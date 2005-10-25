@@ -12,7 +12,7 @@ package com.metavize.tran.mail.web.euv.tags;
 
 import javax.servlet.ServletRequest;
 import java.util.Iterator;
-import java.util.Arrays;
+import java.util.ArrayList;
 
 
 /**
@@ -41,12 +41,12 @@ public final class MessagesSetTag
   
   @Override
   protected Iterator<String> createIterator() {
-    String[] messages = getMessages(pageContext.getRequest(), getType());
+    ArrayList<String> messages = getMessages(pageContext.getRequest(), getType());
     
-    if(messages == null || messages.length == 0) {
+    if(messages == null || messages.size() == 0) {
       return null;
     }
-    return Arrays.asList(messages).iterator();
+    return messages.iterator();
   }
   @Override
   protected void setCurrent(String s) {
@@ -64,7 +64,27 @@ public final class MessagesSetTag
   public static final void setMessages(ServletRequest request,
     String msgType,
     String...messages) {
-    request.setAttribute(MESSAGES_KEY_PREFIX + msgType, messages);
+    for(String msg : messages) {
+      addMessage(request, msgType, msg);
+    }
+  }
+  public static final void addErrorMessage(ServletRequest request,
+    String message) {
+    addMessage(request, ERROR_MSG_SUFFIX, message);
+  }
+  public static final void addInfoMessage(ServletRequest request,
+    String message) {
+    addMessage(request, INFO_MSG_SUFFIX, message);
+  }  
+  public static final void addMessage(ServletRequest request,
+    String msgType,
+    String msg) {
+    ArrayList<String> list = getMessages(request, msgType);
+    if(list == null) {
+      list = new ArrayList<String>();
+      request.setAttribute(MESSAGES_KEY_PREFIX + msgType, list);
+    }
+    list.add(msg);
   }
   public static final void clearMessages(ServletRequest request,
     String msgType) {
@@ -74,14 +94,14 @@ public final class MessagesSetTag
   /**
    * Returns null if there are no such messages
    */
-  static String[] getMessages(ServletRequest request,
+  private static ArrayList<String> getMessages(ServletRequest request,
     String msgType) {
-    return (String[]) request.getAttribute(MESSAGES_KEY_PREFIX + msgType);
+    return (ArrayList<String>) request.getAttribute(MESSAGES_KEY_PREFIX + msgType);
   }
 
   static boolean hasMessages(ServletRequest request,
     String msgType) {
-    String[] msgs = getMessages(request, msgType);
-    return msgs != null && msgs.length > 0;
+    ArrayList<String> msgs = getMessages(request, msgType);
+    return msgs != null && msgs.size() > 0;
   }
 }

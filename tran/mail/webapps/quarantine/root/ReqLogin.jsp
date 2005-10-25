@@ -95,7 +95,7 @@
           <td>
           </td>
           <td>
-            <form name="form1" action="rdc">
+            <form name="form1" method="POST" action="rdc">
               <table class="enteremail">
                 <tr>
                   <td>Email Address:&nbsp;

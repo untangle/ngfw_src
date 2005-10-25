@@ -28,12 +28,16 @@ public abstract class WritesBodyAtEndTag
   public int doEndTag() throws JspException{
     try {
       BodyContent body = getBodyContent();
+      if(body == null || body.getString() == null) {
+        return EVAL_PAGE;
+      }
       JspWriter writer = body.getEnclosingWriter();
       String bodyString = body.getString();
       writer.println(bodyString);
       return EVAL_PAGE;
     }
     catch (Exception ioe){
+      ioe.printStackTrace(System.out);
       throw new JspException(ioe.getMessage());
     }
   }   

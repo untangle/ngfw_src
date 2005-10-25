@@ -26,13 +26,15 @@ public interface SafelistManipulation {
    * @param safelistOwnerAddress the logical address owner
    * @param toAdd the address to add
    *
+   * @return the contents of the safelist <i>after</i> the operation
+   *         has been performed
    *
    * @exception NoSuchSafelistException Note that this should not
    *            be thrown if {@link #hasOrCanHaveSafelist hasOrCanHaveSafelist}
    *            returns true for this address
    * @exception SafelistActionFailedException general back-end problem (you're hosed)
    */
-  public void addToSafelist(String safelistOwnerAddress,
+  public String[] addToSafelist(String safelistOwnerAddress,
     String toAdd)
     throws NoSuchSafelistException, SafelistActionFailedException;
 
@@ -45,13 +47,15 @@ public interface SafelistManipulation {
    * @param safelistOwnerAddress the logical address owner
    * @param toRemove the address to remove
    *
+   * @return the contents of the safelist <i>after</i> the operation
+   *         has been performed
    *
    * @exception NoSuchSafelistException Note that this should not
    *            be thrown if {@link #hasOrCanHaveSafelist hasOrCanHaveSafelist}
    *            returns true for this address
    * @exception SafelistActionFailedException general back-end problem (you're hosed)
    */
-  public void removeFromSafelist(String safelistOwnerAddress,
+  public String[] removeFromSafelist(String safelistOwnerAddress,
     String toRemove)
     throws NoSuchSafelistException, SafelistActionFailedException;
 
@@ -62,13 +66,15 @@ public interface SafelistManipulation {
    * @param safelistOwnerAddress the logical address owner
    * @param listContents the new list
    *
+   * @return the contents of the safelist <i>after</i> the operation
+   *         has been performed
    *
    * @exception NoSuchSafelistException Note that this should not
    *            be thrown if {@link #hasOrCanHaveSafelist hasOrCanHaveSafelist}
    *            returns true for this address
    * @exception SafelistActionFailedException general back-end problem (you're hosed)
    */
-  public void replaceSafelist(String safelistOwnerAddress,
+  public String[] replaceSafelist(String safelistOwnerAddress,
     String...listContents)
     throws NoSuchSafelistException, SafelistActionFailedException;
 

@@ -24,28 +24,39 @@
 	</servlet>
 
   <servlet>
-    <servlet-name>MaintenenceControler</servlet-name>
+    <servlet-name>InboxMaintenenceControler</servlet-name>
     <servlet-class>com.metavize.tran.mail.web.euv.InboxMaintenenceControler</servlet-class>
-    <load-on-startup>1</load-on-startup>
+    <load-on-startup>2</load-on-startup>
   </servlet>
 
   <servlet>
     <servlet-name>RequestDigestControler</servlet-name>
     <servlet-class>com.metavize.tran.mail.web.euv.RequestDigestControler</servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet>    
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+
+  <servlet>
+    <servlet-name>SafelistMaintenenceControler</servlet-name>
+    <servlet-class>com.metavize.tran.mail.web.euv.SafelistMaintenenceControler</servlet-class>
+    <load-on-startup>2</load-on-startup>
+  </servlet>       
 
   @JSP_PRE_COMPILED_SERVLETS@  
   
 
 	<servlet-mapping>
-		<servlet-name>MaintenenceControler</servlet-name>
-		<url-pattern>/imc/*</url-pattern>
+		<servlet-name>InboxMaintenenceControler</servlet-name>
+		<url-pattern>/imc</url-pattern>
 	</servlet-mapping>
 
   <servlet-mapping>
     <servlet-name>RequestDigestControler</servlet-name>
-    <url-pattern>/rdc/*</url-pattern>
-  </servlet-mapping>  
+    <url-pattern>/rdc</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>SafelistMaintenenceControler</servlet-name>
+    <url-pattern>/smc</url-pattern>
+  </servlet-mapping>    
 
 </web-app>

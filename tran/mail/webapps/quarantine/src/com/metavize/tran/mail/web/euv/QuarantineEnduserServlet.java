@@ -23,6 +23,7 @@ import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.security.Tid;
 
 import com.metavize.tran.mail.papi.quarantine.QuarantineUserView;
+import com.metavize.tran.mail.papi.safelist.SafelistEndUserView;
 import com.metavize.tran.mail.papi.MailTransform;
 
 
@@ -37,6 +38,7 @@ public class QuarantineEnduserServlet
 
   private static QuarantineEnduserServlet s_instance;
   private QuarantineUserView m_quarantine;
+  private SafelistEndUserView m_safelist;
   private Exception m_ex;
 
   public QuarantineEnduserServlet() {
@@ -58,6 +60,32 @@ public class QuarantineEnduserServlet
   }
 
   /**
+   * Access the remote reference to the SafelistEndUserView.  If this
+   * method returns null, the caller should not attempt to fix
+   * the situation (i.e. you're hosed).
+   * <br><br>
+   * Also, no need for caller to log issue if null is returned.  This
+   * method already makes a log message
+   *
+   * @return the safelist.
+   */
+  public SafelistEndUserView getSafelist() {
+    if(m_safelist == null) {
+      initRemoteRefs();
+    }
+    else {
+      try {
+        m_safelist.test();
+      }
+      catch(Exception ex) {
+        log("SafelistEndUserView reference stale.  Recreate (once)", ex);
+        initRemoteRefs();
+      }
+    }
+    return m_safelist;
+  }  
+
+  /**
    * Access the remote reference to the QuarantineUserView.  If this
    * method returns null, the caller should not attempt to fix
    * the situation (i.e. you're hosed).
@@ -69,7 +97,7 @@ public class QuarantineEnduserServlet
    */
   public QuarantineUserView getQuarantine() {
     if(m_quarantine == null) {
-      m_quarantine = getRemoteRef();
+      initRemoteRefs();
     }
     else {
       try {
@@ -77,27 +105,25 @@ public class QuarantineEnduserServlet
       }
       catch(Exception ex) {
         log("QuarantineUserView reference stale.  Recreate (once)", ex);
-        m_quarantine = getRemoteRef();
+        initRemoteRefs();
       }
     }
     return m_quarantine;
   }
 
   /**
-   * Attempts to create a remote reference to the
-   * QuarantineUserView.  Returns null if it cannot be
-   * created (and logs the error).
+   * Attempts to create a remote references
    */
-  private QuarantineUserView getRemoteRef() {
+  private void initRemoteRefs() {
     try {
       MvvmRemoteContext ctx = MvvmRemoteContextFactory.factory().systemLogin(0);
       Tid tid = ctx.transformManager().transformInstances("mail-casing").get(0);
       TransformContext tc = ctx.transformManager().transformContext(tid);
-      return ((MailTransform) tc.transform()).getQuarantineUserView();
+      m_quarantine =  ((MailTransform) tc.transform()).getQuarantineUserView();
+      m_safelist =  ((MailTransform) tc.transform()).getSafelistEndUserView();
     }
     catch(Exception ex) {
-      log("Unable to create reference to QuarantineUserView", ex);
-      return null;
+      log("Unable to create reference to Quarantine/safelist", ex);
     }
   }
 

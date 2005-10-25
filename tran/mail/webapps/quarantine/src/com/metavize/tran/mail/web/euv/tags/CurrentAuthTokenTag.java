@@ -46,7 +46,6 @@ public final class CurrentAuthTokenTag
 
   public static final void setCurrent(ServletRequest request,
     String token) {
-    System.out.println("[CurrentAuthTokenTag] setCurrent: " + token);
     request.setAttribute(AUTH_TOKEN_KEY, token);
   }
   public static final void clearCurret(ServletRequest request) {

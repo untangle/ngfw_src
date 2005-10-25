@@ -46,6 +46,8 @@ public final class Constants
 
   public static final String INBOX_VIEW = "/Inbox.jsp";
 
+  public static final String SAFELIST_VIEW = "/Safelist.jsp";
+
   public static final String INBOX_MAINTENENCE_CTL = "/imc";
   
   

@@ -163,6 +163,29 @@
   </tag>
 
   <!--
+    Unlike the pagnationLink, this tag outputs the individual
+    elements which could make-up a link
+
+    Valid values for "propName" are:
+
+    "sorting"
+    "ascending"
+    "prevId"
+    "nextId"
+    "thisId"
+  -->
+  <tag>
+    <name>pagnationProperties</name>
+    <tagclass>com.metavize.tran.mail.web.euv.tags.PagnationPropertiesTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <attribute>
+      <name>propName</name>
+      <required>true</required>
+      <rtexpvalue>false</rtexpvalue>
+    </attribute>    
+  </tag>  
+
+  <!--
     Conditional tag which includes/excludes a block depending
     on if there are "prev" and "next" pages to be shown.
 
@@ -209,6 +232,45 @@
       <rtexpvalue>false</rtexpvalue>
     </attribute>    
   </tag>
+
+
+  
+  <!--
+    Tag which declares an iteration over the "current"
+    Safelist.  Within each iteration, sets an "oddEven"
+    and a "safelistEntry"
+  -->
+  <tag>
+    <name>forEachSafelistEntry</name>
+    <tagclass>com.metavize.tran.mail.web.euv.tags.SafelistListTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+  </tag>
+
+  <!--
+    Used within an forEachSafelistEntry tag, to access the "current"
+    entry. "encoded" will return a base64 encoded version of the address
+  -->
+  <tag>
+    <name>safelistEntry</name>
+    <tagclass>com.metavize.tran.mail.web.euv.tags.SafelistEntryTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <attribute>
+      <name>encoded</name>
+      <required>true</required>
+      <rtexpvalue>false</rtexpvalue>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>hasSafelist</name>
+    <tagclass>com.metavize.tran.mail.web.euv.tags.HasSafelistTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <attribute>
+      <name>includeIfTrue</name>
+      <required>true</required>
+      <rtexpvalue>false</rtexpvalue>
+    </attribute>  
+  </tag>    
 
   <!--
     Tag outputs constants for keys/values used in forms.  Lets us avoid having

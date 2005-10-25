@@ -150,13 +150,22 @@ SEP
         </td>
         <td>
           <quarantine:hasInboxRecords includeIfTrue="true">
-          <form name="form1" action="imc">
+          <form name="form1" method="POST" action="imc">
             <input type="hidden"
               name="<quarantine:constants keyName="action"/>"
               value="<quarantine:constants valueName="viewibx"/>"/>
             <input type="hidden"
               name="<quarantine:constants keyName="tkn"/>"
               value="<quarantine:currentAuthToken encoded="false"/>"/>
+            <input type="hidden"
+              name="<quarantine:constants keyName="sort"/>"
+              value="<quarantine:pagnationProperties propName="sorting"/>"/>
+            <input type="hidden"
+              name="<quarantine:constants keyName="ascend"/>"
+              value="<quarantine:pagnationProperties propName="ascending"/>"/>
+            <input type="hidden"
+              name="<quarantine:constants keyName="first"/>"
+              value="<quarantine:pagnationProperties propName="thisId"/>"/>                            
             <table border="0" cellpadding="0" cellspacing="0" width="100%">
               <tbody>
                 <tr>
@@ -241,7 +250,12 @@ SEP
                                 name="<quarantine:constants keyName="mid"/>"
                                 value="<quarantine:inboxRecord prop="mid"/>"/>
                             </th>
-                            <td><quarantine:inboxRecord prop="from"/></td>
+                            <td>
+                              <quarantine:inboxRecord prop="from"/>
+                              <quarantine:hasSafelist includeIfTrue="true">
+                                <a href="/quarantine/imc?<quarantine:constants keyName="action"/>=<quarantine:constants valueName="sladd"/>&<quarantine:constants keyName="tkn"/>=<quarantine:currentAuthToken encoded="false"/>&<quarantine:constants keyName="sort"/>=<quarantine:pagnationProperties propName="sorting"/>&<quarantine:constants keyName="ascend"/>=<quarantine:pagnationProperties propName="ascending"/>&<quarantine:constants keyName="first"/>=<quarantine:pagnationProperties propName="thisId"/>&<quarantine:constants keyName="sladdr"/>=<quarantine:inboxRecord prop="from"/>">(Safelist)</a>
+                              </quarantine:hasSafelist>
+                            </td>
                             <td><quarantine:inboxRecord prop="detail"/></td>
                             <td><quarantine:inboxRecord prop="subject"/></td>
                           </tr>

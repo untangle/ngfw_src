@@ -27,6 +27,7 @@ import java.util.Iterator;
 public final class InboxRecordCursor
   implements Iterable<InboxRecord> {
 
+  private int m_thisStartingWith;
   private int m_firstID;
   private int m_lastID;
   private InboxRecord[] m_records;
@@ -35,7 +36,9 @@ public final class InboxRecordCursor
   private InboxRecordComparator.SortBy m_sortedBy;
   private boolean m_ascending;
 
-  private InboxRecordCursor(int firstID,
+  private InboxRecordCursor(
+    int thisStartingWith,
+    int firstID,
     int lastID,
     InboxRecord[] records,
     boolean hasNext,
@@ -43,6 +46,7 @@ public final class InboxRecordCursor
     InboxRecordComparator.SortBy sortBy,
     boolean ascending) {
 
+    m_thisStartingWith = thisStartingWith;
     m_firstID = firstID;
     m_lastID = lastID;
     m_records = records;
@@ -106,6 +110,10 @@ public final class InboxRecordCursor
     return ret<0?0:ret;
   }
 
+  public int getCurrentStartingAt() {
+    return m_thisStartingWith;
+  }
+
   public InboxRecordComparator.SortBy getSortedBy() {
     return m_sortedBy;
   }
@@ -141,6 +149,7 @@ public final class InboxRecordCursor
     System.arraycopy(allRecords, startingAt, ret, 0, windowSz);
 
     return new InboxRecordCursor(startingAt,
+      startingAt,
       startingAt + windowSz,
       ret,
       startingAt + windowSz < allRecords.length,

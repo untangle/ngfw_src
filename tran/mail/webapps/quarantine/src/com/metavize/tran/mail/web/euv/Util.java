@@ -13,6 +13,7 @@ package com.metavize.tran.mail.web.euv;
 import com.metavize.tran.mail.papi.quarantine.InboxRecordComparator;
 import java.util.Map;
 import java.util.HashMap;
+import javax.servlet.ServletRequest;
 
 /**
  * Utility methods
@@ -62,5 +63,36 @@ public class Util {
     
     return ret==null?
       def:ret;
+  }
+
+  /**
+   * Read a boolean parameter
+   */
+  public static boolean readBooleanParam(ServletRequest req,
+    String paramName,
+    boolean def) {
+    if(req.getParameter(paramName) == null) {
+      return def;
+    }
+    try {
+      return Boolean.parseBoolean(req.getParameter(paramName));
+    }
+    catch(Exception ex) {
+    }
+    return def;
+  }  
+
+  /**
+   * Read an int parameter
+   */
+  public static int readIntParam(ServletRequest req,
+    String paramName,
+    int def) {
+    try {
+      return Integer.parseInt(req.getParameter(paramName));
+    }
+    catch(Exception ex) {
+    }
+    return def;
   }
 }

@@ -62,7 +62,10 @@ public final class ConstantsTag
       }
       else if(keyName.equals(Constants.FIRST_RECORD_RP)) {
         s = Constants.FIRST_RECORD_RP;
-      }                       
+      }
+      else if(keyName.equals(Constants.SAFELIST_TARGET_ADDR_RP)) {
+        s = Constants.SAFELIST_TARGET_ADDR_RP;
+      }
     }
     else if(getValueName() != null) {
       String valueName = getValueName().trim().toLowerCase();
@@ -74,7 +77,19 @@ public final class ConstantsTag
       }
       else if(valueName.equals(Constants.VIEW_INBOX_RV)) {
         s = Constants.VIEW_INBOX_RV;
-      }            
+      }
+      else if(valueName.equals(Constants.SAFELIST_VIEW_RV)) {
+        s = Constants.SAFELIST_VIEW_RV;
+      }
+      else if(valueName.equals(Constants.SAFELIST_ADD_RV)) {
+        s = Constants.SAFELIST_ADD_RV;
+      }
+      else if(valueName.equals(Constants.SAFELIST_REMOVE_RV)) {
+        s = Constants.SAFELIST_REMOVE_RV;
+      }
+      else if(valueName.equals(Constants.VIEW_INBOX_RV)) {
+        s = Constants.VIEW_INBOX_RV;
+      }                       
     }
     return s;  
   }
