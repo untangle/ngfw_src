@@ -44,7 +44,7 @@ public class PhishImapFactory implements TokenHandlerFactory
 
       boolean inbound = session.isInbound();
 
-      SpamIMAPConfig config = inbound?
+      SpamIMAPConfig config = (!inbound)?
         m_transform.getSpamSettings().getIMAPInbound():
         m_transform.getSpamSettings().getIMAPOutbound();
 
@@ -53,7 +53,7 @@ public class PhishImapFactory implements TokenHandlerFactory
         return new ImapTokenStream(session);
       }
 
-      long timeout = inbound?m_mailExport.getExportSettings().getImapInboundTimeout():
+      long timeout = (!inbound)?m_mailExport.getExportSettings().getImapInboundTimeout():
         m_mailExport.getExportSettings().getImapOutboundTimeout();
 
       return new ImapTokenStream(session,

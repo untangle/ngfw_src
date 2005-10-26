@@ -39,7 +39,7 @@ public class SpamImapFactory
 
     boolean inbound = session.isInbound();
 
-    SpamIMAPConfig config = inbound?
+    SpamIMAPConfig config = (!inbound)?
       m_impl.getSpamSettings().getIMAPInbound():
       m_impl.getSpamSettings().getIMAPOutbound();
 
@@ -48,7 +48,7 @@ public class SpamImapFactory
       return new ImapTokenStream(session);
     }
 
-    long timeout = inbound?m_mailExport.getExportSettings().getImapInboundTimeout():
+    long timeout = (!inbound)?m_mailExport.getExportSettings().getImapInboundTimeout():
       m_mailExport.getExportSettings().getImapOutboundTimeout();
 
     return new ImapTokenStream(session,

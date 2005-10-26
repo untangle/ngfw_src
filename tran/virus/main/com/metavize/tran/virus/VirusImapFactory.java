@@ -46,7 +46,7 @@ public final class VirusImapFactory
 
     boolean inbound = session.isInbound();
 
-    VirusIMAPConfig virusConfig = inbound?
+    VirusIMAPConfig virusConfig = (!inbound)?
       m_virusImpl.getVirusSettings().getIMAPInbound():
       m_virusImpl.getVirusSettings().getIMAPOutbound();
 
@@ -55,7 +55,7 @@ public final class VirusImapFactory
       return new ImapTokenStream(session);
     }
 
-    long timeout = inbound?m_mailExport.getExportSettings().getImapInboundTimeout():
+    long timeout = (!inbound)?m_mailExport.getExportSettings().getImapInboundTimeout():
       m_mailExport.getExportSettings().getImapOutboundTimeout();
 
     return new ImapTokenStream(session,
