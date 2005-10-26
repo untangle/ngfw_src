@@ -76,7 +76,7 @@ public class SpamLog implements Comparable<SpamLog>, Serializable
 
     public String getReceiver()
     {
-        return receiver;
+        return (receiver!=null?receiver:"unknown");
     }
 
     public String getSender()
