@@ -36,9 +36,9 @@ public class MColoredJTable extends JTable {
         setIntercellSpacing(new Dimension(1,1));
         setOpaque(true);
         setBackground(TABLE_BACKGROUND_COLOR);
-        this.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-        this.getTableHeader().setReorderingAllowed(false);
-        ((JLabel)this.getTableHeader().getDefaultRenderer()).setPreferredSize(new Dimension(0,34));
+        setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        getTableHeader().setReorderingAllowed(false);
+        ((JLabel)getTableHeader().getDefaultRenderer()).setPreferredSize(new Dimension(0,34));
         
         JLabel headerRendererJLabel = (JLabel) this.getTableHeader().getDefaultRenderer();
         headerRendererJLabel.setHorizontalAlignment( SwingConstants.CENTER );
@@ -59,6 +59,16 @@ public class MColoredJTable extends JTable {
     
     public TableCellEditor getCellEditor(int row, int col){
         return tableCellEditor;
+    }
+
+    public void doGreedyColumn(int scrollPanelWidth){
+	int greedyCol = ((MSortedTableModel) getModel()).getGreedyColumnViewIndex();
+	if( greedyCol < 0 )
+	    return;
+	int currentTableWidth = getWidth();
+	TableColumn greedyColumn = getColumnModel().getColumn(greedyCol);
+	int greedyColumnWidth = greedyColumn.getPreferredWidth();
+	greedyColumn.setPreferredWidth( greedyColumnWidth + (scrollPanelWidth-currentTableWidth) );
     }
 
 }

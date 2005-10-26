@@ -20,10 +20,11 @@ import javax.swing.*;
 import javax.swing.table.*;
 import java.util.Vector;
 import java.awt.*;
+import java.awt.event.*;
 import javax.swing.border.*;
 
 
-public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectionListener, TableModelListener, Refreshable, Savable {
+public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectionListener, TableModelListener, Refreshable, Savable, ComponentListener {
 
     private JLabel messageJLabel;
     
@@ -68,6 +69,7 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
         entryJScrollPane.getViewport().setOpaque(true);
         entryJScrollPane.getViewport().setBackground(TABLE_BACKGROUND_COLOR);
         entryJScrollPane.setViewportBorder(new MatteBorder(2, 2, 2, 1, TABLE_BACKGROUND_COLOR));
+	entryJScrollPane.addComponentListener(this);
         this.setOpaque(false);
         contentJPanel.setOpaque(false);
         detailJTextArea.setText("no selection...");        
@@ -172,6 +174,13 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
         addJButton.setVisible(enabled);
         removeJButton.setVisible(enabled);
         fillJButton.setVisible(enabled);
+    }
+
+    public void componentHidden(ComponentEvent e){}
+    public void componentMoved(ComponentEvent e){}
+    public void componentShown(ComponentEvent e){}
+    public void componentResized(ComponentEvent e){
+	mColoredJTable.doGreedyColumn(entryJScrollPane.getViewport().getExtentSize().width);
     }
     
     private void initComponents() {//GEN-BEGIN:initComponents

@@ -198,10 +198,17 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
     private int stateModelIndex = 0;  // usually the first col
     private int descriptionModelIndex = -1;  // defaults to no description
     private int orderModelIndex = 1;  // defaults to no order shown
+    private int greedyColumnModelIndex = -1;
 
     public int getStateModelIndex(){ return stateModelIndex; }
     public int getDescriptionModelIndex(){ return descriptionModelIndex; }
     public int getOrderModelIndex(){ return orderModelIndex; }
+    public int getGreedyColumnViewIndex(){
+	if( greedyColumnModelIndex == -1 )
+	    return -1;
+	else
+	    return getColModelToViewIndex(greedyColumnModelIndex);
+    }
     public String getDescription(int row) {
         if( (descriptionModelIndex < 0) || (row < 0) )
             return "[no description]";
@@ -312,8 +319,11 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
         }
         defaultTableColumnModel.addColumn(tableColumn);
         
-        if(isDescription)
+        if(isDescription){
              this.descriptionModelIndex = index;
+	     if( !isRemovable )
+		 this.greedyColumnModelIndex = index;
+	}
         if( isRemovable )
             removableVector.add(headerTitle);
         
