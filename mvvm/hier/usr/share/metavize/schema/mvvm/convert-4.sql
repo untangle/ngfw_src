@@ -101,6 +101,8 @@ DROP INDEX pl_endp_cdate_idx;
 DROP TABLE events.pl_endp;
 
 ALTER TABLE events.pl_endp_new RENAME TO pl_endp;
+ALTER TABLE events.pl_endp
+    ADD CONSTRAINT pl_endp_pkey PRIMARY KEY (event_id);
 CREATE INDEX pl_endp_sid_idx ON events.pl_endp (session_id);
 CREATE INDEX pl_endp_cdate_idx ON events.pl_endp (create_date);
 
