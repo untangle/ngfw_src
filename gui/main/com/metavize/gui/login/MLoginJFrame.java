@@ -483,6 +483,8 @@ public class MLoginJFrame extends javax.swing.JFrame {
 	    // ATTEMPT TO LOG IN
 	    int retryLogin = 0;
 	    while( true ){
+		if( Util.getKillThreads() )
+		    return;
 		retryLogin++;
 		try{
 		    
@@ -540,19 +542,19 @@ public class MLoginJFrame extends javax.swing.JFrame {
 		    return;
 		}
 		catch(com.metavize.mvvm.client.InvocationTargetExpiredException e){
-		    e.printStackTrace();
+		    //e.printStackTrace();
 		    //Util.handleExceptionNoRestart("Error:", e);
 		}
 		catch(com.metavize.mvvm.client.InvocationConnectionException e){
-		    e.printStackTrace();
+		    //e.printStackTrace();
 		    //Util.handleExceptionNoRestart("Error:", e);
 		}
 		catch(MvvmConnectException e){
-		    e.printStackTrace();
+		    //e.printStackTrace();
 		    //Util.handleExceptionNoRestart("Error:", e);
 		}
 		catch(Exception e){
-		    e.printStackTrace();
+		    //e.printStackTrace();
 		    //Util.handleExceptionNoRestart("Error:", e);
 		}
 		finally{
@@ -574,6 +576,9 @@ public class MLoginJFrame extends javax.swing.JFrame {
 	    // ATTEMPT TO LOAD CLIENT
 	    int retryClient = 0;
 	    while( true ){
+		if( Util.getKillThreads() )
+		    return;
+
 		retryClient++;
 		try{
 		    // load GUI with proper context
