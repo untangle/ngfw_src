@@ -26,7 +26,7 @@ import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shutdownable {
+public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shutdownable, ComponentListener {
 
     protected static final String ALL_EVENTS_STRING = "All events";    
 
@@ -50,6 +50,7 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
 		entryJScrollPane.getViewport().setOpaque(true);
 		entryJScrollPane.getViewport().setBackground(TABLE_BACKGROUND_COLOR);
 		entryJScrollPane.setViewportBorder(new MatteBorder(2, 2, 2, 1, TABLE_BACKGROUND_COLOR));
+		addComponentListener(MLogTableJPanel.this);
 		Dictionary dictionary = depthJSlider.getLabelTable();
 		Enumeration enumeration = dictionary.elements();
 		while(enumeration.hasMoreElements()){
@@ -90,6 +91,12 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
         return null;
     }
 
+    public void componentHidden(ComponentEvent e){}
+    public void componentMoved(ComponentEvent e){}
+    public void componentShown(ComponentEvent e){}
+    public void componentResized(ComponentEvent e){
+	((MColoredJTable)entryJTable).doGreedyColumn(entryJScrollPane.getViewport().getExtentSize().width);
+    }
     
     private void initComponents() {//GEN-BEGIN:initComponents
         java.awt.GridBagConstraints gridBagConstraints;
