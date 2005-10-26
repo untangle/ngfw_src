@@ -306,11 +306,9 @@ class LOGINTokMon
   }
 
   private void setSessionUserName(String userName) {
-    if(userName == null) {
-      getSessionMonitor().setUserName(userName);
-    }
-    else {
+    if(userName != null) {
       m_logger.debug("Found username \"" + userName + "\" in LOGIN authentication");
+      getSessionMonitor().setUserName(userName);
     }
   }
 
