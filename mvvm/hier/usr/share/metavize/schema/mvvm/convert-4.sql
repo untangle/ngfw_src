@@ -70,6 +70,7 @@ UPDATE settings.tid SET policy_id = 0 FROM
  WHERE id = foo.tid;
 
 -- com.metavize.mvvm.tran.PipelineEndpoints
+DROP TABLE events.pl_endp_new;
 CREATE TABLE events.pl_endp_new (
     event_id int8 NOT NULL,
     time_stamp timestamp,
@@ -90,7 +91,7 @@ CREATE TABLE events.pl_endp_new (
     policy_inbound bool);
 
 INSERT INTO events.pl_endp_new
-SELECT event_id, time_stamp, session_id, proto, create_date, client_intf, server_intf, c_client_addr,
+SELECT DISTINCT event_id, time_stamp, session_id, proto, create_date, client_intf, server_intf, c_client_addr,
        s_client_addr, c_server_addr, s_server_addr, c_client_port, s_client_port, c_server_port, s_server_port,
        0, CASE WHEN client_intf = 0 THEN true ELSE false END
   FROM events.pl_endp;
