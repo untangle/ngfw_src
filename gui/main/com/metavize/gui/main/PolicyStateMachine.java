@@ -81,7 +81,7 @@ public class PolicyStateMachine implements ActionListener {
     private JPanel selectedRackJPanel;
     private int lastToolboxScrollPosition = -1;
     private Map<Policy,Integer> lastRackScrollPosition;
-    private volatile static int applianceLoadProgress = 0;
+    private volatile static int applianceLoadProgress;
     // CONSTANTS /////////////
     private GridBagConstraints buttonGridBagConstraints;
     private GridBagConstraints applianceGridBagConstraints;
@@ -713,6 +713,7 @@ public class PolicyStateMachine implements ActionListener {
 	    }
 	}
 	// SERVICES
+	applianceLoadProgress = 0;
 	for( Tid tid : serviceTidList ){
 	    new LoadApplianceThread(null,tid,overall,progressBar);
 	}
