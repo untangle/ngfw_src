@@ -129,9 +129,6 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
     private Exception saveException;
     protected void saveAll(){
 
-        if(Util.getIsDemo())
-            return;
-
 	// GENERATE AND VALIDATE ALL SETTINGS
 	String transformName = mTransformJPanel.getMackageDesc().getDisplayName();
 	String componentName = "";

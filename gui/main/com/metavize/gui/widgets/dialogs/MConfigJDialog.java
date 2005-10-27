@@ -300,6 +300,8 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
     }//GEN-END:initComponents
 
     private void saveJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveJButtonActionPerformed
+	if( Util.getIsDemo() )
+	    return;
         new SaveAllThread();
     }//GEN-LAST:event_saveJButtonActionPerformed
 
