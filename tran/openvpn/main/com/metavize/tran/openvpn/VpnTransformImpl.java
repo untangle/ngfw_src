@@ -101,13 +101,19 @@ public class VpnTransformImpl extends AbstractTransform
         return this.settings;
     }
 
-    public void generateClientKey( VpnClient client )
+    public VpnClient generateClientCertificate( VpnClient client )
     {
+        return client;
     }
+
+    public VpnClient revokeClientCertificate( VpnClient client )
+    {
+        return client;
+    }
+
 
     public void distributeClientKey( VpnClient client, boolean usbKey, String email )
     {
-        return;
     }
 
     // AbstractTransform methods ----------------------------------------------
