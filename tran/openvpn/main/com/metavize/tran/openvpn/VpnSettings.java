@@ -31,6 +31,9 @@ public class VpnSettings implements Serializable, Validatable
     // XXX update the serial version id
     // private static final long serialVersionUID = 4143567998376955882L;
 
+    private final int KEY_SIZE_ENUMERATION[] = new int[] { 1024, 1536, 2048 };
+    private final int KEY_SIZE_DEFAULT       = KEY_SIZE_ENUMERATION[0];
+
     private Long id;
     private Tid tid;
 
@@ -50,7 +53,7 @@ public class VpnSettings implements Serializable, Validatable
 
     /* Certificate information */
     private String  domain;
-    private int     keySize;
+    private int     keySize = KEY_SIZE_DEFAULT;
     private String  country;
     private String  province;
     private String  organization;
@@ -223,6 +226,8 @@ public class VpnSettings implements Serializable, Validatable
     }
     
     /* Certificate information */
+    
+    
     /**
      * @return domain.
      * @hibernate.property

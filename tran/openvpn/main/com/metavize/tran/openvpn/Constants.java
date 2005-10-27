@@ -15,7 +15,6 @@ class Constants
     static final String BUNNICULA_BASE  = System.getProperty( "bunnicula.home" );
     static final String BUNNICULA_CONF  = System.getProperty( "bunnicula.conf.dir" );
     
-    static final String VPN_SCRIPT_BASE = BUNNICULA_BASE + "/vpn";
-    static final String VPN_CONF_BASE   = BUNNICULA_CONF + "/vpn";
-        
+    static final String VPN_SCRIPT_BASE = BUNNICULA_BASE + "/openvpn";
+    static final String VPN_CONF_BASE   = BUNNICULA_CONF;
 }

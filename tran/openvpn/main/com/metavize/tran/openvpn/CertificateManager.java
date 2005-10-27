@@ -19,7 +19,7 @@ import com.metavize.mvvm.tran.ScriptWriter;
 
 import static com.metavize.tran.openvpn.Constants.*;
 
-class BaseGenerator
+class CertificateManager
 {
     private static final String DOMAIN_FLAG       = "DOMAIN";
     private static final String DEFAULT_DOMAIN    = "does.not.exists";
@@ -52,17 +52,21 @@ class BaseGenerator
         SERVER_NAME_FLAG + "=" + "server.${DOMAIN}",
         CA_NAME_FLAG     + "=" + "ca.${DOMAIN}",
     };
+
+    private static final String GENERATE_BASE_SCRIPT   = VPN_SCRIPT_BASE + "/generate-base";
+    private static final String GENERATE_CLIENT_SCRIPT = VPN_SCRIPT_BASE + "/generate-client";
+    private static final String REVOKE_CLIENT_SCRIPT   = VPN_SCRIPT_BASE + "/revoke-client";
     
     /* Name of the file that stores the configuration data */
-    private static final String CONFIG_FILE       = VPN_CONF_BASE + "/vpn_base_cfg";
+    private static final String CONFIG_FILE       = VPN_CONF_BASE + "/openvpn_base_cfg";
 
     private final Random random = new Random();
 
-    BaseGenerator()
+    CertificateManager()
     {
     }
 
-    public void createBase( VpnSettings settings )
+    public void createBase( VpnSettings settings ) throws TransformException
     {
         ScriptWriter sw = new ScriptWriter( HEADER );
 
@@ -78,12 +82,17 @@ class BaseGenerator
         sw.appendVariable( ORG_UNIT_FLAG, settings.getOrganizationUnit(), true );
         sw.appendVariable( EMAIL_FLAG, settings.getEmail(), true );
 
+        sw.appendComment( "Key size" );
+        sw.appendVariable( KEY_SIZE_FLAG, String.valueOf( settings.getKeySize()), true );
+
         sw.appendComment( "USB Key indicator" );
         sw.appendVariable( USB_FLAG, String.valueOf( settings.isCaKeyOnUsb()));
 
         sw.appendLines( DEFAULTS );
 
         sw.writeFile( CONFIG_FILE );
+        
+        callScript( GENERATE_BASE_SCRIPT );
     }
 
     private void setDefaults( VpnSettings settings )
@@ -103,6 +112,33 @@ class BaseGenerator
     {
         if ( setting == null || setting.trim().length() == 0 ) return false;
         return true;
+    }
+
+    private void callClientScript( String commonName ) throws TransformException
+    {
+        callScript( GENERATE_CLIENT_SCRIPT + " " + commonName );
+    }
+
+    private void callRevokeClientScript( String commonName ) throws TransformException
+    {
+        callScript( REVOKE_CLIENT_SCRIPT + " " + commonName );
+    }
+
+    private void callScript( String scriptName ) throws TransformException
+    {
+        /* Run the script to generate the base parameters */
+        /* Call the rule generator */
+        try {
+            int code = 0;
+            Process p = Runtime.getRuntime().exec( "sh " + scriptName );
+            code = p.waitFor();
+            
+            if ( code != 0 ) throw new TransformException( "Error generating base parameters: " + code );
+        } catch ( TransformException e ) {
+            throw e;
+        } catch( Exception e ) {
+            throw new TransformException( "Error generating base parameters", e );
+        }
     }
 
     

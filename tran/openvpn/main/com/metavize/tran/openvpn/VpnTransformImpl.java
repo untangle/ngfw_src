@@ -30,6 +30,7 @@ public class VpnTransformImpl extends AbstractTransform
 
     private final PipeSpec[] pipeSpec = new PipeSpec[0];
     private final OpenVpnManager openVpnManager = new OpenVpnManager();
+    private final CertificateManager certificateManager = new CertificateManager();
 
     private VpnSettings settings;
 
@@ -79,21 +80,25 @@ public class VpnTransformImpl extends AbstractTransform
                 this.openVpnManager.restart();
             }
         } catch ( TransformException exn ) {
-            logger.error( "Could not save Nat settings", exn );
+            logger.error( "Could not save VPN settings", exn );
         }
     }
 
     public VpnSettings getVpnSettings()
     {
-        return settings;
+        return this.settings;
     }
 
-    public VpnSettings generateBaseParameters( String serverName, boolean isCaKeyLocal, 
-                                               int keySize, String country, String state,
-                                               String city, String organization, String email )
+    public VpnSettings generateBaseParameters( VpnSettings settings )
     {
-        
-        return null;
+        try {
+            certificateManager.createBase( settings );
+            this.settings = settings;
+        } catch ( TransformException e ) {
+            logger.warn( "Unable to generate base parameters", e );
+        }
+            
+        return this.settings;
     }
 
     public void generateClientKey( VpnClient client )

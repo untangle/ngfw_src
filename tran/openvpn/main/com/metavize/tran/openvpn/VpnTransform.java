@@ -18,7 +18,13 @@ public interface VpnTransform extends Transform
     public void setVpnSettings( VpnSettings settings );
     public VpnSettings getVpnSettings();
 
-    public VpnSettings generateBaseParameters( String serverName, boolean isCaKeyLocal, 
-                                               int keySize, String country, String state,
-                                               String city, String organization, String email );
+    /* Create a new set of base parameters, this invalidates all of the client keys */
+    public VpnSettings generateBaseParameters( VpnSettings settings );
+
+    /* Create a client certificate, if the client already has a certificate
+     * this will automatically revoke their old one */
+    public VpnClient generateClientCertificate( VpnClient client );
+
+    /* Revoke a client license */
+    public VpnClient revokeClientCertificate( VpnClient client );
 }
