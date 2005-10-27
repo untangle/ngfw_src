@@ -428,6 +428,8 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
     }//GEN-LAST:event_connectivityTestJButtonActionPerformed
 
     private void renewDhcpLeaseJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renewDhcpLeaseJButtonActionPerformed
+	if( Util.getIsDemo() )
+	    return;
         DhcpLeaseRenewDialog dhcpLeaseRenewDialog = new DhcpLeaseRenewDialog();
         NetworkingConfiguration newNetworkingConfiguration = dhcpLeaseRenewDialog.getNetworkingConfiguration();
         if( newNetworkingConfiguration != null)
