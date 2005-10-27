@@ -299,10 +299,14 @@ public class BackupRestoreJDialog extends javax.swing.JDialog implements java.aw
     }//GEN-END:initComponents
 
     private void backupUSBKeyJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backupUSBKeyJButtonActionPerformed
+	if( Util.getIsDemo() )
+	    return;
         new BackupThread(false);
     }//GEN-LAST:event_backupUSBKeyJButtonActionPerformed
 
     private void backupHardDiskJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backupHardDiskJButtonActionPerformed
+	if( Util.getIsDemo() )
+	    return;
         new BackupThread(true);
     }//GEN-LAST:event_backupHardDiskJButtonActionPerformed
 
