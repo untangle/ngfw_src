@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.metavize.tran.vpn;
+package com.metavize.tran.openvpn;
 
 import java.util.Random;
 
@@ -17,7 +17,7 @@ import com.metavize.mvvm.tran.TransformException;
 
 import com.metavize.mvvm.tran.ScriptWriter;
 
-import static com.metavize.tran.vpn.Constants.*;
+import static com.metavize.tran.openvpn.Constants.*;
 
 class BaseGenerator
 {

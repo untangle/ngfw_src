@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.metavize.tran.vpn;
+package com.metavize.tran.openvpn;
 
 class Constants
 {

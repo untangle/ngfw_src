@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.tran.vpn;
+package com.metavize.tran.openvpn;
 
 import com.metavize.mvvm.tran.Transform;
 

@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.metavize.tran.vpn;
+package com.metavize.tran.openvpn;
 
 import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.tran.TransformException;

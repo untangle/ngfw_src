@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.metavize.tran.vpn;
+package com.metavize.tran.openvpn;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Query;

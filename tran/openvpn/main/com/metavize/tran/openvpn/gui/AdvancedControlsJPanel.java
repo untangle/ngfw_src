@@ -13,8 +13,8 @@
 package com.metavize.tran.test.gui;
 
 import com.metavize.mvvm.tran.TransformContext;
-import com.metavize.tran.vpn.VpnSettings;
-import com.metavize.tran.vpn.VpnTransform;
+import com.metavize.tran.openvpn.VpnSettings;
+import com.metavize.tran.openvpn.VpnTransform;
 import com.metavize.gui.util.Util;
 
 public class AdvancedControlsJPanel extends javax.swing.JPanel {
