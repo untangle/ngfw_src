@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <mvvm-transform>
-  <transform-desc name="opnvpn-transform"
+  <transform-desc name="openvpn-transform"
                   display-name="OpenVpn"
                   classname="com.metavize.tran.openvpn.VpnTransformImpl"
-                  gui-classname="com.metavize.tran.openvpn.gui.MTransformJPanel"/>
+                  gui-classname="com.metavize.tran.openvpn.gui.MTransformJPanel"
+                  single-instance="true"/>
 </mvvm-transform>

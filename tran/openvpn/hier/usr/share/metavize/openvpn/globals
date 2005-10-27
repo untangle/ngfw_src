@@ -1,7 +1,7 @@
 #!/bin/sh
 
-OPENVPN_HOME=@MVVM_HOME@/vpn
-BASE_CONFIG_FILE=${OPENVPN_HOME}/cfg
+OPENVPN_HOME=@MVVM_HOME@/openvpn
+BASE_CONFIG_FILE=@MVVM_CONF@/openvpn_base_cfg
 
 ## There must be a configuration file 
 if [ -r ${BASE_CONFIG_FILE} ]; then
