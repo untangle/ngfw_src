@@ -11,6 +11,7 @@
 
 package com.metavize.mvvm.engine;
 
+import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
@@ -25,6 +26,8 @@ import com.metavize.mvvm.security.LoginSession;
 public class HttpInvokerStub implements InvocationHandler, Serializable
 {
     private static final long serialVersionUID = 7987422171291937863L;
+
+    private static final int[] SLEEP_TIMES = new int[] { 0, 500, 1000, 2000 };
 
     private static ClassLoader classLoader;
 
@@ -94,25 +97,67 @@ public class HttpInvokerStub implements InvocationHandler, Serializable
                                  method.getDeclaringClass().getName(),
                                  url, timeout);
 
-        ObjectOutputStream oos = new ObjectOutputStream(huc.getOutputStream());
-        try {
-            oos.writeObject(inv);
-            oos.writeObject(args);
-        } finally {
-            oos.close();
+        boolean written = false;
+        IOException writeExn = null;
+        for (int i = 0; i < SLEEP_TIMES.length && !written; i++) {
+            ObjectOutputStream oos = new ObjectOutputStream(huc.getOutputStream());
+            try {
+                oos.writeObject(inv);
+                oos.writeObject(args);
+                written = true;
+            } catch (IOException exn) {
+                writeExn = exn;
+                try {
+                    Thread.currentThread().sleep(SLEEP_TIMES[i]);
+                } catch (InterruptedException e) { /* keep going */ }
+            } finally {
+                try {
+                    oos.close();
+                } catch (IOException exn) {
+                    System.out.println("could not close connection" + exn);
+                    exn.printStackTrace();
+                }
+            }
+        }
+
+        if (!written) {
+            System.out.println("could not write invocation " + writeExn);
+            writeExn.printStackTrace();
+            throw writeExn;
         }
 
         Object o = null;
 
-        ProxyInputStream pis = new ProxyInputStream(huc.getInputStream());
-        try {
-            if (classLoader != null) {
-                o = pis.readObject(classLoader);
-            } else {
-                o = pis.readObject();
+        boolean read = false;
+        IOException readExn = null;
+        for (int i = 0; i < SLEEP_TIMES.length && !read; i++) {
+            ProxyInputStream pis = new ProxyInputStream(huc.getInputStream());
+            try {
+                if (classLoader != null) {
+                    o = pis.readObject(classLoader);
+                } else {
+                    o = pis.readObject();
+                }
+                read = true;
+            } catch (IOException exn) {
+                readExn = exn;
+                try {
+                    Thread.currentThread().sleep(SLEEP_TIMES[i]);
+                } catch (InterruptedException e) { /* keep going */ }
+            } finally {
+                try {
+                    pis.close();
+                } catch (IOException exn) {
+                    System.out.println("could not close connection" + exn);
+                    exn.printStackTrace();
+                }
             }
-        } finally {
-            pis.close();
+        }
+
+        if (!read) {
+            System.out.println("could not read return value " + readExn);
+            readExn.printStackTrace();
+            throw readExn;
         }
 
         if (null == o) {
