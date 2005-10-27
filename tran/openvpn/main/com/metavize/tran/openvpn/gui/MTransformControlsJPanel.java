@@ -21,7 +21,7 @@ import com.metavize.mvvm.tran.TransformContext;
 
 public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransformControlsJPanel{
     
-    private static final String NAME_SOME_LIST = "Some List";
+    private static final String NAME_SOME_LIST = "Roberts List";
     private static final String NAME_LOG = "Event Log";
     
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
@@ -30,8 +30,8 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 
     protected void generateGui(){
 	// SOME LIST /////
-	JPanel someJPanel = new JPanel();
-        super.mTabbedPane.addTab(NAME_SOME_LIST, null, someJPanel);
+	RobertsJPanel robertsJPanel = new RobertsJPanel();
+        super.mTabbedPane.addTab(NAME_SOME_LIST, null, robertsJPanel);
 	//super.savableMap.put(NAME_SOME_LIST, someJPanel);
 	//super.refreshableMap.put(NAME_SOME_LIST, someJPanel);
 
