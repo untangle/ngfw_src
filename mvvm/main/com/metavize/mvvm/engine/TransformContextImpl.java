@@ -289,7 +289,7 @@ class TransformContextImpl implements TransformContext
 
     // private classes --------------------------------------------------------
 
-    private static class LoadSettings implements TransactionWork
+    private static class LoadSettings extends TransactionWork
     {
         private final Tid tid;
 

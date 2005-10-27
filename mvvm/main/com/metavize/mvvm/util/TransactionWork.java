@@ -11,12 +11,26 @@
 
 package com.metavize.mvvm.util;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.hibernate.Session;
 
-public interface TransactionWork<T>
+public abstract class TransactionWork<T>
 {
-    boolean doWork(Session s) throws SQLException;
-    T getResult();
+    // abstract methods -------------------------------------------------------
+
+    public abstract boolean doWork(Session s) throws SQLException;
+
+    // public methods ---------------------------------------------------------
+
+    public T getResult()
+    {
+        return null;
+    }
+
+    public int getTransactionIsolation()
+    {
+        return Connection.TRANSACTION_READ_COMMITTED;
+    }
 }

@@ -39,7 +39,8 @@ public class DataSourceFactory
         dataSource.setMinPoolSize(5);
         dataSource.setMaxPoolSize(50);
         dataSource.setMaxIdleTime(300);
-        dataSource.setIdleConnectionTestPeriod(3000);
+        dataSource.setTestConnectionOnCheckout(true);
+        dataSource.setPreferredTestQuery("SELECT 1");
     }
 
     // public factories -------------------------------------------------------

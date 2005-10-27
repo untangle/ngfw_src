@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -79,7 +80,7 @@ class TransformManagerImpl implements TransformManager
             {
                 private TransformManagerState tms;
 
-                public boolean doWork(Session s)
+                public boolean doWork(Session s) throws SQLException
                 {
                     Query q = s.createQuery("from TransformManagerState tms");
                     tms = (TransformManagerState)q.uniqueResult();
