@@ -24,7 +24,7 @@ public class MTransformJPanel extends com.metavize.gui.transform.MTransformJPane
     
 
     
-    public MTransformJPanel(TransformContext transformContext) throws Exception {
+    public MTransformJPanel(TransformContext transformContext) {
         super(transformContext);
         
     }
