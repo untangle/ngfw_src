@@ -30,7 +30,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <property name="bases"
         value="virus,spam"/>
   <property name="transforms"
-        value="nat,firewall,airgap,reporting,protofilter,test,sigma,hauri,clam,kav,spyware,httpblocker,spamassassin,clamphish,ids"/>
+        value="openvpn,nat,firewall,airgap,reporting,protofilter,test,sigma,hauri,clam,kav,spyware,httpblocker,spamassassin,clamphish,ids"/>
 
   <!--              -->
   <!-- main targets -->
@@ -267,9 +267,20 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     <copy file="${build.jar}/${tran.name}-${tran.type}.mar"
       todir="${dist.mvvm.webstart}"/>
 
-    <copy todir="${build.dist}" failonerror="false">
-      <fileset dir="${tran.name}/hier"/>
-    </copy>
+    <if>
+      <equals arg1="${tran.name}" arg2="openvpn"/>
+      <then>
+        <echo message="Copying OPENVPN with filtering"/>
+        <copy todir="${build.dist}" filtering="true" failonerror="false">
+          <fileset dir="${tran.name}/hier"/>
+        </copy>
+      </then>
+      <else>
+        <copy todir="${build.dist}" failonerror="false">
+          <fileset dir="${tran.name}/hier"/>
+        </copy>
+      </else>
+    </if>
 
     <antcall target="install.${tran.name}" inheritAll="true"/>
 
@@ -298,6 +309,9 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="install.test"/>
   <target name="install.ids"/>
   <target name="install.nat"/>
+  <target name="install.openvpn"/>
+
+
   <target name="install.firewall"/>
   <target name="install.spyware"/>
 
@@ -385,6 +399,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="jar.test"/>
   <target name="jar.ids"/>
   <target name="jar.nat"/>
+  <target name="jar.openvpn"/>
   <target name="jar.firewall"/>
   <target name="jar.spyware"/>
 
@@ -628,6 +643,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="compile.test"/>
   <target name="compile.ids"/>
   <target name="compile.nat"/>
+  <target name="compile.openvpn"/>
   <target name="compile.firewall"/>
   <target name="compile.spyware"/>
   <target name="compile.http"/>

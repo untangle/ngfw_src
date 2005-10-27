@@ -180,6 +180,16 @@ XB-Rack-Position: 2002
 Description: The Metavize Test Software Appliance
  The Test Software Appliance is for internal Metavize testing.
 
+Package: openvpn-transform
+Architecture: any
+Depends: mvvm
+XB-Price: 0
+XB-Display-Name: OpenVpn
+XB-Website: http://www.openvpn.met
+XB-Rack-Position: 5
+XB-Is-Service: true
+Description: Client VPN.
+
 Package: ids-transform
 Architecture: any
 Depends: mvvm, http-casing
