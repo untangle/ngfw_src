@@ -13,15 +13,14 @@
 package com.metavize.tran.test.gui;
 
 import com.metavize.mvvm.tran.TransformContext;
-import com.metavize.tran.test.TestSettings;
-import com.metavize.tran.test.TestTransform;
+import com.metavize.tran.vpn.VpnSettings;
+import com.metavize.tran.vpn.VpnTransform;
 import com.metavize.gui.util.Util;
 
 public class AdvancedControlsJPanel extends javax.swing.JPanel {
     
     private TransformContext transformContext;
-    private TestSettings transformSettings;
-    
+    private VpnSettings transformSettings;
     
     public AdvancedControlsJPanel(TransformContext transformContext) {
         this.transformContext = transformContext;
@@ -30,9 +29,10 @@ public class AdvancedControlsJPanel extends javax.swing.JPanel {
         
         
         if(transformContext != null){
-            transformSettings =  ((TestTransform)transformContext.transform()).getTestSettings();
+            transformSettings =  ((VpnTransform)transformContext.transform()).getVpnSettings();
             // FIXME: DEPRECATED
             // doubleEndpointJCheckBox.setSelected(transformSettings.modeDEM());
+            /*
             bufferedJCheckBox.setSelected(transformSettings.isBuffered());
             normalJCheckBox.setSelected(transformSettings.isNormal());
             releaseJCheckBox.setSelected(transformSettings.getRelease());
@@ -40,6 +40,7 @@ public class AdvancedControlsJPanel extends javax.swing.JPanel {
             randomBufferSizeJCheckBox.setSelected(transformSettings.getRandomBufferSizes());
             minJSpinner.setValue( new Integer(transformSettings.getMinRandomBufferSize()) );
             maxJSpinner.setValue( new Integer(transformSettings.getMaxRandomBufferSize()) );
+            */
         }
          
     }
@@ -120,6 +121,7 @@ public class AdvancedControlsJPanel extends javax.swing.JPanel {
         
         // FIXME
         // transformSettings.modeDEM(doubleEndpointJCheckBox.isSelected());
+        /*
         transformSettings.setBuffered(bufferedJCheckBox.isSelected());
         transformSettings.setNormal(normalJCheckBox.isSelected());
         transformSettings.setRelease(releaseJCheckBox.isSelected());
@@ -132,6 +134,7 @@ public class AdvancedControlsJPanel extends javax.swing.JPanel {
         } catch (Exception e) {
             Util.handleExceptionNoRestart("Error comitting", e); 
         }
+        */
         
     }//GEN-LAST:event_commitJButtonActionPerformed
     

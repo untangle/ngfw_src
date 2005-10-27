@@ -67,7 +67,17 @@ policy		= policy_match
 countryName		= match
 stateOrProvinceName	= match
 organizationName	= match
-organizationalUnitName	= optional
+
+## Metavize::
+## The organizational unit is used to lock each set of 
+## base parameters.
+## Each time a new CA is generated, a random organization unit 
+## is assigned globally.  If the user generates new base parameters
+## there will be a new value assigned to the organizational unit.
+## since this value will not match the old value, the certificates
+## are guaranteed to be incompatible with one another.  This is on
+## top of the fact that the old CA is no longer used.
+organizationalUnitName	= match
 commonName		= supplied
 emailAddress		= optional
 

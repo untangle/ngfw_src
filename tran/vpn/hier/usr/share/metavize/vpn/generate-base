@@ -1,7 +1,6 @@
 #!/bin/sh
 
-## XXXX Need an absolute path
-GLOBALS="globals"
+GLOBALS=@MVVM_HOME@/vpn/globals
 
 ## There must be a configuration file 
 if [ -r ${GLOBALS} ]; then

@@ -1,7 +1,6 @@
 #!/bin/sh
 
-## XXXXXXXXXXXXXXXXXX use the filter from the build file(use opevpn instead of vpn)
-OPENVPN_HOME=/localhome/rbscott/work/alpine/tran/vpn/hier/usr/share/metavize/vpn
+OPENVPN_HOME=@MVVM_HOME@/vpn
 BASE_CONFIG_FILE=${OPENVPN_HOME}/cfg
 
 ## There must be a configuration file 
@@ -25,8 +24,7 @@ CA_KEY=${KEY_GEN_DIR}/ca.key
 CA_CRT=${KEY_GEN_DIR}/ca.crt
 
 ## This is where all of the server parameters are placed.
-## XXXXXXXXXXXXXXXXXX use the filter from the build file
-BASE_DIR=/localhome/rbscott/work/alpine/output/etc/openvpn
+BASE_DIR=@PREFIX@/etc/openvpn
 KEY_DIR=${BASE_DIR}/keys
 
 ## Issuing ten year certs
