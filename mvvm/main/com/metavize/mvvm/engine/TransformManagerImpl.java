@@ -177,8 +177,6 @@ class TransformManagerImpl implements TransformManager
             TransformContext tc = tids.get(tid);
 
             if (null != tc) {
-                String n = tc.getTransformDesc().getName();
-
                 Policy p = tid.getPolicy();
 
                 if ((policy == null && p == null) || (policy != null && policy.equals(p))) {
@@ -227,7 +225,7 @@ class TransformManagerImpl implements TransformManager
         return instantiate(transformName, newTid(policy, transformName), args);
     }
 
-    public void destroy(Tid tid) throws UndeployException
+    public void destroy(final Tid tid) throws UndeployException
     {
         final TransformContextImpl tc;
 
@@ -238,6 +236,7 @@ class TransformManagerImpl implements TransformManager
                 throw new UndeployException("Transform " + tid + " not found");
             }
             tc.destroy();
+
             tids.remove(tid);
         }
 
@@ -245,6 +244,8 @@ class TransformManagerImpl implements TransformManager
             {
                 public boolean doWork(Session s)
                 {
+                    tid.setPolicy(null);
+                    s.update(tid);
                     s.delete(tc.getPersistentState());
                     s.delete(tc.getTransformPreferences());
                     return true;
