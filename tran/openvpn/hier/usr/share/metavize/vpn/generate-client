@@ -1,0 +1,63 @@
+#!/bin/sh
+
+commonName="$1"
+
+GLOBALS=@MVVM_HOME@/vpn/globals
+
+## There must be a configuration file 
+if [ -r ${GLOBALS} ]; then
+    . ${GLOBALS}
+else
+    echo "Unable to load the openvpn configuration file ${BASE_CONFIG_FILE}"
+    exit -2
+fi
+
+CLIENT_KEY="${KEY_GEN_DIR}/client-${commonName}.key"
+CLIENT_CRT="${KEY_GEN_DIR}/client-${commonName}.crt"
+
+validateBase() {
+    if [ "${commonName}x" = "x" ]; then
+        echo "Must specify a common name for the key"
+        exit -3
+    fi
+    
+    ## Also have to check the ca.crt and the ca.key
+    if [ ! -d ${KEY_GEN_DIR} ] || [ ! -d ${KEY_DIR} ] || [ ! -f ${INDEX_FILE} ] || 
+        [ ! -f ${SERIAL_FILE} ]; then
+        echo "The base is not currently initialized"
+        exit -4
+    fi
+}
+
+function generateClientKey()
+{
+    local clientCsr=`mktemp`
+
+    export COMMON_NAME=${commonName}
+    
+    ## Generate the server private key and the certificate signing request
+    ${OPENSSL} req -days ${CERT_DURATION} -nodes -new -keyout ${CLIENT_KEY} -out ${clientCsr} \
+        -config ${OPENSSL_CFG_FILE} -batch
+
+    ## Sign the cretificate signing request
+    ${OPENSSL} ca -days ${CERT_DURATION} -out ${CLIENT_CRT} -in ${clientCsr} \
+        -config ${OPENSSL_CFG_FILE} -batch
+
+    ## Remove the CSR
+    rm -f ${clientCsr}
+
+    ## Make the server key readable only by root
+    chmod 0600 ${CLIENT_KEY}
+}
+
+## Check for the USB key if necessary
+validateUsbKey
+
+## Validate that the base has been generated
+validateBase
+
+## Generate the client key
+generateClientKey
+
+
+

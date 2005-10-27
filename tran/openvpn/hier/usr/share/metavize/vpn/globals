@@ -1,0 +1,50 @@
+#!/bin/sh
+
+OPENVPN_HOME=@MVVM_HOME@/vpn
+BASE_CONFIG_FILE=${OPENVPN_HOME}/cfg
+
+## There must be a configuration file 
+if [ -r ${BASE_CONFIG_FILE} ]; then
+    . ${BASE_CONFIG_FILE}
+else
+    echo "Unable to load the openvpn configuration file ${BASE_CONFIG_FILE}"
+    exit -2
+fi
+
+## This is where all of the keys (client and server) are generated.
+export KEY_GEN_DIR=${OPENVPN_HOME}/keygen
+export INDEX_FILE=${KEY_GEN_DIR}/index.txt
+export SERIAL_FILE=${KEY_GEN_DIR}/serial
+
+## Default parameters and file locations for the certificates
+OPENSSL="opensslDbg"
+
+OPENSSL_CFG_FILE=${OPENVPN_HOME}/openssl.cnf
+CA_KEY=${KEY_GEN_DIR}/ca.key
+CA_CRT=${KEY_GEN_DIR}/ca.crt
+
+## This is where all of the server parameters are placed.
+BASE_DIR=@PREFIX@/etc/openvpn
+KEY_DIR=${BASE_DIR}/keys
+
+## Issuing ten year certs
+CERT_DURATION=3650
+
+## Debugging function
+function opensslDbg()
+{
+    echo openssl $@
+    openssl $@
+}
+
+function validateUsbKey()
+{
+############################# XXXXXXXXXXXXXXXXXXXXXXXXXX
+    true
+}
+
+function saveToUsbKey()
+{
+############################# XXXXXXXXXXXXXXXXXXXXXXXXXX
+    true
+}
