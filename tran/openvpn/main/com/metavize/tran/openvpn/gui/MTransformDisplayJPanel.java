@@ -10,7 +10,7 @@
  */
 
 
-package com.metavize.tran.test.gui;
+package com.metavize.tran.openvpn.gui;
 
 import com.metavize.gui.transform.*;
 import com.metavize.gui.pipeline.MPipelineJPanel;
