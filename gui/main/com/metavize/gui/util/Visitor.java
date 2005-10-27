@@ -49,48 +49,48 @@ public class Visitor implements ProgressVisitor{
     public void visitDownloadProgress(final DownloadProgress dp){
 	SwingUtilities.invokeLater( new Runnable(){ public void run(){
 	    currentByteIncrement = dp.getSize();
-	    progressBar.setString( "Downloading file " + (currentFileIndex+1) + " of " + fileCountTotal
-				   + " : " + dp.getName()
-				   + " (" + dp.getSpeed() + ")" );
-	    progressBar.setValue( (int) (90f*(((float)(currentByteIndex+dp.getBytesDownloaded())) / ((float)byteCountTotal))) );
+	    String progressString = "Downloading file " + (currentFileIndex+1) + " of " + fileCountTotal
+		+ " : " + dp.getName()
+		+ " (" + dp.getSpeed() + ")";
+	    progressBar.setString( progressString );
+	    float currentPercentComplete = ((float)(currentByteIndex + dp.getBytesDownloaded())) / ((float)byteCountTotal);
+	    progressBar.setValue( (int) (90f*currentPercentComplete) );
+	    System.err.println(progressString);
+	    System.err.println("indx: " + currentByteIndex + " dl: " + dp.getBytesDownloaded() + " tot: " + byteCountTotal + " %: " + currentPercentComplete);
 	}});
     }    
     
     public void visitDownloadComplete(final DownloadComplete dc){
-	final boolean success = dc.getSuccess();
 	SwingUtilities.invokeLater( new Runnable(){ public void run(){
+	    isSuccessful = dc.getSuccess();
+	    isDone = !isSuccessful;
 	    currentByteIndex += currentByteIncrement;
 	    currentFileIndex++;
-	    if(!success){
+	    if(!dc.getSuccess()){
 		progressBar.setString( "Download failed.  Please try again." );
 		progressBar.setValue( 100 );
 	    }
 	}});
-	if(!success){
-	    isDone = true;
-	    isSuccessful = false;
-	}
     }
     
     public void visitInstallComplete(final InstallComplete ic){
-	final boolean success = ic.getSuccess();
 	SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    if(success)
+	    isSuccessful = ic.getSuccess();
+	    isDone = true;
+	    if(ic.getSuccess())
 		progressBar.setString( "Installation successful" );
 	    else
 		progressBar.setString( "Installation failed.  Please try again." );
 	    progressBar.setValue( 100 );
 	}});
-	isDone = true;
-	isSuccessful = success;
     }
 
     public void visitInstallTimeout(final InstallTimeout it){
+	isSuccessful = false;
+	isDone = true;
 	SwingUtilities.invokeLater( new Runnable(){ public void run(){
 	    progressBar.setString( "Installation timed out.  Please try again." );
 	    progressBar.setValue( 100 );
 	}});
-	isDone = true;
-	isSuccessful = false;
     }
 }
