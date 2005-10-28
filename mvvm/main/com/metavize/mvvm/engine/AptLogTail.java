@@ -182,7 +182,7 @@ class AptLogTail implements Runnable
                     }
                     break;
                 } else if (m.matches()) {
-                    int bytesDownloaded = Integer.parseInt(m.group(1)) * 100;
+                    int bytesDownloaded = Integer.parseInt(m.group(1)) * 1000;
                     int percent = Integer.parseInt(m.group(2));
                     String speed = m.group(3);
 
