@@ -65,13 +65,14 @@ RIGHT.label=%
 
 LEFT.expr=$F{addr}
 MIDDLE.expr=$F{count}
-RIGHT.expr=Math.round($F{count}.doubleValue() / $F{top_count}.doubleValue() * 100) + "%"
+RIGHT.expr=Math.round($F{count}.doubleValue() / $F{all_count}.doubleValue() * 100) + "%"
 
 LEFT.total=Top @REPORT_MAX_LENGTH@ Totals:
 MIDDLE.total=$F{top_count}
-RIGHT.total="100%"
+RIGHT.total=(null != $F{top_count} ? Math.round($F{top_count}.doubleValue() / $F{all_count}.doubleValue() * 100) + "%" : "100%")
 
 LEFT.alltotal=Overall Total:
 MIDDLE.alltotal=$F{all_count}
+RIGHT.alltotal="100%"
 
 UNIQUE_COUNT.expr=$F{addr}

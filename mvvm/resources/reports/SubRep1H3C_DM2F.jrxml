@@ -134,6 +134,13 @@
                 </textElement>
                 <text><![CDATA[@LEFT.alltotal@]]></text>
             </staticText>
+            <textField>
+                <reportElement positionType="Float" x="234" y="13" width="42" height="13"/>
+                <textElement textAlignment="Right">
+                    <font fontName="Monospaced" size="9" isBold="false" isItalic="true"/>
+                </textElement>
+                <textFieldExpression class="java.lang.String"><![CDATA[@RIGHT.alltotal@]]></textFieldExpression>
+            </textField>
         </band>
     </columnFooter>
     <pageFooter>

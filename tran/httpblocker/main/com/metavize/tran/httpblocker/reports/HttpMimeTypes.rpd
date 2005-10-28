@@ -44,13 +44,14 @@ RIGHT.label=%
 
 LEFT.expr=(null != $F{content_type} ? $F{content_type} : "(none)")
 MIDDLE.expr=(null != $F{size} ? ($F{size}.doubleValue() / 1048576) : 0)
-RIGHT.expr=Math.round($F{size}.doubleValue() / $F{top_size}.doubleValue() * 100) + "%"
+RIGHT.expr=Math.round($F{size}.doubleValue() / $F{all_size}.doubleValue() * 100) + "%"
 
 LEFT.total=Top @REPORT_MAX_LENGTH@ Totals:
 MIDDLE.total=(null != $F{top_size} ? ($F{top_size}.doubleValue() / 1048576) : 0)
-RIGHT.total="100%"
+RIGHT.total=(null != $F{top_size} ? Math.round($F{top_size}.doubleValue() / $F{all_size}.doubleValue() * 100) + "%" : "100%")
 
 LEFT.alltotal=Overall Total:
 MIDDLE.alltotal=(null != $F{all_size} ? ($F{all_size}.doubleValue() / 1048576) : 0)
+RIGHT.alltotal="100%"
 
 UNIQUE_COUNT.expr=$F{content_type}
