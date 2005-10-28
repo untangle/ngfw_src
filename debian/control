@@ -130,7 +130,7 @@ Depends: mvvm, dnsmasq, ftp-casing
 XB-Price: 0
 XB-Display-Name: Network Sharing
 XB-Website: http://www.metavize.com/networksharing.html
-XB-Rack-Position: 9
+XB-Rack-Position: 10
 XB-Is-Service: true
 Description: The Metavize Network Sharing Software Appliance
  The Network Sharing Software Appliance allows a single public IP
@@ -143,7 +143,7 @@ Depends: mvvm
 XB-Price: 0
 XB-Display-Name: Firewall
 XB-Website: http://www.metavize.com/firewall.html
-XB-Rack-Position: 10
+XB-Rack-Position: 9
 Description: The Metavize Firewall Software Appliance
  The Firewall Software Appliance allows network traffic to be blocked
  based on simple rules.
@@ -184,8 +184,8 @@ Package: openvpn-transform
 Architecture: any
 Depends: mvvm
 XB-Price: 0
-XB-Display-Name: OpenVpn
-XB-Website: http://www.openvpn.met
+XB-Display-Name: OpenVPN
+XB-Website: http://www.openvpn.net
 XB-Rack-Position: 5
 XB-Is-Service: true
 Description: Client VPN.
