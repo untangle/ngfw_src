@@ -54,6 +54,7 @@ public class Visitor implements ProgressVisitor{
 		+ " (" + dp.getSpeed() + ")";
 	    progressBar.setString( progressString );
 	    float currentPercentComplete = ((float)(currentByteIndex + dp.getBytesDownloaded())) / ((float)byteCountTotal);
+	    progressString += " " + currentPercentComplete + " " + ( (int) (90f*currentPercentComplete) );
 	    progressBar.setValue( (int) (90f*currentPercentComplete) );
 	    System.err.println(progressString);
 	    System.err.println("indx: " + currentByteIndex + " dl: " + dp.getBytesDownloaded() + " tot: " + byteCountTotal + " %: " + currentPercentComplete);
