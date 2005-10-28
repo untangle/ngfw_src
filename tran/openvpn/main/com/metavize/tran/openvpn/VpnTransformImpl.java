@@ -86,6 +86,11 @@ public class VpnTransformImpl extends AbstractTransform
 
     public VpnSettings getVpnSettings()
     {
+
+        /* XXXXXXXXXXXXXXXXXXXX This is not really legit, done so the schema doesn't have to be
+         * written for a little while */
+        if ( this.settings == null ) this.settings = new VpnSettings( this.getTid());
+        
         return this.settings;
     }
 

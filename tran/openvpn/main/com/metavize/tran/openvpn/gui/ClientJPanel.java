@@ -17,12 +17,12 @@ import com.metavize.tran.openvpn.VpnAddressGroup;
  *
  * @author  inieves
  */
-public class RobertsJPanel extends javax.swing.JPanel {
+public class ClientJPanel extends javax.swing.JPanel {
     
     private final VpnTransform openvpn;
 
     /** Creates new form RobertsJPanel */
-    public RobertsJPanel( TransformContext transformContext ) {
+    public ClientJPanel( TransformContext transformContext ) {
         this.openvpn = (VpnTransform)transformContext.transform();
         initComponents();
     }

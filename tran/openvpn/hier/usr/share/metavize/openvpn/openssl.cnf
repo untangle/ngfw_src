@@ -121,8 +121,8 @@ string_mask = nombstr
 [ req_distinguished_name_no_prompt ]
 CN                              = $ENV::COMMON_NAME
 C                               = $ENV::KEY_COUNTRY
-L                               = $ENV::KEY_CITY
 ST                              = $ENV::KEY_PROVINCE
+L                               = $ENV::KEY_CITY
 O                               = $ENV::KEY_ORG
 OU                              = $ENV::KEY_ORG_UNIT
 

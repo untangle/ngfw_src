@@ -64,7 +64,20 @@ public class ScriptWriter
     // Really only for shell scripts
     public void appendVariable( String variable, String value, boolean isGlobal )
     {
-        appendLine(( isGlobal ) ? EXPORT_FLAG : "" + variable + "=\"" + value + "\"" );
+        if (( variable == null ) || ( value == null )) {
+            logger.warn( "NULL variable[" + variable +"] or value[" + variable + "], ignoring" );
+            return;
+        }
+        
+        variable = variable.trim();
+
+        if ( variable.length() == 0 ) {
+            /* This is a jenky way to get a stack trace */
+            logger.warn( "Empty variable name, ignoring", new Exception());
+            return;
+        }
+
+        appendLine((( isGlobal ) ? EXPORT_FLAG : "" ) + " " + variable + "=\"" + value + "\"" );
     }
 
     public void appendVariable( String variable, String value )

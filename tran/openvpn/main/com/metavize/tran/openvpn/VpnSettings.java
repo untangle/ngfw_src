@@ -55,6 +55,7 @@ public class VpnSettings implements Serializable, Validatable
     private String  domain;
     private int     keySize = KEY_SIZE_DEFAULT;
     private String  country;
+    private String  locality;
     private String  province;
     private String  organization;
     private String  organizationUnit;
@@ -286,6 +287,21 @@ public class VpnSettings implements Serializable, Validatable
     public void setProvince( String province )
     {
         this.province = province;
+    }
+
+    /**
+     * @return locality(city).
+     * @hibernate.property
+     * column="locality"
+     */
+    public String getLocality()
+    {
+        return this.locality;
+    }
+
+    public void setLocality( String locality )
+    {
+        this.locality = locality;
     }
 
     /**

@@ -27,8 +27,11 @@ class CertificateManager
     private static final String COUNTRY_FLAG      = "KEY_COUNTRY";
     private static final String DEFAULT_COUNTRY   = "US";
 
-    private static final String PROVINCE_FLAG     = "KEY_CITY";
+    private static final String PROVINCE_FLAG     = "KEY_PROVINCE";
     private static final String DEFAULT_PROVINCE  = "VPN Land";
+
+    private static final String LOCALITY_FLAG     = "KEY_CITY";
+    private static final String DEFAULT_LOCALITY  = "VPN City";
     
     private static final String ORGANIZATION_FLAG = "KEY_ORG";
     private static final String DEFAULT_ORGANIZATION = "VPN Organization";
@@ -78,6 +81,7 @@ class CertificateManager
         sw.appendComment( "Certificate configuration parameters" );
         sw.appendVariable( COUNTRY_FLAG,  settings.getCountry(), true );
         sw.appendVariable( PROVINCE_FLAG, settings.getProvince(), true );
+        sw.appendVariable( LOCALITY_FLAG, settings.getLocality(), true );
         sw.appendVariable( ORGANIZATION_FLAG, settings.getOrganization(), true );
         sw.appendVariable( ORG_UNIT_FLAG, settings.getOrganizationUnit(), true );
         sw.appendVariable( EMAIL_FLAG, settings.getEmail(), true );
@@ -100,6 +104,7 @@ class CertificateManager
         if ( !isSet( settings.getDomain()))       settings.setDomain( DEFAULT_DOMAIN );
         if ( !isSet( settings.getCountry()))      settings.setCountry( DEFAULT_COUNTRY );        
         if ( !isSet( settings.getProvince()))     settings.setProvince( DEFAULT_PROVINCE );
+        if ( !isSet( settings.getLocality()))     settings.setLocality( DEFAULT_LOCALITY );
         if ( !isSet( settings.getOrganization())) settings.setOrganization( DEFAULT_ORGANIZATION );
 
         /* For now this is alwayts just set to a random string */
@@ -116,12 +121,12 @@ class CertificateManager
 
     private void callClientScript( String commonName ) throws TransformException
     {
-        callScript( GENERATE_CLIENT_SCRIPT + " " + commonName );
+        callScript( GENERATE_CLIENT_SCRIPT + " '" + commonName + "'" );
     }
 
     private void callRevokeClientScript( String commonName ) throws TransformException
     {
-        callScript( REVOKE_CLIENT_SCRIPT + " " + commonName );
+        callScript( REVOKE_CLIENT_SCRIPT + " '" + commonName + "'" );
     }
 
     private void callScript( String scriptName ) throws TransformException

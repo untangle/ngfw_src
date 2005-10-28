@@ -1,6 +1,8 @@
 #!/bin/sh
 
-GLOBALS=@MVVM_HOME@/vpn/globals
+exec >> @MVVM_LOG@/openvpn.log 2>&1
+
+GLOBALS=@MVVM_HOME@/openvpn/globals
 
 ## There must be a configuration file 
 if [ -r ${GLOBALS} ]; then
@@ -55,8 +57,8 @@ function generateServerKey()
 
 function cleanBase()
 {
-    rm -rf ${KEY_GEN_DIR}
-    rm -rf ${KEY_DIR}    
+    rm -f ${KEY_GEN_DIR}/*
+    rm -f ${KEY_DIR}/*
 }
 
 function makeBase()

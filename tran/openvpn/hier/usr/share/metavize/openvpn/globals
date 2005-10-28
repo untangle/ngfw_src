@@ -12,7 +12,7 @@ else
 fi
 
 ## This is where all of the keys (client and server) are generated.
-export KEY_GEN_DIR=${OPENVPN_HOME}/keygen
+export KEY_GEN_DIR=@MVVM_CONF@/openvpn
 export INDEX_FILE=${KEY_GEN_DIR}/index.txt
 export SERIAL_FILE=${KEY_GEN_DIR}/serial
 
@@ -47,4 +47,10 @@ function saveToUsbKey()
 {
 ############################# XXXXXXXXXXXXXXXXXXXXXXXXXX
     true
+}
+
+function removeSpaces() {
+    ## don't know why but this works, and just 'echo ${*// /_}' doesn't.
+    local val="$*"
+    echo ${val// /_}
 }

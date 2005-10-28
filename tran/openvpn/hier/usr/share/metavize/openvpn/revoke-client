@@ -1,5 +1,7 @@
 #!/bin/sh
 
+exec >> @MVVM_LOG@/openvpn.log 2>&1
+
 commonName="$1"
 
 GLOBALS=@MVVM_HOME@/vpn/globals
