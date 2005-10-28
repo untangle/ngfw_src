@@ -21,6 +21,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import com.metavize.mvvm.client.InvocationConnectionException;
+import com.metavize.mvvm.client.InvocationException;
 import com.metavize.mvvm.security.LoginSession;
 
 public class HttpInvokerStub implements InvocationHandler, Serializable
@@ -123,7 +124,7 @@ public class HttpInvokerStub implements InvocationHandler, Serializable
         if (!written) {
             System.out.println("could not write invocation " + writeExn);
             writeExn.printStackTrace();
-            throw writeExn;
+            throw new InvocationException(writeExn);
         }
 
         Object o = null;
@@ -157,7 +158,7 @@ public class HttpInvokerStub implements InvocationHandler, Serializable
         if (!read) {
             System.out.println("could not read return value " + readExn);
             readExn.printStackTrace();
-            throw readExn;
+            throw new InvocationException(readExn);
         }
 
         if (null == o) {
