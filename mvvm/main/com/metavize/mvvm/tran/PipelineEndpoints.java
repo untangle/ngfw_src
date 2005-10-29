@@ -358,11 +358,4 @@ public class PipelineEndpoints extends LogEvent
     {
         this.policyInbound = inbound;
     }
-
-    // LogEvent methods -------------------------------------------------------
-
-    public String toSyslog()
-    {
-        return ""; // XXX SYSLOG
-    }
 }

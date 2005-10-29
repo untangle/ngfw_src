@@ -61,11 +61,11 @@ class PipelineFoundryImpl implements PipelineFoundry
     private final Map<Integer, PipelineImpl> pipelines
         = new ConcurrentHashMap<Integer, PipelineImpl>();
 
-    // These don't need to be concurrent and being able to use a null
-    // key is currently useful for the null policy.
-    private final Map<Policy, Map<Fitting, List<MPipeFitting>>> inboundChains
+    // These don't need to be concurrent and being able to use a null key
+    // is currently useful for the null policy.
+    private static final Map<Policy, Map<Fitting, List<MPipeFitting>>> inboundChains
         = new HashMap<Policy, Map<Fitting, List<MPipeFitting>>>();
-    private final Map<Policy, Map<Fitting, List<MPipeFitting>>> outboundChains
+    private static final Map<Policy, Map<Fitting, List<MPipeFitting>>> outboundChains
         = new HashMap<Policy, Map<Fitting, List<MPipeFitting>>>();
 
     private PipelineFoundryImpl() { }
@@ -173,12 +173,8 @@ class PipelineFoundryImpl implements PipelineFoundry
     public void registerEndpoints(IPSessionDesc start, IPSessionDesc end,
                                   Policy policy, boolean policyInbound)
     {
-        PipelineEndpoints pe = new PipelineEndpoints(start, end, policy,
-                                                     policyInbound);
-        PipelineImpl p = pipelines.get(start.id());
-        p.setPipelineEndpoints(pe);
-
-        eventLogger.info(pe);
+        eventLogger.info(new PipelineEndpoints(start, end, policy,
+                                               policyInbound));
     }
 
     public void destroy(IPSessionDesc start, IPSessionDesc end)

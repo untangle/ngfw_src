@@ -11,20 +11,22 @@
 
 package com.metavize.tran.spyware;
 
+import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.tran.IPMaddr;
 import com.metavize.tran.http.RequestLine;
 
 /**
  * Log event for a spyware hit.
  *
- * @author Jo Momma
+ * @author
  * @version 1.0
  * @hibernate.class
  * table="TR_SPYWARE_EVT_ACCESS"
  * mutable="false"
  */
-public class SpywareAccessEvent extends SpywareEvent
+public class SpywareAccessEvent extends LogEvent
 {
+    private int sessionId;
     private String identification;
     private IPMaddr ipMaddr;
     private RequestLine requestLine; // Optional

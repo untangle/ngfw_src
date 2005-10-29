@@ -88,8 +88,7 @@ CREATE TABLE events.pl_endp_new (
     c_server_port int4,
     s_server_port int4,
     policy_id int8,
-    policy_inbound bool,
-    PRIMARY KEY (event_id));
+    policy_inbound bool);
 
 INSERT INTO events.pl_endp_new
 SELECT DISTINCT event_id, time_stamp, session_id, proto, create_date, client_intf, server_intf, c_client_addr,
@@ -121,7 +120,7 @@ ALTER TABLE settings.mail_settings ALTER COLUMN use_tls SET NOT NULL;
 
 
 -- Constraints
-
+ 
 CREATE INDEX pl_stats_sid_idx ON events.pl_stats (session_id);
 
 ALTER TABLE settings.tid

@@ -22,7 +22,6 @@ import java.util.Map;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.MPipe;
 import com.metavize.mvvm.tapi.Pipeline;
-import com.metavize.mvvm.tran.PipelineEndpoints;
 
 class PipelineImpl implements Pipeline
 {
@@ -39,8 +38,6 @@ class PipelineImpl implements Pipeline
 
     private int id = 0;
 
-    private PipelineEndpoints pipelineEndpoints;
-
     // constructors -----------------------------------------------------------
 
     PipelineImpl(int sessionId, List<MPipeFitting> mPipeFittings)
@@ -51,11 +48,6 @@ class PipelineImpl implements Pipeline
     }
 
     // object registry methods ------------------------------------------------
-
-    public PipelineEndpoints getPipelineEndpoints()
-    {
-        return pipelineEndpoints;
-    }
 
     /**
      * Add object to registry. The object will remain in the token
@@ -120,7 +112,6 @@ class PipelineImpl implements Pipeline
                 }
             }
         }
-
         throw new IllegalArgumentException("mPipe not in pipeline: " + mPipe);
     }
 
@@ -148,11 +139,6 @@ class PipelineImpl implements Pipeline
     }
 
     // package protected methods ----------------------------------------------
-
-    void setPipelineEndpoints(PipelineEndpoints pipelineEndpoints)
-    {
-        this.pipelineEndpoints = pipelineEndpoints;
-    }
 
     void destroy()
     {

@@ -135,7 +135,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       </fileset>
       <fileset dir="../mvvm/main">
         <include name="com/metavize/mvvm/logging/LogEvent.java"/>
-        <include name="com/metavize/mvvm/logging/PipelineEvent.java"/>
       </fileset>
       <hibernate version="2.0"/>
     </hibernatedoclet>
@@ -329,7 +328,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     <mkdir dir="${dist.mvvm.web}/quarantine"/>
     <copy todir="${dist.mvvm.web}/quarantine">
       <fileset dir="${build.webapps}/quarantine"/>
-    </copy>
+    </copy>  
   </target>
 
   <target name="install.ftp">
@@ -445,7 +444,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
           For safelist stuff
         -->
         <include name="com/metavize/tran/mail/papi/safelist/*.class"/>
-
+        
       </fileset>
       <fileset dir="${build.gensrc}/mail">
         <include name="com/metavize/tran/mail/papi/*.hbm.xml"/>
@@ -470,7 +469,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
     <!-- Create the "classes" directory -->
     <mkdir dir="${build.webapps}/quarantine/WEB-INF/classes"/>
-
+    
     <!-- Compile the servlets and and supporting stuff -->
     <javac destdir="${build.webapps}/quarantine/WEB-INF/classes"
            debug="on"
@@ -525,7 +524,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     <!-- Delete the .java files -->
     <delete>
       <fileset dir="${build.webapps}/quarantine/WEB-INF/classes" includes="**/*.java"/>
-    </delete>
+    </delete>    
 
     <!-- Create a "web.xml" file with substitution -->
     <loadfile property="quar-enduser-generated-web.xml"
@@ -539,7 +538,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
     <!-- Delete the web xml fragment -->
     <delete file="${build.webapps}/quarantine/WEB-INF/web-fragment.xml"/>
-
+    
     <!-- Copy-over required libraries -->
     <mkdir dir="${build.webapps}/quarantine/WEB-INF/lib"/>
     <copy toDir="${build.webapps}/quarantine/WEB-INF/lib">

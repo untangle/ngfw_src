@@ -237,12 +237,4 @@ public class PipelineStats extends LogEvent
     {
         this.p2sChunks = p2sChunks;
     }
-
-    // LogEvent methods -------------------------------------------------------
-
-    public String toSyslog()
-    {
-        return ""; // XXX SYSLOG
-    }
-
 }

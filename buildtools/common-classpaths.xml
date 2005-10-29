@@ -84,11 +84,11 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
   <fileset id="hibernate.gui.jarset" dir="${HIBERNATE_HOME}">
     <include name="hibernate3.jar"/>
     <include name="lib/asm.jar"/>
-    <include name="lib/commons-logging-*.jar"/>
-    <include name="lib/cglib-*.jar"/>
-    <exclude name="lib/concurrent-*.jar"/>
-    <exclude name="lib/ant-*.jar"/>
-    <exclude name="lib/log4j-*.jar"/>
+    <include name="lib/commons-logging-1.0.4.jar"/>
+    <include name="lib/cglib-2.1.jar"/>
+    <exclude name="lib/concurrent-1.3.2.jar"/>
+    <exclude name="lib/ant-1.6.3.jar"/>
+    <exclude name="lib/log4j-1.2.9.jar"/>
   </fileset>
 
   <path id="hibernate.classpath">
@@ -144,7 +144,7 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
   </path>
 
   <fileset id="log4j.jarset" dir="${LOG4J_HOME}/dist/lib">
-    <include name="log4j-1.2.12.jar"/>
+    <include name="log4j-1.2.9.jar"/>
   </fileset>
 
   <path id="log4j.classpath">
