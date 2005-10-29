@@ -25,7 +25,7 @@ public interface Spyware extends Transform
     SpywareSettings getSpywareSettings();
     void setSpywareSettings(SpywareSettings settings);
 
-    List<SpywareLog> getEventLogs(int limit);
+    List<SpywareEvent> getEventLogs(int limit);
 
-    List<SpywareLog> getEventLogs(int limit, boolean blockedOnly);
+    List<SpywareEvent> getEventLogs(int limit, boolean blockedOnly);
 }

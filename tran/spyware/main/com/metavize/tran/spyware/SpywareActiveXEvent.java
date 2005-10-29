@@ -11,7 +11,6 @@
 
 package com.metavize.tran.spyware;
 
-import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.tran.http.RequestLine;
 
 /**
@@ -23,9 +22,8 @@ import com.metavize.tran.http.RequestLine;
  * table="TR_SPYWARE_EVT_ACTIVEX"
  * mutable="false"
  */
-public class SpywareActiveXEvent extends LogEvent
+public class SpywareActiveXEvent extends SpywareEvent
 {
-    private int sessionId;
     private String identification;
     private RequestLine requestLine;
 
@@ -36,11 +34,12 @@ public class SpywareActiveXEvent extends LogEvent
      */
     public SpywareActiveXEvent() { }
 
-    public SpywareActiveXEvent(int sessionId,
+    public SpywareActiveXEvent(IPSession session,
                                RequestLine requestLine,
                                String identification)
     {
-        this.sessionId = sessionId;
+        super(session);
+
         this.identification = identification;
         this.requestLine = requestLine;
     }

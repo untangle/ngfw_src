@@ -14,6 +14,8 @@ package com.metavize.mvvm.tapi;
 import java.io.File;
 import java.io.IOException;
 
+import com.metavize.mvvm.tran.PipelineEndpoints;
+
 public interface Pipeline
 {
     Long attach(Object o);
@@ -21,6 +23,8 @@ public interface Pipeline
     Object detach(Long key);
     Fitting getClientFitting(MPipe mPipe);
     Fitting getServerFitting(MPipe mPipe);
+
+    PipelineEndpoints getPipelineEndpoints();
 
     /**
      * Makes a temporary file that will be destroyed on Session

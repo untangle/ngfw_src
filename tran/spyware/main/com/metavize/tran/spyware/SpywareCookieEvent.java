@@ -11,7 +11,6 @@
 
 package com.metavize.tran.spyware;
 
-import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.tran.http.RequestLine;
 
 /**
@@ -23,8 +22,9 @@ import com.metavize.tran.http.RequestLine;
  * table="TR_SPYWARE_EVT_COOKIE"
  * mutable="false"
  */
-public class SpywareCookieEvent extends LogEvent
+public class SpywareCookieEvent extends SpywareEvent
 {
+    // persisted fields -------------------------------------------------------
     private int sessionId;
     private String identification;
     private RequestLine requestLine;
@@ -37,35 +37,21 @@ public class SpywareCookieEvent extends LogEvent
      */
     public SpywareCookieEvent() { }
 
-    public SpywareCookieEvent(int sessionId,
+    public SpywareCookieEvent(IPSession session,
                               RequestLine requestLine,
                               String identification,
                               boolean toServer)
     {
-        this.sessionId = sessionId;
+        super(session);
+
+        this.session = session;
+        this.sessionId = session.getSessionId();
         this.identification = identification;
         this.requestLine = requestLine;
         this.toServer = toServer;
     }
 
-    // accessors --------------------------------------------------------------
-
-    /**
-     * Session id.
-     *
-     * @return the session id.
-     * @hibernate.property
-     * column="SESSION_ID"
-     */
-    public int getSessionId()
-    {
-        return sessionId;
-    }
-
-    public void setSessionId(int sessionId)
-    {
-        this.sessionId = sessionId;
-    }
+    // Hibernate accessors ----------------------------------------------------
 
     /**
      * Request line for this HTTP response pair.
@@ -88,7 +74,7 @@ public class SpywareCookieEvent extends LogEvent
     /**
      * The identification (name of IP address range matched)
      *
-     * @return the protocl name.
+     * @return the protocol name.
      * @hibernate.property
      * column="IDENT"
      */

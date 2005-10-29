@@ -70,7 +70,8 @@ public class Header implements Token
         f.addValue( value );
     }
 
-    public String getValue(String key)
+
+public String getValue(String key)
     {
         Field f = header.get(key.toUpperCase());
         return (null == f || f.values.size() == 0) ? null : f.values.get(0);

@@ -35,7 +35,7 @@
       "../downloads/output/javamail-1.3.1/mail.jar"
       "../downloads/output/javassist-2.6/javassist.jar"
       "../downloads/output/junit3.8.1/junit.jar"
-      "../downloads/output/logging-log4j-1.2.9/dist/lib/log4j-1.2.9.jar"
+      "../downloads/output/logging-log4j-1.2.12/dist/lib/log4j-1.2.12.jar"
       "../downloads/output/trove/lib/trove.jar"
       "./jnetcap/output/jar/jnetcap.jar"
       "./jvector/output/jar/jvector.jar"

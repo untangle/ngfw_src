@@ -11,7 +11,6 @@
 
 package com.metavize.tran.spyware;
 
-import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.tran.http.RequestLine;
 
 /**
@@ -23,7 +22,7 @@ import com.metavize.tran.http.RequestLine;
  * table="TR_SPYWARE_EVT_BLACKLIST"
  * mutable="false"
  */
-public class SpywareBlacklistEvent extends LogEvent
+public class SpywareBlacklistEvent extends SpywareEvent
 {
     private int sessionId;
     private RequestLine requestLine;
