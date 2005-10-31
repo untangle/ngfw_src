@@ -43,7 +43,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
     private long totalProcessTime = 0l;
 
     public SummaryGraph(){
-	this("Traffic", true, true, "Outgoing", "Incoming", "Total");
+	this("Traffic", true, true, "Outgoing", "Incoming", "Total", "kB/sec.");
     }
 
     // Produces a single line graph of one series
@@ -64,7 +64,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
     public SummaryGraph(String charTitle,
                                    boolean doOutgoingSessions, boolean doIncomingSessions,
                                    String outgoingSeriesTitle, String incomingSeriesTitle,
-                                   String overallSeriesTitle)
+                                   String overallSeriesTitle, String rangeTitle)
     {
         this.chartTitle = chartTitle;
         this.doOutgoingSessions = doOutgoingSessions;
@@ -77,6 +77,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         this.seriesTitle = overallSeriesTitle;
         this.outgoingSeriesTitle = outgoingSeriesTitle;
         this.incomingSeriesTitle = incomingSeriesTitle;
+	this.valueAxisLabel = rangeTitle;
     }
 
     protected JFreeChart doChart(Connection con) throws JRScriptletException, SQLException
@@ -218,11 +219,11 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 	    averageIncomingCount /= denom;
 	    averageOutgoingCount /= denom;
 
-	    java.util.Date date = new java.util.Date(startMinuteInMillis + i * MINUTE_INTERVAL * MINUTES_PER_BUCKET );
-	    dataset.add(new Minute(date), averageTotalCount);
+	    java.util.Date date = new java.util.Date(startMinuteInMillis + i * MINUTE_INTERVAL * MINUTES_PER_BUCKET);
+	    dataset.addOrUpdate(new Minute(date), averageTotalCount);
 	    if (doThreeSeries) {
-		incomingDataset.add(new Minute(date), averageIncomingCount);
-		outgoingDataset.add(new Minute(date), averageOutgoingCount);
+		incomingDataset.addOrUpdate(new Minute(date), averageIncomingCount);
+		outgoingDataset.addOrUpdate(new Minute(date), averageOutgoingCount);
 	    }
 
         }
