@@ -1,0 +1,289 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+
+<!-- This file makes part of an XSL Test Suite -->
+<!-- Test for complex layout patterns          -->
+<!-- Version: 1.1 of 24/08/99                  -->
+
+<manual header="Universal Hammer - Operation Manual">
+  <header>
+    <title>IDM Universal Hammer</title>
+    <subtitle>Operation Manual</subtitle>
+    <manufacturer>International Destruction Machines Corp.</manufacturer>
+  </header>
+
+
+  <annotation>
+    <p>
+      The purpose of this document is to illustrate handling complex 
+      layout patterns in the Extended Stylesheet Language (XSL).
+      To simulate a real text, I have written an operation instruction
+      for a hammer. The genre of operation instructions turned out 
+      to be quite convenient for showing most standard formatting 
+      properties. Features used in this text include:
+    </p>
+    <ul>
+      <li> multi-column text; </li>
+      <li> page headers/footers; </li>
+      <li> graphics; </li>
+      <li> footnotes; </li>
+      <li> ordered and unordered lists; </li>
+      <li> tables; </li>
+      <li> automatically generated table of contents; </li>
+      <li> automatically generated analytical index. </li>
+    </ul>
+  </annotation>
+  
+  <toc/>   <!-- Table of contents will be generated here -->
+
+  <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+  <chapter> 
+    <title> Before you start </title>
+
+    <p><b> Dear Customer, </b></p>
+    <p> 
+      you have just become a proud owner of an IDM universal hammer - the most 
+      powerful tool for all kinds of mechanical annihilation. We have made all 
+      possible efforts to make this hammer robust and easy to use. To help you 
+      manipulate your hammer, we have composed this Operation Manual. Read it 
+      through and through several times, until you learn basic principles of 
+      hammering exposed herein. 
+    </p>
+    <p>
+      Mechanical tools like hammers often involve serious risk of damaging your
+      extremities. If you are new to the art of hammering, it is a good idea 
+      to obtain a health insurance policy beforehand; curing fractures may cost.
+    </p>
+
+    <disclaimer>
+      The manufacturer declines every liability with regard to any direct or 
+      consequential damage caused by the equipment to you, your body parts, 
+      your personal belongings, your domestic animals e/o beloved relatives. 
+      Use this equipment at your own risk, and let God protect your fingers! 
+    </disclaimer>
+
+    <p>Have fun with our stuff!</p>
+
+  </chapter>
+
+  <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+  <chapter>
+    <title> Unpacking &amp; Installing </title>
+    <p> 
+      The universal hammer comes shipped in a <keyword>carton box</keyword> 
+      <figure src="Images/box.jpg" figure-name="Shipping Box."/>.
+    </p> 
+    <p> 
+      To unpack the tool, cut the sealing ribbon on the top of the box, open the box 
+      by pulling the two halves of the upper side and turn it upside down. The hammer 
+      comes out automatically by gravitation.<footnote>
+        When arriving to the ground, the hammer may acquire high velocity. 
+        You should protect your <keyword>toes</keyword> with appropriate shoes.
+      </footnote>
+
+      To install the hammer, simply hold it by the handle 
+      <figure src="Images/hammer.jpg" figure-name="Hammer Parts."/>. 
+      Try to perform some oscillatory movements upward and downward. If you 
+      feel the hammer is too heavy for you, contact the nearest gym. 
+    </p>
+
+  </chapter>
+
+  <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+  <chapter>
+    <title> Operation </title>
+    <subchapter>
+      <title> Applications</title>
+      <p>
+        The universal hammer is a semi-automatic device: when you move it
+        upon a target, the tool automatically transfers a good deal of its
+        <keyword>momentum</keyword> to the hammered object. The consequences 
+        of such a transfer may vary depending on the nature of the target:
+      </p>
+
+      <imagelist>
+        <li img="Images/nail.jpg"> 
+          <keyword>nails</keyword> may either penetrate to their corresponding 
+          substrate or bend, depending on your skills;
+        </li>
+        <li img="Images/screw.jpg"> 
+          <keyword>screws</keyword> behave like nails, except that they are 
+          less probable to bend but require more momentum to penetrate; 
+        </li>
+        <li img="Images/brick.jpg"> 
+          <keyword>bricks</keyword> normally crack; 
+        </li>
+        <li img="Images/can.jpg"> 
+          <keyword>tins and cans</keyword> deform and flatten; 
+        </li>
+        <li img="Images/plank.jpg"> 
+          <keyword>wood planks</keyword> will probably bounce your hammer 
+          back in your face. If you plan to hammer wood planks on a regular 
+          basis, protect your face with an appropriate <keyword>metallic grid</keyword>.
+        </li>
+      </imagelist>
+    </subchapter>
+
+    <subchapter>
+      <title> How to hammer</title>
+      <p>
+        To start hammering, first choose the point you want to hit. 
+        Then take the handle by your leading hand (either right or left). 
+        Raise your hand to an appropriate quota and then
+        start moving it downwards. Propelled by the joint effort of the 
+        gravity and your muscular strength, the hammer will accelerate 
+        quickly. Direct its trajectory in such a way that the target point
+        lie within the path of the falling hammer. When the hammer arrives 
+        at the specified point, it should have accumulated a good amount
+        of <keyword>kinetic energy</keyword>; at the moment of collision, 
+        all this energy is released and transferred to the target. 
+      </p>
+      <p>
+        The higher you raise the hammer at the initial phase, the faster
+        it will move in the collision point. However, excessive initial 
+        elevation can give rise to difficulties in proper pointing of
+        the hammer: the faster the tool moves, the more likely you are
+        to miss the point. You should learn by  
+        experience<footnote>
+          While gaining the experience, we strongly recommend to pay maximum 
+          attention to safety precautions described in this Instruction. 
+        </footnote>
+        what is the optimum value of the initial elevation needed in 
+        specific cases. 
+      </p>
+    </subchapter>
+  </chapter>  
+
+  <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+  <chapter>
+    <title> Troubleshooting </title>
+
+    <troubleshooting>
+
+      <problem-cause-remedy> 
+        <problem>The hammer is too heavy</problem>
+        <cause-remedy>
+          <cause>You have chosen a wrong hammer model</cause>
+          <remedy>Contact your hammer vendor for a lighter hammer</remedy>
+        </cause-remedy>
+        <cause-remedy>
+          <cause>Your muscles are too weak</cause>
+          <remedy>Contact the nearest gym</remedy>
+        </cause-remedy>
+      </problem-cause-remedy> 
+  
+      <problem-cause-remedy> 
+        <problem>The hammer is too light</problem>
+        <cause-remedy>
+          <cause>You have chosen a wrong hammer model</cause>
+          <remedy>Contact your hammer vendor for a heavier hammer</remedy>
+        </cause-remedy>
+        <cause-remedy>
+          <cause>Your muscles are too strong</cause>
+          <remedy>
+            You're a <keyword>Schwarzenegger</keyword>. 
+            Throw the hammer away, call the Hollywood
+          </remedy>
+        </cause-remedy>
+      </problem-cause-remedy> 
+  
+      <problem-cause-remedy> 
+        <problem>The  hammer handle is broken</problem>
+        <cause-remedy>
+          <cause>The hammer has been overloaded</cause>
+          <remedy>
+            Repair the handle and refrain from hammering too hard
+          </remedy>
+          <remedy>
+            Replace the handle
+          </remedy>
+        </cause-remedy>
+        <cause-remedy>
+          <cause>The handle was not robust enough</cause>
+          <remedy>
+            Repair the handle and refrain from hammering too hard
+          </remedy>
+          <remedy>
+            Replace the handle by one made of more robust material 
+            (e.g. <keyword>titanium</keyword> alloy)
+          </remedy>
+        </cause-remedy>
+      </problem-cause-remedy> 
+ 
+      <problem-cause-remedy> 
+        <problem>You have hurt a <keyword>finger</keyword></problem>
+        <cause-remedy>
+          <cause>You could not point the hammer well</cause>
+          <remedy>
+            Try once more. If the problem persists, bandage the finger 
+            and call a <keyword>physician</keyword>
+          </remedy>
+        </cause-remedy>
+      </problem-cause-remedy> 
+    </troubleshooting>
+
+  </chapter>  
+
+  <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+  <chapter>
+    <title> Safety Regulations </title>
+    <ol>
+      <li>
+        The hammer is a potential source of danger; its inherent destructive
+        power makes it an easy target for misuses. The hammer may be used only 
+        for its expressed applications. All other uses are considered dangerous.
+        Never permit <keyword>children</keyword> or <keyword>unauthorized persons</keyword> 
+        to tamper with the hammer.
+      </li>
+      <li>
+        Store the hammer in a secure place, out of reach of children and pets.
+        <b>Never</b> keep it on the upper shelves, to avoid risk of occasional
+        fall.
+      </li>
+      <li>
+        After removing all package materials, check the contents to make
+        sure that no  damage has occurred during shipping. When in doubt, 
+        do not use the hammer and contact the supplier. The packaging 
+        materials are a source of pollution and potential hazard if lying 
+        around; collect them together and dispose of them properly.
+      </li>
+    </ol>
+  </chapter>  
+
+  <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+
+  <chapter>
+    <title> Specifications </title>
+    <specifications>
+
+      <item>Type</item>
+      <value>IDM UH-1/15</value>
+
+      <item>Weight</item>
+      <value>1 lb (453 g)</value>
+
+      <item>Handle</item>
+      <value>15 inches (38 cm), made of hickory wood </value>
+
+      <item>Electrical protection</item>
+      <value>IP 54</value>
+
+      <item>Compliance</item>
+      <value>
+        <line>ISO 9001 to 9003</line>
+        <line>EEC Directive 456/78 "Hammers"</line>
+        <line>ANSI 123-456/89</line>
+        <line>DIN 1234567-89</line>
+        <line>UNI 10203-92</line>
+        <line>GOST 12.345-67</line>
+      </value>
+    </specifications>
+
+  </chapter>  
+  
+  <index/> <!-- Index of keywords will be generated here -->
+</manual>
+

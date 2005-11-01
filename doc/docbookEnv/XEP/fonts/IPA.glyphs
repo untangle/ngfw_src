@@ -1,0 +1,229 @@
+# Glyph list for OmegaSerifIPA.
+# Character not present in Unicode 3.0 are mapped 
+# to symbols in U+E*** area: <Unicode> = U+E000 + <built-in code>.
+# Smallcaps are mapped to two regions - Adobe corporate-use
+# (as in Adobe Glyph List) and Unicode IPA; this produces
+# double mappings. Note that characters with names already present 
+# in AGL, incl. small latin characters, aogonek/oogonek, hbar, etc.
+# are not present here: the default mapping is sufficient to make
+# them appear at their right Unicode positions.
+#
+# © RenderX, 2000
+#
+# NOTE: this glyph list is produced with mere scope to illustrate
+# font handling capabilities of XEP XSL FO formatter. No warranty
+# of any kind is given about its being correct and/or suitable for
+# any purpose other than said above.
+
+# Latin characters present in AGL that were given strange names.
+
+007C;pipe;VERTICAL LINE
+0021;exclamlatin;EXCLAMATION MARK
+00E7;ccomma;LATIN SMALL LETTER C WITH CEDILLA
+014B;nhook;LATIN SMALL LETTER ENG
+
+# IPA subset of Unicode. It is covered almost completely.
+0251;ascript;LATIN SMALL LETTER ALPHA = LATIN SMALL LETTER SCRIPT A
+0252;ascriptturn;LATIN SMALL LETTER TURNED ALPHA 
+0250;aturn;LATIN SMALL LETTER TURNED A
+0253;bhook;LATIN SMALL LETTER B WITH HOOK
+0254;oopen;LATIN SMALL LETTER OPEN O
+0255;ccurl;LATIN SMALL LETTER C WITH CURL
+0256;drighthook;LATIN SMALL LETTER D WITH TAIL = LATIN SMALL LETTER D RETROFLEX HOOK
+0257;dhook;LATIN SMALL LETTER D WITH HOOK
+02A4;dyogh;LATIN SMALL LETTER DEZH DIGRAPH
+02A3;dz;LATIN SMALL LETTER DZ DIGRAPH
+02A5;dzcurl;LATIN SMALL LETTER DZ DIGRAPH WITH CURL
+0259;schwa;LATIN SMALL LETTER SCHWA
+0258;erev;LATIN SMALL LETTER REVERSED E
+025A;schwahook;LATIN SMALL LETTER SCHWA WITH HOOK
+025B;epsilonlatin;LATIN SMALL LETTER OPEN E = LATIN SMALL LETTER EPSILON
+0299;Bsmallcap;LATIN LETTER SMALL CAPITAL B
+025C;epsilonlatinrev;LATIN SMALL LETTER REVERSED OPEN E
+0262;Gsmallcap;LATIN LETTER SMALL CAPITAL G
+029C;Hsmallcap;LATIN LETTER SMALL CAPITAL H
+026A;Ismallcap;LATIN LETTER SMALL CAPITAL I
+029F;Lsmallcap;LATIN LETTER SMALL CAPITAL L
+0274;Nsmallcap;LATIN LETTER SMALL CAPITAL N
+0276;OEsmallcap;LATIN LETTER SMALL CAPITAL OE
+0280;Rsmallcap;LATIN LETTER SMALL CAPITAL R
+025D;epsilonlatinrevhook;LATIN SMALL LETTER REVERSED OPEN E WITH HOOK
+028F;Ysmallcap;LATIN LETTER SMALL CAPITAL Y
+0278;philatin;LATIN SMALL LETTER PHI
+0261;gcursive;LATIN SMALL LETTER SCRIPT G
+0263;gammalatin;LATIN SMALL LETTER GAMMA
+0264;babygamma;LATIN SMALL LETTER RAMS HORN = LATIN SMALL LETTER BABY GAMMA
+029B;Gsmallcaphook;LATIN LETTER SMALL CAPITAL G WITH HOOK
+0260;gcursivehook;LATIN SMALL LETTER G WITH HOOK
+0266;hhook;LATIN SMALL LETTER H WITH HOOK
+0265;hturn;LATIN SMALL LETTER TURNED H
+0267;henghook;LATIN SMALL LETTER HENG WITH HOOK
+0268;ibar;LATIN SMALL LETTER I WITH STROKE
+0269;iotalatin;LATIN SMALL LETTER IOTA
+029D;jcrosstail;LATIN SMALL LETTER J WITH CROSSED-TAIL
+029E;kturn;LATIN SMALL LETTER TURNED K
+026C;lbelt;LATIN SMALL LETTER L WITH BELT
+026D;lrighthook;LATIN SMALL LETTER L WITH RETROFLEX HOOK
+028E;yturn;LATIN SMALL LETTER TURNED Y
+026E;lyogh;LATIN SMALL LETTER LEZH
+026B;lmidtilde;LATIN SMALL LETTER L WITH MIDDLE TILDE
+0271;mhook;LATIN SMALL LETTER M WITH HOOK
+026F;mturn;LATIN SMALL LETTER TURNED M
+0270;mturnhook;LATIN SMALL LETTER TURNED M WITH LONG LEG
+0273;nrighthook;LATIN SMALL LETTER N WITH RETROFLEX HOOK
+0272;nlefthook;LATIN SMALL LETTER N WITH LEFT HOOK
+02A0;qhook;LATIN SMALL LETTER Q WITH HOOK
+027D;rrighthook;LATIN SMALL LETTER R WITH TAIL
+0279;rturn;LATIN SMALL LETTER TURNED R
+0281;Rsmallcapinv;LATIN LETTER SMALL CAPITAL INVERTED R
+027A;rturnascend;LATIN SMALL LETTER TURNED R WITH LONG LEG
+027B;rturnhook;LATIN SMALL LETTER TURNED R WITH HOOK
+027C;rdescend;LATIN SMALL LETTER R WITH LONG LEG
+0285;eshshortrev;LATIN SMALL LETTER SQUAT REVERSED ESH
+027E;rfishhook;LATIN SMALL LETTER R WITH FISHHOOK
+0282;shook;LATIN SMALL LETTER S WITH HOOK
+0283;esh;LATIN SMALL LETTER ESH
+027F;rfishhookrev;LATIN SMALL LETTER REVERSED R WITH FISHHOOK
+0286;eshcurl;0295 LATIN SMALL LETTER ESH WITH CURL
+0288;trighthook;LATIN SMALL LETTER T WITH RETROFLEX HOOK
+0275;ocentralbar;LATIN SMALL LETTER BARRED O
+02A6;ts;LATIN SMALL LETTER TS DIGRAPH
+02A7;tesh;LATIN SMALL LETTER TESH DIGRAPH
+02A8;tccurl;LATIN SMALL LETTER TC DIGRAPH WITH CURL
+0289;ucentralbar;LATIN SMALL LETTER U BAR
+028A;upsilonlatin;LATIN SMALL LETTER UPSILON
+028B;vscript;LATIN SMALL LETTER V WITH HOOK = LATIN SMALL LETTER SCRIPT V
+028C;vturn;LATIN SMALL LETTER TURNED V
+028D;wturn;LATIN SMALL LETTER TURNED W
+0290;zhook;LATIN SMALL LETTER Z WITH RETROFLEX HOOK
+0292;yogh;LATIN SMALL LETTER EZH = LATIN SMALL LETTER YOGH
+0291;zcurl;LATIN SMALL LETTER Z WITH CURL
+0293;yoghcurl;LATIN SMALL LETTER EZH WITH CURL
+0294;glottalstop;LATIN LETTER GLOTTAL STOP
+0295;glottalstoprev;LATIN LETTER PHARYNGEAL VOICED FRICATIVE = LATIN LETTER REVERSED GLOTTAL STOP
+0296;glottalstopinv;LATIN LETTER INVERTED GLOTTAL STOP
+0298;kiss;LATIN LETTER BILABIAL CLICK = LATIN LETTER BULLSEYE
+025E;epsilonlatinrevclosed;LATIN SMALL LETTER CLOSED REVERSED OPEN E = LATIN SMALL LETTER CLOSED REVERSED EPSILON
+0277;omegaclosed;LATIN SMALL LETTER CLOSED OMEGA
+02A1;glottalstopbar;LATIN LETTER GLOTTAL STOP WITH STROKE
+02A2;glottalstoprevbar;LATIN LETTER REVERSED GLOTTAL STOP WITH STROKE
+025F;jdotlessbar;LATIN SMALL LETTER DOTLESS J WITH STROKE
+
+# Adobe defines code for smallcaps in its corporate area.
+# Some of them overlap with Unicode IPA range; it's no problem,
+# duplicate definitions are permitted in XEP (but not triplicate!).
+
+F6FA;OEsmall;LATIN SMALL CAPITAL LIGATURE OE (Adobe Corporate Area)
+F761;Asmallcap;LATIN LETTER SMALL CAPITAL A (Adobe Corporate Area)
+F762;Bsmallcap;LATIN LETTER SMALL CAPITAL B (Adobe Corporate Area)
+F764;Dsmallcap;LATIN LETTER SMALL CAPITAL D (Adobe Corporate Area)
+F765;Esmallcap;LATIN LETTER SMALL CAPITAL E (Adobe Corporate Area)
+F766;Fsmallcap;LATIN LETTER SMALL CAPITAL F (Adobe Corporate Area)
+F767;Gsmallcap;LATIN LETTER SMALL CAPITAL G (Adobe Corporate Area)
+F768;Hsmallcap;LATIN LETTER SMALL CAPITAL H (Adobe Corporate Area)
+F769;Ismallcap;LATIN LETTER SMALL CAPITAL I (Adobe Corporate Area)
+F76A;Jsmallcap;LATIN LETTER SMALL CAPITAL J (Adobe Corporate Area)
+F76B;Ksmallcap;LATIN LETTER SMALL CAPITAL K (Adobe Corporate Area)
+F76C;Lsmallcap;LATIN LETTER SMALL CAPITAL L (Adobe Corporate Area)
+F76D;Msmallcap;LATIN LETTER SMALL CAPITAL M (Adobe Corporate Area)
+F76E;Nsmallcap;LATIN LETTER SMALL CAPITAL N (Adobe Corporate Area)
+F770;Psmallcap;LATIN LETTER SMALL CAPITAL P (Adobe Corporate Area)
+F771;Qsmallcap;LATIN LETTER SMALL CAPITAL Q (Adobe Corporate Area)
+F772;Rsmallcap;LATIN LETTER SMALL CAPITAL R (Adobe Corporate Area)
+F774;Tsmallcap;LATIN LETTER SMALL CAPITAL T (Adobe Corporate Area)
+F775;Usmallcap;LATIN LETTER SMALL CAPITAL U (Adobe Corporate Area)
+F779;Ysmallcap;LATIN LETTER SMALL CAPITAL Y (Adobe Corporate Area)
+
+# Characters not present neither in Unicode IPA nor in Adobe Area 
+# are mapped to E+0xx area: <Unicode> = U+E000 + <built-in code>.
+# I haven't checked all of the Unicode for characters contained
+# here: some of them may already have a valid Unicode counterpart.
+
+E023;ahook
+E025;blefthook
+E026;bbar
+E027;bcentralbar
+E028;bslash
+E029;betaphonetic
+E02B;chook
+E02C;crighthook
+E02E;cslash
+E031;dcurl
+E032;dtilde
+E035;deltalatin
+E038;dbarphonetic
+E039;dcentralbar
+E03A;dslash
+E03B;ethphonetic
+E056;epsilonlatinhook
+E058;jhookdblbar
+E05B;philatinlower
+E05C;philatinupper
+E05D;philatinlowerbar
+E05E;philatinupperbar
+E05F;fturned
+E060;fclosed
+E07D;gammaphonetic
+E080;gammaweird
+E081;dblgammaweird
+E083;gbar
+E089;hturnhook
+E08A;hrighthook
+E08B;hhookrev
+E08C;hv
+E08F;Ismallcapbar
+E090;jdotlesscentralbar;
+E091;lrighthookrev
+E093;jshort
+E095;Ksmallcaprev
+E096;krighthook
+E09B;lcursive
+E09C;lcursivebelt
+E09D;lhookyogh
+E09E;yturnbelt
+E09F;yturnyogh
+E0A0;lsmallcapturn
+E0A2;lrightlowerhook
+E0A3;lcentralbar
+E0A4;lambdalatinslash
+E0A5;lambdalatin
+E0A9;mrevascend
+E0AD;nleftcircle
+E0AE;ndoublecircle
+E0AF;ncurl
+E0B0;nrightlowerhook
+E0B1;nrightdescend
+E0B2;nleftdescend
+E0B4;deltalatinturn
+E0B6;pleftlowerhook
+E0B7;wynnlong
+E0B8;plefthook
+E0B9;plowercaron
+E0BA;pcentralbar
+E0BC;qlowerhook
+E0C0;rfishhookhook
+E0C5;rdescendturn
+E0C9;eshcirclerev
+E0CC;scentralbar
+E0CD;sigmalatin
+E0CF;trightlowerhook
+E0D0;ttilde
+E0D4;tdescendrev
+E0D6;thetalatin
+E0D9;uslash
+E0DA;Usmallcapbar
+E0DD;vcurl
+E0DF;omegalatinturn
+E0E0;omegalatin
+E0E1;chilatin
+E0E2;xhook
+E0E5;zbar
+E0E6;yoghweird
+E0E9;twoturn
+E0ED;Qcursive
+E0EE;glottalstopcursive
+E0F2;Omegasmallcap
+E0F5;twobar
+E0F6;oo
+E0F7;cturn
+E0FA;pipedbl

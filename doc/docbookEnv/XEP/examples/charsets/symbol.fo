@@ -1,0 +1,2326 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+    (c) RenderX, 2000-2003
+
+    This file makes part of the RenderX XSL FO Test Suite. Permission is
+    granted to copy and modify this file as a whole or in part, provided
+    that any work derived from it bear a reference to the original
+    document.
+-->
+  <fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
+    <fo:layout-master-set>
+      <fo:simple-page-master master-name="all-pages">
+        <fo:region-body region-name="xsl-region-body" margin="0.7in" column-gap="0.25in" border="0.25pt solid gray" padding="6pt" column-count="3"/>
+        <fo:region-before region-name="xsl-region-before" extent="0.7in" display-align="after" padding="6pt 0.7in"/>
+        <fo:region-after region-name="xsl-region-after" extent="0.7in" display-align="before" padding="6pt 0.7in"/>
+      </fo:simple-page-master>
+    </fo:layout-master-set>
+    <fo:page-sequence master-reference="all-pages">
+    <fo:static-content flow-name="xsl-region-before">
+      <fo:list-block font="10pt Helvetica" provisional-distance-between-starts="5in" provisional-label-separation="0in">
+        <fo:list-item>
+          <fo:list-item-label end-indent="label-end()">
+            <fo:block text-align="start" font-weight="bold">Character Sets &#8212; Symbol</fo:block>
+          </fo:list-item-label>
+          <fo:list-item-body start-indent="body-start()">
+            <fo:block text-align="end">Page <fo:page-number/></fo:block>
+          </fo:list-item-body>
+        </fo:list-item>
+      </fo:list-block>
+    </fo:static-content>
+    <fo:static-content flow-name="xsl-region-after">
+      <fo:list-block font="9pt Times" provisional-distance-between-starts="3in" provisional-label-separation="0in">
+        <fo:list-item>
+          <fo:list-item-label end-indent="label-end()">
+            <fo:block text-align="start" font-weight="bold">© <fo:basic-link external-destination="url(http://www.renderx.com/)" color="#0000C0" text-decoration="underline">Render<fo:wrapper font-weight="bold" color="#C00000">X</fo:wrapper></fo:basic-link> 2000</fo:block>
+          </fo:list-item-label>
+          <fo:list-item-body start-indent="body-start()">
+            <fo:block text-align="end" font-style="italic" color="#606060">
+              XSL Formatting Objects Test Suite
+            </fo:block>
+          </fo:list-item-body>
+        </fo:list-item>
+      </fo:list-block>
+    </fo:static-content>
+    
+    <fo:static-content flow-name="xsl-footnote-separator">
+      <fo:block><fo:leader leader-pattern="rule" leader-length="100%" rule-thickness="0.5pt" rule-style="solid" color="black"/></fo:block>
+    </fo:static-content>
+    
+    <fo:flow flow-name="xsl-region-body">
+      <fo:block>
+   
+<fo:block font="bold 14pt Helvetica" space-before="18pt" space-before.conditionality="discard" space-after="6pt" keep-with-next.within-column="always" keep-together.within-column="always" text-align="center" padding="3pt" background-color="silver">Character Sets &#8212; Symbol</fo:block>
+
+  <fo:block space-before="6pt" space-after="6pt" font="11pt Times">
+     This document tests glyph repertory for Symbol font.
+     It also lists Unicode values used to access respective glyphs
+     from XML documents.
+  </fo:block>
+
+  <fo:list-block space-before="12pt" provisional-distance-between-starts="30pt" provisional-label-separation="6pt" font="11pt Times">
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol"> </fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        space
+        [<fo:wrapper font="bold 11pt Courier">x0020</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">!</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        exclam
+        [<fo:wrapper font="bold 11pt Courier">x0021</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">#</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        numbersign
+        [<fo:wrapper font="bold 11pt Courier">x0023</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">%</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        percent
+        [<fo:wrapper font="bold 11pt Courier">x0025</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&amp;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        ampersand
+        [<fo:wrapper font="bold 11pt Courier">x0026</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">(</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        parenleft
+        [<fo:wrapper font="bold 11pt Courier">x0028</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">)</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        parenright
+        [<fo:wrapper font="bold 11pt Courier">x0029</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">+</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        plus
+        [<fo:wrapper font="bold 11pt Courier">x002B</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">,</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        comma
+        [<fo:wrapper font="bold 11pt Courier">x002C</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">.</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        period
+        [<fo:wrapper font="bold 11pt Courier">x002E</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">/</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        slash
+        [<fo:wrapper font="bold 11pt Courier">x002F</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">0</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        zero
+        [<fo:wrapper font="bold 11pt Courier">x0030</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">1</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        one
+        [<fo:wrapper font="bold 11pt Courier">x0031</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">2</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        two
+        [<fo:wrapper font="bold 11pt Courier">x0032</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">3</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        three
+        [<fo:wrapper font="bold 11pt Courier">x0033</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">4</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        four
+        [<fo:wrapper font="bold 11pt Courier">x0034</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">5</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        five
+        [<fo:wrapper font="bold 11pt Courier">x0035</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">6</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        six
+        [<fo:wrapper font="bold 11pt Courier">x0036</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">7</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        seven
+        [<fo:wrapper font="bold 11pt Courier">x0037</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">8</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        eight
+        [<fo:wrapper font="bold 11pt Courier">x0038</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">9</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        nine
+        [<fo:wrapper font="bold 11pt Courier">x0039</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">:</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        colon
+        [<fo:wrapper font="bold 11pt Courier">x003A</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        semicolon
+        [<fo:wrapper font="bold 11pt Courier">x003B</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&lt;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        less
+        [<fo:wrapper font="bold 11pt Courier">x003C</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">=</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        equal
+        [<fo:wrapper font="bold 11pt Courier">x003D</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&gt;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        greater
+        [<fo:wrapper font="bold 11pt Courier">x003E</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">?</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        question
+        [<fo:wrapper font="bold 11pt Courier">x003F</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">[</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        bracketleft
+        [<fo:wrapper font="bold 11pt Courier">x005B</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">]</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        bracketright
+        [<fo:wrapper font="bold 11pt Courier">x005D</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">_</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        underscore
+        [<fo:wrapper font="bold 11pt Courier">x005F</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">{</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        braceleft
+        [<fo:wrapper font="bold 11pt Courier">x007B</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">|</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        bar
+        [<fo:wrapper font="bold 11pt Courier">x007C</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">}</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        braceright
+        [<fo:wrapper font="bold 11pt Courier">x007D</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">¬</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        logicalnot
+        [<fo:wrapper font="bold 11pt Courier">x00AC</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">°</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        degree
+        [<fo:wrapper font="bold 11pt Courier">x00B0</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">±</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        plusminus
+        [<fo:wrapper font="bold 11pt Courier">x00B1</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">×</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        multiply
+        [<fo:wrapper font="bold 11pt Courier">x00D7</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">÷</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        divide
+        [<fo:wrapper font="bold 11pt Courier">x00F7</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#402;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        florin
+        [<fo:wrapper font="bold 11pt Courier">x0192</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#913;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        Alpha
+        [<fo:wrapper font="bold 11pt Courier">x0391</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#914;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        Beta
+        [<fo:wrapper font="bold 11pt Courier">x0392</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#915;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        Gamma
+        [<fo:wrapper font="bold 11pt Courier">x0393</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#916;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        Delta
+        [<fo:wrapper font="bold 11pt Courier">x0394</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#917;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        Epsilon
+        [<fo:wrapper font="bold 11pt Courier">x0395</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#918;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        Zeta
+        [<fo:wrapper font="bold 11pt Courier">x0396</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#919;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        Eta
+        [<fo:wrapper font="bold 11pt Courier">x0397</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#920;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        Theta
+        [<fo:wrapper font="bold 11pt Courier">x0398</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#921;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        Iota
+        [<fo:wrapper font="bold 11pt Courier">x0399</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#922;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        Kappa
+        [<fo:wrapper font="bold 11pt Courier">x039A</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#923;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        Lambda
+        [<fo:wrapper font="bold 11pt Courier">x039B</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#924;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        Mu
+        [<fo:wrapper font="bold 11pt Courier">x039C</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#925;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        Nu
+        [<fo:wrapper font="bold 11pt Courier">x039D</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#926;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        Xi
+        [<fo:wrapper font="bold 11pt Courier">x039E</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#927;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        Omicron
+        [<fo:wrapper font="bold 11pt Courier">x039F</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#928;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        Pi
+        [<fo:wrapper font="bold 11pt Courier">x03A0</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#929;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        Rho
+        [<fo:wrapper font="bold 11pt Courier">x03A1</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#931;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        Sigma
+        [<fo:wrapper font="bold 11pt Courier">x03A3</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#932;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        Tau
+        [<fo:wrapper font="bold 11pt Courier">x03A4</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#933;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        Upsilon
+        [<fo:wrapper font="bold 11pt Courier">x03A5</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#934;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        Phi
+        [<fo:wrapper font="bold 11pt Courier">x03A6</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#935;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        Chi
+        [<fo:wrapper font="bold 11pt Courier">x03A7</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#936;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        Psi
+        [<fo:wrapper font="bold 11pt Courier">x03A8</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#937;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        Omega
+        [<fo:wrapper font="bold 11pt Courier">x03A9</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#945;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        alpha
+        [<fo:wrapper font="bold 11pt Courier">x03B1</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#946;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        beta
+        [<fo:wrapper font="bold 11pt Courier">x03B2</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#947;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        gamma
+        [<fo:wrapper font="bold 11pt Courier">x03B3</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#948;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        delta
+        [<fo:wrapper font="bold 11pt Courier">x03B4</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#949;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        epsilon
+        [<fo:wrapper font="bold 11pt Courier">x03B5</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#950;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        zeta
+        [<fo:wrapper font="bold 11pt Courier">x03B6</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#951;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        eta
+        [<fo:wrapper font="bold 11pt Courier">x03B7</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#952;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        theta
+        [<fo:wrapper font="bold 11pt Courier">x03B8</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#953;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        iota
+        [<fo:wrapper font="bold 11pt Courier">x03B9</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#954;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        kappa
+        [<fo:wrapper font="bold 11pt Courier">x03BA</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#955;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        lambda
+        [<fo:wrapper font="bold 11pt Courier">x03BB</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#956;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        mu
+        [<fo:wrapper font="bold 11pt Courier">x03BC</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#957;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        nu
+        [<fo:wrapper font="bold 11pt Courier">x03BD</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#958;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        xi
+        [<fo:wrapper font="bold 11pt Courier">x03BE</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#959;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        omicron
+        [<fo:wrapper font="bold 11pt Courier">x03BF</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#960;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        pi
+        [<fo:wrapper font="bold 11pt Courier">x03C0</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#961;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        rho
+        [<fo:wrapper font="bold 11pt Courier">x03C1</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#962;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        sigma1
+        [<fo:wrapper font="bold 11pt Courier">x03C2</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#963;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        sigma
+        [<fo:wrapper font="bold 11pt Courier">x03C3</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#964;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        tau
+        [<fo:wrapper font="bold 11pt Courier">x03C4</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#965;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        upsilon
+        [<fo:wrapper font="bold 11pt Courier">x03C5</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#966;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        phi
+        [<fo:wrapper font="bold 11pt Courier">x03C6</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#967;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        chi
+        [<fo:wrapper font="bold 11pt Courier">x03C7</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#968;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        psi
+        [<fo:wrapper font="bold 11pt Courier">x03C8</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#969;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        omega
+        [<fo:wrapper font="bold 11pt Courier">x03C9</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#977;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        theta1
+        [<fo:wrapper font="bold 11pt Courier">x03D1</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#978;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        Upsilon1
+        [<fo:wrapper font="bold 11pt Courier">x03D2</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#981;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        phi1
+        [<fo:wrapper font="bold 11pt Courier">x03D5</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#982;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        omega1
+        [<fo:wrapper font="bold 11pt Courier">x03D6</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8226;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        bullet
+        [<fo:wrapper font="bold 11pt Courier">x2022</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8230;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        ellipsis
+        [<fo:wrapper font="bold 11pt Courier">x2026</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8242;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        minute
+        [<fo:wrapper font="bold 11pt Courier">x2032</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8243;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        second
+        [<fo:wrapper font="bold 11pt Courier">x2033</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8260;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        fraction
+        [<fo:wrapper font="bold 11pt Courier">x2044</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8364;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        Euro
+        [<fo:wrapper font="bold 11pt Courier">x20AC</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8465;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        Ifraktur
+        [<fo:wrapper font="bold 11pt Courier">x2111</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8472;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        weierstrass
+        [<fo:wrapper font="bold 11pt Courier">x2118</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8476;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        Rfraktur
+        [<fo:wrapper font="bold 11pt Courier">x211C</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8501;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        aleph
+        [<fo:wrapper font="bold 11pt Courier">x2135</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8592;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        arrowleft
+        [<fo:wrapper font="bold 11pt Courier">x2190</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8593;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        arrowup
+        [<fo:wrapper font="bold 11pt Courier">x2191</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8594;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        arrowright
+        [<fo:wrapper font="bold 11pt Courier">x2192</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8595;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        arrowdown
+        [<fo:wrapper font="bold 11pt Courier">x2193</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8596;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        arrowboth
+        [<fo:wrapper font="bold 11pt Courier">x2194</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8629;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        carriagereturn
+        [<fo:wrapper font="bold 11pt Courier">x21B5</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8656;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        arrowdblleft
+        [<fo:wrapper font="bold 11pt Courier">x21D0</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8657;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        arrowdblup
+        [<fo:wrapper font="bold 11pt Courier">x21D1</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8658;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        arrowdblright
+        [<fo:wrapper font="bold 11pt Courier">x21D2</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8659;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        arrowdbldown
+        [<fo:wrapper font="bold 11pt Courier">x21D3</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8660;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        arrowdblboth
+        [<fo:wrapper font="bold 11pt Courier">x21D4</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8704;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        universal
+        [<fo:wrapper font="bold 11pt Courier">x2200</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8706;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        partialdiff
+        [<fo:wrapper font="bold 11pt Courier">x2202</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8707;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        existential
+        [<fo:wrapper font="bold 11pt Courier">x2203</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8711;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        gradient
+        [<fo:wrapper font="bold 11pt Courier">x2207</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8712;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        element
+        [<fo:wrapper font="bold 11pt Courier">x2208</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8709;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        emptyset
+        [<fo:wrapper font="bold 11pt Courier">x2205</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8713;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        notelement
+        [<fo:wrapper font="bold 11pt Courier">x2209</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8715;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        suchthat
+        [<fo:wrapper font="bold 11pt Courier">x220B</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8719;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        product
+        [<fo:wrapper font="bold 11pt Courier">x220F</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8721;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        summation
+        [<fo:wrapper font="bold 11pt Courier">x2211</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8722;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        minus
+        [<fo:wrapper font="bold 11pt Courier">x2212</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8727;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        asteriskmath
+        [<fo:wrapper font="bold 11pt Courier">x2217</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8730;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        radical
+        [<fo:wrapper font="bold 11pt Courier">x221A</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8733;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        proportional
+        [<fo:wrapper font="bold 11pt Courier">x221D</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8734;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        infinity
+        [<fo:wrapper font="bold 11pt Courier">x221E</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8736;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        angle
+        [<fo:wrapper font="bold 11pt Courier">x2220</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8743;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        logicaland
+        [<fo:wrapper font="bold 11pt Courier">x2227</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8744;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        logicalor
+        [<fo:wrapper font="bold 11pt Courier">x2228</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8745;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        intersection
+        [<fo:wrapper font="bold 11pt Courier">x2229</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8746;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        union
+        [<fo:wrapper font="bold 11pt Courier">x222A</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8747;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        integral
+        [<fo:wrapper font="bold 11pt Courier">x222B</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8756;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        therefore
+        [<fo:wrapper font="bold 11pt Courier">x2234</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8764;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        similar
+        [<fo:wrapper font="bold 11pt Courier">x223C</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8773;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        congruent
+        [<fo:wrapper font="bold 11pt Courier">x2245</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8776;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        approxequal
+        [<fo:wrapper font="bold 11pt Courier">x2248</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8800;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        notequal
+        [<fo:wrapper font="bold 11pt Courier">x2260</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8801;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        equivalence
+        [<fo:wrapper font="bold 11pt Courier">x2261</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8804;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        lessequal
+        [<fo:wrapper font="bold 11pt Courier">x2264</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8805;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        greaterequal
+        [<fo:wrapper font="bold 11pt Courier">x2265</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8834;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        propersubset
+        [<fo:wrapper font="bold 11pt Courier">x2282</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8835;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        propersuperset
+        [<fo:wrapper font="bold 11pt Courier">x2283</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8836;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        notsubset
+        [<fo:wrapper font="bold 11pt Courier">x2284</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8838;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        reflexsubset
+        [<fo:wrapper font="bold 11pt Courier">x2286</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8839;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        reflexsuperset
+        [<fo:wrapper font="bold 11pt Courier">x2287</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8853;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        circleplus
+        [<fo:wrapper font="bold 11pt Courier">x2295</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8855;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        circlemultiply
+        [<fo:wrapper font="bold 11pt Courier">x2297</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8869;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        perpendicular
+        [<fo:wrapper font="bold 11pt Courier">x22A5</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8901;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        dotmath
+        [<fo:wrapper font="bold 11pt Courier">x22C5</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8992;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        integraltp
+        [<fo:wrapper font="bold 11pt Courier">x2320</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#8993;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        integralbt
+        [<fo:wrapper font="bold 11pt Courier">x2321</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#9001;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        angleleft
+        [<fo:wrapper font="bold 11pt Courier">x2329</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#9002;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        angleright
+        [<fo:wrapper font="bold 11pt Courier">x232A</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#9674;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        lozenge
+        [<fo:wrapper font="bold 11pt Courier">x25CA</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#9824;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        spade
+        [<fo:wrapper font="bold 11pt Courier">x2660</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#9827;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        club
+        [<fo:wrapper font="bold 11pt Courier">x2663</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#9829;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        heart
+        [<fo:wrapper font="bold 11pt Courier">x2665</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#9830;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        diamond
+        [<fo:wrapper font="bold 11pt Courier">x2666</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#63194;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        registerserif
+        [<fo:wrapper font="bold 11pt Courier">xF6DA</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#63195;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        trademarkserif
+        [<fo:wrapper font="bold 11pt Courier">xF6DB</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#63717;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        radicalex
+        [<fo:wrapper font="bold 11pt Courier">xF8E5</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#63718;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        arrowvertex
+        [<fo:wrapper font="bold 11pt Courier">xF8E6</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#63719;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        arrowhorizex
+        [<fo:wrapper font="bold 11pt Courier">xF8E7</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#63720;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        registersans
+        [<fo:wrapper font="bold 11pt Courier">xF8E8</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#63722;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        trademarksans
+        [<fo:wrapper font="bold 11pt Courier">xF8EA</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#63723;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        parenlefttp
+        [<fo:wrapper font="bold 11pt Courier">xF8EB</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#63724;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        parenleftex
+        [<fo:wrapper font="bold 11pt Courier">xF8EC</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#63725;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        parenleftbt
+        [<fo:wrapper font="bold 11pt Courier">xF8ED</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#63733;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        integralex
+        [<fo:wrapper font="bold 11pt Courier">xF8F5</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#63734;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        parenrighttp
+        [<fo:wrapper font="bold 11pt Courier">xF8F6</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#63735;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        parenrightex
+        [<fo:wrapper font="bold 11pt Courier">xF8F7</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt Symbol">&#63736;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        parenrightbt
+        [<fo:wrapper font="bold 11pt Courier">xF8F8</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+  </fo:list-block>
+
+</fo:block></fo:flow></fo:page-sequence></fo:root>

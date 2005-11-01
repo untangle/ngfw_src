@@ -35,6 +35,74 @@
         <% // Because of IE stupidity, there can be no LWS between the tags below %>
         <td WIDTH="20" valign="top"><img src="images/tl.gif" ALT=""></td>
         <td>
+          <table class="intro"
+            border="0"
+            cellpadding="0"
+            cellspacing="0"
+            height="100%"
+            width="100%">
+              <tbody>
+                <tr>
+                  <% // I cannot get things to work correctly w/o putting an absolute value here %>
+                  <td width="200">
+                    <% // IE ignores this class if applied to the table below %>
+                    <div class="logoTable">
+                      <table>
+                        <tbody>
+                          <tr>
+                            <td>
+                              <img src="images/logo.gif">
+                            </td>
+                            <td class="logotext">
+                            &nbsp;&nbsp;Metavize EdgeGuard
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </td>
+                  <td>
+                    <table class="introUserInfo" height="100%" width="100%">
+                      <tbody>
+                        <tr>
+                          <td>
+                            Safelist for <quarantine:currentAddress/>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr><tr>
+                </tr><tr>
+                <td class="infotext" colspan="2">
+Welcome to your &quot;safelist&quot;.  A safelist is a list of email addresses, usualy your
+friends and collegues.  Emails from people on this list will <i>not</i> be considered spam.<br><br><br><br>
+                </td>
+              </tr>
+              <quarantine:hasMessages type="info">
+              <tr>
+                <td>
+                  <ul class="messageText">
+                    <quarantine:forEachMessage type="info">
+                      <li><quarantine:message/></li>
+                    </quarantine:forEachMessage>
+                  </ul>
+                </td>              
+              </tr>
+              </quarantine:hasMessages>
+              <quarantine:hasMessages type="error">
+              <tr>
+                <td>
+                  <ul class="errortext">
+                    <quarantine:forEachMessage type="error">
+                      <li><quarantine:message/></li>
+                    </quarantine:forEachMessage>
+                  </ul>
+                </td>              
+              </tr>
+              </quarantine:hasMessages>                      
+            </tbody>
+          </table>
         </td>
         <% // Because of IE stupidity, there can be no LWS between the tags below %>
         <td WIDTH="20" valign="top"><img src="images/tr.gif"></td>
@@ -44,23 +112,6 @@
         <td>
         </td>
         <td>
-          This page is temp, just here to show functionality.
-          <quarantine:hasMessages type="info">
-            <ul class="messageText">
-              <quarantine:forEachMessage type="info">
-                <li><quarantine:message/></li>
-              </quarantine:forEachMessage>
-            </ul>
-          </quarantine:hasMessages>
-          <quarantine:hasMessages type="error">
-            <ul class="errortext">
-              <quarantine:forEachMessage type="error">
-                <li><quarantine:message/></li>
-              </quarantine:forEachMessage>
-            </ul>
-          </quarantine:hasMessages>
-
-          <br><br>
           <form name="form1" method="POST" action="smc">
             <input type="hidden"
               name="<quarantine:constants keyName="action"/>"
@@ -68,32 +119,43 @@
             <input type="hidden"
               name="<quarantine:constants keyName="tkn"/>"
               value="<quarantine:currentAuthToken encoded="false"/>"/>
-            <table>
+            <table width="100%">
               <tr>
                 <td>
-                  <input name="checkall"
-                    value="checkall"
-                    onclick="CheckAll()"
-                    type="checkbox">
-                </td>
-                <td>
-                  <input type="submit" name="Delete" value="Delete"/>
+                  <table class="slist">
+                    <thead>
+                      <tr>
+                        <th><input name="checkall"
+                          value="checkall"
+                          onclick="CheckAll()"
+                          type="checkbox"></th>
+                        <th width="100%">Name</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <quarantine:forEachSafelistEntry>
+                        <tr>
+                          <td>
+                            <input type="checkbox"
+                              name="<quarantine:constants keyName="sladdr"/>"
+                              value="<quarantine:safelistEntry encoded="false"/>"/>
+                          </td>
+                          <td>
+                            <quarantine:safelistEntry encoded="false"/>
+                          </td>
+                        </tr>
+                      </quarantine:forEachSafelistEntry>                  
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td colspan="2"><input type="Submit" value="Remove Selected Addresses"/>
+                        </td>
+                      </tr>
+                    </tfoot>
+                  </table>
                 </td>
               </tr>
-              <quarantine:forEachSafelistEntry>
-                <tr class="<quarantine:oddEven even="even" odd="odd"/>">
-                  <td>
-                    <input type="checkbox"
-                      name="<quarantine:constants keyName="sladdr"/>"
-                      value="<quarantine:safelistEntry encoded="false"/>"/>
-                  </td>
-                  <td>
-                    <quarantine:safelistEntry encoded="false"/>
-                  </td>
-                </tr>
-              </quarantine:forEachSafelistEntry>
             </table>
-          </form>          
           <br><br>
           <form name="form2" action="smc">
             <input type="hidden"
@@ -109,7 +171,7 @@
               </tr>
               <tr><td colspan="2"><input type="submit" name="Submit" value="Submit"/></td></tr>
             </table>
-          </form>                     
+          </form>          
         </td>
         <td>
         </td>

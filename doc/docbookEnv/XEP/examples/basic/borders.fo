@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    (c) RenderX, 2000-2003
+
+    This file makes part of the RenderX XSL FO Test Suite. Permission is
+    granted to copy and modify this file as a whole or in part, provided
+    that any work derived from it bear a reference to the original
+    document.
+-->
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
+   <fo:layout-master-set>
+      <fo:simple-page-master master-name="all-pages">
+         <fo:region-body region-name="xsl-region-body" margin="0.7in" column-gap="0.25in" border="0.25pt solid gray" padding="6pt"/>
+         <fo:region-before region-name="xsl-region-before" extent="0.7in" display-align="after" padding="6pt 0.7in"/>
+         <fo:region-after region-name="xsl-region-after" extent="0.7in" display-align="before" padding="6pt 0.7in"/>
+      </fo:simple-page-master>
+   </fo:layout-master-set>
+   <fo:page-sequence master-reference="all-pages">
+      <fo:static-content flow-name="xsl-region-before">
+         <fo:list-block font="10pt Helvetica" provisional-distance-between-starts="5in" provisional-label-separation="0in">
+            <fo:list-item>
+               <fo:list-item-label end-indent="label-end()">
+                  <fo:block text-align="start" font-weight="bold">   Block Properties - Borders  </fo:block>
+               </fo:list-item-label>
+               <fo:list-item-body start-indent="body-start()">
+                  <fo:block text-align="end">
+                     Page <fo:page-number/>
+                  </fo:block>
+               </fo:list-item-body>
+            </fo:list-item>
+         </fo:list-block>
+      </fo:static-content>
+      <fo:static-content flow-name="xsl-region-after">
+         <fo:list-block font="9pt Times" provisional-distance-between-starts="3in" provisional-label-separation="0in">
+            <fo:list-item>
+               <fo:list-item-label end-indent="label-end()">
+                  <fo:block text-align="start" font-weight="bold">
+                     &#xA9; 
+                     <fo:basic-link external-destination="url(http://www.renderx.com/)" color="#0000C0" text-decoration="underline">Render<fo:wrapper font-weight="bold" color="#C00000">X</fo:wrapper></fo:basic-link> 
+                     2000
+                  </fo:block>
+               </fo:list-item-label>
+               <fo:list-item-body start-indent="body-start()">
+                  <fo:block text-align="end" font-style="italic" color="#606060">
+                      XSL Formatting Objects Test Suite
+                  </fo:block>
+               </fo:list-item-body>
+            </fo:list-item>
+         </fo:list-block>
+      </fo:static-content>
+      <fo:static-content flow-name="xsl-footnote-separator">
+         <fo:block>
+            <fo:leader leader-pattern="rule" leader-length="100%" rule-thickness="0.5pt" rule-style="solid" color="black"/>
+         </fo:block>
+      </fo:static-content>
+      <fo:flow flow-name="xsl-region-body">
+         <fo:block>
+            <fo:block font="bold 14pt Helvetica" space-before="18pt" space-before.conditionality="discard" space-after="6pt" keep-with-next.within-column="always" keep-together.within-column="always" text-align="center" padding="3pt" background-color="silver">   
+               Block Properties - Borders 
+            </fo:block>
+
+            <fo:block text-align="center" font="10pt Helvetica" margin-bottom="12pt" padding="9pt" margin-left="0pt" margin-right="0pt" border-width="3pt" border-style="solid" border-color="black" border-left-color="red" border-right-color="red">
+  This paragraph should have a solid border, 3 pt thick.
+  Top and bottom edges are black, and left and right edges are red.
+  The text is black on white.
+            </fo:block>
+
+
+            <fo:block text-align="center" font="10pt Helvetica" margin-bottom="12pt" padding="9pt" margin-left="0pt" margin-right="0pt" border-width="0.5pt" border-style="dashed" border-color="red" background="#D0D0D0" color="#000080">
+  This paragraph should have a thin red dashed border, 0.5 pt thick.
+  Background color is light grey, and text color is dark blue.
+            </fo:block>
+
+
+            <fo:block text-align="center" font="10pt Helvetica" margin-bottom="12pt" padding="9pt" margin-left="0pt" margin-right="0pt" border-width="2pt" border-style="dotted" border-color="blue" border-left-width="12pt" border-left-color="green" border-left-style="solid" border-right-width="12pt" border-right-color="green" border-right-style="solid">
+  This text is rendered in default colors (black on white). As for the
+  border, we should have a thin (2pt) dotted blue line above and below,
+  and a thick (12pt) solid green bars on the right and on the left.
+            </fo:block>
+
+
+            <fo:block text-align="center" font="10pt Helvetica" margin-bottom="12pt" padding="9pt" margin-left="0pt" margin-right="0pt" border-top-width="6pt" border-top-color="red" border-top-style="double" border-bottom-width="6pt" border-bottom-color="green" border-bottom-style="double" border-left-width="6pt" border-left-color="blue" border-left-style="solid" border-right-width="6pt" border-right-color="#FF00FF" border-right-style="solid">
+  This text is rendered in default colors (black on white). All borders
+  have the same thickness of 6 pt. Colors and styles are:
+  
+               <fo:list-block space-before="6pt" space-after="6pt" provisional-distance-between-starts="1.5in" provisional-label-separation="0.1in">  
+                  <fo:list-item>
+                     <fo:list-item-label end-indent="label-end()">
+                        <fo:block text-align="end" font-weight="bold">Top:</fo:block>
+                     </fo:list-item-label>      
+                     <fo:list-item-body start-indent="body-start()">
+                        <fo:block text-align="start" color="red">double red</fo:block>
+                     </fo:list-item-body>
+                  </fo:list-item>
+                  <fo:list-item>
+                     <fo:list-item-label end-indent="label-end()">
+                        <fo:block text-align="end" font-weight="bold">Bottom:</fo:block>
+                     </fo:list-item-label>
+                     <fo:list-item-body start-indent="body-start()">
+                        <fo:block text-align="start" color="green">double green</fo:block>
+                     </fo:list-item-body>
+                  </fo:list-item>
+                  <fo:list-item>
+                     <fo:list-item-label end-indent="label-end()">
+                        <fo:block text-align="end" font-weight="bold">Right:</fo:block>
+                     </fo:list-item-label>
+                     <fo:list-item-body start-indent="body-start()">
+                        <fo:block text-align="start" color="#FF00FF">solid purple</fo:block>
+                     </fo:list-item-body>
+                  </fo:list-item>
+                  <fo:list-item>      
+                     <fo:list-item-label end-indent="label-end()">
+                        <fo:block text-align="end" font-weight="bold">Left:</fo:block>
+                     </fo:list-item-label>
+                     <fo:list-item-body start-indent="body-start()">
+                        <fo:block text-align="start" color="blue">solid blue</fo:block>
+                     </fo:list-item-body>
+                  </fo:list-item>
+               </fo:list-block>
+            </fo:block>
+
+            <fo:block text-align="center" font="10pt Helvetica" margin-bottom="12pt" padding="9pt" margin-left="0pt" margin-right="0pt" border-width="2pt" border-style="hidden" border-color="green" background="#0000FF" color="yellow" font-weight="bold">
+  Though the border color of this paragraph is set to green, it should
+  not be visible, since the border style is set to <fo:wrapper font-style="italic">hidden</fo:wrapper>.
+  Background color is blue, and text color is yellow. The text is printed
+  in bold typeface.
+            </fo:block>
+
+            <fo:block text-align="center" font="10pt Helvetica" margin-bottom="12pt" border-width="2pt" border-style="solid" border-color="red">
+               <fo:block text-align="center" font="10pt Helvetica" border-width="2pt" border-style="solid" border-color="blue" margin="0pt">
+                  <fo:block text-align="center" font="10pt Helvetica" border-width="2pt" border-style="solid" border-color="red" margin="0pt">
+                     <fo:block text-align="center" font="10pt Helvetica" border-width="2pt" border-style="solid" border-color="blue" margin="0pt">
+                        <fo:block text-align="center" font="10pt Helvetica" border-width="2pt" border-style="solid" border-color="red" margin="0pt">
+                           <fo:block text-align="center" font="10pt Helvetica" border-width="2pt" border-style="solid" border-color="blue" margin="0pt">
+                              <fo:block text-align="center" font="10pt Helvetica" border-width="2pt" border-style="solid" border-color="red" margin="0pt">
+                                 <fo:block text-align="center" font="10pt Helvetica" border-width="2pt" border-style="solid" border-color="blue" margin="0pt">
+                                    <fo:block text-align="center" font="10pt Helvetica" border-width="2pt" border-style="solid" border-color="red" margin="0pt">
+                                       <fo:block text-align="center" font="10pt Helvetica" border-width="2pt" border-style="solid" border-color="blue" margin="0pt" padding="9pt">
+  This text is included into 10 solid  frames of 2pt each, with alternated
+  colors: red/blue. So you should have a 20 pt striped border, made of 5
+  red stripes and 5 blue ones. The outermost stripe is red, and the innermost stripe is blue.
+                                       </fo:block>
+                                    </fo:block>
+                                 </fo:block>
+                              </fo:block>
+                           </fo:block>
+                        </fo:block>
+                     </fo:block>
+                  </fo:block>
+               </fo:block>
+            </fo:block>
+
+            <fo:block text-align="center" font="10pt Helvetica" margin-bottom="12pt" padding="6pt" margin-left="0pt" margin-right="0pt" background-color="#808080">
+              <fo:block margin="0pt" padding="9pt" border-width="3pt" border-style="groove" border-color="#808080" color="navy">
+  This text should be rendered dark blue on grey, and surrounded
+  by a groove of the same color as the background, 3pt thick.
+  For visibility, extra 6pt of padding is added around the border. 
+              </fo:block>
+            </fo:block>
+
+            <fo:block text-align="center" font="10pt Helvetica" margin-bottom="12pt" padding="6pt" margin-left="0pt" margin-right="0pt" background-color="blue">
+              <fo:block margin="0pt" padding="9pt" border-width="3pt" border-style="ridge" border-color="blue"  color="yellow">
+  This text should be rendered yellow on blue, and surrounded
+  by a blue ridge, 3pt thick.  For visibility, extra 6pt of padding is added around the border. 
+              </fo:block>
+            </fo:block>
+
+
+            <fo:block text-align="center" font="10pt Helvetica" margin-bottom="12pt" padding="6pt" margin-left="0pt" margin-right="0pt" background-color="#60C0A0">
+              <fo:block margin="0pt" padding="9pt" border-width="2pt" border-style="inset" border-color="#60C0A0" color="black">
+This text should be sunken into the page; frame thickness is 2 pt.
+Frame and background color are light green; text color is black.
+For visibility, extra 6pt of padding is added around the border. 
+              </fo:block>
+            </fo:block>
+
+            <fo:block text-align="center" font="10pt Helvetica" margin-bottom="12pt" padding="6pt" margin-left="0pt" margin-right="0pt" background-color="#D0D080">
+              <fo:block margin="0pt" padding="9pt" border-width="2pt" border-style="outset" border-color="#D0D080" color="#006000">
+This text should be raised above the page; frame thickness is also 2 pt.
+Text color is dark green; background color and frame color is dark yellow. 
+For visibility, extra 6pt of padding is added around the border. 
+              </fo:block>
+            </fo:block>
+
+            <fo:block text-align="center" font="10pt Helvetica" margin-bottom="12pt" padding="9pt" margin-left="0pt" margin-right="0pt" border-width="thin" border-style="solid" border-color="red">
+  This text tests predefined values for border thickness.
+  It is surrounded by a <fo:wrapper font-weight="bold">thin</fo:wrapper> red solid frame.
+            </fo:block>
+
+            <fo:block text-align="center" font="10pt Helvetica" margin-bottom="12pt" padding="9pt" margin-left="0pt" margin-right="0pt" border-width="medium" border-style="solid" border-color="green">
+  Test for predefined values continued: the text
+  is surrounded by a <fo:wrapper font-weight="bold">medium</fo:wrapper> green solid frame.
+            </fo:block>
+
+            <fo:block text-align="center" font="10pt Helvetica" margin-bottom="12pt" padding="9pt" margin-left="0pt" margin-right="0pt" border-width="thick" border-style="solid" border-color="blue">
+  Test for predefined values comes to <fo:wrapper font-weight="bold">The End</fo:wrapper>: the text
+  is surrounded by a <fo:wrapper font-weight="bold">thick</fo:wrapper> blue solid frame.
+            </fo:block>
+         </fo:block>
+      </fo:flow>
+   </fo:page-sequence>
+</fo:root>

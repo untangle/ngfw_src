@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<license issuer="RenderX" issued="2005-10-26">
+   <licensee>
+      <person>Bill Scott bscott@metavize.com</person>
+      <organization>Metavize</organization>
+   </licensee>
+   <product name="XEP">
+      <limit name="personal">1</limit>
+      <feature name="stamp"/>
+   </product>
+<signature>iQBVAgUAQ1+8FPz8zkdesEfDAQEMxgIAirjk/DT2cOyKInHhdG6HyF2o/3wT68A4
+pPJiq76kTHdUkMMpOimWbpHv/Noc2IvV9i0eng4BawLdg6iCcPEnGA===n43G</signature></license>

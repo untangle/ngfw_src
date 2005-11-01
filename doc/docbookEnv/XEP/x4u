@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# XEP Graphical Aide
+
+XEP_HOME="/home/bscott/XEP"
+JAVA_HOME="/opt/jdk1.5.0_05/jre"
+CP="$XEP_HOME/lib/xep.jar:\
+$XEP_HOME/lib/x4u.jar:\
+$XEP_HOME/lib/saxon.jar:\
+$XEP_HOME/lib/xt.jar:\
+$XEP_HOME/lib/crimson.jar"
+
+"$JAVA_HOME/bin/java" \
+	"-Dcom.renderx.xep.CONFIG=$XEP_HOME/xep.xml" \
+	-cp "$CP" \
+	com.renderx.xepx.x4u.as.Assistant "$@"

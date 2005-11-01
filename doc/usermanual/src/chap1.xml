@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter>
+  <title>Introduction</title>
+
+  <para>Metavize EdgeGuard is a comprehensive, software-based security
+  solution. EdgeGuard can be installed in minutes, and drops seamlessly into
+  existing infrastructure behind or in place of your firewall. EdgeGuard
+  simplifies the complexity of securing the network, and allows you to
+  install, deploy, configure, manage and generate reports across a wide
+  selection of point solutions from a single point.</para>
+
+  <para>The user-friendly management GUI is designed to resemble a virtual
+  rack, as shown in <xref linkend="figure1_1" /></para>
+
+  <para></para>
+
+  <figure>
+    <title id="figure1_1">This is an Image title</title>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="figure/someKDEPicture.png" />
+      </imageobject>
+    </mediaobject>
+  </figure>
+
+  <para>This is a pararaph, after the image was used. The administration said
+  that suspending the rules would reduce rebuilding costs and help open
+  opportunities for minority-owned companies, but critics said it would result
+  in lower pay for workers.</para>
+
+  <para>Members of Congress were first informed of the decision at a White
+  House meeting with Chief of Staff Andrew Card on Wednesday morning.</para>
+
+  <para>The decision, which means that workers will get wages closer to what
+  they were making before the hurricane, was met with approval by Republicans
+  and Democrats, many of whom felt that out-of-state workers were descending
+  on hurricane-ravaged areas and working for a fraction of a living
+  wage.</para>
+
+  <para>The Davis-Bacon Act, which guarantees the wage levels, was suspended
+  Sept. 8. It will be reinstated Nov. 8.</para>
+
+  <para>Rep. Steven LaTourette, R-Ohio, who attended the White House meeting,
+  told CNN that the situation was unacceptable.</para>
+
+  <para>"The danger we have in the Gulf Coast in general is profiteering. When
+  you have these large contracts and again, when you suspend some protections
+  ... it appears you can pay people whatever you want to pay and the rest of
+  the money goes into the profit column of the corporation," he said.</para>
+
+  <para>Rep. George Miller, D-Calif., who has led his party's charge against
+  the Davis-Bacon suspension, said in an interview with CNN, "At least those
+  wages will be protected where federal money is involved, and that's very
+  important to the economy of that region. This is why we couldn't understand
+  how the president could take such a callous</para>
+
+  <para></para>
+
+  <para>Now, here is an example of a numbered list</para>
+
+  <para></para>
+
+  <orderedlist>
+    <listitem>
+      <para>This is some item</para>
+    </listitem>
+
+    <listitem>
+      <para>This is Another item from the list</para>
+    </listitem>
+
+    <listitem>
+      <para>This will be a item in the list, but will have new lines</para>
+
+      <para>Not sure if that makes sense</para>
+    </listitem>
+
+    <listitem>
+      <para>This continues the list</para>
+    </listitem>
+  </orderedlist>
+
+  <para>Now, we're done that numbered list. Lets move on to an un-numbered
+  list</para>
+
+  <para></para>
+
+  <itemizedlist>
+    <listitem>
+      <para>The first item</para>
+    </listitem>
+
+    <listitem>
+      <para>Yet another</para>
+    </listitem>
+
+    <listitem>
+      <para>And a third</para>
+    </listitem>
+  </itemizedlist>
+
+  <para>Cool. Now, how about a "variable" list. Not sure what that
+  is...</para>
+
+  <para></para>
+
+  <variablelist>
+    <varlistentry>
+      <term>This is from the var list</term>
+
+      <listitem>
+        <para>I think the idea is that this is a "large" list entry, which may
+        have lots of junk associated with each entry. As such, I'm testing it
+        now to see what happens when I put-in a lot of text. Laa sdf dsf fds
+        dsf sdf dfs dfs dfs sdf dfs sdf v sefg bfdx gbndf ghbdf gybdr fghb
+        tfgb yhdrg fhdrt byhd rtfvhg bdrtfy hbrdr tfcgfy bhg trffcvgy d5rt fy
+        ge45drt yfg ed4r5tge 4d5rtf g</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>Odd, I cannot fugure this out</term>
+
+      <listitem>
+        <para>I think the idea is that this is a "large" list entry, which may
+        have lots of junk associated with each entry. As such, I'm testing it
+        now to see what happens when I put-in a lot of text. Laa sdf dsf fds
+        dsf sdf dfs dfs dfs sdf dfs sdf v sefg bfdx gbndf ghbdf gybdr fghb
+        tfgb yhdrg fhdrt byhd rtfvhg bdrtfy hbrdr tfcgfy bhg trffcvgy d5rt fy
+        ge45drt yfg ed4r5tge 4d5rtf g</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+
+  <itemizedlist></itemizedlist>
+
+  <para>Whatever. Here is some more CNN stuff</para>
+
+  <para>He wrote officials that $20,850 contributed in 2000 and 2001 was not
+  reported anywhere. Another $17,300 was included in the defense fund's
+  quarterly report but not in DeLay's 2000 annual financial disclosure report
+  -- a separate requirement.</para>
+
+  <para>Other donations were understated as totaling $2,800, when the figure
+  should have been $4,450.</para>
+
+  <para>It was during that period that DeLay was the subject of several House
+  ethics investigations.</para>
+
+  <para>DeLay, R-Texas, stepped aside as House majority leader -- at least
+  temporarily -- after he was indicted on a felony charge September 28 in a
+  Texas campaign fund-raising investigation.</para>
+
+  <para>He has since been charged a second time in the same case.</para>
+
+  <para>On October 13 DeLay wrote the clerk of the House, Jeff Trandahl, that
+  his first inkling of inconsistencies in his disclosures came last
+  February.</para>
+
+  <para>"I brought this matter -- which I discovered on my own -- to the
+  attention of the Committee on Standards of Official Conduct to alert the
+  chairman and ranking member," DeLay said in his letter.</para>
+
+  <para>"Upon learning of these accounting irregularities, I immediately
+  requested that the trust undergo a full and complete audit from its June
+  2000 inception through 2004 to determine if any additional accountancy
+  problems existed with the trust."</para>
+
+  <para>The audit confirmed the unreported donations and the other errors,
+  DeLay said.</para>
+
+  <para></para>
+
+  <para></para>
+
+  <para>The following items comprise the Virtual Rack Interface:</para>
+
+  <orderedlist>
+    <listitem>
+      <para>The Virtual Rack</para>
+    </listitem>
+
+    <listitem>
+      <para>Software Appliance. This displays security modules that have been
+      downloaded and installed as Software Appliances.</para>
+    </listitem>
+
+    <listitem>
+      <para></para>
+    </listitem>
+  </orderedlist>
+
+  <para></para>
+
+  <para></para>
+
+  <simpara>fsddsfjksdfjdsf sdf sdffsd sdf dfs dsf dfss df asd fafsd asdf asdf
+  asdf fsddsfjksdfjdsf sdf sdffsd sdf dfs dsf dfss df asd fafsd asdf asdf asdf
+  fsddsfjksdfjdsf sdf sdffsd sdf dfs dsf dfss df asd fafsd asdf asdf asdf fsd
+  fsdsdfsdfsdf 443 er df 564 egrsd gd h ert gdf fsd fsdsdfsdfsdf 443 er df 564
+  egrsd jhkhk fsd fsdsdfsdfsdf 443 er df 564 egrsd fsd fsdsdfsdfsdf 443 er df
+  564 egrsd jkhjhhj hjkjjkh hhkfsd fsdsdfsdfsdf 443 er df 564 egrsd fsd
+  fsdsdfsdfsdf 443 er df 564 egrsd</simpara>
+</chapter>

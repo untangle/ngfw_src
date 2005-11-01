@@ -96,19 +96,23 @@
           </td>
           <td>
             <form name="form1" method="POST" action="rdc">
-              <table class="enteremail">
-                <tr>
-                  <td>Email Address:&nbsp;
-                  </td>
-                  <td>
-                    <input type="text" name="<quarantine:constants keyName="draddr"/>"/>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="paddedButton" colspan="2" align="center">
-                    <input type="submit" value="submit"/>
-                  </td>
-                </tr>
+              <table>
+                <tr><td class="enteremail">
+                  <table>
+                    <tr>
+                      <td>Email Address:&nbsp;
+                      </td>
+                      <td>
+                        <input type="text" name="<quarantine:constants keyName="draddr"/>"/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="paddedButton" colspan="2" align="center">
+                        <input type="submit" value="submit"/>
+                      </td>
+                    </tr>
+                  </table>
+                </td></tr>
               </table>
             </form>
           </td>

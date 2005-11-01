@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<svg
+   width="100%"
+   height="100%"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink">
+
+   <defs>
+      <rect width="14pt" height="14pt" stroke="grey icc-color(#Registration, 50%)" id="box"/>
+   </defs>
+
+   <svg x="48pt" y="16pt">
+     <use x="0pt" y="0pt" fill="rgb(0%,0%,0%) icc-color(#Registration, 100%)" xlink:href="#box"/>
+     <use x="14pt" y="0pt" fill="rgb(10%,10%,10%) icc-color(#Registration, 90%)" xlink:href="#box"/>
+     <use x="28pt" y="0pt" fill="rgb(20%,20%,20%) icc-color(#Registration, 80%)" xlink:href="#box"/>
+     <use x="42pt" y="0pt" fill="rgb(30%,30%,30%) icc-color(#Registration, 70%)" xlink:href="#box"/>
+     <use x="56pt" y="0pt" fill="rgb(40%,40%,40%) icc-color(#Registration, 60%)" xlink:href="#box"/>
+     <use x="70pt" y="0pt" fill="rgb(50%,50%,50%) icc-color(#Registration, 50%)" xlink:href="#box"/>
+     <use x="84pt" y="0pt" fill="rgb(60%,60%,60%) icc-color(#Registration, 40%)" xlink:href="#box"/>
+     <use x="98pt" y="0pt" fill="rgb(70%,70%,70%) icc-color(#Registration, 30%)" xlink:href="#box"/>
+     <use x="112pt" y="0pt" fill="rgb(80%,80%,80%) icc-color(#Registration, 20%)" xlink:href="#box"/>
+     <use x="126pt" y="0pt" fill="rgb(90%,90%,90%) icc-color(#Registration, 10%)" xlink:href="#box"/>
+     <use x="140pt" y="0pt" fill="rgb(100%,100%,100%) icc-color(#Registration, 0%)" xlink:href="#box"/>
+   </svg>
+
+
+   <svg x="-48pt" y="16pt">
+     <svg x="100%" y="0pt" width="100%" height="100%" overflow="visible">
+       <g transform="matrix(-1,0,0,1,0,0)">
+         <use x="0pt" y="0pt" fill="grey icc-color(#CMYK, 0%,0%,0%,50%)" xlink:href="#box"/>
+         <use x="14pt" y="0pt" fill="rgb(50%,100%,100%) icc-color(#CMYK, 50%,0%,0%,0%)"  xlink:href="#box"/>
+         <use x="28pt" y="0pt" fill="rgb(100%,50%,100%) icc-color(#CMYK, 0%,50%,0%,0%)"  xlink:href="#box"/>
+         <use x="42pt" y="0pt" fill="rgb(100%,100%,50%) icc-color(#CMYK, 0%,0%,50%,0%)"  xlink:href="#box"/>
+         <use x="56pt" y="0pt" fill="black icc-color(#CMYK, 0%,0%,0%,100%)"  xlink:href="#box"/>
+         <use x="70pt" y="0pt" fill="red icc-color(#CMYK, 0%,100%,100%,0%)" xlink:href="#box"/>
+         <use x="84pt" y="0pt" fill="green icc-color(#CMYK, 100%,0%,100%,0%)" xlink:href="#box"/>
+         <use x="98pt" y="0pt" fill="blue icc-color(#CMYK, 100%,100%,0%,0%)" xlink:href="#box"/>
+         <use x="112pt" y="0pt" fill="cyan icc-color(#CMYK, 100%,0%,0%,0%)" xlink:href="#box"/>
+         <use x="126pt" y="0pt" fill="magenta icc-color(#CMYK, 0%,100%,0%,0%)" xlink:href="#box"/>
+         <use x="140pt" y="0pt" fill="yellow icc-color(#CMYK, 0%,0%,100%,0%)" xlink:href="#box"/>
+       </g>
+     </svg>
+   </svg>
+
+</svg>
+

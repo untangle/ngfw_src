@@ -12,7 +12,14 @@ body {
 table.outertable {
   background:#FFFFFF;
   padding: 0;
-  margin: 0;  
+  margin: 0;
+  /* Note the magic trick below to center the table */
+  width: 96%;
+  height: 95%;
+  margin-left:2%;
+  margin-right:2%;
+  margin-top:1%;
+  margin-bottom:4%;
 }
 
 .logoTable {
@@ -98,6 +105,82 @@ table.actions a:active {
   padding-bottom: 10;
 }
 
+table.topofsl {
+  border-collapse: collapse;
+  border-style:  solid;
+  border-width: 1;
+  border-color: #666;
+  width: 98%;
+  margin-left:1%;
+  margin-right:1%;
+  background-color: #003399;  
+}
+
+
+
+table.slist {
+  border-collapse: collapse;
+  border-style:  solid;
+  border-width: 1;
+  border-color: #666;
+  width: 98%;
+  margin-left:1%;
+  margin-right:1%;
+}
+
+table.slist th, table.slist td {
+  border-bottom: 1px solid #666;
+  border-top: 1px solid #666;
+  padding: 0.6em;
+  vertical-align: 4px;
+}
+
+table.slist th {
+  text-align: left;
+  text-transform: uppercase;
+}
+
+table.slist tbody td.first {
+  text-align: left;
+  padding-left: 20;
+}
+
+table.slist thead th {
+  background-color: #33CCFF;
+  border-left: 1px solid #666;
+}
+
+table.slist table.slist tfoot th, table.slist tfoot td {
+  background-color: #33CCFF;
+}
+
+table.slist thead th.first {
+  padding-left: 24px;
+}
+
+table.slist tbody th {
+  padding-left: 24px;
+}
+
+table.slist tr.even td, table.slist tr.even th {
+  background-color:#eee;
+}
+
+table.slist tr.odd td, table.slist tr.odd th {
+  background-color: #ddd;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 table.inbox {
   border-collapse: collapse;
   margin: 0;
@@ -168,9 +251,14 @@ table.inbox tfoot th:after {
 
 .enteremail {
   border-style: solid;
-  border-width: thin;
+  border-width: 1;
   padding: 20;
   background: #D0D0D0;
+  border-color: #000000;
+}
+
+.msiehack3 {
+  padding: 20;
 }
 
 .smallLogo {
@@ -178,4 +266,6 @@ table.inbox tfoot th:after {
   text-align: center;
   padding-top: 30;
   padding-bottom: 30;
+  height: 100%;
+  vertical-align: bottom;
 }

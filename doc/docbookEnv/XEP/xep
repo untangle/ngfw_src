@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# XEP command-line
+
+JAVA_HOME="/opt/jdk1.5.0_05/jre"
+XEP_HOME="localhome/bscott/mvDocbook/XEP"
+
+CP="$JAVA_HOME/lib/tools.jar:\
+$XEP_HOME/lib/xep.jar:\
+$XEP_HOME/lib/saxon.jar:\
+$XEP_HOME/lib/xt.jar"
+
+"$JAVA_HOME/bin/java" \
+	-classpath "$CP" \
+	"-Dcom.renderx.xep.CONFIG=$XEP_HOME/xep.xml" \
+	com.renderx.xep.XSLDriver "$@" 
+

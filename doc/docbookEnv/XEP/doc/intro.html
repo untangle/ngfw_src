@@ -1,0 +1,651 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   
+      <title>A Gentle Introduction to XSL-FO and XEP</title>
+      <meta name="generator" content="DocBook XSL Stylesheets V1.61.2"><style type="text/css">
+	        a  { color: #0040C0; }
+    	    p  { font-family: Arial, Helvetica, sans-serif; text-align: justify;
+        	     margin-top: 6pt; margin-bottom: 6pt; margin-right: 6pt; }
+        	li { font-family: Arial, Helvetica, sans-serif; text-align: justify;
+             	 margin-top: 3pt; margin-bottom: 3pt; margin-right: 6pt; }
+        	dt { font-family: Arial, Helvetica, sans-serif; text-align: left; font-weight: bold; }
+	h1, h2, h3 { font-family: Arial, Helvetica, sans-serif; text-align: left;
+    	         color: #0060A0;
+        	     margin-right: 6pt; }
+    	h4, h5 { font-family: Arial, Helvetica, sans-serif; text-align: left;
+             	 margin-right: 6pt; }
+        thead  { background-color: silver;
+    	td, th { font-family: Arial, Helvetica, sans-serif }
+
+    	tt     { font-family: Courier New, Courier; font-size: 112%; }
+    	pre    { margin-bottom: 0pt; }
+
+	.italic 		  { font-style: italic; }
+	.bold 			  { font-weight: bold; }
+	.informalexample  { border: 1px solid gray;
+			     	    margin-top: 6pt;
+			     	    margin-bottom: 6pt;
+		    	 	    padding: 6pt;
+	  	   			  }    
+	.toc  			  { font-family: Arial, Helvetica, sans-serif;
+					    text-align: left;
+					    color: #0060A0;
+					    margin-right: 6pt; }
+	.toc-line 		  { margin-top: 1pt;
+					    margin-bottom: 1pt;
+					    margin-left: 30pt;
+					    font-family: Arial, Helvetica, sans-serif;
+					    font-weight:normal; }
+	.admonition-label { text-align: left; font-weight: bold;}  
+  </style></head>
+   <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+      <div class="article" lang="en">
+         <div class="titlepage">
+            <div>
+               <div>
+                  <h1 class="article-title"><a name="d0e4"></a>A Gentle Introduction to XSL-FO and XEP
+                  </h1>
+               </div>
+            </div>
+            <div></div>
+         </div>
+         <div class="toc">
+            <p><b>Table of Contents</b></p>
+            <dl>
+               <dt class="toc-line"><a href="#d0e20">1. Is this for you?</a></dt>
+               <dt class="toc-line"><a href="#d0e52">2. An overview of the process</a></dt>
+               <dt class="toc-line"><a href="#d0e114">3. Tools you will need.</a></dt>
+               <dt class="toc-line"><a href="#d0e131">4. Using the XEP Assistant to produce PDF output</a></dt>
+               <dt class="toc-line"><a href="#shell.use">5. Using the command line</a></dt>
+               <dt class="toc-line"><a href="#d0e240">6. Error recovery. When it goes wrong</a></dt>
+               <dt class="toc-line"><a href="#d0e356">7. XEP in other environments</a></dt>
+               <dt class="toc-line"><a href="#d0e409">Glossary</a></dt>
+            </dl>
+         </div>
+         <div class="section" lang="en">
+            <div class="titlepage">
+               <div>
+                  <div>
+                     <h2 class="title" style="clear: both"><a name="d0e20"></a>1.&nbsp;Is this for you?
+                     </h2>
+                  </div>
+               </div>
+               <div></div>
+            </div>
+            <p>This document is for the first time
+               user of XEP 4.4. If you have only limited experience with
+               <a href="#xsl-fo">XSL-FO</a>, or are unfamiliar with the process of using XSLT and a
+               formatter such as XEP, then this document is for you.
+            </p>
+            <p>Working from a simple (pre-prepared) XML example, you will
+               produce both <a href="#pdf">PDF</a> and <a href="#ps">PostScript</a> output using XEP 4.4 
+            </p>
+            <p>This document shows two ways of working with XEP, one
+               graphical and one using the command line. 
+            </p>
+            <p>Later, we can introduce errors into the example, and you will
+               see how to find and correct them. 
+            </p>
+            <p>The XML document and its associated XSLT stylesheet to make a
+               file ready for the XEP formatter are available in the
+               <tt class="filename">~/examples</tt> directory of the XEP
+               installation. I'm using the tilda <span class="bold"><b>(~
+                     )</b></span> as a replacement for the directory into which you
+               installed XEP 4.4
+            </p>
+            <p>Once you are familiar with the transformation, further
+               options are offered to show  ways in which you can control the
+               operation of XEP to generate the output you want.
+            </p>
+            <p>After reading it you will be able to use XEP with your own
+               documents and the other components of XEP documentation as a
+               reference.
+            </p>
+         </div>
+         <div class="section" lang="en">
+            <div class="titlepage">
+               <div>
+                  <div>
+                     <h2 class="title" style="clear: both"><a name="d0e52"></a>2.&nbsp;An overview of the process
+                     </h2>
+                  </div>
+               </div>
+               <div></div>
+            </div>
+            <p>XEP is a formatter. A tool used as part of a chain normally
+               used to transform an XML input document into a printable document
+               for distribution. The process consists of two steps. The first
+               transforms the input document into a standard XML format (XSL-FO),
+               the second generates the printable format from that intermediate
+               form. XSL-FO can be considered as a specification for the
+               formatting that you want for a particular document type.
+            </p>
+            <p>Starting with the file <tt class="filename">hammer.xml</tt>, a
+               small XML file which is provided with the distribution of XEP
+               4.4. If you installed XEP into <tt class="filename">\xep</tt> (or
+               <tt class="filename">/xep</tt> on *nix), then this file will be found
+               in the <tt class="filename">/xep/examples/hammer</tt> directory. If
+               you are using a Windows operating system, please change all such
+               path information from using the forward slash <span class="bold"><b>( / )</b></span>, to use the <span class="bold"><b>( \
+                     )</b></span>.
+            </p>
+            <p>Open the file in any text editor. You will see its structure,
+               having a root element named <tt class="sgmltag-element">manual</tt>, containing
+               the remainder of the document, it has <tt class="sgmltag-element">chapter</tt>
+               elements, each of which contains <tt class="sgmltag-element">p</tt>aragraphs (in
+               <tt class="sgmltag-element">p</tt> tags) and so on. Use this file for your
+               experiments until you have your own material and the knowledge to
+               develop your own stylesheets. If you want to change it, keep a copy
+               of the original file so you know what worked.
+            </p>
+            <p>In the same directory is a file named
+               <tt class="filename">hammer.xsl</tt>, which is an XSLT stylesheet used
+               to convert the source XML document into a specification for the XEP
+               formatter. Feeding this specification to XEP can produce a PDF
+               output document ready to print.
+            </p>
+            <p>This is the end to end process which will be described. </p>
+            <p>
+               The input file, marked up in XML, is fed to an XSLT
+               transformer. XEP comes with one provided. The job of the
+               transformer is to take the content in the source document, and
+               depending on the element name and position (e.g. a paragraph or a
+               list or a chapter title), to modify (transform) the markup or
+               content, into the form used by XSL-FO, which specifies
+               how XEP 4.4 should present the file ready for viewing or
+               printing. If you want to see this vocabulary in use, have a look
+               in the <tt class="filename">examples</tt> directory where you will find
+               files with an extension of <tt class="filename">.fo</tt>, which is
+               often used for this type of file.
+            </p>
+            <p>The second step feeds the XSL-FO document to the formatter,
+               which creates and fills pages according to the specification laid
+               out in the XSL-FO document. 
+            </p>
+            <p>Finally, dependant on the format specified, the formatter
+               writes out the pages in either PDF or PostScript.
+            </p>
+            <p>Since most users simply want to produce PDF or PostScript
+               from XML (or XSL-FO) XEP 4.4 may be used to perform all
+               these processes as a single step.
+            </p>
+            <p></p>
+         </div>
+         <div class="section" lang="en">
+            <div class="titlepage">
+               <div>
+                  <div>
+                     <h2 class="title" style="clear: both"><a name="d0e114"></a>3.&nbsp;Tools you will need.
+                     </h2>
+                  </div>
+               </div>
+               <div></div>
+            </div>
+            <p>I'll assume you have XEP
+               4.4 installed on your computer.
+            </p>
+            <p>In order to view Adobe PDF (Portable Document Format) files,
+               you will need a viewer. Adobe provide a free one.
+            </p>
+            <p>If you don't have it on your computer, you can download
+               and install it from the <a href="http://www.adobe.com/products/acrobat/readstep2.html" target="_top">Adobe
+                  	website</a>, free for personal use. Note where you install it,
+               since you can set this in XEP Assistant, and view the PDF output
+               file immediately when XEP has processed it.
+            </p>
+            <p>To view PostScript files, one of the options is to use a
+               product called <a href="http://www.cs.wisc.edu/~ghost/gsview/get46.htm" target="_top">GhostView</a>.
+               Versions are available for most operating systems. This product
+               is also capable of viewing PDF. 
+            </p>
+         </div>
+         <div class="section" lang="en">
+            <div class="titlepage">
+               <div>
+                  <div>
+                     <h2 class="title" style="clear: both"><a name="d0e131"></a>4.&nbsp;Using the XEP Assistant to produce PDF output
+                     </h2>
+                  </div>
+               </div>
+               <div></div>
+            </div>
+            <p>With XEP is distributed a tool which enables the easy
+               transformation of files in a graphical environment, suitable for
+               users more familiar with a graphical interface. 
+            </p>
+            <p>Find the <tt class="filename">x4u.bat</tt> file in the
+               distribution and click on it. This runs the Assistant. Under the
+               file menu, select the <tt class="filename">hammer.xml</tt> file as the
+               input file to process. Under the Formatting menu, select start,
+               then tick the apply stylesheet box, and select
+               <tt class="filename">hammer.xsl</tt> from the same directory. Since
+               this is an XML file, both steps of the process are needed, the
+               transformation to XSL-FO format, and the formatting into
+               PDF.
+            </p>
+            <p>The lower part of the screen may be used to select a viewer,
+               either Adobe Acrobat <span class="application">reader</span> or
+               <span class="application">Ghostview</span>. The
+               <span class="application">Assistant</span> needs to be told where you
+               installed the application. Use the browse button to locate the
+               application. Tick the <span class="emphasis"><em>display with</em></span> box if you
+               want to launch the viewer once the process is complete.
+            </p>
+            <p>Either remember the value in the output file selection box,
+               or change its value to indicate where you want the output to be
+               located.  The default output is set as PDF. Leave it as that, then
+               select OK. 
+            </p>
+            <p>The right hand tab marked event log will show the file
+               progress through to completion.
+            </p>
+            <p>The output file may be read with the Adobe Acrobat
+               reader. 
+            </p>
+            <div class="caution" style="margin-left: 0.5in; margin-right: 0.5in;">
+               <table cellspacing="3" border="0">
+                  <tr valign="top">
+                     <td>
+                        <p class="admonition-label">Caution. Updating PDF files whilst viewing them.:
+                           	    
+                        </p>
+                     </td>
+                     <td>
+                        <p>The Acrobat reader will not allow a file to be overwritten
+                           whilst it is open. If you wish to modify the source XML file,
+                           and re-process it to produce PDF, you must close the file in
+                           Acrobat reader, or XEP will not be able to re-write the modified
+                           file. This applies whichever route you take to producing
+                           PDF.
+                        </p>
+                     </td>
+                  </tr>
+               </table>
+            </div>
+         </div>
+         <div class="section" lang="en">
+            <div class="titlepage">
+               <div>
+                  <div>
+                     <h2 class="title" style="clear: both"><a name="shell.use"></a>5.&nbsp;Using the command line
+                     </h2>
+                  </div>
+               </div>
+               <div></div>
+            </div>
+            <p>For those used to the flexibility of the command line
+               interface, one is provided with XEP.
+            </p>
+            <p>If you've never used the command line on Windows, it is
+               available from the start menu, programs, and either directly as an
+               option or as a tab from the acessories tab. Normally called
+               <span class="emphasis"><em>Command prompt</em></span>. The window that pops up is
+               the command line interface to Windows. If you type
+               <b class="command">help</b> it responds by listing all the commands it
+               understands. You may want to create a temporary directory to work
+               in, perhaps <tt class="filename">c:\myfiles</tt>. If you avoid using
+               spaces in the directory names, it makes working with the command
+               line that much easier. 
+            </p>
+            <p>Taking the same example as previously, to format
+               <tt class="filename">hammer.xml</tt> using
+               <tt class="filename">hammer.xsl</tt>, to produce
+               <tt class="filename">hammer.pdf</tt>, the following command line is
+               used. The script <b class="command">xep.bat</b> is a part of the
+               distribution, found in the top level installation
+               directory. 
+            </p>
+            <p>The command below is split over 3 lines for
+               readability. It should remain on one line, so just remove the \
+               characters used to indicate a continuation line.
+            </p>
+            <table border="0" bgcolor="#E0E0E0" width="97%">
+               <tr>
+                  <td><pre class="screen">
+&gt;\xep\xep.bat -xml \xep\examples\hammer\hammer.xml \
+              -xsl \xep\examples\hammer\hammer.xsl \
+              -out hammer.pdf
+
+</pre></td>
+               </tr>
+            </table>
+            <p>Finally, as a command line exercise, to produce
+               <tt class="filename">hammer.fo</tt>, the matching XSL-FO file.  If you
+               can find out where <span class="application">java</span> is installed,
+               and add it to your environment path variable.  If you installed
+               XEP into <tt class="filename">/xep</tt>, the command is
+            </p>
+            <table border="0" bgcolor="#E0E0E0" width="97%">
+               <tr>
+                  <td><pre class="screen">
+&gt;java  -jar /xep4/lib/saxon.jar  -o hammer.fo \
+            /xep4/examples/hammer/hammer.xml \ 
+            /xep4/examples/hammer/hammer.xsl
+</pre></td>
+               </tr>
+            </table>
+            <p>This uses the <span class="application">Saxon</span> XSLT
+               engine, another <span class="application">java</span> tool, to
+               produce <tt class="filename">hammer.fo</tt>, in the current working
+               directory. <span class="application">Saxon</span> takes its parameters
+               as shown. The output is specified using the <i class="parameter"><tt>-o
+                     </tt></i> option, then the input file and stylesheet are
+               appended. So the general form is
+            </p>
+            <table border="0" bgcolor="#E0E0E0" width="97%">
+               <tr>
+                  <td><pre class="screen">
+&gt;java -jar saxon.jar \
+       -o outputFile \
+          inputFile \
+          stylesheet
+
+</pre></td>
+               </tr>
+            </table>
+            <p>If that makes sense to you, you can now start to use your
+               own XML files to produce output suitable for the XEP
+               formatter.
+            </p>
+         </div>
+         <div class="section" lang="en">
+            <div class="titlepage">
+               <div>
+                  <div>
+                     <h2 class="title" style="clear: both"><a name="d0e240"></a>6.&nbsp;Error recovery. When it goes wrong
+                     </h2>
+                  </div>
+               </div>
+               <div></div>
+            </div>
+            <p>Rather fake, but in order to find and correct errors it is
+               necessary to see how they are reported. Two potential sources of
+               errors are possible. Firstly in the source XML document. It could
+               be either syntax or validity. Secondly, an error in the input to
+               XEP. Often generated by an XSLT conversion, where the properties
+               are mis-used. XEP has a tool to validate this input and isolate
+               the source of the error.
+            </p>
+            <p>Firstly then the source code error. Open the
+               <tt class="filename">hammer.xml</tt> file, near the top there is an
+               <tt class="sgmltag-element">annotation</tt> element. Modify the markup as
+               shown below
+            </p>
+            <table border="0" bgcolor="#E0E0E0" width="97%">
+               <tr>
+                  <td><pre class="programlisting">
+ &lt;annotation&gt;
+    &lt;p&gt;
+      The purpose of this document is to illustrate handling complex 
+      layout patterns in the Extended Stylesheet Language (XSL).
+      To simulate a real text, I have written an operation instruction
+      for a hammer. The genre of operation instructions turned out 
+      to be quite convenient for showing most standard formatting 
+      properties. Features used in this text include:
+    &lt;/b&gt;
+
+</pre></td>
+               </tr>
+            </table>
+            <p>The closing <tt class="sgmltag-element">p</tt> tag has been replaced by a
+               <tt class="sgmltag-element">b</tt> tag. The structure is now unbalanced, in a
+               manner that is called not well-formed. Run this through either
+               <span class="application">Assistant</span>, or the command line
+               <span class="application">XEP</span>.
+               <span class="application">Assistant</span> produces the following report.
+            </p>
+            <p></p>
+            <table border="0" bgcolor="#E0E0E0" width="97%">
+               <tr>
+                  <td><pre class="screen">
+[error] javax.xml.transform.TransformerException: \
+org.xml.sax.SAXParseException:                    \
+unexpected characters in element end tag (expected "p")
+</pre></td>
+               </tr>
+            </table>
+            <p>Again the lines are split using the <span class="bold"><b>\</b></span> character, where on the screen they are
+               on a single line.
+            </p>
+            <p>The message is clear. The software expected an end tag of
+               <tt class="sgmltag-element">p</tt>, and didn't find one. No indication of
+               where though. For a long document this is a problem. For shorter
+               ones perhaps your XML editor of choice can help you.
+            </p>
+            <p>If you have no other help, then use the tools provided with
+               XEP. Open up an MSDOS window (Command prompt), or a shell, and
+               selecting the correct paths, type in the following, repeating what
+               the use in <a href="#shell.use" title="5.&nbsp;Using the command line">Using the command
+                  line</a> section above.
+            </p>
+            <table border="0" bgcolor="#E0E0E0" width="97%">
+               <tr>
+                  <td><pre class="programlisting">
+&gt;java -jar \xep\lib\saxon.jar  -o hammer.fo hammer.xml hammer.xsl
+
+</pre></td>
+               </tr>
+            </table>
+            <p>This time the error reporting is clear and concise</p>
+            <table border="0" bgcolor="#E0E0E0" width="97%">
+               <tr>
+                  <td><pre class="screen">
+&gt;java -jar \xep4\lib\saxon.jar -o hammer.fo hammer.xml hammer.xsl \
+Error on line 23 column 7 of
+      file: .. /hammer.xml: \
+      Error reported by XML parser:                  \
+unexpected characters in element end tag (expected "p")
+Transformation failed: Run-time errors were reported
+
+</pre></td>
+               </tr>
+            </table>
+            <p>Your display will vary a little from this, dependant on the
+               location of your files, but the information is clear. Somewhere on
+               line 23, the <span class="emphasis"><em>end tag</em></span> is suspect. Now remove
+               the error, by replacing the <tt class="literal">&lt;/b&gt;</tt> with a
+               <tt class="literal">&lt;/p&gt;</tt>, and re-run the transformation. The
+               error will not show if you have cleared it. 
+            </p>
+            <p>This demonstrates the increased detail available from a two
+               step process, which is just a nuisance on a correct file. 
+            </p>
+            <p>If you ran the command line transformation, using saxon,
+               then you will have a file named <tt class="filename">hammer.fo</tt>,
+               into which we can now insert an error, to view the second source
+               of errors. 
+            </p>
+            <p>In summary. When converting from XML to PDF (or PostScript),
+               errors may be detected in either of the two stages of the
+               transformation. It is often easier to isolate from which stage the
+               error is originating. Now to inject and detect an error in the
+               second stage, the XSL-FO to PDF stage.
+            </p>
+            <p>Open up the <tt class="filename">hammer.fo</tt> file, using any
+               text editor. Far more difficult to read, since much more is
+               happening, but you should see the structure of the file if you
+               spend a few minutes with it. In particular, look for that first
+               paragraph again, where we inserted the error before. It looks
+               different, since its now ready for the formatter. Look for 
+            </p>
+            <table border="0" bgcolor="#E0E0E0" width="97%">
+               <tr>
+                  <td><pre class="screen">
+      &lt;fo:block space-before.optimum="6pt" <span class="bold"><b>text-align='centre'</b></span>&gt;
+      The purpose of this document is to illustrate handling complex 
+      layout patterns in the Extended Stylesheet Language (XSL).
+      To simulate a real text, I have written an operation instruction
+      for a hammer. The genre of operation instructions turned out 
+      to be quite convenient for showing most standard formatting 
+      properties. Features used in this text include:
+    &lt;/fo:block&gt;
+
+</pre></td>
+               </tr>
+            </table>
+            <p>An error has been introduced, specifying that the text
+               should be aligned <span class="emphasis"><em>centre</em></span>, which is a
+               misspelling according to the official recommendation, which uses
+               the American spelling (center). A perfectly innocent
+               typographical error. Now to find it.
+            </p>
+            <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+               <table cellspacing="3" border="0">
+                  <tr valign="top">
+                     <td>
+                        <p class="admonition-label">Note:
+                           	    
+                        </p>
+                     </td>
+                     <td>
+                        <p>If you regenerate the pdf file, this intermediate XSL-FO
+                           file will be overwritten, as mentioned above.
+                        </p>
+                     </td>
+                  </tr>
+               </table>
+            </div>
+            <p>If you introduce the error as shown, then run the command
+               shown below, the <span class="application">validate</span> program
+               should find it.
+            </p>
+            <table border="0" bgcolor="#E0E0E0" width="97%">
+               <tr>
+                  <td><pre class="screen">
+&gt;\xep\validate hammer.fo
+file: ... hammer.fo: line 2
+Attribute 'text-align' cannot have a value of "centre".
+
+hammer.fo: 1 error
+
+</pre></td>
+               </tr>
+            </table>
+            <p>The <span class="application">validate</span> script, located in
+               the distributeion directory has a single purpose, to spot these
+               errors. The output could not be clearer, the text-align property
+               cannot take a value of centre. To remove the error, either change
+               the value to <span class="emphasis"><em>center</em></span>, or remove the
+               attribute and its value. 
+            </p>
+            <p>Re-run the validator, and a successful validation will
+               result. Since the normal source of such errors is the XSLT
+               stylesheet, that is where you would normally locate and remove
+               these errors, since the purpose of the stylesheet is to convert
+               the source XML into the form you have just seen in
+               <tt class="filename">hammer.fo</tt>. 
+            </p>
+            <p>That is a view of finding errors in the two stages. Although
+               not normally done in two separate stages like that, it is worth
+               remembering that it can be done this way, since it is often easier
+               to locate errors, and the objective is to produce the output
+               efficiently. 
+            </p>
+         </div>
+         <div class="section" lang="en">
+            <div class="titlepage">
+               <div>
+                  <div>
+                     <h2 class="title" style="clear: both"><a name="d0e356"></a>7.&nbsp;XEP in other environments
+                     </h2>
+                  </div>
+               </div>
+               <div></div>
+            </div>
+            <p>Since this document
+               is only an introduction, no detail is given of the full suite of
+               options. That is available in <a href="reference.html" target="_top">the reference</a>. It
+               is worth knowing of other applications of XEP 4.4
+            </p>
+            <p>The <a href="http://xep.xattic.com/xep/connectors/connectors.html" target="_top">RenderX</a>
+               	website has a page devoted to alternative ways of configuring
+               	XEP 4.4 It is worthwhile appreciating these, they may be
+               	in use now, or in the future, in your organisation.
+            </p>
+            <p>Be aware that XEP 4.4 may be readily integrated into
+               all these products.
+            </p>
+            <div class="variablelist">
+               <dl>
+                  <dt><span class="term">The jEdit plugin</span></dt>
+                  <dd>
+                     <p>jEdit is a cross platform editor with an amazing range
+                        	  of plugin components.
+                     </p>
+                  </dd>
+                  <dt><span class="term">The oXygen editor</span></dt>
+                  <dd>
+                     <p>The oXygen xml editor provides built-in support for XEP. 
+                        	  RenderX offers a bundled distribution, Docbench, in which XEP
+                        	  and oXygen are tuned to work with each other.
+                        	  
+                     </p>
+                  </dd>
+                  <dt><span class="term">As an Ant task</span></dt>
+                  <dd>
+                     <p>Ant is a java based building tool. XEP distribution
+                        	  includes a Task for Ant.
+                     </p>
+                  </dd>
+                  <dt><span class="term">Cocoon</span></dt>
+                  <dd>
+                     <p>A web development framework</p>
+                  </dd>
+                  <dt><span class="term">As part of a Java servlet</span></dt>
+                  <dd>
+                     <p>For Tomcat server users.</p>
+                  </dd>
+                  <dt><span class="term">As an Enterprise Java Bean</span></dt>
+                  <dd>
+                     <p>XEP can server as a remote or local EJB in J2EE environments.
+                        	  
+                     </p>
+                  </dd>
+               </dl>
+            </div>
+         </div>
+         <div class="glossary">
+            <div class="titlepage">
+               <div>
+                  <div>
+                     <h2 class="title"><a name="d0e409"></a>Glossary
+                     </h2>
+                  </div>
+               </div>
+               <div></div>
+            </div>
+            <dl>
+               <dt><a name="pdf"></a>PDF (Portable Document Format)
+               </dt>
+               <dd>
+                  <p>PDF is a universal file format that preserves the fonts,
+                     	    images, graphics, and layout of any source document,
+                     	    regardless of the application and platform used to create
+                     	    it. See <a href="http://www.adobe.com/products/acrobat/adobepdf.html" target="_top">Adobe</a> website for more information.
+                  </p>
+               </dd>
+               <dt><a name="ps"></a>PostScript
+               </dt>
+               <dd>
+                  <p><span class="trademark">Adobe</span>&reg; <span class="trademark">PostScript</span>&reg; is the worldwide printing and
+                     	    imaging standard. Used by print service providers,
+                     	    publishers, corporations, and government agencies around
+                     	    the globe, Adobe PostScript 3 gives you the power to print
+                     	    visually rich documents reliably. See <a href="http://www.adobe.com/products/postscript/overview.html" target="_top">Adobe
+                        	    </a> website for more.
+                  </p>
+               </dd>
+               <dt><a name="xsl-fo"></a>XSL-FO
+               </dt>
+               <dd>
+                  <p>XSL, Formatting objects. A standard way of specifying
+                     	how content should be presented. A World Wide Web Consortium
+                     	  specification. <a href="http://www.w3c.org/TR/xsl/" target="_top">W3C</a> 
+                  </p>
+               </dd>
+            </dl>
+         </div>
+      </div>
+   </body>
+</html>

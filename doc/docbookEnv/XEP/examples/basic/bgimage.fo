@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    (c) RenderX, 2000-2003
+
+    This file makes part of the RenderX XSL FO Test Suite. Permission is
+    granted to copy and modify this file as a whole or in part, provided
+    that any work derived from it bear a reference to the original
+    document.
+-->
+
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
+   <fo:layout-master-set>
+      <fo:simple-page-master master-name="all-pages">
+         <fo:region-body region-name="xsl-region-body" margin="0.7in" column-gap="0.25in" border="0.25pt solid gray" padding="6pt"/>
+         <fo:region-before region-name="xsl-region-before" extent="0.7in" display-align="after" padding="6pt 0.7in"/>
+         <fo:region-after region-name="xsl-region-after" extent="0.7in" display-align="before" padding="6pt 0.7in"/>
+      </fo:simple-page-master>
+   </fo:layout-master-set>
+   <fo:page-sequence master-reference="all-pages">
+      <fo:static-content flow-name="xsl-region-before">
+         <fo:list-block font="10pt Helvetica" provisional-distance-between-starts="5in" provisional-label-separation="0in">
+            <fo:list-item>
+               <fo:list-item-label end-indent="label-end()">
+                  <fo:block text-align="start" font-weight="bold">  Block Properties - Background Images </fo:block>
+               </fo:list-item-label>
+               <fo:list-item-body start-indent="body-start()">
+                  <fo:block text-align="end">
+                     Page <fo:page-number/>
+                  </fo:block>
+               </fo:list-item-body>
+            </fo:list-item>
+         </fo:list-block>
+      </fo:static-content>
+      <fo:static-content flow-name="xsl-region-after">
+         <fo:list-block font="9pt Times" provisional-distance-between-starts="3in" provisional-label-separation="0in">
+            <fo:list-item>
+               <fo:list-item-label end-indent="label-end()">
+                  <fo:block text-align="start" font-weight="bold">
+                     &#xA9; 
+                     <fo:basic-link external-destination="url(http://www.renderx.com/)" color="#0000C0" text-decoration="underline">Render<fo:wrapper font-weight="bold" color="#C00000">X</fo:wrapper></fo:basic-link> 
+                     2000
+                  </fo:block>
+               </fo:list-item-label>
+               <fo:list-item-body start-indent="body-start()">
+                  <fo:block text-align="end" font-style="italic" color="#606060">
+                     XSL Formatting Objects Test Suite
+                  </fo:block>
+               </fo:list-item-body>
+            </fo:list-item>
+         </fo:list-block>
+      </fo:static-content>
+      <fo:static-content flow-name="xsl-footnote-separator">
+         <fo:block>
+            <fo:leader leader-pattern="rule" leader-length="100%" rule-thickness="0.5pt" rule-style="solid" color="black"/>
+         </fo:block>
+      </fo:static-content>
+      <fo:flow flow-name="xsl-region-body">
+         <fo:block>
+            <fo:block font="bold 14pt Helvetica" space-before="18pt" space-before.conditionality="discard" space-after="6pt" keep-with-next.within-column="always" keep-together.within-column="always" text-align="center" padding="3pt" background-color="silver">
+               Block Properties - Background Images
+            </fo:block>
+            <fo:block font="12pt Times" space-before="6pt" space-after="6pt">
+This text consists of a series of paragraphs, each having the same
+background image (three coloured spots). The paragraphs differ in
+the position and tiling of the image. All paragraphs have background
+color set to light grey (#E0E0E0) and a thin dotted black border around.
+Padding is 18 points from top and bottom, and 6 points from left 
+and right. There should be a space of 12 pt between the paragraphs.
+            </fo:block>
+  
+            <fo:block text-align="center" font="10pt Helvetica" border="thin dotted black" padding="18pt 6pt" margin-bottom="12pt" background="#E0E0E0" background-image="url(Images/spots.jpg)" background-repeat="no-repeat" background-position="center center">
+In this paragraph, the background image should not be repeated.
+It is positioned in the center, both vertically and horizontally.
+            </fo:block>
+  
+            <fo:block text-align="center" font="10pt Helvetica" border="thin dotted black" padding="18pt 6pt" margin-bottom="12pt" background="#E0E0E0" background-image="url(Images/spots.jpg)" background-repeat="no-repeat" background-position="right bottom">
+In this paragraph, the background image should not be repeated.
+It is positioned in the right bottom corner of the frame.
+            </fo:block>
+ 
+            <fo:block text-align="center" font="10pt Helvetica" border="thin dotted black" padding="18pt 6pt" margin-bottom="12pt" background="#E0E0E0" background-image="url(Images/spots.jpg)" background-repeat="no-repeat" background-position="25% 75%">
+In this paragraph, the background image should not be repeated.
+Its position is (25%, 75%); it means that the point 25% across and 75% down the image 
+coincides with the point 25% across and 75% down the frame.
+            </fo:block>
+   
+            <fo:block text-align="center" font="10pt Helvetica" border="thin dotted black" padding="18pt 6pt" margin-bottom="12pt" background="#E0E0E0" background-image="url(Images/spots.jpg)" background-repeat="no-repeat" background-position="-1in -1in">
+In this paragraph, the background image should not be repeated.
+Its upper left corner is located 1 inch above and 1 inch to the left 
+of the border's upper left corner (position displacement values are negative). 
+It means that the image should not be visible any more.
+            </fo:block>
+ 
+            <fo:block text-align="center" font="10pt Helvetica" border="thin dotted black" padding="18pt 6pt" margin-bottom="12pt" background="#E0E0E0" background-image="url(Images/spots.jpg)" background-repeat="repeat-y" background-position="left center">
+In this paragraph, the background image should be repeated along the Y axis, 
+creating a continuous vertical stripe.
+The ribbon is attached to the left side of the box.
+            </fo:block>
+ 
+            <fo:block text-align="center" font="10pt Helvetica" border="thin dotted black" padding="18pt 6pt" margin-bottom="12pt" background="#E0E0E0" background-image="url(Images/spots.jpg)" background-repeat="repeat-y" background-position="1in 50%">
+In this paragraph, the background image should be repeated along 
+the Y axis, creating a continuous vertical stripe.
+The ribbon is distant 1 inch from the left side of the box.
+            </fo:block>
+ 
+            <fo:block text-align="center" font="10pt Helvetica" border="thin dotted black" padding="18pt 6pt" margin-bottom="12pt" background="#E0E0E0" background-image="url(Images/spots.jpg)" background-repeat="repeat-x" background-position="center top">
+In this paragraph, the background image should be repeated along the X axis, creating a continuous horizontal stripe.
+The ribbon is attached to the top of the box.
+            </fo:block>
+ 
+            <fo:block text-align="center" font="10pt Helvetica" border="thin dotted black" padding="18pt 6pt" margin-bottom="12pt" background="#E0E0E0" background-image="url(Images/spots.jpg)" background-repeat="repeat-x" background-position="50% 0.25in">
+In this paragraph, the background image should be repeated along the X axis, creating a continuous horizontal stripe.
+The ribbon is distant 0.25 inch from the top side of the box.
+            </fo:block>
+ 
+            <fo:block text-align="center" font="10pt Helvetica" border="thin dotted black" padding="18pt 6pt" margin-bottom="12pt" background="#E0E0E0" background-image="url(Images/spots.jpg)" background-repeat="repeat" background-position="center center">
+In this paragraph, the background image should be repeated along both axes, covering the background completely.
+            </fo:block>
+  
+            <fo:block text-align="center" font="10pt Helvetica" border="thin dotted black" padding="18pt 6pt" margin-bottom="12pt" background="#E0E0E0" background-image="url(Images/spots.jpg)" background-repeat="repeat-y" background-position-horizontal="left">
+In this paragraph, the background image should be repeated along the Y axis, creating a continuous vertical stripe.
+The ribbon is attached to the left side of the box.
+            </fo:block>
+
+            <fo:block text-align="center" font="10pt Helvetica" border="thin dotted black" padding="18pt 6pt" margin-bottom="12pt" background="#E0E0E0" background-image="url(Images/spots.jpg)" background-repeat="repeat-y" background-position-horizontal="center">
+In this paragraph, the background image should be repeated along the Y axis, creating a continuous vertical stripe.
+The ribbon is attached to the center of the box.
+            </fo:block>
+  
+            <fo:block text-align="center" font="10pt Helvetica" border="thin dotted black" padding="18pt 6pt" margin-bottom="12pt" background="#E0E0E0" background-image="url(Images/spots.jpg)" background-repeat="repeat-y" background-position-horizontal="right">
+In this paragraph, the background image should be repeated along the Y axis, creating a continuous vertical stripe.
+The ribbon is attached to the right side of the box.
+            </fo:block>
+  
+            <fo:block text-align="center" font="10pt Helvetica" border="thin dotted black" padding="18pt 6pt" margin-bottom="12pt" background="#E0E0E0" background-image="url(Images/spots.jpg)" background-repeat="repeat-y" background-position-horizontal="1in">
+In this paragraph, the background image should be repeated along the Y axis, creating a continuous vertical stripe.
+The ribbon is distant 1 inch from the left side of the box.
+            </fo:block>
+ 
+            <fo:block text-align="center" font="10pt Helvetica" border="thin dotted black" padding="18pt 6pt" margin-bottom="12pt" background="#E0E0E0" background-image="url(Images/spots.jpg)" background-repeat="repeat-y" background-position-horizontal="25%">
+In this paragraph, the background image should be repeated along the Y axis, creating a continuous vertical stripe.
+The ribbon is distant 25% from the left side of the box.
+            </fo:block>
+  
+            <fo:block text-align="center" font="10pt Helvetica" border="thin dotted black" padding="18pt 6pt" margin-bottom="12pt" background="#E0E0E0" background-image="url(Images/spots.jpg)" background-repeat="repeat-x" background-position-vertical="top">
+In this paragraph, the background image should be repeated along the X axis, creating a continuous horizontal stripe.
+The ribbon is attached to the top side of the box.
+            </fo:block>
+ 
+            <fo:block text-align="center" font="10pt Helvetica" border="thin dotted black" padding="18pt 6pt" margin-bottom="12pt" background="#E0E0E0" background-image="url(Images/spots.jpg)" background-repeat="repeat-x" background-position-vertical="center">
+In this paragraph, the background image should be repeated along the X axis, creating a continuous horizontal stripe.
+The ribbon is attached to the center of the box.
+            </fo:block>
+  
+            <fo:block text-align="center" font="10pt Helvetica" border="thin dotted black" padding="18pt 6pt" margin-bottom="12pt" background="#E0E0E0" background-image="url(Images/spots.jpg)" background-repeat="repeat-x" background-position-vertical="bottom">
+In this paragraph, the background image should be repeated along the X axis, creating a continuous horizontal stripe.
+The ribbon is attached to the bottom side of the box.
+            </fo:block>
+   
+            <fo:block text-align="center" font="10pt Helvetica" border="thin dotted black" padding="18pt 6pt" margin-bottom="12pt" background="#E0E0E0" background-image="url(Images/spots.jpg)" background-repeat="repeat-x" background-position-vertical="0.25in">
+In this paragraph, the background image should be repeated along the X axis, creating a continuous horizontal stripe.
+The ribbon is distant 0.25 inch from the top side of the box.
+            </fo:block>
+  
+            <fo:block text-align="center" font="10pt Helvetica" border="thin dotted black" padding="18pt 6pt" margin-bottom="12pt" background="#E0E0E0" background-image="url(Images/spots.jpg)" background-repeat="repeat-x" background-position-vertical="25%">
+In this paragraph, the background image should be repeated along the X axis, creating a continuous horizontal stripe.
+The ribbon is distant 25% from the top side of the box.
+            </fo:block>
+
+         </fo:block>
+      </fo:flow>
+   </fo:page-sequence>
+</fo:root>

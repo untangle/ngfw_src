@@ -1,0 +1,2676 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+    (c) RenderX, 2000-2003
+
+    This file makes part of the RenderX XSL FO Test Suite. Permission is
+    granted to copy and modify this file as a whole or in part, provided
+    that any work derived from it bear a reference to the original
+    document.
+-->
+  <fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
+    <fo:layout-master-set>
+      <fo:simple-page-master master-name="all-pages">
+        <fo:region-body region-name="xsl-region-body" margin="0.7in" column-gap="0.25in" border="0.25pt solid gray" padding="6pt" column-count="3"/>
+        <fo:region-before region-name="xsl-region-before" extent="0.7in" display-align="after" padding="6pt 0.7in"/>
+        <fo:region-after region-name="xsl-region-after" extent="0.7in" display-align="before" padding="6pt 0.7in"/>
+      </fo:simple-page-master>
+    </fo:layout-master-set>
+    <fo:page-sequence master-reference="all-pages">
+    <fo:static-content flow-name="xsl-region-before">
+      <fo:list-block font="10pt Helvetica" provisional-distance-between-starts="5in" provisional-label-separation="0in">
+        <fo:list-item>
+          <fo:list-item-label end-indent="label-end()">
+            <fo:block text-align="start" font-weight="bold">Character Sets &#8212; Zapf Dingbats</fo:block>
+          </fo:list-item-label>
+          <fo:list-item-body start-indent="body-start()">
+            <fo:block text-align="end">Page <fo:page-number/></fo:block>
+          </fo:list-item-body>
+        </fo:list-item>
+      </fo:list-block>
+    </fo:static-content>
+    <fo:static-content flow-name="xsl-region-after">
+      <fo:list-block font="9pt Times" provisional-distance-between-starts="3in" provisional-label-separation="0in">
+        <fo:list-item>
+          <fo:list-item-label end-indent="label-end()">
+            <fo:block text-align="start" font-weight="bold">© <fo:basic-link external-destination="url(http://www.renderx.com/)" color="#0000C0" text-decoration="underline">Render<fo:wrapper font-weight="bold" color="#C00000">X</fo:wrapper></fo:basic-link> 2000</fo:block>
+          </fo:list-item-label>
+          <fo:list-item-body start-indent="body-start()">
+            <fo:block text-align="end" font-style="italic" color="#606060">
+              XSL Formatting Objects Test Suite
+            </fo:block>
+          </fo:list-item-body>
+        </fo:list-item>
+      </fo:list-block>
+    </fo:static-content>
+    
+    <fo:static-content flow-name="xsl-footnote-separator">
+      <fo:block><fo:leader leader-pattern="rule" leader-length="100%" rule-thickness="0.5pt" rule-style="solid" color="black"/></fo:block>
+    </fo:static-content>
+    
+    <fo:flow flow-name="xsl-region-body">
+      <fo:block>
+
+  <fo:block font="bold 14pt Helvetica" space-before="18pt" space-before.conditionality="discard" space-after="6pt" keep-with-next.within-column="always" keep-together.within-column="always" text-align="center" padding="3pt" background-color="silver">Character Sets &#8212; Zapf Dingbats</fo:block>
+
+  <fo:block space-before="6pt" space-after="6pt" font="11pt Times">
+     This document tests glyph repertory for ZapfDingbats font.
+     It also lists Unicode values used to access respective glyphs
+     from XML documents.
+  </fo:block>
+
+  <fo:list-block space-before="12pt" provisional-distance-between-starts="30pt" provisional-label-separation="6pt" font="11pt Times">
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9985;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a1
+        [<fo:wrapper font="bold 11pt Courier">x2701</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9986;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a2
+        [<fo:wrapper font="bold 11pt Courier">x2702</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9987;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a202
+        [<fo:wrapper font="bold 11pt Courier">x2703</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9988;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a3
+        [<fo:wrapper font="bold 11pt Courier">x2704</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9742;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a4
+        [<fo:wrapper font="bold 11pt Courier">x260E</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9990;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a5
+        [<fo:wrapper font="bold 11pt Courier">x2706</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9991;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a119
+        [<fo:wrapper font="bold 11pt Courier">x2707</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9992;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a118
+        [<fo:wrapper font="bold 11pt Courier">x2708</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9993;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a117
+        [<fo:wrapper font="bold 11pt Courier">x2709</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9755;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a11
+        [<fo:wrapper font="bold 11pt Courier">x261B</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9758;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a12
+        [<fo:wrapper font="bold 11pt Courier">x261E</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9996;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a13
+        [<fo:wrapper font="bold 11pt Courier">x270C</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9997;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a14
+        [<fo:wrapper font="bold 11pt Courier">x270D</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9998;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a15
+        [<fo:wrapper font="bold 11pt Courier">x270E</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9999;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a16
+        [<fo:wrapper font="bold 11pt Courier">x270F</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10000;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a105
+        [<fo:wrapper font="bold 11pt Courier">x2710</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10001;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a17
+        [<fo:wrapper font="bold 11pt Courier">x2711</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10002;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a18
+        [<fo:wrapper font="bold 11pt Courier">x2712</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10003;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a19
+        [<fo:wrapper font="bold 11pt Courier">x2713</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10004;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a20
+        [<fo:wrapper font="bold 11pt Courier">x2714</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10005;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a21
+        [<fo:wrapper font="bold 11pt Courier">x2715</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10006;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a22
+        [<fo:wrapper font="bold 11pt Courier">x2716</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10007;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a23
+        [<fo:wrapper font="bold 11pt Courier">x2717</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10008;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a24
+        [<fo:wrapper font="bold 11pt Courier">x2718</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10009;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a25
+        [<fo:wrapper font="bold 11pt Courier">x2719</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10010;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a26
+        [<fo:wrapper font="bold 11pt Courier">x271A</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10011;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a27
+        [<fo:wrapper font="bold 11pt Courier">x271B</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10012;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a28
+        [<fo:wrapper font="bold 11pt Courier">x271C</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10013;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a6
+        [<fo:wrapper font="bold 11pt Courier">x271D</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10014;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a7
+        [<fo:wrapper font="bold 11pt Courier">x271E</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10015;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a8
+        [<fo:wrapper font="bold 11pt Courier">x271F</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10016;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a9
+        [<fo:wrapper font="bold 11pt Courier">x2720</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10017;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a10
+        [<fo:wrapper font="bold 11pt Courier">x2721</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10018;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a29
+        [<fo:wrapper font="bold 11pt Courier">x2722</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10019;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a30
+        [<fo:wrapper font="bold 11pt Courier">x2723</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10020;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a31
+        [<fo:wrapper font="bold 11pt Courier">x2724</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10021;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a32
+        [<fo:wrapper font="bold 11pt Courier">x2725</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10022;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a33
+        [<fo:wrapper font="bold 11pt Courier">x2726</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10023;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a34
+        [<fo:wrapper font="bold 11pt Courier">x2727</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9733;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a35
+        [<fo:wrapper font="bold 11pt Courier">x2605</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10025;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a36
+        [<fo:wrapper font="bold 11pt Courier">x2729</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10026;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a37
+        [<fo:wrapper font="bold 11pt Courier">x272A</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10027;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a38
+        [<fo:wrapper font="bold 11pt Courier">x272B</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10028;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a39
+        [<fo:wrapper font="bold 11pt Courier">x272C</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10029;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a40
+        [<fo:wrapper font="bold 11pt Courier">x272D</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10030;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a41
+        [<fo:wrapper font="bold 11pt Courier">x272E</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10031;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a42
+        [<fo:wrapper font="bold 11pt Courier">x272F</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10032;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a43
+        [<fo:wrapper font="bold 11pt Courier">x2730</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10033;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a44
+        [<fo:wrapper font="bold 11pt Courier">x2731</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10034;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a45
+        [<fo:wrapper font="bold 11pt Courier">x2732</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10035;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a46
+        [<fo:wrapper font="bold 11pt Courier">x2733</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10036;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a47
+        [<fo:wrapper font="bold 11pt Courier">x2734</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10037;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a48
+        [<fo:wrapper font="bold 11pt Courier">x2735</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10038;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a49
+        [<fo:wrapper font="bold 11pt Courier">x2736</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10039;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a50
+        [<fo:wrapper font="bold 11pt Courier">x2737</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10040;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a51
+        [<fo:wrapper font="bold 11pt Courier">x2738</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10041;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a52
+        [<fo:wrapper font="bold 11pt Courier">x2739</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10042;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a53
+        [<fo:wrapper font="bold 11pt Courier">x273A</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10043;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a54
+        [<fo:wrapper font="bold 11pt Courier">x273B</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10044;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a55
+        [<fo:wrapper font="bold 11pt Courier">x273C</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10045;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a56
+        [<fo:wrapper font="bold 11pt Courier">x273D</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10046;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a57
+        [<fo:wrapper font="bold 11pt Courier">x273E</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10047;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a58
+        [<fo:wrapper font="bold 11pt Courier">x273F</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10048;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a59
+        [<fo:wrapper font="bold 11pt Courier">x2740</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10049;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a60
+        [<fo:wrapper font="bold 11pt Courier">x2741</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10050;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a61
+        [<fo:wrapper font="bold 11pt Courier">x2742</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10051;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a62
+        [<fo:wrapper font="bold 11pt Courier">x2743</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10052;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a63
+        [<fo:wrapper font="bold 11pt Courier">x2744</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10053;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a64
+        [<fo:wrapper font="bold 11pt Courier">x2745</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10054;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a65
+        [<fo:wrapper font="bold 11pt Courier">x2746</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10055;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a66
+        [<fo:wrapper font="bold 11pt Courier">x2747</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10056;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a67
+        [<fo:wrapper font="bold 11pt Courier">x2748</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10057;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a68
+        [<fo:wrapper font="bold 11pt Courier">x2749</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10058;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a69
+        [<fo:wrapper font="bold 11pt Courier">x274A</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10059;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a70
+        [<fo:wrapper font="bold 11pt Courier">x274B</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9679;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a71
+        [<fo:wrapper font="bold 11pt Courier">x25CF</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10061;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a72
+        [<fo:wrapper font="bold 11pt Courier">x274D</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9632;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a73
+        [<fo:wrapper font="bold 11pt Courier">x25A0</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10063;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a74
+        [<fo:wrapper font="bold 11pt Courier">x274F</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10064;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a203
+        [<fo:wrapper font="bold 11pt Courier">x2750</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10065;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a75
+        [<fo:wrapper font="bold 11pt Courier">x2751</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10066;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a204
+        [<fo:wrapper font="bold 11pt Courier">x2752</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9650;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a76
+        [<fo:wrapper font="bold 11pt Courier">x25B2</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9660;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a77
+        [<fo:wrapper font="bold 11pt Courier">x25BC</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9670;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a78
+        [<fo:wrapper font="bold 11pt Courier">x25C6</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10070;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a79
+        [<fo:wrapper font="bold 11pt Courier">x2756</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9687;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a81
+        [<fo:wrapper font="bold 11pt Courier">x25D7</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10072;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a82
+        [<fo:wrapper font="bold 11pt Courier">x2758</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10073;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a83
+        [<fo:wrapper font="bold 11pt Courier">x2759</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10074;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a84
+        [<fo:wrapper font="bold 11pt Courier">x275A</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10075;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a97
+        [<fo:wrapper font="bold 11pt Courier">x275B</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10076;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a98
+        [<fo:wrapper font="bold 11pt Courier">x275C</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10077;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a99
+        [<fo:wrapper font="bold 11pt Courier">x275D</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10078;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a100
+        [<fo:wrapper font="bold 11pt Courier">x275E</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10081;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a101
+        [<fo:wrapper font="bold 11pt Courier">x2761</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10082;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a102
+        [<fo:wrapper font="bold 11pt Courier">x2762</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10083;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a103
+        [<fo:wrapper font="bold 11pt Courier">x2763</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10084;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a104
+        [<fo:wrapper font="bold 11pt Courier">x2764</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10085;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a106
+        [<fo:wrapper font="bold 11pt Courier">x2765</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10086;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a107
+        [<fo:wrapper font="bold 11pt Courier">x2766</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10087;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a108
+        [<fo:wrapper font="bold 11pt Courier">x2767</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9827;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a112
+        [<fo:wrapper font="bold 11pt Courier">x2663</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9830;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a111
+        [<fo:wrapper font="bold 11pt Courier">x2666</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9829;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a110
+        [<fo:wrapper font="bold 11pt Courier">x2665</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9824;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a109
+        [<fo:wrapper font="bold 11pt Courier">x2660</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9312;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a120
+        [<fo:wrapper font="bold 11pt Courier">x2460</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9313;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a121
+        [<fo:wrapper font="bold 11pt Courier">x2461</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9314;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a122
+        [<fo:wrapper font="bold 11pt Courier">x2462</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9315;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a123
+        [<fo:wrapper font="bold 11pt Courier">x2463</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9316;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a124
+        [<fo:wrapper font="bold 11pt Courier">x2464</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9317;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a125
+        [<fo:wrapper font="bold 11pt Courier">x2465</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9318;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a126
+        [<fo:wrapper font="bold 11pt Courier">x2466</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9319;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a127
+        [<fo:wrapper font="bold 11pt Courier">x2467</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9320;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a128
+        [<fo:wrapper font="bold 11pt Courier">x2468</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#9321;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a129
+        [<fo:wrapper font="bold 11pt Courier">x2469</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10102;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a130
+        [<fo:wrapper font="bold 11pt Courier">x2776</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10103;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a131
+        [<fo:wrapper font="bold 11pt Courier">x2777</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10104;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a132
+        [<fo:wrapper font="bold 11pt Courier">x2778</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10105;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a133
+        [<fo:wrapper font="bold 11pt Courier">x2779</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10106;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a134
+        [<fo:wrapper font="bold 11pt Courier">x277A</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10107;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a135
+        [<fo:wrapper font="bold 11pt Courier">x277B</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10108;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a136
+        [<fo:wrapper font="bold 11pt Courier">x277C</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10109;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a137
+        [<fo:wrapper font="bold 11pt Courier">x277D</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10110;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a138
+        [<fo:wrapper font="bold 11pt Courier">x277E</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10111;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a139
+        [<fo:wrapper font="bold 11pt Courier">x277F</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10112;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a140
+        [<fo:wrapper font="bold 11pt Courier">x2780</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10113;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a141
+        [<fo:wrapper font="bold 11pt Courier">x2781</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10114;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a142
+        [<fo:wrapper font="bold 11pt Courier">x2782</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10115;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a143
+        [<fo:wrapper font="bold 11pt Courier">x2783</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10116;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a144
+        [<fo:wrapper font="bold 11pt Courier">x2784</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10117;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a145
+        [<fo:wrapper font="bold 11pt Courier">x2785</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10118;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a146
+        [<fo:wrapper font="bold 11pt Courier">x2786</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10119;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a147
+        [<fo:wrapper font="bold 11pt Courier">x2787</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10120;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a148
+        [<fo:wrapper font="bold 11pt Courier">x2788</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10121;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a149
+        [<fo:wrapper font="bold 11pt Courier">x2789</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10122;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a150
+        [<fo:wrapper font="bold 11pt Courier">x278A</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10123;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a151
+        [<fo:wrapper font="bold 11pt Courier">x278B</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10124;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a152
+        [<fo:wrapper font="bold 11pt Courier">x278C</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10125;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a153
+        [<fo:wrapper font="bold 11pt Courier">x278D</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10126;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a154
+        [<fo:wrapper font="bold 11pt Courier">x278E</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10127;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a155
+        [<fo:wrapper font="bold 11pt Courier">x278F</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10128;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a156
+        [<fo:wrapper font="bold 11pt Courier">x2790</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10129;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a157
+        [<fo:wrapper font="bold 11pt Courier">x2791</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10130;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a158
+        [<fo:wrapper font="bold 11pt Courier">x2792</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10131;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a159
+        [<fo:wrapper font="bold 11pt Courier">x2793</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10132;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a160
+        [<fo:wrapper font="bold 11pt Courier">x2794</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#8594;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a161
+        [<fo:wrapper font="bold 11pt Courier">x2192</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#8596;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a163
+        [<fo:wrapper font="bold 11pt Courier">x2194</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#8597;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a164
+        [<fo:wrapper font="bold 11pt Courier">x2195</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10136;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a196
+        [<fo:wrapper font="bold 11pt Courier">x2798</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10137;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a165
+        [<fo:wrapper font="bold 11pt Courier">x2799</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10138;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a192
+        [<fo:wrapper font="bold 11pt Courier">x279A</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10139;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a166
+        [<fo:wrapper font="bold 11pt Courier">x279B</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10140;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a167
+        [<fo:wrapper font="bold 11pt Courier">x279C</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10141;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a168
+        [<fo:wrapper font="bold 11pt Courier">x279D</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10142;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a169
+        [<fo:wrapper font="bold 11pt Courier">x279E</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10143;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a170
+        [<fo:wrapper font="bold 11pt Courier">x279F</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10144;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a171
+        [<fo:wrapper font="bold 11pt Courier">x27A0</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10145;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a172
+        [<fo:wrapper font="bold 11pt Courier">x27A1</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10146;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a173
+        [<fo:wrapper font="bold 11pt Courier">x27A2</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10147;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a162
+        [<fo:wrapper font="bold 11pt Courier">x27A3</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10148;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a174
+        [<fo:wrapper font="bold 11pt Courier">x27A4</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10149;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a175
+        [<fo:wrapper font="bold 11pt Courier">x27A5</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10150;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a176
+        [<fo:wrapper font="bold 11pt Courier">x27A6</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10151;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a177
+        [<fo:wrapper font="bold 11pt Courier">x27A7</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10152;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a178
+        [<fo:wrapper font="bold 11pt Courier">x27A8</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10153;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a179
+        [<fo:wrapper font="bold 11pt Courier">x27A9</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10154;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a193
+        [<fo:wrapper font="bold 11pt Courier">x27AA</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10155;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a180
+        [<fo:wrapper font="bold 11pt Courier">x27AB</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10156;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a199
+        [<fo:wrapper font="bold 11pt Courier">x27AC</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10157;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a181
+        [<fo:wrapper font="bold 11pt Courier">x27AD</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10158;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a200
+        [<fo:wrapper font="bold 11pt Courier">x27AE</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10159;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a182
+        [<fo:wrapper font="bold 11pt Courier">x27AF</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10161;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a201
+        [<fo:wrapper font="bold 11pt Courier">x27B1</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10162;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a183
+        [<fo:wrapper font="bold 11pt Courier">x27B2</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10163;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a184
+        [<fo:wrapper font="bold 11pt Courier">x27B3</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10164;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a197
+        [<fo:wrapper font="bold 11pt Courier">x27B4</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10165;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a185
+        [<fo:wrapper font="bold 11pt Courier">x27B5</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10166;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a194
+        [<fo:wrapper font="bold 11pt Courier">x27B6</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10167;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a198
+        [<fo:wrapper font="bold 11pt Courier">x27B7</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10168;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a186
+        [<fo:wrapper font="bold 11pt Courier">x27B8</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10169;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a195
+        [<fo:wrapper font="bold 11pt Courier">x27B9</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10170;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a187
+        [<fo:wrapper font="bold 11pt Courier">x27BA</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10171;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a188
+        [<fo:wrapper font="bold 11pt Courier">x27BB</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10172;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a189
+        [<fo:wrapper font="bold 11pt Courier">x27BC</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10173;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a190
+        [<fo:wrapper font="bold 11pt Courier">x27BD</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#10174;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a191
+        [<fo:wrapper font="bold 11pt Courier">x27BE</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#x2768;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a89
+        [<fo:wrapper font="bold 11pt Courier">x2768</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#x2769;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a90
+        [<fo:wrapper font="bold 11pt Courier">x2769</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#x276A;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a93
+        [<fo:wrapper font="bold 11pt Courier">x276A</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#x276B;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a94
+        [<fo:wrapper font="bold 11pt Courier">x276B</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#x276C;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a91
+        [<fo:wrapper font="bold 11pt Courier">x276C</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#x276D;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a92
+        [<fo:wrapper font="bold 11pt Courier">x276D</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#x276E;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a205
+        [<fo:wrapper font="bold 11pt Courier">x276E</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#x276F;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a85
+        [<fo:wrapper font="bold 11pt Courier">x276F</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#x2770;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a206
+        [<fo:wrapper font="bold 11pt Courier">x2770</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#x2771;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a86
+        [<fo:wrapper font="bold 11pt Courier">x2771</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#x2772;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a87
+        [<fo:wrapper font="bold 11pt Courier">x2772</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#x2773;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a88
+        [<fo:wrapper font="bold 11pt Courier">x2773</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#x2774;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a95
+        [<fo:wrapper font="bold 11pt Courier">x2774</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+
+  <fo:list-item>
+    <fo:list-item-label end-indent="label-end()">
+      <fo:block text-align="center" font="11pt ZapfDingbats">&#x2775;</fo:block>
+    </fo:list-item-label>
+    <fo:list-item-body start-indent="body-start()">
+      <fo:block>
+        a96
+        [<fo:wrapper font="bold 11pt Courier">x2775</fo:wrapper>]
+      </fo:block>
+    </fo:list-item-body>
+  </fo:list-item>
+
+  </fo:list-block>
+</fo:block></fo:flow></fo:page-sequence></fo:root>
