@@ -19,9 +19,9 @@ export SERIAL_FILE=${KEY_GEN_DIR}/serial
 ## Default parameters and file locations for the certificates
 OPENSSL="opensslDbg"
 
-OPENSSL_CFG_FILE=${OPENVPN_HOME}/openssl.cnf
-CA_KEY=${KEY_GEN_DIR}/ca.key
-CA_CRT=${KEY_GEN_DIR}/ca.crt
+OPENSSL_CFG_FILE="${OPENVPN_HOME}/openssl.cnf"
+CA_KEY="${KEY_GEN_DIR}/ca.key"
+CA_CRT="${KEY_GEN_DIR}/ca.crt"
 
 ## This is where all of the server parameters are placed.
 BASE_DIR=@PREFIX@/etc/openvpn
@@ -29,6 +29,9 @@ KEY_DIR=${BASE_DIR}/keys
 
 ## Issuing ten year certs
 CERT_DURATION=3650
+
+## Client configuration directory
+CLIENT_CFG_DIR="${BASE_DIR}/ccd"
 
 ## Debugging function
 function opensslDbg()

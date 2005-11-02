@@ -17,10 +17,13 @@ BASE_SERIAL=`printf '%04X%04X' ${RANDOM} ${RANDOM}`
 SERVER_KEY="${KEY_GEN_DIR}/server.key"
 SERVER_CRT="${KEY_GEN_DIR}/server.crt"
 
+## Directory with pre-generated diffie hellman parameters
+DH_DIR="${OPENVPN_HOME}/dh"
+
 function diffieHellman()
 {
-    ## This might have to be fixed, just because it may take a long time.
-    true
+    local dhFile="${DH_DIR}/dh${KEY_SIZE}-$(( ${RANDOM} % 4 )).pem"
+    cp ${dhFile} ${KEY_DIR}/dh.pem
 }
 
 function generateCA()
@@ -32,6 +35,9 @@ function generateCA()
     
     ## Make the ca key readable only by root
     chmod 0600 ${CA_KEY}
+
+    ## Copy into into the key dir
+    cp ${CA_KEY} ${CA_CRT} ${KEY_DIR}
 }
 
 function generateServerKey()
@@ -53,6 +59,8 @@ function generateServerKey()
 
     ## Make the server key readable only by root
     chmod 0600 ${SERVER_KEY}
+
+    cp ${SERVER_KEY} ${SERVER_CRT} ${KEY_DIR}
 }
 
 function cleanBase()
@@ -65,6 +73,7 @@ function makeBase()
 {
     mkdir -p ${KEY_GEN_DIR}        
     mkdir -p ${KEY_DIR}
+    mkdir -p ${CLIENT_CFG_DIR}
 
     touch ${INDEX_FILE}
     echo ${BASE_SERIAL} > ${SERIAL_FILE}
