@@ -14,9 +14,6 @@ public abstract class IDSOption {
 	protected boolean negationFlag = false;
 	
 	private static final Logger log = Logger.getLogger(IDSOption.class);
-	static {
-		log.setLevel(Level.WARN);
-	}
 				
 	protected IDSOption(IDSRuleSignature signature, String params) { 
 		

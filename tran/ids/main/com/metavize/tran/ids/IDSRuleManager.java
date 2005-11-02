@@ -52,9 +52,7 @@ public class IDSRuleManager {
 	}
 																													
 	private static final Logger log = Logger.getLogger(IDSRuleManager.class);
-	static {
-		log.setLevel(Level.WARN);
-	}
+
 	public IDSRuleManager() {
 	}
 
@@ -230,7 +228,6 @@ public class IDSRuleManager {
 			return ruleText.replace(action,ACTIONS[LOG]);	
 		}
 		else { 
-			rule.disable();
 			return ruleText.replace(action,ACTIONS[ALERT]);
 		}
 	}

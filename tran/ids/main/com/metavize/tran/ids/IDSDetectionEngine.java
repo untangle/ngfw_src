@@ -31,9 +31,6 @@ public class IDSDetectionEngine {
 	Map<Integer,List<IDSRuleHeader>> 	portC2SMap 	= new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
 	
 	private static final Logger log = Logger.getLogger(IDSDetectionEngine.class);
-	static {
-		log.setLevel(Level.INFO);
-	}
 	
 	/*private static IDSDetectionEngine instance = new IDSDetectionEngine();
 	public  static IDSDetectionEngine instance() {
@@ -42,7 +39,9 @@ public class IDSDetectionEngine {
 		return instance;
 	}*/
 
-	public IDSDetectionEngine() {
+	public IDSDetectionEngine(IDSTransformImpl transform) {
+            this.transform = transform;
+
 		//The Goggles! They do nothing!
 		/*String test = "alert tcp 10.0.0.40-10.0.0.101 any -> 66.35.250.0/24 80 (content:\"slashdot\"; msg:\"OMG teH SLASHd0t\";)";
 		String tesT = "alert tcp 10.0.0.1/24 any -> any any (content: \"spOOns|FF FF FF FF|spoons\"; msg:\"Matched binary FF FF FF and spoons\"; nocase;)";
@@ -54,7 +53,6 @@ public class IDSDetectionEngine {
 		} catch (ParseException e) {
 			log.warn("Could not parse rule; " + e.getMessage());
 		}*/
-												
 	}
 
 	public IDSSettings getSettings() {
@@ -78,9 +76,6 @@ public class IDSDetectionEngine {
 		transform.incrementCount(counter);
 	}
 
-	public void setTransform(IDSTransformImpl transform) {
-		this.transform = transform;
-	}
 	public void onReconfigure() {
 		portC2SMap = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
 		portS2CMap = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();

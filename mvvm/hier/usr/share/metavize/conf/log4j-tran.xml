@@ -105,6 +105,10 @@
     <priority value="WARN"/>
   </category>
 
+  <category name="com.metavize.tran.ids">
+    <priority value="DEBUG"/>
+  </category>
+
   <category name="com.metavize.tran.protofilter">
     <priority value="WARN"/>
   </category>

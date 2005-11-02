@@ -40,9 +40,7 @@ public class IDSRuleSignature {
 	
 	private final Logger eventLog = MvvmContextFactory.context().eventLogger();
 	private static final Logger log = Logger.getLogger(IDSRuleSignature.class);
-	static {
-		log.setLevel(Level.WARN);
-	}
+
 	public IDSRuleSignature(int action, IDSRule rule) {
 		this.action = action;
 		this.rule = rule;

@@ -11,9 +11,6 @@ import com.metavize.tran.ids.IDSSessionInfo;
 public class DsizeOption extends IDSOption {
 	
 	private static final Logger log = Logger.getLogger(DsizeOption.class);
-	static {
-		log.setLevel(Level.WARN);
-	}
 	
 	int min;
 	int max;

@@ -23,10 +23,6 @@ public class IDSSummarizer extends BaseSummarizer {
 
     private static final Logger log = Logger.getLogger(IDSSummarizer.class);
 
-	static {
-		log.setLevel(Level.ALL);
-	}
-	
     public IDSSummarizer() { }
 
     public String getSummaryHtml(Connection conn, Timestamp startDate, Timestamp endDate)

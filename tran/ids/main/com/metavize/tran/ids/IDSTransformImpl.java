@@ -47,10 +47,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         + "AND blocked "
         + "ORDER BY create_date DESC LIMIT ?";
 
-    private static final Logger log = Logger.getLogger(IDSTransformImpl.class);
-    static {
-        log.setLevel(Level.DEBUG);
-    }
+    private static final Logger logger = Logger.getLogger(IDSTransformImpl.class);
 
     private IDSSettings settings = null;
 
@@ -58,7 +55,6 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
     private final SoloPipeSpec octetPipeSpec, httpPipeSpec;
     private final PipeSpec[] pipeSpecs;
 
-    private List ruleList = Collections.synchronizedList(new ArrayList());
     private IDSDetectionEngine engine;
 
     public IDSTransformImpl() {
@@ -67,12 +63,12 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         httpPipeSpec = new SoloPipeSpec("ids-http", this, new TokenAdaptor(this, new IDSHttpFactory(this)), Fitting.HTTP_TOKENS, Affinity.SERVER,0);
         pipeSpecs = new PipeSpec[] { httpPipeSpec, octetPipeSpec };
         
-		engine = new IDSDetectionEngine();
-		engine.setTransform(this);
+        engine = new IDSDetectionEngine(this);
     }
 
+    @Override
     protected PipeSpec[] getPipeSpecs() {
-        log.debug("Getting PipeSpec");
+        logger.debug("Getting PipeSpec");
         return pipeSpecs;
     }
 
@@ -114,7 +110,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
                         l.add(rl);
                     }
                     long l1 = System.currentTimeMillis();
-                    log.debug("getAccessLogs() in: " + (l1 - l0));
+                    logger.debug("getAccessLogs() in: " + (l1 - l0));
 
                     return true;
                 }
@@ -137,8 +133,6 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
                 {
                     s.saveOrUpdate(settings);
                     IDSTransformImpl.this.settings = settings;
-                    engine.setSettings(settings);
-
                     return true;
                 }
 
@@ -148,57 +142,47 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
     }
 
     protected void initializeSettings() {
+        List<IDSRule> ruleList = new ArrayList<IDSRule>();
 
-        log.info("Loading Rules...");
-        //IDSSettings settings = new IDSSettings(getTid());
-        //settings = queryDBForSettings();
-		queryDBForSettings();
-        if(settings == null || settings.getRules() == null) {
-            settings = new IDSSettings(getTid());
-            settings.setVariables(IDSRuleManager.defaultVariables);
-            settings.setImmutableVariables(IDSRuleManager.immutableVariables);
+        logger.info("Loading Rules...");
+        IDSSettings settings = new IDSSettings(getTid());
+        settings.setVariables(IDSRuleManager.defaultVariables);
+        settings.setImmutableVariables(IDSRuleManager.immutableVariables);
 
-            log.info("Settings was null, loading from file");
-            String path =  System.getProperty("bunnicula.home");
-            File file = new File(path+"/idsrules");
-            visitAllFiles(file);
+        logger.info("Settings was null, loading from file");
+        String path =  System.getProperty("bunnicula.home");
+        File file = new File(path+"/idsrules");
+        visitAllFiles(file, ruleList);
 
-            settings.setMaxChunks(engine.getMaxChunks());
-            settings.setRules(ruleList);
-			setIDSSettings(settings);
-			log.info(ruleList.size() + " rules loaded");
-			for(IDSRule rule : (List<IDSRule>) settings.getRules()) {
-				engine.updateRule(rule);
-			}
-							
-        }
-        else
-            log.info("Settings was loaded from DB: " + settings);
+        settings.setMaxChunks(engine.getMaxChunks());
+        settings.setRules(ruleList);
 
-        /*setIDSSettings(settings);
-        log.info(ruleList.size() + " rules loaded");
-        for(IDSRule rule : (List<IDSRule>) settings.getRules()) {
+        // Must update the rules before saving to DB
+        for(IDSRule rule : ruleList) {
             engine.updateRule(rule);
-		}*/
-		
+        }
+
+        setIDSSettings(settings);
+        logger.info(ruleList.size() + " rules loaded");
+
         IDSStatisticManager.instance().stop();
     }
 
     /** Temp subroutines for loading local snort rules.
      */
-    private void visitAllFiles(File file) {
+    private void visitAllFiles(File file, List<IDSRule> result) {
         if (file.isDirectory()) {
             String[] children = file.list();
             for (int i=0; i<children.length; i++)
-                visitAllFiles(new File(file, children[i]));
+                visitAllFiles(new File(file, children[i]), result);
         }
         else
-            processFile(file);
+            processFile(file, result);
     }
 
     /** Temp subroutines for loading local snort rules.
      */
-    private void processFile(File file) {
+    private void processFile(File file, List<IDSRule> result) {
         IDSRuleManager testManager = new IDSRuleManager();
         try {
             BufferedReader in = new BufferedReader(new FileReader(file));
@@ -209,7 +193,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
                     String message = (sig == null) ? "The signature failed to load" : sig.getMessage();
                     String category = file.getName().replaceAll(".rules",""); //Should move this to script land
                     category = category.replace("bleeding-",""); //Should move this to script land
-                    ruleList.add(new IDSRule(str, category ,message));
+                    result.add(new IDSRule(str, category ,message));
                 }
             }
             in.close();
@@ -218,7 +202,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         }
     }
 
-	private void queryDBForSettings() {
+    private void queryDBForSettings() {
         TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork(Session s)
@@ -235,23 +219,22 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
     }
 
     protected void postInit(String args[]) {
-        log.info("Post init");
-	//	queryDBForSettings();
-        //settings = queryDBForSettings();
+        logger.info("Post init");
+	queryDBForSettings();
     }
 
     protected void preStart() throws TransformStartException {
 /*        IDSTest test = new IDSTest();
-        log.info("Pre Start");
+        logger.info("Pre Start");
         if(!test.runTest())
           throw new TransformStartException("IDS Test failed"); // */
-/*
+
         try {
             reconfigure();
         }
         catch (Exception e) {
             throw new TransformStartException(e);
-        }*/
+        }
 
         IDSStatisticManager.instance().start();
     }
@@ -265,13 +248,6 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
     }
 
     public void reconfigure() throws TransformException {
-
-        if(settings == null) {
-			queryDBForSettings();
-			if(settings == null)
-                throw new TransformException("Failed to get IDS settings: " + settings);
-        }
-
         engine.setSettings(settings);
         engine.onReconfigure();
         engine.setMaxChunks(settings.getMaxChunks());
@@ -279,9 +255,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         for(IDSRule rule : rules) {
             engine.updateRule(rule);
         }
-        //remove all deleted rules
-
-        setIDSSettings(settings);
+        //remove all deleted rules XXXX
     }
 
     //XXX soon to be deprecated ------------------------------------------
