@@ -236,6 +236,13 @@ public class MailTransformSettings implements Serializable
     public void setQuarantineSettings(QuarantineSettings s) {
        this.quarantineSettings = s;
     }
+    /**
+     *
+     * @hibernate.many-to-one
+     * column="QUARANTINE_SETTINGS"
+     * not-null="false"
+     * cascade="all"
+     */
     public QuarantineSettings getQuarantineSettings() {
       return quarantineSettings;
     }

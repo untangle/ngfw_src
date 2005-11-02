@@ -230,8 +230,9 @@ public class MailTransformImpl extends AbstractTransform
                         settings.setImapOutboundTimeout(1000*30);
                         shouldSave = true;
                     }
-                    if(settings.getQuarantineSettings() == null) {
-                    
+                    if(settings.getQuarantineSettings() == null ||
+                      settings.getQuarantineSettings().getSecretKey() == null) {
+
                       QuarantineSettings qs = new QuarantineSettings();
                       
                       qs.setMaxQuarantineTotalSz(10 * 1000000000);//10Gig - I hope
@@ -255,8 +256,8 @@ public class MailTransformImpl extends AbstractTransform
                       
                       settings.setSafelistSettings(ss);
                       
-                      shouldSave = true;
-                    }                    
+//                      shouldSave = true;
+                    }
 
                     if(shouldSave) {
                       s.save(settings);

@@ -113,7 +113,11 @@ SEP
   EdgeGuard appliance. They will be deleted automatically after 20 days.
   To release any email from the quarantine and have them delivered to
   your inbox, select the emails and click Release. To delete emails,
-  select the emails to be deleted and click Delete. <br><br><br><br>                
+  select the emails to be deleted and click Delete. <br><br>
+  <quarantine:hasSafelist includeIfTrue="true">
+  You may also wish to view your <a href="/quarantine/smc?<quarantine:constants keyName="action"/>=<quarantine:constants valueName="slview"/>&<quarantine:constants keyName="tkn"/>=<quarantine:currentAuthToken encoded="true"/>">safelist</a> of email senders who will never
+  be considered senders of spam.<br><br>
+  </quarantine:hasSafelist>
                 </td>
               </tr>
               <quarantine:hasMessages type="info">

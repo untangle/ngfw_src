@@ -25,9 +25,7 @@
     <TD>
       <TABLE WIDTH="100%" height="100%" BORDER="0" CELLPADDING="0" CELLSPACING="0" bgcolor="white" align="center">
         <TR>
-          <TD valign="top">
-            <IMG SRC="images/tl.gif" WIDTH="20" HEIGHT="20">
-          </TD>
+          <TD valign="top"><IMG SRC="images/tl.gif" WIDTH="20" HEIGHT="20"></TD>
           <td>
             <table class="intro" HEIGHT="100%" WIDTH="100%" BORDER="0" CELLPADDING="0" CELLSPACING="0">
               <tr>
@@ -87,9 +85,7 @@
               </quarantine:hasMessages>   
              </table>
           </td>
-          <TD valign="top" align="right">
-            <IMG SRC="images/tr.gif" WIDTH="20" HEIGHT="20">
-          </TD>
+          <TD valign="top" align="right"><IMG SRC="images/tr.gif" WIDTH="20" HEIGHT="20"></TD>
         </TR>
         <tr>
           <td>
@@ -120,16 +116,12 @@
           </td>
         </tr> 
         <TR>
-        <TD valign="bottom">
-          <IMG SRC="images/bl.gif" WIDTH="20" HEIGHT="20">
-        </TD>
+        <TD valign="bottom"><IMG SRC="images/bl.gif" WIDTH="20" HEIGHT="20"></TD>
         <td class="smallLogo" height="100%">
           Powered by <br>
           Metavize EdgeGuard
         </td>
-        <TD valign="bottom" align="right">
-          <IMG SRC="images/br.gif" WIDTH="20" HEIGHT="20">
-        </TD>
+        <TD valign="bottom" align="right"><IMG SRC="images/br.gif" WIDTH="20" HEIGHT="20"></TD>
       </TR>
     </TABLE>
   </TD>

@@ -10,18 +10,23 @@
  */
 
 package com.metavize.tran.mail.papi.quarantine;
-//BILL - see com.metavize.mvvm.security.User for example of byte[]
 
 /**
  * Settings for the quarantine stuff
+ *
+ * @hibernate.class
+ * table="TR_MAIL_QUARANTINE_SETTINGS" 
  */
 public class QuarantineSettings
   implements java.io.Serializable {
+
+  private static final long serialVersionUID = -4387806670497574999L;
 
   public static final long HOUR = 1000*60*60;
   public static final long DAY = HOUR*24;
   public static final long WEEK = DAY*7;
 
+  private Long m_id;
   private long m_maxMailIntern = 2*WEEK;
   private long m_maxIdleInbox = 4*WEEK;
   private byte[] m_secretKey;
@@ -29,6 +34,25 @@ public class QuarantineSettings
   private int m_digestHOD;//Hour Of Day
   private long m_maxQuarantineSz;
 
+  /**
+    * @hibernate.id
+    * column="SETTINGS_ID"
+    * generator-class="native"
+    */
+  private Long getId() {
+    return m_id;
+  }
+
+  private void setId(Long id) {
+    m_id = id;
+  }
+
+  /**
+   *
+   * @hibernate.property
+   * column="MAX_QUARANTINE_SZ"
+   * not-null="true"   
+   */   
   public long getMaxQuarantineTotalSz() {
     return m_maxQuarantineSz;
   }
@@ -44,6 +68,12 @@ public class QuarantineSettings
   }
   
 
+  /**
+    *
+    * @return the session id.
+    * @hibernate.property
+    * column="HOUR_IN_DAY"
+    */
   public int getDigestHourOfDay() {
     return m_digestHOD;
   }
@@ -58,7 +88,14 @@ public class QuarantineSettings
   public void setDigestHourOfDay(int hod) {
     m_digestHOD = hod;
   }
-  
+
+  /**
+    *
+    * @return email address.
+    * @hibernate.property
+    * column="DIGEST_FROM"
+    * not-null="true"
+    */
   public String getDigestFrom() {
     return m_digestFrom;
   }
@@ -71,6 +108,16 @@ public class QuarantineSettings
     m_digestFrom = f;
   }
 
+  /**
+    * Password, encrypted with password utils.
+    *
+    * @return encrypted password bytes.
+    * @hibernate.property
+    * type="binary"
+    * length="32"
+    * column="SECRET_KEY"
+    * not-null="true"
+    */
   public byte[] getSecretKey() {
     return m_secretKey;
   }
@@ -83,7 +130,13 @@ public class QuarantineSettings
   public void setSecretKey(byte[] key) {
     m_secretKey = key;
   }  
-  
+
+  /**
+   *
+   * @hibernate.property
+   * column="MAX_INTERN_TIME"
+   * not-null="true"   
+   */  
   public long getMaxMailIntern() {
     return m_maxMailIntern;
   }
@@ -96,7 +149,12 @@ public class QuarantineSettings
     m_maxMailIntern = max;
   }
   
-
+  /**
+   *
+   * @hibernate.property
+   * column="MAX_IDLE_INBOX_TIME"
+   * not-null="true"   
+   */
   public long getMaxIdleInbox() {
     return m_maxMailIntern;
   }

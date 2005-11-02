@@ -156,6 +156,7 @@ friends and collegues.  Emails from people on this list will <i>not</i> be consi
                 </td>
               </tr>
             </table>
+          </form>
           <br><br>
           <form name="form2" action="smc">
             <input type="hidden"
@@ -166,10 +167,16 @@ friends and collegues.  Emails from people on this list will <i>not</i> be consi
               value="<quarantine:currentAuthToken encoded="false"/>"/>
             <table>
               <tr>
-                <td>Add address: </td>
-                <td><input type="text" name="<quarantine:constants keyName="sladdr"/>"
+                <td class="enteremail">
+                  <table>
+                    <tr>
+                      <td>Add address: </td>
+                      <td><input type="text" name="<quarantine:constants keyName="sladdr"/>"/>
+                    </tr>
+                    <tr><td colspan="2"><input type="submit" name="Submit" value="Submit"/></td></tr>
+                  </table>
+                </td>
               </tr>
-              <tr><td colspan="2"><input type="submit" name="Submit" value="Submit"/></td></tr>
             </table>
           </form>          
         </td>
