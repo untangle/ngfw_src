@@ -266,7 +266,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
                         logger.warn("skipping non-url: " + s, exn);
                     }
                 } else {
-                    s.add(sr.getString());
+                    s.add(str);
                 }
             }
         }
@@ -330,8 +330,8 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
         boolean match = false;
 
-        for (String d = domain; !match && null != d; d = nextHost(d)) {
-            match = urlBlacklist.contains(domain);
+        for (String d = domain.toLowerCase(); !match && null != d; d = nextHost(d)) {
+            match = urlBlacklist.contains(d);
         }
 
         return match;
@@ -341,8 +341,8 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     {
         boolean match = false;
 
-        for (String d = domain; !match && null != d; d = nextHost(d)) {
-            match = domainWhitelist.contains(domain);
+        for (String d = domain.toLowerCase(); !match && null != d; d = nextHost(d)) {
+            match = domainWhitelist.contains(d);
         }
 
         return match;
