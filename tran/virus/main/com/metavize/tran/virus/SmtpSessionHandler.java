@@ -152,7 +152,7 @@ public class SmtpSessionHandler
         m_logger.debug("Notification handled without error");
       }
       else {
-        m_logger.error("Error sending notification");
+        m_logger.warn("Error sending notification");
       }
 
       if(action == SMTPVirusMessageAction.BLOCK) {
