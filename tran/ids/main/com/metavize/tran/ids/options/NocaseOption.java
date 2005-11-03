@@ -4,21 +4,13 @@ import com.metavize.tran.ids.IDSRuleSignature;
 
 public class NocaseOption extends IDSOption {
 
-	public NocaseOption(IDSRuleSignature signature, String params) {
-		super(signature, params);
-		IDSOption option = signature.getOption("ContentOption",this);
-		if(option != null) {
-			ContentOption content = (ContentOption) option;
-			content.setNoCase();
-		}
+    public NocaseOption(IDSRuleSignature signature, String params) {
+        super(signature, params);
+        IDSOption option = signature.getOption("ContentOption",this);
+        if(option != null) {
+            ContentOption content = (ContentOption) option;
+            content.setNoCase();
+        }
 				
-	}
-
-	public boolean runnable() {
-		return false;
-	}
-	
-	public boolean run() {
-		return false;
-	}
+    }
 }

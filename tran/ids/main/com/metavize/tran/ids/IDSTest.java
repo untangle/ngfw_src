@@ -34,7 +34,7 @@ public class IDSTest {
 	}
 	
 	private static final Logger log = Logger.getLogger(IDSTest.class);
-	private IDSRuleManager rules = new IDSRuleManager();
+	private IDSRuleManager rules = new IDSRuleManager(null);
 	
 	static {
 		log.setLevel(Level.ALL);
@@ -103,7 +103,7 @@ public class IDSTest {
 			for(IDSRuleSignature sig : header.getSignatures()) 
 				signatures.add(sig);
 		
-		IDSSessionInfo info = new IDSSessionInfo();
+		IDSSessionInfo info = new IDSSessionInfo(null);
 		info.setC2SSignatures(signatures);
 		info.setS2CSignatures(signatures);
 		info.setUriPath("/this/is/just/a/test");

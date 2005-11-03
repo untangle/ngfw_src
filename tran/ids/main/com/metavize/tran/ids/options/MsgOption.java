@@ -8,16 +8,8 @@ import com.metavize.mvvm.tapi.event.*;
 
 public class MsgOption extends IDSOption {
 	
-	public MsgOption(IDSRuleSignature signature, String params) {
-		super(signature, params);
-		signature.setMessage(params);	
-	}
-
-	public boolean runnable() {
-		return false;
-	}
-
-	public boolean run() {
-		return true;
-	}
+    public MsgOption(IDSRuleSignature signature, String params) {
+        super(signature, params);
+        signature.setMessage(params);	
+    }
 }

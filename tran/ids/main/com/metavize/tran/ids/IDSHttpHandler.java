@@ -9,18 +9,17 @@ import com.metavize.tran.token.Header;
 
 class IDSHttpHandler extends HttpStateMachine {
 
-    private IDSTransformImpl transform; 
-	private IDSSessionInfo info;
+    // private IDSTransformImpl transform; 
+    private IDSSessionInfo info;
 
     IDSHttpHandler(TCPSession session, IDSTransformImpl transform) {
         super(session);
-		this.transform = transform;
-        transform.getEngine().mapSessionInfo(session.id(),new IDSSessionInfo());
+        // this.transform = transform;
+        info = new IDSSessionInfo(session);
     }
 
     protected RequestLine doRequestLine(RequestLine requestLine) {
         String path = requestLine.getRequestUri().getPath();
-        IDSSessionInfo info = transform.getEngine().getSessionInfo(super.getSession().id());
         info.setUriPath(path);
         releaseRequest();
         return requestLine;

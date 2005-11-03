@@ -58,12 +58,11 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
     private IDSDetectionEngine engine;
 
     public IDSTransformImpl() {
+        engine = new IDSDetectionEngine(this);
         handler = new EventHandler(this);
         octetPipeSpec = new SoloPipeSpec("ids-octet", this, handler,Fitting.OCTET_STREAM, Affinity.SERVER,10);
         httpPipeSpec = new SoloPipeSpec("ids-http", this, new TokenAdaptor(this, new IDSHttpFactory(this)), Fitting.HTTP_TOKENS, Affinity.SERVER,0);
         pipeSpecs = new PipeSpec[] { httpPipeSpec, octetPipeSpec };
-        
-        engine = new IDSDetectionEngine(this);
     }
 
     @Override
@@ -157,11 +156,6 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         settings.setMaxChunks(engine.getMaxChunks());
         settings.setRules(ruleList);
 
-        // Must update the rules before saving to DB
-        for(IDSRule rule : ruleList) {
-            engine.updateRule(rule);
-        }
-
         setIDSSettings(settings);
         logger.info(ruleList.size() + " rules loaded");
 
@@ -183,18 +177,16 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
     /** Temp subroutines for loading local snort rules.
      */
     private void processFile(File file, List<IDSRule> result) {
-        IDSRuleManager testManager = new IDSRuleManager();
+        IDSRuleManager manager = new IDSRuleManager(engine);
         try {
+            String category = file.getName().replaceAll(".rules",""); //Should move this to script land
+            category = category.replace("bleeding-",""); //Should move this to script land
             BufferedReader in = new BufferedReader(new FileReader(file));
             String str;
             while ((str = in.readLine()) != null) {
-                if(testManager.canParse(str.trim())) {
-                    IDSRuleSignature sig = testManager.getNewestSignature();
-                    String message = (sig == null) ? "The signature failed to load" : sig.getMessage();
-                    String category = file.getName().replaceAll(".rules",""); //Should move this to script land
-                    category = category.replace("bleeding-",""); //Should move this to script land
-                    result.add(new IDSRule(str, category ,message));
-                }
+                IDSRule rule = manager.createRule(str.trim(), category);
+                if (rule != null)
+                    result.add(rule);
             }
             in.close();
         } catch (IOException e) {

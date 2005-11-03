@@ -1,4 +1,4 @@
--- schema for release 3.0
+-- schema for release 3.1
 
 -------------
 -- settings |
@@ -12,9 +12,9 @@ create table settings.TR_IDS_SETTINGS (
 	
 create table settings.TR_IDS_VARIABLE (
 	VARIABLE_ID int8 not null,
-	VARIABLE varchar(512),
-	DEFINITION varchar(512),
-	DESCRIPTION varchar(1024),
+	VARIABLE text,
+	DEFINITION text,
+	DESCRIPTION text,
 	SETTINGS_ID int8,
 	POSITION int4,
 	PRIMARY KEY (VARIABLE_ID));
@@ -33,11 +33,10 @@ create table settings.TR_IDS_MUTABLE_VARIABLES (
 						
 create table settings.TR_IDS_RULE (
 	RULE_ID int8 not null, 
-	RULE varchar(4095),
-	NAME varchar(255),
-	CATEGORY varchar(255),
-	DESCRIPTION varchar(255),
-	MODIFIED bool,
+	RULE text,
+	NAME text,
+	CATEGORY text,
+	DESCRIPTION text,
 	LIVE bool,
 	ALERT bool,
 	LOG bool,
@@ -51,7 +50,7 @@ create table settings.TR_IDS_RULE (
 create table events.TR_IDS_EVT (
 	event_id int8 NOT NULL,
 	session_id int4,
-	message varchar(512),
+	message text,
 	blocked bool,
 	time_stamp timestamp,
 	PRIMARY KEY (event_id));

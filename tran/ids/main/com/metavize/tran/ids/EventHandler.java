@@ -9,8 +9,9 @@ public class EventHandler extends AbstractEventHandler {
 
     private IDSDetectionEngine idsEngine;
 
-    public EventHandler(Transform transform) {
+    public EventHandler(IDSTransformImpl transform) {
         super(transform);
+        idsEngine = transform.getEngine();
     }
 
     public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event) throws MPipeException {
@@ -22,11 +23,21 @@ public class EventHandler extends AbstractEventHandler {
     }
 
     private void handleNewSessionRequest(IPNewSessionRequest request, Protocol protocol) {
-        if(idsEngine == null) 
-			idsEngine =
-				 ((IDSTransformImpl)MvvmContextFactory.context().transformManager().threadContext().transform()).getEngine();
-		idsEngine.processNewSession(request, protocol);
+        idsEngine.processNewSessionRequest(request, protocol);
     }
+
+    public void handleTCPNewSession(TCPSessionEvent event) throws MPipeException {
+        handleNewSession(event.session(), Protocol.TCP);
+    }
+
+    public void handleUDPNewSession(UDPSessionEvent event) throws MPipeException {
+        handleNewSession(event.session(), Protocol.UDP);
+    }
+
+    private void handleNewSession(IPSession session, Protocol protocol) {
+        idsEngine.processNewSession(session, protocol);
+    }
+
 /*  public void handleTCPNewSession(TCPSessionEvent event) {
 
     }

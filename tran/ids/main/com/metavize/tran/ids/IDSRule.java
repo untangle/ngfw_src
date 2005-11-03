@@ -18,12 +18,14 @@ public class IDSRule extends Rule implements Serializable {
 	
     //Hibernate Variables
     private String rule;
+
+    // Used from UI to let us know it's changed.
     private boolean modified;
 	
     //Variables set at run time
     private transient IDSRuleHeader header;
     private transient IDSRuleSignature signature;
-    private boolean remove; //Should no longer be in the list
+    private transient boolean remove; //Should no longer be in the list
 
     /**
      * Hibernate constructor
@@ -45,11 +47,6 @@ public class IDSRule extends Rule implements Serializable {
     public long getKeyValue() { return super.getId(); }
     public void setKeyValue(Long val) { super.setId(val); }
 
-    /**
-     * @hibernate.property
-     * column="MODIFIED"
-     */
-	
     public boolean getModified() { return modified; }
     public void setModified(boolean val) { modified = val; }
 	
@@ -58,7 +55,6 @@ public class IDSRule extends Rule implements Serializable {
      * column="RULE"
      * length="4096"
      */
-
     public String getText() { return this.rule; }
     public void setText(String s) { this.rule = s; }	
 
@@ -93,10 +89,30 @@ public class IDSRule extends Rule implements Serializable {
         return !(isLive() || getLog());
     }
 
-    public boolean equals(Object other) {
-        if(other instanceof IDSRule) {
-            return ((IDSRule) other).getId() == this.getId();
+    public int getAction() {
+        if (isLive())
+            return IDSRuleManager.BLOCK;
+        else if (getLog())
+            return IDSRuleManager.LOG;
+        else
+            // XX
+            return IDSRuleManager.ALERT;
+    }
+
+    public boolean equals(Object o) {
+        if (o instanceof IDSRule) {
+            IDSRule other = (IDSRule) o;
+            // Following isn't totally complete, but is good enough for what we use from Rule. XX
+            return (rule == null ? other.rule == null : rule.equals(other.rule)) &&
+                isLive() == other.isLive() &&
+                getLog() == other.getLog();
         }
         return false;
+    }
+
+    public int hashCode()
+    {
+        // Good enough. XX
+        return (null == rule ? 0 : rule.hashCode());
     }
 }

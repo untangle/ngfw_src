@@ -7,90 +7,88 @@ import com.metavize.mvvm.tapi.event.*;
 
 public class IDSSessionInfo {
 	
-	private 	List<IDSRuleSignature> 	c2sSignatures;
-	private 	List<IDSRuleSignature>	s2cSignatures;
-	private 	IPSession 				session;
-	private 	IPDataEvent 			event;
-	private 	String 					uriPath;
-	private 	boolean 				isServer;
+    private 	List<IDSRuleSignature> 	c2sSignatures;
+    private 	List<IDSRuleSignature>	s2cSignatures;
+    private 	IPSession 				session;
+    private 	IPDataEvent 			event;
+    private 	String 					uriPath;
+    private 	boolean 				isServer;
 
-	public IDSSessionInfo() { };
+    public IDSSessionInfo(IPSession session) {
+        this.session = session;
+    }
 	
-	public void setUriPath(String path) {
-		uriPath = path;
-	}
+    public void setUriPath(String path) {
+        uriPath = path;
+    }
 
-	public String  getUriPath() {
-		return uriPath;
-	}
-	/**Do i need to set sessionion data? I dont think so..
-	 * Check later.
-	 */
-	public void setSession(IPSession session) {
-		this.session = session;
-	}
-
-	public IPSession getSession() {
-		return session;
-	}
+    public String  getUriPath() {
+        return uriPath;
+    }
+    /**Do i need to set sessionion data? I dont think so..
+     * Check later.
+     */
+    public IPSession getSession() {
+        return session;
+    }
 	
-	public void setC2SSignatures(List<IDSRuleSignature> signatures) {
-		this.c2sSignatures = signatures;
-	}
+    public void setC2SSignatures(List<IDSRuleSignature> signatures) {
+        this.c2sSignatures = signatures;
+    }
 
-	public void setS2CSignatures(List<IDSRuleSignature> signatures) {	
-		this.s2cSignatures = signatures;
-	}
-	public void setEvent(IPDataEvent event) {
-		this.event = event;
-	}
+    public void setS2CSignatures(List<IDSRuleSignature> signatures) {	
+        this.s2cSignatures = signatures;
+    }
+    public void setEvent(IPDataEvent event) {
+        this.event = event;
+    }
 	
-	public IPDataEvent getEvent() {
-		return event;
-	}
+    public IPDataEvent getEvent() {
+        return event;
+    }
 
-	public void setFlow(boolean isServer) {
-		this.isServer = isServer;
-	}
+    public void setFlow(boolean isServer) {
+        this.isServer = isServer;
+    }
 
-	public boolean isServer() {
-		return isServer;
-	}
+    public boolean isServer() {
+        return isServer;
+    }
 
-	public void processC2SSignatures() {
-		for(IDSRuleSignature sig : c2sSignatures)
-			sig.execute(this);
-	}
+    public void processC2SSignatures() {
+        for(IDSRuleSignature sig : c2sSignatures)
+            sig.execute(this);
+    }
 	
-	public void processS2CSignatures() {
-		for(IDSRuleSignature sig : s2cSignatures)
-			sig.execute(this);
-	}
+    public void processS2CSignatures() {
+        for(IDSRuleSignature sig : s2cSignatures)
+            sig.execute(this);
+    }
 
-	public void blockSession() {
-		System.out.println("In block session");
-		if(session instanceof TCPSession) {
-			System.out.println("Resseting TCP");
-			((TCPSession)session).resetClient();
-			((TCPSession)session).resetServer();
-		}
-		else if(session instanceof UDPSession) {
-			System.out.println("Resseting UDP");
-			((UDPSession)session).expireClient(); /* XXX correct? */
-			((UDPSession)session).expireServer(); /* XXX correct? */
-		}
-		session.release();
-	}
+    public void blockSession() {
+        System.out.println("In block session");
+        if(session instanceof TCPSession) {
+            System.out.println("Resseting TCP");
+            ((TCPSession)session).resetClient();
+            ((TCPSession)session).resetServer();
+        }
+        else if(session instanceof UDPSession) {
+            System.out.println("Resseting UDP");
+            ((UDPSession)session).expireClient(); /* XXX correct? */
+            ((UDPSession)session).expireServer(); /* XXX correct? */
+        }
+        session.release();
+    }
 								
 								
 	
-	/**Debug methods*/
-	public boolean testSignature(int num) {
-		return c2sSignatures.get(num).execute(this);
-	}
+    /**Debug methods*/
+    public boolean testSignature(int num) {
+        return c2sSignatures.get(num).execute(this);
+    }
 
-	public IDSRuleSignature getSignature(int num) {
-		return c2sSignatures.get(num);
-	}
-	// */
+    public IDSRuleSignature getSignature(int num) {
+        return c2sSignatures.get(num);
+    }
+    // */
 }
