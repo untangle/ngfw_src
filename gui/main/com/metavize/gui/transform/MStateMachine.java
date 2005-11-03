@@ -248,7 +248,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
 
 	Runnable runnable = new Runnable(){
 		public void run(){
-		    mTransformControlsJPanel.setAllEnabled( allControlsEnabled );
+		    //mTransformControlsJPanel.setAllEnabled( allControlsEnabled );
 		    saveJButton.setEnabled( saveEnabled );
 		    reloadJButton.setEnabled( refreshEnabled );
 		    removeJButton.setEnabled( removeEnabled );
