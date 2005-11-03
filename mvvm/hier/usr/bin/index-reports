@@ -652,7 +652,7 @@ alternate=0
 cat $tran_dir/report-files | while read line; do
     base_name=$(echo $line | cut -d: -f2)
     rep_name=$(echo $line | cut -d: -f3-)
-    if [ xsummarizer != "x$base_name" ] && [ xsummaryGraph != "x$base_name" ] && [ xparameter != "x$base_name" ] ; then
+    if [ xscanner != "x$base_name" ] && [ xsummarizer != "x$base_name" ] && [ xsummaryGraph != "x$base_name" ] && [ xparameter != "x$base_name" ] ; then
         if (( alternate % 2 )); then
             color="dddddd"
 	else
