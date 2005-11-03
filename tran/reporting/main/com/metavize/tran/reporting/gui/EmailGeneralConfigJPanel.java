@@ -15,6 +15,7 @@ import com.metavize.gui.transform.*;
 import com.metavize.gui.pipeline.MPipelineJPanel;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.widgets.MPasswordField;
+import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.gui.util.*;
 
 import com.metavize.mvvm.*;
@@ -96,6 +97,15 @@ class EmailGeneralTableModel extends MSortedTableModel{
 	// SAVE SETTINGS //////////
 	if( !validateOnly ){
 	    MailSettings mailSettings = Util.getAdminManager().getMailSettings();
+
+	    // WARN THE USER IF EMAIL ADDRESSES ^ MAIL SERVER ARE SET xxx this should not be in the save.. -> above
+	    if( (smtpHost.length() != 0) && (mailSettings.getReportEmail().length() == 0) ){
+		new MOneButtonJDialog("EdgeReport", "<html>You have set your Outgoing Email Server, but you have not specified any email recipients.  You must specify both an Outgoing Email Server and at least one email recipient in order to receive reports.</html>");
+	    }
+	    else if( (smtpHost.length() == 0) && (mailSettings.getReportEmail().length() != 0) ){
+		new MOneButtonJDialog("EdgeReport", "<html>You have set at least one Email Recipient, but you have not specified an Outgoing Email Server.  You must specify both an Outgoing Email Server and at least one email recipient in order to receive reports.</html>");
+	    }
+	    
 	    mailSettings.setSmtpHost( (smtpHost.length()==0?null:smtpHost) );
 	    mailSettings.setSmtpPort( smtpPort );
 	    mailSettings.setFromAddress( fromAddress );
