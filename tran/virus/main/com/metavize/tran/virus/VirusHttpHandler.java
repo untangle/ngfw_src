@@ -246,9 +246,11 @@ class VirusHttpHandler extends HttpStateMachine
     {
         StatusLine sl = new StatusLine("HTTP/1.1", 403, "Forbidden");
 
-        String message = String.format(BLOCK_MESSAGE, vendor,
-                                       getResponseHost(),
-                                       getResponseRequest().getRequestUri());
+        RequestLine rl = getResponseRequest();
+        String uri = null != rl ? rl.getRequestUri().toString() : "";
+        String host = getResponseHost();
+
+        String message = String.format(BLOCK_MESSAGE, vendor, host, uri);
 
         Header h = new Header();
         h.addField("Content-Length", Integer.toString(message.length()));

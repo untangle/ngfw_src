@@ -13,6 +13,7 @@ package com.metavize.tran.spyware;
 
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -81,7 +82,8 @@ public class SpywareHttpHandler extends HttpStateMachine
 
     private final TCPSession session;
 
-    private final List cookieQueue = new LinkedList();
+    private final Map<RequestLine, List<String>> killers
+        = new HashMap<RequestLine, List<String>>();
 
     private final Logger logger = Logger.getLogger(getClass());
     private final Logger eventLogger = MvvmContextFactory.context()
@@ -169,10 +171,9 @@ public class SpywareHttpHandler extends HttpStateMachine
         logger.debug("got response header");
         mimeType = header.getValue("content-type");
 
-        if (100 != getStatusLine().getStatusCode()) {
-            header = serverCookie(getResponseRequest(), header);
-            header = addCookieKillers(header);
-        }
+        RequestLine rl = getResponseRequest();
+        header = serverCookie(rl, header);
+        header = addCookieKillers(rl, header);
 
         return header;
     }
@@ -268,8 +269,8 @@ public class SpywareHttpHandler extends HttpStateMachine
     {
         logger.debug("checking client cookie");
 
-        List cookieKillers = new LinkedList();;
-        cookieQueue.add(cookieKillers);
+        List<String> cookieKillers = new LinkedList<String>();;
+        killers.put(requestLine, cookieKillers);
 
         String host = h.getValue("host");
         List cookies = h.getValues("cookie"); // XXX cookie2 ???
@@ -314,6 +315,10 @@ public class SpywareHttpHandler extends HttpStateMachine
 
         String reqDomain = getResponseHost();
 
+        if (null == reqDomain) {
+            return h;
+        }
+
         List setCookies = h.getValues("set-cookie");
 
         if (null == setCookies) { return h; }
@@ -351,9 +356,13 @@ public class SpywareHttpHandler extends HttpStateMachine
         return h;
     }
 
-    private Header addCookieKillers(Header h)
+    private Header addCookieKillers(RequestLine rl, Header h)
     {
-        List cookieKillers = (List)cookieQueue.remove(0);
+        List<String> cookieKillers = killers.remove(rl);
+        if (null == cookieKillers) {
+            return h;
+        }
+
         for (Iterator i = cookieKillers.iterator(); i.hasNext(); ) {
             String killer = (String)i.next();
             logger.debug("adding killer to header: " + killer);
@@ -363,10 +372,10 @@ public class SpywareHttpHandler extends HttpStateMachine
         return h;
     }
 
-    private List makeCookieKillers(String c, String h)
+    private List<String> makeCookieKillers(String c, String h)
     {
         logger.debug("making cookie killers");
-        List l = new LinkedList();
+        List<String> l = new LinkedList<String>();
 
         String cookieKiller = makeCookieKiller(c, h);
         l.add(cookieKiller);

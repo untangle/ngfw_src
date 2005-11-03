@@ -11,18 +11,23 @@
 
 package com.metavize.tran.http;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.token.AbstractCasing;
 import com.metavize.tran.token.Parser;
 import com.metavize.tran.token.Unparser;
+import org.apache.log4j.Logger;
 
 class HttpCasing extends AbstractCasing
 {
     private final HttpTransformImpl transform;
     private final HttpParser parser;
     private final HttpUnparser unparser;
+    private final List<RequestLine> requests = new LinkedList<RequestLine>();
 
-    private RequestLine request;
+    private final Logger logger = Logger.getLogger(getClass());
 
     // constructors -----------------------------------------------------------
 
@@ -55,11 +60,16 @@ class HttpCasing extends AbstractCasing
 
     void queueRequest(RequestLine request)
     {
-        this.request = request;
+        requests.add(request);
     }
 
     RequestLine dequeueRequest()
     {
-        return request;
+        if (0 < requests.size()) {
+            return requests.remove(0);
+        } else {
+            logger.error("requests is empty");
+            return null;
+        }
     }
 }

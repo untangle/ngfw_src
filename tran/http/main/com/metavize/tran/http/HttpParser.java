@@ -198,10 +198,11 @@ public class HttpParser extends AbstractParser
                     assert !b.hasRemaining();
 
                     if (!clientSide) {
-                        HttpMethod method = requestLine.getMethod();
-                        logger.debug(sessStr + "handling response: " + method);
-                        if (HttpMethod.HEAD == method) {
-                            transferEncoding = NO_BODY;
+                        if (null != requestLine) {
+                            HttpMethod method = requestLine.getMethod();
+                            if (HttpMethod.HEAD == method) {
+                                transferEncoding = NO_BODY;
+                            }
                         }
                     }
 
@@ -506,7 +507,6 @@ public class HttpParser extends AbstractParser
     private Object firstLine(ByteBuffer data) throws ParseException
     {
         if (!clientSide) {
-            requestLine = casing.dequeueRequest();
             return statusLine = statusLine(data);
         } else {
             return requestLine = requestLine(data);
@@ -550,6 +550,12 @@ public class HttpParser extends AbstractParser
         if (100 <= statusCode && 199 >= statusCode
             || 204 == statusCode || 304 == statusCode) {
             transferEncoding = NO_BODY;
+        }
+
+        if (100 != statusCode && 408 != statusCode) {
+            RequestLine rl = casing.dequeueRequest();
+            // casing returns null and logs an error when nothing in queue
+            requestLine = null != rl ? rl : requestLine;
         }
 
         return new StatusLine(httpVersion, statusCode, reasonPhrase);

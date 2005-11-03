@@ -183,7 +183,9 @@ class Blacklist
     String checkResponse(InetAddress clientIp, RequestLine requestLine,
                          Header header)
     {
-        if (null != passClient(clientIp)) { // we only log on the request
+        if (null == requestLine) {
+            return null;
+        } else if (null != passClient(clientIp)) {
             return null;
         }
 

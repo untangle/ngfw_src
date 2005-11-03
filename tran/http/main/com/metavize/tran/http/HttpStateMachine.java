@@ -28,9 +28,12 @@ import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenException;
 import com.metavize.tran.token.TokenResult;
 import com.metavize.tran.token.TokenStreamer;
+import org.apache.log4j.Logger;
 
 public abstract class HttpStateMachine extends AbstractTokenHandler
 {
+    private final Logger logger = Logger.getLogger(getClass());
+
     protected enum ClientState {
         REQ_START_STATE,
         REQ_LINE_STATE,
@@ -545,9 +548,16 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
             responseMode = Mode.QUEUEING;
 
             statusLine = (StatusLine)token;
-            if (100 != statusLine.getStatusCode()) {
-                responseRequest = requests.remove(0);
-                responseResponse = outstandingResponses.get(0);
+            int sc = statusLine.getStatusCode();
+            if (100 != sc && 408 != sc) { /* not continue or request timed out */
+                if (0 == requests.size()) {
+                    if (4 != sc / 100) {
+                        logger.warn("requests is empty, code: " + sc);
+                    }
+                } else {
+                    responseRequest = requests.remove(0);
+                    responseResponse = outstandingResponses.get(0);
+                }
             }
 
             if (null == responseResponse) {
