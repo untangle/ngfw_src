@@ -10,19 +10,12 @@
  */
 package com.metavize.tran.virus;
 
+import com.metavize.mvvm.tran.Scanner;
 import java.io.IOException;
 import java.util.List;
 
-public interface VirusScanner
+public interface VirusScanner extends Scanner
 {
-
-    /**
-     * Gets the name of the vendor of this transform's virus scanner, used for logging.
-     *
-     * @return a <code>String</code> giving the name of the vendor of this scanner
-     */
-    String getVendorName();
-
     /**
      * Gets the version information for the signatures, usually this is a single string containing
      * the version #, if any, and a timestamp for the version.
@@ -39,3 +32,4 @@ public interface VirusScanner
      */
     VirusScannerResult scanFile (String fileName);
 }
+

@@ -6,4 +6,3 @@ com.metavize.tran.virus.reports.VirusSummarizer:summarizer:Summarizer
 com.metavize.tran.virus.reports.SummaryGraph:summaryGraph:Clam_AntiVirus--Summary_Graph
 com.metavize.tran.clam.ClamScanner:scanner:Scanner
 reportTitlePrefix:parameter:Clam
-virusVendor:paramater:Clam

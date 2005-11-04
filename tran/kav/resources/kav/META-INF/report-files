@@ -6,4 +6,3 @@ com.metavize.tran.virus.reports.VirusSummarizer:summarizer:Summarizer
 com.metavize.tran.virus.reports.SummaryGraph:summaryGraph:Kaspersky_AntiVirus--Summary_Graph
 com.metavize.tran.kav.KavScanner:scanner:Scanner
 reportTitlePrefix:parameter:Kaspersky
-virusVendor:parameter:Kaspersky

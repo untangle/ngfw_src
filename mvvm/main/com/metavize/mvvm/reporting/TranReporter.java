@@ -21,6 +21,7 @@ import java.util.jar.*;
 import com.metavize.mvvm.engine.MvvmTransformHandler;
 import com.metavize.mvvm.reporting.summary.*;
 import com.metavize.mvvm.security.Tid;
+import com.metavize.mvvm.tran.Scanner;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.export.*;
 import org.apache.log4j.Logger;
@@ -67,7 +68,7 @@ public class TranReporter {
         File imagesDir = new File(tranDir, "images");
         File globalImagesDir = new File(tranDir, "../images");
         MvvmTransformHandler mth = new MvvmTransformHandler(null);
-        Object scanner = null;
+        Scanner scanner = null;
 
         InputStream is = ucl.getResourceAsStream("META-INF/report-files");
         if (null == is) {
@@ -99,11 +100,14 @@ public class TranReporter {
                 ClassLoader cl = Thread.currentThread().getContextClassLoader();
                 try {
                     Class scannerClass = cl.loadClass(resourceOrClassname);
-                    scanner = scannerClass.newInstance();
+                    scanner = (Scanner) scannerClass.newInstance();
                 } catch (Exception x) {
                     logger.warn("No such class: " + resourceOrClassname);
                 }
+                // Ugly Constants. XXXX
                 extraParams.put("scanner", scanner);
+                extraParams.put("virusVendor", scanner.getVendorName());
+                extraParams.put("spamVendor", scanner.getVendorName());
             }
         } 
         is.close();

@@ -6,4 +6,3 @@ com.metavize.tran.virus.reports.VirusSummarizer:summarizer:Summarizer
 com.metavize.tran.virus.reports.SummaryGraph:summaryGraph:Hauri_AntiVirus--Summary_Graph
 com.metavize.tran.hauri.HauriScanner:scanner:Scanner
 reportTitlePrefix:parameter:Hauri
-virusVendor:parameter:Hauri
