@@ -228,7 +228,7 @@ public class Util {
 
     // UPGRADE /////////////////////
     public static final int UPGRADE_THREAD_SLEEP_MILLIS = 60 * (60 * 1000); // X * (minutes * Y)
-    public static final long UPGRADE_STORE_CHECK_FRESH_MILLIS = 60l * (5l * 1000l); // X * (minutes * Y)
+    public static final long UPGRADE_STORE_CHECK_FRESH_MILLIS = 60l * (60l * 1000l); // X * (minutes * Y)
     public static final int UPGRADE_UNAVAILABLE = -1;
     public static final int UPGRADE_CHECKING = -2;
     private static long lastUpgradeCheck = 0l;
