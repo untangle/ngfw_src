@@ -23,8 +23,8 @@ public interface VpnTransform extends Transform
 
     /* Create a client certificate, if the client already has a certificate
      * this will automatically revoke their old one */
-    public VpnClient generateClientCertificate( VpnClient client );
+    public VpnClient generateClientCertificate( VpnSettings settings, VpnClient client );
 
     /* Revoke a client license */
-    public VpnClient revokeClientCertificate( VpnClient client );
+    public VpnClient revokeClientCertificate( VpnSettings settings, VpnClient client );
 }

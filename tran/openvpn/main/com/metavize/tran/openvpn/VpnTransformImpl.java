@@ -66,6 +66,7 @@ public class VpnTransformImpl extends AbstractTransform
                     return null;
                 }
             };
+
         getTransformContext().runTransaction( tw );
 
         try {
@@ -98,7 +99,7 @@ public class VpnTransformImpl extends AbstractTransform
     {
         try {
             certificateManager.createBase( settings );
-            this.settings = settings;
+            setVpnSettings( settings );
         } catch ( TransformException e ) {
             logger.warn( "Unable to generate base parameters", e );
         }
@@ -106,13 +107,25 @@ public class VpnTransformImpl extends AbstractTransform
         return this.settings;
     }
 
-    public VpnClient generateClientCertificate( VpnClient client )
+    public VpnClient generateClientCertificate( VpnSettings settings, VpnClient client )
     {
+        try {
+            certificateManager.createClient( client );
+        } catch ( TransformException e ) {
+            logger.error( "Unable to create a client certificate", e );
+        }
+
         return client;
     }
 
-    public VpnClient revokeClientCertificate( VpnClient client )
+    public VpnClient revokeClientCertificate( VpnSettings settings, VpnClient client )
     {
+        try {
+            certificateManager.revokeClient( client );
+        } catch ( TransformException e ) {
+            logger.error( "Unable to revoke a client certificate", e );
+        }
+        
         return client;
     }
 
@@ -150,7 +163,6 @@ public class VpnTransformImpl extends AbstractTransform
                     return null; 
                 }
             };
-        
         getTransformContext().runTransaction( tw );
 
         reconfigure();

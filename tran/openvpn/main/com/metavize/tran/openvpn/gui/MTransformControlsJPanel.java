@@ -12,6 +12,8 @@
 
 package com.metavize.tran.openvpn.gui;
 
+import com.metavize.mvvm.tran.TransformContext;
+
 import com.metavize.gui.util.Util;
 
 import com.metavize.gui.transform.*;
@@ -21,8 +23,11 @@ import com.metavize.mvvm.tran.TransformContext;
 
 public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransformControlsJPanel{
     
-    private static final String NAME_SOME_LIST = "Roberts List";
-    private static final String CLIENT_PANEL_NAME = "Client Generator";
+    private static final String CERTIFICATE_PANEL_NAME = "Certificate Management";
+    private static final String NET_SETTINGS_1_PANEL_NAME = "Network Settings, Part 1";
+    private static final String NET_SETTINGS_2_PANEL_NAME = "Network Settings, Part 2";
+    private static final String GROUP_PANEL_NAME  = "Address groups";
+    private static final String CLIENT_PANEL_NAME = "Clients";
     private static final String NAME_LOG = "Event Log";
     
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
@@ -31,9 +36,18 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 
     protected void generateGui(){
 	// SOME LIST /////
-	RobertsJPanel robertsJPanel = new RobertsJPanel( mTransformJPanel.getTransformContext());
-        ClientJPanel clientJPanel = new ClientJPanel( mTransformJPanel.getTransformContext());
-        super.mTabbedPane.addTab(NAME_SOME_LIST, null, robertsJPanel );
+        TransformContext transformContext = mTransformJPanel.getTransformContext();
+
+	RobertsJPanel robertsJPanel       = new RobertsJPanel( transformContext );
+        NetSettingsOneJPanel netOneJPanel = new NetSettingsOneJPanel( transformContext );
+        NetSettingsTwoJPanel netTwoJPanel = new NetSettingsTwoJPanel( transformContext );
+        GroupJPanel groupJPanel           = new GroupJPanel( transformContext );
+        ClientJPanel clientJPanel         = new ClientJPanel( transformContext );
+        
+        super.mTabbedPane.addTab( CERTIFICATE_PANEL_NAME, null, robertsJPanel );
+        super.mTabbedPane.addTab( NET_SETTINGS_1_PANEL_NAME, null, netOneJPanel );
+        super.mTabbedPane.addTab( NET_SETTINGS_2_PANEL_NAME, null, netTwoJPanel );
+        super.mTabbedPane.addTab( GROUP_PANEL_NAME, null, groupJPanel );
         super.mTabbedPane.addTab( CLIENT_PANEL_NAME, null, clientJPanel );
         
 	//super.savableMap.put(NAME_SOME_LIST, someJPanel);

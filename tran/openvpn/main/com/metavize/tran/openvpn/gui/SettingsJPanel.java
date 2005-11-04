@@ -6,29 +6,28 @@
 
 package com.metavize.tran.openvpn.gui;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
 
-import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.TransformContext;
+import com.metavize.mvvm.tran.ParseException;
 
 import com.metavize.tran.openvpn.VpnTransform;
 import com.metavize.tran.openvpn.VpnClient;
 import com.metavize.tran.openvpn.VpnSettings;
 import com.metavize.tran.openvpn.VpnGroup;
-import com.metavize.tran.openvpn.ClientSiteNetwork;
 
 /**
  *
  * @author  inieves
  */
-public class ClientJPanel extends javax.swing.JPanel {
+public class SettingsJPanel extends javax.swing.JPanel {
     
     private final VpnTransform openvpn;
 
     /** Creates new form RobertsJPanel */
-    public ClientJPanel( TransformContext transformContext ) {
+    public SettingsJPanel( TransformContext transformContext ) {
         this.openvpn = (VpnTransform)transformContext.transform();
         initComponents();
     }
@@ -91,51 +90,49 @@ public class ClientJPanel extends javax.swing.JPanel {
         jPanel1.add(jTextField10, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 290, 270, 20));
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel1.setText("Client 1:");
+        jLabel1.setText("Bridge Inside Network:");
+        jTextField1.setText( "false" );
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 180, -1));
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel2.setText("Client 1 Status:");
-        jLabel2.setEnabled(false);
+        jLabel2.setText("VPN Base Network:");
+        jTextField2.setText( "172.16.16.0" );
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 50, 180, -1));
 
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel3.setText("Client 2:");
+        jLabel3.setText("VPN Base Netmask:");
+        jTextField3.setText( "255.255.255.0" );
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, 180, -1));
 
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel4.setText("Client 2 Status:");
-        jLabel4.setEnabled(false);
+        jLabel4.setText("unused:");
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, 180, -1));
 
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel5.setText("Client 3:");
+        jLabel5.setText("unused:");
         jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, 180, -1));
 
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel6.setText("Client 3 Status:");
-        jLabel6.setEnabled(false);
+        jLabel6.setText("unused:");
         jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, 180, -1));
 
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel7.setText("Client 4:");
+        jLabel7.setText("unused:");
         jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 200, 180, -1));
 
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel8.setText( "Client 4 Status:" );
-        jLabel8.setEnabled(false);
+        jLabel8.setText( "unused:" );
         jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 230, 180, -1));
 
         jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel9.setText("Client 5:");
+        jLabel9.setText("unused:");
         jPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 260, 180, -1));
 
         jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel10.setText("Client 5 Status:");
-        jLabel10.setEnabled(false);
+        jLabel10.setText("unused");
         jPanel1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 290, 180, -1));
 
-        acceptJButton.setText("Generate Client!");
+        acceptJButton.setText("Setup VPN!");
         acceptJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 acceptJButtonActionPerformed(evt);
@@ -144,7 +141,7 @@ public class ClientJPanel extends javax.swing.JPanel {
 
         jPanel1.add(acceptJButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 340, -1, -1));
 
-        cancelJButton.setText("Load Client!");
+        cancelJButton.setText("Reload!");
         cancelJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cancelJButtonActionPerformed(evt);
@@ -167,118 +164,70 @@ public class ClientJPanel extends javax.swing.JPanel {
     }//GEN-END:initComponents
 
     private void cancelJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelJButtonActionPerformed
-        updateClientList( openvpn.getVpnSettings());
+        VpnSettings settings = openvpn.getVpnSettings();
+        List groupList = settings.getGroupList();
+        
+        jTextField1.setText( String.valueOf( settings.isBridgeMode()));
+
+        if ( groupList != null && groupList.size() > 0 ) {
+            VpnGroup group = (VpnGroup)groupList.get( 0 );
+            jTextField2.setText( group.getAddress().toString());
+            jTextField3.setText( group.getNetmask().toString());
+        }
     }//GEN-LAST:event_cancelJButtonActionPerformed
 
     private void acceptJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acceptJButtonActionPerformed
         VpnSettings settings = openvpn.getVpnSettings();
-        
-        List clientList = new LinkedList();
         List groupList = settings.getGroupList();
+        VpnGroup group;
         
-        addClient( jTextField1, clientList, groupList );
-        addClient( jTextField3, clientList, groupList );
-        addClient( jTextField5, clientList, groupList );
-        addClient( jTextField7, clientList, groupList );
-        addClient( jTextField9, clientList, groupList );
-        
-        settings.setClientList( clientList );
-
-        openvpn.setVpnSettings( settings );
-        
-        updateClientList( openvpn.getVpnSettings());
-    }//GEN-LAST:event_acceptJButtonActionPerformed
-
-    private void updateClientList( VpnSettings settings )
-    {
-        List clientList = settings.getClientList();
-        
-        if ( null == clientList ) return;
-
-        Iterator iter = clientList.iterator();
-        updateClient( jTextField1, jTextField2,  iter );
-        updateClient( jTextField3, jTextField4,  iter );
-        updateClient( jTextField5, jTextField6,  iter );
-        updateClient( jTextField7, jTextField8,  iter );
-        updateClient( jTextField9, jTextField10, iter );
-    }
-
-    private void addClient( javax.swing.JTextField field, List clientList, List groupList )
-    {
-        String value = field.getText().trim();
-        
-        if ( value.length() == 0 ) return;
-        String[] clientDescription = value.split( " " );
-
-        if (( clientDescription.length < 2 ) || (( clientDescription.length & 1 ) == 1 )) {
-            System.err.println( "Invalid client description [" + value + "]" );
-            return;
-        }
-
-        VpnClient client = new VpnClient();
-        client.setName( clientDescription[0] );
-        
-        client.setGroup( null );
-        
-        /* Get the group */
-        String groupName = clientDescription[1];
-        for ( VpnGroup group : ((List<VpnGroup>)groupList)) {
-            if ( !group.getName().equalsIgnoreCase( groupName )) continue;
-            client.setGroup( group );
-            break;
-        }
-
-        if ( client.getGroup() == null ) {
-            System.err.println( "Unknown group [" + groupName + "]" );
-            return;
-        }
-
-        List siteList = new LinkedList();
-
-        for ( int c = 2 ; c < clientDescription.length ; c += 2 ) {
-            try {
-                String network = clientDescription[c];
-                String netmask = clientDescription[c+1];
-                ClientSiteNetwork site = new ClientSiteNetwork();
-                site.setNetwork( IPaddr.parse( network ));
-                site.setNetmask( IPaddr.parse( netmask ));
-                siteList.add( site );
-            } catch ( Exception e ) {
-                System.err.println( "Error parsing network or netmask: " + e );
+        if ( groupList == null ) {
+            groupList = new LinkedList();
+            group = new VpnGroup();
+            groupList.add( group );
+        } else {
+            if ( groupList.size() < 1 ) {
+                group = new VpnGroup();
+                groupList.add( group );
             }
         }
-        
-        client.setExportedAddressList( siteList );
 
-        clientList.add( client );
-    }
+        group = (VpnGroup)groupList.get( 0 );
 
-    private void updateClient( javax.swing.JTextField field, javax.swing.JTextField statusField, 
-                               Iterator iter )
-    {
-        if ( !iter.hasNext()) {
-            field.setText( "" );
-            statusField.setText( "" );
-            return;
+        settings.setGroupList( groupList );
+
+        // settings.setOrganizationUnit( jTextField1.getText());
+        settings.setBridgeMode( Boolean.parseBoolean( jTextField1.getText().trim()));
+
+        try {
+            group.setAddress( IPaddr.parse( jTextField2.getText().trim()));
+        } catch ( Exception e ) {
+            System.err.println( "Error parsing address: " + e );
         }
-        
-        VpnClient client = (VpnClient)iter.next();
 
-        String value = client.getName() + " ";
-        
-        VpnGroup group = client.getGroup();
-
-        value += ( group == null ) ? "" : group.getName();
-
-        for ( ClientSiteNetwork site : ((List<ClientSiteNetwork>)client.getExportedAddressList())) {
-            value += " " + site.getNetwork() + " " + site.getNetmask();
+        try {
+            group.setNetmask( IPaddr.parse( jTextField3.getText().trim()));
+        } catch ( Exception e ) {
+            System.err.println( "Error parsing netmask: " + e );
         }
+            
+        /* Save */
+        openvpn.setVpnSettings( settings );
         
-        field.setText( value );
+        /* Get */
+        settings = openvpn.getVpnSettings();
+        
+        jTextField1.setText( String.valueOf( settings.isBridgeMode()));
 
-        /* XXX Need to also get the status of the key */
-        statusField.setText( "" + client.getAddress());
-    }
+        groupList = settings.getGroupList();
+                
+        if ( groupList != null && groupList.size() > 0 ) {
+            group = (VpnGroup)groupList.get( 0 );
+            jTextField2.setText( group.getAddress().toString());
+            jTextField3.setText( group.getNetmask().toString());
+        }        
+    }//GEN-LAST:event_acceptJButtonActionPerformed
+    
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton acceptJButton;

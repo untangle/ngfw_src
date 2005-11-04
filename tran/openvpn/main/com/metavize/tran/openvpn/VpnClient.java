@@ -12,12 +12,14 @@
 package com.metavize.tran.openvpn;
 
 import java.io.Serializable;
-
-import com.metavize.mvvm.security.Tid;
+import java.util.List;
+import java.util.LinkedList;
 
 import com.metavize.mvvm.tran.Rule;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.Validatable;
+
+import com.metavize.mvvm.tran.ValidateException;
 
 /**
  * the configuration for a vpn client.
@@ -25,24 +27,21 @@ import com.metavize.mvvm.tran.Validatable;
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
  * @hibernate.class
- * table="tr_vpn_client"
+ * table="tr_openvpn_client"
  */
-public abstract class VpnClient extends Rule implements Validatable
+public class VpnClient extends Rule implements Validatable
 {
     // XXX update the serial version id
     // private static final long serialVersionUID = 4143567998376955882L;
 
-    private IPaddr address;            // nullable
-    private IPaddr netmask;            // nullable
+    private IPaddr address;            // may be null.
+    
+    // The address group to pull this client address
+    private VpnGroup group;
 
-    // The address group to pull this client address, may be null.
-    private VpnAddressGroup addressGroup;  // nullable
-
-    private IPaddr siteAddress;            // nullable
-    private IPaddr siteNetmask;            // nullable
-
-    /* The interface that this clients is associated with, null to use clientPoolIntf from VpnSettings */
-    private byte clientIntf;
+    // List of addresses at this site,
+    // initially, may not be supported, just use one address.
+    private List    exportedAddressList;
 
     private boolean isEdgeguard = false;
     
@@ -58,17 +57,19 @@ public abstract class VpnClient extends Rule implements Validatable
     // accessors --------------------------------------------------------------
 
     /**
-     * @return the address group this client belongs to, null if the client has a static address.
-     * column="address_group"
+     * @return The address group that this client belongs to.
+     * @hibernate.many-to-one
+     * class="com.metavize.tran.openvpn.VpnGroup"
+     * column="group_id"
      */
-    VpnAddressGroup getAddressGroup()
+    public VpnGroup getGroup()
     {
-        return this.addressGroup;
+        return this.group;
     }
 
-    void setAddressGroup( VpnAddressGroup addressGroup )
+    public void setGroup( VpnGroup group )
     {
-        this.addressGroup = addressGroup;
+        this.group = group;
     }
 
     /* have to somehow convey that each user actually uses two address */
@@ -94,59 +95,51 @@ public abstract class VpnClient extends Rule implements Validatable
         this.address = address;
     }
 
-    /* XXX This may need to be a list of addresses */
-
     /**
-     * Get the range of addresses on the client side(null for site->machine).
+     * The list of exported networks for this site.
      *
-     * @return This is the network that is reachable when this client connects.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPaddrUserType"
-     * @hibernate.column
-     * name="site_address"
-     * sql-type="inet"
+     * @return the list of exported networks for this site.
+     * @hibernate.list
+     * cascade="all-delete-orphan"
+     * @hibernate.collection-key
+     * column="client_id"
+     * @hibernate.collection-index
+     * column="position"
+     * @hibernate.collection-one-to-many
+     * class="com.metavize.tran.openvpn.ClientSiteNetwork"
      */
-    public IPaddr getSiteAddress()
+    public List getExportedAddressList()
     {
-        return this.siteAddress;
-    }
+        if ( this.exportedAddressList == null ) this.exportedAddressList = new LinkedList();
 
-    public void setSideAddress( IPaddr siteAddress )
-    {
-        this.siteAddress = siteAddress;
+        return this.exportedAddressList;
     }
-    
-    /**
-     * Get the range of netmask on the client side(null for site->machine).
-     *
-     * @return This is the network that is reachable when this client connects.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPaddrUserType"
-     * @hibernate.column
-     * name="site_netmask"
-     * sql-type="inet"
-     */
-    public IPaddr getSiteNetmask()
+    public void setExportedAddressList( List exportedAddressList )
     {
-        return this.siteNetmask;
-    }
-
-    public void setSideNetmask( IPaddr siteNetmask )
-    {
-        this.siteNetmask = siteNetmask;
+        this.exportedAddressList = exportedAddressList;
     }
     
     /**
      * @return whether the other side is an edgeguard.
-     * column="is_bridge"
+     * @hibernate.property
+     * column="is_edgeguard"
      */
-    public boolean isEdgeguard()
+    public boolean getIsEdgeguard()
     {
         return this.isEdgeguard;
     }
 
-    public void setEdgeguard( boolean isEdgeguard )
+    public void setIsEdgeguard( boolean isEdgeguard )
     {
         this.isEdgeguard = isEdgeguard;
+    }
+
+    public void validate() throws Exception
+    {
+        /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
+        String name = getName().trim();
+        if ( name.length() == 0 ) {
+            throw new ValidateException( "A client cannot have an empty name" );
+        }
     }
 }

@@ -90,7 +90,7 @@ class CertificateManager
         sw.appendVariable( KEY_SIZE_FLAG, String.valueOf( settings.getKeySize()), true );
 
         sw.appendComment( "USB Key indicator" );
-        sw.appendVariable( USB_FLAG, String.valueOf( settings.isCaKeyOnUsb()));
+        sw.appendVariable( USB_FLAG, String.valueOf( settings.getCaKeyOnUsb()));
 
         sw.appendLines( DEFAULTS );
 
@@ -98,6 +98,17 @@ class CertificateManager
         
         callScript( GENERATE_BASE_SCRIPT );
     }
+
+    public void createClient( VpnClient client ) throws TransformException
+    {
+        callCreateClientScript( client.getName());
+    }
+
+    public void revokeClient( VpnClient client ) throws TransformException
+    {
+        callRevokeClientScript( client.getName());
+    }
+
 
     private void setDefaults( VpnSettings settings )
     {
@@ -118,8 +129,8 @@ class CertificateManager
         if ( setting == null || setting.trim().length() == 0 ) return false;
         return true;
     }
-
-    private void callClientScript( String commonName ) throws TransformException
+    
+    private void callCreateClientScript( String commonName ) throws TransformException
     {
         callScript( GENERATE_CLIENT_SCRIPT + " '" + commonName + "'" );
     }
@@ -145,6 +156,4 @@ class CertificateManager
             throw new TransformException( "Error generating base parameters", e );
         }
     }
-
-    
 }

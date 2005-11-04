@@ -11,7 +11,7 @@ import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.tran.openvpn.VpnTransform;
 import com.metavize.tran.openvpn.VpnClient;
 import com.metavize.tran.openvpn.VpnSettings;
-import com.metavize.tran.openvpn.VpnAddressGroup;
+import com.metavize.tran.openvpn.VpnGroup;
 
 /**
  *
@@ -85,48 +85,49 @@ public class RobertsJPanel extends javax.swing.JPanel {
         jPanel1.add(jTextField10, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 290, 270, 20));
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel1.setText("Server Name:");
+        jLabel1.setText("Organization:");
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 180, -1));
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel2.setText("CA Name(unecessary):");
+        jLabel2.setText("Organization Unit[x]:");
+        jTextField2.setEnabled( false );
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 50, 180, -1));
 
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel3.setText("Organization:");
+        jLabel3.setText("Country:");
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, 180, -1));
 
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel4.setText("Country(unecessary?):");
+        jLabel4.setText("Provice/State:");
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, 180, -1));
 
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel5.setText("Province/(State?):");
+        jLabel5.setText("Locality/City:");
         jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, 180, -1));
 
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel6.setText("Locality(City?):");
+        jLabel6.setText("email:");
         jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, 180, -1));
 
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel7.setText("email(unecessary):");
+        jLabel7.setText("key size:");
+        jTextField7.setText( "1536" );
         jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 200, 180, -1));
 
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel8.setText( "key size(combobox/slider):" );
-        jTextField8.setText( "1024" );
+        jLabel8.setText( "USB Key:" );
+        jTextField8.setText( String.valueOf( false ));
         jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 230, 180, -1));
 
         jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel9.setText("usb key:");
-        jTextField9.setText( String.valueOf( false ));
+        jLabel9.setText("unused:");
         jPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 260, 180, -1));
 
         jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel10.setText("jLabel10");
+        jLabel10.setText("unused:");
         jPanel1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 290, 180, -1));
 
-        acceptJButton.setText("Its go time!");
+        acceptJButton.setText("Generate Cert!");
         acceptJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 acceptJButtonActionPerformed(evt);
@@ -165,25 +166,25 @@ public class RobertsJPanel extends javax.swing.JPanel {
         VpnSettings settings = openvpn.getVpnSettings();
         
         // settings.setOrganizationUnit( jTextField1.getText());
-        settings.setOrganization( jTextField3.getText().trim());
-        settings.setCountry( jTextField4.getText().trim());
-        settings.setProvince( jTextField5.getText().trim());
-        settings.setLocality( jTextField6.getText().trim());
-        settings.setEmail( jTextField7.getText().trim());
-        settings.setKeySize( Integer.parseInt( jTextField8.getText().trim()));
-        settings.setIsCaKeyOnUsb( Boolean.parseBoolean( jTextField9.getText().trim()));
+        settings.setOrganization( jTextField1.getText().trim());
+        settings.setCountry( jTextField3.getText().trim());
+        settings.setProvince( jTextField4.getText().trim());
+        settings.setLocality( jTextField5.getText().trim());
+        settings.setEmail( jTextField6.getText().trim());
+        settings.setKeySize( Integer.parseInt( jTextField7.getText().trim()));
+        settings.setCaKeyOnUsb( Boolean.parseBoolean( jTextField8.getText().trim()));
         
         settings = openvpn.generateBaseParameters( settings );
 
         /* This is ignored until the key is generated */
-        jTextField1.setText( settings.getOrganizationUnit());
-        jTextField3.setText( settings.getOrganization());
-        jTextField4.setText( settings.getCountry());
-        jTextField5.setText( settings.getProvince());
-        jTextField6.setText( settings.getLocality());
-        jTextField7.setText( settings.getEmail());
-        jTextField8.setText( String.valueOf( settings.getKeySize()));
-        jTextField9.setText( String.valueOf( settings.isCaKeyOnUsb()));
+        jTextField1.setText( settings.getOrganization());
+        jTextField2.setText( settings.getOrganizationUnit());
+        jTextField3.setText( settings.getCountry());
+        jTextField4.setText( settings.getProvince());
+        jTextField5.setText( settings.getLocality());
+        jTextField6.setText( settings.getEmail());
+        jTextField7.setText( String.valueOf( settings.getKeySize()));
+        jTextField8.setText( String.valueOf( settings.getCaKeyOnUsb()));
     }//GEN-LAST:event_acceptJButtonActionPerformed
     
     

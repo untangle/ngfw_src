@@ -24,7 +24,7 @@ CA_KEY="${KEY_GEN_DIR}/ca.key"
 CA_CRT="${KEY_GEN_DIR}/ca.crt"
 
 ## This is where all of the server parameters are placed.
-BASE_DIR=@PREFIX@/etc/openvpn
+BASE_DIR=/etc/openvpn
 KEY_DIR=${BASE_DIR}/keys
 
 ## Issuing ten year certs

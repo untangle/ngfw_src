@@ -28,5 +28,5 @@ done
 hibernate_props=../output/usr/share/metavize/conf/hibernate.properties
 
 $JAVA_HOME/bin/java -cp "$CLASSPATH" \
-    net.sf.hibernate.tool.hbm2ddl.SchemaExport \
+    org.hibernate.tool.hbm2ddl.SchemaExport \
     --properties="$hibernate_props" --text $mvvm_hbms $tran_hbms
