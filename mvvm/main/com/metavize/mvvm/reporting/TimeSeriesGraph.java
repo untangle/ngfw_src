@@ -48,6 +48,9 @@ public abstract class TimeSeriesGraph extends ReportGraph
     protected String timeAxisLabel;
     protected String valueAxisLabel;
 
+    protected int MOVING_AVERAGE_MINUTES = 6;
+    protected int MINUTES_PER_BUCKET = 3;
+
     protected TimeSeriesGraph()
     {
 
@@ -73,9 +76,7 @@ public abstract class TimeSeriesGraph extends ReportGraph
                 timeAxisLabel = "day of week";
 	}
 	*/
-	timeAxisLabel = "time of day";
-        valueAxisLabel = (String) gpv(PARAM_VALUE_AXIS_LABEL);
-        if (valueAxisLabel == null)
-            valueAxisLabel = "kB/sec";
+	timeAxisLabel = "Time of day";
+
     }
 }

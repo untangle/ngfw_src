@@ -1,4 +1,5 @@
 reports/FirewallMaster.jasper:Firewall--Summary:Summary
 reports/FirewallBlockPassDetail.jasper:Firewall--Block_And_Pass_Events:Block and Pass Events
 com.metavize.tran.firewall.reports.FirewallSummarizer:summarizer:Summarizer
+com.metavize.tran.firewall.reports.SummaryGraph:summaryGraph:Firewall--Summary_Graph
 reportTitlePrefix:parameter:none

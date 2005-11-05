@@ -2,5 +2,6 @@ reports/PhishMaster.jasper:ClamPhish_AntiPhishing--Summary:Summary
 reports/PhishSmtpDetail.jasper:ClamPhish_AntiPhishing--Email_Incidents_SMTP:Emails (SMTP)
 reports/PhishDetail.jasper:ClamPhish_AntiPhishing--Email_Incidents:Emails (POP/IMAP)
 com.metavize.tran.clamphish.reports.PhishSummarizer:summarizer:Summarizer
+com.metavize.tran.clamphish.reports.SummaryGraph:summaryGraph:ClamPhish_AntiPhishing--Summary_Graph
 spamVendor:parameter:Clam
 reportTitlePrefix:parameter:none

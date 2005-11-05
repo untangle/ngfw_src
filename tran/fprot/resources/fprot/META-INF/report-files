@@ -3,5 +3,6 @@ reports/WebVirusDetail.jasper:F-Prot_AntiVirus--Web_Incidents:Web Incidents
 reports/FtpVirusDetail.jasper:F-Prot_AntiVirus--FTP_Incidents:FTP Incidents
 reports/EmailVirusDetail.jasper:F-Prot_AntiVirus--Email_Incidents:Email Incidents
 com.metavize.tran.virus.reports.VirusSummarizer:summarizer:Summarizer
+com.metavize.tran.virus.reports.SummaryGraph:summaryGraph:F-Prot_AntiVirus--Summary_Graph
 reportTitlePrefix:paramater:F-Prot
 virusVendor:parameter:F-Prot

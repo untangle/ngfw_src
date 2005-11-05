@@ -11,12 +11,15 @@
 
 package com.metavize.tran.reporting.reports;
 
+import java.awt.Color;
 import java.sql.*;
 import java.util.*;
 
 import com.metavize.mvvm.reporting.*;
 import net.sf.jasperreports.engine.JRDefaultScriptlet;
 import net.sf.jasperreports.engine.JRScriptletException;
+import org.jfree.chart.*;
+import org.jfree.chart.plot.*;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.time.Minute;
@@ -43,7 +46,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
     private long totalProcessTime = 0l;
 
     public SummaryGraph(){
-	this("Traffic", true, true, "Outgoing", "Incoming", "Total", "kB/sec.");
+	this("Traffic", true, true, "Outgoing Traffic", "Incoming Traffic", "Total", "Kilobytes/sec.");
     }
 
     // Produces a single line graph of one series
@@ -89,8 +92,6 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
             incomingDataset = new TimeSeries(incomingSeriesTitle, Minute.class);
         }
 
-	final int MOVING_AVERAGE_MINUTES = 5;
-	final int MINUTES_PER_BUCKET = 1;
 	final int BUCKETS = 1440 / MINUTES_PER_BUCKET;
 
         // TRUNCATE TIME TO MINUTES, COMPUTE NUMBER OF QUERIES
@@ -237,18 +238,23 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 			   + " (" + ((float)totalProcessTime/(float)(totalQueryTime+totalProcessTime))  + ")");
 	System.out.println("=====================");
 
-        TimeSeriesCollection tsc = new TimeSeriesCollection(dataset);
+        //TimeSeriesCollection tsc = new TimeSeriesCollection(dataset);
+	TimeSeriesCollection tsc = new TimeSeriesCollection();
         if (doThreeSeries) {
-            tsc.addSeries(incomingDataset);
             tsc.addSeries(outgoingDataset);
+            tsc.addSeries(incomingDataset);
         }
 
-        return ChartFactory.createTimeSeriesChart(chartTitle,
-                                                  timeAxisLabel,
-                                                  valueAxisLabel,
-                                                  tsc,
-                                                  true,
-                                                  true,
-                                                  false);
+	JFreeChart timeSeriesChart = ChartFactory.createTimeSeriesChart(chartTitle,
+									timeAxisLabel,
+									valueAxisLabel,
+									tsc,
+									true,
+									true,
+									false);
+	XYPlot plot = timeSeriesChart.getXYPlot();
+	plot.getRenderer().setSeriesPaint(0, new Color(0, 255, 0));
+	plot.getRenderer().setSeriesPaint(1, new Color(0, 0, 255));
+	return timeSeriesChart;
     }
 }

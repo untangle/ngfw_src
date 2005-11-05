@@ -1,4 +1,5 @@
 reports/AirgapMaster.jasper:Packet_Attack_Shield--Summary:Summary
 reports/AirgapResourceViolationsDetail.jasper:Packet_Attack_Shield--Resource_Violations:Resource Violations
 com.metavize.tran.airgap.reports.AirgapSummarizer:summarizer:Summarizer
+com.metavize.tran.airgap.reports.SummaryGraph:summaryGraph:Packet_Attack_Shield--Summary_Graph
 reportTitlePrefix:parameter:none

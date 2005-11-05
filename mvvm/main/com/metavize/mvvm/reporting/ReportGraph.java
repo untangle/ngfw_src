@@ -28,6 +28,8 @@ import java.awt.geom.Rectangle2D;
 import java.sql.*;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Map;
+import java.util.HashMap;
 
 import net.sf.jasperreports.engine.JRAbstractSvgRenderer;
 import net.sf.jasperreports.engine.JRDefaultScriptlet;
@@ -55,6 +57,13 @@ public abstract class ReportGraph
     protected Timestamp startDate;
     protected Timestamp endDate;
     protected int type;
+
+    protected Map<String,Object> extraParams;
+
+    protected void setExtraParams(Map<String,Object> extraParams){
+	this.extraParams = new HashMap<String,Object>(extraParams); // Make a copy just in case	
+    }
+
 
     protected ReportGraph()
     {

@@ -155,6 +155,7 @@ public class TranReporter {
                     ReportGraph reportGraph;
                     String name = tok.nextToken();
                     reportGraph = (ReportGraph) reportClass.newInstance();
+		    reportGraph.setExtraParams(extraParams);
                     logger.debug("Found graph: " + className);
                     String dailyFile = new File(tranDir, name + "--daily.jpg").getCanonicalPath();
                     processReportGraph(reportGraph, conn, dailyFile, Util.REPORT_TYPE_DAILY, Util.lastday, Util.midnight);
@@ -164,6 +165,7 @@ public class TranReporter {
                     processReportGraph(reportGraph, conn, monthlyFile, Util.REPORT_TYPE_MONTHLY, Util.lastmonth, Util.midnight);
                 } catch (Exception x) {
                     logger.error("Unable to generate summary graph", x);
+		    x.printStackTrace();
                 }
             }
             else {
