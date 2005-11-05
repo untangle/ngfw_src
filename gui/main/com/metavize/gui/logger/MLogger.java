@@ -16,6 +16,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Arrays;
 
 public class MLogger extends javax.swing.JFrame implements FilenameFilter {
 
@@ -40,8 +41,9 @@ public class MLogger extends javax.swing.JFrame implements FilenameFilter {
     private boolean[] updateNeeded;
     private File[] logFiles;
     private File logDirectory;
-    private int[] logLastCount;
 
+    private int lastBufferSize = -1; // in lines
+    private int currentBufferSize = 0;
     
     private StringBuffer outputStringBuffer;
     private JTextArea outputJTextArea;
@@ -133,18 +135,22 @@ public class MLogger extends javax.swing.JFrame implements FilenameFilter {
         File[] newFiles;
             
 	while(true){		
-	    try{		
-		// SLEEP AND PAUSE IF NECESSARY
-		Thread.sleep(THREAD_SLEEP_MILLIS);
-		if(DO_PAUSE)
+	    try{
+                // PAUSE IF NECESSARY
+                if(DO_PAUSE)
 		    continue;
-		
+                
 		// GET THE LIST OF FILES IN THE DIRECTORY
 		newFiles = logDirectory.listFiles(this);
-
+		
 		// CLEAR OUTPUT BUFFER
 		outputStringBuffer = new StringBuffer();
 
+		// DETERMINE BUFFER SIZE
+		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		    currentBufferSize = bufferJSlider.getValue();
+		}});
+		
 		// CASE: NO FILES TO VIEW
 		if( (newFiles == null) || (newFiles.length <= 0) ){
 		    outputStringBuffer.append( (new Date(System.currentTimeMillis())).toString()
@@ -152,8 +158,9 @@ public class MLogger extends javax.swing.JFrame implements FilenameFilter {
 		    initializeTabs();
 		    logFiles = null;
 		}		
-		// CASE: FILE SET HAS CHANGED, DO NEW VISUALIZATIONS
-		else if( !isSameFileSet(logFiles, newFiles) ){
+		// CASE: FILE SET HAS CHANGED, OR BUFFER SIZE HAS CHANGED, DO NEW VISUALIZATIONS
+		else if( !isSameFileSet(logFiles, newFiles) || (currentBufferSize != lastBufferSize) ){
+		    lastBufferSize = currentBufferSize;
 		    outputStringBuffer.append( (new Date(System.currentTimeMillis())).toString()
 					       + " log files set updated...  rereading log files." + "\n");		    
 		    for( File newFile : newFiles )
@@ -170,13 +177,12 @@ public class MLogger extends javax.swing.JFrame implements FilenameFilter {
 									   + "\n");
 			    }
 			}
-
+		    
 		    // CREATE AND INITIALIZE THE PROPER AMOUNT OF GENERAL RESOURCES
 		    logFiles = newFiles;
 		    logStreams = new BufferedInputStream[logFiles.length];
 		    updateNeeded = new boolean[logFiles.length];
 		    logs = new String[logFiles.length];
-		    logLastCount = new int[logFiles.length];
 		    for(int i = 0; i < logFiles.length; i++){
 			logStreams[i] = new BufferedInputStream( new FileInputStream(logFiles[i]) );
 			updateNeeded[i] = true;
@@ -189,6 +195,11 @@ public class MLogger extends javax.swing.JFrame implements FilenameFilter {
 			outputJTabbedPane.addTab("output", outputJScrollPane);
 			for(int i = 0; i < logFiles.length; i++){
 			    logJTextAreas[i] = new JTextArea();
+			    logJTextAreas[i].setEditable(false);
+			    Insets margin = logJTextAreas[i].getMargin();
+			    margin.left = 10;
+			    margin.right = 10;
+			    logJTextAreas[i].setMargin(margin);
 			    logJScrollPanes[i] = new JScrollPane(logJTextAreas[i]);
 			    outputJTabbedPane.addTab(logFiles[i].getName(), logJScrollPanes[i] );
 			}
@@ -209,11 +220,17 @@ public class MLogger extends javax.swing.JFrame implements FilenameFilter {
 		}});
 	    } 
 	    catch(Exception e){ e.printStackTrace(); }
-        }
-
+	    
+            // SLEEP
+            try{ Thread.sleep(THREAD_SLEEP_MILLIS); }
+            catch(Exception e){ e.printStackTrace(); }
+	    
+	}
     }
     
-   
+    
+    
+    
     private void initializeTabs(){
 	SwingUtilities.invokeLater( new Runnable(){ public void run(){
 	    int tabCount = outputJTabbedPane.getTabCount();
@@ -245,29 +262,51 @@ public class MLogger extends javax.swing.JFrame implements FilenameFilter {
 		else
 		    updateNeeded[i] = true;
 		// APPEND TO OUTPUT BUFFER
-                outputStringBuffer.append( (new Date(System.currentTimeMillis())).toString()
+                outputStringBuffer.append( new Date()
 					   + " Updating: "
 					   + logFiles[i].getCanonicalPath() + "\n");
 		// READ A STREAM
                 byte[] buffer = new byte[logStreams[i].available()];
                 logStreams[i].read(buffer);
                 logs[i] = new String( buffer );
-                logLastCount[i] = logs[i].length();
 	    }
 	    catch(Exception e){ e.printStackTrace(); }
 	}
 	// UPDATE ONLY CHANGED STREAMS AND OUTPUT BUFFER
 	try{
 	    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		int maxLineCount = bufferJSlider.getValue();
+		int currentLineCount;
+		// DO EACH OF THE LOGS
 		for(int i = 0; i < logStreams.length; i++){
 		    if( updateNeeded[i] ){
 			logJTextAreas[i].append( logs[i] );
-			outputJTabbedPane.setTitleAt(1 + i, "<html><font color=\"#FF0000\">" + logFiles[i].getName() + "</font></html>");
+			outputJTabbedPane.setTitleAt(1 + i, "<html><font color=\"#FF0000\">"
+						     + logFiles[i].getName() + "</font></html>");
+			currentLineCount = logJTextAreas[i].getLineCount();
+			if( currentLineCount > maxLineCount ){
+			    try{
+				int lineEndOffset = logJTextAreas[i].getLineEndOffset(currentLineCount-maxLineCount);
+				logJTextAreas[i].getDocument().remove(0,lineEndOffset);
+			    } catch(Exception e){ e.printStackTrace(); }
+			}
 			if(DO_AUTOSCROLL){
-			    logJTextAreas[i].setCaretPosition(logJTextAreas[i].getText().length());
-			    outputJTextArea.setCaretPosition(outputJTextArea.getText().length());
+			    JScrollBar scrollBar = logJScrollPanes[i].getVerticalScrollBar();
+			    scrollBar.setValue(scrollBar.getMaximum());
 			}
 		    }
+		}
+		// DO OUTPUT PANEL
+		currentLineCount = outputJTextArea.getLineCount();
+		if( currentLineCount > maxLineCount ){
+		    try{
+			int lineEndOffset = outputJTextArea.getLineEndOffset(currentLineCount-maxLineCount);
+			outputJTextArea.getDocument().remove(0,lineEndOffset);
+		    } catch(Exception e){ e.printStackTrace(); }
+		}		
+		if(DO_AUTOSCROLL){
+		    JScrollBar scrollBar = outputJScrollPane.getVerticalScrollBar();
+		    scrollBar.setValue(scrollBar.getMaximum());
 		}
 	    }});
 	}
@@ -310,9 +349,11 @@ public class MLogger extends javax.swing.JFrame implements FilenameFilter {
         jPanel2 = new javax.swing.JPanel();
         showApplianceLogsJCheckBox = new javax.swing.JCheckBox();
         showSystemLogsJCheckBox = new javax.swing.JCheckBox();
-        jPanel4 = new javax.swing.JPanel();
+        jPanel3 = new javax.swing.JPanel();
         showCurrentLogsJCheckBox = new javax.swing.JCheckBox();
         showBackupLogsJCheckBox = new javax.swing.JCheckBox();
+        jPanel4 = new javax.swing.JPanel();
+        bufferJSlider = new javax.swing.JSlider();
 
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
@@ -332,7 +373,7 @@ public class MLogger extends javax.swing.JFrame implements FilenameFilter {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.gridwidth = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
@@ -341,7 +382,7 @@ public class MLogger extends javax.swing.JFrame implements FilenameFilter {
 
         jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.Y_AXIS));
 
-        jPanel1.setBorder(new javax.swing.border.TitledBorder("Actions"));
+        jPanel1.setBorder(new javax.swing.border.TitledBorder(null, "Actions", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 11)));
         pauseJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
         pauseJCheckBox.setText("pause");
         pauseJCheckBox.addActionListener(new java.awt.event.ActionListener() {
@@ -365,13 +406,13 @@ public class MLogger extends javax.swing.JFrame implements FilenameFilter {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         getContentPane().add(jPanel1, gridBagConstraints);
 
         jPanel2.setLayout(new javax.swing.BoxLayout(jPanel2, javax.swing.BoxLayout.Y_AXIS));
 
-        jPanel2.setBorder(new javax.swing.border.TitledBorder("Filter: Type"));
+        jPanel2.setBorder(new javax.swing.border.TitledBorder(null, "Filter: Type", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 11)));
         showApplianceLogsJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
         showApplianceLogsJCheckBox.setText("appliances");
         showApplianceLogsJCheckBox.addActionListener(new java.awt.event.ActionListener() {
@@ -395,13 +436,13 @@ public class MLogger extends javax.swing.JFrame implements FilenameFilter {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 5);
         getContentPane().add(jPanel2, gridBagConstraints);
 
-        jPanel4.setLayout(new javax.swing.BoxLayout(jPanel4, javax.swing.BoxLayout.Y_AXIS));
+        jPanel3.setLayout(new javax.swing.BoxLayout(jPanel3, javax.swing.BoxLayout.Y_AXIS));
 
-        jPanel4.setBorder(new javax.swing.border.TitledBorder("Filter: Time"));
+        jPanel3.setBorder(new javax.swing.border.TitledBorder(null, "Filter: Time", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 11)));
         showCurrentLogsJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
         showCurrentLogsJCheckBox.setText("current");
         showCurrentLogsJCheckBox.addActionListener(new java.awt.event.ActionListener() {
@@ -410,7 +451,7 @@ public class MLogger extends javax.swing.JFrame implements FilenameFilter {
             }
         });
 
-        jPanel4.add(showCurrentLogsJCheckBox);
+        jPanel3.add(showCurrentLogsJCheckBox);
 
         showBackupLogsJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
         showBackupLogsJCheckBox.setText("backup");
@@ -420,12 +461,39 @@ public class MLogger extends javax.swing.JFrame implements FilenameFilter {
             }
         });
 
-        jPanel4.add(showBackupLogsJCheckBox);
+        jPanel3.add(showBackupLogsJCheckBox);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
         gridBagConstraints.ipadx = 10;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 5);
+        getContentPane().add(jPanel3, gridBagConstraints);
+
+        jPanel4.setLayout(new java.awt.GridBagLayout());
+
+        jPanel4.setBorder(new javax.swing.border.TitledBorder(null, "Tail Length (lines)", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 11)));
+        bufferJSlider.setFont(new java.awt.Font("Dialog", 0, 12));
+        bufferJSlider.setMajorTickSpacing(1000);
+        bufferJSlider.setMaximum(5000);
+        bufferJSlider.setMinimum(10);
+        bufferJSlider.setPaintLabels(true);
+        bufferJSlider.setPaintTicks(true);
+        bufferJSlider.setValue(200);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 10);
+        jPanel4.add(bufferJSlider, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 5);
         getContentPane().add(jPanel4, gridBagConstraints);
 
         java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
@@ -497,8 +565,10 @@ public class MLogger extends javax.swing.JFrame implements FilenameFilter {
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox autoscrollJCheckBox;
+    private javax.swing.JSlider bufferJSlider;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JTabbedPane outputJTabbedPane;
     private javax.swing.JCheckBox pauseJCheckBox;
