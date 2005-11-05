@@ -51,13 +51,10 @@ public class Visitor implements ProgressVisitor{
 	    currentByteIncrement = dp.getSize();
 	    String progressString = "Downloading file " + (currentFileIndex+1) + " of " + fileCountTotal
 		+ " : " + dp.getName()
-		+ " (" + dp.getSpeed() + ")";
+		+ " (" + byteCountTotal/1000 + "KBytes " + "@ "  + dp.getSpeed() + ")";
 	    progressBar.setString( progressString );
 	    float currentPercentComplete = ((float)(currentByteIndex + dp.getBytesDownloaded())) / ((float)byteCountTotal);
-	    progressString += " " + currentPercentComplete + " " + ( (int) (90f*currentPercentComplete) );
 	    progressBar.setValue( (int) (90f*currentPercentComplete) );
-	    System.err.println(progressString);
-	    System.err.println("indx: " + currentByteIndex + " dl: " + dp.getBytesDownloaded() + " tot: " + byteCountTotal + " %: " + currentPercentComplete);
 	}});
     }    
     
@@ -79,7 +76,7 @@ public class Visitor implements ProgressVisitor{
 	    isSuccessful = ic.getSuccess();
 	    isDone = true;
 	    if(ic.getSuccess())
-		progressBar.setString( "Installation successful" );
+		progressBar.setString( "Installation successful." );
 	    else
 		progressBar.setString( "Installation failed.  Please try again." );
 	    progressBar.setValue( 100 );
