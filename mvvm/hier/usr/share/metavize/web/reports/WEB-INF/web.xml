@@ -10,6 +10,11 @@
 
   <display-name>Reports</display-name>
 
+  <servlet-mapping>
+    <servlet-name>com.metavize.jsp.ReportsIndex_jsp</servlet-name>
+    <url-pattern>/archive</url-pattern>
+  </servlet-mapping>
+
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>Reports</web-resource-name>

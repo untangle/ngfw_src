@@ -1,19 +1,54 @@
-<%@ page language="java" import="com.metavize.mvvm.*, com.metavize.mvvm.client.*, com.metavize.mvvm.security.Tid, com.metavize.mvvm.tran.*, com.metavize.mvvm.tapi.*, com.metavize.mvvm.util.SessionUtil, org.apache.log4j.helpers.AbsoluteTimeDateFormat, java.util.Properties, java.net.URL, java.io.PrintWriter, javax.naming.*" %>
+
+<%@ page language="java" import="com.metavize.mvvm.*, com.metavize.mvvm.client.*, com.metavize.mvvm.security.Tid, com.metavize.mvvm.tran.*, com.metavize.mvvm.tapi.*, com.metavize.mvvm.util.SessionUtil, org.apache.log4j.helpers.AbsoluteTimeDateFormat, java.util.Properties, java.net.URL, java.io.*, java.util.Vector, java.util.Collections, java.util.Comparator, javax.naming.*" %>
 
 <%
-MvvmRemoteContext mvvm = MvvmRemoteContextFactory.factory().systemLogin(0);
-// XXX logins timeout
-//ServletContext sc = getServletContext();
-//MvvmRemoteContext mvvm = (MvvmRemoteContext) sc.getAttribute("mvvm");
-//if (mvvm == null) {
-//    mvvm = MvvmRemoteContextFactory.localLogin();
-//    sc.setAttribute("mvvm", mvvm);
-//}
-  ReportingManager reportingManager = mvvm.reportingManager();
 
-  boolean reportingEnabled = reportingManager.isReportingEnabled();
-  boolean reportsAvailable = reportingManager.isReportsAvailable();
-  if (!reportsAvailable) {
+	// ENUMERATE THE DIRECTORIES IN REPORTS
+	String path = System.getProperty("bunnicula.home") + "/web/reports";
+	File mvvmReportsFile = new File(path);
+	Vector<File> directories = new Vector<File>();
+	File[] allFiles = mvvmReportsFile.listFiles();
+	for( File file : allFiles ){
+		if( file.isDirectory()
+		    && (file.getName().charAt(4) == '-')
+		    && (file.getName().charAt(7) == '-') )
+			directories.add(file);
+	}
+
+	// ORDER THE DIRECTORIES
+	Comparator<File> directoryComparator = new Comparator<File>(){
+		public int compare(File f1, File f2){ 
+			String n1 = f1.getName();
+			String n2 = f2.getName();
+			try{
+				int y1 = Integer.parseInt(n1.substring(0, 4));
+				int y2 = Integer.parseInt(n2.substring(0, 4));
+				if( y1 > y2 )
+					return -1;
+				else if( y1 < y2 )
+					return 1;
+				int m1 = Integer.parseInt(n1.substring(5, 7));
+				int m2 = Integer.parseInt(n2.substring(5, 7));
+				if( m1 > m2 )
+					return -1;
+				else if( m1 < m2 )
+					return 1;
+				int d1 = Integer.parseInt(n1.substring(8, 10));
+				int d2 = Integer.parseInt(n2.substring(8, 10));
+				if( d1 > d2 )
+					return -1;
+				else if( d1 < d2 )
+					return 1;
+				else
+					return 0;
+			}
+			catch(Exception e){ return 0; }
+		}
+		public boolean equals(Object o){ return true; }
+		};
+	Collections.sort(directories, directoryComparator);
+	
+
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -61,6 +96,12 @@ a:hover {
     font: bold normal normal 25pt Arial,Sans-Serif;
     color: #777777;
 }
+
+.page_header_alternate {
+    font: normal normal normal 20pt Arial,Sans-Serif;
+    color: #777777;
+}
+
 
 h1 {
     font: normal normal bold 11pt Arial,Sans-Serif;
@@ -161,14 +202,24 @@ h4 {
             <img src="./images/spacer.gif" alt=" " width="1" height="1"/>
           </td>
           <td id="table_main_center">
-            <table>
+            <table width="100%">
               <tr>
-              <td valign="middle">
+              <td width="96" valign="middle">
                 <img src="./images/logo_no_text_shiny_96x96.gif" alt="Metavize logo" width="96" height="96"/>
               </td>
-              <td style="padding: 0px 0px 0px 10px" valign="middle">
-                <span class="page_header_title">Metavize EdgeReport</span>
+              <td style="padding: 0px 0px 0px 10px" class="page_header_title" align="left" valign="middle">
+		Metavize EdgeReport
               </td>
+	      <td align="right">
+		<table width="100%">
+		<tr><td class="page_header_alternate" align="right">
+			<b>Archives</b>
+		</td></tr>
+		<tr><td align="right">
+			> <a href="./current">View Current Report</a>
+		</td></tr>
+		</table>
+	      </td>
               </tr>
             </table>
           </td>
@@ -180,22 +231,21 @@ h4 {
 
     <tr>
     <td id="table_main_left"></td>
-    <td id="table_main_center">
-        <center>
-        <b><i>
-        No reports are available.<br/>
-        <br/>
+    <td id="table_main_center" style="padding: 15px 0px 0px 0px">
+	<hr width="100%" size="1" color="969696"/>
 
-        <% if(!reportingEnabled){ %>
-            EdgeReport is not installed into your rack or it is not turned on.<br/>
-            Reports are only generated when EdgeReport is installed and turned on.
-        <% } else{ %>
-                    <i>Please check back tomorrow morning.</i><br/>
-                    <i>Reports are generated every night automatically.</i>
-        <% } %>
+	<table width="100%" style="padding: 15px 0px 10px 0px">
+        <%
 
-        </i></b>
-        </center>
+	 	for(File file : directories){
+			out.write("<tr><td align=\"center\">");
+			out.write( "> <a href=\"./" + file.getName() + "\">" + file.getName() + "</a><br/>");
+			out.write("</td></tr>");
+		}
+
+	 %>
+	</table>
+	<hr width="100%" size="1" color="969696"/>
     </td>
     <td id="table_main_right"></td>
     </tr>
@@ -220,31 +270,3 @@ h4 {
 </BODY>
 </HTML>
 
-<%
-    } else {
-            // We can redirect them. If it fails (shouldn't with any modern
-            // browser), serve them the following backup page.
-            response.sendRedirect("./current");
-
-%>
-
-<html><head><title>Metavize EdgeReport</title>
-<STYLE><!---
-H1{font-family : sans-serif,Arial,Tahoma;color : white;
-  background-color : #0086b2;}
-BODY{font-family : sans-serif,Arial,Tahoma;color : black;
-  background-color : white;}
-B{color : white;background-color : #0086b2;} HR{color : #0086b2;}
---></STYLE> </head><body>
-<h1>Metavize EdgeReport - HTTP Status 302 - Moved Temporarily</h1>
-<HR size="1" noshade><p><b>type</b> Status report</p>
-<p><b>message</b> <u>Moved Temporarily</u></p>
-<p><b>description</b>
-<u>The requested resource (Moved Temporarily) has moved temporarily
-to a new location.</u></p>
-<HR size="1" noshade>
-</body></html>
-
-<%
-    }
-%>

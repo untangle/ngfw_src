@@ -205,7 +205,9 @@ h4 {
                 <img src="$web_base/images/logo_no_text_shiny_96x96.gif" alt="Metavize logo" width="96" height="96"/>
               </td>
               <td style="padding: 0px 0px 0px 10px" class="page_header_title" align="left" valign="middle">Metavize EdgeReport</td>
-              <td class="page_header_alternate" align="right">
+              <td align="right">
+              <table width="100%">
+                <tr><td class="page_header_alternate" align="right">
 EOF
 
 
@@ -240,6 +242,17 @@ EOF
 fi
 
 /bin/date -d'yesterday' +'%A %B %e, %Y' >> $main_index
+
+cat >> $main_index <<EOF
+    </td><tr>
+    </table>
+EOF
+
+if [ "$generate_email_index" = false ]; then
+cat >> $main_index <<EOF
+    > <a href="../archive">View Archived Reports</a>
+EOF
+fi
 
 cat >> $main_index <<EOF
               </td>
