@@ -101,3 +101,5 @@ if [ "${USE_USB_KEY}x" = "truex" ]; then
     saveToUsbKey
 fi
 
+## Update the client status file
+updateClientStatus

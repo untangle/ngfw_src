@@ -96,7 +96,7 @@ public class ClientJPanel extends javax.swing.JPanel {
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel2.setText("Client 1 Status:");
-        jLabel2.setEnabled(false);
+        jTextField2.setEnabled(false);
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 50, 180, -1));
 
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -105,7 +105,7 @@ public class ClientJPanel extends javax.swing.JPanel {
 
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel4.setText("Client 2 Status:");
-        jLabel4.setEnabled(false);
+        jTextField4.setEnabled(false);
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, 180, -1));
 
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -114,7 +114,7 @@ public class ClientJPanel extends javax.swing.JPanel {
 
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel6.setText("Client 3 Status:");
-        jLabel6.setEnabled(false);
+        jTextField6.setEnabled(false);
         jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, 180, -1));
 
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -123,7 +123,7 @@ public class ClientJPanel extends javax.swing.JPanel {
 
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel8.setText( "Client 4 Status:" );
-        jLabel8.setEnabled(false);
+        jTextField8.setEnabled(false);
         jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 230, 180, -1));
 
         jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -132,7 +132,7 @@ public class ClientJPanel extends javax.swing.JPanel {
 
         jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel10.setText("Client 5 Status:");
-        jLabel10.setEnabled(false);
+        jTextField10.setEnabled(false);
         jPanel1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 290, 180, -1));
 
         acceptJButton.setText("Generate Client!");
@@ -164,6 +164,7 @@ public class ClientJPanel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         add(jScrollPane1, gridBagConstraints);
 
+        updateClientList( openvpn.getVpnSettings());
     }//GEN-END:initComponents
 
     private void cancelJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelJButtonActionPerformed
@@ -277,7 +278,7 @@ public class ClientJPanel extends javax.swing.JPanel {
         field.setText( value );
 
         /* XXX Need to also get the status of the key */
-        statusField.setText( "" + client.getAddress());
+        statusField.setText( "" + client.getAddress() + " " + client.getCertificateStatus());
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

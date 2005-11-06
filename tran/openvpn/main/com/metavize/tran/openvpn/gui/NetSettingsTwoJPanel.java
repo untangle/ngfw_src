@@ -6,6 +6,7 @@
 
 package com.metavize.tran.openvpn.gui;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
 
@@ -17,6 +18,7 @@ import com.metavize.tran.openvpn.VpnTransform;
 import com.metavize.tran.openvpn.VpnClient;
 import com.metavize.tran.openvpn.VpnSettings;
 import com.metavize.tran.openvpn.VpnGroup;
+import com.metavize.tran.openvpn.ServerSiteNetwork;
 
 /**
  *
@@ -90,18 +92,15 @@ public class NetSettingsTwoJPanel extends javax.swing.JPanel {
         jPanel1.add(jTextField10, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 290, 270, 20));
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel1.setText("Exported Internal Address:");
-        jTextField1.setText( "true" );
+        jLabel1.setText("Exported Internal:");
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 180, -1));
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel2.setText("Exported External Address 1:");
-        jTextField2.setText( "false" );
+        jLabel2.setText("Exported External:");
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 50, 180, -1));
 
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel3.setText("Exported Network 1:");
-        jTextField3.setText( "1.2.3.4 255.255.255.0" );
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, 180, -1));
 
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -161,73 +160,74 @@ public class NetSettingsTwoJPanel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         add(jScrollPane1, gridBagConstraints);
 
+        update( openvpn.getVpnSettings());
+
     }//GEN-END:initComponents
 
     private void cancelJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelJButtonActionPerformed
-        VpnSettings settings = openvpn.getVpnSettings();
-        List groupList = settings.getGroupList();
-        
-        jTextField1.setText( String.valueOf( settings.isBridgeMode()));
-
-        if ( groupList != null && groupList.size() > 0 ) {
-            VpnGroup group = (VpnGroup)groupList.get( 0 );
-            jTextField2.setText( group.getAddress().toString());
-            jTextField3.setText( group.getNetmask().toString());
-        }
+        update( openvpn.getVpnSettings());
     }//GEN-LAST:event_cancelJButtonActionPerformed
 
     private void acceptJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acceptJButtonActionPerformed
         VpnSettings settings = openvpn.getVpnSettings();
-        List groupList = settings.getGroupList();
-        VpnGroup group;
         
-        if ( groupList == null ) {
-            groupList = new LinkedList();
-            group = new VpnGroup();
-            groupList.add( group );
-        } else {
-            if ( groupList.size() < 1 ) {
-                group = new VpnGroup();
-                groupList.add( group );
-            }
-        }
-
-        group = (VpnGroup)groupList.get( 0 );
-
-        settings.setGroupList( groupList );
-
-        // settings.setOrganizationUnit( jTextField1.getText());
-        settings.setBridgeMode( Boolean.parseBoolean( jTextField1.getText().trim()));
-
-        try {
-            group.setAddress( IPaddr.parse( jTextField2.getText().trim()));
-        } catch ( Exception e ) {
-            System.err.println( "Error parsing address: " + e );
-        }
-
-        try {
-            group.setNetmask( IPaddr.parse( jTextField3.getText().trim()));
-        } catch ( Exception e ) {
-            System.err.println( "Error parsing netmask: " + e );
-        }
-            
-        /* Save */
+        settings.setIsInternalExported( Boolean.parseBoolean( jTextField1.getText().trim()));
+        settings.setIsExternalExported( Boolean.parseBoolean( jTextField2.getText().trim()));
+        
+        List siteList = new LinkedList();
+        addSite( jTextField3, siteList );
+        addSite( jTextField4, siteList );
+        addSite( jTextField5, siteList );
+        settings.setExportedAddressList( siteList );
+        
         openvpn.setVpnSettings( settings );
         
-        /* Get */
-        settings = openvpn.getVpnSettings();
-        
-        jTextField1.setText( String.valueOf( settings.isBridgeMode()));
-
-        groupList = settings.getGroupList();
-                
-        if ( groupList != null && groupList.size() > 0 ) {
-            group = (VpnGroup)groupList.get( 0 );
-            jTextField2.setText( group.getAddress().toString());
-            jTextField3.setText( group.getNetmask().toString());
-        }        
+        update( openvpn.getVpnSettings());
     }//GEN-LAST:event_acceptJButtonActionPerformed
+
+    private void addSite( javax.swing.JTextField field, List siteList )
+    {
+        String value   = field.getText().trim();
+        
+        if ( value.length() == 0 ) return;
+
+        String data[] = field.getText().trim().split( " " );
+
+        if ( data.length != 2 ) {
+            System.err.println( "A site should contain 2 items [" + value + "]" );
+            return;
+        }
+        
+        try {
+            String network = data[0];
+            String netmask = data[1];
+            ServerSiteNetwork site = new ServerSiteNetwork();
+            site.setNetwork( IPaddr.parse( network ));
+            site.setNetmask( IPaddr.parse( netmask ));
+            siteList.add( site );
+        } catch ( Exception e ) {
+            System.err.println( "Error parsing network or netmask: " + e );
+        }
+    }
+
+    private void updateSite( javax.swing.JTextField field, Iterator iter )
+    {
+        if ( !iter.hasNext()) return;
+
+        ServerSiteNetwork site = (ServerSiteNetwork)iter.next();
+        field.setText( "" + site.getNetwork() + " " + site.getNetmask());
+    }
     
+    private void update( VpnSettings settings )
+    {
+        jTextField1.setText( String.valueOf( settings.getIsInternalExported()));
+        jTextField2.setText( String.valueOf( settings.getIsExternalExported()));
+
+        Iterator iter = settings.getExportedAddressList().iterator();
+        updateSite( jTextField3, iter );
+        updateSite( jTextField4, iter );
+        updateSite( jTextField5, iter );
+    }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton acceptJButton;

@@ -98,6 +98,12 @@ public class VpnGroup extends Rule implements Validatable
     {
         this.intf = intf;
     }
+
+    /* This is the name that is used as the common name in the certificate */
+    public String getInternalName()
+    {
+        return getName().trim().toLowerCase();
+    }
     
     public void validate() throws Exception
     {

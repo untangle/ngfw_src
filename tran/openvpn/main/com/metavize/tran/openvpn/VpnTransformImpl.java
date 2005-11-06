@@ -52,6 +52,16 @@ public class VpnTransformImpl extends AbstractTransform
 
     public void setVpnSettings( final VpnSettings settings )
     {
+        /* Attempt to assign all of the clients addresses */
+        try {
+            this.openVpnManager.assignAddresses( settings );
+        } catch ( TransformException exn ) {
+            logger.error( "Could not save VPN settings", exn );
+        }
+
+        /* Update the status/generate all of the certificates for clients */
+        this.certificateManager.updateCertificateStatus( settings );
+
         TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork( Session s )

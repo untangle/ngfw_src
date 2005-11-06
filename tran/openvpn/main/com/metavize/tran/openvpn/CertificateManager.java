@@ -10,7 +10,19 @@
  */
 package com.metavize.tran.openvpn;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
+
 import java.util.Random;
+
+import org.apache.log4j.Logger;
 
 import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.tran.TransformException;
@@ -56,12 +68,20 @@ class CertificateManager
         CA_NAME_FLAG     + "=" + "ca.${DOMAIN}",
     };
 
+    private static final String EMPTY_ARRAY[] = new String[0];
+
     private static final String GENERATE_BASE_SCRIPT   = VPN_SCRIPT_BASE + "/generate-base";
     private static final String GENERATE_CLIENT_SCRIPT = VPN_SCRIPT_BASE + "/generate-client";
     private static final String REVOKE_CLIENT_SCRIPT   = VPN_SCRIPT_BASE + "/revoke-client";
     
     /* Name of the file that stores the configuration data */
-    private static final String CONFIG_FILE       = VPN_CONF_BASE + "/openvpn_base_cfg";
+    /* The first item is V if the client common name is valid, and R if it has been revoked */
+    private static final String OPENSSL_VALID_FLAG = "V";
+
+    private static final String VPN_CLIENT_STATUS_FILE = VPN_CONF_BASE + "/openvpn/client_status.txt";
+    private static final String CONFIG_FILE            = VPN_CONF_BASE + "/openvpn_base_cfg";
+
+    private final Logger logger = Logger.getLogger( this.getClass());
 
     private final Random random = new Random();
 
@@ -99,14 +119,112 @@ class CertificateManager
         callScript( GENERATE_BASE_SCRIPT );
     }
 
+    /* Update the status of the certificate, (granted or revoked), and automatically
+     * create a cert if a client doesn't have one */
+    void updateCertificateStatus( VpnSettings settings )
+    {
+        /* Read out the index file */
+        Map<String,Boolean> certificateStatusMap = generateCertificateStatusMap();
+        Set<String> usedNameSet = new HashSet<String>();
+
+        for ( VpnClient client : (List<VpnClient>)settings.getClientList()) {
+            String name = client.getInternalName();
+            Boolean status = certificateStatusMap.remove( name );
+
+            /* Cert doesn't exist for this client, create a new one */
+            if ( status == null ) {
+                if ( usedNameSet.contains( name )) {
+                    logger.error( "Client [" + name + " ] common name is listed twice" );
+                    continue;
+                }
+
+                try {
+                    callCreateClientScript( name );
+                    /* Indicate that the client has a valid certificate */
+                    client.setCertificateStatusValid();
+                } catch ( TransformException e ) {
+                    logger.error( "Unable to create a certificate for '" + name + "'", e );
+                    client.setCertificateStatusRevoked();
+                }
+            } else {
+                if ( status ) client.setCertificateStatusValid();
+                else          client.setCertificateStatusRevoked();                
+            }
+
+            if ( !usedNameSet.add( name )) logger.warn( "Used name set already contained [" + name + "]" );
+        }
+        
+        /* Revoke all of the clients that have been deleted */
+        for ( Map.Entry<String,Boolean> entry  : certificateStatusMap.entrySet()) {
+            String name    = entry.getKey();
+            Boolean status = entry.getValue();
+            
+            try {
+                /* If necessary revoke the certificate for this user */
+                if ( status ) callRevokeClientScript( name );
+            } catch ( TransformException e ) {
+                logger.error( "Unable to revoke the certificate for [" + name + "]", e );
+            }
+        }
+    }
+    
+    private Map<String,Boolean> generateCertificateStatusMap()
+    {
+        BufferedReader in = null;
+        Map<String,Boolean> certificateStatusMap = new HashMap<String,Boolean>();
+
+        try {
+            in = new BufferedReader(new FileReader( VPN_CLIENT_STATUS_FILE ));
+            String line;
+            while (( line = in.readLine()) != null ) parseCertificate( line, certificateStatusMap );
+        } catch ( FileNotFoundException ex ) {
+            logger.warn( "The file: " + VPN_CLIENT_STATUS_FILE  + " does not exist" );
+        } catch ( Exception ex ) {
+            logger.error( "Error reading file: " + VPN_CLIENT_STATUS_FILE, ex );
+        } finally {
+            try {
+                if ( in != null )  in.close();
+            } catch ( Exception ex ) {
+                logger.error( "Unable to close file: " + VPN_CLIENT_STATUS_FILE, ex );
+            }
+        }
+        
+        return certificateStatusMap;
+    }
+    
+    private void parseCertificate( String line, Map<String,Boolean> map )
+    {
+        String data[] = line.split( " " );
+        
+        if ( data.length != 2 ) {
+            logger.error( "Invalid line: '" + line + "'" );
+            return;
+        }
+        
+        boolean isValid   = ( data[0].equalsIgnoreCase( OPENSSL_VALID_FLAG ));
+        String clientName = data[1].replace( "_", " " );
+
+        Boolean status = map.get( clientName );
+        if ( status == null || status == false ) {
+            map.put( clientName, isValid );
+        } else {
+            /* This means the status is true */
+            if ( isValid == true ) {
+                logger.error( "Client " + clientName + " has two valid certificates" );
+            }
+            /* Otherwise, ignore, because one valid cert means at least one of the client's certs
+             * hasn't been revoked */
+        }
+    }
+
     public void createClient( VpnClient client ) throws TransformException
     {
-        callCreateClientScript( client.getName());
+        callCreateClientScript( client.getInternalName());
     }
 
     public void revokeClient( VpnClient client ) throws TransformException
     {
-        callRevokeClientScript( client.getName());
+        callRevokeClientScript( client.getInternalName());
     }
 
 
@@ -132,28 +250,44 @@ class CertificateManager
     
     private void callCreateClientScript( String commonName ) throws TransformException
     {
-        callScript( GENERATE_CLIENT_SCRIPT + " '" + commonName + "'" );
+        callScript( GENERATE_CLIENT_SCRIPT, new String[] { commonName } );
     }
 
     private void callRevokeClientScript( String commonName ) throws TransformException
     {
-        callScript( REVOKE_CLIENT_SCRIPT + " '" + commonName + "'" );
+        callScript( REVOKE_CLIENT_SCRIPT, new String[] { commonName  } );
     }
 
     private void callScript( String scriptName ) throws TransformException
     {
+        callScript( scriptName, EMPTY_ARRAY );
+    }
+    
+    /* Done with an array to exec to fix common names that have spaces in them
+     * If the string 'sh scriptName "common name"' is used, the quotes make it 
+     * into the common name */
+    private void callScript( String scriptName, String args[] ) throws TransformException
+    {
         /* Run the script to generate the base parameters */
         /* Call the rule generator */
+        
+        String input[] = new String[2 + args.length];
+        int c = 0;
+        input[c++] = "sh";
+        input[c++] = scriptName;
+        for ( String arg : args ) input[c++] = arg;
+    
         try {
             int code = 0;
-            Process p = Runtime.getRuntime().exec( "sh " + scriptName );
+            Process p = Runtime.getRuntime().exec( input );
             code = p.waitFor();
             
-            if ( code != 0 ) throw new TransformException( "Error generating base parameters: " + code );
+            if ( code != 0 ) throw new TransformException( "Error executing script [" + scriptName + "]: " 
+                                                           + code );
         } catch ( TransformException e ) {
             throw e;
         } catch( Exception e ) {
-            throw new TransformException( "Error generating base parameters", e );
+            throw new TransformException( "Error executing script [" + scriptName + "]", e );
         }
     }
 }

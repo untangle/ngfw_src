@@ -16,6 +16,9 @@ export KEY_GEN_DIR=@MVVM_CONF@/openvpn
 export INDEX_FILE=${KEY_GEN_DIR}/index.txt
 export SERIAL_FILE=${KEY_GEN_DIR}/serial
 
+## This is the client status file that java uses to check the certificate status for each client
+CLIENT_STATUS_FILE="${KEY_GEN_DIR}/client_status.txt"
+
 ## Default parameters and file locations for the certificates
 OPENSSL="opensslDbg"
 
@@ -56,4 +59,53 @@ function removeSpaces() {
     ## don't know why but this works, and just 'echo ${*// /_}' doesn't.
     local val="$*"
     echo ${val// /_}
+}
+
+function getSerialNumber() {
+    local crt=${1}
+
+    grep "Serial Number" ${crt} | sed 's/.*(0x\([^(]*\)).*/\1/g'
+}
+
+function isRevoked()
+{
+    local commonName="${1}"
+    local clientCrt=`getClientCrtFile ${commonName}`
+    
+    ## If the cert is there, it hasn't been revoked, (it is renamed after being revoked)
+    if [ -f ${clientCrt} ]; then
+        return
+    fi
+    
+    ## If there are any cert-revoked files, then the cert has been revoked.
+        
+    local search=`grep '^R' ${INDEX_FILE} | grep "CN=${commonName}"`
+
+    if [ -n "${search}" ]; then echo "true" ; fi
+}
+
+function getClientCrtFile()
+{
+    echo "${KEY_GEN_DIR}/client-${1}.crt"
+}
+
+function getClientKeyFile()
+{
+    echo "${KEY_GEN_DIR}/client-${1}.key"
+}
+
+## XXXX This function isn't used anymore
+function getClientRevokedCrtFile()
+{
+    local commonName="${1}"
+    local clientCrt=`getClientCrtFile ${commonName}`
+    local serialNumber=`getSerialNumber ${clientCrt}`
+    echo "${KEY_GEN_DIR}/client-revoked-${commonName}-${serialNumber}.crt"
+}
+
+## Write a new client status file which java uses to check the status of each client
+function updateClientStatus()
+{
+    ## Always delete the first line
+    sed -e "1d" -e 's/^\(R\|V\).*\/CN=/\1 /' ${INDEX_FILE} | uniq > ${CLIENT_STATUS_FILE}
 }

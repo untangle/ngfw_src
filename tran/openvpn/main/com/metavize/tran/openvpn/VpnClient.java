@@ -15,6 +15,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.LinkedList;
 
+import java.util.Map;
+import java.util.HashMap;
+
 import com.metavize.mvvm.tran.Rule;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.Validatable;
@@ -33,7 +36,7 @@ public class VpnClient extends Rule implements Validatable
 {
     // XXX update the serial version id
     // private static final long serialVersionUID = 4143567998376955882L;
-
+    
     private IPaddr address;            // may be null.
     
     // The address group to pull this client address
@@ -44,6 +47,8 @@ public class VpnClient extends Rule implements Validatable
     private List    exportedAddressList;
 
     private boolean isEdgeguard = false;
+
+    private String certificateStatus = "Unknown";
     
     // constructors -----------------------------------------------------------
     
@@ -134,12 +139,40 @@ public class VpnClient extends Rule implements Validatable
         this.isEdgeguard = isEdgeguard;
     }
 
+    /* This is the name that is used as the common name in the certificate */
+    public String getInternalName()
+    {
+        return getName().trim().toLowerCase();
+    }
+
     public void validate() throws Exception
     {
         /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
-        String name = getName().trim();
+        String name = getInternalName();
         if ( name.length() == 0 ) {
             throw new ValidateException( "A client cannot have an empty name" );
         }
     }
+
+    public String getCertificateStatus()
+    {
+        return this.certificateStatus;
+    }
+
+    public void setCertificateStatusUnknown( )
+    {
+        this.certificateStatus = "unknown";
+    }
+
+
+    public void setCertificateStatusValid( )
+    {
+        this.certificateStatus = "valid";
+    }
+
+    public void setCertificateStatusRevoked( )
+    {
+        this.certificateStatus = "revoked";
+    }
+
 }

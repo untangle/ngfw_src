@@ -52,8 +52,8 @@ public class VpnSettings implements Serializable, Validatable
     private boolean isBridgeMode = false;
     private boolean isEdgeGuardClient = false;
 
-    private boolean isOutsideExported = false;
-    private boolean isInsideExported = true;
+    private boolean isExternalExported = false;
+    private boolean isInternalExported = true;
     private List    exportedAddressList;
 
     private boolean keepAlive;
@@ -95,7 +95,7 @@ public class VpnSettings implements Serializable, Validatable
             for ( Iterator iter = groupList.iterator(); iter.hasNext() ; ) {
                 VpnGroup group = (VpnGroup)iter.next();
 
-                String name = group.getName().toLowerCase().trim();
+                String name = group.getInternalName();
 
                 if ( !nameSet.add( name )) {
                     throw new ValidateException( "Group names must all be unique:" + name );
@@ -108,7 +108,7 @@ public class VpnSettings implements Serializable, Validatable
 
             for ( Iterator iter = clientList.iterator() ; iter.hasNext() ; ) {
                 VpnClient client = (VpnClient)iter.next();
-                String name = client.getName().toLowerCase().trim();
+                String name = client.getInternalName();
                 if ( !nameSet.add( name )) {
                     throw new ValidateException( "Client names must all be unique:" + name );
                 }
@@ -154,6 +154,7 @@ public class VpnSettings implements Serializable, Validatable
     
     /**
      * @return whether the vpn is in bridge mode.
+     * @hibernate.property
      * column="is_bridge"
      */
     public boolean isBridgeMode()
@@ -168,6 +169,7 @@ public class VpnSettings implements Serializable, Validatable
 
     /**
      * @return whether this is an openvpn of another edgeguard client.
+     * @hibernate.property
      * column="is_edgeguard_client"
      */
     public boolean getIsEdgeGuardClient()
@@ -232,6 +234,36 @@ public class VpnSettings implements Serializable, Validatable
     }
 
     /**
+     * @return True if clients should be able to see the network on the internal interface
+     * @hibernate.property
+     * column="export_internal"
+     */
+    public boolean getIsInternalExported()
+    {
+        return this.isInternalExported;
+    }
+    
+    public void setIsInternalExported( boolean isInternalExported )
+    {
+        this.isInternalExported = isInternalExported;
+    }
+
+    /**
+     * @return True if clients should be able to see the network on the external interface
+     * @hibernate.property
+     * column="export_external"
+     */
+    public boolean getIsExternalExported()
+    {
+        return this.isExternalExported;
+    }
+    
+    public void setIsExternalExported( boolean isExternalExported )
+    {
+        this.isExternalExported = isExternalExported;
+    }
+
+    /**
      * The list of exported networks for this site.
      *
      * @return the list of exported networks for this site.
@@ -258,6 +290,7 @@ public class VpnSettings implements Serializable, Validatable
     /**
      * True if clients should be allowed to see other clients 
      * @return whether the vpn is in bridge mode.
+     * @hibernate.property
      * column="expose_clients"
      */
     public boolean getExposeClients()
@@ -269,10 +302,11 @@ public class VpnSettings implements Serializable, Validatable
     {
         this.exposeClients = exposeClients;
     }
-
+    
     /**
      * True if clients should keep the connection alive with pings. (may want to hide this from the user)
      * @return keep alive
+     * @hibernate.property
      * column="keep_alive"
      */
     public boolean getKeepAlive()
@@ -286,8 +320,8 @@ public class VpnSettings implements Serializable, Validatable
     }
 
     /**
-     * Maximum number of concurrent clients.(probably not exposed)
-     * @return  max clients.
+     * @return Maximum number of concurrent clients.(probably not exposed)
+     * @hibernate.property
      * column="max_clients"
      */
     public int getMaxClients()

@@ -2,9 +2,7 @@
 
 exec >> @MVVM_LOG@/openvpn.log 2>&1
 
-commonName="$1"
-
-GLOBALS=@MVVM_HOME@/vpn/globals
+GLOBALS=@MVVM_HOME@/openvpn/globals
 
 ## There must be a configuration file 
 if [ -r ${GLOBALS} ]; then
@@ -14,9 +12,11 @@ else
     exit -2
 fi
 
+## Convert spaces to _
+commonName=`removeSpaces $1`
 
-
-validateBase() {
+validateBase()
+{
     if [ "${commonName}x" = "x" ]; then
         echo "Must specify a common name for the key"
         exit -3
@@ -34,7 +34,18 @@ function revokeClient()
 {
     local clientCrl=`mktemp`
     local revokeTest=`mktemp`
-    local clientCrt="${KEY_GEN_DIR}/client-${commonName}.crt"
+    local clientCrt=`getClientCrtFile ${commonName}`
+    local clientKey=`getClientKeyFile ${commonName}`
+
+    if [ ! -f ${clientCrt} ]; then
+        echo "The client certificate for '${commonName} does not exist"
+        return
+    fi
+
+    ## This is not necessary since the keystore keeps a copy of every cert it
+    ## ever generates in ${serialNumber}.pem
+    ## 
+    ## local clientRevokedCrt=`getClientRevokedCrtFile ${commonName}`
 
     export COMMON_NAME=${commonName}
 
@@ -43,14 +54,26 @@ function revokeClient()
     
     # generate a new CRL
     ${OPENSSL} ca -gencrl -out ${clientCrl} -config ${OPENSSL_CFG_FILE}
-    cat ${CA_CRT} ${clientCrl} >${revokeTest}
+    cat ${CA_CRT} ${clientCrl} > ${revokeTest}
     
     # verify the revocation
     ${OPENSSL} verify -CAfile ${revokeTest} -crl_check ${clientCrt}
-
+    
+    ## Remove the key.
+    ## Consider shredding the private key.
+    rm -f ${clientKey}
+    
+    ## Move the cert out of the way
+    rm -f ${clientCrt}
+    
     rm -f ${clientCrl}
     rm -f ${revokeTest}
 }
+
+if [ -n "`isRevoked ${commonName}`" ]; then
+    echo "The cert for ${commonName} is already revoked"
+    exit 0
+fi
 
 ## Check for the USB key if necessary
 validateUsbKey
@@ -60,6 +83,9 @@ validateBase
 
 ## Generate the client key
 revokeClient
+
+## Update the client status file
+updateClientStatus
 
 
 

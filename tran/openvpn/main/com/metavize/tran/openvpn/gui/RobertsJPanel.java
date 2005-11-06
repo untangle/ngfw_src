@@ -156,10 +156,12 @@ public class RobertsJPanel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         add(jScrollPane1, gridBagConstraints);
 
+        updateBaseParameters( openvpn.getVpnSettings());
+
     }//GEN-END:initComponents
 
     private void cancelJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelJButtonActionPerformed
-        
+        updateBaseParameters( openvpn.getVpnSettings());
     }//GEN-LAST:event_cancelJButtonActionPerformed
 
     private void acceptJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acceptJButtonActionPerformed
@@ -174,9 +176,11 @@ public class RobertsJPanel extends javax.swing.JPanel {
         settings.setKeySize( Integer.parseInt( jTextField7.getText().trim()));
         settings.setCaKeyOnUsb( Boolean.parseBoolean( jTextField8.getText().trim()));
         
-        settings = openvpn.generateBaseParameters( settings );
+        updateBaseParameters( openvpn.generateBaseParameters( settings ));
+    }//GEN-LAST:event_acceptJButtonActionPerformed
 
-        /* This is ignored until the key is generated */
+    private void updateBaseParameters( VpnSettings settings )
+    {
         jTextField1.setText( settings.getOrganization());
         jTextField2.setText( settings.getOrganizationUnit());
         jTextField3.setText( settings.getCountry());
@@ -185,8 +189,7 @@ public class RobertsJPanel extends javax.swing.JPanel {
         jTextField6.setText( settings.getEmail());
         jTextField7.setText( String.valueOf( settings.getKeySize()));
         jTextField8.setText( String.valueOf( settings.getCaKeyOnUsb()));
-    }//GEN-LAST:event_acceptJButtonActionPerformed
-    
+    }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton acceptJButton;

@@ -72,7 +72,14 @@ create table tr_openvpn_settings (
         org text,
         org_unit text,
         email text,
+        max_clients int4,
+        is_edgeguard_client bool,
+        export_internal bool,
+        export_external bool,
         is_ca_on_usb bool,
+        is_bridge bool,
+        expose_clients bool,
+        keep_alive bool,
         primary key (ID));
 
 alter table tr_openvpn_c_site_network add constraint FKF75374E830D9EF2D
