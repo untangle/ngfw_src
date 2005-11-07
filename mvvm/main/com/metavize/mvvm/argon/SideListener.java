@@ -18,11 +18,11 @@ import com.metavize.jvector.SourceEndpointListener;
 
 class SideListener implements SinkEndpointListener, SourceEndpointListener
 {
-    protected int txChunks = 0;
-    protected int txBytes  = 0;
+    protected long txChunks = 0;
+    protected long txBytes  = 0;
 
-    protected int rxChunks = 0;
-    protected int rxBytes  = 0;
+    protected long rxChunks = 0;
+    protected long rxBytes  = 0;
 
     protected boolean isSourceShutdown = false;
     protected boolean isSinkShutdown   = false;
