@@ -50,7 +50,7 @@ public class VpnGroup extends Rule implements Validatable
      * @hibernate.property
      * type="com.metavize.mvvm.type.IPaddrUserType"
      * @hibernate.column
-     * name="client_pool_address"
+     * name="address"
      * sql-type="inet"
      */
     public IPaddr getAddress()
@@ -71,7 +71,7 @@ public class VpnGroup extends Rule implements Validatable
      * @hibernate.property
      * type="com.metavize.mvvm.type.IPaddrUserType"
      * @hibernate.column
-     * name="client_pool_netmask"
+     * name="netmask"
      * sql-type="inet"
      */
     public IPaddr getNetmask()

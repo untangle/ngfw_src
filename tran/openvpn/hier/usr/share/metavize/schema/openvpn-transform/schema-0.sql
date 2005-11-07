@@ -49,8 +49,8 @@ create table tr_openvpn_client (
 
 create table tr_openvpn_group (
         RULE_ID int8 not null,
-        client_pool_address inet,
-        client_pool_netmask inet,
+        address inet,
+        netmask inet,
         NAME text,
         CATEGORY text,
         DESCRIPTION text,
@@ -64,6 +64,7 @@ create table tr_openvpn_group (
 create table tr_openvpn_settings (
         ID int8 not null,
         TID int8 not null,
+        server_address inet,
         domain text,
         key_size int4,
         country text,

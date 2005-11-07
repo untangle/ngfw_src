@@ -52,6 +52,9 @@ public class VpnSettings implements Serializable, Validatable
     private boolean isBridgeMode = false;
     private boolean isEdgeGuardClient = false;
 
+    /* The virtual address of the vpn server */
+    private IPaddr  serverAddress;
+
     private boolean isExternalExported = false;
     private boolean isInternalExported = true;
     private List    exportedAddressList;
@@ -88,23 +91,25 @@ public class VpnSettings implements Serializable, Validatable
     public void validate() throws Exception
     {
         /* XXXXXXXXXXX */
-
-        if ( groupList != null ) {
-            Set nameSet = new HashSet();
+        
+        if (( groupList == null ) || ( groupList.size() == 0 )) throw new ValidateException( "No groups" );
+        
+        Set nameSet = new HashSet();
+        
+        for ( Iterator iter = groupList.iterator(); iter.hasNext() ; ) {
+            VpnGroup group = (VpnGroup)iter.next();
+            /* XXXX Have to check if these are all in the correct range */
             
-            for ( Iterator iter = groupList.iterator(); iter.hasNext() ; ) {
-                VpnGroup group = (VpnGroup)iter.next();
-
-                String name = group.getInternalName();
-
-                if ( !nameSet.add( name )) {
-                    throw new ValidateException( "Group names must all be unique:" + name );
-                }
+            String name = group.getInternalName();
+            
+            if ( !nameSet.add( name )) {
+                throw new ValidateException( "Group names must all be unique:" + name );
             }
         }
-        
+
+        /* XXX??? Should there be a check for no clients */
         if ( clientList != null ) {
-            Set nameSet = new HashSet();
+            nameSet.clear();
 
             for ( Iterator iter = clientList.iterator() ; iter.hasNext() ; ) {
                 VpnClient client = (VpnClient)iter.next();
@@ -233,6 +238,26 @@ public class VpnSettings implements Serializable, Validatable
     public void setClientList( List clientList )
     {
         this.clientList = clientList;
+    }
+
+    /**
+     * Static address for the openvpn server.
+     *
+     * @return virtual address of the open vpn server.
+     * @hibernate.property
+     * type="com.metavize.mvvm.type.IPaddrUserType"
+     * @hibernate.column
+     * name="server_address"
+     * sql-type="inet"
+     */
+    public IPaddr getServerAddress()
+    {
+        return this.serverAddress;
+    }
+
+    public void setServerAddress( IPaddr serverAddress )
+    {
+        this.serverAddress = serverAddress;
     }
 
     /**

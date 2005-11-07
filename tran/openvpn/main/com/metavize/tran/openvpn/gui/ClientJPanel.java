@@ -288,7 +288,6 @@ public class ClientJPanel extends javax.swing.JPanel {
         
         field.setText( value );
 
-        /* XXX Need to also get the status of the key */
         statusField.setText( "" + client.getAddress() + " " + client.getCertificateStatus());
     }
     

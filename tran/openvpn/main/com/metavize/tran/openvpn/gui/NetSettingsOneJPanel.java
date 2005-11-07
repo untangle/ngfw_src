@@ -96,17 +96,18 @@ public class NetSettingsOneJPanel extends javax.swing.JPanel {
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         /* I think this is only for bridging */
-        jLabel2.setText("VPN Base Network[x]:");
-        jTextField2.setText( "172.16.16.0" );
+        jLabel2.setText("VPN Base Network:");
+        jTextField2.setEnabled( false );
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 50, 180, -1));
 
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel3.setText("VPN Base Netmask[x]:");
-        jTextField3.setText( "255.255.255.0" );
+        jLabel3.setText("VPN Base Netmask:");
+        jTextField3.setEnabled( false );
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, 180, -1));
 
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel4.setText("unused:");
+        jLabel4.setText("VPN Server Address:");
+        jTextField4.setEnabled( false );
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, 180, -1));
 
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -162,19 +163,11 @@ public class NetSettingsOneJPanel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         add(jScrollPane1, gridBagConstraints);
 
+        updateSettings( openvpn.getVpnSettings());
     }//GEN-END:initComponents
 
     private void cancelJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelJButtonActionPerformed
-        VpnSettings settings = openvpn.getVpnSettings();
-        List groupList = settings.getGroupList();
-        
-        jTextField1.setText( String.valueOf( settings.isBridgeMode()));
-
-        if ( groupList != null && groupList.size() > 0 ) {
-            VpnGroup group = (VpnGroup)groupList.get( 0 );
-            jTextField2.setText( group.getAddress().toString());
-            jTextField3.setText( group.getNetmask().toString());
-        }
+        updateSettings( openvpn.getVpnSettings());        
     }//GEN-LAST:event_cancelJButtonActionPerformed
 
     private void acceptJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acceptJButtonActionPerformed
@@ -187,10 +180,26 @@ public class NetSettingsOneJPanel extends javax.swing.JPanel {
         openvpn.setVpnSettings( settings );
         
         /* Get */
-        settings = openvpn.getVpnSettings();
-        
-        jTextField1.setText( String.valueOf( settings.isBridgeMode()));
+        updateSettings( openvpn.getVpnSettings());
     }//GEN-LAST:event_acceptJButtonActionPerformed
+
+    private void updateSettings( VpnSettings settings )
+    {
+        jTextField1.setText( String.valueOf( settings.isBridgeMode()));
+        
+        List groupList = settings.getGroupList();
+        if ( null != groupList && ( groupList.size() > 0 )) {
+            VpnGroup group = (VpnGroup)groupList.get( 0 );
+            jTextField2.setText( "" + group.getAddress());
+            jTextField3.setText( "" + group.getNetmask());
+        } else {
+            jTextField2.setText( "" );
+            jTextField3.setText( "" );
+        }
+        
+        jTextField4.setText( "" + settings.getServerAddress() );
+    }
+
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

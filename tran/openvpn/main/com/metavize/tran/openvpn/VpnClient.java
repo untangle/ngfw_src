@@ -83,11 +83,8 @@ public class VpnClient extends Rule implements Validatable
         this.group = group;
     }
 
-    /* have to somehow convey that each user actually uses two address */
-
     /**
-     * Static address of this client, this can only be set if address group is null.
-     *   not available in bridge mode.
+     * Static address for this client, this cannot be set, it is assigned.
      *
      * @return static address of the machine.
      * @hibernate.property
