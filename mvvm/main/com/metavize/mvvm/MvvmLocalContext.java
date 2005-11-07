@@ -178,13 +178,20 @@ public interface MvvmLocalContext
     PipelineFoundry pipelineFoundry();
 
     /**
-     * Returns an <code>mvvmLogin</code> method here.
+     * Returns true if the product has been activated, false otherwise
      *
-     * @param isLocal a <code>boolean</code> true if the invoker is on
-     * the local host.
-     * @return a <code>MvvmLogin</code> value
+     * @return a <code>boolean</code> value
      */
-    MvvmLogin mvvmLogin();
+    boolean isActivated();
+
+    /**
+     * Activates the EdgeGuard using the given key.  Returns true if the activation
+     * succeeds, false otherwise (if the key is bogus).
+     *
+     * @param key a <code>String</code> giving the key to be activated under
+     * @return a <code>boolean</code> true if the activation succeeded
+     */
+    boolean activate(String key);
 
     boolean runTransaction(TransactionWork tw);
 

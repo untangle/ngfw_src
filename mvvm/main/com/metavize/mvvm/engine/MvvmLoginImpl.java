@@ -30,7 +30,9 @@ import org.hibernate.Session;
 
 class MvvmLoginImpl implements MvvmLogin
 {
-    private static final String SYSTEM_USER = "localadmin";
+    private static final String ACTIVATION_USER    = "admin";
+
+    private static final String SYSTEM_USER     = "localadmin";
     private static final String SYSTEM_PASSWORD = "nimda11lacol";
     // Add two seconds to each failed login attempt to blunt the force
     // of scripted dictionary attacks.
@@ -55,6 +57,29 @@ class MvvmLoginImpl implements MvvmLogin
         return MVVM_LOGIN;
     }
 
+    // Activation methods ------------------------------------------------------
+    public boolean isActivated()
+    {
+        return MvvmContextFactory.context().isActivated();
+    }
+
+    public MvvmRemoteContext activationLogin(String key)
+        throws FailedLoginException
+    {
+        if (isActivated())
+            throw new FailedLoginException("Product has already been activated");
+        
+        boolean success = MvvmContextFactory.context().activate(key);
+        if (!success)
+            throw new FailedLoginException("Activation key invalid");
+
+        HttpInvoker invoker = HttpInvoker.invoker();
+        InetAddress clientAddr = invoker.getClientAddr();
+        return login(ACTIVATION_USER, clientAddr, LoginSession.LoginType.INTERACTIVE,
+                     true);
+    }
+        
+
     // MvvmLogin methods ------------------------------------------------------
 
     public MvvmRemoteContext interactiveLogin(final String login,
@@ -62,6 +87,11 @@ class MvvmLoginImpl implements MvvmLogin
                                               boolean force)
         throws FailedLoginException, MultipleLoginsException
     {
+        if (!isActivated()) {
+            logger.error("Attempt to login as " + login + " without activating first")
+            throw new FailedLoginException("Product has not been activated");
+        }
+
         HttpInvoker invoker = HttpInvoker.invoker();
         InetAddress clientAddr = invoker.getClientAddr();
 

@@ -27,7 +27,7 @@ final class NullLoginDesc extends LoginDesc
     {
         super(url, timeout, null);
 
-        MvvmLogin login = MvvmContextFactory.context().mvvmLogin();
+        MvvmLogin login = ((MvvmContextImpl)MvvmContextFactory.context()).mvvmLogin();
 
         targetDesc = new TargetDesc(url, timeout, null, 0,
                                     new WeakReference(login));

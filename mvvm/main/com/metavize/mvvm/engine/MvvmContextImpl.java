@@ -12,6 +12,7 @@
 package com.metavize.mvvm.engine;
 
 import java.io.IOException;
+import java.io.File;
 
 import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.ToolboxManager;
@@ -33,6 +34,8 @@ public class MvvmContextImpl extends MvvmContextBase
     private static final MvvmContextImpl CONTEXT = new MvvmContextImpl();
 
     private static final String BACKUP_SCRIPT;
+    private static final String ACTIVATE_SCRIPT;
+    private static final String ACTIVATION_KEY_FILE;
     private static final String LOCAL_ARG;
     private static final String USB_ARG;
     private static final String ARGON_FAKE_KEY;
@@ -229,6 +232,39 @@ public class MvvmContextImpl extends MvvmContextBase
         backup(false);
     }
 
+    public boolean isActivated() {
+        // This is ez since we aren't concerned about local box security -- the key is ultimately
+        // checked on the release webserver, which is what matters.
+        File keyFile = new File(ACTIVATION_KEY_FILE);
+        return keyFile.exists();
+    }
+     
+    public boolean activate(String key) {
+        // Be nice to the poor user:
+        if (key.length() == 16)
+            key = key.substring(0, 4) + "-" + key.substring(4, 8) + "-" +
+                key.substring(8, 12) + "-" + key.substring(12,16);
+
+        try {
+            Process p = Runtime.getRuntime().exec(new String[] { ACTIVATE_SCRIPT, key });
+            for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
+            int exitValue = p.waitFor();
+            if (0 != exitValue) {
+                logger.error("Unable to activate (" + exitValue + ") with key: " + key);
+                return false;
+            } else {
+                logger.info("Product activated with key: " + key);
+                return true;
+            }
+        } catch (InterruptedException exn) {
+            logger.error("Interrupted during activation with key: " + key);
+            return false;
+        } catch (IOException exn) {
+            logger.error("Exception during activation with key: " + key, exn);
+            return false;
+        }
+    }
+
     public void doFullGC()
     {
         // XXX check access permission
@@ -406,7 +442,11 @@ public class MvvmContextImpl extends MvvmContextBase
 
     static {
         BACKUP_SCRIPT = System.getProperty("bunnicula.home")
-            + "/../../bin/mvvmdb-backup";;
+            + "/../../bin/mvvmdb-backup";
+        ACTIVATE_SCRIPT = System.getProperty("bunnicula.home")
+            + "/../../bin/mvactivate";
+        ACTIVATION_KEY_FILE = System.getProperty("bunnicula.home")
+            + "/activation.key";
         LOCAL_ARG = "local";
         USB_ARG = "usb";
         ARGON_FAKE_KEY = "argon.fake";

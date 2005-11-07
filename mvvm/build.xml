@@ -444,8 +444,12 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
   </target>
 
   <target name="install.servlets" depends="jar.servlets">
-    <copy file="${build.jar}/servlets.jar"
-          todir="${dist.mvvm.web}/http-invoker/WEB-INF/lib"/>
+    <copy todir="${dist.mvvm.web}/http-invoker/WEB-INF/lib">
+      <fileset dir="${build.jar}">
+        <include name="mvvm-client.jar"/>
+        <include name="servlets.jar"/>
+      </fileset>
+    </copy>
     <copy todir="${dist.mvvm.web}/session-dumper/WEB-INF/lib">
       <fileset dir="${build.jar}">
         <include name="mvvm-client.jar"/>

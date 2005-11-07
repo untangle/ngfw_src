@@ -36,6 +36,10 @@ else
     sed -i -e "s|^.*pam_limits.so.*|${LOGIN_LINE}|g" ${LOGIN_FILE}
 fi
 
+# Extract the activation key if we were installed by a version older than 3.1
+if [ ! -f /usr/share/metavize/activation.key ]; then
+    grep -sq "release.*\.metavize\.com" /etc/apt/sources.list && grep "release.*\.metavize\.com" /etc/apt/sources.list | sed -e "s|^.*http://||" -e "s|:.*||" > /usr/share/metavize/activation.key
+fi
 
 # right permissions for all those dirs
 /bin/chown -R $USER:$GROUP ${MVVM_LOGDIR} ${MVVM_CACHEDIR}

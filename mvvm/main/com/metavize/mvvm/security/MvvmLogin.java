@@ -18,6 +18,18 @@ import com.metavize.mvvm.client.MvvmRemoteContext;
 
 public interface MvvmLogin
 {
+    boolean isActivated();
+
+    /**
+     * Activates the EdgeGuard using the given key. 
+     *
+     * @param key a <code>String</code> giving the key to be activated under
+     * @return a <code>MvvmRemoteContext</code> value
+     * @exception FailedLoginException if the key isn't kosher or the product has already been activated
+     */
+    MvvmRemoteContext activationLogin(String key)
+        throws FailedLoginException, MultipleLoginsException;
+
     MvvmRemoteContext interactiveLogin(String username, String password,
                                        boolean force)
         throws FailedLoginException, MultipleLoginsException;

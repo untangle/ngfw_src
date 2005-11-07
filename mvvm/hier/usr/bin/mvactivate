@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# Note we don't relaly need PREFIX here since we don't activate developer/test boxes
+KEY_VERIFICATION="@PREFIX@/usr/sbin/mv/mv_key_gen verify_key"
+
+REG_KEY="$1"
+
+if [ -f "@MVVM_HOME@/activation.key" ]; then
+    echo "Product has already been activated"
+    exit 2
+fi
+
+$KEY_VERIFICATION $REG_KEY 2> /dev/null
+VERIFY_RES="$?"
+if [ "$VERIFY_RES" -eq 127 ]; then
+    echo "Error validating registration.  Unable to continue."
+    exit 2
+fi
+if [ "$VERIFY_RES" -ne 1 ]; then
+    echo "Key is invalid: $REG_KEY"
+    exit 1
+fi
+
+# If we get here, the key is good.
+echo "Key is valid"
+
+echo "Installing sources list"
+cat @PREFIX@/usr/sbin/mv/etc_apt_sources.list | sed "s/XXX_REG_KEY_XXX/$REG_KEY/" > @PREFIX@/etc/apt/sources.list
+
+# Do this last, since once this file exists we cannot activate again
+echo $REG_KEY > @MVVM_HOME@/activation.key
