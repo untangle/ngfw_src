@@ -185,9 +185,14 @@ public class ClientJPanel extends javax.swing.JPanel {
         
         settings.setClientList( clientList );
 
-        openvpn.setVpnSettings( settings );
-        
-        updateClientList( openvpn.getVpnSettings());
+        try {
+            settings.validate();
+            openvpn.setVpnSettings( settings );
+            
+            updateClientList( openvpn.getVpnSettings());
+        } catch ( Exception e ) {
+            System.err.println( "Invalid settings" + e );
+        }
     }//GEN-LAST:event_acceptJButtonActionPerformed
 
     private void updateClientList( VpnSettings settings )
@@ -209,7 +214,7 @@ public class ClientJPanel extends javax.swing.JPanel {
         String value = field.getText().trim();
         
         if ( value.length() == 0 ) return;
-        String[] clientDescription = value.split( " " );
+        String[] clientDescription = value.split( " *\\| *" );
 
         if (( clientDescription.length < 2 ) || (( clientDescription.length & 1 ) == 1 )) {
             System.err.println( "Invalid client description [" + value + "]" );
@@ -217,7 +222,7 @@ public class ClientJPanel extends javax.swing.JPanel {
         }
 
         VpnClient client = new VpnClient();
-        client.setName( clientDescription[0] );
+        client.setName( clientDescription[0].trim() );
         
         client.setGroup( null );
         
@@ -251,6 +256,12 @@ public class ClientJPanel extends javax.swing.JPanel {
         
         client.setExportedAddressList( siteList );
 
+        try {
+            client.validate();
+        } catch ( Exception e ) {
+            System.err.println( "Invalid client" + e );
+        }
+        
         clientList.add( client );
     }
 
@@ -265,14 +276,14 @@ public class ClientJPanel extends javax.swing.JPanel {
         
         VpnClient client = (VpnClient)iter.next();
 
-        String value = client.getName() + " ";
+        String value = client.getName() + " | ";
         
         VpnGroup group = client.getGroup();
 
         value += ( group == null ) ? "" : group.getName();
 
         for ( ClientSiteNetwork site : ((List<ClientSiteNetwork>)client.getExportedAddressList())) {
-            value += " " + site.getNetwork() + " " + site.getNetmask();
+            value += " | " + site.getNetwork() + " | " + site.getNetmask();
         }
         
         field.setText( value );

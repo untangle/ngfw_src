@@ -15,6 +15,10 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.LinkedList;
 
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+import java.util.regex.PatternSyntaxException;
+
 import java.util.Map;
 import java.util.HashMap;
 
@@ -34,6 +38,8 @@ import com.metavize.mvvm.tran.ValidateException;
  */
 public class VpnClient extends Rule implements Validatable
 {
+    private static final Pattern NAME_PATTERN;
+    
     // XXX update the serial version id
     // private static final long serialVersionUID = 4143567998376955882L;
     
@@ -142,7 +148,7 @@ public class VpnClient extends Rule implements Validatable
     /* This is the name that is used as the common name in the certificate */
     public String getInternalName()
     {
-        return getName().trim().toLowerCase();
+        return getName().trim().toLowerCase().replace( " ", "_" );
     }
 
     public void validate() throws Exception
@@ -151,6 +157,10 @@ public class VpnClient extends Rule implements Validatable
         String name = getInternalName();
         if ( name.length() == 0 ) {
             throw new ValidateException( "A client cannot have an empty name" );
+        }
+        
+        if ( !NAME_PATTERN.matcher( name ).matches()) {
+            throw new ValidateException( "A client name should only contains numbers, letters, spaces and dashes and periods: " + name );
         }
     }
 
@@ -175,4 +185,18 @@ public class VpnClient extends Rule implements Validatable
         this.certificateStatus = "revoked";
     }
 
+    static
+    {
+        Pattern p;
+
+        try {
+            /* Limited to prevent funny shell hacks(the name goes to the shell) */
+            p = Pattern.compile( "^[A-Za-z]([-_ .0-9A-Za-z]*[0-9A-Za-z])?$" );
+        } catch ( PatternSyntaxException e ) {
+            System.err.println( "Unable to intialize the host label pattern" );
+            p = null;
+        }
+        
+        NAME_PATTERN = p;        
+    }
 }

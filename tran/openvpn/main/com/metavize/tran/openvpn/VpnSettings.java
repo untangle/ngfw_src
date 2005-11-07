@@ -108,6 +108,8 @@ public class VpnSettings implements Serializable, Validatable
 
             for ( Iterator iter = clientList.iterator() ; iter.hasNext() ; ) {
                 VpnClient client = (VpnClient)iter.next();
+                /* Validate that the client is okay */
+                client.validate();
                 String name = client.getInternalName();
                 if ( !nameSet.add( name )) {
                     throw new ValidateException( "Client names must all be unique:" + name );

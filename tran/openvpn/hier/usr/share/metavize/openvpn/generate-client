@@ -53,6 +53,7 @@ function generateClientKey()
     local clientCsr=`mktemp`
 
     export COMMON_NAME=${commonName}
+    export KEY_DN_QUALIFIER=${DN_QUALIFIER_CLIENT}
     
     ## Generate the server private key and the certificate signing request
     ${OPENSSL} req -days ${CERT_DURATION} -nodes -new -keyout ${CLIENT_KEY} -out ${clientCsr} \

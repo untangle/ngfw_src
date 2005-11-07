@@ -29,6 +29,7 @@ function diffieHellman()
 function generateCA()
 {
     export COMMON_NAME=${CA_NAME}
+    export KEY_DN_QUALIFIER=${DN_QUALIFIER_CA}
 
     ${OPENSSL} req -days ${CERT_DURATION} -nodes -new -x509 -keyout ${CA_KEY} -out ${CA_CRT} \
         -config ${OPENSSL_CFG_FILE} -batch
@@ -45,6 +46,7 @@ function generateServerKey()
     local serverCsr=`mktemp`
 
     export COMMON_NAME=${SERVER_NAME}
+    export KEY_DN_QUALIFIER=${DN_QUALIFIER_SERVER}
     
     ## Generate the server private key and the certificate signing request
     ${OPENSSL} req -days ${CERT_DURATION} -nodes -new -keyout ${SERVER_KEY} -out ${serverCsr} \

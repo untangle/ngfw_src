@@ -140,6 +140,8 @@ class CertificateManager
 
                 try {
                     callCreateClientScript( name );
+                    
+                    logger.info( "Creating a certificate for [" + name + "]" );
                     /* Indicate that the client has a valid certificate */
                     client.setCertificateStatusValid();
                 } catch ( TransformException e ) {
@@ -160,8 +162,11 @@ class CertificateManager
             Boolean status = entry.getValue();
             
             try {
-                /* If necessary revoke the certificate for this user */
-                if ( status ) callRevokeClientScript( name );
+                if ( status ) {
+                    /* If necessary revoke the certificate for this user */
+                    logger.info( "Revoking the certificate for [" + name + "]" );
+                    callRevokeClientScript( name );
+                }
             } catch ( TransformException e ) {
                 logger.error( "Unable to revoke the certificate for [" + name + "]", e );
             }
@@ -202,7 +207,7 @@ class CertificateManager
         }
         
         boolean isValid   = ( data[0].equalsIgnoreCase( OPENSSL_VALID_FLAG ));
-        String clientName = data[1].replace( "_", " " );
+        String clientName = data[1];
 
         Boolean status = map.get( clientName );
         if ( status == null || status == false ) {
@@ -236,9 +241,10 @@ class CertificateManager
         if ( !isSet( settings.getLocality()))     settings.setLocality( DEFAULT_LOCALITY );
         if ( !isSet( settings.getOrganization())) settings.setOrganization( DEFAULT_ORGANIZATION );
 
-        /* For now this is alwayts just set to a random string */
+        /* For now this is always just set to a random string */
         settings.setOrganizationUnit( String.format( "%04x%04x", random.nextInt(), random.nextInt()));
         
+        /* Presently the email address isn't used */
         if ( !isSet( settings.getEmail())) settings.setEmail( DEFAULT_EMAIL + "@" + settings.getDomain());
     }
 

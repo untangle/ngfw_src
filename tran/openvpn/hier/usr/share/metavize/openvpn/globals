@@ -36,6 +36,11 @@ CERT_DURATION=3650
 ## Client configuration directory
 CLIENT_CFG_DIR="${BASE_DIR}/ccd"
 
+## dnQualifier for the different certs
+DN_QUALIFIER_SERVER="server"
+DN_QUALIFIER_CLIENT="client"
+DN_QUALIFIER_CA="certificateAuthority"
+
 ## Debugging function
 function opensslDbg()
 {
@@ -106,6 +111,6 @@ function getClientRevokedCrtFile()
 ## Write a new client status file which java uses to check the status of each client
 function updateClientStatus()
 {
-    ## Always delete the first line
-    sed -e "1d" -e 's/^\(R\|V\).*\/CN=/\1 /' ${INDEX_FILE} | uniq > ${CLIENT_STATUS_FILE}
+    ## Delete any line that has a dnQualifier for the server
+    sed -e "/dnQualifier=${DN_QUALIFIER_SERVER}/d" -e 's/^\(R\|V\).*\/CN=\([^/]*\).*/\1 \2/' ${INDEX_FILE} | uniq > ${CLIENT_STATUS_FILE}
 }
