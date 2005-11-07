@@ -83,11 +83,8 @@ public class VpnTransformImpl extends AbstractTransform
             reconfigure();
             
             if ( getRunState() == TransformState.RUNNING ) {
-                /* VPN configuratoins needs information from the networking settings. */
-                NetworkingConfiguration netConfig = MvvmContextFactory.context().networkingManager().get();
-
                 /* This stops then starts openvpn */
-                this.openVpnManager.configure( settings, netConfig );
+                this.openVpnManager.configure( settings );
                 this.openVpnManager.restart();
             }
         } catch ( TransformException exn ) {

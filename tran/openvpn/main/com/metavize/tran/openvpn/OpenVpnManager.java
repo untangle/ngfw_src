@@ -27,7 +27,8 @@ import java.net.UnknownHostException;
 
 import org.apache.log4j.Logger;
 
-import com.metavize.mvvm.NetworkingConfiguration;
+import com.metavize.mvvm.ArgonManager;
+import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.ScriptWriter;
 import com.metavize.mvvm.tran.IPaddr;
@@ -37,8 +38,9 @@ import static com.metavize.tran.openvpn.Constants.*;
 
 class OpenVpnManager
 {
-    private static final String VPN_CONF_DIR       = "/etc/openvpn";
-    private static final String VPN_SERVER_FILE    = VPN_CONF_DIR + "/server.conf";
+    private static final String VPN_CONF_DIR     = "/etc/openvpn";
+    private static final String VPN_SERVER_FILE  = VPN_CONF_DIR + "/server.conf";
+    private static final String VPN_CCD_DIR      = VPN_CONF_DIR + "/ccd";
     
     /* Most likely want to bind to the outside address when using NAT */
     private static final String FLAG_LOCAL       = "local";
@@ -50,15 +52,16 @@ class OpenVpnManager
     private static final String DEVICE_BRIDGE    = "tap";
     private static final String DEVICE_ROUTING   = "tun";
     
-    private static final String FLAG_ROUTE_GROUP  = "server";
+    private static final String FLAG_ROUTE        = "route";
     private static final String FLAG_IFCONFIG     = "ifconfig";
+    private static final String FLAG_CLI_IFCONFIG = "ifconfig-push";
+    private static final String FLAG_CLI_ROUTE    = "iroute";
     private static final String FLAG_BRIDGE_GROUP = "server-bridge";
 
-    private static final String FLAG_PUSH_PARAM  = "push";
-    private static final String FLAG_EXPOSE_CLI  = "client-to-client";
+    private static final String FLAG_PUSH         = "push";
+    private static final String FLAG_EXPOSE_CLI   = "client-to-client";
 
     private static final String FLAG_MAX_CLI     = "max-clients";
-    
     
     /* Ping every x seconds */
     private static final int DEFAULT_PING_TIME      = 10;
@@ -84,7 +87,8 @@ class OpenVpnManager
         "cert keys/server.crt",
         "key  keys/server.key",
         "dh   keys/dh.pem",
-        "ifconfig-pool-persist ipp.txt",
+        // XXX This is only valid if you specify a pool
+        // "ifconfig-pool-persist ipp.txt",
         "client-config-dir ccd",
         "keepalive " + DEFAULT_PING_TIME + " " + DEFAULT_PING_TIMEOUT,
         /* XXXXXXXXX Need to select a valid cipher to use */
@@ -92,6 +96,10 @@ class OpenVpnManager
         "user nobody",
         "group nogroup",
         
+        /* Only talk to clients with a client configuration file */
+        /* XXX This may need to go away to support pools */
+        "ccd-exclusive",
+        "tls-server",
         "comp-lzo",
 
         /* XXX Be careful, restarts that change the key will not take this into account */
@@ -130,43 +138,159 @@ class OpenVpnManager
         
     }
     
-    void configure( VpnSettings settings, NetworkingConfiguration netConfig ) throws TransformException
+    void configure( VpnSettings settings ) throws TransformException
     {
-        writeSettings( settings, netConfig );
+        writeSettings( settings );
+
+        writeClientFiles( settings );
     }
     
-    void writeSettings( VpnSettings settings, NetworkingConfiguration netConfig ) throws TransformException
+    void writeSettings( VpnSettings settings ) throws TransformException
     {
         ScriptWriter sw = new VpnScriptWriter();
         
         /* Insert all of the default parameters */
         sw.appendLines( DEFAULTS );
-        
+
         /* Bridging or routing */
-        if ( settings.isBridgeMode()) {
-            
+        if ( settings.isBridgeMode()) {            
             sw.appendVariable( FLAG_DEVICE, DEVICE_BRIDGE );
             
+        } else {
+            sw.appendVariable( FLAG_DEVICE, DEVICE_ROUTING );
             IPaddr localEndpoint  = settings.getServerAddress();
             IPaddr remoteEndpoint = getRemoteEndpoint( localEndpoint );
             
             sw.appendVariable( FLAG_IFCONFIG, "" + localEndpoint + " " + remoteEndpoint );
-        } else {
-            sw.appendVariable( FLAG_DEVICE, DEVICE_ROUTING );
+            writePushRoute( sw, localEndpoint, null );
+
+            /* Get all of the routes for all of the different groups */
+            writeGroups( sw, settings );
+            
+            /* Export the inside address if necessary */
+            
+            /* VPN configuratoins needs information from the networking settings. */
+            ArgonManager argonManager = MvvmContextFactory.context().argonManager();
+            
+            writeExports( sw, settings,
+                          argonManager.getInsideAddress(), argonManager.getInsideNetmask(),
+                          argonManager.getOutsideAddress(), argonManager.getOutsideNetmask());
         }
-                          
-        if ( settings.getExposeClients()) sw.appendLine( FLAG_EXPOSE_CLI );
-
+        
         int maxClients = settings.getMaxClients();
-        if ( maxClients > 0 ) sw.appendVariable( FLAG_MAX_CLI, String.valueOf( maxClients ));
-
-        
-        
-        /* XXX Insert the site to site parameters */
-
+        if ( maxClients > 0 ) sw.appendVariable( FLAG_MAX_CLI, String.valueOf( maxClients ));       
         
         
         sw.writeFile( VPN_SERVER_FILE );
+    }
+
+    private void writeExports( ScriptWriter sw, VpnSettings settings, 
+                               InetAddress internalAddress, InetAddress internalNetmask,
+                               InetAddress externalAddress, InetAddress externalNetmask )
+    {
+        if ( internalAddress.equals( externalAddress )) {
+            /* If either is exported, export it */
+            if ( settings.getIsInternalExported() || settings.getIsInternalExported()) {
+                writePushRoute( sw, internalAddress, internalNetmask );
+            }
+        } else {
+            /* Export the inside if requested */
+            if ( settings.getIsInternalExported()) writePushRoute( sw, internalAddress, internalNetmask );
+            
+            /* Export the outside address if necessary */
+            if ( settings.getIsExternalExported()) writePushRoute( sw, externalAddress, externalNetmask );
+        }
+        
+        /* XXX This needs additional entries in the routing table,
+         * because the edgeguard must also know how to route this
+         * traffic */
+        for ( SiteNetwork siteNetwork : (List<SiteNetwork>)settings.getExportedAddressList()) {
+            writePushRoute( sw, siteNetwork.getNetwork(), siteNetwork.getNetmask());
+        }
+        
+        /* Each client configuration is written at a separate time */
+        for ( VpnClient client : (List<VpnClient>)settings.getClientList()) {
+            for ( SiteNetwork siteNetwork : (List<SiteNetwork>)client.getExportedAddressList()) {
+                IPaddr network = siteNetwork.getNetwork();
+                IPaddr netmask = siteNetwork.getNetmask();
+                
+                if ( netmask != null ) {
+                    network = IPaddr.and( network, netmask );
+                    sw.appendVariable( FLAG_ROUTE, "" + network + " " + netmask );
+                } else {
+                    sw.appendVariable( FLAG_ROUTE, "" + network );
+                }
+                
+                writePushRoute( sw, network, netmask );
+            }
+        }
+    }
+
+    private void writeGroups( ScriptWriter sw, VpnSettings settings )
+    {
+        /* XXX Need some group consolidation */
+        /* XXX Need some checking for overlapping groups */
+        /* XXX Do not exports groups that are not used */
+
+        for ( VpnGroup group : (List<VpnGroup>)settings.getGroupList()) {
+            writePushRoute( sw, group.getAddress(), group.getNetmask());
+        }
+    }
+
+    private void writeClientFiles( VpnSettings settings )
+    {
+        for ( VpnClient client : (List<VpnClient>)settings.getClientList()) {
+            ScriptWriter sw = new VpnScriptWriter();
+            
+            IPaddr localEndpoint  = client.getAddress();
+            IPaddr remoteEndpoint = getRemoteEndpoint( localEndpoint );
+
+            /* XXXX This won't work for a bridge configuration */
+            sw.appendVariable( FLAG_CLI_IFCONFIG, "" + localEndpoint + " " + remoteEndpoint );
+            
+            for ( SiteNetwork siteNetwork : (List<SiteNetwork>)client.getExportedAddressList()) {
+                sw.appendVariable( FLAG_CLI_ROUTE, "" + siteNetwork.getNetwork() + " " + 
+                                   siteNetwork.getNetmask());
+            }
+
+            sw.writeFile( VPN_CCD_DIR + "/" + client.getInternalName());
+        }
+    }
+    
+    private void writePushRoute( ScriptWriter sw, IPaddr address, IPaddr netmask )
+    {
+        if ( address == null ) {
+            logger.warn( "attempt to write route with null address" );
+            return;
+        }
+
+        writePushRoute( sw, address.getAddr(), ( netmask == null ) ? null : netmask.getAddr());
+    }
+
+    private void writePushRoute( ScriptWriter sw, InetAddress address )
+    {
+        writePushRoute( sw, address, null );
+    }
+
+    private void writePushRoute( ScriptWriter sw, InetAddress address, InetAddress netmask )
+    {
+        if ( address == null ) {
+            logger.warn( "attempt to write route with null address" );
+            return;
+        }
+
+        String value = "\"route ";
+        if ( netmask != null ) {
+            /* the route command complains you do not pass in the base address */
+            value += IPaddr.and( new IPaddr((Inet4Address)address ), new IPaddr((Inet4Address)netmask ));
+            value += " " + netmask.getHostAddress();
+        } else {
+            value += address.getHostAddress();
+        }
+        
+        value += "\"";
+        
+        sw.appendVariable( FLAG_PUSH,  value );
     }
 
     /**
