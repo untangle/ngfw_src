@@ -25,7 +25,8 @@ public final class IntfConverter
     public static final byte  OUTSIDE   = 0;
     public static final byte  INSIDE    = 1;
     public static final byte  DMZ       = 2;
-    
+    public static final byte  VPN       = 3;
+
     /* Special argon interfaces */
     public static final byte  ARGON_MIN      = 0;
     public static final byte  ARGON_MAX      = 8;
