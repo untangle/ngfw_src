@@ -535,7 +535,6 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         
     }
     
-
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     protected javax.swing.JLabel activity0JLabel;
@@ -550,7 +549,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
     protected javax.swing.JLabel sessionTotalJLabel;
     private javax.swing.JLabel sessionsJLabel;
     private javax.swing.JPanel sessionsJPanel;
-    private javax.swing.JLabel throughputJLabel;
+    protected javax.swing.JLabel throughputJLabel;
     protected javax.swing.JLabel throughputTotalJLabel;
     // End of variables declaration//GEN-END:variables
     
