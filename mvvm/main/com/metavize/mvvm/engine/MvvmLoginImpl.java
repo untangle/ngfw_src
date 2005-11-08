@@ -88,7 +88,7 @@ class MvvmLoginImpl implements MvvmLogin
         throws FailedLoginException, MultipleLoginsException
     {
         if (!isActivated()) {
-            logger.error("Attempt to login as " + login + " without activating first")
+            logger.error("Attempt to login as " + login + " without activating first");
             throw new FailedLoginException("Product has not been activated");
         }
 
