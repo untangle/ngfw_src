@@ -125,6 +125,7 @@ public class MMainJFrame extends javax.swing.JFrame {
         remoteJButton = new javax.swing.JButton();
         backupJButton = new javax.swing.JButton();
         protocolJButton = new javax.swing.JButton();
+        quarantineJButton = new javax.swing.JButton();
         maintenanceJButton = new javax.swing.JButton();
         aboutJButton = new javax.swing.JButton();
         configurationSpacerJPanel1 = new javax.swing.JPanel();
@@ -420,6 +421,29 @@ public class MMainJFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
         jPanel8.add(protocolJButton, gridBagConstraints);
 
+        quarantineJButton.setFont(new java.awt.Font("Arial", 0, 12));
+        quarantineJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
+        quarantineJButton.setText("<html>Email<br>Quarantine</html>");
+        quarantineJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
+        quarantineJButton.setDoubleBuffered(true);
+        quarantineJButton.setFocusPainted(false);
+        quarantineJButton.setFocusable(false);
+        quarantineJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        quarantineJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
+        quarantineJButton.setMaximumSize(new java.awt.Dimension(810, 370));
+        quarantineJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                quarantineJButtonActionPerformed(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
+        jPanel8.add(quarantineJButton, gridBagConstraints);
+
         maintenanceJButton.setFont(new java.awt.Font("Arial", 0, 12));
         maintenanceJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
         maintenanceJButton.setText("<html>Support</html>");
@@ -566,6 +590,21 @@ public class MMainJFrame extends javax.swing.JFrame {
         java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         setBounds((screenSize.width-1024)/2, (screenSize.height-768)/2, 1024, 768);
     }//GEN-END:initComponents
+
+    private void quarantineJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_quarantineJButtonActionPerformed
+        try{
+	    quarantineJButton.setEnabled(false);
+	    QuarantineJDialog quarantineJDialog = new QuarantineJDialog();
+	    quarantineJDialog.setVisible(true);
+	}
+	catch(Exception e){
+	    try{ Util.handleExceptionWithRestart("Error showing quarantine", e); }
+	    catch(Exception f){ Util.handleExceptionNoRestart("Error showing quarantine", f); }
+	}
+	finally{
+	    quarantineJButton.setEnabled(true);
+	}
+    }//GEN-LAST:event_quarantineJButtonActionPerformed
 
     private void rackJComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rackJComboBoxActionPerformed
         //System.err.println("action performed");
@@ -724,6 +763,7 @@ public class MMainJFrame extends javax.swing.JFrame {
     private javax.swing.JButton networkJButton;
     private javax.swing.JPanel policyToolboxJPanel;
     private javax.swing.JButton protocolJButton;
+    private javax.swing.JButton quarantineJButton;
     private javax.swing.JComboBox rackJComboBox;
     private javax.swing.JButton remoteJButton;
     private javax.swing.JPanel serviceToolboxJPanel;

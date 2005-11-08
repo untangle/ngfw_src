@@ -1,0 +1,332 @@
+/*
+ * Copyright (c) 2004, 2005 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
+package com.metavize.tran.mail.gui;
+
+import com.metavize.gui.widgets.coloredTable.*;
+import com.metavize.gui.widgets.dialogs.RefreshLogFailureDialog;
+import com.metavize.gui.transform.*;
+import com.metavize.gui.util.*;
+
+import com.metavize.mvvm.tran.*;
+import com.metavize.mvvm.security.Tid;
+
+import com.metavize.tran.mail.papi.*;
+import com.metavize.tran.mail.papi.quarantine.*;
+
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.table.*;
+import javax.swing.border.*;
+import java.util.*;
+import java.awt.*;
+import java.awt.event.*;
+import com.metavize.gui.widgets.editTable.*;
+
+public class QuarantineUserJPanel extends javax.swing.JPanel implements ComponentListener {
+
+    private static final Color TABLE_BACKGROUND_COLOR = new Color(213, 213, 226);
+    private QuarantineUserTableModel quarantineUserTableModel;
+    private QuarantineMaintenenceView quarantineMaintenenceView;
+    private String account;
+    
+    public QuarantineUserJPanel(QuarantineMaintenenceView quarantineMaintenenceView, String account) {
+        this.quarantineMaintenenceView = quarantineMaintenenceView;
+        this.account = account;
+        
+        // INIT GUI & CUSTOM INIT
+        initComponents();
+        entryJScrollPane.getViewport().setOpaque(true);
+        entryJScrollPane.getViewport().setBackground(TABLE_BACKGROUND_COLOR);
+        entryJScrollPane.setViewportBorder(new MatteBorder(2, 2, 2, 1, TABLE_BACKGROUND_COLOR));
+        addComponentListener(QuarantineUserJPanel.this);
+        
+        // create actual table model
+        quarantineUserTableModel = new QuarantineUserTableModel(quarantineMaintenenceView, account);
+        setTableModel( quarantineUserTableModel );
+        
+        //quarantineAllTableModel.generateRows(null);
+    }
+
+    protected void sendSettings(Object settings) throws Exception {
+	//Util.getNetworkingManager().set( (NetworkingConfiguration) settings);
+        
+    }
+    protected void refreshSettings(){
+	//settings = Util.getNetworkingManager().get();
+    }
+    
+    public void setTableModel(MSortedTableModel mSortedTableModel){
+        entryJTable.setModel( mSortedTableModel );
+        entryJTable.setColumnModel( mSortedTableModel.getTableColumnModel() );
+        mSortedTableModel.setTableHeader( entryJTable.getTableHeader() );
+        mSortedTableModel.hideColumns( entryJTable );
+    }
+    
+    public MSortedTableModel getTableModel(){
+        return (MSortedTableModel) entryJTable.getModel();
+    }
+    
+
+    public MColoredJTable getJTable(){
+        return (MColoredJTable) entryJTable;
+    }
+        
+    protected Vector<Vector> generateRows(Object settings) {
+        return null;
+    }
+
+    public void componentHidden(ComponentEvent e){}
+    public void componentMoved(ComponentEvent e){}
+    public void componentShown(ComponentEvent e){}
+    public void componentResized(ComponentEvent e){
+	((MColoredJTable)entryJTable).doGreedyColumn(entryJScrollPane.getViewport().getExtentSize().width);
+    }
+    
+    private void initComponents() {//GEN-BEGIN:initComponents
+        java.awt.GridBagConstraints gridBagConstraints;
+
+        contentJPanel = new javax.swing.JPanel();
+        eventJPanel = new javax.swing.JPanel();
+        purgeJButton = new javax.swing.JButton();
+        releaseJButton = new javax.swing.JButton();
+        entryJScrollPane = new javax.swing.JScrollPane();
+        entryJTable = new MColoredJTable();
+
+        setLayout(new java.awt.GridBagLayout());
+
+        setOpaque(false);
+        contentJPanel.setLayout(new java.awt.GridBagLayout());
+
+        contentJPanel.setOpaque(false);
+        eventJPanel.setLayout(new java.awt.GridBagLayout());
+
+        eventJPanel.setFocusCycleRoot(true);
+        eventJPanel.setFocusable(false);
+        eventJPanel.setOpaque(false);
+        purgeJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        purgeJButton.setText("<html><b>Purge</b> selected</html>");
+        purgeJButton.setDoubleBuffered(true);
+        purgeJButton.setFocusPainted(false);
+        purgeJButton.setFocusable(false);
+        purgeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        purgeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        purgeJButton.setMaximumSize(new java.awt.Dimension(125, 25));
+        purgeJButton.setMinimumSize(new java.awt.Dimension(125, 25));
+        purgeJButton.setPreferredSize(new java.awt.Dimension(125, 25));
+        purgeJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                purgeJButtonActionPerformed(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
+        eventJPanel.add(purgeJButton, gridBagConstraints);
+
+        releaseJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        releaseJButton.setText("<html><b>Release</b> selected</html>");
+        releaseJButton.setDoubleBuffered(true);
+        releaseJButton.setFocusPainted(false);
+        releaseJButton.setFocusable(false);
+        releaseJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        releaseJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        releaseJButton.setMaximumSize(new java.awt.Dimension(125, 25));
+        releaseJButton.setMinimumSize(new java.awt.Dimension(125, 25));
+        releaseJButton.setPreferredSize(new java.awt.Dimension(125, 25));
+        releaseJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                releaseJButtonActionPerformed(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        eventJPanel.add(releaseJButton, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 0);
+        contentJPanel.add(eventJPanel, gridBagConstraints);
+
+        entryJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        entryJScrollPane.setDoubleBuffered(true);
+        entryJTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        entryJTable.setDoubleBuffered(true);
+        entryJScrollPane.setViewportView(entryJTable);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        contentJPanel.add(entryJScrollPane, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        add(contentJPanel, gridBagConstraints);
+
+    }//GEN-END:initComponents
+
+    private void releaseJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_releaseJButtonActionPerformed
+        int[] selectedModelRows = getSelectedModelRows();
+        if( selectedModelRows.length == 0 )
+                return;
+        
+        // release
+        Vector<Vector> dataVector = quarantineUserTableModel.getDataVector();
+        String[] emails = new String[selectedModelRows.length];
+        for( int i=0; i<selectedModelRows.length; i++){
+            emails[i] = (String) dataVector.elementAt(selectedModelRows[i]).elementAt(2);
+        }
+        try{
+            quarantineMaintenenceView.rescue(account, emails);
+        }
+        catch(Exception e){Util.handleExceptionNoRestart("Error purging account: " + account, e);}
+        
+        // clear selection
+        entryJTable.clearSelection();
+        
+        // refresh
+        quarantineUserTableModel.generateRows(null);
+    }//GEN-LAST:event_releaseJButtonActionPerformed
+    
+    private void purgeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_purgeJButtonActionPerformed
+        int[] selectedModelRows = getSelectedModelRows();
+        if( selectedModelRows.length == 0 )
+                return;
+        
+        // purge
+        Vector<Vector> dataVector = quarantineUserTableModel.getDataVector();
+        String[] emails = new String[selectedModelRows.length];
+        for( int i=0; i<selectedModelRows.length; i++){
+            emails[i] = (String) dataVector.elementAt(selectedModelRows[i]).elementAt(2);
+        }
+        try{
+            quarantineMaintenenceView.purge(account, emails);
+        }
+        catch(Exception e){Util.handleExceptionNoRestart("Error purging account: " + account, e);}
+        
+        
+        // clear selection
+        entryJTable.clearSelection();
+        
+        // refresh
+        quarantineUserTableModel.generateRows(null);
+    }//GEN-LAST:event_purgeJButtonActionPerformed
+
+    private int[] getSelectedModelRows(){
+        int[] selectedViewRows = entryJTable.getSelectedRows();
+        if( (selectedViewRows==null) || (selectedViewRows.length!=1) || (selectedViewRows[0]==-1) )
+            return new int[0];
+
+        // translate view row
+        int[] selectedModelRows = new int[selectedViewRows.length];
+        for( int i=0; i<selectedViewRows.length; i++ )
+            selectedModelRows[i] = getTableModel().getRowViewToModelIndex(selectedViewRows[i]);
+        
+        return selectedModelRows;
+    }
+    
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel contentJPanel;
+    protected javax.swing.JScrollPane entryJScrollPane;
+    protected javax.swing.JTable entryJTable;
+    private javax.swing.JPanel eventJPanel;
+    private javax.swing.JButton purgeJButton;
+    private javax.swing.JButton releaseJButton;
+    // End of variables declaration//GEN-END:variables
+    
+}
+
+
+
+class QuarantineUserTableModel extends MSortedTableModel {
+
+    private QuarantineMaintenenceView quarantineMaintenenceView;
+    private String account;
+    private static final StringConstants sc = StringConstants.getInstance();
+    
+    public QuarantineUserTableModel(QuarantineMaintenenceView quarantineMaintenenceView, String account){
+        this.quarantineMaintenenceView = quarantineMaintenenceView;
+        this.account = account;
+    }
+    
+    public TableColumnModel getTableColumnModel(){
+
+        DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
+        //                                 #   min  rsz    edit   remv   desc   typ               def
+        addTableColumn( tableColumnModel,  0,  Util.STATUS_MIN_WIDTH, false, false, true,  false, String.class,     null, sc.TITLE_STATUS );
+	addTableColumn( tableColumnModel,  1,  Util.LINENO_MIN_WIDTH, false, false, false, false, Integer.class,    null, sc.TITLE_INDEX );
+        addTableColumn( tableColumnModel,  2, 150, true,  false,  true,  false, String.class, null, null );
+        addTableColumn( tableColumnModel,  3, 150, true,  false,  false, false, String.class, null, sc.html("Date") );
+        addTableColumn( tableColumnModel,  4, 150, true,  false,  false, false, String.class, null, sc.html("Sender") );
+        addTableColumn( tableColumnModel,  5, 150, true,  false,  false, true,  String.class, null, sc.html("Subject") );
+        addTableColumn( tableColumnModel,  6,  85, true,  false,  false, false, String.class, null, sc.html("Size (kB)") );
+        addTableColumn( tableColumnModel,  7,  85, true,  false,  false, false, String.class, null, sc.html("Category") );
+        addTableColumn( tableColumnModel,  8,  85, true,  false,  false, false, String.class, null, sc.html("Detail") );
+        return tableColumnModel;
+    }
+
+
+   
+    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception { }
+
+    public Vector<Vector> generateRows(Object settings) {
+        
+        InboxIndex inboxIndex;
+        try{
+             inboxIndex = quarantineMaintenenceView.getInboxIndex(account);
+        }
+        catch(Exception e){
+            Util.handleExceptionNoRestart("Error getting inbox record", e);
+            return new Vector<Vector>();
+        }
+        
+        Vector<Vector> allRows = new Vector<Vector>(inboxIndex.size());
+	Vector tempRow = null;
+        MailSummary mailSummary = null;
+        int rowIndex = 0;
+
+	for( InboxRecord inboxRecord : inboxIndex ){
+	    rowIndex++;
+            tempRow = new Vector(8);
+            mailSummary = inboxRecord.getMailSummary();
+            tempRow.add( super.ROW_SAVED );
+            tempRow.add( rowIndex );
+            tempRow.add( inboxRecord.getMailID() );
+            tempRow.add( inboxRecord.getInternDate() );
+            tempRow.add( mailSummary.getSender() );
+            tempRow.add( mailSummary.getSubject() );            
+            tempRow.add( Long.toString(inboxRecord.getSize()/1024l) );
+            tempRow.add( mailSummary.getQuarantineCategory() );   
+            tempRow.add( mailSummary.getQuarantineDetail() );   
+            allRows.add( tempRow );
+        }
+        
+        return allRows;
+
+    }
+
+
+
+
+
+}

@@ -265,6 +265,10 @@ public class Quarantine
     return result.b;
   }
 
+  public void rescueInbox(String account)
+    throws NoSuchInboxException, QuarantineUserActionFailedException {
+  }
+
   public InboxIndex getInboxIndex(String account)
     throws NoSuchInboxException, QuarantineUserActionFailedException {
 
