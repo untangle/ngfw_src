@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Note we don't relaly need PREFIX here since we don't activate developer/test boxes
+# Note we don't really need PREFIX here since we don't activate developer/test boxes
 KEY_VERIFICATION="@PREFIX@/usr/sbin/mv/mv_key_gen verify_key"
 
 REG_KEY="$1"

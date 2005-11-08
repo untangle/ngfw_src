@@ -22,6 +22,9 @@ import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import java.util.TimeZone;
+import java.io.IOException;
+import javax.transaction.TransactionRolledbackException;
 
 class AdminManagerImpl implements AdminManager
 {
@@ -30,6 +33,8 @@ class AdminManagerImpl implements AdminManager
     private static final String INITIAL_USER_PASSWORD = "passwd";
 
     private static final AdminManagerImpl ADMIN_MANAGER = new AdminManagerImpl();
+
+    private static final String SET_TIMEZONE_SCRIPT;
 
     private final MvvmLoginImpl mvvmLogin;
 
@@ -113,5 +118,43 @@ class AdminManagerImpl implements AdminManager
     public LoginSession[] loggedInUsers()
     {
         return HttpInvoker.invoker().getLoginSessions();
+    }
+
+    public TimeZone getTimeZone()
+    {
+        return TimeZone.getDefault();
+    }
+
+    public void setTimeZone(TimeZone timezone)
+        throws TransactionRolledbackException
+    {
+        TimeZone.setDefault(timezone);
+        String id = timezone.getID();
+
+        try {
+            Process p = Runtime.getRuntime().exec(new String[] { SET_TIMEZONE_SCRIPT, id });
+            for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
+            int exitValue = p.waitFor();
+            if (0 != exitValue) {
+                String message = "Unable to set time zone (" + exitValue + ") to: " + id;
+                logger.error(message);
+                throw new TransactionRolledbackException(message);
+            } else {
+                logger.info("Time zone set to : " + id);
+            }
+        } catch (InterruptedException exn) {
+            String message = "Interrupted during set time zone";
+            logger.error(message);
+            throw new TransactionRolledbackException(message);
+        } catch (IOException exn) {
+            String message = "Exception during set time zone to: " + id;
+            logger.error(message, exn);
+            throw new TransactionRolledbackException(message);
+        }
+    }
+
+    static {
+        SET_TIMEZONE_SCRIPT = System.getProperty("bunnicula.home")
+            + "/../../bin/mvtimezone";
     }
 }

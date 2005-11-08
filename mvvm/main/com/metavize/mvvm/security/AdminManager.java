@@ -13,6 +13,7 @@ package com.metavize.mvvm.security;
 
 import com.metavize.mvvm.MailSettings;
 import javax.transaction.TransactionRolledbackException;
+import java.util.TimeZone;
 
 public interface AdminManager
 {
@@ -27,4 +28,20 @@ public interface AdminManager
         throws TransactionRolledbackException;
 
     LoginSession[] loggedInUsers();
+
+    /**
+     * Returns the time zone that the MVVM is currently set to
+     *
+     * @return the <code>TimeZone</code> that the MVVM is now in
+     */
+    TimeZone getTimeZone();
+
+    /**
+     * Sets the time zone that the MVVM is in.
+     *
+     * @param timezone a <code>TimeZone</code> value
+     * @exception TransactionRolledbackException if an error occurs
+     */
+    void setTimeZone(TimeZone timezone)
+        throws TransactionRolledbackException;
 }
