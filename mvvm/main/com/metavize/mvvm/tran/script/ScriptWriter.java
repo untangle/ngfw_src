@@ -9,7 +9,7 @@
  *  $Id$
  */
 
-package com.metavize.mvvm.tran;
+package com.metavize.mvvm.tran.script;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -45,6 +45,11 @@ public class ScriptWriter
         appendLines( header );
     }
 
+    public void appendLine()
+    {
+        this.sb.append( "\n" );
+    }
+
     /** Kind of a silly helper functions to avoid "\n" everywhere " */
     public void appendLine( String text )
     {
@@ -58,7 +63,7 @@ public class ScriptWriter
 
     public void appendComment( String text )
     {
-        for ( String line : text.split( "\n" )) this.sb.append( comment() + line + "\n" );
+        for ( String line : text.split( "\n" )) this.sb.append( comment() + " " + line + "\n" );
     }
     
     // Really only for shell scripts
