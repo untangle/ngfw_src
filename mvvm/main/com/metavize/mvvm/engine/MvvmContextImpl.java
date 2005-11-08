@@ -244,6 +244,12 @@ public class MvvmContextImpl extends MvvmContextBase
         if (key.length() == 16)
             key = key.substring(0, 4) + "-" + key.substring(4, 8) + "-" +
                 key.substring(8, 12) + "-" + key.substring(12,16);
+        if (key.length() != 19) {
+            // Don't even bother if the key isn't the right length.  Could do other
+            // sanity checking here as well. XX
+            logger.error("Unable to activate with wrong length key: " + key);
+            return false;
+        }
 
         try {
             Process p = Runtime.getRuntime().exec(new String[] { ACTIVATE_SCRIPT, key });
