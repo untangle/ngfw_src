@@ -31,6 +31,7 @@ public class VpnTransformImpl extends AbstractTransform
     private final PipeSpec[] pipeSpec = new PipeSpec[0];
     private final OpenVpnManager openVpnManager = new OpenVpnManager();
     private final CertificateManager certificateManager = new CertificateManager();
+    private final AddressMapper addressMapper = new AddressMapper();
 
     private VpnSettings settings;
 
@@ -54,7 +55,7 @@ public class VpnTransformImpl extends AbstractTransform
     {
         /* Attempt to assign all of the clients addresses */
         try {
-            this.openVpnManager.assignAddresses( settings );
+            addressMapper.assignAddresses( settings );
         } catch ( TransformException exn ) {
             logger.error( "Could not save VPN settings", exn );
         }
@@ -177,6 +178,7 @@ public class VpnTransformImpl extends AbstractTransform
 
     protected void preStart()
     {
+        /* XXXXX Need a way of not starting if the transform is not configured */
         if ( this.settings == null ) {
             String[] args = {""};
             postInit( args );
@@ -185,6 +187,15 @@ public class VpnTransformImpl extends AbstractTransform
         }
 
         reconfigure();
+    }
+
+    protected void postStop()
+    {
+        try {
+            this.openVpnManager.stop();
+        } catch ( TransformException e ){
+            logger.error( "Unable to stop open vpn", e );
+        }
     }
 
     public void reconfigure()

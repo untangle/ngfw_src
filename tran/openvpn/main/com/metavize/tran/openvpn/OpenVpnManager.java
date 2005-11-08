@@ -22,17 +22,18 @@ import java.util.LinkedHashSet;
 
 import java.net.InetAddress;
 import java.net.Inet4Address;
-
 import java.net.UnknownHostException;
 
 import org.apache.log4j.Logger;
 
 import com.metavize.mvvm.ArgonManager;
+import com.metavize.mvvm.argon.ArgonException;
+
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tran.TransformException;
-import com.metavize.mvvm.tran.ScriptWriter;
+import com.metavize.mvvm.tran.script.ScriptWriter;
+import com.metavize.mvvm.tran.script.ScriptRunner;
 import com.metavize.mvvm.tran.IPaddr;
-import com.metavize.mvvm.tran.firewall.IPMatcher;
 
 import static com.metavize.tran.openvpn.Constants.*;
 
@@ -41,6 +42,9 @@ class OpenVpnManager
     private static final String VPN_CONF_DIR     = "/etc/openvpn";
     private static final String VPN_SERVER_FILE  = VPN_CONF_DIR + "/server.conf";
     private static final String VPN_CCD_DIR      = VPN_CONF_DIR + "/ccd";
+
+    private static final String VPN_START_SCRIPT = VPN_SCRIPT_BASE + "/start-openvpn";
+    private static final String VPN_STOP_SCRIPT  = VPN_SCRIPT_BASE + "/stop-openvpn";
     
     /* Most likely want to bind to the outside address when using NAT */
     private static final String FLAG_LOCAL       = "local";
@@ -122,26 +126,37 @@ class OpenVpnManager
     {
     }
        
-    void start()
+    void start() throws TransformException
     {
-        
+        ScriptRunner.getInstance().exec( VPN_START_SCRIPT );
+
+        try {
+            MvvmContextFactory.context().argonManager().updateAddress();
+        } catch ( ArgonException e ) {
+            throw new TransformException( e );
+        }
     }
     
     void restart() throws TransformException
     {
-        stop();
+        /* The start script handles the case where it has to be stopped */
         start();
     }
 
-    void stop()
+    void stop() throws TransformException
     {
-        
+        ScriptRunner.getInstance().exec( VPN_STOP_SCRIPT );
+
+        try {
+            MvvmContextFactory.context().argonManager().updateAddress();
+        } catch ( ArgonException e ) {
+            throw new TransformException( e );
+        }
     }
     
     void configure( VpnSettings settings ) throws TransformException
     {
         writeSettings( settings );
-
         writeClientFiles( settings );
     }
     
@@ -188,6 +203,8 @@ class OpenVpnManager
                                InetAddress internalAddress, InetAddress internalNetmask,
                                InetAddress externalAddress, InetAddress externalNetmask )
     {
+        sw.appendComment( "Exports" );
+
         if ( internalAddress.equals( externalAddress )) {
             /* If either is exported, export it */
             if ( settings.getIsInternalExported() || settings.getIsInternalExported()) {
@@ -208,22 +225,18 @@ class OpenVpnManager
             writePushRoute( sw, siteNetwork.getNetwork(), siteNetwork.getNetmask());
         }
         
-        /* Each client configuration is written at a separate time */
+        /* The client configuration file is written in writeClientFiles */
         for ( VpnClient client : (List<VpnClient>)settings.getClientList()) {
             for ( SiteNetwork siteNetwork : (List<SiteNetwork>)client.getExportedAddressList()) {
                 IPaddr network = siteNetwork.getNetwork();
                 IPaddr netmask = siteNetwork.getNetmask();
                 
-                if ( netmask != null ) {
-                    network = IPaddr.and( network, netmask );
-                    sw.appendVariable( FLAG_ROUTE, "" + network + " " + netmask );
-                } else {
-                    sw.appendVariable( FLAG_ROUTE, "" + network );
-                }
-                
+                writeRoute( sw, network, netmask );
                 writePushRoute( sw, network, netmask );
             }
         }
+        
+        sw.appendLine();
     }
 
     private void writeGroups( ScriptWriter sw, VpnSettings settings )
@@ -231,10 +244,14 @@ class OpenVpnManager
         /* XXX Need some group consolidation */
         /* XXX Need some checking for overlapping groups */
         /* XXX Do not exports groups that are not used */
+        
+        sw.appendComment( "Groups" );
 
         for ( VpnGroup group : (List<VpnGroup>)settings.getGroupList()) {
-            writePushRoute( sw, group.getAddress(), group.getNetmask());
+            writeRoute( sw, group.getAddress(), group.getNetmask());
         }
+
+        sw.appendLine();
     }
 
     private void writeClientFiles( VpnSettings settings )
@@ -244,16 +261,18 @@ class OpenVpnManager
             
             IPaddr localEndpoint  = client.getAddress();
             IPaddr remoteEndpoint = getRemoteEndpoint( localEndpoint );
+            String name           = client.getInternalName();
+            
+            logger.info( "Writing client configuration file for [" + name + "]" );
 
             /* XXXX This won't work for a bridge configuration */
             sw.appendVariable( FLAG_CLI_IFCONFIG, "" + localEndpoint + " " + remoteEndpoint );
             
             for ( SiteNetwork siteNetwork : (List<SiteNetwork>)client.getExportedAddressList()) {
-                sw.appendVariable( FLAG_CLI_ROUTE, "" + siteNetwork.getNetwork() + " " + 
-                                   siteNetwork.getNetmask());
+                writeClientRoute( sw, siteNetwork.getNetwork(), siteNetwork.getNetmask());
             }
 
-            sw.writeFile( VPN_CCD_DIR + "/" + client.getInternalName());
+            sw.writeFile( VPN_CCD_DIR + "/" + name );
         }
     }
     
@@ -275,7 +294,7 @@ class OpenVpnManager
     private void writePushRoute( ScriptWriter sw, InetAddress address, InetAddress netmask )
     {
         if ( address == null ) {
-            logger.warn( "attempt to write route with null address" );
+            logger.warn( "attempt to write a push route with null address" );
             return;
         }
 
@@ -293,212 +312,33 @@ class OpenVpnManager
         sw.appendVariable( FLAG_PUSH,  value );
     }
 
-    /**
-     * Assign addresses to the server and all of the clients.
-     * XXXX This function needs some serious whitebox testing
-     * @throws TransformException - A group does not contain enough addresses for its clients.
-     */
-    void assignAddresses( VpnSettings settings ) throws TransformException
+    private void writeRoute( ScriptWriter sw, IPaddr address, IPaddr netmask )
     {
-        /* A mapping from a group to its list of clients */
-        Map<VpnGroup,List<VpnClient>> groupToClientList = new HashMap<VpnGroup,List<VpnClient>>();
-        
-        List<VpnClient> clientList = (List<VpnClient>)settings.getClientList();
-
-        if ( settings.getGroupList().size() == 0 ) throw new TransformException( "No groups" );
-
-        VpnGroup serverGroup   = (VpnGroup)settings.getGroupList().get( 0 );
-
-        /* Always add the first group, even if there aren't any clients in it, 
-         * this is where the server pulls its address from */
-        groupToClientList.put( serverGroup, new LinkedList());
-        
-        for ( VpnClient client : clientList ) {
-            VpnGroup group = client.getGroup();
-            if ( group == null ) {
-                logger.error( "NULL group for client [" + client.getName() + "]" );
-                continue;
-            }
-
-            /* Retrieve the group list this client belongs on */
-            List<VpnClient> groupClientList = groupToClientList.get( group );
-
-            /* If a list hasn't been created yet, then create one */
-            if ( groupClientList == null ) {
-                groupClientList = new LinkedList();
-                groupToClientList.put( group, groupClientList );
-            }
-            
-            /* Add this client to the list */
-            groupClientList.add( client );
-        }
-
-        /* Iterate each group assigning all of the clients IP addresses */
-        final boolean isBridge = settings.isBridgeMode();
-
-        /* Test to make sure this gets set */
-        boolean setServerAddress = false;
-
-        for ( Map.Entry<VpnGroup,List<VpnClient>> entry  : groupToClientList.entrySet()) {
-            VpnGroup group = entry.getKey();
-            List<VpnClient> clients = entry.getValue();
-
-            List addrs = new LinkedList();
-            boolean isServerGroup = group.equals( serverGroup );
-            
-            /* Create a new ip matcher to validate all of the created addresses */
-            IPMatcher matcher = new IPMatcher( group.getAddress(), group.getNetmask(), false );
-                                           
-            /* Create enough addresses for all of the clients, and possible the server */
-            Set<IPaddr> addressSet = createAddressSet( clients.size() + ( isServerGroup ? 1 : 0 ), 
-                                                       group, matcher, isBridge );
-            
-            /* Remove any duplicates */
-            removeDuplicateAddresses( settings, matcher, clients, isServerGroup );
-
-            /* Now remove all of the entries that are taken */
-            removeTakenAddresses( settings, matcher, clients, addressSet, isServerGroup );
-            
-            /* Now assign the remaining address to clients that don't have addresses */
-            assignRemainingClients( settings, clients, addressSet, isServerGroup );
-        }
-
-        if ( null == settings.getServerAddress()) {
-            throw new TransformException( "Unable to set the server address" );
-        }
+        writeRoute( sw, FLAG_ROUTE, address, netmask );
     }
 
-    private Set<IPaddr> createAddressSet( int size, VpnGroup group, IPMatcher matcher, boolean isBridge ) 
-        throws TransformException
+    private void writeClientRoute( ScriptWriter sw, IPaddr address, IPaddr netmask )
     {
-        /* Get the base address */
-        InetAddress base = IPaddr.and( group.getAddress(), group.getNetmask()).getAddr();
-
-        byte[] addressData = base.getAddress();
-        addressData[3] &= 0xFC;
-        addressData[3] |= 1;
-        
-        Set<IPaddr> addressSet = new LinkedHashSet<IPaddr>();
-        
-        for (  ; size-- > 0 ; ) {
-            /* Create the inet address */
-            IPaddr address = getByAddress( addressData );
-            
-            /* Check to see if it is in the range */
-            if ( !matcher.isMatch( address.getAddr())) {
-                /* This is a configuration problem */
-                logger.warn( "Unable to configure clients" );
-                throw new TransformException( "Not enough addresses to assign all clients in group " + 
-                                              group.getName());
-            }
-            
-            addressSet.add( address );
-            
-            getNextAddress( addressData, isBridge );
-        }
-        
-        return addressSet;
+        writeRoute( sw, FLAG_CLI_ROUTE, address, netmask );
     }
 
-    void removeDuplicateAddresses( VpnSettings settings, IPMatcher matcher, List<VpnClient> clientList, 
-                                   boolean assignServer )
+    private void writeRoute( ScriptWriter sw, String type, IPaddr address, IPaddr netmask )
     {
-        Set<IPaddr> addressSet = new HashSet<IPaddr>();
-
-        /* If necessary add the server address */
-        if ( assignServer ) {
-            IPaddr serverAddress = settings.getServerAddress();
-            if (( null != serverAddress ) && matcher.isMatch( serverAddress.getAddr())) {
-                addressSet.add( serverAddress );
-            }
+        if ( address == null || address.getAddr() == null ) {
+            logger.warn( "attempt to write a route with a null address" );
+            return;
         }
-
-        /* Check to see if each client has a unique address */
-        for ( VpnClient client : clientList ) {
-            IPaddr address = client.getAddress();
-            /* If the address is already in the set, then unset it from the client since it is
-             * already taken */
-            if (( null != address ) && matcher.isMatch( address.getAddr()) && !addressSet.add( address )) {
-                client.setAddress( null );
-            }
-        }
-    }
-    
-    void removeTakenAddresses( VpnSettings settings, IPMatcher matcher, List<VpnClient> clientList, 
-                               Set<IPaddr> addressSet, boolean assignServer )
-    {
-        /* First check the server address */
-        if ( assignServer ) {
-            IPaddr serverAddress = settings.getServerAddress();
-            if (( null !=  serverAddress ) && matcher.isMatch( serverAddress.getAddr())) {
-                addressSet.remove( serverAddress );
-            } else { 
-                settings.setServerAddress( null );
-            }
-        }
-
-        for ( VpnClient client : clientList ) {
-            IPaddr address = client.getAddress();
-            if (( null != address ) && matcher.isMatch( address.getAddr())) {
-                /* The return code doesn't really matter */
-                addressSet.remove( address );
-            } else {
-                /* This will clear clients that currently have addresses are not in 
-                 * this address space */
-                client.setAddress( null );
-            }
-        }
-    }
-
-    void assignRemainingClients( VpnSettings settings, List<VpnClient> clientList,
-                                 Set<IPaddr> addressSet, boolean assignServer )
-    {
-        Iterator<IPaddr> iter = addressSet.iterator();
         
-        /* If necessary assign the server an address */
-        if ( assignServer && ( null == settings.getServerAddress())) {
-            settings.setServerAddress( iter.next());
-            iter.remove();
-        }
-
-        /* Assign each client an address */
-        for ( VpnClient client : clientList ) {
-            /* Nothing to do for this clients that current have addresses */
-            if ( client.getAddress() != null ) continue;
-            
-            /* Once you use the node, you must remove it from the set so it is never used again */
-            client.setAddress( iter.next());
-            iter.remove();
-        }
-    }
-
-
-    void getNextAddress( byte[] current, boolean isBridge )
-    {
-        /* For a bridge each one increments by 1 */
-        boolean overflow = false;
-        if ( isBridge ) {
-            current[3] += 1;
-
-            if (( current[3] == 0 ) || ( current[3] == -127 )) {
-                overflow = true;
-                current[3] = 1;
-            }
+        String value = "";
+        
+        if ( netmask != null && ( netmask.getAddr() != null )) {
+            value += IPaddr.and( address, netmask );
+            value += " " + netmask;
         } else {
-            current[3] += 4;
-            if ( current[3] == 1 ) overflow = true;
+            value += address;
         }
-
-        /* Overflow  */
-        if ( overflow ) {
-            current[2]++;
-            if ( current[2] == 0 ) {
-                current[1]++;
-                if ( current[1] == 0 ) {
-                    current[0]++;
-                }
-            }
-        }        
+        
+        sw.appendVariable( type, value );
     }
 
     /* A safe function (exceptionless) for InetAddress.getByAddress */

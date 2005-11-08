@@ -1,0 +1,17 @@
+#!/bin/sh
+
+exec >> @MVVM_LOG@/openvpn.log 2>&1
+
+GLOBALS=@MVVM_HOME@/openvpn/globals
+
+## There must be a configuration file 
+if [ -r ${GLOBALS} ]; then
+    . ${GLOBALS}
+else
+    echo "Unable to load the openvpn configuration file ${GLOBALS}"
+    exit -2
+fi
+
+${OPENVPN_SCRIPT} stop
+
+true 

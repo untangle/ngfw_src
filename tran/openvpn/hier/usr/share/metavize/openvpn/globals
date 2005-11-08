@@ -41,6 +41,8 @@ DN_QUALIFIER_SERVER="server"
 DN_QUALIFIER_CLIENT="client"
 DN_QUALIFIER_CA="certificateAuthority"
 
+OPENVPN_SCRIPT="/etc/init.d/openvpn"
+
 ## Debugging function
 function opensslDbg()
 {

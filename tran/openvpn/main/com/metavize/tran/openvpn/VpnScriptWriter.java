@@ -12,10 +12,10 @@ package com.metavize.tran.openvpn;
 
 import org.apache.log4j.Logger;
 
-import com.metavize.mvvm.tran.ScriptWriter;
+import com.metavize.mvvm.tran.script.ScriptWriter;
 
-import static com.metavize.mvvm.tran.ScriptWriter.COMMENT;
-import static com.metavize.mvvm.tran.ScriptWriter.METAVIZE_HEADER;
+import static com.metavize.mvvm.tran.script.ScriptWriter.COMMENT;
+import static com.metavize.mvvm.tran.script.ScriptWriter.METAVIZE_HEADER;
 
 
 class VpnScriptWriter extends ScriptWriter

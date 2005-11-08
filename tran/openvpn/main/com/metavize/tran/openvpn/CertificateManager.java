@@ -27,7 +27,8 @@ import org.apache.log4j.Logger;
 import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.tran.TransformException;
 
-import com.metavize.mvvm.tran.ScriptWriter;
+import com.metavize.mvvm.tran.script.ScriptWriter;
+import com.metavize.mvvm.tran.script.ScriptRunner;
 
 import static com.metavize.tran.openvpn.Constants.*;
 
@@ -232,7 +233,6 @@ class CertificateManager
         callRevokeClientScript( client.getInternalName());
     }
 
-
     private void setDefaults( VpnSettings settings )
     {
         if ( !isSet( settings.getDomain()))       settings.setDomain( DEFAULT_DOMAIN );
@@ -253,47 +253,22 @@ class CertificateManager
         if ( setting == null || setting.trim().length() == 0 ) return false;
         return true;
     }
-    
+
+    /* These function have been less useful since the functionality in
+     * callScript was moved into the script runner
+     */
     private void callCreateClientScript( String commonName ) throws TransformException
     {
-        callScript( GENERATE_CLIENT_SCRIPT, new String[] { commonName } );
+        ScriptRunner.getInstance().exec( GENERATE_CLIENT_SCRIPT, new String[] { commonName } );
     }
 
     private void callRevokeClientScript( String commonName ) throws TransformException
     {
-        callScript( REVOKE_CLIENT_SCRIPT, new String[] { commonName  } );
+        ScriptRunner.getInstance().exec( REVOKE_CLIENT_SCRIPT, new String[] { commonName } );
     }
 
     private void callScript( String scriptName ) throws TransformException
     {
-        callScript( scriptName, EMPTY_ARRAY );
-    }
-    
-    /* Done with an array to exec to fix common names that have spaces in them
-     * If the string 'sh scriptName "common name"' is used, the quotes make it 
-     * into the common name */
-    private void callScript( String scriptName, String args[] ) throws TransformException
-    {
-        /* Run the script to generate the base parameters */
-        /* Call the rule generator */
-        
-        String input[] = new String[2 + args.length];
-        int c = 0;
-        input[c++] = "sh";
-        input[c++] = scriptName;
-        for ( String arg : args ) input[c++] = arg;
-    
-        try {
-            int code = 0;
-            Process p = Runtime.getRuntime().exec( input );
-            code = p.waitFor();
-            
-            if ( code != 0 ) throw new TransformException( "Error executing script [" + scriptName + "]: " 
-                                                           + code );
-        } catch ( TransformException e ) {
-            throw e;
-        } catch( Exception e ) {
-            throw new TransformException( "Error executing script [" + scriptName + "]", e );
-        }
+        ScriptRunner.getInstance().exec( scriptName );
     }
 }

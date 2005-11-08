@@ -1,0 +1,27 @@
+#!/bin/sh
+
+exec >> @MVVM_LOG@/openvpn.log 2>&1
+
+GLOBALS=@MVVM_HOME@/openvpn/globals
+
+## There must be a configuration file 
+if [ -r ${GLOBALS} ]; then
+    . ${GLOBALS}
+else
+    echo "Unable to load the openvpn configuration file ${GLOBALS}"
+    exit -2
+fi
+
+## XXX May need to run reconfiguration for the bridge
+## 
+
+## Use restart just in case there is one lingering around
+## For some reason restart is different stop then start
+${OPENVPN_SCRIPT} stop
+
+## This is required or else openvpn won't restart properly
+sleep 1
+
+${OPENVPN_SCRIPT} start
+
+true
