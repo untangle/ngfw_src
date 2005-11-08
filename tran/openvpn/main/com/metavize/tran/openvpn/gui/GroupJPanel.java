@@ -202,6 +202,8 @@ public class GroupJPanel extends javax.swing.JPanel {
         }
 
         VpnGroup group = new VpnGroup();
+        
+        group.setLive( true );
 
         group.setName( groupDescription[0] );
         

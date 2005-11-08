@@ -14,6 +14,9 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
+import com.metavize.mvvm.tapi.Affinity;
+import com.metavize.mvvm.tapi.Fitting;
+
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.tran.TransformState;
@@ -21,6 +24,7 @@ import com.metavize.mvvm.tran.TransformException;
 
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.PipeSpec;
+import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.util.TransactionWork;
 
 public class VpnTransformImpl extends AbstractTransform
@@ -28,10 +32,14 @@ public class VpnTransformImpl extends AbstractTransform
 {
     private final Logger logger = Logger.getLogger( VpnTransformImpl.class );
 
-    private final PipeSpec[] pipeSpec = new PipeSpec[0];
+    private final SoloPipeSpec pipeSpec;
+    private final SoloPipeSpec[] pipeSpecs;
+
     private final OpenVpnManager openVpnManager = new OpenVpnManager();
     private final CertificateManager certificateManager = new CertificateManager();
     private final AddressMapper addressMapper = new AddressMapper();
+
+    private final EventHandler handler;
 
     private VpnSettings settings;
 
@@ -39,6 +47,15 @@ public class VpnTransformImpl extends AbstractTransform
 
     public VpnTransformImpl()
     {
+        this.handler          = new EventHandler( this );
+        // this.statisticManager = new VpnStatisticManager();
+
+        /* Have to figure out pipeline ordering, this should always
+         * next to towards the outside, then there is OpenVpn and then Nat */
+        this.pipeSpec = new SoloPipeSpec
+            ( "openvpn", this, handler, Fitting.OCTET_STREAM, Affinity.OUTSIDE,
+             SoloPipeSpec.MAX_STRENGTH - 2);
+        this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
     }
 
     protected void initializeSettings()
@@ -87,6 +104,7 @@ public class VpnTransformImpl extends AbstractTransform
                 /* This stops then starts openvpn */
                 this.openVpnManager.configure( settings );
                 this.openVpnManager.restart();
+                this.handler.configure( settings );
             }
         } catch ( TransformException exn ) {
             logger.error( "Could not save VPN settings", exn );
@@ -147,7 +165,7 @@ public class VpnTransformImpl extends AbstractTransform
     @Override
     protected PipeSpec[] getPipeSpecs()
     {
-        return pipeSpec;
+        return pipeSpecs;
     }
 
     // lifecycle --------------------------------------------------------------

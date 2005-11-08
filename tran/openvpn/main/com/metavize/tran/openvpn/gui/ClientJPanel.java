@@ -222,6 +222,7 @@ public class ClientJPanel extends javax.swing.JPanel {
         }
 
         VpnClient client = new VpnClient();
+        client.setLive( true );
         client.setName( clientDescription[0].trim() );
         
         client.setGroup( null );
@@ -246,6 +247,7 @@ public class ClientJPanel extends javax.swing.JPanel {
                 String network = clientDescription[c];
                 String netmask = clientDescription[c+1];
                 ClientSiteNetwork site = new ClientSiteNetwork();
+                site.setLive( true );
                 site.setNetwork( IPaddr.parse( network ));
                 site.setNetmask( IPaddr.parse( netmask ));
                 siteList.add( site );
