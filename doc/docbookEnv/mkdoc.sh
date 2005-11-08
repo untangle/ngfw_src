@@ -207,3 +207,5 @@ case $OUTPUT_TYPE in
   html) doHtml;;
 esac
 
+exit 0
+

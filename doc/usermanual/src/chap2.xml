@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter>
+  <title id="sample_chap_with_sections">Sample Chapter With Sections</title>
+
+  <para>
+    This is text outside of a section.  It can be though of as "chapter scope", used
+    for introductions and such.
+  </para>
+  <sect1 id="chap2_sect1">
+    <title>The Simpsons</title>
+    <para>This paragraph introduces the Simpsons, and prepares the reader tro expect
+    the remainder of the chapter to be organized by parents and their kids.</para>
+    
+    <para>We will also show off, and link to <xref linkend="chap1_fig_1"/>, which is from
+    another chapter (another XML document).</para>
+    
+    <sect2 id="chap2_sect1_inline_markup">
+      <title>Inline Markup</title>
+
+      <para>
+      Most of you are used to bold and italic.  The DocBook equivilants are a
+      bit more complex, in that they are more in context.  DocBook does support
+      the basic <emphasis>emphasis</emphasis> which can be thought of as bold.  It
+      also supports <firstterm>firstterm</firstterm> to say "this is the first time
+      this term has been used".  This is normally italic.
+      </para>
+      
+
+      <table frame="topbot" pgwide="0">
+        <title>Recommended Inline Markup</title>
+        <tgroup cols="2">
+          <colspec colwidth="*" align="left"/>
+          <colspec colwidth="5*"  align="left"/>
+          <thead>
+            <row rowsep="1">
+              <entry>Tag</entry>
+              <entry>Desc</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>&lt;emphasis></entry>
+              <entry>
+                <para>
+                The most generic way to say "this is important".  It looks
+                <emphasis>like this</emphasis>
+                </para>
+              </entry>
+
+            </row>
+            <row>
+              <entry>Marge</entry>
+              <entry>
+                <para>
+                This is a sample.  This is a sample.  This is a sample.
+                This is a sample.  This is a sample.  This is a sample.
+                This is a sample.  This is a sample.  This is a sample.
+                This is a sample.  This is a sample.  This is a sample.  
+                </para>
+                <para>
+                This is a sample.  This is a sample.  This is a sample.
+                This is a sample.  This is a sample.  This is a sample.
+                This is a sample.  This is a sample.  This is a sample.
+                This is a sample.  This is a sample.  This is a sample.  
+                </para>
+              </entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+      
+    </sect2>
+
+    <sect2 id="chap2_sect1_tables">
+      <title>Tables</title>
+      <para>This is a sample.  This is a sample.  This is a sample.
+      This is a sample.  This is a sample.  This is a sample.  This is a sample.
+      This is a sample.  This is a sample.  This is a sample.  This is a sample.
+      This is a sample.  This is a sample.  This is a sample.  This is a sample.
+      This is a sample.  This is a sample.  </para>
+
+      <para>Blaaa</para>
+      
+      <table frame="topbot" pgwide="0">
+        <title>topbot table</title>
+        <tgroup cols="2">
+          <thead>
+            <row rowsep="1">
+              <entry>Foo</entry>
+              <entry>Bar</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>xyz</entry>
+              <entry>pdq</entry>
+            </row>
+            <row>
+              <entry>abc</entry>
+              <entry>123</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+
+      <para>Blaaa</para>
+
+
+      <table frame="topbot" pgwide="0">
+        <title>Simple table</title>
+        <tgroup cols="2">
+          <colspec colwidth="*" align="left"/>
+          <colspec colwidth="5*"  align="left"/>
+          <thead>
+            <row rowsep="1">
+              <entry>Name</entry>
+              <entry>Desc</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>Homer</entry>
+              <entry>
+                <para>
+                This is a sample.  This is a sample.  This is a sample.
+                This is a sample.  This is a sample.  This is a sample.
+                This is a sample.  This is a sample.  This is a sample.
+                This is a sample.  This is a sample.  This is a sample.  
+                </para>
+                <para>
+                This is a sample.  This is a sample.  This is a sample.
+                This is a sample.  This is a sample.  This is a sample.
+                This is a sample.  This is a sample.  This is a sample.
+                This is a sample.  This is a sample.  This is a sample.  
+                </para>
+              </entry>
+
+            </row>
+            <row>
+              <entry>Marge</entry>
+              <entry>
+                <para>
+                This is a sample.  This is a sample.  This is a sample.
+                This is a sample.  This is a sample.  This is a sample.
+                This is a sample.  This is a sample.  This is a sample.
+                This is a sample.  This is a sample.  This is a sample.  
+                </para>
+                <para>
+                This is a sample.  This is a sample.  This is a sample.
+                This is a sample.  This is a sample.  This is a sample.
+                This is a sample.  This is a sample.  This is a sample.
+                This is a sample.  This is a sample.  This is a sample.  
+                </para>
+              </entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+
+
+      
+                            
+      
+      <para>This is a sample.  This is a sample.  This is a sample.
+      This is a sample.  This is a sample.  This is a sample.  This is a sample.
+      This is a sample.  This is a sample.  This is a sample.  This is a sample.
+      This is a sample.  This is a sample.  This is a sample.  This is a sample.
+      This is a sample.  This is a sample.  </para>
+      <sect3 id="chap2_sect1_marge_bart">
+        <title>Bart</title>
+        <para>This is a sample.  This is a sample.  This is a sample.
+        This is a sample.  This is a sample.  This is a sample.  This is a sample.
+        This is a sample.  This is a sample.  This is a sample.  This is a sample.
+        This is a sample.  This is a sample.  This is a sample.  This is a sample.
+        This is a sample.  This is a sample.  </para>
+      </sect3>
+    </sect2>    
+  </sect1>
+</chapter>

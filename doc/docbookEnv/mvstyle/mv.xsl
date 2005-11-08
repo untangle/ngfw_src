@@ -484,6 +484,8 @@ This document was created using the &gt;e-novative&gt; DocBook Environment (<a h
 <!-- Allows inserting text files directly into the XML source.               -->
 <xsl:param name="textinsert.extensions">0</xsl:param>
 
+<xsl:param name="glossentry.show.acronym">yes</xsl:param>
+
 
 <xsl:variable name="headerval">
  <xsl:choose>

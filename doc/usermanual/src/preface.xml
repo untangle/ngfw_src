@@ -2,10 +2,25 @@
 <preface>
   <title>Preface</title>
 
-  <address>
-    Metavize, Inc
-    <street>2000 Alameda de las Pulgas, Suite 125</street>
-    <state>San Mateo, CA  94403</state>
-  </address>
+
+
+  <sect1 id="preface_safety">
+    <title>Safety</title>
+    <para>This is where we tell people not to shower with their &eg;
+    appliance, as it is a big nasty electrical thing and other silly
+    legal speak.</para>
+  </sect1>
+
+  <sect1 id="preface_support">
+    <title>Support</title>
+    <para>This is where we provide support contact info</para>
+
+    <address>
+      &mv;
+      <street>2000 Alameda de las Pulgas, Suite 125</street>
+      <state>San Mateo, CA  94403</state>
+    </address>    
+    
+  </sect1>
   
 </preface>  

@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glossary>
+  <title>Glossary Of Terms</title>
+
+  <para>
+    Note that many of these terms were taken from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>.
+  </para>
+  
+<!--
+
+Place new terms under the appropriate alphabetical location.
+
+-->  
+  
+
+<!-- ============== A ================ -->
+
+  <glossdiv>
+    <title>A</title>
+  </glossdiv>
+
+<!-- ============== B ================ -->  
+  
+  <glossdiv>
+    <title>B</title>
+  </glossdiv>
+
+<!-- ============== C ================ -->
+  
+  <glossdiv>
+    <title>C</title>
+
+    <glossentry>
+      <glossterm>Computer Virus</glossterm>
+      <glosssee otherterm="gloss_virus"/>
+    </glossentry>    
+    
+  </glossdiv>  
+
+<!-- ============== D ================ -->
+  
+  <glossdiv>
+    <title>D</title>
+  </glossdiv>
+
+<!-- ============== E ================ -->
+  
+  <glossdiv>
+    <title>E</title>
+  </glossdiv>
+
+<!-- ============== F ================ -->
+  
+  <glossdiv>
+    <title>F</title>
+  </glossdiv>  
+
+<!-- ============== G ================ -->
+  
+  <glossdiv>
+    <title>G</title>
+
+    <glossentry id="gloss_groupware">>
+      <glossterm>Groupware</glossterm>
+      <glossdef>
+        <para>Generic term used to describe client/server applications used to provide email calendar (and other) services.  Groupware consists of a server and client.  Examples include Microsoft Exchange (server) and Outlook (client) and IBM Lotus Domino (server) and Notes (client).  Since the communication between client and server for groupware applications is propriatary to the groupware vendor, such communication often cannot be scanned.</para>
+      </glossdef>            
+    </glossentry>
+    
+  </glossdiv>
+
+<!-- ============== H ================ -->
+  
+  <glossdiv>
+    <title>H</title>
+  </glossdiv>
+
+
+<!-- ============== H ================ -->
+  
+  <glossdiv>
+    <title>H</title>
+  </glossdiv>
+
+<!-- ============== I ================ -->
+  
+  <glossdiv>
+    <title>I</title>
+
+    <glossentry id="gloss_imap">>
+      <glossterm>Internet Mail Access Protocol</glossterm>
+      <acronym>IMAP</acronym>
+      <glossdef>
+        <para>TODO</para>
+      </glossdef>            
+    </glossentry>      
+    
+  </glossdiv>
+
+<!-- ============== J ================ -->
+  
+  <glossdiv>
+    <title>J</title>
+  </glossdiv>
+
+<!-- ============== K ================ -->
+  
+  <glossdiv>
+    <title>K</title>
+  </glossdiv>
+
+<!-- ============== L ================ -->
+  
+  <glossdiv>
+    <title>L</title>
+  </glossdiv>
+
+<!-- ============== M ================ -->
+  
+  <glossdiv>
+    <title>M</title>
+
+    <glossentry id="gloss_malware">
+      <glossterm>Malware</glossterm>
+      <glossdef>
+        <para>Malware is a type of software designed to take over and/ or damage a computer user's operating system, without his or her knowledge or approval. Once installed, it is often very difficult to remove, and depending on the severity of the program installed, its handiwork can range in degree from the slightly annoying (such as unwanted pop up ads while a user is performing regular computing tasks on or offline), to irreparable damage requiring the reformatting of one's hard drive, since much of malware is poorly written. Examples of malware include viruses and trojan horses.</para>
+        <glossseealso otherterm="gloss_virus"/>
+        <glossseealso otherterm="gloss_spyware"/>
+        <glossseealso otherterm="gloss_trojan"/>
+      </glossdef>
+
+    </glossentry>    
+    
+  </glossdiv>
+
+<!-- ============== N ================ -->
+  
+  <glossdiv>
+    <title>N</title>
+  </glossdiv>
+
+<!-- ============== O ================ -->
+  
+  <glossdiv>
+    <title>O</title>
+  </glossdiv>
+
+<!-- ============== P ================ -->
+  
+  <glossdiv>
+    <title>P</title>
+
+    <glossentry id="gloss_pop">>
+      <glossterm>Post Office Protocol</glossterm>
+      <acronym>POP</acronym>
+      <glossdef>
+        <para>TODO</para>
+      </glossdef>            
+    </glossentry>    
+    
+  </glossdiv>
+
+<!-- ============== Q ================ -->
+  
+  <glossdiv>
+    <title>Q</title>
+  </glossdiv>
+
+<!-- ============== R ================ -->
+  
+  <glossdiv>
+    <title>R</title>
+  </glossdiv>
+
+<!-- ============== S ================ -->
+  
+  <glossdiv>
+    <title>S</title>
+
+
+    <glossentry id="gloss_smtp">
+      <glossterm>Simple Mail Transfer Protocol</glossterm>
+      <acronym>SMTP</acronym>
+      <glossdef>
+        <para>Internet protocol used to transmit (send) email.  SMTP is the defacto way to send email between organizations.  Within a given organization, SMTP may or may not be used to send mails from user desktops to the organization's mail server.</para>
+        <glossseealso otherterm="gloss_pop"/>
+        <glossseealso otherterm="gloss_imap"/>
+        <glossseealso otherterm="gloss_groupware"/>
+      </glossdef>
+    </glossentry>     
+
+    <glossentry id="gloss_spyware">
+      <glossterm>Spyware</glossterm>
+      <glossdef>
+        <para>TODO complete me.</para>
+      </glossdef>
+    </glossentry>     
+    
+  </glossdiv>
+
+<!-- ============== T ================ -->
+  
+  <glossdiv>
+    <title>T</title>
+
+    <glossentry id="gloss_trojan">
+      <glossterm>Trojan Horse</glossterm>
+      <abbrev>Trojan</abbrev>
+      <glossdef>
+        <para>TODO complete me.</para>
+      </glossdef>
+    </glossentry>        
+    
+  </glossdiv>
+
+<!-- ============== U ================ -->
+  
+  <glossdiv>
+    <title>U</title>
+  </glossdiv>
+
+<!-- ============== V ================ -->
+  
+  <glossdiv>
+    <title>V</title>
+    
+    <glossentry id="gloss_virus">
+      <glossterm>Virus</glossterm>
+      <glossdef>
+        <para>Software with the ability to install and replicate itself without user permission, usually causing damage to the infected computer system.</para>
+        <glossseealso otherterm="gloss_malware"/>
+        <glossseealso otherterm="gloss_spyware"/>
+        <glossseealso otherterm="gloss_trojan"/>
+      </glossdef>
+    </glossentry>
+    
+  </glossdiv>
+  
+<!-- ============== W ================ -->
+  
+  <glossdiv>
+    <title>W</title>
+  </glossdiv>
+
+<!-- ============== X ================ -->
+  
+  <glossdiv>
+    <title>X</title>
+  </glossdiv>                              
+  
+<!-- ============== Y ================ -->
+  
+  <glossdiv>
+    <title>Y</title>
+  </glossdiv>                              
+  
+<!-- ============== Z ================ -->
+  
+  <glossdiv>
+    <title>Z</title>
+  </glossdiv>                              
+  
+    
+  
+  
+  
+    
+  <glossdiv>
+    <title>A</title>
+  
+    <glossentry id="gloss_apple">
+      <glossterm>Apple</glossterm>
+      <acronym>Apple</acronym>
+      <glossdef>
+        <para>A fruit.</para>
+        <para>A computer company.</para>
+        <glossseealso otherterm="gloss_fruit"/>
+      </glossdef>
+    </glossentry>
+  
+  </glossdiv>
+
+  <glossdiv>
+    <title>F</title>
+  
+    <glossentry id="gloss_fruit">
+      <glossterm>Fruit</glossterm>
+      <acronym>Fruit Acronym</acronym>
+      <glossdef>
+        <para>A kind of food</para>
+        <glossseealso otherterm="gloss_food">Food Literal</glossseealso>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="gloss_food">
+      <glossterm>Food</glossterm>
+      <glossdef>
+        <para>Food has no acronym</para>
+      </glossdef>
+    </glossentry>    
+  
+  </glossdiv>  
+  
+
+  <glossdiv>
+    <title>E</title>
+  
+    <glossentry id="xml">
+      <glossterm>Extensible Markup Language</glossterm>
+      <acronym>XML</acronym>
+      <glossdef>
+        <para>Some reasonable definition here.</para>
+        <glossseealso otherterm="sgml">SGML</glossseealso>
+      </glossdef>
+    </glossentry>
+  
+  </glossdiv>
+  
+  <glossdiv>
+    <title>S</title>
+  
+    <glossentry>
+      <glossterm>SGML</glossterm>
+    <glosssee otherterm="sgml"/>
+    </glossentry>
+    
+    <glossentry id="sgml"><glossterm>Standard Generalized
+      Markup Language</glossterm><acronym>SGML</acronym>
+      <abbrev>ISO 8879:1986</abbrev>
+    <glossdef>
+      <para>Some reasonable definition here.</para>
+      <glossseealso otherterm="xml">XML</glossseealso>
+    </glossdef>
+    </glossentry>
+  
+  </glossdiv>
+
+</glossary>

@@ -1,66 +1,122 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter>
-  <title>Introduction</title>
+  <title id="simple_sample_chap">Simple Sample Chapter</title>
 
-  <para>Metavize EdgeGuard is a comprehensive, software-based security
-  solution. EdgeGuard can be installed in minutes, and drops seamlessly into
-  existing infrastructure behind or in place of your firewall. EdgeGuard
-  simplifies the complexity of securing the network, and allows you to
-  install, deploy, configure, manage and generate reports across a wide
-  selection of point solutions from a single point.</para>
+  <!--
+    If the chapter is small or otherwise flat, you can just insert
+    text directly, starting with a "para" tag.  If the chapter is
+    long or complex (nested), you should consider "sect1", "sect2"
+    tags.  This creates "sections", which show-up in an index as
+    well as becoming their own HTML pages (when DocBook is converted
+    to chunked HTML).
 
-  <para>The user-friendly management GUI is designed to resemble a virtual
-  rack, as shown in <xref linkend="figure1_1" /></para>
+    If your chapter is *really* long or is likely to be authored
+    by several people, consider splitting into separate files (see
+    "eg250.xml" for more details).
 
-  <para></para>
+    This chapter is simple, and "chap2" is more complex.
 
-  <figure>
-    <title id="figure1_1">This is an Image title</title>
+
+    On Links:
+    =========
+    In the text below are examples creating targets and links.  The mechanics
+    will not be explained here.  However, the naming convention is important.
+    All "files" for the manual are merged into a single XML document at
+    generation time.  This is done by the XML parser.  Therefore, any targets
+    (things linked-to) are in the *same* namespace although they do not seem
+    as such while you are working in your own file.
+
+    To avoid conflicts, please use the following convention for naming
+    targets (IDs):
+
+    filename_logicalTarget.
+
+    For example, accessing the first section of "chap1.xml" may take on
+    the target "chapt_sect1".
+
+    There is some goofy-ass bug where things get mangled if you put the
+    ID on the "title" instead of the outer-most element.  I saw some DocBook
+    examples on the web where they put it on the title (naugty, naughty, naughty).
+    
+  -->
+
+  <para>This chapter is full of little examples of markup that we may want to
+  use.  If you need more than the markup listed here, please ask me.  My intent
+  was to <emphasis>spare</emphasis> you from from having to read-up on DocBook.</para>
+
+  <para>Here is a link to <glossterm linkend="gloss_fruit">a glossary entry</glossterm> </para>
+
+  <para>
+    Here we show how to create true hyperlinks to resources on the
+    web, such as <ulink  url="http://www.google.com">Google</ulink>
+    or a plain URL without alternative text <ulink url="http://www.metavize.com"/>
+  </para>
+
+  <para>Now, we will forward-reference a figure which is later on (a forward
+  reference) <xref linkend="chap1_fig_1"/>.  Note that when doing such a reference, it is best to target
+  something which had a "title" element, as that will become the display
+  text for your link.  Note also it is good writing practice to never use
+  positional text (i.e. "the figure below" or "the figure on the next page") as
+  you do not know where the images will ultimatly be placed relative to the
+  text.</para>
+
+  <para>This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  </para>  
+
+  <para id="chap1_random_paragraph"  xreflabel="Some important paragraph">This
+  paragraph is interesting only in that we're making it targetable
+  (something that can be linked) yet it lacked a "title".  Instead, we'll give it
+  one then at the end of this chapter, we'll refer to it</para>
+
+  <para>This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  </para>
+
+  <figure id="chap1_fig_1">
+    <title>Sample PNG Image</title>
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="figure/someKDEPicture.png" />
+        <imagedata fileref="figure/pngSample.png" />
       </imageobject>
     </mediaobject>
   </figure>
 
-  <para>This is a pararaph, after the image was used. The administration said
-  that suspending the rules would reduce rebuilding costs and help open
-  opportunities for minority-owned companies, but critics said it would result
-  in lower pay for workers.</para>
+  <para>This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  </para>
 
-  <para>Members of Congress were first informed of the decision at a White
-  House meeting with Chief of Staff Andrew Card on Wednesday morning.</para>
+  <para>This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  </para>
 
-  <para>The decision, which means that workers will get wages closer to what
-  they were making before the hurricane, was met with approval by Republicans
-  and Democrats, many of whom felt that out-of-state workers were descending
-  on hurricane-ravaged areas and working for a fraction of a living
-  wage.</para>
+  <para>Now, we'll go back and reference the image a few paragraphs back.  If
+  this were a "real" doc, we'd say something like "as seen in <xref linkend="chap1_fig_1"/>"
+  </para>
 
-  <para>The Davis-Bacon Act, which guarantees the wage levels, was suspended
-  Sept. 8. It will be reinstated Nov. 8.</para>
+  <para>This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  </para>
 
-  <para>Rep. Steven LaTourette, R-Ohio, who attended the White House meeting,
-  told CNN that the situation was unacceptable.</para>
-
-  <para>"The danger we have in the Gulf Coast in general is profiteering. When
-  you have these large contracts and again, when you suspend some protections
-  ... it appears you can pay people whatever you want to pay and the rest of
-  the money goes into the profit column of the corporation," he said.</para>
-
-  <para>Rep. George Miller, D-Calif., who has led his party's charge against
-  the Davis-Bacon suspension, said in an interview with CNN, "At least those
-  wages will be protected where federal money is involved, and that's very
-  important to the economy of that region. This is why we couldn't understand
-  how the president could take such a callous</para>
-
-  <para></para>
-
-  <para>Now, here is an example of a numbered list</para>
-
-  <para></para>
-
+  <para>Now, here is an example of a numbered list.  This does not have a title,
+  so you should not reference it (i.e. do not give it an "ID" attribute)</para>
+  
   <orderedlist>
     <listitem>
       <para>This is some item</para>
@@ -81,12 +137,66 @@
     </listitem>
   </orderedlist>
 
-  <para>Now, we're done that numbered list. Lets move on to an un-numbered
-  list</para>
+  <para>This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  </para>
+  
+  <para>Now, we will create an ordered list <emphasis>with</emphasis> a title and
+  an ID (so it can be referred-to).</para>
 
-  <para></para>
+  <orderedlist id="chap1_list_2">
+    <title>My First List</title>
+    <listitem>
+      <para>This is some item</para>
+    </listitem>
+
+    <listitem>
+      <para>This is Another item from the list</para>
+    </listitem>
+
+    <listitem>
+      <para>This will be a item in the list, but will have new lines.  This is a sample.
+      This is a sample.  This is a sample.  This is a sample.  This is a sample.
+      This is a sample.  This is a sample.  This is a sample.  This is a sample.</para>
+      
+      <para>This is a new paragraph, but still part of the same list item.
+      This is a sample.  This is a sample.  This is a sample.  This is a sample.</para>
+    </listitem>
+
+    <listitem>
+      <para>This continues the list</para>
+    </listitem>
+  </orderedlist>  
+
+  <para>This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  </para>
+
+  <para>Now, we'll go back and reference our list.  "...Please refer to the list 
+  <xref linkend="chap1_list_2"/> for more information..."</para>
+
+
+  <para>This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  </para>
+
+
+  <para> For completeness, here are a few other sample list types</para>
+
 
   <itemizedlist>
+
+    <title>Un-numbered list</title>
+    
     <listitem>
       <para>The first item</para>
     </listitem>
@@ -100,106 +210,125 @@
     </listitem>
   </itemizedlist>
 
-  <para>Cool. Now, how about a "variable" list. Not sure what that
-  is...</para>
-
-  <para></para>
+  <para>Here is an odd type of list.  I guess it is good for introducing terms.  It
+  seems on the border of making something its own "small" section vs. one of these lists.</para>
 
   <variablelist>
+    <title>An interesting type of list</title>
     <varlistentry>
-      <term>This is from the var list</term>
+      <term>Some Entry</term>
 
       <listitem>
-        <para>I think the idea is that this is a "large" list entry, which may
-        have lots of junk associated with each entry. As such, I'm testing it
-        now to see what happens when I put-in a lot of text. Laa sdf dsf fds
-        dsf sdf dfs dfs dfs sdf dfs sdf v sefg bfdx gbndf ghbdf gybdr fghb
-        tfgb yhdrg fhdrt byhd rtfvhg bdrtfy hbrdr tfcgfy bhg trffcvgy d5rt fy
-        ge45drt yfg ed4r5tge 4d5rtf g</para>
+        <para>This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.</para>
       </listitem>
     </varlistentry>
 
     <varlistentry>
-      <term>Odd, I cannot fugure this out</term>
+      <term>Another Entry</term>
 
       <listitem>
-        <para>I think the idea is that this is a "large" list entry, which may
-        have lots of junk associated with each entry. As such, I'm testing it
-        now to see what happens when I put-in a lot of text. Laa sdf dsf fds
-        dsf sdf dfs dfs dfs sdf dfs sdf v sefg bfdx gbndf ghbdf gybdr fghb
-        tfgb yhdrg fhdrt byhd rtfvhg bdrtfy hbrdr tfcgfy bhg trffcvgy d5rt fy
-        ge45drt yfg ed4r5tge 4d5rtf g</para>
+        <para>This only has one line, which could look dumb</para>
       </listitem>
     </varlistentry>
+
+    <varlistentry>
+      <term>Last Entry</term>
+
+      <listitem>
+        <para>This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+  This is a sample.  This is a sample.  This is a sample.  This is a sample.</para>
+      </listitem>
+    </varlistentry>    
+    
   </variablelist>
 
-  <itemizedlist></itemizedlist>
+  <para>We will now explore the "correct" way to add little assides to your document.
+  In books these are sometimes sidebars, and sometimes in-line with text.</para>
+ 
+  <para>This has the five types of callouts.  For each, we show with and without a title
+  (when title not provided, one is assumed by the processor)
 
-  <para>Whatever. Here is some more CNN stuff</para>
+      <note>
+        <para>This is a note, without a title.
+        This is a sample.  This is a sample.  This is a sample.
+        This is a sample.  This is a sample.  This is a sample.
+        </para>
+      </note>
+      <note>
+        <title>Electric Fences need electricity</title>
+        <para>This is a note, without a title.
+        This is a sample.  This is a sample.  This is a sample.
+        This is a sample.  This is a sample.  This is a sample.
+        </para>
+      </note>
+   
+      <warning>
+        <para>This is a warning, without a title.
+        This is a sample.  This is a sample.  This is a sample.
+        This is a sample.  This is a sample.  This is a sample.
+        </para>        
+      </warning>
+      <warning>
+        <title>Do not touch the electric fence</title>
+        <para>This is a warning, with a title.
+        This is a sample.  This is a sample.  This is a sample.
+        This is a sample.  This is a sample.  This is a sample.
+        </para>      
+      </warning>
 
-  <para>He wrote officials that $20,850 contributed in 2000 and 2001 was not
-  reported anywhere. Another $17,300 was included in the defense fund's
-  quarterly report but not in DeLay's 2000 annual financial disclosure report
-  -- a separate requirement.</para>
+            
+      <important>
+        <para>This is an important note, without a title.
+        This is a sample.  This is a sample.  This is a sample.
+        This is a sample.  This is a sample.  This is a sample.
+        </para>       
+      </important>
+      <important>
+        <title>Install fence above ground</title>
+        <para>This is an important note, with a title.
+        This is a sample.  This is a sample.  This is a sample.
+        This is a sample.  This is a sample.  This is a sample.
+        </para>        
+      </important>      
+      
+      <caution>
+        <para>This is a caution note, without a title.
+        This is a sample.  This is a sample.  This is a sample.
+        This is a sample.  This is a sample.  This is a sample.
+        </para>       
+      </caution>
+      <caution>
+        <title>Touch electric fence at your own risk</title>
+        <para>This is a caution note, with a title.
+        This is a sample.  This is a sample.  This is a sample.
+        This is a sample.  This is a sample.  This is a sample.
+        </para>       
+      </caution>
 
-  <para>Other donations were understated as totaling $2,800, when the figure
-  should have been $4,450.</para>
+            
+      <tip>
+        <para>This is a tip, without a title.
+        This is a sample.  This is a sample.  This is a sample.
+        This is a sample.  This is a sample.  This is a sample.
+        </para>       
+      </tip>
+      <tip>
+        <title>Electric Fences cannot be used on fish</title>
+        <para>This is a tip, with a title.
+        This is a sample.  This is a sample.  This is a sample.
+        This is a sample.  This is a sample.  This is a sample.
+        </para>         
+      </tip>        
+  </para>
 
-  <para>It was during that period that DeLay was the subject of several House
-  ethics investigations.</para>
 
-  <para>DeLay, R-Texas, stepped aside as House majority leader -- at least
-  temporarily -- after he was indicted on a felony charge September 28 in a
-  Texas campaign fund-raising investigation.</para>
+  <para>As promised, we'll also provide a link back to <xref linkend="chap1_random_paragraph"/></para>
 
-  <para>He has since been charged a second time in the same case.</para>
-
-  <para>On October 13 DeLay wrote the clerk of the House, Jeff Trandahl, that
-  his first inkling of inconsistencies in his disclosures came last
-  February.</para>
-
-  <para>"I brought this matter -- which I discovered on my own -- to the
-  attention of the Committee on Standards of Official Conduct to alert the
-  chairman and ranking member," DeLay said in his letter.</para>
-
-  <para>"Upon learning of these accounting irregularities, I immediately
-  requested that the trust undergo a full and complete audit from its June
-  2000 inception through 2004 to determine if any additional accountancy
-  problems existed with the trust."</para>
-
-  <para>The audit confirmed the unreported donations and the other errors,
-  DeLay said.</para>
-
-  <para></para>
-
-  <para></para>
-
-  <para>The following items comprise the Virtual Rack Interface:</para>
-
-  <orderedlist>
-    <listitem>
-      <para>The Virtual Rack</para>
-    </listitem>
-
-    <listitem>
-      <para>Software Appliance. This displays security modules that have been
-      downloaded and installed as Software Appliances.</para>
-    </listitem>
-
-    <listitem>
-      <para></para>
-    </listitem>
-  </orderedlist>
-
-  <para></para>
-
-  <para></para>
-
-  <simpara>fsddsfjksdfjdsf sdf sdffsd sdf dfs dsf dfss df asd fafsd asdf asdf
-  asdf fsddsfjksdfjdsf sdf sdffsd sdf dfs dsf dfss df asd fafsd asdf asdf asdf
-  fsddsfjksdfjdsf sdf sdffsd sdf dfs dsf dfss df asd fafsd asdf asdf asdf fsd
-  fsdsdfsdfsdf 443 er df 564 egrsd gd h ert gdf fsd fsdsdfsdfsdf 443 er df 564
-  egrsd jhkhk fsd fsdsdfsdfsdf 443 er df 564 egrsd fsd fsdsdfsdfsdf 443 er df
-  564 egrsd jkhjhhj hjkjjkh hhkfsd fsdsdfsdfsdf 443 er df 564 egrsd fsd
-  fsdsdfsdfsdf 443 er df 564 egrsd</simpara>
 </chapter>

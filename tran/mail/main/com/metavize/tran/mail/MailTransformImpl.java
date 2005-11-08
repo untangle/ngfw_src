@@ -24,6 +24,12 @@ import com.metavize.tran.mail.papi.quarantine.QuarantineTransformView;
 import com.metavize.tran.mail.papi.quarantine.QuarantineMaintenenceView;
 import com.metavize.tran.mail.papi.quarantine.QuarantineUserView;
 import com.metavize.tran.mail.papi.quarantine.QuarantineSettings;
+import com.metavize.tran.mail.papi.quarantine.QuarantineUserActionFailedException;
+import com.metavize.tran.mail.papi.quarantine.NoSuchInboxException;
+import com.metavize.tran.mail.papi.quarantine.BadTokenException;
+import com.metavize.tran.mail.papi.quarantine.InboxIndex;
+import com.metavize.tran.mail.papi.quarantine.Inbox;
+import com.metavize.tran.mail.papi.quarantine.MailSummary;
 import com.metavize.tran.mail.papi.safelist.SafelistSettings;
 import com.metavize.tran.mail.papi.safelist.SafelistAdminView;
 import com.metavize.tran.mail.papi.safelist.SafelistEndUserView;
@@ -36,6 +42,9 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import com.metavize.mvvm.MvvmContextFactory;
+import java.util.List;
+import java.io.File;
+import com.metavize.tran.mime.EmailAddress;
 
 
 public class MailTransformImpl extends AbstractTransform
@@ -59,6 +68,11 @@ public class MailTransformImpl extends AbstractTransform
     private MailTransformSettings settings;
     private static Quarantine s_quarantine;//This will never be null for *instances* of
                                            //MailTransformImpl
+
+    //HAck instances for RMI issues
+    private QuarantineUserViewWrapper m_quv = new QuarantineUserViewWrapper();
+    private QuarantineMaintenenceViewWrapper m_qmv = new QuarantineMaintenenceViewWrapper();
+    private QuarantineTransformViewWrapper m_qtv = new QuarantineTransformViewWrapper();
     private static SafelistManager s_safelistMngr;
     private static boolean s_deployedWebApp = false;
     private static boolean s_unDeployedWebApp = false;
@@ -157,11 +171,11 @@ public class MailTransformImpl extends AbstractTransform
     }
 
     public QuarantineUserView getQuarantineUserView() {
-      return s_quarantine;
+      return m_quv;
     }
 
     public QuarantineMaintenenceView getQuarantineMaintenenceView() {
-      return s_quarantine;
+      return m_qmv;
     }
     
     public SafelistEndUserView getSafelistEndUserView() {
@@ -180,7 +194,7 @@ public class MailTransformImpl extends AbstractTransform
     }
     
     public QuarantineTransformView getQuarantineTransformView() {
-      return s_quarantine;
+      return m_qtv;
     }
 
     public SafelistTransformView getSafelistTransformView() {
@@ -294,4 +308,77 @@ public class MailTransformImpl extends AbstractTransform
     {
         setMailTransformSettings((MailTransformSettings)settings);
     }
+
+
+  //================================================================
+  //Hacks to work around issues w/ the implicit RMI proxy stuff
+    
+  abstract class QuarantineManipulationWrapper {
+  
+    public InboxIndex purge(String account,
+      String...doomedMails)
+      throws NoSuchInboxException, QuarantineUserActionFailedException {
+      return s_quarantine.purge(account, doomedMails);
+    }
+
+    public InboxIndex rescue(String account,
+      String...rescuedMails)
+      throws NoSuchInboxException, QuarantineUserActionFailedException {
+      return s_quarantine.rescue(account, rescuedMails);
+    }
+
+    public InboxIndex getInboxIndex(String account)
+      throws NoSuchInboxException, QuarantineUserActionFailedException {
+      return s_quarantine.getInboxIndex(account);
+    }
+
+    public void test() {
+      //Nothing to do
+    }
+  }
+    
+
+  class QuarantineUserViewWrapper
+    extends QuarantineManipulationWrapper
+    implements QuarantineUserView {
+
+    public String getAccountFromToken(String token)
+      throws BadTokenException {
+      return s_quarantine.getAccountFromToken(token);
+    }
+  
+    public boolean requestDigestEmail(String account)
+      throws NoSuchInboxException, QuarantineUserActionFailedException {
+      return s_quarantine.requestDigestEmail(account);
+    }
+          
+  }
+  class QuarantineMaintenenceViewWrapper
+    extends QuarantineManipulationWrapper
+    implements QuarantineMaintenenceView {
+    
+    public List<Inbox> listInboxes()
+      throws QuarantineUserActionFailedException {
+      return s_quarantine.listInboxes();
+    }
+
+    public void deleteInbox(String account)
+      throws NoSuchInboxException, QuarantineUserActionFailedException {
+      s_quarantine.deleteInbox(account);
+    }
+  
+    public void rescueInbox(String account)
+      throws NoSuchInboxException, QuarantineUserActionFailedException {
+      s_quarantine.rescueInbox(account);
+    }    
+  }
+  class QuarantineTransformViewWrapper
+    implements QuarantineTransformView {
+    public boolean quarantineMail(File file,
+      MailSummary summary,
+      EmailAddress...recipients) {
+      return s_quarantine.quarantineMail(file, summary, recipients);
+    }
+  }
+  
 }

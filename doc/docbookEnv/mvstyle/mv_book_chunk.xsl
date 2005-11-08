@@ -63,4 +63,9 @@
 </xsl:template>
 
 
+<xsl:param name="collect.xref.targets">yes</xsl:param>
+
+
+
+
 </xsl:stylesheet>
