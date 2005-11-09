@@ -11,9 +11,6 @@
 
 package com.metavize.mvvm.engine;
 
-import java.io.IOException;
-import java.io.File;
-
 import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.ToolboxManager;
 import com.metavize.mvvm.argon.Argon;
@@ -27,6 +24,11 @@ import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.File;
+import java.io.FileReader;
+
 
 public class MvvmContextImpl extends MvvmContextBase
     implements MvvmLocalContext
@@ -271,6 +273,20 @@ public class MvvmContextImpl extends MvvmContextBase
         }
     }
 
+    String getActivationKey()
+    {
+        try {
+            File keyFile = new File(ACTIVATION_KEY_FILE);
+            if (keyFile.exists()) {
+                BufferedReader reader = new BufferedReader(new FileReader(keyFile));
+                return reader.readLine();
+            }
+        } catch (IOException x) {
+            logger.error("Unable to get activation key: ", x);
+        }
+        return null;
+    }
+        
     public void doFullGC()
     {
         // XXX check access permission

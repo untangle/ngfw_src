@@ -15,6 +15,12 @@ import com.metavize.mvvm.MailSettings;
 import javax.transaction.TransactionRolledbackException;
 import java.util.TimeZone;
 
+/**
+ * Describe interface <code>AdminManager</code> here.
+ *
+ * @author <a href="mailto:jdi@metavize.com">John Irwin</a>
+ * @version 1.0
+ */
 public interface AdminManager
 {
     AdminSettings getAdminSettings();
@@ -43,5 +49,14 @@ public interface AdminManager
      * @exception TransactionRolledbackException if an error occurs
      */
     void setTimeZone(TimeZone timezone)
+        throws TransactionRolledbackException;
+
+    /**
+     * Sets the registration info for the box customer.  The new info will be transmitted to Metavize
+     * automatically by cron.
+     *
+     * @param info a <code>RegistrationInfo</code> giving the new registration info for the customer
+     */
+    void setRegistrationInfo(RegistrationInfo info)
         throws TransactionRolledbackException;
 }

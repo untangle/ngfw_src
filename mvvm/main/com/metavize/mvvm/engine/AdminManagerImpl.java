@@ -14,15 +14,14 @@ package com.metavize.mvvm.engine;
 import com.metavize.mvvm.MailSender;
 import com.metavize.mvvm.MailSettings;
 import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.security.AdminManager;
-import com.metavize.mvvm.security.AdminSettings;
-import com.metavize.mvvm.security.LoginSession;
-import com.metavize.mvvm.security.User;
+import com.metavize.mvvm.security.*;
 import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import java.util.TimeZone;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import javax.transaction.TransactionRolledbackException;
 
@@ -35,6 +34,7 @@ class AdminManagerImpl implements AdminManager
     private static final AdminManagerImpl ADMIN_MANAGER = new AdminManagerImpl();
 
     private static final String SET_TIMEZONE_SCRIPT;
+    private static final String REGISTRATION_INFO_FILE;
 
     private final MvvmLoginImpl mvvmLogin;
 
@@ -153,8 +153,36 @@ class AdminManagerImpl implements AdminManager
         }
     }
 
+    public void setRegistrationInfo(RegistrationInfo info)
+        throws TransactionRolledbackException
+    {
+        File regFile = new File(REGISTRATION_INFO_FILE);
+        if (regFile.exists()) {
+            if (!regFile.delete()) {
+                String message = "Unable to remove old registration info";
+                logger.error(message);
+                throw new TransactionRolledbackException(message);
+            }
+        }
+
+        try {
+            FileWriter writer = new FileWriter(regFile);
+            writer.write("regKey=");
+            writer.write(((MvvmContextImpl)MvvmContextFactory.context()).getActivationKey());
+            writer.write("&");
+            writer.write(info.toForm());
+            writer.close();
+        } catch (IOException exn) {
+            String message = "Exception during writing registration info: " + info;
+            logger.error(message, exn);
+            throw new TransactionRolledbackException(message);
+        }
+    }
+
     static {
         SET_TIMEZONE_SCRIPT = System.getProperty("bunnicula.home")
             + "/../../bin/mvtimezone";
+        REGISTRATION_INFO_FILE = System.getProperty("bunnicula.home")
+            + "/registration.info";
     }
 }
