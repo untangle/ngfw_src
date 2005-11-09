@@ -69,6 +69,21 @@ public class MLoginJFrame extends javax.swing.JFrame {
         passJPasswordField.setText("egdemo");
         }
     }});
+    
+    // HANDLE FIRST TIME LOGINS
+    boolean isActivated;
+    try{
+        isActivated = MvvmRemoteContextFactory.factory().isActivated( Util.getServerCodeBase().getHost(), 0, Util.isSecureViaHttps() );
+    }
+    catch(Exception e){
+        Util.handleExceptionNoRestart("unable to connect to server for activation check", e);
+        isActivated = true;
+    }
+    if( !isActivated ){
+        SwingUtilities.invokeLater( new Runnable(){ public void run(){
+            (new InitialSetupWizard()).setVisible(true);
+        }});
+    }
     }
 
 
