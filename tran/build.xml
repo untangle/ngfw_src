@@ -203,14 +203,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       </then>
     </if>
 
-    <!-- FIXME openvpn special case -->
-    <if><equals arg1="${tran.name}" arg2="openvpn"/>
-      <then>
-        <var name="extra.classpath" value="tomcat.classpath"/>
-      </then>
-    </if>
-    
-    
     <javac destdir="${build.root}/${tran.name}"
            debug="on"
            optimize="false"
@@ -222,7 +214,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <src path="${build.gensrc}/${tran.name}"/>
 
       <classpath path="${extra.classes}"/>
-      <classpath refid="${extra.classpath}"/>
+      
       <classpath refid="gui.classpath"/>
       <classpath refid="hibernate.classpath"/>
       <classpath refid="jasperreports.classpath"/>
@@ -234,7 +226,8 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <classpath refid="mvvm.classpath"/>
       <classpath refid="netbeans.classpath"/>
       <classpath refid="velocity.classpath"/>
-
+      <!-- FIXME I DON'T KNOW -->
+      <classpath refid="tomcat.classpath"/>
       <include name="com/metavize/tran/${tran.name}/**"/>
     </javac>
 
