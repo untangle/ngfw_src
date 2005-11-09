@@ -44,6 +44,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         + "       CASE WHEN action = 'P' OR NOT is_spam THEN 'PASS' "
         + "            WHEN action = 'M' THEN 'MARK' "
         + "            WHEN action = 'B' THEN 'BLOCK' "
+        + "            WHEN action = 'Q' THEN 'QUARANTINE' "
         + "       END AS action, "
         + "       subject, rcpt.addr AS receiver, send.addr AS sender, "
         + "       c_client_addr, c_client_port, s_server_addr, s_server_port, "

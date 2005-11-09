@@ -11,10 +11,11 @@
 
 package com.metavize.tran.mail.papi;
 
-import com.metavize.tran.mail.papi.quarantine.QuarantineSettings;
-import com.metavize.tran.mail.papi.safelist.SafelistSettings;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.metavize.tran.mail.papi.quarantine.QuarantineSettings;
 
 /**
  * Mail casing settings.
@@ -44,7 +45,7 @@ public class MailTransformSettings implements Serializable
     private long imapInboundTimeout;
     private long imapOutboundTimeout;
     private QuarantineSettings quarantineSettings;
-    private SafelistSettings safelistSettings;
+    private List safelistSettings; // xdoclet doesn't support java 1.5 syntax
 
     // constructors -----------------------------------------------------------
 
@@ -248,13 +249,30 @@ public class MailTransformSettings implements Serializable
     }
 
     /**
-     * Set the Safelist properties associated with this
-     * casing
+     * (actions cascade from parent to child/children and
+     *  orphan children are deleted)
+     *
+     * @return the list of Safelist settings
+     * @hibernate.list
+     * cascade="all-delete-orphan"
+     * table="TR_MAIL_SAFELISTS"
+     * @hibernate.collection-key
+     * column="SETTING_ID"
+     * @hibernate.collection-index
+     * column="POSITION"
+     * @hibernate.collection-many-to-many
+     * class="com.metavize.tran.mail.papi.safelist.SafelistSettings"
+     * column="SAFELS_ID"
      */
-    public void setSafelistSettings(SafelistSettings s) {
-      this.safelistSettings = s;
-    }
-    public SafelistSettings getSafelistSettings() {
-      return safelistSettings;
+    public List getSafelistSettings()
+    {
+        return safelistSettings;
     }    
+
+    public void setSafelistSettings(List safelistSettings)
+    {
+        this.safelistSettings = safelistSettings;
+
+        return;
+    }
 }

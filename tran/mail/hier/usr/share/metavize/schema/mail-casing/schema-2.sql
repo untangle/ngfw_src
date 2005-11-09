@@ -1,5 +1,4 @@
--- schema for release after-3.0
-
+-- schema for release after 3.0
 
 -------------
 -- settings |
@@ -19,7 +18,6 @@ CREATE TABLE settings.tr_mail_settings (
     quarantine_settings int8,
     PRIMARY KEY (settings_id));
 
-
 CREATE TABLE settings.tr_mail_quarantine_settings (
     settings_id int8 NOT NULL,
     max_intern_time int8 NOT NULL,
@@ -29,6 +27,29 @@ CREATE TABLE settings.tr_mail_quarantine_settings (
     hour_in_day int4,
     max_quarantine_sz int8 NOT NULL,
     PRIMARY KEY (settings_id));
+
+CREATE TABLE settings.tr_mail_safels_recipient (
+    id int8 NOT NULL,
+    addr varchar(255) NOT NULL,
+    PRIMARY KEY (id));
+
+CREATE TABLE settings.tr_mail_safels_sender (
+    LIKE settings.tr_mail_safels_recipient,
+    PRIMARY KEY (id));
+
+-- com.metavize.tran.mail.papi.safelist.SafelistSettings
+CREATE TABLE settings.tr_mail_safels_settings (
+    safels_id int8 NOT NULL,
+    recipient int8 NOT NULL,
+    sender int8 NOT NULL,
+    PRIMARY KEY (safels_id));
+
+-- com.metavize.tran.mail.papi.MailTransformSettings.safelists (list construct)
+CREATE TABLE settings.tr_mail_safelists (
+    safels_id int8 NOT NULL,
+    setting_id int8 NOT NULL,
+    position int4 NOT NULL,
+    PRIMARY KEY (setting_id, position));
 
 -----------
 -- events |
@@ -61,9 +82,29 @@ CREATE TABLE events.tr_mail_message_stats (
 -- constraints |
 ----------------
 
--- indeces for reporting
+-- indices for reporting
 
 CREATE INDEX tr_mail_mio_sid_idx ON events.tr_mail_message_info (session_id);
 
 CREATE INDEX tr_mail_mioa_parent_idx ON events.tr_mail_message_info_addr (msg_id);
 
+-- foreign key constraints
+ALTER TABLE settings.tr_mail_safelists
+    ADD CONSTRAINT fk_trml_safelists_to_ml_settings
+    FOREIGN KEY (setting_id)
+    REFERENCES settings.tr_mail_settings;
+
+ALTER TABLE settings.tr_mail_safelists
+    ADD CONSTRAINT fk_trml_safelists_to_sl_settings
+    FOREIGN KEY (safels_id)
+    REFERENCES settings.tr_mail_safels_settings;
+
+ALTER TABLE settings.tr_mail_safels_settings
+    ADD CONSTRAINT fk_trml_sl_settings_to_sl_recipient
+    FOREIGN KEY (recipient)
+    REFERENCES settings.tr_mail_safels_recipient;
+
+ALTER TABLE settings.tr_mail_safels_settings
+    ADD CONSTRAINT fk_trml_sl_settings_to_sl_sender
+    FOREIGN KEY (sender)
+    REFERENCES settings.tr_mail_safels_sender;

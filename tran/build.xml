@@ -450,6 +450,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <include name="com/metavize/tran/mail/papi/*.hbm.xml"/>
         <include name="com/metavize/tran/mail/papi/quarantine/*.hbm.xml"/>
         <include name="com/metavize/tran/mail/papi/smtp/*.hbm.xml"/>
+        <include name="com/metavize/tran/mail/papi/safelist/*.hbm.xml"/>
       </fileset>
     </jar>
     <!--

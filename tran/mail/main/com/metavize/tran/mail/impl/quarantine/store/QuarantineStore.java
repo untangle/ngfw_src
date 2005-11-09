@@ -690,7 +690,8 @@ public class QuarantineStore {
       return new RelativeFile(subDirName.relativePath, subDir);
     }
     catch(Exception ex) {
-      m_logger.warn(ex);
+      //m_logger.warn("getOrCreateInboxDirWL: ", ex);
+      ex.printStackTrace(System.out);
       return null;
     }
   }

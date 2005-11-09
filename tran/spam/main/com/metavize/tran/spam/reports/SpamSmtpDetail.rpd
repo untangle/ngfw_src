@@ -51,7 +51,7 @@ BOTRIGHT.label=Spam Score
 
 TOPLEFT.expr=$F{time_stamp}
 TOPLMID.expr=$F{is_spam}.booleanValue() ? "SPAM" : ""
-BOTLMID.expr=$F{is_spam}.booleanValue() ? ($F{action}.charAt(0) == 'P' ? "pass message" : $F{action}.charAt(0) == 'M' ? "mark message" : $F{action}.charAt(0) == 'B' ? "block message" : "unknown") : "pass message"
+BOTLMID.expr=$F{is_spam}.booleanValue() ? ($F{action}.charAt(0) == 'P' ? "pass message" : $F{action}.charAt(0) == 'M' ? "mark message" : $F{action}.charAt(0) == 'B' ? "block message" : $F{action}.charAt(0) == 'Q' ? "quarantine message" : "pass message") : "pass message"
 TOPRMID.expr=$F{from_addr}
 BOTRMID.expr=$F{recip_addr} == null ? "unknown" : $F{recip_addr}
 TOPRIGHT.expr=$F{ip_addr}

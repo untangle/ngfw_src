@@ -27,7 +27,7 @@ class InboxDirectoryTree {
   private static final String DATA_DIR_NAME = "inboxes";
   private static final int MAX_TRIES = 10000;//Just to avoid the infinite loop
 
-  private Object m_lock;
+  private Object m_lock = new Object();
 
   private File m_rootDir;
 
