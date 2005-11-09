@@ -203,6 +203,14 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       </then>
     </if>
 
+    <!-- FIXME openvpn special case -->
+    <if><equals arg1="${tran.name}" arg2="openvpn"/>
+      <then>
+        <var name="extra.classpath" value="tomcat.classpath"/>
+      </then>
+    </if>
+    
+    
     <javac destdir="${build.root}/${tran.name}"
            debug="on"
            optimize="false"
@@ -214,6 +222,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <src path="${build.gensrc}/${tran.name}"/>
 
       <classpath path="${extra.classes}"/>
+      <classpath refid="${extra.classpath}"/>
       <classpath refid="gui.classpath"/>
       <classpath refid="hibernate.classpath"/>
       <classpath refid="jasperreports.classpath"/>
@@ -243,6 +252,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <fileset dir="${build.root}/${tran.name}"/>
       <fileset dir="${build.gensrc}/${tran.name}">
         <exclude name="**/*jrxml"/>
+        <exclude name="**/*.java"/>
       </fileset>
       <fileset dir="${tran.name}/${src.main}/">
         <include name="**/*png"/>
@@ -310,8 +320,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="install.ids"/>
   <target name="install.nat"/>
   <target name="install.openvpn"/>
-
-
   <target name="install.firewall"/>
   <target name="install.spyware"/>
 
@@ -645,7 +653,31 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="compile.test"/>
   <target name="compile.ids"/>
   <target name="compile.nat"/>
-  <target name="compile.openvpn"/>
+  <target name="compile.openvpn">    
+    <echo message="Precompiling JSP in ${tran.name}/${src.hier}/${suffix.mvvm.web}/${tran.name}"/>
+
+    <java classname="org.apache.jasper.JspC"
+          fork="true"
+          failonerror="true">
+      <arg line="-d ${build.gensrc}/${tran.name}"/>
+      <arg line="-p com.metavize.tran.${tran.name}.servlet"/>
+      <arg line="-webinc ${build.gensrc}/${tran.name}/web-fragment.xml"/>
+      <arg line="-uriroot ${tran.name}/${src.hier}/${suffix.mvvm.web}/${tran.name}/"/>
+      <classpath refid="tomcat.classpath"/>
+      <classpath refid="mvvm.thirdparty.classpath"/>
+    </java>
+
+    <echo message="Adding JSP servlet mappings to web.xml"/>
+
+    <loadfile property="generated-web.xml" srcFile="${build.gensrc}/${tran.name}/web-fragment.xml"/>
+    <copy file="${tran.name}/${src.hier}/${suffix.mvvm.web}/${tran.name}/WEB-INF/web.xml" 
+          toFile="${dist.mvvm.web}/${tran.name}/WEB-INF/web.xml" overwrite="true">
+      <filterset>
+        <filter token="JSP_PRE_COMPILED_SERVLETS" value="${generated-web.xml}"/>
+      </filterset>
+    </copy>
+  </target>
+
   <target name="compile.firewall"/>
   <target name="compile.spyware"/>
   <target name="compile.http"/>
