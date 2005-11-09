@@ -29,7 +29,8 @@ public class MTransformDisplayJPanel extends com.metavize.gui.transform.MTransfo
         super.activity2JLabel.setText("CLIENT");
         //super.activity3JLabel.setText("TEST 4");
 
-        throughputJLabel.setText("active clients");
+        // XXX Won't work until made public
+        // throughputJLabel.setText("active clients");
     }
     
 }

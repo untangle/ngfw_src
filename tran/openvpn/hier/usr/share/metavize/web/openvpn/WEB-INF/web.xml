@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+    version="2.4">
+
+  @JSP_PRE_COMPILED_SERVLETS@
+
+  <display-name>Metavize OpenVPN</display-name>
+
+  <description>
+    OpenVPN client download utility
+  </description>
+
+
+  <!-- Page to select which application to download -->
+  <servlet>
+    <servlet-name>Start</servlet-name>
+    <servlet-class>com.metavize.tran.openvpn.servlet.Start</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <!-- Download the windows setup or configuration file -->
+  <servlet>
+    <servlet-name>Downloader</servlet-name>
+    <servlet-class>com.metavize.tran.openvpn.servlet.Downloader</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>Downloader</servlet-name>
+    <url-pattern>/setup.exe</url-pattern>
+  </servlet-mapping>
+
+
+  <servlet-mapping>
+    <servlet-name>Downloader</servlet-name>
+    <url-pattern>/config.zip</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>Start</servlet-name>
+    <url-pattern>/*</url-pattern>
+  </servlet-mapping>
+</web-app>

@@ -10,11 +10,11 @@
  */
 package com.metavize.tran.openvpn;
 
-class Constants
+public class Constants
 {
     static final String BUNNICULA_BASE  = System.getProperty( "bunnicula.home" );
     static final String BUNNICULA_CONF  = System.getProperty( "bunnicula.conf.dir" );
     
     static final String VPN_SCRIPT_BASE = BUNNICULA_BASE + "/openvpn";
-    static final String VPN_CONF_BASE   = BUNNICULA_CONF;
+    public static final String VPN_CONF_BASE   = BUNNICULA_CONF;
 }

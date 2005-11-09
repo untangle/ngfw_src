@@ -55,6 +55,15 @@ public class VpnClient extends Rule implements Validatable
     private boolean isEdgeguard = false;
 
     private String certificateStatus = "Unknown";
+
+    /* A 96-bit random string to be emailed out.  When the user goes
+     * to the page and uses this key, they are allowed to download the
+     * configuration for one session */
+    private String distributionKey;
+    
+    /* Most likely unused for early versions but a nice possiblity for
+     * the future */
+    private String distributionPassword;
     
     // constructors -----------------------------------------------------------
     

@@ -21,6 +21,8 @@ import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.tran.TransformState;
 import com.metavize.mvvm.tran.TransformException;
+import com.metavize.mvvm.tran.TransformStartException;
+import com.metavize.mvvm.tran.TransformStopException;
 
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.PipeSpec;
@@ -30,7 +32,13 @@ import com.metavize.mvvm.util.TransactionWork;
 public class VpnTransformImpl extends AbstractTransform
     implements VpnTransform
 {
+    private static final String TRAN_NAME    = "openvpn";
+    private static final String WEB_APP      = TRAN_NAME;
+    private static final String WEB_APP_PATH = "/" + WEB_APP;
+
     private final Logger logger = Logger.getLogger( VpnTransformImpl.class );
+
+    private boolean isWebAppDeployed = false;
 
     private final SoloPipeSpec pipeSpec;
     private final SoloPipeSpec[] pipeSpecs;
@@ -53,7 +61,7 @@ public class VpnTransformImpl extends AbstractTransform
         /* Have to figure out pipeline ordering, this should always
          * next to towards the outside, then there is OpenVpn and then Nat */
         this.pipeSpec = new SoloPipeSpec
-            ( "openvpn", this, handler, Fitting.OCTET_STREAM, Affinity.OUTSIDE,
+            ( TRAN_NAME, this, handler, Fitting.OCTET_STREAM, Affinity.OUTSIDE,
              SoloPipeSpec.MAX_STRENGTH - 2);
         this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
     }
@@ -160,6 +168,28 @@ public class VpnTransformImpl extends AbstractTransform
     {
     }
 
+    private synchronized void deployWebAppIfRequired()
+    {
+        if ( !isWebAppDeployed ) {
+            if ( MvvmContextFactory.context().loadWebApp( WEB_APP_PATH, WEB_APP )) {
+                logger.debug("Deployed openvpn web app");
+            }
+            else logger.error("Unable to deploy openvpn web app");
+        }
+        isWebAppDeployed = true;
+    }
+
+    private synchronized void unDeployWebAppIfRequired()
+    {
+        if ( isWebAppDeployed ) {
+            if( MvvmContextFactory.context().unloadWebApp(WEB_APP_PATH )) {
+                logger.debug("Unloaded openvpn web app");
+            }
+            logger.error("Unable to unload openvpn web app");
+        }
+        isWebAppDeployed = false;
+    }
+
     // AbstractTransform methods ----------------------------------------------
 
     @Override
@@ -194,8 +224,10 @@ public class VpnTransformImpl extends AbstractTransform
         reconfigure();
     }
 
-    protected void preStart()
+    @Override protected void preStart() throws TransformStartException
     {
+        super.preStart();
+
         /* XXXXX Need a way of not starting if the transform is not configured */
         if ( this.settings == null ) {
             String[] args = {""};
@@ -205,15 +237,23 @@ public class VpnTransformImpl extends AbstractTransform
         }
 
         reconfigure();
+        
+        deployWebAppIfRequired();
     }
 
-    protected void postStop()
+    @Override protected void postStop() throws TransformStopException
     {
+        super.postStop();
         try {
             this.openVpnManager.stop();
-        } catch ( TransformException e ){
-            logger.error( "Unable to stop open vpn", e );
+        } catch ( TransformException e ) {
+            throw new TransformStopException( e );
         }
+    }
+
+    @Override protected void preStop() throws TransformStopException {
+        super.preStop();
+        unDeployWebAppIfRequired();
     }
 
     public void reconfigure()
