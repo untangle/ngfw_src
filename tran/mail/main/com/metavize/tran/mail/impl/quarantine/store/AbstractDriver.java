@@ -257,7 +257,8 @@ class AbstractDriver {
    */  
   static void writeMultilineEntry(PrintWriter writer,
     String value) throws IOException {
-    writer.print(Integer.toString(CharSequenceUtil.countLines(value)));
+    writer.print(Integer.toString(
+      value==null?0:CharSequenceUtil.countLines(value)));
     writer.print(":");
     writer.println(nullToQQ(value));
   }
