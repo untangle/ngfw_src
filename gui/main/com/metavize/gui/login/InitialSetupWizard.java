@@ -24,12 +24,12 @@ public class InitialSetupWizard extends MWizardJDialog {
         setTitle("Metavize EdgeGuard Setup Wizard");
         addSavableJPanel(new InitialSetupWelcomeJPanel(), "1. Welcome");
         addSavableJPanel(new InitialSetupLicenseJPanel(), "2. License Agreement");
-        addSavableJPanel(new InitialSetupKeyJPanel(), "3. Key Code");
+        addSavableJPanel(new InitialSetupKeyJPanel(), "3. Activation Key");
         addSavableJPanel(new InitialSetupContactJPanel(), "4. Contact Info");
-        addSavableJPanel(new InitialSetupPasswordJPanel(), "4. First Account");
-        addSavableJPanel(new InitialSetupTimezoneJPanel(), "5. Timezone");
-        addSavableJPanel(new InitialSetupNetworkJPanel(), "6. Network Settings");
-        addSavableJPanel(new InitialSetupCongratulationsJPanel(), "7. Congratulations!");
+        addSavableJPanel(new InitialSetupPasswordJPanel(), "5. First Account");
+        addSavableJPanel(new InitialSetupTimezoneJPanel(), "6. Timezone");
+        addSavableJPanel(new InitialSetupNetworkJPanel(), "7. Network Settings");
+        addSavableJPanel(new InitialSetupCongratulationsJPanel(), "8. Finished!");
     }
     
 }

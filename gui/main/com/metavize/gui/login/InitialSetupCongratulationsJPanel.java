@@ -33,12 +33,12 @@ public class InitialSetupCongratulationsJPanel extends javax.swing.JPanel implem
         setOpaque(false);
         jLabel1.setFont(new java.awt.Font("Dialog", 1, 18));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("<html>Congratulations!<br>You have successfully setup your<br>Metavize EdgeGuard.</html>");
+        jLabel1.setText("<html>Congratulations!<br>You have created an initial<br>EdgeGuard configuration.<br><br>Press \"Finish\" to save your<br>configuration.</html>");
         add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, -1, -1));
 
         jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel2.setText("<html>You may now proceed to login to EdgeGuard for the first time.<br> User your newly created \"admin\" account.</html>");
-        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 110, -1, -1));
+        jLabel2.setText("<html>After finishing, you may then proceed to login to<br>EdgeGuard for the first time.<br><br>Use your newly created \"admin\" account with the<br>password you have chosen.</html>");
+        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 180, -1, -1));
 
     }//GEN-END:initComponents
     

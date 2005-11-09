@@ -11,13 +11,16 @@
 
 package com.metavize.gui.login;
 
+import com.metavize.mvvm.security.*;
 import com.metavize.gui.transform.Savable;
+import com.metavize.gui.util.Util;
 
 public class InitialSetupContactJPanel extends javax.swing.JPanel implements Savable {
     
 
     public InitialSetupContactJPanel() {
         initComponents();
+        countJSpinner.setModel(new javax.swing.SpinnerNumberModel(15,0,10000,1));
     }
 
     public void doSave(Object settings, boolean validateOnly) throws Exception {
@@ -33,13 +36,29 @@ public class InitialSetupContactJPanel extends javax.swing.JPanel implements Sav
         String lastName = lastNameJTextField.getText().trim();
         if(lastName.length() == 0)
             throw new Exception("You must fill out your last name.");
+
+        String address1 = address1JTextField.getText().trim();
+        String address2 = address2JTextField.getText().trim();
+        String city = cityJTextField.getText().trim();
+        String state = stateJTextField.getText().trim();
+        String zipcode = zipcodeJTextField.getText().trim();
+        String phone = phoneJTextField.getText().trim();
         
         String email = emailJTextField.getText().trim();
         if(email.length() == 0)
             throw new Exception("You must fill out your email address.");
+
+	int count = (Integer) countJSpinner.getValue();
         
         if( !validateOnly ){
-            
+	    RegistrationInfo registrationInfo = new RegistrationInfo(company, firstName, lastName, email, count);
+	    registrationInfo.setAddress1(address1);
+	    registrationInfo.setAddress2(address2);
+	    registrationInfo.setCity(city);
+	    registrationInfo.setState(state);
+	    registrationInfo.setZipcode(zipcode);
+	    registrationInfo.setPhone(phone);
+            Util.getAdminManager().setRegistrationInfo(registrationInfo);
             
         }
     }
@@ -71,6 +90,8 @@ public class InitialSetupContactJPanel extends javax.swing.JPanel implements Sav
         jLabel13 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
+        countJSpinner = new javax.swing.JSpinner();
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -168,6 +189,13 @@ public class InitialSetupContactJPanel extends javax.swing.JPanel implements Sav
         jLabel15.setText("(required)");
         add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 250, -1, -1));
 
+        jLabel16.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel16.setText("Computers protected by EdgeGuard:");
+        add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 300, -1, -1));
+
+        add(countJSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 300, 70, -1));
+
     }//GEN-END:initComponents
     
     
@@ -176,6 +204,7 @@ public class InitialSetupContactJPanel extends javax.swing.JPanel implements Sav
     private javax.swing.JTextField address2JTextField;
     private javax.swing.JTextField cityJTextField;
     private javax.swing.JTextField companyJTextField;
+    private javax.swing.JSpinner countJSpinner;
     private javax.swing.JTextField emailJTextField;
     private javax.swing.JTextField firstNameJTextField;
     private javax.swing.JLabel jLabel1;
@@ -185,6 +214,7 @@ public class InitialSetupContactJPanel extends javax.swing.JPanel implements Sav
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

@@ -25,8 +25,8 @@ public class InitialSetupKeyJPanel extends javax.swing.JPanel implements Savable
     public void doSave(Object settings, boolean validateOnly) throws Exception {
         
         String key = keyJTextField.getText();
-        key.trim();
         key = key.replaceAll("-","");
+        key = key.replaceAll(" ","");
         if( key.length() != 16 )
             throw new Exception("The key must be exactly 16 alpha-numeric digits long.");
         
@@ -44,7 +44,7 @@ public class InitialSetupKeyJPanel extends javax.swing.JPanel implements Savable
 
         setOpaque(false);
         jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel2.setText("<html>Please enter the 16-digit EdgeGuard registration<br> key into the field below. (With or without dashes)</html>");
+        jLabel2.setText("<html>Please enter the 16-digit EdgeGuard activation key<br> into the field below. (With or without dashes)</html>");
         add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, -1, -1));
 
         keyJTextField.setColumns(19);

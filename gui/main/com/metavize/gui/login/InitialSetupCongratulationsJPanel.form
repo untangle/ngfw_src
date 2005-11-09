@@ -18,7 +18,7 @@
           <Font name="Dialog" size="18" style="1"/>
         </Property>
         <Property name="horizontalAlignment" type="int" value="0"/>
-        <Property name="text" type="java.lang.String" value="&lt;html&gt;Congratulations!&lt;br&gt;You have successfully setup your&lt;br&gt;Metavize EdgeGuard.&lt;/html&gt;"/>
+        <Property name="text" type="java.lang.String" value="&lt;html&gt;Congratulations!&lt;br&gt;You have created an initial&lt;br&gt;EdgeGuard configuration.&lt;br&gt;&lt;br&gt;Press &quot;Finish&quot; to save your&lt;br&gt;configuration.&lt;/html&gt;"/>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
@@ -31,11 +31,11 @@
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Dialog" size="12" style="0"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="&lt;html&gt;You may now proceed to login to EdgeGuard for the first time.&lt;br&gt; User your newly created &quot;admin&quot; account.&lt;/html&gt;"/>
+        <Property name="text" type="java.lang.String" value="&lt;html&gt;After finishing, you may then proceed to login to&lt;br&gt;EdgeGuard for the first time.&lt;br&gt;&lt;br&gt;Use your newly created &quot;admin&quot; account with the&lt;br&gt;password you have chosen.&lt;/html&gt;"/>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="50" y="110" width="-1" height="-1"/>
+          <AbsoluteConstraints x="50" y="180" width="-1" height="-1"/>
         </Constraint>
       </Constraints>
     </Component>
