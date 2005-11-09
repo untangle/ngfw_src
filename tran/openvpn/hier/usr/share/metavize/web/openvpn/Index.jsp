@@ -60,29 +60,27 @@
       <!-- CENTER CELL --> 
       <td id="table_main_center" style="padding: 8px 0px 0px;">
         <hr size="1" width="100%"/>
-        <table style="padding: 15px 0px 0px;" width="100%">
+        <table style="padding: 15px 0px 0px;">
           <tbody>
 
             <tr>
-              <td valign="top" width="200">
-                &lt;Client Name&gt;
+              <td valign="top" width="300">
+                Name: <%= "" + request.getAttribute( Util.COMMON_NAME_ATTR ) %><br/>
+                Please select one of the following files.
               </td>
             </tr>
 
-
             <tr>
-              <td valign="top" width="200">
-                Download Windows Installation Program
-              </td>
+                <td valign="top" width="250">
+                  <a href="setup.exe"><span>Windows Installer</span></a>
+                </td>
             </tr>
             
             <tr>
-              <td valign="top" width="200">
-                Download Configuration Files.
+              <td valign="top" width="250">
+                <a href="config.zip"><span>Configuration Files</span></a>
               </td>
             </tr>
-
-            
           </tbody>
         </table>
         
@@ -97,7 +95,7 @@
     <tr>
       <td id="table_main_bottom_left"><img src="images/spacer.gif" alt=" " height="23" width="23"/><br/>
       </td>
-      <td id="table_main_bottom"><img src="images/spacer.gif" alt=" " height="1" width="1"/>/<br/>
+      <td id="table_main_bottom"><img src="images/spacer.gif" alt=" " height="1" width="1"/><br/>
       </td>
       <td id="table_main_bottom_right"> <img src="images/spacer.gif" alt=" " height="23" width="23"/><br/>
       </td>

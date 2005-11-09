@@ -23,11 +23,16 @@ public class Start extends HttpServlet
 {
     protected void service( HttpServletRequest request,  HttpServletResponse response )
         throws ServletException, IOException {
-        
-        /* Get the session for the user */
-        HttpSession session = request.getSession( true );
-        
-        
+        Util util = Util.getInstance();
 
+        String commonName = util.getCommonName( request );
+
+        if ( commonName == null ) {
+            util.rejectFile( request, response );
+        } else {
+            request.setAttribute( Util.STATUS_ATTR, "READY" );
+            request.setAttribute( Util.COMMON_NAME_ATTR, commonName );
+            request.getRequestDispatcher("/Index.jsp").forward( request, response );
+        }
     }
 }

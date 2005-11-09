@@ -45,6 +45,8 @@ create table tr_openvpn_client (
         LOG bool,
         settings_id int8,
         position int4,
+        dist_key text,
+        dist_passwd text,
         primary key (RULE_ID));
 
 create table tr_openvpn_group (

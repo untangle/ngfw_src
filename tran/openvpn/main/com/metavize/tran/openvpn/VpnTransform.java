@@ -27,4 +27,7 @@ public interface VpnTransform extends Transform
 
     /* Revoke a client license */
     public VpnClient revokeClientCertificate( VpnSettings settings, VpnClient client );
+
+    public String lookupClientDistributionKey( String key );
+
 }

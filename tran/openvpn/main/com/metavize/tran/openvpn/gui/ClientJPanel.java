@@ -216,7 +216,7 @@ public class ClientJPanel extends javax.swing.JPanel {
         if ( value.length() == 0 ) return;
         String[] clientDescription = value.split( " *\\| *" );
 
-        if (( clientDescription.length < 2 ) || (( clientDescription.length & 1 ) == 1 )) {
+        if (( clientDescription.length < 3 ) || (( clientDescription.length & 1 ) == 0 )) {
             System.err.println( "Invalid client description [" + value + "]" );
             return;
         }
@@ -235,6 +235,9 @@ public class ClientJPanel extends javax.swing.JPanel {
             break;
         }
 
+        /* Set the distro key */
+        client.setDistributionKey( clientDescription[2] );
+
         if ( client.getGroup() == null ) {
             System.err.println( "Unknown group [" + groupName + "]" );
             return;
@@ -242,7 +245,7 @@ public class ClientJPanel extends javax.swing.JPanel {
 
         List siteList = new LinkedList();
 
-        for ( int c = 2 ; c < clientDescription.length ; c += 2 ) {
+        for ( int c = 3 ; c < clientDescription.length ; c += 2 ) {
             try {
                 String network = clientDescription[c];
                 String netmask = clientDescription[c+1];
@@ -283,6 +286,8 @@ public class ClientJPanel extends javax.swing.JPanel {
         VpnGroup group = client.getGroup();
 
         value += ( group == null ) ? "" : group.getName();
+
+        value += " | " + client.getDistributionKey();
 
         for ( ClientSiteNetwork site : ((List<ClientSiteNetwork>)client.getExportedAddressList())) {
             value += " | " + site.getNetwork() + " | " + site.getNetmask();

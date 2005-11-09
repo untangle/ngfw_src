@@ -319,7 +319,15 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="install.test"/>
   <target name="install.ids"/>
   <target name="install.nat"/>
-  <target name="install.openvpn"/>
+  <target name="install.openvpn">
+    <mkdir  dir="${dist.mvvm.web}/${tran.name}/WEB-INF/lib"/>
+    <copy toDir="${dist.mvvm.web}/${tran.name}/WEB-INF/lib">
+      <fileset refid="log4j.jarset"/>
+      <fileset refid="mvvm-client.jarset"/>
+    </copy>
+    <copy file="${build.jar}/openvpn-web.jar" todir="${dist.mvvm.web}/${tran.name}/WEB-INF/lib"/>
+  </target>
+
   <target name="install.firewall"/>
   <target name="install.spyware"/>
 
@@ -407,7 +415,22 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="jar.test"/>
   <target name="jar.ids"/>
   <target name="jar.nat"/>
-  <target name="jar.openvpn"/>
+  <target name="jar.openvpn">
+    <jar destfile="${build.jar}/openvpn-web.jar">
+      <fileset dir="${build.root}/openvpn">
+        <include name="com/metavize/tran/openvpn/SiteNetwork.class"/>
+        <include name="com/metavize/tran/openvpn/ServerSiteNetwork.class"/>
+        <include name="com/metavize/tran/openvpn/ClientSiteNetwork.class"/>
+        <include name="com/metavize/tran/openvpn/VpnClient.class"/>
+        <include name="com/metavize/tran/openvpn/VpnTransform.class"/>
+        <include name="com/metavize/tran/openvpn/VpnGroup.class"/>
+        <include name="com/metavize/tran/openvpn/VpnSettings.class"/>
+        <include name="com/metavize/tran/openvpn/Constants.class"/>
+        <include name="com/metavize/tran/openvpn/servlet/*.class"/>
+      </fileset>
+    </jar>
+  </target>
+  
   <target name="jar.firewall"/>
   <target name="jar.spyware"/>
 

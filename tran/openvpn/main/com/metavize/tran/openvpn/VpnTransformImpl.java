@@ -10,6 +10,8 @@
  */
 package com.metavize.tran.openvpn;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -166,6 +168,26 @@ public class VpnTransformImpl extends AbstractTransform
 
     public void distributeClientKey( VpnClient client, boolean usbKey, String email )
     {
+    }
+    
+    /* Get the common name for the key, and clear it if it exists */
+    public synchronized String lookupClientDistributionKey( String key )
+    {
+        logger.debug( "Looking up client for key: " + key );
+
+        /* Could use a hash map, but why bother ? */
+        for ( VpnClient client : ((List<VpnClient>)this.settings.getClientList())) {
+            String clientKey = client.getDistributionKey().trim();
+            logger.debug( "Checking: " + clientKey );
+            if ( clientKey == null || clientKey.length() == 0 ) continue;
+            if ( clientKey.equalsIgnoreCase( key )) {
+                /* XXXX This has to be written out to the database */
+                client.setDistributionKey( null );
+                return client.getInternalName();
+            }
+        }
+        
+        return null;
     }
 
     private synchronized void deployWebAppIfRequired()

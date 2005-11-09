@@ -29,6 +29,8 @@ public class Downloader extends HttpServlet
     private static final String SETUP_DOWNLOAD    = "setup.exe";
     private static final String SETUP_NAME_PREFIX = "setup-";
     private static final String SETUP_NAME_SUFFIX = ".exe";
+
+    
    
 
     protected void service( HttpServletRequest request,  HttpServletResponse response )

@@ -137,6 +137,36 @@ public class VpnClient extends Rule implements Validatable
     }
     
     /**
+     * @return the key required to download the client.
+     * @hibernate.property
+     * column="dist_key"
+     */
+    public String getDistributionKey()
+    {
+        return this.distributionKey;
+    }
+
+    public void setDistributionKey( String distributionKey )
+    {
+        this.distributionKey = distributionKey;
+    }
+
+    /**
+     * @return the key password to download the client.(unused)
+     * @hibernate.property
+     * column="dist_passwd"
+     */
+    public String getDistributionPassword()
+    {
+        return this.distributionPassword;
+    }
+
+    public void setDistributionPassword( String distributionPassword )
+    {
+        this.distributionPassword = distributionPassword;
+    }    
+
+    /**
      * @return whether the other side is an edgeguard.
      * @hibernate.property
      * column="is_edgeguard"
@@ -179,7 +209,6 @@ public class VpnClient extends Rule implements Validatable
     {
         this.certificateStatus = "unknown";
     }
-
 
     public void setCertificateStatusValid( )
     {
