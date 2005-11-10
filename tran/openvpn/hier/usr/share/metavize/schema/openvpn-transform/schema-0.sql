@@ -49,6 +49,23 @@ create table tr_openvpn_client (
         dist_passwd text,
         primary key (RULE_ID));
 
+create table tr_openvpn_site (
+        RULE_ID int8 not null,
+        address inet,
+        is_edgeguard bool,
+        group_id int8,
+        NAME text,
+        CATEGORY text,
+        DESCRIPTION text,
+        LIVE bool,
+        ALERT bool,
+        LOG bool,
+        settings_id int8,
+        position int4,
+        dist_key text,
+        dist_passwd text,
+        primary key (RULE_ID));
+
 create table tr_openvpn_group (
         RULE_ID int8 not null,
         address inet,
@@ -85,6 +102,18 @@ create table tr_openvpn_settings (
         keep_alive bool,
         primary key (ID));
 
+create table tr_openvpn_statistic_evt (
+        event_id INT8 NOT NULL,
+        time_stamp TIMESTAMP,
+        PRIMARY KEY (event_id));
+
+create table TR_OPENVPN_DISTR_EVT (
+        event_id INT8 NOT NULL,
+        remote_address INET,
+        client_name TEXT,
+        time_stamp  TIMESTAMP,
+        PRIMARY KEY (event_id));
+
 alter table tr_openvpn_c_site_network add constraint FKF75374E830D9EF2D
         foreign key (client_id) references tr_openvpn_client;
 
@@ -92,6 +121,9 @@ alter table tr_openvpn_s_site_network add constraint FKF75374E89E4538C5
         foreign key (settings_id) references tr_openvpn_settings;
 
 alter table tr_openvpn_client add constraint FKF4113219E4538C5
+        foreign key (settings_id) references tr_openvpn_settings;
+
+alter table tr_openvpn_site add constraint tr_openvpn_site_to_settings
         foreign key (settings_id) references tr_openvpn_settings;
 
 alter table tr_openvpn_group add constraint FKB66694699E4538C5

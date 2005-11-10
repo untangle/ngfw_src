@@ -61,7 +61,9 @@ response.setStatus( HttpServletResponse.SC_FORBIDDEN );
           <tbody>
             <tr>
               <td valign="middle" width="96">
-                <img src="images/logo_no_text_shiny_96x96.gif" alt="Metavize logo"/>
+                <a href="http://www.metavize.com">
+                  <img src="images/logo_no_text_shiny_96x96.gif" alt="Metavize logo"/>
+                </a>
               </td>
               
               <td style="padding: 0px 0px 0px 10px;" class="page_header_title" align="left" valign="middle">

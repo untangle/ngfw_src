@@ -1,0 +1,117 @@
+ChangeLog for OpenVPN GUI NSIS install script
+
+[openvpn-2.0.5-gui-1.0.3]
+
+  * No changes
+
+[openvpn-2.0.2-gui-1.0.3]
+
+  * Don't include OpenVPN/OpenVPN GUI source code.
+
+[openvpn-2.0.1-gui-1.0.3]
+
+  * No changes
+
+[openvpn-2.0.1-gui-1.0.2]
+
+  * No changes
+
+[openvpn-2.0-gui-1.0]
+
+  * No changes
+	
+[openvpn-2.0-rc18-gui-1.0-rc5]
+
+  * Upgraded to NSIS 2.06
+
+  * Updatated OpenSSL dlls to 0.9.7f.
+	
+[openvpn-2.0-rc17-gui-1.0-rc4]
+
+  * Change the install path for a customized config file to
+    openvpn\config instead of openvpn\sample-configs.
+
+[openvpn-2.0-rc16-gui-1.0-rc4]
+
+  * Don't auto-close window on uninstall, so the list of removed
+    files can be verified.
+
+[openvpn-2.0-rc15-gui-1.0-rc4]
+
+  * Added build-key-pkcs12.bat to easy-rsa package.
+
+[openvpn-2.0-rc14-gui-1.0-rc4]
+
+  * Renamed easy-rsa\revoke.key.bat to revoke-full.bat.
+
+  * Added a commented line to add a customized config file.
+
+[openvpn-2.0-rc13-gui-1.0-rc3]
+
+  * Upgraded script to work with NSIS 2.05.
+
+  * Install OpenVPN GUI ReadMe and create a Start Menu short-cut.
+
+  * Fixed the semicolon bug in path additions the real way by
+    patching setpath.nsi.
+
+[openvpn-2.0-rc13-gui-1.0-rc2]
+
+  * Install easy-rsa in c:\program files\openvpn\easy-rsa
+
+  * Install sample configs sample-config folder.
+
+  * Fixed a bug which caused an extra ; to be added to the system
+    path each time OpenVPN (GUI) was installed.
+
+[openvpn-2.0-rc10-gui-1.0-rc2]
+
+  * No changes
+
+[openvpn-2.0-rc9-gui-1.0-rc2]
+
+  * Replaced "James Yonan" with "OpenVPN Solutions LLC" in various files. 
+
+[openvpn-2.0-rc8-gui-1.0-rc2]
+
+  * OpenSSL upgraded to 0.9.8e
+
+[openvpn-2.0-rc7-gui-1.0-rc2]
+
+  * Added default registry values for "allow_password" and "service_only".
+
+[openvpn-2.0-rc6-gui-1.0-rc1]
+
+  * No changes
+
+[openvpn-2.0-rc6-gui-1.0-beta26]
+
+  * No changes
+
+[openvpn-2.0-rc1-gui-1.0-beta26]
+
+  * No changes
+
+
+[openvpn-2.0-beta19-gui-1.0-beta26]
+
+  * Updated My Certificate Wizard to version 0.3.2b
+
+  * Fixed a bug that caused the autorun registry value not to be deleted
+    when uninstalling OpenVPN GUI.
+
+  * Added version number to un-install info screen.
+
+  * Added icons for installation package.
+
+  * Show warning that OpenVPN GUI should be uninstalled before installing
+    a new version if an old version is found.
+
+  * Ask if OpenVPN GUI should be killed if it is running both on installation
+    and un-installation.
+
+  * Start OpenVPN GUI after installation.
+
+  * Create log directory if OpenVPN GUI is installed even if the service
+    wrapper is not installed.
+
