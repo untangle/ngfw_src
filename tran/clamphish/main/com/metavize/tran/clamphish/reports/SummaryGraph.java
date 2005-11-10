@@ -36,7 +36,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
     private long totalProcessTime = 0l;
 
     public SummaryGraph(){          // out, in, total
-	this("Traffic", true, true, "Total", "Phish Detected/Blocked", "Clean/Passed", "Email/min.");
+	this("Traffic", true, true, "Total", "Phish Detected", "Clean/Passed", "Email/min.");
     }
 
     // Produces a single line graph of one series
@@ -98,7 +98,12 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 
 	totalQueryTime = System.currentTimeMillis();
 
-	String sql = "SELECT date_trunc('minute', time_stamp) as time_stamp,"
+	String sql;
+	int sidx;
+	PreparedStatement stmt;
+	ResultSet rs;
+
+	sql = "SELECT date_trunc('minute', time_stamp) as time_stamp,"
 	    + " count(case is_spam when true then 1 else null end),"
 	    + " count(case is_spam when false then 1 else null end)"
 	    + " FROM tr_spam_evt where"
@@ -106,11 +111,49 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 	    + " GROUP BY time_stamp"
 	    + " ORDER BY time_stamp";
 
-	int sidx = 1;
-	PreparedStatement stmt = con.prepareStatement(sql);
+	sidx = 1;
+	stmt = con.prepareStatement(sql);
 	stmt.setTimestamp(sidx++, endTimestamp);
 	stmt.setTimestamp(sidx++, startTimestamp);
-	ResultSet rs = stmt.executeQuery();
+	rs = stmt.executeQuery();
+	totalQueryTime = System.currentTimeMillis() - totalQueryTime;
+	totalProcessTime = System.currentTimeMillis();
+
+	// PROCESS EACH ROW
+	while (rs.next()) {
+	    // GET RESULTS
+	    Timestamp eventDate = rs.getTimestamp(1);
+	    long countA = rs.getLong(2) + rs.getLong(3);
+	    long countB = rs.getLong(2);
+	    long countC = rs.getLong(3);
+	    
+	    // ALLOCATE COUNT TO EACH MINUTE WE WERE ALIVE EQUALLY
+	    long eventStart = (eventDate.getTime() / MINUTE_INTERVAL) * MINUTE_INTERVAL;
+	    long realStart = eventStart < startMinuteInMillis ? (long) 0 : eventStart - startMinuteInMillis;
+	    int startInterval = (int)(realStart / MINUTE_INTERVAL)/MINUTES_PER_BUCKET;
+
+	    // COMPUTE COUNTS IN INTERVALS
+	    countsA[startInterval%BUCKETS] += countA;
+	    countsB[startInterval%BUCKETS] += countB;
+	    countsC[startInterval%BUCKETS] += countC;
+
+	}
+	try { stmt.close(); } catch (SQLException x) { }
+
+
+	sql = "SELECT date_trunc('minute', time_stamp) as time_stamp,"
+	    + " count(case is_spam when true then 1 else null end),"
+	    + " count(case is_spam when false then 1 else null end)"
+	    + " FROM tr_spam_evt_smtp where"
+	    + " time_stamp <= ? AND time_stamp >= ? AND vendor_name='Clam'"
+	    + " GROUP BY time_stamp"
+	    + " ORDER BY time_stamp";
+
+	sidx = 1;
+	stmt = con.prepareStatement(sql);
+	stmt.setTimestamp(sidx++, endTimestamp);
+	stmt.setTimestamp(sidx++, startTimestamp);
+	rs = stmt.executeQuery();
 	totalQueryTime = System.currentTimeMillis() - totalQueryTime;
 	totalProcessTime = System.currentTimeMillis();
 
