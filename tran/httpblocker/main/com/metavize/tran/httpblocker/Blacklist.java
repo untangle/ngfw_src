@@ -25,7 +25,7 @@ import com.metavize.mvvm.tran.IPMaddrRule;
 import com.metavize.mvvm.tran.MimeType;
 import com.metavize.mvvm.tran.MimeTypeRule;
 import com.metavize.mvvm.tran.StringRule;
-import com.metavize.tran.http.RequestLine;
+import com.metavize.tran.http.RequestLineToken;
 import com.metavize.tran.token.Header;
 import com.metavize.tran.util.CharSequenceUtil;
 import org.apache.log4j.Logger;
@@ -112,7 +112,7 @@ class Blacklist
      * @param path the requested path.
      * @return an HTML response.
      */
-    String checkRequest(InetAddress clientIp, RequestLine requestLine,
+    String checkRequest(InetAddress clientIp, RequestLineToken requestLine,
                         Header header)
     {
         URI uri = requestLine.getRequestUri();
@@ -136,7 +136,8 @@ class Blacklist
 
         if (null != passCategory) {
             HttpBlockerEvent hbe = new HttpBlockerEvent
-                (requestLine, Action.PASS, Reason.PASS_CLIENT, passCategory);
+                (requestLine.getRequestLine(), Action.PASS, Reason.PASS_CLIENT,
+                 passCategory);
             logger.info(hbe);
             return null;
         } else {
@@ -147,7 +148,8 @@ class Blacklist
 
                 if (null != category) {
                     HttpBlockerEvent hbe = new HttpBlockerEvent
-                        (requestLine, Action.PASS, Reason.PASS_URL, category);
+                        (requestLine.getRequestLine(), Action.PASS,
+                         Reason.PASS_URL, category);
                     eventLogger.info(hbe);
 
                     return null;
@@ -169,7 +171,8 @@ class Blacklist
             if (rule.isLive() && path.endsWith(exn)) {
                 logger.debug("blocking extension " + exn);
                 HttpBlockerEvent hbe = new HttpBlockerEvent
-                    (requestLine, Action.BLOCK, Reason.BLOCK_EXTENSION, exn);
+                    (requestLine.getRequestLine(), Action.BLOCK,
+                     Reason.BLOCK_EXTENSION, exn);
                 eventLogger.info(hbe);
 
                 return settings.getBlockTemplate()
@@ -180,7 +183,7 @@ class Blacklist
         return null;
     }
 
-    String checkResponse(InetAddress clientIp, RequestLine requestLine,
+    String checkResponse(InetAddress clientIp, RequestLineToken requestLine,
                          Header header)
     {
         if (null == requestLine) {
@@ -195,7 +198,8 @@ class Blacklist
             MimeType mt = rule.getMimeType();
             if (rule.isLive() && mt.matches(contentType)) {
                 HttpBlockerEvent hbe = new HttpBlockerEvent
-                    (requestLine, Action.BLOCK, Reason.BLOCK_MIME, contentType);
+                    (requestLine.getRequestLine(), Action.BLOCK,
+                     Reason.BLOCK_MIME, contentType);
                 eventLogger.info(hbe);
                 String host = header.getValue("host");
                 URI uri = requestLine.getRequestUri();
@@ -227,7 +231,7 @@ class Blacklist
         return null;
     }
 
-    private String checkBlacklist(String host, RequestLine requestLine)
+    private String checkBlacklist(String host, RequestLineToken requestLine)
     {
         URI uri = requestLine.getRequestUri();
 
@@ -261,7 +265,7 @@ class Blacklist
 
         if (null != category) {
             HttpBlockerEvent hbe = new HttpBlockerEvent
-                (requestLine, Action.BLOCK, reason, category);
+                (requestLine.getRequestLine(), Action.BLOCK, reason, category);
             eventLogger.info(hbe);
 
             return settings.getBlockTemplate().render(host, uri, category);

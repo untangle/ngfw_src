@@ -25,7 +25,7 @@ SELECT cookie.time_stamp, name, c_client_addr, c_server_addr, c_server_port, \
        ident, to_server \
   FROM tr_spyware_evt_cookie cookie \
          JOIN pl_endp endp \
-           USING (session_id) \
+           ON cookie.pl_endp_id = endp.event_id \
          JOIN tr_http_evt_req evt \
            ON (cookie.request_id = evt.request_id \
              AND cookie.time_stamp >= $P{startTime} \

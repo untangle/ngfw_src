@@ -188,6 +188,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <src path="${build.gensrc}"/>
 
       <exclude name="com/metavize/mvvm/tran/MutateTStats.java"/>
+
       <include name="com/metavize/mvvm/*.java"/>
       <include name="com/metavize/mvvm/argon/ArgonException.java"/>
       <include name="com/metavize/mvvm/argon/IPSessionDesc.java"/>
@@ -199,8 +200,12 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <include name="com/metavize/mvvm/engine/ProxyInputStream.java"/>
       <include name="com/metavize/mvvm/engine/SocketInvokerStub.java"/>
       <include name="com/metavize/mvvm/engine/Version.java"/>
+      <include name="com/metavize/mvvm/logging/EventFilter.java"/>
+      <include name="com/metavize/mvvm/logging/EventManager.java"/>
+      <include name="com/metavize/mvvm/logging/FilterDesc.java"/>
       <include name="com/metavize/mvvm/logging/LogEvent.java"/>
       <include name="com/metavize/mvvm/logging/LoggingManager.java"/>
+      <include name="com/metavize/mvvm/logging/PipelineEvent.java"/>
       <include name="com/metavize/mvvm/policy/*.java"/>
       <include name="com/metavize/mvvm/security/*.java"/>
       <include name="com/metavize/mvvm/shield/ShieldNodeSettings.java"/>
@@ -219,6 +224,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
     <jar destfile="${build.jar}/mvvm-client.jar" index="yes">
       <fileset dir="${build.mvvm-client}">
         <exclude name="com/metavize/mvvm/tran/MutateTStats*.class"/>
+
         <include name="com/metavize/mvvm/*.class"/>
         <include name="com/metavize/mvvm/argon/ArgonException.class"/>
         <include name="com/metavize/mvvm/argon/IPSessionDesc.class"/>
@@ -230,8 +236,14 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
         <include name="com/metavize/mvvm/engine/ProxyInputStream*.class"/>
         <include name="com/metavize/mvvm/engine/SocketInvokerStub*.class"/>
         <include name="com/metavize/mvvm/engine/Version*.class"/>
+        <include name="com/metavize/mvvm/logging/EventFilter.class"/>
+        <include name="com/metavize/mvvm/logging/EventManager.class"/>
+        <include name="com/metavize/mvvm/logging/FilterDesc.class"/>
         <include name="com/metavize/mvvm/logging/LogEvent*.class"/>
         <include name="com/metavize/mvvm/logging/LoggingManager*.class"/>
+        <include name="com/metavize/mvvm/logging/PipelineEvent.class"/>
+        <include name="com/metavize/mvvm/logging/SyslogFacility.class"/>
+        <include name="com/metavize/mvvm/logging/SyslogPriority.class"/>
         <include name="com/metavize/mvvm/policy/*.class"/>
         <include name="com/metavize/mvvm/security/*.class"/>
         <include name="com/metavize/mvvm/shield/ShieldNodeSettings.class"/>

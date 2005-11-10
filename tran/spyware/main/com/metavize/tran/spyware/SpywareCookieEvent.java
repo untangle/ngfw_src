@@ -11,7 +11,6 @@
 
 package com.metavize.tran.spyware;
 
-import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.tran.http.RequestLine;
 
 /**
@@ -23,7 +22,7 @@ import com.metavize.tran.http.RequestLine;
  * table="TR_SPYWARE_EVT_COOKIE"
  * mutable="false"
  */
-public class SpywareCookieEvent extends LogEvent
+public class SpywareCookieEvent extends SpywareEvent
 {
     private int sessionId;
     private String identification;
@@ -48,24 +47,24 @@ public class SpywareCookieEvent extends LogEvent
         this.toServer = toServer;
     }
 
+    // SpywareEvent methods ---------------------------------------------------
+
+    public String getReason()
+    {
+        return "in Cookie List";
+    }
+
+    public String getLocation()
+    {
+        return requestLine.getUrl().toString();
+    }
+
+    public boolean isBlocked()
+    {
+        return true;
+    }
+
     // accessors --------------------------------------------------------------
-
-    /**
-     * Session id.
-     *
-     * @return the session id.
-     * @hibernate.property
-     * column="SESSION_ID"
-     */
-    public int getSessionId()
-    {
-        return sessionId;
-    }
-
-    public void setSessionId(int sessionId)
-    {
-        this.sessionId = sessionId;
-    }
 
     /**
      * Request line for this HTTP response pair.

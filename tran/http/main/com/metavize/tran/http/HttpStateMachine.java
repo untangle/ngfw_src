@@ -62,13 +62,13 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
         RESPONSE
     }
 
-    private final List<RequestLine> requests = new LinkedList<RequestLine>();
+    private final List<RequestLineToken> requests = new LinkedList<RequestLineToken>();
 
     private final List<Token[]> outstandingResponses = new LinkedList<Token[]>();
 
     private final List<Token> requestQueue = new ArrayList<Token>();
     private final List<Token> responseQueue = new ArrayList<Token>();
-    private final Map<RequestLine, String> hosts = new HashMap<RequestLine, String>();
+    private final Map<RequestLineToken, String> hosts = new HashMap<RequestLineToken, String>();
 
     private ClientState clientState = ClientState.REQ_START_STATE;
     private ServerState serverState = ServerState.RESP_START_STATE;
@@ -77,8 +77,8 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
     private Mode responseMode = Mode.QUEUEING;
     private Task task = Task.NONE;
 
-    private RequestLine requestLine;
-    private RequestLine responseRequest;
+    private RequestLineToken requestLineToken;
+    private RequestLineToken responseRequest;
     private StatusLine statusLine;
 
     private Token[] requestResponse = null;
@@ -101,7 +101,7 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
 
     // XXX the default impls should pass through?
 
-    protected abstract RequestLine doRequestLine(RequestLine rl)
+    protected abstract RequestLineToken doRequestLine(RequestLineToken rl)
         throws TokenException;
     protected abstract Header doRequestHeader(Header h)
         throws TokenException;
@@ -131,12 +131,12 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
         return serverState;
     }
 
-    protected RequestLine getRequestLine()
+    protected RequestLineToken getRequestLine()
     {
-        return requestLine;
+        return requestLineToken;
     }
 
-    protected RequestLine getResponseRequest()
+    protected RequestLineToken getResponseRequest()
     {
         return responseRequest;
     }
@@ -365,20 +365,20 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
         switch (clientState) {
         case REQ_LINE_STATE:
             requestMode = Mode.QUEUEING;
-            requestLine = (RequestLine)token;
-            requestLine = doRequestLine(requestLine);
+            requestLineToken = (RequestLineToken)token;
+            requestLineToken = doRequestLine(requestLineToken);
 
             switch (requestMode) {
             case QUEUEING:
-                requestQueue.add(requestLine);
+                requestQueue.add(requestLineToken);
                 return TokenResult.NONE;
 
             case RELEASED:
                 assert 0 == requestQueue.size();
 
-                requests.add(requestLine);
+                requests.add(requestLineToken);
                 outstandingResponses.add(null);
-                return new TokenResult(null, new Token[] { requestLine } );
+                return new TokenResult(null, new Token[] { requestLineToken } );
 
             case BLOCKED:
                 assert 0 == requestQueue.size();
@@ -388,7 +388,7 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
                     requestResponse = null;
                     return tr;
                 } else {
-                    requests.add(requestLine);
+                    requests.add(requestLineToken);
                     outstandingResponses.add(requestResponse);
                     requestResponse = null;
                     return TokenResult.NONE;
@@ -406,7 +406,7 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
                 h = doRequestHeader(h);
 
                 String host = h.getValue("host");
-                hosts.put(requestLine, host);
+                hosts.put(requestLineToken, host);
 
                 switch (requestMode) {
                 case QUEUEING:
@@ -419,7 +419,7 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
                     toks = requestQueue.toArray(toks);
                     requestQueue.clear();
                     if (Mode.QUEUEING == preMode) {
-                        requests.add(requestLine);
+                        requests.add(requestLineToken);
                         outstandingResponses.add(null);
                     }
                     return new TokenResult(null, toks);
@@ -432,7 +432,7 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
                         requestResponse = null;
                         return tr;
                     } else {
-                        requests.add(requestLine);
+                        requests.add(requestLineToken);
                         outstandingResponses.add(requestResponse);
                         requestResponse = null;
                         return TokenResult.NONE;
@@ -462,7 +462,7 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
                     toks = requestQueue.toArray(toks);
                     requestQueue.clear();
                     if (Mode.QUEUEING == preMode) {
-                        requests.add(requestLine);
+                        requests.add(requestLineToken);
                         outstandingResponses.add(null);
                     }
                     return new TokenResult(null, toks);
@@ -475,7 +475,7 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
                         requestResponse = null;
                         return tr;
                     } else {
-                        requests.add(requestLine);
+                        requests.add(requestLineToken);
                         outstandingResponses.add(requestResponse);
                         requestResponse = null;
                         return TokenResult.NONE;
@@ -508,7 +508,7 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
                     toks = requestQueue.toArray(toks);
                     requestQueue.clear();
                     if (Mode.QUEUEING == preMode) {
-                        requests.add(requestLine);
+                        requests.add(requestLineToken);
                         outstandingResponses.add(null);
                     }
                     return new TokenResult(null, toks);
@@ -521,7 +521,7 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
                         requestResponse = null;
                         return tr;
                     } else {
-                        requests.add(requestLine);
+                        requests.add(requestLineToken);
                         outstandingResponses.add(requestResponse);
                         requestResponse = null;
                         return TokenResult.NONE;
@@ -556,7 +556,7 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
                     }
                 } else {
                     responseRequest = requests.remove(0);
-                    responseResponse = outstandingResponses.get(0);
+                    responseResponse = outstandingResponses.remove(0);
                 }
             }
 

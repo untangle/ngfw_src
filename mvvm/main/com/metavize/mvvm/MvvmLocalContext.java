@@ -17,9 +17,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.metavize.mvvm.logging.LoggingManager;
+import com.metavize.mvvm.logging.SyslogManager;
 import com.metavize.mvvm.policy.PolicyManager;
 import com.metavize.mvvm.security.AdminManager;
-import com.metavize.mvvm.security.MvvmLogin;
 import com.metavize.mvvm.tapi.MPipeManager;
 import com.metavize.mvvm.tapi.PipelineFoundry;
 import com.metavize.mvvm.tran.TransformManager;
@@ -117,6 +117,8 @@ public interface MvvmLocalContext
      */
     LoggingManager loggingManager();
 
+    SyslogManager syslogManager();
+
     /**
      * Get the <code>PolicyManager</code> singleton.
      *
@@ -185,10 +187,11 @@ public interface MvvmLocalContext
     boolean isActivated();
 
     /**
-     * Activates the EdgeGuard using the given key.  Returns true if the activation
-     * succeeds, false otherwise (if the key is bogus).
+     * Activates the EdgeGuard using the given key.  Returns true if
+     * the activation succeeds, false otherwise (if the key is bogus).
      *
-     * @param key a <code>String</code> giving the key to be activated under
+     * @param key a <code>String</code> giving the key to be activated
+     * under
      * @return a <code>boolean</code> true if the activation succeeded
      */
     boolean activate(String key);
@@ -210,6 +213,6 @@ public interface MvvmLocalContext
      */
     boolean loadWebApp(String urlBase,
       String rootDir);
-    
+
     boolean unloadWebApp(String urlBase);
 }

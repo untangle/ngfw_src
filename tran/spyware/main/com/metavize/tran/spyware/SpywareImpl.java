@@ -18,13 +18,7 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -35,15 +29,18 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.metavize.mvvm.logging.EventHandler;
+import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
-import com.metavize.mvvm.tran.Direction;
 import com.metavize.mvvm.tran.IPMaddr;
 import com.metavize.mvvm.tran.IPMaddrRule;
 import com.metavize.mvvm.tran.StringRule;
+import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.util.TransactionWork;
 import com.metavize.tran.token.TokenAdaptor;
 import org.apache.log4j.Logger;
@@ -52,84 +49,6 @@ import org.hibernate.Session;
 
 public class SpywareImpl extends AbstractTransform implements Spyware
 {
-    private static final String COOKIE_QUERY
-        = "SELECT req.time_stamp, "
-        +        "'COOKIE' AS type, "
-        +        "'http://' || host || uri AS location, "
-        +        "ident, "
-        +        "true AS blocked, "
-        +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        +        "NOT policy_inbound as incoming "
-        + "FROM tr_http_evt_req req "
-        + "JOIN pl_endp endp USING (session_id) "
-        + "JOIN tr_http_req_line rl USING (request_id) "
-        + "JOIN tr_spyware_evt_cookie cookie USING (request_id) "
-        + "WHERE endp.policy_id = ? "
-        + "ORDER BY req.time_stamp DESC LIMIT ?";
-
-    private static final String COOKIE_BLOCKED_QUERY = COOKIE_QUERY;
-
-    private static final String ACTIVEX_QUERY
-        = "SELECT req.time_stamp, "
-        +        "'ACTIVEX' AS type, "
-        +        "'http://' || host || uri AS location, "
-        +        "ident, "
-        +        "true AS blocked, "
-        +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        +        "NOT policy_inbound as incoming "
-        + "FROM tr_http_evt_req req "
-        + "JOIN pl_endp endp USING (session_id) "
-        + "JOIN tr_http_req_line rl USING (request_id) "
-        + "JOIN tr_spyware_evt_activex ax USING (request_id) "
-        + "WHERE endp.policy_id = ? "
-        + "ORDER BY req.time_stamp DESC LIMIT ?";
-
-    private static final String ACTIVEX_BLOCKED_QUERY = ACTIVEX_QUERY;
-
-    private static final String BLACKLIST_QUERY
-        = "SELECT req.time_stamp, "
-        +        "'BLACKLIST' AS type, "
-        +        "'http://' || host || uri AS location, "
-        +        "host AS ident, "
-        +        "true AS blocked, "
-        +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        +        "NOT policy_inbound as incoming "
-        + "FROM tr_http_evt_req req "
-        + "JOIN pl_endp endp USING (session_id) "
-        + "JOIN tr_http_req_line rl USING (request_id) "
-        + "JOIN tr_spyware_evt_blacklist bl USING (request_id) "
-        + "WHERE endp.policy_id = ? "
-        + "ORDER BY req.time_stamp DESC LIMIT ?";
-
-    private static final String BLACKLIST_BLOCKED_QUERY = BLACKLIST_QUERY;
-
-    private static final String ACCESS_QUERY_BASE
-        = "SELECT create_date AS time_stamp, "
-        +        "'ACCESS' AS type, "
-        +        "text(ipmaddr) AS location, "
-        +        "ident, "
-        +        "blocked, "
-        +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        +        "NOT policy_inbound as incoming "
-        + "FROM tr_spyware_evt_access acc "
-        + "JOIN pl_endp endp USING (session_id) "
-        + "WHERE endp.policy_id = ? ";
-
-    private static final String ACCESS_QUERY
-        = ACCESS_QUERY_BASE
-        + "ORDER BY create_date DESC LIMIT ?";
-
-    private static final String ACCESS_BLOCKED_QUERY
-        = ACCESS_QUERY_BASE
-        + "AND blocked "
-        + "ORDER BY create_date DESC LIMIT ?";
-
-    private static final String[] QUERIES = new String[]
-        { COOKIE_QUERY, ACTIVEX_QUERY, BLACKLIST_QUERY, ACCESS_QUERY };
-
-    private static final String[] BLOCKED_QUERIES = new String[]
-        { COOKIE_BLOCKED_QUERY, ACTIVEX_BLOCKED_QUERY, BLACKLIST_BLOCKED_QUERY, ACCESS_BLOCKED_QUERY };
-
     private static final String ACTIVEX_LIST
         = "com/metavize/tran/spyware/blocklist.reg";
     private static final String COOKIE_LIST
@@ -149,6 +68,8 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     private final TokenAdaptor tokenAdaptor = new TokenAdaptor(this, factory);
     private final SpywareEventHandler streamHandler = new SpywareEventHandler(this);
 
+    private final EventLogger<SpywareEvent> eventLogger;
+
     private final Set urlBlacklist;
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[]
@@ -167,6 +88,22 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     public SpywareImpl()
     {
         urlBlacklist = SpywareCache.cache().getUrls();
+
+        TransformContext tctx = getTransformContext();
+        eventLogger = new EventLogger<SpywareEvent>(tctx);
+
+        EventHandler eh = new SpywareAllEventHandler(tctx);
+        eventLogger.addEventHandler(eh);
+        eh = new SpywareBlockedEventHandler(tctx);
+        eventLogger.addEventHandler(eh);
+        eh = new SpywareAccessEventHandler(tctx);
+        eventLogger.addEventHandler(eh);
+        eh = new SpywareActiveXEventHandler(tctx);
+        eventLogger.addEventHandler(eh);
+        eh = new SpywareBlacklistEventHandler(tctx);
+        eventLogger.addEventHandler(eh);
+        eh = new SpywareCookieEventHandler(tctx);
+        eventLogger.addEventHandler(eh);
     }
 
     // SpywareTransform methods -----------------------------------------------
@@ -194,31 +131,9 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         reconfigure();
     }
 
-    public List<SpywareLog> getEventLogs(int limit)
+    public EventManager<SpywareEvent> getEventManager()
     {
-        return getEventLogs(limit, false);
-    }
-
-    public List<SpywareLog> getEventLogs(int limit, boolean blockedOnly)
-    {
-        String[] queries;
-        if (blockedOnly)
-            queries = BLOCKED_QUERIES;
-        else
-            queries = QUERIES;
-        List<SpywareLog> l = new ArrayList<SpywareLog>(queries.length * limit);
-
-        for (String q : queries) {
-            getEventLogs(q, l, limit);
-        }
-
-        Collections.sort(l);
-
-        long t0 = System.currentTimeMillis();
-        while (l.size() > limit) { l.remove(l.size() - 1); }
-        long t1 = System.currentTimeMillis();
-
-        return l;
+        return eventLogger;
     }
 
     // Transform methods ------------------------------------------------------
@@ -320,6 +235,16 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         reconfigure();
     }
 
+    protected void preStart()
+    {
+        eventLogger.start();
+    }
+
+    protected void postStop()
+    {
+        eventLogger.stop();
+    }
+
     // package private methods ------------------------------------------------
 
     boolean isBlacklistDomain(String domain, URI uri)
@@ -377,6 +302,11 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     StringRule getBlockedActiveX(String clsId)
     {
         return null == activeXRules ? null : activeXRules.get(clsId);
+    }
+
+    void log(SpywareEvent se)
+    {
+        eventLogger.log(se);
     }
 
     // private methods --------------------------------------------------------
@@ -539,53 +469,6 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         }
 
         return host.substring(i + 1);
-    }
-
-    private List<SpywareLog> getEventLogs(final String q,
-                                          final List<SpywareLog> l,
-                                          final int limit)
-    {
-        TransactionWork tw = new TransactionWork()
-            {
-                public boolean doWork(Session s) throws SQLException
-                {
-                    Connection c = s.connection();
-                    PreparedStatement ps = c.prepareStatement(q);
-                    ps.setString(1, getPolicy().getId().toString());
-                    ps.setInt(2, limit);
-                    long l0 = System.currentTimeMillis();
-                    ResultSet rs = ps.executeQuery();
-                    while (rs.next()) {
-                        long ts = rs.getTimestamp("time_stamp").getTime();
-                        Date createDate = new Date(ts);
-                        String type = rs.getString("type");
-                        String location = rs.getString("location");
-                        String ident = rs.getString("ident");
-                        boolean blocked = rs.getBoolean("blocked");
-                        String clientAddr = rs.getString("c_client_addr");
-                        int clientPort = rs.getInt("c_client_port");
-                        String serverAddr = rs.getString("s_server_addr");
-                        int serverPort = rs.getInt("s_server_port");
-                        boolean incoming = rs.getBoolean("incoming");
-
-                        Direction d = incoming ? Direction.INCOMING : Direction.OUTGOING;
-
-                        SpywareLog rl = new SpywareLog
-                            (createDate, type, location, ident, blocked, clientAddr,
-                             clientPort, serverAddr, serverPort, d);
-
-                        l.add(rl);
-                    }
-                    long l1 = System.currentTimeMillis();
-                    logger.debug("getActiveXLogs() in: " + (l1 - l0));
-                    return true;
-                }
-
-                public Object getResult() { return null; }
-            };
-        getTransformContext().runTransaction(tw);
-
-        return l;
     }
 
     // XXX soon to be deprecated ----------------------------------------------

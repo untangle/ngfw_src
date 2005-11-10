@@ -11,7 +11,7 @@
 
 package com.metavize.tran.spyware;
 
-import com.metavize.mvvm.logging.LogEvent;
+import com.metavize.tran.http.HttpRequestEvent;
 import com.metavize.tran.http.RequestLine;
 
 /**
@@ -23,9 +23,8 @@ import com.metavize.tran.http.RequestLine;
  * table="TR_SPYWARE_EVT_BLACKLIST"
  * mutable="false"
  */
-public class SpywareBlacklistEvent extends LogEvent
+public class SpywareBlacklistEvent extends SpywareEvent
 {
-    private int sessionId;
     private RequestLine requestLine;
 
     // constructors -----------------------------------------------------------
@@ -37,28 +36,38 @@ public class SpywareBlacklistEvent extends LogEvent
 
     public SpywareBlacklistEvent(int sessionId, RequestLine requestLine)
     {
-        this.sessionId = sessionId;
+        super(sessionId);
+
         this.requestLine = requestLine;
     }
 
+    // SpywareEvent methods ---------------------------------------------------
+
+    public String getReason()
+    {
+        return "in URL List";
+    }
+
+    public String getIdentification()
+    {
+        HttpRequestEvent hre = requestLine.getHttpRequestEvent();
+        String host = null == hre
+            ? getPipelineEndpoints().getSServerAddr().toString()
+            : hre.getHost();
+        return "http://" + host + requestLine.getRequestUri().toString();
+    }
+
+    public boolean isBlocked()
+    {
+        return true;
+    }
+
+    public String getLocation()
+    {
+        return requestLine.getUrl().toString();
+    }
+
     // accessors --------------------------------------------------------------
-
-    /**
-     * Session id.
-     *
-     * @return the session id.
-     * @hibernate.property
-     * column="SESSION_ID"
-     */
-    public int getSessionId()
-    {
-        return sessionId;
-    }
-
-    public void setSessionId(int sessionId)
-    {
-        this.sessionId = sessionId;
-    }
 
     /**
      * Request line for this HTTP response pair.
@@ -66,7 +75,7 @@ public class SpywareBlacklistEvent extends LogEvent
      * @return the request line.
      * @hibernate.many-to-one
      * column="REQUEST_ID"
-     * cascade="save-update"
+     * cascade="all"
      */
     public RequestLine getRequestLine()
     {

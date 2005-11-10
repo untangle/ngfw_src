@@ -25,7 +25,7 @@ class HttpCasing extends AbstractCasing
     private final HttpTransformImpl transform;
     private final HttpParser parser;
     private final HttpUnparser unparser;
-    private final List<RequestLine> requests = new LinkedList<RequestLine>();
+    private final List<RequestLineToken> requests = new LinkedList<RequestLineToken>();
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -58,12 +58,12 @@ class HttpCasing extends AbstractCasing
         return transform;
     }
 
-    void queueRequest(RequestLine request)
+    void queueRequest(RequestLineToken request)
     {
         requests.add(request);
     }
 
-    RequestLine dequeueRequest()
+    RequestLineToken dequeueRequest()
     {
         if (0 < requests.size()) {
             return requests.remove(0);

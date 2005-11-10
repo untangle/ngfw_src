@@ -11,15 +11,13 @@
 
 package com.metavize.tran.http;
 
+import java.io.Serializable;
+import java.net.MalformedURLException;
 import java.net.URI;
-import java.nio.ByteBuffer;
-
-import com.metavize.tran.token.Token;
+import java.net.URL;
 
 /**
  * Holds a RFC 2616 request-line.
- *
- * Note: requestURI automatically trimmed to length 255 by its custom UserType
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
@@ -27,12 +25,14 @@ import com.metavize.tran.token.Token;
  * table="TR_HTTP_REQ_LINE"
  * mutable="false"
  */
-public class RequestLine implements Token
+public class RequestLine implements Serializable
 {
+    // XXX serial UID
+
     private Long id;
     private HttpMethod method;
     private URI requestUri;
-    private String httpVersion;
+    private HttpRequestEvent httpRequestEvent;
 
     // constructors -----------------------------------------------------------
 
@@ -41,15 +41,29 @@ public class RequestLine implements Token
      */
     public RequestLine() { }
 
-    public RequestLine(HttpMethod method, URI requestUri, String httpVersion)
-     {
-        if (httpVersion != null && httpVersion.length() > 10) {
-            throw new IllegalArgumentException("http-version too long");
-        }
-
+    public RequestLine(HttpMethod method, URI requestUri)
+    {
         this.method = method;
         this.requestUri = requestUri;
-        this.httpVersion = httpVersion;
+        this.httpRequestEvent = httpRequestEvent;
+    }
+
+    // business methods -------------------------------------------------------
+
+    public URL getUrl()
+    {
+        // XXX this shouldn't happen in practice
+        String host = null == httpRequestEvent ? ""
+            : httpRequestEvent.getHost();
+
+        URL url;
+        try {
+            url = new URL("http", host, getRequestUri().toString());
+        } catch (MalformedURLException exn) {
+            throw new RuntimeException(exn); // should never happen
+        }
+
+        return url;
     }
 
     // accessors --------------------------------------------------------------
@@ -106,39 +120,21 @@ public class RequestLine implements Token
     }
 
     /**
-     * The HTTP version.
+     * The HttpRequestEvent that logged this item.
      *
-     * XXX try to save space here? dont save at all?
-     *
-     * @return the HTTP version.
-     * @hibernate.property
-     * column="HTTP_VERSION"
-     * length="10"
+     * @return the HttpRequestEvent.
+     * @hibernate.one-to-one
+     * column="event_id"
+     * property-ref="requestLine"
      */
-    public String getHttpVersion()
+    public HttpRequestEvent getHttpRequestEvent()
     {
-        return httpVersion;
+        return httpRequestEvent;
     }
 
-    public void setHttpVersion(String httpVersion)
+    public void setHttpRequestEvent(HttpRequestEvent httpRequestEvent)
     {
-        if (httpVersion != null && httpVersion.length() > 10) {
-            throw new IllegalArgumentException("http-version too long");
-        }
-
-        this.httpVersion = httpVersion;
-    }
-
-    // Token methods ----------------------------------------------------------
-
-    public ByteBuffer getBytes()
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.append(method).append(" ").append(requestUri.toString())
-            .append(" ").append(httpVersion).append("\r\n");
-        byte[] buf = sb.toString().getBytes();
-
-        return ByteBuffer.wrap(buf);
+        this.httpRequestEvent = httpRequestEvent;
     }
 
     // Object methods ---------------------------------------------------------

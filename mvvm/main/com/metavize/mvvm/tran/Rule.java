@@ -21,7 +21,7 @@ import java.io.Serializable;
  * @hibernate.class
  * table="RULE"
  */
-public class Rule implements Serializable
+public abstract class Rule implements Serializable
 {
     private static final long serialVersionUID = -7861114769604834397L;
 

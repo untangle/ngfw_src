@@ -11,8 +11,6 @@
 
 package com.metavize.mvvm.tran;
 
-
-
 import com.metavize.mvvm.MackageDesc;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tapi.IPSessionDesc;

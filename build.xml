@@ -39,7 +39,7 @@ $Id: build.xml,v 1.20 2005/01/29 07:14:04 amread Exp $
   </target>
 
   <target name="world">
-<!--         <splash imageurl="http://geeksforhire.com/images/computerbang.gif" showduration="5000"/>  -->
+    <!--         <splash imageurl="http://geeksforhire.com/images/computerbang.gif" showduration="5000"/>  -->
     <subant target="install">
       <property name="build.dist" value="${world.root}"/>
       <filelist refid="antfiles"/>

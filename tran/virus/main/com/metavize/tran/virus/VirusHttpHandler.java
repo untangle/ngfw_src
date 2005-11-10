@@ -27,6 +27,7 @@ import com.metavize.mvvm.tran.Transform;
 import com.metavize.tran.http.HttpMethod;
 import com.metavize.tran.http.HttpStateMachine;
 import com.metavize.tran.http.RequestLine;
+import com.metavize.tran.http.RequestLineToken;
 import com.metavize.tran.http.StatusLine;
 import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.EndMarker;
@@ -93,7 +94,7 @@ class VirusHttpHandler extends HttpStateMachine
     // HttpStateMachine methods -----------------------------------------------
 
     @Override
-    protected RequestLine doRequestLine(RequestLine requestLine)
+    protected RequestLineToken doRequestLine(RequestLineToken requestLine)
     {
         this.scan = false;
         String path = requestLine.getRequestUri().getPath();
@@ -138,7 +139,7 @@ class VirusHttpHandler extends HttpStateMachine
 
         String reason = "";
 
-        RequestLine rl = getResponseRequest();
+        RequestLineToken rl = getResponseRequest();
 
         if (null == rl || HttpMethod.HEAD == rl.getMethod()) {
             logger.debug("CONTINUE or HEAD");
@@ -209,7 +210,8 @@ class VirusHttpHandler extends HttpStateMachine
             result = VirusScannerResult.ERROR;
         }
 
-        eventLogger.info(new VirusHttpEvent(getResponseRequest(), result,  vendor));
+        RequestLine requestLine = getResponseRequest().getRequestLine();
+        eventLogger.info(new VirusHttpEvent(requestLine, result,  vendor));
 
         if (result.isClean()) {
             transform.incrementCount(PASS_COUNTER, 1);
@@ -246,7 +248,7 @@ class VirusHttpHandler extends HttpStateMachine
     {
         StatusLine sl = new StatusLine("HTTP/1.1", 403, "Forbidden");
 
-        RequestLine rl = getResponseRequest();
+        RequestLineToken rl = getResponseRequest();
         String uri = null != rl ? rl.getRequestUri().toString() : "";
         String host = getResponseHost();
 

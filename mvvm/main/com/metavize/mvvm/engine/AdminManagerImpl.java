@@ -61,8 +61,6 @@ class AdminManagerImpl implements AdminManager
                     }
                     return true;
                 }
-
-                public Object getResult() { return null; }
             };
         MvvmContextFactory.context().runTransaction(tw);
 
@@ -107,8 +105,6 @@ class AdminManagerImpl implements AdminManager
                     s.saveOrUpdate(as);
                     return true;
                 }
-
-                public Object getResult() { return null; }
             };
         MvvmContextFactory.context().runTransaction(tw);
 

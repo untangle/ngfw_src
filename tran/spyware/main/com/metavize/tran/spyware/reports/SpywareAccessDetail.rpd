@@ -25,7 +25,7 @@ SELECT evt.time_stamp, name, c_client_addr, c_server_addr, c_server_port, \
        ident, blocked \
   FROM tr_spyware_evt_access evt \
          JOIN pl_endp endp \
-           USING (session_id) \
+           ON endp event_id = evt.pl_endp_id \
          LEFT OUTER JOIN merged_address_map mam \
            ON (endp.c_client_addr = mam.addr \
              AND evt.time_stamp >= mam.start_time \

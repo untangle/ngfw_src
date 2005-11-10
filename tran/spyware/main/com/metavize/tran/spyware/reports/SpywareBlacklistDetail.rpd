@@ -27,7 +27,7 @@ SELECT blcklst.time_stamp, name, c_client_addr, c_server_addr, c_server_port, \
          JOIN tr_http_req_line \
            USING (request_id) \
          JOIN pl_endp endp \
-           USING (session_id) \
+           ON evt.pl_endp_id = endp.event_id \
          JOIN tr_http_evt_req evt \
            ON (blcklst.request_id = evt.request_id \
              AND blcklst.time_stamp >= $P{startTime} \

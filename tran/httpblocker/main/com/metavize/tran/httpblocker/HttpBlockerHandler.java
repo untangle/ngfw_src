@@ -16,7 +16,7 @@ import java.nio.ByteBuffer;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.tran.http.HttpStateMachine;
-import com.metavize.tran.http.RequestLine;
+import com.metavize.tran.http.RequestLineToken;
 import com.metavize.tran.http.StatusLine;
 import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.EndMarker;
@@ -47,7 +47,7 @@ public class HttpBlockerHandler extends HttpStateMachine
     // HttpStateMachine methods -----------------------------------------------
 
     @Override
-    protected RequestLine doRequestLine(RequestLine requestLine)
+    protected RequestLineToken doRequestLine(RequestLineToken requestLine)
     {
         return requestLine;
     }

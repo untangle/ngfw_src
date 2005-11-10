@@ -67,9 +67,9 @@ class HttpUnparser extends AbstractUnparser
             logger.debug(sessStr + " got status line!");
             transferEncoding = CLOSE_ENCODING;
             return statusLine((StatusLine)token);
-        } else if (token instanceof RequestLine) {
+        } else if (token instanceof RequestLineToken) {
             logger.debug(sessStr + " got request line!");
-            return requestLine((RequestLine)token);
+            return requestLine((RequestLineToken)token);
         } else if (token instanceof Header) {
             logger.debug(sessStr + " got header!");
             return header((Header)token);
@@ -98,7 +98,7 @@ class HttpUnparser extends AbstractUnparser
         return new UnparseResult(BYTE_BUFFER_PROTO);
     }
 
-    private UnparseResult requestLine(RequestLine rl)
+    private UnparseResult requestLine(RequestLineToken rl)
     {
         logger.debug(sessStr + " request-line");
 

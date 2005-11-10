@@ -72,7 +72,7 @@ public class HttpParser extends AbstractParser
     private final Logger eventLogger = MvvmContextFactory.context()
         .eventLogger();
 
-    private RequestLine requestLine;
+    private RequestLineToken requestLineToken;
     private StatusLine statusLine;
     private Header header;
 
@@ -106,8 +106,9 @@ public class HttpParser extends AbstractParser
     {
         cancelTimer();
 
-        if (logger.isDebugEnabled())
+        if (logger.isDebugEnabled()) {
             logger.debug(sessStr + "parsing chunk: " + b);
+        }
         List l = new LinkedList();
 
         boolean done = false;
@@ -198,12 +199,16 @@ public class HttpParser extends AbstractParser
                     assert !b.hasRemaining();
 
                     if (!clientSide) {
-                        if (null != requestLine) {
-                            HttpMethod method = requestLine.getMethod();
+                        if (null != requestLineToken) {
+                            HttpMethod method = requestLineToken.getMethod();
                             if (HttpMethod.HEAD == method) {
                                 transferEncoding = NO_BODY;
                             }
                         }
+                    } else {
+                        HttpRequestEvent evt = new HttpRequestEvent
+                            (session.id(), requestLineToken.getRequestLine(),
+                             header.getValue("host"), lengthCounter);
                     }
 
                     if (NO_BODY == transferEncoding) {
@@ -357,12 +362,16 @@ public class HttpParser extends AbstractParser
                             : MimeType.getType(contentType);
 
                         HttpResponseEvent evt = new HttpResponseEvent
-                            (requestLine, mimeType, lengthCounter);
+                            (requestLineToken.getRequestLine(), mimeType,
+                             contentLength);
+
                         eventLogger.info(evt);
                     } else {
-                        HttpRequestEvent evt = new HttpRequestEvent
-                            (session.id(), requestLine,
-                             header.getValue("host"), lengthCounter);
+                        HttpRequestEvent evt = requestLineToken
+                            .getRequestLine()
+                            .getHttpRequestEvent();
+                        evt.setContentLength(contentLength);
+
                         eventLogger.info(evt);
                     }
 
@@ -509,12 +518,12 @@ public class HttpParser extends AbstractParser
         if (!clientSide) {
             return statusLine = statusLine(data);
         } else {
-            return requestLine = requestLine(data);
+            return requestLineToken = requestLine(data);
         }
     }
 
     // Request-Line   = Method SP Request-URI SP HTTP-Version CRLF
-    private RequestLine requestLine(ByteBuffer data) throws ParseException
+    private RequestLineToken requestLine(ByteBuffer data) throws ParseException
     {
         transferEncoding = NO_BODY;
 
@@ -526,7 +535,8 @@ public class HttpParser extends AbstractParser
         String httpVersion = version(data);
         eatCrLf(data);
 
-        return new RequestLine(method, requestUri, httpVersion);
+        RequestLine rl = new RequestLine(method, requestUri);
+        return new RequestLineToken(rl, httpVersion);
     }
 
     // Status-Line = HTTP-Version SP Status-Code SP Reason-Phrase CRLF
@@ -553,9 +563,9 @@ public class HttpParser extends AbstractParser
         }
 
         if (100 != statusCode && 408 != statusCode) {
-            RequestLine rl = casing.dequeueRequest();
+            RequestLineToken rl = casing.dequeueRequest();
             // casing returns null and logs an error when nothing in queue
-            requestLine = null != rl ? rl : requestLine;
+            requestLineToken = null != rl ? rl : requestLineToken;
         }
 
         return new StatusLine(httpVersion, statusCode, reasonPhrase);

@@ -164,8 +164,6 @@ public class RemoteClient
             isReportingEnabled();
         } else if (args[0].equalsIgnoreCase("areReportsAvailable")) {
             areReportsAvailable();
-        } else if (args[0].equalsIgnoreCase("userLogs")) {
-            userLogs(args[1]);
         } else if (args[0].equalsIgnoreCase("resetLogs")) {
             resetLogs();
         } else if (args[0].equalsIgnoreCase("shieldStatus")) {
@@ -586,19 +584,6 @@ public class RemoteClient
     private static void areReportsAvailable()
     {
         System.out.println(mc.reportingManager().isReportsAvailable());
-    }
-
-    private static void userLogs(String tidStr)
-    {
-        Tid tid = new Tid(Long.parseLong(tidStr));
-
-        long t0 = System.currentTimeMillis();
-        String[] sles = mc.loggingManager().userLogStrings(tid);
-        long t1 = System.currentTimeMillis();
-        System.out.println("Logs in: " + (t1 - t0) + " millis.");
-        for (int i = 0; i < sles.length; i++) {
-            System.out.println(sles[i]);
-        }
     }
 
     /**

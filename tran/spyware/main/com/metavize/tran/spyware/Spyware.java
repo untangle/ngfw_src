@@ -11,8 +11,7 @@
 
 package com.metavize.tran.spyware;
 
-import java.util.List;
-
+import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.tran.Transform;
 
 public interface Spyware extends Transform
@@ -25,7 +24,5 @@ public interface Spyware extends Transform
     SpywareSettings getSpywareSettings();
     void setSpywareSettings(SpywareSettings settings);
 
-    List<SpywareLog> getEventLogs(int limit);
-
-    List<SpywareLog> getEventLogs(int limit, boolean blockedOnly);
+    EventManager<SpywareEvent> getEventManager();
 }

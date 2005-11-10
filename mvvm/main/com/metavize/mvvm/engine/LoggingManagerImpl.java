@@ -11,12 +11,10 @@
 
 package com.metavize.mvvm.engine;
 
-import java.util.List;
-
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.LoggingManager;
-import com.metavize.mvvm.security.Tid;
+import com.metavize.mvvm.logging.LoggingSettings;
 import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -32,7 +30,29 @@ class LoggingManagerImpl implements LoggingManager
     private static final Logger logger = Logger
         .getLogger(LoggingManagerImpl.class.getName());
 
-    private LoggingManagerImpl() { }
+    private LoggingSettings loggingSettings;
+
+    private LoggingManagerImpl()
+    {
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery("from LoggingSettings ls");
+                    loggingSettings = (LoggingSettings)q.uniqueResult();
+
+                    if (null == loggingSettings) {
+                        loggingSettings = new LoggingSettings();
+                        s.save(loggingSettings);
+                    }
+
+                    return true;
+                }
+            };
+        MvvmContextFactory.context().runTransaction(tw);
+
+        SyslogManagerImpl.manager().reconfigure(loggingSettings);
+    }
 
     static LoggingManagerImpl loggingManager()
     {
@@ -41,47 +61,31 @@ class LoggingManagerImpl implements LoggingManager
                 LOGGING_MANAGER = new LoggingManagerImpl();
             }
         }
+
         return LOGGING_MANAGER;
     }
 
-    public LogEvent[] userLogs(final Tid tid)
+    public LoggingSettings getLoggingSettings()
     {
-        LogEvent[] logs = null;
-
-        TransactionWork<LogEvent[]> tw = new TransactionWork<LogEvent[]>()
-            {
-                private LogEvent[] logs = null;
-
-                public boolean doWork(Session s)
-                {
-                    Query q = s.createQuery("from LogEvent le where le.tid = :tid");
-                    q.setParameter("tid", tid);
-                    List result = q.list();
-
-                    logs = (LogEvent[])result.toArray(LOG_PROTO);
-
-                    return true;
-                }
-
-                public LogEvent[] getResult()
-                {
-                    return logs;
-                }
-            };
-        MvvmContextFactory.context().runTransaction(tw);
-
-        return tw.getResult();
+        return loggingSettings;
     }
 
-    public String[] userLogStrings(Tid tid)
+    public void setLoggingSettings(final LoggingSettings loggingSettings)
     {
-        LogEvent[] les = userLogs(tid);
-        String[] sles = new String[les.length];
-        for (int i = 0; i < sles.length; i++) {
-            sles[i] = les[i].toString();
-        }
+        this.loggingSettings = loggingSettings;
 
-        return sles;
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    s.saveOrUpdate(loggingSettings);
+                    return true;
+                }
+            };
+
+        MvvmContextFactory.context().runTransaction(tw);
+
+        SyslogManagerImpl.manager().reconfigure(loggingSettings);
     }
 
     public void resetAllLogs()

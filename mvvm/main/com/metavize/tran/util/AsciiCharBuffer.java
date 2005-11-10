@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004 Metavize Inc.
+ * Copyright (c) 2004, 2005 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,11 +11,14 @@
 
 package com.metavize.tran.util;
 
+import java.io.IOException;
+import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ReadOnlyBufferException;
 
-public class AsciiCharBuffer implements CharSequence
+public class AsciiCharBuffer
+    implements CharSequence, Appendable, Comparable<AsciiCharBuffer>
 {
     private ByteBuffer bb;
     private boolean readOnly;
@@ -57,11 +60,6 @@ public class AsciiCharBuffer implements CharSequence
         return bb.capacity();
     }
 
-    public char charAt(int i)
-    {
-        return (char)bb.get(bb.position() + i);
-    }
-
     public AsciiCharBuffer clear()
     {
         bb.clear();
@@ -74,25 +72,9 @@ public class AsciiCharBuffer implements CharSequence
         return this;
     }
 
-    public int compareTo(Object o)
-    {
-        AsciiCharBuffer cb = (AsciiCharBuffer)o;
-        return bb.compareTo(cb.bb);
-    }
-
     public AsciiCharBuffer duplicate()
     {
         return new AsciiCharBuffer(bb.duplicate(), false);
-    }
-
-    public boolean equals(Object o)
-    {
-        if (!(o instanceof AsciiCharBuffer)) {
-            return false;
-        }
-        AsciiCharBuffer cb = (AsciiCharBuffer)o;
-
-        return bb.equals(cb.bb);
     }
 
     public AsciiCharBuffer flip()
@@ -103,7 +85,7 @@ public class AsciiCharBuffer implements CharSequence
 
     public char get()
     {
-        return (char)bb.get();
+        return (char)(bb.get() & 0x00FF);
     }
 
     public AsciiCharBuffer get(char[] dst)
@@ -114,7 +96,7 @@ public class AsciiCharBuffer implements CharSequence
     public AsciiCharBuffer get(char[] dst, int off, int l)
     {
         for (int i = off; i < off + l; i++) {
-            dst[i] = (char)bb.get();
+            dst[i] = (char)(bb.get() & 0x00FF);
         }
 
         return this;
@@ -122,7 +104,7 @@ public class AsciiCharBuffer implements CharSequence
 
     public char get(int i)
     {
-        return (char)bb.get(i);
+        return (char)(bb.get(i) & 0x00FF);
     }
 
     public boolean hasArray()
@@ -135,11 +117,6 @@ public class AsciiCharBuffer implements CharSequence
         return bb.hasRemaining();
     }
 
-    public int hashCode()
-    {
-        return bb.hashCode();
-    }
-
     public boolean isDirect()
     {
         return false;
@@ -148,11 +125,6 @@ public class AsciiCharBuffer implements CharSequence
     public boolean isReadOnly()
     {
         return bb.isReadOnly();
-    }
-
-    public int length()
-    {
-        return bb.remaining();
     }
 
     public int limit()
@@ -212,11 +184,10 @@ public class AsciiCharBuffer implements CharSequence
 
     public AsciiCharBuffer put(char[] src)
     {
-        if (readOnly) { new ReadOnlyBufferException(); }
         return put(src, 0, src.length);
     }
 
-    public AsciiCharBuffer put(String src, int s, int e)
+    public AsciiCharBuffer put(CharSequence src, int s, int e)
     {
         if (readOnly) { new ReadOnlyBufferException(); }
         for (int i = s; i < s + e; i++) {
@@ -225,23 +196,14 @@ public class AsciiCharBuffer implements CharSequence
         return this;
     }
 
-    public AsciiCharBuffer put(String src)
+    public AsciiCharBuffer put(CharSequence src)
     {
-        if (readOnly) { new ReadOnlyBufferException(); }
         return put(src, 0, src.length());
     }
 
     public AsciiCharBuffer slice()
     {
         return new AsciiCharBuffer(bb.slice(), false);
-    }
-
-    public CharSequence subSequence(int s, int e)
-    {
-        ByteBuffer dup = bb.duplicate();
-        dup.position(bb.position() + s);
-        dup.limit(bb.position() + e);
-        return new AsciiCharBuffer(dup, false);
     }
 
     public int remaining()
@@ -261,11 +223,85 @@ public class AsciiCharBuffer implements CharSequence
         return this;
     }
 
+    // CharSequence methods ---------------------------------------------------
+
+    public char charAt(int i)
+    {
+        return (char)(bb.get(bb.position() + i) & 0x00FF);
+    }
+
+    public int length()
+    {
+        return bb.remaining();
+    }
+
+    public CharSequence subSequence(int s, int e)
+    {
+        ByteBuffer dup = bb.duplicate();
+        dup.position(bb.position() + s);
+        dup.limit(bb.position() + e);
+        return new AsciiCharBuffer(dup, false);
+    }
+
     public String toString()
     {
         ByteBuffer dup = bb.duplicate();
         byte[] sb = new byte[dup.remaining()];
         dup.get(sb);
         return new String(sb);
+    }
+
+    // Appendable methods -----------------------------------------------------
+
+    public AsciiCharBuffer append(char c) throws IOException
+    {
+        try {
+            return put(c);
+        } catch (BufferOverflowException exn) {
+            throw new IOException(exn.getMessage());
+        }
+    }
+
+    public AsciiCharBuffer append(CharSequence csq) throws IOException
+    {
+        try {
+            return put(csq);
+        } catch (BufferOverflowException exn) {
+            throw new IOException(exn.getMessage());
+        }
+    }
+
+    public AsciiCharBuffer append(CharSequence csq, int start, int end)
+        throws IOException
+    {
+        try {
+            return put(csq, start, end);
+        } catch (BufferOverflowException exn) {
+            throw new IOException(exn.getMessage());
+        }
+    }
+
+    // Comparable methods -----------------------------------------------------
+
+    public int compareTo(AsciiCharBuffer cb)
+    {
+        return bb.compareTo(cb.bb);
+    }
+
+    // Object methods ---------------------------------------------------------
+
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof AsciiCharBuffer)) {
+            return false;
+        }
+        AsciiCharBuffer cb = (AsciiCharBuffer)o;
+
+        return bb.equals(cb.bb);
+    }
+
+    public int hashCode()
+    {
+        return bb.hashCode();
     }
 }

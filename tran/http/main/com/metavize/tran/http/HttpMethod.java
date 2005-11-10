@@ -11,6 +11,7 @@
 
 package com.metavize.tran.http;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,8 +21,10 @@ import java.util.Map;
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
  */
-public class HttpMethod
+public class HttpMethod implements Serializable
 {
+    // XXX serial UID
+
     public static final HttpMethod OPTIONS = new HttpMethod('O', "OPTIONS");
     public static final HttpMethod GET = new HttpMethod('G', "GET");
     public static final HttpMethod HEAD = new HttpMethod('H', "HEAD");

@@ -11,7 +11,6 @@
 
 package com.metavize.tran.spyware;
 
-import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.tran.http.RequestLine;
 
 /**
@@ -23,7 +22,7 @@ import com.metavize.tran.http.RequestLine;
  * table="TR_SPYWARE_EVT_ACTIVEX"
  * mutable="false"
  */
-public class SpywareActiveXEvent extends LogEvent
+public class SpywareActiveXEvent extends SpywareEvent
 {
     private int sessionId;
     private String identification;
@@ -40,29 +39,30 @@ public class SpywareActiveXEvent extends LogEvent
                                RequestLine requestLine,
                                String identification)
     {
-        this.sessionId = sessionId;
+        super(sessionId);
+
         this.identification = identification;
         this.requestLine = requestLine;
     }
 
+    // SpywareEvent methods ---------------------------------------------------
+
+    public String getReason()
+    {
+        return "in ActiveX List";
+    }
+
+    public String getLocation()
+    {
+        return requestLine.getUrl().toString();
+    }
+
+    public boolean isBlocked()
+    {
+        return true;
+    }
+
     // accessors --------------------------------------------------------------
-
-    /**
-     * Session id.
-     *
-     * @return the session id.
-     * @hibernate.property
-     * column="SESSION_ID"
-     */
-    public int getSessionId()
-    {
-        return sessionId;
-    }
-
-    public void setSessionId(int sessionId)
-    {
-        this.sessionId = sessionId;
-    }
 
     /**
      * Request line for this HTTP response pair.

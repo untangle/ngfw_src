@@ -10,17 +10,20 @@
  */
 package com.metavize.tran.spyware;
 
-
 import java.util.Iterator;
 import java.util.List;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.AbstractEventHandler;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
+import com.metavize.mvvm.tapi.MPipeException;
+import com.metavize.mvvm.tapi.Session;
 import com.metavize.mvvm.tapi.TCPNewSessionRequest;
 import com.metavize.mvvm.tapi.UDPNewSessionRequest;
 import com.metavize.mvvm.tapi.event.TCPNewSessionRequestEvent;
+import com.metavize.mvvm.tapi.event.TCPSessionEvent;
 import com.metavize.mvvm.tapi.event.UDPNewSessionRequestEvent;
+import com.metavize.mvvm.tapi.event.UDPSessionEvent;
 import com.metavize.mvvm.tran.IPMaddr;
 import com.metavize.mvvm.tran.IPMaddrRule;
 import com.metavize.tran.util.IPSet;
@@ -81,6 +84,27 @@ public class SpywareEventHandler extends AbstractEventHandler
         }
     }
 
+    public void handleTCPFinalized(TCPSessionEvent event)
+        throws MPipeException
+    {
+        Session s = event.session();
+        SpywareAccessEvent spe = (SpywareAccessEvent)s.attachment();
+        if (null != spe) {
+            spe.setPipelineEndpoints(s.id());
+        }
+    }
+
+    public void handleUDPFinalized(UDPSessionEvent event)
+        throws MPipeException
+    {
+        Session s = event.session();
+        SpywareAccessEvent spe = (SpywareAccessEvent)s.attachment();
+        if (null != spe) {
+            spe.setPipelineEndpoints(s.id());
+        }
+    }
+
+
     void detectSpyware(IPNewSessionRequest ipr, boolean release)
     {
         IPMaddr ipm = new IPMaddr(ipr.serverAddr().getHostAddress());
@@ -107,7 +131,7 @@ public class SpywareEventHandler extends AbstractEventHandler
             logger.info("Protocol      : UDP");
         logger.info("----------------------------------------------------------");
 
-        eventLogger.info(new SpywareAccessEvent(ipr.id(), ir.getName(), ir.getIpMaddr(), ir.isLive()));
+        ipr.attach(new SpywareAccessEvent(ipr.id(), ir.getName(), ir.getIpMaddr(), ir.isLive()));
 
         if (ir.isLive()) {
             transform.incrementCount(Spyware.BLOCK);

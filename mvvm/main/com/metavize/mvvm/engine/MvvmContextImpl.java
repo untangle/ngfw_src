@@ -11,6 +11,11 @@
 
 package com.metavize.mvvm.engine;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+
 import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.ToolboxManager;
 import com.metavize.mvvm.argon.Argon;
@@ -24,10 +29,6 @@ import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.File;
-import java.io.FileReader;
 
 
 public class MvvmContextImpl extends MvvmContextBase
@@ -52,6 +53,7 @@ public class MvvmContextImpl extends MvvmContextBase
     private ArgonManagerImpl argonManager;
     private HttpInvoker httpInvoker;
     private LoggingManagerImpl loggingManager;
+    private SyslogManagerImpl syslogManager;
     private PolicyManagerImpl policyManager;
     private MPipeManagerImpl mPipeManager;
     private MailSenderImpl mailSender;
@@ -104,6 +106,11 @@ public class MvvmContextImpl extends MvvmContextBase
     public LoggingManagerImpl loggingManager()
     {
         return loggingManager;
+    }
+
+    public SyslogManagerImpl syslogManager()
+    {
+        return syslogManager;
     }
 
     public PolicyManagerImpl policyManager()
@@ -173,7 +180,7 @@ public class MvvmContextImpl extends MvvmContextBase
     public boolean unloadWebApp(String contextRoot) {
       return getMain().unloadWebApp(contextRoot);
     }
-      
+
 
     // service methods --------------------------------------------------------
 
@@ -240,7 +247,7 @@ public class MvvmContextImpl extends MvvmContextBase
         File keyFile = new File(ACTIVATION_KEY_FILE);
         return keyFile.exists();
     }
-     
+
     public boolean activate(String key) {
         // Be nice to the poor user:
         if (key.length() == 16)
@@ -286,7 +293,7 @@ public class MvvmContextImpl extends MvvmContextBase
         }
         return null;
     }
-        
+
     public void doFullGC()
     {
         // XXX check access permission
@@ -306,6 +313,8 @@ public class MvvmContextImpl extends MvvmContextBase
         // start services:
         adminManager = AdminManagerImpl.adminManager();
         mailSender = MailSenderImpl.mailSender();
+
+        syslogManager = SyslogManagerImpl.manager();
         loggingManager = LoggingManagerImpl.loggingManager();
 
         // Fire up the policy manager.

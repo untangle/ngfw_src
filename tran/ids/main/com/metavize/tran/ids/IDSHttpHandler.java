@@ -2,14 +2,14 @@ package com.metavize.tran.ids;
 
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.http.HttpStateMachine;
-import com.metavize.tran.http.RequestLine;
+import com.metavize.tran.http.RequestLineToken;
 import com.metavize.tran.http.StatusLine;
 import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.Header;
 
 class IDSHttpHandler extends HttpStateMachine {
 
-    // private IDSTransformImpl transform; 
+    // private IDSTransformImpl transform;
     private IDSSessionInfo info;
 
     IDSHttpHandler(TCPSession session, IDSTransformImpl transform) {
@@ -18,7 +18,7 @@ class IDSHttpHandler extends HttpStateMachine {
         info = new IDSSessionInfo(session);
     }
 
-    protected RequestLine doRequestLine(RequestLine requestLine) {
+    protected RequestLineToken doRequestLine(RequestLineToken requestLine) {
         String path = requestLine.getRequestUri().getPath();
         info.setUriPath(path);
         releaseRequest();

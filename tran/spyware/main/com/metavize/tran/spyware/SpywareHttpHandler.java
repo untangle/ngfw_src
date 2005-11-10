@@ -21,11 +21,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.mvvm.tran.StringRule;
 import com.metavize.tran.http.HttpStateMachine;
-import com.metavize.tran.http.RequestLine;
+import com.metavize.tran.http.RequestLineToken;
 import com.metavize.tran.http.StatusLine;
 import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.EndMarker;
@@ -82,12 +81,10 @@ public class SpywareHttpHandler extends HttpStateMachine
 
     private final TCPSession session;
 
-    private final Map<RequestLine, List<String>> killers
-        = new HashMap<RequestLine, List<String>>();
+    private final Map<RequestLineToken, List<String>> killers
+        = new HashMap<RequestLineToken, List<String>>();
 
     private final Logger logger = Logger.getLogger(getClass());
-    private final Logger eventLogger = MvvmContextFactory.context()
-        .eventLogger();
 
     private final SpywareImpl transform;
 
@@ -107,7 +104,7 @@ public class SpywareHttpHandler extends HttpStateMachine
     // HttpStateMachine methods -----------------------------------------------
 
     @Override
-    protected RequestLine doRequestLine(RequestLine requestLine)
+    protected RequestLineToken doRequestLine(RequestLineToken requestLine)
     {
         logger.debug("got request line");
 
@@ -125,7 +122,7 @@ public class SpywareHttpHandler extends HttpStateMachine
         logger.debug("got request header");
 
         // XXX we could check the request-uri for an absolute address too...
-        RequestLine requestLine = getRequestLine();
+        RequestLineToken requestLine = getRequestLine();
         String host = requestHeader.getValue("host");
         URI uri = requestLine.getRequestUri();
 
@@ -135,8 +132,8 @@ public class SpywareHttpHandler extends HttpStateMachine
             return requestHeader;
         } else if (transform.isBlacklistDomain(host, uri)) {
             SpywareBlacklistEvent evt = new SpywareBlacklistEvent
-                (getSession().id(), requestLine);
-            eventLogger.info(evt);
+                (getSession().id(), requestLine.getRequestLine());
+            transform.log(evt);
             // XXX we could send a page back instead, this isn't really right
             logger.debug("detected spyware, shutting down");
 
@@ -171,7 +168,7 @@ public class SpywareHttpHandler extends HttpStateMachine
         logger.debug("got response header");
         mimeType = header.getValue("content-type");
 
-        RequestLine rl = getResponseRequest();
+        RequestLineToken rl = getResponseRequest();
         header = serverCookie(rl, header);
         header = addCookieKillers(rl, header);
 
@@ -265,7 +262,7 @@ public class SpywareHttpHandler extends HttpStateMachine
 
     // cookie stuff -----------------------------------------------------------
 
-    private Header clientCookie(RequestLine requestLine, Header h)
+    private Header clientCookie(RequestLineToken requestLine, Header h)
     {
         logger.debug("checking client cookie");
 
@@ -298,7 +295,7 @@ public class SpywareHttpHandler extends HttpStateMachine
                 logger.debug("blocking cookie: " + domain);
                 transform.incrementCount(Spyware.BLOCK);
 
-                eventLogger.info(new SpywareCookieEvent(getSession().id(), requestLine, domain, true));
+                transform.log(new SpywareCookieEvent(getSession().id(), requestLine.getRequestLine(), domain, true));
                 i.remove();
                 logger.debug("making cookieKiller: " + domain);
                 cookieKillers.addAll(makeCookieKillers(cookie, host));
@@ -308,7 +305,7 @@ public class SpywareHttpHandler extends HttpStateMachine
         return h;
     }
 
-    private Header serverCookie(RequestLine rl, Header h)
+    private Header serverCookie(RequestLineToken rl, Header h)
     {
         logger.debug("checking server cookie");
         // XXX if deferred 0ttl cookie, send it and nullify
@@ -346,7 +343,7 @@ public class SpywareHttpHandler extends HttpStateMachine
             if (badDomain) {
                 logger.debug("cookie deleted: " + domain);
                 transform.incrementCount(Spyware.BLOCK);
-                eventLogger.info(new SpywareCookieEvent(getSession().id(), rl, domain, false));
+                transform.log(new SpywareCookieEvent(getSession().id(), rl.getRequestLine(), domain, false));
                 i.remove();
             } else {
                 logger.debug("cookie not deleted: " + domain);
@@ -356,7 +353,7 @@ public class SpywareHttpHandler extends HttpStateMachine
         return h;
     }
 
-    private Header addCookieKillers(RequestLine rl, Header h)
+    private Header addCookieKillers(RequestLineToken rl, Header h)
     {
         List<String> cookieKillers = killers.remove(rl);
         if (null == cookieKillers) {
@@ -425,7 +422,7 @@ public class SpywareHttpHandler extends HttpStateMachine
 
     // ActiveX stuff ----------------------------------------------------------
 
-    private Chunk activeXChunk(RequestLine rl, Chunk c)
+    private Chunk activeXChunk(RequestLineToken rl, Chunk c)
     {
         logger.debug("scanning activeX chunk");
 
@@ -471,7 +468,7 @@ public class SpywareHttpHandler extends HttpStateMachine
             if (block) {
                 logger.debug("blocking activeX");
                 transform.incrementCount(Spyware.BLOCK);
-                eventLogger.info(new SpywareActiveXEvent(getSession().id(), rl, ident));
+                transform.log(new SpywareActiveXEvent(getSession().id(), rl.getRequestLine(), ident));
                 int len = findEnd(cb, os);
                 if (-1 == len) {
                     logger.warn("chunk does not contain entire tag");

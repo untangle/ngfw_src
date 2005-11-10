@@ -88,6 +88,13 @@ public class PipelineEndpoints extends LogEvent
         this.policyInbound = policyInbound;
     }
 
+    // business methods -------------------------------------------------------
+
+    public String getDirectionName()
+    {
+        return policyInbound ? "inbound" : "outbound";
+    }
+
     // accessors --------------------------------------------------------------
 
     /**
@@ -123,7 +130,6 @@ public class PipelineEndpoints extends LogEvent
     {
         this.protocol = protocol;
     }
-
 
     /**
      * Time the session began
@@ -342,7 +348,8 @@ public class PipelineEndpoints extends LogEvent
     }
 
     /**
-     * Was the the inbound side of the policy chosen?  If false, the outbound side was chosen.
+     * Was the the inbound side of the policy chosen?  If false, the
+     * outbound side was chosen.
      *
      * @return true if the inbound side of policy was chosen, false if outbound
      * @hibernate.property

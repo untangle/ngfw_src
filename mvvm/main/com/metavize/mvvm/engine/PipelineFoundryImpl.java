@@ -173,8 +173,11 @@ class PipelineFoundryImpl implements PipelineFoundry
     public void registerEndpoints(IPSessionDesc start, IPSessionDesc end,
                                   Policy policy, boolean policyInbound)
     {
-        eventLogger.info(new PipelineEndpoints(start, end, policy,
-                                               policyInbound));
+        PipelineEndpoints pe = new PipelineEndpoints(start, end, policy,
+                                                     policyInbound);
+        PipelineImpl pipeline = pipelines.get(start.id());
+        pipeline.setPipelineEndpoints(pe);
+        eventLogger.info(pe);
     }
 
     public void destroy(IPSessionDesc start, IPSessionDesc end)

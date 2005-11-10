@@ -35,11 +35,10 @@ public class HttpResponseEvent extends LogEvent
      */
     public HttpResponseEvent() { }
 
-    public HttpResponseEvent(RequestLine requestLine, String contentType,
-                             int contentLength)
+    public HttpResponseEvent(RequestLine requestLine,
+                             String contentType, int contentLength)
     {
         this.requestLine = requestLine;
-        if (contentType != null && contentType.length() > DEFAULT_STRING_SIZE) contentType = contentType.substring(0, DEFAULT_STRING_SIZE);
         this.contentType = contentType;
         this.contentLength = contentLength;
     }

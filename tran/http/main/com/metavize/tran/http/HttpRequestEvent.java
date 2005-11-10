@@ -37,13 +37,24 @@ public class HttpRequestEvent extends LogEvent
     public HttpRequestEvent() { }
 
     public HttpRequestEvent(int sessionId, RequestLine requestLine,
+                            String host)
+    {
+        this.sessionId = sessionId;
+        this.requestLine = requestLine;
+        this.host = host;
+
+        requestLine.setHttpRequestEvent(this);
+    }
+
+    public HttpRequestEvent(int sessionId, RequestLine requestLine,
                             String host, int contentLength)
     {
         this.sessionId = sessionId;
         this.requestLine = requestLine;
-        if (host != null && host.length() > DEFAULT_STRING_SIZE) host = host.substring(0, DEFAULT_STRING_SIZE);
         this.host = host;
         this.contentLength = contentLength;
+
+        requestLine.setHttpRequestEvent(this);
     }
 
     // accessors --------------------------------------------------------------
@@ -81,6 +92,7 @@ public class HttpRequestEvent extends LogEvent
     public void setRequestLine(RequestLine requestLine)
     {
         this.requestLine = requestLine;
+        requestLine.setHttpRequestEvent(this);
     }
 
     /**
@@ -97,7 +109,6 @@ public class HttpRequestEvent extends LogEvent
 
     public void setHost(String host)
     {
-        if (host != null && host.length() > DEFAULT_STRING_SIZE) host = host.substring(0, DEFAULT_STRING_SIZE);
         this.host = host;
     }
 

@@ -11,6 +11,7 @@
 
 package com.metavize.mvvm.logging;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -20,15 +21,17 @@ import java.util.Date;
  * Hibernate mappings for this class are in the MVVM resource
  * directory.
  */
-public abstract class LogEvent implements Serializable
+public abstract class LogEvent implements Comparable, Serializable
 {
+    // XXX wrong! each class should have a serial UID
     private static final long serialVersionUID = 3836086272903683391L;
 
-    // How big a varchar() do we get for default String fields.  This should be elsewhere. XXX
+    // How big a varchar() do we get for default String fields.  This
+    // should be elsewhere. XXX
     public static final int DEFAULT_STRING_SIZE = 255;
 
     private Long id;
-    private Date timeStamp;
+    private Date timeStamp = new Date();
 
     // constructors -----------------------------------------------------------
 
@@ -68,4 +71,35 @@ public abstract class LogEvent implements Serializable
         this.timeStamp = timeStamp;
     }
 
+    // Syslog methods ---------------------------------------------------------
+
+    public void appendSyslog(Appendable a) throws IOException { }
+
+    public String getSyslogId()
+    {
+        String[] s = getClass().getName().split("\\.");
+
+        return s[s.length - 1];
+    }
+
+    // Comparable methods -----------------------------------------------------
+
+    public int compareTo(Object o)
+    {
+        LogEvent le = (LogEvent)o;
+
+        int i = timeStamp.compareTo(le.timeStamp);
+
+        if (0 == i) {
+            if (le.id == id) {
+                return 0;
+            } else {
+                Integer t = System.identityHashCode(this);
+                Integer u = System.identityHashCode(le);
+                return t.compareTo(u);
+            }
+        } else {
+            return i;
+        }
+    }
 }
