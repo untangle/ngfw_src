@@ -31,7 +31,7 @@ public class ScriptRunner
     }
 
     /* Done with an array to exec to fix arguments that have spaces. */
-    public final void exec( String scriptName, String args[] ) throws TransformException
+    public final void exec( String scriptName, String ... args ) throws TransformException
     {
         String input[] = new String[2 + args.length];
         int c = 0;
