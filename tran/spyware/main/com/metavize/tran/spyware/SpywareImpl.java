@@ -330,7 +330,8 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
         boolean match = false;
 
-        for (String d = domain.toLowerCase(); !match && null != d; d = nextHost(d)) {
+	domain = null == domain ? null : domain.toLowerCase();
+        for (String d = domain; !match && null != d; d = nextHost(d)) {
             match = urlBlacklist.contains(d);
         }
 
@@ -341,7 +342,8 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     {
         boolean match = false;
 
-        for (String d = domain.toLowerCase(); !match && null != d; d = nextHost(d)) {
+	domain = null == domain ? null : domain.toLowerCase();
+        for (String d = domain; !match && null != d; d = nextHost(d)) {
             match = domainWhitelist.contains(d);
         }
 
