@@ -24,52 +24,20 @@ import java.util.StringTokenizer;
 
 import com.metavize.tran.util.AlarmTimer;
 import com.metavize.tran.virus.VirusScanner;
+import com.metavize.tran.virus.VirusScannerLauncher;
 import com.metavize.tran.virus.VirusScannerResult;
 import org.apache.log4j.Logger;
 
-public class HauriScannerLauncher implements Runnable
+public class HauriScannerLauncher extends VirusScannerLauncher
 {
-    private static final Logger logger = Logger.getLogger(HauriScannerLauncher.class.getName());
-
-    private Process scanProcess = null;
-    private String pathName = null;
-    private VirusScannerResult result = null;
-
     /**
      * Create a Launcher for the give file
      */
     public HauriScannerLauncher(String pathName)
     {
-        this.pathName = pathName;
+        super(pathName);
     }
         
-    /**
-     * Waits for timeout milliseconds for a result
-     * If a result is reached, it is returned.
-     * If the time expires VirusScannerResult.ERROR is returned
-     */
-    public VirusScannerResult waitFor(int timeout)
-    {
-        try {
-            synchronized (this) {
-                this.wait(timeout);
-            }
-        }
-        catch (java.lang.InterruptedException e) {
-            logger.warn("Virus scan interrupted, killing virobot, assuming clean");
-            this.scanProcess.destroy();
-            return VirusScannerResult.ERROR;
-        }
-
-        if (this.result == null) {
-            logger.warn("Timer expired, killing virobot, assuming clean");
-            this.scanProcess.destroy();
-            return VirusScannerResult.ERROR;
-        }
-        else {
-            return this.result;
-        }
-    }
 
     /**
      * This runs the virus scan, and stores the result for retrieval.
@@ -197,13 +165,5 @@ public class HauriScannerLauncher implements Runnable
             synchronized (this) {this.notifyAll();}
             return;
         }
-    }
-
-    /**
-     * retrieve the stored result, null if not set
-     */
-    public VirusScannerResult getResult()
-    {
-        return this.result;
     }
 }
