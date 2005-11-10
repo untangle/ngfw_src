@@ -54,16 +54,11 @@ public class QuarantineAllJPanel extends javax.swing.JPanel implements Component
         quarantineAllTableModel = new QuarantineAllTableModel(quarantineMaintenenceView);
         setTableModel( quarantineAllTableModel );
         
-        //quarantineAllTableModel.generateRows(null);
+        quarantineAllTableModel.generateRows(null);
     }
 
-    protected void sendSettings(Object settings) throws Exception {
-	//Util.getNetworkingManager().set( (NetworkingConfiguration) settings);
-        
-    }
-    protected void refreshSettings(){
-	//settings = Util.getNetworkingManager().get();
-    }
+    protected void sendSettings(Object settings) throws Exception {}
+    protected void refreshSettings(){}
     
     public void setTableModel(MSortedTableModel mSortedTableModel){
         entryJTable.setModel( mSortedTableModel );
@@ -81,9 +76,6 @@ public class QuarantineAllJPanel extends javax.swing.JPanel implements Component
         return (MColoredJTable) entryJTable;
     }
         
-    protected Vector<Vector> generateRows(Object settings) {
-        return null;
-    }
 
     public void componentHidden(ComponentEvent e){}
     public void componentMoved(ComponentEvent e){}

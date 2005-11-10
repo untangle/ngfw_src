@@ -29,7 +29,7 @@ import javax.swing.*;
 
 public class QuarantineJDialog extends MConfigJDialog {
 
-    private static final String NAME_QUARANTINE_SETTINGS = "Quarantine Settings";
+    private static final String NAME_QUARANTINE_SETTINGS = "Email Quarantine";
     private static final String NAME_ALL_ACCOUNTS = "All Email Accounts";
 
     public QuarantineJDialog( ) {

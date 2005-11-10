@@ -85,12 +85,17 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
                 
         if(!showDetailJPanel)
             tableJPanel.remove(detailJScrollPane);
+        
+        auxJPanel.setVisible(false);
     }
 
     public void setFillJButtonEnabled(boolean enabled){
 	fillJButton.setEnabled(enabled);
     }
 
+    public void setAuxJPanelEnabled(boolean enabled){
+        auxJPanel.setVisible(enabled);
+    }
 
     public void setMessage(String message){
 	if(message == null){
@@ -195,6 +200,7 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
         fillJButton = new javax.swing.JButton();
         detailJScrollPane = new javax.swing.JScrollPane();
         detailJTextArea = new javax.swing.JTextArea();
+        auxJPanel = new javax.swing.JPanel();
 
         setLayout(new java.awt.GridBagLayout());
 
@@ -212,7 +218,7 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.gridheight = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
@@ -239,7 +245,7 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
         gridBagConstraints.weighty = 0.5;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 3, 4);
@@ -265,7 +271,7 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weighty = 0.5;
         gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 4);
@@ -291,7 +297,7 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weighty = 0.5;
         gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 4);
@@ -318,11 +324,18 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridy = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         tableJPanel.add(detailJScrollPane, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+        tableJPanel.add(auxJPanel, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -471,6 +484,7 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addJButton;
+    protected javax.swing.JPanel auxJPanel;
     private javax.swing.JPanel contentJPanel;
     private javax.swing.JScrollPane detailJScrollPane;
     protected javax.swing.JTextArea detailJTextArea;
