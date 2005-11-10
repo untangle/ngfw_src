@@ -33,7 +33,7 @@ SELECT c_server_port, c_client_addr, host, name, c_server_addr, \
              AND evt.time_stamp < $P{endTime} \
              AND evt.vendor_name = $P{virusVendor}) \
          JOIN pl_endp endp \
-           USING (session_id) \
+           ON endp.event_id = evt.pl_endp_id \
          LEFT OUTER JOIN merged_address_map mam \
            ON (endp.c_client_addr = mam.addr \
              AND evt.time_stamp >= mam.start_time \
