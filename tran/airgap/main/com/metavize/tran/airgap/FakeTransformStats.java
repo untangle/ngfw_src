@@ -25,10 +25,13 @@ import com.metavize.mvvm.tran.TransformStats;
     //   eth1: 1260552    4645    1    0    0     0          0         0   642460    4512    0    0    0     0       0          0
     //    br0: 9086448   10976    0    0    0     0          0         0  1645622   10402    0    0    0     0       0          0
     //
-    // We only fill in the chunk and byte counts, and C means inside, S means outside.
+    // 11/05 jdi:
+    // Since there can now be more than two interfaces, we no longer try to map client to inside
+    // and server to outside.  Instead we total up the counts over all interfaces, where
+    // C->S arbitrarily means receive, S->C means transmit.  We only fill in the chunk and byte counts.
     // So:
-    //     C->T is count of inside to pipeline,  T->S is count from pipeline to outside.
-    //     S->T is count of outside to pipeline, T->C is count from pipeline to inside.
+    //     C->T and T->S is count of all received bytes/chunks
+    //     S->T and T->C is count of all transmitted bytes/chunks
     //
  * Describe class <code>FakeTransformStats</code> here.
  *
@@ -38,14 +41,20 @@ import com.metavize.mvvm.tran.TransformStats;
 public class FakeTransformStats extends TransformStats {
 
     private static final String PATH_PROCNET_DEV = "/proc/net/dev";
-    private static final String OUTSIDE_DEV = "eth0"; // XXXX
-    private static final String INSIDE_DEV = "eth1"; // XXXX
+    private static final String ETH_DEV_PREFIX = "eth";
+    private static final String TUN_DEV_PREFIX = "tun";
+    private static final String TAP_DEV_PREFIX = "tap";
 
     private static final Logger logger = Logger
         .getLogger(FakeTransformStats.class.getName());
 
     public void update() {
         String line = null;
+
+        long totRxBytes = 0;
+        long totRxChunks = 0;
+        long totTxBytes = 0;
+        long totTxChunks = 0;
 
         try {
             BufferedReader rdr = new BufferedReader(new FileReader(PATH_PROCNET_DEV));
@@ -85,38 +94,24 @@ public class FakeTransformStats extends TransformStats {
                     continue;
                 }
                 try {
-                    if (iface.equals(OUTSIDE_DEV)) {
+                    if (iface.startsWith(ETH_DEV_PREFIX) ||
+                        iface.startsWith(TUN_DEV_PREFIX) ||
+                        iface.startsWith(TAP_DEV_PREFIX)) {
                         StringTokenizer st = new StringTokenizer(rest);
-                        String srxbytes = st.nextToken();
-                        String srxchunks = st.nextToken();
+                        String rxbytes = st.nextToken();
+                        String rxchunks = st.nextToken();
                         st.nextToken(); // errors
                         st.nextToken(); // dropped
                         st.nextToken(); // fifo_errors
                         st.nextToken(); // frame_errors
                         st.nextToken(); // compressed
                         st.nextToken(); // multicast
-                        String stxbytes = st.nextToken();
-                        String stxchunks = st.nextToken();
-                        s2tBytes = Long.parseLong(srxbytes);
-                        s2tChunks = Long.parseLong(srxchunks);
-                        t2sBytes = Long.parseLong(stxbytes);
-                        t2sChunks = Long.parseLong(stxchunks);
-                    } else if (iface.equals(INSIDE_DEV)) {
-                        StringTokenizer st = new StringTokenizer(rest);
-                        String crxbytes = st.nextToken();
-                        String crxchunks = st.nextToken();
-                        st.nextToken(); // errors
-                        st.nextToken(); // dropped
-                        st.nextToken(); // fifo_errors
-                        st.nextToken(); // frame_errors
-                        st.nextToken(); // compressed
-                        st.nextToken(); // multicast
-                        String ctxbytes = st.nextToken();
-                        String ctxchunks = st.nextToken();
-                        c2tBytes = Long.parseLong(crxbytes);
-                        c2tChunks = Long.parseLong(crxchunks);
-                        t2cBytes = Long.parseLong(ctxbytes);
-                        t2cChunks = Long.parseLong(ctxchunks);
+                        String txbytes = st.nextToken();
+                        String txchunks = st.nextToken();
+                        totRxBytes += Long.parseLong(rxbytes);
+                        totRxChunks += Long.parseLong(rxchunks);
+                        totTxBytes += Long.parseLong(txbytes);
+                        totTxChunks += Long.parseLong(txchunks);
                     }
                 } catch (NumberFormatException x) {
                     logger.warn("Unable to parse number in stats line " + line);
@@ -125,6 +120,27 @@ public class FakeTransformStats extends TransformStats {
                 }
             }
             rdr.close();
+
+            while (c2tBytes > totRxBytes)
+                // /proc/net/dev counters overflow at 32 bit unsigned.
+                totRxBytes += 1<<32;
+            while (c2tChunks > totRxChunks)
+                // /proc/net/dev counters overflow at 32 bit unsigned.
+                totRxChunks += 1<<32;
+            while (s2tBytes > totTxBytes)
+                // /proc/net/dev counters overflow at 32 bit unsigned.
+                totTxBytes += 1<<32;
+            while (s2tChunks > totTxChunks)
+                // /proc/net/dev counters overflow at 32 bit unsigned.
+                totTxChunks += 1<<32;
+            c2tBytes = totRxBytes;
+            t2sBytes = c2tBytes;
+            c2tChunks = totRxChunks;
+            t2sChunks = c2tChunks;
+            s2tBytes = totTxBytes;
+            t2cBytes = c2tBytes;
+            s2tChunks = totTxChunks;
+            t2cChunks = c2tChunks;
         } catch (FileNotFoundException x) {
             logger.warn("Cannot open " + PATH_PROCNET_DEV + "(" + x.getMessage() +
                         "), no stats available");
