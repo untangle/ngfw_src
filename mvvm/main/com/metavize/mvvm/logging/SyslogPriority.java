@@ -12,11 +12,13 @@
 package com.metavize.mvvm.logging;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SyslogPriority implements Serializable
 {
     public static final SyslogPriority EMERGENCY;
-    public  static final SyslogPriority ALERT;
+    public static final SyslogPriority ALERT;
     public static final SyslogPriority CRITICAL;
     public static final SyslogPriority ERROR;
     public static final SyslogPriority WARNING;
@@ -57,6 +59,16 @@ public class SyslogPriority implements Serializable
     public static SyslogPriority getPriority(int priorityCode)
     {
         return priorities[priorityCode];
+    }
+
+    public static List<SyslogPriority> values()
+    {
+        List<SyslogPriority> l = new ArrayList<SyslogPriority>(priorities.length);
+        for (SyslogPriority sp : priorities) {
+            l.add(sp);
+        }
+
+        return l;
     }
 
     // accessors --------------------------------------------------------------

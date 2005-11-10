@@ -12,6 +12,8 @@
 package com.metavize.mvvm.logging;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SyslogFacility implements Serializable
 {
@@ -49,26 +51,26 @@ public class SyslogFacility implements Serializable
         USER = new SyslogFacility(1, "user");
         MAIL = new SyslogFacility(2, "mail");
         DAEMON = new SyslogFacility(3, "daemon");
-        SECURITY_0 = new SyslogFacility(4, "security_0");
+        SECURITY_0 = new SyslogFacility(4, "security 0");
         SYSLOG = new SyslogFacility(5, "syslog");
         PRINTER = new SyslogFacility(6, "printer");
         NEWS = new SyslogFacility(7, "news");
         UUCP = new SyslogFacility(8, "uucp");
-        CLOCK_0 = new SyslogFacility(9, "clock_0");
-        SECURITY_1 = new SyslogFacility(10, "security_1");
+        CLOCK_0 = new SyslogFacility(9, "clock 0");
+        SECURITY_1 = new SyslogFacility(10, "security 1");
         FTP = new SyslogFacility(11, "ftp");
         NTP = new SyslogFacility(12, "ntp");
-        LOG_AUDIT = new SyslogFacility(13, "log_audit");
-        LOG_ALERT = new SyslogFacility(14, "log_alert");
-        CLOCK_1 = new SyslogFacility(15, "clock_1");
-        LOCAL_0 = new SyslogFacility(16, "local_0");
-        LOCAL_1 = new SyslogFacility(17, "local_1");
-        LOCAL_2 = new SyslogFacility(18, "local_2");
-        LOCAL_3 = new SyslogFacility(19, "local_3");
-        LOCAL_4 = new SyslogFacility(20, "local_4");
-        LOCAL_5 = new SyslogFacility(21, "local_5");
-        LOCAL_6 = new SyslogFacility(22, "local_6");
-        LOCAL_7 = new SyslogFacility(23, "local_7");
+        LOG_AUDIT = new SyslogFacility(13, "log audit");
+        LOG_ALERT = new SyslogFacility(14, "log alert");
+        CLOCK_1 = new SyslogFacility(15, "clock 1");
+        LOCAL_0 = new SyslogFacility(16, "local 0");
+        LOCAL_1 = new SyslogFacility(17, "local 1");
+        LOCAL_2 = new SyslogFacility(18, "local 2");
+        LOCAL_3 = new SyslogFacility(19, "local 3");
+        LOCAL_4 = new SyslogFacility(20, "local 4");
+        LOCAL_5 = new SyslogFacility(21, "local 5");
+        LOCAL_6 = new SyslogFacility(22, "local 6");
+        LOCAL_7 = new SyslogFacility(23, "local 7");
     }
 
     private final int facilityValue;
@@ -91,11 +93,26 @@ public class SyslogFacility implements Serializable
         return facilities[value];
     }
 
+    public static List<SyslogFacility> values()
+    {
+        List<SyslogFacility> l = new ArrayList<SyslogFacility>(facilities.length);
+        for (SyslogFacility sf : facilities) {
+            l.add(sf);
+        }
+
+        return l;
+    }
+
     // public methods ---------------------------------------------------------
 
     public int getFacilityValue()
     {
         return facilityValue;
+    }
+
+    public String getFacilityName()
+    {
+        return name;
     }
 
     // serialization methods --------------------------------------------------
