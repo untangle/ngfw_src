@@ -20,7 +20,7 @@ public class SpamLog implements Comparable<SpamLog>, Serializable
 {
     private static final long serialVersionUID = -394881366677267209L;
 
-    public enum Action { PASS, MARK, BLOCK };
+    public enum Action { PASS, MARK, BLOCK, QUARANTINE };
 
     private final Date timeStamp;
     private final float score;
