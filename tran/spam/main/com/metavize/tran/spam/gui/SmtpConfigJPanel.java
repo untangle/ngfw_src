@@ -52,7 +52,7 @@ class SmtpTableModel extends MSortedTableModel{
     private static final int C2_MW = 125; /* source */
     private static final int C3_MW = 55;  /* scan */
     private static final int C4_MW = 95; /* scan strength */
-    private static final int C5_MW = 125; /* action if SPAM detected */
+    private static final int C5_MW = 155; /* action if SPAM detected */
     private static final int C6_MW = 190; /* notification if SPAM detected */
     private static final int C7_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW), 120); /* description */
 
