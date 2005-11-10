@@ -165,6 +165,8 @@ class AdminManagerImpl implements AdminManager
             FileWriter writer = new FileWriter(regFile);
             writer.write("regKey=");
             writer.write(((MvvmContextImpl)MvvmContextFactory.context()).getActivationKey());
+            writer.write("&version=");
+            writer.write(MvvmContextFactory.context().version());
             writer.write("&");
             writer.write(info.toForm());
             writer.close();

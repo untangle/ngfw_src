@@ -230,20 +230,32 @@ public class RegistrationInfo implements Serializable
         result.append(URLEncoder.encode(firstName));
         result.append("&lastName=");
         result.append(URLEncoder.encode(lastName));
-        result.append("&address1=");
-        result.append(URLEncoder.encode(address1));
-        result.append("&address2=");
-        result.append(URLEncoder.encode(address2));
-        result.append("&city=");
-        result.append(URLEncoder.encode(city));
-        result.append("&state=");
-        result.append(URLEncoder.encode(state));
-        result.append("&zipcode=");
-        result.append(URLEncoder.encode(zipcode));
+        if (address1 != null) {
+            result.append("&address1=");
+            result.append(URLEncoder.encode(address1));
+        }
+        if (address2 != null) {
+            result.append("&address2=");
+            result.append(URLEncoder.encode(address2));
+        }
+        if (city != null) {
+            result.append("&city=");
+            result.append(URLEncoder.encode(city));
+        }
+        if (state != null) {
+            result.append("&state=");
+            result.append(URLEncoder.encode(state));
+        }
+        if (zipcode != null) {
+            result.append("&zipcode=");
+            result.append(URLEncoder.encode(zipcode));
+        }
         result.append("&emailAddr=");
         result.append(URLEncoder.encode(emailAddr));
-        result.append("&phone=");
-        result.append(URLEncoder.encode(phone));
+        if (phone != null) {
+            result.append("&phone=");
+            result.append(URLEncoder.encode(phone));
+        }
         result.append("&numSeats=");
         result.append(numSeats);
         return result.toString();

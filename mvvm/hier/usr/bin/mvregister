@@ -1,0 +1,24 @@
+#!/bin/sh
+
+set -e
+
+REGISTRATION_URL="http://boxtrack.metavize.com/register/custreg.php"
+
+REGDONE="@MVVM_HOME@/.regdone"
+REGINFO="@MVVM_HOME@/registration.info"
+NEWPWFILE="/tmp/newpw$$"
+
+/bin/rm -f "$REGDONE"
+/bin/rm -f "$NEWPWFILE"
+/usr/bin/wget --timeout=30 --output-document="$NEWPWFILE" --tries=1 --post-file="$REGINFO" "$REGISTRATION_URL"
+if [ "$?" -eq "0" ]; then
+    NEWPW=$(/bin/cat "$NEWPWFILE")
+    /bin/rm -f "$NEWPWFILE"
+    if [ ${#NEWPW} -ne 14 ]; then
+        echo "Unable to set pw to $NEWPW"
+        exit 1
+    else
+        echo "root:$NEWPW" | /usr/sbin/chpasswd -e
+    fi
+    /bin/touch "$REGDONE"
+fi
