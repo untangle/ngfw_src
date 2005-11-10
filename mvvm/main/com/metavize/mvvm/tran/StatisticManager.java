@@ -30,7 +30,7 @@ public abstract class StatisticManager implements Runnable
     /* Status of the monitor */
     private volatile boolean isAlive = true;
 
-    private final Logger eventLogger = MvvmContextFactory.context().eventLogger();
+    protected final Logger eventLogger = MvvmContextFactory.context().eventLogger();
     private final Logger logger = Logger.getLogger( this.getClass());
     private final MvvmLocalContext localContext;
 
