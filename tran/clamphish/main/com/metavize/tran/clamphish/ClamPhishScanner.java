@@ -11,6 +11,7 @@
 
 package com.metavize.tran.clamphish;
 
+import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.tran.virus.VirusScannerResult;
 import com.metavize.tran.clam.ClamScannerLauncher;
 import com.metavize.tran.spam.SpamScanner;
@@ -48,7 +49,7 @@ class ClamPhishScanner implements SpamScanner
         if (logger.isDebugEnabled())
             logger.debug("scanning file " + filePath);
         ClamScannerLauncher scan = new ClamScannerLauncher(filePath);
-        Thread thread = new Thread(scan);
+        Thread thread = MvvmContextFactory.context().newThread(scan);
         thread.start();
         VirusScannerResult vsr = scan.waitFor(this.timeout);
         if (logger.isDebugEnabled())

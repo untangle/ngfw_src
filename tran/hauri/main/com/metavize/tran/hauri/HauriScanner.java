@@ -24,6 +24,7 @@ import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 
+import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.tran.virus.VirusScanner;
 import com.metavize.tran.virus.VirusScannerResult;
 
@@ -86,7 +87,7 @@ public class HauriScanner implements VirusScanner
     public VirusScannerResult scanFile (String pathName)
     {
         HauriScannerLauncher scan = new HauriScannerLauncher(pathName);
-        Thread thread = new Thread(scan);
+        Thread thread = MvvmContextFactory.context().newThread(scan);
         thread.start();
         
         return scan.waitFor(this.timeout);

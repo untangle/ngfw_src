@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
@@ -170,7 +171,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
      */
     public void reconfigure()
     {
-        new Thread(new Runnable() {
+        MvvmContextFactory.context().newThread(new Runnable() {
                 public void run() {
                     blacklist.reconfigure();
                 }
