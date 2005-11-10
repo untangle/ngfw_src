@@ -12,6 +12,7 @@
 package com.metavize.tran.openvpn;
 
 import com.metavize.mvvm.tran.Transform;
+import com.metavize.mvvm.tran.IPaddr;
 
 public interface VpnTransform extends Transform
 {
@@ -28,6 +29,7 @@ public interface VpnTransform extends Transform
     /* Revoke a client license */
     public VpnClient revokeClientCertificate( VpnSettings settings, VpnClient client );
 
-    public String lookupClientDistributionKey( String key );
+    /* Need the address to log where the request came from */
+    public String lookupClientDistributionKey( String key, IPaddr address );
 
 }

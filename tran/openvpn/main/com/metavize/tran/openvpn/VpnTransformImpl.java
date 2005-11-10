@@ -25,6 +25,7 @@ import com.metavize.mvvm.tran.TransformState;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformStartException;
 import com.metavize.mvvm.tran.TransformStopException;
+import com.metavize.mvvm.tran.IPaddr;
 
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.PipeSpec;
@@ -39,6 +40,9 @@ public class VpnTransformImpl extends AbstractTransform
     private static final String WEB_APP_PATH = "/" + WEB_APP;
 
     private final Logger logger = Logger.getLogger( VpnTransformImpl.class );
+    private final Logger eventLogger = MvvmContextFactory.context().eventLogger();
+    
+    final VpnStatisticManager statisticManager;
 
     private boolean isWebAppDeployed = false;
 
@@ -58,7 +62,7 @@ public class VpnTransformImpl extends AbstractTransform
     public VpnTransformImpl()
     {
         this.handler          = new EventHandler( this );
-        // this.statisticManager = new VpnStatisticManager();
+        this.statisticManager = new VpnStatisticManager();
 
         /* Have to figure out pipeline ordering, this should always
          * next to towards the outside, then there is OpenVpn and then Nat */
@@ -74,6 +78,9 @@ public class VpnTransformImpl extends AbstractTransform
         logger.info("Initializing Settings...");
 
         setVpnSettings( settings );
+
+        /* Stop the statistics manager */
+        statisticManager.stop();
     }
 
     // VpnTransform methods --------------------------------------------------
@@ -166,7 +173,7 @@ public class VpnTransformImpl extends AbstractTransform
     }
     
     /* Get the common name for the key, and clear it if it exists */
-    public synchronized String lookupClientDistributionKey( String key )
+    public synchronized String lookupClientDistributionKey( String key, IPaddr clientAddress )
     {
         logger.debug( "Looking up client for key: " + key );
 
@@ -193,6 +200,12 @@ public class VpnTransformImpl extends AbstractTransform
                 
                 getTransformContext().runTransaction( tw );
 
+                /* Log the client distribution event.  Must be done with
+                 * the statistic manager because the thread is not currently 
+                 * registered for the event logger. */
+                this.statisticManager.
+                    addClientDistributionEvent( new ClientDistributionEvent( clientAddress, 
+                                                                             client.getName()));
                 return client.getInternalName();
             }
         }
@@ -266,11 +279,15 @@ public class VpnTransformImpl extends AbstractTransform
         reconfigure();
         
         deployWebAppIfRequired();
+
+        statisticManager.start();
     }
 
     @Override protected void postStop() throws TransformStopException
     {
         super.postStop();
+        statisticManager.stop();
+        
         try {
             this.openVpnManager.stop();
         } catch ( TransformException e ) {

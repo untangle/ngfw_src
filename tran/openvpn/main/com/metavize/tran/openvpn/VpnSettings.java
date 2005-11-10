@@ -67,6 +67,7 @@ public class VpnSettings implements Serializable, Validatable
 
     private List groupList;
     private List clientList;
+    private List siteList;
 
     /* Certificate information */
     private String  domain;
@@ -238,6 +239,32 @@ public class VpnSettings implements Serializable, Validatable
     public void setClientList( List clientList )
     {
         this.clientList = clientList;
+    }
+
+
+    /**
+     * The list of VPN clients.
+     *
+     * @return the list of Patterns
+     * @hibernate.list
+     * cascade="all-delete-orphan"
+     * @hibernate.collection-key
+     * column="settings_id"
+     * @hibernate.collection-index
+     * column="position"
+     * @hibernate.collection-one-to-many
+     * class="com.metavize.tran.openvpn.VpnSite"
+     */
+    public List getSiteList()
+    {
+        if ( this.siteList == null ) this.siteList = new LinkedList();
+        
+        return this.siteList;
+    }
+    
+    public void setSiteList( List siteList )
+    {
+        this.siteList = siteList;
     }
 
     /**

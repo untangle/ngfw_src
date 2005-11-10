@@ -109,4 +109,11 @@ public class VpnGroup extends Rule implements Validatable
     {
         /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
     }
+
+    /*
+     * GUI depends on get name for to string to show the list of clients */
+    public String toString()
+    {
+        return getName();
+    }
 }
