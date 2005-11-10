@@ -24,6 +24,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import javax.transaction.TransactionRolledbackException;
+import com.metavize.mvvm.snmp.SnmpManager;
+import com.metavize.mvvm.snmp.SnmpManagerImpl;
 
 class AdminManagerImpl implements AdminManager
 {
@@ -41,6 +43,7 @@ class AdminManagerImpl implements AdminManager
     private final Logger logger = Logger.getLogger(AdminManagerImpl.class);
 
     private AdminSettings adminSettings;
+    private SnmpManager snmpManager;
 
     private AdminManagerImpl()
     {
@@ -65,6 +68,8 @@ class AdminManagerImpl implements AdminManager
         MvvmContextFactory.context().runTransaction(tw);
 
         mvvmLogin = MvvmLoginImpl.mvvmLogin();
+
+        snmpManager = SnmpManagerImpl.snmpManager();
 
         logger.info("Initialized AdminManager");
     }
@@ -175,6 +180,10 @@ class AdminManagerImpl implements AdminManager
             logger.error(message, exn);
             throw new TransactionRolledbackException(message);
         }
+    }
+
+    public SnmpManager getSnmpManager() {
+      return snmpManager;
     }
 
     static {

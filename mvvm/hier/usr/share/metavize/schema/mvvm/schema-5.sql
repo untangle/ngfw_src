@@ -208,6 +208,21 @@ CREATE TABLE settings.ipmaddr_rule (
     log bool,
     PRIMARY KEY (rule_id));
 
+
+-- com.metavize.mvvm.snmp.SnmpSettings
+CREATE TABLE settings.snmp_settings (
+    snmp_settings_id int8 NOT NULL,
+    enabled bool,
+    port int4,
+    com_str text,
+    sys_contact text,
+    sys_location text,
+    send_traps bool,
+    trap_host text,
+    trap_com text,
+    trap_port int4,
+    PRIMARY KEY (snmp_settings_id));      
+
 -----------
 -- events |
 -----------

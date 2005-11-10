@@ -12,6 +12,7 @@
 package com.metavize.mvvm.security;
 
 import com.metavize.mvvm.MailSettings;
+import com.metavize.mvvm.snmp.SnmpManager;
 import javax.transaction.TransactionRolledbackException;
 import java.util.TimeZone;
 
@@ -59,4 +60,10 @@ public interface AdminManager
      */
     void setRegistrationInfo(RegistrationInfo info)
         throws TransactionRolledbackException;
+
+    /**
+     * Access the singleton responsible for
+     * managing SNMP in this instance
+     */
+    SnmpManager getSnmpManager();
 }
