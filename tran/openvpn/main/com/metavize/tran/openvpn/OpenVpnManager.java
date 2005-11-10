@@ -42,14 +42,18 @@ class OpenVpnManager
     private static final String VPN_CONF_DIR     = "/etc/openvpn";
     private static final String VPN_SERVER_FILE  = VPN_CONF_DIR + "/server.conf";
     private static final String VPN_CCD_DIR      = VPN_CONF_DIR + "/ccd";
+    private static final String VPN_CLIENT_FILE_BASE = VPN_CONF_BASE + "/openvpn/client-";
 
     private static final String VPN_START_SCRIPT = VPN_SCRIPT_BASE + "/start-openvpn";
     private static final String VPN_STOP_SCRIPT  = VPN_SCRIPT_BASE + "/stop-openvpn";
     
     /* Most likely want to bind to the outside address when using NAT */
     private static final String FLAG_LOCAL       = "local";
+
+    /* XXX Have to export this */
     private static final String FLAG_PORT        = "port";
     private static final int    DEFAULT_PORT     = 1194;
+
     private static final String FLAG_PROTOCOL    = "proto";
     private static final String DEFAULT_PROTOCOL = "udp";
     private static final String FLAG_DEVICE      = "dev";
@@ -65,7 +69,11 @@ class OpenVpnManager
     private static final String FLAG_PUSH         = "push";
     private static final String FLAG_EXPOSE_CLI   = "client-to-client";
 
-    private static final String FLAG_MAX_CLI     = "max-clients";
+    private static final String FLAG_MAX_CLI      = "max-clients";
+
+    /* XXXXXXXXX Need to select a valid cipher to use */
+    private static final String FLAG_REMOTE       = "remote";
+    private static final String DEFAULT_CIPHER    = "none";
     
     /* Ping every x seconds */
     private static final int DEFAULT_PING_TIME      = 10;
@@ -85,7 +93,7 @@ class OpenVpnManager
     private static final int MANAGEMENT_PORT     = 1195;
 
     /* Key management directives */
-    private static final String DEFAULTS[] = new String[] {
+    private static final String SERVER_DEFAULTS[] = new String[] {
         "mode server",
         "ca   keys/ca.crt",
         "cert keys/server.crt",
@@ -95,8 +103,7 @@ class OpenVpnManager
         // "ifconfig-pool-persist ipp.txt",
         "client-config-dir ccd",
         "keepalive " + DEFAULT_PING_TIME + " " + DEFAULT_PING_TIMEOUT,
-        /* XXXXXXXXX Need to select a valid cipher to use */
-        "cipher none",
+        "cipher " + DEFAULT_CIPHER,
         "user nobody",
         "group nogroup",
         
@@ -119,6 +126,35 @@ class OpenVpnManager
         /* Allow management from localhost */
         "management 127.0.0.1 " + MANAGEMENT_PORT
     };
+
+    private static final String CLIENT_DEFAULTS[] = new String[] {
+        "client",
+        "proto udp",
+        "resolv-retry infinite",
+        "nobind",
+        "mute-replay-warnings",
+        "ns-cert-type server",
+        "cipher " + DEFAULT_CIPHER,
+        "comp-lzo",
+        "verb 3",
+        "persist-key",
+        "persist-tun",
+        "ca   data/ca.crt",
+        "cert data/client.crt",
+        "key  data/client.key"
+    };
+    
+    private static final String WIN_CLIENT_DEFAULTS[]  = new String[] {};
+    private static final String WIN_EXTENSION          = "ovpn";
+    
+    private static final String UNIX_CLIENT_DEFAULTS[] = new String[] {
+        // ??? Questionable because not all os will have this.
+        // "user nobody",
+        // "group nogroup"
+    };
+
+    private static final String UNIX_EXTENSION         = "conf";
+
 
     private final Logger logger = Logger.getLogger( this.getClass());
 
@@ -165,7 +201,7 @@ class OpenVpnManager
         ScriptWriter sw = new VpnScriptWriter();
         
         /* Insert all of the default parameters */
-        sw.appendLines( DEFAULTS );
+        sw.appendLines( SERVER_DEFAULTS );
 
         /* Bridging or routing */
         if ( settings.isBridgeMode()) {            
@@ -252,6 +288,32 @@ class OpenVpnManager
         }
 
         sw.appendLine();
+    }
+
+    void writeClientConfigurationFiles( VpnSettings settings, VpnClient client )
+        throws TransformException
+    {
+        writeClientConfigurationFile( settings, client, UNIX_CLIENT_DEFAULTS, UNIX_EXTENSION );
+        writeClientConfigurationFile( settings, client, WIN_CLIENT_DEFAULTS, WIN_EXTENSION );
+    }
+
+    private void writeClientConfigurationFile( VpnSettings settings, VpnClient client,
+                                               String[] defaults, String extension )
+    {
+        ScriptWriter sw = new VpnScriptWriter();
+
+        /* Insert all of the default parameters */
+        sw.appendLines( CLIENT_DEFAULTS );
+        sw.appendLines( defaults );
+        
+        /* VPN configuratoins needs information from the networking settings. */
+        ArgonManager argonManager = MvvmContextFactory.context().argonManager();
+        
+        /* XXXXXX This needs some global address and possibly the port, possibly an address 
+           from the settings */
+        sw.appendVariable( FLAG_REMOTE, argonManager.getOutsideAddress().getHostAddress());
+
+        sw.writeFile( VPN_CLIENT_FILE_BASE + client.getInternalName() + "." + extension );
     }
 
     private void writeClientFiles( VpnSettings settings )

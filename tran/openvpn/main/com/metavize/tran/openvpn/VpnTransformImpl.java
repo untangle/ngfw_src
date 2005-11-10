@@ -97,6 +97,15 @@ public class VpnTransformImpl extends AbstractTransform
         /* Update the status/generate all of the certificates for clients */
         this.certificateManager.updateCertificateStatus( settings );
 
+        /* XXXXXXXXXXXXXXXXX NO, just for testing */
+        for ( VpnClient client : (List<VpnClient>)settings.getClientList()) {
+            try {
+                this.openVpnManager.writeClientConfigurationFiles( settings, client );
+            } catch ( TransformException e ) {
+                logger.error( "Error writing config file for " + client.getName());
+            }
+        }
+
         TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork( Session s )
