@@ -329,7 +329,8 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
      * Increment the counter for messages scanned
      */
     public void incrementScanCounter() {
-      incrementCount(Transform.GENERIC_0_COUNTER);
+      //The scanning blingy-bringer has been disabled
+//      incrementCount(Transform.GENERIC_0_COUNTER);
     }
     /**
      * Increment the counter for blocked (SMTP only).
@@ -341,19 +342,19 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
      * Increment the counter for messages passed
      */
     public void incrementPassCounter() {
-      incrementCount(Transform.GENERIC_2_COUNTER);
+      incrementCount(Transform.GENERIC_0_COUNTER);
     }
     /**
      * Increment the counter for messages marked
      */
     public void incrementMarkCounter() {
-      incrementCount(Transform.GENERIC_3_COUNTER);
+      incrementCount(Transform.GENERIC_2_COUNTER);
     }
     /**
      * Increment the count for messages quarantined.
      */
     public void incrementQuarantineCount() {
-      //TODO bscott implement me
+      incrementCount(Transform.GENERIC_3_COUNTER);
     }
     
 
