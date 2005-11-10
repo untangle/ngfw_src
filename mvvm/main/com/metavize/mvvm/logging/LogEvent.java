@@ -82,6 +82,11 @@ public abstract class LogEvent implements Comparable, Serializable
         return s[s.length - 1];
     }
 
+    public SyslogPriority getSyslogPrioritiy()
+    {
+        return SyslogPriority.INFORMATIONAL;
+    }
+
     // Comparable methods -----------------------------------------------------
 
     public int compareTo(Object o)

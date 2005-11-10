@@ -33,7 +33,7 @@ class SyslogManagerImpl implements SyslogManager
 
     private DatagramSocket syslogSocket;
 
-    private volatile String syslogCode;
+    private volatile int facility;
 
     private SyslogManagerImpl()
     {
@@ -92,9 +92,7 @@ class SyslogManagerImpl implements SyslogManager
                 logger.error("could not bind socket", exn);
             }
 
-            int v = 8 * loggingSettings.getSyslogFacility().getFacilityValue()
-                + loggingSettings.getSyslogThreshold().getPriorityValue();
-            syslogCode = "<" + v + ">";
+            facility = loggingSettings.getSyslogFacility().getFacilityValue();
         }
     }
 
@@ -114,7 +112,10 @@ class SyslogManagerImpl implements SyslogManager
         {
             try {
                 // 'PRI'
-                sb.append(syslogCode);
+                int v = 8 * facility * e.getSyslogPrioritiy().getPriorityValue();
+                sb.append("<");
+                sb.append(Integer.toString(v));
+                sb.append(">");
 
                 // 'TIMESTAMP'
                 dateFormatter.format(DATE_FORMAT, e.getTimeStamp());
