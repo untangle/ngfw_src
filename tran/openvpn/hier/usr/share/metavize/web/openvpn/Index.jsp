@@ -1,3 +1,27 @@
+<%@page language="java"%>
+
+<% 
+boolean isValid;
+String debuggingMessages;
+String commonName;
+
+try {
+isValid = (Boolean)request.getAttribute( Util.VALID_ATTR );
+debuggingMessages = (String)request.getAttribute( Util.DEBUGGING_ATTR );
+commonName = (String)request.getAttribute( Util.COMMON_NAME_ATTR );
+if ( commonName == null ) {
+  commonName = "";
+  isValid = false;
+}
+} catch ( Exception e ) {
+isValid = false;
+debuggingMessages = "";
+commonName = "";
+/* If any of these occur there was an error processing the page, user is doing something wrong */
+response.setStatus( HttpServletResponse.SC_FORBIDDEN );
+}
+%>
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -60,32 +84,51 @@
       <!-- CENTER CELL --> 
       <td id="table_main_center" style="padding: 8px 0px 0px;">
         <hr size="1" width="100%"/>
-        <table style="padding: 15px 0px 0px;">
-          <tbody>
-
-            <tr>
-              <td valign="top" width="300">
-                Name: <%= "" + request.getAttribute( Util.COMMON_NAME_ATTR ) %><br/>
-                Please select one of the following files.
-              </td>
-            </tr>
-
-            <tr>
-                <td valign="top" width="250">
-                  <a href="setup.exe"><span>Windows Installer</span></a>
+        <table style="padding: 1px; text-align: left; margin-left: auto; margin-right: auto; width: 400px; border: 1px;" border="1"><tbody><tr><td>
+          <table style="padding: 10px 40px 10px 40px;">
+            <tbody>
+              <% if ( isValid ) { %>
+              <tr>
+                <td valign="top" class="page_sub_title">
+                  Download
                 </td>
-            </tr>
-            
-            <tr>
-              <td valign="top" width="250">
-                <a href="config.zip"><span>Configuration Files</span></a>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        
-        <hr size="1" width="100%"/>
-      </td>
+              </tr>
+              <tr>
+                <td valign="top">
+                  Common Name:   <%= commonName %><br/>
+                  Please select one of the following files.
+                </td>
+              </tr>
+              
+              <tr>
+                <td valign="top">
+                  <a href="<%= response.encodeUrl( "setup.exe" ) %>">Windows Installer</a>
+                </td>
+              </tr>
+              
+              <tr>
+                <td valign="top">
+                  <a href="<%= response.encodeUrl( "config.zip" ) %>">Configuration Files</a>
+                </td>
+              </tr>
+              <% } else { // if ( isValid ) %>
+              <tr>
+                <td valign="top" class="page_sub_title">
+                  Warning
+                </td>
+              </tr>
+              <tr>
+                <td valign="top">
+                  The files that you requested are no longer available,
+                  please contact your network administrator for more information.
+                </td>
+              </tr>
+              <% } // else { if ( isValid ) %>
+            </tbody>
+          </table>
+          </td></tr></tbody></table>
+          <hr size="1" width="100%"/>
+        </td>
       <!-- END CENTER CELL -->
       <td id="table_main_right"></td>
     </tr>

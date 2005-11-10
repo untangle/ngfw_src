@@ -98,11 +98,6 @@ public class VpnTransformImpl extends AbstractTransform
                     VpnTransformImpl.this.settings = settings;
                     return true;
                 }
-
-                public Object getResult()
-                { 
-                    return null;
-                }
             };
 
         getTransformContext().runTransaction( tw );
@@ -176,13 +171,28 @@ public class VpnTransformImpl extends AbstractTransform
         logger.debug( "Looking up client for key: " + key );
 
         /* Could use a hash map, but why bother ? */
-        for ( VpnClient client : ((List<VpnClient>)this.settings.getClientList())) {
-            String clientKey = client.getDistributionKey().trim();
+        for ( final VpnClient client : ((List<VpnClient>)this.settings.getClientList())) {
+            String clientKey = client.getDistributionKey();
+
+            if ( clientKey != null ) clientKey = clientKey.trim();
             logger.debug( "Checking: " + clientKey );
+
             if ( clientKey == null || clientKey.length() == 0 ) continue;
             if ( clientKey.equalsIgnoreCase( key )) {
-                /* XXXX This has to be written out to the database */
+                
                 client.setDistributionKey( null );
+                
+                TransactionWork tw = new TransactionWork()
+                    {
+                        public boolean doWork( Session s )
+                        {
+                            s.saveOrUpdate( client );
+                            return true;
+                        }                        
+                    };
+                
+                getTransformContext().runTransaction( tw );
+
                 return client.getInternalName();
             }
         }
@@ -234,11 +244,6 @@ public class VpnTransformImpl extends AbstractTransform
 
                     settings = (VpnSettings)q.uniqueResult();
                     return true;
-                }
-
-                public Object getResult()
-                { 
-                    return null; 
                 }
             };
         getTransformContext().runTransaction( tw );

@@ -26,11 +26,12 @@ public class Start extends HttpServlet
         Util util = Util.getInstance();
 
         String commonName = util.getCommonName( request );
-
+        
         if ( commonName == null ) {
             util.rejectFile( request, response );
         } else {
-            request.setAttribute( Util.STATUS_ATTR, "READY" );
+            request.setAttribute( Util.DEBUGGING_ATTR, "" );
+            request.setAttribute( Util.VALID_ATTR, true );
             request.setAttribute( Util.COMMON_NAME_ATTR, commonName );
             request.getRequestDispatcher("/Index.jsp").forward( request, response );
         }

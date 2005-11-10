@@ -53,9 +53,10 @@ class Util
     private static final String EXPIRATION_SESSION_ATTR  = ATTR_BASE + "expiration";
     private static final String COMMON_NAME_SESSION_ATTR = ATTR_BASE + "common-name";
 
-
-    static final String STATUS_ATTR      = ATTR_BASE + "status";
     static final String COMMON_NAME_ATTR = ATTR_BASE + "common-name";
+    static final String REASON_ATTR      = ATTR_BASE + "reason";
+    static final String DEBUGGING_ATTR   = ATTR_BASE + "debugging";
+    static final String VALID_ATTR       = ATTR_BASE + "valid";
 
     /* Download in at least a half hour, seems reasonable */
     private static final long TIMEOUT = 1000 * 60 * 30;
@@ -84,12 +85,18 @@ class Util
                 Tid tid = ctx.transformManager().transformInstances( "openvpn-transform" ).get( 0 );
                 TransformContext tc = ctx.transformManager().transformContext( tid );
                 commonName = ((VpnTransform)tc.transform()).lookupClientDistributionKey( key );
+                MvvmRemoteContextFactory.factory().logout();
             } catch ( Exception e ) {
                 logger.error( "Error connecting to the openvpn transform", e );
+                e.printStackTrace();
+                request.setAttribute( REASON_ATTR, "Error connnecting to the openvpn transform " + e );
                 return null;
             }
 
-            if ( commonName == null ) return null;
+            if ( null == commonName ) {
+                request.setAttribute( REASON_ATTR, "Key doesn't exist" );
+                return null;
+            }
 
             HttpSession session = request.getSession( true );
             
@@ -102,13 +109,24 @@ class Util
             HttpSession session = request.getSession( false );
 
             /* If they have no session information, then there is nothing to do */
-            if ( session == null ) return null;
+            if ( session == null ) {
+                request.setAttribute( REASON_ATTR, "User doesn't have a session" );
+                return null;
+            }
+
             Date expirationDate = (Date)session.getAttribute( EXPIRATION_SESSION_ATTR );
             String commonName = (String)session.getAttribute( COMMON_NAME_SESSION_ATTR );
-            if ( commonName == null || expirationDate == null ) return null;
+            if ( commonName == null || expirationDate == null ) {
+                request.setAttribute( REASON_ATTR, "Common name or expiration is null" );
+                return null;
+            }
 
             /* If the session is expired, kill it */
-            if ( expirationDate.after( new Date())) return null;
+            Date now = new Date();
+            if ( now.after( expirationDate )) {
+                request.setAttribute( REASON_ATTR, "Session expired at " + expirationDate );
+                return null;
+            }
 
             return commonName;
         }
@@ -119,24 +137,30 @@ class Util
      * @param fileName - Full path of the file to download
      * @param downloadFileName - Name that should be given to the file that is downloaded
      */
-    void downloadFile( HttpServletRequest request, HttpServletResponse response, 
-                          String fileName, String downloadFileName )
+    void streamFile( HttpServletRequest request, HttpServletResponse response, 
+                     String fileName, String downloadFileName, String type )
         throws ServletException, IOException
     {
-        response.setContentType( "application/download" );
-        response.setHeader( "Content-Disposition", "attachment;filename=\"" + downloadFileName + "\"" );
-
-        fileName = BASE_DIRECTORY + fileName;
+        fileName = BASE_DIRECTORY + "/" + fileName;
         
         InputStream fileData;
 
+        long length = 0;
+
         try {
-            fileData  = new FileInputStream( new File( fileName ));
+            File file = new File( fileName );
+            fileData  = new FileInputStream( file );
+            length = file.length();
         } catch ( FileNotFoundException e ) { 
             logger.info( "The file '" + fileName + "' does not exist" );
+            request.setAttribute( Util.REASON_ATTR, "The file '" + fileName + "' does not exist" );
             rejectFile( request, response );
             return;
         }
+
+        response.setContentType( type );
+        response.setHeader( "Content-Disposition", "attachment;filename=\"" + downloadFileName + "\"" );
+        response.setHeader( "Content-Length", "" + length );
 
         BufferedInputStream bis = null;
         BufferedOutputStream bos = null;
@@ -175,8 +199,12 @@ class Util
     void rejectFile( HttpServletRequest request, HttpServletResponse response ) 
         throws ServletException, IOException
     {
-        request.setAttribute( STATUS_ATTR, "ERROR" );
-        request.getRequestDispatcher("/Index.jsp").forward( request, response );
+        request.setAttribute( DEBUGGING_ATTR, "" );
+        request.setAttribute( VALID_ATTR, false );
+
+        /* Indicate that the response was not rejected */
+        response.setStatus( HttpServletResponse.SC_FORBIDDEN );
+        request.getRequestDispatcher( "/Index.jsp" ).forward( request, response );
     }
 
     static Util getInstance()

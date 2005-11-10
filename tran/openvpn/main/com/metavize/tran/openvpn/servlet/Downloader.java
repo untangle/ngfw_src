@@ -24,14 +24,13 @@ public class Downloader extends HttpServlet
     private static final String CONFIG_DOWNLOAD    = "config.zip";
     private static final String CONFIG_NAME_PREFIX = "config-";
     private static final String CONFIG_NAME_SUFFIX = ".zip";
+    private static final String CONFIG_TYPE        = "application/zip";
 
     private static final String SETUP_PAGE        = "/setup.exe";
     private static final String SETUP_DOWNLOAD    = "setup.exe";
     private static final String SETUP_NAME_PREFIX = "setup-";
     private static final String SETUP_NAME_SUFFIX = ".exe";
-
-    
-   
+    private static final String SETUP_TYPE        = "application/download";
 
     protected void service( HttpServletRequest request,  HttpServletResponse response )
         throws ServletException, IOException {
@@ -41,13 +40,16 @@ public class Downloader extends HttpServlet
         String fileName = null;
         String download = null;
         String pageName = request.getServletPath();
+        String type = "";
 
         if ( pageName.equalsIgnoreCase( CONFIG_PAGE )) {
             fileName = getConfigFileName( commonName );
             download = CONFIG_DOWNLOAD;
+            type     = CONFIG_TYPE;
         } else if ( pageName.equalsIgnoreCase( SETUP_PAGE )) {
             fileName = getSetupFileName( commonName );
             download = SETUP_DOWNLOAD;
+            type     = SETUP_TYPE;
         } else {
             fileName = null;
             download = null;
@@ -56,9 +58,12 @@ public class Downloader extends HttpServlet
         /* File name shouldn't be null unless the web.xml is misconfigured to force pages
          * that are not supposed to reach here */
         if (( null == commonName ) || ( null == fileName ) || ( null == download )) {
+            if ( commonName != null ) {
+                request.setAttribute( Util.REASON_ATTR, "download or fileName is null [" + pageName + "]" );
+            }
             util.rejectFile( request, response );
         } else {
-            util.downloadFile( request, response, fileName, download );
+            util.streamFile( request, response, fileName, download, type );
         }
     }
 
