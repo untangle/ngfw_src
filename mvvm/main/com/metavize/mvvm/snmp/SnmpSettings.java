@@ -117,6 +117,8 @@ public class SnmpSettings
   }
 
   /**
+    * This cannot be blank ("") or null
+    *
     * @return the community String
     * @hibernate.property
     * column="COM_STR"
