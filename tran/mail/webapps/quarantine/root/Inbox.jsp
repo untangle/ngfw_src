@@ -26,6 +26,9 @@
           document.form1.elements[i].checked = isOn;
         }
       }
+      function uncheckMaster() {
+        document.form1.checkall.checked = false;
+      }      
       
       function doPurge() {
         document.form1.<quarantine:constants keyName="action"/>.value = "<quarantine:constants valueName="purge"/>";
@@ -252,6 +255,7 @@ SEP
                             <th scope="row">
                               <input type="checkbox"
                                 name="<quarantine:constants keyName="mid"/>"
+                                onclick="uncheckMaster()"
                                 value="<quarantine:inboxRecord prop="mid"/>"/>
                             </th>
                             <td>

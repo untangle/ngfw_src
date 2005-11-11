@@ -215,7 +215,28 @@ class DigestGenerator {
         ContentXFerEncodingHeaderField.SEVEN_BIT_STR);
   
       //Subject
-      headers.setSubject("Quarantine Digest for " + to);
+/*
+    SpamAssassin gives 1.4 "points" when there is an email
+    address in the subject.  We observed that Mac clients (which
+    have some anti-spam built into the email program) were flagging
+    our digests as junk.  Running through SpamAssassin (we do not
+    know why the Mac client declared the digest junk) lead to the
+    following outcome:
+
+
+0.2 NO_REAL_NAME
+1.4 ADDRESS_IN_SUBJECT
+0.1 NORMAL_HTTP_TO_IP
+0.0 HTML_MESSAGE
+0.2 HTML_TAG_EXIST_TBODY
+0.2 HTML_90_100
+1.1 NO_DNS_FOR_FROM
+
+The only one we can really change is the "address in subject" - hence why
+the line below is commented-out
+*/
+//      headers.setSubject("Quarantine Digest for " + to);
+      headers.setSubject("Quarantine Digest");
   
       //Sender/Recipient
       EmailAddress toAddress =
