@@ -39,6 +39,7 @@ public class QuarantineGeneralSettingsJPanel extends MEditTableJPanel {
         super.setTableTitle("General Settings");
         super.setDetailsTitle("rule notes");
         super.setAddRemoveEnabled(false);
+	super.setFillJButtonEnabled(false);
         
         // create actual table model
 	MailTransform mailTransform = ((MailTransform)transformContext.transform());

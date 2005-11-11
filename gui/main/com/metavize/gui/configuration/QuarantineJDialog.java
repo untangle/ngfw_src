@@ -22,6 +22,7 @@ import com.metavize.mvvm.security.Tid;
 import java.lang.reflect.Constructor;
 
 import java.awt.Dimension;
+import java.awt.BorderLayout;
 import java.util.*;
 import javax.swing.table.*;
 import javax.swing.*;
@@ -46,16 +47,27 @@ public class QuarantineJDialog extends MConfigJDialog {
         
 	// GET TRANSFORM CONTEXT //
         String casingName = "mail-casing";
-	TransformContext transformContext;
+	TransformContext transformContext = null;
 	try{
 	    List<Tid> casingInstances = Util.getTransformManager().transformInstances(casingName);
-	    if( casingInstances.size() == 0 )
-		return;
 	    transformContext = Util.getTransformManager().transformContext(casingInstances.get(0));
 	}
 	catch(Exception e){
-            Util.handleExceptionNoRestart("Error loading mail casing: " + casingName, e);
-            return;
+	    try{
+		Util.handleExceptionWithRestart("Error loading mail casing: ", e);
+	    }
+	    catch(Exception f){
+		Util.handleExceptionNoRestart("Error loading mail casing: " + casingName, f);
+		JPanel messageJPanel = new JPanel();
+		messageJPanel.setLayout(new BorderLayout());
+		JLabel messageJLabel = new JLabel("<html>There are currently no Software Appliances in<br>"
+						  + "the rack that have an Email Quarantine.</html>");
+		messageJLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+		messageJPanel.add(messageJLabel);
+		this.contentJTabbedPane.addTab("Message", null, messageJPanel);
+		return;
+	    }
 	}
 	
         // ALL ACCOUNTS //////

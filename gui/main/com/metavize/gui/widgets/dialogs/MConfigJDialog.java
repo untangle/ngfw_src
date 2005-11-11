@@ -42,6 +42,15 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 
     public MConfigJDialog() {
         super(Util.getMMainJFrame(), true);
+	init();
+    }
+
+    public MConfigJDialog(Dialog topLevelDialog, boolean isModal){
+	super(topLevelDialog, isModal);
+	init();
+    }
+
+    private void init(){
 	this.generateButtonText();
         this.initComponents();
         this.setBounds( Util.generateCenteredBounds( Util.getMMainJFrame().getBounds(), getMinSize().width, getMinSize().height) );

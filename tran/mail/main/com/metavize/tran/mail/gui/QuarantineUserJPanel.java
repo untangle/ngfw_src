@@ -204,6 +204,10 @@ public class QuarantineUserJPanel extends javax.swing.JPanel implements Componen
         int[] selectedModelRows = getSelectedModelRows();
         if( selectedModelRows.length == 0 )
                 return;
+
+	PurgeProceedDialog purgeProceedDialog = new PurgeProceedDialog( (Dialog) this.getTopLevelAncestor() );
+	if( !purgeProceedDialog.isProceeding() )
+	    return;
         
         // purge
         Vector<Vector> dataVector = quarantineUserTableModel.getDataVector();

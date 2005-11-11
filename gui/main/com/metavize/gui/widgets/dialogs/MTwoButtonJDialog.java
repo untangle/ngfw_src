@@ -13,18 +13,29 @@ package com.metavize.gui.widgets.dialogs;
 
 import com.metavize.gui.util.Util;
 import com.metavize.mvvm.ToolboxManager;
-
+import java.awt.Container;
+import java.awt.Frame;
+import java.awt.Dialog;
+import java.awt.Window;
 
 public class MTwoButtonJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
     
     private boolean isProceeding = false;
-    
 
-    public MTwoButtonJDialog() {
-        super(Util.getMMainJFrame(), true);
+    public MTwoButtonJDialog(Dialog topLevelDialog, boolean isModal) {
+        super( topLevelDialog , isModal);
+	init( topLevelDialog );
+    }
+
+    public MTwoButtonJDialog(Frame topLevelFrame, boolean isModal) {
+        super( topLevelFrame , isModal);
+	init( topLevelFrame );
+    }
+
+    private void init(Window topLevelWindow) {
         initComponents();
         this.addWindowListener(this);
-        this.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), this.getWidth(), this.getHeight()) );
+        this.setBounds( Util.generateCenteredBounds(topLevelWindow.getBounds(), this.getWidth(), this.getHeight()) );
     }
     
     private void initComponents() {//GEN-BEGIN:initComponents

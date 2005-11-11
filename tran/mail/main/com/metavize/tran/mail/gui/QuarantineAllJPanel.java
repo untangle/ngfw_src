@@ -207,7 +207,7 @@ public class QuarantineAllJPanel extends javax.swing.JPanel implements Component
         // show detail dialog
         Vector<Vector> dataVector = quarantineAllTableModel.getDataVector();
         String account = (String) dataVector.elementAt(selectedModelRows[0]).elementAt(2);
-        (new QuarantineUserJDialog(quarantineMaintenenceView, account)).setVisible(true);
+        (new QuarantineUserJDialog((Dialog)getTopLevelAncestor(), quarantineMaintenenceView, account)).setVisible(true);
         
         // refresh
         quarantineAllTableModel.doRefresh(null);
@@ -237,6 +237,10 @@ public class QuarantineAllJPanel extends javax.swing.JPanel implements Component
         int[] selectedModelRows = getSelectedModelRows();
         if( selectedModelRows.length == 0 )
                 return;
+
+	PurgeProceedDialog purgeProceedDialog = new PurgeProceedDialog( (Dialog) this.getTopLevelAncestor() );
+	if( !purgeProceedDialog.isProceeding() )
+	    return;
         
         // purge
         String account;

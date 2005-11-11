@@ -17,6 +17,7 @@ import com.metavize.gui.util.Util;
 final public class PowerProceedDialog extends MTwoButtonJDialog {
     
     public PowerProceedDialog(String applianceName, boolean powerOn) {
+	super(Util.getMMainJFrame(), true);
         this.setTitle(applianceName + " Warning");
         if(powerOn){
             this.cancelJButton.setIcon(Util.getButtonCancelPowerOn());

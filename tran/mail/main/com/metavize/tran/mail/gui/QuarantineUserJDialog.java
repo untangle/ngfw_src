@@ -24,6 +24,7 @@ import com.metavize.tran.mail.papi.quarantine.*;
 import java.lang.reflect.Constructor;
 
 import java.awt.Dimension;
+import java.awt.Dialog;
 import java.util.*;
 import javax.swing.table.*;
 import javax.swing.*;
@@ -37,7 +38,8 @@ public class QuarantineUserJDialog extends MConfigJDialog {
     private QuarantineMaintenenceView quarantineMaintenenceView;
     private String account;
         
-    public QuarantineUserJDialog(QuarantineMaintenenceView quarantineMaintenenceView, String account) {
+    public QuarantineUserJDialog(Dialog topLevelDialog, QuarantineMaintenenceView quarantineMaintenenceView, String account) {
+	super(topLevelDialog, true);
         this.quarantineMaintenenceView = quarantineMaintenenceView;
         this.account = account;
 	generateGuiAfter();

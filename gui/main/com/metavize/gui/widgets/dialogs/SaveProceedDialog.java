@@ -17,6 +17,7 @@ import com.metavize.gui.util.Util;
 final public class SaveProceedDialog extends MTwoButtonJDialog {
     
     public SaveProceedDialog(String applianceName) {
+	super(Util.getMMainJFrame(), true);
         this.setTitle(applianceName + " Warning");
         this.cancelJButton.setIcon(Util.getButtonCancelSave());
         this.proceedJButton.setIcon(Util.getButtonContinueSaving());

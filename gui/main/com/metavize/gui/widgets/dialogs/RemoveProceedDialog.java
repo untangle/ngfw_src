@@ -17,6 +17,7 @@ import com.metavize.gui.util.Util;
 final public class RemoveProceedDialog extends MTwoButtonJDialog {
     
     public RemoveProceedDialog(String applianceName) {
+	super(Util.getMMainJFrame(), true);
         this.setTitle(applianceName + " Warning");
         this.cancelJButton.setIcon(Util.getButtonCancelRemove());
         this.proceedJButton.setIcon(Util.getButtonContinueRemoving());
