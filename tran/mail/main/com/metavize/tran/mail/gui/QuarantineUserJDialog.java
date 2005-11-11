@@ -40,13 +40,15 @@ public class QuarantineUserJDialog extends MConfigJDialog {
     public QuarantineUserJDialog(QuarantineMaintenenceView quarantineMaintenenceView, String account) {
         this.quarantineMaintenenceView = quarantineMaintenenceView;
         this.account = account;
+	generateGuiAfter();
     }
 
     protected Dimension getMinSize(){
 	return new Dimension(640, 550);
     }
     
-    protected void generateGui(){
+    protected void generateGui(){}
+    private void generateGuiAfter(){
         this.setTitle(NAME_QUARANTINE_USER + account);
         
         // ALL ACCOUNTS //////
@@ -59,8 +61,8 @@ public class QuarantineUserJDialog extends MConfigJDialog {
                 return;
             TransformContext transformContext = Util.getTransformManager().transformContext(casingInstances.get(0));
             Class objectClass = Util.getClassLoader().loadClass( objectName, casingName );
-            Constructor objectConstructor = objectClass.getConstructor(new Class[]{});
-            quarantineAllJPanel = (JPanel) objectConstructor.newInstance();
+            Constructor objectConstructor = objectClass.getConstructor(new Class[]{QuarantineMaintenenceView.class, String.class});
+            quarantineAllJPanel = (JPanel) objectConstructor.newInstance(quarantineMaintenenceView, account);
         }
         catch(Exception e){
             Util.handleExceptionNoRestart("Error loading quarantine: " + casingName, e);

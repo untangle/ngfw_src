@@ -53,16 +53,11 @@ public class QuarantineUserJPanel extends javax.swing.JPanel implements Componen
         quarantineUserTableModel = new QuarantineUserTableModel(quarantineMaintenenceView, account);
         setTableModel( quarantineUserTableModel );
         
-        //quarantineAllTableModel.generateRows(null);
+        quarantineUserTableModel.doRefresh(null);
     }
 
-    protected void sendSettings(Object settings) throws Exception {
-	//Util.getNetworkingManager().set( (NetworkingConfiguration) settings);
-        
-    }
-    protected void refreshSettings(){
-	//settings = Util.getNetworkingManager().get();
-    }
+    protected void sendSettings(Object settings) throws Exception { }
+    protected void refreshSettings(){}
     
     public void setTableModel(MSortedTableModel mSortedTableModel){
         entryJTable.setModel( mSortedTableModel );
@@ -199,13 +194,10 @@ public class QuarantineUserJPanel extends javax.swing.JPanel implements Componen
         try{
             quarantineMaintenenceView.rescue(account, emails);
         }
-        catch(Exception e){Util.handleExceptionNoRestart("Error purging account: " + account, e);}
-        
-        // clear selection
-        entryJTable.clearSelection();
+        catch(Exception e){Util.handleExceptionNoRestart("Error releasing account: " + account, e);}
         
         // refresh
-        quarantineUserTableModel.generateRows(null);
+        quarantineUserTableModel.doRefresh(null);
     }//GEN-LAST:event_releaseJButtonActionPerformed
     
     private void purgeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_purgeJButtonActionPerformed
@@ -224,17 +216,13 @@ public class QuarantineUserJPanel extends javax.swing.JPanel implements Componen
         }
         catch(Exception e){Util.handleExceptionNoRestart("Error purging account: " + account, e);}
         
-        
-        // clear selection
-        entryJTable.clearSelection();
-        
         // refresh
-        quarantineUserTableModel.generateRows(null);
+        quarantineUserTableModel.doRefresh(null);
     }//GEN-LAST:event_purgeJButtonActionPerformed
 
     private int[] getSelectedModelRows(){
         int[] selectedViewRows = entryJTable.getSelectedRows();
-        if( (selectedViewRows==null) || (selectedViewRows.length!=1) || (selectedViewRows[0]==-1) )
+        if( (selectedViewRows==null) || (selectedViewRows.length==0) || (selectedViewRows[0]==-1) )
             return new int[0];
 
         // translate view row
@@ -275,7 +263,7 @@ class QuarantineUserTableModel extends MSortedTableModel {
         //                                 #   min  rsz    edit   remv   desc   typ               def
         addTableColumn( tableColumnModel,  0,  Util.STATUS_MIN_WIDTH, false, false, true,  false, String.class,     null, sc.TITLE_STATUS );
 	addTableColumn( tableColumnModel,  1,  Util.LINENO_MIN_WIDTH, false, false, false, false, Integer.class,    null, sc.TITLE_INDEX );
-        addTableColumn( tableColumnModel,  2, 150, true,  false,  true,  false, String.class, null, null );
+        addTableColumn( tableColumnModel,  2, 150, true,  false,  true,  false, String.class, null, sc.html("MailID") );
         addTableColumn( tableColumnModel,  3, 150, true,  false,  false, false, String.class, null, sc.html("Date") );
         addTableColumn( tableColumnModel,  4, 150, true,  false,  false, false, String.class, null, sc.html("Sender") );
         addTableColumn( tableColumnModel,  5, 150, true,  false,  false, true,  String.class, null, sc.html("Subject") );
@@ -312,7 +300,7 @@ class QuarantineUserTableModel extends MSortedTableModel {
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );
             tempRow.add( inboxRecord.getMailID() );
-            tempRow.add( inboxRecord.getInternDate() );
+            tempRow.add( new Date(inboxRecord.getInternDate()) );
             tempRow.add( mailSummary.getSender() );
             tempRow.add( mailSummary.getSubject() );            
             tempRow.add( Long.toString(inboxRecord.getSize()/1024l) );

@@ -54,7 +54,7 @@ public class QuarantineAllJPanel extends javax.swing.JPanel implements Component
         quarantineAllTableModel = new QuarantineAllTableModel(quarantineMaintenenceView);
         setTableModel( quarantineAllTableModel );
         
-        quarantineAllTableModel.generateRows(null);
+        quarantineAllTableModel.doRefresh(null);
     }
 
     protected void sendSettings(Object settings) throws Exception {}
@@ -209,13 +209,10 @@ public class QuarantineAllJPanel extends javax.swing.JPanel implements Component
         // show detail dialog
         Vector<Vector> dataVector = quarantineAllTableModel.getDataVector();
         String account = (String) dataVector.elementAt(selectedModelRows[0]).elementAt(2);
-        new QuarantineUserJDialog(quarantineMaintenenceView, account);
-        
-        // clear selection
-        entryJTable.clearSelection();
+        (new QuarantineUserJDialog(quarantineMaintenenceView, account)).setVisible(true);
         
         // refresh
-        quarantineAllTableModel.generateRows(null);
+        quarantineAllTableModel.doRefresh(null);
     }//GEN-LAST:event_detailJButtonActionPerformed
 
     private void releaseJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_releaseJButtonActionPerformed
@@ -234,11 +231,8 @@ public class QuarantineAllJPanel extends javax.swing.JPanel implements Component
             catch(Exception e){Util.handleExceptionNoRestart("Error rescuing inbox: " + account, e);}
         }
         
-        // clear selection
-        entryJTable.clearSelection();
-        
         // refresh
-        quarantineAllTableModel.generateRows(null);
+        quarantineAllTableModel.doRefresh(null);
     }//GEN-LAST:event_releaseJButtonActionPerformed
     
     private void purgeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_purgeJButtonActionPerformed
@@ -257,16 +251,13 @@ public class QuarantineAllJPanel extends javax.swing.JPanel implements Component
             catch(Exception e){Util.handleExceptionNoRestart("Error deleting inbox: " + account, e);}
         }
         
-        // clear selection
-        entryJTable.clearSelection();
-        
         // refresh
-        quarantineAllTableModel.generateRows(null);
+        quarantineAllTableModel.doRefresh(null);
     }//GEN-LAST:event_purgeJButtonActionPerformed
 
     private int[] getSelectedModelRows(){
         int[] selectedViewRows = entryJTable.getSelectedRows();
-        if( (selectedViewRows==null) || (selectedViewRows.length!=1) || (selectedViewRows[0]==-1) )
+        if( (selectedViewRows==null) || (selectedViewRows.length==0) || (selectedViewRows[0]==-1) )
             return new int[0];
 
         // translate view row
@@ -286,7 +277,7 @@ public class QuarantineAllJPanel extends javax.swing.JPanel implements Component
     private javax.swing.JButton purgeJButton;
     private javax.swing.JButton releaseJButton;
     // End of variables declaration//GEN-END:variables
-    
+
 }
 
 
@@ -341,7 +332,6 @@ class QuarantineAllTableModel extends MSortedTableModel {
             tempRow.add( Long.toString(inbox.getTotalSz()/1024l) );
             allRows.add( tempRow );
         }
-        
         return allRows;
 
     }
