@@ -535,7 +535,17 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
     <mkdir dir="${dist.mvvm.conf}/etc/network"/>
 
     <copy todir="${build.dist}" filtering="true">
-      <fileset dir="${src.hier}"/>
+      <fileset dir="${src.hier}">
+        <!-- don't filter binaries -->
+        <exclude name="usr/share/metavize/conf/etc/mvverifykey"/>
+      </fileset>
+    </copy>
+
+    <copy todir="${build.dist}">
+      <fileset dir="${src.hier}">
+        <!-- don't filter binaries -->
+        <include name="usr/share/metavize/conf/etc/mvverifykey"/>
+      </fileset>
     </copy>
 
     <copy tofile="${build.dist}/tmp/pkg-list" filtering="true">
@@ -554,6 +564,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <fileset file="${build.dist}/usr/share/metavize/mvvm_restart.sh"/>
       <fileset file="${build.dist}/usr/share/metavize/ssh_enable.sh"/>
       <fileset file="${build.dist}/usr/share/metavize/ssh_disable.sh"/>
+      <fileset file="${build.dist}/usr/share/metavize/conf/etc/mvverifykey"/>
     </chmod>
   </target>
 
