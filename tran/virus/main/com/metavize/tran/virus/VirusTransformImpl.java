@@ -88,8 +88,7 @@ public abstract class VirusTransformImpl extends AbstractTransform
 
     private final VirusScanner scanner;
     private final EventLogger<VirusEvent> eventLogger;
-
-    private PipeSpec[] pipeSpecs;
+    private final PipeSpec[] pipeSpecs;
 
     private final Logger logger = Logger.getLogger(VirusTransformImpl.class);
 
@@ -126,6 +125,7 @@ public abstract class VirusTransformImpl extends AbstractTransform
     public VirusTransformImpl(VirusScanner scanner)
     {
         this.scanner = scanner;
+        this.pipeSpecs = initialPipeSpecs();
 
         TransformContext tctx = getTransformContext();
         eventLogger = new EventLogger<VirusEvent>(tctx);
@@ -170,7 +170,9 @@ public abstract class VirusTransformImpl extends AbstractTransform
 
     abstract protected int getStrength();
 
-    protected PipeSpec[] initialPipeSpecs()
+    // Transform methods ------------------------------------------------------
+
+    private PipeSpec[] initialPipeSpecs()
     {
         int strength = getStrength();
         PipeSpec[] result = new PipeSpec[] {
@@ -193,12 +195,8 @@ public abstract class VirusTransformImpl extends AbstractTransform
         return result;
     }
 
-    // Transform methods ------------------------------------------------------
-
     private void virusReconfigure()
     {
-        pipeSpecs = initialPipeSpecs();
-
         // FTP
         Set subscriptions = new HashSet();
         {

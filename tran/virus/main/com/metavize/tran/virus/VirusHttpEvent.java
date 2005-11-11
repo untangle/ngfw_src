@@ -35,10 +35,7 @@ public class VirusHttpEvent extends VirusEvent
     /**
      * Hibernate constructor.
      */
-    public VirusHttpEvent()
-    {
-        System.out.println("HI");
-    }
+    public VirusHttpEvent() { }
 
     public VirusHttpEvent(RequestLine requestLine, VirusScannerResult result,
                           String vendorName)
