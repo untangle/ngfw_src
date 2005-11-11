@@ -11,16 +11,17 @@
 
 package com.metavize.tran.virus;
 
+import java.io.File;
+
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.mail.papi.MessageInfo;
 import com.metavize.tran.mail.papi.imap.BufferingImapTokenStreamHandler;
-import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.mime.MIMEMessage;
 import com.metavize.tran.mime.MIMEPart;
 import com.metavize.tran.mime.MIMEUtil;
 import com.metavize.tran.util.TempFileFactory;
-import com.metavize.mvvm.MvvmContextFactory;
 import org.apache.log4j.Logger;
-import java.io.File;
 
 
 /**
@@ -28,23 +29,20 @@ import java.io.File;
  */
 public class VirusImapHandler
   extends BufferingImapTokenStreamHandler {
-  
+
   private final Logger m_logger =
     Logger.getLogger(VirusImapHandler.class);
-
-  private static final Logger m_eventLogger = MvvmContextFactory
-    .context().eventLogger();    
 
   private final VirusTransformImpl m_virusImpl;
   private final VirusIMAPConfig m_config;
   private TempFileFactory m_fileFactory;
-  
+
   protected VirusImapHandler(TCPSession session,
     long maxClientWait,
     long maxServerWait,
     VirusTransformImpl transform,
     VirusIMAPConfig config) {
-    
+
     super(maxClientWait, maxServerWait, Integer.MAX_VALUE);
     m_virusImpl = transform;
     m_config = config;
@@ -54,12 +52,12 @@ public class VirusImapHandler
     );
   }
 
-  
+
   @Override
   public HandleMailResult handleMessage(MIMEMessage msg,
     MessageInfo msgInfo) {
     m_logger.debug("[handleMessage]");
-    
+
     m_virusImpl.incrementScanCounter();
 
     MIMEPart[] candidateParts = MIMEUtil.getCandidateParts(msg);
@@ -96,7 +94,7 @@ public class VirusImapHandler
         scanResult,
         scanResult.isClean()?VirusMessageAction.PASS:action,
         m_virusImpl.getScanner().getVendorName());
-      m_eventLogger.info(event);
+      m_virusImpl.log(event);
 
       if(scanResult.isClean()) {
         m_logger.debug("Part clean");
@@ -180,7 +178,7 @@ public class VirusImapHandler
       //through its normal lifecycle
       return null;
     }
-  }  
-  
+  }
+
 
 }

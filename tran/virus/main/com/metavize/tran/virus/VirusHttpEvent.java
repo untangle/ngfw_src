@@ -11,7 +11,8 @@
 
 package com.metavize.tran.virus;
 
-import com.metavize.mvvm.logging.LogEvent;
+import com.metavize.mvvm.tran.PipelineEndpoints;
+import com.metavize.tran.http.HttpRequestEvent;
 import com.metavize.tran.http.RequestLine;
 
 /**
@@ -23,7 +24,7 @@ import com.metavize.tran.http.RequestLine;
  * table="TR_VIRUS_EVT_HTTP"
  * mutable="false"
  */
-public class VirusHttpEvent extends LogEvent
+public class VirusHttpEvent extends VirusEvent
 {
     private RequestLine requestLine;
     private VirusScannerResult result;
@@ -34,7 +35,10 @@ public class VirusHttpEvent extends LogEvent
     /**
      * Hibernate constructor.
      */
-    public VirusHttpEvent() { }
+    public VirusHttpEvent()
+    {
+        System.out.println("HI");
+    }
 
     public VirusHttpEvent(RequestLine requestLine, VirusScannerResult result,
                           String vendorName)
@@ -42,6 +46,51 @@ public class VirusHttpEvent extends LogEvent
         this.requestLine = requestLine;
         this.result = result;
         this.vendorName = vendorName;
+    }
+
+    // VirusEvent methods -----------------------------------------------------
+
+    public String getType()
+    {
+        return "HTTP";
+    }
+
+    public String getLocation()
+    {
+        return null == requestLine ? "" : requestLine.getUrl().toString();
+    }
+
+    public boolean isInfected()
+    {
+        return !result.isClean();
+    }
+
+    public String getActionName()
+    {
+        if (result.isClean()) {
+            return "clean";
+        } else if (result.isVirusCleaned()) {
+            return "cleaned";
+        } else {
+            return "blocked";
+        }
+    }
+
+    public String getVirusName()
+    {
+        String n = result.getVirusName();
+
+        return null == n ? "" : n;
+    }
+
+    public PipelineEndpoints getPipelineEndpoints()
+    {
+        if (null == requestLine) {
+            return null;
+        } else {
+            HttpRequestEvent req = requestLine.getHttpRequestEvent();
+            return null == req ? null : req.getPipelineEndpoints();
+        }
     }
 
     // accessors --------------------------------------------------------------
@@ -59,7 +108,7 @@ public class VirusHttpEvent extends LogEvent
         return requestLine;
     }
 
-    public void setRequestLine(RequestLine requestline)
+    public void setRequestLine(RequestLine requestLine)
     {
         this.requestLine = requestLine;
     }

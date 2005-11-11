@@ -19,7 +19,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Iterator;
 
-import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.mvvm.tran.MimeTypeRule;
 import com.metavize.mvvm.tran.StringRule;
@@ -64,8 +63,6 @@ class VirusHttpHandler extends HttpStateMachine
 
     private static final Logger logger = Logger
         .getLogger(VirusHttpHandler.class);
-    private static final Logger eventLogger = MvvmContextFactory
-        .context().eventLogger();
 
     private final String vendor;
     private final VirusTransformImpl transform;
@@ -211,7 +208,7 @@ class VirusHttpHandler extends HttpStateMachine
         }
 
         RequestLine requestLine = getResponseRequest().getRequestLine();
-        eventLogger.info(new VirusHttpEvent(requestLine, result,  vendor));
+        transform.log(new VirusHttpEvent(requestLine, result,  vendor));
 
         if (result.isClean()) {
             transform.incrementCount(PASS_COUNTER, 1);

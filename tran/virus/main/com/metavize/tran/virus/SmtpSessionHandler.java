@@ -23,8 +23,6 @@ import com.metavize.tran.mail.papi.smtp.sapi.*;
 import com.metavize.tran.mime.*;
 import com.metavize.tran.util.*;
 import org.apache.log4j.Logger;
-import com.metavize.mvvm.tran.Transform;
-import com.metavize.mvvm.MailSender;
 
 
 /**
@@ -35,8 +33,6 @@ public class SmtpSessionHandler
   extends BufferingSessionHandler {
 
   private final Logger m_logger = Logger.getLogger(SmtpSessionHandler.class);
-  private final Logger m_eventLogger = MvvmContextFactory
-    .context().eventLogger();
   private final Pipeline m_pipeline;
   private final TempFileFactory m_fileFactory;
 
@@ -101,7 +97,7 @@ public class SmtpSessionHandler
         scanResult.isClean()?SMTPVirusMessageAction.PASS:action,
         scanResult.isClean()?SMTPNotifyAction.NEITHER:m_config.getNotifyAction(),
         m_virusImpl.getScanner().getVendorName());
-      m_eventLogger.info(event);
+      m_virusImpl.log(event);
 
       if(scanResult.isClean()) {
         m_logger.debug("Part clean");
@@ -143,7 +139,7 @@ public class SmtpSessionHandler
 
     if(foundVirus) {
       //Perform notification (if we should)
-      if(m_config.getNotificationMessageGenerator().sendNotification(
+        if(m_config.getNotificationMessageGenerator().sendNotification(
         MvvmContextFactory.context().mailSender(),
         m_config.getNotifyAction(),
         msg,
@@ -231,7 +227,7 @@ public class SmtpSessionHandler
           scanResult.isClean()?SMTPVirusMessageAction.PASS:action,
           scanResult.isClean()?SMTPNotifyAction.NEITHER:m_config.getNotifyAction(),
           m_virusImpl.getScanner().getVendorName());
-        m_eventLogger.info(event);
+        m_virusImpl.log(event);
 
         if(action == SMTPVirusMessageAction.PASS) {
           m_logger.debug("Passing infected part as-per policy");

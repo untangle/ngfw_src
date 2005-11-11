@@ -10,14 +10,18 @@
  */
 
 package com.metavize.tran.mail.papi.smtp;
+
+import java.io.*;
+import java.nio.*;
+import java.util.*;
+
+import com.metavize.mvvm.MailSender;
+import com.metavize.mvvm.tran.TemplateValues;
+import com.metavize.mvvm.tran.TemplateValuesChain;
 import com.metavize.tran.mail.papi.*;
 import com.metavize.tran.mime.*;
 import com.metavize.tran.util.*;
 import org.apache.log4j.Logger;
-import com.metavize.mvvm.MailSender;
-import java.util.*;
-import java.io.*;
-import java.nio.*;
 
 /**
  * Subclass of MessageGenerator which understands
@@ -33,7 +37,7 @@ public class SmtpNotifyMessageGenerator
     Logger.getLogger(SmtpNotifyMessageGenerator.class);
 
   private boolean m_attachCause;
-  
+
   public SmtpNotifyMessageGenerator() {
     this(null, null, false);
   }
@@ -44,9 +48,9 @@ public class SmtpNotifyMessageGenerator
   public SmtpNotifyMessageGenerator(String subjectTemplate,
     String bodyTemplate,
     boolean attachCause) {
-    
+
     super(subjectTemplate, bodyTemplate);
-    
+
     m_attachCause = attachCause;
   }
 
@@ -90,7 +94,7 @@ public class SmtpNotifyMessageGenerator
       tx,
       new TemplateValuesChain(substitutionSources));
   }
-  
+
   /**
    * Send a Notification (if the <code>action</code>
    * determines we should).
@@ -116,7 +120,7 @@ public class SmtpNotifyMessageGenerator
 
     //TODO bscott Use a "set" instead of a list, to prevent dupes
     //     if sender was also a recipient
-    
+
     if(action == SMTPNotifyAction.NEITHER) {
       return true;
     }
@@ -131,7 +135,7 @@ public class SmtpNotifyMessageGenerator
     else if(action == SMTPNotifyAction.RECEIVER) {
       for(EmailAddress addr : tx.getRecipients(true)) {
         recipients.add(addr);
-      }    
+      }
     }
     else {//BOTH
       for(EmailAddress addr : tx.getRecipients(true)) {
@@ -141,7 +145,7 @@ public class SmtpNotifyMessageGenerator
         recipients.add(tx.getFrom());
       }
     }
-    
+
     if(recipients.size() == 0) {
       m_logger.debug("No recipients for notification email.  Do not send");
       return false;

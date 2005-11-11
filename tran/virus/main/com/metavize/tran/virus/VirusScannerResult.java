@@ -12,7 +12,7 @@ package com.metavize.tran.virus;
 
 import java.io.Serializable;
 
-import com.metavize.tran.util.TemplateValues;
+import com.metavize.mvvm.tran.TemplateValues;
 
 /**
  * Virus scan result.  <br><br> This class also implements {@link
@@ -25,7 +25,7 @@ import com.metavize.tran.util.TemplateValues;
  * @version 1.0
  */
 public class VirusScannerResult
-  implements Serializable, TemplateValues {
+    implements Serializable, TemplateValues {
 
     private static final long serialVersionUID = -9165160954531529727L;
 

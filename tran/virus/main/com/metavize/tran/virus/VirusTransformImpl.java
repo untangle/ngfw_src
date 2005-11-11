@@ -13,19 +13,16 @@ package com.metavize.tran.virus;
 
 import static com.metavize.tran.util.Ascii.CRLF;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.argon.SessionMatcher;
+import com.metavize.mvvm.logging.EventHandler;
+import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
@@ -35,11 +32,11 @@ import com.metavize.mvvm.tapi.PipelineFoundry;
 import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tapi.Subscription;
-import com.metavize.mvvm.tran.Direction;
 import com.metavize.mvvm.tran.MimeType;
 import com.metavize.mvvm.tran.MimeTypeRule;
 import com.metavize.mvvm.tran.StringRule;
 import com.metavize.mvvm.tran.Transform;
+import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.util.TransactionWork;
 import com.metavize.tran.mail.papi.smtp.SMTPNotifyAction;
 import com.metavize.tran.token.TokenAdaptor;
@@ -81,125 +78,6 @@ public abstract class VirusTransformImpl extends AbstractTransform
     private static final String IN_NOTIFY_SUB_TEMPLATE = OUT_NOTIFY_SUB_TEMPLATE;
     private static final String IN_NOTIFY_BODY_TEMPLATE = OUT_NOTIFY_BODY_TEMPLATE;
 
-
-
-    // XXX these queries need to be optimized once I have some real
-    // data from the mail transform
-    private static final String FTP_QUERY_BASE
-        = "SELECT create_date, "
-        +        "'FTP' AS type, "
-        +        "'file' AS location, "
-        +        "NOT clean AS infected, "
-        +        "CASE WHEN clean THEN 'PASSED' "
-        +             "WHEN virus_cleaned THEN 'CLEANED' "
-        +             "ELSE 'BLOCKED' "
-        +        "END AS action, "
-        +        "virus_name, "
-        +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        +        "CASE WHEN pls.p2c_bytes > pls.p2s_bytes THEN NOT policy_inbound ELSE policy_inbound END AS incoming "
-        + "FROM tr_virus_evt evt "
-        + "JOIN pl_endp endp USING (session_id) "
-        + "JOIN pl_stats pls USING (session_id) "
-        + "WHERE vendor_name = ? "
-        + "AND endp.policy_id = ? ";
-
-    private static final String FTP_QUERY
-        = FTP_QUERY_BASE
-        + "ORDER BY create_date DESC LIMIT ?";
-
-    private static final String FTP_VIRUS_QUERY
-        = FTP_QUERY_BASE
-        + "AND NOT clean "
-        + "ORDER BY create_date DESC LIMIT ?";
-
-    // (Direction is easy for now since we don't handle PUT)
-    private static final String HTTP_QUERY_BASE
-        = "SELECT create_date, "
-        +        "'HTTP' AS type, "
-        +        "'http://' || host || uri AS location, "
-        +        "NOT clean AS infected, "
-        +        "CASE WHEN clean THEN 'PASSED' "
-        +             "WHEN virus_cleaned THEN 'CLEANED' "
-        +             "ELSE 'BLOCKED' "
-        +        "END AS action, "
-        +        "virus_name, "
-        +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        +        "NOT policy_inbound as incoming "
-        + "FROM tr_virus_evt_http evt "
-        + "JOIN tr_http_evt_req req ON evt.request_line = req.request_id "
-        + "JOIN pl_endp endp ON req.session_id = endp.session_id "
-        + "JOIN tr_http_req_line rl ON rl.request_id = req.request_id "
-        + "WHERE vendor_name = ? "
-        + "AND endp.policy_id = ? ";
-
-    private static final String HTTP_QUERY
-        = HTTP_QUERY_BASE
-        + "ORDER BY req.time_stamp DESC LIMIT ?";
-
-    private static final String HTTP_VIRUS_QUERY
-        = HTTP_QUERY_BASE
-        + "AND NOT clean "
-        + "ORDER BY req.time_stamp DESC LIMIT ?";
-
-    private static final String MAIL_QUERY_BASE
-        = "SELECT create_date, "
-        +        "'MAIL' AS type, "
-        +        "subject AS location, "
-        +        "NOT clean AS infected, "
-        +        "CASE WHEN action = 'P' THEN 'PASSED' "
-        +             "WHEN action = 'R' THEN 'REMOVED' "
-        +        "END AS action, "
-        +        "virus_name, "
-        +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        +        "NOT policy_inbound as incoming "
-        + "FROM tr_virus_evt_mail evt "
-        + "JOIN tr_mail_message_info info ON evt.msg_id = info.id "
-        + "JOIN pl_endp endp ON info.session_id = endp.session_id "
-        + "WHERE vendor_name = ? "
-        + "AND endp.policy_id = ? ";
-
-    private static final String MAIL_QUERY
-        = MAIL_QUERY_BASE
-        + "ORDER BY create_date DESC LIMIT ?";
-
-    private static final String MAIL_VIRUS_QUERY
-        = MAIL_QUERY_BASE
-        + "AND NOT clean "
-        + "ORDER BY create_date DESC LIMIT ?";
-
-    private static final String SMTP_QUERY_BASE
-        = "SELECT create_date, "
-        +        "'MAIL' AS type, "
-        +        "subject AS location, "
-        +        "NOT clean AS infected, "
-        +        "CASE WHEN action = 'P' THEN 'PASSED' "
-        +             "WHEN action = 'R' THEN 'REMOVED' "
-        +             "WHEN action = 'B' THEN 'BLOCKED' "
-        +        "END AS action, "
-        +        "virus_name, "
-        +        "c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        +        "policy_inbound as incoming "
-        + "FROM tr_virus_evt_smtp evt "
-        + "JOIN tr_mail_message_info info ON evt.msg_id = info.id "
-        + "JOIN pl_endp endp ON info.session_id = endp.session_id "
-        + "WHERE vendor_name = ? "
-        + "AND endp.policy_id = ? ";
-
-    private static final String SMTP_QUERY
-        = SMTP_QUERY_BASE
-        + "ORDER BY create_date DESC LIMIT ?";
-
-    private static final String SMTP_VIRUS_QUERY
-        = SMTP_QUERY_BASE
-        + "AND NOT clean "
-        + "ORDER BY create_date DESC LIMIT ?";
-
-    private static final String[] QUERIES
-        = { FTP_QUERY, HTTP_QUERY, MAIL_QUERY, SMTP_QUERY };
-
-    private static final String[] VIRUS_QUERIES
-        = { FTP_VIRUS_QUERY, HTTP_VIRUS_QUERY, MAIL_VIRUS_QUERY, SMTP_VIRUS_QUERY };
-
     private static final PipelineFoundry FOUNDRY = MvvmContextFactory.context()
         .pipelineFoundry();
 
@@ -209,6 +87,7 @@ public abstract class VirusTransformImpl extends AbstractTransform
     private static final int POP = 3;
 
     private final VirusScanner scanner;
+    private final EventLogger<VirusEvent> eventLogger;
 
     private PipeSpec[] pipeSpecs;
 
@@ -247,6 +126,12 @@ public abstract class VirusTransformImpl extends AbstractTransform
     public VirusTransformImpl(VirusScanner scanner)
     {
         this.scanner = scanner;
+
+        TransformContext tctx = getTransformContext();
+        eventLogger = new EventLogger<VirusEvent>(tctx);
+
+        EventHandler eh = new VirusHttpEventHandler(tctx);
+        eventLogger.addEventHandler(eh);
     }
 
     // VirusTransform methods -------------------------------------------------
@@ -278,32 +163,9 @@ public abstract class VirusTransformImpl extends AbstractTransform
         return settings;
     }
 
-    // backwards compat
-    public List<VirusLog> getEventLogs(int limit)
+    public EventManager<VirusEvent> getEventManager()
     {
-        return getEventLogs(limit, false);
-    }
-
-    public List<VirusLog> getEventLogs(int limit, boolean virusOnly)
-    {
-        String[] queries;
-        if (virusOnly) {
-            queries = VIRUS_QUERIES;
-        } else {
-            queries = QUERIES;
-        }
-
-        List<VirusLog> l = new ArrayList<VirusLog>(queries.length * limit);
-
-        for (String q : queries) {
-            getEventLogs(q, l, limit);
-        }
-
-        Collections.sort(l);
-
-        while (l.size() > limit) { l.remove(l.size() - 1); }
-
-        return l;
+        return eventLogger;
     }
 
     abstract protected int getStrength();
@@ -571,11 +433,17 @@ public abstract class VirusTransformImpl extends AbstractTransform
     protected void preStart()
     {
         virusReconfigure();
+        eventLogger.start();
     }
 
     protected void postStart()
     {
         shutdownMatchingSessions();
+    }
+
+    protected void postStop()
+    {
+        eventLogger.stop();
     }
 
     // package protected methods ----------------------------------------------
@@ -603,6 +471,11 @@ public abstract class VirusTransformImpl extends AbstractTransform
     boolean getFtpDisableResume()
     {
         return settings.getFtpDisableResume();
+    }
+
+    void log(VirusEvent evt)
+    {
+        eventLogger.log(evt);
     }
 
     // XXX soon to be deprecated ----------------------------------------------
@@ -651,56 +524,5 @@ public abstract class VirusTransformImpl extends AbstractTransform
      */
     public void incrementRemoveCounter() {
       incrementCount(Transform.GENERIC_3_COUNTER);
-    }
-
-    // private methods --------------------------------------------------------
-
-    private List<VirusLog> getEventLogs(final String q, final List<VirusLog> l,
-                                        final int limit)
-    {
-        TransactionWork tw = new TransactionWork()
-            {
-                public boolean doWork(Session s) throws SQLException
-                {
-                    Connection c = s.connection();
-                    PreparedStatement ps = c.prepareStatement(q);
-                    ps.setString(1, scanner.getVendorName());
-                    ps.setString(2, getPolicy().getId().toString());
-                    ps.setInt(3, limit);
-                    long l0 = System.currentTimeMillis();
-                    ResultSet rs = ps.executeQuery();
-                    while (rs.next()) {
-                        long ts = rs.getTimestamp("create_date").getTime();
-                        Date createDate = new Date(ts);
-                        String type = rs.getString("type");
-                        String location = rs.getString("location");
-                        boolean infected = rs.getBoolean("infected");
-                        String action = rs.getString("action");
-                        String virusName = rs.getString("virus_name");
-                        String clientAddr = rs.getString("c_client_addr");
-                        int clientPort = rs.getInt("c_client_port");
-                        String serverAddr = rs.getString("s_server_addr");
-                        int serverPort = rs.getInt("s_server_port");
-                        boolean incoming = rs.getBoolean("incoming");
-
-                        Direction d = incoming ? Direction.INCOMING : Direction.OUTGOING;
-
-                        VirusLog rl = new VirusLog
-                            (createDate, type, location, infected, action,
-                             virusName, clientAddr, clientPort, serverAddr,
-                             serverPort, d);
-
-                        l.add(rl);
-                    }
-                    long l1 = System.currentTimeMillis();
-                    logger.debug("getActiveXLogs() in: " + (l1 - l0));
-                    return true;
-                }
-
-                public Object getResult() { return null; }
-            };
-        getTransformContext().runTransaction(tw);
-
-        return l;
     }
 }

@@ -1,4 +1,4 @@
--- schema for release-3.0
+-- schema for release-3.1
 
 -------------
 -- settings |
@@ -31,7 +31,7 @@ CREATE TABLE events.tr_http_evt_resp (
 -- com.metavize.tran.http.HttpRequestEvent
 CREATE TABLE events.tr_http_evt_req (
     event_id int8 NOT NULL,
-    session_id int4,
+    pl_endp_id int8,
     request_id int8,
     host text,
     content_length int4,
@@ -52,6 +52,15 @@ CREATE TABLE events.tr_http_req_line (
 -- indeces for reporting
 
 CREATE INDEX tr_http_evt_req_ts_idx ON tr_http_evt_req (time_stamp);
-CREATE INDEX tr_http_evt_req_sid_idx ON tr_http_evt_req (session_id);
 CREATE INDEX tr_http_evt_req_rid_idx ON tr_http_evt_req (request_id);
 CREATE INDEX tr_http_evt_resp_rid_idx ON tr_http_evt_resp (request_id);
+
+-- constraints
+
+ALTER TABLE tr_http_evt_req
+    ADD CONSTRAINT fk_tr_http_reqevt_req
+    FOREIGN KEY (request_id) REFERENCES tr_http_req_line;
+
+ALTER TABLE tr_http_evt_resp
+    ADD CONSTRAINT fk_tr_http_respevt_req
+    FOREIGN KEY (request_id) REFERENCES tr_http_req_line;

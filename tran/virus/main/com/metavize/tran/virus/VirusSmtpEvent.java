@@ -11,7 +11,7 @@
 
 package com.metavize.tran.virus;
 
-import com.metavize.mvvm.logging.LogEvent;
+import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.tran.mail.papi.MessageInfo;
 import com.metavize.tran.mail.papi.smtp.SMTPNotifyAction;
 import com.metavize.tran.mail.papi.smtp.SMTPNotifyActionUserType;
@@ -25,7 +25,7 @@ import com.metavize.tran.mail.papi.smtp.SMTPNotifyActionUserType;
  * table="TR_VIRUS_EVT_SMTP"
  * mutable="false"
  */
-public class VirusSmtpEvent extends LogEvent
+public class VirusSmtpEvent extends VirusEvent
 {
     private MessageInfo messageInfo;
     private VirusScannerResult result;
@@ -49,6 +49,40 @@ public class VirusSmtpEvent extends LogEvent
         this.action = action;
         this.notifyAction = notifyAction;
         this.vendorName = vendorName;
+    }
+
+    // VirusEvent methods -----------------------------------------------------
+
+    public String getType()
+    {
+        return "SMTP";
+    }
+
+    public String getLocation()
+    {
+        return messageInfo.getSubject();
+    }
+
+    public boolean isInfected()
+    {
+        return !result.isClean();
+    }
+
+    public String getActionName()
+    {
+        return action.getName();
+    }
+
+    public String getVirusName()
+    {
+        String n = result.getVirusName();
+
+        return null == n ? "" : n;
+    }
+
+    public PipelineEndpoints getPipelineEndpoints()
+    {
+        return messageInfo.getPipelineEndpoints();
     }
 
     // accessors --------------------------------------------------------------

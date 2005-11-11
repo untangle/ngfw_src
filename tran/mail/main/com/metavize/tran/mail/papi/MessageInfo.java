@@ -16,6 +16,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.tran.mime.*;
 import org.apache.log4j.Logger;
 
@@ -44,8 +46,7 @@ public class MessageInfo implements Serializable
     /* columns */
     private Long id; /* msg_id */
 
-    private int sessionId; /* s_id */
-    // private MLHandlerInfo handlerInfo; /* hdl_id */
+    private PipelineEndpoints pipelineEndpoints;
 
     private String subject;
 
@@ -62,6 +63,9 @@ public class MessageInfo implements Serializable
 
     public MessageInfo(int sessionId, int serverPort, String subject)
     {
+        pipelineEndpoints = MvvmContextFactory.context().pipelineFoundry()
+            .getPipeline(sessionId).getPipelineEndpoints();
+
         // Subject really shouldn't be NOT NULL, but it's easier for
         // now to fix by using an empty string... XXX jdi 8/9/05
         if (subject == null)
@@ -71,7 +75,6 @@ public class MessageInfo implements Serializable
             subject = subject.substring(0, DEFAULT_STRING_SIZE);
         }
         this.subject = subject;
-        this.sessionId = sessionId;
 
         switch (serverPort) {
         case SMTP_PORT:
@@ -143,20 +146,28 @@ public class MessageInfo implements Serializable
     }
 
     /**
-     * Session id.
+     * Get the PipelineEndpoints.
      *
-     * @return the session id.
-     * @hibernate.property
-     * column="SESSION_ID"
+     * @return the PipelineEndpoints.
+     * @hibernate.many-to-one
+     * column="PL_ENDP_ID"
+     * not-null="true"
+     * cascade="all"
      */
-    public int getSessionId()
+    public PipelineEndpoints getPipelineEndpoints()
     {
-        return sessionId;
+        return pipelineEndpoints;
     }
 
-    public void setSessionId(int sessionId)
+    public void setPipelineEndpoints(PipelineEndpoints pipelineEndpoints)
     {
-        this.sessionId = sessionId;
+        this.pipelineEndpoints = pipelineEndpoints;
+    }
+
+    public void setPipelineEndpoints(int sessionId)
+    {
+        pipelineEndpoints = MvvmContextFactory.context().pipelineFoundry()
+            .getPipeline(sessionId).getPipelineEndpoints();
     }
 
     /**

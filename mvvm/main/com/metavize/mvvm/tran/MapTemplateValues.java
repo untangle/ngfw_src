@@ -9,16 +9,15 @@
  * $Id:$
  */
 
-package com.metavize.tran.util;
-
+package com.metavize.mvvm.tran;
 
 /**
- * Implementation of TemplateValues which acts as 
+ * Implementation of TemplateValues which acts as
  * a map (really, a java.util.Properties).
  *
  * @see Template
  */
-public class MapTemplateValues 
+public class MapTemplateValues
   extends java.util.Properties
   implements TemplateValues {
 

@@ -11,13 +11,13 @@
 
 package com.metavize.tran.mail.papi.smtp;
 
-
-import java.util.List;
-import java.util.ArrayList;
-import com.metavize.tran.mime.EmailAddress;
-import org.apache.log4j.Logger;
-import com.metavize.tran.util.TemplateValues;
 import static com.metavize.tran.util.Ascii.CRLF;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.metavize.mvvm.tran.TemplateValues;
+import com.metavize.tran.mime.EmailAddress;
 
 
 /**
@@ -30,7 +30,7 @@ import static com.metavize.tran.util.Ascii.CRLF;
  * between client and server, this class maintains
  * envelope data (recipients and sender)
  * as "provisional" until they are "confirmed".
- * Confirmed means the server accepted, provisional 
+ * Confirmed means the server accepted, provisional
  * means the request was issued by client yet final
  * disposition is unknown.
  * <br>
@@ -97,14 +97,14 @@ public final class SmtpTransaction
 
   /**
    * Change the state to "RESET"
-   */  
+   */
   public void reset() {
     m_state = TransactionState.RESET;
   }
 
   /**
    * Change the state to "FAILED"
-   */  
+   */
   public void failed() {
     m_state = TransactionState.FAILED;
   }
@@ -160,7 +160,7 @@ public final class SmtpTransaction
     //to request the same recipient twice,
     //scan from top-down for the to
     m_hasAtLeastOneRecipient = true;
-    
+
     for(int i = 0; i<m_recipients.size(); i++) {
       EmailAddressWithStatus eaws = m_recipients.get(i);
       if(!eaws.addr.equals(addr)) {
@@ -183,7 +183,7 @@ public final class SmtpTransaction
   }
 
   /**
-   * Quick test to see if there is at least one 
+   * Quick test to see if there is at least one
    * {@link #toResponse confirmed recipient}.
    *
    * @return true if at least one recipient has been confirmed.
@@ -236,7 +236,7 @@ public final class SmtpTransaction
 
   /**
    * Test if the FROM has been confirmed by the
-   * server.  
+   * server.
    */
   public boolean isFromConfirmed() {
     return m_fromConfirmed;

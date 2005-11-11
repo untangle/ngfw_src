@@ -14,12 +14,11 @@ package com.metavize.tran.virus;
 import java.io.File;
 import java.io.IOException;
 
-import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.mvvm.tran.Transform;
+import com.metavize.tran.mail.papi.MIMEMessageT;
 import com.metavize.tran.mail.papi.MailExport;
 import com.metavize.tran.mail.papi.MailTransformSettings;
-import com.metavize.tran.mail.papi.MIMEMessageT;
 import com.metavize.tran.mail.papi.WrappedMessageGenerator;
 import com.metavize.tran.mail.papi.pop.PopStateMachine;
 import com.metavize.tran.mime.HeaderParseException;
@@ -35,7 +34,6 @@ import org.apache.log4j.Logger;
 public class VirusPopHandler extends PopStateMachine
 {
     private final static Logger logger = Logger.getLogger(VirusPopHandler.class);
-    private final static Logger eventLogger = MvvmContextFactory.context().eventLogger();
 
     /* no block counter */
     private final static int SCAN_COUNTER = Transform.GENERIC_0_COUNTER;
@@ -161,7 +159,7 @@ public class VirusPopHandler extends PopStateMachine
                                                       zScanResult,
                                                       zScanResult.isClean() ? VirusMessageAction.PASS : zMsgAction,
                                                       zVendorName);
-            eventLogger.info(event);
+            zTransform.log(event);
 
             if (false == zScanResult.isClean()) {
                 return zScanResult;

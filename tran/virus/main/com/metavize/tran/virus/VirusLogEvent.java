@@ -11,7 +11,8 @@
 
 package com.metavize.tran.virus;
 
-import com.metavize.mvvm.logging.LogEvent;
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.tran.PipelineEndpoints;
 
 /**
  * Log for non-mail, non-HTTP Virus events.  Currently just FTP.
@@ -22,9 +23,9 @@ import com.metavize.mvvm.logging.LogEvent;
  * table="TR_VIRUS_EVT"
  * mutable="false"
  */
-public class VirusLogEvent extends LogEvent
+public class VirusLogEvent extends VirusEvent
 {
-    private int sessionId;
+    private PipelineEndpoints pipelineEndpoints;
     private VirusScannerResult result;
     private String vendorName;
 
@@ -35,30 +36,76 @@ public class VirusLogEvent extends LogEvent
      */
     public VirusLogEvent() { }
 
-    public VirusLogEvent(int sessionId, VirusScannerResult result, String vendorName)
+    public VirusLogEvent(int sessionId, VirusScannerResult result,
+                         String vendorName)
     {
-        this.sessionId = sessionId;
+        pipelineEndpoints = MvvmContextFactory.context().pipelineFoundry()
+            .getPipeline(sessionId).getPipelineEndpoints();
+
         this.result = result;
         this.vendorName = vendorName;
+    }
+
+    // VirusEvent methods -----------------------------------------------------
+
+    public String getType()
+    {
+        return "FTP";
+    }
+
+    public String getLocation()
+    {
+        return pipelineEndpoints.getSServerAddr().getHostAddress();
+    }
+
+    public boolean isInfected()
+    {
+        return !result.isClean();
+    }
+
+    public String getActionName()
+    {
+        if (result.isClean()) {
+            return "clean";
+        } else if (result.isVirusCleaned()) {
+            return "cleaned";
+        } else {
+            return "blocked";
+        }
+    }
+
+    public String getVirusName()
+    {
+        String n = result.getVirusName();
+
+        return null == n ? "" : n;
     }
 
     // accessors --------------------------------------------------------------
 
     /**
-     * Session id.
+     * Get the PipelineEndpoints.
      *
-     * @return the session id.
-     * @hibernate.property
-     * column="SESSION_ID"
+     * @return the PipelineEndpoints.
+     * @hibernate.many-to-one
+     * column="PL_ENDP_ID"
+     * not-null="true"
+     * cascade="all"
      */
-    public int getSessionId()
+    public PipelineEndpoints getPipelineEndpoints()
     {
-        return sessionId;
+        return pipelineEndpoints;
     }
 
-    public void setSessionId(int sessionId)
+    public void setPipelineEndpoints(PipelineEndpoints pipelineEndpoints)
     {
-        this.sessionId = sessionId;
+        this.pipelineEndpoints = pipelineEndpoints;
+    }
+
+    public void setPipelineEndpoints(int sessionId)
+    {
+        pipelineEndpoints = MvvmContextFactory.context().pipelineFoundry()
+            .getPipeline(sessionId).getPipelineEndpoints();
     }
 
     /**

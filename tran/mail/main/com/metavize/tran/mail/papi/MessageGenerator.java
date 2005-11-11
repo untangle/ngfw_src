@@ -10,12 +10,18 @@
  */
 
 package com.metavize.tran.mail.papi;
+
+import static com.metavize.tran.mime.HeaderNames.*;
+import static com.metavize.tran.util.Ascii.*;
+
+import java.util.*;
+
+import com.metavize.mvvm.tran.Template;
+import com.metavize.mvvm.tran.TemplateValues;
+import com.metavize.mvvm.tran.TemplateValuesChain;
 import com.metavize.tran.mime.*;
 import com.metavize.tran.util.*;
 import org.apache.log4j.Logger;
-import static com.metavize.tran.mime.HeaderNames.*;
-import static com.metavize.tran.util.Ascii.*;
-import java.util.*;
 
 /**
  * Class which assists in creating notification messages,
@@ -57,9 +63,9 @@ public class MessageGenerator {
     String bodyTemplate) {
     setSubject(subjectTemplate);
     setBody(bodyTemplate);
-  }  
+  }
 
-  
+
   public String getSubject() {
     return m_subjectTemplate==null?
       null:m_subjectTemplate.getTemplate();
@@ -94,11 +100,11 @@ public class MessageGenerator {
    *
    * @param template the template (or null to declare
    *        that body should not be wrapped).
-   */  
+   */
   public void setBody(String template) {
     if(template == null) {
       m_bodyTemplate = null;
-    }  
+    }
     if(m_bodyTemplate == null) {
       m_bodyTemplate = new Template(template, false);
     }
@@ -119,7 +125,7 @@ public class MessageGenerator {
   /**
    * For subclasses to access the internal subject
    * Template Object (or null if not set).
-   */  
+   */
   protected Template getSubjectTemplate() {
     return m_subjectTemplate;
   }
@@ -193,12 +199,12 @@ public class MessageGenerator {
     throws Exception {
 
     //Add the original message to the chain
-    values.append(cause);    
-    
+    values.append(cause);
+
 
     MIMEMessageHeaders headers = new MIMEMessageHeaders();
 
-    
+
     //Take care of boiler-plate headers
     headers.addHeaderField(DATE, MIMEUtil.getRFC822Date());
     headers.addHeaderField(MIME_VERSION, "1.0");
@@ -248,7 +254,7 @@ public class MessageGenerator {
 
     //Add the wrapped other message
     ret.addChild(new AttachedMIMEMessage(cause));
-    
+
     return ret;
   }
 
@@ -259,12 +265,12 @@ public class MessageGenerator {
     throws Exception {
 
     //Add the original message to the chain
-    values.append(cause);    
-    
+    values.append(cause);
+
 
     MIMEMessageHeaders headers = new MIMEMessageHeaders();
 
-    
+
     //Take care of boiler-plate headers
     headers.addHeaderField(DATE, MIMEUtil.getRFC822Date());
     headers.addHeaderField(MIME_VERSION, "1.0");
@@ -301,7 +307,7 @@ public class MessageGenerator {
   }
 
 
-  
+
   /**
    * Helper which gets the formatted
    * plain-text body, or "" if there

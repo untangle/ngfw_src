@@ -11,7 +11,9 @@
 
 package com.metavize.tran.http;
 
-import com.metavize.mvvm.logging.LogEvent;
+import java.io.IOException;
+
+import com.metavize.mvvm.logging.PipelineEvent;
 
 /**
  * Log event for a request.
@@ -22,7 +24,7 @@ import com.metavize.mvvm.logging.LogEvent;
  * table="TR_HTTP_EVT_REQ"
  * mutable="false"
  */
-public class HttpRequestEvent extends LogEvent
+public class HttpRequestEvent extends PipelineEvent
 {
     private int sessionId;
     private RequestLine requestLine;
@@ -39,7 +41,8 @@ public class HttpRequestEvent extends LogEvent
     public HttpRequestEvent(int sessionId, RequestLine requestLine,
                             String host)
     {
-        this.sessionId = sessionId;
+        super(sessionId);
+
         this.requestLine = requestLine;
         this.host = host;
 
@@ -49,7 +52,8 @@ public class HttpRequestEvent extends LogEvent
     public HttpRequestEvent(int sessionId, RequestLine requestLine,
                             String host, int contentLength)
     {
-        this.sessionId = sessionId;
+        super(sessionId);
+
         this.requestLine = requestLine;
         this.host = host;
         this.contentLength = contentLength;
@@ -58,23 +62,6 @@ public class HttpRequestEvent extends LogEvent
     }
 
     // accessors --------------------------------------------------------------
-
-    /**
-     * Session id.
-     *
-     * @return the session id.
-     * @hibernate.property
-     * column="SESSION_ID"
-     */
-    public int getSessionId()
-    {
-        return sessionId;
-    }
-
-    public void setSessionId(int sessionId)
-    {
-        this.sessionId = sessionId;
-    }
 
     /**
      * Request Line.
@@ -127,5 +114,23 @@ public class HttpRequestEvent extends LogEvent
     public void setContentLength(int contentLength)
     {
         this.contentLength = contentLength;
+    }
+
+    // Syslog methods ---------------------------------------------------------
+
+    protected void doSyslog(Appendable a) throws IOException
+    {
+        a.append(" info: host=");
+        a.append(host);
+
+        a.append(", uri=");
+        String u = requestLine.getRequestUri().toString();
+        u = u.substring(Math.min(u.length(), 256));
+        a.append(u);
+
+        a.append(", content-length=");
+        a.append(Integer.toString(contentLength));
+
+        a.append(" #");
     }
 }

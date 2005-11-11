@@ -11,14 +11,14 @@
 
 package com.metavize.tran.spam;
 
+import static com.metavize.tran.util.Ascii.*;
+
 import java.util.LinkedList;
 import java.util.List;
 
-//import com.metavize.tran.mail.Rfc822Header;
+import com.metavize.mvvm.tran.TemplateValues;
 import com.metavize.tran.token.header.IllegalFieldException;
 import org.apache.log4j.Logger;
-import com.metavize.tran.util.TemplateValues;
-import static com.metavize.tran.util.Ascii.*;
 
 
 /**
@@ -41,7 +41,7 @@ import static com.metavize.tran.util.Ascii.*;
  *     <code><b>SCORE</b></code> The numerical value of the score (e.g. "7.2").
  *   </li>
  * </ul>
- * 
+ *
  */
 public class SpamReport
   implements TemplateValues {
@@ -103,12 +103,12 @@ public class SpamReport
         }
       }
       return null;
-    }    
+    }
 
     /**
      * @depricated
      */
-/*     
+/*
     public Rfc822Header rewriteHeader(Rfc822Header h)
     {
         if (isSpam()) {

@@ -1,4 +1,4 @@
- /*
+/*
   * Copyright (c) 2005 Metavize Inc.
   * All rights reserved.
   *
@@ -9,18 +9,21 @@
   * $Id:$
   */
 package com.metavize.tran.mime;
+
+import static com.metavize.tran.util.Ascii.*;
+
 import java.io.*;
 import java.nio.*;
 import java.util.*;
-import org.apache.log4j.Logger;
-import static com.metavize.tran.util.Ascii.*;
+
+import com.metavize.mvvm.tran.TemplateValues;
 import com.metavize.tran.util.*;
-import com.metavize.tran.util.TemplateValues;
+import org.apache.log4j.Logger;
 
 
 /**
  * Class representing a MIMEMessage.  Adds the strongly-typed
- * {@link #getMMHeaders MIMEMessageHeaders} with convienence 
+ * {@link #getMMHeaders MIMEMessageHeaders} with convienence
  * members for a top-level message (such as recipient
  * and subject manipulation).
  * <br><br>
@@ -61,7 +64,7 @@ import com.metavize.tran.util.TemplateValues;
  * evaluated (see the docs on {@link com.metavize.tran.mime.Headers Headers}
  * for a list of possible variables).
  */
-public class MIMEMessage 
+public class MIMEMessage
   extends MIMEPart
   implements TemplateValues {
 
@@ -71,9 +74,9 @@ public class MIMEMessage
   private static final String RECIP_TV = "RECIPIENTS".toLowerCase();
   private static final String FROM_TV = "FROM".toLowerCase();
   private static final String SUBJECT_TV = "SUBJECT".toLowerCase();
-  
-  private final Logger m_logger = Logger.getLogger(MIMEPart.class); 
-  
+
+  private final Logger m_logger = Logger.getLogger(MIMEPart.class);
+
   public MIMEMessage() {
     super();
   }
@@ -89,20 +92,20 @@ public class MIMEMessage
     boolean ownsSource,
     MIMEPolicy policy,
     String outerBoundary) throws IOException,
-      InvalidHeaderDataException, 
+      InvalidHeaderDataException,
       HeaderParseException,
-      MIMEPartParseException {  
-    
-    super();  
-      
+      MIMEPartParseException {
+
+    super();
+
     parse(new MailMessageHeaderFieldFactory(),
       stream,
       source,
       ownsSource,
       policy,
       outerBoundary);
-  }    
-  
+  }
+
   /**
    * Construct a MIME part, reading until the outerBoundary.
    */
@@ -110,9 +113,9 @@ public class MIMEMessage
     MIMESource source,
     MIMEPolicy policy,
     String outerBoundary) throws IOException,
-      InvalidHeaderDataException, 
+      InvalidHeaderDataException,
       HeaderParseException,
-      MIMEPartParseException {  
+      MIMEPartParseException {
     this(stream, source, true, policy, outerBoundary);
   }
 
@@ -124,9 +127,9 @@ public class MIMEMessage
     MIMEPolicy policy,
     String outerBoundary,
     MIMEMessageHeaders headers) throws IOException,
-      InvalidHeaderDataException, 
+      InvalidHeaderDataException,
       HeaderParseException,
-      MIMEPartParseException {    
+      MIMEPartParseException {
     super(stream, source, true, policy, outerBoundary, headers);
   }
 
@@ -162,7 +165,7 @@ public class MIMEMessage
           sb.append(addr.toMIMEString());
           sb.append(CRLF);
         }
-        return sb.toString();      
+        return sb.toString();
       }
       else if(key.equals(RECIP_TV)) {
         List<EmailAddressWithRcptType> allRcpts = getMMHeaders().getAllRecipients();
@@ -171,7 +174,7 @@ public class MIMEMessage
           sb.append(eawrt.address.toMIMEString());
           sb.append(CRLF);
         }
-        return sb.toString();          
+        return sb.toString();
       }
       else if(key.equals(FROM_TV)) {
         EmailAddress from = getMMHeaders().getFrom();
@@ -187,10 +190,10 @@ public class MIMEMessage
     }
     return null;
   }
-  
+
   /**
    * Get the MIMEMessageHeaders for this MIMEMessage.  Changes
-   * to the headers will be known by this message.  
+   * to the headers will be known by this message.
    *
    * @return the headers
    */
@@ -200,7 +203,7 @@ public class MIMEMessage
 
  /**
   * Get the contents of this MIMEPart as a file.  This applies to
-  * 
+  *
   */
   public final File toFile(FileFactory fileFactory)
     throws IOException {
@@ -243,24 +246,24 @@ public class MIMEMessage
     writeTo(mos);
     mos.flush();
     return ByteBuffer.wrap(baos.toByteArray());
-  }  
-  
-//------------- Debug/Test ---------------  
+  }
+
+//------------- Debug/Test ---------------
 
   public static void main(String[] args) throws Exception {
 
     File f = new File(args[0]);
-    
+
     File tempDir = new File(new File(System.getProperty("user.dir")),
       "mimeFiles");
     if(!tempDir.exists()) {
       tempDir.mkdirs();
-    }    
-    
+    }
+
     //Dump file to another file, with byte offsets.  This
     //makes troubleshooting really easy
     FileInputStream fIn = new FileInputStream(f);
-    FileOutputStream fOut = 
+    FileOutputStream fOut =
       new FileOutputStream(new File("byteMap.txt"));
     int rawRead = fIn.read();
     int counter = 0;
@@ -279,16 +282,16 @@ public class MIMEMessage
     fIn.close();
     fOut.flush();
     fOut.close();
-    
+
     FileMIMESource source = new FileMIMESource(f);
-    
+
     MIMEMessage mp = new MIMEMessage(source.getInputStream(),
       source,
       new MIMEPolicy(),
       null);
-    
+
     System.out.println("");
-    System.out.println("Message has subject: \"" + 
+    System.out.println("Message has subject: \"" +
       mp.getMMHeaders().getSubject() + "\"");
     System.out.println("BEGIN Recipients");
     List<EmailAddressWithRcptType> allRcpts = mp.getMMHeaders().getAllRecipients();
@@ -299,11 +302,11 @@ public class MIMEMessage
     mp.dump("");
 
 
-    
+
     MyFileFactory factory = new MyFileFactory(tempDir);
-    
-    File file = null;    
-    if(mp.isMultipart()) {  
+
+    File file = null;
+    if(mp.isMultipart()) {
 
       MIMEPart[] children = mp.getLeafParts(true);
 
@@ -311,12 +314,12 @@ public class MIMEMessage
       for(MIMEPart part : children) {
         if(!part.isMultipart()) {
           file = part.getContentAsFile(factory, false);
-          System.out.println("Raw part to: " + file.getName());      
+          System.out.println("Raw part to: " + file.getName());
           file = part.getContentAsFile(factory, true);
           System.out.println("Decoded part to: " + file.getName());
         }
       }
-      
+
       for(MIMEPart part : children) {
         part.changed();
         part.getObserver().mIMEPartChanged(part);
@@ -331,24 +334,24 @@ public class MIMEMessage
     }
     else {
       file = mp.getContentAsFile(factory, false);
-      System.out.println("Raw part to: " + file.getName());      
+      System.out.println("Raw part to: " + file.getName());
       file = mp.getContentAsFile(factory, true);
-      System.out.println("Decoded part to: " + file.getName());    
+      System.out.println("Decoded part to: " + file.getName());
       System.out.println("Try writing it out (after declaring changed)");
         mp.changed();
 //        mp.getObserver().mIMEPartChanged(part);
         mp.getMPHeaders().addHeaderField("FooBar", "Goo");
-        mp.getMPHeaders().removeHeaderFields(new LCString("FooBar"));      
+        mp.getMPHeaders().removeHeaderFields(new LCString("FooBar"));
       fOut = new FileOutputStream(new File(tempDir, "redone.txt"));
       mp.writeTo(new MIMEOutputStream(fOut));
       fOut.flush();
-      fOut.close();    
+      fOut.close();
     }
-      
+
   }
 
-//------------- Debug/Test ---------------  
-  
+//------------- Debug/Test ---------------
+
 //================= Inner Class =================
 
   /**
@@ -360,8 +363,8 @@ public class MIMEMessage
       public MyFileFactory(File rootDir) {
           m_dir = rootDir;
       }
-  
-      public File createFile(String name) 
+
+      public File createFile(String name)
           throws IOException {
           if(name == null) {
               name = "meta";
