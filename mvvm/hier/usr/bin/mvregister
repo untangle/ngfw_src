@@ -2,7 +2,7 @@
 
 set -e
 
-REGISTRATION_URL="http://boxtrack.metavize.com/register/custreg.php"
+REGISTRATION_URL="https://boxtrack.metavize.com/register/custreg.php"
 
 REGDONE="@MVVM_HOME@/.regdone"
 REGINFO="@MVVM_HOME@/registration.info"
@@ -14,7 +14,7 @@ NEWPWFILE="/tmp/newpw$$"
 if [ "$?" -eq "0" ]; then
     NEWPW=$(/bin/cat "$NEWPWFILE")
     /bin/rm -f "$NEWPWFILE"
-    if [ ${#NEWPW} -ne 14 ]; then
+    if [ ${#NEWPW} -ne 13 ]; then
         echo "Unable to set pw to $NEWPW"
         exit 1
     else
