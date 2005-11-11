@@ -20,7 +20,9 @@ import java.awt.event.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 import java.awt.*;
-
+import javax.swing.text.*;
+import java.text.*;
+import java.util.*;
 
 public class MColoredTableCellEditor extends DefaultCellEditor implements KeyListener, ActionListener, ChangeListener, CaretListener {
         
@@ -39,6 +41,7 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
     private final JTextField jTextField;
     private final JSlider jSlider;
     private final JSpinner jSpinner;
+    private final JSpinner jDateSpinner;
     private final MPasswordField mPasswordField;
     
     private JComponent editedComponent;
@@ -119,6 +122,20 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().setFocusable(true);
 	jSpinner.addChangeListener(this);
 
+	jDateSpinner = new JSpinner( new SpinnerDateModel((new GregorianCalendar()).getTime(), null, null, Calendar.MINUTE) );
+	jDateSpinner.setFocusable(true);
+	jDateSpinner.setOpaque(false);
+	jDateSpinner.setFont(new java.awt.Font("Default", 0, 10));
+	jDateSpinner.setBorder(mLineBorder);
+	jDateSpinner.getEditor().setOpaque(false);
+	((JSpinner.DefaultEditor)jDateSpinner.getEditor()).getTextField().setOpaque(false);
+	((JSpinner.DefaultEditor)jDateSpinner.getEditor()).getTextField().setFocusable(true);
+	jDateSpinner.addChangeListener(this);
+	JFormattedTextField tf = ((JSpinner.DefaultEditor)jDateSpinner.getEditor()).getTextField();
+	DefaultFormatterFactory factory = (DefaultFormatterFactory)tf.getFormatterFactory();
+	DateFormatter formatter = (DateFormatter)factory.getDefaultFormatter();
+	formatter.setFormat(new SimpleDateFormat("HH:mm " + "(" + "a" + ")"));
+
     }
     
     
@@ -134,14 +151,27 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	    editedComponent = jComboBox;
 	    ((JComboBox)editedComponent).setModel((ComboBoxModel) value);
 	}
-	else if(value instanceof SpinnerNumberModel){
-	    selectedValue  = (Integer) ((SpinnerNumberModel)value).getValue();
-	    editedComponent = jSpinner;
-	    ((JSpinner)editedComponent).setModel((SpinnerNumberModel) value);
-	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().requestFocusInWindow();
-		((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().setCaretPosition(0);
-	    }});
+	else if(value instanceof AbstractSpinnerModel){
+	    if(value instanceof SpinnerDateModel){
+		selectedValue  = ((AbstractSpinnerModel)value).getValue();
+		editedComponent = jDateSpinner;
+		Calendar calendar = new GregorianCalendar();
+		calendar.setTime( ((SpinnerDateModel)value).getDate() );
+		((JSpinner)editedComponent).setValue( calendar.getTime() );
+		SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		    ((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().requestFocusInWindow();
+		    ((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().setCaretPosition(0);
+		}});
+	    }
+	    else{
+		selectedValue  = ((AbstractSpinnerModel)value).getValue();
+		editedComponent = jSpinner;
+		((JSpinner)editedComponent).setModel((AbstractSpinnerModel) value);
+		SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		    ((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().requestFocusInWindow();
+		    ((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().setCaretPosition(0);
+		}});
+	    }
 	}
 	else if(value instanceof Boolean){
 	    selectedValue = (Boolean) value;
@@ -198,7 +228,7 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	    }
 	    else{
 		returnValue = ((JSpinner)editedComponent).getModel();
-		newValue = (Integer) ((SpinnerNumberModel)returnValue).getValue();
+		newValue = ((AbstractSpinnerModel)returnValue).getValue();
 	    }
 	}
 	else if(editedComponent instanceof MPasswordField){

@@ -32,6 +32,7 @@ public class QuarantineSettings
   private byte[] m_secretKey;
   private String m_digestFrom;
   private int m_digestHOD;//Hour Of Day
+  private int m_digestMOD;//Minute Of Day
   private long m_maxQuarantineSz;
 
   /**
@@ -70,7 +71,7 @@ public class QuarantineSettings
 
   /**
     *
-    * @return the session id.
+    * @return the Hour of the day when digest emails should be sent.
     * @hibernate.property
     * column="HOUR_IN_DAY"
     */
@@ -87,6 +88,27 @@ public class QuarantineSettings
    */
   public void setDigestHourOfDay(int hod) {
     m_digestHOD = hod;
+  }
+
+  /**
+    *
+    * @return the Minute of the day when digest emails should be sent.
+    * @hibernate.property
+    * column="MINUTE_IN_DAY"
+    */
+  public int getDigestMinuteOfDay() {
+    return m_digestMOD;
+  }
+
+  /**
+   * Set the Minute of the day when digest emails should
+   * be sent.  This should be a value between 0 and 59 (inclusive
+   * of both ends).
+   *
+   * @param mod the minute of the day
+   */
+  public void setDigestMinuteOfDay(int mod) {
+    m_digestMOD = mod;
   }
 
   /**

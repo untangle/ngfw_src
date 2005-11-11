@@ -25,6 +25,7 @@ CREATE TABLE settings.tr_mail_quarantine_settings (
     secret_key bytea NOT NULL,
     digest_from varchar(255) NOT NULL,
     hour_in_day int4,
+    minute_in_day int4,
     max_quarantine_sz int8 NOT NULL,
     PRIMARY KEY (settings_id));
 

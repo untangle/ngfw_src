@@ -15,6 +15,7 @@ import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.util.*;
 
+import com.metavize.gui.transform.*;
 import com.metavize.mvvm.tran.*;
 import com.metavize.mvvm.security.Tid;
 
@@ -31,6 +32,7 @@ public class QuarantineJDialog extends MConfigJDialog {
 
     private static final String NAME_QUARANTINE_SETTINGS = "Email Quarantine";
     private static final String NAME_ALL_ACCOUNTS = "All Email Accounts";
+    private static final String NAME_GENERAL_SETTINGS = "General Settings";
 
     public QuarantineJDialog( ) {
     }
@@ -42,28 +44,49 @@ public class QuarantineJDialog extends MConfigJDialog {
     protected void generateGui(){
         this.setTitle(NAME_QUARANTINE_SETTINGS);
         
-        // ALL ACCOUNTS //////
+	// GET TRANSFORM CONTEXT //
         String casingName = "mail-casing";
-        String objectName = "com.metavize.tran.mail.gui.QuarantineAllJPanel";
+	TransformContext transformContext;
+	try{
+	    List<Tid> casingInstances = Util.getTransformManager().transformInstances(casingName);
+	    if( casingInstances.size() == 0 )
+		return;
+	    transformContext = Util.getTransformManager().transformContext(casingInstances.get(0));
+	}
+	catch(Exception e){
+            Util.handleExceptionNoRestart("Error loading mail casing: " + casingName, e);
+            return;
+	}
+	
+        // ALL ACCOUNTS //////
+        String quarantineAllJPanelName = "com.metavize.tran.mail.gui.QuarantineAllJPanel";
         JPanel quarantineAllJPanel = null;
         try{
-            List<Tid> casingInstances = Util.getTransformManager().transformInstances(casingName);
-            if( casingInstances.size() == 0 )
-                return;
-            TransformContext transformContext = Util.getTransformManager().transformContext(casingInstances.get(0));
-            Class objectClass = Util.getClassLoader().loadClass( objectName, casingName );
-            Constructor objectConstructor = objectClass.getConstructor(new Class[]{});
-            quarantineAllJPanel = (JPanel) objectConstructor.newInstance();
+            Class objectClass = Util.getClassLoader().loadClass( quarantineAllJPanelName, casingName );
+            Constructor objectConstructor = objectClass.getConstructor(new Class[]{TransformContext.class});
+            quarantineAllJPanel = (JPanel) objectConstructor.newInstance(transformContext);
         }
         catch(Exception e){
-            Util.handleExceptionNoRestart("Error loading quarantine: " + casingName, e);
+            Util.handleExceptionNoRestart("Error loading quarantine management: " + casingName, e);
             return;
         }
+        super.contentJTabbedPane.addTab(NAME_ALL_ACCOUNTS, null, quarantineAllJPanel);
 
-        this.contentJTabbedPane.addTab(NAME_ALL_ACCOUNTS, null, quarantineAllJPanel);
-
-        reloadJButton.setVisible(false);
-        saveJButton.setVisible(false);
+        // GENERAL SETTINGS //////
+        String quarantineGeneralSettingsJPanelName = "com.metavize.tran.mail.gui.QuarantineGeneralSettingsJPanel";
+        JPanel quarantineGeneralSettingsJPanel = null;
+        try{
+            Class objectClass = Util.getClassLoader().loadClass( quarantineGeneralSettingsJPanelName, casingName );
+            Constructor objectConstructor = objectClass.getConstructor(new Class[]{TransformContext.class});
+            quarantineGeneralSettingsJPanel = (JPanel) objectConstructor.newInstance(transformContext);
+        }
+        catch(Exception e){
+            Util.handleExceptionNoRestart("Error loading quarantine general settings: " + casingName, e);
+            return;
+        }
+        super.contentJTabbedPane.addTab(NAME_GENERAL_SETTINGS, null, quarantineGeneralSettingsJPanel);
+	super.savableMap.put(NAME_GENERAL_SETTINGS, (Savable) quarantineGeneralSettingsJPanel);
+	super.refreshableMap.put(NAME_GENERAL_SETTINGS, (Refreshable) quarantineGeneralSettingsJPanel);
     }
     
     protected void sendSettings(Object settings) throws Exception { }

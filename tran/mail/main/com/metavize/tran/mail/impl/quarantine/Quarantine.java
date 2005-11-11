@@ -94,6 +94,7 @@ public class Quarantine
 */
     m_atm.setKey(m_settings.getSecretKey());
     m_chronThread.setHourInDay(m_settings.getDigestHourOfDay());
+    m_chronThread.setMinuteInDay(m_settings.getDigestMinuteOfDay());
     
   }
 

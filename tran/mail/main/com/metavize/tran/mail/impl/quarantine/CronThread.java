@@ -27,6 +27,7 @@ class CronThread implements Runnable {
   private Quarantine m_quarantine;
   private boolean m_done = false;
   private int m_hourInDay = 6;
+  private int m_minuteInDay = 0;
   private long m_nextWakeup = System.currentTimeMillis() +
     1000*60*60*24;
 
@@ -36,6 +37,11 @@ class CronThread implements Runnable {
 
   synchronized void setHourInDay(int hid) {
     m_hourInDay = hid;
+    notify();
+  }
+
+  synchronized void setMinuteInDay(int mid) {
+    m_minuteInDay = mid;
     notify();
   }
 
@@ -61,7 +67,7 @@ class CronThread implements Runnable {
    */
   private synchronized boolean doWait() {
     try {
-      wait(getMillisUntilNext(m_hourInDay));
+      wait(getMillisUntilNext(m_hourInDay, m_minuteInDay));
       return !m_done;
     }
     catch(Exception ex) {
@@ -73,12 +79,15 @@ class CronThread implements Runnable {
 
   /**
    * Gets the number of milliseconds until the
-   * next <code>hourOfDay</code> hour.
+   * next <code>hourOfDay</code> hour, and <code>minuteOfDay</code> minute.
    */
-  private long getMillisUntilNext(int hourOfDay) {
+  private long getMillisUntilNext(int hourOfDay, int minuteOfDay) {
     GregorianCalendar calendar = new GregorianCalendar();
     while(calendar.get(Calendar.HOUR_OF_DAY) != hourOfDay) {
       calendar.add(Calendar.HOUR_OF_DAY, 1);
+    }
+    while(calendar.get(Calendar.MINUTE) != minuteOfDay) {
+      calendar.add(Calendar.MINUTE, 1);
     }
     long ret = calendar.getTimeInMillis() - System.currentTimeMillis();
     return ret>0?

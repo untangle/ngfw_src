@@ -37,7 +37,7 @@ public class QuarantineAllJPanel extends javax.swing.JPanel implements Component
     private QuarantineAllTableModel quarantineAllTableModel;
     private QuarantineMaintenenceView quarantineMaintenenceView;
     
-    public QuarantineAllJPanel() {
+    public QuarantineAllJPanel(TransformContext transformContext) {
         // INIT GUI & CUSTOM INIT
         initComponents();
         entryJScrollPane.getViewport().setOpaque(true);
@@ -46,8 +46,6 @@ public class QuarantineAllJPanel extends javax.swing.JPanel implements Component
         addComponentListener(QuarantineAllJPanel.this);
         
         // GET PROXY
-        Tid tid = Util.getTransformManager().transformInstances("mail-casing").get(0);
-        TransformContext transformContext = Util.getTransformManager().transformContext(tid);
         quarantineMaintenenceView = ((MailTransform)transformContext.transform()).getQuarantineMaintenenceView();
         
         // create actual table model

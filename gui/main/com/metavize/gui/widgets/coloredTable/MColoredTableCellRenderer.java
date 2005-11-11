@@ -19,8 +19,9 @@ import javax.swing.*;
 import java.awt.*;
 import javax.swing.table.*;
 import javax.swing.border.*;
-import java.util.Date;
-
+import java.util.*;
+import javax.swing.text.*;
+import java.text.*;
 
  
  
@@ -82,8 +83,10 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
         private static JCheckBox renderJCheckBox = new JCheckBox();
         private static JSlider renderJSlider = new JSlider();
         private static JSpinner renderJSpinner = new JSpinner();
+    private static JSpinner renderDateJSpinner = new JSpinner( new SpinnerDateModel((new GregorianCalendar()).getTime(), null, null, Calendar.MINUTE) );
+    
     private static SpinnerNumberModel indexSpinnerNumberModel = new SpinnerNumberModel(1, Integer.MIN_VALUE, Integer.MAX_VALUE, 1);
-        private static MPasswordField renderMPasswordField = new MPasswordField();
+    private static MPasswordField renderMPasswordField = new MPasswordField();
         
 
         public MColoredTableCellRenderer(){
@@ -134,6 +137,17 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
             renderJSpinner.setBackground(new Color(0f, 0f, 0f, 0f));
             ((JSpinner.DefaultEditor)renderJSpinner.getEditor()).getTextField().setOpaque(true);
             ((JSpinner.DefaultEditor)renderJSpinner.getEditor()).getTextField().setBackground(new Color(0f, 0f, 0f, 0f));
+
+            renderDateJSpinner.setOpaque(true);
+            renderDateJSpinner.setFocusable(false);
+            renderDateJSpinner.setFont(new java.awt.Font("Default", 0, 10));
+            renderDateJSpinner.setBackground(new Color(0f, 0f, 0f, 0f));
+            ((JSpinner.DefaultEditor)renderDateJSpinner.getEditor()).getTextField().setOpaque(true);
+            ((JSpinner.DefaultEditor)renderDateJSpinner.getEditor()).getTextField().setBackground(new Color(0f, 0f, 0f, 0f));
+	    JFormattedTextField tf = ((JSpinner.DefaultEditor)renderDateJSpinner.getEditor()).getTextField();
+	    DefaultFormatterFactory factory = (DefaultFormatterFactory)tf.getFormatterFactory();
+	    DateFormatter formatter = (DateFormatter)factory.getDefaultFormatter();
+	    formatter.setFormat(new SimpleDateFormat("HH:mm " + "(" + "a" + ")"));
             
             renderMPasswordField.setFont(new java.awt.Font("Dialog", 0, 12));
             renderMPasswordField.setHorizontalAlignment(JTextField.LEFT);
@@ -219,9 +233,17 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
                 renderJLabel.setHorizontalAlignment(JTextField.LEFT);
                 renderJComponent = renderJLabel;
             }
-            else if(value instanceof SpinnerNumberModel){
-                renderJSpinner.setModel( (SpinnerNumberModel) value );
-                renderJComponent = renderJSpinner;
+            else if(value instanceof AbstractSpinnerModel){
+		if( value instanceof SpinnerDateModel ){
+		    Calendar calendar = new GregorianCalendar();
+		    calendar.setTime(((SpinnerDateModel)value).getDate());
+		    renderDateJSpinner.setValue( calendar.getTime() );
+		    renderJComponent = renderDateJSpinner;
+		}
+		else{
+		    renderJSpinner.setModel( (AbstractSpinnerModel) value );
+		    renderJComponent = renderJSpinner;
+		}
             }
 	    else if(value instanceof Date){
 		renderJLabel.setIcon(null);
