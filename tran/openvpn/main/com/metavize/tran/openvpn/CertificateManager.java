@@ -259,12 +259,12 @@ class CertificateManager
      */
     private void callCreateClientScript( String commonName ) throws TransformException
     {
-        ScriptRunner.getInstance().exec( GENERATE_CLIENT_SCRIPT, new String[] { commonName } );
+        ScriptRunner.getInstance().exec( GENERATE_CLIENT_SCRIPT, commonName );
     }
 
     private void callRevokeClientScript( String commonName ) throws TransformException
     {
-        ScriptRunner.getInstance().exec( REVOKE_CLIENT_SCRIPT, new String[] { commonName } );
+        ScriptRunner.getInstance().exec( REVOKE_CLIENT_SCRIPT, commonName );
     }
 
     private void callScript( String scriptName ) throws TransformException

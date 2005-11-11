@@ -46,6 +46,7 @@ class OpenVpnManager
 
     private static final String VPN_START_SCRIPT = VPN_SCRIPT_BASE + "/start-openvpn";
     private static final String VPN_STOP_SCRIPT  = VPN_SCRIPT_BASE + "/stop-openvpn";
+    private static final String GENERATE_DISTRO_SCRIPT = VPN_SCRIPT_BASE + "/generate-distro";
     
     /* Most likely want to bind to the outside address when using NAT */
     private static final String FLAG_LOCAL       = "local";
@@ -139,9 +140,9 @@ class OpenVpnManager
         "verb 3",
         "persist-key",
         "persist-tun",
-        "ca   data/ca.crt",
-        "cert data/client.crt",
-        "key  data/client.key"
+        "ca   metavize-data/ca.crt",
+        "cert metavize-data/client.crt",
+        "key  metavize-data/client.key"
     };
     
     private static final String WIN_CLIENT_DEFAULTS[]  = new String[] {};
@@ -295,6 +296,8 @@ class OpenVpnManager
     {
         writeClientConfigurationFile( settings, client, UNIX_CLIENT_DEFAULTS, UNIX_EXTENSION );
         writeClientConfigurationFile( settings, client, WIN_CLIENT_DEFAULTS, WIN_EXTENSION );
+
+        ScriptRunner.getInstance().exec( GENERATE_DISTRO_SCRIPT, client.getInternalName());
     }
 
     private void writeClientConfigurationFile( VpnSettings settings, VpnClient client,
@@ -305,6 +308,12 @@ class OpenVpnManager
         /* Insert all of the default parameters */
         sw.appendLines( CLIENT_DEFAULTS );
         sw.appendLines( defaults );
+
+        if ( settings.isBridgeMode()) {
+            sw.appendVariable( FLAG_DEVICE, DEVICE_BRIDGE );
+        } else {
+            sw.appendVariable( FLAG_DEVICE, DEVICE_ROUTING );
+        }
         
         /* VPN configuratoins needs information from the networking settings. */
         ArgonManager argonManager = MvvmContextFactory.context().argonManager();

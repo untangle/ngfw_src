@@ -62,7 +62,7 @@ response.setStatus( HttpServletResponse.SC_FORBIDDEN );
             <tr>
               <td valign="middle" width="96">
                 <a href="http://www.metavize.com">
-                  <img src="images/logo_no_text_shiny_96x96.gif" alt="Metavize logo"/>
+                  <img src="images/logo_no_text_shiny_96x96.gif" border="0" alt="Metavize logo"/>
                 </a>
               </td>
               
@@ -104,13 +104,13 @@ response.setStatus( HttpServletResponse.SC_FORBIDDEN );
               
               <tr>
                 <td valign="top">
-                  <a href="<%= response.encodeUrl( "setup.exe" ) %>">Windows Installer</a>
+                  <a href="<%= response.encodeURL( "setup.exe" ) %>">Windows Installer</a>
                 </td>
               </tr>
               
               <tr>
                 <td valign="top">
-                  <a href="<%= response.encodeUrl( "config.zip" ) %>">Configuration Files</a>
+                  <a href="<%= response.encodeURL( "config.zip" ) %>">Configuration Files</a>
                 </td>
               </tr>
               <% } else { // if ( isValid ) %>

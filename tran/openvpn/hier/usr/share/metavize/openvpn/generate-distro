@@ -1,0 +1,51 @@
+#!/bin/sh
+
+exec >> @MVVM_LOG@/openvpn.log 2>&1
+
+GLOBALS=@MVVM_HOME@/openvpn/globals
+
+## There must be a configuration file 
+if [ -r ${GLOBALS} ]; then
+    . ${GLOBALS}
+else
+    echo "Unable to load the openvpn configuration file ${GLOBALS}"
+    exit -2
+fi
+
+commonName=`removeSpaces $1`
+
+## XXX May need to do some checks to see if files exists etc.
+
+if [ -z "${commonName}" ]; then
+    echo "Must specify a common name"
+    exit -3
+fi
+
+OUTPUT_DIRECTORY=@MVVM_CONF@/openvpn/client-packages
+WIN_CONFIG_FILE=@MVVM_CONF@/openvpn/client-${commonName}.ovpn
+UNIX_CONFIG_FILE=@MVVM_CONF@/openvpn/client-${commonName}.conf
+
+NSI_SCRIPT=${OPENVPN_HOME}/installer/openvpn-gui.nsi
+
+## Create the output directory
+mkdir -p ${OUTPUT_DIRECTORY}
+
+## Create a tempory directory for the client
+function moveFiles() {
+    local outputDir=`mktemp -d || exit -3`
+    
+    
+    rm -rf ${outputDir}
+}
+
+
+
+
+## Convert the client file to dos
+unix2dos ${WIN_CONFIG_FILE}
+
+## Run NSIS to create client distro.
+ makensis -V2 -DCOMMON_NAME="${commonName}" ${NSI_SCRIPT}
+
+true
+

@@ -43,7 +43,7 @@ function generateCA()
 
 function generateServerKey()
 {
-    local serverCsr=`mktemp`
+    local serverCsr=`mktemp || exit -3`
 
     export COMMON_NAME=${SERVER_NAME}
     export KEY_DN_QUALIFIER=${DN_QUALIFIER_SERVER}

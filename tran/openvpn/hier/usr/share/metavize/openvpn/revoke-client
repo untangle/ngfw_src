@@ -32,8 +32,8 @@ validateBase()
 
 function revokeClient()
 {
-    local clientCrl=`mktemp`
-    local revokeTest=`mktemp`
+    local clientCrl=`mktemp || exit -3`
+    local revokeTest=`mktemp || exit -3`
     local clientCrt=`getClientCrtFile ${commonName}`
     local clientKey=`getClientKeyFile ${commonName}`
 

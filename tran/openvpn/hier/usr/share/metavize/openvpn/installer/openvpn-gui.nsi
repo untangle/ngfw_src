@@ -13,6 +13,7 @@
 !include "setpath.nsi"
 
 !define HOME "openvpn"
+!define MV_FILES "@MVVM_CONF@/openvpn"
 !define BIN "${HOME}\bin"
 
 !define PRODUCT_NAME "OpenVPN"
@@ -62,7 +63,7 @@
 
   ;General
 
-  OutFile "setup-${COMMON_NAME}.exe"
+  OutFile "${MV_FILES}/client-packages/setup-${COMMON_NAME}.exe"
 
   SetCompressor bzip2
 
@@ -74,12 +75,6 @@
   
   ;Remember install folder
   InstallDirRegKey HKCU "Software\${PRODUCT_NAME}" ""
-
-  !define SOURCE_ZIP_DEST "openvpn-${OPENVPN_VERSION}.zip"
-  !define SOURCE_ZIP_SRC "${HOME}\${SOURCE_ZIP_DEST}"
-
-  !define GUI_SOURCE_ZIP_DEST "openvpn-gui-${GUI_VERSION}.zip"
-  !define GUI_SOURCE_ZIP_SRC "${HOME}\${GUI_SOURCE_ZIP_DEST}"
 
 ;--------------------------------
 ;Modern UI Configuration
@@ -133,8 +128,6 @@
   LangString DESC_SecService ${LANG_ENGLISH} "Install the OpenVPN service wrapper (openvpnserv.exe)"
 
   LangString DESC_SecOpenSSLUtilities ${LANG_ENGLISH} "Install the OpenSSL Utilities (used for generating public/private key pairs)."
-
-; LangString DESC_SecOpenVPNSource ${LANG_ENGLISH} "Install (but do not unzip) the source code zip files."
 
   LangString DESC_SecAddPath ${LANG_ENGLISH} "Add OpenVPN executable directory to the current user's PATH."
 
@@ -229,14 +222,21 @@ Section "OpenVPN GUI" SecGUI
 
   # Include your custom config file(s) here.
   SetOutPath "$INSTDIR\config"
-  # XXX Put in the metavize directory
-  File "${HOME}/config/metavize.ovpn"
+  File "${MV_FILES}/office-mv.ovpn"
+
+  # Named metavize-data so it is safe to overwrite the files in it.
+  SetOutPath "$INSTDIR\config\metavize-data"
+  File "${MV_FILES}/client.crt"
+  File "${MV_FILES}/client.key"
+  File "${MV_FILES}/ca.crt"
 
   SetOutPath "$INSTDIR"
   File "${HOME}\install-win32\OpenVPN GUI ReadMe.txt"
 
   CreateDirectory "$INSTDIR\log"
   CreateDirectory "$INSTDIR\config"
+  CreateDirectory "$INSTDIR\config\metavize-data"
+
 
 SectionEnd
 
@@ -341,8 +341,8 @@ Section "Add Shortcuts to Start Menu" SecAddShortcuts
 
   SetOverwrite on
   CreateDirectory "$SMPROGRAMS\OpenVPN"
-  CreateShortCut "$SMPROGRAMS\OpenVPN\OpenVPN Win32 README.lnk" "$INSTDIR\INSTALL-win32.txt" ""
-  WriteINIStr "$SMPROGRAMS\OpenVPN\OpenVPN Manual Page.url" "InternetShortcut" "URL" "http://openvpn.sourceforge.net/man.html"
+;;---  CreateShortCut "$SMPROGRAMS\OpenVPN\OpenVPN Win32 README.lnk" "$INSTDIR\INSTALL-win32.txt" ""
+;;---  WriteINIStr "$SMPROGRAMS\OpenVPN\OpenVPN Manual Page.url" "InternetShortcut" "URL" "http://openvpn.sourceforge.net/man.html"
   WriteINIStr "$SMPROGRAMS\OpenVPN\OpenVPN Web Site.url" "InternetShortcut" "URL" "http://openvpn.sourceforge.net/"
   CreateShortCut "$SMPROGRAMS\OpenVPN\Uninstall OpenVPN.lnk" "$INSTDIR\Uninstall.exe"
 
@@ -509,39 +509,29 @@ Section -post
     !insertmacro WriteRegStringIfUndef HKCR "OpenVPNFile\shell\run\command" "" '"$INSTDIR\bin\openvpn.exe" --pause-exit --config "%1"'
 
  noass:
-;  ; Create start menu link to source distribution zip file   
-;  IfFileExists "$SMPROGRAMS\OpenVPN" "" noshortcuts
-;    IfFileExists "$INSTDIR\${SOURCE_ZIP_DEST}" "" nosourcezip
-;      CreateShortCut "$SMPROGRAMS\OpenVPN\OpenVPN Source Code Distribution.lnk" "$INSTDIR\${SOURCE_ZIP_DEST}" ""
-;
-;    ; Create start menu shortcuts to addtap.bat and deltapall.bat
-; nosourcezip:
-    IfFileExists "$INSTDIR\bin\addtap.bat" "" trydeltap
-      CreateShortCut "$SMPROGRAMS\OpenVPN\Add a new TAP-Win32 virtual ethernet adapter.lnk" "$INSTDIR\bin\addtap.bat" ""
+; These shortcuts are just a little too complicated.
+;;---    IfFileExists "$INSTDIR\bin\addtap.bat" "" trydeltap
+;;---      CreateShortCut "$SMPROGRAMS\OpenVPN\Add a new TAP-Win32 virtual ethernet adapter.lnk" "$INSTDIR\bin\addtap.bat" ""
 
- trydeltap:
-    IfFileExists "$INSTDIR\bin\deltapall.bat" "" config_shortcut
-      CreateShortCut "$SMPROGRAMS\OpenVPN\Delete ALL TAP-Win32 virtual ethernet adapters.lnk" "$INSTDIR\bin\deltapall.bat" ""
+;;--- trydeltap:
+;;---    IfFileExists "$INSTDIR\bin\deltapall.bat" "" config_shortcut
+;;---      CreateShortCut "$SMPROGRAMS\OpenVPN\Delete ALL TAP-Win32 virtual ethernet adapters.lnk" "$INSTDIR\bin\deltapall.bat" ""
 
     ; Create start menu shortcuts for config and log directories
- config_shortcut:
+;;--- config_shortcut:
     IfFileExists "$INSTDIR\config" "" log_shortcut
       CreateShortCut "$SMPROGRAMS\OpenVPN\OpenVPN configuration file directory.lnk" "$INSTDIR\config" ""
 
  log_shortcut:
-    IfFileExists "$INSTDIR\log" "" samp_shortcut
-      CreateShortCut "$SMPROGRAMS\OpenVPN\OpenVPN log file directory.lnk" "$INSTDIR\log" ""
+;;---    IfFileExists "$INSTDIR\log" "" samp_shortcut
+;;---      CreateShortCut "$SMPROGRAMS\OpenVPN\OpenVPN log file directory.lnk" "$INSTDIR\log" ""
 
- samp_shortcut:
-    IfFileExists "$INSTDIR\sample-config" "" genkey_shortcut
-      CreateShortCut "$SMPROGRAMS\OpenVPN\OpenVPN Sample Configuration Files.lnk" "$INSTDIR\sample-config" ""
+;;--- genkey_shortcut:
+;;---    IfFileExists "$INSTDIR\bin\openvpn.exe" "" noshortcuts
+;;---      IfFileExists "$INSTDIR\config" "" noshortcuts
+;;---        CreateShortCut "$SMPROGRAMS\OpenVPN\Generate a static OpenVPN key.lnk" "$INSTDIR\bin\openvpn.exe" '--pause-exit --verb 3 --genkey --secret "$INSTDIR\config\key.txt"' "$INSTDIR\openvpn.ico" 0
 
- genkey_shortcut:
-    IfFileExists "$INSTDIR\bin\openvpn.exe" "" noshortcuts
-      IfFileExists "$INSTDIR\config" "" noshortcuts
-        CreateShortCut "$SMPROGRAMS\OpenVPN\Generate a static OpenVPN key.lnk" "$INSTDIR\bin\openvpn.exe" '--pause-exit --verb 3 --genkey --secret "$INSTDIR\config\key.txt"' "$INSTDIR\openvpn.ico" 0
-
- noshortcuts:
+;;--- noshortcuts:
   ; Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
 
@@ -568,7 +558,6 @@ SectionEnd
   !insertmacro MUI_DESCRIPTION_TEXT ${SecTAPHidden} $(DESC_SecTAPHidden)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecOpenSSLUtilities} $(DESC_SecOpenSSLUtilities)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecOpenSSLDLLs} $(DESC_SecOpenSSLDLLs)
-;  !insertmacro MUI_DESCRIPTION_TEXT ${SecOpenVPNSource} $(DESC_SecOpenVPNSource)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecAddPath} $(DESC_SecAddPath)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecAddShortcuts} $(DESC_SecAddShortcuts)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecService} $(DESC_SecService)
@@ -731,8 +720,6 @@ Section "Uninstall"
 
   Delete "$INSTDIR\bin\openssl.exe"
 
-  Delete "$INSTDIR\${SOURCE_ZIP_DEST}"
-  Delete "$INSTDIR\${GUI_SOURCE_ZIP_DEST}"
   Delete "$INSTDIR\OpenVPN GUI ReadMe.txt"
   Delete "$INSTDIR\INSTALL-win32.txt"
   Delete "$INSTDIR\openvpn.ico"
