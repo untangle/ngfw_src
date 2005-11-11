@@ -53,7 +53,6 @@ class ClientsTableModel extends MSortedTableModel{
     private static final int C5_MW = 120; /* netmask */
     private static final int C6_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW), 120); /* description */
 
-    protected boolean getSortable(){ return false; }
 
     public TableColumnModel getTableColumnModel(){
 
@@ -78,7 +77,7 @@ class ClientsTableModel extends MSortedTableModel{
 	
 	for( Vector rowVector : tableVector ){
 	    rowIndex++;
-            newElem = (VpnGroup) rowVector.elementAt(6);
+            newElem = (VpnGroup) rowVector.elementAt(7);
 	    newElem.setLive( (Boolean) rowVector.elementAt(2) );
 	    newElem.setName( (String) rowVector.elementAt(3) );
 	    try{ newElem.setAddress( IPaddr.parse((String) rowVector.elementAt(4)) ); }

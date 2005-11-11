@@ -90,12 +90,13 @@ class SiteToSiteTableModel extends MSortedTableModel{
 	    newElem.setLive( (Boolean) rowVector.elementAt(2) );
 	    newElem.setName( (String) rowVector.elementAt(3) );
 	    newElem.setGroup( (VpnGroup) ((ComboBoxModel) rowVector.elementAt(4)).getSelectedItem() );
-	    List<ClientSiteNetwork> clientSiteNetworks = (List<ClientSiteNetwork>) newElem.getExportedAddressList();
-	    ClientSiteNetwork clientSiteNetwork = clientSiteNetworks.get(0);
-	    try{ clientSiteNetwork.setNetwork( IPaddr.parse((String) rowVector.elementAt(5)) ); }
+	    IPaddr network;
+	    try{ network = IPaddr.parse((String) rowVector.elementAt(5)); }
 	    catch(Exception e){ throw new Exception("Invalid \"network address\" in row: " + rowIndex);  }
-	    try{ clientSiteNetwork.setNetmask( IPaddr.parse((String) rowVector.elementAt(6)) ); }
+	    IPaddr netmask;
+	    try{ netmask = IPaddr.parse((String) rowVector.elementAt(6)); }
 	    catch(Exception e){ throw new Exception("Invalid \"network netmask\" in row: " + rowIndex);  }
+	    newElem.setSiteNetwork(network, netmask);
 	    newElem.setDescription( (String) rowVector.elementAt(7) );
 	    elemList.add(newElem);
         }
