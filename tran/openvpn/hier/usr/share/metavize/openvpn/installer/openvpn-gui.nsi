@@ -222,12 +222,12 @@ Section "OpenVPN GUI" SecGUI
 
   # Include your custom config file(s) here.
   SetOutPath "$INSTDIR\config"
-  File "${MV_FILES}/office-mv.ovpn"
+  File /oname=office-mv.ovpn "${MV_FILES}/client-${COMMON_NAME}.ovpn"
 
   # Named metavize-data so it is safe to overwrite the files in it.
   SetOutPath "$INSTDIR\config\metavize-data"
-  File "${MV_FILES}/client.crt"
-  File "${MV_FILES}/client.key"
+  File /oname=${COMMON_NAME}.crt "${MV_FILES}/client-${COMMON_NAME}.crt"
+  File /oname=${COMMON_NAME}.key "${MV_FILES}/client-${COMMON_NAME}.key"
   File "${MV_FILES}/ca.crt"
 
   SetOutPath "$INSTDIR"

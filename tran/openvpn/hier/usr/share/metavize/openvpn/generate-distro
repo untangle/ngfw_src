@@ -21,9 +21,12 @@ if [ -z "${commonName}" ]; then
     exit -3
 fi
 
-OUTPUT_DIRECTORY=@MVVM_CONF@/openvpn/client-packages
-WIN_CONFIG_FILE=@MVVM_CONF@/openvpn/client-${commonName}.ovpn
-UNIX_CONFIG_FILE=@MVVM_CONF@/openvpn/client-${commonName}.conf
+OPENVPN_CONF_DIR=@MVVM_CONF@/openvpn
+OUTPUT_DIRECTORY=${OPENVPN_CONF_DIR}/client-packages
+WIN_CONFIG_FILE=${OPENVPN_CONF_DIR}/client-${commonName}.ovpn
+UNIX_CONFIG_FILE=${OPENVPN_CONF_DIR}/client-${commonName}.conf
+CLI_CRT_FILE=${OPENVPN_CONF_DIR}/client-${commonName}.crt
+CLI_KEY_FILE=${OPENVPN_CONF_DIR}/client-${commonName}.key
 
 NSI_SCRIPT=${OPENVPN_HOME}/installer/openvpn-gui.nsi
 
@@ -31,21 +34,45 @@ NSI_SCRIPT=${OPENVPN_HOME}/installer/openvpn-gui.nsi
 mkdir -p ${OUTPUT_DIRECTORY}
 
 ## Create a tempory directory for the client
-function moveFiles() {
-    local outputDir=`mktemp -d || exit -3`
+function buildConfigFile() {
+    local tmpDir=`mktemp -d || exit -3`
+
+    ## Done this way so the zip directory is called office-mv
+    local outputDir="${tmpDir}/office-mv"
+    local keyDir="${outputDir}/metavize-data"
+
+    mkdir ${outputDir} || exit -4
+    mkdir ${keyDir} || exit -4
     
+    cp ${UNIX_CONFIG_FILE} ${outputDir}/office-mv.conf
+    cp ${WIN_CONFIG_FILE}  ${outputDir}/office-mv.ovpn
+    cp ${CLI_KEY_FILE}     ${keyDir}/${commonName}.crt
+    cp ${CLI_CRT_FILE}     ${keyDir}/${commonName}.key
+    cp ${CA_CRT}           ${keyDir}/ca.crt
+
+    pushd ${tmpDir}
+    zip -r ${OUTPUT_DIRECTORY}/config-${commonName}.zip office-mv
+    popd
+
+    ## Clean up
+    rm -f ${outputDir}/office-mv.conf
+    rm -f ${outputDir}/office-mv.ovpn
+    rm -f ${keyDir}/${commonName}.crt
+    rm -f ${keyDir}/${commonName}.key
+    rm -f ${keyDir}/ca.crt
     
-    rm -rf ${outputDir}
+    rmdir ${keyDir}
+    rmdir ${outputDir}
+    rmdir ${tmpDir}
 }
-
-
-
 
 ## Convert the client file to dos
 unix2dos ${WIN_CONFIG_FILE}
 
 ## Run NSIS to create client distro.
- makensis -V2 -DCOMMON_NAME="${commonName}" ${NSI_SCRIPT}
+makensis -V1 -DCOMMON_NAME="${commonName}" ${NSI_SCRIPT}
+
+buildConfigFile
 
 true
 

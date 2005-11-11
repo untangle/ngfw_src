@@ -75,7 +75,12 @@ class OpenVpnManager
     /* XXXXXXXXX Need to select a valid cipher to use */
     private static final String FLAG_REMOTE       = "remote";
     private static final String DEFAULT_CIPHER    = "none";
-    
+
+    private static final String FLAG_CERT         = "cert";
+    private static final String FLAG_KEY          = "key";
+    /* The directory where the key material ends up for a client */
+    private static final String CLI_KEY_DIR       = "metavize-data";
+
     /* Ping every x seconds */
     private static final int DEFAULT_PING_TIME      = 10;
     
@@ -140,9 +145,7 @@ class OpenVpnManager
         "verb 3",
         "persist-key",
         "persist-tun",
-        "ca   metavize-data/ca.crt",
-        "cert metavize-data/client.crt",
-        "key  metavize-data/client.key"
+        "ca " + CLI_KEY_DIR + "/ca.crt"
     };
     
     private static final String WIN_CLIENT_DEFAULTS[]  = new String[] {};
@@ -314,6 +317,11 @@ class OpenVpnManager
         } else {
             sw.appendVariable( FLAG_DEVICE, DEVICE_ROUTING );
         }
+
+        String name = client.getInternalName();
+        
+        sw.appendVariable( FLAG_CERT, CLI_KEY_DIR + "/" + name + ".crt" );
+        sw.appendVariable( FLAG_KEY,  CLI_KEY_DIR + "/" + name + ".key" );
         
         /* VPN configuratoins needs information from the networking settings. */
         ArgonManager argonManager = MvvmContextFactory.context().argonManager();
@@ -322,7 +330,7 @@ class OpenVpnManager
            from the settings */
         sw.appendVariable( FLAG_REMOTE, argonManager.getOutsideAddress().getHostAddress());
 
-        sw.writeFile( VPN_CLIENT_FILE_BASE + client.getInternalName() + "." + extension );
+        sw.writeFile( VPN_CLIENT_FILE_BASE + name + "." + extension );
     }
 
     private void writeClientFiles( VpnSettings settings )
