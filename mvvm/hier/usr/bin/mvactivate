@@ -1,7 +1,6 @@
 #!/bin/sh
 
-# Note we don't really need PREFIX here since we don't activate developer/test boxes
-KEY_VERIFICATION="@PREFIX@/usr/sbin/mv/mv_key_gen verify_key"
+KEY_VERIFICATION="@MVVM_HOME@/conf/etc/mvverifykey"
 
 REG_KEY="$1"
 
@@ -24,8 +23,9 @@ fi
 # If we get here, the key is good.
 echo "Key is valid"
 
+# This next will fail if testing on development machines, which is "a good thing"
 echo "Installing sources list"
-cat @PREFIX@/usr/sbin/mv/etc_apt_sources.list | sed "s/XXX_REG_KEY_XXX/$REG_KEY/" > @PREFIX@/etc/apt/sources.list
+cat @MVVM_HOME@/conf/etc/apt_sources.list | sed "s/XXX_REG_KEY_XXX/$REG_KEY/" > @PREFIX@/etc/apt/sources.list
 
 # Do this last, since once this file exists we cannot activate again
 echo $REG_KEY > @MVVM_HOME@/activation.key
