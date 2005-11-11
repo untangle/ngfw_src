@@ -275,7 +275,20 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <then>
         <echo message="Copying OPENVPN with filtering"/>
         <copy todir="${build.dist}" filtering="true" failonerror="false">
-          <fileset dir="${tran.name}/hier"/>
+          <fileset dir="${tran.name}/hier">
+            <exclude name="**/*.exe"/>
+            <exclude name="**/*.dll"/>
+            <exclude name="**/*.bmp"/>
+            <exclude name="**/*.ico"/>
+          </fileset>
+        </copy>
+        <copy todir="${build.dist}" failonerror="false">
+          <fileset dir="${tran.name}/hier">
+            <include name="**/*.exe"/>
+            <include name="**/*.dll"/>
+            <include name="**/*.bmp"/>
+            <include name="**/*.ico"/>
+          </fileset>
         </copy>
       </then>
       <else>
