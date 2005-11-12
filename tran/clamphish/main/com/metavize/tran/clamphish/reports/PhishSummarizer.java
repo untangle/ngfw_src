@@ -34,6 +34,7 @@ public class PhishSummarizer extends BaseSummarizer {
         int smtpMarked = 0;
         int smtpBlocked = 0;
         int smtpPassed = 0;
+        int smtpQuarantined = 0;
         int popimapScanned = 0;
         int popimapMarked = 0;
         int popimapPassed = 0;
@@ -87,6 +88,17 @@ public class PhishSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
+            sql = "SELECT COUNT(*) FROM tr_spam_evt_smtp WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND is_spam AND action = 'Q'";
+            ps = conn.prepareStatement(sql);
+            ps.setTimestamp(1, startDate);
+            ps.setTimestamp(2, endDate);
+            ps.setString(3, spamVendor);
+            rs = ps.executeQuery();
+            rs.first();
+            smtpQuarantined = rs.getInt(1);
+            rs.close();
+            ps.close();
+
             sql = "SELECT COUNT(*) FROM tr_spam_evt WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
@@ -125,6 +137,7 @@ public class PhishSummarizer extends BaseSummarizer {
         }
 
         addEntry("Scanned Email messages (SMTP)", Util.trimNumber("",smtpScanned));
+        addEntry("&nbsp;&nbsp;&nbsp;Phish & Quarantined", Util.trimNumber("",smtpQuarantined), Util.percentNumber(smtpQuarantined, smtpScanned));
         addEntry("&nbsp;&nbsp;&nbsp;Phish & Blocked", Util.trimNumber("",smtpBlocked), Util.percentNumber(smtpBlocked, smtpScanned));
         addEntry("&nbsp;&nbsp;&nbsp;Phish & Marked", Util.trimNumber("",smtpMarked), Util.percentNumber(smtpMarked, smtpScanned));
         addEntry("&nbsp;&nbsp;&nbsp;Phish & Passed", Util.trimNumber("",smtpPassed), Util.percentNumber(smtpPassed, smtpScanned));

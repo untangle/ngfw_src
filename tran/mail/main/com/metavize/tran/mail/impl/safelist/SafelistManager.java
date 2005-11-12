@@ -32,10 +32,6 @@ import com.metavize.tran.mail.papi.safelist.SafelistSettings;
 import com.metavize.tran.mail.papi.safelist.SafelistTransformView;
 import com.metavize.tran.mime.EmailAddress;
 
-//TODO bscott This is *obviously* a silly fake implemementation,
-//existing only for basic testing.  Someone needs to "make this
-//real"
-
 /**
  * Implementation of the safelist stuff
  */
@@ -44,16 +40,12 @@ public class SafelistManager
 {
     private final Logger m_logger = Logger.getLogger(SafelistManager.class);
 
-    // caches of values held by persistent hibernate mapping objects
-    private HashMap<String, ArrayList<String>> m_listsByRcpnt = new HashMap<String, ArrayList<String>>();
-    private HashSet<String> m_allSndrs = new HashSet<String>();
-
-    // caches of persistent hibernate mapping objects
-    private HashMap<String, SafelistRecipient> m_allHMSLRcpnts = new HashMap<String, SafelistRecipient>();
-    private HashMap<String, SafelistSender> m_allHMSLSndrs = new HashMap<String, SafelistSender>();
-
     private MailTransformImpl mlImpl;
     private MailTransformSettings mlSettings;
+
+    // caches of values held by persistent hibernate mapping objects
+    private HashMap<String, ArrayList<String>> m_sndrsByRcpnt = new HashMap<String, ArrayList<String>>();
+    private HashSet<String> m_allSndrs = new HashSet<String>();
 
     public SafelistManager() {}
 
@@ -65,7 +57,7 @@ public class SafelistManager
     {
         this.mlImpl = mlImpl;
         this.mlSettings = mlSettings;
-        // must cast list because xdoclet does not support java 1.5
+        // cast list because xdoclet does not support java 1.5
         renew((List<SafelistSettings>) mlSettings.getSafelistSettings());
         return;
     }
@@ -78,12 +70,7 @@ public class SafelistManager
     {
         EmailAddress eAddr = (null != envelopeSender ? envelopeSender : (null != mimeFrom ? mimeFrom : null));
 
-        boolean bReturn;
-        if (null == eAddr) {
-            bReturn = false;
-        } else {
-            bReturn = m_allSndrs.contains(eAddr.getAddress().toLowerCase());
-        }
+        boolean bReturn = (null == eAddr) ? bReturn = false : m_allSndrs.contains(eAddr.getAddress().toLowerCase());
         m_logger.debug("sender ( " + envelopeSender + ", " + mimeFrom + "): is safelisted: " + bReturn);
         return bReturn;
     }
@@ -116,7 +103,8 @@ public class SafelistManager
             return null;
             //throw new NoSuchSafelistException(rcpnt + " has no safelist; cannot remove " + obsSndr + " from safelist");
         }
-        sndrs.remove(obsSndr.toLowerCase());
+        obsSndr = obsSndr.toLowerCase();
+        sndrs.remove(obsSndr);
 
         setSndrs(rcpnt, sndrs);
         return toStringArray(sndrs);
@@ -175,8 +163,8 @@ public class SafelistManager
     //See doc on SafelistAdminView.java
     public List<String> listSafelists() throws SafelistActionFailedException
     {
-        m_logger.debug("returning list of safelists");
-        return new ArrayList<String>(m_listsByRcpnt.keySet());
+        m_logger.debug("returning all safelists");
+        return new ArrayList<String>(m_sndrsByRcpnt.keySet());
     }
 
     //See doc on SafelistAdminView.java
@@ -184,7 +172,7 @@ public class SafelistManager
       throws SafelistActionFailedException
     {
         m_logger.debug("recipient: " + rcpnt + ", deleted safelist");
-        m_listsByRcpnt.remove(rcpnt.toLowerCase());
+        m_sndrsByRcpnt.remove(rcpnt.toLowerCase());
 
         setSndrs(null, null);
         return;
@@ -203,93 +191,176 @@ public class SafelistManager
     public boolean safelistExists(String rcpnt)
       throws SafelistActionFailedException
     {
-        boolean bReturn = m_listsByRcpnt.containsKey(rcpnt.toLowerCase());
+        boolean bReturn = m_sndrsByRcpnt.containsKey(rcpnt.toLowerCase());
         m_logger.debug("recipient: " + rcpnt + ", has safelist: " + bReturn);
         return bReturn;
     }
 
     //--------------------- SafelistEndUserView -----------------------
 
+    // refresh (add/delete/update) safelists for this recipient and
+    // make these changes visible as persistent hibernate mapping objects
     private synchronized void setSndrs(String rcpnt, ArrayList<String> sndrs)
     {
         if (null == rcpnt) {
-            m_logger.debug("updating safelist");
+            m_logger.debug("refreshing all safelists");
         } else {
             m_logger.debug("recipient: " + rcpnt + ", updating safelist: " + sndrs);
             rcpnt = rcpnt.toLowerCase();
         }
 
-        // must cast list because xdoclet does not support java 1.5
+        HashMap<String, ArrayList<SafelistSettings>> allHMSafelistsByRcpnt = new HashMap<String, ArrayList<SafelistSettings>>();
+        HashMap<String, SafelistSender> allHMSndrs = new HashMap<String, SafelistSender>();
+        // cast list because xdoclet does not support java 1.5
         List<SafelistSettings> safelists = (List<SafelistSettings>) mlSettings.getSafelistSettings();
-        ArrayList<String> tmpRcpnts = new ArrayList<String>(m_listsByRcpnt.keySet());
 
+        ArrayList<SafelistSettings> rcpntHMSafelists;
         SafelistRecipient slRcpnt;
         SafelistSender slSndr;
-        SafelistSettings safelist;
-        ArrayList<String> tmpSndrs;
+        String tmpRcpnt;
+        String tmpSndr;
 
-        safelists.clear();
+        // create temporary caches of safelists
+        for (SafelistSettings safelist : safelists) {
+            // recipient may exist in multiple safelists
+            // but we only use one copy of recipient
+            slRcpnt = safelist.getRecipient();
+            tmpRcpnt = slRcpnt.getAddr();
 
-        for (String tmpRcpnt : tmpRcpnts) {
-            m_logger.debug("inserting recipient: " + tmpRcpnt);
+            // sender may exist in multiple safelists
+            // but we only use one copy of sender
+            slSndr = safelist.getSender();
+            tmpSndr = slSndr.getAddr();
+            allHMSndrs.put(tmpSndr, slSndr); // cache sender
 
-            slRcpnt = m_allHMSLRcpnts.get(tmpRcpnt);
-            tmpSndrs = m_listsByRcpnt.get(tmpRcpnt);
-            if (null == slRcpnt &&
-                false == tmpSndrs.isEmpty()) {
-                slRcpnt = new SafelistRecipient(tmpRcpnt);
+            rcpntHMSafelists = allHMSafelistsByRcpnt.get(tmpRcpnt);
+            if (null == rcpntHMSafelists) {
+                // create safelist cache for recipient
+                rcpntHMSafelists = new ArrayList<SafelistSettings>();
+                allHMSafelistsByRcpnt.put(tmpRcpnt, rcpntHMSafelists);
+            }
+            rcpntHMSafelists.add(safelist); // cache safelist for recipient
+        }
+
+        ArrayList<SafelistSettings> newSafelists = new ArrayList<SafelistSettings>(safelists.size());
+        ArrayList<String> curRcpnts = new ArrayList<String>(m_sndrsByRcpnt.keySet());
+
+        SafelistSettings newSafelist;
+        ArrayList<String> curSndrs;
+
+        // update/add/remove safelists for current recipients
+        for (String curRcpnt : curRcpnts) {
+            if (null != rcpnt && true == rcpnt.equals(curRcpnt)) {
+                if (null == sndrs) {
+                    // we drop obsolete safelists for this recipient
+                    // (by not reusing this recipient's safelists)
+                    continue;
+                } else {
+                    // we have new safelists for this recipient
+                    curSndrs = sndrs;
+                }
+            } else {
+                // we reuse old safelists for this recipient
+                // - list always exists in this context (but it may be empty)
+                curSndrs = m_sndrsByRcpnt.get(curRcpnt);
             }
 
-            // if recipient's safelist is empty, we do not save it
-            for (String tmpSndr : tmpSndrs) {
-                m_logger.debug("inserting sender: " + tmpSndr);
+            rcpntHMSafelists = allHMSafelistsByRcpnt.get(curRcpnt);
+            if (null == rcpntHMSafelists) {
+                // create new recipient
+                slRcpnt = new SafelistRecipient(curRcpnt);
+                m_logger.debug("adding recipient: " + curRcpnt);
 
-                safelist = new SafelistSettings();
+                // create safelist cache for new recipient
+                rcpntHMSafelists = new ArrayList<SafelistSettings>();
+                allHMSafelistsByRcpnt.put(curRcpnt, rcpntHMSafelists);
+            } else {
+                // use recipient from any safelist; recipients are all same
+                slRcpnt = rcpntHMSafelists.get(0).getRecipient();
+                m_logger.debug("reusing recipient: " + curRcpnt);
+            }
 
-                safelist.setRecipient(slRcpnt);
-
-                slSndr = m_allHMSLSndrs.get(tmpSndr);
-                if (null == slSndr) {
-                    slSndr = new SafelistSender(tmpSndr);
+            // if recipient has no safelist, skip recipient (do not save)
+            for (String curSndr : curSndrs) {
+                newSafelist = getSndrSafelist(curSndr, rcpntHMSafelists);
+                if (null != newSafelist) {
+                    // safelist already exists for this recipient
+                    // so reuse safelist
+                    newSafelists.add(newSafelist);
+                    m_logger.debug("reusing sender: " + curSndr);
+                    m_logger.debug("reusing safelist: " + newSafelist);
+                    continue;
                 }
-                safelist.setSender(slSndr);
+                // else safelist doesn't exist for this recipient
+                // so create new safelist
 
-                safelists.add(safelist);
+                newSafelist = new SafelistSettings();
+                newSafelist.setRecipient(slRcpnt);
+
+                // if another recipient uses this sender,
+                // this recipient can use this sender too
+                slSndr = allHMSndrs.get(curSndr);
+                if (null == slSndr) {
+                    // create new sender
+                    slSndr = new SafelistSender(curSndr);
+                    // cache new sender
+                    allHMSndrs.put(curSndr, slSndr);
+                    m_logger.debug("adding sender: " + curSndr);
+                } else {
+                    // else reuse sender
+                    m_logger.debug("reusing sender: " + curSndr);
+                }
+
+                newSafelist.setSender(slSndr);
+
+                newSafelists.add(newSafelist);
+                m_logger.debug("adding safelist: " + newSafelist);
+
+                if (null != rcpntHMSafelists) {
+                    // cache new safelist for new recipient
+                    rcpntHMSafelists.add(newSafelist);
+                }
             }
         }
 
-        if (null != rcpnt && false == m_listsByRcpnt.containsKey(rcpnt)) {
-            m_logger.debug("inserting new recipient: " + rcpnt);
+        // refresh all safelists
+        // - delete unused safelists, add new safelists, reuse old safelists
+        safelists.clear(); // clear old cache
+        safelists.addAll(newSafelists); // add new cache
 
-            slRcpnt = new SafelistRecipient(rcpnt);
-
-            for (String tmpSndr : sndrs) {
-                m_logger.debug("inserting sender: " + tmpSndr);
-
-                safelist = new SafelistSettings();
-
-                safelist.setRecipient(slRcpnt);
-
-                slSndr = m_allHMSLSndrs.get(tmpSndr);
-                if (null == slSndr) {
-                    slSndr = new SafelistSender(tmpSndr);
-                }
-                safelist.setSender(slSndr);
-
-                safelists.add(safelist);
-            }
+        // clear all caches of safelist references
+        ArrayList<String> clrRcpnts = new ArrayList<String>(m_sndrsByRcpnt.keySet());
+        for (String clrRcpnt : clrRcpnts) {
+            allHMSafelistsByRcpnt.get(clrRcpnt).clear();
         }
+        allHMSafelistsByRcpnt.clear();
+        allHMSndrs.clear();
+        newSafelists.clear();
 
-        setSafelists(safelists);
+        setHMSafelists(safelists); // set new cache
         return;
     }
 
-    private void setSafelists(List<SafelistSettings> safelists)
+    private SafelistSettings getSndrSafelist(String sndr, List<SafelistSettings> safelists)
     {
-        m_logger.debug("setting safelists: " + safelists);
+        if (null == safelists) {
+            return null;
+        }
 
-        // must cast list because xdoclet does not support java 1.5
-        mlSettings.setSafelistSettings((List) safelists);
+        for (SafelistSettings safelist : safelists) {
+            if (true == sndr.equals(safelist.getSender().getAddr())) {
+                return safelist;
+            }
+        }
+
+        return null;
+    }
+
+    private void setHMSafelists(List<SafelistSettings> safelists)
+    {
+        m_logger.debug("setting safelists, size: " + safelists.size());
+
+        mlSettings.setSafelistSettings(safelists);
 
         TransactionWork tw = new TransactionWork()
         {
@@ -307,12 +378,18 @@ public class SafelistManager
         return;
     }
 
+    // get (refresh) safelists for this recipient
     private ArrayList<String> getSndrs(String rcpnt)
     {
-        return getSndrs(getSafelists(), rcpnt);
+        return getSndrs(getHMSafelists(), rcpnt);
     }
 
-    private List getSafelists()
+    private ArrayList<String> getSndrs(List<SafelistSettings> safelists, String rcpnt)
+    {
+        return renewGetSndrs(safelists, rcpnt);
+    }
+
+    private List getHMSafelists()
     {
         TransactionWork tw = new TransactionWork()
         {
@@ -329,22 +406,16 @@ public class SafelistManager
         };
         mlImpl.getTransformContext().runTransaction(tw);
 
-        // must cast list because xdoclet does not support java 1.5
+        // cast list because xdoclet does not support java 1.5
         return (List<SafelistSettings>) mlSettings.getSafelistSettings();
-    }
-
-    private ArrayList<String> getSndrs(List<SafelistSettings> safelists, String rcpnt)
-    {
-        return renewGetSndrs(safelists, rcpnt);
     }
 
     private void renew(List<SafelistSettings> safelists)
     {
-        HashMap<String, ArrayList<String>> listsByRcpnt = new HashMap<String, ArrayList<String>>();
-        HashSet<String> allSndrs = new HashSet<String>();
+        m_logger.debug("reading all safelists");
 
-        HashMap<String, SafelistRecipient> allHMSLRcpnts = new HashMap<String, SafelistRecipient>();
-        HashMap<String, SafelistSender> allHMSLSndrs = new HashMap<String, SafelistSender>();
+        HashMap<String, ArrayList<String>> sndrsByRcpnt = new HashMap<String, ArrayList<String>>();
+        HashSet<String> allSndrs = new HashSet<String>();
 
         SafelistRecipient slRcpnt;
         SafelistSender slSndr;
@@ -353,27 +424,29 @@ public class SafelistManager
         String sndr;
 
         for (SafelistSettings safelist : safelists) {
-            // we implicitly ignore duplicates with HashMap
+
+            // we implicitly ignore duplicates w/ HashMap
             slRcpnt = safelist.getRecipient();
             rcpnt = slRcpnt.getAddr().toLowerCase();
-            allHMSLRcpnts.put(rcpnt, slRcpnt);
 
             slSndr = safelist.getSender();
             sndr = slSndr.getAddr().toLowerCase();
-            allHMSLSndrs.put(sndr, slSndr);
 
-            // we implicitly ignore duplicates with HashSet
+            m_logger.debug("using safelist: " + safelist + ", recipient: " + rcpnt + ", sender: " + sndr);
+
+            // we implicitly ignore duplicates w/ HashSet
             allSndrs.add(sndr);
 
-            if (false == listsByRcpnt.containsKey(rcpnt)) {
-                // create safelist for this recipient
+            sndrs = sndrsByRcpnt.get(rcpnt);
+            if (null == sndrs) {
+                // create new safelists for this recipient
                 sndrs = new ArrayList<String>();
                 sndrs.add(sndr);
-                listsByRcpnt.put(rcpnt, sndrs);
+                sndrsByRcpnt.put(rcpnt, sndrs);
                 continue;
             }
+            // else if necessary, add sender to this recipient's safelists
 
-            sndrs = listsByRcpnt.get(rcpnt);
             if (true == sndrs.contains(sndr)) {
                 // we explicitly ignore duplicates for ArrayList
                 continue; 
@@ -383,11 +456,9 @@ public class SafelistManager
             sndrs.add(sndr);
         }
 
-        m_listsByRcpnt = listsByRcpnt;
+        m_sndrsByRcpnt = sndrsByRcpnt;
         m_allSndrs = allSndrs;
 
-        m_allHMSLRcpnts = allHMSLRcpnts;
-        m_allHMSLSndrs = allHMSLSndrs;
         return;
     }
 
@@ -395,7 +466,7 @@ public class SafelistManager
     {
         renew(safelists);
         // if null, recipient has no safelist
-        return (ArrayList<String>) m_listsByRcpnt.get(rcpnt.toLowerCase());
+        return (m_sndrsByRcpnt.get(rcpnt.toLowerCase()));
     }
 
     private ArrayList<String> createSL(String rcpnt)
@@ -405,7 +476,7 @@ public class SafelistManager
         ArrayList<String> sndrs = getSndrs(rcpnt);
         if (null == sndrs) {
             sndrs = new ArrayList<String>();
-            m_listsByRcpnt.put(rcpnt, sndrs);
+            m_sndrsByRcpnt.put(rcpnt, sndrs);
         } else {
             sndrs.clear();
         }
