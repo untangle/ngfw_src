@@ -16,12 +16,10 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
-import java.util.Formatter;
 
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.LoggingSettings;
 import com.metavize.mvvm.logging.SyslogManager;
-import com.metavize.tran.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;
 
 class SyslogManagerImpl implements SyslogManager
@@ -100,47 +98,13 @@ class SyslogManagerImpl implements SyslogManager
 
     private class SyslogSender
     {
-        private static final String DATE_FORMAT = "%1$tb %1$2te %1$tH:%1$tM:%1$tS";
-
-        private final byte[] buf = new byte[1024];
-        private final AsciiCharBuffer sb = AsciiCharBuffer.wrap(buf);
-        private final Formatter dateFormatter = new Formatter(sb);
+        private final SyslogBuilderImpl sb = new SyslogBuilderImpl();
 
         // public methods -----------------------------------------------------
 
         public void sendSyslog(LogEvent e, String tag)
         {
-            try {
-                // 'PRI'
-                int v = 8 * facility * e.getSyslogPrioritiy().getPriorityValue();
-                sb.append("<");
-                sb.append(Integer.toString(v));
-                sb.append(">");
-
-                // 'TIMESTAMP'
-                dateFormatter.format(DATE_FORMAT, e.getTimeStamp());
-
-                sb.append(' ');
-
-                // 'HOSTNAME'
-                sb.append("mv-edgeguard"); // XXX use legit hostname
-
-                sb.append(' ');
-
-                // 'TAG[pid]: '
-                sb.append(tag);
-
-                // CONTENT
-                sb.append(e.getSyslogId());
-
-                sb.append(" # ");
-
-                e.appendSyslog(sb);
-            } catch (IOException exn) {
-                logger.warn("could not fully append", exn);
-            }
-
-            DatagramPacket p = new DatagramPacket(buf, 0, sb.position());
+            DatagramPacket p = sb.makePacket(e, facility, "mv-edgeguard", tag);
 
             synchronized (SyslogManagerImpl.this) {
                 if (null != syslogSocket) {
@@ -148,13 +112,9 @@ class SyslogManagerImpl implements SyslogManager
                         syslogSocket.send(p);
                     } catch (IOException exn) {
                         logger.warn("could not send syslog", exn);
-                    } catch (Exception exn) {
-                        exn.printStackTrace();
                     }
                 }
             }
-
-            sb.clear();
         }
     }
 }

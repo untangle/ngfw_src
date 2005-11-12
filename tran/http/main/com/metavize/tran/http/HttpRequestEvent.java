@@ -11,9 +11,9 @@
 
 package com.metavize.tran.http;
 
-import java.io.IOException;
 
 import com.metavize.mvvm.logging.PipelineEvent;
+import com.metavize.mvvm.logging.SyslogBuilder;
 
 /**
  * Log event for a request.
@@ -118,19 +118,10 @@ public class HttpRequestEvent extends PipelineEvent
 
     // Syslog methods ---------------------------------------------------------
 
-    protected void doSyslog(Appendable a) throws IOException
+    protected void doSyslog(SyslogBuilder sb)
     {
-        a.append(" info: host=");
-        a.append(host);
-
-        a.append(", uri=");
-        String u = requestLine.getRequestUri().toString();
-        u = u.substring(Math.min(u.length(), 256));
-        a.append(u);
-
-        a.append(", content-length=");
-        a.append(Integer.toString(contentLength));
-
-        a.append(" #");
+        sb.addField("host", host);
+        sb.addField("uri", requestLine.getRequestUri().toString());;
+        sb.addField("content-length", Integer.toString(contentLength));
     }
 }

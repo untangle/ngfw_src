@@ -13,91 +13,25 @@ package com.metavize.tran.spam;
 
 import static com.metavize.tran.util.Ascii.CRLF;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
+import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
-import com.metavize.mvvm.tran.Direction;
 import com.metavize.mvvm.tran.Transform;
+import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.util.TransactionWork;
 import com.metavize.tran.mail.papi.smtp.SMTPNotifyAction;
 import com.metavize.tran.token.TokenAdaptor;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import com.metavize.mvvm.logging.EventHandler;
 
 public class SpamImpl extends AbstractTransform implements SpamTransform
 {
-    // XXX not yet tested, still need to index, etc...
-    private static final String SMTP_QUERY_BASE
-        = "SELECT evt.time_stamp, score, "
-        + "       CASE WHEN action = 'P' OR NOT is_spam THEN 'PASS' "
-        + "            WHEN action = 'M' THEN 'MARK' "
-        + "            WHEN action = 'B' THEN 'BLOCK' "
-        + "            WHEN action = 'Q' THEN 'QUARANTINE' "
-        + "       END AS action, "
-        + "       subject, rcpt.addr AS receiver, send.addr AS sender, "
-        + "       c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        + "       policy_inbound AS incoming "
-        + "FROM tr_spam_evt_smtp evt "
-        + "JOIN tr_mail_message_info info ON evt.msg_id = info.id "
-        + "JOIN pl_endp endp ON info.session_id = endp.session_id "
-        + "LEFT OUTER JOIN tr_mail_message_info_addr rcpt ON info.id = rcpt.msg_id AND rcpt.kind = 'B' "
-        + "LEFT OUTER JOIN tr_mail_message_info_addr send ON info.id = send.msg_id AND send.kind = 'G' "
-        + "WHERE vendor_name = ? "
-        + "AND endp.policy_id = ? ";
-
-    private static final String SMTP_QUERY
-        = SMTP_QUERY_BASE
-        + "ORDER BY evt.time_stamp DESC LIMIT ?";
-
-    private static final String SMTP_SPAM_QUERY
-        = SMTP_QUERY_BASE
-        + "AND is_spam "
-        + "ORDER BY evt.time_stamp DESC LIMIT ?";
-
-    private static final String MAIL_QUERY_BASE
-        = "SELECT evt.time_stamp, score, "
-        + "       CASE WHEN action = 'P' OR NOT is_spam THEN 'PASS' "
-        + "            WHEN action = 'M' THEN 'MARK' "
-        + "       END AS action, "
-        + "       subject, rcpt.addr AS receiver, send.addr AS sender, "
-        + "       c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        + "       NOT policy_inbound AS incoming "
-        + "FROM tr_spam_evt evt "
-        + "JOIN tr_mail_message_info info ON evt.msg_id = info.id "
-        + "JOIN pl_endp endp ON info.session_id = endp.session_id "
-        + "LEFT OUTER JOIN tr_mail_message_info_addr rcpt ON info.id = rcpt.msg_id AND rcpt.kind = 'U' "
-        + "LEFT OUTER JOIN tr_mail_message_info_addr send ON info.id = send.msg_id AND send.kind = 'F' "
-        + "WHERE vendor_name = ? "
-        + "AND endp.policy_id = ? ";
-
-    private static final String MAIL_QUERY
-        = MAIL_QUERY_BASE
-        + "ORDER BY evt.time_stamp DESC LIMIT ?";
-
-    private static final String MAIL_SPAM_QUERY
-        = MAIL_QUERY_BASE
-        + "AND is_spam "
-        + "ORDER BY evt.time_stamp DESC LIMIT ?";
-
-    private static final String[] QUERIES = new String[]
-        { SMTP_QUERY, MAIL_QUERY };
-
-    private static final String[] SPAM_QUERIES = new String[]
-        { SMTP_SPAM_QUERY, MAIL_SPAM_QUERY };
-
-
     //===============================
     // Defaults for templates
 
@@ -143,6 +77,8 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
     };
 
     private final SpamScanner scanner;
+    private final EventLogger<SpamEvent> eventLogger;
+
     private final Logger logger = Logger.getLogger(getClass());
 
     private volatile SpamSettings zSpamSettings;
@@ -151,36 +87,20 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
 
     public SpamImpl(SpamScanner scanner)
     {
+        TransformContext tctx = getTransformContext();
+
         this.scanner = scanner;
+        eventLogger = new EventLogger<SpamEvent>(tctx);
+
+        EventHandler eh = new SpamSmtpEventHandler(tctx);
+        eventLogger.addEventHandler(eh);
     }
 
     // Spam methods -----------------------------------------------------------
 
-    // backwards compat
-    public List<SpamLog> getEventLogs(int limit)
+    public EventManager<SpamEvent> getEventManager()
     {
-        return getEventLogs(limit, false);
-    }
-
-    public List<SpamLog> getEventLogs(int limit, boolean spamOnly)
-    {
-        String[] queries;
-        if (spamOnly)
-            queries = SPAM_QUERIES;
-        else
-            queries = QUERIES;
-
-        List<SpamLog> l = new ArrayList<SpamLog>(queries.length * limit);
-
-        for (String q : queries) {
-            getEventLogs(q, l, limit);
-        }
-
-        Collections.sort(l);
-
-        while (l.size() > limit) { l.remove(l.size() - 1); }
-
-        return l;
+        return eventLogger;
     }
 
     // Transform methods ------------------------------------------------------
@@ -356,7 +276,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
     public void incrementQuarantineCount() {
       incrementCount(Transform.GENERIC_3_COUNTER);
     }
-    
+
 
     public void reconfigure() { return; }
 
@@ -475,59 +395,25 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         return;
     }
 
+    protected void preStart()
+    {
+        eventLogger.start();
+    }
+
+    protected void postStop()
+    {
+        eventLogger.stop();
+    }
+
+
     SpamScanner getScanner()
     {
         return scanner;
     }
 
-    // private methods --------------------------------------------------------
-
-    private List<SpamLog> getEventLogs(final String q, final List<SpamLog> l,
-                                       final int limit)
+    void log(SpamEvent se)
     {
-        TransactionWork tw = new TransactionWork()
-            {
-                public boolean doWork(Session s) throws SQLException
-                {
-                    Connection c = s.connection();
-                    PreparedStatement ps = c.prepareStatement(q);
-                    ps.setString(1, scanner.getVendorName());
-                    ps.setString(2, getPolicy().getId().toString());
-                    ps.setInt(3, limit);
-                    long l0 = System.currentTimeMillis();
-                    ResultSet rs = ps.executeQuery();
-                    while (rs.next()) {
-                        long ts = rs.getTimestamp("time_stamp").getTime();
-                        Date timeStamp = new Date(ts);
-                        float score = rs.getFloat("score");
-                        String action = rs.getString("action");
-                        String subject = rs.getString("subject");
-                        String receiver = rs.getString("receiver");
-                        String sender = rs.getString("sender");
-                        String clientAddr = rs.getString("c_client_addr");
-                        int clientPort = rs.getInt("c_client_port");
-                        String serverAddr = rs.getString("s_server_addr");
-                        int serverPort = rs.getInt("s_server_port");
-                        boolean incoming = rs.getBoolean("incoming");
-
-                        Direction d = incoming ? Direction.INCOMING : Direction.OUTGOING;
-
-                        SpamLog rl = new SpamLog
-                            (timeStamp, score, action, subject, receiver, sender,
-                             clientAddr, clientPort, serverAddr, serverPort, d);
-
-                        l.add(rl);
-                    }
-                    long l1 = System.currentTimeMillis();
-                    logger.debug("getSpamLogs() in: " + (l1 - l0));
-                    return true;
-                }
-
-                public Object getResult() { return null; }
-            };
-        getTransformContext().runTransaction(tw);
-
-        return l;
+        eventLogger.log(se);
     }
 
     // XXX soon to be deprecated ----------------------------------------------

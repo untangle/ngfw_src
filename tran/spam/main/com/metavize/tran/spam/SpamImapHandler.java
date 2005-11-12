@@ -11,18 +11,17 @@
 
 package com.metavize.tran.spam;
 
+import java.io.File;
+
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.mail.papi.MessageInfo;
 import com.metavize.tran.mail.papi.imap.BufferingImapTokenStreamHandler;
-import com.metavize.tran.mime.MIMEMessage;
-import com.metavize.tran.mime.MIMEPart;
-import com.metavize.tran.mime.MIMEUtil;
 import com.metavize.tran.mime.HeaderParseException;
-import com.metavize.tran.util.TempFileFactory;
-import java.io.File;
-import org.apache.log4j.Logger;
 import com.metavize.tran.mime.LCString;
+import com.metavize.tran.mime.MIMEMessage;
+import com.metavize.tran.util.TempFileFactory;
+import org.apache.log4j.Logger;
 
 public class SpamImapHandler
   extends BufferingImapTokenStreamHandler {
@@ -30,13 +29,10 @@ public class SpamImapHandler
   private final Logger m_logger =
     Logger.getLogger(SpamImapHandler.class);
 
-  private static final Logger m_eventLogger = MvvmContextFactory
-    .context().eventLogger();    
-
   private final SpamImpl m_spamImpl;
   private final SpamIMAPConfig m_config;
   private final TempFileFactory m_fileFactory;
-  
+
   public SpamImapHandler(TCPSession session,
     long maxClientWait,
     long maxSvrWait,
@@ -48,7 +44,7 @@ public class SpamImapHandler
     m_spamImpl = impl;
     m_config = config;
     m_fileFactory = new TempFileFactory(MvvmContextFactory.context().
-      pipelineFoundry().getPipeline(session.id()));    
+      pipelineFoundry().getPipeline(session.id()));
 
   }
 
@@ -94,7 +90,7 @@ public class SpamImapHandler
       report.isSpam(),
       report.isSpam()?action:SpamMessageAction.PASS,
       m_spamImpl.getScanner().getVendorName());
-    m_eventLogger.info(spamEvent);
+    m_spamImpl.log(spamEvent);
 
     //Mark headers regardless of other actions
     try {
@@ -162,5 +158,5 @@ public class SpamImapHandler
       return null;
     }
   }
-  
+
 }

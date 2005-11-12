@@ -11,7 +11,6 @@
 
 package com.metavize.mvvm.logging;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -73,7 +72,7 @@ public abstract class LogEvent implements Comparable, Serializable
 
     // Syslog methods ---------------------------------------------------------
 
-    public void appendSyslog(Appendable a) throws IOException { }
+    public void appendSyslog(SyslogBuilder a) { }
 
     public String getSyslogId()
     {

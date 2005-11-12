@@ -11,9 +11,9 @@
 
 package com.metavize.tran.spyware;
 
-import java.io.IOException;
 
 import com.metavize.mvvm.logging.PipelineEvent;
+import com.metavize.mvvm.logging.SyslogBuilder;
 
 public abstract class SpywareEvent extends PipelineEvent
 {
@@ -35,15 +35,10 @@ public abstract class SpywareEvent extends PipelineEvent
 
     // Syslog methods ---------------------------------------------------------
 
-    protected void doSyslog(Appendable a) throws IOException
+    protected void doSyslog(SyslogBuilder sb)
     {
-        a.append(" info: id=");
-        a.append(getIdentification());
-        a.append(", loc=");
-        String loc = getLocation();
-        a.append(loc, 0, Math.min(loc.length(), 256));
-        a.append(", blocked=");
-        a.append(Boolean.toString(isBlocked()));
-        a.append(" #");
+        sb.addField("info", getIdentification());
+        sb.addField("loc", getLocation());
+        sb.addField("blocked", Boolean.toString(isBlocked()));
     }
 }

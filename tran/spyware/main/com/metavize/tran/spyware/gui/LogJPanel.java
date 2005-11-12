@@ -36,13 +36,9 @@ public class LogJPanel extends MLogTableJPanel {
 
         depthJSlider.addChangeListener(new ChangeListener() {
                 public void stateChanged(ChangeEvent ce) {
-                    System.out.println("GOING IN");
                     int v = depthJSlider.getValue();
                     EventManager<SpywareEvent> em = spyware.getEventManager();
-                    for (EventFilter<SpywareEvent> ef : em.getFilters()) {
-
-                    }
-                    System.out.println("LEAVING");
+                    em.setLimit(v);
                 }
             });
 

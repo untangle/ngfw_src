@@ -1,0 +1,101 @@
+/*
+ * Copyright (c) 2005 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
+package com.metavize.mvvm.engine;
+
+import java.net.DatagramPacket;
+import java.util.Formatter;
+
+import com.metavize.mvvm.logging.LogEvent;
+import com.metavize.mvvm.logging.SyslogBuilder;
+import com.metavize.tran.util.AsciiCharBuffer;
+import org.apache.log4j.Logger;
+
+public class SyslogBuilderImpl implements SyslogBuilder
+{
+    private static final int PACKET_SIZE = 1024;
+    private static final int MAX_VALUE_SIZE = 256;
+    private static final String DATE_FORMAT = "%1$tb %1$2te %1$tH:%1$tM:%1$tS";
+
+
+    private final byte[] buf = new byte[PACKET_SIZE];
+    private final AsciiCharBuffer sb = AsciiCharBuffer.wrap(buf);
+    private final Formatter dateFormatter = new Formatter(sb);
+
+    private final Logger logger = Logger.getLogger(getClass());
+
+    private boolean first = true;
+
+    // public methods ---------------------------------------------------------
+
+    public void addField(String key, String value)
+    {
+        int s = key.length() + (first ? 0 : 2) + 1;
+        if (sb.remaining() <= s) {
+            logger.error("could not fit field key: '" + key
+                         + "' value: '" + value + "'");
+            return;
+        }
+
+        if (!first) {
+            sb.append(", ");
+        } else {
+            first = false;
+        }
+
+        sb.append(key);
+        sb.append("=");
+
+        int i = Math.min(value.length(), MAX_VALUE_SIZE);
+
+        if (sb.remaining() < i) {
+            logger.warn("value too long, truncating");
+            i = sb.remaining();
+        }
+
+        sb.append(value, 0, i);
+    }
+
+    DatagramPacket makePacket(LogEvent e, int facility, String host,
+                                     String tag)
+    {
+        sb.clear();
+
+        int v = 8 * facility + e.getSyslogPrioritiy().getPriorityValue();
+        sb.append("<");
+        sb.append(Integer.toString(v));
+        sb.append(">");
+
+        // 'TIMESTAMP'
+        dateFormatter.format(DATE_FORMAT, e.getTimeStamp());
+
+        sb.append(' ');
+
+        // 'HOSTNAME'
+        sb.append(host); // XXX use legit hostname
+
+        sb.append(' ');
+
+        // 'TAG[pid]: '
+        sb.append(tag);
+
+        // CONTENT
+        sb.append(e.getSyslogId());
+
+        sb.append(" # info: ");
+
+        e.appendSyslog(this);
+
+        sb.append(" #");
+
+        return new DatagramPacket(buf, 0, sb.position());
+    }
+}

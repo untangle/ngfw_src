@@ -12,6 +12,8 @@
 package com.metavize.tran.virus.gui;
 
 import java.util.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.table.*;
 
 import com.metavize.gui.transform.*;
@@ -27,9 +29,19 @@ public class LogJPanel extends MLogTableJPanel {
 
     public LogJPanel(Transform transform, MTransformControlsJPanel mTransformControlsJPanel){
         super(transform, mTransformControlsJPanel);
+
+        final VirusTransform virus = (VirusTransform)logTransform;
+
+        depthJSlider.addChangeListener(new ChangeListener() {
+                public void stateChanged(ChangeEvent ce) {
+                    int v = depthJSlider.getValue();
+                    EventManager<VirusEvent> em = virus.getEventManager();
+                    em.setLimit(v);
+                }
+            });
+
         setTableModel(new LogTableModel());
 
-        VirusTransform virus = (VirusTransform)logTransform;
         EventManager<VirusEvent> eventManager = virus.getEventManager();
         for (FilterDesc fd : eventManager.getFilterDescs()) {
             queryJComboBox.addItem(fd.getName());

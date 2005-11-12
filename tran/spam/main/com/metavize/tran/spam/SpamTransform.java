@@ -11,8 +11,7 @@
 
 package com.metavize.tran.spam;
 
-import java.util.List;
-
+import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.tran.Transform;
 
 public interface SpamTransform extends Transform
@@ -20,7 +19,5 @@ public interface SpamTransform extends Transform
     void setSpamSettings(SpamSettings spamSettings);
     SpamSettings getSpamSettings();
 
-    List<SpamLog> getEventLogs(int limit);
-
-    List<SpamLog> getEventLogs(int limit, boolean spamOnly);
+    EventManager<SpamEvent> getEventManager();
 }

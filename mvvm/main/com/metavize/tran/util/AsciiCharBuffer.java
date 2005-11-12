@@ -11,8 +11,6 @@
 
 package com.metavize.tran.util;
 
-import java.io.IOException;
-import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ReadOnlyBufferException;
@@ -253,32 +251,19 @@ public class AsciiCharBuffer
 
     // Appendable methods -----------------------------------------------------
 
-    public AsciiCharBuffer append(char c) throws IOException
+    public AsciiCharBuffer append(char c)
     {
-        try {
-            return put(c);
-        } catch (BufferOverflowException exn) {
-            throw new IOException(exn.getMessage());
-        }
+        return put(c);
     }
 
-    public AsciiCharBuffer append(CharSequence csq) throws IOException
+    public AsciiCharBuffer append(CharSequence csq)
     {
-        try {
-            return put(csq);
-        } catch (BufferOverflowException exn) {
-            throw new IOException(exn.getMessage());
-        }
+        return put(csq);
     }
 
     public AsciiCharBuffer append(CharSequence csq, int start, int end)
-        throws IOException
     {
-        try {
-            return put(csq, start, end);
-        } catch (BufferOverflowException exn) {
-            throw new IOException(exn.getMessage());
-        }
+        return put(csq, start, end);
     }
 
     // Comparable methods -----------------------------------------------------

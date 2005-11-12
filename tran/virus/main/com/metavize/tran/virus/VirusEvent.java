@@ -11,15 +11,13 @@
 
 package com.metavize.tran.virus;
 
-import java.io.IOException;
 
 import com.metavize.mvvm.logging.LogEvent;
+import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.tran.PipelineEndpoints;
 
 public abstract class VirusEvent extends LogEvent
 {
-    private VirusScannerResult result;
-
     // constructors -----------------------------------------------------------
 
     public VirusEvent() { }
@@ -47,21 +45,11 @@ public abstract class VirusEvent extends LogEvent
 
     // Syslog methods ---------------------------------------------------------
 
-    protected void doSyslog(Appendable a) throws IOException
+    protected void doSyslog(SyslogBuilder sb)
     {
-        a.append(" info: loc=");
-        String loc = getLocation();
-        a.append(loc, 0, Math.min(loc.length(), 256));
-
-        a.append(", infected=");
-        a.append(Boolean.toString(isInfected()));
-
-        a.append(", action=");
-        a.append(getActionName());
-
-        a.append(", virus-name=");
-        a.append(getVirusName());
-
-        a.append(" #");
+        sb.addField("info", getLocation());
+        sb.addField("infected", Boolean.toString(isInfected()));
+        sb.addField("action", getActionName());
+        sb.addField("virus-name", getVirusName());
     }
 }

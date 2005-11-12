@@ -14,28 +14,25 @@ package com.metavize.tran.spam;
 import java.io.File;
 import java.io.IOException;
 
-import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.mvvm.tran.Transform;
+import com.metavize.tran.mail.papi.MIMEMessageT;
 import com.metavize.tran.mail.papi.MailExport;
 import com.metavize.tran.mail.papi.MailTransformSettings;
-import com.metavize.tran.mail.papi.MIMEMessageT;
 import com.metavize.tran.mail.papi.WrappedMessageGenerator;
 import com.metavize.tran.mail.papi.pop.PopStateMachine;
 import com.metavize.tran.mime.HeaderParseException;
+import com.metavize.tran.mime.LCString;
 import com.metavize.tran.mime.MIMEMessage;
-import com.metavize.tran.mime.MIMEUtil;
 import com.metavize.tran.token.Token;
 import com.metavize.tran.token.TokenException;
 import com.metavize.tran.token.TokenResult;
 import com.metavize.tran.util.TempFileFactory;
-import com.metavize.tran.mime.LCString;
 import org.apache.log4j.Logger;
 
 public class SpamPopHandler extends PopStateMachine
 {
     private final static Logger logger = Logger.getLogger(SpamPopHandler.class);
-    private final static Logger eventLogger = MvvmContextFactory.context().eventLogger();
 
     /* no block counter */
     private final static int SCAN_COUNTER = Transform.GENERIC_0_COUNTER;
@@ -49,7 +46,7 @@ public class SpamPopHandler extends PopStateMachine
     private final SpamMessageAction zMsgAction;
     private final SpamPOPConfig zConfig;
     private final boolean bScan;
-    private final int strength; 
+    private final int strength;
     private final int giveUpSize;
 
     private WrappedMessageGenerator zWMsgGenerator;
@@ -134,7 +131,7 @@ public class SpamPopHandler extends PopStateMachine
                                                   zReport.isSpam(),
                                                   zReport.isSpam() ? zMsgAction : SpamMessageAction.PASS,
                                                   zVendorName);
-            eventLogger.info(event);
+            zTransform.log(event);
 
             try {
                 zMMessage.getMMHeaders().removeHeaderFields(new LCString(zConfig.getHeaderName()));

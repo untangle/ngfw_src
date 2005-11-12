@@ -11,7 +11,6 @@
 
 package com.metavize.tran.spam;
 
-import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.tran.mail.papi.MessageInfo;
 
 /**
@@ -23,7 +22,7 @@ import com.metavize.tran.mail.papi.MessageInfo;
  * table="TR_SPAM_EVT"
  * mutable="false"
  */
-public class SpamLogEvent extends LogEvent
+public class SpamLogEvent extends SpamEvent
 {
     private MessageInfo messageInfo;
     private float score;
@@ -46,6 +45,13 @@ public class SpamLogEvent extends LogEvent
         this.isSpam = isSpam;
         this.action = action;
         this.vendorName = vendorName;
+    }
+
+    // SpamEvent methods ------------------------------------------------------
+
+    public String getActionName()
+    {
+        return action.toString();
     }
 
     // accessors --------------------------------------------------------------

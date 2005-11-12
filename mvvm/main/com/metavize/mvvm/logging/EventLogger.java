@@ -30,7 +30,6 @@ public class EventLogger<E extends LogEvent> implements EventManager<E>
     private static final int QUEUE_SIZE = 10000;
     private static final int BATCH_SIZE = QUEUE_SIZE;
     private static final int SYNC_TIME = 300000;
-    //private static final int SYNC_TIME = 300;
 
     private static final Object LOG_LOCK = new Object();
 
@@ -207,7 +206,6 @@ public class EventLogger<E extends LogEvent> implements EventManager<E>
                         for (Iterator<E> i = logQueue.iterator();
                              i.hasNext(); ) {
                             E e = i.next();
-                            System.out.println("SAVEING: " + e);
                             s.save(e);
                             i.remove();
                         }

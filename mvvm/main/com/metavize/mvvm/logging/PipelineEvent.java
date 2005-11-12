@@ -11,7 +11,6 @@
 
 package com.metavize.mvvm.logging;
 
-import java.io.IOException;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tran.PipelineEndpoints;
@@ -59,26 +58,17 @@ public abstract class PipelineEvent extends LogEvent
 
     // Syslog methods ---------------------------------------------------------
 
-    protected abstract void doSyslog(Appendable a) throws IOException;
+    protected abstract void doSyslog(SyslogBuilder sb);
 
-    public void appendSyslog(Appendable a) throws IOException
+    public void appendSyslog(SyslogBuilder sb)
     {
-        a.append("endpoints: ");
-        a.append("sid=");
-        a.append(Integer.toString(pipelineEndpoints.getSessionId()));
-        a.append(", prot=");
-        a.append(Short.toString(pipelineEndpoints.getProtocol()));
-        a.append(", caddr=");
-        a.append(pipelineEndpoints.getCClientAddr().getHostAddress());
-        a.append(", cport=");
-        a.append(Integer.toString(pipelineEndpoints.getCClientPort()));
-        a.append(", saddr=");
-        a.append(pipelineEndpoints.getSServerAddr().getHostAddress());
-        a.append(", sport=");
-        a.append(Integer.toString(pipelineEndpoints.getSServerPort()));
+        sb.addField("sid", Integer.toString(pipelineEndpoints.getSessionId()));
+        sb.addField("prot", Short.toString(pipelineEndpoints.getProtocol()));
+        sb.addField("caddr", pipelineEndpoints.getCClientAddr().getHostAddress());
+        sb.addField("cport", Integer.toString(pipelineEndpoints.getCClientPort()));
+        sb.addField("saddr", pipelineEndpoints.getSServerAddr().getHostAddress());
+        sb.addField("sport", Integer.toString(pipelineEndpoints.getSServerPort()));
 
-        a.append(" #");
-
-        doSyslog(a);
+        doSyslog(sb);
     }
 }

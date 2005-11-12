@@ -11,28 +11,30 @@
 
 package com.metavize.tran.spam;
 
-import org.apache.log4j.Logger;
-import java.net.InetAddress;
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
-import java.io.File;
-import com.metavize.tran.mime.LCString;
-import com.metavize.tran.mime.MIMEUtil;
-import com.metavize.tran.mime.MIMEMessage;
-import com.metavize.tran.mime.MIMEOutputStream;
-import com.metavize.tran.mime.HeaderParseException;
-import com.metavize.tran.util.TempFileFactory;
-import com.metavize.tran.mime.EmailAddress;
 import static com.metavize.tran.util.Ascii.CRLF;
+
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.net.InetAddress;
+import java.util.List;
+
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.mail.papi.MessageInfo;
+import com.metavize.tran.mail.papi.quarantine.MailSummary;
+import com.metavize.tran.mail.papi.quarantine.QuarantineTransformView;
+import com.metavize.tran.mail.papi.safelist.SafelistTransformView;
 import com.metavize.tran.mail.papi.smtp.SmtpTransaction;
 import com.metavize.tran.mail.papi.smtp.sapi.BufferingSessionHandler;
-import com.metavize.tran.mail.papi.quarantine.QuarantineTransformView;
-import com.metavize.tran.mail.papi.quarantine.MailSummary;
-import com.metavize.tran.mail.papi.safelist.SafelistTransformView;
-import com.metavize.mvvm.tapi.TCPSession;
-import com.metavize.mvvm.MvvmContextFactory;
-import java.util.List;
+import com.metavize.tran.mime.EmailAddress;
+import com.metavize.tran.mime.HeaderParseException;
+import com.metavize.tran.mime.LCString;
+import com.metavize.tran.mime.MIMEMessage;
+import com.metavize.tran.mime.MIMEOutputStream;
+import com.metavize.tran.mime.MIMEUtil;
+import com.metavize.tran.util.TempFileFactory;
+import org.apache.log4j.Logger;
 
 
 /**
@@ -44,8 +46,6 @@ public class SmtpSessionHandler
 
   private final Logger m_logger = Logger.getLogger(SmtpSessionHandler.class);
   private final TempFileFactory m_fileFactory;
-  private static final Logger m_eventLogger = MvvmContextFactory
-    .context().eventLogger();
 
   private final SpamImpl m_spamImpl;
   private final SpamSMTPConfig m_config;
@@ -180,7 +180,7 @@ public class SmtpSessionHandler
           postSpamEvent(msgInfo, report, SMTPSpamMessageAction.MARK);
           markHeaders(msg, report);
           MIMEMessage wrappedMsg = m_config.getMessageGenerator().wrap(msg, tx, report);
-          return new BPMEvaluationResult(wrappedMsg);          
+          return new BPMEvaluationResult(wrappedMsg);
         }
       }
       else {//BLOCK
@@ -229,7 +229,7 @@ public class SmtpSessionHandler
       m_logger.debug("Message sender safelisted");
       m_spamImpl.incrementPassCounter();
       return BlockOrPassResult.PASS;
-    }    
+    }
 
     SpamReport report = scanFile(f);
 
@@ -242,7 +242,7 @@ public class SmtpSessionHandler
     }
 
     SMTPSpamMessageAction action = m_config.getMsgAction();
-    
+
     //Check for the impossible-to-satisfy action of "REMOVE"
     if(action == SMTPSpamMessageAction.MARK) {
       //Change action now, as it'll make the event logs
@@ -286,6 +286,7 @@ public class SmtpSessionHandler
       else {//BLOCK
         m_logger.debug("Blocking SPAM message as-per policy");
         postSpamEvent(msgInfo, report, SMTPSpamMessageAction.BLOCK);
+        System.out.println("INC BLOCK CTR");
         m_spamImpl.incrementBlockCounter();
         return BlockOrPassResult.BLOCK;
       }
@@ -307,7 +308,7 @@ public class SmtpSessionHandler
     }
     catch(HeaderParseException shouldNotHappen) {
       m_logger.error(shouldNotHappen);
-    }  
+    }
   }
 
   /**
@@ -316,14 +317,15 @@ public class SmtpSessionHandler
   private void postSpamEvent(MessageInfo msgInfo,
     SpamReport report,
     SMTPSpamMessageAction action) {
-    
+
     SpamSmtpEvent spamEvent = new SpamSmtpEvent(
       msgInfo,
       report.getScore(),
       report.isSpam(),
       action,
       m_spamImpl.getScanner().getVendorName());
-    m_eventLogger.info(spamEvent);    
+    System.out.println("LOG THAT SHIT@!");
+    m_spamImpl.log(spamEvent);
   }
 
   /**
@@ -331,7 +333,7 @@ public class SmtpSessionHandler
    * null if there is a problem
    */
   private File messageToFile(MIMEMessage msg) {
-  
+
     //Build the "fake" received header for SpamAssassin
     InetAddress clientAddr = getSession().getClientAddress();
     StringBuilder sb = new StringBuilder();
@@ -341,7 +343,7 @@ public class SmtpSessionHandler
         append(" [").append(clientAddr.getHostAddress()).append("])").append(CRLF);
     sb.append("\tby mv-edgeguard; ").append(MIMEUtil.getRFC822Date());
 
-    
+
     File ret = null;
     FileOutputStream fOut = null;
     try {
@@ -368,7 +370,7 @@ public class SmtpSessionHandler
       copyOut.flush();
       copyOut.close();
       copyIn.close();
-*/      
+*/
       return ret;
     }
     catch(Exception ex) {
@@ -403,10 +405,10 @@ public class SmtpSessionHandler
     SmtpTransaction tx,
     SpamReport report,
     File file) {
-    
+
     List<EmailAddress> addrList =
       tx.getRecipients(true);
-    
+
     EmailAddress[] addresses =
       (EmailAddress[]) addrList.toArray(new EmailAddress[addrList.size()]);
 
