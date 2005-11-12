@@ -768,11 +768,11 @@ public final class Session
       if(m_outstandingRequests.size() == 0) {
         long timeDiff = System.currentTimeMillis() - getLastServerTimestamp();
         if(timeDiff > LIKELY_TIMEOUT_LENGTH) {
-          m_logger.error("Unsolicited response from server.  Likely a timeout (" +
+          m_logger.warn("Unsolicited response from server.  Likely a timeout (" +
             timeDiff + " millis since last communication)");
         }
         else {
-          m_logger.warn("Response received without a registered handler");
+          m_logger.info("Response received without a registered handler");
         }
         resultBuilder.addTokenForClient(resp);
         return;
