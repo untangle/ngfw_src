@@ -61,7 +61,7 @@ public class VirusHttpEventHandler implements EventHandler<VirusEvent>
                     Query q = s.createQuery(WARM_QUERY);
                     q.setParameter("policy", policy);
                     for (Iterator i = q.iterate(); i.hasNext() && l.size() < limit; ) {
-                        VirusHttpEvent ve = (VirusHttpEvent)i.next();
+                        VirusEvent ve = (VirusEvent)i.next();
                         l.add(ve);
                     }
 

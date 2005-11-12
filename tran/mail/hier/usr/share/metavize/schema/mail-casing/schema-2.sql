@@ -58,7 +58,7 @@ CREATE TABLE settings.tr_mail_safelists (
 
 CREATE TABLE events.tr_mail_message_info (
     id int8 NOT NULL,
-    session_id int4,
+    pl_endp_id int8,
     subject text NOT NULL,
     server_type char(1) NOT NULL,
     PRIMARY KEY (id));

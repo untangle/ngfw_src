@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.tran.spyware;
+package com.metavize.tran.virus;
 
 import java.sql.SQLException;
 import java.util.Iterator;
@@ -24,18 +24,18 @@ import com.metavize.mvvm.util.TransactionWork;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-public class SpywareAccessEventHandler implements EventHandler<SpywareEvent>
+public class VirusLogEventHandler implements EventHandler<VirusEvent>
 {
-    private static final FilterDesc FILTER_DESC = new FilterDesc("Access Events");
+    private static final FilterDesc FILTER_DESC = new FilterDesc("FTP Events");
 
     private static final String WARM_QUERY
-        = "FROM SpywareAccessEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
+        = "FROM VirusLogEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
 
     private final TransformContext transformContext;
 
     // constructors -----------------------------------------------------------
 
-    SpywareAccessEventHandler(TransformContext transformContext)
+    VirusLogEventHandler(TransformContext transformContext)
     {
         this.transformContext = transformContext;
     }
@@ -47,9 +47,9 @@ public class SpywareAccessEventHandler implements EventHandler<SpywareEvent>
         return FILTER_DESC;
     }
 
-    public List<SpywareEvent> doWarm(final int limit)
+    public List<VirusEvent> doWarm(final int limit)
     {
-        final List<SpywareEvent> l = new LinkedList<SpywareEvent>();
+        final List<VirusEvent> l = new LinkedList<VirusEvent>();
 
         TransactionWork tw = new TransactionWork()
             {
@@ -61,8 +61,8 @@ public class SpywareAccessEventHandler implements EventHandler<SpywareEvent>
                     Query q = s.createQuery(WARM_QUERY);
                     q.setParameter("policy", policy);
                     for (Iterator i = q.iterate(); i.hasNext() && l.size() < limit; ) {
-                        SpywareEvent sb = (SpywareEvent)i.next();
-                        l.add(sb);
+                        VirusEvent ve = (VirusEvent)i.next();
+                        l.add(ve);
                     }
 
                     return true;
@@ -73,8 +73,8 @@ public class SpywareAccessEventHandler implements EventHandler<SpywareEvent>
         return l;
     }
 
-    public boolean accept(SpywareEvent e)
+    public boolean accept(VirusEvent e)
     {
-        return e instanceof SpywareAccessEvent;
+        return e instanceof VirusLogEvent;
     }
 }

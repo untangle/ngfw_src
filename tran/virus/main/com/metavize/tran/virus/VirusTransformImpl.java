@@ -130,7 +130,19 @@ public abstract class VirusTransformImpl extends AbstractTransform
         TransformContext tctx = getTransformContext();
         eventLogger = new EventLogger<VirusEvent>(tctx);
 
-        EventHandler eh = new VirusHttpEventHandler(tctx);
+        EventHandler eh = new VirusAllEventHandler(tctx);
+        eventLogger.addEventHandler(eh);
+
+        eh = new VirusHttpEventHandler(tctx);
+        eventLogger.addEventHandler(eh);
+
+        eh = new VirusLogEventHandler(tctx);
+        eventLogger.addEventHandler(eh);
+
+        eh = new VirusMailEventHandler(tctx);
+        eventLogger.addEventHandler(eh);
+
+        eh = new VirusSmtpEventHandler(tctx);
         eventLogger.addEventHandler(eh);
     }
 

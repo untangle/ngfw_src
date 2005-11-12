@@ -61,7 +61,7 @@ public class SpywareBlacklistEventHandler implements EventHandler<SpywareEvent>
                     Query q = s.createQuery(WARM_QUERY);
                     q.setParameter("policy", policy);
                     for (Iterator i = q.iterate(); i.hasNext() && l.size() < limit; ) {
-                        SpywareEvent sb = (SpywareBlacklistEvent)i.next();
+                        SpywareEvent sb = (SpywareEvent)i.next();
                         l.add(sb);
                     }
 

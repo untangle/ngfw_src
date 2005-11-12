@@ -79,8 +79,9 @@ public class SpywareBlockedEventHandler implements EventHandler<SpywareEvent>
                 {
                     Query q = s.createQuery(query);
                     q.setParameter("policy", policy);
-                    for (Iterator i = q.iterate(); i.hasNext() && l.size() < limit; ) {
-                        SpywareEvent sb = (SpywareBlacklistEvent)i.next();
+                    int c = 0;
+                    for (Iterator i = q.iterate(); i.hasNext() && ++c < limit; ) {
+                        SpywareEvent sb = (SpywareEvent)i.next();
                         l.add(sb);
                     }
                 }

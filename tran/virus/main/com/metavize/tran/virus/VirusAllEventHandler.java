@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.tran.spyware;
+package com.metavize.tran.virus;
 
 import java.sql.SQLException;
 import java.util.Iterator;
@@ -24,27 +24,27 @@ import com.metavize.mvvm.util.TransactionWork;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-public class SpywareAllEventHandler implements EventHandler<SpywareEvent>
+public class VirusAllEventHandler implements EventHandler<VirusEvent>
 {
     private static final FilterDesc FILTER_DESC = new FilterDesc("All Events");
 
-    private static final String ACCESS_QUERY
-        = "FROM SpywareAccessEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
-    private static final String ACTIVEX_QUERY
-        = "FROM SpywareActiveXEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
-    private static final String BLACKLIST_QUERY
-        = "FROM SpywareBlacklistEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
-    private static final String COOKIE_QUERY
-        = "FROM SpywareCookieEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
+    private static final String HTTP_QUERY
+        = "FROM VirusHttpEvent evt WHERE evt.requestLine.httpRequestEvent.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
+    private static final String FTP_QUERY
+        = "FROM VirusLogEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
+    private static final String MAIL_QUERY
+        = "FROM VirusMailEvent evt WHERE evt.messageInfo.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
+    private static final String SMTP_QUERY
+        = "FROM VirusSmtpEvent evt WHERE evt.messageInfo.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
 
     private static final String[] QUERIES = new String[]
-        { ACCESS_QUERY, ACTIVEX_QUERY, BLACKLIST_QUERY, COOKIE_QUERY };
+        { HTTP_QUERY, FTP_QUERY, MAIL_QUERY, SMTP_QUERY };
 
     private final TransformContext transformContext;
 
     // constructors -----------------------------------------------------------
 
-    SpywareAllEventHandler(TransformContext transformContext)
+    VirusAllEventHandler(TransformContext transformContext)
     {
         this.transformContext = transformContext;
     }
@@ -56,9 +56,9 @@ public class SpywareAllEventHandler implements EventHandler<SpywareEvent>
         return FILTER_DESC;
     }
 
-    public List<SpywareEvent> doWarm(final int limit)
+    public List<VirusEvent> doWarm(final int limit)
     {
-        final List<SpywareEvent> l = new LinkedList<SpywareEvent>();
+        final List<VirusEvent> l = new LinkedList<VirusEvent>();
 
         TransactionWork tw = new TransactionWork()
             {
@@ -81,8 +81,8 @@ public class SpywareAllEventHandler implements EventHandler<SpywareEvent>
                     q.setParameter("policy", policy);
                     int c = 0;
                     for (Iterator i = q.iterate(); i.hasNext() && ++c < limit; ) {
-                        SpywareEvent sb = (SpywareEvent)i.next();
-                        l.add(sb);
+                        VirusEvent ve = (VirusEvent)i.next();
+                        l.add(ve);
                     }
                 }
             };
@@ -91,7 +91,7 @@ public class SpywareAllEventHandler implements EventHandler<SpywareEvent>
         return l;
     }
 
-    public boolean accept(SpywareEvent e)
+    public boolean accept(VirusEvent e)
     {
         return true;
     }
