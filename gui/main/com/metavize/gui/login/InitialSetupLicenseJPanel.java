@@ -53,17 +53,17 @@ public class InitialSetupLicenseJPanel extends javax.swing.JPanel implements Sav
         contentJEditorPane.setEditable(false);
         contentJScrollPane.setViewportView(contentJEditorPane);
 
-        add(contentJScrollPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 390, 210));
+        add(contentJScrollPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, 460, 210));
 
         acceptButtonGroup.add(acceptJRadioButton);
         acceptJRadioButton.setText("Accept License Agreement");
         acceptJRadioButton.setOpaque(false);
-        add(acceptJRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 290, -1, -1));
+        add(acceptJRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 290, -1, -1));
 
         acceptButtonGroup.add(declineJRadioButton);
         declineJRadioButton.setText("Decline License Agreement");
         declineJRadioButton.setOpaque(false);
-        add(declineJRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 310, -1, -1));
+        add(declineJRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 310, -1, -1));
 
         jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
         jLabel2.setText("<html>Please read and agree to the following license<br>\nagreement before proceeding.</html>");

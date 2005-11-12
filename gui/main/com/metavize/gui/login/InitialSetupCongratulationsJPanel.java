@@ -15,7 +15,6 @@ import com.metavize.gui.transform.Savable;
 
 public class InitialSetupCongratulationsJPanel extends javax.swing.JPanel implements Savable {
     
-
     public InitialSetupCongratulationsJPanel() {
         initComponents();
     }
@@ -33,7 +32,7 @@ public class InitialSetupCongratulationsJPanel extends javax.swing.JPanel implem
         setOpaque(false);
         jLabel1.setFont(new java.awt.Font("Dialog", 1, 18));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("<html>Congratulations!<br>You have created an initial<br>EdgeGuard configuration.<br><br>Press \"Finish\" to save your<br>configuration.</html>");
+        jLabel1.setText("<html>Congratulations!<br>You have created an initial<br>EdgeGuard configuration.<br><br>Press \"Finish\" to save your<br>configuration and open a new EdgeGuard Login Window.</html>");
         add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, -1, -1));
 
         jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));

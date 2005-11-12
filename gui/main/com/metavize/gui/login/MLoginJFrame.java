@@ -54,7 +54,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
         initComponents();
         Util.setMLoginJFrame(MLoginJFrame.this);
         Util.setStatusJProgressBar(statusJProgressBar);
-        MLoginJFrame.this.setBounds( Util.generateCenteredBounds(null, MLoginJFrame.this.getWidth(), MLoginJFrame.this.getHeight()) );
+        MLoginJFrame.this.setBounds( Util.generateCenteredBounds((Dialog)null, MLoginJFrame.this.getWidth(), MLoginJFrame.this.getHeight()) );
         serverJTextField.setText( Util.getServerCodeBase().getHost() );
         if( Util.isSecureViaHttps() )
         protocolJTextField.setText( "https (secure)");
@@ -70,20 +70,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
         }
     }});
     
-    // HANDLE FIRST TIME LOGINS
-    boolean isActivated;
-    try{
-        isActivated = MvvmRemoteContextFactory.factory().isActivated( Util.getServerCodeBase().getHost(), 0, Util.isSecureViaHttps() );
-    }
-    catch(Exception e){
-        Util.handleExceptionNoRestart("unable to connect to server for activation check", e);
-        isActivated = true;
-    }
-    if( !isActivated ){
-        SwingUtilities.invokeLater( new Runnable(){ public void run(){
-            (new InitialSetupWizard()).setVisible(true);
-        }});
-    }
     }
 
 

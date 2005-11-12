@@ -14,6 +14,8 @@ package com.metavize.gui.widgets.dialogs;
 import com.metavize.gui.util.Util;
 import com.metavize.mvvm.ToolboxManager;
 
+import java.awt.Dialog;
+import java.awt.Window;
 
 public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
     
@@ -21,22 +23,33 @@ public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.e
     public MOneButtonJDialog() {
 	super( (Util.getMMainJFrame()!=null?Util.getMMainJFrame():Util.getMLoginJFrame() ),
 	       (Util.getMMainJFrame()!=null?true:false) );
-	init();
+	init(null);
+    }
+
+    public MOneButtonJDialog(Dialog topLevelDialog, String applianceName, String warning){
+	super(topLevelDialog, true);
+	init(topLevelDialog);
+        this.setTitle(applianceName + " Warning");
+        messageJLabel.setText("<html><center>" + warning + "</center></html>");
+        this.setVisible(true);
     }
     
     public MOneButtonJDialog(String applianceName, String warning) {
 	super( (Util.getMMainJFrame()!=null?Util.getMMainJFrame():Util.getMLoginJFrame() ),
 	       (Util.getMMainJFrame()!=null?true:false) );
-	init();
+	init(null);
         this.setTitle(applianceName + " Warning");
         messageJLabel.setText("<html><center>" + warning + "</center></html>");
         this.setVisible(true);
     }
 
-    private void init(){
+    private void init(Window window){
         initComponents();
         this.addWindowListener(this);
-        this.setBounds( Util.generateCenteredBounds((Util.getMMainJFrame()!=null?Util.getMMainJFrame().getBounds():Util.getMLoginJFrame().getBounds() ), this.getWidth(), this.getHeight()) );
+	if( window == null)
+	    this.setBounds( Util.generateCenteredBounds((Util.getMMainJFrame()!=null?Util.getMMainJFrame().getBounds():Util.getMLoginJFrame().getBounds() ), this.getWidth(), this.getHeight()) );
+	else
+	    this.setBounds( Util.generateCenteredBounds(window, this.getWidth(), this.getHeight()) );
     }
 
     private void initComponents() {//GEN-BEGIN:initComponents

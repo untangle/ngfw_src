@@ -40,18 +40,27 @@ public abstract class MWizardJDialog extends javax.swing.JDialog implements java
     private int currentPage = 0;
     protected Map<String, Savable> savableMap = new LinkedHashMap<String, Savable>();
 
+    public MWizardJDialog(Dialog topLevelDialog, boolean isModal){
+	super(topLevelDialog, isModal);
+	init(topLevelDialog);
+    }
+    
+    public MWizardJDialog(Frame topLevelFrame, boolean isModal){
+	super(topLevelFrame, isModal);
+	init(topLevelFrame);
+    }
 
-    public MWizardJDialog() {
-        super(Util.getMMainJFrame(), true);
+    private void init(Window window){
         this.initComponents();
-        this.setBounds( Util.generateCenteredBounds( Util.getMMainJFrame()!=null?Util.getMMainJFrame().getBounds():Util.getMLoginJFrame().getBounds(),
-                                                    getPreferredSize().width, getPreferredSize().height) );
+        this.setBounds( Util.generateCenteredBounds( window,
+						     getPreferredSize().width,
+						     getPreferredSize().height) );
         this.addWindowListener(this);
 
         // SETUP BUTTONS
         previousJButton.setEnabled(false);
-    }
 
+    }
 
     public void addSavableJPanel(JPanel jPanel, String title){
         if( !(jPanel instanceof Savable) )
@@ -93,7 +102,7 @@ public abstract class MWizardJDialog extends javax.swing.JDialog implements java
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(15, 300, 15, 15);
+        gridBagConstraints.insets = new java.awt.Insets(15, 250, 15, 15);
         getContentPane().add(contentJPanel, gridBagConstraints);
 
         titleJPanel.setLayout(new javax.swing.BoxLayout(titleJPanel, javax.swing.BoxLayout.Y_AXIS));
@@ -104,7 +113,7 @@ public abstract class MWizardJDialog extends javax.swing.JDialog implements java
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(15, 15, 15, 470);
+        gridBagConstraints.insets = new java.awt.Insets(15, 15, 15, 520);
         getContentPane().add(titleJPanel, gridBagConstraints);
 
         closeJButton.setFont(new java.awt.Font("Default", 0, 12));
@@ -214,6 +223,8 @@ public abstract class MWizardJDialog extends javax.swing.JDialog implements java
         nextJButton.setText(NEXT_PAGE);
     }//GEN-LAST:event_previousJButtonActionPerformed
 
+    protected void wizardFinished(){}
+
     private void nextJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextJButtonActionPerformed
         // VALIDATE CURRENT PAGE
         String keyValidate = (String) savableMap.keySet().toArray()[currentPage];
@@ -222,7 +233,8 @@ public abstract class MWizardJDialog extends javax.swing.JDialog implements java
             savableValidate.doSave(null, true);  // verify only, dont save
         }
         catch(Exception e){
-            new MOneButtonJDialog("Wizard", e.getMessage());
+	    Util.handleExceptionNoRestart("Error validating: ", e);
+            new MOneButtonJDialog(this, "Wizard", e.getMessage());
             return;
         }
         
@@ -234,11 +246,13 @@ public abstract class MWizardJDialog extends javax.swing.JDialog implements java
                     savable.doSave(null, false);
             }
             catch(Exception e){
-                new MOneButtonJDialog("Wizard", e.getMessage());
+		Util.handleExceptionNoRestart("Error validating: ", e);
+                new MOneButtonJDialog(this, "Wizard", e.getMessage());
                 return;
             }
             // close dialog
             windowClosing(null);
+	    wizardFinished();
         }
         else{ // not last page
             ((JLabel)titleJPanel.getComponent(currentPage)).setForeground(Color.BLACK);
@@ -262,7 +276,7 @@ public abstract class MWizardJDialog extends javax.swing.JDialog implements java
         previousJButton.setEnabled(true);
     }//GEN-LAST:event_nextJButtonActionPerformed
 
-    private void closeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeJButtonActionPerformed
+    protected void closeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeJButtonActionPerformed
          windowClosing(null);
     }//GEN-LAST:event_closeJButtonActionPerformed
     

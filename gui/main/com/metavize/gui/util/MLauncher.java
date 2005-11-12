@@ -11,6 +11,7 @@
 
 package com.metavize.gui.util;
 
+
 import java.lang.reflect.Constructor;    
 import java.security.*;
 
@@ -20,7 +21,7 @@ import java.net.URL;
 
 public class MLauncher {
         
-    public static void main(String args[]) {
+    public static void main(final String args[]) {
 
 	// set the proper look and feel, and dynamic resizing
         try {
@@ -73,9 +74,25 @@ public class MLauncher {
             System.err.println(e);
         }
         */
-
-        // load and start the login dialog
-        new com.metavize.gui.login.MLoginJFrame(args);
+	
+	// HANDLE FIRST TIME LOGINS
+	boolean isActivated;
+	try{
+	    isActivated = com.metavize.mvvm.client.MvvmRemoteContextFactory.factory().isActivated( Util.getServerCodeBase().getHost(), 0, Util.isSecureViaHttps() );
+	}
+	catch(Exception e){
+	    Util.handleExceptionNoRestart("unable to connect to server for activation check", e);
+	    isActivated = true;
+	}
+	if( !isActivated ){
+	    javax.swing.SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		(new com.metavize.gui.login.InitialSetupWizard(args)).setVisible(true);
+	    }});
+	}
+	else{
+	    // load and start the login dialog
+	    new com.metavize.gui.login.MLoginJFrame(args);
+	}
     }
 
     

@@ -20,6 +20,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.net.*;
 import java.text.*;
 import java.util.List;
@@ -320,6 +321,14 @@ public class Util {
         GraphicsDevice graphicsDevice = graphicsEnvironment.getDefaultScreenDevice();
         GraphicsConfiguration graphicsConfiguration = graphicsDevice.getDefaultConfiguration();
         return graphicsConfiguration;
+    }
+
+    public static Rectangle generateCenteredBounds(Window window, int childWidth, int childHeight){
+	if( window != null )
+	    return generateCenteredBounds(window.getBounds(), childWidth, childHeight);
+	else
+	    return generateCenteredBounds((Rectangle)null, childWidth, childHeight);
+	
     }
 
     public static Rectangle generateCenteredBounds(Rectangle parentBounds, int childWidth, int childHeight){

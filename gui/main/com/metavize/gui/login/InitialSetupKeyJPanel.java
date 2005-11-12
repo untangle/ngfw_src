@@ -31,7 +31,13 @@ public class InitialSetupKeyJPanel extends javax.swing.JPanel implements Savable
             throw new Exception("The key must be exactly 16 alpha-numeric digits long.");
         
         if( !validateOnly){ 
-            MvvmRemoteContextFactory.factory().activationLogin( Util.getServerCodeBase().getHost(), key, 0, Util.getClassLoader(), Util.isSecureViaHttps() );
+	    MvvmRemoteContext mvvmContext = MvvmRemoteContextFactory.factory().activationLogin( Util.getServerCodeBase().getHost(),
+												key,
+												0,
+												Util.getClassLoader(),
+												Util.isSecureViaHttps() );
+	    Util.setMvvmContext(mvvmContext);
+	    
         }
     }
     
