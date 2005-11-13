@@ -15,3 +15,5 @@ rm -f /etc/localtime
 ln -s "/usr/share/zoneinfo/$ZONE" /etc/localtime
 
 grep -sq lang= /boot/grub/menu.lst && sed -i -e "s|\( tz=[^ ]*\)\? lang=| tz=$ZONE lang=|" /boot/grub/menu.lst
+
+exit 0
