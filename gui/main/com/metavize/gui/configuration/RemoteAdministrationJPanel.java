@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: RemoteJPanel.java 194 2005-04-06 19:13:55Z inieves $
+ * $Id$
  */
 
 package com.metavize.gui.configuration;
@@ -21,13 +21,13 @@ import com.metavize.mvvm.tran.*;
 import java.awt.*;
 
 
-public class RemoteJPanel extends javax.swing.JPanel implements Savable, Refreshable {
+public class RemoteAdministrationJPanel extends javax.swing.JPanel implements Savable, Refreshable {
 
     private static final String EXCEPTION_OUTSIDE_ACCESS_NETWORK = "Invalid External Remote Administration \"IP Address\" specified.";
     private static final String EXCEPTION_OUTSIDE_ACCESS_NETMASK = "Invalid External Remote Administration \"Netmask\" specified.";
 
     
-    public RemoteJPanel() {
+    public RemoteAdministrationJPanel() {
         initComponents();
     }
 

@@ -25,22 +25,32 @@ import javax.swing.*;
 
 public class RemoteJDialog extends MConfigJDialog {
 
-    private static final String NAME_REMOTE_SETTINGS = "Remote Administration";
+    private static final String NAME_ADMINISTRATION_SETTINGS = "Remote Administration";
+    private static final String NAME_SNMP_SETTINGS = "SNMP Monitoring";
 
     public RemoteJDialog( ) {
     }
 
     protected void generateGui(){
-        this.setTitle(NAME_REMOTE_SETTINGS);
+        this.setTitle(NAME_ADMINISTRATION_SETTINGS);
         
-        // GENERAL SETTINGS //////
-        RemoteJPanel remoteJPanel = new RemoteJPanel();
-        JScrollPane contentJScrollPane = new JScrollPane( remoteJPanel );
-        contentJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
-        contentJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-        this.contentJTabbedPane.addTab(NAME_REMOTE_SETTINGS, null, contentJScrollPane);
-	super.savableMap.put(NAME_REMOTE_SETTINGS, remoteJPanel);
-	super.refreshableMap.put(NAME_REMOTE_SETTINGS, remoteJPanel);
+        // REMOTE ADMINISTRATION //////
+        RemoteAdministrationJPanel remoteAdministrationJPanel = new RemoteAdministrationJPanel();
+        JScrollPane remoteAdministrationJScrollPane = new JScrollPane( remoteAdministrationJPanel );
+        remoteAdministrationJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
+        remoteAdministrationJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
+        this.contentJTabbedPane.addTab(NAME_ADMINISTRATION_SETTINGS, null, remoteAdministrationJScrollPane);
+	super.savableMap.put(NAME_ADMINISTRATION_SETTINGS, remoteAdministrationJPanel);
+	super.refreshableMap.put(NAME_ADMINISTRATION_SETTINGS, remoteAdministrationJPanel);
+
+        // SNMP MONITORING //////
+        RemoteSnmpJPanel remoteSnmpJPanel = new RemoteSnmpJPanel();
+        JScrollPane remoteSnmpJScrollPane = new JScrollPane( remoteSnmpJPanel );
+        remoteSnmpJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
+        remoteSnmpJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
+        this.contentJTabbedPane.addTab(NAME_SNMP_SETTINGS, null, remoteSnmpJScrollPane);
+	super.savableMap.put(NAME_SNMP_SETTINGS, remoteSnmpJPanel);
+	super.refreshableMap.put(NAME_SNMP_SETTINGS, remoteSnmpJPanel);
     }
     
     protected void sendSettings(Object settings) throws Exception {

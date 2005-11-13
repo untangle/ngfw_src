@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: BlockJPanel.java 194 2005-04-06 19:13:55Z inieves $
+ * $Id$
  */
 
 package com.metavize.gui.configuration;
@@ -27,9 +27,9 @@ import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.InterfaceAlias;
 import com.metavize.mvvm.tran.IPaddr;
 
-public class InterfaceAliasJPanel extends MEditTableJPanel{
+public class NetworkAliasJPanel extends MEditTableJPanel{
 
-    public InterfaceAliasJPanel() {
+    public NetworkAliasJPanel() {
         super(true, true);
         super.setFillJButtonEnabled( true );
         super.setInsets(new Insets(4, 4, 2, 2));

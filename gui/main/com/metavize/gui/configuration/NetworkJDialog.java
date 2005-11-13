@@ -50,7 +50,7 @@ public class NetworkJDialog extends MConfigJDialog {
 	super.refreshableMap.put(NAME_NETWORK_SETTINGS, networkJPanel);
 
         // ALIASES Panel /////
-        InterfaceAliasJPanel aliasJPanel = new InterfaceAliasJPanel();
+        NetworkAliasJPanel aliasJPanel = new NetworkAliasJPanel();
         super.contentJTabbedPane.addTab(NAME_ALIAS_PANEL, null, aliasJPanel );
 	super.savableMap.put(NAME_ALIAS_PANEL, aliasJPanel );
 	super.refreshableMap.put(NAME_ALIAS_PANEL, aliasJPanel );
