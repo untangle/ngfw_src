@@ -562,7 +562,7 @@
                             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                               <Image iconType="3" name="/com/metavize/gui/icons/LogoNoText32x32.png"/>
                             </Property>
-                            <Property name="text" type="java.lang.String" value="&lt;html&gt;Email&lt;br&gt;Quarantine&lt;/html&gt;"/>
+                            <Property name="text" type="java.lang.String" value="&lt;html&gt;Quarantine&lt;/html&gt;"/>
                             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                               <Border info="org.netbeans.modules.form.compat2.border.CompoundBorderInfo">
                                 <CompundBorder>

@@ -423,7 +423,7 @@ public class MMainJFrame extends javax.swing.JFrame {
 
         quarantineJButton.setFont(new java.awt.Font("Arial", 0, 12));
         quarantineJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
-        quarantineJButton.setText("<html>Email<br>Quarantine</html>");
+        quarantineJButton.setText("<html>Quarantine</html>");
         quarantineJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
         quarantineJButton.setDoubleBuffered(true);
         quarantineJButton.setFocusPainted(false);
