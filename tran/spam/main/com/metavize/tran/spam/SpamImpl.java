@@ -13,6 +13,7 @@ package com.metavize.tran.spam;
 
 import static com.metavize.tran.util.Ascii.CRLF;
 
+import com.metavize.mvvm.logging.EventHandler;
 import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.tapi.AbstractTransform;
@@ -28,7 +29,6 @@ import com.metavize.tran.token.TokenAdaptor;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import com.metavize.mvvm.logging.EventHandler;
 
 public class SpamImpl extends AbstractTransform implements SpamTransform
 {
@@ -92,7 +92,13 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         this.scanner = scanner;
         eventLogger = new EventLogger<SpamEvent>(tctx);
 
-        EventHandler eh = new SpamSmtpEventHandler(tctx);
+        EventHandler eh = new SpamAllEventHandler(tctx);
+        eventLogger.addEventHandler(eh);
+
+        eh = new SpamSmtpEventHandler(tctx);
+        eventLogger.addEventHandler(eh);
+
+        eh = new SpamLogEventHandler(tctx);
         eventLogger.addEventHandler(eh);
     }
 
