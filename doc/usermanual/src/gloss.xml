@@ -17,6 +17,15 @@ Place new terms under the appropriate alphabetical location.
 
   <glossdiv>
     <title>A</title>
+
+
+    <glossentry id="gloss_activex">
+      <glossterm>ActiveX</glossterm>
+      <glossdef>
+        <para>TODO</para>
+      </glossdef>            
+    </glossentry>      
+    
   </glossdiv>
 
 <!-- ============== B ================ -->  
@@ -33,7 +42,14 @@ Place new terms under the appropriate alphabetical location.
     <glossentry>
       <glossterm>Computer Virus</glossterm>
       <glosssee otherterm="gloss_virus"/>
-    </glossentry>    
+    </glossentry>
+
+    <glossentry id="gloss_cookie">
+      <glossterm>Cookie</glossterm>
+      <glossdef>
+        <para>TODO</para>
+      </glossdef>            
+    </glossentry>      
     
   </glossdiv>  
 
@@ -104,6 +120,15 @@ Place new terms under the appropriate alphabetical location.
   
   <glossdiv>
     <title>F</title>
+
+    <glossentry id="gloss_ftp">
+      <glossterm>File Transfer Protocol</glossterm>
+      <acronym>FTP</acronym>
+      <glossdef>
+        <para>TODO</para>
+      </glossdef>            
+    </glossentry>
+    
   </glossdiv>  
 
 <!-- ============== G ================ -->
@@ -195,7 +220,26 @@ Place new terms under the appropriate alphabetical location.
         <glossseealso otherterm="gloss_trojan"/>
       </glossdef>
 
-    </glossentry>    
+    </glossentry>
+
+
+
+    <glossentry id="gloss_mime">
+      <glossterm>Multipart Internet Mail Extensions</glossterm>
+      <acronym>MIME</acronym>
+      <glossdef>
+        <para>TODO</para>
+      </glossdef>            
+    </glossentry>
+
+
+    <glossentry id="gloss_mime_type">
+      <glossterm>MIME Type</glossterm>
+      <glossdef>
+        <para>TODO</para>
+        <glossseealso otherterm="_mime"/>        
+      </glossdef>            
+    </glossentry>      
     
   </glossdiv>
 
@@ -246,7 +290,14 @@ Place new terms under the appropriate alphabetical location.
       <glossdef>
         <para>TODO</para>
       </glossdef>            
-    </glossentry>    
+    </glossentry>
+
+    <glossentry id="gloss_phishing">
+      <glossterm>Phishing</glossterm>
+      <glossdef>
+        <para>TODO</para>
+      </glossdef>            
+    </glossentry>      
     
   </glossdiv>
 
@@ -294,6 +345,15 @@ Place new terms under the appropriate alphabetical location.
       <glossdef>
         <para>TODO complete me.</para>
       </glossdef>
+    </glossentry>
+
+
+    <glossentry id="gloss_subnet">
+      <glossterm>Subnet</glossterm>
+      <glossdef>
+        <para>TODO complete me.</para>
+        <glossseealso otherterm="gloss_netmask"/>
+      </glossdef>
     </glossentry>     
     
   </glossdiv>
@@ -333,7 +393,16 @@ Place new terms under the appropriate alphabetical location.
       <glossdef>
         <para>TODO complete me.</para>
       </glossdef>
-    </glossentry>     
+    </glossentry>
+
+
+    <glossentry id="gloss_url">
+      <glossterm>Uniform Resource Locator</glossterm>
+      <acronym>URL</acronym>
+      <glossdef>
+        <para>TODO complete me.</para>
+      </glossdef>
+    </glossentry>       
 
 
     <glossentry id="gloss_udp">

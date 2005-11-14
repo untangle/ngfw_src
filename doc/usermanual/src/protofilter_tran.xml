@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="protofilter_tran">
+
+  <title>Rogue Protocol Control</title>
+
+  <!-- Note that the "introduction" is not within a Section.  This is
+       the convention we'll use
+  -->
+  <para>
+    The Rogue Protocol Control Appliance is identified by the
+    <inlinemediaobject>
+      <imageobject>
+        <imagedata fileref="figure/protofilter_tran_icon.png"/>
+      </imageobject>
+    </inlinemediaobject>
+    symbol.
+  </para>
+
+  <para>
+    TODO COMPLETE ME.  Someone needs to write this section.  As you do, you should refer to <xref linkend="introduction_ui_appliance"/> as the protofilter Transform is a "virtual appliance".
+  </para>
+
+</chapter>

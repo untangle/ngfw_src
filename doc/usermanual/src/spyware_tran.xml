@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="spyware_tran">
+
+  <title>Spyware Blocker</title>
+
+  <!-- Note that the "introduction" is not within a Section.  This is
+       the convention we'll use
+  -->
+  <para>
+    The Spyware Blocker Appliance is identified by the
+    <inlinemediaobject>
+      <imageobject>
+        <imagedata fileref="figure/spyware_tran_icon.png"/>
+      </imageobject>
+    </inlinemediaobject>
+    symbol.
+  </para>
+
+  <para>
+    TODO COMPLETE ME.  Someone needs to write this section.  As you do, you should refer to <xref linkend="introduction_ui_appliance"/> as the Spyware Blocker Transform is a "virtual appliance".
+  </para>
+
+  
+  <para>
+    As this section is written, these glossary refs may come in handy
+    <glossterm linkend="gloss_cookie">Cookie</glossterm>
+    <glossterm linkend="gloss_subnet">Subnet</glossterm>
+    <glossterm linkend="gloss_activex">ActiveX</glossterm>
+    <glossterm linkend="gloss_url">URL</glossterm>
+  </para>  
+
+
+</chapter>

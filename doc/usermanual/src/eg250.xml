@@ -11,6 +11,13 @@
 <!ENTITY openvpn_tran SYSTEM "openvpn_tran.xml">
 <!ENTITY ids_tran SYSTEM "ids_tran.xml">
 <!ENTITY firewall_tran SYSTEM "firewall_tran.xml">
+<!ENTITY protofilter_tran SYSTEM "protofilter_tran.xml">
+<!ENTITY clam_tran SYSTEM "clam_tran.xml">
+<!ENTITY hauri_tran SYSTEM "hauri_tran.xml">
+<!ENTITY httpblocker_tran SYSTEM "httpblocker_tran.xml">
+<!ENTITY spyware_tran SYSTEM "spyware_tran.xml">
+<!ENTITY clamphish_tran SYSTEM "clamphish_tran.xml">
+<!ENTITY spamassassin_tran SYSTEM "spamassassin_tran.xml">
 <!ENTITY chap1 SYSTEM "chap1.xml">
 <!ENTITY chap2 SYSTEM "chap2.xml">
 <!ENTITY appendix_q_a SYSTEM "appendix_q_a.xml">
@@ -73,6 +80,20 @@
   &ids_tran;
 
   &firewall_tran;
+
+  &protofilter_tran;
+  
+  &clam_tran;
+  
+  &hauri_tran;
+
+  &httpblocker_tran;
+  
+  &spyware_tran;
+  
+  &clamphish_tran;
+  
+  &spamassassin_tran;
 
   &chap1;
 
