@@ -38,15 +38,6 @@ public class ExportsConfigJPanel extends MEditTableJPanel {
         super.setInsets(new Insets(4, 4, 2, 2));
         super.setTableTitle("host export rules");
         super.setDetailsTitle("rule notes");
-	super.setAuxJPanelEnabled(true);
-	allInternalJCheckBox = new JCheckBox("Export all internal hosts    ");
-	allInternalJCheckBox.setFocusable(false);
-	allInternalJCheckBox.setFont(new Font("Dialog", 0, 12));
-	allExternalJCheckBox = new JCheckBox("Export all external hosts");
-	allExternalJCheckBox.setFocusable(false);
-	allExternalJCheckBox.setFont(new Font("Dialog", 0, 12));
-	auxJPanel.add(allInternalJCheckBox);
-	auxJPanel.add(allExternalJCheckBox);
 
         // create actual table model
         ExportTableModel exportTableModel = new ExportTableModel();

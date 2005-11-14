@@ -114,7 +114,9 @@ class ClientToSiteTableModel extends MSortedTableModel{
 	    tempRow.add( rowIndex );
 	    tempRow.add( vpnClient.isLive() );
 	    tempRow.add( vpnClient.getName() );
-	    tempRow.add( super.copyComboBoxModel(groupModel) );
+	    ComboBoxModel groupComboBoxModel = super.copyComboBoxModel(groupModel);
+	    groupComboBoxModel.setSelectedItem( vpnClient.getGroup() );
+	    tempRow.add( groupComboBoxModel );
 	    tempRow.add( vpnClient.getDescription() );
 	    tempRow.add( vpnClient );
 	    allRows.add(tempRow);
