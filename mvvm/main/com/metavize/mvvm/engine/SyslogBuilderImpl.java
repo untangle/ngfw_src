@@ -25,7 +25,6 @@ public class SyslogBuilderImpl implements SyslogBuilder
     private static final int MAX_VALUE_SIZE = 256;
     private static final String DATE_FORMAT = "%1$tb %1$2te %1$tH:%1$tM:%1$tS";
 
-
     private final byte[] buf = new byte[PACKET_SIZE];
     private final AsciiCharBuffer sb = AsciiCharBuffer.wrap(buf);
     private final Formatter dateFormatter = new Formatter(sb);

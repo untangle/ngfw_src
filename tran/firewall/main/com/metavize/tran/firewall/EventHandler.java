@@ -19,9 +19,12 @@ import com.metavize.mvvm.tapi.AbstractEventHandler;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
 import com.metavize.mvvm.tapi.MPipeException;
 import com.metavize.mvvm.tapi.Protocol;
+import com.metavize.mvvm.tapi.Session;
 import com.metavize.mvvm.tapi.TCPNewSessionRequest;
 import com.metavize.mvvm.tapi.event.TCPNewSessionRequestEvent;
+import com.metavize.mvvm.tapi.event.TCPSessionEvent;
 import com.metavize.mvvm.tapi.event.UDPNewSessionRequestEvent;
+import com.metavize.mvvm.tapi.event.UDPSessionEvent;
 import com.metavize.mvvm.tran.Transform;
 import org.apache.log4j.Logger;
 
@@ -110,11 +113,37 @@ class EventHandler extends AbstractEventHandler
 
         /* If necessary log the event */
         if ( rule != null && rule.getLog()) {
-            transform.log( new FirewallEvent( request.id(), rule, reject, ruleIndex ));
+            request.attach(new FirewallEvent(request.id(), rule, reject, ruleIndex));
         }
 
         /* Track the statistics */
         transform.statisticManager.incrRequest( protocol, request, reject, rule == null );
+    }
+
+    // XXX move to new callback
+    @Override
+    public void handleTCPFinalized(TCPSessionEvent event)
+        throws MPipeException
+    {
+        Session s = event.session();
+        FirewallEvent fe = (FirewallEvent)s.attachment();
+        if (null != fe) {
+            fe.setPipelineEndpoints(s.id());
+            transform.log(fe);
+        }
+    }
+
+    // XXX move to new callback
+    @Override
+    public void handleUDPFinalized(UDPSessionEvent event)
+        throws MPipeException
+    {
+        Session s = event.session();
+        FirewallEvent fe = (FirewallEvent)s.attachment();
+        if (null != fe) {
+            fe.setPipelineEndpoints(s.id());
+            transform.log(fe);
+        }
     }
 
     void configure( FirewallSettings settings )

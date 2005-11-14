@@ -84,6 +84,8 @@ public class SpywareEventHandler extends AbstractEventHandler
         }
     }
 
+    // XXX move to new callback
+    @Override
     public void handleTCPFinalized(TCPSessionEvent event)
         throws MPipeException
     {
@@ -91,9 +93,12 @@ public class SpywareEventHandler extends AbstractEventHandler
         SpywareAccessEvent spe = (SpywareAccessEvent)s.attachment();
         if (null != spe) {
             spe.setPipelineEndpoints(s.id());
+            transform.log(spe);
         }
     }
 
+    // XXX move to new callback
+    @Override
     public void handleUDPFinalized(UDPSessionEvent event)
         throws MPipeException
     {
@@ -101,9 +106,9 @@ public class SpywareEventHandler extends AbstractEventHandler
         SpywareAccessEvent spe = (SpywareAccessEvent)s.attachment();
         if (null != spe) {
             spe.setPipelineEndpoints(s.id());
+            transform.log(spe);
         }
     }
-
 
     void detectSpyware(IPNewSessionRequest ipr, boolean release)
     {
