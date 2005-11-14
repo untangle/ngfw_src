@@ -11,7 +11,6 @@ CREATE TABLE events.tr_nat_tmp AS
            rule_index, is_dmz, evt.time_stamp
     FROM events.tr_nat_redirect_evt evt JOIN pl_endp endp USING (session_id);
 
-
 DROP TABLE events.tr_nat_redirect_evt;
 ALTER TABLE events.tr_nat_tmp RENAME TO tr_nat_redirect_evt;
 ALTER TABLE events.tr_nat_redirect_evt ALTER COLUMN event_id SET NOT NULL;

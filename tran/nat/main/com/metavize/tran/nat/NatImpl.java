@@ -47,20 +47,6 @@ import org.hibernate.Session;
 
 public class NatImpl extends AbstractTransform implements Nat
 {
-    private static final int CREATE_DATE_IDX   =  1;
-    private static final int PROTO_IDX         =  2;
-    private static final int O_CLIENT_ADDR_IDX =  3;
-    private static final int O_CLIENT_PORT_IDX =  4;
-    private static final int R_CLIENT_ADDR_IDX =  5;
-    private static final int O_SERVER_ADDR_IDX =  6;
-    private static final int O_SERVER_PORT_IDX =  7;
-    private static final int R_SERVER_ADDR_IDX =  8;
-    private static final int R_SERVER_PORT_IDX =  9;
-    private static final int CLIENT_INTF_IDX   = 10;
-    private static final int SERVER_INTF_IDX   = 11;
-    private static final int RULE_INDEX_IDX    = 12;
-    private static final int IS_DMZ_IDX        = 13;
-
     private final NatEventHandler handler;
     private final NatSessionManager sessionManager;
     final NatStatisticManager statisticManager;
