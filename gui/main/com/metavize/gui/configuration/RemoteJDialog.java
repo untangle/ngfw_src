@@ -27,6 +27,7 @@ public class RemoteJDialog extends MConfigJDialog {
 
     private static final String NAME_ADMINISTRATION_SETTINGS = "Remote Administration";
     private static final String NAME_SNMP_SETTINGS = "SNMP Monitoring";
+    private static final String NAME_SYSLOG_SETTINGS = "Syslog Monitoring";
 
     public RemoteJDialog( ) {
     }
@@ -51,6 +52,15 @@ public class RemoteJDialog extends MConfigJDialog {
         this.contentJTabbedPane.addTab(NAME_SNMP_SETTINGS, null, remoteSnmpJScrollPane);
 	super.savableMap.put(NAME_SNMP_SETTINGS, remoteSnmpJPanel);
 	super.refreshableMap.put(NAME_SNMP_SETTINGS, remoteSnmpJPanel);
+        
+        // SYSLOG MONITORING //////
+        RemoteSyslogJPanel remoteSyslogJPanel = new RemoteSyslogJPanel();
+        JScrollPane remoteSyslogJScrollPane = new JScrollPane( remoteSyslogJPanel );
+        remoteSyslogJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
+        remoteSyslogJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
+        this.contentJTabbedPane.addTab(NAME_SYSLOG_SETTINGS, null, remoteSyslogJScrollPane);
+	super.savableMap.put(NAME_SYSLOG_SETTINGS, remoteSyslogJPanel);
+	super.refreshableMap.put(NAME_SYSLOG_SETTINGS, remoteSyslogJPanel);
     }
     
     protected void sendSettings(Object settings) throws Exception {

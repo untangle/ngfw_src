@@ -40,6 +40,7 @@ import com.metavize.mvvm.client.*;
 import com.metavize.mvvm.policy.*;
 import com.metavize.mvvm.security.*;
 import com.metavize.mvvm.tran.*;
+import com.metavize.mvvm.logging.*;
 
 public class Util {
 
@@ -94,6 +95,7 @@ public class Util {
     private static StatsCache statsCache;
     private static NetworkingManager networkingManager;
     private static PolicyManager policyManager;
+    private static LoggingManager loggingManager;
 
     public static void setMvvmContext(MvvmRemoteContext mvvmContextX){
         mvvmContext = mvvmContextX;
@@ -103,6 +105,7 @@ public class Util {
             adminManager = mvvmContext.adminManager();
             networkingManager = mvvmContext.networkingManager();
             policyManager = mvvmContext.policyManager();
+	    loggingManager = mvvmContext.loggingManager();
         }
         else{
             toolboxManager = null;
@@ -110,6 +113,7 @@ public class Util {
             adminManager = null;
             networkingManager = null;
             policyManager = null;
+	    loggingManager = null;
         }
     }
 
@@ -124,6 +128,7 @@ public class Util {
     }
     public static NetworkingManager getNetworkingManager(){ return networkingManager; }
     public static PolicyManager getPolicyManager(){ return policyManager; }
+    public static LoggingManager getLoggingManager(){ return loggingManager; }
     ///////////////////////////////////
 
 

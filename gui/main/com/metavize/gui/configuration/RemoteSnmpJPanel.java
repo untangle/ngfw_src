@@ -245,7 +245,7 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel implements Savable, Ref
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
         restrictIPJPanel.add(snmpCommunityJTextField, gridBagConstraints);
 
         jLabel8.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -263,7 +263,7 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel implements Savable, Ref
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
         restrictIPJPanel.add(snmpContactJTextField, gridBagConstraints);
 
         jLabel11.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -274,14 +274,16 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel implements Savable, Ref
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         restrictIPJPanel.add(jLabel11, gridBagConstraints);
 
+        snmpPortJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
         snmpPortJSpinner.setFocusable(false);
-        snmpPortJSpinner.setMaximumSize(new java.awt.Dimension(75, 32767));
-        snmpPortJSpinner.setMinimumSize(new java.awt.Dimension(75, 20));
-        snmpPortJSpinner.setPreferredSize(new java.awt.Dimension(75, 20));
+        snmpPortJSpinner.setMaximumSize(new java.awt.Dimension(75, 19));
+        snmpPortJSpinner.setMinimumSize(new java.awt.Dimension(75, 19));
+        snmpPortJSpinner.setPreferredSize(new java.awt.Dimension(75, 19));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
         restrictIPJPanel.add(snmpPortJSpinner, gridBagConstraints);
 
         jLabel12.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -299,14 +301,14 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel implements Savable, Ref
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
         restrictIPJPanel.add(snmpLocationJTextField, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 20, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 0);
         enableRemoteJPanel.add(restrictIPJPanel, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -374,7 +376,7 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel implements Savable, Ref
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
         restrictIPJPanel1.add(trapCommunityJTextField, gridBagConstraints);
 
         jLabel9.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -392,7 +394,7 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel implements Savable, Ref
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
         restrictIPJPanel1.add(trapHostJTextField, gridBagConstraints);
 
         jLabel10.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -403,21 +405,23 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel implements Savable, Ref
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         restrictIPJPanel1.add(jLabel10, gridBagConstraints);
 
+        trapPortJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
         trapPortJSpinner.setFocusable(false);
-        trapPortJSpinner.setMaximumSize(new java.awt.Dimension(75, 32767));
-        trapPortJSpinner.setMinimumSize(new java.awt.Dimension(75, 20));
-        trapPortJSpinner.setPreferredSize(new java.awt.Dimension(75, 20));
+        trapPortJSpinner.setMaximumSize(new java.awt.Dimension(75, 19));
+        trapPortJSpinner.setMinimumSize(new java.awt.Dimension(75, 19));
+        trapPortJSpinner.setPreferredSize(new java.awt.Dimension(75, 19));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
         restrictIPJPanel1.add(trapPortJSpinner, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 50, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 50, 5, 0);
         enableRemoteJPanel1.add(restrictIPJPanel1, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();

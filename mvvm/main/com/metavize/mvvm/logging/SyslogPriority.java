@@ -61,6 +61,15 @@ public class SyslogPriority implements Serializable
         return priorities[priorityCode];
     }
 
+    public static SyslogPriority getPriority(String name)
+    {
+	for( SyslogPriority sp : priorities ){ // XXX linear, not fast but works for now
+	    if( sp.getName().equals(name) )
+		return sp;
+	}
+	return null;
+    }
+
     public static List<SyslogPriority> values()
     {
         List<SyslogPriority> l = new ArrayList<SyslogPriority>(priorities.length);

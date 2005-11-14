@@ -205,6 +205,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <include name="com/metavize/mvvm/logging/FilterDesc.java"/>
       <include name="com/metavize/mvvm/logging/LogEvent.java"/>
       <include name="com/metavize/mvvm/logging/LoggingManager.java"/>
+      <include name="com/metavize/mvvm/logging/LoggingSettings.java"/>
       <include name="com/metavize/mvvm/logging/PipelineEvent.java"/>
       <include name="com/metavize/mvvm/logging/SyslogBuilder.java"/>
       <include name="com/metavize/mvvm/policy/*.java"/>
@@ -244,6 +245,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
         <include name="com/metavize/mvvm/logging/FilterDesc.class"/>
         <include name="com/metavize/mvvm/logging/LogEvent*.class"/>
         <include name="com/metavize/mvvm/logging/LoggingManager*.class"/>
+        <include name="com/metavize/mvvm/logging/LoggingSettings.class"/>
         <include name="com/metavize/mvvm/logging/PipelineEvent.class"/>
         <include name="com/metavize/mvvm/logging/SyslogBuilder.class"/>
         <include name="com/metavize/mvvm/logging/SyslogFacility.class"/>
