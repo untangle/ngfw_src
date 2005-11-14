@@ -104,12 +104,13 @@ public class IDSRuleSignature {
     }
 
     public boolean execute(IDSSessionInfo info) {
-        IDSDetectionEngine engine = 
-            ((IDSTransformImpl)MvvmContextFactory.context().transformManager().threadContext().transform()).getEngine();
+        IDSTransformImpl transform = (IDSTransformImpl)MvvmContextFactory.context().transformManager().threadContext().transform();
+        IDSDetectionEngine engine = transform.getEngine();
+            
         for(IDSOption option : options) {
             if(!option.run(info)) {
                 engine.updateUICount(PASS_COUNTER);
-                IDSStatisticManager.instance().incrScanned();
+                transform.statisticManager.incrScanned();
                 return false;
             }
         }
@@ -118,26 +119,27 @@ public class IDSRuleSignature {
     }
 
     private void doAction(IDSSessionInfo info) {
-        IDSDetectionEngine engine =
-            ((IDSTransformImpl)MvvmContextFactory.context().transformManager().threadContext().transform()).getEngine();
+        IDSTransformImpl transform = (IDSTransformImpl)MvvmContextFactory.context().transformManager().threadContext().transform();
+        IDSDetectionEngine engine = transform.getEngine();
+
         boolean blocked = false;
         switch(action) {
         case IDSRuleManager.ALERT:
             log.debug("Alert: "+message);
-            IDSStatisticManager.instance().incrPassed();
+            transform.statisticManager.incrPassed();
             engine.updateUICount(ALERT_COUNTER);
             break;
 			
         case IDSRuleManager.LOG:
             log.debug("Log: "+message);
-            IDSStatisticManager.instance().incrPassed();
+            transform.statisticManager.incrPassed();
             engine.updateUICount(LOG_COUNTER);
             break;
 			
         case IDSRuleManager.BLOCK:
             log.debug("Block: "+message);
             blocked = true;
-            IDSStatisticManager.instance().incrBlocked();
+            transform.statisticManager.incrBlocked();
             engine.updateUICount(BLOCK_COUNTER);
             info.blockSession();
             break;

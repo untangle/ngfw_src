@@ -16,7 +16,6 @@ import com.metavize.mvvm.tran.StatisticManager;
 import com.metavize.mvvm.tran.firewall.IntfMatcher;
 
 class IDSStatisticManager extends StatisticManager {
-    private static IDSStatisticManager INSTANCE = null;
 
     /* Interface matcher to determine if the sessions is incoming or outgoing */
     //final IntfMatcher matcherIncoming = IntfMatcher.MATCHER_IN;
@@ -24,7 +23,7 @@ class IDSStatisticManager extends StatisticManager {
 
     private IDSStatisticEvent statisticEvent = new IDSStatisticEvent();
 
-    private IDSStatisticManager() {
+    IDSStatisticManager() {
         super();
     }
 
@@ -48,10 +47,4 @@ class IDSStatisticManager extends StatisticManager {
         this.statisticEvent.incrBlocked();
     }
 
-    static synchronized IDSStatisticManager instance() {
-        if ( INSTANCE == null )
-            INSTANCE = new IDSStatisticManager();
-
-        return INSTANCE;
-    }
 }

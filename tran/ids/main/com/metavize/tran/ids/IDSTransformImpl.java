@@ -50,6 +50,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
     private static final Logger logger = Logger.getLogger(IDSTransformImpl.class);
 
     private IDSSettings settings = null;
+    final IDSStatisticManager statisticManager;
 
     private final EventHandler handler;
     private final SoloPipeSpec octetPipeSpec, httpPipeSpec;
@@ -60,6 +61,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
     public IDSTransformImpl() {
         engine = new IDSDetectionEngine(this);
         handler = new EventHandler(this);
+        statisticManager = new IDSStatisticManager();
         octetPipeSpec = new SoloPipeSpec("ids-octet", this, handler,Fitting.OCTET_STREAM, Affinity.SERVER,10);
         httpPipeSpec = new SoloPipeSpec("ids-http", this, new TokenAdaptor(this, new IDSHttpFactory(this)), Fitting.HTTP_TOKENS, Affinity.SERVER,0);
         pipeSpecs = new PipeSpec[] { httpPipeSpec, octetPipeSpec };
@@ -159,7 +161,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         setIDSSettings(settings);
         logger.info(ruleList.size() + " rules loaded");
 
-        IDSStatisticManager.instance().stop();
+        statisticManager.stop();
     }
 
     /** Temp subroutines for loading local snort rules.
@@ -228,7 +230,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
             throw new TransformStartException(e);
         }
 
-        IDSStatisticManager.instance().start();
+        statisticManager.start();
     }
 
     public IDSDetectionEngine getEngine() {
@@ -236,7 +238,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
     }
 
     protected void postStop() {
-        IDSStatisticManager.instance().stop();
+        statisticManager.stop();
     }
 
     public void reconfigure() throws TransformException {
