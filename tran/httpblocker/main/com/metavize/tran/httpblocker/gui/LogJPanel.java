@@ -13,70 +13,94 @@
 package com.metavize.tran.httpblocker.gui;
 
 import java.util.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.table.*;
 
-import com.metavize.gui.util.Util;
 import com.metavize.gui.transform.*;
 import com.metavize.gui.widgets.editTable.*;
+import com.metavize.mvvm.logging.EventFilter;
+import com.metavize.mvvm.logging.EventManager;
+import com.metavize.mvvm.logging.FilterDesc;
+import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.mvvm.tran.Transform;
-import com.metavize.tran.httpblocker.Action;
+import com.metavize.tran.http.HttpRequestEvent;
+import com.metavize.tran.http.RequestLine;
 import com.metavize.tran.httpblocker.HttpBlocker;
-import com.metavize.tran.httpblocker.HttpRequestLog;
-import com.metavize.tran.httpblocker.Reason;
+import com.metavize.tran.httpblocker.HttpBlockerEvent;
 
 public class LogJPanel extends MLogTableJPanel {
 
-    private static final String BLOCKED_EVENTS_STRING = "Website blocked events";
-
     public LogJPanel(Transform transform, MTransformControlsJPanel mTransformControlsJPanel){
         super(transform, mTransformControlsJPanel);
-	setTableModel(new LogTableModel());
-	queryJComboBox.addItem(BLOCKED_EVENTS_STRING);
+
+        final HttpBlocker httpBlocker = (HttpBlocker)logTransform;
+
+        depthJSlider.addChangeListener(new ChangeListener() {
+                public void stateChanged(ChangeEvent ce) {
+                    int v = depthJSlider.getValue();
+                    EventManager<HttpBlockerEvent> em = httpBlocker.getEventManager();
+                    em.setLimit(v);
+                }
+            });
+
+        setTableModel(new LogTableModel());
+
+        EventManager<HttpBlockerEvent> eventManager = httpBlocker.getEventManager();
+        for (FilterDesc fd : eventManager.getFilterDescs()) {
+            queryJComboBox.addItem(fd.getName());
+        }
     }
 
     protected void refreshSettings(){
-	settings = ((HttpBlocker)super.logTransform).getEvents(depthJSlider.getValue(),
-							       queryJComboBox.getSelectedItem().equals(BLOCKED_EVENTS_STRING));
+        HttpBlocker httpBlocker = (HttpBlocker)logTransform;
+        EventManager<HttpBlockerEvent> em = httpBlocker.getEventManager();
+        EventFilter<HttpBlockerEvent> ef = em.getFilter((String)queryJComboBox.getSelectedItem());
+        settings = ef.getEvents();
     }
-    
+
     class LogTableModel extends MSortedTableModel{
-	
-	public TableColumnModel getTableColumnModel(){
-	    DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
-	    //                                 #   min  rsz    edit   remv   desc   typ               def
-	    addTableColumn( tableColumnModel,  0,  150, true,  false, false, false, Date.class,   null, "timestamp" );
-	    addTableColumn( tableColumnModel,  1,  55,  true,  false, false, false, String.class, null, "action" );
-	    addTableColumn( tableColumnModel,  2,  165, true,  false, false, false, String.class, null, "client" );
-	    addTableColumn( tableColumnModel,  3,  200, true,  false, false, true,  String.class, null, "request" );
-	    addTableColumn( tableColumnModel,  4,  140, true,  false, false, false, String.class, null, sc.html("reason for<br>action") );
-	    addTableColumn( tableColumnModel,  5,  100, true,  false, false, false, String.class, null, sc.html("direction") );
-	    addTableColumn( tableColumnModel,  6,  165, true,  false, false, false, String.class, null, "server" );
-	    
-	    return tableColumnModel;
-	}
-	
-	public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {}
-	
-	public Vector<Vector> generateRows(Object settings){
-	    List<HttpRequestLog> requestLogList = (List<HttpRequestLog>) settings;
-	    Vector<Vector> allEvents = new Vector<Vector>(requestLogList.size());
-	    Vector event;
-	    
-	    for( HttpRequestLog requestLog : requestLogList ){
-		event = new Vector(7);
-		event.add( requestLog.timeStamp() );
-		event.add( requestLog.getAction().toString() );
-		event.add( requestLog.getClientAddr() + ":" + ((Integer)requestLog.getClientPort()).toString() );
-		event.add( requestLog.getUrl().toString() );
-		event.add( requestLog.getReason().toString() );
-		event.add( requestLog.getDirection().getDirectionName() );
-		event.add( requestLog.getServerAddr() + ":" + ((Integer)requestLog.getServerPort()).toString() );
-		allEvents.add( event );
-	    }
-	    
-	    return allEvents;
-	}
-	
+
+        public TableColumnModel getTableColumnModel(){
+            DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
+            //                                 #   min  rsz    edit   remv   desc   typ               def
+            addTableColumn( tableColumnModel,  0,  150, true,  false, false, false, Date.class,   null, "timestamp" );
+            addTableColumn( tableColumnModel,  1,  55,  true,  false, false, false, String.class, null, "action" );
+            addTableColumn( tableColumnModel,  2,  165, true,  false, false, false, String.class, null, "client" );
+            addTableColumn( tableColumnModel,  3,  200, true,  false, false, true,  String.class, null, "request" );
+            addTableColumn( tableColumnModel,  4,  140, true,  false, false, false, String.class, null, sc.html("reason for<br>action") );
+            addTableColumn( tableColumnModel,  5,  100, true,  false, false, false, String.class, null, sc.html("direction") );
+            addTableColumn( tableColumnModel,  6,  165, true,  false, false, false, String.class, null, "server" );
+
+            return tableColumnModel;
+        }
+
+        public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {}
+
+        public Vector<Vector> generateRows(Object settings){
+            List<HttpBlockerEvent> requestLogList = (List<HttpBlockerEvent>) settings;
+            Vector<Vector> allEvents = new Vector<Vector>(requestLogList.size());
+            Vector event;
+
+            for( HttpBlockerEvent requestLog : requestLogList ){
+                RequestLine rl = requestLog.getRequestLine();
+                HttpRequestEvent re = null == rl ? null : rl.getHttpRequestEvent();
+                PipelineEndpoints pe = null == re ? null : re.getPipelineEndpoints();
+
+                event = new Vector(7);
+                event.add( requestLog.getTimeStamp() );
+                event.add( requestLog.getAction().toString() );
+                event.add( null == pe ? "" : (pe.getCClientAddr().getHostAddress() + ":" + pe.getCClientPort()));
+                event.add( null == rl ? "" : rl.getUrl().toString() );
+                event.add( requestLog.getReason().toString() );
+                event.add( null == pe ? "" : pe.getDirectionName() );
+                event.add( null == pe ? "" : pe.getSServerAddr().getHostAddress() + ":" + pe.getSServerPort());
+                allEvents.add( event );
+            }
+
+            return allEvents;
+        }
+
     }
 
 }

@@ -14,4 +14,7 @@ package com.metavize.mvvm.logging;
 public interface SyslogBuilder
 {
     void addField(String key, String value);
+    void addField(String key, boolean value);
+    void addField(String key, int value);
+    void addField(String key, double value);
 }

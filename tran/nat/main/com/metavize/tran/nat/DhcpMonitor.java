@@ -22,9 +22,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
-import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.ParseException;
@@ -74,7 +72,6 @@ class DhcpMonitor implements Runnable
     private final Map<IPaddr,DhcpLease> currentLeaseMap = new HashMap<IPaddr,DhcpLease>();
 
     private final Logger logger = Logger.getLogger( this.getClass());
-    private final Logger eventLogger;
     private final NatImpl transform;
     private final MvvmLocalContext localContext;
 
@@ -83,7 +80,6 @@ class DhcpMonitor implements Runnable
     {
         this.transform = transform;
         this.localContext = localContext;
-        this.eventLogger = MvvmContextFactory.context().eventLogger();
     }
 
     public void run()
@@ -95,7 +91,7 @@ class DhcpMonitor implements Runnable
             logger.error( "died before starting" );
             return;
         }
-        
+
         while ( true ) {
             if ( c <= 0 ) {
                 logAbsolute();
@@ -130,7 +126,7 @@ class DhcpMonitor implements Runnable
         logger.debug( "Finished" );
 
         /* Write an absolute lease map that is empty */
-        eventLogger.info( new DhcpAbsoluteEvent());
+        transform.log( new DhcpAbsoluteEvent());
     }
 
     synchronized void start()
@@ -203,7 +199,7 @@ class DhcpMonitor implements Runnable
             }
 
             /* Log the absolute event */
-            if ( isAbsolute ) eventLogger.info( absoluteEvent );
+            if ( isAbsolute ) transform.log( absoluteEvent );
         } catch ( FileNotFoundException ex ) {
             logger.info( "The file: " + DHCP_LEASES_FILE + " does not exist yet" );
         } catch ( Exception ex ) {
@@ -224,7 +220,7 @@ class DhcpMonitor implements Runnable
             }
 
             /* Log that an entry was deleted */
-            eventLogger.info( new DhcpLeaseEvent( lease, DhcpLeaseEvent.RELEASE ));
+            transform.log( new DhcpLeaseEvent( lease, DhcpLeaseEvent.RELEASE ));
         }
 
         /* Update the last time the file was modified */
@@ -314,7 +310,7 @@ class DhcpMonitor implements Runnable
             int eventType = lease.isActive() ? DhcpLeaseEvent.REGISTER : DhcpLeaseEvent.EXPIRE;
             logger.debug( "Logging new lease: " + ip.toString());
 
-            eventLogger.info( new DhcpLeaseEvent( lease, eventType ));
+            transform.log( new DhcpLeaseEvent( lease, eventType ));
         } else {
             if ( lease.hasChanged( eol, mac, ip, host, now )) {
                 int eventType;
@@ -332,7 +328,7 @@ class DhcpMonitor implements Runnable
                 lease.set( eol, mac, ip, host, now );
 
                 logger.debug( "Logging updated lease: " + ip.toString());
-                eventLogger.info( new DhcpLeaseEvent( lease, eventType ));
+                transform.log( new DhcpLeaseEvent( lease, eventType ));
             } else {
                 logger.debug( "Lease hasn't changed: " + ip.toString());
             }

@@ -10,22 +10,19 @@
  */
 package com.metavize.tran.protofilter;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
-import com.metavize.mvvm.tran.Direction;
+import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformStartException;
 import com.metavize.mvvm.util.TransactionWork;
@@ -37,28 +34,12 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
 {
     private final EventHandler handler = new EventHandler( this );
 
-    private static final String EVENT_QUERY_BASE
-        = "SELECT create_date, protocol, blocked, "
-        + "c_client_addr, c_client_port, "
-        + "s_server_addr, s_server_port, "
-        + "policy_inbound AS incoming "
-        + "FROM pl_endp endp "
-        + "JOIN tr_protofilter_evt USING (session_id) "
-        + "WHERE endp.policy_id = ? ";
-
-    private static final String EVENT_QUERY
-        = EVENT_QUERY_BASE
-        + "ORDER BY create_date DESC LIMIT ?";
-
-    private static final String EVENT_BLOCKED_QUERY
-        = EVENT_QUERY_BASE
-        + "AND blocked "
-        + "ORDER BY create_date DESC LIMIT ?";
-
     private final SoloPipeSpec pipeSpec = new SoloPipeSpec
         ("protofilter", this, handler, Fitting.OCTET_STREAM,
          Affinity.CLIENT, 0);
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { pipeSpec };
+
+    private final EventLogger<ProtoFilterLogEvent> eventLogger;
 
     private final Logger logger = Logger.getLogger(ProtoFilterImpl.class);
 
@@ -66,7 +47,14 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
 
     // constructors -----------------------------------------------------------
 
-    public ProtoFilterImpl() { }
+    public ProtoFilterImpl()
+    {
+        TransformContext tctx = getTransformContext();
+        eventLogger = new EventLogger<ProtoFilterLogEvent>(tctx);
+
+        ProtoFilterAllEventHandler eh = new ProtoFilterAllEventHandler(tctx);
+        eventLogger.addEventHandler(eh);
+    }
 
     // ProtoFilter methods ----------------------------------------------------
 
@@ -98,60 +86,9 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
         }
     }
 
-    // backwards compat
-    public List<ProtoFilterLog> getLogs(int limit)
+    public EventManager<ProtoFilterLogEvent> getEventManager()
     {
-        return getLogs(limit, false);
-    }
-
-    public List<ProtoFilterLog> getLogs(final int limit,
-                                        final boolean blockedOnly)
-    {
-        final List<ProtoFilterLog> l = new ArrayList<ProtoFilterLog>(limit);
-
-        TransactionWork tw = new TransactionWork()
-            {
-                public boolean doWork(Session s) throws SQLException
-                {
-                    Connection c = s.connection();
-                    PreparedStatement ps;
-                    if (blockedOnly)
-                        ps = c.prepareStatement(EVENT_BLOCKED_QUERY);
-                    else
-                        ps = c.prepareStatement(EVENT_QUERY);
-                    ps.setString(1, getPolicy().getId().toString());
-                    ps.setInt(2, limit);
-                    long l0 = System.currentTimeMillis();
-                    ResultSet rs = ps.executeQuery();
-                    while (rs.next()) {
-                        long cd = rs.getTimestamp("create_date").getTime();
-                        Date createDate = new Date(cd);
-                        String protocol = rs.getString("protocol");
-                        boolean blocked = rs.getBoolean("blocked");
-                        String clientAddr = rs.getString("c_client_addr");
-                        int clientPort = rs.getInt("c_client_port");
-                        String serverAddr = rs.getString("s_server_addr");
-                        int serverPort = rs.getInt("s_server_port");
-                        boolean incoming = rs.getBoolean("incoming");
-
-                        Direction d = incoming ? Direction.INCOMING : Direction.OUTGOING;
-
-                        ProtoFilterLog rl = new ProtoFilterLog
-                            (createDate, protocol, blocked, clientAddr, clientPort,
-                             serverAddr, serverPort, d);
-
-                        l.add(rl);
-                    }
-                    long l1 = System.currentTimeMillis();
-                    logger.debug("getAccessLogs() in: " + (l1 - l0));
-                    return true;
-                }
-
-                public Object getResult() { return null; }
-            };
-        getTransformContext().runTransaction(tw);
-
-        return l;
+        return eventLogger;
     }
 
     // AbstractTransform methods ----------------------------------------------
@@ -196,11 +133,18 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
 
     protected void preStart() throws TransformStartException
     {
+        eventLogger.start();
+
         try {
             reconfigure();
         } catch (Exception e) {
             throw new TransformStartException(e);
         }
+    }
+
+    protected void postStop()
+    {
+        eventLogger.stop();
     }
 
     public    void reconfigure() throws TransformException
@@ -302,6 +246,11 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
         }
 
         logger.info("UPDATE: Complete");
+    }
+
+    void log(ProtoFilterLogEvent se)
+    {
+        eventLogger.log(se);
     }
 
     // XXX soon to be deprecated ----------------------------------------------

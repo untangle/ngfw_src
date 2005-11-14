@@ -11,68 +11,95 @@
 
 package com.metavize.tran.nat.gui;
 
-import com.metavize.gui.util.Util;
+import java.util.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.table.*;
+
 import com.metavize.gui.transform.*;
 import com.metavize.gui.widgets.editTable.*;
+import com.metavize.mvvm.logging.EventFilter;
+import com.metavize.mvvm.logging.EventManager;
+import com.metavize.mvvm.logging.FilterDesc;
+import com.metavize.mvvm.logging.LogEvent;
+import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.tran.nat.*;
-
-import javax.swing.table.*;
-import java.util.*;
 
 public class LogJPanel extends MLogTableJPanel
 {
     public LogJPanel(Transform transform, MTransformControlsJPanel mTransformControlsJPanel)
     {
         super(transform, mTransformControlsJPanel);
-	setTableModel(new LogTableModel());
-	queryJComboBox.setVisible(false);
+
+        final Nat nat = (Nat)logTransform;
+
+        depthJSlider.addChangeListener(new ChangeListener() {
+                public void stateChanged(ChangeEvent ce) {
+                    int v = depthJSlider.getValue();
+                    EventManager<LogEvent> em = nat.getEventManager();
+                    em.setLimit(v);
+                }
+            });
+
+        setTableModel(new LogTableModel());
+
+        EventManager<LogEvent> eventManager = nat.getEventManager();
+        for (FilterDesc fd : eventManager.getFilterDescs()) {
+            queryJComboBox.addItem(fd.getName());
+        }
     }
 
     protected void refreshSettings(){
-	settings = ((Nat)super.logTransform).getLogs( depthJSlider.getValue());
+        Nat nat = (Nat)logTransform;
+        EventManager<LogEvent> em = nat.getEventManager();
+        EventFilter<LogEvent> ef = em.getFilter((String)queryJComboBox.getSelectedItem());
+        settings = ef.getEvents();
     }
 
     class LogTableModel extends MSortedTableModel {
-	
-	public TableColumnModel getTableColumnModel(){
-	    DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
-	    //                                 #   min  rsz    edit   remv   desc   typ               def
-	    addTableColumn( tableColumnModel,  0,  150, true,  false, false, false, Date.class,   null, "timestamp" );
-	    addTableColumn( tableColumnModel,  1,  55,  true,  false, false, false, String.class, null, "action" );
+
+        public TableColumnModel getTableColumnModel(){
+            DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
+            //                                 #   min  rsz    edit   remv   desc   typ               def
+            addTableColumn( tableColumnModel,  0,  150, true,  false, false, false, Date.class,   null, "timestamp" );
+            addTableColumn( tableColumnModel,  1,  55,  true,  false, false, false, String.class, null, "action" );
             addTableColumn( tableColumnModel,  2,  55,  true,  false, false, false, String.class, null, "protocol" );
-	    addTableColumn( tableColumnModel,  3,  165, true,  false, false, false, String.class, null, "source" );
+            addTableColumn( tableColumnModel,  3,  165, true,  false, false, false, String.class, null, "source" );
             addTableColumn( tableColumnModel,  4,  165, true,  false, false, false, String.class, null, "original destination" );
             addTableColumn( tableColumnModel,  5,  165, true,  false, false, false, String.class, null, "redirected destination" );
-	    addTableColumn( tableColumnModel,  6,  150, true,  false, false, false, String.class, null, sc.html("reason for<br>action") );
-	    addTableColumn( tableColumnModel,  7,  100, true,  false, false, false, String.class, null, sc.html("client interface") );
-	    addTableColumn( tableColumnModel,  8,  105, true,  false, false, false, String.class, null, sc.html("redirected<br>server interface") );
-	    return tableColumnModel;
-	}
-	
-	public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly ) throws Exception {}
+            addTableColumn( tableColumnModel,  6,  150, true,  false, false, false, String.class, null, sc.html("reason for<br>action") );
+            addTableColumn( tableColumnModel,  7,  100, true,  false, false, false, String.class, null, sc.html("client interface") );
+            addTableColumn( tableColumnModel,  8,  105, true,  false, false, false, String.class, null, sc.html("redirected<br>server interface") );
+            return tableColumnModel;
+        }
 
-	public Vector<Vector> generateRows(Object settings){
-	    List<NatRedirectLogEntry> logList = (List<NatRedirectLogEntry>) settings;
-	    Vector<Vector> allEvents = new Vector<Vector>(logList.size());
-	    Vector event;
-	    
-	    for( NatRedirectLogEntry log : logList ){
-		event = new Vector(8);
-		event.add( log.getCreateDate() );
-		event.add( log.getAction() );
-		event.add( log.getProtocol() );
-		event.add( log.getClient() );
-		event.add( log.getOriginalServer() );
-		event.add( log.getRedirectServer() );
-		event.add( log.getReason() );
-		event.add( log.getClientIntf());
-                event.add( log.getServerIntf());
-		allEvents.add( event );
-	    }
-	    
-	    return allEvents;
-	}
-	
-    }       
+        public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly ) throws Exception {}
+
+        public Vector<Vector> generateRows(Object settings){
+            List<LogEvent> logList = (List<LogEvent>) settings;
+            Vector<Vector> allEvents = new Vector<Vector>(logList.size());
+            Vector event;
+
+            for (Iterator i = logList.iterator(); i.hasNext(); ) {
+                RedirectEvent log = (RedirectEvent)i.next();
+                PipelineEndpoints pe = log.getPipelineEndpoints();
+
+                event = new Vector(8);
+                event.add( null == pe ? "" : pe.getCreateDate() );
+                event.add( log.getIsDmz() ? "dmz" : "redirect" );
+                event.add( null == pe ? "" : pe.getProtocolName());
+                event.add( null == pe ? "" : pe.getCClientAddr().getHostAddress() );
+                event.add( null == pe ? "" : pe.getCServerAddr().getHostAddress() );
+                event.add( null == pe ? "" : pe.getSServerAddr().getHostAddress() );
+                event.add( log.getIsDmz() ? "Destined to DMZ" : ("Redirect Rule #" + log.getRuleIndex()));
+                event.add( null == pe ? "" : pe.getClientIntf());
+                event.add( null == pe ? "" : pe.getServerIntf());
+                allEvents.add( event );
+            }
+
+            return allEvents;
+        }
+
+    }
 }

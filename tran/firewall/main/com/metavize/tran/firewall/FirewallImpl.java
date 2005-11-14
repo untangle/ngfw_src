@@ -10,12 +10,7 @@
  */
 package com.metavize.tran.firewall;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,12 +19,14 @@ import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.argon.SessionMatcher;
 import com.metavize.mvvm.argon.SessionMatcherFactory;
+import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
-import com.metavize.mvvm.tran.Direction;
+import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformStartException;
 import com.metavize.mvvm.tran.firewall.IPMatcher;
@@ -42,26 +39,11 @@ import org.hibernate.Session;
 
 public class FirewallImpl extends AbstractTransform implements Firewall
 {
-    private static final String EVENT_QUERY_BASE
-        = "SELECT create_date, was_blocked, "
-        + "c_client_addr, c_client_port, s_server_addr, s_server_port, "
-        + "policy_inbound AS incoming, rule_index "
-        + "FROM pl_endp endp "
-        + "JOIN tr_firewall_evt evt ON endp.session_id = evt.session_id "
-        + "WHERE endp.policy_id = ? ";
-
-    private static final String EVENT_QUERY
-        = EVENT_QUERY_BASE
-        + "ORDER BY create_date DESC LIMIT ?";
-
-    private static final String EVENT_BLOCKED_QUERY
-        = EVENT_QUERY_BASE
-        + "AND was_blocked "
-        + "ORDER BY create_date DESC LIMIT ?";
-
     private final EventHandler handler;
     private final SoloPipeSpec pipeSpec;
     private final SoloPipeSpec[] pipeSpecs;
+
+    private final EventLogger<FirewallEvent> eventLogger;
 
     private final Logger logger = Logger.getLogger(FirewallImpl.class);
 
@@ -79,6 +61,14 @@ public class FirewallImpl extends AbstractTransform implements Firewall
             ("firewall", this, handler, Fitting.OCTET_STREAM, Affinity.OUTSIDE,
              SoloPipeSpec.MAX_STRENGTH - 2);
         this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
+
+        TransformContext tctx = getTransformContext();
+        eventLogger = new EventLogger<FirewallEvent>(tctx);
+
+        FirewallEventHandler eh = new FirewallEventHandler(tctx);
+        eventLogger.addEventHandler(eh);
+        FirewallBlockedEventHandler beh = new FirewallBlockedEventHandler(tctx);
+        eventLogger.addEventHandler(beh);
     }
 
     // Firewall methods -------------------------------------------------------
@@ -111,60 +101,9 @@ public class FirewallImpl extends AbstractTransform implements Firewall
         }
     }
 
-    // Backwards compat
-    public List<FirewallLog> getEventLogs(int limit)
+    public EventManager<FirewallEvent> getEventManager()
     {
-        return getEventLogs(limit, false);
-    }
-
-    public List<FirewallLog> getEventLogs(final int limit,
-                                          final boolean blockedOnly)
-    {
-        final List<FirewallLog> l = new ArrayList<FirewallLog>(limit);
-
-        TransactionWork tw = new TransactionWork()
-            {
-                public boolean doWork(Session s) throws SQLException
-                {
-                    Connection c = s.connection();
-                    PreparedStatement ps;
-                    if (blockedOnly)
-                        ps = c.prepareStatement(EVENT_BLOCKED_QUERY);
-                    else
-                        ps = c.prepareStatement(EVENT_QUERY);
-                    ps.setString(1, getPolicy().getId().toString());
-                    ps.setInt(2, limit);
-                    long l0 = System.currentTimeMillis();
-                    ResultSet rs = ps.executeQuery();
-                    while (rs.next()) {
-                        long ts = rs.getTimestamp("create_date").getTime();
-                        Date createDate = new Date(ts);
-                        boolean trafficBlocker = rs.getBoolean("was_blocked");
-                        String clientAddr = rs.getString("c_client_addr");
-                        int clientPort = rs.getInt("c_client_port");
-                        String serverAddr = rs.getString("s_server_addr");
-                        int serverPort = rs.getInt("s_server_port");
-                        boolean incoming = rs.getBoolean("incoming");
-                        int ruleIndex = rs.getInt("rule_index");
-
-                        Direction d = incoming ? Direction.INCOMING : Direction.OUTGOING;
-
-                        FirewallLog rl = new FirewallLog
-                            (createDate, trafficBlocker, clientAddr, clientPort,
-                             serverAddr, serverPort, d, ruleIndex);
-
-                        l.add(rl);
-                    }
-                    long l1 = System.currentTimeMillis();
-                    logger.debug("getEventLogs() in: " + (l1 - l0));
-                    return true;
-                }
-
-                public Object getResult() { return null; }
-            };
-        getTransformContext().runTransaction(tw);
-
-        return l;
+        return eventLogger;
     }
 
     // AbstractTransform methods ----------------------------------------------
@@ -208,6 +147,8 @@ public class FirewallImpl extends AbstractTransform implements Firewall
 
     protected void preStart() throws TransformStartException
     {
+        eventLogger.start();
+
         try {
             reconfigure();
         } catch (Exception e) {
@@ -229,6 +170,8 @@ public class FirewallImpl extends AbstractTransform implements Firewall
         shutdownMatchingSessions();
 
         statisticManager.stop();
+
+        eventLogger.stop();
     }
 
     public    void reconfigure() throws TransformException
@@ -253,6 +196,11 @@ public class FirewallImpl extends AbstractTransform implements Firewall
         }
 
         logger.info( "Update Settings Complete" );
+    }
+
+    void log(FirewallEvent logEvent)
+    {
+        eventLogger.log(logEvent);
     }
 
     FirewallSettings getDefaultSettings()

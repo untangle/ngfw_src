@@ -95,6 +95,16 @@ public class PipelineEndpoints extends LogEvent
         return policyInbound ? "inbound" : "outbound";
     }
 
+    public String getProtocolName()
+    {
+        switch (protocol) {
+        case 6: return "TCP";
+        case 7: return "UDP";
+        default: return "unknown";
+        }
+    }
+
+
     // accessors --------------------------------------------------------------
 
     /**

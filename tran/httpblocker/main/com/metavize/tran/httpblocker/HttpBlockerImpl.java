@@ -11,54 +11,30 @@
 
 package com.metavize.tran.httpblocker;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
-import com.metavize.mvvm.tran.Direction;
 import com.metavize.mvvm.tran.MimeType;
 import com.metavize.mvvm.tran.MimeTypeRule;
 import com.metavize.mvvm.tran.StringRule;
+import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.util.TransactionWork;
 import com.metavize.tran.token.TokenAdaptor;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import com.metavize.mvvm.logging.EventHandler;
 
 public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 {
-    private static final String ALL_EVENTS_QUERY_BASE
-        = "SELECT req.event_id, blk.event_id, req.time_stamp, host, uri, "
-        +         "action, reason, category, content_type, "
-        +         "resp.content_length, c_client_addr, c_client_port, "
-        +         "s_server_addr, s_server_port, "
-        +        "NOT policy_inbound as incoming "
-        + "FROM tr_http_evt_req req "
-        + "JOIN pl_endp endp USING (session_id) "
-        + "JOIN tr_http_req_line rl USING (request_id) "
-        + "LEFT OUTER JOIN tr_http_evt_resp resp USING (request_id) "
-        + "LEFT OUTER JOIN tr_httpblk_evt_blk blk USING (request_id) "
-        + "WHERE endp.policy_id = ? ";
-
-    private static final String ALL_EVENTS_QUERY
-        = ALL_EVENTS_QUERY_BASE
-        + "ORDER BY req.time_stamp DESC LIMIT ?";
-
-    private static final String ALL_EVENTS_BLOCKED_QUERY
-        = ALL_EVENTS_QUERY_BASE
-        + "AND blk.action = '" + Action.BLOCK.getKey() + "' "
-        + "ORDER BY req.time_stamp DESC LIMIT ?";
-
     private static final Logger logger = Logger.getLogger(HttpBlockerImpl.class);
 
     private final HttpBlockerFactory factory = new HttpBlockerFactory(this);
@@ -68,13 +44,21 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
          Affinity.CLIENT, 0);
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { pipeSpec };
 
-    private final Blacklist blacklist = new Blacklist();
+    private final Blacklist blacklist = new Blacklist(this);
+
+    private final EventLogger<HttpBlockerEvent> eventLogger;
 
     private volatile HttpBlockerSettings settings;
 
     // constructors -----------------------------------------------------------
 
-    public HttpBlockerImpl() { }
+    public HttpBlockerImpl()
+    {
+        TransformContext tctx = getTransformContext();
+        eventLogger = new EventLogger<HttpBlockerEvent>(tctx);
+        EventHandler eh = new HttpBlockerEventHandler(tctx);
+        eventLogger.addEventHandler(eh);
+    }
 
     // HttpBlocker methods ----------------------------------------------------
 
@@ -101,67 +85,9 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         blacklist.configure(settings);
     }
 
-    // Backwards compat
-    public List<HttpRequestLog> getEvents(int limit)
+    public EventManager<HttpBlockerEvent> getEventManager()
     {
-        return getEvents(limit, false);
-    }
-
-    public List<HttpRequestLog> getEvents(final int limit,
-                                          final boolean blockedOnly)
-    {
-        final List<HttpRequestLog> l = new ArrayList<HttpRequestLog>(limit);
-
-        TransactionWork tw = new TransactionWork()
-            {
-                public boolean doWork(Session s) throws SQLException
-                {
-                    Connection c = s.connection();
-                    PreparedStatement ps;
-                    if (blockedOnly)
-                        ps = c.prepareStatement(ALL_EVENTS_BLOCKED_QUERY);
-                    else
-                        ps = c.prepareStatement(ALL_EVENTS_QUERY);
-                    ps.setString(1, getPolicy().getId().toString());
-                    ps.setInt(2, limit);
-                    long l0 = System.currentTimeMillis();
-                    ResultSet rs = ps.executeQuery();
-                    while (rs.next()) {
-                        long ts = rs.getTimestamp("time_stamp").getTime();
-                        Date timeStamp = new Date(ts);
-                        String host = rs.getString("host");
-                        String uri = rs.getString("uri");
-                        String actionStr = rs.getString("action");
-                        String reasonStr = rs.getString("reason");
-                        String category = rs.getString("category");
-                        String contentType = rs.getString("content_type");
-                        int contentLength = rs.getInt("content_length");
-                        String clientAddr = rs.getString("c_client_addr");
-                        int clientPort = rs.getInt("c_client_port");
-                        String serverAddr = rs.getString("s_server_addr");
-                        int serverPort = rs.getInt("s_server_port");
-                        boolean incoming = rs.getBoolean("incoming");
-
-                        Direction d = incoming ? Direction.INCOMING : Direction.OUTGOING;
-
-                        HttpRequestLog rl = new HttpRequestLog
-                            (timeStamp, host, uri, actionStr, reasonStr, category,
-                             contentType, contentLength, clientAddr, clientPort,
-                             serverAddr, serverPort, d);
-
-                        l.add(rl);
-                    }
-                    long l1 = System.currentTimeMillis();
-                    logger.debug("getEvents() in: " + (l1 - l0));
-
-                    return true;
-                }
-
-                public Object getResult() { return null; }
-            };
-        getTransformContext().runTransaction(tw);
-
-        return l;
+        return eventLogger;
     }
 
     // Transform methods ------------------------------------------------------
@@ -407,6 +333,16 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         reconfigure();
     }
 
+    protected void preStart()
+    {
+        eventLogger.start();
+    }
+
+    protected void postStop()
+    {
+        eventLogger.stop();
+    }
+
     protected void postDestroy()
     {
         blacklist.destroy();
@@ -429,5 +365,10 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
     Blacklist getBlacklist()
     {
         return blacklist;
+    }
+
+    void log(HttpBlockerEvent se)
+    {
+        eventLogger.log(se);
     }
 }

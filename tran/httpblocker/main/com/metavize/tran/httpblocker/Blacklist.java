@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tran.IPMaddrRule;
 import com.metavize.mvvm.tran.MimeType;
 import com.metavize.mvvm.tran.MimeTypeRule;
@@ -40,8 +39,7 @@ class Blacklist
 {
     private final Logger logger = Logger.getLogger(Blacklist.class);
 
-    private final Logger eventLogger = MvvmContextFactory.context()
-        .eventLogger();
+    private final HttpBlockerImpl transform;
 
     private volatile Map<String, CharSequence[]> urls = Collections.emptyMap();
     private volatile Map<String, CharSequence[]> domains = Collections.emptyMap();
@@ -55,8 +53,10 @@ class Blacklist
 
     // constructors -----------------------------------------------------------
 
-    Blacklist()
+    Blacklist(HttpBlockerImpl transform)
     {
+        this.transform = transform;
+
         try {
             Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException exn) {
@@ -150,7 +150,7 @@ class Blacklist
                     HttpBlockerEvent hbe = new HttpBlockerEvent
                         (requestLine.getRequestLine(), Action.PASS,
                          Reason.PASS_URL, category);
-                    eventLogger.info(hbe);
+                    transform.log(hbe);
 
                     return null;
                 }
@@ -173,7 +173,7 @@ class Blacklist
                 HttpBlockerEvent hbe = new HttpBlockerEvent
                     (requestLine.getRequestLine(), Action.BLOCK,
                      Reason.BLOCK_EXTENSION, exn);
-                eventLogger.info(hbe);
+                transform.log(hbe);
 
                 return settings.getBlockTemplate()
                     .render(host, uri, "extension (" + exn + ")");
@@ -200,7 +200,7 @@ class Blacklist
                 HttpBlockerEvent hbe = new HttpBlockerEvent
                     (requestLine.getRequestLine(), Action.BLOCK,
                      Reason.BLOCK_MIME, contentType);
-                eventLogger.info(hbe);
+                transform.log(hbe);
                 String host = header.getValue("host");
                 URI uri = requestLine.getRequestUri();
 
@@ -266,7 +266,7 @@ class Blacklist
         if (null != category) {
             HttpBlockerEvent hbe = new HttpBlockerEvent
                 (requestLine.getRequestLine(), Action.BLOCK, reason, category);
-            eventLogger.info(hbe);
+            transform.log(hbe);
 
             return settings.getBlockTemplate().render(host, uri, category);
         }

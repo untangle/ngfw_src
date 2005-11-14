@@ -32,7 +32,7 @@ SELECT evt.time_stamp, was_blocked, rule_index, \
        c_server_addr, c_client_addr, c_server_port, c_client_port \
   FROM tr_firewall_evt evt \
          JOIN pl_endp endp \
-           ON (evt.session_id = endp.session_id \
+           ON (evt.pl_endp_id = endp.event_id \
              AND evt.time_stamp >= $P{startTime} \
              AND evt.time_stamp < $P{endTime}) \
   ORDER BY evt.time_stamp DESC

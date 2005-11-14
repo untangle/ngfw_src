@@ -11,7 +11,8 @@
 
 package com.metavize.tran.protofilter;
 
-import com.metavize.mvvm.logging.LogEvent;
+import com.metavize.mvvm.logging.PipelineEvent;
+import com.metavize.mvvm.logging.SyslogBuilder;
 
 /**
  * Log event for a proto filter match.
@@ -22,9 +23,8 @@ import com.metavize.mvvm.logging.LogEvent;
  * table="TR_PROTOFILTER_EVT"
  * mutable="false"
  */
-public class ProtoFilterLogEvent extends LogEvent
+public class ProtoFilterLogEvent extends PipelineEvent
 {
-    private int sessionId;
     private String protocol;
     private boolean blocked;
 
@@ -37,30 +37,12 @@ public class ProtoFilterLogEvent extends LogEvent
 
     public ProtoFilterLogEvent(int sessionId, String protocol, boolean blocked)
     {
-        this.sessionId = sessionId;
-        if (protocol != null && protocol.length() > DEFAULT_STRING_SIZE) protocol = protocol.substring(0, DEFAULT_STRING_SIZE);
+        super(sessionId);
         this.protocol = protocol;
         this.blocked = blocked;
     }
 
     // accessors --------------------------------------------------------------
-
-    /**
-     * Session id.
-     *
-     * @return the session id.
-     * @hibernate.property
-     * column="SESSION_ID"
-     */
-    public int getSessionId()
-    {
-        return sessionId;
-    }
-
-    public void setSessionId(int sessionId)
-    {
-        this.sessionId = sessionId;
-    }
 
     /**
      * The protocol, as determined by the protocol filter.
@@ -76,7 +58,6 @@ public class ProtoFilterLogEvent extends LogEvent
 
     public void setProtocol(String protocol)
     {
-        if (protocol != null && protocol.length() > DEFAULT_STRING_SIZE) protocol = protocol.substring(0, DEFAULT_STRING_SIZE);
         this.protocol = protocol;
     }
 
@@ -95,5 +76,11 @@ public class ProtoFilterLogEvent extends LogEvent
     public void setBlocked(boolean blocked)
     {
         this.blocked = blocked;
+    }
+
+    protected void doSyslog(SyslogBuilder sb)
+    {
+        sb.addField("protocol", protocol);
+        sb.addField("blocked", blocked);
     }
 }

@@ -11,8 +11,7 @@
 
 package com.metavize.tran.httpblocker;
 
-import java.util.List;
-
+import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.tran.Transform;
 
 public interface HttpBlocker extends Transform
@@ -20,7 +19,5 @@ public interface HttpBlocker extends Transform
     HttpBlockerSettings getHttpBlockerSettings();
     void setHttpBlockerSettings(HttpBlockerSettings settings);
 
-    List<HttpRequestLog> getEvents(int limit);
-
-    List<HttpRequestLog> getEvents(int limit, boolean blockedOnly);
+    EventManager<HttpBlockerEvent> getEventManager();
 }

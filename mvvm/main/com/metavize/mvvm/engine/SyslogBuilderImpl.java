@@ -64,6 +64,21 @@ public class SyslogBuilderImpl implements SyslogBuilder
         sb.append(value, 0, i);
     }
 
+    public void addField(String key, boolean value)
+    {
+        addField(key, Boolean.toString(value));
+    }
+
+    public void addField(String key, int value)
+    {
+        addField(key, Integer.toString(value));
+    }
+
+    public void addField(String key, double value)
+    {
+        addField(key, Double.toString(value));
+    }
+
     DatagramPacket makePacket(LogEvent e, int facility, String host,
                                      String tag)
     {

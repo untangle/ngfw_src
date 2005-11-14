@@ -10,8 +10,7 @@
  */
 package com.metavize.tran.firewall;
 
-import java.util.List;
-
+import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.tran.Transform;
 
 public interface Firewall extends Transform
@@ -19,7 +18,5 @@ public interface Firewall extends Transform
     FirewallSettings getFirewallSettings();
     void setFirewallSettings( FirewallSettings settings );
 
-    List<FirewallLog> getEventLogs(int limit);
-
-    List<FirewallLog> getEventLogs(int limit, boolean blockedOnly);
+    EventManager<FirewallEvent> getEventManager();
 }

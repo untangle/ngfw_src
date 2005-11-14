@@ -10,31 +10,27 @@
  */
 package com.metavize.tran.nat;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import com.metavize.mvvm.IntfEnum;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.NetworkingConfiguration;
-import com.metavize.mvvm.NetworkingManager;
 import com.metavize.mvvm.argon.SessionMatcher;
 import com.metavize.mvvm.argon.SessionMatcherFactory;
+import com.metavize.mvvm.logging.EventHandler;
+import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.logging.EventManager;
+import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.MPipe;
 import com.metavize.mvvm.tapi.PipeSpec;
-import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformStartException;
 import com.metavize.mvvm.tran.TransformState;
@@ -51,13 +47,6 @@ import org.hibernate.Session;
 
 public class NatImpl extends AbstractTransform implements Nat
 {
-    private static final String REDIRECT_EVENT_QUERY
-        = "SELECT create_date, proto, c_client_addr, c_client_port, s_client_addr,"
-        + " c_server_addr, c_server_port, s_server_addr, s_server_port,"
-        + " client_intf, server_intf, rule_index, is_dmz "
-        + " FROM pl_endp JOIN tr_nat_redirect_evt USING ( session_id )"
-        + " ORDER BY create_date DESC LIMIT ?";
-
     private static final int CREATE_DATE_IDX   =  1;
     private static final int PROTO_IDX         =  2;
     private static final int O_CLIENT_ADDR_IDX =  3;
@@ -83,6 +72,8 @@ public class NatImpl extends AbstractTransform implements Nat
 
     private final DhcpManager dhcpManager;
 
+    private final EventLogger<LogEvent> eventLogger;
+
     private final Logger logger = Logger.getLogger( NatImpl.class );
 
     private NatSettings settings = null;
@@ -106,6 +97,12 @@ public class NatImpl extends AbstractTransform implements Nat
              Fitting.FTP_TOKENS, Affinity.SERVER, 0);
 
         pipeSpecs = new SoloPipeSpec[] { natPipeSpec, natFtpPipeSpec };
+
+        TransformContext tctx = getTransformContext();
+        eventLogger = new EventLogger<LogEvent>(tctx);
+
+        EventHandler eh = new NatRedirectEventHandler(tctx);
+        eventLogger.addEventHandler(eh);
     }
 
     public NatSettings getNatSettings()
@@ -166,66 +163,9 @@ public class NatImpl extends AbstractTransform implements Nat
         }
     }
 
-    public List<NatRedirectLogEntry> getLogs( final int limit )
+    public EventManager<LogEvent> getEventManager()
     {
-        final List<NatRedirectLogEntry> l = new ArrayList<NatRedirectLogEntry>(limit);
-
-        TransactionWork tw = new TransactionWork()
-            {
-                public boolean doWork(Session s) throws SQLException
-                {
-                    NetworkingManager networkingManager = MvvmContextFactory.context().networkingManager();
-                    IntfEnum intfEnum = networkingManager.getIntfEnum();
-
-                    Connection c = s.connection();
-                    PreparedStatement ps = c.prepareStatement( REDIRECT_EVENT_QUERY );
-                    ps.setInt( 1, limit );
-                    long l0 = System.currentTimeMillis();
-                    ResultSet rs = ps.executeQuery();
-                    while (rs.next()) {
-                        Date createDate           = new Date( rs.getTimestamp( CREATE_DATE_IDX ).getTime());
-                        String clientAddr         = rs.getString( O_CLIENT_ADDR_IDX );
-                        boolean isNatd            = !clientAddr.equalsIgnoreCase( rs.getString( R_CLIENT_ADDR_IDX ));
-                        int    clientPort         = rs.getInt( O_CLIENT_PORT_IDX );
-                        String originalServerAddr = rs.getString( O_SERVER_ADDR_IDX );
-                        int    originalServerPort = rs.getInt( O_SERVER_PORT_IDX);
-                        String redirectServerAddr = rs.getString( R_SERVER_ADDR_IDX );
-                        int    redirectServerPort = rs.getInt( R_SERVER_PORT_IDX );
-                        Protocol proto            = Protocol.getInstance( rs.getInt( PROTO_IDX ));
-                        /* Just in case, it is null */
-                        String protocol = ( proto == null ) ? "UNK" : proto.toString();
-
-                        /* XXX Dirty ICMP hack */
-                        if ( clientPort == 0 ) protocol = "Ping";
-
-                        /* Set the direction */
-                        String clientIntf           = intfEnum.getIntfName( rs.getByte( CLIENT_INTF_IDX ));
-                        String serverIntf           = intfEnum.getIntfName( rs.getByte( SERVER_INTF_IDX ));
-
-                        /* Determine the reason
-                         * The rule index is presently ignored, because the rule may have already
-                         * been modified, which could be confusing ot the user
-                         */
-                        boolean isDmz             = rs.getBoolean( IS_DMZ_IDX );
-                        int ruleIndex             = rs.getInt( RULE_INDEX_IDX );
-
-                        NatRedirectLogEntry redirectLogEntry = new NatRedirectLogEntry
-                            ( createDate, protocol, clientAddr, clientPort, isNatd,
-                              originalServerAddr, originalServerPort, redirectServerAddr, redirectServerPort,
-                              clientIntf, serverIntf, isDmz, ruleIndex );
-
-                        l.add(redirectLogEntry );
-                    }
-                    long l1 = System.currentTimeMillis();
-                    logger.debug( "getAccessLogs() in: " + ( l1 - l0 ));
-                    return true;
-                }
-
-                public Object getResult() { return null; }
-            };
-        getTransformContext().runTransaction(tw);
-
-        return l;
+        return eventLogger;
     }
 
     // package protected methods ----------------------------------------------
@@ -298,6 +238,8 @@ public class NatImpl extends AbstractTransform implements Nat
 
     protected void preStart() throws TransformStartException
     {
+        eventLogger.start();
+
         try {
             reconfigure();
         } catch (Exception e) {
@@ -341,6 +283,8 @@ public class NatImpl extends AbstractTransform implements Nat
         }
 
         statisticManager.stop();
+
+        eventLogger.stop();
     }
 
     public void reconfigure() throws TransformException
@@ -368,6 +312,11 @@ public class NatImpl extends AbstractTransform implements Nat
     protected SessionMatcher sessionMatcher()
     {
         return SessionMatcherFactory.getAllInstance();
+    }
+
+    void log(LogEvent le)
+    {
+        eventLogger.log(le);
     }
 
     // XXX soon to be deprecated ----------------------------------------------

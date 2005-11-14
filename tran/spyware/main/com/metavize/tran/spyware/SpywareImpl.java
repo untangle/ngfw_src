@@ -191,7 +191,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     // AbstractTransform methods ----------------------------------------------
 
     @Override
-    protected PipeSpec[] getPipeSpecs()
+        protected PipeSpec[] getPipeSpecs()
     {
         return pipeSpecs;
     }
@@ -255,7 +255,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
         boolean match = false;
 
-	domain = null == domain ? null : domain.toLowerCase();
+        domain = null == domain ? null : domain.toLowerCase();
         for (String d = domain; !match && null != d; d = nextHost(d)) {
             match = urlBlacklist.contains(d);
         }
@@ -267,7 +267,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     {
         boolean match = false;
 
-	domain = null == domain ? null : domain.toLowerCase();
+        domain = null == domain ? null : domain.toLowerCase();
         for (String d = domain; !match && null != d; d = nextHost(d)) {
             match = domainWhitelist.contains(d);
         }

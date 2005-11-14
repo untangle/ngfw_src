@@ -10,8 +10,9 @@
  */
 package com.metavize.tran.nat;
 
-import java.util.List;
 
+import com.metavize.mvvm.logging.EventManager;
+import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.tran.Transform;
 
 public interface Nat extends Transform
@@ -19,5 +20,5 @@ public interface Nat extends Transform
     NatSettings getNatSettings();
     void setNatSettings( NatSettings settings ) throws Exception;
 
-    List<NatRedirectLogEntry> getLogs( int limit );
+    public EventManager<LogEvent> getEventManager();
 }

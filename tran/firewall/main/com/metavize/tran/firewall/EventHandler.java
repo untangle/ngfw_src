@@ -15,7 +15,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.AbstractEventHandler;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
 import com.metavize.mvvm.tapi.MPipeException;
@@ -33,7 +32,6 @@ class EventHandler extends AbstractEventHandler
     private static final int PASS_COUNTER  = Transform.GENERIC_1_COUNTER;
 
     private final Logger logger = Logger.getLogger( EventHandler.class );
-    private final Logger eventLogger = MvvmContextFactory.context().eventLogger();
 
     private List <FirewallMatcher> firewallRuleList = new LinkedList<FirewallMatcher>();
 
@@ -112,7 +110,7 @@ class EventHandler extends AbstractEventHandler
 
         /* If necessary log the event */
         if ( rule != null && rule.getLog()) {
-            eventLogger.info( new FirewallEvent( request.id(), rule, reject, ruleIndex ));
+            transform.log( new FirewallEvent( request.id(), rule, reject, ruleIndex ));
         }
 
         /* Track the statistics */

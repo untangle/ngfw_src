@@ -12,9 +12,9 @@
 package com.metavize.tran.nat;
 
 import java.io.Serializable;
-import java.net.InetAddress;
 
-import com.metavize.mvvm.logging.LogEvent;
+import com.metavize.mvvm.logging.PipelineEvent;
+import com.metavize.mvvm.logging.SyslogBuilder;
 
 /**
  * Log event for the firewall.
@@ -25,16 +25,15 @@ import com.metavize.mvvm.logging.LogEvent;
  * table="TR_NAT_REDIRECT_EVT"
  * mutable="false"
  */
-public class RedirectEvent extends LogEvent implements Serializable
+public class RedirectEvent extends PipelineEvent implements Serializable
 {
-    private int          sessionId;
     private RedirectRule rule;
     private int          ruleIndex;
     private boolean      isDmz;
-    
-    // Constructors 
+
+    // Constructors
     /**
-     * Hibernate constructor 
+     * Hibernate constructor
      */
     public RedirectEvent()
     {
@@ -42,7 +41,7 @@ public class RedirectEvent extends LogEvent implements Serializable
 
     public RedirectEvent( int sessionId, RedirectRule rule, int ruleIndex )
     {
-        this.sessionId = sessionId;
+        super(sessionId);
         this.rule      = rule;
         this.ruleIndex = ruleIndex;
         this.isDmz     = false;
@@ -51,29 +50,11 @@ public class RedirectEvent extends LogEvent implements Serializable
     /* This is for DMZ events */
     public RedirectEvent( int sessionId )
     {
-        this.sessionId = sessionId;
+        super (sessionId);
         this.rule      = null;
         this.ruleIndex = 0;
         this.isDmz     = true;
     }
-
-    /**
-     * Session id.
-     *
-     * @return the id of the session
-     * @hibernate.property
-     * column="SESSION_ID"
-     */
-    public int getSessionId()
-    {
-        return sessionId;
-    }
-    
-    public void setSessionId( int sessionId )
-    {
-        this.sessionId = sessionId;
-    }
-
 
     /**
      * Redirect rule that triggered this event
@@ -104,7 +85,7 @@ public class RedirectEvent extends LogEvent implements Serializable
     {
         return ruleIndex;
     }
-    
+
     public void setRuleIndex( int ruleIndex )
     {
         this.ruleIndex = ruleIndex;
@@ -121,9 +102,17 @@ public class RedirectEvent extends LogEvent implements Serializable
     {
         return this.isDmz;
     }
-    
+
     public void setIsDmz( boolean isDmz )
     {
         this.isDmz = isDmz;
+    }
+
+    // PipelineEvent methods --------------------------------------------------
+
+    protected void doSyslog(SyslogBuilder sb)
+    {
+        sb.addField("rule", ruleIndex);
+        sb.addField("is-dmz", isDmz);
     }
 }

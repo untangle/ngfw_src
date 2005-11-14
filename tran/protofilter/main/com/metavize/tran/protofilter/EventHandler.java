@@ -25,7 +25,6 @@ import org.apache.log4j.Logger;
 public class EventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(EventHandler.class);
-    private final Logger eventLogger = MvvmContextFactory.context().eventLogger();
 
     static final int SCAN_COUNTER   = Transform.GENERIC_0_COUNTER;
     static final int DETECT_COUNTER = Transform.GENERIC_1_COUNTER;
@@ -267,7 +266,7 @@ public class EventHandler extends AbstractEventHandler
 
             ProtoFilterLogEvent evt = new ProtoFilterLogEvent
                 (sess.id(), sessInfo.protocol, elem.isBlocked());
-            eventLogger.info(evt);
+            transform.log(evt);
 
             // We release session immediately upon first match.
             sess.attach(null);
