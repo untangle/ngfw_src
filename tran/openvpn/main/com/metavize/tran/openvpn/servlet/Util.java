@@ -68,7 +68,18 @@ class Util
     private Util()
     {
     }
+    
+    /* Returns true if this page requires a secure redirect */
+    boolean requiresSecure( HttpServletRequest request, HttpServletResponse response ) 
+        throws ServletException, IOException
+    {
+        if ( request.getScheme().equals( "https" )) return false;
 
+        /* Otherwise, reject the page, they definitely didn't use the link to get it */
+        rejectFile( request, response );
+        return true;
+    }
+    
     /* Returns the commonName for the request, or null if the request is not valid */
     String getCommonName( HttpServletRequest request )
     {

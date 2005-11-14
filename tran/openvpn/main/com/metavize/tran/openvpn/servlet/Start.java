@@ -25,6 +25,8 @@ public class Start extends HttpServlet
         throws ServletException, IOException {
         Util util = Util.getInstance();
 
+        if ( util.requiresSecure( request, response )) return;
+
         String commonName = util.getCommonName( request );
         
         if ( commonName == null ) {

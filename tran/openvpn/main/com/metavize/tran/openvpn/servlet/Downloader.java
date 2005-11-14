@@ -34,8 +34,11 @@ public class Downloader extends HttpServlet
 
     protected void service( HttpServletRequest request,  HttpServletResponse response )
         throws ServletException, IOException {
-
+                
         Util util = Util.getInstance();
+        
+        if ( util.requiresSecure( request, response )) return;
+
         String commonName = util.getCommonName( request );
         String fileName = null;
         String download = null;
