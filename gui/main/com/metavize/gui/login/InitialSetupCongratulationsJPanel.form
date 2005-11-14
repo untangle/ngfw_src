@@ -18,7 +18,7 @@
           <Font name="Dialog" size="18" style="1"/>
         </Property>
         <Property name="horizontalAlignment" type="int" value="0"/>
-        <Property name="text" type="java.lang.String" value="&lt;html&gt;Congratulations!&lt;br&gt;You have created an initial&lt;br&gt;EdgeGuard configuration.&lt;br&gt;&lt;br&gt;Press &quot;Finish&quot; to save your&lt;br&gt;configuration.&lt;/html&gt;"/>
+        <Property name="text" type="java.lang.String" value="&lt;html&gt;Congratulations!&lt;br&gt;You have created an initial&lt;br&gt;EdgeGuard configuration.&lt;br&gt;&lt;br&gt;Press &quot;Finish&quot; to open&lt;br&gt;a login window.&lt;/html&gt;"/>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
@@ -31,7 +31,7 @@
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Dialog" size="12" style="0"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="&lt;html&gt;After finishing, you may then proceed to login to&lt;br&gt;EdgeGuard for the first time.&lt;br&gt;&lt;br&gt;Use your newly created &quot;admin&quot; account with the&lt;br&gt;password you have chosen.&lt;/html&gt;"/>
+        <Property name="text" type="java.lang.String" value="&lt;html&gt;Use your newly created &quot;admin&quot; account with the&lt;br&gt;password you have chosen to login to EdgeGuard.&lt;/html&gt;"/>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">

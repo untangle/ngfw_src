@@ -12,10 +12,10 @@
 package com.metavize.gui.login;
 
 import com.metavize.gui.transform.Savable;
-import java.util.Arrays;
 import com.metavize.gui.util.Util;
 import com.metavize.mvvm.security.*;
 import java.util.Set;
+import javax.swing.SwingUtilities;
 
 public class InitialSetupPasswordJPanel extends javax.swing.JPanel implements Savable {
     
@@ -24,13 +24,19 @@ public class InitialSetupPasswordJPanel extends javax.swing.JPanel implements Sa
         initComponents();
     }
 
+    String password;
+    String retypePassword;
+
     public void doSave(Object settings, boolean validateOnly) throws Exception {
-        
-        String password = new String(passwordJPasswordField.getPassword());
+
+        SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+	    password = new String(passwordJPasswordField.getPassword());
+	    retypePassword = new String(retypePasswordJPasswordField.getPassword());
+	}});
+
         if(password.length() == 0)
             throw new Exception("You must fill out the password.");
         
-        String retypePassword = new String(retypePasswordJPasswordField.getPassword());
         if(retypePassword.length() == 0)
             throw new Exception("You must fill out the retype password.");
         

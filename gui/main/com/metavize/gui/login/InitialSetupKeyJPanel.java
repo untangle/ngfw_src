@@ -14,6 +14,7 @@ package com.metavize.gui.login;
 import com.metavize.gui.transform.Savable;
 import com.metavize.gui.util.Util;
 import com.metavize.mvvm.client.*;
+import javax.swing.SwingUtilities;
 
 public class InitialSetupKeyJPanel extends javax.swing.JPanel implements Savable {
     
@@ -22,21 +23,28 @@ public class InitialSetupKeyJPanel extends javax.swing.JPanel implements Savable
         initComponents();
     }
 
+    String key;
+
     public void doSave(Object settings, boolean validateOnly) throws Exception {
         
-        String key = keyJTextField.getText();
-        key = key.replaceAll("-","");
-        key = key.replaceAll(" ","");
+	SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+	    key = keyJTextField.getText().replaceAll("-","").replaceAll(" ","");
+	}});
+
         if( key.length() != 16 )
             throw new Exception("The key must be exactly 16 alpha-numeric digits long.");
         
         if( !validateOnly){ 
-	    MvvmRemoteContext mvvmContext = MvvmRemoteContextFactory.factory().activationLogin( Util.getServerCodeBase().getHost(),
-												key,
-												0,
-												Util.getClassLoader(),
-												Util.isSecureViaHttps() );
-	    Util.setMvvmContext(mvvmContext);
+            boolean isActivated = com.metavize.mvvm.client.MvvmRemoteContextFactory.factory().isActivated( Util.getServerCodeBase().getHost(), 0, Util.isSecureViaHttps() );
+            if( !isActivated ){
+        	    MvvmRemoteContext mvvmContext = MvvmRemoteContextFactory.factory().activationLogin( Util.getServerCodeBase().getHost(),
+                											key,
+                        										0,
+                                									Util.getClassLoader(),
+                                        								Util.isSecureViaHttps() );
+                                                                                   
+                    Util.setMvvmContext(mvvmContext);
+            }
 	    
         }
     }

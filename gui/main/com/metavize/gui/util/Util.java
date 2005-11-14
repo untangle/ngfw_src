@@ -97,20 +97,31 @@ public class Util {
 
     public static void setMvvmContext(MvvmRemoteContext mvvmContextX){
         mvvmContext = mvvmContextX;
-        toolboxManager = mvvmContext.toolboxManager();
-        transformManager = mvvmContext.transformManager();
-        adminManager = mvvmContext.adminManager();
-        networkingManager = mvvmContext.networkingManager();
-        policyManager = mvvmContext.policyManager();
-        // Somewhere else this should go? XXX jdi
-        statsCache = new StatsCache();
+        if( mvvmContext != null ){
+            toolboxManager = mvvmContext.toolboxManager();
+            transformManager = mvvmContext.transformManager();
+            adminManager = mvvmContext.adminManager();
+            networkingManager = mvvmContext.networkingManager();
+            policyManager = mvvmContext.policyManager();
+        }
+        else{
+            toolboxManager = null;
+            transformManager = null;
+            adminManager = null;
+            networkingManager = null;
+            policyManager = null;
+        }
     }
 
     public static MvvmRemoteContext getMvvmContext(){ return mvvmContext; }
     public static ToolboxManager getToolboxManager(){ return toolboxManager; }
     public static TransformManager getTransformManager(){ return transformManager; }
     public static AdminManager getAdminManager(){ return adminManager; }
-    public static StatsCache getStatsCache(){ return statsCache; }
+    public static StatsCache getStatsCache(){ 
+        if( statsCache == null )
+            statsCache = new StatsCache();
+        return statsCache;
+    }
     public static NetworkingManager getNetworkingManager(){ return networkingManager; }
     public static PolicyManager getPolicyManager(){ return policyManager; }
     ///////////////////////////////////
@@ -434,6 +445,7 @@ public class Util {
     }
 
     public static void handleExceptionWithRestart(String output, Exception e) throws Exception {
+        e.printStackTrace();
         Throwable throwableRef = e;
 
         while( throwableRef != null){

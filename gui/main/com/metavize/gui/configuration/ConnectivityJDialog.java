@@ -15,18 +15,26 @@ import com.metavize.gui.util.Util;
 import com.metavize.mvvm.*;
 
 import javax.swing.*;
-
+import java.awt.*;
 
 public class ConnectivityJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
     
     private boolean upgradesAvailable = true;
     
-    /** Creates new form ProceedJDialog */
+    public ConnectivityJDialog(Dialog topLevelDialog, boolean isModal){
+        super(topLevelDialog, isModal);
+        init(topLevelDialog);
+    }
+    
     public ConnectivityJDialog() {
         super(Util.getMMainJFrame(), true);
+        init(Util.getMMainJFrame());
+    }
+    
+    private void init(Window window){
         initComponents();
         this.addWindowListener(this);
-	this.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), this.getWidth(), this.getHeight()) );
+	this.setBounds( Util.generateCenteredBounds(window.getBounds(), this.getWidth(), this.getHeight()) );
     }
     
     public boolean upgradesAvailable(){

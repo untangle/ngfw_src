@@ -28,9 +28,12 @@ public class StatsCache
     public StatsCache(){
         fakies = new HashMap<Tid, FakeTransform>();
         updateThread = new UpdateThread();
-        updateThread.start();
     }
 
+    public void start(){
+        updateThread.start();
+    }
+    
     public Transform getFakeTransform(Tid tid)
     {
         return fakies.get(tid);
@@ -86,6 +89,9 @@ public class StatsCache
 		    }
 		}
             }
+        }
+
+        public void setKilled(boolean killed) {
         }
     }
     

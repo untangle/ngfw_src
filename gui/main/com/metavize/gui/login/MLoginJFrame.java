@@ -37,7 +37,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
         Util.printMessage("[no args]");
     for( String arg : args )
         Util.printMessage("[arg: " + arg + "]");
-    for( String arg : args ) // isLocak
+    for( String arg : args ) // isLocal
         if( arg.equals("local") ){
         Util.setLocal(true);
         break;
@@ -496,7 +496,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                                                      0, Util.getClassLoader(),
                                                      Util.isSecureViaHttps(), useForce );
             Util.setMvvmContext(mvvmContext);
-
+            Util.getStatsCache().start();
             // VERSION MISMATCH ///////
             String version = Util.getMvvmContext().version();
             if( !version.equals("-1") ){

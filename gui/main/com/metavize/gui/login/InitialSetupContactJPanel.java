@@ -14,41 +14,54 @@ package com.metavize.gui.login;
 import com.metavize.mvvm.security.*;
 import com.metavize.gui.transform.Savable;
 import com.metavize.gui.util.Util;
+import javax.swing.SwingUtilities;
 
 public class InitialSetupContactJPanel extends javax.swing.JPanel implements Savable {
     
-
     public InitialSetupContactJPanel() {
         initComponents();
         countJSpinner.setModel(new javax.swing.SpinnerNumberModel(15,0,10000,1));
     }
 
+    String company;
+    String firstName;
+    String lastName;
+    String address1;
+    String address2;
+    String city;
+    String state;
+    String zipcode;
+    String phone;
+    String email;
+    int count;
+    
     public void doSave(Object settings, boolean validateOnly) throws Exception {
-        
-        String company = companyJTextField.getText().trim();
-        if(company.length() == 0)
-            throw new Exception("You must fill out the company name.");
-        
-        String firstName = firstNameJTextField.getText().trim();
-        if(firstName.length() == 0)
-            throw new Exception("You must fill out your first name.");
-        
-        String lastName = lastNameJTextField.getText().trim();
-        if(lastName.length() == 0)
-            throw new Exception("You must fill out your last name.");
+	
+	SwingUtilities.invokeAndWait( new Runnable(){ public void run() {
+	    address1 = address1JTextField.getText().trim();
+	    address2 = address2JTextField.getText().trim();
+	    city = cityJTextField.getText().trim();
+	    state = stateJTextField.getText().trim();
+	    zipcode = zipcodeJTextField.getText().trim();
+	    phone = phoneJTextField.getText().trim();        
+	    email = emailJTextField.getText().trim();
+	    count = (Integer) countJSpinner.getValue();
+	}});
 
-        String address1 = address1JTextField.getText().trim();
-        String address2 = address2JTextField.getText().trim();
-        String city = cityJTextField.getText().trim();
-        String state = stateJTextField.getText().trim();
-        String zipcode = zipcodeJTextField.getText().trim();
-        String phone = phoneJTextField.getText().trim();
+	company = companyJTextField.getText().trim();
+	if(company.length() == 0)
+	    throw new Exception("You must fill out the company name.");
         
-        String email = emailJTextField.getText().trim();
-        if(email.length() == 0)
-            throw new Exception("You must fill out your email address.");
+	firstName = firstNameJTextField.getText().trim();
+	if(firstName.length() == 0)
+	    throw new Exception("You must fill out your first name.");
+        
+	lastName = lastNameJTextField.getText().trim();
+	if(lastName.length() == 0)
+	    throw new Exception("You must fill out your last name.");
 
-	int count = (Integer) countJSpinner.getValue();
+	if(email.length() == 0)
+	    throw new Exception("You must fill out your email address.");
         
         if( !validateOnly ){
 	    RegistrationInfo registrationInfo = new RegistrationInfo(company, firstName, lastName, email, count);
@@ -58,8 +71,7 @@ public class InitialSetupContactJPanel extends javax.swing.JPanel implements Sav
 	    registrationInfo.setState(state);
 	    registrationInfo.setZipcode(zipcode);
 	    registrationInfo.setPhone(phone);
-            Util.getAdminManager().setRegistrationInfo(registrationInfo);
-            
+            Util.getAdminManager().setRegistrationInfo(registrationInfo);            
         }
     }
     

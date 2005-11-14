@@ -39,7 +39,8 @@ public abstract class MWizardJDialog extends javax.swing.JDialog implements java
     
     private int currentPage = 0;
     protected Map<String, Savable> savableMap = new LinkedHashMap<String, Savable>();
-
+    protected int finishPage = -1;
+    
     public MWizardJDialog(Dialog topLevelDialog, boolean isModal){
 	super(topLevelDialog, isModal);
 	init(topLevelDialog);
@@ -75,6 +76,7 @@ public abstract class MWizardJDialog extends javax.swing.JDialog implements java
             contentJPanel.add(jPanel);
             newJLabel.setForeground(Color.BLUE);
         }
+        finishPage++;
     }
 
 
@@ -224,58 +226,111 @@ public abstract class MWizardJDialog extends javax.swing.JDialog implements java
     }//GEN-LAST:event_previousJButtonActionPerformed
 
     protected void wizardFinished(){}
-
+    protected void saveStarted(){}
+    protected void saveFinished(String message){}
     private void nextJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextJButtonActionPerformed
-        // VALIDATE CURRENT PAGE
-        String keyValidate = (String) savableMap.keySet().toArray()[currentPage];
-        Savable savableValidate = savableMap.get(keyValidate);
-        try{
-            savableValidate.doSave(null, true);  // verify only, dont save
-        }
-        catch(Exception e){
-	    Util.handleExceptionNoRestart("Error validating: ", e);
-            new MOneButtonJDialog(this, "Wizard", e.getMessage());
-            return;
-        }
-        
-        // TAKE ACTION BASED ON CURRENT PAGE
-        if( currentPage == (savableMap.size()-1) ){ // last page
-            // save/send everything
-            try{
-                for( Savable savable : savableMap.values() )
-                    savable.doSave(null, false);
-            }
-            catch(Exception e){
-		Util.handleExceptionNoRestart("Error validating: ", e);
-                new MOneButtonJDialog(this, "Wizard", e.getMessage());
-                return;
-            }
-            // close dialog
-            windowClosing(null);
-	    wizardFinished();
-        }
-        else{ // not last page
-            ((JLabel)titleJPanel.getComponent(currentPage)).setForeground(Color.BLACK);
-            currentPage++;
-            ((JLabel)titleJPanel.getComponent(currentPage)).setForeground(Color.BLUE);
-            contentJPanel.removeAll();
-            String key = (String) savableMap.keySet().toArray()[currentPage];
-            Savable savable = savableMap.get(key);
-            contentJPanel.add( (JPanel) savable);
-            contentJPanel.revalidate();
-            contentJPanel.repaint();
-        }
-
-        // UPDATE BUTTONS
-        if( currentPage == (savableMap.size()-1) ){
-            nextJButton.setText(FINAL_PAGE);              
-        }
-        else{
-            nextJButton.setText(NEXT_PAGE);
-        }
-        previousJButton.setEnabled(true);
+        new NextPageThread();
     }//GEN-LAST:event_nextJButtonActionPerformed
 
+    private class NextPageThread extends Thread{
+        public NextPageThread(){
+            setDaemon(true);
+            nextJButton.setEnabled(false);
+            previousJButton.setEnabled(false);            
+            start();
+        }
+        public void run(){
+            // VALIDATE CURRENT PAGE
+            String keyValidate = (String) savableMap.keySet().toArray()[currentPage];
+            Savable savableValidate = savableMap.get(keyValidate);
+            try{
+                savableValidate.doSave(null, true);  // verify only, dont save
+            }
+            catch(Exception e){
+                // UPDATE BUTTONS
+                SwingUtilities.invokeLater( new Runnable(){ public void run(){
+                    if( currentPage == 0 ){
+                        nextJButton.setEnabled(true);
+                        previousJButton.setEnabled(false);
+                    }
+                    else{
+                        nextJButton.setEnabled(true);
+                        previousJButton.setEnabled(true);            
+                    }
+                }});
+                Util.handleExceptionNoRestart("Error validating: ", e);
+                new MOneButtonJDialog(MWizardJDialog.this, "Wizard", e.getMessage());
+                return;
+            }
+
+            // TAKE ACTION BASED ON CURRENT PAGE
+            if( currentPage == finishPage ){ 
+                // save/send everything
+                try{
+                    saveStarted();
+                    Iterator iterator = savableMap.values().iterator();
+                    for(int i=0; i<=finishPage; i++)
+                        ((Savable)iterator.next()).doSave(null, false);
+                    saveFinished("Finished Saving");
+                    try{Thread.currentThread().sleep(1500);}catch(Exception e){}
+                }
+                catch(Exception e){
+                    saveFinished("Unable to Save Settings");
+                    // UPDATE BUTTONS
+                    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+                        if( currentPage == 0 ){
+                            nextJButton.setEnabled(true);
+                            previousJButton.setEnabled(false);
+                        }
+                        else{
+                            nextJButton.setEnabled(true);
+                            previousJButton.setEnabled(true);            
+                        }
+                    }});
+                    Util.handleExceptionNoRestart("Error validating: ", e);
+                    new MOneButtonJDialog(MWizardJDialog.this, "Wizard", e.getMessage());
+                    return;
+                }
+                finally{
+                    
+                }
+            }
+            if(currentPage == (savableMap.size()-1)){
+                // close dialog
+                SwingUtilities.invokeLater( new Runnable(){ public void run(){
+                    MWizardJDialog.this.setVisible(false);
+                    MWizardJDialog.this.dispose();
+                }});
+                wizardFinished();
+            }
+            else{ // not last page
+                currentPage++;
+                String key = (String) savableMap.keySet().toArray()[currentPage];
+                final Savable savable = savableMap.get(key);
+                SwingUtilities.invokeLater( new Runnable(){ public void run(){
+                    ((JLabel)titleJPanel.getComponent(currentPage-1)).setForeground(Color.BLACK);                
+                    ((JLabel)titleJPanel.getComponent(currentPage)).setForeground(Color.BLUE);
+                    contentJPanel.removeAll();                
+                    contentJPanel.add( (JPanel) savable);
+                    contentJPanel.revalidate();
+                    contentJPanel.repaint();
+                }});
+            }
+
+            // UPDATE BUTTONS
+            SwingUtilities.invokeLater( new Runnable(){ public void run(){
+                if( currentPage == (savableMap.size()-1) ){
+                    nextJButton.setText(FINAL_PAGE);              
+                }
+                else{
+                    nextJButton.setText(NEXT_PAGE);
+                }
+                nextJButton.setEnabled(true);
+                previousJButton.setEnabled(true);
+            }});
+        }
+    }
+        
     protected void closeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeJButtonActionPerformed
          windowClosing(null);
     }//GEN-LAST:event_closeJButtonActionPerformed

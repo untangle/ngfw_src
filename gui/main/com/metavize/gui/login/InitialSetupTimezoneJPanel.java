@@ -14,26 +14,33 @@ package com.metavize.gui.login;
 import com.metavize.gui.transform.Savable;
 import java.util.TimeZone;
 import com.metavize.gui.util.Util;
+import javax.swing.SwingUtilities;
 
 public class InitialSetupTimezoneJPanel extends javax.swing.JPanel implements Savable {
     
-
     public InitialSetupTimezoneJPanel() {
         initComponents();
         
-        String[] timezones = TimeZone.getAvailableIDs();
-        for(String timezone : timezones){
-            if( timezone.startsWith("US/") ){
-                timezoneJComboBox.addItem(timezone);
-            }
-        }
+        final String[] timezones = TimeZone.getAvailableIDs();
+	SwingUtilities.invokeLater( new Runnable(){ public void run(){
+	    for(String timezone : timezones){
+		if( timezone.startsWith("US/") ){
+		    timezoneJComboBox.addItem(timezone);
+		}
+	    }
+	}});
     }
+
+    String timezone;
 
     public void doSave(Object settings, boolean validateOnly) throws Exception {
         
-        
+        SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+	    timezone = (String) timezoneJComboBox.getSelectedItem();
+	}});
+
         if( !validateOnly ){
-            Util.getAdminManager().setTimeZone(TimeZone.getTimeZone((String)timezoneJComboBox.getSelectedItem())); 
+            Util.getAdminManager().setTimeZone( TimeZone.getTimeZone(timezone) ); 
         }
     }
     
