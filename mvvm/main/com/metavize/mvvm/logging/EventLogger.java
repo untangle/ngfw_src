@@ -135,6 +135,13 @@ public class EventLogger<E extends LogEvent> implements EventManager<E>
         worker.stop();
     }
 
+    // package protected methods ----------------------------------------------
+
+    TransformContext getTransformContext()
+    {
+        return transformContext;
+    }
+
     // private classes --------------------------------------------------------
 
     private class Worker implements Runnable

@@ -11,18 +11,10 @@
 
 package com.metavize.tran.spam;
 
-import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 import com.metavize.mvvm.logging.EventHandler;
 import com.metavize.mvvm.logging.FilterDesc;
-import com.metavize.mvvm.policy.Policy;
 import com.metavize.mvvm.tran.TransformContext;
-import com.metavize.mvvm.util.TransactionWork;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 public class SpamAllEventHandler implements EventHandler<SpamEvent>
 {
@@ -32,9 +24,6 @@ public class SpamAllEventHandler implements EventHandler<SpamEvent>
         = "FROM SpamLogEvent evt WHERE evt.messageInfo.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
     private static final String SMTP_QUERY
         = "FROM SpamSmtpEvent evt WHERE evt.messageInfo.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
-
-    private static final String[] QUERIES = new String[]
-        { LOG_QUERY, SMTP_QUERY };
 
     private final TransformContext transformContext;
 
@@ -52,39 +41,9 @@ public class SpamAllEventHandler implements EventHandler<SpamEvent>
         return FILTER_DESC;
     }
 
-    public List<SpamEvent> doWarm(final int limit)
+    public String[] getQueries()
     {
-        final List<SpamEvent> l = new LinkedList<SpamEvent>();
-
-        TransactionWork tw = new TransactionWork()
-            {
-                private final Policy policy = transformContext.getTid()
-                    .getPolicy();
-
-                public boolean doWork(Session s) throws SQLException
-                {
-                    for (String query : QUERIES) {
-                        runQuery(s, query);
-                    }
-
-                    return true;
-                }
-
-                private void runQuery(Session s, String query)
-                    throws SQLException
-                {
-                    Query q = s.createQuery(query);
-                    q.setParameter("policy", policy);
-                    int c = 0;
-                    for (Iterator i = q.iterate(); i.hasNext() && ++c < limit; ) {
-                        SpamEvent ve = (SpamEvent)i.next();
-                        l.add(ve);
-                    }
-                }
-            };
-        transformContext.runTransaction(tw);
-
-        return l;
+        return new String[] { LOG_QUERY, SMTP_QUERY };
     }
 
     public boolean accept(SpamEvent e)

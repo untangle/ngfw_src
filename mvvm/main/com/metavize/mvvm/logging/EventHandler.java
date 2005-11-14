@@ -11,11 +11,10 @@
 
 package com.metavize.mvvm.logging;
 
-import java.util.List;
 
 public interface EventHandler<E extends LogEvent>
 {
     FilterDesc getFilterDesc();
-    List<E> doWarm(int limit);
+    String[] getQueries();
     boolean accept(E e);
 }
