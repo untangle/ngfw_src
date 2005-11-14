@@ -29,7 +29,7 @@ public class FirewallBlockedEventHandler implements EventHandler<FirewallEvent>
     private static final FilterDesc FILTER_DESC = new FilterDesc("Firewall Block Events");
 
     private static final String WARM_QUERY
-        = "FROM FirewallEvent evt WHERE evt.wasBlocked AND evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
+        = "FROM FirewallEvent evt WHERE evt.wasBlocked = true AND evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
 
     private final TransformContext transformContext;
 
