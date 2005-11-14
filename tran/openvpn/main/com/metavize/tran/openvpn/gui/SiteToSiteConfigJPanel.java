@@ -125,9 +125,9 @@ class SiteToSiteTableModel extends MSortedTableModel{
 	    tempRow.add( rowIndex );
 	    tempRow.add( vpnSite.isLive() );
 	    tempRow.add( vpnSite.getName() );
+	    tempRow.add( super.copyComboBoxModel(groupModel) );
 	    tempRow.add( ((ClientSiteNetwork) vpnSite.getExportedAddressList().get(0)).getNetwork().toString() );
 	    tempRow.add( ((ClientSiteNetwork) vpnSite.getExportedAddressList().get(0)).getNetmask().toString() );
-	    tempRow.add( super.copyComboBoxModel(groupModel) );
 	    tempRow.add( vpnSite.getDescription() );
 	    tempRow.add( vpnSite );
 	    allRows.add(tempRow);

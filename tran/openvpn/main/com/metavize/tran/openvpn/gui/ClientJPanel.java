@@ -14,7 +14,7 @@ import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.IPaddr;
 
 import com.metavize.tran.openvpn.VpnTransform;
-import com.metavize.tran.openvpn.VpnClient;
+import com.metavize.tran.openvpn.VpnSite;
 import com.metavize.tran.openvpn.VpnSettings;
 import com.metavize.tran.openvpn.VpnGroup;
 import com.metavize.tran.openvpn.ClientSiteNetwork;
@@ -197,7 +197,7 @@ public class ClientJPanel extends javax.swing.JPanel {
 
     private void updateClientList( VpnSettings settings )
     {
-        List clientList = settings.getClientList();
+        List clientList = settings.getSiteList();
         
         if ( null == clientList ) return;
 
@@ -221,7 +221,7 @@ public class ClientJPanel extends javax.swing.JPanel {
             return;
         }
 
-        VpnClient client = new VpnClient();
+        VpnSite client = new VpnSite();
         client.setLive( true );
         client.setName( clientDescription[0].trim() );
         
@@ -279,7 +279,7 @@ public class ClientJPanel extends javax.swing.JPanel {
             return;
         }
         
-        VpnClient client = (VpnClient)iter.next();
+        VpnSite client = (VpnSite)iter.next();
 
         String value = client.getName() + " | ";
         
