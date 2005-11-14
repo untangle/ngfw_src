@@ -69,6 +69,45 @@ class ClientsTableModel extends MSortedTableModel{
         return tableColumnModel;
     }
 
+    Hashtable<String,String> groupClientHashtable = new Hashtable<String,String>();
+    Hashtable<String,String> groupSiteHashtable = new Hashtable<String,String>();
+
+    public void prevalidate(Object settings, Vector<Vector> tableVector) throws Exception {
+	VpnSettings vpnSettings = (VpnSettings) settings;
+	
+	// BUILD THE LIST OF REFERENCED GROUPS (ASSUMES NAMES ARE UNIQUE)
+	groupClientHashtable.clear();
+	groupSiteHashtable.clear();
+	List<VpnClient> vpnClients = vpnSettings.getClientList();
+	for( VpnClient vpnClient : vpnClients )
+	    if( !groupClientHashtable.containsKey(vpnClient.getGroup().getName()) )
+		groupClientHashtable.put(vpnClient.getGroup().getName(), vpnClient.getName());
+	List<VpnSite> vpnSites = vpnSettings.getSiteList();
+	for( VpnSite vpnSite : vpnSites )
+	    if( !groupSiteHashtable.containsKey(vpnSite.getGroup().getName()) )
+		groupSiteHashtable.put(vpnSite.getGroup().getName(), vpnSite.getName());
+
+	// CHECK THAT NO REMOVED GROUP IS REFERENCED
+	for( Vector tempGroup : tableVector ){
+	    String rowState = (String) tempGroup.elementAt(0);
+	    if( !ROW_REMOVE.equals(rowState) )
+		continue;
+	    VpnGroup vpnGroup = (VpnGroup) tempGroup.elementAt(7);
+	    if( groupClientHashtable.containsKey(vpnGroup.getName()) )
+		throw new Exception("The group \"" 
+				    + vpnGroup.getName() 
+				    + "\" cannot be deleted because it is being used by the client: " 
+				    + groupClientHashtable.get(vpnGroup.getName())
+				    + " in the Client To Site List." );
+	    else if( groupSiteHashtable.containsKey(vpnGroup.getName()) )
+		throw new Exception("The group \"" 
+				    + vpnGroup.getName() 
+				    + "\" cannot be deleted because it is being used by the site: " 
+				    + groupSiteHashtable.get(vpnGroup.getName())
+				    + " in the Site To Site List." );
+	}
+    }
+
 
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
 	List elemList = new ArrayList(tableVector.size());

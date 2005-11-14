@@ -46,12 +46,6 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	super.refreshableMap.put( EXPORTS_NAME, exportsConfigJPanel );
 	super.mTabbedPane.addTab( EXPORTS_NAME, null, exportsConfigJPanel );
 
-	// CLIENTS
-	ClientsConfigJPanel clientsConfigJPanel = new ClientsConfigJPanel();
-	super.savableMap.put( CLIENTS_NAME, clientsConfigJPanel );
-	super.refreshableMap.put( CLIENTS_NAME, clientsConfigJPanel );
-	super.mTabbedPane.addTab( CLIENTS_NAME, null, clientsConfigJPanel );
-
 	// CLIENT TO SITE
 	ClientToSiteConfigJPanel clientToSiteConfigJPanel = new ClientToSiteConfigJPanel();
 	super.savableMap.put( CLIENT_TO_SITE_NAME, clientToSiteConfigJPanel );
@@ -63,6 +57,12 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	super.savableMap.put( SITE_TO_SITE_NAME, siteToSiteConfigJPanel );
 	super.refreshableMap.put( SITE_TO_SITE_NAME, siteToSiteConfigJPanel );
 	super.mTabbedPane.addTab( SITE_TO_SITE_NAME, null, siteToSiteConfigJPanel );
+
+	// CLIENTS (THIS SHOULD BE AFTER CTS AND STS FOR PREVALIDATION REASONS)
+	ClientsConfigJPanel clientsConfigJPanel = new ClientsConfigJPanel();
+	super.savableMap.put( CLIENTS_NAME, clientsConfigJPanel );
+	super.refreshableMap.put( CLIENTS_NAME, clientsConfigJPanel );
+	super.mTabbedPane.addTab( CLIENTS_NAME, null, clientsConfigJPanel );
 
 	// SOME LIST /////
         TransformContext transformContext = mTransformJPanel.getTransformContext();
