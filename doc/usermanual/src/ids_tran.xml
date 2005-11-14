@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="ids_tran">
+
+  <title>Intrusion Prevention</title>
+
+  <!-- Note that the "introduction" is not within a Section.  This is
+       the convention we'll use
+  -->
+  <para>
+    The Intrusion Prevention Appliance is identified by the
+    <inlinemediaobject>
+      <imageobject>
+        <imagedata fileref="figure/ids_tran_icon.png"/>
+      </imageobject>
+    </inlinemediaobject>
+    symbol.
+  </para>
+
+  <para>
+    TODO COMPLETE ME.  Someone needs to write this section.  As you do, you should refer to <xref linkend="introduction_ui_appliance"/> as the ids Transform is a "virtual appliance".
+  </para>
+  <para>
+    As this section is written, these glossary refs may come in handy
+    <glossterm linkend="gloss_dos">DOS</glossterm>
+  </para>
+
+</chapter>

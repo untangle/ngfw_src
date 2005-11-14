@@ -2,9 +2,19 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
 "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
 <!ENTITY preface SYSTEM "preface.xml">
+<!ENTITY introduction SYSTEM "introduction.xml">
+<!ENTITY config_tab SYSTEM "config_tab.xml">
+<!ENTITY policy_manager SYSTEM "policy_manager.xml">
+<!ENTITY reporting_tran SYSTEM "reporting_tran.xml">
+<!ENTITY airgap_tran SYSTEM "airgap_tran.xml">
+<!ENTITY nat_tran SYSTEM "nat_tran.xml">
+<!ENTITY openvpn_tran SYSTEM "openvpn_tran.xml">
+<!ENTITY ids_tran SYSTEM "ids_tran.xml">
+<!ENTITY firewall_tran SYSTEM "firewall_tran.xml">
 <!ENTITY chap1 SYSTEM "chap1.xml">
 <!ENTITY chap2 SYSTEM "chap2.xml">
-<!ENTITY appendix SYSTEM "appendix.xml">
+<!ENTITY appendix_q_a SYSTEM "appendix_q_a.xml">
+<!ENTITY appendix_changes SYSTEM "appendix_changes.xml">
 <!ENTITY glossary SYSTEM "gloss.xml">
 <!ENTITY eg "EdgeGuard Appliance">
 <!ENTITY mv "Metavize, Inc">
@@ -44,13 +54,33 @@
     </legalnotice>
   </bookinfo>
 
-  &preface;  
-  
+  &preface;
+
+  &introduction;
+
+  &config_tab;
+
+  &policy_manager;
+
+  &reporting_tran;
+
+  &airgap_tran;
+
+  &nat_tran;
+
+  &openvpn_tran;
+
+  &ids_tran;
+
+  &firewall_tran;
+
   &chap1;
 
   &chap2;
 
-  &appendix;
+  &appendix_changes;
+  
+  &appendix_q_a;
 
   &glossary;
   

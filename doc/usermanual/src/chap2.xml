@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<chapter>
-  <title id="sample_chap_with_sections">Sample Chapter With Sections</title>
+<chapter id="sample_chap_with_sections">
+  <title>Sample Chapter With Sections</title>
 
   <para>
-    This is text outside of a section.  It can be though of as "chapter scope", used
-    for introductions and such.
+    This chapter covers a few more things, but is also interesting because it makes
+    use of &lt;sect1>, &lt;sect2>, and &lt;sect3> elements.  These are natural ways
+    to divide-up a chapter.  When outputting the chunked HTML, they also become their
+    own files.
   </para>
   <sect1 id="chap2_sect1">
-    <title>The Simpsons</title>
-    <para>This paragraph introduces the Simpsons, and prepares the reader tro expect
-    the remainder of the chapter to be organized by parents and their kids.</para>
+    <title>Most Stuff</title>
+    <para>This is a sample.  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+    This is a sample.  This is a sample.  This is a sample.  This is a sample.  This is a sample.
+    This is a sample.  This is a sample.  This is a sample.  This is a sample.  </para>
     
-    <para>We will also show off, and link to <xref linkend="chap1_fig_1"/>, which is from
+    <para>We will also show off another &lt;xref>, to <xref linkend="chap1_fig_1"/>, which is from
     another chapter (another XML document).</para>
     
     <sect2 id="chap2_sect1_inline_markup">
@@ -19,10 +22,8 @@
 
       <para>
       Most of you are used to bold and italic.  The DocBook equivilants are a
-      bit more complex, in that they are more in context.  DocBook does support
-      the basic <emphasis>emphasis</emphasis> which can be thought of as bold.  It
-      also supports <firstterm>firstterm</firstterm> to say "this is the first time
-      this term has been used".  This is normally italic.
+      bit more complex, in that they are more in context.  Here is a table of ones
+      we may want to use.
       </para>
       
 
@@ -46,25 +47,104 @@
                 <emphasis>like this</emphasis>
                 </para>
               </entry>
-
             </row>
             <row>
-              <entry>Marge</entry>
+              <entry>&lt;quote></entry>
               <entry>
                 <para>
-                This is a sample.  This is a sample.  This is a sample.
-                This is a sample.  This is a sample.  This is a sample.
-                This is a sample.  This is a sample.  This is a sample.
-                This is a sample.  This is a sample.  This is a sample.  
-                </para>
-                <para>
-                This is a sample.  This is a sample.  This is a sample.
-                This is a sample.  This is a sample.  This is a sample.
-                This is a sample.  This is a sample.  This is a sample.
-                This is a sample.  This is a sample.  This is a sample.  
+                A way to bound quotes.  It likely renders with quotes "", but may also
+                be italic and have slanted quotes.  Here is <quote>an example</quote>.
                 </para>
               </entry>
             </row>
+            <row>
+              <entry>&lt;subscript></entry>
+              <entry>
+                <para>
+                Here is <subscript>an example</subscript>
+                </para>
+              </entry>
+            </row>
+            <row>
+              <entry>&lt;superscript></entry>
+              <entry>
+                <para>
+                Here is <superscript>an example</superscript>
+                </para>
+              </entry>
+            </row>
+            <row>
+              <entry>&lt;filename></entry>
+              <entry>
+                <para>
+                The name of a file.  We likely don't have a lot of these at this
+                point, but who knows in the future.  Here is <filename>an example</filename>
+                </para>
+              </entry>
+            </row>
+            <row>
+              <entry>&lt;application></entry>
+              <entry>
+                <para>
+                This is the name of an application.  For a large UI, I believe it can also
+                be used to refer to large sections of the UI such as the <application>Policy Manager</application>
+                </para>
+              </entry>
+            </row>
+            <row>
+              <entry>&lt;userinput></entry>
+              <entry>
+                <para>
+                This is used when you want folks to type something, for example
+                <quote>At a DOS prompt, type <userinput> del /s c:\</userinput></quote>
+                </para>
+              </entry>
+            </row>
+            <row>
+              <entry>&lt;keysym></entry>
+              <entry>
+                <para>
+                The name of a key.  For example, Press the <keysym>Enter</keysym> key.
+                </para>
+              </entry>
+            </row>
+            <row>
+              <entry>&lt;guimenu></entry>
+              <entry>
+                <para>
+                The name of a menu itsm.  For example, Under the <guimenu>File</guimenu> menu .
+                </para>
+              </entry>
+            </row>
+            <row>
+              <entry>&lt;guilabel></entry>
+              <entry>
+                <para>
+                Title of a UI widget.  For example, you will first see a
+                <guilabel>Java Web Start</guilabel> window .
+                </para>
+              </entry>
+            </row>
+            <row>
+              <entry>&lt;guiicon></entry>
+              <entry>
+                <para>
+                Name given to a user action input widget, such as a button or icon which
+                reacts like a button.  For example, press the <guiicon>Power On</guiicon> button.
+                </para>
+              </entry>
+            </row>
+            <row>
+              <entry>&lt;glossterm></entry>
+              <entry>
+                <para>
+                Used when you want to refer to something in the glossary.  For example
+                <glossterm linkend="gloss_virus">Computer Virus</glossterm>
+                </para>
+              </entry>
+            </row>            
+
+
           </tbody>
         </tgroup>
       </table>
@@ -73,38 +153,10 @@
 
     <sect2 id="chap2_sect1_tables">
       <title>Tables</title>
-      <para>This is a sample.  This is a sample.  This is a sample.
-      This is a sample.  This is a sample.  This is a sample.  This is a sample.
-      This is a sample.  This is a sample.  This is a sample.  This is a sample.
-      This is a sample.  This is a sample.  This is a sample.  This is a sample.
-      This is a sample.  This is a sample.  </para>
-
-      <para>Blaaa</para>
-      
-      <table frame="topbot" pgwide="0">
-        <title>topbot table</title>
-        <tgroup cols="2">
-          <thead>
-            <row rowsep="1">
-              <entry>Foo</entry>
-              <entry>Bar</entry>
-            </row>
-          </thead>
-          <tbody>
-            <row>
-              <entry>xyz</entry>
-              <entry>pdq</entry>
-            </row>
-            <row>
-              <entry>abc</entry>
-              <entry>123</entry>
-            </row>
-          </tbody>
-        </tgroup>
-      </table>
-
-      <para>Blaaa</para>
-
+      <para>There are a few ways to do tables, but the intesection of table tweaks that
+      look good in HTML and those that look good in PDF seems (based on my findings)
+      to be 1.  So, here is how to make the one and only one table type.  If this pattern
+      doesn't help (read the source), then see me.</para>
 
       <table frame="topbot" pgwide="0">
         <title>Simple table</title>
@@ -157,23 +209,28 @@
         </tgroup>
       </table>
 
-
-      
-                            
-      
-      <para>This is a sample.  This is a sample.  This is a sample.
-      This is a sample.  This is a sample.  This is a sample.  This is a sample.
-      This is a sample.  This is a sample.  This is a sample.  This is a sample.
-      This is a sample.  This is a sample.  This is a sample.  This is a sample.
-      This is a sample.  This is a sample.  </para>
-      <sect3 id="chap2_sect1_marge_bart">
-        <title>Bart</title>
-        <para>This is a sample.  This is a sample.  This is a sample.
-        This is a sample.  This is a sample.  This is a sample.  This is a sample.
-        This is a sample.  This is a sample.  This is a sample.  This is a sample.
-        This is a sample.  This is a sample.  This is a sample.  This is a sample.
-        This is a sample.  This is a sample.  </para>
+      <sect3 id="chap2_sect1_tables_foo">
+        <title>Foo</title>
+        <para>This section is an excuse to have a 3-deep nested section. </para>
       </sect3>
-    </sect2>    
+    </sect2>
+    <sect2 id="chap2_sect1_linking">
+      <title>Linking</title>
+      <para>
+        Here we show how to create true hyperlinks to resources on the
+        web, such as <ulink  url="http://www.google.com">Google</ulink>
+        or a plain URL without alternative text <ulink url="http://www.metavize.com"/>
+      </para>
+    
+      <para>Now, we will reference a figure from the previous chapter,<xref linkend="chap1_fig_1"/>.
+      Note that when doing such a reference, it is best to target
+      something which had a "title" element, as that will become the display
+      text for your link.  Note also it is good writing practice to never use
+      positional text (i.e. "the figure below" or "the figure on the next page") as
+      you do not know where the images will ultimatly be placed relative to the
+      text.</para>
+
+      <para>Here is a cross link to something which lacked a &lt;title> element, but substituted a &lt;xreflabel> element instead.  The link is to <xref linkend="chap1_random_paragraph"/></para>
+    </sect2>
   </sect1>
 </chapter>

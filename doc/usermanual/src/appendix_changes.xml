@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<appendix id="appendix_changes">
+  <title>Change History</title>
+
+  <sect1 id="appendix_changes_30_31">
+    <title>Changes Between 3.0 and 3.1</title>
+    
+    <variablelist>
+      <title>New Features</title>
+      <varlistentry>
+        <term>Open VPN</term>
+  
+        <listitem>
+          <para>
+            This sould be a description of Open VPN TODO
+          </para>
+        </listitem>
+      </varlistentry>
+  
+      <varlistentry>
+        <term>SNMP Support</term>
+  
+        <listitem>
+          <para>
+            This sould be a description of SNMP TODO
+          </para>
+        </listitem>
+      </varlistentry>
+  
+      <varlistentry>
+        <term>Email Quarantine</term>
+  
+        <listitem>
+          <para>
+            This sould be a description of Quarantine TODO
+          </para>
+        </listitem>
+      </varlistentry>    
+    </variablelist>
+  
+  
+    <variablelist>
+      <title>Resolved Issues</title>
+      <varlistentry>
+        <term>Some Bug </term>
+  
+        <listitem>
+          <para>
+            Some resolution TODO
+          </para>
+        </listitem>
+      </varlistentry>
+  
+      <varlistentry>
+        <term>Some bug</term>
+  
+        <listitem>
+          <para>
+            TSome resoilution TODO
+          </para>
+        </listitem>
+      </varlistentry>
+  
+    </variablelist>  
+  </sect1>
+
+</appendix>

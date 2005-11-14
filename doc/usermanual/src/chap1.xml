@@ -2,63 +2,53 @@
 <chapter>
   <title id="simple_sample_chap">Simple Sample Chapter</title>
 
-  <!--
-    If the chapter is small or otherwise flat, you can just insert
-    text directly, starting with a "para" tag.  If the chapter is
-    long or complex (nested), you should consider "sect1", "sect2"
-    tags.  This creates "sections", which show-up in an index as
-    well as becoming their own HTML pages (when DocBook is converted
-    to chunked HTML).
-
-    If your chapter is *really* long or is likely to be authored
-    by several people, consider splitting into separate files (see
-    "eg250.xml" for more details).
-
-    This chapter is simple, and "chap2" is more complex.
-
-
-    On Links:
-    =========
-    In the text below are examples creating targets and links.  The mechanics
-    will not be explained here.  However, the naming convention is important.
-    All "files" for the manual are merged into a single XML document at
-    generation time.  This is done by the XML parser.  Therefore, any targets
-    (things linked-to) are in the *same* namespace although they do not seem
-    as such while you are working in your own file.
-
-    To avoid conflicts, please use the following convention for naming
-    targets (IDs):
-
-    filename_logicalTarget.
-
-    For example, accessing the first section of "chap1.xml" may take on
-    the target "chapt_sect1".
-
-    There is some goofy-ass bug where things get mangled if you put the
-    ID on the "title" instead of the outer-most element.  I saw some DocBook
-    examples on the web where they put it on the title (naugty, naughty, naughty).
-    
-  -->
-
-  <para>This chapter is full of little examples of markup that we may want to
-  use.  If you need more than the markup listed here, please ask me.  My intent
-  was to <emphasis>spare</emphasis> you from from having to read-up on DocBook.</para>
-
-  <para>Here is a link to <glossterm linkend="gloss_fruit">a glossary entry</glossterm> </para>
-
   <para>
-    Here we show how to create true hyperlinks to resources on the
-    web, such as <ulink  url="http://www.google.com">Google</ulink>
-    or a plain URL without alternative text <ulink url="http://www.metavize.com"/>
+    This chapter and <xref linkend="sample_chap_with_sections"/> are two chapters created
+    to demonstrate some basic markup in DocBook.  Note that both chapters demonstrate different
+    things, as well as the fact that this chapter is flat, and the other chapter has nested
+    sections.
   </para>
 
-  <para>Now, we will forward-reference a figure which is later on (a forward
-  reference) <xref linkend="chap1_fig_1"/>.  Note that when doing such a reference, it is best to target
-  something which had a "title" element, as that will become the display
-  text for your link.  Note also it is good writing practice to never use
-  positional text (i.e. "the figure below" or "the figure on the next page") as
-  you do not know where the images will ultimatly be placed relative to the
-  text.</para>
+  <para>
+    Most DocBook stuff should be fairly straightforward.  Its like HTML, with its own tag set.  The
+    only slightly "tricky" piece is linking and file layout.  
+  </para>
+  <para>
+    This document has been divided into many .xml files.  However, this is a "trick" from the
+    XML parser.  The docbook processor does not know this isn't one file.  As such, anytime you name
+    something keep in mind <emphasis>there is one namespace</emphasis>.  Creating an element
+    and tagging it ...<varname>id="details"</varname> will likely conflict.  As such, the naming convention
+    for <emphasis>everything</emphasis> is to prefix it with the file name.  If you have nested sections,
+    those go in front of any name as well.  This also goes for any graphics images.  See me if you're confused by this.
+  </para>
+
+  <orderedlist id="chap1_dbRules">
+    <title>Docbook Rules</title>
+    <listitem>
+      <para>Never refer to an image with directional nouns.  Do not write
+      <quote>the image below</quote> as you do not know if the image
+      will be below, or on the next page.
+      </para> 
+    </listitem>
+
+    <listitem>
+      <para>If you think someone may want to refer to your section/chapter/table, then
+      give it a title with the <varname>&lt;title></varname> tag.  Then, on the element
+      itself, provide an ID attribute.  Note that when someone links (via &lt;xref>)
+      to your content, their reference will cary the text of your title.</para>
+    </listitem>
+
+    <listitem>
+      <para>When using &lt;xref>, always let the linkend define the text.  </para>
+    </listitem>
+
+    <listitem>
+      <para>Do not assume your text will be a section, chapter, etc forever.  It is best to avoid such
+      positional language, as we may reorganize things</para>
+    </listitem>
+  </orderedlist>   
+
+
 
   <para>This is a sample.  This is a sample.  This is a sample.
   This is a sample.  This is a sample.  This is a sample.  This is a sample.
@@ -70,7 +60,7 @@
   <para id="chap1_random_paragraph"  xreflabel="Some important paragraph">This
   paragraph is interesting only in that we're making it targetable
   (something that can be linked) yet it lacked a "title".  Instead, we'll give it
-  one then at the end of this chapter, we'll refer to it</para>
+  one in the next chapter, we'll refer to it</para>
 
   <para>This is a sample.  This is a sample.  This is a sample.
   This is a sample.  This is a sample.  This is a sample.  This is a sample.
@@ -96,24 +86,23 @@
   This is a sample.  This is a sample.  This is a sample.  This is a sample.
   This is a sample.  This is a sample.  </para>
 
-  <para>This is a sample.  This is a sample.  This is a sample.
-  This is a sample.  This is a sample.  This is a sample.  This is a sample.
-  This is a sample.  This is a sample.  This is a sample.  This is a sample.
-  This is a sample.  This is a sample.  This is a sample.  This is a sample.
-  This is a sample.  This is a sample.  This is a sample.  This is a sample.
-  This is a sample.  This is a sample.  </para>
+  <para>
+    Here is an example of an inline graphic.  I'm going to put a bunch of junk
+    around it, so you can see how it is placed in-line bunch of  bunch of  bunch of
+    bunch of  bunch of  bunch of  bunch of  bunch of  bunch of  bunch of  bunch of
+    bunch of  bunch of  bunch of bunch of  bunch of
+      <inlinemediaobject>
+        <imageobject>
+          <imagedata fileref="figure/IconMV42x42.png"/>
+        </imageobject>
+        <textobject><phrase>Where is the phrase put</phrase>
+        </textobject>
+      </inlinemediaobject>
 
-  <para>Now, we'll go back and reference the image a few paragraphs back.  If
-  this were a "real" doc, we'd say something like "as seen in <xref linkend="chap1_fig_1"/>"
-  </para>
-
-  <para>This is a sample.  This is a sample.  This is a sample.
-  This is a sample.  This is a sample.  This is a sample.  This is a sample.
-  This is a sample.  This is a sample.  This is a sample.  This is a sample.
-  This is a sample.  This is a sample.  This is a sample.  This is a sample.
-  This is a sample.  This is a sample.  This is a sample.  This is a sample.
-  This is a sample.  This is a sample.  </para>
-
+    bunch of bunch of  bunch of  bunch of  bunch of  bunch of  bunch of  bunch of  bunch of
+    bunch of  bunch of  bunch of  bunch of  bunch of  bunch of  bunch of  bunch of  bunch of
+    bunch of  bunch of  bunch of  bunch of  bunch of  bunch of  bunch of  bunch of  bunch of </para>
+  
   <para>Now, here is an example of a numbered list.  This does not have a title,
   so you should not reference it (i.e. do not give it an "ID" attribute)</para>
   
@@ -329,6 +318,6 @@
   </para>
 
 
-  <para>As promised, we'll also provide a link back to <xref linkend="chap1_random_paragraph"/></para>
+
 
 </chapter>

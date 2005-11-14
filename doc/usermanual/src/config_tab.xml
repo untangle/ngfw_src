@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="config_tab">
+  <title>Global Configuration</title>
+
+  <para>
+    Various global properties of your &eg; are set from the <guimenu>Config</guimenu> tab of the Administrative interface (see <xref linkend="config_tab_config_tab_figure"/>).
+  </para>
+
+  <figure id="config_tab_config_tab_figure">
+    <title>Config Tab</title>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="figure/config_tab.png" />
+      </imageobject>
+    </mediaobject>
+  </figure>    
+
+  <para>
+    We will now discuss in more detail each of the options within the <guimenu>Config</guimenu> Tab.
+  </para>
+
+
+  <!-- ========================================================= -->  
+  <sect1 id="config_tab_accounts">
+    <title>Accounts</title>
+    <para>
+    TODO Complete me
+    </para>
+  </sect1>
+
+  <!-- ========================================================= -->  
+  <sect1 id="config_tab_network_settings">
+    <title>Network Settings</title>
+    <para>
+    TODO Complete me.  As you do, here are some glossary entries which you may find handy.
+    <glossterm linkend="gloss_ip_addr">IP Address</glossterm>
+    <glossterm linkend="gloss_netmask">Netmask</glossterm>
+    <glossterm linkend="gloss_dns">DNS</glossterm>
+    <glossterm linkend="gloss_default_route">Default Route</glossterm>
+    <glossterm linkend="gloss_dhcp">DHCP</glossterm>
+    <glossterm linkend="gloss_dhcp_lease">DHCP Lease</glossterm>
+
+    </para>
+  </sect1>
+
+  <!-- ========================================================= -->  
+  <sect1 id="config_tab_remote_admin">
+    <title>Remote Administration</title>
+
+    <para>
+    TODO Complete me.  As you do, here are some glossary entries which you may find handy.
+    
+    <glossterm linkend="gloss_http">HTTP</glossterm>
+    </para>
+  </sect1>
+
+  <!-- ========================================================= -->  
+  <sect1 id="config_tab_backup_restore">
+    <title>Backup and Restore</title>
+    <para>
+    TODO Complete me
+    </para>
+  </sect1>
+
+  <!-- ========================================================= -->  
+  <sect1 id="config_tab_protocol_settings">
+    <title>Protocol Settings</title>
+    <para>
+    TODO Complete me.  As you do, here are some glossary entries which you may find handy.    
+    <glossterm linkend="gloss_smtp">SMTP</glossterm>
+    <glossterm linkend="gloss_pop">POP</glossterm>
+    <glossterm linkend="gloss_imap">IMAP</glossterm>
+
+    <glossterm linkend="gloss_uri">URI</glossterm>
+    </para>
+  </sect1>
+
+  <!-- ========================================================= -->  
+  <sect1 id="config_tab_quarantine">
+    <title>Quarantine</title>
+    <para>
+    TODO Complete me
+    </para>
+  </sect1>
+
+  <!-- ========================================================= -->
+  <sect1 id="config_tab_support">
+    <title>Support</title>
+    <para>
+    TODO Complete me
+    </para>
+  </sect1>
+
+  
+</chapter>

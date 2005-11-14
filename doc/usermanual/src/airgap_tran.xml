@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="airgap_tran">
+  <title>Packet Attack Shield</title>
+
+  <para>
+    The Packet Attack Shield is identified by the
+    <inlinemediaobject>
+      <imageobject>
+        <imagedata fileref="figure/airgap_tran_icon.png"/>
+      </imageobject>
+    </inlinemediaobject>
+
+    symbol.
+  </para>
+  
+  <para>
+    TODO COMPLETE ME.  Someone needs to write this section.  As you do, you should refer to <xref linkend="introduction_ui_appliance"/> as the Reporting Transform is a "Virtual Appliance".
+  </para>
+
+</chapter>

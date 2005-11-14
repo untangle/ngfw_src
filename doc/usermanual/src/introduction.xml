@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="introduction">
+  <title>Introduction</title>
+
+  <sect1 id="introduction_box">
+    <title>EdgeGuard Machine</title>
+    <para>
+      Describe the machine, saying that it has network interfaces.  Forward reference to <xref linkend="introduction_topology"/>, so folks know we'll explain more later.
+    </para>
+  </sect1>
+  <sect1 id="introduction_ui">
+    <title>Administrative Interface</title>
+    <para>
+      Briefly describe the admin interface and its UI conventions.
+    </para>
+    <sect2 id="introduction_ui_appliance">
+      <title>Virtual Appliances</title>
+      <para>
+        This is where we explain the concept of a "virtual" appliance, and describe how they are represented in the UI.  The "vendor of source" idea should also be discussed.
+      </para>
+    </sect2>
+    <sect2 id="introduction_ui_rack">
+      <title>Virtual Racks</title>
+      <para>
+        This is where we explain the concept of a "virtual" rack, and describe how they are represented in the UI.
+      </para>
+    </sect2>
+    <sect2 id="introduction_ui_system_services">
+      <title>System Services</title>
+      <para>
+        This is where we explain "System Services" vs. Virtual Appliances and Virtual Racks.
+      </para>
+    </sect2>       
+  </sect1>
+  <sect1 id="introduction_purchase_appliance">
+    <title>Purchasing new Virtual Appliances</title>
+    <para>
+      I guess this is only for Clam, but describe how that model works.
+    </para>
+  </sect1>   
+  <sect1 id="introduction_topology">
+    <title>EdgeGuard and Your Network</title>
+    <para>
+      Describe some common topologies, where edgeguard would fit-in.  Discuss bridge and NAT mode.
+    </para>
+  </sect1>  
+</chapter>

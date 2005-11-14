@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="firewall_tran">
+
+  <title>Firewall</title>
+
+  <!-- Note that the "introduction" is not within a Section.  This is
+       the convention we'll use
+  -->
+  <para>
+    The Firewall Appliance is identified by the
+    <inlinemediaobject>
+      <imageobject>
+        <imagedata fileref="figure/firewall_tran_icon.png"/>
+      </imageobject>
+    </inlinemediaobject>
+    symbol.
+  </para>
+
+  <para>
+    TODO COMPLETE ME.  Someone needs to write this section.  As you do, you should refer to <xref linkend="introduction_ui_appliance"/> as the firewall Transform is a "virtual appliance".
+  </para>
+  <para>
+    As this section is written, these glossary refs may come in handy
+    <glossterm linkend="gloss_tcp">TCP</glossterm>
+    <glossterm linkend="gloss_udp">UDP</glossterm>
+  </para>
+
+</chapter>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="policy_manager">
+  <title>Policy Manager</title>
+
+  <para>
+    The Policy Manager is ...TODO Complete me...  The <application>Policy Manager</application> is launched via the drop down menu shown in <xref linkend="policy_manager_launch_policy_mngr"/>.
+  </para>
+
+  <figure id="policy_manager_launch_policy_mngr">
+    <title>Launching the Policy Manager</title>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="figure/launch_policy_mngr.png" />
+      </imageobject>
+    </mediaobject>
+  </figure>    
+
+  <para>
+    Once launched, the policy manager main view should be seen.  This is shown in <xref linkend="policy_manager_policy_mngr"/>.
+  </para>
+
+  <figure id="policy_manager_policy_mngr">
+    <title>Policy Manager Window</title>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="figure/policy_mngr.png" />
+      </imageobject>
+    </mediaobject>
+  </figure>
+  
+  <para>
+    Here, we explain what this thing is for, as an overview.  We then segue by saying that we will discuss each of the three tabs in the subsequent sections
+  </para>
+
+
+  <!-- ========================================================= -->
+  <sect1 id="policy_manager_def_policies">
+    <title>Default Policies</title>
+    <para>
+    TODO Complete me
+    </para>
+  </sect1>
+
+  <!-- ========================================================= -->
+  <sect1 id="policy_manager_custom_policies">
+    <title>Custom Policies</title>
+    <para>
+    TODO Complete me    
+    </para>
+  </sect1>
+
+  <!-- ========================================================= -->
+  <sect1 id="policy_manager_available_racks">
+    <title>Available Racks</title>
+
+    <para>
+    TODO Complete me.
+    </para>
+  </sect1>
+
+</chapter>

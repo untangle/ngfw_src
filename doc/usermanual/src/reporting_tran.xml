@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="reporting_tran">
+  <title>Reporting</title>
+
+  <para>
+    The Reporting Transform is identified by the
+    <inlinemediaobject>
+      <imageobject>
+        <imagedata fileref="figure/reporting_tran_icon.png"/>
+      </imageobject>
+    </inlinemediaobject>
+
+    symbol.
+  </para>
+  
+  <para>
+    TODO COMPLETE ME.  Someone needs to write this section.  As you do, you should refer to <xref linkend="introduction_ui_system_services"/> as the Reporting Transform is a "system service".
+  </para>
+  <para>
+    As this section is written, these glossary refs may come in handy
+    <glossterm linkend="gloss_port">Port</glossterm>
+    <glossterm linkend="gloss_smtp">SMTP</glossterm>
+    <glossterm linkend="gloss_ip_addr">IP Address</glossterm>
+  </para>
+
+</chapter>

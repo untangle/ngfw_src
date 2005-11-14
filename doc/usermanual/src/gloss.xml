@@ -41,6 +41,57 @@ Place new terms under the appropriate alphabetical location.
   
   <glossdiv>
     <title>D</title>
+
+    <glossentry id="gloss_dos">
+      <glossterm>Denial Of Service</glossterm>
+      <acronym>DOS</acronym>
+      <glossdef>
+        <para>TODO</para>
+      </glossdef>            
+    </glossentry>    
+
+    <glossentry id="gloss_dns">
+      <glossterm>Domain Name Service</glossterm>
+      <acronym>DNS</acronym>
+      <glossdef>
+        <para>TODO</para>
+      </glossdef>            
+    </glossentry>
+
+    <glossentry id="gloss_default_route">
+      <glossterm>Default Route</glossterm>
+      <glossdef>
+        <para>TODO</para>
+      </glossdef>            
+    </glossentry>
+
+
+    <glossentry id="gloss_dhcp">
+      <glossterm>Dynamic Configuration Host Protocol</glossterm>
+      <acronym>DHCP</acronym>
+      <glossdef>
+        <para>TODO</para>
+      </glossdef>            
+    </glossentry>
+
+
+    <glossentry id="gloss_dhcp_lease">
+      <glossterm>DCHP Lease</glossterm>
+      <glossdef>
+        <para>TODO</para>
+      </glossdef>            
+    </glossentry>
+
+
+
+    <glossentry id="gloss_dmz">
+      <!-- Avoid the true military history of the term -->
+      <glossterm>DMZ</glossterm>
+      <glossdef>
+        <para>TODO</para>
+      </glossdef>            
+    </glossentry>     
+          
   </glossdiv>
 
 <!-- ============== E ================ -->
@@ -60,7 +111,7 @@ Place new terms under the appropriate alphabetical location.
   <glossdiv>
     <title>G</title>
 
-    <glossentry id="gloss_groupware">>
+    <glossentry id="gloss_groupware">
       <glossterm>Groupware</glossterm>
       <glossdef>
         <para>Generic term used to describe client/server applications used to provide email calendar (and other) services.  Groupware consists of a server and client.  Examples include Microsoft Exchange (server) and Outlook (client) and IBM Lotus Domino (server) and Notes (client).  Since the communication between client and server for groupware applications is propriatary to the groupware vendor, such communication often cannot be scanned.</para>
@@ -73,6 +124,14 @@ Place new terms under the appropriate alphabetical location.
   
   <glossdiv>
     <title>H</title>
+
+    <glossentry id="gloss_http">
+      <glossterm>Hypter Text Transfer Protocol</glossterm>
+      <acronym>HTTP</acronym>
+      <glossdef>
+        <para>TODO</para>
+      </glossdef>            
+    </glossentry>      
   </glossdiv>
 
 
@@ -87,7 +146,14 @@ Place new terms under the appropriate alphabetical location.
   <glossdiv>
     <title>I</title>
 
-    <glossentry id="gloss_imap">>
+    <glossentry id="gloss_ip_addr">
+      <glossterm>IP Address</glossterm>
+      <glossdef>
+        <para>TODO</para>
+      </glossdef>            
+    </glossentry>       
+
+    <glossentry id="gloss_imap">
       <glossterm>Internet Mail Access Protocol</glossterm>
       <acronym>IMAP</acronym>
       <glossdef>
@@ -137,6 +203,23 @@ Place new terms under the appropriate alphabetical location.
   
   <glossdiv>
     <title>N</title>
+
+    <glossentry id="gloss_netmask">
+      <glossterm>Netmask</glossterm>
+      <glossdef>
+        <para>TODO</para>
+      </glossdef>            
+    </glossentry>
+
+
+    <glossentry id="gloss_nat">
+      <glossterm>Network Address Translation</glossterm>
+      <acronym>NAT</acronym>
+      <glossdef>
+        <para>TODO</para>
+      </glossdef>            
+    </glossentry>
+        
   </glossdiv>
 
 <!-- ============== O ================ -->
@@ -150,7 +233,14 @@ Place new terms under the appropriate alphabetical location.
   <glossdiv>
     <title>P</title>
 
-    <glossentry id="gloss_pop">>
+    <glossentry id="gloss_port">
+      <glossterm>Port</glossterm>
+      <glossdef>
+        <para>TODO</para>
+      </glossdef>            
+    </glossentry>  
+    
+    <glossentry id="gloss_pop">
       <glossterm>Post Office Protocol</glossterm>
       <acronym>POP</acronym>
       <glossdef>
@@ -170,6 +260,16 @@ Place new terms under the appropriate alphabetical location.
   
   <glossdiv>
     <title>R</title>
+
+
+
+    <glossentry id="gloss_redirect">
+      <glossterm>Redirect</glossterm>
+      <glossdef>
+        <para>TODO Complete me (note this is "redirect" as defined in the scope of NAT).</para>
+      </glossdef>            
+    </glossentry>      
+    
   </glossdiv>
 
 <!-- ============== S ================ -->
@@ -209,7 +309,16 @@ Place new terms under the appropriate alphabetical location.
       <glossdef>
         <para>TODO complete me.</para>
       </glossdef>
-    </glossentry>        
+    </glossentry>
+
+
+    <glossentry id="gloss_tcp">
+      <glossterm>Transmission Control Protocol</glossterm>
+      <acronym>TCP</acronym>
+      <glossdef>
+        <para>TODO complete me.</para>
+      </glossdef>
+    </glossentry>          
     
   </glossdiv>
 
@@ -217,6 +326,26 @@ Place new terms under the appropriate alphabetical location.
   
   <glossdiv>
     <title>U</title>
+
+    <glossentry id="gloss_uri">
+      <glossterm>Uniform Resource Identifier</glossterm>
+      <acronym>URI</acronym>
+      <glossdef>
+        <para>TODO complete me.</para>
+      </glossdef>
+    </glossentry>     
+
+
+    <glossentry id="gloss_udp">
+      <glossterm>User Datagram Protocol</glossterm>
+      <acronym>UDP</acronym>
+      <glossdef>
+        <para>TODO complete me.</para>
+      </glossdef>
+    </glossentry>     
+
+
+    
   </glossdiv>
 
 <!-- ============== V ================ -->
@@ -233,6 +362,15 @@ Place new terms under the appropriate alphabetical location.
         <glossseealso otherterm="gloss_trojan"/>
       </glossdef>
     </glossentry>
+
+
+    <glossentry id="gloss_vpn">
+      <glossterm>Virtual Private Network</glossterm>
+      <acronym>VPN</acronym>
+      <glossdef>
+        <para>TODO complete me.</para>
+      </glossdef>
+    </glossentry>       
     
   </glossdiv>
   
@@ -260,79 +398,4 @@ Place new terms under the appropriate alphabetical location.
     <title>Z</title>
   </glossdiv>                              
   
-    
-  
-  
-  
-    
-  <glossdiv>
-    <title>A</title>
-  
-    <glossentry id="gloss_apple">
-      <glossterm>Apple</glossterm>
-      <acronym>Apple</acronym>
-      <glossdef>
-        <para>A fruit.</para>
-        <para>A computer company.</para>
-        <glossseealso otherterm="gloss_fruit"/>
-      </glossdef>
-    </glossentry>
-  
-  </glossdiv>
-
-  <glossdiv>
-    <title>F</title>
-  
-    <glossentry id="gloss_fruit">
-      <glossterm>Fruit</glossterm>
-      <acronym>Fruit Acronym</acronym>
-      <glossdef>
-        <para>A kind of food</para>
-        <glossseealso otherterm="gloss_food">Food Literal</glossseealso>
-      </glossdef>
-    </glossentry>
-
-    <glossentry id="gloss_food">
-      <glossterm>Food</glossterm>
-      <glossdef>
-        <para>Food has no acronym</para>
-      </glossdef>
-    </glossentry>    
-  
-  </glossdiv>  
-  
-
-  <glossdiv>
-    <title>E</title>
-  
-    <glossentry id="xml">
-      <glossterm>Extensible Markup Language</glossterm>
-      <acronym>XML</acronym>
-      <glossdef>
-        <para>Some reasonable definition here.</para>
-        <glossseealso otherterm="sgml">SGML</glossseealso>
-      </glossdef>
-    </glossentry>
-  
-  </glossdiv>
-  
-  <glossdiv>
-    <title>S</title>
-  
-    <glossentry>
-      <glossterm>SGML</glossterm>
-    <glosssee otherterm="sgml"/>
-    </glossentry>
-    
-    <glossentry id="sgml"><glossterm>Standard Generalized
-      Markup Language</glossterm><acronym>SGML</acronym>
-      <abbrev>ISO 8879:1986</abbrev>
-    <glossdef>
-      <para>Some reasonable definition here.</para>
-      <glossseealso otherterm="xml">XML</glossseealso>
-    </glossdef>
-    </glossentry>
-  
-  </glossdiv>
-
 </glossary>
