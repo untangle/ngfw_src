@@ -25,6 +25,7 @@ import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformStartException;
 import com.metavize.mvvm.tran.TransformStopException;
+import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.util.TransactionWork;
 import com.metavize.tran.mail.impl.imap.ImapCasingFactory;
 import com.metavize.tran.mail.impl.smtp.SmtpCasingFactory;
@@ -44,6 +45,9 @@ import com.metavize.tran.mail.papi.safelist.SafelistSettings;
 import com.metavize.tran.mail.papi.safelist.SafelistAdminView;
 import com.metavize.tran.mail.papi.safelist.SafelistEndUserView;
 import com.metavize.tran.mail.papi.safelist.SafelistTransformView;
+import com.metavize.tran.mail.papi.safelist.SafelistManipulation;
+import com.metavize.tran.mail.papi.safelist.NoSuchSafelistException;
+import com.metavize.tran.mail.papi.safelist.SafelistActionFailedException;
 import com.metavize.tran.mail.impl.safelist.SafelistManager;
 import java.util.List;
 import java.io.File;
@@ -76,6 +80,9 @@ public class MailTransformImpl extends AbstractTransform
     private QuarantineMaintenenceViewWrapper m_qmv = new QuarantineMaintenenceViewWrapper();
     private QuarantineTransformViewWrapper m_qtv = new QuarantineTransformViewWrapper();
     private static SafelistManager s_safelistMngr;
+    private SafelistTransformViewWrapper m_stv = new SafelistTransformViewWrapper();
+    private SafelistEndUserViewWrapper m_suv = new SafelistEndUserViewWrapper();
+    private SafelistAdminViewWrapper m_sav = new SafelistAdminViewWrapper();
     private static boolean s_deployedWebApp = false;
     private static boolean s_unDeployedWebApp = false;
 
@@ -83,7 +90,7 @@ public class MailTransformImpl extends AbstractTransform
 
     public MailTransformImpl()
     {
-        logger.debug("MailTransformImpl");
+        logger.debug("<init>");
 
         //TODO bscott I assume this class will only ever be instantiated
         // on the server?!?
@@ -125,25 +132,6 @@ public class MailTransformImpl extends AbstractTransform
         }
     }
 
-    @Override
-    protected void postStart() throws TransformStartException {
-        super.postStart();
-        deployWebAppIfRequired(logger);
-        s_quarantine.open();
-    }
-
-    @Override
-    protected void preStop() throws TransformStopException {
-        super.preStop();
-        unDeployWebAppIfRequired(logger);
-    }
-
-    @Override
-    protected void preDestroy() throws TransformException {
-        super.preDestroy();
-        s_quarantine.close();
-    }
-
     // MailTransform methods --------------------------------------------------
 
     public MailTransformSettings getMailTransformSettings()
@@ -181,11 +169,11 @@ public class MailTransformImpl extends AbstractTransform
     }
 
     public SafelistEndUserView getSafelistEndUserView() {
-        return s_safelistMngr;
+        return m_suv;
     }
 
     public SafelistAdminView getSafelistAdminView() {
-        return s_safelistMngr;
+        return m_sav;
     }
 
     // MailExport methods -----------------------------------------------------
@@ -200,7 +188,7 @@ public class MailTransformImpl extends AbstractTransform
     }
 
     public SafelistTransformView getSafelistTransformView() {
-        return s_safelistMngr;
+        return m_stv;
     }
 
     // Transform methods ------------------------------------------------------
@@ -221,8 +209,17 @@ public class MailTransformImpl extends AbstractTransform
     protected void initializeSettings() {
     }
 
+    @Override
+    protected void preDestroy() throws TransformException {
+      super.preDestroy();
+      logger.debug("preDestroy()");
+      unDeployWebAppIfRequired(logger);
+      s_quarantine.close();
+    }
+
     protected void postInit(String[] args)
     {
+        logger.debug("postInit()");
         TransactionWork tw = new TransactionWork()
         {
             public boolean doWork(Session s)
@@ -286,8 +283,11 @@ public class MailTransformImpl extends AbstractTransform
         };
         getTransformContext().runTransaction(tw);
 
+        logger.debug("Initialize SafeList/Quarantine...");
         s_quarantine.setSettings(settings.getQuarantineSettings());
         s_safelistMngr.setSettings(this, settings);
+        deployWebAppIfRequired(logger);
+        s_quarantine.open();        
     }
 
     // AbstractTransform methods ----------------------------------------------
@@ -380,6 +380,87 @@ public class MailTransformImpl extends AbstractTransform
       EmailAddress...recipients) {
       return s_quarantine.quarantineMail(file, summary, recipients);
     }
+  }
+
+
+  class SafelistTransformViewWrapper
+    implements SafelistTransformView {
+    public boolean isSafelisted(EmailAddress envelopeSender,
+      EmailAddress mimeFrom,
+      List<EmailAddress> recipients) {
+      return s_safelistMngr.isSafelisted(envelopeSender, mimeFrom, recipients);
+    }
+  }
+
+  abstract class SafelistManipulationWrapper
+    implements SafelistManipulation {
+
+    public String[] addToSafelist(String safelistOwnerAddress,
+      String toAdd)
+      throws NoSuchSafelistException, SafelistActionFailedException {
+      return s_safelistMngr.addToSafelist(safelistOwnerAddress, toAdd);
+    }
+  
+    public String[] removeFromSafelist(String safelistOwnerAddress,
+      String toRemove)
+      throws NoSuchSafelistException, SafelistActionFailedException {
+      return s_safelistMngr.removeFromSafelist(safelistOwnerAddress, toRemove);
+    }
+
+    public String[] replaceSafelist(String safelistOwnerAddress,
+      String...listContents)
+      throws NoSuchSafelistException, SafelistActionFailedException {
+      return s_safelistMngr.replaceSafelist(safelistOwnerAddress, listContents);
+    }
+
+    public String[] getSafelistContents(String safelistOwnerAddress)
+      throws NoSuchSafelistException, SafelistActionFailedException {
+      return s_safelistMngr.getSafelistContents(safelistOwnerAddress);
+    }
+
+    public int getSafelistCnt(String safelistOwnerAddress)
+      throws NoSuchSafelistException, SafelistActionFailedException {
+      return s_safelistMngr.getSafelistCnt(safelistOwnerAddress);
+    }
+
+    public boolean hasOrCanHaveSafelist(String address) {
+      return s_safelistMngr.hasOrCanHaveSafelist(address);
+    }
+
+    public void test() {
+    }
+
+  }
+
+  class SafelistEndUserViewWrapper
+    extends SafelistManipulationWrapper
+    implements SafelistEndUserView {
+    
+  }
+
+  class SafelistAdminViewWrapper
+    extends SafelistManipulationWrapper
+    implements SafelistAdminView {
+    
+    public List<String> listSafelists()
+      throws SafelistActionFailedException {
+      return s_safelistMngr.listSafelists();
+    }
+
+    public void deleteSafelist(String safelistOwnerAddress)
+      throws SafelistActionFailedException {
+      s_safelistMngr.deleteSafelist(safelistOwnerAddress);
+    }
+
+    public void createSafelist(String newListOwnerAddress)
+      throws SafelistActionFailedException {
+      s_safelistMngr.createSafelist(newListOwnerAddress);
+    }
+
+    public boolean safelistExists(String safelistOwnerAddress)
+      throws SafelistActionFailedException {
+      return s_safelistMngr.safelistExists(safelistOwnerAddress);
+    }    
   }
   
 }
