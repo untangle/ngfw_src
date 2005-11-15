@@ -129,32 +129,11 @@ class CertificateManager
         Set<String> usedNameSet = new HashSet<String>();
 
         for ( VpnClient client : (List<VpnClient>)settings.getClientList()) {
-            String name = client.getInternalName();
-            Boolean status = certificateStatusMap.remove( name );
+            updateClientCertificateStatus( settings, client, certificateStatusMap, usedNameSet );
+        }
 
-            /* Cert doesn't exist for this client, create a new one */
-            if ( status == null ) {
-                if ( usedNameSet.contains( name )) {
-                    logger.error( "Client [" + name + " ] common name is listed twice" );
-                    continue;
-                }
-
-                try {
-                    callCreateClientScript( name );
-                    
-                    logger.info( "Creating a certificate for [" + name + "]" );
-                    /* Indicate that the client has a valid certificate */
-                    client.setCertificateStatusValid();
-                } catch ( TransformException e ) {
-                    logger.error( "Unable to create a certificate for '" + name + "'", e );
-                    client.setCertificateStatusRevoked();
-                }
-            } else {
-                if ( status ) client.setCertificateStatusValid();
-                else          client.setCertificateStatusRevoked();                
-            }
-
-            if ( !usedNameSet.add( name )) logger.warn( "Used name set already contained [" + name + "]" );
+        for ( VpnSite site : (List<VpnSite>)settings.getSiteList()) {
+            updateClientCertificateStatus( settings, site, certificateStatusMap, usedNameSet );
         }
         
         /* Revoke all of the clients that have been deleted */
@@ -173,6 +152,39 @@ class CertificateManager
             }
         }
     }
+
+    private void updateClientCertificateStatus( VpnSettings settings, VpnClient client, 
+                                                Map<String,Boolean> certificateStatusMap,
+                                                Set<String> usedNameSet )
+    {
+        String name = client.getInternalName();
+        Boolean status = certificateStatusMap.remove( name );
+        
+        /* Cert doesn't exist for this client, create a new one */
+        if ( status == null ) {
+            if ( usedNameSet.contains( name )) {
+                logger.error( "Client [" + name + " ] common name is listed twice" );
+                return;
+            }
+            
+            try {
+                callCreateClientScript( name );
+                
+                logger.info( "Creating a certificate for [" + name + "]" );
+                /* Indicate that the client has a valid certificate */
+                client.setCertificateStatusValid();
+            } catch ( TransformException e ) {
+                logger.error( "Unable to create a certificate for '" + name + "'", e );
+                client.setCertificateStatusRevoked();
+            }
+        } else {
+            if ( status ) client.setCertificateStatusValid();
+            else          client.setCertificateStatusRevoked();                
+        }
+        
+        if ( !usedNameSet.add( name )) logger.warn( "Used name set already contained [" + name + "]" );
+    }
+        
     
     private Map<String,Boolean> generateCertificateStatusMap()
     {

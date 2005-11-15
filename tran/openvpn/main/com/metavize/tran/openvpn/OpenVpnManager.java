@@ -93,10 +93,10 @@ class OpenVpnManager
      * 5  --  Output  R  and W characters to the console for each packet read and write, uppercase is
      * used for TCP/UDP packets and lowercase is used for TUN/TAP packets.
      * 6 to 11 -- Debug info range (see errlevel.h for additional information on debug levels). */
-    private static final int DEFAULT_VERBOSITY   = 3;
+    private static final int DEFAULT_VERBOSITY   = 2;
 
     /* XXX Just pick one that is unused (this is openvpn + 1) */
-    private static final int MANAGEMENT_PORT     = 1195;
+    static final int MANAGEMENT_PORT     = 1195;
 
     /* Key management directives */
     private static final String SERVER_DEFAULTS[] = new String[] {
@@ -145,6 +145,7 @@ class OpenVpnManager
         "verb 3",
         "persist-key",
         "persist-tun",
+        "verb " + DEFAULT_VERBOSITY,
         "ca " + CLI_KEY_DIR + "/ca.crt"
     };
     
@@ -168,6 +169,8 @@ class OpenVpnManager
        
     void start() throws TransformException
     {
+        logger.info( "Starting openvpn server" );
+
         ScriptRunner.getInstance().exec( VPN_START_SCRIPT );
 
         try {
@@ -185,6 +188,7 @@ class OpenVpnManager
 
     void stop() throws TransformException
     {
+        logger.info( "Stopping openvpn server" );
         ScriptRunner.getInstance().exec( VPN_STOP_SCRIPT );
 
         try {
@@ -221,15 +225,8 @@ class OpenVpnManager
 
             /* Get all of the routes for all of the different groups */
             writeGroups( sw, settings );
-            
-            /* Export the inside address if necessary */
-            
-            /* VPN configuratoins needs information from the networking settings. */
-            ArgonManager argonManager = MvvmContextFactory.context().argonManager();
-            
-            writeExports( sw, settings,
-                          argonManager.getInsideAddress(), argonManager.getInsideNetmask(),
-                          argonManager.getOutsideAddress(), argonManager.getOutsideNetmask());
+                                    
+            writeExports( sw, settings );
         }
         
         int maxClients = settings.getMaxClients();
@@ -239,35 +236,24 @@ class OpenVpnManager
         sw.writeFile( VPN_SERVER_FILE );
     }
 
-    private void writeExports( ScriptWriter sw, VpnSettings settings, 
-                               InetAddress internalAddress, InetAddress internalNetmask,
-                               InetAddress externalAddress, InetAddress externalNetmask )
+    private void writeExports( ScriptWriter sw, VpnSettings settings )
     {
         sw.appendComment( "Exports" );
-
-        if ( internalAddress.equals( externalAddress )) {
-            /* If either is exported, export it */
-            if ( settings.getIsInternalExported() || settings.getIsInternalExported()) {
-                writePushRoute( sw, internalAddress, internalNetmask );
-            }
-        } else {
-            /* Export the inside if requested */
-            if ( settings.getIsInternalExported()) writePushRoute( sw, internalAddress, internalNetmask );
-            
-            /* Export the outside address if necessary */
-            if ( settings.getIsExternalExported()) writePushRoute( sw, externalAddress, externalNetmask );
-        }
         
-        /* XXX This needs additional entries in the routing table,
+        /* XXX This may need additional entries in the routing table,
          * because the edgeguard must also know how to route this
-         * traffic */
+         * traffic
+         * not sure about this comment, the entries seem to get 
+         * pushed automatically. */
         for ( SiteNetwork siteNetwork : (List<SiteNetwork>)settings.getExportedAddressList()) {
             writePushRoute( sw, siteNetwork.getNetwork(), siteNetwork.getNetmask());
         }
         
         /* The client configuration file is written in writeClientFiles */
-        for ( VpnClient client : (List<VpnClient>)settings.getClientList()) {
-            for ( SiteNetwork siteNetwork : (List<SiteNetwork>)client.getExportedAddressList()) {
+        for ( VpnSite site : (List<VpnSite>)settings.getSiteList()) {
+            if ( !site.isEnabled()) continue;
+
+            for ( SiteNetwork siteNetwork : (List<SiteNetwork>)site.getExportedAddressList()) {
                 IPaddr network = siteNetwork.getNetwork();
                 IPaddr netmask = siteNetwork.getNetmask();
                 
@@ -336,6 +322,8 @@ class OpenVpnManager
     private void writeClientFiles( VpnSettings settings )
     {
         for ( VpnClient client : (List<VpnClient>)settings.getClientList()) {
+            if ( !client.isEnabled()) continue;
+
             ScriptWriter sw = new VpnScriptWriter();
             
             IPaddr localEndpoint  = client.getAddress();
@@ -347,7 +335,23 @@ class OpenVpnManager
             /* XXXX This won't work for a bridge configuration */
             sw.appendVariable( FLAG_CLI_IFCONFIG, "" + localEndpoint + " " + remoteEndpoint );
             
-            for ( SiteNetwork siteNetwork : (List<SiteNetwork>)client.getExportedAddressList()) {
+            sw.writeFile( VPN_CCD_DIR + "/" + name );
+        }
+
+        for ( VpnSite site : (List<VpnSite>)settings.getSiteList()) {
+            if ( !site.isEnabled()) continue;
+            ScriptWriter sw = new VpnScriptWriter();
+            
+            IPaddr localEndpoint  = site.getAddress();
+            IPaddr remoteEndpoint = getRemoteEndpoint( localEndpoint );
+            String name           = site.getInternalName();
+            
+            logger.info( "Writing site configuration file for [" + name + "]" );
+
+            /* XXXX This won't work for a bridge configuration */
+            sw.appendVariable( FLAG_CLI_IFCONFIG, "" + localEndpoint + " " + remoteEndpoint );
+            
+            for ( SiteNetwork siteNetwork : (List<SiteNetwork>)site.getExportedAddressList()) {
                 writeClientRoute( sw, siteNetwork.getNetwork(), siteNetwork.getNetmask());
             }
 

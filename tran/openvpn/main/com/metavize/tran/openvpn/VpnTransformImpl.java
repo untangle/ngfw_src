@@ -36,9 +36,7 @@ public class VpnTransformImpl extends AbstractTransform
     private static final String WEB_APP_PATH = "/" + WEB_APP;
 
     private final Logger logger = Logger.getLogger( VpnTransformImpl.class );
-
-    final VpnStatisticManager statisticManager;
-
+    
     private boolean isWebAppDeployed = false;
 
     private final SoloPipeSpec pipeSpec;
@@ -47,6 +45,7 @@ public class VpnTransformImpl extends AbstractTransform
     private final OpenVpnManager openVpnManager = new OpenVpnManager();
     private final CertificateManager certificateManager = new CertificateManager();
     private final AddressMapper addressMapper = new AddressMapper();
+    private final OpenVpnMonitor openVpnMonitor;
 
     private final EventHandler handler;
 
@@ -57,7 +56,7 @@ public class VpnTransformImpl extends AbstractTransform
     public VpnTransformImpl()
     {
         this.handler          = new EventHandler( this );
-        this.statisticManager = new VpnStatisticManager(getTransformContext());
+        this.openVpnMonitor   = new OpenVpnMonitor( this );
 
         /* Have to figure out pipeline ordering, this should always
          * next to towards the outside, then there is OpenVpn and then Nat */
@@ -74,12 +73,14 @@ public class VpnTransformImpl extends AbstractTransform
 
         setVpnSettings( settings );
 
-        /* Stop the statistics manager */
-        statisticManager.stop();
+        /* Stop the statistics manager(I don't think this actually does anything rbs) */
+        // XXX DDD statisticManager.stop();
+
+        /* Stop the open vpn monitor(I don't think this actually does anything rbs) */
+        openVpnMonitor.stop();
     }
 
     // VpnTransform methods --------------------------------------------------
-
     public void setVpnSettings( final VpnSettings settings )
     {
         /* Attempt to assign all of the clients addresses */
@@ -93,13 +94,25 @@ public class VpnTransformImpl extends AbstractTransform
         this.certificateManager.updateCertificateStatus( settings );
 
         /* XXXXXXXXXXXXXXXXX NO, just for testing */
-        for ( VpnClient client : (List<VpnClient>)settings.getClientList()) {
+        for ( final VpnClient client : (List<VpnClient>)settings.getClientList()) {
             try {
+                client.setDistributionKey( "test" ); /* SOO XXX JENKY */
                 this.openVpnManager.writeClientConfigurationFiles( settings, client );
             } catch ( TransformException e ) {
                 logger.error( "Error writing config file for " + client.getName());
             }
         }
+
+        for ( final VpnClient client : (List<VpnClient>)settings.getSiteList()) {
+            try {
+                client.setDistributionKey( "test" ); /* SOO XXXX JENKY */
+                this.openVpnManager.writeClientConfigurationFiles( settings, client );
+            } catch ( TransformException e ) {
+                logger.error( "Error writing config file for " + client.getName());
+            }
+        }
+        /* XXXXXXXXXXXXXXXXX NO, just for testing */
+
 
         TransactionWork tw = new TransactionWork()
             {
@@ -183,58 +196,68 @@ public class VpnTransformImpl extends AbstractTransform
 
         /* Could use a hash map, but why bother ? */
         for ( final VpnClient client : ((List<VpnClient>)this.settings.getClientList())) {
-            String clientKey = client.getDistributionKey();
+            if ( lookupClientDistributionKey( key, clientAddress, client )) return client.getInternalName();
+        }
 
-            if ( clientKey != null ) clientKey = clientKey.trim();
-            logger.debug( "Checking: " + clientKey );
-
-            if ( clientKey == null || clientKey.length() == 0 ) continue;
-            if ( clientKey.equalsIgnoreCase( key )) {
-
-                client.setDistributionKey( null );
-
-                TransactionWork tw = new TransactionWork()
-                    {
-                        public boolean doWork( Session s )
-                        {
-                            s.saveOrUpdate( client );
-                            return true;
-                        }
-                    };
-
-                getTransformContext().runTransaction( tw );
-
-                /* Log the client distribution event.  Must be done with
-                 * the statistic manager because the thread is not currently
-                 * registered for the event logger. */
-                this.statisticManager.
-                    addClientDistributionEvent( new ClientDistributionEvent( clientAddress,
-                                                                             client.getName()));
-                return client.getInternalName();
-            }
+        for ( final VpnSite site : ((List<VpnSite>)this.settings.getSiteList())) {
+            if ( lookupClientDistributionKey( key, clientAddress, site )) return site.getInternalName();
         }
 
         return null;
     }
 
-    private synchronized void deployWebAppIfRequired()
+    private boolean lookupClientDistributionKey( String key, IPaddr clientAddress, final VpnClient client )
+    {
+        String clientKey = client.getDistributionKey();
+
+        /* XXX, possible check if it is live ??? */
+        
+        if ( clientKey != null ) clientKey = clientKey.trim();
+        logger.debug( "Checking: " + clientKey );
+        
+        if ( clientKey == null || clientKey.length() == 0 ) return false;
+        if ( !clientKey.equalsIgnoreCase( key )) return false;
+            
+        client.setDistributionKey( null );
+        
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork( Session s )
+                {
+                    s.saveOrUpdate( client );
+                    return true;
+                }
+            };
+        
+        getTransformContext().runTransaction( tw );
+        
+        /* Log the client distribution event.  Must be done with
+         * the statistic manager because the thread is not currently 
+         * registered for the event logger. */
+        this.openVpnMonitor.
+            addClientDistributionEvent( new ClientDistributionEvent( clientAddress, client.getName()));
+        
+        return true;
+    }
+
+    private synchronized void deployWebApp()
     {
         if ( !isWebAppDeployed ) {
             if ( MvvmContextFactory.context().loadWebApp( WEB_APP_PATH, WEB_APP )) {
-                logger.debug("Deployed openvpn web app");
+                logger.debug( "Deployed openvpn web app" );
             }
-            else logger.error("Unable to deploy openvpn web app");
+            else logger.error( "Unable to deploy openvpn web app" );
         }
         isWebAppDeployed = true;
     }
 
-    private synchronized void unDeployWebAppIfRequired()
+    private synchronized void unDeployWebApp()
     {
         if ( isWebAppDeployed ) {
             if( MvvmContextFactory.context().unloadWebApp(WEB_APP_PATH )) {
-                logger.debug("Unloaded openvpn web app");
+                logger.debug( "Unloaded openvpn web app" );
             }
-            logger.error("Unable to unload openvpn web app");
+            logger.error( "Unable to unload openvpn web app" );
         }
         isWebAppDeployed = false;
     }
@@ -280,17 +303,36 @@ public class VpnTransformImpl extends AbstractTransform
             if ( this.settings == null ) initializeSettings();
         }
 
+        /* Don't start if openvpn cannot be configured */
+        try {
+            settings.validate();
+                        
+            this.openVpnManager.configure( settings );
+            this.handler.configure( settings );
+            this.openVpnManager.restart();
+        } catch( Exception e ) {
+            try {
+                this.openVpnManager.stop();
+            } catch ( Exception stopException ) {
+                logger.error( "Unable to stop the openvpn process", stopException );
+            }
+            throw new TransformStartException( e );
+        }
+
         reconfigure();
 
-        deployWebAppIfRequired();
+        deployWebApp();
 
-        statisticManager.start();
+        // XXXX DDDD statisticManager.start();
+
+        openVpnMonitor.start();
     }
 
     @Override protected void postStop() throws TransformStopException
     {
         super.postStop();
-        statisticManager.stop();
+        // XXX DDD statisticManager.stop();
+        openVpnMonitor.stop();
 
         try {
             this.openVpnManager.stop();
@@ -301,7 +343,7 @@ public class VpnTransformImpl extends AbstractTransform
 
     @Override protected void preStop() throws TransformStopException {
         super.preStop();
-        unDeployWebAppIfRequired();
+        unDeployWebApp();
     }
 
     public void reconfigure()

@@ -42,5 +42,10 @@
   <servlet-mapping>
     <servlet-name>Start</servlet-name>
     <url-pattern>*.html</url-pattern>
-  </servlet-mapping>  
+  </servlet-mapping>
+
+    <error-page>
+      <error-code>404</error-code>
+      <location>/Index.jsp</location>
+    </error-page>
 </web-app>

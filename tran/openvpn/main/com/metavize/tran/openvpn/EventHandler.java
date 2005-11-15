@@ -19,6 +19,10 @@ import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.tapi.AbstractEventHandler;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
 import com.metavize.mvvm.tapi.MPipeException;
+
+import com.metavize.mvvm.IntfConstants;
+
+import com.metavize.mvvm.tapi.TCPNewSessionRequest;
 import com.metavize.mvvm.tapi.event.TCPNewSessionRequestEvent;
 import com.metavize.mvvm.tapi.event.UDPNewSessionRequestEvent;
 import com.metavize.mvvm.tran.Transform;
@@ -27,16 +31,6 @@ import org.apache.log4j.Logger;
 
 class EventHandler extends AbstractEventHandler
 {
-    /* Triggered when there is a VPN session that is blocked */
-    /* XXXXXXX Probably want to log block events */
-    private static final int BLOCK_COUNTER   = Transform.GENERIC_0_COUNTER;
-
-    /* Triggered when there is a VPN session that is passed */
-    private static final int PASS_COUNTER    = Transform.GENERIC_1_COUNTER;
-
-    /* Triggered whenever a client connects to the VPN */
-    private static final int CONNECT_COUNTER = Transform.GENERIC_2_COUNTER;
-
     private final Logger logger = Logger.getLogger( EventHandler.class );
 
     /* Are the VPNs bridged with the other networks */
@@ -70,20 +64,22 @@ class EventHandler extends AbstractEventHandler
 
     private void handleNewSessionRequest( IPNewSessionRequest request )
     {
-        logger.debug( "New session: [" + request.id() + "]" );
+        if ( logger.isDebugEnabled()) logger.debug( "New session: [" + request.id() + "]" );
 
-        if ( request.clientIntf() != IntfConverter.VPN && request.serverIntf() != IntfConverter.VPN ) {
+        if ( request.clientIntf() != IntfConstants.VPN_INTF && 
+             request.serverIntf() != IntfConstants.VPN_INTF ) {
             /* Nothing to do */
             request.release();
             return;
         }
-        else if ( request.clientIntf() == IntfConverter.VPN && request.serverIntf() == IntfConverter.VPN ) {
+        else if ( request.clientIntf() == IntfConstants.VPN_INTF && 
+                  request.serverIntf() == IntfConstants.VPN_INTF ) {
             /* XXXXXXXXXX sort this out */
             request.release();
             return;
         }
         /* XXXX Handle bridging */
-        else if ( request.clientIntf() == IntfConverter.VPN ) {
+        else if ( request.clientIntf() == IntfConstants.VPN_INTF ) {
             /* VPN client going to another interface */
             checkAddress( request, request.clientAddr(), request.serverAddr());
         }
@@ -100,7 +96,9 @@ class EventHandler extends AbstractEventHandler
     {
         boolean isValid = false;
         for ( IPMatcher matcher : this.clientAddressList ) {
-            logger.debug( "Testing " + vpn.getHostAddress() + " against " + matcher );
+            if ( logger.isDebugEnabled()) {
+                logger.debug( "Testing " + vpn.getHostAddress() + " against " + matcher );
+            }
             if ( matcher.isMatch( vpn )) {
                 isValid = true;
                 break;
@@ -116,7 +114,9 @@ class EventHandler extends AbstractEventHandler
         isValid = false;
 
         for ( IPMatcher matcher : this.exportedAddressList ) {
-            logger.debug( "Testing " + local.getHostAddress() + " against " + matcher );
+            if ( logger.isDebugEnabled()) {
+                logger.debug( "Testing " + local.getHostAddress() + " against " + matcher );
+            }
             if ( matcher.isMatch( local )) {
                 isValid = true;
                 break;
@@ -129,8 +129,10 @@ class EventHandler extends AbstractEventHandler
         }
 
         /* Accept the request */
-        logger.debug( "Accepted VPN session: [" + request.id() + "]" );
-        transform.incrementCount( PASS_COUNTER );
+        if ( logger.isDebugEnabled()) {
+            logger.debug( "Accepted VPN session: [" + request.id() + "]" );
+        }
+        transform.incrementCount( Constants.PASS_COUNTER );
         request.release();
 
         /* XXX Probably want to create an event */
@@ -142,10 +144,12 @@ class EventHandler extends AbstractEventHandler
         /* XXX Should this always reject silently */
         request.rejectSilently();
 
-        transform.incrementCount( BLOCK_COUNTER );
+        transform.incrementCount( Constants.BLOCK_COUNTER );
 
         /* XXX Probably want to create an event */
-        logger.debug( "Blocked VPN session: [" + request.id() + "]" );
+        if ( logger.isDebugEnabled()) {
+            logger.debug( "Blocked VPN session: [" + request.id() + "]" );
+        }
 
         // transform.statisticManager.incrRequest( protocol, request, reject );
     }
@@ -166,31 +170,17 @@ class EventHandler extends AbstractEventHandler
             logger.debug( "clientAddressList: [" + matcher + "]" );
         }
 
-        for ( VpnClient client : (List<VpnClient>)settings.getClientList()) {
+        for ( VpnSite site : (List<VpnSite>)settings.getSiteList()) {
             /* Continue if the client isn't live or the group the client is in isn't live */
-            if ( !client.isLive() || ( null == client.getGroup()) || !client.getGroup().isLive()) continue;
+            if ( !site.isEnabled()) continue;
 
-            for ( SiteNetwork siteNetwork : (List<SiteNetwork>)client.getExportedAddressList()) {
+            for ( SiteNetwork siteNetwork : (List<SiteNetwork>)site.getExportedAddressList()) {
                 if ( !siteNetwork.isLive()) continue;
                 IPMatcher matcher = new IPMatcher( siteNetwork.getNetwork(), siteNetwork.getNetmask(),
                                                    false );
                 clientAddressList.add( matcher );
                 logger.debug( "clientAddressList: [" + matcher + "]" );
             }
-        }
-
-        /* If requested add the matchers for internal */
-        if ( settings.getIsInternalExported()) {
-            exportedAddressList.add( IPMatcher.MATCHER_INTERNAL );
-            logger.debug( "exportedAddressList: [internal]" );
-        }
-
-        /* If requested add the matchers for external, (may be the same as internal, but should have
-         * no effect) */
-        /* XXXXX This isn't going to work, the external matchers are jenky */
-        if ( settings.getIsExternalExported()) {
-            exportedAddressList.add( IPMatcher.MATCHER_EXTERNAL );
-            logger.debug( "exportedAddressList: [external]" );
         }
 
         for ( SiteNetwork siteNetwork : (List<SiteNetwork>)settings.getExportedAddressList()) {

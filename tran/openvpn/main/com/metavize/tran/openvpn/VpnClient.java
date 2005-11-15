@@ -48,12 +48,6 @@ public class VpnClient extends Rule implements Validatable
     // The address group to pull this client address
     private VpnGroup group;
 
-    // List of addresses at this site,
-    // initially, may not be supported, just use one address.
-    private List    exportedAddressList;
-
-    private boolean isEdgeguard = false;
-
     private String certificateStatus = "Unknown";
 
     /* A 96-bit random string to be emailed out.  When the user goes
@@ -111,30 +105,6 @@ public class VpnClient extends Rule implements Validatable
     {
         this.address = address;
     }
-
-    /**
-     * The list of exported networks for this site.
-     *
-     * @return the list of exported networks for this site.
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * @hibernate.collection-key
-     * column="client_id"
-     * @hibernate.collection-index
-     * column="position"
-     * @hibernate.collection-one-to-many
-     * class="com.metavize.tran.openvpn.ClientSiteNetwork"
-     */
-    public List getExportedAddressList()
-    {
-        if ( this.exportedAddressList == null ) this.exportedAddressList = new LinkedList();
-
-        return this.exportedAddressList;
-    }
-    public void setExportedAddressList( List exportedAddressList )
-    {
-        this.exportedAddressList = exportedAddressList;
-    }
     
     /**
      * @return the key required to download the client.
@@ -165,21 +135,6 @@ public class VpnClient extends Rule implements Validatable
     {
         this.distributionPassword = distributionPassword;
     }    
-
-    /**
-     * @return whether the other side is an edgeguard.
-     * @hibernate.property
-     * column="is_edgeguard"
-     */
-    public boolean getIsEdgeguard()
-    {
-        return this.isEdgeguard;
-    }
-
-    public void setIsEdgeguard( boolean isEdgeguard )
-    {
-        this.isEdgeguard = isEdgeguard;
-    }
 
     /* This is the name that is used as the common name in the certificate */
     public String getInternalName()
@@ -218,6 +173,12 @@ public class VpnClient extends Rule implements Validatable
     public void setCertificateStatusRevoked( )
     {
         this.certificateStatus = "revoked";
+    }
+
+    /* If the client is alive and the group it is in is enabled */
+    public boolean isEnabled()
+    {
+        return isLive() && ( this.group != null ) && ( this.group.isLive());
     }
 
     static

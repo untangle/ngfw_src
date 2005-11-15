@@ -603,7 +603,8 @@ Function .onInit
   Pop $R0
 
   ; Don't install the TAP driver as hiddden as default.
-  SectionSetFlags ${SecTAPHidden} 0
+;; Commented out to hide by default
+;;  SectionSetFlags ${SecTAPHidden} 0
 FunctionEnd
 
 Function .onSelChange

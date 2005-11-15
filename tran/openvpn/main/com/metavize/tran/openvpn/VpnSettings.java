@@ -54,9 +54,8 @@ public class VpnSettings implements Serializable, Validatable
 
     /* The virtual address of the vpn server */
     private IPaddr  serverAddress;
-
-    private boolean isExternalExported = false;
-    private boolean isInternalExported = true;
+    
+    /* List of addresses that should be visible to the VPN */
     private List    exportedAddressList;
 
     private boolean keepAlive;
@@ -102,21 +101,34 @@ public class VpnSettings implements Serializable, Validatable
             /* XXXX Have to check if these are all in the correct range */
             
             String name = group.getInternalName();
-            
+            group.validate();
             if ( !nameSet.add( name )) {
                 throw new ValidateException( "Group names must all be unique:" + name );
             }
         }
 
+        nameSet.clear();
+
         /* XXX??? Should there be a check for no clients */
         if ( clientList != null ) {
-            nameSet.clear();
 
             for ( Iterator iter = clientList.iterator() ; iter.hasNext() ; ) {
                 VpnClient client = (VpnClient)iter.next();
                 /* Validate that the client is okay */
                 client.validate();
                 String name = client.getInternalName();
+                if ( !nameSet.add( name )) {
+                    throw new ValidateException( "Client names must all be unique:" + name );
+                }
+            }
+        }
+
+        if ( siteList != null ) {
+            for ( Iterator iter = siteList.iterator() ; iter.hasNext() ; ) {
+                VpnClient site = (VpnClient)iter.next();
+                /* Validate that the client is okay */
+                site.validate();
+                String name = site.getInternalName();
                 if ( !nameSet.add( name )) {
                     throw new ValidateException( "Client names must all be unique:" + name );
                 }
@@ -285,36 +297,6 @@ public class VpnSettings implements Serializable, Validatable
     public void setServerAddress( IPaddr serverAddress )
     {
         this.serverAddress = serverAddress;
-    }
-
-    /**
-     * @return True if clients should be able to see the network on the internal interface
-     * @hibernate.property
-     * column="export_internal"
-     */
-    public boolean getIsInternalExported()
-    {
-        return this.isInternalExported;
-    }
-    
-    public void setIsInternalExported( boolean isInternalExported )
-    {
-        this.isInternalExported = isInternalExported;
-    }
-
-    /**
-     * @return True if clients should be able to see the network on the external interface
-     * @hibernate.property
-     * column="export_external"
-     */
-    public boolean getIsExternalExported()
-    {
-        return this.isExternalExported;
-    }
-    
-    public void setIsExternalExported( boolean isExternalExported )
-    {
-        this.isExternalExported = isExternalExported;
     }
 
     /**

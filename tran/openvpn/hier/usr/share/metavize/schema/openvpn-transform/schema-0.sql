@@ -94,8 +94,6 @@ create table tr_openvpn_settings (
         email text,
         max_clients int4,
         is_edgeguard_client bool,
-        export_internal bool,
-        export_external bool,
         is_ca_on_usb bool,
         is_bridge bool,
         expose_clients bool,
@@ -107,12 +105,20 @@ create table tr_openvpn_statistic_evt (
         time_stamp TIMESTAMP,
         PRIMARY KEY (event_id));
 
-create table TR_OPENVPN_DISTR_EVT (
+create table tr_openvpn_distr_evt (
         event_id INT8 NOT NULL,
         remote_address INET,
         client_name TEXT,
         time_stamp  TIMESTAMP,
         PRIMARY KEY (event_id));
+
+create table tr_openvpn_connect_evt (
+        event_id INT8 NOT NULL,
+        remote_address INET,
+        remote_port    INT4,
+        client_name    TEXT,
+        time_stamp     TIMESTAMP,
+        PRIMARY KEY    (event_id));
 
 alter table tr_openvpn_c_site_network add constraint FKF75374E830D9EF2D
         foreign key (client_id) references tr_openvpn_client;

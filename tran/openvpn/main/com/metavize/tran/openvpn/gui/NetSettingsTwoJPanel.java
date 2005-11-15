@@ -171,8 +171,8 @@ public class NetSettingsTwoJPanel extends javax.swing.JPanel {
     private void acceptJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acceptJButtonActionPerformed
         VpnSettings settings = openvpn.getVpnSettings();
         
-        settings.setIsInternalExported( Boolean.parseBoolean( jTextField1.getText().trim()));
-        settings.setIsExternalExported( Boolean.parseBoolean( jTextField2.getText().trim()));
+        // settings.setIsInternalExported( Boolean.parseBoolean( jTextField1.getText().trim()));
+        // settings.setIsExternalExported( Boolean.parseBoolean( jTextField2.getText().trim()));
         
         List siteList = new LinkedList();
         addSite( jTextField3, siteList );
@@ -220,8 +220,8 @@ public class NetSettingsTwoJPanel extends javax.swing.JPanel {
     
     private void update( VpnSettings settings )
     {
-        jTextField1.setText( String.valueOf( settings.getIsInternalExported()));
-        jTextField2.setText( String.valueOf( settings.getIsExternalExported()));
+        // jTextField1.setText( String.valueOf( settings.getIsInternalExported()));
+        // jTextField2.setText( String.valueOf( settings.getIsExternalExported()));
 
         Iterator iter = settings.getExportedAddressList().iterator();
         updateSite( jTextField3, iter );

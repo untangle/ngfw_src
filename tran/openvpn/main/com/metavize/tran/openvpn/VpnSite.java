@@ -14,6 +14,8 @@ package com.metavize.tran.openvpn;
 import com.metavize.mvvm.tran.IPaddr;
 
 import java.util.List;
+import java.util.LinkedList;
+
 
 /**
  *  A site network for a client.  Done this way so the client site networks and the server 
@@ -31,11 +33,56 @@ public class  VpnSite extends VpnClient
 
     /* XXX This should be in one place */
     private static final IPaddr EMPTY_ADDR = new IPaddr( null );
+
+    // List of addresses at this site,
+    // initially, may not be supported, just use one address.
+    private List    exportedAddressList;
+
+    private boolean isEdgeguard = false;
     
     public VpnSite()
     {
         /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXX This should have all of the stuff 
          * about exports in it, but for now just keep it in both places */
+    }
+
+    /**
+     * The list of exported networks for this site.
+     *
+     * @return the list of exported networks for this site.
+     * @hibernate.list
+     * cascade="all-delete-orphan"
+     * @hibernate.collection-key
+     * column="client_id"
+     * @hibernate.collection-index
+     * column="position"
+     * @hibernate.collection-one-to-many
+     * class="com.metavize.tran.openvpn.ClientSiteNetwork"
+     */
+    public List getExportedAddressList()
+    {
+        if ( this.exportedAddressList == null ) this.exportedAddressList = new LinkedList();
+
+        return this.exportedAddressList;
+    }
+    public void setExportedAddressList( List exportedAddressList )
+    {
+        this.exportedAddressList = exportedAddressList;
+    }
+
+    /**
+     * @return whether the other side is an edgeguard.
+     * @hibernate.property
+     * column="is_edgeguard"
+     */
+    public boolean getIsEdgeguard()
+    {
+        return this.isEdgeguard;
+    }
+
+    public void setIsEdgeguard( boolean isEdgeguard )
+    {
+        this.isEdgeguard = isEdgeguard;
     }
 
     /**

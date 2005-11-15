@@ -46,8 +46,8 @@ function buildConfigFile() {
     
     cp ${UNIX_CONFIG_FILE} ${outputDir}/office-mv.conf
     cp ${WIN_CONFIG_FILE}  ${outputDir}/office-mv.ovpn
-    cp ${CLI_KEY_FILE}     ${keyDir}/${commonName}.crt
-    cp ${CLI_CRT_FILE}     ${keyDir}/${commonName}.key
+    cp ${CLI_KEY_FILE}     ${keyDir}/${commonName}.key
+    cp ${CLI_CRT_FILE}     ${keyDir}/${commonName}.crt
     cp ${CA_CRT}           ${keyDir}/ca.crt
 
     pushd ${tmpDir}

@@ -49,7 +49,9 @@ class AddressMapper
         /* A mapping from a group to its list of clients */
         Map<VpnGroup,List<VpnClient>> groupToClientList = new HashMap<VpnGroup,List<VpnClient>>();
         
-        List<VpnClient> clientList = (List<VpnClient>)settings.getClientList();
+        /* Create a new list that combines the clients and the sites */
+        List<VpnClient> clientList = new LinkedList((List<VpnClient>)settings.getClientList());
+        clientList.addAll((List<VpnClient>)settings.getSiteList());
 
         if ( settings.getGroupList().size() == 0 ) throw new TransformException( "No groups" );
 
