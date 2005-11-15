@@ -194,6 +194,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
         controlsJToggleButton.setAlignmentX(0.5F);
         controlsJToggleButton.setDoubleBuffered(true);
         controlsJToggleButton.setFocusPainted(false);
+        controlsJToggleButton.setFocusable(false);
         controlsJToggleButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
         controlsJToggleButton.setIconTextGap(0);
         controlsJToggleButton.setMargin(new java.awt.Insets(0, 0, 1, 3));
@@ -228,6 +229,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
         powerJToggleButton.setContentAreaFilled(false);
         powerJToggleButton.setDoubleBuffered(true);
         powerJToggleButton.setFocusPainted(false);
+        powerJToggleButton.setFocusable(false);
         powerJToggleButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         powerJToggleButton.setIconTextGap(0);
         powerJToggleButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
