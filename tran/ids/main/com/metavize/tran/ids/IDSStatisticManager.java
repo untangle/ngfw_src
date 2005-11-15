@@ -10,9 +10,10 @@
  */
 package com.metavize.tran.ids;
 
-import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.StatisticEvent;
 import com.metavize.mvvm.tran.StatisticManager;
+import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.firewall.IntfMatcher;
 
 class IDSStatisticManager extends StatisticManager {
@@ -23,8 +24,8 @@ class IDSStatisticManager extends StatisticManager {
 
     private IDSStatisticEvent statisticEvent = new IDSStatisticEvent();
 
-    IDSStatisticManager() {
-        super();
+    public IDSStatisticManager(TransformContext tctx) {
+        super(new EventLogger(tctx));
     }
 
     protected StatisticEvent getInitialStatisticEvent() {
@@ -46,5 +47,4 @@ class IDSStatisticManager extends StatisticManager {
     void incrBlocked() {
         this.statisticEvent.incrBlocked();
     }
-
 }

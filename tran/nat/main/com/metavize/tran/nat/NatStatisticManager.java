@@ -10,13 +10,12 @@
  */
 package com.metavize.tran.nat;
 
-
-import com.metavize.mvvm.MvvmContextFactory;
-
+import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.StatisticEvent;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
 import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tran.StatisticManager;
+import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.firewall.IntfMatcher;
 
 class NatStatisticManager extends StatisticManager
@@ -27,9 +26,9 @@ class NatStatisticManager extends StatisticManager
 
     private NatStatisticEvent statisticEvent = new NatStatisticEvent();
 
-    NatStatisticManager()
+    NatStatisticManager(TransformContext tctx)
     {
-        super();
+        super(new EventLogger(tctx));
     }
 
     protected StatisticEvent getInitialStatisticEvent()

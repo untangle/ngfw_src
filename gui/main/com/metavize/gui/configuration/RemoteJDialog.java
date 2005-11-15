@@ -11,17 +11,15 @@
 
 package com.metavize.gui.configuration;
 
-import com.metavize.gui.widgets.dialogs.*;
-import com.metavize.gui.widgets.editTable.*;
-import com.metavize.gui.util.*;
-
-import com.metavize.mvvm.NetworkingConfiguration;
-
 import java.awt.*;
 import java.util.*;
-import javax.swing.table.*;
 import javax.swing.*;
+import javax.swing.table.*;
 
+import com.metavize.gui.util.*;
+import com.metavize.gui.widgets.dialogs.*;
+import com.metavize.gui.widgets.editTable.*;
+import com.metavize.mvvm.NetworkingConfiguration;
 
 public class RemoteJDialog extends MConfigJDialog {
 
@@ -34,15 +32,15 @@ public class RemoteJDialog extends MConfigJDialog {
 
     protected void generateGui(){
         this.setTitle(NAME_ADMINISTRATION_SETTINGS);
-        
+
         // REMOTE ADMINISTRATION //////
         RemoteAdministrationJPanel remoteAdministrationJPanel = new RemoteAdministrationJPanel();
         JScrollPane remoteAdministrationJScrollPane = new JScrollPane( remoteAdministrationJPanel );
         remoteAdministrationJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
         remoteAdministrationJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
         this.contentJTabbedPane.addTab(NAME_ADMINISTRATION_SETTINGS, null, remoteAdministrationJScrollPane);
-	super.savableMap.put(NAME_ADMINISTRATION_SETTINGS, remoteAdministrationJPanel);
-	super.refreshableMap.put(NAME_ADMINISTRATION_SETTINGS, remoteAdministrationJPanel);
+        super.savableMap.put(NAME_ADMINISTRATION_SETTINGS, remoteAdministrationJPanel);
+        super.refreshableMap.put(NAME_ADMINISTRATION_SETTINGS, remoteAdministrationJPanel);
 
         // SNMP MONITORING //////
         RemoteSnmpJPanel remoteSnmpJPanel = new RemoteSnmpJPanel();
@@ -50,31 +48,31 @@ public class RemoteJDialog extends MConfigJDialog {
         remoteSnmpJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
         remoteSnmpJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
         this.contentJTabbedPane.addTab(NAME_SNMP_SETTINGS, null, remoteSnmpJScrollPane);
-	super.savableMap.put(NAME_SNMP_SETTINGS, remoteSnmpJPanel);
-	super.refreshableMap.put(NAME_SNMP_SETTINGS, remoteSnmpJPanel);
-        
+        super.savableMap.put(NAME_SNMP_SETTINGS, remoteSnmpJPanel);
+        super.refreshableMap.put(NAME_SNMP_SETTINGS, remoteSnmpJPanel);
+
         // SYSLOG MONITORING //////
         RemoteSyslogJPanel remoteSyslogJPanel = new RemoteSyslogJPanel();
         JScrollPane remoteSyslogJScrollPane = new JScrollPane( remoteSyslogJPanel );
         remoteSyslogJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
         remoteSyslogJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
         this.contentJTabbedPane.addTab(NAME_SYSLOG_SETTINGS, null, remoteSyslogJScrollPane);
-	super.savableMap.put(NAME_SYSLOG_SETTINGS, remoteSyslogJPanel);
-	super.refreshableMap.put(NAME_SYSLOG_SETTINGS, remoteSyslogJPanel);
+        super.savableMap.put(NAME_SYSLOG_SETTINGS, remoteSyslogJPanel);
+        super.refreshableMap.put(NAME_SYSLOG_SETTINGS, remoteSyslogJPanel);
     }
-    
+
     protected void sendSettings(Object settings) throws Exception {
-	Util.getNetworkingManager().set( (NetworkingConfiguration) settings);
+        Util.getNetworkingManager().set( (NetworkingConfiguration) settings);
     }
     protected void refreshSettings(){
-	settings = Util.getNetworkingManager().get();
+        settings = Util.getNetworkingManager().get();
     }
 
     protected void saveAll(){
-	// ASK THE USER IF HE REALLY WANTS TO SAVE SETTINGS ////////
+        // ASK THE USER IF HE REALLY WANTS TO SAVE SETTINGS ////////
         SaveSettingsProceedJDialog saveSettingsProceedJDialog = new SaveSettingsProceedJDialog();
         boolean isProceeding = saveSettingsProceedJDialog.isProceeding();
-        if( isProceeding ){ 
+        if( isProceeding ){
             super.saveAll();
         }
     }

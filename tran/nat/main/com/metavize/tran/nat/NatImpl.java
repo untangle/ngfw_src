@@ -69,7 +69,7 @@ public class NatImpl extends AbstractTransform implements Nat
         handler = new NatEventHandler(this);
         sessionManager = new NatSessionManager(this);
         dhcpManager = new DhcpManager( this );
-        statisticManager = new NatStatisticManager();
+        statisticManager = new NatStatisticManager(getTransformContext());
 
         /* Have to figure out pipeline ordering, this should always next
          * to towards the outside */

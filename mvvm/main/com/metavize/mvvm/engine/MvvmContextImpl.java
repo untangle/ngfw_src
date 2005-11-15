@@ -21,6 +21,7 @@ import com.metavize.mvvm.ToolboxManager;
 import com.metavize.mvvm.argon.Argon;
 import com.metavize.mvvm.argon.ArgonManagerImpl;
 import com.metavize.mvvm.client.MvvmRemoteContext;
+import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.tapi.MPipeManager;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformManager;
@@ -46,7 +47,6 @@ public class MvvmContextImpl extends MvvmContextBase
     private final SessionFactory sessionFactory;
     private final TransactionRunner transactionRunner;
     private final Logger logger = Logger.getLogger(MvvmContextImpl.class);
-    private final Logger eventLogger = Logger.getLogger("eventlog");
 
     private MvvmState state;
     private AdminManagerImpl adminManager;
@@ -54,6 +54,7 @@ public class MvvmContextImpl extends MvvmContextBase
     private HttpInvoker httpInvoker;
     private LoggingManagerImpl loggingManager;
     private SyslogManagerImpl syslogManager;
+    private EventLogger eventLogger;
     private PolicyManagerImpl policyManager;
     private MPipeManagerImpl mPipeManager;
     private MailSenderImpl mailSender;
@@ -300,7 +301,7 @@ public class MvvmContextImpl extends MvvmContextBase
         System.gc();
     }
 
-    public Logger eventLogger()
+    public EventLogger eventLogger()
     {
         return eventLogger;
     }
@@ -310,12 +311,14 @@ public class MvvmContextImpl extends MvvmContextBase
     @Override
     protected void init()
     {
+        syslogManager = SyslogManagerImpl.manager();
+        loggingManager = LoggingManagerImpl.loggingManager();
+        eventLogger = new EventLogger();
+        eventLogger.start();
+
         // start services:
         adminManager = AdminManagerImpl.adminManager();
         mailSender = MailSenderImpl.mailSender();
-
-        syslogManager = SyslogManagerImpl.manager();
-        loggingManager = LoggingManagerImpl.loggingManager();
 
         // Fire up the policy manager.
         policyManager = PolicyManagerImpl.policyManager();
@@ -427,6 +430,13 @@ public class MvvmContextImpl extends MvvmContextBase
         // XXX destroy methods for:
         // - mailSender
         // - adminManager
+
+        try {
+            eventLogger.stop();
+            eventLogger = null;
+        } catch (Exception exn) {
+            logger.error("could not stop EventLogger", exn);
+        }
 
         try {
             sessionFactory.close();

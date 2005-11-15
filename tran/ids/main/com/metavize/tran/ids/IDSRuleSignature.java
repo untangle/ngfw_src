@@ -2,42 +2,39 @@ package com.metavize.tran.ids;
 
 import java.lang.reflect.*;
 import java.util.List;
-import java.util.Vector;
-import java.util.Iterator;
 import java.util.ListIterator;
-import org.apache.log4j.Logger;
-import org.apache.log4j.Level;
+import java.util.Vector;
 
-import com.metavize.mvvm.tapi.event.*;
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.tapi.event.*;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.tran.ids.options.*;
+import org.apache.log4j.Logger;
 
 public class IDSRuleSignature {
-	
+
     /***************************************
      * These are options that are safe to ignore
      * Any other option *WILL DROP THE RULE*
-     * 
+     *
      * These rules should all be added at some point!
      *****************************************/
     private String[] ignoreSafeOptions = { "rev","sid","reference","priority" };
     /** **************************************/
-	
-    private static final int BLOCK_COUNTER 	= Transform.GENERIC_0_COUNTER;
-    private static final int PASS_COUNTER 	= Transform.GENERIC_1_COUNTER;
-    private static final int LOG_COUNTER 	= Transform.GENERIC_2_COUNTER;
-    private static final int ALERT_COUNTER 	= Transform.GENERIC_3_COUNTER;
-	
+
+    private static final int BLOCK_COUNTER  = Transform.GENERIC_0_COUNTER;
+    private static final int PASS_COUNTER   = Transform.GENERIC_1_COUNTER;
+    private static final int LOG_COUNTER    = Transform.GENERIC_2_COUNTER;
+    private static final int ALERT_COUNTER  = Transform.GENERIC_3_COUNTER;
+
     private List<IDSOption> options = new Vector<IDSOption>();
-	
+
     private IDSRule rule;
     private String toString = "Starting..";
     private String message = "No message set";
     private int action;
     private boolean removeFlag = false;
-	
-    private final Logger eventLog = MvvmContextFactory.context().eventLogger();
+
     private static final Logger log = Logger.getLogger(IDSRuleSignature.class);
 
     public IDSRuleSignature(int action, IDSRule rule) {
@@ -62,7 +59,7 @@ public class IDSRuleSignature {
             if(optionName.equalsIgnoreCase(ignoreSafeOptions[i]))
                 return;
         }
-		 
+
         IDSOption option = IDSOption.buildOption(this,optionName,params, initializeSettingsTime);
         if(option != null && option.runnable())
             options.add(option);
@@ -73,7 +70,7 @@ public class IDSRuleSignature {
     }
 
     public IDSOption getOption(String name, IDSOption callingOption) {
-        /**Have to iterate backwards over the options so that options that 
+        /**Have to iterate backwards over the options so that options that
          * act as modifiers will modify the correct option
          * eg, in situations where there are multiple content options.
          */
@@ -106,7 +103,7 @@ public class IDSRuleSignature {
     public boolean execute(IDSSessionInfo info) {
         IDSTransformImpl transform = (IDSTransformImpl)MvvmContextFactory.context().transformManager().threadContext().transform();
         IDSDetectionEngine engine = transform.getEngine();
-            
+
         for(IDSOption option : options) {
             if(!option.run(info)) {
                 engine.updateUICount(PASS_COUNTER);
@@ -119,40 +116,41 @@ public class IDSRuleSignature {
     }
 
     private void doAction(IDSSessionInfo info) {
-        IDSTransformImpl transform = (IDSTransformImpl)MvvmContextFactory.context().transformManager().threadContext().transform();
-        IDSDetectionEngine engine = transform.getEngine();
+        // XXX this is not a good way to get a reference to the transform
+        IDSTransformImpl ids = (IDSTransformImpl)MvvmContextFactory.context().transformManager().threadContext().transform();
+        IDSDetectionEngine engine = ids.getEngine();
 
         boolean blocked = false;
         switch(action) {
         case IDSRuleManager.ALERT:
             log.debug("Alert: "+message);
-            transform.statisticManager.incrPassed();
+            ids.statisticManager.incrPassed();
             engine.updateUICount(ALERT_COUNTER);
             break;
-			
+
         case IDSRuleManager.LOG:
             log.debug("Log: "+message);
-            transform.statisticManager.incrPassed();
+            ids.statisticManager.incrPassed();
             engine.updateUICount(LOG_COUNTER);
             break;
-			
+
         case IDSRuleManager.BLOCK:
             log.debug("Block: "+message);
             blocked = true;
-            transform.statisticManager.incrBlocked();
+            ids.statisticManager.incrBlocked();
             engine.updateUICount(BLOCK_COUNTER);
             info.blockSession();
             break;
         }
         int sessionId = (info.getSession() == null) ? -1 : info.getSession().id(); // change to if(!null)
         if(sessionId >= 0)
-            eventLog.info(new IDSLogEvent(sessionId,message,blocked)); //Add list number that this rule came from
+            ids.log(new IDSLogEvent(sessionId,message,blocked)); //Add list number that this rule came from
     }
 
     public void setToString(String string) {
         toString = string;
     }
-	
+
     public String toString() {
         return toString;
     }

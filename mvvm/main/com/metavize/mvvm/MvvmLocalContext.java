@@ -16,6 +16,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.LoggingManager;
 import com.metavize.mvvm.logging.SyslogManager;
 import com.metavize.mvvm.policy.PolicyManager;
@@ -24,7 +25,6 @@ import com.metavize.mvvm.tapi.MPipeManager;
 import com.metavize.mvvm.tapi.PipelineFoundry;
 import com.metavize.mvvm.tran.TransformManager;
 import com.metavize.mvvm.util.TransactionWork;
-import org.apache.log4j.Logger;
 
 /**
  * Provides an interface to get all local MVVM components from an MVVM
@@ -200,7 +200,7 @@ public interface MvvmLocalContext
 
     Thread newThread(Runnable runnable);
 
-    Logger eventLogger();
+    EventLogger eventLogger();
 
     /**
      * Load a web app.  The web app's files are already assumed to be

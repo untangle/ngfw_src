@@ -8,10 +8,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
@@ -22,7 +22,6 @@ import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformStartException;
 import com.metavize.mvvm.util.TransactionWork;
 import com.metavize.tran.token.TokenAdaptor;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -49,6 +48,8 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 
     private static final Logger logger = Logger.getLogger(IDSTransformImpl.class);
 
+    private final EventLogger<IDSLogEvent> eventLogger;
+
     private IDSSettings settings = null;
     final IDSStatisticManager statisticManager;
 
@@ -61,10 +62,12 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
     public IDSTransformImpl() {
         engine = new IDSDetectionEngine(this);
         handler = new EventHandler(this);
-        statisticManager = new IDSStatisticManager();
+        statisticManager = new IDSStatisticManager(getTransformContext());
         octetPipeSpec = new SoloPipeSpec("ids-octet", this, handler,Fitting.OCTET_STREAM, Affinity.SERVER,10);
         httpPipeSpec = new SoloPipeSpec("ids-http", this, new TokenAdaptor(this, new IDSHttpFactory(this)), Fitting.HTTP_TOKENS, Affinity.SERVER,0);
         pipeSpecs = new PipeSpec[] { httpPipeSpec, octetPipeSpec };
+
+        eventLogger = new EventLogger<IDSLogEvent>(getTransformContext());
     }
 
     @Override
@@ -214,7 +217,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 
     protected void postInit(String args[]) {
         logger.info("Post init");
-	queryDBForSettings();
+    queryDBForSettings();
     }
 
     protected void preStart() throws TransformStartException {
@@ -250,6 +253,11 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
             engine.updateRule(rule);
         }
         //remove all deleted rules XXXX
+    }
+
+    void log(IDSLogEvent ile)
+    {
+        eventLogger.log(ile);
     }
 
     //XXX soon to be deprecated ------------------------------------------

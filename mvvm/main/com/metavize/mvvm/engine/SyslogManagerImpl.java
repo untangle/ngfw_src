@@ -20,6 +20,7 @@ import java.net.SocketException;
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.LoggingSettings;
 import com.metavize.mvvm.logging.SyslogManager;
+import com.metavize.mvvm.logging.SyslogPriority;
 import org.apache.log4j.Logger;
 
 class SyslogManagerImpl implements SyslogManager
@@ -32,6 +33,7 @@ class SyslogManagerImpl implements SyslogManager
     private DatagramSocket syslogSocket;
 
     private volatile int facility;
+    private volatile SyslogPriority threshold;
 
     private SyslogManagerImpl()
     {
@@ -91,6 +93,7 @@ class SyslogManagerImpl implements SyslogManager
             }
 
             facility = loggingSettings.getSyslogFacility().getFacilityValue();
+            threshold = loggingSettings.getSyslogThreshold();
         }
     }
 
@@ -107,7 +110,7 @@ class SyslogManagerImpl implements SyslogManager
             DatagramPacket p = sb.makePacket(e, facility, "mv-edgeguard", tag);
 
             synchronized (SyslogManagerImpl.this) {
-                if (null != syslogSocket) {
+                if (null != syslogSocket && threshold.inThreshold(e)) {
                     try {
                         syslogSocket.send(p);
                     } catch (IOException exn) {

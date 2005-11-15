@@ -25,8 +25,6 @@ import com.metavize.tran.token.TokenException;
 import com.metavize.tran.token.TokenResult;
 import org.apache.log4j.Logger;
 
-
-
 class NatFtpHandler extends FtpStateMachine
 {
     private static final int PASV_REPLY = 227;
@@ -93,7 +91,7 @@ class NatFtpHandler extends FtpStateMachine
     protected TokenResult doReply( FtpReply reply ) throws TokenException
     {
         int replyCode = reply.getReplyCode();
-        
+
         if ( !updateSessionData()) {
             logger.debug( "Ignoring unmodified session" );
             return new TokenResult( new Token[] { reply }, null );
@@ -262,7 +260,7 @@ class NatFtpHandler extends FtpStateMachine
 
         if ( sessionData.isServerRedirect()) {
             if ( !ip.equals( sessionData.modifiedServerAddr())) {
-                logger.warn( "Dropping reply from incorrect server address: " + ip + " != " + 
+                logger.warn( "Dropping reply from incorrect server address: " + ip + " != " +
                              sessionData.modifiedServerAddr());
                 return TokenResult.NONE;
             }
@@ -277,7 +275,7 @@ class NatFtpHandler extends FtpStateMachine
             reply = FtpReply.pasvReply( addr );
         } else {
             if ( !ip.equals( session.serverAddr())) {
-                logger.warn( "Dropping reply from incorrect server address: " + ip + " != " + 
+                logger.warn( "Dropping reply from incorrect server address: " + ip + " != " +
                              session.serverAddr());
                 return TokenResult.NONE;
             }
@@ -304,7 +302,7 @@ class NatFtpHandler extends FtpStateMachine
     {
         if ( sessionData == null ) {
             /* Get the information the nat transform is tracking about the session */
-            sessionData = sessionManager.getSessionData( getSession());            
+            sessionData = sessionManager.getSessionData( getSession());
         }
 
         return ( sessionData != null );

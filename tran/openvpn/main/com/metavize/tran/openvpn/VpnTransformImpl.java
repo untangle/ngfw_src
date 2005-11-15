@@ -12,25 +12,21 @@ package com.metavize.tran.openvpn;
 
 import java.util.List;
 
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.tapi.AbstractTransform;
+import com.metavize.mvvm.tapi.Affinity;
+import com.metavize.mvvm.tapi.Fitting;
+import com.metavize.mvvm.tapi.PipeSpec;
+import com.metavize.mvvm.tapi.SoloPipeSpec;
+import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.TransformException;
+import com.metavize.mvvm.tran.TransformStartException;
+import com.metavize.mvvm.tran.TransformState;
+import com.metavize.mvvm.tran.TransformStopException;
+import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
-
-import com.metavize.mvvm.tapi.Affinity;
-import com.metavize.mvvm.tapi.Fitting;
-
-import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.NetworkingConfiguration;
-import com.metavize.mvvm.tran.TransformState;
-import com.metavize.mvvm.tran.TransformException;
-import com.metavize.mvvm.tran.TransformStartException;
-import com.metavize.mvvm.tran.TransformStopException;
-import com.metavize.mvvm.tran.IPaddr;
-
-import com.metavize.mvvm.tapi.AbstractTransform;
-import com.metavize.mvvm.tapi.PipeSpec;
-import com.metavize.mvvm.tapi.SoloPipeSpec;
-import com.metavize.mvvm.util.TransactionWork;
 
 public class VpnTransformImpl extends AbstractTransform
     implements VpnTransform
@@ -40,8 +36,7 @@ public class VpnTransformImpl extends AbstractTransform
     private static final String WEB_APP_PATH = "/" + WEB_APP;
 
     private final Logger logger = Logger.getLogger( VpnTransformImpl.class );
-    private final Logger eventLogger = MvvmContextFactory.context().eventLogger();
-    
+
     final VpnStatisticManager statisticManager;
 
     private boolean isWebAppDeployed = false;
@@ -62,7 +57,7 @@ public class VpnTransformImpl extends AbstractTransform
     public VpnTransformImpl()
     {
         this.handler          = new EventHandler( this );
-        this.statisticManager = new VpnStatisticManager();
+        this.statisticManager = new VpnStatisticManager(getTransformContext());
 
         /* Have to figure out pipeline ordering, this should always
          * next to towards the outside, then there is OpenVpn and then Nat */
@@ -120,7 +115,7 @@ public class VpnTransformImpl extends AbstractTransform
 
         try {
             reconfigure();
-            
+
             if ( getRunState() == TransformState.RUNNING ) {
                 /* This stops then starts openvpn */
                 this.openVpnManager.configure( settings );
@@ -138,7 +133,7 @@ public class VpnTransformImpl extends AbstractTransform
         /* XXXXXXXXXXXXXXXXXXXX This is not really legit, done so the schema doesn't have to be
          * written for a little while */
         if ( this.settings == null ) this.settings = new VpnSettings( this.getTid());
-        
+
         return this.settings;
     }
 
@@ -150,7 +145,7 @@ public class VpnTransformImpl extends AbstractTransform
         } catch ( TransformException e ) {
             logger.warn( "Unable to generate base parameters", e );
         }
-            
+
         return this.settings;
     }
 
@@ -172,7 +167,7 @@ public class VpnTransformImpl extends AbstractTransform
         } catch ( TransformException e ) {
             logger.error( "Unable to revoke a client certificate", e );
         }
-        
+
         return client;
     }
 
@@ -180,7 +175,7 @@ public class VpnTransformImpl extends AbstractTransform
     public void distributeClientKey( VpnClient client, boolean usbKey, String email )
     {
     }
-    
+
     /* Get the common name for the key, and clear it if it exists */
     public synchronized String lookupClientDistributionKey( String key, IPaddr clientAddress )
     {
@@ -195,30 +190,30 @@ public class VpnTransformImpl extends AbstractTransform
 
             if ( clientKey == null || clientKey.length() == 0 ) continue;
             if ( clientKey.equalsIgnoreCase( key )) {
-                
+
                 client.setDistributionKey( null );
-                
+
                 TransactionWork tw = new TransactionWork()
                     {
                         public boolean doWork( Session s )
                         {
                             s.saveOrUpdate( client );
                             return true;
-                        }                        
+                        }
                     };
-                
+
                 getTransformContext().runTransaction( tw );
 
                 /* Log the client distribution event.  Must be done with
-                 * the statistic manager because the thread is not currently 
+                 * the statistic manager because the thread is not currently
                  * registered for the event logger. */
                 this.statisticManager.
-                    addClientDistributionEvent( new ClientDistributionEvent( clientAddress, 
+                    addClientDistributionEvent( new ClientDistributionEvent( clientAddress,
                                                                              client.getName()));
                 return client.getInternalName();
             }
         }
-        
+
         return null;
     }
 
@@ -261,7 +256,7 @@ public class VpnTransformImpl extends AbstractTransform
                 public boolean doWork( Session s )
                 {
                     Query q = s.createQuery( "from VpnSettings ts where ts.tid = :tid" );
-                        
+
                     q.setParameter( "tid", getTid());
 
                     settings = (VpnSettings)q.uniqueResult();
@@ -286,7 +281,7 @@ public class VpnTransformImpl extends AbstractTransform
         }
 
         reconfigure();
-        
+
         deployWebAppIfRequired();
 
         statisticManager.start();
@@ -296,7 +291,7 @@ public class VpnTransformImpl extends AbstractTransform
     {
         super.postStop();
         statisticManager.stop();
-        
+
         try {
             this.openVpnManager.stop();
         } catch ( TransformException e ) {

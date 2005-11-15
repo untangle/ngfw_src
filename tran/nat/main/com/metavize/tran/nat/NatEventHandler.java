@@ -20,7 +20,7 @@ import com.metavize.mvvm.ArgonManager;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.argon.IntfConverter;
-
+import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.tapi.AbstractEventHandler;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
 import com.metavize.mvvm.tapi.IPSession;
@@ -36,12 +36,12 @@ import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.firewall.IPMatcher;
+import com.metavize.mvvm.tran.firewall.InterfaceAddressRedirect;
+import com.metavize.mvvm.tran.firewall.InterfaceRedirect;
+import com.metavize.mvvm.tran.firewall.InterfaceStaticRedirect;
 import com.metavize.mvvm.tran.firewall.IntfMatcher;
 import com.metavize.mvvm.tran.firewall.PortMatcher;
 import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
-import com.metavize.mvvm.tran.firewall.InterfaceStaticRedirect;
-import com.metavize.mvvm.tran.firewall.InterfaceAddressRedirect;
-import com.metavize.mvvm.tran.firewall.InterfaceRedirect;
 import org.apache.log4j.Logger;
 
 /* Import all of the constants from NatConstants (1.5 feature) */
@@ -50,7 +50,7 @@ import static com.metavize.tran.nat.NatConstants.*;
 class NatEventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(NatEventHandler.class);
-    private final Logger eventLogger = MvvmContextFactory.context().eventLogger();
+    private final EventLogger eventLogger;
 
     /* Number of milliseconds to wait in between updating the address and updating the mvvm */
     private static final int SLEEP_TIME = 1000;
@@ -97,6 +97,7 @@ class NatEventHandler extends AbstractEventHandler
         udpPortList = PortList.makePortList( UDP_NAT_PORT_START, UDP_NAT_PORT_END );
         icmpPidList = PortList.makePortList( ICMP_PID_START, ICMP_PID_END );
         this.transform = transform;
+        this.eventLogger = MvvmContextFactory.context().eventLogger();
     }
 
     public void handleTCPNewSessionRequest( TCPNewSessionRequestEvent event )
@@ -124,7 +125,7 @@ class NatEventHandler extends AbstractEventHandler
         request.attach( attachment );
 
         /* Check for NAT, Redirects or DMZ */
-        try {            
+        try {
             if ( isNat( request, protocol )      ||
                  isRedirect( request, protocol ) ||
                  isDmzHost( request,  protocol )) {
@@ -148,7 +149,7 @@ class NatEventHandler extends AbstractEventHandler
                 request.release( false );
                 return;
             }
-            
+
             /* If nat is on, and this session wasn't natted, redirected or dmzed, it
              * must be rejected */
             if ( nat.isEnabled()) {
@@ -217,9 +218,9 @@ class NatEventHandler extends AbstractEventHandler
         IPMatcher localHostMatcher = IPMatcher.MATCHER_LOCAL;
 
         ArgonManager argonManager = MvvmContextFactory.context().argonManager();
-        
+
         List<InterfaceRedirect> overrideList = new LinkedList<InterfaceRedirect>();
-        
+
         if ( settings.getNatEnabled()) {
             internalAddress = settings.getNatInternalAddress();
             internalSubnet  = settings.getNatInternalSubnet();
@@ -252,7 +253,7 @@ class NatEventHandler extends AbstractEventHandler
             dmzHost = RedirectMatcher.MATCHER_DISABLED;
             isDmzLoggingEnabled = false;
         }
-        
+
         /* Empty out the list */
         redirectList.clear();
 
@@ -267,29 +268,29 @@ class NatEventHandler extends AbstractEventHandler
                 if ( rule.isLive()) {
                     RedirectMatcher redirect = new RedirectMatcher( rule, index );
                     redirectList.add( redirect );
-                    
+
                     /* Insert the rule into the interface overrides */
                     InetAddress redirectAddress = redirect.getRedirectAddress();
-                    
+
                     overrideList.add( new InterfaceAddressRedirect( rule, redirectAddress ));
                 }
                 index++;
             }
         }
-        
+
         /* This override has to go after the rules */
         if ( settings.getDmzEnabled() || settings.getNatEnabled()) {
             /* Create a new redirect to redirect all traffic destined
              * to the outside interface to the inside.  This handles sessions
-             * both sessions that are managed for FTP and sessions that are for 
+             * both sessions that are managed for FTP and sessions that are for
              * the DMZ. */
-            InterfaceRedirect redirect = 
+            InterfaceRedirect redirect =
                 new InterfaceStaticRedirect( ProtocolMatcher.MATCHER_ALL,
                                              IntfMatcher.getNotInside(), IntfMatcher.getAll(),
                                              IPMatcher.MATCHER_ALL, localHostMatcher,
                                              PortMatcher.MATCHER_ALL, PortMatcher.MATCHER_ALL,
                                              IntfConverter.INSIDE );
-            
+
             overrideList.add( redirect );
         }
 
@@ -302,7 +303,7 @@ class NatEventHandler extends AbstractEventHandler
         /* Bring down NAT */
         disableNat( MvvmContextFactory.context().networkingManager().get());
 
-        /* Remove all of the interface override redirects */        
+        /* Remove all of the interface override redirects */
         MvvmContextFactory.context().argonManager().clearInterfaceOverrideList();
     }
 
@@ -407,7 +408,7 @@ class NatEventHandler extends AbstractEventHandler
                 if ( matcher.rule() == null ) {
                     logger.warn( "Null rule for a redirect matcher" );
                 } else if ( matcher.rule().getLog()) {
-                    eventLogger.info( new RedirectEvent( request.id(), matcher.rule(), matcher.ruleIndex()));
+                    eventLogger.log( new RedirectEvent( request.id(), matcher.rule(), matcher.ruleIndex()));
                 }
 
                 /* Log the stat */
@@ -432,7 +433,7 @@ class NatEventHandler extends AbstractEventHandler
 
             if ( isDmzLoggingEnabled ) {
                 /* Log the event if necessary */
-                eventLogger.info( new RedirectEvent( request.id()));
+                eventLogger.log( new RedirectEvent( request.id()));
             }
 
             transform.statisticManager.incrDmzSessions();

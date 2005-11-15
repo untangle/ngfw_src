@@ -13,7 +13,6 @@ package com.metavize.tran.sigma;
 
 import java.nio.*;
 
-import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.*;
 import com.metavize.mvvm.tapi.event.*;
 import com.metavize.mvvm.tran.Transform;
@@ -23,7 +22,6 @@ public class EventHandler extends AbstractEventHandler
 {
     private SigmaSettings settings = null;
     private final Logger logger = Logger.getLogger(EventHandler.class);
-    private final Logger eventLogger = MvvmContextFactory.context().eventLogger();
 
     private class SessionInfo {
         public int myState;

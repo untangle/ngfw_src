@@ -80,6 +80,18 @@ public class SyslogPriority implements Serializable
         return l;
     }
 
+    // business methods -------------------------------------------------------
+
+    public boolean inThreshold(LogEvent le)
+    {
+        return inThreshold(le.getSyslogPrioritiy());
+    }
+
+    public boolean inThreshold(SyslogPriority lp)
+    {
+        return lp.priorityCode <= priorityCode;
+    }
+
     // accessors --------------------------------------------------------------
 
     public int getPriorityValue()

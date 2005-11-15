@@ -13,7 +13,6 @@ package com.metavize.tran.spyware;
 import java.util.Iterator;
 import java.util.List;
 
-import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.AbstractEventHandler;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
 import com.metavize.mvvm.tapi.MPipeException;
@@ -34,9 +33,6 @@ public class SpywareEventHandler extends AbstractEventHandler
 {
     private static final Logger logger = Logger
         .getLogger(SpywareEventHandler.class.getName());
-
-    private final Logger eventLogger = MvvmContextFactory
-        .context().eventLogger();
 
     private final SpywareImpl transform;
 

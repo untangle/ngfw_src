@@ -26,6 +26,7 @@ import com.metavize.mvvm.argon.ArgonAgent;
 import com.metavize.mvvm.argon.IPSessionDesc;
 import com.metavize.mvvm.argon.PipelineDesc;
 import com.metavize.mvvm.argon.SessionEndpoints;
+import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.policy.Policy;
 import com.metavize.mvvm.policy.PolicyRule;
 import com.metavize.mvvm.policy.SystemPolicyRule;
@@ -45,7 +46,7 @@ class PipelineFoundryImpl implements PipelineFoundry
     private static final PipelineFoundryImpl PIPELINE_FOUNDRY_IMPL
         = new PipelineFoundryImpl();
 
-    private static final Logger eventLogger
+    private static final EventLogger eventLogger
         = MvvmContextImpl.context().eventLogger();
     private static final Logger logger
         = Logger.getLogger(PipelineFoundryImpl.class);
@@ -177,7 +178,7 @@ class PipelineFoundryImpl implements PipelineFoundry
                                                      policyInbound);
         PipelineImpl pipeline = pipelines.get(start.id());
         pipeline.setPipelineEndpoints(pe);
-        eventLogger.info(pe);
+        eventLogger.log(pe);
     }
 
     public void destroy(IPSessionDesc start, IPSessionDesc end)
@@ -188,7 +189,7 @@ class PipelineFoundryImpl implements PipelineFoundry
             logger.debug("removed: " + pipeline + " for: " + start.id());
         }
 
-        eventLogger.info(new PipelineStats(start, end));
+        eventLogger.log(new PipelineStats(start, end));
 
         pipeline.destroy();
     }

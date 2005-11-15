@@ -12,8 +12,8 @@ package com.metavize.mvvm.tran;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
+import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.StatisticEvent;
-import com.metavize.mvvm.security.Tid;
 import org.apache.log4j.Logger;
 
 public abstract class StatisticManager implements Runnable
@@ -30,18 +30,21 @@ public abstract class StatisticManager implements Runnable
     /* Status of the monitor */
     private volatile boolean isAlive = true;
 
-    protected final Logger eventLogger = MvvmContextFactory.context().eventLogger();
+    protected final EventLogger eventLogger;
     private final Logger logger = Logger.getLogger( this.getClass());
     private final MvvmLocalContext localContext;
 
-    protected StatisticManager()
+    protected StatisticManager(EventLogger eventLogger)
     {
         this.localContext = MvvmContextFactory.context();
+        this.eventLogger = eventLogger;
     }
 
-    protected StatisticManager( MvvmLocalContext localContext )
+    protected StatisticManager(MvvmLocalContext localContext,
+                               EventLogger eventLogger)
     {
         this.localContext = localContext;
+        this.eventLogger = eventLogger;
     }
 
     public void run()
@@ -67,7 +70,7 @@ public abstract class StatisticManager implements Runnable
                 /* Pre-cache the statistics to insure that no stats are lost */
                 StatisticEvent currentStatistics = statisticEvent;
                 statisticEvent = getNewStatisticEvent();
-                eventLogger.info( currentStatistics );
+                eventLogger.log( currentStatistics );
             } else {
                 logger.debug( "No statistics available" );
             }
@@ -82,6 +85,8 @@ public abstract class StatisticManager implements Runnable
     public synchronized void start()
     {
         isAlive = true;
+
+        eventLogger.start();
 
         logger.debug( "Starting Statistic Manager" );
 
@@ -111,6 +116,8 @@ public abstract class StatisticManager implements Runnable
             }
             thread = null;
         }
+
+        eventLogger.stop();
     }
 
     protected abstract StatisticEvent getInitialStatisticEvent();

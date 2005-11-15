@@ -79,7 +79,7 @@ public class SyslogBuilderImpl implements SyslogBuilder
     }
 
     DatagramPacket makePacket(LogEvent e, int facility, String host,
-                                     String tag)
+                              String tag)
     {
         sb.clear();
 

@@ -324,7 +324,6 @@ public class SmtpSessionHandler
       report.isSpam(),
       action,
       m_spamImpl.getScanner().getVendorName());
-    System.out.println("LOG THAT SHIT@!");
     m_spamImpl.log(spamEvent);
   }
 

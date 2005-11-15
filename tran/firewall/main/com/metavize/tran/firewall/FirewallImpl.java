@@ -53,7 +53,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
     public FirewallImpl()
     {
         this.handler = new EventHandler( this );
-        this.statisticManager = new FirewallStatisticManager();
+        this.statisticManager = new FirewallStatisticManager(getTransformContext());
 
         /* Have to figure out pipeline ordering, this should always
          * next to towards the outside */

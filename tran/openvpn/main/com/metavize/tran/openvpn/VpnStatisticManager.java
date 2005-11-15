@@ -10,15 +10,14 @@
  */
 package com.metavize.tran.openvpn;
 
-import com.metavize.mvvm.MvvmContextFactory;
 
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 
+import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.StatisticEvent;
-import com.metavize.mvvm.tapi.IPNewSessionRequest;
-import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tran.StatisticManager;
+import com.metavize.mvvm.tran.TransformContext;
 
 class VpnStatisticManager extends StatisticManager
 {
@@ -26,9 +25,9 @@ class VpnStatisticManager extends StatisticManager
 
     private List<ClientDistributionEvent> clientDistributionList = new LinkedList<ClientDistributionEvent>();
 
-    VpnStatisticManager()
+    VpnStatisticManager(TransformContext tctx)
     {
-        super();
+        super(new EventLogger(tctx));
     }
 
     protected StatisticEvent getInitialStatisticEvent()
@@ -42,7 +41,7 @@ class VpnStatisticManager extends StatisticManager
         List<ClientDistributionEvent> clientDistributionList = this.clientDistributionList;
         this.clientDistributionList = new LinkedList<ClientDistributionEvent>();
 
-        for ( ClientDistributionEvent event : clientDistributionList ) eventLogger.info( event );
+        for ( ClientDistributionEvent event : clientDistributionList ) eventLogger.log( event );
 
         return ( this.statisticEvent = new VpnStatisticEvent());
     }

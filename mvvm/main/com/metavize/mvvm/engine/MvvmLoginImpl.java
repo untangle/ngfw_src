@@ -17,6 +17,7 @@ import javax.security.auth.login.FailedLoginException;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.client.MultipleLoginsException;
 import com.metavize.mvvm.client.MvvmRemoteContext;
+import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.security.LoginFailureReason;
 import com.metavize.mvvm.security.LoginSession;
 import com.metavize.mvvm.security.MvvmLogin;
@@ -41,7 +42,7 @@ class MvvmLoginImpl implements MvvmLogin
     private static final MvvmLoginImpl MVVM_LOGIN = new MvvmLoginImpl();
 
     private final Logger logger = Logger.getLogger(MvvmLoginImpl.class);
-    private final Logger eventLogger = MvvmContextFactory.context()
+    private final EventLogger eventLogger = MvvmContextFactory.context()
         .eventLogger();
 
     private int loginId = 0;
@@ -68,7 +69,7 @@ class MvvmLoginImpl implements MvvmLogin
     {
         if (isActivated())
             throw new FailedLoginException("Product has already been activated");
-        
+
         boolean success = MvvmContextFactory.context().activate(key);
         if (!success)
             throw new FailedLoginException("Activation key invalid");
@@ -78,7 +79,7 @@ class MvvmLoginImpl implements MvvmLogin
         return login(ACTIVATION_USER, clientAddr, LoginSession.LoginType.INTERACTIVE,
                      true);
     }
-        
+
 
     // MvvmLogin methods ------------------------------------------------------
 
@@ -115,7 +116,7 @@ class MvvmLoginImpl implements MvvmLogin
 
         if (null == user) {
             logger.debug("no user found with login: " + login);
-            eventLogger.info(new LoginEvent(clientAddr, login, false, false,
+            eventLogger.log(new LoginEvent(clientAddr, login, false, false,
                                             LoginFailureReason.UNKNOWN_USER));
             try {
                 Thread.sleep(LOGIN_FAIL_SLEEP_TIME);
@@ -124,7 +125,7 @@ class MvvmLoginImpl implements MvvmLogin
             throw new FailedLoginException("no such user: " + login);
         } else if (!PasswordUtil.check(password, user.getPassword())) {
             logger.debug("password check failed");
-            eventLogger.info(new LoginEvent(clientAddr, login, false, false,
+            eventLogger.log(new LoginEvent(clientAddr, login, false, false,
                                             LoginFailureReason.BAD_PASSWORD));
 
             try {
@@ -134,7 +135,7 @@ class MvvmLoginImpl implements MvvmLogin
             throw new FailedLoginException("incorrect password");
         } else {
             logger.debug("password check succeeded");
-            eventLogger.info(new LoginEvent(clientAddr, login, false, true));
+            eventLogger.log(new LoginEvent(clientAddr, login, false, true));
 
             return login(login, clientAddr, LoginSession.LoginType.INTERACTIVE,
                          force);
@@ -153,7 +154,7 @@ class MvvmLoginImpl implements MvvmLogin
         if (!clientAddr.isLoopbackAddress()) {
             logger.debug("systemLogin failed, not localhost");
 
-            eventLogger.info(new LoginEvent(clientAddr, username, true,
+            eventLogger.log(new LoginEvent(clientAddr, username, true,
                                             false));
 
             try {
@@ -162,7 +163,7 @@ class MvvmLoginImpl implements MvvmLogin
 
             throw new FailedLoginException("system login not from localhost");
         } else if (!isSystemLogin(username, password)) {
-            eventLogger.info(new LoginEvent(clientAddr, username, true,
+            eventLogger.log(new LoginEvent(clientAddr, username, true,
                                             false));
             try {
                 Thread.sleep(LOGIN_FAIL_SLEEP_TIME);
@@ -171,7 +172,7 @@ class MvvmLoginImpl implements MvvmLogin
             throw new FailedLoginException("bad system login");
         } else {
             logger.debug("local login succeeded");
-            eventLogger.info(new LoginEvent(clientAddr, username, true, true));
+            eventLogger.log(new LoginEvent(clientAddr, username, true, true));
 
             return login(username, clientAddr, LoginSession.LoginType.SYSTEM,
                          false);

@@ -11,19 +11,20 @@
 package com.metavize.tran.firewall;
 
 
-import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.StatisticEvent;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
 import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tran.StatisticManager;
+import com.metavize.mvvm.tran.TransformContext;
 
 class FirewallStatisticManager extends StatisticManager
 {
     private FirewallStatisticEvent statisticEvent = new FirewallStatisticEvent();
 
-    FirewallStatisticManager()
+    FirewallStatisticManager(TransformContext tctx)
     {
-        super();
+        super(new EventLogger(tctx));
     }
 
     protected StatisticEvent getInitialStatisticEvent()

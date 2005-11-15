@@ -12,29 +12,28 @@
 package com.metavize.mvvm.shield;
 
 import java.net.InetAddress;
-import org.apache.log4j.Logger;
 
 import com.metavize.jnetcap.Shield;
 import com.metavize.jnetcap.ShieldEventListener;
-
 import com.metavize.mvvm.MvvmContextFactory;
-
 import com.metavize.mvvm.argon.IntfConverter;
+import com.metavize.mvvm.logging.EventLogger;
+import org.apache.log4j.Logger;
 
 public class ShieldMonitor implements ShieldEventListener
 {
     private static ShieldMonitor INSTANCE = null;
 
-    private final Logger eventLogger = MvvmContextFactory.context().eventLogger();
+    private final EventLogger eventLogger = MvvmContextFactory.context().eventLogger();
     private final Logger logger = Logger.getLogger( this.getClass());
 
     private ShieldMonitor()
-    {        
+    {
     }
 
-    public void rejectionEvent( InetAddress ip, byte clientIntf, double reputation, int mode, 
+    public void rejectionEvent( InetAddress ip, byte clientIntf, double reputation, int mode,
                                 int limited, int dropped, int rejected )
-                                
+
     {
         if ( Thread.currentThread().getContextClassLoader() == null ) {
             Thread.currentThread().setContextClassLoader( getClass().getClassLoader());
@@ -45,14 +44,14 @@ public class ShieldMonitor implements ShieldEventListener
 
         try {
             clientIntf = IntfConverter.toArgon( clientIntf );
-            
-            eventLogger.info( new ShieldRejectionEvent( ip, clientIntf, reputation, mode, limited, dropped, 
+
+            eventLogger.log( new ShieldRejectionEvent( ip, clientIntf, reputation, mode, limited, dropped,
                                                         rejected ));
         } catch ( IllegalArgumentException e ) {
             logger.warn( "Invalid interface for shield rejection event: " + clientIntf );
         }
     }
-    
+
     public void statisticEvent( int accepted, int limited, int dropped, int rejected, int relaxed,
                                 int lax, int tight, int closed )
     {
@@ -60,7 +59,7 @@ public class ShieldMonitor implements ShieldEventListener
             Thread.currentThread().setContextClassLoader( getClass().getClassLoader());
         }
 
-        eventLogger.info( new ShieldStatisticEvent( accepted, limited, dropped, rejected, relaxed,
+        eventLogger.log( new ShieldStatisticEvent( accepted, limited, dropped, rejected, relaxed,
                                                     lax, tight, closed ));
     }
 
@@ -72,5 +71,5 @@ public class ShieldMonitor implements ShieldEventListener
 
         return INSTANCE;
     }
-    
+
 }

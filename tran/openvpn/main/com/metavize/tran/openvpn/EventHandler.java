@@ -11,28 +11,19 @@
 
 package com.metavize.tran.openvpn;
 
-import java.util.Iterator;
+import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 
-import java.net.InetAddress;
-
-import org.apache.log4j.Logger;
-
-import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.tapi.AbstractEventHandler;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
 import com.metavize.mvvm.tapi.MPipeException;
-
-import com.metavize.mvvm.argon.IntfConverter;
-
-import com.metavize.mvvm.tapi.TCPNewSessionRequest;
 import com.metavize.mvvm.tapi.event.TCPNewSessionRequestEvent;
 import com.metavize.mvvm.tapi.event.UDPNewSessionRequestEvent;
-
 import com.metavize.mvvm.tran.Transform;
-
 import com.metavize.mvvm.tran.firewall.IPMatcher;
+import org.apache.log4j.Logger;
 
 class EventHandler extends AbstractEventHandler
 {
@@ -47,7 +38,6 @@ class EventHandler extends AbstractEventHandler
     private static final int CONNECT_COUNTER = Transform.GENERIC_2_COUNTER;
 
     private final Logger logger = Logger.getLogger( EventHandler.class );
-    private final Logger eventLogger = MvvmContextFactory.context().eventLogger();
 
     /* Are the VPNs bridged with the other networks */
     private boolean isBridge = false;
@@ -58,7 +48,7 @@ class EventHandler extends AbstractEventHandler
 
     /* Firewall Transform */
     private final VpnTransformImpl transform;
-    
+
     EventHandler( VpnTransformImpl transform )
     {
         super(transform);
@@ -100,9 +90,9 @@ class EventHandler extends AbstractEventHandler
         else {
             /* Local user trying to reach a VPN client */
             checkAddress( request, request.serverAddr(), request.clientAddr());
-        }        
+        }
     }
-        
+
     /**
      * Check whether vpn is allowed to talk to local
      */
@@ -116,7 +106,7 @@ class EventHandler extends AbstractEventHandler
                 break;
             }
         }
-                
+
         if ( !isValid ) {
             reject( request );
             return;
@@ -132,7 +122,7 @@ class EventHandler extends AbstractEventHandler
                 break;
             }
         }
-                
+
         if ( !isValid ) {
             reject( request );
             return;
@@ -151,12 +141,12 @@ class EventHandler extends AbstractEventHandler
     {
         /* XXX Should this always reject silently */
         request.rejectSilently();
-        
+
         transform.incrementCount( BLOCK_COUNTER );
-        
+
         /* XXX Probably want to create an event */
         logger.debug( "Blocked VPN session: [" + request.id() + "]" );
-        
+
         // transform.statisticManager.incrRequest( protocol, request, reject );
     }
 
@@ -175,14 +165,14 @@ class EventHandler extends AbstractEventHandler
             clientAddressList.add( matcher );
             logger.debug( "clientAddressList: [" + matcher + "]" );
         }
-        
+
         for ( VpnClient client : (List<VpnClient>)settings.getClientList()) {
             /* Continue if the client isn't live or the group the client is in isn't live */
             if ( !client.isLive() || ( null == client.getGroup()) || !client.getGroup().isLive()) continue;
 
             for ( SiteNetwork siteNetwork : (List<SiteNetwork>)client.getExportedAddressList()) {
                 if ( !siteNetwork.isLive()) continue;
-                IPMatcher matcher = new IPMatcher( siteNetwork.getNetwork(), siteNetwork.getNetmask(), 
+                IPMatcher matcher = new IPMatcher( siteNetwork.getNetwork(), siteNetwork.getNetmask(),
                                                    false );
                 clientAddressList.add( matcher );
                 logger.debug( "clientAddressList: [" + matcher + "]" );
@@ -202,17 +192,17 @@ class EventHandler extends AbstractEventHandler
             exportedAddressList.add( IPMatcher.MATCHER_EXTERNAL );
             logger.debug( "exportedAddressList: [external]" );
         }
-        
+
         for ( SiteNetwork siteNetwork : (List<SiteNetwork>)settings.getExportedAddressList()) {
             if ( !siteNetwork.isLive()) continue;
             IPMatcher matcher = new IPMatcher( siteNetwork.getNetwork(), siteNetwork.getNetmask(), false );
             exportedAddressList.add( matcher );
             logger.debug( "exportedAddressList: [" + matcher + "]" );
         }
-        
+
         this.clientAddressList   = clientAddressList;
         this.exportedAddressList = exportedAddressList;
-        
+
         logger.debug( "" );
     }
 }
