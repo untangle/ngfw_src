@@ -1,4 +1,4 @@
-MKDOC=../../docbookEnv/mkdoc.sh
+MKDOC=../../../../docbookEnv/mkdoc.sh
 OUT_DIR=../output
 
 all: pdf chunk

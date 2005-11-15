@@ -13,7 +13,7 @@
         <imagedata fileref="figure/spamassassin_tran_icon.png"/>
       </imageobject>
     </inlinemediaobject>
-    symbol.  It is a <link linkend="introduction_ui_appliance"> Virtual Appliance which can be installed into multiple Virtual Racks.
+    symbol.  It is a <link linkend="introduction_ui_appliance"> Virtual Appliance </link>which can be installed into multiple Virtual Racks.
   </para>
   <para>
     SpamGuard works to filter email for <glossterm linkend="gloss_spam">Spam</glossterm>.  

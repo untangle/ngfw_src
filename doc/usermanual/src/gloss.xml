@@ -237,7 +237,7 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>MIME Type</glossterm>
       <glossdef>
         <para>TODO</para>
-        <glossseealso otherterm="_mime"/>        
+        <glossseealso otherterm="gloss_mime"/>        
       </glossdef>            
     </glossentry>      
     
