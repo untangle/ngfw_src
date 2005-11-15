@@ -14,6 +14,7 @@ package com.metavize.tran.openvpn;
 import java.io.Serializable;
 
 import com.metavize.mvvm.logging.LogEvent;
+import com.metavize.mvvm.logging.SyslogBuilder;
 
 import com.metavize.mvvm.tran.IPaddr;
 
@@ -101,4 +102,10 @@ public class ClientConnectEvent extends LogEvent implements Serializable
     {
         this.clientName = clientName;
     }
+
+    public void appendSyslog(SyslogBuilder a)
+    {
+        /* XXXXXXX */
+    }
+
 }

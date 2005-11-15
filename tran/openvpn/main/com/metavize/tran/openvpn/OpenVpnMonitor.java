@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.logging.EventLogger;
 
 class OpenVpnMonitor implements Runnable
 {
@@ -65,7 +66,7 @@ class OpenVpnMonitor implements Runnable
 
     private static final int TIMEOUT       = 2 * 60 * 1000;
 
-    private final Logger eventLogger = MvvmContextFactory.context().eventLogger();
+    private final EventLogger eventLogger = MvvmContextFactory.context().eventLogger();
     private final Logger logger = Logger.getLogger( this.getClass());
     
     private final Map<Key,Stats> statusMap = new HashMap<Key,Stats>();
@@ -126,7 +127,7 @@ class OpenVpnMonitor implements Runnable
             Date now = new Date();
 
             if ( now.after( nextUpdate )) {
-                // eventLogger.info( this.statistics );                
+                // eventLogger.log( this.statistics );                
             }
 
             /* Check if the transform is still running */
@@ -228,12 +229,13 @@ class OpenVpnMonitor implements Runnable
             if ( stats.isNew ) {
                 transform.incrementCount( Constants.CONNECT_COUNTER );
 
-                eventLogger.info( stats.connectEvent );
+                eventLogger.log( stats.connectEvent );
                 stats.isNew = false;
             }
 
             /* Anything that is inactive or didn't get updated, is dead (or going to be dead) */
-            if ( !stats.updated || !stats.isActive ) eventLogger.info( "disconnect event");
+            // XXX Log the disabled event
+            // XXX if ( !stats.updated || !stats.isActive ) eventLogger.log( "disconnect event");
         }
     }
 
@@ -385,7 +387,7 @@ class OpenVpnMonitor implements Runnable
         List<ClientDistributionEvent> clientDistributionList = this.clientDistributionList;
         this.clientDistributionList = new LinkedList<ClientDistributionEvent>();
 
-        for ( ClientDistributionEvent event : clientDistributionList ) eventLogger.info( event );
+        for ( ClientDistributionEvent event : clientDistributionList ) eventLogger.log( event );
     }
 
     void addClientDistributionEvent( ClientDistributionEvent event )
