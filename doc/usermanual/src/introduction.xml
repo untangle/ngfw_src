@@ -18,6 +18,32 @@
       <para>
         This is where we explain the concept of a "virtual" appliance, and describe how they are represented in the UI.  The "vendor of source" idea should also be discussed.
       </para>
+
+        <variablelist>
+          <title>Common Features of Appliances</title>
+          <varlistentry>
+            <term id="introduction_ui_appliance_event_log"  xreflabel="Event Log">
+              Event Log
+            </term>
+            <listitem>
+              <para>
+                Here, we explain in general what the Event Logs are for, and how most appliances have them
+              </para>
+            </listitem>
+          </varlistentry>
+          
+          <varlistentry>
+            <term id="introduction_ui_appliance_blingy_blingers"  xreflabel="Activity Meters">
+              Activity Meters
+            </term>
+            <listitem>
+              <para>
+                Here, we explain in general what the the blingy-blingiers do.
+              </para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+      
     </sect2>
     <sect2 id="introduction_ui_rack">
       <title>Virtual Racks</title>

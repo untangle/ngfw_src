@@ -348,6 +348,14 @@ Place new terms under the appropriate alphabetical location.
     </glossentry>
 
 
+    <glossentry id="gloss_spam">
+      <glossterm>Spam</glossterm>
+      <glossdef>
+        <para>TODO complete me.</para>
+      </glossdef>
+    </glossentry>    
+
+
     <glossentry id="gloss_subnet">
       <glossterm>Subnet</glossterm>
       <glossdef>

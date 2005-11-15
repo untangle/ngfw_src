@@ -67,13 +67,35 @@
   <sect1 id="config_tab_protocol_settings">
     <title>Protocol Settings</title>
     <para>
-    TODO Complete me.  As you do, here are some glossary entries which you may find handy.    
-    <glossterm linkend="gloss_smtp">SMTP</glossterm>
-    <glossterm linkend="gloss_pop">POP</glossterm>
-    <glossterm linkend="gloss_imap">IMAP</glossterm>
-
-    <glossterm linkend="gloss_uri">URI</glossterm>
+      TODO Complete me.  As you do, here are some glossary entries which you may find handy.    
+      <glossterm linkend="gloss_smtp">SMTP</glossterm>
+      <glossterm linkend="gloss_pop">POP</glossterm>
+      <glossterm linkend="gloss_imap">IMAP</glossterm>
+      <glossterm linkend="gloss_ftp">FTP</glossterm>
+      <glossterm linkend="gloss_http">HTTP</glossterm>
+      <glossterm linkend="gloss_uri">URI</glossterm>
     </para>
+    
+    <sect2 id="config_tab_protocol_settings_web">
+      <title>Web</title>
+      <para>
+        Explain the web tab
+      </para>
+    </sect2>
+
+    <sect2 id="config_tab_protocol_settings_email">
+      <title>Email</title>
+      <para>
+        Explain the Email tab
+      </para>
+    </sect2>
+
+    <sect2 id="config_tab_protocol_settings_ftp">
+      <title>File Transfer</title>
+      <para>
+        Explain the file transfer (FTP) tab
+      </para>
+    </sect2>        
   </sect1>
 
   <!-- ========================================================= -->  
