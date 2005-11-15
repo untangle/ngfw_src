@@ -18,7 +18,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.mvvm.tapi.TCPSessionDesc;
@@ -69,8 +68,6 @@ public class HttpParser extends AbstractParser
     private final boolean blockLongUris;
     private final String sessStr;
 
-    private final EventLogger eventLogger;
-
     private final Logger logger = Logger.getLogger(HttpParser.class);
 
     private RequestLineToken requestLineToken;
@@ -87,15 +84,14 @@ public class HttpParser extends AbstractParser
     HttpParser(TCPSession session, boolean clientSide, HttpCasing casing)
     {
         super(session, clientSide);
-        HttpTransformImpl t = casing.getTransform();
-        HttpSettings settings = t.getHttpSettings();
+        HttpTransformImpl transform = casing.getTransform();
+        HttpSettings settings = transform.getHttpSettings();
         this.maxHeader = settings.getMaxHeaderLength();
         this.blockLongHeaders = settings.getBlockLongHeaders();
         this.maxUri = settings.getMaxUriLength();
         this.blockLongUris = settings.getBlockLongUris();
         this.casing = casing;
         this.sessStr = "HttpParser" + (clientSide ? " client-side " : " server-side ");
-        this.eventLogger = new EventLogger(t.getTransformContext());
 
         // This is now initialized just before we need it and removed afterwards
         this.buf = null;
@@ -368,14 +364,14 @@ public class HttpParser extends AbstractParser
                             (requestLineToken.getRequestLine(), mimeType,
                              contentLength);
 
-                        eventLogger.log(evt);
+                        casing.getTransform().log(evt);
                     } else {
                         HttpRequestEvent evt = requestLineToken
                             .getRequestLine()
                             .getHttpRequestEvent();
                         evt.setContentLength(contentLength);
 
-                        eventLogger.log(evt);
+                        casing.getTransform().log(evt);
                     }
 
                     // Free up header storage

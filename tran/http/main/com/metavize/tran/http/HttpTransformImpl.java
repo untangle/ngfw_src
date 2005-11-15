@@ -11,7 +11,8 @@
 
 package com.metavize.tran.http;
 
-
+import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.CasingPipeSpec;
 import com.metavize.mvvm.tapi.Fitting;
@@ -29,14 +30,18 @@ public class HttpTransformImpl extends AbstractTransform
     private final CasingPipeSpec pipeSpec = new CasingPipeSpec
         ("http", this, new HttpCasingFactory(this),
          Fitting.HTTP_STREAM, Fitting.HTTP_TOKENS);
-
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { pipeSpec };
+
+    private final EventLogger eventLogger;
 
     private HttpSettings settings;
 
     // constructors -----------------------------------------------------------
 
-    public HttpTransformImpl() { }
+    public HttpTransformImpl()
+    {
+        this.eventLogger = new EventLogger(getTransformContext());
+    }
 
     // HttpTransform methods --------------------------------------------------
 
@@ -75,6 +80,16 @@ public class HttpTransformImpl extends AbstractTransform
 
     protected void initializeSettings() { }
 
+    protected void preStart()
+    {
+        eventLogger.start();
+    }
+
+    protected void postStop()
+    {
+        eventLogger.stop();
+    }
+
     protected void postInit(String[] args)
     {
         TransactionWork tw = new TransactionWork()
@@ -104,6 +119,13 @@ public class HttpTransformImpl extends AbstractTransform
     protected PipeSpec[] getPipeSpecs()
     {
         return pipeSpecs;
+    }
+
+    // package protected methods ----------------------------------------------
+
+    void log(LogEvent le)
+    {
+        eventLogger.log(le);
     }
 
     // XXX soon to be deprecated ----------------------------------------------

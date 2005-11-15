@@ -59,6 +59,7 @@ class PipelineFoundryImpl implements PipelineFoundry
 
     private final Map<InetSocketAddress, Fitting> connectionFittings
         = new ConcurrentHashMap<InetSocketAddress, Fitting>();
+
     private final Map<Integer, PipelineImpl> pipelines
         = new ConcurrentHashMap<Integer, PipelineImpl>();
 

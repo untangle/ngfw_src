@@ -32,7 +32,8 @@ public class EventLogger<E extends LogEvent> implements EventManager<E>
 {
     private static final int QUEUE_SIZE = 10000;
     private static final int BATCH_SIZE = QUEUE_SIZE;
-    private static final int SYNC_TIME = 600000;
+    private static final int DEFAULT_SYNC_TIME = 600000; /* 10 minutes */
+    private static final int SYNC_TIME;
 
     private static final Map<Tid, Worker> WORKERS = new HashMap<Tid, Worker>();
     private static final Object LOG_LOCK = new Object();
@@ -209,7 +210,11 @@ public class EventLogger<E extends LogEvent> implements EventManager<E>
                 if (t < nextSync) {
                     EventDesc ed;
                     try {
-                        ed = inputQueue.poll(nextSync - t, TimeUnit.MILLISECONDS);
+                        if (0 < logQueue.size()) {
+                            ed = inputQueue.poll(nextSync - t, TimeUnit.MILLISECONDS);
+                        } else {
+                            ed = inputQueue.take();
+                        }
                     } catch (InterruptedException exn) {
                         continue;
                     }
@@ -326,6 +331,25 @@ public class EventLogger<E extends LogEvent> implements EventManager<E>
         LogEvent getLogEvent()
         {
             return logEvent;
+        }
+    }
+
+    // static initialization --------------------------------------------------
+
+    static {
+        String p = System.getProperty("mvvm.logging.synctime");
+        if (null == p) {
+            SYNC_TIME = DEFAULT_SYNC_TIME;
+        } else {
+            int i = -1;
+            try {
+                i = Integer.parseInt(p);
+            } catch (NumberFormatException exn) {
+                Logger l = Logger.getLogger(EventLogger.class);
+                l.warn("ignoring invalid sync time: " + p);
+            }
+
+            SYNC_TIME = 0 > i ? DEFAULT_SYNC_TIME : i;
         }
     }
 }
