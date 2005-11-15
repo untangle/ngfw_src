@@ -24,10 +24,19 @@ echo "Reconstructing all of the tables"
 MARK_ANTISUB="0x01000000"
 MARK_NOTRACK="0x02000000"
 MARK_LOCAL="0x00001000"
+
 ## This is not the interface index (1,2,3, etc), this is the special bit that
 ## is set to indicate that the traffic entered on the inside interface.
 ## This makes all of the guard rules a little bit easier to deal with
 MARK_INSIDE_INTF="0x00002000"
+
+## These are the marks and interfaces for VPN traffic.
+VPN_TUN_INTF="tun0"
+VPN_TUN_MARK="0x4"
+
+VPN_TAP_INTF="tap0"
+VPN_TAP_MARK="0x5"
+
 MARK_LOCAL_ADDRESS_BASE="0x00000010"
 
 ## This list must get longer when there are more interfaces
@@ -212,7 +221,7 @@ function markIntfRules () {
     
     c=1
     for interface in ${INTERFACE_ORDER} ; do
-        if [ -z `getBridge $interface` ]; then
+        if [ -z "`getBridge $interface`" ]; then
             addresses=`getAddresses $interface`
             matchType="-i "
             #echo "${addresses}"
@@ -226,7 +235,7 @@ function markIntfRules () {
 
         if [ "${c}x" == "2x" ]; then
             ## Set the special flag for inside traffic
-            mask=$(( ${c} | MARK_INSIDE_INTF ))
+            mask=$(( ${c} | ${MARK_INSIDE_INTF} ))
         else
             mask=${c}
         fi
@@ -241,7 +250,53 @@ function markIntfRules () {
         done
         c=$(( $c + 1 ))
     done
+
+    ## Mark any vpn traffic if necessary
+    markIntfVpn
 }
+
+function markIntfVpn() {
+    local l_interface=""
+    local l_matchType=""
+
+    ## Always use the TUN mark, there isn't really a reason to have two
+    local l_mark=$(( ${VPN_TUN_MARK} | ${MARK_INSIDE_INTF} ))
+    local l_addresses
+    local l_address
+    
+    ## Not really worried about local traffic to the VPN, just vector it.
+    if [  -d "${SYSFS_INTERFACE_PATH}/${VPN_TUN_INTF}" ]; then
+        l_interface=${VPN_TUN_INTF}
+        l_matchType="-i"
+        l_addresses="`getActualAddresses ${l_interface}` `getActualAddresses ${MVVM_INSIDE_INTF}`"
+    fi
+    
+    if [ -d "${SYSFS_INTERFACE_PATH}/${VPN_TAP_INTF}" ]; then
+        if [ -n "${l_interface}" ]; then
+            echo "error, TUN and TAP interface are configured, using TUN"
+        else 
+            l_interface=${VPN_TAP_INTF}
+            l_matchType="-m physdev --physdev-in "
+
+            ## It is bridged, so you only need the local address
+            l_addresses="`getActualAddresses ${l_interface}`"
+        fi
+    fi
+    
+    ## Nothing to do if neither of the interfaces are configured
+    if [ -z "${l_interface}" ]; then return ; fi
+    
+    ## Mark all packets that come in on on the VPN interface
+    ${IPTABLES} -t mangle -A ${CHAIN_MARKINTF} ${l_matchType} ${l_interface} -j MARK --set-mark ${l_mark}
+
+    d=${MARK_LOCAL_ADDRESS_BASE}
+    for l_address in ${l_addresses}; do
+        ${IPTABLES} -t mangle -A ${CHAIN_MARKINTF} ${l_matchType} ${l_interface} --destination ${l_address} \
+            -j MARK --set-mark $(( ${l_mark} | ${d} | ${MARK_LOCAL} ))
+        d=$(( ${d} + ${MARK_LOCAL_ADDRESS_BASE} ))
+    done
+}
+
 
 function rawRules() {
     ## Flush the raw table
@@ -376,10 +431,8 @@ function uturnRules() {
     c=1
     for interface in ${INTERFACE_ORDER}; do
         if [ -z `getBridge $interface` ]; then
-            addresses=`getAddresses $interface`
             matchType="-o "
         else
-            addresses=`getBridgeAddresses $interface`
             matchType="-m physdev --physdev-out"
         fi
         

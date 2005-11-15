@@ -101,8 +101,16 @@ function generateAddresses() {
     ifconfig | grep -A 4 $1 | awk '/inet/ { print $2 "/" $4 }' | sed -e 's/addr://' -e 's/Mask://' | grep -v "^$" | joinLines
 }
 
+function unconfigureInterfaces() {
+    local l_t
+    for l_t in `ifconfig -a | grep '^[^ ]' | awk '{print $1}' | grep -v ''`; do
+        echo "Unconfiguringing interface '${l_t}'"
+        ifconfig ${l_t} 0.0.0.0 down
+    done
+}
+
 function getAllInterfaces() {
-    ls ${SYSFS_INTERFACE_PATH} | grep -v dummy | grep -v lo
+    ls ${SYSFS_INTERFACE_PATH} | grep -v '\(lo\|dummy\|tun\)'
 }
 
 ## Returns all of the interfaces that participate in a bridge
@@ -130,6 +138,18 @@ function getBridge() {
 
 function getBridgeAddresses() {    
     getAddresses `getBridge $1`
+}
+
+## Returns the "actual" address, this means the address of the bridge the interface is in(if it in
+## in one) or the address of the interface itself if it is not.
+function getActualAddresses() {
+    local l_interface=$1
+
+    if [ -z "`getBridge ${l_interface}`" ]; then
+        getAddresses ${l_interface}
+    else
+        getBridgeAddresses ${l_interface}
+    fi
 }
 
 function getBridgeNetmasks() {
@@ -188,6 +208,9 @@ function deconfigureAllInterfaces() {
     for l_interface in ${l_interfaceList}; do
         ifconfig ${l_interface} 0.0.0.0 -promisc down
     done
+
+    ## Just in case
+    ifconfig lo 127.0.0.1 netmask 255.0.0.0
 }
 
 ## Thisjust removes all of the interfaces from the bridge, 

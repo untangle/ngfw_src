@@ -14,15 +14,15 @@ package com.metavize.mvvm.tran.firewall;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Collections;
 
-import com.metavize.mvvm.argon.IntfConverter;
+import org.apache.log4j.Logger;
+
 import com.metavize.mvvm.tran.ParseException;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.IntfEnum;
+
+import com.metavize.mvvm.IntfConstants;
 
 /**
  * The class <code>IntfMatcher</code> represents a class for filtering on one of the interfaces
@@ -34,16 +34,20 @@ import com.metavize.mvvm.IntfEnum;
  */
 public final class IntfMatcher implements Serializable
 {
-    private static final long serialVersionUID = 6995354637973561046L;
+    // XXXXXXXX FIXME
+    // private static final long serialVersionUID = 6995354637973561046L;
+
+    private static final Logger logger = Logger.getLogger( IntfMatcher.class );
 
     public static IntfEnum INTF_ENUM = null;
 
     /* The maximum number of interfaces */
-    public static final int    INTERFACE_MAX   = 5;
+    public static final int    INTERFACE_MAX   = IntfConstants.MAX_INTF;
     public static final int    BITSET_MASK     = ( 1 << INTERFACE_MAX ) - 1;
-    public static final String MARKER_INSIDE   = "I";
-    public static final String MARKER_OUTSIDE  = "O";
+    public static final String MARKER_INTERNAL = "I";
+    public static final String MARKER_EXTERNAL = "O";
     public static final String MARKER_DMZ      = "D";
+    public static final String MARKER_VPN      = "V";
 
     public static final String MARKER_WILDCARD  = MatcherStringConstants.WILDCARD;
     public static final String MARKER_SEP       = MatcherStringConstants.SEPERATOR;
@@ -88,7 +92,7 @@ public final class IntfMatcher implements Serializable
         if ( BITSET_NOTHING == this.interfaceBitSet ) return false;
 
         /* Unknown and loopback always matches on outside */
-        if ( IntfConverter.ARGON_UNKNOWN == intf || IntfConverter.ARGON_LOOPBACK == intf ) return true;
+        if ( IntfConstants.UNKNOWN_INTF == intf || IntfConstants.LOOPBACK_INTF == intf ) return true;
                 
         /* XXX Possibly throw an exception */
         if ( intf >= INTERFACE_MAX ) return false;
@@ -106,9 +110,18 @@ public final class IntfMatcher implements Serializable
             if ( this.interfaceBitSet == BITSET_ALL ) this.userRepresentation = "any";
             else {
                 String s = null;
-                if ( isMatch((byte)0 )) s = "External";
-                if ( isMatch((byte)1 )) s = (( s == null ) ? "" : s + " & " ) + "Internal";
-                if ( isMatch((byte)2 )) s = (( s == null ) ? "" : s + " & " ) + "DMZ";
+                if ( isMatch( IntfConstants.EXTERNAL_INTF )) s = IntfConstants.EXTERNAL;
+                if ( isMatch( IntfConstants.INTERNAL_INTF )) {
+                    s += (( s == null ) ? "" : " & " ) + IntfConstants.INTERNAL;
+                }
+
+                if ( isMatch( IntfConstants.DMZ_INTF )) {
+                    s += (( s == null ) ? "" : " & " ) + IntfConstants.DMZ;
+                }
+
+                if ( isMatch( IntfConstants.VPN_INTF )) {
+                    s += (( s == null ) ? "" : " & " ) + IntfConstants.VPN;
+                }
                 this.userRepresentation = s;
             }
         }
@@ -143,12 +156,14 @@ public final class IntfMatcher implements Serializable
         if ( str.indexOf( MARKER_SEP ) > 0 ) {
             String strArray[] = str.split( MARKER_SEP );
             for ( int c = 0 ; c < strArray.length ; c++ ) {
-                if ( strArray[c].equalsIgnoreCase( MARKER_INSIDE )) {
-                    interfaceBitSet |= ( 1 << IntfConverter.INSIDE );
-                } else if ( strArray[c].equalsIgnoreCase( MARKER_OUTSIDE )) {
-                    interfaceBitSet |= ( 1 << IntfConverter.OUTSIDE );
+                if ( strArray[c].equalsIgnoreCase( MARKER_INTERNAL )) {
+                    interfaceBitSet |= ( 1 << IntfConstants.INTERNAL_INTF );
+                } else if ( strArray[c].equalsIgnoreCase( MARKER_EXTERNAL )) {
+                    interfaceBitSet |= ( 1 << IntfConstants.EXTERNAL_INTF );
                 } else if ( strArray[c].equalsIgnoreCase( MARKER_DMZ )) {
-                    interfaceBitSet |= ( 1 << IntfConverter.DMZ );
+                    interfaceBitSet |= ( 1 << IntfConstants.DMZ_INTF );
+                } else if ( strArray[c].equalsIgnoreCase( MARKER_VPN )) {
+                    interfaceBitSet |= ( 1 << IntfConstants.VPN_INTF );
                 } else {
                     throw new ParseException( "Invalid IntfMatcher at \"" + strArray[c] + "\"" );
                 }
@@ -157,12 +172,14 @@ public final class IntfMatcher implements Serializable
             return getAll();
         } else if ( str.equalsIgnoreCase( MARKER_NOTHING )) {
             return getNothing();
-        } else if ( str.equalsIgnoreCase( MARKER_OUTSIDE ))  {
-            interfaceBitSet = ( 1 << IntfConverter.OUTSIDE );
-        } else if ( str.equalsIgnoreCase( MARKER_INSIDE )) {
-            interfaceBitSet = ( 1 << IntfConverter.INSIDE );
+        } else if ( str.equalsIgnoreCase( MARKER_EXTERNAL ))  {
+            interfaceBitSet = ( 1 << IntfConstants.EXTERNAL_INTF );
+        } else if ( str.equalsIgnoreCase( MARKER_INTERNAL )) {
+            interfaceBitSet = ( 1 << IntfConstants.INTERNAL_INTF );
         } else if ( str.equalsIgnoreCase( MARKER_DMZ ))  {
-            interfaceBitSet = ( 1 << IntfConverter.DMZ );
+            interfaceBitSet = ( 1 << IntfConstants.DMZ_INTF );
+        } else if ( str.equalsIgnoreCase( MARKER_VPN ))  {
+            interfaceBitSet = ( 1 << IntfConstants.VPN_INTF );
         } else {
             throw new ParseException( "Invalid IntfMatcher at \"" + str + "\"" );
         }
@@ -202,6 +219,26 @@ public final class IntfMatcher implements Serializable
     public static IntfMatcher getMatcher( int c )
     {
         return MATCHER_MAP.get( c );
+    }
+
+    /* Retrieve a matcher that looks for the interfaces in intfArray */
+    public static IntfMatcher getByteMatcher( byte ... intfArray )
+    {
+        int bitSet = 0;
+        for ( byte intf : intfArray ) {
+            if ( intf > INTERFACE_MAX ) {
+                logger.warn( "Ignoring Invalid interface: " + intf );
+                continue;
+            }
+
+            bitSet |= ( 1 << intf );
+        }
+        
+        IntfMatcher matcher = getMatcher( bitSet );
+        if ( matcher == null ) {
+            logger.error( "Unable to find the matcher for " + Integer.toBinaryString( bitSet ));
+        }
+        return matcher;
     }
 
     /**
@@ -255,15 +292,16 @@ public final class IntfMatcher implements Serializable
     
     static
     {
-        addMarker( IntfConverter.OUTSIDE, MARKER_OUTSIDE );    // 0
-        addMarker( IntfConverter.INSIDE, MARKER_INSIDE );      // 1
-        addMarker( IntfConverter.DMZ, MARKER_DMZ );            // 2
-        addMarker( 3, "U1" );
+        addMarker( IntfConstants.EXTERNAL_INTF, MARKER_EXTERNAL );
+        addMarker( IntfConstants.INTERNAL_INTF, MARKER_INTERNAL );
+        addMarker( IntfConstants.DMZ_INTF,      MARKER_DMZ );
+        addMarker( IntfConstants.VPN_INTF,      MARKER_VPN );       
         addMarker( 4, "U2" );
         addMarker( 5, "U3" );
         addMarker( 6, "U4" );
         addMarker( 7, "U5" );
 
+        /* XXX This is a waster of 255 interface matchers */
         for ( int c = 0 ; c < ( 1 << INTERFACE_MAX ) ; c++ ) {
             String databaseRepresentation = null;
             /* XXX This will have to change if the number of interfaces can change */

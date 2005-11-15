@@ -31,8 +31,9 @@ fi
 ## Local ports to antisubscribe to
 ANTISUBSCRIBES_LOCAL_TCP_PORTS="22,443 80_inside"
 
-## Possible for NAT
-ANTISUBSCRIBES_LOCAL_UDP_PORTS="53"
+## Possible for NAT(53) and 1194 for open vpn.
+## XXX Look into only using open vpn on the outside ###
+ANTISUBSCRIBES_LOCAL_UDP_PORTS="53,1194"
 
 #### Handle all of the port guards
 

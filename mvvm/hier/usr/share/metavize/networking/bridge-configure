@@ -225,14 +225,6 @@ function configureInterface() {
     fi
 }
 
-function unconfigureInterfaces() {
-    local l_t
-    for l_t in `ifconfig -a | grep '^[^ ]' | awk '{print $1}' | grep -v 'lo' | grep -v dummy`; do 
-        echo "Unconfiguringing interface '$l_t'"
-        sudo ifconfig $l_t 0.0.0.0 down
-    done
-}
-
 function configureInterfaces() {
     local l_interfaceList=$1
     local l_interface
@@ -272,7 +264,7 @@ fi
 
 ## Unconfigure all interfaces This gets rid of any active interfaces
 ## that are not in the current configuration
-unconfigureInterfaces
+deconfigureAllInterfaces
 
 ## Reconfigure all interfaces
 configureInterfaces "${INTERFACE_LIST}"
