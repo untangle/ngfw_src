@@ -146,6 +146,20 @@ public class SafelistManager
     }
 
     //See doc on SafelistManipulation.java
+    public int getSafelistCnt(String rcpnt)
+      throws NoSuchSafelistException, SafelistActionFailedException
+    {
+        m_logger.debug("recipient: " + rcpnt + ", getting safelist cnt");
+        ArrayList<String> sndrs = getSndrs(rcpnt);
+        if (null == sndrs) {
+            return 0;
+            //throw new NoSuchSafelistException(rcpnt + " has no safelist; cannot get safelist cnt");
+        }
+
+        return sndrs.size();
+    }
+
+    //See doc on SafelistManipulation.java
     public boolean hasOrCanHaveSafelist(String rcpnt)
     {
         m_logger.debug("recipient: " + rcpnt + ", has or can have safelist");

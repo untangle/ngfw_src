@@ -87,7 +87,6 @@ public interface SafelistManipulation {
    *
    * @return the contents of the list
    *
-   *
    * @exception NoSuchSafelistException Note that this should not
    *            be thrown if {@link #hasOrCanHaveSafelist hasOrCanHaveSafelist}
    *            returns true for this address
@@ -96,6 +95,22 @@ public interface SafelistManipulation {
   public String[] getSafelistContents(String safelistOwnerAddress)
     throws NoSuchSafelistException, SafelistActionFailedException;
 
+  /**
+   * If the safelist does not exist yet
+   * {@link #hasOrCanHaveSafelist hasOrCanHaveSafelist} returns true,
+   * then this method will return 0 (zero).
+   * 
+   * @param safelistOwnerAddress the logical address owner
+   *
+   * @return the number of addresses that this owner has safelisted
+   *
+   * @exception NoSuchSafelistException Note that this should not
+   *            be thrown if {@link #hasOrCanHaveSafelist hasOrCanHaveSafelist}
+   *            returns true for this address
+   * @exception SafelistActionFailedException general back-end problem (you're hosed)
+   */
+  public int getSafelistCnt(String safelistOwnerAddress)
+    throws NoSuchSafelistException, SafelistActionFailedException;
 
   /**
    * Slightly goofy method (esp the name).  This tests if the given
@@ -106,12 +121,10 @@ public interface SafelistManipulation {
    * they all declare.
    */
   public boolean hasOrCanHaveSafelist(String address);
-    
 
   /**
    * Total hack for servlets, to test if a connection is still alive
    */
   public void test(); 
-     
 
 }
