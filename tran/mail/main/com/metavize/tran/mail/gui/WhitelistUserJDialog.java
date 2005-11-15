@@ -19,7 +19,7 @@ import com.metavize.mvvm.tran.*;
 import com.metavize.mvvm.security.Tid;
 
 import com.metavize.tran.mail.papi.*;
-import com.metavize.tran.mail.papi.quarantine.*;
+import com.metavize.tran.mail.papi.safelist.*;
 
 import java.lang.reflect.Constructor;
 
@@ -31,16 +31,16 @@ import javax.swing.*;
 
 
 
-public class QuarantineUserJDialog extends MConfigJDialog {
+public class WhitelistUserJDialog extends MConfigJDialog {
 
-    private static final String NAME_QUARANTINE_USER = "Email Quarantine Details for: ";
-    private static final String NAME_ALL_ACCOUNTS = "Email Quarantine Details for: ";
-    private QuarantineMaintenenceView quarantineMaintenenceView;
+    private static final String NAME_WHITELIST_USER = "Email Quarantine Whitelist Details for: ";
+    private static final String NAME_ALL_ACCOUNTS = "Email Quarantine Whitelist Details for: ";
+    private SafelistAdminView safelistAdminView;
     private String account;
         
-    public QuarantineUserJDialog(Dialog topLevelDialog, QuarantineMaintenenceView quarantineMaintenenceView, String account) {
+    public WhitelistUserJDialog(Dialog topLevelDialog, SafelistAdminView safelistAdminView, String account) {
 	super(topLevelDialog, true);
-        this.quarantineMaintenenceView = quarantineMaintenenceView;
+        this.safelistAdminView = safelistAdminView;
         this.account = account;
 	generateGuiAfter();
     }
@@ -51,23 +51,23 @@ public class QuarantineUserJDialog extends MConfigJDialog {
     
     protected void generateGui(){}
     private void generateGuiAfter(){
-        this.setTitle(NAME_QUARANTINE_USER + account);
+        this.setTitle(NAME_WHITELIST_USER + account);
         
         // ALL ACCOUNTS //////
         String casingName = "mail-casing";
-        String objectName = "com.metavize.tran.mail.gui.QuarantineUserJPanel";
-        JPanel quarantineAllJPanel = null;
+        String objectName = "com.metavize.tran.mail.gui.WhitelistUserJPanel";
+        JPanel whitelistAllJPanel = null;
         try{
             Class objectClass = Util.getClassLoader().loadClass( objectName, casingName );
-            Constructor objectConstructor = objectClass.getConstructor(new Class[]{QuarantineMaintenenceView.class, String.class});
-            quarantineAllJPanel = (JPanel) objectConstructor.newInstance(quarantineMaintenenceView, account);
+            Constructor objectConstructor = objectClass.getConstructor(new Class[]{SafelistAdminView.class, String.class});
+            whitelistAllJPanel = (JPanel) objectConstructor.newInstance(safelistAdminView, account);
         }
         catch(Exception e){
-            Util.handleExceptionNoRestart("Error loading quarantine: " + casingName, e);
+            Util.handleExceptionNoRestart("Error loading whitelist: " + casingName, e);
             return;
         }
 
-        this.contentJTabbedPane.addTab(NAME_ALL_ACCOUNTS + account, null, quarantineAllJPanel);
+        this.contentJTabbedPane.addTab(NAME_ALL_ACCOUNTS + account, null, whitelistAllJPanel);
 
         reloadJButton.setVisible(false);
         saveJButton.setVisible(false);

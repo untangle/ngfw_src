@@ -20,7 +20,7 @@ import com.metavize.mvvm.tran.*;
 import com.metavize.mvvm.security.Tid;
 
 import com.metavize.tran.mail.papi.*;
-import com.metavize.tran.mail.papi.quarantine.*;
+import com.metavize.tran.mail.papi.safelist.*;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -31,15 +31,15 @@ import java.awt.*;
 import java.awt.event.*;
 import com.metavize.gui.widgets.editTable.*;
 
-public class QuarantineUserJPanel extends javax.swing.JPanel implements ComponentListener {
+public class WhitelistUserJPanel extends javax.swing.JPanel implements ComponentListener {
 
     private static final Color TABLE_BACKGROUND_COLOR = new Color(213, 213, 226);
-    private QuarantineUserTableModel quarantineUserTableModel;
-    private QuarantineMaintenenceView quarantineMaintenenceView;
+    private WhitelistUserTableModel whitelistUserTableModel;
+    private SafelistAdminView safelistAdminView;
     private String account;
     
-    public QuarantineUserJPanel(QuarantineMaintenenceView quarantineMaintenenceView, String account) {
-        this.quarantineMaintenenceView = quarantineMaintenenceView;
+    public WhitelistUserJPanel(SafelistAdminView safelistAdminView, String account) {
+        this.safelistAdminView = safelistAdminView;
         this.account = account;
         
         // INIT GUI & CUSTOM INIT
@@ -47,13 +47,13 @@ public class QuarantineUserJPanel extends javax.swing.JPanel implements Componen
         entryJScrollPane.getViewport().setOpaque(true);
         entryJScrollPane.getViewport().setBackground(TABLE_BACKGROUND_COLOR);
         entryJScrollPane.setViewportBorder(new MatteBorder(2, 2, 2, 1, TABLE_BACKGROUND_COLOR));
-        addComponentListener(QuarantineUserJPanel.this);
+        addComponentListener(WhitelistUserJPanel.this);
         
         // create actual table model
-        quarantineUserTableModel = new QuarantineUserTableModel(quarantineMaintenenceView, account);
-        setTableModel( quarantineUserTableModel );
+        whitelistUserTableModel = new WhitelistUserTableModel(safelistAdminView, account);
+        setTableModel( whitelistUserTableModel );
         
-        quarantineUserTableModel.doRefresh(null);
+        whitelistUserTableModel.doRefresh(null);
     }
 
     protected void sendSettings(Object settings) throws Exception { }
@@ -91,8 +91,7 @@ public class QuarantineUserJPanel extends javax.swing.JPanel implements Componen
 
         contentJPanel = new javax.swing.JPanel();
         eventJPanel = new javax.swing.JPanel();
-        purgeJButton = new javax.swing.JButton();
-        releaseJButton = new javax.swing.JButton();
+        removeJButton = new javax.swing.JButton();
         entryJScrollPane = new javax.swing.JScrollPane();
         entryJTable = new MColoredJTable();
 
@@ -107,48 +106,26 @@ public class QuarantineUserJPanel extends javax.swing.JPanel implements Componen
         eventJPanel.setFocusCycleRoot(true);
         eventJPanel.setFocusable(false);
         eventJPanel.setOpaque(false);
-        purgeJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        purgeJButton.setText("<html><b>Purge</b> selected</html>");
-        purgeJButton.setDoubleBuffered(true);
-        purgeJButton.setFocusPainted(false);
-        purgeJButton.setFocusable(false);
-        purgeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        purgeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        purgeJButton.setMaximumSize(new java.awt.Dimension(125, 25));
-        purgeJButton.setMinimumSize(new java.awt.Dimension(125, 25));
-        purgeJButton.setPreferredSize(new java.awt.Dimension(125, 25));
-        purgeJButton.addActionListener(new java.awt.event.ActionListener() {
+        removeJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        removeJButton.setText("<html><b>Remove</b> selected</html>");
+        removeJButton.setDoubleBuffered(true);
+        removeJButton.setFocusPainted(false);
+        removeJButton.setFocusable(false);
+        removeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        removeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        removeJButton.setMaximumSize(new java.awt.Dimension(125, 25));
+        removeJButton.setMinimumSize(new java.awt.Dimension(125, 25));
+        removeJButton.setPreferredSize(new java.awt.Dimension(125, 25));
+        removeJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                purgeJButtonActionPerformed(evt);
-            }
-        });
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
-        eventJPanel.add(purgeJButton, gridBagConstraints);
-
-        releaseJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        releaseJButton.setText("<html><b>Release</b> selected</html>");
-        releaseJButton.setDoubleBuffered(true);
-        releaseJButton.setFocusPainted(false);
-        releaseJButton.setFocusable(false);
-        releaseJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        releaseJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        releaseJButton.setMaximumSize(new java.awt.Dimension(125, 25));
-        releaseJButton.setMinimumSize(new java.awt.Dimension(125, 25));
-        releaseJButton.setPreferredSize(new java.awt.Dimension(125, 25));
-        releaseJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                releaseJButtonActionPerformed(evt);
+                removeJButtonActionPerformed(evt);
             }
         });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
-        eventJPanel.add(releaseJButton, gridBagConstraints);
+        eventJPanel.add(removeJButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -181,50 +158,27 @@ public class QuarantineUserJPanel extends javax.swing.JPanel implements Componen
 
     }//GEN-END:initComponents
 
-    private void releaseJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_releaseJButtonActionPerformed
+    private void removeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeJButtonActionPerformed
         int[] selectedModelRows = getSelectedModelRows();
         if( selectedModelRows.length == 0 )
                 return;
         
         // release
-        Vector<Vector> dataVector = quarantineUserTableModel.getDataVector();
+        Vector<Vector> dataVector = whitelistUserTableModel.getDataVector();
         String[] emails = new String[selectedModelRows.length];
         for( int i=0; i<selectedModelRows.length; i++){
             emails[i] = (String) dataVector.elementAt(selectedModelRows[i]).elementAt(2);
         }
         try{
-            quarantineMaintenenceView.rescue(account, emails);
+            for( String email : emails )
+                safelistAdminView.removeFromSafelist(account, email);
         }
-        catch(Exception e){Util.handleExceptionNoRestart("Error releasing account: " + account, e);}
+        catch(Exception e){Util.handleExceptionNoRestart("Error removing from whitelist: " + account, e);}
         
         // refresh
-        quarantineUserTableModel.doRefresh(null);
-    }//GEN-LAST:event_releaseJButtonActionPerformed
+        whitelistUserTableModel.doRefresh(null);
+    }//GEN-LAST:event_removeJButtonActionPerformed
     
-    private void purgeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_purgeJButtonActionPerformed
-        int[] selectedModelRows = getSelectedModelRows();
-        if( selectedModelRows.length == 0 )
-                return;
-
-	QuarantinePurgeProceedDialog purgeProceedDialog = new QuarantinePurgeProceedDialog( (Dialog) this.getTopLevelAncestor() );
-	if( !purgeProceedDialog.isProceeding() )
-	    return;
-        
-        // purge
-        Vector<Vector> dataVector = quarantineUserTableModel.getDataVector();
-        String[] emails = new String[selectedModelRows.length];
-        for( int i=0; i<selectedModelRows.length; i++){
-            emails[i] = (String) dataVector.elementAt(selectedModelRows[i]).elementAt(2);
-        }
-        try{
-            quarantineMaintenenceView.purge(account, emails);
-        }
-        catch(Exception e){Util.handleExceptionNoRestart("Error purging account: " + account, e);}
-        
-        // refresh
-        quarantineUserTableModel.doRefresh(null);
-    }//GEN-LAST:event_purgeJButtonActionPerformed
-
     private int[] getSelectedModelRows(){
         int[] selectedViewRows = entryJTable.getSelectedRows();
         if( (selectedViewRows==null) || (selectedViewRows.length==0) || (selectedViewRows[0]==-1) )
@@ -243,22 +197,21 @@ public class QuarantineUserJPanel extends javax.swing.JPanel implements Componen
     protected javax.swing.JScrollPane entryJScrollPane;
     protected javax.swing.JTable entryJTable;
     private javax.swing.JPanel eventJPanel;
-    private javax.swing.JButton purgeJButton;
-    private javax.swing.JButton releaseJButton;
+    private javax.swing.JButton removeJButton;
     // End of variables declaration//GEN-END:variables
     
 }
 
 
 
-class QuarantineUserTableModel extends MSortedTableModel {
+class WhitelistUserTableModel extends MSortedTableModel {
 
-    private QuarantineMaintenenceView quarantineMaintenenceView;
+    private SafelistAdminView safelistAdminView;
     private String account;
     private static final StringConstants sc = StringConstants.getInstance();
     
-    public QuarantineUserTableModel(QuarantineMaintenenceView quarantineMaintenenceView, String account){
-        this.quarantineMaintenenceView = quarantineMaintenenceView;
+    public WhitelistUserTableModel(SafelistAdminView safelistAdminView, String account){
+        this.safelistAdminView = safelistAdminView;
         this.account = account;
     }
     
@@ -268,13 +221,7 @@ class QuarantineUserTableModel extends MSortedTableModel {
         //                                 #   min  rsz    edit   remv   desc   typ               def
         addTableColumn( tableColumnModel,  0,  Util.STATUS_MIN_WIDTH, false, false, true,  false, String.class,     null, sc.TITLE_STATUS );
 	addTableColumn( tableColumnModel,  1,  Util.LINENO_MIN_WIDTH, false, false, false, false, Integer.class,    null, sc.TITLE_INDEX );
-        addTableColumn( tableColumnModel,  2, 150, true,  false,  true,  false, String.class, null, sc.html("MailID") );
-        addTableColumn( tableColumnModel,  3, 150, true,  false,  false, false, String.class, null, sc.html("Date") );
-        addTableColumn( tableColumnModel,  4, 150, true,  false,  false, false, String.class, null, sc.html("Sender") );
-        addTableColumn( tableColumnModel,  5, 150, true,  false,  false, true,  String.class, null, sc.html("Subject") );
-        addTableColumn( tableColumnModel,  6,  85, true,  false,  false, false, String.class, null, sc.html("Size (kB)") );
-        addTableColumn( tableColumnModel,  7,  85, true,  false,  false, false, String.class, null, sc.html("Category") );
-        addTableColumn( tableColumnModel,  8,  85, true,  false,  false, false, String.class, null, sc.html("Detail") );
+        addTableColumn( tableColumnModel,  2, 150, true,  false,  false, true,  String.class, null, sc.html("Email Address") );
         return tableColumnModel;
     }
 
@@ -284,34 +231,25 @@ class QuarantineUserTableModel extends MSortedTableModel {
 
     public Vector<Vector> generateRows(Object settings) {
         
-        InboxIndex inboxIndex;
+        String[] addresses;
         try{
-             inboxIndex = quarantineMaintenenceView.getInboxIndex(account);
+              addresses = safelistAdminView.getSafelistContents(account);
         }
         catch(Exception e){
-            Util.handleExceptionNoRestart("Error getting inbox record", e);
+            Util.handleExceptionNoRestart("Error getting safelist record", e);
             return new Vector<Vector>();
         }
         
-        Vector<Vector> allRows = new Vector<Vector>(inboxIndex.size());
+        Vector<Vector> allRows = new Vector<Vector>(addresses.length);
 	Vector tempRow = null;
-        MailSummary mailSummary = null;
         int rowIndex = 0;
 
-	for( InboxRecord inboxRecord : inboxIndex ){
+	for( String address : addresses ){
 	    rowIndex++;
-            tempRow = new Vector(8);
-            mailSummary = inboxRecord.getMailSummary();
+            tempRow = new Vector(3);
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );
-            tempRow.add( inboxRecord.getMailID() );
-            tempRow.add( new Date(inboxRecord.getInternDate()) );
-            tempRow.add( mailSummary.getSender() );
-            tempRow.add( mailSummary.getSubject() );            
-            tempRow.add( Long.toString(inboxRecord.getSize()/1024l) );
-            tempRow.add( mailSummary.getQuarantineCategory() );   
-            tempRow.add( mailSummary.getQuarantineDetail() );   
-            allRows.add( tempRow );
+            tempRow.add( address );
         }
         
         return allRows;

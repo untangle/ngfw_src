@@ -32,7 +32,8 @@ import javax.swing.*;
 public class QuarantineJDialog extends MConfigJDialog {
 
     private static final String NAME_QUARANTINE_SETTINGS = "Email Quarantine";
-    private static final String NAME_ALL_ACCOUNTS = "All Email Accounts";
+    private static final String NAME_ALL_ACCOUNTS = "Quarantine Controls";
+    private static final String NAME_WHITE_LIST = "Quarantine Whitelist";
     private static final String NAME_GENERAL_SETTINGS = "General Settings";
 
     public QuarantineJDialog( ) {
@@ -70,7 +71,7 @@ public class QuarantineJDialog extends MConfigJDialog {
 	    }
 	}
 	
-        // ALL ACCOUNTS //////
+        // QUARANTINE CONTROLS //////
         String quarantineAllJPanelName = "com.metavize.tran.mail.gui.QuarantineAllJPanel";
         JPanel quarantineAllJPanel = null;
         try{
@@ -83,6 +84,20 @@ public class QuarantineJDialog extends MConfigJDialog {
             return;
         }
         super.contentJTabbedPane.addTab(NAME_ALL_ACCOUNTS, null, quarantineAllJPanel);
+
+        // WHITELIST CONTROLS //////
+        String whitelistAllJPanelName = "com.metavize.tran.mail.gui.WhitelistAllJPanel";
+        JPanel whitelistAllJPanel = null;
+        try{
+            Class objectClass = Util.getClassLoader().loadClass( whitelistAllJPanelName, casingName );
+            Constructor objectConstructor = objectClass.getConstructor(new Class[]{TransformContext.class});
+            whitelistAllJPanel = (JPanel) objectConstructor.newInstance(transformContext);
+        }
+        catch(Exception e){
+            Util.handleExceptionNoRestart("Error loading whitelist management: " + casingName, e);
+            return;
+        }
+        super.contentJTabbedPane.addTab(NAME_WHITE_LIST, null, whitelistAllJPanel);
 
         // GENERAL SETTINGS //////
         String quarantineGeneralSettingsJPanelName = "com.metavize.tran.mail.gui.QuarantineGeneralSettingsJPanel";
