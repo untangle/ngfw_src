@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.metavize.mvvm.logging.LogEvent;
+import com.metavize.mvvm.logging.SyslogBuilder;
 
 /**
  * Log event for a DHCP absolute event .
@@ -74,5 +75,12 @@ public class DhcpAbsoluteEvent extends LogEvent implements Serializable
         }
 
         absoluteLeaseList.add( lease );
+    }
+
+    // Syslog methods ---------------------------------------------------------
+
+    public void appendSyslog(SyslogBuilder sb)
+    {
+        sb.addField("num-leases", absoluteLeaseList.size());
     }
 }

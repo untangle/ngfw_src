@@ -13,11 +13,10 @@ package com.metavize.tran.nat;
 
 import java.util.Date;
 
-import com.metavize.mvvm.tran.Rule;
-
 import com.metavize.mvvm.logging.LogEvent;
-import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.tran.HostName;
+import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.firewall.MACAddress;
 
 /**
@@ -44,9 +43,9 @@ public class DhcpLeaseEvent extends LogEvent
     private Date       endOfLease;
     private int        eventType;
 
-    // Constructors 
+    // Constructors
     /**
-     * Hibernate constructor 
+     * Hibernate constructor
      */
     public DhcpLeaseEvent()
     {
@@ -62,7 +61,7 @@ public class DhcpLeaseEvent extends LogEvent
         this.hostname   = lease.getHostname();
         this.eventType  = eventType;
     }
-    
+
     /**
      * MAC address
      *
@@ -71,7 +70,7 @@ public class DhcpLeaseEvent extends LogEvent
      * type="com.metavize.mvvm.type.firewall.MACAddressUserType"
      * @hibernate.column
      * name="MAC"
-     */    
+     */
     public MACAddress getMac()
     {
         return mac;
@@ -81,7 +80,7 @@ public class DhcpLeaseEvent extends LogEvent
     {
         this.mac = mac;
     }
-    
+
     /**
      * Host name
      *
@@ -90,7 +89,7 @@ public class DhcpLeaseEvent extends LogEvent
      * type="com.metavize.mvvm.type.HostNameUserType"
      * @hibernate.column
      * name="HOSTNAME"
-     */    
+     */
     public HostName getHostname()
     {
         return hostname;
@@ -115,12 +114,12 @@ public class DhcpLeaseEvent extends LogEvent
     {
         return this.ip;
     }
-    
-    public void setIP( IPaddr ip ) 
+
+    public void setIP( IPaddr ip )
     {
         this.ip = ip;
     }
-    
+
     /**
      * Expiration date of the lease.
      *
@@ -156,4 +155,27 @@ public class DhcpLeaseEvent extends LogEvent
         this.eventType = eventType;
     }
 
+    // Syslog methods ---------------------------------------------------------
+
+    public void appendSyslog(SyslogBuilder sb)
+    {
+        sb.addField("mac", mac.toString());
+        sb.addField("hostname", hostname.toString());
+        sb.addField("ip", ip.toString());
+        sb.addField("lease-end", endOfLease);
+        String type;
+        if (REGISTER == eventType) {
+            type = "register";
+        } else if (RENEW == eventType) {
+            type = "renew";
+        } else if (EXPIRE == eventType) {
+            type = "expire";
+        } else if (RELEASE == eventType) {
+            type = "release";
+        } else {
+            type = "unknown";
+        }
+
+        sb.addField("type", type);
+    }
 }

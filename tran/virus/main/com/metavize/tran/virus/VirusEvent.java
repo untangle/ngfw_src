@@ -45,7 +45,7 @@ public abstract class VirusEvent extends LogEvent
 
     // Syslog methods ---------------------------------------------------------
 
-    protected void doSyslog(SyslogBuilder sb)
+    public void appendSyslog(SyslogBuilder sb)
     {
         sb.addField("info", getLocation());
         sb.addField("infected", Boolean.toString(isInfected()));

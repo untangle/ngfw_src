@@ -14,7 +14,7 @@ package com.metavize.tran.openvpn;
 import java.io.Serializable;
 
 import com.metavize.mvvm.logging.LogEvent;
-
+import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.tran.IPaddr;
 
 /**
@@ -30,10 +30,10 @@ public class ClientDistributionEvent extends LogEvent implements Serializable
 {
     private IPaddr address;
     private String clientName;
-    
-    // Constructors 
+
+    // Constructors
     /**
-     * Hibernate constructor 
+     * Hibernate constructor
      */
     public ClientDistributionEvent()
     {
@@ -60,7 +60,7 @@ public class ClientDistributionEvent extends LogEvent implements Serializable
     {
         return this.address;
     }
-    
+
     public void setAddress( IPaddr address )
     {
         this.address = address;
@@ -81,5 +81,13 @@ public class ClientDistributionEvent extends LogEvent implements Serializable
     public void setClientName( String clientName )
     {
         this.clientName = clientName;
+    }
+
+    // Syslog methods ---------------------------------------------------------
+
+    public void appendSyslog(SyslogBuilder sb)
+    {
+        sb.addField("client-address", address.getAddr());
+        sb.addField("client-name", clientName);
     }
 }

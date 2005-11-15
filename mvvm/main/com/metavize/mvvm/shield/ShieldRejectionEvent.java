@@ -15,6 +15,8 @@ import java.io.Serializable;
 import java.net.InetAddress;
 
 import com.metavize.mvvm.logging.LogEvent;
+import com.metavize.mvvm.logging.SyslogBuilder;
+import com.metavize.mvvm.logging.SyslogPriority;
 
 /**
  * Log event for the shield rejection.
@@ -34,16 +36,16 @@ public class ShieldRejectionEvent extends LogEvent implements Serializable
     private int         limited;
     private int         rejected;
     private int         dropped;
-    
-    // Constructors 
+
+    // Constructors
     /**
-     * Hibernate constructor 
+     * Hibernate constructor
      */
     public ShieldRejectionEvent()
     {
     }
 
-    public ShieldRejectionEvent( InetAddress clientAddr, byte clientIntf, double reputation, int mode, 
+    public ShieldRejectionEvent( InetAddress clientAddr, byte clientIntf, double reputation, int mode,
                                  int limited, int dropped, int rejected )
     {
         this.clientAddr = clientAddr;
@@ -54,7 +56,7 @@ public class ShieldRejectionEvent extends LogEvent implements Serializable
         this.rejected   = rejected;
         this.dropped    = dropped;
     }
-    
+
 
     /**
      * IP of the user that generated the event
@@ -176,5 +178,23 @@ public class ShieldRejectionEvent extends LogEvent implements Serializable
     public void setDropped( int dropped )
     {
         this.dropped = dropped;
-    }    
+    }
+
+    // Syslog methods ---------------------------------------------------------
+
+    public void appendSyslog(SyslogBuilder sb)
+    {
+        sb.addField("client-addr", clientAddr);
+        sb.addField("client-iface", clientIntf);
+        sb.addField("reputation", reputation);
+        sb.addField("mode", mode);
+        sb.addField("limited", limited);
+        sb.addField("rejected", rejected);
+        sb.addField("dropped", dropped);
+    }
+
+    public SyslogPriority getSyslogPrioritiy()
+    {
+        return SyslogPriority.DEBUG;
+    }
 }

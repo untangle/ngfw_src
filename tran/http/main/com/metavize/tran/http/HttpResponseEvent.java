@@ -12,6 +12,8 @@
 package com.metavize.tran.http;
 
 import com.metavize.mvvm.logging.LogEvent;
+import com.metavize.mvvm.logging.SyslogBuilder;
+import com.metavize.mvvm.logging.SyslogPriority;
 
 /**
  * Log event for response.
@@ -97,5 +99,19 @@ public class HttpResponseEvent extends LogEvent
     public void setContentLength(int contentLength)
     {
         this.contentLength = contentLength;
+    }
+
+    // Syslog methods ---------------------------------------------------------
+
+    public void appendSyslog(SyslogBuilder sb)
+    {
+        sb.addField("url", requestLine.getUrl().toString());
+        sb.addField("content-type", contentType);
+        sb.addField("content-length", contentLength);
+    }
+
+    public SyslogPriority getSyslogPrioritiy()
+    {
+        return SyslogPriority.DEBUG;
     }
 }

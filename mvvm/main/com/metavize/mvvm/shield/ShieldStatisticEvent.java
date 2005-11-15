@@ -12,9 +12,10 @@
 package com.metavize.mvvm.shield;
 
 import java.io.Serializable;
-import java.net.InetAddress;
 
 import com.metavize.mvvm.logging.LogEvent;
+import com.metavize.mvvm.logging.SyslogBuilder;
+import com.metavize.mvvm.logging.SyslogPriority;
 
 /**
  * Log event for the shield rejection.
@@ -35,10 +36,10 @@ public class ShieldStatisticEvent extends LogEvent implements Serializable
     private int lax;
     private int tight;
     private int closed;
-    
-    // Constructors 
+
+    // Constructors
     /**
-     * Hibernate constructor 
+     * Hibernate constructor
      */
     public ShieldStatisticEvent()
     {
@@ -51,7 +52,7 @@ public class ShieldStatisticEvent extends LogEvent implements Serializable
         this.tight    = 0;
         this.closed   = 0;
     }
-    
+
     public ShieldStatisticEvent( int accepted, int limited, int dropped, int rejected, int relaxed,
                                  int lax, int tight, int closed )
     {
@@ -64,7 +65,7 @@ public class ShieldStatisticEvent extends LogEvent implements Serializable
         this.tight    = tight;
         this.closed   = closed;
     }
-    
+
     /**
      * Number of accepted connections since the last log event
      *
@@ -202,5 +203,24 @@ public class ShieldStatisticEvent extends LogEvent implements Serializable
     public void setClosed( int closed )
     {
         this.closed = closed;
+    }
+
+    // Syslog methods ---------------------------------------------------------
+
+    public void appendSyslog(SyslogBuilder sb)
+    {
+        sb.addField("accepted", accepted);
+        sb.addField("limited", limited);
+        sb.addField("dropped", dropped);
+        sb.addField("rejected", rejected);
+        sb.addField("relaxed", relaxed);
+        sb.addField("lax", lax);
+        sb.addField("tight", tight);
+        sb.addField("closed", closed);
+    }
+
+    public SyslogPriority getSyslogPrioritiy()
+    {
+        return SyslogPriority.DEBUG;
     }
 }

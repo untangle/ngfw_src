@@ -12,6 +12,7 @@
 package com.metavize.tran.firewall;
 
 import com.metavize.mvvm.logging.StatisticEvent;
+import com.metavize.mvvm.logging.SyslogBuilder;
 
 /**
  * Log event for a Firewall statistics.
@@ -26,7 +27,7 @@ public class FirewallStatisticEvent extends StatisticEvent
 {
     /* Number of outbound firewall sessions */
     /**
-     * Number of TCP Sessions blocked by the default action, 
+     * Number of TCP Sessions blocked by the default action,
      * by a rule, passsed by the default, and
      * passed by a rule */
     private int tcpBlockedDefault;
@@ -43,10 +44,10 @@ public class FirewallStatisticEvent extends StatisticEvent
     private int icmpBlockedRule;
     private int icmpPassedDefault;
     private int icmpPassedRule;
-    
-    // Constructors 
+
+    // Constructors
     /**
-     * Hibernate constructor 
+     * Hibernate constructor
      */
     public FirewallStatisticEvent()
     {
@@ -54,12 +55,12 @@ public class FirewallStatisticEvent extends StatisticEvent
         this.tcpBlockedRule = 0;
         this.tcpPassedDefault = 0;
         this.tcpPassedRule = 0;
-        
+
         this.udpBlockedDefault = 0;
         this.udpBlockedRule = 0;
         this.udpPassedDefault = 0;
         this.udpPassedRule = 0;
-        
+
         this.icmpBlockedDefault = 0;
         this.icmpBlockedRule = 0;
         this.icmpPassedDefault = 0;
@@ -72,7 +73,7 @@ public class FirewallStatisticEvent extends StatisticEvent
                                    int udpPasssedDefault,  int udpPassedRule,
                                    int icmpBlockedDefault, int icmpBlockedRule,
                                    int icmpPasssedDefault, int icmpPassedRule )
-    {        
+    {
         this.tcpBlockedDefault  = tcpBlockedDefault;
         this.tcpBlockedRule     = tcpBlockedRule;
         this.tcpPassedDefault   = tcpPassedDefault;
@@ -88,7 +89,7 @@ public class FirewallStatisticEvent extends StatisticEvent
         this.icmpPassedDefault  = icmpPassedDefault;
         this.icmpPassedRule     = icmpPassedRule;
     }
-    
+
     /**
      * Number of tcp sessions blocked by the default rule.
      *
@@ -363,5 +364,23 @@ public class FirewallStatisticEvent extends StatisticEvent
         return (( tcpBlockedDefault  + tcpBlockedRule  + tcpPassedDefault  + tcpPassedRule +
                   udpBlockedDefault  + udpBlockedRule  + udpPassedDefault  + udpPassedRule +
                   icmpBlockedDefault + icmpBlockedRule + icmpPassedDefault + icmpPassedRule ) > 0 );
+    }
+
+    // Syslog methods ---------------------------------------------------------
+
+    public void appendSyslog(SyslogBuilder sb)
+    {
+        sb.addField("tcp-blk-def", tcpBlockedDefault);
+        sb.addField("tcp-blk-rule", tcpBlockedRule);
+        sb.addField("tcp-pass-def", tcpPassedDefault);
+        sb.addField("tcp-pass-rule", tcpPassedRule);
+        sb.addField("udp-blk-def", udpBlockedDefault);
+        sb.addField("udp-blk-rule", udpBlockedRule);
+        sb.addField("udp-pass-def", udpPassedDefault);
+        sb.addField("udp-pass-rule", udpPassedRule);
+        sb.addField("icmp-blk-def", icmpBlockedDefault);
+        sb.addField("icmp-blk-rule", icmpBlockedRule);
+        sb.addField("icmp-pass-def", icmpPassedDefault);
+        sb.addField("icmp-pass-rule", icmpPassedRule);
     }
 }

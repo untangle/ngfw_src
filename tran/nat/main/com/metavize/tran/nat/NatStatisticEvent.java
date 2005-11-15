@@ -12,6 +12,7 @@
 package com.metavize.tran.nat;
 
 import com.metavize.mvvm.logging.StatisticEvent;
+import com.metavize.mvvm.logging.SyslogBuilder;
 
 /**
  * Log event for a Nat statistics.
@@ -34,9 +35,9 @@ public class NatStatisticEvent extends StatisticEvent
     private int icmpOutgoingRedirects = 0;
     private int dmzSessions           = 0;
 
-    // Constructors 
+    // Constructors
     /**
-     * Hibernate constructor 
+     * Hibernate constructor
      */
     public NatStatisticEvent()
     {
@@ -45,7 +46,7 @@ public class NatStatisticEvent extends StatisticEvent
     public NatStatisticEvent( int natSessions, int tcpIncomingRedirects, int tcpOutgoingRedirects,
                               int udpIncomingRedirects,  int udpOutgoingRedirects,
                               int icmpIncomingRedirects, int icmpOutgoingRedirects,
-                              int dmzSessions ) 
+                              int dmzSessions )
     {
         this.natSessions           = natSessions;
         this.tcpIncomingRedirects  = tcpIncomingRedirects;
@@ -56,7 +57,7 @@ public class NatStatisticEvent extends StatisticEvent
         this.icmpOutgoingRedirects = icmpOutgoingRedirects;
         this.dmzSessions           = dmzSessions;
     }
-    
+
     /**
      * Number of natted connections since the last log event
      *
@@ -73,7 +74,7 @@ public class NatStatisticEvent extends StatisticEvent
     {
         this.natSessions = natSessions;
     }
-    
+
     public void incrNatSessions()
     {
         this.natSessions++;
@@ -245,5 +246,18 @@ public class NatStatisticEvent extends StatisticEvent
                   udpIncomingRedirects  + udpOutgoingRedirects +
                   icmpIncomingRedirects + icmpOutgoingRedirects ) > 0 );
     }
-    
+
+    // Syslog methods ---------------------------------------------------------
+
+    public void appendSyslog(SyslogBuilder sb)
+    {
+        sb.addField("nat-sessions", natSessions);
+        sb.addField("tcp-incoming-redirects", tcpIncomingRedirects);
+        sb.addField("tcp-outgoing-redirects", tcpOutgoingRedirects);
+        sb.addField("udp-incoming-redirects", udpIncomingRedirects);
+        sb.addField("udp-outgoing-redirects", udpOutgoingRedirects);
+        sb.addField("icmp-incoming-redirects", icmpIncomingRedirects);
+        sb.addField("icmp-outgoing-redirects", icmpOutgoingRedirects);
+        sb.addField("dmz-sessions", dmzSessions);
+    }
 }

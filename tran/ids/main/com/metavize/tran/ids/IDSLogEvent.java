@@ -11,6 +11,8 @@
 package com.metavize.tran.ids;
 
 import com.metavize.mvvm.logging.LogEvent;
+import com.metavize.mvvm.logging.SyslogBuilder;
+import com.metavize.mvvm.logging.SyslogPriority;
 
 /**
  * Log event for a blocked request.
@@ -22,10 +24,10 @@ import com.metavize.mvvm.logging.LogEvent;
  * mutable="false"
  */
 public class IDSLogEvent extends LogEvent {
-	
+
     private int sessionId;
     private String message;
-	private boolean blocked;
+    private boolean blocked;
 
     // constructors -----------------------------------------------------------
 
@@ -47,13 +49,13 @@ public class IDSLogEvent extends LogEvent {
      * column="SESSION_ID"
      */
     public int getSessionId() {
-		return sessionId;		    
-	}
+        return sessionId;
+    }
 
-	public void setSessionId(int sessionId) {
-		this.sessionId = sessionId;
-	}
-	
+    public void setSessionId(int sessionId) {
+        this.sessionId = sessionId;
+    }
+
 
     /**
      * Message of signature that generated this event.
@@ -70,21 +72,34 @@ public class IDSLogEvent extends LogEvent {
         this.message = message;
     }
 
-	/**
-	 * Was it blocked.
-	 * 
-	 * @return whether or not the session was blocked (closed)
-	 * @hibernate.property
-	 * column="BLOCKED"
-	 */
-	  public boolean isBlocked() {
-		  return blocked;
-	  }
-	  
-	  public void setBlocked(boolean blocked) {
-		  this.blocked = blocked;
-	  }
-			
+    /**
+     * Was it blocked.
+     *
+     * @return whether or not the session was blocked (closed)
+     * @hibernate.property
+     * column="BLOCKED"
+     */
+      public boolean isBlocked() {
+          return blocked;
+      }
+
+      public void setBlocked(boolean blocked) {
+          this.blocked = blocked;
+      }
+
+    // Syslog methods ---------------------------------------------------------
+
+    public void appendSyslog(SyslogBuilder sb)
+    {
+        sb.addField("sid", sessionId);
+        sb.addField("message", message);
+        sb.addField("blocked", blocked);
+    }
+
+    public SyslogPriority getSyslogPrioritiy()
+    {
+        return blocked ? SyslogPriority.INFORMATIONAL : SyslogPriority.DEBUG;
+    }
 
     // Object methods ---------------------------------------------------------
 

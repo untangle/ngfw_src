@@ -12,6 +12,7 @@
 package com.metavize.tran.ids;
 
 import com.metavize.mvvm.logging.StatisticEvent;
+import com.metavize.mvvm.logging.SyslogBuilder;
 
 /**
  * Log event for a IDS statistics.
@@ -26,25 +27,25 @@ import com.metavize.mvvm.logging.StatisticEvent;
 
 public class IDSStatisticEvent extends StatisticEvent {
 
-    private int scanned	= 0;
-    private int passed	= 0;
-	private int blocked = 0;
+    private int scanned = 0;
+    private int passed  = 0;
+    private int blocked = 0;
 
-    // Constructors 
+    // Constructors
     /**
-     * Hibernate constructor 
+     * Hibernate constructor
      */
     public IDSStatisticEvent()
     {
     }
 
-    public IDSStatisticEvent( int scanned, int passed, int blocked ) 
+    public IDSStatisticEvent( int scanned, int passed, int blocked )
     {
         this.scanned = scanned;
-		this.passed  = passed;
-		this.blocked = blocked;
+        this.passed  = passed;
+        this.blocked = blocked;
     }
-    
+
     /**
      * Number of scanned chunks
      *
@@ -64,27 +65,35 @@ public class IDSStatisticEvent extends StatisticEvent {
      * column="IDS_PASSED"
      */
 
-	public int getPassed() { return passed; }
-	public void setPassed(int passed) { this.passed = passed; }
-	public void incrPassed() { this.passed++; }
+    public int getPassed() { return passed; }
+    public void setPassed(int passed) { this.passed = passed; }
+    public void incrPassed() { this.passed++; }
 
-	/**
-	 * Number of blocked chunks
-	 * 
-	 * @return Number of blocked chunks
+    /**
+     * Number of blocked chunks
+     *
+     * @return Number of blocked chunks
      * @hibernate.property
-	 * column="IDS_BLOCKED"
-	 */
+     * column="IDS_BLOCKED"
+     */
 
-	public int getBlocked() { return blocked; }
-	public void setBlocked(int blocked) { this.blocked = blocked; }
-	public void incrBlocked() { this.blocked++; }
-			
+    public int getBlocked() { return blocked; }
+    public void setBlocked(int blocked) { this.blocked = blocked; }
+    public void incrBlocked() { this.blocked++; }
+
 
     /**
      * Returns true if any of the stats are non-zero, whenever all the stats are zero,
      * a new log event is not created.
      */
     public boolean hasStatistics() { return ((scanned + passed + blocked) > 0 ); }
-    
+
+    // Syslog methods ---------------------------------------------------------
+
+    public void appendSyslog(SyslogBuilder sb)
+    {
+        sb.addField("scanned", scanned);
+        sb.addField("passed", passed);
+        sb.addField("blocked", blocked);
+    }
 }

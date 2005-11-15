@@ -11,7 +11,6 @@
 
 package com.metavize.tran.spam;
 
-import java.io.IOException;
 import java.util.Iterator;
 
 import com.metavize.mvvm.logging.LogEvent;
@@ -32,6 +31,7 @@ public abstract class SpamEvent extends LogEvent
     public abstract float getScore();
     public abstract String getActionName();
     public abstract MessageInfo getMessageInfo();
+    public abstract String getVendorName();
 
     // public methods ---------------------------------------------------------
 
@@ -102,9 +102,11 @@ public abstract class SpamEvent extends LogEvent
 
     // Syslog methods ---------------------------------------------------------
 
-    protected void doSyslog(SyslogBuilder sb) throws IOException
+    public void appendSyslog(SyslogBuilder sb)
     {
+        sb.addField("vendor", getVendorName());
         sb.addField("subject", getSubject());
+        sb.addField("score", getScore());
         sb.addField("action", getActionName());
         sb.addField("subject", getSubject());
         sb.addField("receiver", getReceiver());

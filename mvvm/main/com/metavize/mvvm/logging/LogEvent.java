@@ -72,7 +72,7 @@ public abstract class LogEvent implements Comparable, Serializable
 
     // Syslog methods ---------------------------------------------------------
 
-    public void appendSyslog(SyslogBuilder a) { }
+    public abstract void appendSyslog(SyslogBuilder a);
 
     public String getSyslogId()
     {

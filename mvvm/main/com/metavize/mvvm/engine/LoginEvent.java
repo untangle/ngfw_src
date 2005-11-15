@@ -14,6 +14,8 @@ package com.metavize.mvvm.engine;
 import java.net.InetAddress;
 
 import com.metavize.mvvm.logging.LogEvent;
+import com.metavize.mvvm.logging.SyslogBuilder;
+import com.metavize.mvvm.logging.SyslogPriority;
 import com.metavize.mvvm.security.LoginFailureReason;
 
 /**
@@ -144,6 +146,27 @@ public class LoginEvent extends LogEvent
     public void setReason(LoginFailureReason reason)
     {
         this.reason = reason;
+    }
+
+    // Syslog methods ---------------------------------------------------------
+
+    public void appendSyslog(SyslogBuilder sb)
+    {
+        sb.addField("client-addr", clientAddr);
+        sb.addField("login", login);
+        sb.addField("local", local);
+        sb.addField("succeeded", succeeded);
+        sb.addField("reason", reason.toString());
+    }
+
+    public SyslogPriority getSyslogPrioritiy()
+    {
+        if (!succeeded) {
+            return SyslogPriority.NOTICE;
+        } else {
+            // local logins are not as interesting to enduser
+            return local ? SyslogPriority.DEBUG : SyslogPriority.INFORMATIONAL;
+        }
     }
 
     // Object methods ---------------------------------------------------------

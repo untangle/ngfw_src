@@ -12,6 +12,8 @@
 package com.metavize.tran.openvpn;
 
 import com.metavize.mvvm.logging.StatisticEvent;
+import com.metavize.mvvm.logging.SyslogBuilder;
+import com.metavize.mvvm.logging.SyslogPriority;
 
 /**
  * Log event for a Nat statistics.
@@ -24,11 +26,11 @@ import com.metavize.mvvm.logging.StatisticEvent;
  */
 public class VpnStatisticEvent extends StatisticEvent
 {
-    // Constructors 
+    // Constructors
     private boolean hasStatistics = false;
-    
+
     /**
-     * Hibernate constructor 
+     * Hibernate constructor
      */
     public VpnStatisticEvent()
     {
@@ -38,7 +40,7 @@ public class VpnStatisticEvent extends StatisticEvent
     {
         this.hasStatistics = true;
     }
-    
+
     /**
      * Returns true if any of the stats are non-zero, whenever all the stats are zero,
      * a new log event is not created.
@@ -50,5 +52,15 @@ public class VpnStatisticEvent extends StatisticEvent
 
         return false;
     }
-    
+
+    // Syslog methods ---------------------------------------------------------
+
+    public void appendSyslog(SyslogBuilder sb)
+    {
+    }
+
+    public SyslogPriority getSyslogPrioritiy()
+    {
+        return SyslogPriority.DEBUG;
+    }
 }

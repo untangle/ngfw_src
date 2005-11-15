@@ -12,6 +12,7 @@
 package com.metavize.tran.httpblocker;
 
 import com.metavize.mvvm.logging.LogEvent;
+import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.tran.http.RequestLine;
 
 /**
@@ -114,6 +115,16 @@ public class HttpBlockerEvent extends LogEvent
     public void setCategory(String category)
     {
         this.category = category;
+    }
+
+    // Syslog methods ---------------------------------------------------------
+
+    public void appendSyslog(SyslogBuilder sb)
+    {
+        sb.addField("url", requestLine.getUrl().toString());
+        sb.addField("action", action.toString());
+        sb.addField("reason", reason.toString());
+        sb.addField("category", category);
     }
 
     // Object methods ---------------------------------------------------------

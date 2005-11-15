@@ -13,6 +13,7 @@ package com.metavize.mvvm.engine;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.util.Date;
 import java.util.Formatter;
 
 import com.metavize.mvvm.logging.LogEvent;
@@ -82,6 +83,11 @@ public class SyslogBuilderImpl implements SyslogBuilder
     public void addField(String key, InetAddress ia)
     {
         addField(key, ia.getHostAddress());
+    }
+
+    public void addField(String key, Date d)
+    {
+        addField(key, d.toString());
     }
 
     DatagramPacket makePacket(LogEvent e, int facility, String host,
