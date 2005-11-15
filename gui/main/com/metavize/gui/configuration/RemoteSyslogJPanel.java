@@ -1,0 +1,316 @@
+/*
+ * Copyright (c) 2004, 2005 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
+package com.metavize.gui.configuration;
+
+import com.metavize.gui.transform.*;
+import com.metavize.gui.util.*;
+import com.metavize.mvvm.snmp.*;
+import com.metavize.mvvm.security.*;
+import com.metavize.mvvm.*;
+import com.metavize.mvvm.tran.*;
+import com.metavize.mvvm.logging.*;
+
+import java.awt.*;
+import javax.swing.*;
+
+public class RemoteSyslogJPanel extends javax.swing.JPanel implements Savable, Refreshable {
+
+    private static final String EXCEPTION_HOST_MISSING = "A \"Host\" must be specified.";
+
+    
+    public RemoteSyslogJPanel() {
+        initComponents();
+	portJSpinner.setModel(new SpinnerNumberModel(0,0,65535,1));
+        for( SyslogFacility syslogFacility : SyslogFacility.values() )
+            facilityJComboBox.addItem(syslogFacility.getFacilityName());
+        for( SyslogPriority syslogPriority : SyslogPriority.values() )
+            thresholdJComboBox.addItem(syslogPriority.getName());
+    }
+
+    public void doSave(Object settings, boolean validateOnly) throws Exception {
+
+	// SYSLOG ENABLED ////////
+	boolean isSyslogEnabled = syslogEnabledRadioButton.isSelected();
+
+        // PORT /////
+	int port = (Integer) portJSpinner.getValue();
+
+        // HOST /////
+	String host = hostJTextField.getText();
+	hostJTextField.setBackground( Color.WHITE );
+	if( isSyslogEnabled && (host.length() == 0) ){
+	    hostJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+	    throw new Exception(EXCEPTION_HOST_MISSING);
+	}
+        
+        // FACILITY ///////
+	String facilityString = (String) facilityJComboBox.getSelectedItem();
+        SyslogFacility facility = SyslogFacility.getFacility( facilityString );
+        
+        // THRESHOLD ///////
+	String thresholdString = (String) thresholdJComboBox.getSelectedItem();
+        SyslogPriority threshold = SyslogPriority.getPriority( thresholdString );
+
+	// SAVE SETTINGS ////////////
+	if( !validateOnly ){
+            LoggingManager loggingManager = Util.getLoggingManager();
+            LoggingSettings loggingSettings = loggingManager.getLoggingSettings();
+	    
+	    loggingSettings.setSyslogEnabled( isSyslogEnabled );
+	    if( isSyslogEnabled ){
+		loggingSettings.setSyslogHost( host );
+                loggingSettings.setSyslogPort( port );
+                loggingSettings.setSyslogFacility( facility );
+                loggingSettings.setSyslogThreshold( threshold );
+	    }
+
+	    loggingManager.setLoggingSettings( loggingSettings );
+        }
+
+    }
+
+    public void doRefresh(Object settings){
+	LoggingSettings loggingSettings = Util.getLoggingManager().getLoggingSettings();
+
+	// SYSLOG ENABLED //////
+	boolean isSyslogEnabled = loggingSettings.isSyslogEnabled();
+	setSyslogEnabledDependency( isSyslogEnabled );
+	if( isSyslogEnabled )
+            syslogEnabledRadioButton.setSelected(true);
+        else
+            syslogDisabledRadioButton.setSelected(true);
+
+        // TRAP HOST /////
+	String host = loggingSettings.getSyslogHost();
+	hostJTextField.setText( host );
+	hostJTextField.setBackground( Color.WHITE );
+        
+        // PORT /////
+	int port = loggingSettings.getSyslogPort();
+	portJSpinner.setValue( port );
+        
+        // FACILITY /////
+        SyslogFacility syslogFacility = loggingSettings.getSyslogFacility();
+        facilityJComboBox.setSelectedItem( syslogFacility.getFacilityName() );
+        
+        // PRIORITY /////
+        SyslogPriority syslogPriority = loggingSettings.getSyslogThreshold();
+        thresholdJComboBox.setSelectedItem( syslogPriority.getName() );
+        	
+    }
+    
+    
+    private void initComponents() {//GEN-BEGIN:initComponents
+        java.awt.GridBagConstraints gridBagConstraints;
+
+        syslogButtonGroup = new javax.swing.ButtonGroup();
+        trapButtonGroup = new javax.swing.ButtonGroup();
+        externalRemoteJPanel = new javax.swing.JPanel();
+        syslogEnabledRadioButton = new javax.swing.JRadioButton();
+        syslogDisabledRadioButton = new javax.swing.JRadioButton();
+        enableRemoteJPanel = new javax.swing.JPanel();
+        restrictIPJPanel = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
+        hostJTextField = new javax.swing.JTextField();
+        jLabel11 = new javax.swing.JLabel();
+        portJSpinner = new javax.swing.JSpinner();
+        jLabel8 = new javax.swing.JLabel();
+        facilityJComboBox = new javax.swing.JComboBox();
+        jLabel12 = new javax.swing.JLabel();
+        thresholdJComboBox = new javax.swing.JComboBox();
+
+        setLayout(new java.awt.GridBagLayout());
+
+        setMaximumSize(new java.awt.Dimension(563, 343));
+        setMinimumSize(new java.awt.Dimension(563, 343));
+        setPreferredSize(new java.awt.Dimension(563, 343));
+        externalRemoteJPanel.setLayout(new java.awt.GridBagLayout());
+
+        externalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Syslog Monitoring", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+        syslogButtonGroup.add(syslogEnabledRadioButton);
+        syslogEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        syslogEnabledRadioButton.setText("<html><b>Enable</b> Syslog Monitoring.</html>");
+        syslogEnabledRadioButton.setFocusPainted(false);
+        syslogEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                syslogEnabledRadioButtonActionPerformed(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        externalRemoteJPanel.add(syslogEnabledRadioButton, gridBagConstraints);
+
+        syslogButtonGroup.add(syslogDisabledRadioButton);
+        syslogDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        syslogDisabledRadioButton.setText("<html><b>Disable</b> Syslog Monitoring. (This is the default setting.)</html>");
+        syslogDisabledRadioButton.setFocusPainted(false);
+        syslogDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                syslogDisabledRadioButtonActionPerformed(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+        externalRemoteJPanel.add(syslogDisabledRadioButton, gridBagConstraints);
+
+        enableRemoteJPanel.setLayout(new java.awt.GridBagLayout());
+
+        restrictIPJPanel.setLayout(new java.awt.GridBagLayout());
+
+        jLabel5.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel5.setText("Host:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        restrictIPJPanel.add(jLabel5, gridBagConstraints);
+
+        hostJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
+        hostJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
+        hostJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
+        restrictIPJPanel.add(hostJTextField, gridBagConstraints);
+
+        jLabel11.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel11.setText("Port:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        restrictIPJPanel.add(jLabel11, gridBagConstraints);
+
+        portJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
+        portJSpinner.setFocusable(false);
+        portJSpinner.setMaximumSize(new java.awt.Dimension(75, 19));
+        portJSpinner.setMinimumSize(new java.awt.Dimension(75, 19));
+        portJSpinner.setPreferredSize(new java.awt.Dimension(75, 19));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
+        restrictIPJPanel.add(portJSpinner, gridBagConstraints);
+
+        jLabel8.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel8.setText("Faclility:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        restrictIPJPanel.add(jLabel8, gridBagConstraints);
+
+        facilityJComboBox.setFont(new java.awt.Font("Dialog", 0, 12));
+        facilityJComboBox.setFocusable(false);
+        facilityJComboBox.setMaximumSize(new java.awt.Dimension(150, 19));
+        facilityJComboBox.setMinimumSize(new java.awt.Dimension(150, 19));
+        facilityJComboBox.setPreferredSize(new java.awt.Dimension(150, 19));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
+        restrictIPJPanel.add(facilityJComboBox, gridBagConstraints);
+
+        jLabel12.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel12.setText("Threshold:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        restrictIPJPanel.add(jLabel12, gridBagConstraints);
+
+        thresholdJComboBox.setFont(new java.awt.Font("Dialog", 0, 12));
+        thresholdJComboBox.setFocusable(false);
+        thresholdJComboBox.setMaximumSize(new java.awt.Dimension(150, 19));
+        thresholdJComboBox.setMinimumSize(new java.awt.Dimension(150, 19));
+        thresholdJComboBox.setPreferredSize(new java.awt.Dimension(150, 19));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
+        restrictIPJPanel.add(thresholdJComboBox, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 0);
+        enableRemoteJPanel.add(restrictIPJPanel, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
+        externalRemoteJPanel.add(enableRemoteJPanel, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
+        add(externalRemoteJPanel, gridBagConstraints);
+
+    }//GEN-END:initComponents
+
+    private void syslogDisabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_syslogDisabledRadioButtonActionPerformed
+        setSyslogEnabledDependency( false );
+    }//GEN-LAST:event_syslogDisabledRadioButtonActionPerformed
+
+    private void syslogEnabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_syslogEnabledRadioButtonActionPerformed
+        setSyslogEnabledDependency( true );
+    }//GEN-LAST:event_syslogEnabledRadioButtonActionPerformed
+    
+
+    private void setSyslogEnabledDependency(boolean enabled){
+	hostJTextField.setEnabled( enabled );
+	portJSpinner.setEnabled( enabled );
+	facilityJComboBox.setEnabled( enabled );
+	thresholdJComboBox.setEnabled( enabled );
+    }
+
+
+    
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel enableRemoteJPanel;
+    private javax.swing.JPanel externalRemoteJPanel;
+    private javax.swing.JComboBox facilityJComboBox;
+    public javax.swing.JTextField hostJTextField;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JSpinner portJSpinner;
+    private javax.swing.JPanel restrictIPJPanel;
+    private javax.swing.ButtonGroup syslogButtonGroup;
+    public javax.swing.JRadioButton syslogDisabledRadioButton;
+    public javax.swing.JRadioButton syslogEnabledRadioButton;
+    private javax.swing.JComboBox thresholdJComboBox;
+    private javax.swing.ButtonGroup trapButtonGroup;
+    // End of variables declaration//GEN-END:variables
+    
+
+}
