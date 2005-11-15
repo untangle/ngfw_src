@@ -32,16 +32,16 @@ public class ReportingSummarizer extends BaseSummarizer {
         long p2sOut = 0;
         long s2pOut = 0;
         long p2cOut = 0;
-	long numOut = 0;
-	
+    long numOut = 0;
+
         long c2pIn = 0;
         long p2sIn = 0;
         long s2pIn = 0;
         long p2cIn = 0;
-	long numIn = 0;
-	
+    long numIn = 0;
+
         try {
-            String sql = "SELECT sum(c2p_bytes), sum(p2s_bytes), sum(s2p_bytes), sum(p2c_bytes), count(*) FROM pl_endp JOIN pl_stats USING (session_id) WHERE client_intf = 1 AND raze_date >= ? AND create_date < ?";
+            String sql = "SELECT sum(c2p_bytes), sum(p2s_bytes), sum(s2p_bytes), sum(p2c_bytes), count(*) FROM pl_endp endp JOIN pl_stats stats USING endp.event_id = stats.pl_endp_id WHERE client_intf = 1 AND raze_date >= ? AND create_date < ?";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -51,11 +51,11 @@ public class ReportingSummarizer extends BaseSummarizer {
             p2sOut = rs.getLong(2);
             s2pOut = rs.getLong(3);
             p2cOut = rs.getLong(4);
-	    numOut = rs.getLong(5);
+        numOut = rs.getLong(5);
             rs.close();
             ps.close();
 
-            sql = "SELECT sum(c2p_bytes), sum(p2s_bytes), sum(s2p_bytes), sum(p2c_bytes), count(*) FROM pl_endp JOIN pl_stats USING (session_id) WHERE client_intf = 0 AND raze_date >= ? AND create_date < ?";
+            sql = "SELECT sum(c2p_bytes), sum(p2s_bytes), sum(s2p_bytes), sum(p2c_bytes), count(*) FROM pl_endp endp JOIN pl_stats stats ON endp.event_id = stats.pl_endp_id WHERE client_intf = 0 AND raze_date >= ? AND create_date < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -65,7 +65,7 @@ public class ReportingSummarizer extends BaseSummarizer {
             p2sIn = rs.getLong(2);
             s2pIn = rs.getLong(3);
             p2cIn = rs.getLong(4);
-	    numIn = rs.getLong(5);
+        numIn = rs.getLong(5);
             rs.close();
             ps.close();
 

@@ -36,8 +36,8 @@ SELECT evt.time_stamp, subject, recip_addr.addr AS recip_addr, \
            ON (msg.id = evt.msg_id \
              AND evt.is_spam \
              AND evt.vendor_name = 'Clam') \
-         JOIN pl_endp \
-           USING (session_id) \
+         JOIN pl_endp endp \
+           ON endp.event_id = msg.pl_endp_id \
   ORDER BY evt.time_stamp DESC
 
 TOPLEFT.label=Timestamp

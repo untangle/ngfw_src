@@ -36,7 +36,7 @@
        SUM(p2c_bytes + c2p_bytes) AS DATA_TRANSFERRED
   FROM tr_nat_redirect_evt evt
          JOIN pl_endp endp ON endp.event_id = evt.pl_endp_id
-         JOIN pl_stats USING (session_id)
+         JOIN pl_stats stats ON endp.event_id = stats.pl_endp_id
   WHERE evt.time_stamp >= $P{startTime} AND evt.time_stamp < $P{endTime} AND NOT evt.is_dmz
   GROUP BY rule_id, RULE
   ORDER BY DATA_TRANSFERRED DESC, RULE ASC

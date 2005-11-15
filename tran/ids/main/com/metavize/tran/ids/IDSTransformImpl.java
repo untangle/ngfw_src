@@ -34,7 +34,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         + "s_server_addr, s_server_port, "
         + "policy_inbound AS incoming "
         + "FROM pl_endp endp "
-        + "JOIN tr_ids_evt USING (session_id) "
+        + "JOIN tr_ids_evt evt ON endp.event_id = evt.pl_endp_id "
         + "WHERE endp.policy_id = ? ";
 
     private static final String EVENT_QUERY

@@ -17,7 +17,6 @@ import java.util.*;
 
 import com.metavize.mvvm.reporting.*;
 import com.metavize.mvvm.util.PortServiceNames;
-import net.sf.jasperreports.engine.JRDefaultScriptlet;
 import net.sf.jasperreports.engine.JRScriptletException;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.labels.StandardPieItemLabelGenerator;
@@ -62,7 +61,7 @@ public class TrafficByPortGraph extends TopTenPieGraph
         System.out.println("Start Date: " + startDate + ", End Date: " + endDate);
 
         // Load up the datasets
-        String sql = "SELECT proto, s_server_port, client_intf, count(*), sum(c2p_bytes), sum(p2s_bytes), sum(s2p_bytes), sum(p2c_bytes) FROM pl_endp JOIN pl_stats USING (session_id) WHERE ";
+        String sql = "SELECT proto, s_server_port, client_intf, count(*), sum(c2p_bytes), sum(p2s_bytes), sum(s2p_bytes), sum(p2c_bytes) FROM pl_endp endp JOIN pl_stats stats ON endp.event_id = stats.pl_endp_id WHERE ";
         if (!doIncomingSessions || !doOutgoingSessions)
             sql += "client_intf = ? AND ";
         sql += "create_date <= ? and raze_date >= ? GROUP BY client_intf, proto, s_server_port";

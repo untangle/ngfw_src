@@ -30,9 +30,9 @@ public class HttpBlockerSummarizer extends BaseSummarizer {
         long totalTraffic = 0l;
 
         try {
-	    String sql;
-	    PreparedStatement ps;
-	    ResultSet rs;
+        String sql;
+        PreparedStatement ps;
+        ResultSet rs;
 
             sql = "SELECT COUNT(*) FROM tr_http_evt_req WHERE time_stamp >= ? AND time_stamp < ?";
             ps = conn.prepareStatement(sql);
@@ -54,7 +54,7 @@ public class HttpBlockerSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "SELECT SUM(c2p_bytes), SUM(s2p_bytes), SUM(p2c_bytes), SUM(p2s_bytes) FROM tr_http_evt_req AS h, pl_stats AS p WHERE h.time_stamp >= ? AND h.time_stamp < ? AND h.session_id = p.session_id";
+            sql = "SELECT SUM(c2p_bytes), SUM(s2p_bytes), SUM(p2c_bytes), SUM(p2s_bytes) FROM tr_http_evt_req AS h, pl_stats AS p WHERE h.time_stamp >= ? AND h.time_stamp < ? AND h.pl_endp_id = p.event_id";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
