@@ -16,6 +16,8 @@ import java.util.Date;
 
 import com.metavize.mvvm.argon.IPSessionDesc;
 import com.metavize.mvvm.logging.LogEvent;
+import com.metavize.mvvm.logging.SyslogBuilder;
+import com.metavize.mvvm.logging.SyslogPriority;
 import com.metavize.mvvm.policy.Policy;
 
 /**
@@ -374,5 +376,22 @@ public class PipelineEndpoints extends LogEvent
     public void setInbound(boolean inbound)
     {
         this.policyInbound = inbound;
+    }
+
+    // Syslog methods ---------------------------------------------------------
+
+    public void appendSyslog(SyslogBuilder sb)
+    {
+        sb.addField("sid", sessionId);
+        sb.addField("prot", protocol);
+        sb.addField("caddr", cClientAddr);
+        sb.addField("cport", cClientPort);
+        sb.addField("saddr", sServerAddr);
+        sb.addField("sport", sServerPort);
+    }
+
+    public SyslogPriority getSyslogPrioritiy()
+    {
+        return SyslogPriority.DEBUG;
     }
 }

@@ -221,7 +221,7 @@ CREATE TABLE settings.snmp_settings (
     trap_host text,
     trap_com text,
     trap_port int4,
-    PRIMARY KEY (snmp_settings_id));      
+    PRIMARY KEY (snmp_settings_id));
 
 -----------
 -- events |
@@ -263,7 +263,7 @@ CREATE TABLE events.pl_endp (
 CREATE TABLE events.pl_stats (
     event_id int8 NOT NULL,
     time_stamp timestamp,
-    session_id int4,
+    pl_endp_id int8,
     raze_date timestamp,
     c2p_bytes int8,
     s2p_bytes int8,
@@ -361,3 +361,7 @@ ALTER TABLE settings.transform_persistent_state
 ALTER TABLE settings.ipmaddr_dir_entries
     ADD CONSTRAINT fk_ipmaddr_dir_entries
     FOREIGN KEY (ipmaddr_dir_id) REFERENCES settings.ipmaddr_dir;
+
+ALTER TABLE events.pl_stats
+    ADD CONSTRAINT fk_plstats_to_plendp
+    FOREIGN KEY (pl_endp_id) REFERENCES events.pl_endp;

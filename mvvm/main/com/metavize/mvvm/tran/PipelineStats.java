@@ -14,7 +14,9 @@ package com.metavize.mvvm.tran;
 import java.util.Date;
 
 import com.metavize.mvvm.argon.IPSessionDesc;
-import com.metavize.mvvm.logging.LogEvent;
+import com.metavize.mvvm.logging.PipelineEvent;
+import com.metavize.mvvm.logging.SyslogBuilder;
+import com.metavize.mvvm.logging.SyslogPriority;
 
 /**
  * Used to record the Session stats at session end time.
@@ -28,11 +30,9 @@ import com.metavize.mvvm.logging.LogEvent;
  * table="PL_STATS"
  * mutable="false"
  */
-public class PipelineStats extends LogEvent
+public class PipelineStats extends PipelineEvent
 {
     private static final long serialVersionUID = 2479594766473917892L;
-
-    private int sessionId;
 
     private Date razeDate;
 
@@ -52,7 +52,8 @@ public class PipelineStats extends LogEvent
 
     public PipelineStats(IPSessionDesc begin, IPSessionDesc end)
     {
-        sessionId = begin.id();
+        super(begin.id());
+
         razeDate = new Date();
 
         c2pBytes = begin.c2tBytes();
@@ -67,23 +68,6 @@ public class PipelineStats extends LogEvent
     }
 
     // accessors --------------------------------------------------------------
-
-    /**
-     * Session id.
-     *
-     * @return the id of the session
-     * @hibernate.property
-     * column="SESSION_ID"
-     */
-    public int getSessionId()
-    {
-        return sessionId;
-    }
-
-    public void setSessionId(int sessionId)
-    {
-        this.sessionId = sessionId;
-    }
 
     /**
      * Time the session ended
@@ -236,5 +220,25 @@ public class PipelineStats extends LogEvent
     public void setP2sChunks(long p2sChunks)
     {
         this.p2sChunks = p2sChunks;
+    }
+
+    // Syslog methods ---------------------------------------------------------
+
+    protected void doSyslog(SyslogBuilder sb)
+    {
+        sb.addField("c2pBytes", c2pBytes);
+        sb.addField("p2sBytes", p2sBytes);
+        sb.addField("s2pBytes", s2pBytes);
+        sb.addField("p2cBytes", p2cBytes);
+
+        sb.addField("c2pChunks", c2pChunks);
+        sb.addField("p2sChunks", c2pChunks);
+        sb.addField("s2pChunks", c2pChunks);
+        sb.addField("p2cChunks", c2pChunks);
+    }
+
+    public SyslogPriority getSyslogPrioritiy()
+    {
+        return SyslogPriority.DEBUG;
     }
 }

@@ -12,6 +12,7 @@
 package com.metavize.mvvm.engine;
 
 import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.util.Formatter;
 
 import com.metavize.mvvm.logging.LogEvent;
@@ -76,6 +77,11 @@ public class SyslogBuilderImpl implements SyslogBuilder
     public void addField(String key, double value)
     {
         addField(key, Double.toString(value));
+    }
+
+    public void addField(String key, InetAddress ia)
+    {
+        addField(key, ia.getHostAddress());
     }
 
     DatagramPacket makePacket(LogEvent e, int facility, String host,

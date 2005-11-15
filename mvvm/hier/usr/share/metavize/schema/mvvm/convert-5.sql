@@ -27,7 +27,7 @@ CREATE TABLE settings.snmp_settings (
     trap_host text,
     trap_com text,
     trap_port int4,
-    PRIMARY KEY (snmp_settings_id));      
+    PRIMARY KEY (snmp_settings_id));
 
 ---------------
 -- old tables |
@@ -35,6 +35,23 @@ CREATE TABLE settings.snmp_settings (
 
 DROP TABLE settings.rule;
 DROP TABLE settings.uri_rule;
+
+---------------------
+-- point at pl_endp |
+---------------------
+
+DROP TABLE events.mvvm_tmp;
+
+CREATE TABLE events.mvvm_tmp AS
+    SELECT evt.event_id, evt.time_stamp, endp.event_id AS pl_endp_id,
+           raze_date, c2p_bytes, s2p_bytes, p2c_bytes, p2s_bytes,
+           c2p_chunks, s2p_chunks, p2c_chunks, p2s_chunks
+    FROM events.pl_stats evt JOIN events.pl_endp endp USING (session_id);
+
+DROP TABLE events.pl_stats;
+ALTER TABLE events.mvvm_tmp RENAME TO pl_stats;
+ALTER TABLE events.pl_stats ALTER COLUMN event_id SET NOT NULL;
+ALTER TABLE events.pl_stats ADD PRIMARY KEY (event_id);
 
 ------------------------
 -- elimintate varchars |
@@ -242,3 +259,7 @@ ALTER TABLE settings.user_policy_rule
 ALTER TABLE settings.system_policy_rule
     ADD CONSTRAINT fk_system_policy_rule_policy
     FOREIGN KEY (policy_id) REFERENCES settings.policy;
+
+ALTER TABLE events.pl_stats
+    ADD CONSTRAINT fk_plstats_to_plendp
+    FOREIGN KEY (pl_endp_id) REFERENCES events.pl_endp;
