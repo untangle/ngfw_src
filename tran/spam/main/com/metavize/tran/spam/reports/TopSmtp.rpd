@@ -22,7 +22,7 @@ SELECT addr, count, top_count, all_count \
                  JOIN tr_mail_message_info_addr user_addr \
                    ON (msg.id = user_addr.msg_id \
                      AND user_addr.kind = 'B') \
-                 JOIN tr_spam_evt evt \
+                 JOIN tr_spam_evt_smtp evt \
                    ON (msg.id = evt.msg_id \
                      AND evt.time_stamp >= $P{startTime} \
                      AND evt.time_stamp < $P{endTime} \
@@ -36,7 +36,7 @@ SELECT addr, count, top_count, all_count \
                          JOIN tr_mail_message_info_addr user_addr \
                            ON (msg.id = user_addr.msg_id \
                              AND user_addr.kind = 'B') \
-                         JOIN tr_spam_evt evt \
+                         JOIN tr_spam_evt_smtp evt \
                            ON (msg.id = evt.msg_id \
                              AND evt.time_stamp >= $P{startTime} \
                              AND evt.time_stamp < $P{endTime} \
@@ -50,7 +50,7 @@ SELECT addr, count, top_count, all_count \
                          JOIN tr_mail_message_info_addr user_addr \
                            ON (msg.id = user_addr.msg_id \
                              AND user_addr.kind = 'B') \
-                         JOIN tr_spam_evt evt \
+                         JOIN tr_spam_evt_smtp evt \
                            ON (msg.id = evt.msg_id \
                              AND evt.time_stamp >= $P{startTime} \
                              AND evt.time_stamp < $P{endTime} \
