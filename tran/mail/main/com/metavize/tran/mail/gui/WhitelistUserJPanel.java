@@ -250,6 +250,7 @@ class WhitelistUserTableModel extends MSortedTableModel {
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );
             tempRow.add( address );
+	    allRows.add( tempRow );
         }
         
         return allRows;

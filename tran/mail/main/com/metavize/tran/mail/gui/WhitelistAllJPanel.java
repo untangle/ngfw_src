@@ -291,6 +291,7 @@ class WhitelistAllTableModel extends MSortedTableModel {
             tempRow.add( rowIndex );
             tempRow.add( safelist );
             tempRow.add( counts[rowIndex-1] );
+	    allRows.add( tempRow );
         }
         return allRows;
 
