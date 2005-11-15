@@ -280,6 +280,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 10, 0);
         smtpJPanel.add(jLabel1, gridBagConstraints);
 
+        smtpInboundJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
         smtpInboundJSpinner.setMaximumSize(new java.awt.Dimension(100, 20));
         smtpInboundJSpinner.setMinimumSize(new java.awt.Dimension(100, 20));
         smtpInboundJSpinner.setPreferredSize(new java.awt.Dimension(100, 20));
@@ -298,6 +299,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         smtpJPanel.add(jLabel2, gridBagConstraints);
 
+        smtpOutboundJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
         smtpOutboundJSpinner.setMaximumSize(new java.awt.Dimension(100, 20));
         smtpOutboundJSpinner.setMinimumSize(new java.awt.Dimension(100, 20));
         smtpOutboundJSpinner.setPreferredSize(new java.awt.Dimension(100, 20));
@@ -319,6 +321,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
         timeoutJPanel.add(jSeparator3, gridBagConstraints);
 
         popJPanel.setLayout(new java.awt.GridBagLayout());
@@ -331,6 +334,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 10, 0);
         popJPanel.add(jLabel5, gridBagConstraints);
 
+        popInboundJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
         popInboundJSpinner.setMaximumSize(new java.awt.Dimension(100, 20));
         popInboundJSpinner.setMinimumSize(new java.awt.Dimension(100, 20));
         popInboundJSpinner.setPreferredSize(new java.awt.Dimension(100, 20));
@@ -339,7 +343,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 19, 10, 0);
         popJPanel.add(popInboundJSpinner, gridBagConstraints);
 
         jLabel6.setText("POP Outbound (seconds)");
@@ -349,6 +353,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         popJPanel.add(jLabel6, gridBagConstraints);
 
+        popOutboundJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
         popOutboundJSpinner.setMaximumSize(new java.awt.Dimension(100, 20));
         popOutboundJSpinner.setMinimumSize(new java.awt.Dimension(100, 20));
         popOutboundJSpinner.setPreferredSize(new java.awt.Dimension(100, 20));
@@ -357,7 +362,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 19, 0, 0);
         popJPanel.add(popOutboundJSpinner, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -370,6 +375,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
         timeoutJPanel.add(jSeparator4, gridBagConstraints);
 
         imapJPanel.setLayout(new java.awt.GridBagLayout());
@@ -382,6 +388,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 10, 0);
         imapJPanel.add(jLabel7, gridBagConstraints);
 
+        imapInboundJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
         imapInboundJSpinner.setMaximumSize(new java.awt.Dimension(100, 20));
         imapInboundJSpinner.setMinimumSize(new java.awt.Dimension(100, 20));
         imapInboundJSpinner.setPreferredSize(new java.awt.Dimension(100, 20));
@@ -390,7 +397,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 12, 10, 0);
         imapJPanel.add(imapInboundJSpinner, gridBagConstraints);
 
         jLabel8.setText("IMAP Outbound (seconds)");
@@ -400,6 +407,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         imapJPanel.add(jLabel8, gridBagConstraints);
 
+        imapOutboundJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
         imapOutboundJSpinner.setMaximumSize(new java.awt.Dimension(100, 20));
         imapOutboundJSpinner.setMinimumSize(new java.awt.Dimension(100, 20));
         imapOutboundJSpinner.setPreferredSize(new java.awt.Dimension(100, 20));
@@ -408,7 +416,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 12, 0, 0);
         imapJPanel.add(imapOutboundJSpinner, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();

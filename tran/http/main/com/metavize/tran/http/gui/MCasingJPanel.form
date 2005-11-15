@@ -205,6 +205,9 @@
             </Component>
             <Component class="javax.swing.JSpinner" name="maxUriJSpinner">
               <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Dialog" size="12" style="0"/>
+                </Property>
                 <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[100, 20]"/>
                 </Property>
@@ -342,6 +345,9 @@
             </Component>
             <Component class="javax.swing.JSpinner" name="maxHeaderJSpinner">
               <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Dialog" size="12" style="0"/>
+                </Property>
                 <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[100, 20]"/>
                 </Property>

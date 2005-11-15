@@ -232,6 +232,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         uriSpinnerJPanel.add(jLabel3, gridBagConstraints);
 
+        maxUriJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
         maxUriJSpinner.setMaximumSize(new java.awt.Dimension(100, 20));
         maxUriJSpinner.setMinimumSize(new java.awt.Dimension(100, 20));
         maxUriJSpinner.setPreferredSize(new java.awt.Dimension(100, 20));
@@ -310,6 +311,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         headerSpinnerJpanel.add(jLabel5, gridBagConstraints);
 
+        maxHeaderJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
         maxHeaderJSpinner.setMaximumSize(new java.awt.Dimension(100, 20));
         maxHeaderJSpinner.setMinimumSize(new java.awt.Dimension(100, 20));
         maxHeaderJSpinner.setPreferredSize(new java.awt.Dimension(100, 20));
