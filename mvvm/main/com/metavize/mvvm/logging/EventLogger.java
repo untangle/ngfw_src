@@ -142,9 +142,11 @@ public class EventLogger<E extends LogEvent> implements EventManager<E>
         synchronized (WORKERS) {
             inputQueue = null;
             Worker w = WORKERS.get(tid);
-            w.stop();
-            if (!w.isLive()) {
-                WORKERS.remove(tid);
+            if (null != w) {
+                w.stop();
+                if (!w.isLive()) {
+                    WORKERS.remove(tid);
+                }
             }
         }
     }
