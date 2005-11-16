@@ -14,21 +14,21 @@ package com.metavize.tran.virus;
 
 import com.metavize.mvvm.logging.EventHandler;
 import com.metavize.mvvm.logging.FilterDesc;
-import com.metavize.mvvm.tran.TransformContext;
 
 public class VirusHttpEventHandler implements EventHandler<VirusEvent>
 {
     private static final FilterDesc FILTER_DESC = new FilterDesc("HTTP Events");
-    private static final String WARM_QUERY
-        = "FROM VirusHttpEvent evt WHERE evt.requestLine.httpRequestEvent.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
 
-    private final TransformContext transformContext;
+    private final String warmQuery;
 
     // constructors -----------------------------------------------------------
 
-    VirusHttpEventHandler(TransformContext transformContext)
+    VirusHttpEventHandler(String vendorName)
     {
-        this.transformContext = transformContext;
+        warmQuery = "FROM VirusHttpEvent evt "
+        + "WHERE evt.vendorName = '" + vendorName + "' "
+        + "AND evt.requestLine.httpRequestEvent.pipelineEndpoints.policy = :policy "
+        + "ORDER BY evt.timeStamp";
     }
 
     // EventCache methods -----------------------------------------------------
@@ -40,7 +40,7 @@ public class VirusHttpEventHandler implements EventHandler<VirusEvent>
 
     public String[] getQueries()
     {
-        return new String[] { WARM_QUERY };
+        return new String[] { warmQuery };
     }
 
     public boolean accept(VirusEvent e)
