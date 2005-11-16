@@ -221,7 +221,8 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
     }
 
     protected void preStart() throws TransformStartException {
-/*        IDSTest test = new IDSTest();
+        logger.error("Running test...");
+		IDSTest test = new IDSTest();
         logger.info("Pre Start");
         if(!test.runTest())
           throw new TransformStartException("IDS Test failed"); // */

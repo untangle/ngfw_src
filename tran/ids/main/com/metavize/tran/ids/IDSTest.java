@@ -34,7 +34,7 @@ public class IDSTest {
 	}
 	
 	private static final Logger log = Logger.getLogger(IDSTest.class);
-	private IDSRuleManager rules = new IDSRuleManager(null);
+	private IDSRuleManager manager = new IDSRuleManager(null);
 	
 	static {
 		log.setLevel(Level.ALL);
@@ -87,7 +87,11 @@ public class IDSTest {
 		
 		for(int i=0; i < testValidStrings.length; i++) {
 			try { 
-				rules.addRule(testValidStrings[i], (long)i);
+				IDSRule rule = manager.createRule(testValidStrings[i], "Testing");
+				rule.setLog(true);
+				rule.setKeyValue((long)i+1337l);
+				manager.addRule(rule);
+			
 			} catch (ParseException e)  { log.error(e.getMessage()); }
 		}
 		return true;
@@ -99,7 +103,7 @@ public class IDSTest {
 		
 		/**Setup*/
 		List<IDSRuleSignature> signatures = new LinkedList<IDSRuleSignature>();
-		for(IDSRuleHeader header : rules.getHeaders())
+		for(IDSRuleHeader header : manager.getHeaders())
 			for(IDSRuleSignature sig : header.getSignatures()) 
 				signatures.add(sig);
 		
@@ -195,7 +199,7 @@ public class IDSTest {
 
 	private void runHeaderTest() {
 		
-		List<IDSRuleHeader> ruleList = rules.getHeaders();
+		List<IDSRuleHeader> ruleList = manager.getHeaders();
 		
 		matchTest(ruleList.get(1), Protocol.TCP, "10.0.0.101", 33242, "66.35.250.8", 80, false);
 		matchTest(ruleList.get(3), Protocol.TCP, "192.168.1.1", 33065, "66.33.22.111", 80, true);
@@ -212,6 +216,7 @@ public class IDSTest {
 		matchTest(ruleList.get(2), Protocol.TCP, "10.0.0.101",3232,"10.0.0.31",4999, false);
 		matchTest(ruleList.get(1), Protocol.TCP, "10.0.0.101",3232,"10.0.0.31",4999, true);
 		matchTest(ruleList.get(3), Protocol.TCP, "10.0.0.101",3232,"10.0.0.31",4999, false);
+		
 	}
 
 	private void matchTest(IDSRuleHeader header, Protocol protocol, String clientAddr, int clientPort, String serverAddr, int serverPort, boolean answer) {
@@ -238,7 +243,7 @@ public class IDSTest {
 	private void runTimeTest(int seconds) {
 		long stopTime = System.currentTimeMillis() + seconds*1000;
 		int counter = 0;
-		rules = IDSDetectionEngine.instance().getRulesForTesting();
+		manager = IDSDetectionEngine.instance().getRulesForTesting();
 		Random rand = new Random();
 		while(stopTime > System.currentTimeMillis()) {
 			try {
@@ -255,7 +260,7 @@ public class IDSTest {
 	private void generateRandomRuleHeaders(int num) {
 		long startTime = System.currentTimeMillis();
 		Random rand = new Random();
-		rules.clear();
+		manager.clear();
 		for(int i=0;i<num;i++) {
 
 			String dir;
@@ -278,7 +283,7 @@ public class IDSTest {
 			serverPort = getRandomPort();
 
 		//	try {
-				//rules.addRule("alert"+prot+clientIP+clientPort+dir+serverIP+serverPort+" ( content: \"I like spoons\"; msg: \"This is just a test\";)");
+				//manager.addRule("alert"+prot+clientIP+clientPort+dir+serverIP+serverPort+" ( content: \"I like spoons\"; msg: \"This is just a test\";)");
 		//	} catch(ParseException e) { log.error("Could not parse rule; " + e.getMessage()); }
 		}
 		long endTime = System.currentTimeMillis() - startTime;

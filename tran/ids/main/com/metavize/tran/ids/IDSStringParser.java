@@ -60,7 +60,7 @@ public class IDSStringParser {
         /* Header should match: prot sourceIP sourcePort -> destIP destPort */
         String tokens[] = header.split(" ");
         if(tokens.length != 6) {
-            throw new ParseException("Not a valid String Header" + header);
+            throw new ParseException("Not a valid String Header:\n" + header);
         }
 		
         /*Objects needed for a IDSRuleHeader constructor*/

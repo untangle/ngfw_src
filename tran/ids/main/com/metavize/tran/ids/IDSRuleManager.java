@@ -83,13 +83,13 @@ public class IDSRuleManager {
                 }
 				
                 //Add the modified rule
-                logger.info("Adding modified rule");
+                logger.debug("Adding modified rule");
                 addRule(rule);
             }
         }
 
         else {
-            logger.info("Does not contain - adding");
+            logger.debug("Does not contain - adding");
             addRule(rule);
         }
         //remove all rules with remove == true
@@ -97,20 +97,21 @@ public class IDSRuleManager {
 			
     }
 	
-    public boolean addRule(String rule, Long key) throws ParseException {
-        IDSRule test = new IDSRule(rule,"Not set", "Not set");
-        test.setLog(true);
-        test.setKeyValue(key);
-        return addRule(test);
-    }
+//    public boolean addRule(String rule, Long key) throws ParseException {
+  //      IDSRule test = new IDSRule(rule,"Not set", "Not set");
+    //    test.setLog(true);
+      //  test.setKeyValue(key);
+        //return addRule(test);
+    //}
 
     public boolean addRule(IDSRule rule) throws ParseException {
         String ruleText = rule.getText();
-	
+		
         String noVarText = substituteVariables(ruleText);
-        String ruleParts[] 		= IDSStringParser.parseRuleSplit(noVarText);
-        IDSRuleHeader header		= IDSStringParser.parseHeader(ruleParts[0], rule.getAction());
-        IDSRuleSignature signature	= IDSStringParser.parseSignature(ruleParts[1], rule.getAction(), rule, false);
+		String ruleParts[] = IDSStringParser.parseRuleSplit(noVarText);
+		
+        IDSRuleHeader header = IDSStringParser.parseHeader(ruleParts[0], rule.getAction());
+        IDSRuleSignature signature = IDSStringParser.parseSignature(ruleParts[1], rule.getAction(), rule, false);
 	
         signature.setToString(ruleParts[1]);
 	
