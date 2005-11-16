@@ -9,7 +9,9 @@ if [ -f "@MVVM_HOME@/activation.key" ]; then
     /usr/bin/find /tmp -mtime +31 -name "*.tmp" | /usr/bin/xargs /bin/rm
     /usr/bin/find @MVVM_HOME@/tmp -mtime +31 | /usr/bin/xargs /bin/rm
 
-    if [ ! -f "$REGDONE" -o "$REGDONE" -ot "$REGINFO" ]; then
-        /usr/bin/mvregister
+    if [ -f "$REGINFO" ]; then
+        if [ ! -f "$REGDONE" -o "$REGDONE" -ot "$REGINFO" ]; then
+            /usr/bin/mvregister
+        fi
     fi
 fi
