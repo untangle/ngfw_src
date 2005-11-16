@@ -10,7 +10,7 @@
     The Spyware Blocker Appliance is identified by the
     <inlinemediaobject>
       <imageobject>
-        <imagedata fileref="figure/spyware_tran_icon.png"/>
+        <imagedata fileref="figure/spyware/spyware_tran_icon.png"/>
       </imageobject>
     </inlinemediaobject>
     symbol.
@@ -20,14 +20,141 @@
     TODO COMPLETE ME.  Someone needs to write this section.  As you do, you should refer to <xref linkend="introduction_ui_appliance"/> as the Spyware Blocker Transform is a "virtual appliance".
   </para>
 
-  
-  <para>
-    As this section is written, these glossary refs may come in handy
-    <glossterm linkend="gloss_cookie">Cookie</glossterm>
-    <glossterm linkend="gloss_subnet">Subnet</glossterm>
-    <glossterm linkend="gloss_activex">ActiveX</glossterm>
-    <glossterm linkend="gloss_url">URL</glossterm>
-  </para>  
+  <!-- ========================================= -->
+  <sect1 id="spyware_tran_block">
+    <title>Block List</title>
 
+    <para>
+      TODO Explain what this tab means in general, and explain that we will discuss the four child tabs
+    </para>
+
+    <!-- ========================================= -->
+    <sect2 id="spyware_tran_block_cookie">
+      <title>Cookie List</title>
+      <figure id="spyware_tran_block_cookie_figure">
+        <title>Cookie List Tab</title>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/spyware/spyware_block_cookie.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        TODO Explain what the Cookie List does, and how the UI works
+        <glossterm linkend="gloss_cookie">Cookie</glossterm>
+      </para>
+    </sect2>
+
+    <!-- ========================================= -->
+    <sect2 id="spyware_tran_block_subnet">
+      <title>Subnet List</title>
+      <figure id="spyware_tran_block_subnet_figure">
+        <title>Subnet List Tab</title>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/spyware/spyware_block_subnet.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        TODO Explain what the Subnet List does, and how the UI works
+        <glossterm linkend="gloss_subnet">Subnet</glossterm>
+      </para>
+    </sect2>
+
+    <!-- ========================================= -->
+    <sect2 id="spyware_tran_block_activex">
+      <title>ActiveX List</title>
+      <figure id="spyware_tran_block_activex_figure">
+        <title>ActiveX List Tab</title>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/spyware/spyware_block_activex.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        TODO Explain what the ActiveX List does, and how the UI works
+        <glossterm linkend="gloss_activex">ActiveX</glossterm>
+      </para>
+    </sect2>
+
+    <!-- ========================================= -->
+    <sect2 id="spyware_tran_block_urllist">
+      <title>URL List</title>
+      <figure id="spyware_tran_block_urllist_figure">
+        <title>URL List Tab</title>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/spyware/spyware_block_urllist.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        TODO Explain what the URL List does, and how the UI works
+        <glossterm linkend="gloss_url">URL</glossterm>
+      </para>
+    </sect2>            
+  </sect1>
+
+  <!-- ========================================= -->
+  <sect1 id="spyware_tran_passlist">
+    <title>Pass List</title>
+
+    <para>
+      TODO
+    </para>
+    <figure id="spyware_tran_passlist_figure">
+      <title>Pass List Tab</title>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figure/spyware/spyware_passlist.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+  </sect1>
+  
+
+  <!-- ========================================= -->
+  <sect1 id="spyware_tran_generalsettings">
+    <title>General Settings</title>
+
+    <para>
+      TODO
+    </para>
+    <figure id="spyware_tran_generalsettings_figure">
+      <title>General Settings Tab</title>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figure/spyware/spyware_general.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+  </sect1>
+
+
+  <!-- ========================================= -->
+  <sect1 id="spyware_tran_eventlog">
+    <title>Event Log</title>
+
+    <para>
+      TODO
+    </para>
+    <figure id="spyware_tran_eventlog_figure">
+      <title>Event Log</title>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figure/spyware/spyware_eventlog.jpg" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+  </sect1>    
 
 </chapter>

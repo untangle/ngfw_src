@@ -10,7 +10,7 @@
     The Web Content Control is identified by the
     <inlinemediaobject>
       <imageobject>
-        <imagedata fileref="figure/httpblocker_tran_icon.png"/>
+        <imagedata fileref="figure/httpblocker/httpblocker_tran_icon.png"/>
       </imageobject>
     </inlinemediaobject>
     symbol.
@@ -20,12 +20,137 @@
     TODO COMPLETE ME.  Someone needs to write this section.  As you do, you should refer to <xref linkend="introduction_ui_appliance"/> as the httpblocker Transform is a "virtual appliance".
   </para>
 
-  
-  <para>
-    As this section is written, these glossary refs may come in handy
-    <glossterm linkend="gloss_url">URL</glossterm>
-    <glossterm linkend="gloss_mime_type">MIME Type</glossterm>
-  </para>  
+
+  <!-- ======================================================== -->
+  <sect1 id="httpblocker_tran_block">
+    <title>Block Lists</title>
+    <para>
+      TODO
+    </para>
+
+    <!-- ############################################################## -->
+    <sect2 id="httpblocker_tran_block_categories">
+      <title>Categories</title>
+      <para>
+        TODO
+      </para>
+      <figure id="httpblocker_tran_block_categories_figure">
+        <title>Categories Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/httpblocker/httpblocker_block_categories.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+    </sect2>
+
+    <!-- ############################################################## -->
+    <sect2 id="httpblocker_tran_block_urls">
+      <title>URLs</title>
+      <para>
+        TODO
+        <glossterm linkend="gloss_url">URL</glossterm>
+      </para>
+      <figure id="httpblocker_tran_block_urls_figure">
+        <title>URLs Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/httpblocker/httpblocker_block_urls.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+    </sect2>
+
+    <!-- ############################################################## -->
+    <sect2 id="httpblocker_tran_block_mime">
+      <title>MIME Types</title>
+      <para>
+        TODO
+        <glossterm linkend="gloss_mime_type">MIME Type</glossterm>
+      </para>
+      <figure id="httpblocker_tran_block_mime_figure">
+        <title>MIME Types Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/httpblocker/httpblocker_block_mime.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+    </sect2>
+
+    <!-- ############################################################## -->
+    <sect2 id="httpblocker_tran_block_fileext">
+      <title>File Extensions</title>
+      <para>
+        TODO
+      </para>
+      <figure id="httpblocker_tran_block_fileext_figure">
+        <title>File Extensions Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/httpblocker/httpblocker_block_fileext.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+    </sect2>          
+  </sect1>
+
+  <!-- ======================================================== -->  
+  <sect1 id="httpblocker_tran_pass">
+    <title>Pass Lists</title>
+    <para>
+    </para>
+
+    <!-- ############################################################## -->
+    <sect2 id="httpblocker_tran_pass_urls">
+      <title>URLs</title>
+      <para>
+        TODO
+        <glossterm linkend="gloss_url">URL</glossterm>
+      </para>
+      <figure id="httpblocker_tran_pass_urls_figure">
+        <title>URLs Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/httpblocker/httpblocker_pass_urls.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+    </sect2>
+
+    <!-- ############################################################## -->
+    <sect2 id="httpblocker_tran_pass_clients">
+      <title>Clients</title>
+      <para>
+        TODO
+      </para>
+      <figure id="httpblocker_tran_pass_clients_figure">
+        <title>Clients Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/httpblocker/httpblocker_pass_clients.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+    </sect2>    
+  </sect1>
+
+  <!-- ======================================================== -->
+  <sect1 id="httpblocker_tran_eventlog">
+    <title>Event Log</title>
+    <para>
+      TODO
+    </para>
+    <figure id="httpblocker_tran_eventlog_figure">
+      <title> Tab</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figure/httpblocker/httpblocker_eventlog.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+  </sect1>  
+
 
 
 </chapter>

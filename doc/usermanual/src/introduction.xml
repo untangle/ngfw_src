@@ -69,5 +69,20 @@
     <para>
       Describe some common topologies, where edgeguard would fit-in.  Discuss bridge and NAT mode.
     </para>
-  </sect1>  
+  </sect1>
+
+  <sect1>
+    <title>Random Stuff</title>
+    <para>
+      This is a catch-all section, where I'm dumping things I need to refer-to from other
+      sections.  We'll have to go back later and refactor this stuff.  However, I didn't
+      want dangling references.
+    </para>
+    <para id="fixme_ui_editing_icons"  xreflabel="Editing Rows">
+      This section is likely part of a larger section explaining the UI conventions, including how when
+      a row is edited you go from a green circle to a yellow triangle.
+    </para>
+
+  </sect1>
+   
 </chapter>

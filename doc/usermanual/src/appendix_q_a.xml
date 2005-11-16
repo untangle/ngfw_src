@@ -5,18 +5,7 @@
 <!--  <qandaset defaultlabel='qanda'> -->
   <qandaset>  
     <qandadiv>
-      <title>General Information</title>
-      <qandaentry>
-        <question>
-          <para>Why</para>
-        </question>
-        <answer>
-          <para>Because</para>
-          <para>Miers never served as a judge and her critics said her background as an attorney, a former head of the Texas State Bar Association and as a Dallas city council member provided few clues to her judicial philosophy.</para>
-          <para>Democrats and Republicans on the Senate Judiciary Committee had asked for documents she had worked on as the White House's top lawyer. The president refused, calling the request "a red line I'm not willing to cross." (Full story)</para>
-          <para>In a letter to the president on Thursday, Miers said she was concerned that she would be called upon to testify about her service as White House counsel, which she said would jeopardize the independence of the Executive branch.</para>
-        </answer>
-      </qandaentry>
+      <title>Something</title>
       <qandaentry>
         <question>
           <para>Really, why</para>

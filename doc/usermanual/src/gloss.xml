@@ -305,6 +305,14 @@ Place new terms under the appropriate alphabetical location.
   
   <glossdiv>
     <title>Q</title>
+
+    <glossentry id="gloss_quarantine">
+      <glossterm>Quarantine</glossterm>
+      <glossdef>
+        <para>TODO</para>
+      </glossdef>            
+    </glossentry>      
+    
   </glossdiv>
 
 <!-- ============== R ================ -->
@@ -353,7 +361,16 @@ Place new terms under the appropriate alphabetical location.
       <glossdef>
         <para>TODO complete me.</para>
       </glossdef>
-    </glossentry>    
+    </glossentry>
+
+
+    <glossentry id="gloss_smtp_server">
+      <glossterm>SMTP Server</glossterm>
+      <glossdef>
+        <para>TODO complete me.</para>
+        <glossseealso otherterm="gloss_smtp"/>
+      </glossdef>
+    </glossentry>      
 
 
     <glossentry id="gloss_subnet">
@@ -455,6 +472,14 @@ Place new terms under the appropriate alphabetical location.
   
   <glossdiv>
     <title>W</title>
+
+    <glossentry id="gloss_worm">
+      <glossterm>Worm</glossterm>
+      <glossdef>
+        <para>TODO complete me.</para>
+      </glossdef>
+    </glossentry>      
+    
   </glossdiv>
 
 <!-- ============== X ================ -->
