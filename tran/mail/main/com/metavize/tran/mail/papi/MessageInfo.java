@@ -11,6 +11,7 @@
 package com.metavize.tran.mail.papi;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -45,12 +46,10 @@ public class MessageInfo implements Serializable
 
     /* columns */
     private Long id; /* msg_id */
-
     private PipelineEndpoints pipelineEndpoints;
-
     private String subject;
-
     private char serverType;
+    private Date timeStamp = new Date();
 
     /* Senders/Receivers */
     private Set addresses = new HashSet();
@@ -103,6 +102,7 @@ public class MessageInfo implements Serializable
 
         MessageInfoAddr newAddr = new MessageInfoAddr(this, p, kind, address, personal);
         addresses.add(newAddr);
+        return;
     }
 
     /* public methods */
@@ -121,6 +121,7 @@ public class MessageInfo implements Serializable
     private void setId(Long id)
     {
         this.id = id;
+        return;
     }
 
     /**
@@ -143,6 +144,7 @@ public class MessageInfo implements Serializable
     public void setAddresses(Set s)
     {
         addresses = s;
+        return;
     }
 
     /**
@@ -162,12 +164,14 @@ public class MessageInfo implements Serializable
     public void setPipelineEndpoints(PipelineEndpoints pipelineEndpoints)
     {
         this.pipelineEndpoints = pipelineEndpoints;
+        return;
     }
 
     public void setPipelineEndpoints(int sessionId)
     {
         pipelineEndpoints = MvvmContextFactory.context().pipelineFoundry()
             .getPipeline(sessionId).getPipelineEndpoints();
+        return;
     }
 
     /**
@@ -189,6 +193,7 @@ public class MessageInfo implements Serializable
             subject = subject.substring(0, DEFAULT_STRING_SIZE);
         }
         this.subject = subject;
+        return;
     }
 
     /**
@@ -209,5 +214,24 @@ public class MessageInfo implements Serializable
     public void setServerType(char serverType)
     {
         this.serverType = serverType;
+        return;
+    }
+
+    /**
+     * Identify approximate datetime that this message was received.
+     *
+     * @return datetime of message.
+     * @hibernate.property
+     * column="TIME_STAMP"
+     */
+    public Date getTimeStamp()
+    {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(Date timeStamp)
+    {
+        this.timeStamp = timeStamp;
+        return;
     }
 }
