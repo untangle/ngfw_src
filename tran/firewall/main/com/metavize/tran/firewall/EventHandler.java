@@ -152,8 +152,8 @@ class EventHandler extends AbstractEventHandler
         this.rejectSilently = settings.isRejectSilently();
         this.isDefaultAccept = settings.isDefaultAccept();
 
-        /* Empty out the list */
-        firewallRuleList.clear();
+        /* Create a new list in tmp to avoid sessions that are iterating the current list */
+        List <FirewallMatcher> firewallRuleList = new LinkedList<FirewallMatcher>();
 
         List<FirewallRule> list = (List<FirewallRule>)settings.getFirewallRuleList();
 
@@ -170,5 +170,7 @@ class EventHandler extends AbstractEventHandler
                 firewallRuleList.add( new FirewallMatcher( rule, index ));
             }
         }
+
+        this.firewallRuleList = firewallRuleList;
     }
 }

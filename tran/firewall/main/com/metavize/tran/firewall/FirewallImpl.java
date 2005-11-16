@@ -56,10 +56,10 @@ public class FirewallImpl extends AbstractTransform implements Firewall
         this.statisticManager = new FirewallStatisticManager(getTransformContext());
 
         /* Have to figure out pipeline ordering, this should always
-         * next to towards the outside */
+         * next to towards the outside, then there is OpenVpn and then Nat */
         this.pipeSpec = new SoloPipeSpec
             ("firewall", this, handler, Fitting.OCTET_STREAM, Affinity.OUTSIDE,
-             SoloPipeSpec.MAX_STRENGTH - 2);
+             SoloPipeSpec.MAX_STRENGTH - 3);
         this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
 
         TransformContext tctx = getTransformContext();
