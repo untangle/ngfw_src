@@ -2,16 +2,13 @@
 -- timestamps here
 
 DELETE FROM tr_mail_message_info
-WHERE id IN (SELECT msg_id FROM tr_spam_evt_smtp
-             WHERE time_stamp < (:cutoff)::timestamp)
-    OR id IN (SELECT msg_id FROM tr_spam_evt
-              WHERE time_stamp < (:cutoff)::timestamp);
+  WHERE time_stamp < (:cutoff)::timestamp;
 
 DELETE FROM tr_mail_message_info_addr
-WHERE msg_id NOT IN (SELECT id FROM tr_mail_message_info);
+  WHERE msg_id NOT IN (SELECT id FROM tr_mail_message_info);
 
 DELETE FROM tr_mail_message_stats
-WHERE msg_id NOT IN (SELECT id FROM tr_mail_message_info);
+  WHERE msg_id NOT IN (SELECT id FROM tr_mail_message_info);
 
 --due to hibernate mapping/cascade issue,
 --we must manually delete orphaned child data
