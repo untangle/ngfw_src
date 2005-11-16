@@ -35,9 +35,8 @@ public class SpamPopHandler extends PopStateMachine
     private final static Logger logger = Logger.getLogger(SpamPopHandler.class);
 
     /* no block counter */
-    private final static int SCAN_COUNTER = Transform.GENERIC_0_COUNTER;
-    private final static int PASS_COUNTER = Transform.GENERIC_2_COUNTER;
-    private final static int MARK_COUNTER = Transform.GENERIC_3_COUNTER;
+    private final static int PASS_COUNTER = Transform.GENERIC_0_COUNTER;
+    private final static int MARK_COUNTER = Transform.GENERIC_2_COUNTER;
 
     private final SpamImpl zTransform;
     private final SpamScanner zScanner;
@@ -88,7 +87,6 @@ public class SpamPopHandler extends PopStateMachine
     {
         if (true == bScan &&
             giveUpSize >= zMsgFile.length()) {
-            zTransform.incrementCount(SCAN_COUNTER);
 
             SpamReport zReport;
 
