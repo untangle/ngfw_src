@@ -32,8 +32,8 @@ import javax.swing.*;
 public class QuarantineJDialog extends MConfigJDialog {
 
     private static final String NAME_QUARANTINE_SETTINGS = "Email Quarantine";
-    private static final String NAME_ALL_ACCOUNTS = "Quarantine Controls";
-    private static final String NAME_WHITE_LIST = "Quarantine Whitelist";
+    private static final String NAME_ALL_ACCOUNTS = "Quarantine Release/Purge";
+    private static final String NAME_WHITE_LIST = "Quarantine Pass List";
     private static final String NAME_GENERAL_SETTINGS = "General Settings";
 
     public QuarantineJDialog( ) {
