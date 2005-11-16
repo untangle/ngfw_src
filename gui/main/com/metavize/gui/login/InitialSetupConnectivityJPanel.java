@@ -17,7 +17,7 @@ import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.gui.util.Util;
 import com.metavize.mvvm.NetworkingManager;
 import com.metavize.mvvm.NetworkingConfiguration;
-import com.metavize.gui.configuration.ConnectivityJDialog;
+import com.metavize.gui.configuration.NetworkConnectivityTestJDialog;
 
 import java.awt.Dialog;
 
@@ -67,7 +67,7 @@ public class InitialSetupConnectivityJPanel extends javax.swing.JPanel implement
 
     private void connectivityTestJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectivityTestJButtonActionPerformed
         try{
-	    ConnectivityJDialog connectivityJDialog = new ConnectivityJDialog((Dialog)getTopLevelAncestor(), true);
+	    NetworkConnectivityTestJDialog connectivityJDialog = new NetworkConnectivityTestJDialog((Dialog)getTopLevelAncestor(), true);
 	    connectivityJDialog.setVisible(true);
 	}
 	catch(Exception e){
