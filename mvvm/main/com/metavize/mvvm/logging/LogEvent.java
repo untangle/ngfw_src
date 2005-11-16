@@ -98,8 +98,8 @@ public abstract class LogEvent implements Comparable, Serializable
             if (le.id == id) {
                 return 0;
             } else {
-                Integer t = System.identityHashCode(this);
-                Integer u = System.identityHashCode(le);
+                Long t = null == id ? 0L : id;
+                Long u = null == le.id ? 0L : le.id;
                 return t.compareTo(u);
             }
         } else {

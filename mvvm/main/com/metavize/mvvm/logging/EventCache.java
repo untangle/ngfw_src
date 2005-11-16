@@ -21,9 +21,9 @@ import java.util.List;
 import com.metavize.mvvm.policy.Policy;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.util.TransactionWork;
+import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.apache.log4j.Logger;
 
 class EventCache<E extends LogEvent> implements EventFilter<E>
 {
@@ -83,13 +83,14 @@ class EventCache<E extends LogEvent> implements EventFilter<E>
             if (cache.size() < limit) {
                 doWarm(limit, cache);
                 Collections.sort(cache);
-                E last = null;
+                Long last = null;
                 for (Iterator<E> i = cache.iterator(); i.hasNext(); ) {
                     E e = i.next();
-                    if (last == e) {
+                    Long id = e.getId();
+                    if (null == last ? last == id : last.equals(id)) {
                         i.remove();
                     } else {
-                        last = e;
+                        last = id;
                     }
                 }
                 cold = false;

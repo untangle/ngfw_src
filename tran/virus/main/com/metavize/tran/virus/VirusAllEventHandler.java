@@ -14,28 +14,39 @@ package com.metavize.tran.virus;
 
 import com.metavize.mvvm.logging.EventHandler;
 import com.metavize.mvvm.logging.FilterDesc;
-import com.metavize.mvvm.tran.TransformContext;
 
 public class VirusAllEventHandler implements EventHandler<VirusEvent>
 {
     private static final FilterDesc FILTER_DESC = new FilterDesc("All Events");
 
-    private static final String HTTP_QUERY
-        = "FROM VirusHttpEvent evt WHERE evt.requestLine.httpRequestEvent.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
-    private static final String FTP_QUERY
-        = "FROM VirusLogEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
-    private static final String MAIL_QUERY
-        = "FROM VirusMailEvent evt WHERE evt.messageInfo.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
-    private static final String SMTP_QUERY
-        = "FROM VirusSmtpEvent evt WHERE evt.messageInfo.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
-
-    private final TransformContext transformContext;
+    private final String httpQuery;
+    private final String ftpQuery;
+    private final String mailQuery;
+    private final String smtpQuery;
 
     // constructors -----------------------------------------------------------
 
-    VirusAllEventHandler(TransformContext transformContext)
+    VirusAllEventHandler(String vendorName)
     {
-        this.transformContext = transformContext;
+        httpQuery = "FROM VirusHttpEvent evt "
+            + "WHERE evt.vendorName = '" + vendorName + "' "
+            + "AND evt.requestLine.httpRequestEvent.pipelineEndpoints.policy = :policy "
+            + "ORDER BY evt.timeStamp";
+
+        ftpQuery = "FROM VirusLogEvent evt "
+            + "WHERE evt.vendorName = '" + vendorName + "' "
+            + "AND evt.pipelineEndpoints.policy = :policy "
+            + "ORDER BY evt.timeStamp";
+
+        mailQuery = "FROM VirusMailEvent evt "
+            + "WHERE evt.vendorName = '" + vendorName + "' "
+            + "AND evt.messageInfo.pipelineEndpoints.policy = :policy "
+            + "ORDER BY evt.timeStamp";
+
+        smtpQuery = "FROM VirusSmtpEvent evt "
+            + "WHERE evt.vendorName = '" + vendorName + "' "
+            + "AND evt.messageInfo.pipelineEndpoints.policy = :policy "
+            + "ORDER BY evt.timeStamp";
     }
 
     // EventCache methods -----------------------------------------------------
@@ -47,7 +58,7 @@ public class VirusAllEventHandler implements EventHandler<VirusEvent>
 
     public String[] getQueries()
     {
-        return new String[] { HTTP_QUERY, FTP_QUERY, MAIL_QUERY, SMTP_QUERY };
+        return new String[] { httpQuery, ftpQuery, mailQuery, smtpQuery };
     }
 
     public boolean accept(VirusEvent e)

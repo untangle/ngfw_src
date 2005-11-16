@@ -94,9 +94,9 @@ XB-Display-Name: Kaspersky AntiVirus Scanner
 XB-Website: http://www.metavize.com/kaspersky_antivirus.html
 XB-Rack-Position: 5
 Description: The Kaspersky AntiVirus Scanner
- The Kaspersky AntiVirus Scanner, based on Kaspersky's award winning Anti-Virus, is able to
- scan and block inbound and outbound viruses, on HTTP, FTP, and email
- Updates are automatically installed hourly.
+ The Kaspersky AntiVirus Scanner, based on Kaspersky's award winning
+ Anti-Virus, is able to scan and block inbound and outbound viruses,
+ on HTTP, FTP, and email Updates are automatically installed hourly.
 
 Package: clam-transform
 Architecture: any
