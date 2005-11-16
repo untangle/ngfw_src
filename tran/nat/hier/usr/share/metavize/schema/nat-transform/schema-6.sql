@@ -183,4 +183,4 @@ ALTER TABLE settings.tr_nat_dns_hosts
 
 -- indeces for reporting
 
-CREATE INDEX tr_nat_redirect_evt_sess_idx ON tr_nat_redirect_evt (session_id);
+CREATE INDEX tr_nat_redirect_evt_plepid_idx ON events.tr_nat_redirect_evt (pl_endp_id);

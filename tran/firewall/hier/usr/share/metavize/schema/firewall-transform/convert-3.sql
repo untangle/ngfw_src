@@ -60,4 +60,5 @@ ALTER TABLE events.tr_firewall_tmp RENAME TO tr_firewall_evt;
 ALTER TABLE events.tr_firewall_evt ALTER COLUMN event_id SET NOT NULL;
 ALTER TABLE events.tr_firewall_evt ADD PRIMARY KEY (event_id);
 
-
+DROP INDEX tr_firewall_evt_sid_idx;
+CREATE INDEX tr_firewall_evt_plepid_idx ON events.tr_firewall_evt (pl_endp_id);

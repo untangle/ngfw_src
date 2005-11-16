@@ -75,6 +75,10 @@ CREATE TABLE events.tr_firewall_statistic_evt (
 -- constraints |
 ----------------
 
+-- indices for reporting
+
+CREATE INDEX tr_firewall_evt_plepid_idx ON events.tr_firewall_evt (pl_endp_id);
+
 -- foreign key constraints
 
 ALTER TABLE settings.tr_firewall_rules

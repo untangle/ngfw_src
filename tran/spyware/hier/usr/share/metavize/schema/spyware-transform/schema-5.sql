@@ -102,8 +102,8 @@ CREATE INDEX tr_spyware_bl_rid_idx
     ON events.tr_spyware_evt_blacklist (request_id);
 CREATE INDEX tr_spyware_ax_rid_idx
     ON events.tr_spyware_evt_activex (request_id);
-CREATE INDEX tr_spyware_acc_sid_idx
-    ON events.tr_spyware_evt_access (session_id);
+CREATE INDEX tr_spyware_acc_plepid_idx
+    ON events.tr_spyware_evt_access (pl_endp_id);
 
 -- foreign key constraints
 

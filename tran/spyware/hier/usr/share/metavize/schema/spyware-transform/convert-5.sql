@@ -117,3 +117,9 @@ ALTER TABLE settings.tr_spyware_sr
 ALTER TABLE settings.tr_spyware_cr
     ADD CONSTRAINT fk_tr_spyware_cr_rule
     FOREIGN KEY (rule_id) REFERENCES settings.string_rule;
+
+-- indices for reporting
+
+DROP INDEX tr_spyware_acc_sid_idx;
+CREATE INDEX tr_spyware_acc_plepid_idx
+    ON events.tr_spyware_evt_access (pl_endp_id);

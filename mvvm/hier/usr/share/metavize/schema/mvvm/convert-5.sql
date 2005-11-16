@@ -248,6 +248,9 @@ ALTER TABLE events.mvvm_login_evt ADD PRIMARY KEY (event_id);
 -- recreate constraints |
 -------------------------
 
+DROP INDEX pl_stats_sid_idx;
+CREATE INDEX pl_stats_plepid_idx ON events.pl_stats (pl_endp_id);
+
 ALTER TABLE settings.tid
     ADD CONSTRAINT fk_tid_policy
     FOREIGN KEY (policy_id) REFERENCES settings.policy;

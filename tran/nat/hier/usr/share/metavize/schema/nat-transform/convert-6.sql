@@ -15,3 +15,8 @@ DROP TABLE events.tr_nat_redirect_evt;
 ALTER TABLE events.tr_nat_tmp RENAME TO tr_nat_redirect_evt;
 ALTER TABLE events.tr_nat_redirect_evt ALTER COLUMN event_id SET NOT NULL;
 ALTER TABLE events.tr_nat_redirect_evt ADD PRIMARY KEY (event_id);
+
+-- indices for reporting
+
+DROP INDEX tr_nat_redirect_evt_sess_idx;
+CREATE INDEX tr_nat_redirect_evt_plepid_idx ON events.tr_nat_redirect_evt (pl_endp_id);

@@ -310,7 +310,7 @@ CREATE TABLE events.shield_statistic_evt (
 
 CREATE INDEX pl_endp_sid_idx ON events.pl_endp (session_id);
 CREATE INDEX pl_endp_cdate_idx ON events.pl_endp (create_date);
-CREATE INDEX pl_stats_sid_idx ON events.pl_stats (session_id);
+CREATE INDEX pl_stats_plepid_idx ON events.pl_stats (pl_endp_id);
 
 -- list indeces
 

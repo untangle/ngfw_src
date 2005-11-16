@@ -48,7 +48,7 @@ CREATE TABLE events.tr_protofilter_evt (
 
 -- indeces for reporting
 
-CREATE INDEX tr_protofilter_sid_idx ON tr_protofilter_evt (session_id);
+CREATE INDEX tr_protofilter_evt_plepid_idx ON events.tr_protofilter_evt (pl_endp_id);
 
 -- foreign key constraints
 
