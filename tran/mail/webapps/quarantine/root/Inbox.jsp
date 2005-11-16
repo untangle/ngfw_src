@@ -112,14 +112,15 @@ SEP
                 </tr><tr>
                 </tr><tr>
                 <td class="infotext" colspan="2">
-  The emails listed below have been quarantined by your Metavize
-  EdgeGuard appliance. They will be deleted automatically after 20 days.
-  To release any email from the quarantine and have them delivered to
-  your inbox, select the emails and click Release. To delete emails,
-  select the emails to be deleted and click Delete. <br><br>
+  The emails listed below have been quarantined by Metavize EdgeGuard.
+  These emails will be deleted automatically after 20 days.<br><br>
+  To release any email from the quarantine and deliver the email to your email inbox,
+  click the checkboxes for one or more emails and click <code>Release</code>.
+  To delete any email from the quarantine,
+  click the checkboxes for one or more emails and click <code>Delete</code>.<br><br>
   <quarantine:hasSafelist includeIfTrue="true">
-  You may also wish to view your <a href="/quarantine/smc?<quarantine:constants keyName="action"/>=<quarantine:constants valueName="slview"/>&<quarantine:constants keyName="tkn"/>=<quarantine:currentAuthToken encoded="true"/>">safelist</a> of email senders who will never
-  be considered senders of spam.<br><br>
+  You may also view your <a href="/quarantine/smc?<quarantine:constants keyName="action"/>=<quarantine:constants valueName="slview"/>&<quarantine:constants keyName="tkn"/>=<quarantine:currentAuthToken encoded="true"/>">safelist</a>
+  of email senders whose emails you do not want to quarantine.<br><br>
   </quarantine:hasSafelist>
                 </td>
               </tr>

@@ -75,8 +75,14 @@
                 </tr><tr>
                 </tr><tr>
                 <td class="infotext" colspan="2">
-Welcome to your &quot;safelist&quot;.  A safelist is a list of email addresses, usualy your
-friends and collegues.  Emails from people on this list will <i>not</i> be considered spam.<br><br><br><br>
+Welcome to your &quot;safelist.&quot;
+A safelist is a list of email addresses,
+usually email addresses of your friends and colleagues.
+Emails, sent by people on this list, will <i>not</i> be quarantined if these emails are identified as spam or phish.<br><br>
+To remove any email address from the safelist,
+click the checkboxes for one or more email addresses and click <code>Remove Selected Addresses</code>.
+To add an email address to the safelist,
+enter the email address in the text field and click <code>Submit</code>.<br><br>
                 </td>
               </tr>
               <quarantine:hasMessages type="info">
@@ -129,7 +135,7 @@ friends and collegues.  Emails from people on this list will <i>not</i> be consi
                           value="checkall"
                           onclick="CheckAll()"
                           type="checkbox"></th>
-                        <th width="100%">Name</th>
+                        <th width="100%">Email Address</th>
                       </tr>
                     </thead>
                     <tbody>

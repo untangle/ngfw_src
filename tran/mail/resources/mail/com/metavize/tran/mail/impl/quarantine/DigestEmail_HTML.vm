@@ -297,11 +297,12 @@ Where "$record" will be replaced with the "current" record while iterating over 
                 </tr><tr>
                 </tr><tr>
                   <td class="infotext" colspan="2">
-  The emails listed below have been quarantined by your Metavize
-  EdgeGuard appliance. They will be deleted automatically after 20 days.
-  To release any email from the quarantine and have them delivered to
-  your inbox, select the emails and click Release. To delete emails,
-  select the emails to be deleted and click Delete. <br><br><br><br>                
+  The emails listed below have been quarantined by Metavize EdgeGuard.
+  These emails will be deleted automatically after 20 days.<br><br>
+  To release a specific email from the quarantine and deliver the email to your inbox,
+  click <code>Release</code>.
+  To delete a specific email from the quarantine,
+  click <code>Delete</code>.<br><br>
                   </td>
               </tr>
              </tbody>
