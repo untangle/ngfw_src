@@ -36,7 +36,12 @@ public class NetworkAliasJPanel extends MEditTableJPanel{
         super.setTableTitle("");
         super.setDetailsTitle("");
         super.setAddRemoveEnabled(true);
+	super.setAuxJPanelEnabled(true);
         
+	// add a basic description
+	JLabel descriptionJLabel = new JLabel("XXX Put a description here.... XXX");
+	auxJPanel.add(descriptionJLabel);
+
         // create actual table model
         InterfaceAliasModel interfaceAliasModel = new InterfaceAliasModel();
         this.setTableModel( interfaceAliasModel );

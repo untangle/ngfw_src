@@ -27,8 +27,9 @@ import javax.swing.*;
 public class NetworkJDialog extends MConfigJDialog {
 
     private static final String NAME_NETWORK_SETTINGS = "Network Settings";
+    private static final String NAME_EMAIL_SETTINGS = "Email Settings";
     /* XXX Better name */
-    private static final String NAME_ALIAS_PANEL      = "Address Aliases";
+    private static final String NAME_ALIAS_PANEL      = "Network Aliases";
 
     public NetworkJDialog( ) {
     }
@@ -40,16 +41,25 @@ public class NetworkJDialog extends MConfigJDialog {
     protected void generateGui(){
         this.setTitle(NAME_NETWORK_SETTINGS);
         
-        // GENERAL SETTINGS //////
-        NetworkJPanel networkJPanel = new NetworkJPanel();
-        JScrollPane contentJScrollPane = new JScrollPane( networkJPanel );
-        contentJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
-        contentJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-        this.contentJTabbedPane.addTab(NAME_NETWORK_SETTINGS, null, contentJScrollPane);
-	super.savableMap.put(NAME_NETWORK_SETTINGS, networkJPanel);
-	super.refreshableMap.put(NAME_NETWORK_SETTINGS, networkJPanel);
+        // NETWORK SETTINGS //////
+        NetworkIPJPanel ipJPanel = new NetworkIPJPanel();
+        JScrollPane ipJScrollPane = new JScrollPane( ipJPanel );
+        ipJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
+        ipJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
+        this.contentJTabbedPane.addTab(NAME_NETWORK_SETTINGS, null, ipJScrollPane);
+	super.savableMap.put(NAME_NETWORK_SETTINGS, ipJPanel);
+	super.refreshableMap.put(NAME_NETWORK_SETTINGS, ipJPanel);
 
-        // ALIASES Panel /////
+        // EMAIL SETTINGS /////
+        NetworkEmailJPanel emailJPanel = new NetworkEmailJPanel();
+        JScrollPane emailJScrollPane = new JScrollPane( emailJPanel );
+        emailJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
+        emailJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
+        super.contentJTabbedPane.addTab(NAME_EMAIL_SETTINGS, null, emailJPanel );
+	super.savableMap.put(NAME_EMAIL_SETTINGS, emailJPanel );
+	super.refreshableMap.put(NAME_EMAIL_SETTINGS, emailJPanel );
+        
+        // ALIASES /////
         NetworkAliasJPanel aliasJPanel = new NetworkAliasJPanel();
         super.contentJTabbedPane.addTab(NAME_ALIAS_PANEL, null, aliasJPanel );
 	super.savableMap.put(NAME_ALIAS_PANEL, aliasJPanel );

@@ -21,7 +21,7 @@ import com.metavize.mvvm.tran.*;
 import java.awt.*;
 
 
-public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refreshable {
+public class NetworkIPJPanel extends javax.swing.JPanel implements Savable, Refreshable {
 
     private static final String EXCEPTION_DHCP_IP_ADDRESS = "Invalid \"IP Address\" manually specified.";
     private static final String EXCEPTION_DHCP_NETMASK = "Invalid \"Netmask\" manually specified.";
@@ -31,7 +31,7 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
     private static final String EMPTY_DNS2 = "";
 
     
-    public NetworkJPanel() {
+    public NetworkIPJPanel() {
         initComponents();
     }
 
@@ -220,9 +220,9 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
         dhcpJPanel.setBorder(new javax.swing.border.TitledBorder(null, "External IP Settings", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         dhcpButtonGroup.add(dhcpEnabledRadioButton);
         dhcpEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        dhcpEnabledRadioButton.setText("<html><b>Automatically Set</b>  EdgeGuard's external IP settings from the network's DHCP server.  The settings are shown in the fields below.</html>");
         dhcpEnabledRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set EdgeGuard's IP address from the network's DHCP server.</html>");
         dhcpEnabledRadioButton.setFocusPainted(false);
-        dhcpEnabledRadioButton.setText("<html><b>Automatically Set</b>  EdgeGuard's external IP settings from the network's DHCP server.  The settings are shown in the fields below.</html>");
         dhcpEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 dhcpEnabledRadioButtonActionPerformed(evt);
@@ -237,8 +237,8 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
 
         dhcpButtonGroup.add(dhcpDisabledRadioButton);
         dhcpDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        dhcpDisabledRadioButton.setFocusPainted(false);
         dhcpDisabledRadioButton.setText("<html><b>Manually Set</b> EdgeGuard's external IP settings through the fields below.</html>");
+        dhcpDisabledRadioButton.setFocusPainted(false);
         dhcpDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 dhcpDisabledRadioButtonActionPerformed(evt);
@@ -418,7 +418,7 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
 
     private void connectivityTestJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectivityTestJButtonActionPerformed
         try{
-	    ConnectivityJDialog connectivityJDialog = new ConnectivityJDialog();
+	    NetworkConnectivityTestJDialog connectivityJDialog = new NetworkConnectivityTestJDialog();
 	    connectivityJDialog.setVisible(true);
 	}
 	catch(Exception e){
@@ -430,7 +430,7 @@ public class NetworkJPanel extends javax.swing.JPanel implements Savable, Refres
     private void renewDhcpLeaseJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renewDhcpLeaseJButtonActionPerformed
 	if( Util.getIsDemo() )
 	    return;
-        DhcpLeaseRenewDialog dhcpLeaseRenewDialog = new DhcpLeaseRenewDialog();
+        NetworkDhcpRenewDialog dhcpLeaseRenewDialog = new NetworkDhcpRenewDialog();
         NetworkingConfiguration newNetworkingConfiguration = dhcpLeaseRenewDialog.getNetworkingConfiguration();
         if( newNetworkingConfiguration != null)
             doRefresh( newNetworkingConfiguration );

@@ -17,16 +17,16 @@ import com.metavize.mvvm.*;
 import javax.swing.*;
 import java.awt.*;
 
-public class ConnectivityJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
+public class NetworkConnectivityTestJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
     
     private boolean upgradesAvailable = true;
     
-    public ConnectivityJDialog(Dialog topLevelDialog, boolean isModal){
+    public NetworkConnectivityTestJDialog(Dialog topLevelDialog, boolean isModal){
         super(topLevelDialog, isModal);
         init(topLevelDialog);
     }
     
-    public ConnectivityJDialog() {
+    public NetworkConnectivityTestJDialog() {
         super(Util.getMMainJFrame(), true);
         init(Util.getMMainJFrame());
     }
@@ -192,9 +192,9 @@ public class ConnectivityJDialog extends javax.swing.JDialog implements java.awt
                 Util.handleExceptionNoRestart("Error running connectivity tester", e);
                 
                 SwingUtilities.invokeLater( new Runnable(){ public void run(){
-                    ConnectivityJDialog.this.jProgressBar.setIndeterminate(false);
-                    ConnectivityJDialog.this.jProgressBar.setValue(0);
-                    ConnectivityJDialog.this.jProgressBar.setString("Warning!  Test incomplete for an unknown reason.");
+                    NetworkConnectivityTestJDialog.this.jProgressBar.setIndeterminate(false);
+                    NetworkConnectivityTestJDialog.this.jProgressBar.setValue(0);
+                    NetworkConnectivityTestJDialog.this.jProgressBar.setString("Warning!  Test incomplete for an unknown reason.");
                 }});
                 return;
             }
@@ -205,9 +205,9 @@ public class ConnectivityJDialog extends javax.swing.JDialog implements java.awt
             catch(Exception e){}
             
             SwingUtilities.invokeLater( new Runnable(){ public void run(){
-                ConnectivityJDialog.this.jProgressBar.setIndeterminate(false);
-                ConnectivityJDialog.this.jProgressBar.setValue(100);
-                ConnectivityJDialog.this.jProgressBar.setString("Test complete.");
+                NetworkConnectivityTestJDialog.this.jProgressBar.setIndeterminate(false);
+                NetworkConnectivityTestJDialog.this.jProgressBar.setValue(100);
+                NetworkConnectivityTestJDialog.this.jProgressBar.setString("Test complete.");
             }});
                 
             try{
@@ -235,8 +235,8 @@ public class ConnectivityJDialog extends javax.swing.JDialog implements java.awt
             
 	    
             SwingUtilities.invokeLater( new Runnable(){ public void run(){
-                ConnectivityJDialog.this.jProgressBar.setValue(0);
-                ConnectivityJDialog.this.jProgressBar.setString(result);
+                NetworkConnectivityTestJDialog.this.jProgressBar.setValue(0);
+                NetworkConnectivityTestJDialog.this.jProgressBar.setString(result);
             }});
         }
     }

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: DhcpLeaseRenewDialog.java 194 2005-04-06 19:13:55Z inieves $
+ * $Id$
  */
 
 package com.metavize.gui.configuration;
@@ -20,11 +20,11 @@ import com.metavize.mvvm.NetworkingConfiguration;
 import javax.swing.*;
 
 
-final public class DhcpLeaseRenewDialog extends MOneButtonProgressJDialog {
+final public class NetworkDhcpRenewDialog extends MOneButtonProgressJDialog {
     
     private NetworkingConfiguration networkingConfiguration = null;
     
-    public DhcpLeaseRenewDialog() {
+    public NetworkDhcpRenewDialog() {
         this.setTitle("Renewing DHCP Lease");
         this.labelJLabel.setText("Renewing DHCP Lease");
         this.messageJLabel.setText("<html><center>You have requested that EdgeGuard contact the network's DHCP<br>server in order to renew its lease on DHCP settings.</center></html>");
@@ -45,30 +45,30 @@ final public class DhcpLeaseRenewDialog extends MOneButtonProgressJDialog {
         
     private class DhcpLeaseRenewThread extends Thread {
         public DhcpLeaseRenewThread(){
-            DhcpLeaseRenewDialog.this.jProgressBar.setValue(0);
-            DhcpLeaseRenewDialog.this.jProgressBar.setIndeterminate(true);
-            DhcpLeaseRenewDialog.this.jProgressBar.setString("Renewing DHCP lease...");
-	    DhcpLeaseRenewDialog.this.proceedJButton.setEnabled(false);
+            NetworkDhcpRenewDialog.this.jProgressBar.setValue(0);
+            NetworkDhcpRenewDialog.this.jProgressBar.setIndeterminate(true);
+            NetworkDhcpRenewDialog.this.jProgressBar.setString("Renewing DHCP lease...");
+	    NetworkDhcpRenewDialog.this.proceedJButton.setEnabled(false);
             this.start();
         }
         public void run(){
             try{
-                DhcpLeaseRenewDialog.this.networkingConfiguration = Util.getNetworkingManager().renewDhcpLease();
+                NetworkDhcpRenewDialog.this.networkingConfiguration = Util.getNetworkingManager().renewDhcpLease();
                 Thread.currentThread().sleep(2000l);
                 SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-                    DhcpLeaseRenewDialog.this.jProgressBar.setIndeterminate(false);
-                    DhcpLeaseRenewDialog.this.jProgressBar.setString("DHCP lease renewed.  Proceeding.");
+                    NetworkDhcpRenewDialog.this.jProgressBar.setIndeterminate(false);
+                    NetworkDhcpRenewDialog.this.jProgressBar.setString("DHCP lease renewed.  Proceeding.");
                 }});
                 Thread.currentThread().sleep(2000l);
-                DhcpLeaseRenewDialog.this.setVisible(false);
-                DhcpLeaseRenewDialog.this.dispose();
+                NetworkDhcpRenewDialog.this.setVisible(false);
+                NetworkDhcpRenewDialog.this.dispose();
             }
             catch(Exception e){
                 Util.handleExceptionNoRestart("Error: unable to renew DHCP lease", e);
                 SwingUtilities.invokeLater( new Runnable(){ public void run(){
-                    DhcpLeaseRenewDialog.this.jProgressBar.setIndeterminate(false);
-                    DhcpLeaseRenewDialog.this.jProgressBar.setString("DHCP lease renewal failure.  Please try again later.");
-		    DhcpLeaseRenewDialog.this.proceedJButton.setEnabled(true);
+                    NetworkDhcpRenewDialog.this.jProgressBar.setIndeterminate(false);
+                    NetworkDhcpRenewDialog.this.jProgressBar.setString("DHCP lease renewal failure.  Please try again later.");
+		    NetworkDhcpRenewDialog.this.proceedJButton.setEnabled(true);
                 }});
             }
 
