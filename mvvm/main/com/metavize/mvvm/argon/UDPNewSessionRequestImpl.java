@@ -11,8 +11,8 @@
 
 package com.metavize.mvvm.argon;
 
+import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.jnetcap.NetcapUDPSession;
-
 import com.metavize.jvector.IncomingSocketQueue;
 import com.metavize.jvector.OutgoingSocketQueue;
 
@@ -24,9 +24,9 @@ class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNew
     protected int icmpId;
 
     public UDPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, ArgonAgent agent,
-                                     byte originalServerIntf )
+                                     byte originalServerIntf, PipelineEndpoints pe )
     {
-        super( sessionGlobalState, agent, originalServerIntf );
+        super( sessionGlobalState, agent, originalServerIntf, pe );
         
         /* Grab the TTL, TOS and ICMP Identifier from the udp session */
         this.ttl    = sessionGlobalState.netcapUDPSession().ttl();
@@ -34,16 +34,17 @@ class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNew
         this.icmpId = sessionGlobalState.netcapUDPSession().icmpClientId();
     }
     
-    public UDPNewSessionRequestImpl( UDPSession session, ArgonAgent agent, byte originalServerIntf )
+    public UDPNewSessionRequestImpl( UDPSession session, ArgonAgent agent, byte originalServerIntf, PipelineEndpoints pe )
     {
-        super( session, agent, originalServerIntf );
+        super( session, agent, originalServerIntf, pe );
 
         /* Grab the TTL and TOS from the last request */
         this.ttl    = session.ttl();
         this.tos    = session.tos();
         this.icmpId = session.icmpId();
     }
-    
+
+
     /**
      * Retrieve the TTL for a session, this only has an impact for the last session in the chain
      * when passing data crumbs (UDPPacketCrumbs have TTL value inside of them)

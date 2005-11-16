@@ -23,4 +23,12 @@ public interface PipelineListener
     void serverEvent( OutgoingSocketQueue out );
 
     void raze();
+
+    /**
+     * Right now the complete event is only delivered for
+     *   a released session
+     *   that needs finalization
+     *   where the pipeline has been registered (server and client connected, or session rejected)
+     */
+    void complete();
 }

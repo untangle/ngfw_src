@@ -12,6 +12,7 @@
 package com.metavize.mvvm.tapi;
 
 import java.net.InetAddress;
+import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.mvvm.argon.SessionEndpoints;
 
 public interface IPNewSessionRequest extends NewSessionRequest, SessionEndpoints {
@@ -63,6 +64,8 @@ public interface IPNewSessionRequest extends NewSessionRequest, SessionEndpoints
      * Get the original server interface before any of the overrides occurred 
      */
     byte originalServerIntf();
+
+    PipelineEndpoints pipelineEndpoints();
 
     // May only be called before session is established (from UDPNewSessionRequestEvent handler)
     void rejectSilently();

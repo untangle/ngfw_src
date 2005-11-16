@@ -14,6 +14,7 @@ package com.metavize.mvvm.argon;
 import java.net.InetAddress;
 import java.net.Inet4Address;
 
+import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.jnetcap.*;
 
 public interface IPNewSessionRequest extends NewSessionRequest, IPSessionDesc
@@ -47,6 +48,8 @@ public interface IPNewSessionRequest extends NewSessionRequest, IPSessionDesc
      * Get the original server interface before any of the overrides occurred 
      */
     byte originalServerIntf();
+
+    PipelineEndpoints pipelineEndpoints();
 
     /**
      * Session requests have a state of <code>REQUESTED</code> when the session request has not

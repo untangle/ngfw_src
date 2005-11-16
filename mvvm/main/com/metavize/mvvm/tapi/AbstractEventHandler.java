@@ -131,6 +131,11 @@ public abstract class AbstractEventHandler implements SessionEventListener {
     {
     }
 
+    public void handleTCPComplete(TCPSessionEvent event)
+        throws MPipeException
+    {
+    }
+
     public IPDataResult handleTCPClientChunk(TCPChunkEvent event)
         throws MPipeException
     {
@@ -224,6 +229,12 @@ public abstract class AbstractEventHandler implements SessionEventListener {
         throws MPipeException
     {
     }
+
+    public void handleUDPComplete(UDPSessionEvent event)
+        throws MPipeException
+    {
+    }
+
 
     public void handleUDPClientPacket(UDPPacketEvent event)
         throws MPipeException

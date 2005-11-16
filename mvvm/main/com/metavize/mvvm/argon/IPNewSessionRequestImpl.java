@@ -14,10 +14,10 @@ package com.metavize.mvvm.argon;
 import java.net.InetAddress;
 import java.net.Inet4Address;
 
+import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.jnetcap.NetcapSession;
 import com.metavize.jnetcap.Endpoints;
 import com.metavize.jnetcap.Endpoint;
-
 import com.metavize.jvector.IncomingSocketQueue;
 import com.metavize.jvector.OutgoingSocketQueue;
 
@@ -34,6 +34,8 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
     final byte originalServerIntf;
     protected byte serverIntf;
 
+    protected PipelineEndpoints pipelineEndpoints;
+
     protected byte state = REQUESTED;
 
     /* This is used to distinguish between REJECTED and REJECTED with code */
@@ -46,7 +48,7 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
      * A. Pass in the netcap session and get the parameters from there.
      */
     public IPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, ArgonAgent agent,
-                                    byte originalServerIntf )
+                                    byte originalServerIntf, PipelineEndpoints pe )
     {
         super( sessionGlobalState, agent );
         
@@ -62,16 +64,16 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
         clientIntf = IntfConverter.toArgon( clientSide.interfaceId());
         serverIntf = IntfConverter.toArgon( serverSide.interfaceId());
         this.originalServerIntf = originalServerIntf;
+        this.pipelineEndpoints = pe;
         
         serverAddr = server.host();
         serverPort = server.port();
     }
 
-
     /* Two ways to create an IPNewSessionRequest:
      * B. Pass in the previous request and get the parameters from there
      */
-    public IPNewSessionRequestImpl( IPSession session, ArgonAgent agent, byte originalServerIntf )
+    public IPNewSessionRequestImpl( IPSession session, ArgonAgent agent, byte originalServerIntf, PipelineEndpoints pe )
     {
         super( session.sessionGlobalState(), agent);
   
@@ -85,7 +87,9 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
         serverIntf = session.serverIntf();
 
         this.originalServerIntf = originalServerIntf;
+        this.pipelineEndpoints = pe;
     }
+
 
     public short protocol()
     {
@@ -151,6 +155,11 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
     public byte originalServerIntf()
     {
         return this.originalServerIntf;
+    }
+
+    public PipelineEndpoints pipelineEndpoints()
+    {
+        return pipelineEndpoints;
     }
 
     // One of REQUESTED, REJECTED, RELEASED 

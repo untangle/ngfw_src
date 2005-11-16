@@ -17,6 +17,7 @@ import java.util.Iterator;
 import org.apache.log4j.Logger;
 
 import com.metavize.mvvm.policy.PolicyRule;
+import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.jnetcap.Netcap;
 import com.metavize.jnetcap.NetcapHook;
 import com.metavize.jnetcap.NetcapSession;
@@ -250,18 +251,20 @@ public class TCPHook implements NetcapHook
             return new TCPSource( netcapTCPSession.tcpServerSide().fd(), serverSideListener );
         }
 
-        protected void newSessionRequest( ArgonAgent agent, Iterator iter, byte originalServerIntf )
+        protected void newSessionRequest( ArgonAgent agent, Iterator iter, byte originalServerIntf, PipelineEndpoints pe )
         {
             TCPNewSessionRequest request;
 
             if ( prevSession == null ) {
-                request = new TCPNewSessionRequestImpl( sessionGlobalState, agent, originalServerIntf );
+                request = new TCPNewSessionRequestImpl( sessionGlobalState, agent, originalServerIntf, pe );
             } else {
-                request = new TCPNewSessionRequestImpl( prevSession, agent, originalServerIntf );
+                request = new TCPNewSessionRequestImpl( prevSession, agent, originalServerIntf, pe );
             }
                          
             PolicyRule pr = pipelineDesc.getPolicyRule();
             boolean isInbound = pr == null ? true : pr.isInbound();
+
+            // TAPI returns null when rejecting the session
             TCPSession session = agent.getNewSessionEventListener().newSession( request, isInbound );
             
             processSession( request, session );

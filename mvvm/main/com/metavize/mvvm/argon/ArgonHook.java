@@ -27,6 +27,7 @@ import com.metavize.jvector.Source;
 import com.metavize.jvector.Vector;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.policy.PolicyRule;
+import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.mvvm.tapi.PipelineFoundry;
 import org.apache.log4j.Logger;
 
@@ -45,7 +46,7 @@ abstract class ArgonHook implements Runnable
      * List of all of the transforms( ArgonAgents )
      */
     protected PipelineDesc pipelineDesc;
-    protected List pipeline;
+    protected List pipelineAgents;
     protected List<Session> sessionList = new ArrayList<Session>();
     protected List<Session> releasedSessionList = new ArrayList<Session>();
 
@@ -128,10 +129,13 @@ abstract class ArgonHook implements Runnable
             serverSide = clientSide;
 
             pipelineDesc = pipelineFoundry.weld( clientSide );
-            pipeline = pipelineDesc.getAgents();
+            pipelineAgents = pipelineDesc.getAgents();
 
-            /* Initialize all of the transforms */
-            initTransforms( originalServerIntf );
+            // Create the (fake) endpoints early so they can be available at request time.
+            PipelineEndpoints endpoints = pipelineFoundry.createInitialEndpoints(clientSide);
+
+            /* Initialize all of the transforms, sending the request events to each in turn */
+            initTransforms( originalServerIntf, endpoints );
 
             /* Connect to the server */
             boolean serverActionCompleted = connectServer();
@@ -146,7 +150,8 @@ abstract class ArgonHook implements Runnable
 
             if (serverActionCompleted && clientActionCompleted) {
                 PolicyRule pr = pipelineDesc.getPolicyRule();
-                pipelineFoundry.registerEndpoints( clientSide, serverSide, pr.getPolicy(), pr.isInbound());
+                endpoints.completeEndpoints(clientSide, serverSide, pr.getPolicy(), pr.isInbound());
+                pipelineFoundry.registerEndpoints(endpoints);
             }
 
             /* Only start vectoring if the session is alive */
@@ -212,13 +217,13 @@ abstract class ArgonHook implements Runnable
     /**
      * Initialize each of the transforms for the new session. </p>
      */
-    private void initTransforms( byte originalServerIntf )
+    private void initTransforms( byte originalServerIntf, PipelineEndpoints pe )
     {
-        for ( Iterator<ArgonAgent> iter = pipeline.iterator() ; iter.hasNext() ; ) {
+        for ( Iterator<ArgonAgent> iter = pipelineAgents.iterator() ; iter.hasNext() ; ) {
             ArgonAgent agent = iter.next();
 
             if ( state == IPNewSessionRequest.REQUESTED ) {
-                newSessionRequest( agent, iter, originalServerIntf );
+                newSessionRequest( agent, iter, originalServerIntf, pe );
             } else {
                 /* Session has been rejected or endpointed, remaining transforms need not be informed */
                 // Don't need to remove anything from the pipeline, it is just used here
@@ -315,8 +320,11 @@ abstract class ArgonHook implements Runnable
                 iter.remove();
                 /* Append to the released session list */
                 releasedSessionList.add( session );
+                // Deliver the super secret sauce
+                ((SessionImpl)session).complete();
             }
         }
+
 
         if ( sessionList.isEmpty() ) {
             if ( state == IPNewSessionRequest.ENDPOINTED ) {
@@ -567,7 +575,7 @@ abstract class ArgonHook implements Runnable
     protected abstract Source makeClientSource();
     protected abstract Source makeServerSource();
 
-    protected abstract void newSessionRequest( ArgonAgent agent, Iterator iter, byte originalServerIntf );
+    protected abstract void newSessionRequest( ArgonAgent agent, Iterator iter, byte originalServerIntf, PipelineEndpoints pe );
 
     protected abstract void raze();
 

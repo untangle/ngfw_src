@@ -186,6 +186,20 @@ public interface SessionEventListener extends java.util.EventListener {
      */
     void handleTCPFinalized(TCPSessionEvent event)  throws MPipeException;
 
+    /**
+     * <code>handleTCPComplete</code> is delivered when a session is:
+     *   a released session
+     *   that needs finalization
+     *   where the pipeline has been registered (server and client connected, or session rejected)
+     *
+     * It is delivered just after the pipeline endpoints have been registered
+     * but before vectoring has begun.
+     *
+     * @param event a <code>TCPSessionEvent</code> value
+     * @exception MPipeException if an error occurs
+     */
+    void handleTCPComplete(TCPSessionEvent event) throws MPipeException;
+
 
     //////////////////////////////////////////////////////////////////////
     // UDP
@@ -262,5 +276,18 @@ public interface SessionEventListener extends java.util.EventListener {
      */
     void handleUDPFinalized(UDPSessionEvent event)  throws MPipeException;
 
+    /**
+     * <code>handleUDPComplete</code> is delivered when a session is:
+     *   a released session
+     *   that needs finalization
+     *   where the pipeline has been registered (server and client connected, or session rejected)
+     *
+     * It is delivered just after the pipeline endpoints have been registered
+     * but before vectoring has begun.
+     *
+     * @param event a <code>UDPSessionEvent</code> value
+     * @exception MPipeException if an error occurs
+     */
+    void handleUDPComplete(UDPSessionEvent event) throws MPipeException;
 }
 

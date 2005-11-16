@@ -11,6 +11,7 @@
 
 package com.metavize.mvvm.argon;
 
+import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.jnetcap.NetcapTCPSession;
 import com.metavize.jvector.IncomingSocketQueue;
 import com.metavize.jvector.OutgoingSocketQueue;
@@ -20,21 +21,22 @@ class TCPNewSessionRequestImpl extends IPNewSessionRequestImpl implements TCPNew
     final boolean acked;
 
     public TCPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, ArgonAgent agent,
-                                     byte originalServerIntf )
+                                     byte originalServerIntf, PipelineEndpoints pe )
     {
-        super( sessionGlobalState, agent, originalServerIntf );
+        super( sessionGlobalState, agent, originalServerIntf, pe );
 
         /* Retrieve the value for acked */
         acked = sessionGlobalState.netcapTCPSession().acked();
     }
 
-    public TCPNewSessionRequestImpl( TCPSession session, ArgonAgent agent, byte originalServerIntf )
+    public TCPNewSessionRequestImpl( TCPSession session, ArgonAgent agent, byte originalServerIntf, PipelineEndpoints pe )
     {
-        super( session, agent, originalServerIntf );
+        super( session, agent, originalServerIntf, pe );
 
         /* Retrieve the value for acked */
         acked = sessionGlobalState.netcapTCPSession().acked();
     }
+
 
     /**
      * <code>acked</code> returns true if the new session has already been ACKed to the client.

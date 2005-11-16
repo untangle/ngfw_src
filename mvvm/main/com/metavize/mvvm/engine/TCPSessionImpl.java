@@ -22,6 +22,7 @@ import com.metavize.jvector.ShutdownCrumb;
 import com.metavize.mvvm.tapi.*;
 import com.metavize.mvvm.tapi.client.TCPSessionDescImpl;
 import com.metavize.mvvm.tapi.event.*;
+import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.mvvm.tran.MutateTStats;
 import com.metavize.mvvm.util.MetaEnv;
 
@@ -38,11 +39,11 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
 
     protected TCPSessionImpl(Dispatcher disp,
                              com.metavize.mvvm.argon.TCPSession pSession,
-                             boolean isInbound,
+                             boolean isInbound, PipelineEndpoints pe,
                              int clientReadBufferSize,
                              int serverReadBufferSize)
     {
-        super(disp, pSession, isInbound);
+        super(disp, pSession, isInbound, pe);
 
         if (clientReadBufferSize < 2 || clientReadBufferSize > TCP_MAX_CHUNK_SIZE)
             throw new IllegalArgumentException("Illegal maximum client read bufferSize: " + clientReadBufferSize);
@@ -376,6 +377,13 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
             warn("Ignoring readBuffer returned from writable event");
         addBufs(CLIENT, result.bufsToClient());
         addBufs(SERVER, result.bufsToServer());
+    }
+
+    protected void sendCompleteEvent()
+        throws MPipeException
+    {
+        TCPSessionEvent wevent = new TCPSessionEvent(mPipe, this);
+        dispatcher.dispatchTCPComplete(wevent);
     }
 
     protected void sendFINEvent(int side, ByteBuffer existingReadBuf)

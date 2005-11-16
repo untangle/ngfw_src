@@ -68,6 +68,10 @@ public abstract class SessionImpl implements Session
             public void raze()
             {
             }
+
+            public void complete()
+            {
+            }
         };
 
     static void init()
@@ -268,7 +272,16 @@ public abstract class SessionImpl implements Session
             logger.warn( "Error while killing a session", ex );
         }
     }
-    
+
+    public void complete()
+    {
+        try {
+            listener.complete();
+        } catch ( Exception ex ) {
+            logger.warn( "Error while completing a session", ex );
+        }
+    }
+
     /**
      * Register a listener a listener for the session. 
      */

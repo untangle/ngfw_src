@@ -26,6 +26,7 @@ import com.metavize.jvector.OutgoingSocketQueue;
 import com.metavize.mvvm.argon.PipelineListener;
 import com.metavize.mvvm.tapi.*;
 import com.metavize.mvvm.tapi.event.IPStreamer;
+import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformState;
@@ -42,6 +43,8 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
 
     protected Dispatcher dispatcher;
 
+    protected PipelineEndpoints pipelineEndpoints;
+
     protected List<Crumb>[] crumbs2write = new ArrayList[] { null, null };
 
     protected IPStreamer[] streamer = null;
@@ -54,12 +57,14 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
 
     private final TransformManagerImpl transformManager;
 
-    protected IPSessionImpl(Dispatcher disp, com.metavize.mvvm.argon.IPSession pSession, boolean isInbound)
+    protected IPSessionImpl(Dispatcher disp, com.metavize.mvvm.argon.IPSession pSession, boolean isInbound,
+                            PipelineEndpoints pe)
     {
         super(disp.mPipe(), pSession);
         this.dispatcher = disp;
         this.isInbound = isInbound;
         this.stats = new RWSessionStats();
+        this.pipelineEndpoints = pe;
         if (RWSessionStats.DoDetailedTimes)
             timesLogger = Logger.getLogger("com.metavize.mvvm.tapi.SessionTimes");
         transformManager = MvvmContextImpl.getInstance().transformManager();
@@ -104,6 +109,11 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
     public SessionStats stats()
     {
         return stats;
+    }
+
+    public PipelineEndpoints pipelineEndpoints()
+    {
+        return pipelineEndpoints;
     }
 
     public void release()
@@ -226,6 +236,44 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         return size;
     }
 
+    public void complete()
+    {
+        Transform xform = mPipe().transform();
+        if (xform.getRunState() != TransformState.RUNNING) {
+            String message = "killing: complete(in) for transform in state " + xform.getRunState();
+            warn(message);
+            // killSession(message);
+            return;
+        }
+        TransformContext tctx = xform.getTransformContext();
+        ClassLoader classLoader = tctx.getClassLoader();
+        Thread ct = Thread.currentThread();
+        ClassLoader oldCl = ct.getContextClassLoader();
+
+        // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        ct.setContextClassLoader(classLoader);
+        try {
+            transformManager.registerThreadContext(tctx);
+            MDC.put(SESSION_ID_MDC_KEY, idForMDC());
+
+            sendCompleteEvent();
+        } catch (MPipeException x) {
+            String message = "MPipeException while completing";
+            error(message, x);
+            // killSession(message);
+        } catch (Exception x) {
+            String message = "" + x.getClass().getName() + " while completing";
+            // error(message, x);
+            killSession(message);
+        } catch (OutOfMemoryError x) {
+            Main.fatalError("SessionHandler", x);
+        } finally {
+            transformManager.deregisterThreadContext();
+            MDC.remove(SESSION_ID_MDC_KEY);
+            ct.setContextClassLoader(oldCl);
+            // left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        }
+    }
 
     public void raze()
     {
@@ -686,6 +734,8 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
     public abstract IPSessionDesc makeDesc();
 
     abstract void sendWritableEvent(int side) throws MPipeException;
+
+    abstract void sendCompleteEvent() throws MPipeException;
 
     abstract void tryWrite(int side, OutgoingSocketQueue out, boolean warnIfUnable)
         throws MPipeException;

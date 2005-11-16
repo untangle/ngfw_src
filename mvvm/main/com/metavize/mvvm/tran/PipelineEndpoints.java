@@ -67,6 +67,7 @@ public class PipelineEndpoints extends LogEvent
     public PipelineEndpoints(IPSessionDesc begin, IPSessionDesc end,
                              Policy policy, boolean policyInbound)
     {
+        // Begin & end and all in between have the same ID
         sessionId = begin.id();
 
         protocol = (short)begin.protocol();
@@ -90,7 +91,33 @@ public class PipelineEndpoints extends LogEvent
         this.policyInbound = policyInbound;
     }
 
+    // This one is called by ArgonHook, just to get an object which is filled in later.
+    public PipelineEndpoints(IPSessionDesc begin)
+    {
+        sessionId = begin.id();
+        protocol = (short)begin.protocol();
+        createDate = new Date();
+        clientIntf = begin.clientIntf();
+        // Don't fill in anything that can change later.
+    }
+
     // business methods -------------------------------------------------------
+
+    public void completeEndpoints(IPSessionDesc begin, IPSessionDesc end,
+                                  Policy policy, boolean policyInbound)
+    {
+        cClientAddr = begin.clientAddr();
+        cClientPort = begin.clientPort();
+        cServerAddr = begin.serverAddr();
+        cServerPort = begin.serverPort();
+        sClientAddr = end.clientAddr();
+        sClientPort = end.clientPort();
+        sServerAddr = end.serverAddr();
+        sServerPort = end.serverPort();
+        serverIntf = end.serverIntf();
+        this.policy = policy;
+        this.policyInbound = policyInbound;
+    }
 
     public String getDirectionName()
     {

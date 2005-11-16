@@ -13,6 +13,7 @@ package com.metavize.mvvm.engine;
 
 import java.net.InetAddress;
 
+import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
 import com.metavize.mvvm.tapi.MPipe;
 
@@ -86,6 +87,11 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
 
     public byte originalServerIntf() {
         return pRequest.originalServerIntf();
+    }
+
+    public PipelineEndpoints pipelineEndpoints()
+    {
+        return pRequest.pipelineEndpoints();
     }
 
     public void clientAddr(InetAddress addr)

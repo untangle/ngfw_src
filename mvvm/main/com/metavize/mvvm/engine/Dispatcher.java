@@ -358,7 +358,7 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
             // Create the session, client and server channels
             com.metavize.mvvm.argon.TCPSession pSession =
                 new com.metavize.mvvm.argon.TCPSessionImpl(request);
-            TCPSessionImpl session = new TCPSessionImpl(this, pSession, isInbound,
+            TCPSessionImpl session = new TCPSessionImpl(this, pSession, isInbound, request.pipelineEndpoints(),
                                                         td.getTcpClientReadBufferSize(),
                                                         td.getTcpServerReadBufferSize());
             session.attach(treq.attachment());
@@ -471,7 +471,7 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
             // Create the session, client and server channels
             com.metavize.mvvm.argon.UDPSession pSession =
                 new com.metavize.mvvm.argon.UDPSessionImpl(request);
-            UDPSessionImpl session = new UDPSessionImpl(this, pSession, isInbound,
+            UDPSessionImpl session = new UDPSessionImpl(this, pSession, isInbound, request.pipelineEndpoints(),
                                                         td.getUdpMaxPacketSize(),
                                                         td.getUdpMaxPacketSize());
             session.attach(ureq.attachment());
@@ -1004,6 +1004,17 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
             sessionEventListener.handleTCPFinalized(event);
     }
 
+    void dispatchTCPComplete(TCPSessionEvent event)
+        throws MPipeException
+    {
+        IPSessionImpl session = (IPSessionImpl) event.session();
+        elog(Level.INFO, "TCPComplete", session.id());
+        if (sessionEventListener == null || (session.released() && !session.needsFinalization()))
+            releasedHandler.handleTCPComplete(event);
+        else
+            sessionEventListener.handleTCPComplete(event);
+    }
+
     void dispatchUDPClientExpired(UDPSessionEvent event)
         throws MPipeException
     {
@@ -1057,6 +1068,17 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
             releasedHandler.handleUDPFinalized(event);
         else
             sessionEventListener.handleUDPFinalized(event);
+    }
+
+    void dispatchUDPComplete(UDPSessionEvent event)
+        throws MPipeException
+    {
+        IPSessionImpl session = (IPSessionImpl) event.session();
+        elog(Level.INFO, "UDPComplete", session.id());
+        if (sessionEventListener == null || (session.released() && !session.needsFinalization()))
+            releasedHandler.handleUDPComplete(event);
+        else
+            sessionEventListener.handleUDPComplete(event);
     }
 
     void dispatchTimer(IPSessionEvent event)

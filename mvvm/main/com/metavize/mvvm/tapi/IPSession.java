@@ -11,6 +11,7 @@
 
 package com.metavize.mvvm.tapi;
 
+import com.metavize.mvvm.tran.PipelineEndpoints;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
@@ -91,4 +92,5 @@ public interface IPSession extends IPSessionDesc, Session  {
      */
     void cancelTimer();
 
+    PipelineEndpoints pipelineEndpoints();
 }

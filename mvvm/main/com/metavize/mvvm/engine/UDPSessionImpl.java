@@ -25,6 +25,7 @@ import com.metavize.jvector.UDPPacketCrumb;
 import com.metavize.mvvm.tapi.*;
 import com.metavize.mvvm.tapi.client.UDPSessionDescImpl;
 import com.metavize.mvvm.tapi.event.*;
+import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.mvvm.tran.MutateTStats;
 import com.metavize.mvvm.util.MetaEnv;
 
@@ -34,11 +35,11 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
 
     protected UDPSessionImpl(Dispatcher disp,
                              com.metavize.mvvm.argon.UDPSession pSession,
-                             boolean isInbound,
+                             boolean isInbound, PipelineEndpoints pe,
                              int clientMaxPacketSize,
                              int serverMaxPacketSize)
     {
-        super(disp, pSession, isInbound);
+        super(disp, pSession, isInbound, pe);
 
         if (clientMaxPacketSize < 2 || clientMaxPacketSize > UDP_MAX_MESG_SIZE)
             throw new IllegalArgumentException("Illegal maximum client packet bufferSize: " + clientMaxPacketSize);
@@ -271,6 +272,13 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
             dispatcher.dispatchUDPClientWritable(wevent);
         else
             dispatcher.dispatchUDPServerWritable(wevent);
+    }
+
+    protected void sendCompleteEvent()
+        throws MPipeException
+    {
+        UDPSessionEvent wevent = new UDPSessionEvent(mPipe, this);
+        dispatcher.dispatchUDPComplete(wevent);
     }
 
     protected void sendExpiredEvent(int side)

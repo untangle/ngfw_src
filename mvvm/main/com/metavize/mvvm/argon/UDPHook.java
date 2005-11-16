@@ -14,6 +14,7 @@ package com.metavize.mvvm.argon;
 import java.util.Iterator;
 
 import com.metavize.mvvm.policy.PolicyRule;
+import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.jnetcap.IPTraffic;
 import com.metavize.jnetcap.Netcap;
 import com.metavize.jnetcap.NetcapHook;
@@ -220,14 +221,14 @@ public class UDPHook implements NetcapHook
             return new UDPSource( netcapUDPSession.serverMailbox(), serverSideListener );
         }
 
-        protected void newSessionRequest( ArgonAgent agent, Iterator iter, byte originalServerIntf )
+        protected void newSessionRequest( ArgonAgent agent, Iterator iter, byte originalServerIntf, PipelineEndpoints pe )
         {
             UDPNewSessionRequest request;
 
             if ( prevSession == null ) {
-                request = new UDPNewSessionRequestImpl( sessionGlobalState, agent, originalServerIntf );
+                request = new UDPNewSessionRequestImpl( sessionGlobalState, agent, originalServerIntf, pe );
             } else {
-                request = new UDPNewSessionRequestImpl( prevSession, agent, originalServerIntf );
+                request = new UDPNewSessionRequestImpl( prevSession, agent, originalServerIntf, pe );
             }
                     
             PolicyRule pr = pipelineDesc.getPolicyRule();
