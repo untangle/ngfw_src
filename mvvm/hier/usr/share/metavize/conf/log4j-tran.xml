@@ -101,6 +101,10 @@
     <priority value="DEBUG"/>
   </category>
 
+  <category name="com.metavize.tran.mail">
+    <priority value="WARN"/>
+  </category>
+
   <category name="com.metavize.tran.httpblocker">
     <priority value="DEBUG"/>
   </category>
@@ -114,14 +118,6 @@
   </category>
 
   <category name="com.metavize.tran.spyware">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.metavize.tran.email">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.metavize.tran.mail">
     <priority value="WARN"/>
   </category>
 
