@@ -14,6 +14,7 @@ package com.metavize.mvvm.logging;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tran.PipelineEndpoints;
+import org.apache.log4j.Logger;
 
 public abstract class PipelineEvent extends LogEvent
 {
@@ -25,8 +26,12 @@ public abstract class PipelineEvent extends LogEvent
 
     public PipelineEvent(int sessionId)
     {
-        pipelineEndpoints = MvvmContextFactory.context().pipelineFoundry()
-            .getPipeline(sessionId).getPipelineEndpoints();
+        try {
+            pipelineEndpoints = MvvmContextFactory.context().pipelineFoundry()
+                .getPipeline(sessionId).getPipelineEndpoints();
+        } catch (NullPointerException exn) {
+            Logger.getLogger(getClass()).error("tell jdi 'I want my PipelineEndpoints!'");
+        }
     }
 
     // non-persistent accessors -----------------------------------------------
@@ -52,8 +57,12 @@ public abstract class PipelineEvent extends LogEvent
 
     public void setPipelineEndpoints(int sessionId)
     {
-        pipelineEndpoints = MvvmContextFactory.context().pipelineFoundry()
-            .getPipeline(sessionId).getPipelineEndpoints();
+        try {
+            pipelineEndpoints = MvvmContextFactory.context().pipelineFoundry()
+                .getPipeline(sessionId).getPipelineEndpoints();
+        } catch (NullPointerException exn) {
+            Logger.getLogger(getClass()).error("tell jdi 'I want my PipelineEndpoints!'");
+        }
     }
 
     // Syslog methods ---------------------------------------------------------
