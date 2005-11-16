@@ -10,7 +10,7 @@
 
 package com.metavize.tran.ids;
 
-import com.metavize.mvvm.logging.LogEvent;
+import com.metavize.mvvm.logging.PipelineEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.logging.SyslogPriority;
 
@@ -23,9 +23,8 @@ import com.metavize.mvvm.logging.SyslogPriority;
  * table="TR_IDS_EVT"
  * mutable="false"
  */
-public class IDSLogEvent extends LogEvent {
+public class IDSLogEvent extends PipelineEvent {
 
-    private int sessionId;
     private String message;
     private boolean blocked;
 
@@ -34,28 +33,13 @@ public class IDSLogEvent extends LogEvent {
     public IDSLogEvent() { }
 
     public IDSLogEvent(int sessionId, String message, boolean blocked) {
-        this.sessionId = sessionId;
+        super(sessionId);
+
         this.message = message;
         this.blocked = blocked;
     }
 
     // accessors --------------------------------------------------------------
-
-    /**
-     * The action taken.
-     *
-     * @return the session id
-     * @hibernate.property
-     * column="SESSION_ID"
-     */
-    public int getSessionId() {
-        return sessionId;
-    }
-
-    public void setSessionId(int sessionId) {
-        this.sessionId = sessionId;
-    }
-
 
     /**
      * Message of signature that generated this event.
@@ -89,9 +73,9 @@ public class IDSLogEvent extends LogEvent {
 
     // Syslog methods ---------------------------------------------------------
 
-    public void appendSyslog(SyslogBuilder sb)
+    public void doSyslog(SyslogBuilder sb)
     {
-        sb.addField("sid", sessionId);
+        sb.addField("sid", getPipelineEndpoints().getId());
         sb.addField("message", message);
         sb.addField("blocked", blocked);
     }

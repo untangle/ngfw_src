@@ -24,7 +24,6 @@ import com.metavize.mvvm.logging.SyslogBuilder;
  * table="TR_IDS_STATISTIC_EVT"
  * mutable="false"
  */
-
 public class IDSStatisticEvent extends StatisticEvent {
 
     private int scanned = 0;

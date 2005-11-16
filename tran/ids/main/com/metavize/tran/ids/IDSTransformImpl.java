@@ -3,21 +3,16 @@ package com.metavize.tran.ids;
 import java.io.*;
 import java.nio.*;
 import java.nio.channels.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
-import com.metavize.mvvm.tran.Direction;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformStartException;
 import com.metavize.mvvm.util.TransactionWork;
@@ -27,25 +22,6 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 public class IDSTransformImpl extends AbstractTransform implements IDSTransform {
-
-    private static final String EVENT_QUERY_BASE
-        = "SELECT create_date, message, blocked, "
-        + "c_client_addr, c_client_port, "
-        + "s_server_addr, s_server_port, "
-        + "policy_inbound AS incoming "
-        + "FROM pl_endp endp "
-        + "JOIN tr_ids_evt evt ON endp.event_id = evt.pl_endp_id "
-        + "WHERE endp.policy_id = ? ";
-
-    private static final String EVENT_QUERY
-        = EVENT_QUERY_BASE
-        + "ORDER BY create_date DESC LIMIT ?";
-
-    private static final String EVENT_BLOCKED_QUERY
-        = EVENT_QUERY_BASE
-        + "AND blocked "
-        + "ORDER BY create_date DESC LIMIT ?";
-
     private static final Logger logger = Logger.getLogger(IDSTransformImpl.class);
 
     private final EventLogger<IDSLogEvent> eventLogger;
@@ -68,62 +44,17 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         pipeSpecs = new PipeSpec[] { httpPipeSpec, octetPipeSpec };
 
         eventLogger = new EventLogger<IDSLogEvent>(getTransformContext());
+
+        IDSLogEventHandler ieh = new IDSLogEventHandler();
+        eventLogger.addEventHandler(ieh);
+        IDSBlockedLogEventHandler beh = new IDSBlockedLogEventHandler();
+        eventLogger.addEventHandler(ieh);
     }
 
     @Override
     protected PipeSpec[] getPipeSpecs() {
         logger.debug("Getting PipeSpec");
         return pipeSpecs;
-    }
-
-    // backwards compat
-    public List<IDSLog> getLogs(int limit) {
-        return getLogs(limit, false);
-    }
-
-    public List<IDSLog> getLogs(final int limit, final boolean blockedOnly) {
-        final List<IDSLog> l = new ArrayList<IDSLog>(limit);
-
-        TransactionWork tw = new TransactionWork()
-            {
-                public boolean doWork(Session s) throws SQLException
-                {
-                    Connection c = s.connection();
-                    PreparedStatement ps;
-                    if (blockedOnly)
-                        ps = c.prepareStatement(EVENT_BLOCKED_QUERY);
-                    else
-                        ps = c.prepareStatement(EVENT_QUERY);
-                    ps.setString(1, getPolicy().getId().toString());
-                    ps.setInt(2, limit);
-                    long l0 = System.currentTimeMillis();
-                    ResultSet rs = ps.executeQuery();
-                    while (rs.next()) {
-                        long cd = rs.getTimestamp("create_date").getTime();
-                        Date createDate = new Date(cd);
-                        String message = rs.getString("message");
-                        boolean blocked = rs.getBoolean("blocked");
-                        String clientAddr = rs.getString("c_client_addr");
-                        int clientPort = rs.getInt("c_client_port");
-                        String serverAddr = rs.getString("s_server_addr");
-                        int serverPort = rs.getInt("s_server_port");
-                        boolean incoming = rs.getBoolean("incoming");
-
-                        Direction d = incoming ? Direction.INCOMING : Direction.OUTGOING;
-                        IDSLog rl = new IDSLog(createDate, message, blocked, clientAddr, clientPort, serverAddr, serverPort, d);
-                        l.add(rl);
-                    }
-                    long l1 = System.currentTimeMillis();
-                    logger.debug("getAccessLogs() in: " + (l1 - l0));
-
-                    return true;
-                }
-
-                public Object getResult() { return null; }
-            };
-        getTransformContext().runTransaction(tw);
-
-        return l;
     }
 
     public IDSSettings getIDSSettings() {
@@ -143,6 +74,11 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
                 public Object getResult() { return null; }
             };
         getTransformContext().runTransaction(tw);
+    }
+
+    public EventManager<IDSLogEvent> getEventManager()
+    {
+        return eventLogger;
     }
 
     protected void initializeSettings() {
@@ -222,7 +158,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 
     protected void preStart() throws TransformStartException {
         logger.error("Running test...");
-		IDSTest test = new IDSTest();
+        IDSTest test = new IDSTest();
         logger.info("Pre Start");
         if(!test.runTest())
           throw new TransformStartException("IDS Test failed"); // */
@@ -234,6 +170,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
             throw new TransformStartException(e);
         }
 
+        eventLogger.start();
         statisticManager.start();
     }
 
@@ -243,6 +180,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 
     protected void postStop() {
         statisticManager.stop();
+        eventLogger.stop();
     }
 
     public void reconfigure() throws TransformException {
