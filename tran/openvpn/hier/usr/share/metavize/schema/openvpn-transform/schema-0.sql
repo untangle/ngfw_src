@@ -4,7 +4,7 @@
 -- settings |
 -------------
 
-create table tr_openvpn_c_site_network (
+create table settings.tr_openvpn_c_site_network (
         RULE_ID int8 not null,
         network inet,
         netmask inet,
@@ -18,7 +18,7 @@ create table tr_openvpn_c_site_network (
         position int4,
         primary key (RULE_ID));
 
-create table tr_openvpn_s_site_network (
+create table settings.tr_openvpn_s_site_network (
         RULE_ID int8 not null,
         network inet,
         netmask inet,
@@ -32,7 +32,7 @@ create table tr_openvpn_s_site_network (
         position int4,
         primary key (RULE_ID));
 
-create table tr_openvpn_client (
+create table settings.tr_openvpn_client (
         RULE_ID int8 not null,
         address inet,
         is_edgeguard bool,
@@ -49,7 +49,7 @@ create table tr_openvpn_client (
         dist_passwd text,
         primary key (RULE_ID));
 
-create table tr_openvpn_site (
+create table settings.tr_openvpn_site (
         RULE_ID int8 not null,
         address inet,
         is_edgeguard bool,
@@ -66,7 +66,7 @@ create table tr_openvpn_site (
         dist_passwd text,
         primary key (RULE_ID));
 
-create table tr_openvpn_group (
+create table settings.tr_openvpn_group (
         RULE_ID int8 not null,
         address inet,
         netmask inet,
@@ -80,7 +80,7 @@ create table tr_openvpn_group (
         position int4,
         primary key (RULE_ID));
 
-create table tr_openvpn_settings (
+create table settings.tr_openvpn_settings (
         ID int8 not null,
         TID int8 not null,
         server_address inet,
@@ -100,24 +100,32 @@ create table tr_openvpn_settings (
         keep_alive bool,
         primary key (ID));
 
-create table tr_openvpn_statistic_evt (
-        event_id INT8 NOT NULL,
-        time_stamp TIMESTAMP,
+create table events.tr_openvpn_statistic_evt (
+        event_id    INT8 NOT NULL,
+        time_stamp  TIMESTAMP,
+        rx_bytes    INT8,
+        tx_bytes    INT8,
+        start_time  TIMESTAMP,
+        end_time    TIMESTAMP,
         PRIMARY KEY (event_id));
 
-create table tr_openvpn_distr_evt (
+create table events.tr_openvpn_distr_evt (
         event_id INT8 NOT NULL,
         remote_address INET,
         client_name TEXT,
         time_stamp  TIMESTAMP,
         PRIMARY KEY (event_id));
 
-create table tr_openvpn_connect_evt (
+create table events.tr_openvpn_connect_evt (
         event_id INT8 NOT NULL,
         remote_address INET,
         remote_port    INT4,
         client_name    TEXT,
+        rx_bytes       INT8,
+        tx_bytes       INT8,
         time_stamp     TIMESTAMP,
+        start_time     TIMESTAMP,
+        end_time       TIMESTAMP,
         PRIMARY KEY    (event_id));
 
 alter table tr_openvpn_c_site_network add constraint FKF75374E830D9EF2D

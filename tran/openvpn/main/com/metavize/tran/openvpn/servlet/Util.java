@@ -114,7 +114,7 @@ class Util
             HttpSession session = request.getSession( true );
             
             session.setAttribute( COMMON_NAME_SESSION_ATTR, commonName );
-            session.setAttribute( EXPIRATION_SESSION_ATTR, new Date( new Date().getTime() + TIMEOUT ));
+            session.setAttribute( EXPIRATION_SESSION_ATTR, new Date( System.currentTimeMillis() + TIMEOUT ));
 
             return commonName;
         } else {

@@ -12,6 +12,7 @@
 package com.metavize.tran.openvpn;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
@@ -33,6 +34,18 @@ public class ClientConnectEvent extends LogEvent implements Serializable
     private int    port;
 
     private String clientName;
+
+    /* Start of the session */
+    private Date start;
+    
+    /* End of the session */
+    private Date end;
+    
+    /* Total bytes received */
+    private long bytesRx;
+    
+    /* Total bytes transmitted */
+    private long bytesTx;
     
     // Constructors 
     /**
@@ -42,8 +55,9 @@ public class ClientConnectEvent extends LogEvent implements Serializable
     {
     }
 
-    public ClientConnectEvent( IPaddr address, int port, String clientName )
+    public ClientConnectEvent( Date start, IPaddr address, int port, String clientName )
     {
+        this.start      = start;
         this.address    = address;
         this.clientName = clientName;
         this.port       = port;
@@ -103,9 +117,76 @@ public class ClientConnectEvent extends LogEvent implements Serializable
         this.clientName = clientName;
     }
 
-    public void appendSyslog(SyslogBuilder a)
+    /**
+     * Time the session started.
+     *
+     * @return time logged.
+     * @hibernate.property
+     * column="start_time"
+     */
+    public Date getStart()
+    {
+        return this.start;
+    }
+    
+    void setStart( Date start )
+    {
+        this.start = start;
+    }
+
+    /**
+     * Time the session ended.
+     *
+     * @return time logged.
+     * @hibernate.property
+     * column="end_time"
+     */
+    public Date getEnd()
+    {
+        return this.end;
+    }
+
+    void setEnd( Date end )
+    {
+        this.end = end;
+    }
+
+    /**
+     * Total bytes received during this session.
+     *
+     * @return time logged.
+     * @hibernate.property
+     * column="rx_bytes"
+     */
+    public long getBytesRx()
+    {
+        return this.bytesRx;
+    }
+
+    void setBytesRx( long bytesRx )
+    {
+        this.bytesRx = bytesRx;
+    }
+    
+    /**
+     * Total transmitted received during this session.
+     *
+     * @return time logged.
+     * @hibernate.property
+     * column="tx_bytes"
+     */
+    public long getBytesTx()
+    {
+        return this.bytesTx;
+    }
+
+    void setBytesTx( long bytesTx )
+    {
+        this.bytesTx = bytesTx;
+    }
+
+    public void appendSyslog( SyslogBuilder sb )
     {
         /* XXXXXXX */
     }
-
 }

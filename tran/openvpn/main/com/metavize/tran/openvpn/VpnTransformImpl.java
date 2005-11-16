@@ -69,12 +69,9 @@ public class VpnTransformImpl extends AbstractTransform
     protected void initializeSettings()
     {
         VpnSettings settings = new VpnSettings( this.getTid());
-        logger.info("Initializing Settings...");
+        logger.info( "Initializing Settings..." );
 
         setVpnSettings( settings );
-
-        /* Stop the statistics manager(I don't think this actually does anything rbs) */
-        // XXX DDD statisticManager.stop();
 
         /* Stop the open vpn monitor(I don't think this actually does anything rbs) */
         openVpnMonitor.stop();
@@ -232,7 +229,7 @@ public class VpnTransformImpl extends AbstractTransform
         getTransformContext().runTransaction( tw );
         
         /* Log the client distribution event.  Must be done with
-         * the statistic manager because the thread is not currently 
+         * the openvpn monitor because the thread is not currently 
          * registered for the event logger. */
         this.openVpnMonitor.
             addClientDistributionEvent( new ClientDistributionEvent( clientAddress, client.getName()));
@@ -323,15 +320,12 @@ public class VpnTransformImpl extends AbstractTransform
 
         deployWebApp();
 
-        // XXXX DDDD statisticManager.start();
-
         openVpnMonitor.start();
     }
 
     @Override protected void postStop() throws TransformStopException
     {
         super.postStop();
-        // XXX DDD statisticManager.stop();
         openVpnMonitor.stop();
 
         try {
