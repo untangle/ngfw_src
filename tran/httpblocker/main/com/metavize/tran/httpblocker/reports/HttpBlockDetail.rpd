@@ -31,7 +31,7 @@ SELECT c_server_port, c_client_addr, host, name, c_server_addr, \
              AND blk.time_stamp >= $P{startTime} \
              AND blk.time_stamp < $P{endTime}) \
          JOIN pl_endp endp \
-           USING endp.event_id = evt.pl_endp_id \
+           ON (endp.event_id = evt.pl_endp_id) \
          LEFT OUTER JOIN merged_address_map mam \
            ON (endp.c_client_addr = mam.addr \
              AND blk.time_stamp >= mam.start_time \

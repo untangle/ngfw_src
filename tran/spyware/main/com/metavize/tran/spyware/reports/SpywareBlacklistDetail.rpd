@@ -26,12 +26,12 @@ SELECT blcklst.time_stamp, name, c_client_addr, c_server_addr, c_server_port, \
   FROM tr_spyware_evt_blacklist blcklst \
          JOIN tr_http_req_line \
            USING (request_id) \
-         JOIN pl_endp endp \
-           ON evt.pl_endp_id = endp.event_id \
-         JOIN tr_http_evt_req evt \
-           ON (blcklst.request_id = evt.request_id \
+         JOIN tr_http_evt_req req \
+           ON (blcklst.request_id = req.request_id \
              AND blcklst.time_stamp >= $P{startTime} \
              AND blcklst.time_stamp < $P{endTime}) \
+         JOIN pl_endp endp \
+           ON (req.pl_endp_id = endp.event_id) \
          LEFT OUTER JOIN merged_address_map mam \
            ON (endp.c_client_addr = mam.addr \
              AND blcklst.time_stamp >= mam.start_time \

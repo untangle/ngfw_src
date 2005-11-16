@@ -38,7 +38,7 @@ SELECT c_client_addr AS CLIENT,
        COUNT(CASE blocked WHEN false THEN 1 ELSE NULL END) AS PASSED,
        COUNT(c_client_addr) AS TOTAL_ACTIONS
   FROM tr_ids_evt evt
-         JOIN pl_endp endp ON endp.event_id = evt.pl_endp_id
+         JOIN pl_endp endp ON (evt.pl_endp_id = endp.event_id)
   WHERE evt.time_stamp >= $P{startTime} AND evt.time_stamp < $P{endTime}
   GROUP BY c_client_addr
   ORDER BY TOTAL_ACTIONS DESC

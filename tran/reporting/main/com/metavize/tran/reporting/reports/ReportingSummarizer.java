@@ -41,7 +41,7 @@ public class ReportingSummarizer extends BaseSummarizer {
     long numIn = 0;
 
         try {
-            String sql = "SELECT sum(c2p_bytes), sum(p2s_bytes), sum(s2p_bytes), sum(p2c_bytes), count(*) FROM pl_endp endp JOIN pl_stats stats USING endp.event_id = stats.pl_endp_id WHERE client_intf = 1 AND raze_date >= ? AND create_date < ?";
+            String sql = "SELECT SUM(c2p_bytes), SUM(p2s_bytes), SUM(s2p_bytes), SUM(p2c_bytes), COUNT(*) FROM pl_endp endp JOIN pl_stats stats ON (endp.event_id = stats.pl_endp_id) WHERE client_intf = 1 AND raze_date >= ? AND create_date < ?";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);

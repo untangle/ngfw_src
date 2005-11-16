@@ -21,18 +21,18 @@ FIELD_7.name=blocked
 FIELD_7.type=Boolean
 
 QUERY=\
-SELECT evt.time_stamp, name, c_client_addr, c_server_addr, c_server_port, \
+SELECT access.time_stamp, name, c_client_addr, c_server_addr, c_server_port, \
        ident, blocked \
-  FROM tr_spyware_evt_access evt \
+  FROM tr_spyware_evt_access access \
          JOIN pl_endp endp \
-           ON endp event_id = evt.pl_endp_id \
+           ON (access.pl_endp_id = endp.event_id) \
          LEFT OUTER JOIN merged_address_map mam \
            ON (endp.c_client_addr = mam.addr \
-             AND evt.time_stamp >= mam.start_time \
-             AND evt.time_stamp < mam.end_time) \
-  WHERE evt.time_stamp >= $P{startTime} \
-    AND evt.time_stamp < $P{endTime} \
-  ORDER BY evt.time_stamp DESC
+             AND access.time_stamp >= mam.start_time \
+             AND access.time_stamp < mam.end_time) \
+  WHERE access.time_stamp >= $P{startTime} \
+    AND access.time_stamp < $P{endTime} \
+  ORDER BY access.time_stamp DESC
 
 TOPLEFT.label=Timestamp
 TOPLMID.label=User

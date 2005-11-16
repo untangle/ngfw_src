@@ -24,7 +24,7 @@ SELECT protocol, count, size, top_count, all_count, top_size, all_size \
         SUM(s2p_bytes + p2s_bytes) AS size \
           FROM tr_protofilter_evt AS evt \
                  JOIN pl_stats stats \
-                   USING stats.pl_endp_id = evt.pl_endp_id \
+                   USING (pl_endp_id) \
           WHERE blocked \
             AND evt.time_stamp >= $P{startTime} \
             AND evt.time_stamp < $P{endTime} \
@@ -35,7 +35,7 @@ SELECT protocol, count, size, top_count, all_count, top_size, all_size \
           FROM (SELECT COUNT(protocol), SUM(s2p_bytes + p2s_bytes) AS size \
                   FROM tr_protofilter_evt AS evt \
                          JOIN pl_stats stats \
-                           ON evt.pl_endp_id = stats.pl_endp_id \
+                           USING (pl_endp_id) \
                   WHERE blocked \
                     AND evt.time_stamp >= $P{startTime} \
                     AND evt.time_stamp < $P{endTime} \
@@ -46,7 +46,7 @@ SELECT protocol, count, size, top_count, all_count, top_size, all_size \
           FROM (SELECT COUNT(protocol), SUM(s2p_bytes + p2s_bytes) AS size \
                   FROM tr_protofilter_evt AS evt \
                          JOIN pl_stats stats \
-                           ON stats.pl_endp_id = evt.pl_endp_id \
+                           USING (pl_endp_id) \
                   WHERE blocked \
                     AND evt.time_stamp >= $P{startTime} \
                     AND evt.time_stamp < $P{endTime} \

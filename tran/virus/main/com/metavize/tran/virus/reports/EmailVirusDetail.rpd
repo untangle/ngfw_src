@@ -43,7 +43,7 @@ QUERY=\
               AND evt.time_stamp < $P{endTime} \
               AND evt.vendor_name = $P{virusVendor}) \
           JOIN pl_endp endp \
-            ON endp.event_id = msg.pl_endp_id \
+            ON (endp.event_id = msg.pl_endp_id) \
    ORDER BY evt.time_stamp DESC) \
  UNION \
 (SELECT evt.time_stamp, msg.server_type, \
@@ -64,7 +64,7 @@ QUERY=\
                   AND evt.time_stamp < $P{endTime} \
                   AND evt.vendor_name = $P{virusVendor}) \
           JOIN pl_endp endp \
-            ON endp.event_id = msg.event_id \
+            ON (endp.event_id = msg.pl_endp_id) \
    ORDER BY evt.time_stamp DESC)
 
 TOPLEFT.label=Timestamp
