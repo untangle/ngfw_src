@@ -261,14 +261,15 @@ public class NatImpl extends AbstractTransform implements Nat
 
         dhcpManager.deconfigure();
 
+        statisticManager.stop();
+
         /* deconfigure the event handle */
         try {
             handler.deconfigure();
         } catch ( TransformException e ) {
+            /* XXX Why ??? */
             throw new TransformStopException( e );
         }
-
-        statisticManager.stop();
 
         eventLogger.stop();
     }
@@ -376,8 +377,6 @@ public class NatImpl extends AbstractTransform implements Nat
 
             settings.setDhcpStartAndEndAddress( IPaddr.parse( "192.168.1.100" ),
                                                 IPaddr.parse( "192.168.1.200" ));
-
-
         } catch ( Exception e ) {
             logger.error( "This should never happen", e );
         }

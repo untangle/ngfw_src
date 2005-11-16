@@ -112,15 +112,15 @@ public final class IntfMatcher implements Serializable
                 String s = null;
                 if ( isMatch( IntfConstants.EXTERNAL_INTF )) s = IntfConstants.EXTERNAL;
                 if ( isMatch( IntfConstants.INTERNAL_INTF )) {
-                    s += (( s == null ) ? "" : " & " ) + IntfConstants.INTERNAL;
+                    s = (( s == null ) ? "" : s + " & " ) + IntfConstants.INTERNAL;
                 }
 
                 if ( isMatch( IntfConstants.DMZ_INTF )) {
-                    s += (( s == null ) ? "" : " & " ) + IntfConstants.DMZ;
+                    s = (( s == null ) ? "" : s + " & " ) + IntfConstants.DMZ;
                 }
 
                 if ( isMatch( IntfConstants.VPN_INTF )) {
-                    s += (( s == null ) ? "" : " & " ) + IntfConstants.VPN;
+                    s = (( s == null ) ? "" : s + " & " ) + IntfConstants.VPN;
                 }
                 this.userRepresentation = s;
             }

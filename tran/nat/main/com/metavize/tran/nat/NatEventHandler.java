@@ -16,11 +16,15 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.metavize.mvvm.ArgonManager;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.NetworkingConfiguration;
-import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.IntfConstants;
+
+
 import com.metavize.mvvm.tapi.AbstractEventHandler;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
 import com.metavize.mvvm.tapi.IPSession;
@@ -35,6 +39,7 @@ import com.metavize.mvvm.tapi.event.UDPSessionEvent;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.mvvm.tran.TransformException;
+
 import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.firewall.InterfaceAddressRedirect;
 import com.metavize.mvvm.tran.firewall.InterfaceRedirect;
@@ -42,7 +47,6 @@ import com.metavize.mvvm.tran.firewall.InterfaceStaticRedirect;
 import com.metavize.mvvm.tran.firewall.IntfMatcher;
 import com.metavize.mvvm.tran.firewall.PortMatcher;
 import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
-import org.apache.log4j.Logger;
 
 /* Import all of the constants from NatConstants (1.5 feature) */
 import static com.metavize.tran.nat.NatConstants.*;
@@ -56,12 +60,11 @@ class NatEventHandler extends AbstractEventHandler
     private static final int SLEEP_TIME = 1000;
 
     /* match to determine whether a session is natted */
-    /* XXX Probably need to initialized this with a value */
-    private RedirectMatcher nat;
+    private RedirectMatcher nat = RedirectMatcher.MATCHER_DISABLED;
+    private RedirectMatcher vpn = RedirectMatcher.MATCHER_DISABLED;
     private IPMatcher natLocalNetwork;
 
     /* match to determine  whether a session is directed for the dmz */
-    /* XXX Probably need to initialized this with a value */
     private RedirectMatcher dmzHost = RedirectMatcher.MATCHER_DISABLED;
 
     /* True if logging DMZ redirects */
@@ -126,9 +129,13 @@ class NatEventHandler extends AbstractEventHandler
 
         /* Check for NAT, Redirects or DMZ */
         try {
+            logger.info( "Testing <" + request + ">" );
             if ( isNat( request, protocol )      ||
                  isRedirect( request, protocol ) ||
                  isDmzHost( request,  protocol )) {
+
+                logger.info( "<" + request + "> is nat, redirect or dmz" );
+
                 /* Nothing left to do */
                 if ( request.attachment() == null ) return;
 
@@ -150,6 +157,12 @@ class NatEventHandler extends AbstractEventHandler
                 return;
             }
 
+            /* VPN Sessions that don't require NAT. */
+            if ( isVpn( request, protocol )) {
+                request.release( false );
+                return;
+            }
+            
             /* If nat is on, and this session wasn't natted, redirected or dmzed, it
              * must be rejected */
             if ( nat.isEnabled()) {
@@ -228,16 +241,43 @@ class NatEventHandler extends AbstractEventHandler
             /* Create the nat redirect */
             natLocalNetwork = new IPMatcher( internalAddress, internalSubnet, false );
 
-            /* XXX Update to use local host */
+            /* Nat anything in the VPN or the inside */
+            IntfMatcher clientIntfMatcher = IntfMatcher.getByteMatcher( IntfConstants.INTERNAL_INTF );
+
+            /* This really should be anything but VPN and internal, but this setup will have to
+             * do until there are more effective interface matchers */
+            IntfMatcher serverIntfMatcher = IntfMatcher.getByteMatcher( IntfConstants.EXTERNAL_INTF, 
+                                                                        IntfConstants.DMZ_INTF );
+
+            /* This should NEVER happen */
+            if ( clientIntfMatcher == null || serverIntfMatcher == null ) {
+                throw new TransformException( "Unable to create client or server interface matcher" );
+            }
+
+            /* XXX Update to use local host ??? */
             nat = new RedirectMatcher( true, ProtocolMatcher.MATCHER_ALL,
-                                       IntfMatcher.getInside(), IntfMatcher.getAll(),
+                                       clientIntfMatcher, serverIntfMatcher,
                                        natLocalNetwork, IPMatcher.MATCHER_ALL,
+                                       PortMatcher.MATCHER_ALL, PortMatcher.MATCHER_ALL,
+                                       false, null, -1 );
+
+            /* Nat all VPN traffic from the vpn interface out */
+            clientIntfMatcher = IntfMatcher.getByteMatcher( IntfConstants.VPN_INTF );
+
+            if ( clientIntfMatcher == null ) {
+                throw new TransformException( "Unable to create client or server interface matcher" );
+            }
+
+            vpn = new RedirectMatcher( true, ProtocolMatcher.MATCHER_ALL,
+                                       clientIntfMatcher, serverIntfMatcher,
+                                       IPMatcher.MATCHER_ALL, IPMatcher.MATCHER_ALL,
                                        PortMatcher.MATCHER_ALL, PortMatcher.MATCHER_ALL,
                                        false, null, -1 );
 
             enableNat( netConfig );
         } else {
             nat = RedirectMatcher.MATCHER_DISABLED;
+            vpn = RedirectMatcher.MATCHER_DISABLED;
             disableNat( netConfig );
         }
 
@@ -289,7 +329,7 @@ class NatEventHandler extends AbstractEventHandler
                                              IntfMatcher.getNotInside(), IntfMatcher.getAll(),
                                              IPMatcher.MATCHER_ALL, localHostMatcher,
                                              PortMatcher.MATCHER_ALL, PortMatcher.MATCHER_ALL,
-                                             IntfConverter.INSIDE );
+                                             IntfConstants.INTERNAL_INTF );
 
             overrideList.add( redirect );
         }
@@ -331,8 +371,8 @@ class NatEventHandler extends AbstractEventHandler
         throws MPipeException, NatUnconfiguredException
     {
         int port;
-
-        if ( nat.isMatch( request, protocol )) {
+        
+        if ( nat.isMatch( request, protocol ) || vpn.isMatch( request, protocol )) {
             /* Check to see if this is destined to the NATd network, if it is drop it */
             if ( natLocalNetwork.isMatch( request.serverAddr())) {
                 request.rejectSilently();
@@ -448,13 +488,24 @@ class NatEventHandler extends AbstractEventHandler
         byte clientIntf = request.clientIntf();
         byte serverIntf = request.serverIntf();
 
-        if (( clientIntf == IntfConverter.DMZ && serverIntf == IntfConverter.OUTSIDE ) ||
-            ( clientIntf == IntfConverter.OUTSIDE && serverIntf == IntfConverter.DMZ )) {
+        if (( clientIntf == IntfConstants.DMZ_INTF && serverIntf == IntfConstants.EXTERNAL_INTF ) ||
+            ( clientIntf == IntfConstants.EXTERNAL_INTF && serverIntf == IntfConstants.DMZ_INTF )) {
             return true;
         }
 
         return false;
     }
+
+    private boolean isVpn( IPNewSessionRequest request, Protocol protocol )
+    {
+        if ( request.clientIntf() == IntfConstants.VPN_INTF || 
+             request.serverIntf() == IntfConstants.VPN_INTF ) {
+            return true;
+        }
+
+        return false;
+    }
+
 
     /**
      * Retrieve the next port from the port list
