@@ -30,6 +30,8 @@ import com.metavize.mvvm.ArgonManager;
 import com.metavize.mvvm.argon.ArgonException;
 
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.IntfConstants;
+
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.script.ScriptWriter;
 import com.metavize.mvvm.tran.script.ScriptRunner;
@@ -58,8 +60,8 @@ class OpenVpnManager
     private static final String FLAG_PROTOCOL    = "proto";
     private static final String DEFAULT_PROTOCOL = "udp";
     private static final String FLAG_DEVICE      = "dev";
-    private static final String DEVICE_BRIDGE    = "tap";
-    private static final String DEVICE_ROUTING   = "tun";
+    private static final String DEVICE_BRIDGE    = "tap0";
+    private static final String DEVICE_ROUTING   = "tun0";
     
     private static final String FLAG_ROUTE        = "route";
     private static final String FLAG_IFCONFIG     = "ifconfig";
@@ -167,23 +169,24 @@ class OpenVpnManager
     {
     }
        
-    void start() throws TransformException
+    void start( VpnSettings settings ) throws TransformException
     {
         logger.info( "Starting openvpn server" );
 
         ScriptRunner.getInstance().exec( VPN_START_SCRIPT );
 
         try {
-            MvvmContextFactory.context().argonManager().updateAddress();
+            String intf = ( settings.isBridgeMode()) ? DEVICE_BRIDGE : DEVICE_ROUTING;
+            MvvmContextFactory.context().argonManager().registerIntf( IntfConstants.VPN_INTF, intf );
         } catch ( ArgonException e ) {
             throw new TransformException( e );
         }
     }
     
-    void restart() throws TransformException
+    void restart( VpnSettings settings ) throws TransformException
     {
         /* The start script handles the case where it has to be stopped */
-        start();
+        start( settings );
     }
 
     void stop() throws TransformException

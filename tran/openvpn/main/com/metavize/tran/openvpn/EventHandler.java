@@ -15,7 +15,6 @@ import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.tapi.AbstractEventHandler;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
 import com.metavize.mvvm.tapi.MPipeException;

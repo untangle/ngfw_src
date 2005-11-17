@@ -49,7 +49,6 @@ class OpenVpnMonitor implements Runnable
     /* Just for debugging */
     // private static final long   LOG_TIME_MSEC = 1 * 30 * 1000;
 
-
     /* Delay a second while the thread is joining */
     private static final long   THREAD_JOIN_TIME_MSEC = 1000;
 

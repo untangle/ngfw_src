@@ -52,13 +52,14 @@ fi
 su postgres -c "createuser --createdb --no-adduser metavize" 2>/dev/null
 createdb -O metavize -U metavize mvvm 2>/dev/null
 
-
-# Read the networking configuration parameters, this must be parsed before running the
-# defaults.
-MVVM_PARAMS_FILE=@PREFIX@/usr/share/metavize/conf/networking.sh
-if [ -f "$MVVM_PARAMS_FILE"  -a ! -d "$MVVM_PARAMS_FILE" ]; then
-    . $MVVM_PARAMS_FILE
+MVVM_INTF_LIST_FILE=@MVVM_CONF@/transform_intf
+if [ -f "${MVVM_INTF_LIST_FILE}"  -a ! -d "${MVVM_INTF_LIST_FILE}" ]; then
+    . ${MVVM_INTF_LIST_FILE}
+    if [ -n "${MVVM_TRANSFORM_INTF_LIST}" ]; then
+        JAVA_OPTS="-Dargon.userintf=${MVVM_TRANSFORM_INTF_LIST} $JAVA_OPTS"
+    fi
 fi
+
 
 # This parameter comes from the MVVM_PARAMS_FILE
 if [ -f /proc/sys/net/ipv4/tcp_window_scaling ] ; then

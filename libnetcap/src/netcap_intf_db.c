@@ -161,11 +161,13 @@ int               netcap_intf_db_add_info( netcap_intf_db_t* db, netcap_intf_inf
     return 0;
 }
 
-int               netcap_intf_db_configure_intf( netcap_intf_db_t* db, 
+int               netcap_intf_db_configure_intf( netcap_intf_db_t* db, netcap_intf_t* intf_array,
                                                  netcap_intf_string_t* intf_name_array, int intf_count )
 {
-    if ( intf_name_array == NULL || intf_count < 0 || intf_count > NETCAP_MAX_INTERFACES ) {
-        return errlog( ERR_CRITICAL, "Invalid argument %#10x %d\n", intf_name_array, intf_count );
+    if (( intf_name_array == NULL ) || ( intf_array == NULL ) || 
+        ( intf_count < 0 ) || ( intf_count > NETCAP_MAX_INTERFACES )) {
+        return errlog( ERR_CRITICAL, "Invalid argument %#10x %#10x %d\n", intf_name_array, intf_array, 
+                       intf_count );
     }
     
     int c;
@@ -173,6 +175,7 @@ int               netcap_intf_db_configure_intf( netcap_intf_db_t* db,
         netcap_intf_string_t* intf_name;
         netcap_intf_info_t* info;
         intf_name = &intf_name_array[c];
+        netcap_intf_t intf = intf_array[c];
         
         if ( strnlen( intf_name->s, sizeof( netcap_intf_string_t )) == 0 ) {
             debug( 4, "INTF DB: Ignoring unused interface at index %d\n", c );
@@ -180,9 +183,12 @@ int               netcap_intf_db_configure_intf( netcap_intf_db_t* db,
         }
         
         if (( info = netcap_intf_db_name_to_info( db, intf_name )) == NULL ) {
-            /* This shouldn't happen in a properly configured system. */
-            errlog( ERR_CRITICAL, "Ignoring Unkown Interface at index %d.\n", c );
-            errlog( ERR_CRITICAL, "Interfaces are configured incorrectly.\n" );
+            /* This shouldn't happen in a properly configured system.
+             * this could actually happen at startup if EG VPN is registered but the
+             * interface is not setup yet.  (VPN transform doesn't start until after
+             * the first initialization) */
+            errlog( ERR_WARNING, "Ignoring unkown interface '%s' at index %d.\n", intf_name->s, c );
+            errlog( ERR_WARNING, "Interfaces may be configured incorrectly.\n" );
             continue;
         }
         
@@ -190,11 +196,11 @@ int               netcap_intf_db_configure_intf( netcap_intf_db_t* db,
             return errlog( ERR_CRITICAL, "The interface %s is a bridge.\n", info->name.s );
         }
         
-        debug( 4, "INTF DB: Mapping netcap_intf %d to %d/'%s'\n", c + 1, info->index, info->name.s );
+        debug( 4, "INTF DB: Mapping netcap_intf %d to %d '%s'\n", intf, info->index, info->name.s );
         
         /* Establish the mapping between the interface and the info */
         db->intf_to_info[c] = info;
-        info->netcap_intf   = c + 1;
+        info->netcap_intf   = intf;
     }
     
     /* Copy in all of the interfaces */

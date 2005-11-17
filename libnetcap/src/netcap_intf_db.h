@@ -100,7 +100,7 @@ int                 netcap_intf_db_raze    ( netcap_intf_db_t* db );
 int                 netcap_intf_db_add_info( netcap_intf_db_t* db, netcap_intf_info_t* intf_info );
 
 /* Configure the mapping from netcap interfaces to interface info */ 
-int                 netcap_intf_db_configure_intf( netcap_intf_db_t* db, 
+int                 netcap_intf_db_configure_intf( netcap_intf_db_t* db, netcap_intf_t* intf_array,
                                                    netcap_intf_string_t* intf_name_array, int intf_count );
 
 /* Functions for retrieving an item from the interface database using a variety of keys */

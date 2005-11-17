@@ -12,7 +12,12 @@ package com.metavize.tran.openvpn;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
+
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
@@ -24,9 +29,7 @@ import com.metavize.mvvm.tran.TransformStartException;
 import com.metavize.mvvm.tran.TransformState;
 import com.metavize.mvvm.tran.TransformStopException;
 import com.metavize.mvvm.util.TransactionWork;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
+import com.metavize.mvvm.argon.ArgonException;
 
 public class VpnTransformImpl extends AbstractTransform
     implements VpnTransform
@@ -65,8 +68,8 @@ public class VpnTransformImpl extends AbstractTransform
              SoloPipeSpec.MAX_STRENGTH - 2);
         this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
     }
-
-    protected void initializeSettings()
+    
+    @Override protected void initializeSettings()
     {
         VpnSettings settings = new VpnSettings( this.getTid());
         logger.info( "Initializing Settings..." );
@@ -129,7 +132,7 @@ public class VpnTransformImpl extends AbstractTransform
             if ( getRunState() == TransformState.RUNNING ) {
                 /* This stops then starts openvpn */
                 this.openVpnManager.configure( settings );
-                this.openVpnManager.restart();
+                this.openVpnManager.restart( settings );
                 this.handler.configure( settings );
             }
         } catch ( TransformException exn ) {
@@ -261,16 +264,28 @@ public class VpnTransformImpl extends AbstractTransform
 
     // AbstractTransform methods ----------------------------------------------
 
-    @Override
-    protected PipeSpec[] getPipeSpecs()
+    @Override protected PipeSpec[] getPipeSpecs()
     {
         return pipeSpecs;
     }
 
     // lifecycle --------------------------------------------------------------
-
-    protected void postInit(final String[] args)
+    @Override protected void preInit( final String[] args ) throws TransformException
     {
+        super.preInit( args );
+
+        /* Initially use tun0, even though it could eventually be configured to the tap interface  */
+        try {
+            MvvmContextFactory.context().argonManager().registerIntf( IntfConstants.VPN_INTF, "tun0" );
+        } catch ( ArgonException e ) {
+            throw new TransformException( "Unable to register VPN interface", e );
+        }
+    }
+    
+    @Override protected void postInit(final String[] args) throws TransformException
+    {
+        super.postInit( args );
+
         TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork( Session s )
@@ -285,6 +300,7 @@ public class VpnTransformImpl extends AbstractTransform
             };
         getTransformContext().runTransaction( tw );
 
+        /* Register the VPN interface */
         reconfigure();
     }
 
@@ -295,7 +311,11 @@ public class VpnTransformImpl extends AbstractTransform
         /* XXXXX Need a way of not starting if the transform is not configured */
         if ( this.settings == null ) {
             String[] args = {""};
-            postInit( args );
+            try {
+                postInit( args );
+            } catch ( TransformException e ) {
+                throw new TransformStartException( "post init", e );
+            }
 
             if ( this.settings == null ) initializeSettings();
         }
@@ -306,7 +326,7 @@ public class VpnTransformImpl extends AbstractTransform
                         
             this.openVpnManager.configure( settings );
             this.handler.configure( settings );
-            this.openVpnManager.restart();
+            this.openVpnManager.restart( settings );
         } catch( Exception e ) {
             try {
                 this.openVpnManager.stop();
@@ -326,18 +346,33 @@ public class VpnTransformImpl extends AbstractTransform
     @Override protected void postStop() throws TransformStopException
     {
         super.postStop();
-        openVpnMonitor.stop();
-
-        try {
-            this.openVpnManager.stop();
-        } catch ( TransformException e ) {
-            throw new TransformStopException( e );
-        }
     }
 
     @Override protected void preStop() throws TransformStopException {
         super.preStop();
         unDeployWebApp();
+
+        try {
+            openVpnMonitor.stop();
+        } catch ( Exception e ) {
+            logger.warn( "Error stopping openvpn monitor", e );
+        }
+        
+        try {
+            this.openVpnManager.stop();
+        } catch ( TransformException e ) {
+            logger.warn( "Error stopping openvpn manager", e );
+        }
+    }
+
+    @Override protected void postDestroy() throws TransformException
+    {
+        super.postDestroy();
+        try {
+            MvvmContextFactory.context().argonManager().deregisterIntf( IntfConstants.VPN_INTF );
+        } catch ( ArgonException e ) {
+            throw new TransformException( "Unable to deregister vpn interface", e );
+        }
     }
 
     public void reconfigure()

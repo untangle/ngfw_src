@@ -664,10 +664,13 @@ JNIEXPORT jbyte JNICALL Java_com_metavize_jnetcap_Netcap_cGetOutgoingInterface
  * Signature: ([Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_metavize_jnetcap_Netcap_cConfigureInterfaceArray
-  (JNIEnv* env , jobject _this, jobjectArray j_interface_array )
+  (JNIEnv* env , jobject _this, jbyteArray j_intf_array, jobjectArray j_interface_array )
 {
     int  num_intf;
+    int  intf_array_length;
     netcap_intf_string_t intf_name_array[NETCAP_MAX_INTERFACES];
+    netcap_intf_t intf_array[NETCAP_MAX_INTERFACES];
+    jbyte *j_intf;
     int c;
 
     if ( NULL == j_interface_array ) return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "NULL\n" );
@@ -675,29 +678,46 @@ JNIEXPORT void JNICALL Java_com_metavize_jnetcap_Netcap_cConfigureInterfaceArray
     if (( num_intf = (*env)->GetArrayLength( env, j_interface_array )) <= 0 ) {
         return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "Invalid array %d\n", num_intf );
     }
+
+    if (( intf_array_length = (*env)->GetArrayLength( env, j_intf_array )) != num_intf ) {
+        return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, 
+                                   "intf arrays are a different length %d\n", num_intf, intf_array_length );
+    }
     
     if ( num_intf > NETCAP_MAX_INTERFACES ) {
         return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, 
                                    "Too many elements in the %d\n", num_intf );
     }
+
+    if (( j_intf = (*env)->GetByteArrayElements( env, j_intf_array, NULL )) == NULL ) {
+        return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "GetByteArrayElements\n" );
+    }
+    
     bzero( intf_name_array, sizeof( intf_name_array ));
+    
+    bzero( intf_array, sizeof( intf_array ));
     
     for ( c = 0 ; c < num_intf ; c++ ) {
         const char* name = NULL;
         jstring j_name = (*env)->GetObjectArrayElement( env, j_interface_array, c );
         if ( j_name == NULL ) {
+            (*env)->ReleaseByteArrayElements( env, j_intf_array, j_intf, 0 );
             return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "Null element at %d\n", c );
         }
         
         if (( name = (*env)->GetStringUTFChars( env, j_name, NULL )) == NULL ) {
+            (*env)->ReleaseByteArrayElements( env, j_intf_array, j_intf, 0 );
             return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "(*env)->GetStringUTFChars\n" );
         }
         
+        intf_array[c] = j_intf[c];
         strncpy( intf_name_array[c].s, name, sizeof( netcap_intf_string_t ));
         (*env)->ReleaseStringUTFChars( env, j_name, name );
     }
     
-    if ( netcap_interface_configure_intf( intf_name_array, num_intf ) < 0 ) {
+    (*env)->ReleaseByteArrayElements( env, j_intf_array, j_intf, 0 );
+
+    if ( netcap_interface_configure_intf( intf_array, intf_name_array, num_intf ) < 0 ) {
         return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "netcap_interface_configure_intf\n" );
     }
 }

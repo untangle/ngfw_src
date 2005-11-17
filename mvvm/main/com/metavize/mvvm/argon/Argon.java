@@ -11,8 +11,6 @@
 
 package com.metavize.mvvm.argon;
 
-
-
 import com.metavize.jnetcap.Netcap;
 import com.metavize.jnetcap.Shield;
 import com.metavize.jvector.Vector;
@@ -28,9 +26,6 @@ public class Argon
 
     /* Amount of time between subsequent calls to shutdown all of the vectoring machines */
     static final int SHUTDOWN_PAUSE    = 2000;
-
-    /* Separator in between each user defined interface */
-    private static final String USER_INTERFACE_SEPARATOR = ",";
 
     /* Maximum number of threads allowed at any time */
     private static int MAX_THREADS = 10000;
@@ -65,8 +60,10 @@ public class Argon
 
     /* If there is a DMZ interface, it is passed in using the system property */
     String dmz     = "";
-    String user[]  = new String[0];
 
+    /* A list of user interfaces */
+    String userIntfs = "";
+    
     /* Singleton */
     private Argon()
     {
@@ -104,7 +101,7 @@ public class Argon
         }
 
         if (( temp = System.getProperty( "argon.userintf" )) != null ) {
-            user = temp.split( USER_INTERFACE_SEPARATOR );
+            userIntfs = temp;
         }
 
         if (( temp = System.getProperty( "argon.numthreads" )) != null ) {
@@ -186,23 +183,31 @@ public class Argon
         Netcap.startScheduler();
 
         /* Convert all of the interface names from strings to bytes */
-        try {
-            IntfConverter.init( inside, outside, dmz, user );
-        } catch ( ArgonException e ) {
-            logger.error( "Error initializing IntfConverter, continuing", e );
-        }
-
-        /* Configure the array of active interfaces */
-        policyManager.reconfigure( IntfConverter.getInstance().getArgonIntfArray());
-
-        if ( isShieldEnabled && shieldFile != null )
-            shield.config( shieldFile );
+        // try {
+        // IntfConverter.init( inside, outside, dmz, userIntfs );
+        // } catch ( ArgonException e ) {
+        // logger.error( "Error initializing IntfConverter, continuing", e );
+        // }
 
         try {
-            ArgonManagerImpl.getInstance().updateAddress();
+            /* Configure the array of active interfaces */
+            ArgonManagerImpl.getInstance().
+                initializeIntfArray( policyManager, inside, outside, dmz, userIntfs );
         } catch ( ArgonException e ) {
-            logger.error( "Unable to initialize iptables rules!!!!", e );
+            logger.error( "Unable to initialize iptables rules!!!", e );
         }
+        // policyManager.reconfigure( IntfConverter.getInstance().getArgonIntfArray());
+
+        /* Initialize the address database */
+        //try {
+        // argonManager.updateAddress();
+        // } catch ( ArgonException e ) {
+        //logger.error( "Unable to initialize iptables rules!!!!", e );
+        //}
+
+        /* Initialize the shield configuration */
+        if ( isShieldEnabled && shieldFile != null ) shield.config( shieldFile );
+
 
         /* Initialize the InterfaceOverride table, this is just so the logger doesn't get into the NAT
          * transform context */

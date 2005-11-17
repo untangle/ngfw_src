@@ -14,4 +14,12 @@ fi
 
 ${OPENVPN_SCRIPT} stop
 
+## Openvpn is kind of a fickle program.
+killall openvpn > /dev/null 2>&1
+
+sleep .5
+
+killall -KILL openvpn > /dev/null 2>&1
+
+
 true 

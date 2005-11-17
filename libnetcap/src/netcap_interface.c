@@ -105,6 +105,9 @@ static struct
      * settings */
     netcap_intf_string_t intf_name_array[NETCAP_MAX_INTERFACES];
     
+    /* Interface marking index array */
+    netcap_intf_t        intf_array[NETCAP_MAX_INTERFACES];
+    
     /* Number of interfaces in intf_name_array */
     int intf_count;    
     
@@ -215,9 +218,11 @@ int netcap_interface_update_address( void )
 }
 
 /* Setup the mapping between netcap interfaces and interface info */
-int netcap_interface_configure_intf( netcap_intf_string_t* intf_name_array, int intf_count )
+int netcap_interface_configure_intf( netcap_intf_t* intf_array, netcap_intf_string_t* intf_name_array,
+                                     int intf_count )
 {
-    if ( intf_name_array == NULL || intf_count < 0 || intf_count > NETCAP_MAX_INTERFACES ) {
+    if ( intf_name_array == NULL || intf_array == NULL || intf_count < 0 || 
+         intf_count > NETCAP_MAX_INTERFACES ) {
         return errlog( ERR_CRITICAL, "Invalid argument %#10x %d\n", intf_name_array, intf_count );
     }
     
@@ -226,7 +231,9 @@ int netcap_interface_configure_intf( netcap_intf_string_t* intf_name_array, int 
     int _critical_section( void ) {
         /* Copy in the new interface array */
         bzero( &_interface.intf_name_array, sizeof( _interface.intf_name_array ));
+        bzero( &_interface.intf_array, sizeof( _interface.intf_array ));
         memcpy( &_interface.intf_name_array, intf_name_array, intf_count * sizeof( netcap_intf_string_t ));
+        memcpy( &_interface.intf_array, intf_array, intf_count * sizeof( netcap_intf_t ));
         _interface.intf_count = intf_count;
         
         /* Update the address */
@@ -464,6 +471,7 @@ static int _update_intf_info( void )
         int num_intf;
         
         _intf_index_name_t intf_index_array[NETCAP_MAX_INTERFACES];
+
         bzero( intf_index_array, sizeof( intf_index_array ));
         
         if (( num_intf = _get_interface_list( intf_index_array, sizeof( intf_index_array ))) < 0 ) {
@@ -525,7 +533,8 @@ static int _update_intf_info( void )
         
         /* Update the interface array */
         if (( _interface.intf_count > 0 ) && 
-            ( netcap_intf_db_configure_intf( db, _interface.intf_name_array, _interface.intf_count ) < 0 )) {
+            ( netcap_intf_db_configure_intf( db, _interface.intf_array, _interface.intf_name_array, 
+                                             _interface.intf_count ) < 0 )) {
             return errlog( ERR_CRITICAL, "netcap_intf_db_configure_intf\n" );
         }
         

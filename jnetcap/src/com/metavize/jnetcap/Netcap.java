@@ -231,10 +231,11 @@ public final class Netcap {
     /**
      * Configure the netcap interface array
      */
-    public void configureInterfaceArray( String interfaceArray[] ) throws JNetcapException
+    public void configureInterfaceArray( byte intfIndexArray[], String interfaceArray[] )
+        throws JNetcapException
     {
         try {
-            cConfigureInterfaceArray( interfaceArray );
+            cConfigureInterfaceArray( intfIndexArray, interfaceArray );
         } catch ( Exception e ) {
             throw new JNetcapException( "Error configuring interface array", e );
         }
@@ -414,7 +415,7 @@ public final class Netcap {
     /**
      * Function to configure the netcap interface array 
      */
-    private native void cConfigureInterfaceArray( String interfaceArray[] );
+    private native void cConfigureInterfaceArray( byte intfIndexArray[], String interfaceArray[] );
 
     /**
      * Function to retrieve the outgoing interface for an ip address

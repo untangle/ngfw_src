@@ -14,6 +14,7 @@ package com.metavize.mvvm.argon;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Collections;
@@ -25,8 +26,12 @@ import com.metavize.jnetcap.InterfaceData;
 import com.metavize.jnetcap.Shield;
 import com.metavize.jnetcap.JNetcapException;
 
+import com.metavize.mvvm.engine.PolicyManagerPriv;
+
 import com.metavize.mvvm.ArgonManager;
 import com.metavize.mvvm.NetworkingConfiguration;
+
+import com.metavize.mvvm.tran.script.ScriptWriter;
 
 import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.firewall.InterfaceRedirect;
@@ -37,6 +42,11 @@ public class ArgonManagerImpl implements ArgonManager
 {    
     private static final Shield shield = Shield.getInstance();
 
+    private static final String BUNNICULA_CONF      = System.getProperty( "bunnicula.conf.dir" );
+    private static final String TRANSFORM_INTF_FILE = BUNNICULA_CONF + "/transform_intf";
+
+    private static final String FLAG_INTF_LIST = "MVVM_TRANSFORM_INTF_LIST";
+
     private static final String BOGUS_OUTSIDE_ADDRESS_STRING = "169.254.210.51";
     private static final String BOGUS_INSIDE_ADDRESS_STRING  = "169.254.210.52";
 
@@ -46,14 +56,16 @@ public class ArgonManagerImpl implements ArgonManager
     private static final ArgonManagerImpl INSTANCE = new ArgonManagerImpl();
     
     private static final List<InterfaceData> EMPTY_INTF_DATA_LIST = Collections.emptyList();
+   
 
     private final Logger logger = Logger.getLogger( ArgonManagerImpl.class );
 
     private final Netcap netcap = Netcap.getInstance();
     
-    
     private List<InterfaceData> insideIntfDataList  = EMPTY_INTF_DATA_LIST;
     private List<InterfaceData> outsideIntfDataList = EMPTY_INTF_DATA_LIST;
+
+    private PolicyManagerPriv policyManager;
 
     private boolean isShutdown = false;
         
@@ -135,7 +147,9 @@ public class ArgonManagerImpl implements ArgonManager
     }
     
     /* Indicate that the shutdown process has started, this is used to prevent NAT from both
-     * re-enabling the bridge during shutdown, Argon will do that automatically. */
+     * re-enabling the bridge during shutdown, Argon will do that automatically.
+     * This also prevents transforms from registering or deregistering interfaces after shutdown 
+     */
     synchronized void isShutdown() 
     {
         isShutdown = true;
@@ -316,6 +330,85 @@ public class ArgonManagerImpl implements ArgonManager
         } catch ( Exception e ) {
             throw new ArgonException( "Unable to set the shield node settingss", e );
         }
+    }
+
+    private void updateIntfArray() throws ArgonException
+    {
+        IntfConverter ic = IntfConverter.getInstance();
+
+        /* Update the netcap interface array */
+        try {
+            Netcap.getInstance().configureInterfaceArray( ic.netcapIntfArray(), ic.deviceNameArray());
+        }  catch ( JNetcapException e ) {
+            throw new ArgonException( e );
+        }
+
+        /* List, _ seperated, of interfaces and their corresponding device */
+        /* Write out the list of user interfaces */
+        
+        List<TransformInterface> til = ic.transformInterfaceList();
+
+        ScriptWriter sw = new ScriptWriter();
+        String list = "";
+        for ( TransformInterface ti : til ) {
+            if ( list.length() > 0 ) list += "_";
+            list += ti.deviceName() + "," + ti.argonIntf();
+        }
+        sw.appendVariable( FLAG_INTF_LIST, list );
+        sw.writeFile( TRANSFORM_INTF_FILE );
+
+        /* Update the address database */
+        updateAddress();
+        
+        /* Update the policy manager */
+        if ( ic.clearUpdatePolicyManager()) {
+            this.policyManager.reconfigure( ic.argonIntfArray());
+        }
+    }
+
+    /* Interface management function */
+    void initializeIntfArray( PolicyManagerPriv policyManager, String inside, String outside, 
+                              String dmz, String userIntfs ) 
+        throws ArgonException
+    {
+        this.policyManager = policyManager;
+
+        /* Initialize the interface array */
+        IntfConverter.getInstance().init( outside, inside, dmz, userIntfs );
+
+        updateIntfArray();
+    }
+
+    public void registerIntf( byte argonIntf, String deviceName )
+        throws ArgonException
+    {
+        if ( isShutdown ) {
+            logger.info( "Already shutdown, unable to deregister interface" );
+            return;
+        }
+        
+        if ( !IntfConverter.getInstance().registerIntf( argonIntf, deviceName )) {
+            logger.debug( "Ignoring interface that is already registered" );
+            return;
+        }
+        
+        updateIntfArray();        
+    }
+    
+    public void deregisterIntf( byte argonIntf )
+        throws ArgonException
+    {
+        if ( isShutdown ) {
+            logger.info( "Already shutdown, unable to deregister interface" );
+            return;
+        }
+
+        if ( !IntfConverter.getInstance().deregisterIntf( argonIntf )) {
+            logger.debug( "Ignoring interface that is not registered" );
+            return;
+        }
+
+        updateIntfArray();
     }
 
     public static final ArgonManagerImpl getInstance()

@@ -99,4 +99,18 @@ public interface ArgonManager
     /* Set the shield node rules */
     public void setShieldNodeSettings( List<ShieldNodeSettings> shieldNodeSettingsList ) 
         throws ArgonException;
+
+    /* Index is the argon index of the interface, name is the device
+     * name (eg tun0 or tap0).
+     * @throws ArgonException: Index is IntfConstants.Internal,
+     * IntfConstants.External or IntfConstants.DMZ. or the argonIndex is invalid */
+    public void registerIntf( byte argonIntf, String name )
+        throws ArgonException;
+
+    /* Index is the argon index of the interface, name is the device
+     * name (eg tun0 or tap0).
+     * @throws ArgonException: Index is IntfConstants.Internal,
+     * IntfConstants.External or IntfConstants.DMZ. or the argonIndex is invalid */
+    public void deregisterIntf( byte argonIntf )
+        throws ArgonException;
 }

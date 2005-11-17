@@ -420,7 +420,8 @@ int netcap_interface_intf_to_string ( netcap_intf_t intf, char *intf_str, int st
  *        mark 2, etc.
  * @param num_intf - The number of interfaces in intf_name_array.
  */
-int netcap_interface_configure_intf ( netcap_intf_string_t* intf_name_array, int intf_count );
+int netcap_interface_configure_intf ( netcap_intf_t* intf_array, netcap_intf_string_t* intf_name_array, 
+                                      int intf_count );
 
 int netcap_interface_intf_verify    ( netcap_intf_t intf );
 
