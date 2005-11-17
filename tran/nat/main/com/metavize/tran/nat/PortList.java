@@ -60,15 +60,6 @@ class PortList {
         return new PortList( start, end );
     }
     
-    boolean isInPortRange( int port )
-    {
-        if ( start <= port && port <=  end ) {
-            return true;
-        }
-        
-        return false;
-    }
-    
     synchronized int getNextPort()
     {
         int port = portList.remove( 0 );

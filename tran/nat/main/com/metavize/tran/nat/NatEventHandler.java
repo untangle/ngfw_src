@@ -448,7 +448,7 @@ class NatEventHandler extends AbstractEventHandler
                 if ( matcher.rule() == null ) {
                     logger.warn( "Null rule for a redirect matcher" );
                 } else if ( matcher.rule().getLog()) {
-                    eventLogger.log( new RedirectEvent( request.id(), matcher.rule(), matcher.ruleIndex()));
+                    eventLogger.log( new RedirectEvent( request.pipelineEndpoints(), matcher.rule(), matcher.ruleIndex()));
                 }
 
                 /* Log the stat */
@@ -473,7 +473,7 @@ class NatEventHandler extends AbstractEventHandler
 
             if ( isDmzLoggingEnabled ) {
                 /* Log the event if necessary */
-                eventLogger.log( new RedirectEvent( request.id()));
+                eventLogger.log( new RedirectEvent( request.pipelineEndpoints()));
             }
 
             transform.statisticManager.incrDmzSessions();

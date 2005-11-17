@@ -15,6 +15,7 @@ import java.io.Serializable;
 
 import com.metavize.mvvm.logging.PipelineEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
+import com.metavize.mvvm.tran.PipelineEndpoints;
 
 /**
  * Log event for the firewall.
@@ -39,18 +40,18 @@ public class RedirectEvent extends PipelineEvent implements Serializable
     {
     }
 
-    public RedirectEvent( int sessionId, RedirectRule rule, int ruleIndex )
+    public RedirectEvent( PipelineEndpoints pe, RedirectRule rule, int ruleIndex )
     {
-        super(sessionId);
+        super(pe);
         this.rule      = rule;
         this.ruleIndex = ruleIndex;
         this.isDmz     = false;
     }
 
     /* This is for DMZ events */
-    public RedirectEvent( int sessionId )
+    public RedirectEvent( PipelineEndpoints pe )
     {
-        super (sessionId);
+        super (pe);
         this.rule      = null;
         this.ruleIndex = 0;
         this.isDmz     = true;
