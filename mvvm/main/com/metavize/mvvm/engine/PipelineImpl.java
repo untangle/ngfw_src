@@ -38,7 +38,6 @@ class PipelineImpl implements Pipeline
     private final List<File> files = new LinkedList<File>();
 
     private int id = 0;
-    private PipelineEndpoints pipelineEndpoints;
 
     // constructors -----------------------------------------------------------
 
@@ -140,11 +139,6 @@ class PipelineImpl implements Pipeline
         return f;
     }
 
-    public PipelineEndpoints getPipelineEndpoints()
-    {
-        return pipelineEndpoints;
-    }
-
     // package protected methods ----------------------------------------------
 
     void destroy()
@@ -152,10 +146,5 @@ class PipelineImpl implements Pipeline
         for (File f : files) {
             f.delete();
         }
-    }
-
-    void setPipelineEndpoints(PipelineEndpoints pipelineEndpoints)
-    {
-        this.pipelineEndpoints = pipelineEndpoints;
     }
 }

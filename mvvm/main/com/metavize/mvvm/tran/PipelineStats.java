@@ -50,9 +50,9 @@ public class PipelineStats extends PipelineEvent
 
     public PipelineStats() { }
 
-    public PipelineStats(IPSessionDesc begin, IPSessionDesc end)
+    public PipelineStats(IPSessionDesc begin, IPSessionDesc end, PipelineEndpoints pe)
     {
-        super(begin.id());
+        super(pe);
 
         razeDate = new Date();
 

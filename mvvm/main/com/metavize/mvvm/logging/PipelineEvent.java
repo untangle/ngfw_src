@@ -24,14 +24,9 @@ public abstract class PipelineEvent extends LogEvent
 
     public PipelineEvent() { }
 
-    public PipelineEvent(int sessionId)
+    public PipelineEvent(PipelineEndpoints pe)
     {
-        try {
-            pipelineEndpoints = MvvmContextFactory.context().pipelineFoundry()
-                .getPipeline(sessionId).getPipelineEndpoints();
-        } catch (NullPointerException exn) {
-            Logger.getLogger(getClass()).error("tell jdi 'I want my PipelineEndpoints!'");
-        }
+        pipelineEndpoints = pe;
     }
 
     // non-persistent accessors -----------------------------------------------
@@ -53,16 +48,6 @@ public abstract class PipelineEvent extends LogEvent
     public void setPipelineEndpoints(PipelineEndpoints pipelineEndpoints)
     {
         this.pipelineEndpoints = pipelineEndpoints;
-    }
-
-    public void setPipelineEndpoints(int sessionId)
-    {
-        try {
-            pipelineEndpoints = MvvmContextFactory.context().pipelineFoundry()
-                .getPipeline(sessionId).getPipelineEndpoints();
-        } catch (NullPointerException exn) {
-            Logger.getLogger(getClass()).error("tell jdi 'I want my PipelineEndpoints!'");
-        }
     }
 
     // Syslog methods ---------------------------------------------------------

@@ -25,7 +25,7 @@ public abstract class IPSessionImpl extends SessionImpl implements IPSession
 
     public IPSessionImpl( IPNewSessionRequest request )
     {
-        super( request, request.state() == IPNewSessionRequest.REQUESTED );
+        super( request, request.state() == IPNewSessionRequest.REQUESTED || request.state() == IPNewSessionRequest.ENDPOINTED );
 
         protocol      = request.protocol();
         clientAddr    = request.clientAddr();

@@ -37,7 +37,7 @@ public interface PipelineFoundry
 
     PipelineEndpoints createInitialEndpoints(IPSessionDesc start);
     void registerEndpoints(PipelineEndpoints pe);
-    void destroy(IPSessionDesc start, IPSessionDesc end);
+    void destroy(IPSessionDesc start, IPSessionDesc end, PipelineEndpoints pe);
 
     void registerMPipe(MPipe mPipe);
     void deregisterMPipe(MPipe mPipe);
@@ -46,6 +46,5 @@ public interface PipelineFoundry
     void deregisterCasing(MPipe insideMPipe);
 
     void registerConnection(InetSocketAddress socketAddress, Fitting fitting);
-
     Pipeline getPipeline(int sessionId);
 }

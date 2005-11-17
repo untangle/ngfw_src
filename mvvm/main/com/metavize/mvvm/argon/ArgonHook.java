@@ -75,6 +75,7 @@ abstract class ArgonHook implements Runnable
      */
     public final void run()
     {
+        PipelineEndpoints endpoints = null;
         try {
             ClassLoader cl = getClass().getClassLoader();
             Thread.currentThread().setContextClassLoader(cl);
@@ -132,7 +133,7 @@ abstract class ArgonHook implements Runnable
             pipelineAgents = pipelineDesc.getAgents();
 
             // Create the (fake) endpoints early so they can be available at request time.
-            PipelineEndpoints endpoints = pipelineFoundry.createInitialEndpoints(clientSide);
+            endpoints = pipelineFoundry.createInitialEndpoints(clientSide);
 
             /* Initialize all of the transforms, sending the request events to each in turn */
             initTransforms( originalServerIntf, endpoints );
@@ -152,6 +153,21 @@ abstract class ArgonHook implements Runnable
                 PolicyRule pr = pipelineDesc.getPolicyRule();
                 endpoints.completeEndpoints(clientSide, serverSide, pr.getPolicy(), pr.isInbound());
                 pipelineFoundry.registerEndpoints(endpoints);
+            }
+
+            /* Remove all non-vectored sessions, it is non-efficient to iterate the session
+             * list twice, but the list is typically small and this logic may get very complex
+             * otherwise */
+            for ( Iterator<Session> iter = sessionList.iterator(); iter.hasNext() ; ) {
+                Session session = iter.next();
+                if ( !session.isVectored()) {
+                    logger.debug( "Removing non-vectored session from the session list" + session );
+                    iter.remove();
+                    /* Append to the released session list */
+                    releasedSessionList.add( session );
+                    // Deliver the super secret sauce
+                    ((SessionImpl)session).complete();
+                }
             }
 
             /* Only start vectoring if the session is alive */
@@ -191,7 +207,9 @@ abstract class ArgonHook implements Runnable
 
         try {
             /* Let the pipeline foundy know */
-            pipelineFoundry.destroy( clientSide, serverSide );
+            if (endpoints == null)
+                logger.error("Destroying pipeline with null endpoints");
+            pipelineFoundry.destroy( clientSide, serverSide, endpoints );
 
             /* Remove the vector from the vectron table */
             /* You must remove the vector before razing, or else
@@ -309,22 +327,6 @@ abstract class ArgonHook implements Runnable
 
     protected void buildPipeline() {
         LinkedList relayList = new LinkedList();
-
-        /* Remove all non-vectored sessions, it is non-efficient to iterate the session
-         * list twice, but the list is typically small and this logic may get very complex
-         * otherwise */
-        for ( Iterator<Session> iter = sessionList.iterator(); iter.hasNext() ; ) {
-            Session session = iter.next();
-            if ( !session.isVectored()) {
-                logger.debug( "Removing non-vectored session from the session list" + session );
-                iter.remove();
-                /* Append to the released session list */
-                releasedSessionList.add( session );
-                // Deliver the super secret sauce
-                ((SessionImpl)session).complete();
-            }
-        }
-
 
         if ( sessionList.isEmpty() ) {
             if ( state == IPNewSessionRequest.ENDPOINTED ) {

@@ -45,6 +45,4 @@ public interface Pipeline
      * @exception IOException the temp file cannot be created.
      */
     File mktemp(String prefix) throws IOException;
-
-    PipelineEndpoints getPipelineEndpoints();
 }

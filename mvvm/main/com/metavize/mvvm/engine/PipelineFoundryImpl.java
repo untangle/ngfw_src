@@ -179,12 +179,10 @@ class PipelineFoundryImpl implements PipelineFoundry
 
     public void registerEndpoints(PipelineEndpoints pe)
     {
-        PipelineImpl pipeline = pipelines.get(pe.getSessionId());
-        pipeline.setPipelineEndpoints(pe);
         eventLogger.log(pe);
     }
 
-    public void destroy(IPSessionDesc start, IPSessionDesc end)
+    public void destroy(IPSessionDesc start, IPSessionDesc end, PipelineEndpoints pe)
     {
         PipelineImpl pipeline = pipelines.remove(start.id());
 
@@ -192,7 +190,7 @@ class PipelineFoundryImpl implements PipelineFoundry
             logger.debug("removed: " + pipeline + " for: " + start.id());
         }
 
-        eventLogger.log(new PipelineStats(start, end));
+        eventLogger.log(new PipelineStats(start, end, pe));
 
         pipeline.destroy();
     }
