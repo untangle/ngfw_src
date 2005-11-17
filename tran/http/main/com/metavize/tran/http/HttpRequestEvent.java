@@ -12,7 +12,7 @@
 package com.metavize.tran.http;
 
 
-import com.metavize.mvvm.logging.PipelineEvent;
+import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
 
 /**
@@ -24,9 +24,8 @@ import com.metavize.mvvm.logging.SyslogBuilder;
  * table="TR_HTTP_EVT_REQ"
  * mutable="false"
  */
-public class HttpRequestEvent extends PipelineEvent
+public class HttpRequestEvent extends LogEvent
 {
-    private int sessionId;
     private RequestLine requestLine;
     private String host;
     private int contentLength;
@@ -38,22 +37,18 @@ public class HttpRequestEvent extends PipelineEvent
      */
     public HttpRequestEvent() { }
 
-    public HttpRequestEvent(int sessionId, RequestLine requestLine,
+    public HttpRequestEvent(RequestLine requestLine,
                             String host)
     {
-        super(sessionId);
-
         this.requestLine = requestLine;
         this.host = host;
 
         requestLine.setHttpRequestEvent(this);
     }
 
-    public HttpRequestEvent(int sessionId, RequestLine requestLine,
+    public HttpRequestEvent(RequestLine requestLine,
                             String host, int contentLength)
     {
-        super(sessionId);
-
         this.requestLine = requestLine;
         this.host = host;
         this.contentLength = contentLength;
@@ -118,7 +113,7 @@ public class HttpRequestEvent extends PipelineEvent
 
     // Syslog methods ---------------------------------------------------------
 
-    protected void doSyslog(SyslogBuilder sb)
+    public void appendSyslog(SyslogBuilder sb)
     {
         sb.addField("host", host);
         sb.addField("uri", requestLine.getRequestUri().toString());;

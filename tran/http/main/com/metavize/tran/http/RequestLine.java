@@ -15,6 +15,7 @@ import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import com.metavize.mvvm.tran.PipelineEndpoints;
 
 /**
  * Holds a RFC 2616 request-line.
@@ -32,7 +33,8 @@ public class RequestLine implements Serializable
     private Long id;
     private HttpMethod method;
     private URI requestUri;
-    private HttpRequestEvent httpRequestEvent;
+    private PipelineEndpoints pipelineEndpoints;
+    private HttpRequestEvent httpRequestEvent; // Filled in after creation time.
 
     // constructors -----------------------------------------------------------
 
@@ -41,11 +43,11 @@ public class RequestLine implements Serializable
      */
     public RequestLine() { }
 
-    public RequestLine(HttpMethod method, URI requestUri)
+    public RequestLine(PipelineEndpoints pe, HttpMethod method, URI requestUri)
     {
+        this.pipelineEndpoints = pe;
         this.method = method;
         this.requestUri = requestUri;
-        this.httpRequestEvent = httpRequestEvent;
     }
 
     // business methods -------------------------------------------------------
@@ -81,6 +83,25 @@ public class RequestLine implements Serializable
     private void setId(Long id)
     {
         this.id = id;
+    }
+
+    /**
+     * Get the PipelineEndpoints.
+     *
+     * @return the PipelineEndpoints.
+     * @hibernate.many-to-one
+     * column="PL_ENDP_ID"
+     * not-null="true"
+     * cascade="all"
+     */
+    public PipelineEndpoints getPipelineEndpoints()
+    {
+        return pipelineEndpoints;
+    }
+
+    public void setPipelineEndpoints(PipelineEndpoints pipelineEndpoints)
+    {
+        this.pipelineEndpoints = pipelineEndpoints;
     }
 
     /**

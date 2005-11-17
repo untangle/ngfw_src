@@ -206,7 +206,7 @@ public class HttpParser extends AbstractParser
                         }
                     } else {
                         HttpRequestEvent evt = new HttpRequestEvent
-                            (session.id(), requestLineToken.getRequestLine(),
+                            (requestLineToken.getRequestLine(),
                              header.getValue("host"), lengthCounter);
                     }
 
@@ -534,7 +534,7 @@ public class HttpParser extends AbstractParser
         String httpVersion = version(data);
         eatCrLf(data);
 
-        RequestLine rl = new RequestLine(method, requestUri);
+        RequestLine rl = new RequestLine(getSession().pipelineEndpoints(), method, requestUri);
         return new RequestLineToken(rl, httpVersion);
     }
 

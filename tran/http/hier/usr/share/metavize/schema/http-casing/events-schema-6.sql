@@ -16,7 +16,6 @@ CREATE TABLE events.tr_http_evt_resp (
 -- com.metavize.tran.http.HttpRequestEvent
 CREATE TABLE events.tr_http_evt_req (
     event_id int8 NOT NULL,
-    pl_endp_id int8,
     request_id int8,
     host text,
     content_length int4,
@@ -26,6 +25,7 @@ CREATE TABLE events.tr_http_evt_req (
 -- com.metavize.tran.http.RequestLine
 CREATE TABLE events.tr_http_req_line (
     request_id int8 NOT NULL,
+    pl_endp_id int8,
     method char(1),
     uri text,
     PRIMARY KEY (request_id));
