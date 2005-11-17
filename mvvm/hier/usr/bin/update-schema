@@ -80,14 +80,14 @@ EOF
         echo "running $schema_dir/${type}-schema-$latest_ver.sql"
         psql -e -f "$schema_dir/${type}-schema-$latest_ver.sql" -U metavize mvvm
         cat <<EOF | $PSQL_VERBOSE
-UPDATE split_schema_ver SET ${type}_version = $latest_ver;
+UPDATE split_schema_ver SET ${type}_version = $latest_ver WHERE component = '$component';
 EOF
     else
         echo "running $schema_dir/schema-$latest_ver.sql"
         psql -e -f "$schema_dir/schema-$latest_ver.sql" -U metavize mvvm
         cat <<EOF | $PSQL_VERBOSE
-UPDATE split_schema_ver SET settings_version = $latest_ver;
-UPDATE split_schema_ver SET events_version = $latest_ver;
+UPDATE split_schema_ver SET settings_version = $latest_ver WHERE component = '$component';
+UPDATE split_schema_ver SET events_version = $latest_ver WHERE component = '$component';
 EOF
     fi
 
