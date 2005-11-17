@@ -1176,7 +1176,7 @@ public class ImapServerParser
     }
   
     MessageInfo ret = MessageInfoFactory.fromMIMEMessage(headers,
-      getSession().id(),
+      getSession().pipelineEndpoints(),
       getSession().serverPort());
 
     

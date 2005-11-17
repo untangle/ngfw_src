@@ -60,10 +60,9 @@ public class MessageInfo implements Serializable
     /* constructors */
     public MessageInfo() {}
 
-    public MessageInfo(int sessionId, int serverPort, String subject)
+    public MessageInfo(PipelineEndpoints pe, int serverPort, String subject)
     {
-        pipelineEndpoints = MvvmContextFactory.context().pipelineFoundry()
-            .getPipeline(sessionId).getPipelineEndpoints();
+        pipelineEndpoints = pe;
 
         // Subject really shouldn't be NOT NULL, but it's easier for
         // now to fix by using an empty string... XXX jdi 8/9/05
@@ -164,13 +163,6 @@ public class MessageInfo implements Serializable
     public void setPipelineEndpoints(PipelineEndpoints pipelineEndpoints)
     {
         this.pipelineEndpoints = pipelineEndpoints;
-        return;
-    }
-
-    public void setPipelineEndpoints(int sessionId)
-    {
-        pipelineEndpoints = MvvmContextFactory.context().pipelineFoundry()
-            .getPipeline(sessionId).getPipelineEndpoints();
         return;
     }
 

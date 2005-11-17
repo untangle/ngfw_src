@@ -82,12 +82,7 @@ public class VirusHttpEvent extends VirusEvent
 
     public PipelineEndpoints getPipelineEndpoints()
     {
-        if (null == requestLine) {
-            return null;
-        } else {
-            HttpRequestEvent req = requestLine.getHttpRequestEvent();
-            return null == req ? null : req.getPipelineEndpoints();
-        }
+        return requestLine.getPipelineEndpoints();
     }
 
     // accessors --------------------------------------------------------------

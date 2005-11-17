@@ -247,7 +247,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             return TokenResult.NONE; /* hold message reply for later */
         } catch (IOException exn) {
             /* cannot recover if byte unstuffed message file no longer exists */
-            logger.error("byte unstuffed message file does not exist: " + exn);
+            logger.error("byte unstuffed message file does not exist: ", exn);
             return handleException(ExceptionState.MESSAGE, zMMessageT);
         }
     }
@@ -598,7 +598,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
                      zWrChannel.write(zBuf);
                 }
             } catch (IOException exn) {
-                logger.error("cannot write date to byte unstuffed message file: " + exn);
+                logger.error("cannot write date to byte unstuffed message file: ", exn);
                 return handleException(ExceptionState.MESSAGE_DATA, zChunkT);
             }
         }

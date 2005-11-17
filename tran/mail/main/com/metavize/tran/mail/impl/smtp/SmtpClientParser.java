@@ -490,7 +490,7 @@ class SmtpClientParser
     }
   
     MessageInfo ret = MessageInfoFactory.fromMIMEMessage(headers,
-      getSession().id(),
+      getSession().pipelineEndpoints(),
       getSession().serverPort());
     //Add anyone from the transaction
     SmtpTransaction smtpTx = getSessionTracker().getCurrentTransaction();

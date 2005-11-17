@@ -36,12 +36,10 @@ public class VirusLogEvent extends VirusEvent
      */
     public VirusLogEvent() { }
 
-    public VirusLogEvent(int sessionId, VirusScannerResult result,
+    public VirusLogEvent(PipelineEndpoints pe, VirusScannerResult result,
                          String vendorName)
     {
-        pipelineEndpoints = MvvmContextFactory.context().pipelineFoundry()
-            .getPipeline(sessionId).getPipelineEndpoints();
-
+        this.pipelineEndpoints = pe;
         this.result = result;
         this.vendorName = vendorName;
     }
@@ -100,12 +98,6 @@ public class VirusLogEvent extends VirusEvent
     public void setPipelineEndpoints(PipelineEndpoints pipelineEndpoints)
     {
         this.pipelineEndpoints = pipelineEndpoints;
-    }
-
-    public void setPipelineEndpoints(int sessionId)
-    {
-        pipelineEndpoints = MvvmContextFactory.context().pipelineFoundry()
-            .getPipeline(sessionId).getPipelineEndpoints();
     }
 
     /**

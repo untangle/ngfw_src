@@ -297,7 +297,7 @@ public class PopUnparser extends AbstractUnparser
                 zNewBuf.rewind();
             } catch (CharacterCodingException exn) {
                 /* may not recover if new message reply cannot be formed */
-                logger.error("Unable to encode new message reply line: " + zNewDataOK + ", reusing org reply line as last resort: " + zMsgDataReply + ": " + exn);
+                logger.error("Unable to encode new message reply line: " + zNewDataOK + ", reusing org reply line as last resort: " + zMsgDataReply + ": ", exn);
                 zNewBuf = zMsgDataReply.getBytes();
             }
         }

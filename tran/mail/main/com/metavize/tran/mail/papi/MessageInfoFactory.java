@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.metavize.tran.mime.*;
+import com.metavize.mvvm.tran.PipelineEndpoints;
 import org.apache.log4j.Logger;
 
 public class MessageInfoFactory
@@ -27,10 +28,10 @@ public class MessageInfoFactory
      * it be in MessageInfo.java.
      */
     public static MessageInfo fromMIMEMessage(MIMEMessageHeaders headers,
-      int sessionId,
+      PipelineEndpoints pe,
       int port) {
 
-      MessageInfo ret = new MessageInfo(sessionId, port, headers.getSubject());
+      MessageInfo ret = new MessageInfo(pe, port, headers.getSubject());
 
       //Drain all TO and CC
       List<EmailAddressWithRcptType> allRcpts = headers.getAllRecipients();
