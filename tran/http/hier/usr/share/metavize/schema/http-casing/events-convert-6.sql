@@ -1,4 +1,4 @@
--- convert for release-3.1
+-- events convert for release-3.1
 
 --------------------
 -- remove varchars |
@@ -48,18 +48,18 @@ ALTER TABLE events.tr_http_evt_resp ALTER COLUMN event_id SET NOT NULL;
 -- recreate indeces |
 ---------------------
 
-CREATE INDEX tr_http_evt_req_ts_idx ON tr_http_evt_req (time_stamp);
-CREATE INDEX tr_http_evt_req_rid_idx ON tr_http_evt_req (request_id);
-CREATE INDEX tr_http_evt_resp_rid_idx ON tr_http_evt_resp (request_id);
+CREATE INDEX tr_http_evt_req_ts_idx ON events.tr_http_evt_req (time_stamp);
+CREATE INDEX tr_http_evt_req_rid_idx ON events.tr_http_evt_req (request_id);
+CREATE INDEX tr_http_evt_resp_rid_idx ON events.tr_http_evt_resp (request_id);
 
 -------------------------
 -- recreate constraints |
 -------------------------
 
-ALTER TABLE tr_http_evt_req
+ALTER TABLE events.tr_http_evt_req
     ADD CONSTRAINT fk_tr_http_reqevt_req
     FOREIGN KEY (request_id) REFERENCES tr_http_req_line;
 
-ALTER TABLE tr_http_evt_resp
+ALTER TABLE events.tr_http_evt_resp
     ADD CONSTRAINT fk_tr_http_respevt_req
     FOREIGN KEY (request_id) REFERENCES tr_http_req_line;

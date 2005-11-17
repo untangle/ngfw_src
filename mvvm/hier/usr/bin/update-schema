@@ -4,42 +4,62 @@ exec >>@MVVM_LOG@/schema.log 2>&1
 PSQL="psql -U metavize --tuples-only mvvm"
 
 if [ $# = 0 ]; then
-    echo "usage: $0 [ mvvm | transform ]"
+    echo "usage: $0 [ settings | events ] [ mvvm | transform ]"
     exit 1
 fi
 
 cat <<EOF | $PSQL
 CREATE SCHEMA settings;
 
--- before version 2.5, schema_ver was in public, these two commands may
--- safely be deleted when no such installations exist.
-CREATE TABLE settings.schema_ver (component, version)
-    AS SELECT * FROM public.schema_ver;
-DROP TABLE public.schema_ver;
 
-CREATE TABLE settings.schema_ver (component varchar(64), version int4);
-ALTER TABLE settings.schema_ver
+-- convert pre-3.1 schema_ver to split_schema_ver
+CREATE TABLE settings.split_schema_ver AS
+    SELECT component::text, version AS settings_version, version AS events_version
+    FROM settings.schema_ver;
+
+DROP TABLE settings.schema_ver;
+
+CREATE TABLE settings.split_schema_ver (
+    component varchar(64),
+    settings_version int4,
+    events_version int4);
+
+ALTER TABLE settings.split_schema_ver
     ADD CONSTRAINT schema_ver_pkey PRIMARY KEY (component);
-
 
 -- hack for version 2.5
 -- convert clam, fprot, hauri, and sophos to use virus-base schema
-INSERT INTO schema_ver (SELECT 'virus-base' AS component, version FROM schema_ver WHERE component = 'clam-transform' OR component = 'fprot-transform' OR component = 'hauri-transform' OR component = 'sophos-transform' ORDER BY version LIMIT 1);
-DELETE FROM schema_ver WHERE component = 'clam-transform' OR component = 'fprot-transform' OR component = 'hauri-transform' OR component = 'sophos-transform';
+INSERT INTO split_schema_ver (
+    SELECT 'virus-base' AS component, settings_version, events_version
+    FROM split_schema_ver WHERE component = 'clam-transform' OR component = 'fprot-transform'
+         OR component = 'hauri-transform' OR component = 'sophos-transform'
+    ORDER BY settings_version LIMIT 1);
+
+DELETE FROM split_schema_ver
+WHERE component = 'clam-transform' OR component = 'fprot-transform'
+      OR component = 'hauri-transform' OR component = 'sophos-transform';
 
 -- hack for version 2.5
 -- convert spamassassin, clamphish to use spam-base schema
-INSERT INTO schema_ver (SELECT 'spam-base' AS component, version FROM schema_ver WHERE component = 'spamassassin-transform' OR component = 'clamphish-transform' ORDER BY version LIMIT 1);
-DELETE FROM schema_ver WHERE component = 'spamassassin-transform' OR component = 'clamphish-transform';
+INSERT INTO split_schema_ver (
+    SELECT 'spam-base' AS component, settings_version, events_veresion
+    FROM split_schema_ver
+    WHERE component = 'spamassassin-transform'
+          OR component = 'clamphish-transform'
+    ORDER BY settings_version LIMIT 1);
+
+DELETE FROM split_schema_ver
+WHERE component = 'spamassassin-transform' OR component = 'clamphish-transform';
 
 EOF
 
-component=$1
+type=$1
+component=$2
 
 schema_dir=@MVVM_SCHEMA@/$component
 
-ver=$(echo "SELECT version FROM schema_ver WHERE component = '$1'" | $PSQL)
-latest_ver=$(ls $schema_dir/schema-*.sql | sed 's/^.*schema-\([0-9]\+\).sql/\1/' | sort -n -r | head -n1)
+ver=$(echo "SELECT ${type}_version FROM split_schema_ver WHERE component = '$component'" | $PSQL)
+latest_ver=$(ls $schema_dir/*schema-*.sql | sed 's/^.*schema-\([0-9]\+\).sql/\1/' | sort -n -r | head -n1)
 echo "Updating schema: $component on $(date)"
 echo "Current schema version: $ver"
 echo "Latest schema version: $latest_ver"
@@ -48,12 +68,24 @@ if [ "x$latest_ver" = "x" ]; then
     echo "No schema"
 elif [ "x$ver" = "x" ]; then
     echo "Initializing schema"
-    psql -e -f $schema_dir/schema-$latest_ver.sql -U metavize mvvm
 
-cat <<EOF | $PSQL
-DELETE FROM schema_ver WHERE component = '$component';
-INSERT INTO schema_ver VALUES ('$component', $latest_ver);
+    cat <<EOF | $PSQL
+INSERT INTO split_schema_ver VALUES ('$component', null, null);
 EOF
+
+    if [ -e "$schema_dir/${type}-schema-*.sql" ]; then
+        psql -e -f "$schema_dir/${type}-schema-$latest_ver.sql" -U metavize mvvm
+        cat <<EOF | $PSQL
+UPDATE split_schema_ver SET ${type}_version = $latest_ver;
+EOF
+    else
+        psql -e -f "$schema_dir/schema-$latest_ver.sql" -U metavize mvvm
+        cat <<EOF | $PSQL
+UPDATE split_schema_ver SET settings_version = $latest_ver;
+UPDATE split_schema_ver SET events_version = $latest_ver;
+EOF
+    fi
+
 elif [ "$ver" -gt "$latest_ver" ]; then
     echo "Installed version is greater than latest version."
 else
@@ -61,14 +93,35 @@ else
         echo "Updating Schema..."
         for v in $(seq $(expr $ver + 1) $latest_ver); do
             echo "Updating to $v"
-            psql -e -f $schema_dir/convert-$v.sql -U metavize mvvm
+            if [ -e "$schema_dir/${type}-convert-$v.sql" ]; then
+                psql -e -f "$schema_dir/${type}-convert-$v.sql" -U metavize mvvm
+                eval ${type}_version=$v
+            else
+                psql -e -f "$schema_dir/convert-$v.sql" -U metavize mvvm
+                events_version=$v
+                settings_version=$v
+            fi
         done
 
-        cat <<EOF | $PSQL
-UPDATE schema_ver SET version = '$latest_ver' WHERE component = '$component';
+        if [ "x$events_version" = "x" ]; then
+            cat <<EOF | $PSQL
+UPDATE split_schema_ver SET events_version = '$events_version' WHERE component = '$component';
 EOF
+        fi
+
+        if [ "x$settings_version" = "x" ]; then
+            cat <<EOF | $PSQL
+UPDATE split_schema_ver SET settings_version = '$settings_version' WHERE component = '$component';
+EOF
+        fi
+
     fi
 
     echo "running schema-$latest_ver just in case"
-    psql -e -f $schema_dir/schema-$latest_ver.sql -U metavize mvvm </dev/null
+
+    if [ -e "$schema_dir/${type}-schema-$latest_ver.sql" ]; then
+        psql -e -f "$schema_dir/${type}-schema-$latest_ver.sql" -U metavize mvvm </dev/null
+    else
+        psql -e -f "$schema_dir/schema-$latest_ver.sql" -U metavize mvvm </dev/null
+    fi
 fi

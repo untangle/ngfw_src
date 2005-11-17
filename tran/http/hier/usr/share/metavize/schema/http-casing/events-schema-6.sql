@@ -1,22 +1,7 @@
--- schema for release-3.1
-
--------------
--- settings |
--------------
-
--- com.metavize.tran.http.HttpSettings
-CREATE TABLE settings.tr_http_settings (
-    settings_id int8 NOT NULL,
-    enabled bool NOT NULL,
-    non_http_blocked bool NOT NULL,
-    max_header_length int4 NOT NULL,
-    block_long_headers bool NOT NULL,
-    max_uri_length int4 NOT NULL,
-    block_long_uris bool NOT NULL,
-    PRIMARY KEY (settings_id));
+-- events schema for release-3.1
 
 -----------
--- events |
+-- tables |
 -----------
 
 -- com.metavize.tran.http.HttpResponseEvent
@@ -51,16 +36,16 @@ CREATE TABLE events.tr_http_req_line (
 
 -- indeces for reporting
 
-CREATE INDEX tr_http_evt_req_ts_idx ON tr_http_evt_req (time_stamp);
-CREATE INDEX tr_http_evt_req_rid_idx ON tr_http_evt_req (request_id);
-CREATE INDEX tr_http_evt_resp_rid_idx ON tr_http_evt_resp (request_id);
+CREATE INDEX tr_http_evt_req_ts_idx ON events.tr_http_evt_req (time_stamp);
+CREATE INDEX tr_http_evt_req_rid_idx ON events.tr_http_evt_req (request_id);
+CREATE INDEX tr_http_evt_resp_rid_idx ON events.tr_http_evt_resp (request_id);
 
 -- constraints
 
-ALTER TABLE tr_http_evt_req
+ALTER TABLE events.tr_http_evt_req
     ADD CONSTRAINT fk_tr_http_reqevt_req
-    FOREIGN KEY (request_id) REFERENCES tr_http_req_line;
+    FOREIGN KEY (request_id) REFERENCES events.tr_http_req_line;
 
-ALTER TABLE tr_http_evt_resp
+ALTER TABLE events.tr_http_evt_resp
     ADD CONSTRAINT fk_tr_http_respevt_req
-    FOREIGN KEY (request_id) REFERENCES tr_http_req_line;
+    FOREIGN KEY (request_id) REFERENCES events.tr_http_req_line;

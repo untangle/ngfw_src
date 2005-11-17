@@ -22,6 +22,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.engine.SchemaUtil;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.util.TransactionWork;
@@ -173,6 +174,7 @@ public class EventLogger<E extends LogEvent> implements EventManager<E>
         private final TransformContext transformContext;
         private final BlockingQueue<EventDesc> inputQueue
             = new LinkedBlockingQueue<EventDesc>();
+        private final String name;
         private final String tag;
 
         private final SyslogManager syslogManager = MvvmContextFactory
@@ -190,10 +192,11 @@ public class EventLogger<E extends LogEvent> implements EventManager<E>
         {
             this.transformContext = transformContext;
             if (null == transformContext) {
+                this.name = "mvvm";
                 this.tag = "mvvm[0]: ";
             } else {
-                this.tag = transformContext.getTransformDesc().getName()
-                    + "[" + transformContext.getTid().getId() + "]: ";
+                this.name = transformContext.getTransformDesc().getName();
+                this.tag = name + "[" + transformContext.getTid().getId() + "]: ";
             }
         }
 
@@ -202,6 +205,8 @@ public class EventLogger<E extends LogEvent> implements EventManager<E>
         public void run()
         {
             thread = Thread.currentThread();
+
+            SchemaUtil.initSchema("events", name);
 
             long lastSync = System.currentTimeMillis();
             long nextSync = lastSync + SYNC_TIME;

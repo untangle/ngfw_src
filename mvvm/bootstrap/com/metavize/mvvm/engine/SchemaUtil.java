@@ -25,21 +25,23 @@ import org.apache.log4j.Logger;
 public class SchemaUtil
 {
     private static final String UPDATE_SCHEMA_CMD
-        = System.getProperty("bunnicula.home") + "/../../bin/update-schema ";
+        = System.getProperty("bunnicula.home") + "/../../bin/update-schema";
 
     private static final Logger logger = Logger.getLogger(SchemaUtil.class);
 
     /**
      * Initialize component schema.
      *
+     * XXX we need timeout and barf behavior
      * XXX make non-static?
      *
      * @param component to initialize.
      */
-    public static void initSchema(String component)
+    public static void initSchema(String type, String component)
     {
         try {
-            Process p = Runtime.getRuntime().exec(UPDATE_SCHEMA_CMD + component);
+            ProcessBuilder pb = new ProcessBuilder(UPDATE_SCHEMA_CMD, type, component);
+            Process p = pb.start();
             InputStream is = p.getInputStream();
             // XXX we log in the script, maybe move up to here
             for (byte[] b = new byte[1024]; 0 <= is.read(b); );
@@ -48,6 +50,7 @@ public class SchemaUtil
             try {
                 p.waitFor();
             } catch (InterruptedException exn) {
+                // I don't think this ever happens
                 logger.debug("waiting for update-schema");
                 break TRY_AGAIN;
             }

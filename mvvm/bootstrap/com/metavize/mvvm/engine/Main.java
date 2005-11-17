@@ -17,8 +17,8 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.catalina.Connector;
 import org.apache.catalina.Container;
@@ -75,7 +75,7 @@ public class Main
     // XXX get rid of all these throws
     public static final void main(String[] args) throws Exception
     {
-        SchemaUtil.initSchema("mvvm");
+        SchemaUtil.initSchema("settings", "mvvm");
 
         new Main().init();
     }
@@ -242,7 +242,7 @@ public class Main
     }
 
     //Callback from the MvvmContext to unload
-    //a web app    
+    //a web app
     public boolean unloadWebApp(String contextRoot) {
       return m_tomcatManager.unloadWebApp(contextRoot);
     }
@@ -290,21 +290,21 @@ public class Main
             return loadWebAppImpl(urlBase, rootDir);
           }
         }
-        
-        
+
+
         private boolean loadWebAppImpl(String urlBase,
           String rootDir) {
 
-    
+
           String fqRoot = bunniculaWeb + "/" + rootDir;
-          
+
           try {
             Context ctx = emb.createContext(urlBase, fqRoot);
             StandardManager mgr = new StandardManager();
             mgr.setPathname(null); /* disable session persistence */
             ctx.setManager(mgr);
             baseHost.addChild(ctx);
-            return true; 
+            return true;
           }
           catch(Exception ex) {
             logger.error("Unable to deploy webapp \"" +
@@ -313,8 +313,8 @@ public class Main
             return false;
           }
         }
-    
-        
+
+
         boolean unloadWebApp(String contextRoot) {
           try {
             Container c = baseHost.findChild(contextRoot);
@@ -340,15 +340,15 @@ public class Main
                 }
             } catch (LifecycleException exn) {
                 logger.debug(exn);
-            }        
-        } 
+            }
+        }
 
         // XXX exception handling
         private synchronized void startTomcat() throws Exception
         {
             // jdi 8/30/04 -- canonical host name depends on ordering of /etc/hosts
             String hostname = "localhost";
-    
+
             // set default logger and realm
             FileLogger fileLog = new FileLogger();
             fileLog.setDirectory(bunniculaLog);
@@ -356,42 +356,42 @@ public class Main
             fileLog.setSuffix(".log");
             fileLog.setTimestamp(true);
             // fileLog.setVerbosityLevel("DEBUG");
-    
+
             emb = new Embedded(fileLog, new MvvmRealm());
             emb.setCatalinaHome(bunniculaHome);
-    
+
             // create an Engine
             Engine baseEngine = emb.createEngine();
-    
+
             // set Engine properties
             baseEngine.setName("tomcat");
             baseEngine.setDefaultHost(hostname);
-    
+
             // Set up the Default Context
             StandardDefaultContext sdc = new StandardDefaultContext();
             sdc.setAllowLinking(true);
             baseEngine.addDefaultContext(sdc);
-    
+
             // create Host
             baseHost = (StandardHost)emb
                 .createHost(hostname, bunniculaWeb);
             baseHost.setUnpackWARs(true);
             baseHost.setDeployOnStartup(true);
             baseHost.setAutoDeploy(true);
-    
+
             // add host to Engine
             baseEngine.addChild(baseHost);
-    
+
             // create root Context
             Context ctx = emb.createContext("", bunniculaWeb + "/ROOT");
             StandardManager mgr = new StandardManager();
             mgr.setPathname(null); /* disable session persistence */
             ctx.setManager(mgr);
             ctx.setManager(new StandardManager());
-    
+
             // add context to host
             baseHost.addChild(ctx);
-    
+
             // create application Context
             ctx = emb.createContext("/http-invoker", "http-invoker");
             ctx.setPrivileged(true);
@@ -407,18 +407,18 @@ public class Main
             for(WebAppDescriptor desc : m_descriptors) {
               loadWebAppImpl(desc.urlBase, desc.relativeRoot);
             }
-    
+
             // add new Engine to set of
             // Engine for embedded server
             emb.addEngine(baseEngine);
-    
+
             // create Connector
             CoyoteConnector con = (CoyoteConnector)emb.createConnector((InetAddress)null, HTTP_PORT, false);
             emb.addConnector(con);
             con = (CoyoteConnector)emb.createConnector((InetAddress)null, HTTPS_PORT, true);
             con.setKeystoreFile("conf/keystore");
             emb.addConnector(con);
-    
+
             // start operation
             try {
                 emb.start();
@@ -467,7 +467,7 @@ public class Main
                 }
             }
         }
-    
+
         private boolean isAIUExn(LifecycleException exn) {
             Throwable wrapped = exn.getThrowable();
             String msg = exn.getMessage();

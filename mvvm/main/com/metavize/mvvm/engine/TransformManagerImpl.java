@@ -593,9 +593,9 @@ class TransformManagerImpl implements TransformManager
         }
 
         if (null != tDesc.getTransformBase()) {
-            SchemaUtil.initSchema(tDesc.getTransformBase());
+            SchemaUtil.initSchema("settings", tDesc.getTransformBase());
         }
-        SchemaUtil.initSchema(name);
+        SchemaUtil.initSchema("settings", name);
 
         return new URLClassLoader(resUrls, casingClassLoader);
     }
