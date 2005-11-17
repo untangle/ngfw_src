@@ -13,6 +13,7 @@ package com.metavize.tran.ids;
 import com.metavize.mvvm.logging.PipelineEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.logging.SyslogPriority;
+import com.metavize.mvvm.tran.PipelineEndpoints;
 
 /**
  * Log event for a blocked request.
@@ -32,8 +33,8 @@ public class IDSLogEvent extends PipelineEvent {
 
     public IDSLogEvent() { }
 
-    public IDSLogEvent(int sessionId, String message, boolean blocked) {
-        super(sessionId);
+    public IDSLogEvent(PipelineEndpoints pe, String message, boolean blocked) {
+        super(pe);
 
         this.message = message;
         this.blocked = blocked;

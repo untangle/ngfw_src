@@ -13,6 +13,7 @@ package com.metavize.tran.protofilter;
 
 import com.metavize.mvvm.logging.PipelineEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
+import com.metavize.mvvm.tran.PipelineEndpoints;
 
 /**
  * Log event for a proto filter match.
@@ -35,9 +36,9 @@ public class ProtoFilterLogEvent extends PipelineEvent
      */
     public ProtoFilterLogEvent() { }
 
-    public ProtoFilterLogEvent(int sessionId, String protocol, boolean blocked)
+    public ProtoFilterLogEvent(PipelineEndpoints pe, String protocol, boolean blocked)
     {
-        super(sessionId);
+        super(pe);
         this.protocol = protocol;
         this.blocked = blocked;
     }

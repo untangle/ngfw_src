@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * copyright (c) 2003, 2004, 2005 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -103,45 +103,47 @@ class EventHandler extends AbstractEventHandler
             /* Increment the block counter */
             transform.incrementCount( BLOCK_COUNTER ); // BLOCK COUNTER
 
+            /* If necessary log the event */
+            if ( rule != null && rule.getLog()) {
+                transform.log(new FirewallEvent(request.pipelineEndpoints(), rule, reject, ruleIndex));
+            }
+
         } else {
             logger.debug( "Releasing session: " + request );
-            request.release( false );
+            request.release( true );
 
             /* Increment the pass counter */
             transform.incrementCount( PASS_COUNTER ); // PASS COUNTER
+
+            /* If necessary log the event */
+            if ( rule != null && rule.getLog()) {
+                request.attach(new FirewallEvent(request.pipelineEndpoints(), rule, reject, ruleIndex));
+            }
         }
 
-        /* If necessary log the event */
-        if ( rule != null && rule.getLog()) {
-            request.attach(new FirewallEvent(request.id(), rule, reject, ruleIndex));
-        }
 
         /* Track the statistics */
         transform.statisticManager.incrRequest( protocol, request, reject, rule == null );
     }
 
-    // XXX move to new callback
     @Override
-    public void handleTCPFinalized(TCPSessionEvent event)
+    public void handleTCPComplete(TCPSessionEvent event)
         throws MPipeException
     {
         Session s = event.session();
         FirewallEvent fe = (FirewallEvent)s.attachment();
         if (null != fe) {
-            fe.setPipelineEndpoints(s.id());
             transform.log(fe);
         }
     }
 
-    // XXX move to new callback
     @Override
-    public void handleUDPFinalized(UDPSessionEvent event)
+    public void handleUDPComplete(UDPSessionEvent event)
         throws MPipeException
     {
         Session s = event.session();
         FirewallEvent fe = (FirewallEvent)s.attachment();
         if (null != fe) {
-            fe.setPipelineEndpoints(s.id());
             transform.log(fe);
         }
     }

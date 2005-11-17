@@ -15,6 +15,7 @@
 
 import com.metavize.mvvm.logging.PipelineEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
+import com.metavize.mvvm.tran.PipelineEndpoints;
 
  /**
   * Log event for the firewall.
@@ -40,9 +41,9 @@ import com.metavize.mvvm.logging.SyslogBuilder;
      {
      }
 
-     public FirewallEvent( int sessionId,  FirewallRule rule, boolean wasBlocked, int ruleIndex )
+     public FirewallEvent( PipelineEndpoints pe,  FirewallRule rule, boolean wasBlocked, int ruleIndex )
      {
-         super(sessionId);
+         super(pe);
 
          this.wasBlocked = wasBlocked;
          this.ruleIndex  = ruleIndex;

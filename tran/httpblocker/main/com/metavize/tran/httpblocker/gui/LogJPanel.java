@@ -85,7 +85,7 @@ public class LogJPanel extends MLogTableJPanel {
             for( HttpBlockerEvent requestLog : requestLogList ){
                 RequestLine rl = requestLog.getRequestLine();
                 HttpRequestEvent re = null == rl ? null : rl.getHttpRequestEvent();
-                PipelineEndpoints pe = null == re ? null : re.getPipelineEndpoints();
+                PipelineEndpoints pe = null == rl ? null : rl.getPipelineEndpoints();
 
                 event = new Vector(7);
                 event.add( requestLog.getTimeStamp() );

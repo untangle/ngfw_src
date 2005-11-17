@@ -142,9 +142,10 @@ public class IDSRuleSignature {
             info.blockSession();
             break;
         }
-        int sessionId = (info.getSession() == null) ? -1 : info.getSession().id(); // change to if(!null)
-        if(sessionId >= 0)
-            ids.log(new IDSLogEvent(sessionId,message,blocked)); //Add list number that this rule came from
+        if (info.getSession() == null)
+            log.error("Session null in doAction");
+        else
+            ids.log(new IDSLogEvent(info.getSession().pipelineEndpoints(),message,blocked)); //Add list number that this rule came from
     }
 
     public void setToString(String string) {
