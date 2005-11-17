@@ -65,6 +65,8 @@ public class ArgonManagerImpl implements ArgonManager
     private List<InterfaceData> insideIntfDataList  = EMPTY_INTF_DATA_LIST;
     private List<InterfaceData> outsideIntfDataList = EMPTY_INTF_DATA_LIST;
 
+    private String internalBridgeIntf = "";
+
     private PolicyManagerPriv policyManager;
 
     private boolean isShutdown = false;
@@ -163,8 +165,8 @@ public class ArgonManagerImpl implements ArgonManager
             return;
         }
 
-        BridgeConfigurationManager.getInstance().destroyBridge( netConfig, 
-                                                                internalAddress, internalNetmask );
+        BridgeConfigurationManager.getInstance().destroyBridge( netConfig, internalAddress,
+                                                                internalNetmask );
         pause();
         updateAddress();
     }
@@ -409,6 +411,20 @@ public class ArgonManagerImpl implements ArgonManager
         }
 
         updateIntfArray();
+    }
+
+    /** Add an interface to the internal bridge */
+    public void enableInternalBridgeIntf( NetworkingConfiguration netConfig, String intf )
+        throws ArgonException
+    {
+        BridgeConfigurationManager.getInstance().setInternalBridgeIntf( netConfig, intf );        
+    }
+    
+    /** Remove all interfaces bridged with the internal interface */
+    public void disableInternalBridgeIntf( NetworkingConfiguration netConfig )
+        throws ArgonException
+    {
+        BridgeConfigurationManager.getInstance().clearInternalBridgeIntf( netConfig );
     }
 
     public static final ArgonManagerImpl getInstance()

@@ -63,6 +63,9 @@ class BridgeConfigurationManager
     private InetAddress natInsideAddress = null;
     private InetAddress natInsideNetmask = null;
 
+    /* An interface that the inside if set the inside is bridged with */
+    private String internalBridgeIntf = "";
+
     private final Logger logger = Logger.getLogger( this.getClass());
 
     private BridgeConfigurationManager()
@@ -114,10 +117,12 @@ class BridgeConfigurationManager
     synchronized void argonRestoreBridge( NetworkingConfiguration netConfig ) throws ArgonException
     {
         /* Nothing to do, bridge was never modified */
-        if ( !this.isNatEnabled ) {
-            logger.debug( "Bridge was already enabled, ignoring" );
+        if ( !this.isNatEnabled && ( this.internalBridgeIntf.length() == 0 )) {
+            logger.debug( "Bridge was already enabled and VPN was not inserted, ignoring" );
             return;
         }
+
+        this.internalBridgeIntf = "";
         
         restoreBridge( netConfig );
     }
@@ -137,6 +142,27 @@ class BridgeConfigurationManager
         /* Call the reconfiguraion script */
         reconfigure();
     }
+
+    synchronized void setInternalBridgeIntf( NetworkingConfiguration netConfig, String intf )
+        throws ArgonException
+    {
+        /* XXX Probably should make sure that this is not one of the inside interfaces */
+        this.internalBridgeIntf = intf;
+        reconfigureBridge( netConfig );
+    }
+
+    synchronized void clearInternalBridgeIntf( NetworkingConfiguration netConfig )
+        throws ArgonException
+    {
+        if ( this.internalBridgeIntf.length() == 0 ) {
+            logger.debug( "Ignorning clear internal bridge interface because it doesn't exist" );
+            return;
+        }
+
+        this.internalBridgeIntf = "";
+        reconfigureBridge( netConfig );
+    }
+
     
     static BridgeConfigurationManager getInstance()
     {
@@ -184,19 +210,33 @@ class BridgeConfigurationManager
             /* Inside interface cannot use DHCP, this may change for more advanced 
              * routing */
             appendComment  ( sb, "Nat configuration" );
-            appendParameter( sb, NAT_NAME, TYPE_SUFFIX,    TYPE_POINT );
-            appendParameter( sb, NAT_NAME, PORT_SUFFIX,    inside );            
+            if ( this.internalBridgeIntf.length() > 0 ) {
+                appendComment  ( sb, "Nat configuration, bridged with " + this.internalBridgeIntf );
+                appendParameter( sb, NAT_NAME, TYPE_SUFFIX,      TYPE_BRIDGE );
+                appendParameter( sb, NAT_NAME, PORT_LIST_SUFFIX, 
+                                 inside + BRIDGE_LIST_SEP + this.internalBridgeIntf );
+                /* XXX Hardwired to be br1 */
+                appendParameter( sb, NAT_NAME, BRIDGE_NAME_SUFFIX, "br1" );
+            } else {
+                appendParameter( sb, NAT_NAME, TYPE_SUFFIX,    TYPE_POINT );
+                appendParameter( sb, NAT_NAME, PORT_SUFFIX,    inside );            
+            }
             appendParameter( sb, NAT_NAME, ADDRESS_SUFFIX, natInsideAddress.getHostAddress());
             appendParameter( sb, NAT_NAME, NETMASK_SUFFIX, natInsideNetmask.getHostAddress() );
             interfaceList = NAT_NAME;
+
         } else {
             /* Join the bridge interface list */
             bridgeInterfaceList = outside + BRIDGE_LIST_SEP + inside;
+
+            if ( this.internalBridgeIntf.length() > 0 ) {
+                bridgeInterfaceList += BRIDGE_LIST_SEP + this.internalBridgeIntf;
+            }
         }
                 
         /* Append the DMZ to the bridge interface list */
-        if ( dmz.length() > 0 ) bridgeInterfaceList = bridgeInterfaceList + BRIDGE_LIST_SEP + dmz;
-
+        if ( dmz.length() > 0 ) bridgeInterfaceList += BRIDGE_LIST_SEP + dmz;
+        
         sb.append( "\n\n" );
         /* Check if there is only the outside interface interface in the bridge list.
          * (no need for a bridge) */
