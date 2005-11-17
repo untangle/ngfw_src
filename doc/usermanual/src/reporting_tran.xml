@@ -6,7 +6,7 @@
     The Reporting Transform is identified by the
     <inlinemediaobject>
       <imageobject>
-        <imagedata fileref="figure/reporting_tran_icon.png"/>
+        <imagedata fileref="figure/reporting/reporting_tran_icon.png"/>
       </imageobject>
     </inlinemediaobject>
 
@@ -16,11 +16,54 @@
   <para>
     TODO COMPLETE ME.  Someone needs to write this section.  As you do, you should refer to <xref linkend="introduction_ui_system_services"/> as the Reporting Transform is a "system service".
   </para>
-  <para>
-    As this section is written, these glossary refs may come in handy
-    <glossterm linkend="gloss_port">Port</glossterm>
-    <glossterm linkend="gloss_smtp">SMTP</glossterm>
-    <glossterm linkend="gloss_ip_addr">IP Address</glossterm>
-  </para>
+
+  <!-- ======================================================== -->
+  <sect1 id="reporting_tran_viewreports">
+    <title>View Reports</title>
+    <para>
+      TODO
+    </para>
+    <figure id="reporting_tran_viewreports_figure">
+      <title>View Reports Tab</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figure/reporting/reporting_viewreports.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+  </sect1>
+
+  <!-- ======================================================== -->
+  <sect1 id="reporting_tran_viewreports">
+    <title>Email Report Recipients</title>
+    <para>
+      TODO
+    </para>
+    <figure id="reporting_tran_viewreports_figure">
+      <title>Email Report Recipients Tab</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figure/reporting/reporting_viewreports.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+  </sect1>
+
+  <!-- ======================================================== -->
+  <sect1 id="reporting_tran_ipaddrmap">
+    <title>IP Address to User Map</title>
+    <para>
+      TODO
+      <glossterm linkend="gloss_ip_addr">IP Address</glossterm>
+    </para>
+    <figure id="reporting_tran_ipaddrmap_figure">
+      <title>IP Address to User Map Tab</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figure/reporting/reporting_ipaddrmap.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+  </sect1>     
 
 </chapter>

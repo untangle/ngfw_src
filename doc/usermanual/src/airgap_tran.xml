@@ -6,7 +6,7 @@
     The Packet Attack Shield is identified by the
     <inlinemediaobject>
       <imageobject>
-        <imagedata fileref="figure/airgap_tran_icon.png"/>
+        <imagedata fileref="figure/airgap/airgap_tran_icon.png"/>
       </imageobject>
     </inlinemediaobject>
 
@@ -16,5 +16,39 @@
   <para>
     TODO COMPLETE ME.  Someone needs to write this section.  As you do, you should refer to <xref linkend="introduction_ui_appliance"/> as the Reporting Transform is a "Virtual Appliance".
   </para>
+
+
+  <!-- ======================================================== -->
+  <sect1 id="airgap_tran_exceptionlist">
+    <title>Exception List</title>
+    <para>
+      TODO
+    </para>
+    <figure id="airgap_tran_exceptionlist_figure">
+      <title>Exception List Tab</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figure/airgap/airgap_exceptionlist.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+  </sect1>    
+  
+
+  <!-- ======================================================== -->
+  <sect1 id="airgap_tran_eventlog">
+    <title>Event Log</title>
+    <para>
+      TODO
+    </para>
+    <figure id="airgap_tran_eventlog_figure">
+      <title>Event Log Tab</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figure/airgap/airgap_eventlog.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+  </sect1>    
 
 </chapter>

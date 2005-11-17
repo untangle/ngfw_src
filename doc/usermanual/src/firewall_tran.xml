@@ -10,7 +10,7 @@
     The Firewall Appliance is identified by the
     <inlinemediaobject>
       <imageobject>
-        <imagedata fileref="figure/firewall_tran_icon.png"/>
+        <imagedata fileref="figure/firewall/firewall_tran_icon.png"/>
       </imageobject>
     </inlinemediaobject>
     symbol.
@@ -19,10 +19,59 @@
   <para>
     TODO COMPLETE ME.  Someone needs to write this section.  As you do, you should refer to <xref linkend="introduction_ui_appliance"/> as the firewall Transform is a "virtual appliance".
   </para>
-  <para>
-    As this section is written, these glossary refs may come in handy
-    <glossterm linkend="gloss_tcp">TCP</glossterm>
-    <glossterm linkend="gloss_udp">UDP</glossterm>
-  </para>
+
+  <!-- ======================================================== -->
+  <sect1 id="firewall_tran_blockpass">
+    <title>Block/Pass List</title>
+    <para>
+      TODO - Also, remember to define the special word "any"
+      <glossterm linkend="gloss_tcp">TCP</glossterm>
+      <glossterm linkend="gloss_udp">UDP</glossterm>      
+    </para>
+    <figure id="firewall_tran_blockpass_figure">
+      <title>Block/Pass List Tab</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figure/firewall/firewall_blockpass.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+  </sect1>
+
+
+  <!-- ======================================================== -->
+  <sect1 id="firewall_tran_general">
+    <title>General Settings</title>
+    <para>
+      TODO
+    </para>
+    <figure id="firewall_tran_general_figure">
+      <title>General Settings Tab</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figure/firewall/firewall_general.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+  </sect1>
+
+
+
+  <!-- ======================================================== -->
+  <sect1 id="firewall_tran_eventlog">
+    <title>Event Log</title>
+    <para>
+      TODO
+    </para>
+    <figure id="firewall_tran_eventlog_figure">
+      <title>Event Log Tab</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figure/firewall/firewall_eventlog.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+  </sect1>     
+
 
 </chapter>
