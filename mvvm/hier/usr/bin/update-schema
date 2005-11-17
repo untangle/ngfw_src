@@ -42,7 +42,7 @@ WHERE component = 'clam-transform' OR component = 'fprot-transform'
 -- hack for version 2.5
 -- convert spamassassin, clamphish to use spam-base schema
 INSERT INTO split_schema_ver (
-    SELECT 'spam-base' AS component, settings_version, events_veresion
+    SELECT 'spam-base' AS component, settings_version, events_version
     FROM split_schema_ver
     WHERE component = 'spamassassin-transform'
           OR component = 'clamphish-transform'
@@ -73,7 +73,7 @@ elif [ "x$ver" = "x" ]; then
 INSERT INTO split_schema_ver VALUES ('$component', null, null);
 EOF
 
-    if [ -e "$schema_dir/${type}-schema-*.sql" ]; then
+    if [ -e "$schema_dir/${type}-schema-$latest_ver.sql" ]; then
         psql -e -f "$schema_dir/${type}-schema-$latest_ver.sql" -U metavize mvvm
         cat <<EOF | $PSQL
 UPDATE split_schema_ver SET ${type}_version = $latest_ver;
