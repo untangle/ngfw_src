@@ -125,7 +125,7 @@ public class ClamScannerLauncher extends VirusScannerLauncher
                 }
             }
             catch (Exception e) {
-                logger.error("Scan Exception: " + e);
+                logger.error("Scan Exception: ", e);
                 scanProcess.destroy();
                 this.result = VirusScannerResult.CLEAN;
                 synchronized (this) {this.notifyAll();}
@@ -212,13 +212,13 @@ public class ClamScannerLauncher extends VirusScannerLauncher
             }
         }
         catch (java.io.IOException e) {
-            logger.error("clamdscan scan exception: " + e);
+            logger.error("clamdscan scan exception: ", e);
             this.result = VirusScannerResult.ERROR;
             synchronized (this) {this.notifyAll();}
             return;
         }
         catch (java.lang.InterruptedException e) {
-            logger.warn("clamdscan interrupted: " + e);
+            logger.warn("clamdscan interrupted: ", e);
             this.result = VirusScannerResult.ERROR;
             synchronized (this) {this.notifyAll();}
             return;

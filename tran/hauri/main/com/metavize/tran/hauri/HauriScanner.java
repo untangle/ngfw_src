@@ -71,7 +71,7 @@ public class HauriScanner implements VirusScanner
                 }
             }
             catch (Exception e) {
-                logger.error("Scan Exception: " + e);
+                logger.error("Scan Exception: ", e);
             }
 
             in.close();
@@ -79,7 +79,7 @@ public class HauriScanner implements VirusScanner
             scanProcess.destroy(); // It should be dead already, just to be sure...
         }
         catch (java.io.IOException e) {
-            logger.error("virobot version exception: " + e);
+            logger.error("virobot version exception: ", e);
         }
         return version;
     }

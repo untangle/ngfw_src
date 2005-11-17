@@ -76,7 +76,7 @@ public class ClamScanner implements VirusScanner
                 }
             }
             catch (Exception e) {
-                logger.error("Scan Exception: " + e);
+                logger.error("Scan Exception: ", e);
             }
 
             in.close();
@@ -84,7 +84,7 @@ public class ClamScanner implements VirusScanner
             scanProcess.destroy(); // It should be dead already, just to be sure...
         }
         catch (java.io.IOException e) {
-            logger.error("clamdscan version exception: " + e);
+            logger.error("clamdscan version exception: ", e);
         }
         return versionNumber + " -- " + versionTimestamp;
     }

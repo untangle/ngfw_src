@@ -95,7 +95,7 @@ public class KavScannerLauncher extends VirusScannerLauncher
                     logger.debug("kavclient output: " + wholeOutput.toString());
             }
             catch (Exception e) {
-                logger.error("Scan Exception: " + e);
+                logger.error("Scan Exception: ", e);
                 this.scanProcess.destroy();
                 this.result = VirusScannerResult.CLEAN;
                 synchronized (this) {this.notifyAll();}
@@ -150,13 +150,13 @@ public class KavScannerLauncher extends VirusScannerLauncher
             }
         }
         catch (java.io.IOException e) {
-            logger.error("kavclient scan exception: " + e);
+            logger.error("kavclient scan exception: ", e);
             this.result = VirusScannerResult.ERROR;
             synchronized (this) {this.notifyAll();}
             return;
         }
         catch (java.lang.InterruptedException e) {
-            logger.warn("kavclient interrupted: " + e);
+            logger.warn("kavclient interrupted: ", e);
             this.result = VirusScannerResult.ERROR;
             synchronized (this) {this.notifyAll();}
             return;

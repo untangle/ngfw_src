@@ -105,7 +105,7 @@ public class HauriScannerLauncher extends VirusScannerLauncher
                 }
             }
             catch (Exception e) {
-                logger.error("Scan Exception: " + e);
+                logger.error("Scan Exception: ", e);
                 this.scanProcess.destroy();
                 this.result = VirusScannerResult.CLEAN;
                 synchronized (this) {this.notifyAll();}
@@ -154,13 +154,13 @@ public class HauriScannerLauncher extends VirusScannerLauncher
             }
         }
         catch (java.io.IOException e) {
-            logger.error("virobot scan exception: " + e);
+            logger.error("virobot scan exception: ", e);
             this.result = VirusScannerResult.ERROR;
             synchronized (this) {this.notifyAll();}
             return;
         }
         catch (java.lang.InterruptedException e) {
-            logger.warn("virobot interrupted: " + e);
+            logger.warn("virobot interrupted: ", e);
             this.result = VirusScannerResult.ERROR;
             synchronized (this) {this.notifyAll();}
             return;
