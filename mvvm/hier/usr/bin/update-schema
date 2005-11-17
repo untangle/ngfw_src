@@ -2,13 +2,16 @@
 exec >>@MVVM_LOG@/schema.log 2>&1
 
 PSQL="psql -U metavize --tuples-only mvvm"
+PSQL_VERBOSE="psql -U metavize -e mvvm"
 
 if [ $# = 0 ]; then
     echo "usage: $0 [ settings | events ] [ mvvm | transform ]"
     exit 1
 fi
 
-cat <<EOF | $PSQL
+echo "*** RUNNING $0 $*"
+
+cat <<EOF | $PSQL_VERBOSE
 CREATE SCHEMA settings;
 
 
@@ -58,7 +61,7 @@ component=$2
 
 schema_dir=@MVVM_SCHEMA@/$component
 
-ver=$(echo "SELECT ${type}_version FROM split_schema_ver WHERE component = '$component'" | $PSQL)
+ver=$(echo "SELECT ${type}_version FROM split_schema_ver WHERE component = '$component' AND NOT NULL ${type}_version" | $PSQL)
 latest_ver=$(ls $schema_dir/*schema-*.sql | sed 's/^.*schema-\([0-9]\+\).sql/\1/' | sort -n -r | head -n1)
 echo "Updating schema: $component on $(date)"
 echo "Current schema version: $ver"
@@ -69,18 +72,20 @@ if [ "x$latest_ver" = "x" ]; then
 elif [ "x$ver" = "x" ]; then
     echo "Initializing schema"
 
-    cat <<EOF | $PSQL
+    cat <<EOF | $PSQL_VERBOSE
 INSERT INTO split_schema_ver VALUES ('$component', null, null);
 EOF
 
     if [ -e "$schema_dir/${type}-schema-$latest_ver.sql" ]; then
+        echo "running $schema_dir/${type}-schema-$latest_ver.sql"
         psql -e -f "$schema_dir/${type}-schema-$latest_ver.sql" -U metavize mvvm
-        cat <<EOF | $PSQL
+        cat <<EOF | $PSQL_VERBOSE
 UPDATE split_schema_ver SET ${type}_version = $latest_ver;
 EOF
     else
+        echo "running $schema_dir/schema-$latest_ver.sql"
         psql -e -f "$schema_dir/schema-$latest_ver.sql" -U metavize mvvm
-        cat <<EOF | $PSQL
+        cat <<EOF | $PSQL_VERBOSE
 UPDATE split_schema_ver SET settings_version = $latest_ver;
 UPDATE split_schema_ver SET events_version = $latest_ver;
 EOF
@@ -94,9 +99,11 @@ else
         for v in $(seq $(expr $ver + 1) $latest_ver); do
             echo "Updating to $v"
             if [ -e "$schema_dir/${type}-convert-$v.sql" ]; then
+                echo "running $schema_dir/${type}-convert-$v.sql"
                 psql -e -f "$schema_dir/${type}-convert-$v.sql" -U metavize mvvm
                 eval ${type}_version=$v
             else
+                echo "running $schema_dir/convert-$v.sql"
                 psql -e -f "$schema_dir/convert-$v.sql" -U metavize mvvm
                 events_version=$v
                 settings_version=$v
@@ -104,13 +111,13 @@ else
         done
 
         if [ "x$events_version" = "x" ]; then
-            cat <<EOF | $PSQL
+            cat <<EOF | $PSQL_VERBOSE
 UPDATE split_schema_ver SET events_version = '$events_version' WHERE component = '$component';
 EOF
         fi
 
         if [ "x$settings_version" = "x" ]; then
-            cat <<EOF | $PSQL
+            cat <<EOF | $PSQL_VERBOSE
 UPDATE split_schema_ver SET settings_version = '$settings_version' WHERE component = '$component';
 EOF
         fi
@@ -120,8 +127,10 @@ EOF
     echo "running schema-$latest_ver just in case"
 
     if [ -e "$schema_dir/${type}-schema-$latest_ver.sql" ]; then
+        echo "running $schema_dir/${type}-schema-$latest_ver.sql"
         psql -e -f "$schema_dir/${type}-schema-$latest_ver.sql" -U metavize mvvm </dev/null
     else
+        echo "running $schema_dir/schema-$latest_ver.sql"
         psql -e -f "$schema_dir/schema-$latest_ver.sql" -U metavize mvvm </dev/null
     fi
 fi
