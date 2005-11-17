@@ -78,8 +78,8 @@
 Welcome to your &quot;safelist.&quot;
 A safelist is a list of email addresses,
 usually email addresses of your friends and colleagues.
-Emails, sent by people on this list, will <i>not</i> be quarantined if these emails are identified as spam or phish.<br><br>
-To remove any email address from the safelist,
+Emails, sent by anyone on a safelist, will <i>not</i> be quarantined if the emails are identified as spam or phish.<br><br>
+To delete any email address on the safelist,
 click the checkboxes for one or more email addresses and click <code>Remove Selected Addresses</code>.
 To add an email address to the safelist,
 enter the email address in the text field and click <code>Submit</code>.<br><br>
