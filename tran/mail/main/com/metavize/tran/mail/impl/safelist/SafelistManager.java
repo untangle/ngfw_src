@@ -83,11 +83,20 @@ public class SafelistManager
     {
         m_logger.debug("recipient: " + rcpnt + ", added: " + newSndr + " to safelist");
         ArrayList<String> sndrs = getSndrs(rcpnt);
+        newSndr = newSndr.toLowerCase();
         if (null == sndrs) {
             sndrs = createSL(rcpnt);
             //throw new NoSuchSafelistException(rcpnt + " has no safelist; cannot add " + newSndr + " to safelist");
+        } else if (true == sndrs.contains(newSndr)) {
+            // if multiple views manipulate same user and
+            // one view has recently added new sender,
+            // other view does not refresh itself to pick up change
+            // - we explicitly drop duplicates from ArrayList
+            m_logger.debug("recipient: " + rcpnt + ", " + newSndr + " already exists in safelist");
+            return toStringArray(sndrs);
         }
-        sndrs.add(newSndr.toLowerCase());
+        // else recipient is adding new sender
+        sndrs.add(newSndr);
 
         setSndrs(rcpnt, sndrs);
         return toStringArray(sndrs);
@@ -99,11 +108,20 @@ public class SafelistManager
     {
         m_logger.debug("recipient: " + rcpnt + ", removed: " + obsSndr + " from safelist");
         ArrayList<String> sndrs = getSndrs(rcpnt);
+        obsSndr = obsSndr.toLowerCase();
         if (null == sndrs) {
             return null;
             //throw new NoSuchSafelistException(rcpnt + " has no safelist; cannot remove " + obsSndr + " from safelist");
+        } else if (false == sndrs.contains(obsSndr)) {
+            // if multiple views manipulate same user and
+            // one view has recently removed sender,
+            // other view does not refresh itself to pick up change
+            // - we explicitly dropped duplicates from ArrayList
+            //   so we don't have to remove sender again
+            m_logger.debug("recipient: " + rcpnt + ", " + obsSndr + " does not exist in safelist");
+            return toStringArray(sndrs);
         }
-        obsSndr = obsSndr.toLowerCase();
+        // else recipient is removing sender
         sndrs.remove(obsSndr);
 
         setSndrs(rcpnt, sndrs);
@@ -120,6 +138,10 @@ public class SafelistManager
             sndrs = createSL(rcpnt);
             //throw new NoSuchSafelistException(rcpnt + " has no safelist to replace");
         } else {
+            // if multiple views manipulate same user and
+            // one view has recently replaced senders,
+            // other view does not refresh itself to pick up change
+            // - we let this change overwrite previous change
             sndrs.clear();
         }
 
@@ -197,7 +219,6 @@ public class SafelistManager
       throws SafelistActionFailedException
     {
         createSL(rcpnt);
-
         return;
     }
 
