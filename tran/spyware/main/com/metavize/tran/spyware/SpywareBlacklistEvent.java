@@ -13,6 +13,7 @@ package com.metavize.tran.spyware;
 
 import com.metavize.tran.http.HttpRequestEvent;
 import com.metavize.tran.http.RequestLine;
+import com.metavize.mvvm.tran.PipelineEndpoints;
 
 /**
  * Log event for a spyware hit.
@@ -34,10 +35,8 @@ public class SpywareBlacklistEvent extends SpywareEvent
      */
     public SpywareBlacklistEvent() { }
 
-    public SpywareBlacklistEvent(int sessionId, RequestLine requestLine)
+    public SpywareBlacklistEvent(RequestLine requestLine)
     {
-        super(sessionId);
-
         this.requestLine = requestLine;
     }
 
@@ -65,6 +64,11 @@ public class SpywareBlacklistEvent extends SpywareEvent
     public String getLocation()
     {
         return requestLine.getUrl().toString();
+    }
+
+    public PipelineEndpoints getPipelineEndpoints()
+    {
+        return requestLine.getPipelineEndpoints();
     }
 
     // accessors --------------------------------------------------------------

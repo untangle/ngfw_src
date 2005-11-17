@@ -12,6 +12,7 @@
 package com.metavize.tran.spyware;
 
 import com.metavize.tran.http.RequestLine;
+import com.metavize.mvvm.tran.PipelineEndpoints;
 
 /**
  * Log event for a spyware hit.
@@ -24,7 +25,6 @@ import com.metavize.tran.http.RequestLine;
  */
 public class SpywareActiveXEvent extends SpywareEvent
 {
-    private int sessionId;
     private String identification;
     private RequestLine requestLine;
 
@@ -35,12 +35,9 @@ public class SpywareActiveXEvent extends SpywareEvent
      */
     public SpywareActiveXEvent() { }
 
-    public SpywareActiveXEvent(int sessionId,
-                               RequestLine requestLine,
+    public SpywareActiveXEvent(RequestLine requestLine,
                                String identification)
     {
-        super(sessionId);
-
         this.identification = identification;
         this.requestLine = requestLine;
     }
@@ -60,6 +57,11 @@ public class SpywareActiveXEvent extends SpywareEvent
     public boolean isBlocked()
     {
         return true;
+    }
+
+    public PipelineEndpoints getPipelineEndpoints()
+    {
+        return requestLine.getPipelineEndpoints();
     }
 
     // accessors --------------------------------------------------------------

@@ -12,6 +12,7 @@
 package com.metavize.tran.spyware;
 
 import com.metavize.mvvm.tran.IPMaddr;
+import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.tran.http.RequestLine;
 
 /**
@@ -25,9 +26,9 @@ import com.metavize.tran.http.RequestLine;
  */
 public class SpywareAccessEvent extends SpywareEvent
 {
+    private PipelineEndpoints pipelineEndpoints;
     private String identification;
     private IPMaddr ipMaddr;
-    private RequestLine requestLine; // Optional
     private boolean blocked;
 
     // constructors -----------------------------------------------------------
@@ -37,28 +38,12 @@ public class SpywareAccessEvent extends SpywareEvent
      */
     public SpywareAccessEvent() { }
 
-    public SpywareAccessEvent(int sessionId,
+    public SpywareAccessEvent(PipelineEndpoints pe,
                               String identification,
                               IPMaddr ipMaddr,
                               boolean blocked)
     {
-        super(sessionId);
-
-        this.identification = identification;
-        this.ipMaddr = ipMaddr;
-        this.blocked = blocked;
-        this.requestLine = null;
-    }
-
-    public SpywareAccessEvent(int sessionId,
-                              RequestLine requestLine,
-                              String identification,
-                              IPMaddr ipMaddr,
-                              boolean blocked)
-    {
-        super(sessionId);
-
-        this.requestLine = requestLine;
+        this.pipelineEndpoints = pe;
         this.identification = identification;
         this.ipMaddr = ipMaddr;
         this.blocked = blocked;
@@ -79,21 +64,22 @@ public class SpywareAccessEvent extends SpywareEvent
     // accessors --------------------------------------------------------------
 
     /**
-     * Request line for this HTTP response pair.
+     * Get the PipelineEndpoints.
      *
-     * @return the request line.
+     * @return the PipelineEndpoints.
      * @hibernate.many-to-one
-     * column="REQUEST_ID"
-     * cascade="save-update"
+     * column="PL_ENDP_ID"
+     * not-null="true"
+     * cascade="all"
      */
-    public RequestLine getRequestLine()
+    public PipelineEndpoints getPipelineEndpoints()
     {
-        return requestLine;
+        return pipelineEndpoints;
     }
 
-    public void setRequestLine(RequestLine requestLine)
+    public void setPipelineEndpoints(PipelineEndpoints pipelineEndpoints)
     {
-        this.requestLine = requestLine;
+        this.pipelineEndpoints = pipelineEndpoints;
     }
 
     /**

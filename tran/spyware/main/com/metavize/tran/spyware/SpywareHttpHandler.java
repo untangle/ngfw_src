@@ -132,7 +132,7 @@ public class SpywareHttpHandler extends HttpStateMachine
             return requestHeader;
         } else if (transform.isBlacklistDomain(host, uri)) {
             SpywareBlacklistEvent evt = new SpywareBlacklistEvent
-                (getSession().id(), requestLine.getRequestLine());
+                (requestLine.getRequestLine());
             transform.log(evt);
             // XXX we could send a page back instead, this isn't really right
             logger.debug("detected spyware, shutting down");
@@ -295,7 +295,7 @@ public class SpywareHttpHandler extends HttpStateMachine
                 logger.debug("blocking cookie: " + domain);
                 transform.incrementCount(Spyware.BLOCK);
 
-                transform.log(new SpywareCookieEvent(getSession().id(), requestLine.getRequestLine(), domain, true));
+                transform.log(new SpywareCookieEvent(requestLine.getRequestLine(), domain, true));
                 i.remove();
                 logger.debug("making cookieKiller: " + domain);
                 cookieKillers.addAll(makeCookieKillers(cookie, host));
@@ -343,7 +343,7 @@ public class SpywareHttpHandler extends HttpStateMachine
             if (badDomain) {
                 logger.debug("cookie deleted: " + domain);
                 transform.incrementCount(Spyware.BLOCK);
-                transform.log(new SpywareCookieEvent(getSession().id(), rl.getRequestLine(), domain, false));
+                transform.log(new SpywareCookieEvent(rl.getRequestLine(), domain, false));
                 i.remove();
             } else {
                 logger.debug("cookie not deleted: " + domain);
@@ -468,7 +468,7 @@ public class SpywareHttpHandler extends HttpStateMachine
             if (block) {
                 logger.debug("blocking activeX");
                 transform.incrementCount(Spyware.BLOCK);
-                transform.log(new SpywareActiveXEvent(getSession().id(), rl.getRequestLine(), ident));
+                transform.log(new SpywareActiveXEvent(rl.getRequestLine(), ident));
                 int len = findEnd(cb, os);
                 if (-1 == len) {
                     logger.warn("chunk does not contain entire tag");

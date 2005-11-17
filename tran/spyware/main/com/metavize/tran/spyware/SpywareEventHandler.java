@@ -80,28 +80,24 @@ public class SpywareEventHandler extends AbstractEventHandler
         }
     }
 
-    // XXX move to new callback
     @Override
-    public void handleTCPFinalized(TCPSessionEvent event)
+    public void handleTCPComplete(TCPSessionEvent event)
         throws MPipeException
     {
         Session s = event.session();
         SpywareAccessEvent spe = (SpywareAccessEvent)s.attachment();
         if (null != spe) {
-            spe.setPipelineEndpoints(s.id());
             transform.log(spe);
         }
     }
 
-    // XXX move to new callback
     @Override
-    public void handleUDPFinalized(UDPSessionEvent event)
+    public void handleUDPComplete(UDPSessionEvent event)
         throws MPipeException
     {
         Session s = event.session();
         SpywareAccessEvent spe = (SpywareAccessEvent)s.attachment();
         if (null != spe) {
-            spe.setPipelineEndpoints(s.id());
             transform.log(spe);
         }
     }
@@ -132,7 +128,10 @@ public class SpywareEventHandler extends AbstractEventHandler
             logger.info("Protocol      : UDP");
         logger.info("----------------------------------------------------------");
 
-        ipr.attach(new SpywareAccessEvent(ipr.id(), ir.getName(), ir.getIpMaddr(), ir.isLive()));
+        if (release)
+            ipr.attach(new SpywareAccessEvent(ipr.pipelineEndpoints(), ir.getName(), ir.getIpMaddr(), ir.isLive()));
+        else
+            transform.log(new SpywareAccessEvent(ipr.pipelineEndpoints(), ir.getName(), ir.getIpMaddr(), ir.isLive()));
 
         if (ir.isLive()) {
             transform.incrementCount(Spyware.BLOCK);

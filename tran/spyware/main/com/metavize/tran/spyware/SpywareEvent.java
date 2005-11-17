@@ -12,19 +12,15 @@
 package com.metavize.tran.spyware;
 
 
-import com.metavize.mvvm.logging.PipelineEvent;
+import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
+import com.metavize.mvvm.tran.PipelineEndpoints;
 
-public abstract class SpywareEvent extends PipelineEvent
+public abstract class SpywareEvent extends LogEvent
 {
     // constructors -----------------------------------------------------------
 
     public SpywareEvent() { }
-
-    public SpywareEvent(int sessionId)
-    {
-        super(sessionId);
-    }
 
     // abstract methods -------------------------------------------------------
 
@@ -32,10 +28,11 @@ public abstract class SpywareEvent extends PipelineEvent
     public abstract String getIdentification();
     public abstract String getLocation();
     public abstract boolean isBlocked();
+    public abstract PipelineEndpoints getPipelineEndpoints();
 
     // Syslog methods ---------------------------------------------------------
 
-    protected void doSyslog(SyslogBuilder sb)
+    public void appendSyslog(SyslogBuilder sb)
     {
         sb.addField("info", getIdentification());
         sb.addField("loc", getLocation());
