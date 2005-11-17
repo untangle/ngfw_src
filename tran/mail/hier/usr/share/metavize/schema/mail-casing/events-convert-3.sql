@@ -1,4 +1,4 @@
--- converter for release 3.1
+-- events converter for release 3.1
 
 ---------------------------------------------
 -- copy time_stamp value from pl_endp       |

@@ -44,7 +44,7 @@ CREATE TABLE settings.mail_settings (
     PRIMARY KEY (mail_settings_id));
 
 -- com.metavize.mvvm.logging.LoggingSettings
-CREATE TABLE LOGGING_SETTINGS (
+CREATE TABLE settings.logging_settings (
     settings_id int8 NOT NULL,
     syslog_enabled bool NOT NULL,
     syslog_host text,
