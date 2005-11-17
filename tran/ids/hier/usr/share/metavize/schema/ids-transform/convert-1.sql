@@ -16,4 +16,5 @@ ALTER TABLE events.tr_ids_tmp RENAME TO tr_ids_evt;
 ALTER TABLE events.tr_ids_evt ALTER COLUMN event_id SET NOT NULL;
 ALTER TABLE events.tr_ids_evt ADD PRIMARY KEY (event_id);
 
-CREATE INDEX tr_ids_evt_sid_idx ON events.tr_ids_evt (event_id);
+DROP INDEX tr_ids_evt_sid_idx;
+CREATE INDEX tr_ids_evt_plepid_idx ON events.tr_ids_evt (pl_endp_id);

@@ -30,4 +30,5 @@ ALTER TABLE events.tr_mail_message_info_addr
   FOREIGN KEY (msg_id)
   REFERENCES tr_mail_message_info;
 
-CREATE INDEX tr_mail_mio_sid_idx ON events.tr_mail_message_info (pl_endp_id);
+DROP INDEX tr_mail_mio_sid_idx;
+CREATE INDEX tr_mail_mio_plepid_idx ON events.tr_mail_message_info (pl_endp_id);
