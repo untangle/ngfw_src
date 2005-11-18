@@ -110,15 +110,15 @@ else
             fi
         done
 
-        if [ "x$events_version" = "x" ]; then
+        if [ "x$events_version" != "x" ]; then
             cat <<EOF | $PSQL_VERBOSE
-UPDATE split_schema_ver SET events_version = '$events_version' WHERE component = '$component';
+UPDATE split_schema_ver SET events_version = $events_version WHERE component = '$component';
 EOF
         fi
 
-        if [ "x$settings_version" = "x" ]; then
+        if [ "x$settings_version" != "x" ]; then
             cat <<EOF | $PSQL_VERBOSE
-UPDATE split_schema_ver SET settings_version = '$settings_version' WHERE component = '$component';
+UPDATE split_schema_ver SET settings_version = $settings_version WHERE component = '$component';
 EOF
         fi
 
