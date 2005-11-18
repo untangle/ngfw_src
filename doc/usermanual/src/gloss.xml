@@ -22,7 +22,12 @@ Place new terms under the appropriate alphabetical location.
     <glossentry id="gloss_activex">
       <glossterm>ActiveX</glossterm>
       <glossdef>
-        <para>TODO</para>
+        <para>
+          Name for a family of technologies for running rich applications from within a web page.  Due to their power and access to machine resources, the ActiveX facilities in browsers can be exploited by authors of <glossterm linkend="gloss_malware">malware</glossterm>.
+        </para>
+        <para>
+          A piece of code which leverages ActiveX technologies is said to be an ActiveX <quote>Control</quote>.
+        </para>
       </glossdef>            
     </glossentry>      
     
@@ -47,8 +52,13 @@ Place new terms under the appropriate alphabetical location.
     <glossentry id="gloss_cookie">
       <glossterm>Cookie</glossterm>
       <glossdef>
-        <para>TODO</para>
-      </glossdef>            
+        <blockquote>
+          <attribution><ulink  url="http://en.wikipedia.org">Wikipedia</ulink></attribution>
+          <para>
+            An HTTP magic cookie (usually called simply a cookie) is a packet of information sent by a server to a World Wide Web browser and then sent back by the browser each time it accesses that server.       
+          </para>
+        </blockquote>
+      </glossdef>
     </glossentry>      
     
   </glossdiv>  
@@ -62,16 +72,26 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>Denial Of Service</glossterm>
       <acronym>DOS</acronym>
       <glossdef>
-        <para>TODO</para>
-      </glossdef>            
-    </glossentry>    
+        <blockquote>
+          <attribution><ulink  url="http://en.wikipedia.org">Wikipedia</ulink></attribution>
+          <para>
+            A denial-of-service attack is an attack on a computer system or network that causes a loss of service to users, typically the loss of network connectivity and services by consuming the bandwidth of the victim network or overloading the computational resources of the victim system.
+          </para>
+        </blockquote>
+      </glossdef>      
+    </glossentry>
 
     <glossentry id="gloss_dns">
       <glossterm>Domain Name Service</glossterm>
       <acronym>DNS</acronym>
       <glossdef>
-        <para>TODO</para>
-      </glossdef>            
+        <blockquote>
+          <attribution><ulink  url="http://en.wikipedia.org">Wikipedia</ulink></attribution>
+          <para>
+            The Domain Name System (DNS) is a system that stores information associated with domain names in a distributed database on networks, such as the Internet. The domain name system associates many types of information with domain names, but most importantly, it provides the IP address associated with the domain name. It also lists mail exchange servers accepting e-mail for each domain.
+          </para>
+        </blockquote>
+      </glossdef>   
     </glossentry>
 
     <glossentry id="gloss_default_route">
@@ -104,7 +124,12 @@ Place new terms under the appropriate alphabetical location.
       <!-- Avoid the true military history of the term -->
       <glossterm>DMZ</glossterm>
       <glossdef>
-        <para>TODO</para>
+        <blockquote>
+          <attribution><ulink  url="http://en.wikipedia.org">Wikipedia</ulink></attribution>
+          <para>
+            In computer security, a demilitarized zone (DMZ) or perimeter network is a network area (a <glossterm linkend="gloss_subnet">subnet</glossterm>) that sits between an organisation's internal network and an external network, usually the Internet. The point of a DMZ is that connections from the internal and the external network to the DMZ are permitted, whereas connections from the DMZ are only permitted to the external network -- hosts in the DMZ may not connect to the internal network. This allows the DMZ's hosts to provide services to the external network while protecting the internal network in case intruders compromise a host in the DMZ. For someone on the external network who wants to illegally connect to the internal network, the DMZ is a dead end.
+          </para>
+        </blockquote>
       </glossdef>            
     </glossentry>     
           
@@ -125,7 +150,15 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>File Transfer Protocol</glossterm>
       <acronym>FTP</acronym>
       <glossdef>
-        <para>TODO</para>
+        <blockquote>
+          <attribution><ulink  url="http://en.wikipedia.org">Wikipedia</ulink></attribution>
+          <para>
+            FTP or file transfer protocol is a protocol used for exchanging files over the Internet. FTP works in the same way as <glossterm linkend="gloss_http">HTTP</glossterm> for transferring Web pages from a server to a user's browser, and <glossterm linkend="gloss_smtp">SMTP</glossterm> for transferring electronic mail across the Internet in that FTP uses the Internet's TCP/IP protocols to enable data transfer. FTP is most commonly used to download a file from a server using the Internet or to upload a file to a server (e.g., uploading a Web page file to a server).
+          </para>
+          <para>
+            FTP is commonly run on two <glossterm linkend="gloss_port">ports</glossterm>, 20 and 21. FTP runs exclusively over <glossterm linkend="gloss_tcp">TCP</glossterm>.
+          </para>
+        </blockquote>
       </glossdef>            
     </glossentry>
     

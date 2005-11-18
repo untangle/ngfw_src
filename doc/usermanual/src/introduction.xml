@@ -96,7 +96,10 @@
       </para>
       <para id="fixme_ui_ip_conventions_ipmatcher" xreflabel="IP Matcher">
         "any" | "local" | CIDR | range
-      </para>      
+      </para>
+      <para id="fixme_ui_ip_conventions_portmatcher" xreflabel="Port Matcher">
+        "any" | port literal (number) | port range
+      </para>        
     </sect2>
 
   </sect1>
