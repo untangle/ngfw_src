@@ -18,9 +18,9 @@ import javax.swing.table.*;
 
 import com.metavize.gui.transform.*;
 import com.metavize.gui.widgets.editTable.*;
-import com.metavize.mvvm.logging.EventFilter;
+import com.metavize.mvvm.logging.EventRepository;
 import com.metavize.mvvm.logging.EventManager;
-import com.metavize.mvvm.logging.FilterDesc;
+import com.metavize.mvvm.logging.RepositoryDesc;
 import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.tran.protofilter.*;
@@ -45,7 +45,7 @@ public class LogJPanel extends MLogTableJPanel {
         setTableModel(new LogTableModel());
 
         EventManager<ProtoFilterLogEvent> eventManager = protoFilter.getEventManager();
-        for (FilterDesc fd : eventManager.getFilterDescs()) {
+        for (RepositoryDesc fd : eventManager.getRepositoryDescs()) {
             queryJComboBox.addItem(fd.getName());
         }
     }
@@ -53,7 +53,7 @@ public class LogJPanel extends MLogTableJPanel {
     protected void refreshSettings(){
         ProtoFilter protoFilter = (ProtoFilter)logTransform;
         EventManager<ProtoFilterLogEvent> em = protoFilter.getEventManager();
-        EventFilter<ProtoFilterLogEvent> ef = em.getFilter((String)queryJComboBox.getSelectedItem());
+        EventRepository<ProtoFilterLogEvent> ef = em.getRepository((String)queryJComboBox.getSelectedItem());
         settings = ef.getEvents();
     }
 

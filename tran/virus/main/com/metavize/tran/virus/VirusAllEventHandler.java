@@ -13,11 +13,11 @@ package com.metavize.tran.virus;
 
 
 import com.metavize.mvvm.logging.EventHandler;
-import com.metavize.mvvm.logging.FilterDesc;
+import com.metavize.mvvm.logging.RepositoryDesc;
 
 public class VirusAllEventHandler implements EventHandler<VirusEvent>
 {
-    private static final FilterDesc FILTER_DESC = new FilterDesc("All Events");
+    private static final RepositoryDesc FILTER_DESC = new RepositoryDesc("All Events");
 
     private final String httpQuery;
     private final String ftpQuery;
@@ -51,7 +51,7 @@ public class VirusAllEventHandler implements EventHandler<VirusEvent>
 
     // EventCache methods -----------------------------------------------------
 
-    public FilterDesc getFilterDesc()
+    public RepositoryDesc getRepositoryDesc()
     {
         return FILTER_DESC;
     }

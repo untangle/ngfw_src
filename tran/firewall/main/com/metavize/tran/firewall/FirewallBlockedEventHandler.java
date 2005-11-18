@@ -13,12 +13,12 @@ package com.metavize.tran.firewall;
 
 
 import com.metavize.mvvm.logging.EventHandler;
-import com.metavize.mvvm.logging.FilterDesc;
+import com.metavize.mvvm.logging.RepositoryDesc;
 import com.metavize.mvvm.tran.TransformContext;
 
 public class FirewallBlockedEventHandler implements EventHandler<FirewallEvent>
 {
-    private static final FilterDesc FILTER_DESC = new FilterDesc("Firewall Block Events");
+    private static final RepositoryDesc FILTER_DESC = new RepositoryDesc("Firewall Block Events");
 
     private static final String WARM_QUERY
         = "FROM FirewallEvent evt WHERE evt.wasBlocked = true AND evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
@@ -34,7 +34,7 @@ public class FirewallBlockedEventHandler implements EventHandler<FirewallEvent>
 
     // EventCache methods -----------------------------------------------------
 
-    public FilterDesc getFilterDesc()
+    public RepositoryDesc getRepositoryDesc()
     {
         return FILTER_DESC;
     }

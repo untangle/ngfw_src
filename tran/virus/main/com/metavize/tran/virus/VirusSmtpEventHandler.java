@@ -13,11 +13,11 @@ package com.metavize.tran.virus;
 
 
 import com.metavize.mvvm.logging.EventHandler;
-import com.metavize.mvvm.logging.FilterDesc;
+import com.metavize.mvvm.logging.RepositoryDesc;
 
 public class VirusSmtpEventHandler implements EventHandler<VirusEvent>
 {
-    private static final FilterDesc FILTER_DESC = new FilterDesc("SMTP Events");
+    private static final RepositoryDesc FILTER_DESC = new RepositoryDesc("SMTP Events");
 
     private final String warmQuery;
 
@@ -33,7 +33,7 @@ public class VirusSmtpEventHandler implements EventHandler<VirusEvent>
 
     // EventCache methods -----------------------------------------------------
 
-    public FilterDesc getFilterDesc()
+    public RepositoryDesc getRepositoryDesc()
     {
         return FILTER_DESC;
     }

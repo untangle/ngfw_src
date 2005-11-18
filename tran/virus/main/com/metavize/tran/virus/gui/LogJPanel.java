@@ -18,9 +18,9 @@ import javax.swing.table.*;
 
 import com.metavize.gui.transform.*;
 import com.metavize.gui.widgets.editTable.*;
-import com.metavize.mvvm.logging.EventFilter;
+import com.metavize.mvvm.logging.EventRepository;
 import com.metavize.mvvm.logging.EventManager;
-import com.metavize.mvvm.logging.FilterDesc;
+import com.metavize.mvvm.logging.RepositoryDesc;
 import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.tran.virus.*;
@@ -43,7 +43,7 @@ public class LogJPanel extends MLogTableJPanel {
         setTableModel(new LogTableModel());
 
         EventManager<VirusEvent> eventManager = virus.getEventManager();
-        for (FilterDesc fd : eventManager.getFilterDescs()) {
+        for (RepositoryDesc fd : eventManager.getRepositoryDescs()) {
             queryJComboBox.addItem(fd.getName());
         }
     }
@@ -51,7 +51,7 @@ public class LogJPanel extends MLogTableJPanel {
     protected void refreshSettings(){
         VirusTransform virus = (VirusTransform)logTransform;
         EventManager<VirusEvent> em = virus.getEventManager();
-        EventFilter<VirusEvent> ef = em.getFilter((String)queryJComboBox.getSelectedItem());
+        EventRepository<VirusEvent> ef = em.getRepository((String)queryJComboBox.getSelectedItem());
         settings = ef.getEvents();
     }
 

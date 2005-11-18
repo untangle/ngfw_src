@@ -18,9 +18,9 @@ import javax.swing.table.*;
 
 import com.metavize.gui.transform.*;
 import com.metavize.gui.widgets.editTable.*;
-import com.metavize.mvvm.logging.EventFilter;
+import com.metavize.mvvm.logging.EventRepository;
 import com.metavize.mvvm.logging.EventManager;
-import com.metavize.mvvm.logging.FilterDesc;
+import com.metavize.mvvm.logging.RepositoryDesc;
 import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.tran.firewall.*;
@@ -44,7 +44,7 @@ public class LogJPanel extends MLogTableJPanel {
         setTableModel(new LogTableModel());
 
         EventManager<FirewallEvent> eventManager = firewall.getEventManager();
-        for (FilterDesc fd : eventManager.getFilterDescs()) {
+        for (RepositoryDesc fd : eventManager.getRepositoryDescs()) {
             queryJComboBox.addItem(fd.getName());
         }
     }
@@ -52,7 +52,7 @@ public class LogJPanel extends MLogTableJPanel {
     protected void refreshSettings(){
         Firewall fw = (Firewall)logTransform;
         EventManager<FirewallEvent> em = fw.getEventManager();
-        EventFilter<FirewallEvent> ef = em.getFilter((String)queryJComboBox.getSelectedItem());
+        EventRepository<FirewallEvent> ef = em.getRepository((String)queryJComboBox.getSelectedItem());
         settings = ef.getEvents();
     }
 

@@ -90,20 +90,20 @@ public class EventLogger<E extends LogEvent> implements EventManager<E>
 
     // EventManager methods ---------------------------------------------------
 
-    public List<FilterDesc> getFilterDescs()
+    public List<RepositoryDesc> getRepositoryDescs()
     {
-        List<FilterDesc> l = new ArrayList<FilterDesc>(caches.size());
+        List<RepositoryDesc> l = new ArrayList<RepositoryDesc>(caches.size());
         for (EventCache<E> ec : caches) {
-            l.add(ec.getFilterDesc());
+            l.add(ec.getRepositoryDesc());
         }
 
         return l;
     }
 
-    public EventFilter<E> getFilter(String filterName)
+    public EventRepository<E> getRepository(String repositoryName)
     {
         for (EventCache<E> ec : caches) {
-            if (ec.getFilterDesc().getName().equals(filterName)) {
+            if (ec.getRepositoryDesc().getName().equals(repositoryName)) {
                 return ec;
             }
         }
@@ -111,9 +111,9 @@ public class EventLogger<E extends LogEvent> implements EventManager<E>
         return null;
     }
 
-    public List<EventFilter<E>> getFilters()
+    public List<EventRepository<E>> getRepositories()
     {
-        return new LinkedList<EventFilter<E>>(caches);
+        return new LinkedList<EventRepository<E>>(caches);
     }
 
     public void setLimit(int limit)

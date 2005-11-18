@@ -11,19 +11,10 @@
 
 package com.metavize.mvvm.logging;
 
-import java.io.Serializable;
+import java.util.List;
 
-public class FilterDesc implements Serializable
+public interface EventRepository<E extends LogEvent>
 {
-    private final String name;
-
-    public FilterDesc(String name)
-    {
-        this.name = name;
-    }
-
-    public String getName()
-    {
-        return name;
-    }
+    RepositoryDesc getRepositoryDesc();
+    List<E> getEvents();
 }

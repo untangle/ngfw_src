@@ -15,7 +15,7 @@ import java.util.List;
 
 public interface LogFilter<E extends LogEvent>
 {
-    FilterDesc getFilterDesc();
+    RepositoryDesc getRepositoryDesc();
     int getLimit();
     void setLimit(int limit);
     List<E> getEvents();

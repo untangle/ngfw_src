@@ -13,13 +13,13 @@ package com.metavize.tran.nat;
 
 
 import com.metavize.mvvm.logging.EventHandler;
-import com.metavize.mvvm.logging.FilterDesc;
+import com.metavize.mvvm.logging.RepositoryDesc;
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.tran.TransformContext;
 
 public class NatRedirectEventHandler implements EventHandler<LogEvent>
 {
-    private static final FilterDesc FILTER_DESC = new FilterDesc("NAT Redirect Events");
+    private static final RepositoryDesc FILTER_DESC = new RepositoryDesc("NAT Redirect Events");
 
     private static final String WARM_QUERY
         = "FROM RedirectEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
@@ -35,7 +35,7 @@ public class NatRedirectEventHandler implements EventHandler<LogEvent>
 
     // EventCache methods -----------------------------------------------------
 
-    public FilterDesc getFilterDesc()
+    public RepositoryDesc getRepositoryDesc()
     {
         return FILTER_DESC;
     }

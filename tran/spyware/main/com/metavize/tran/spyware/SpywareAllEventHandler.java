@@ -13,12 +13,12 @@ package com.metavize.tran.spyware;
 
 
 import com.metavize.mvvm.logging.EventHandler;
-import com.metavize.mvvm.logging.FilterDesc;
+import com.metavize.mvvm.logging.RepositoryDesc;
 import com.metavize.mvvm.tran.TransformContext;
 
 public class SpywareAllEventHandler implements EventHandler<SpywareEvent>
 {
-    private static final FilterDesc FILTER_DESC = new FilterDesc("All Events");
+    private static final RepositoryDesc FILTER_DESC = new RepositoryDesc("All Events");
 
     private static final String ACCESS_QUERY
         = "FROM SpywareAccessEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
@@ -40,7 +40,7 @@ public class SpywareAllEventHandler implements EventHandler<SpywareEvent>
 
     // EventCache methods -----------------------------------------------------
 
-    public FilterDesc getFilterDesc()
+    public RepositoryDesc getRepositoryDesc()
     {
         return FILTER_DESC;
     }

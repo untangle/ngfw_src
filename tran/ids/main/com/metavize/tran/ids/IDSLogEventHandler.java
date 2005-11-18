@@ -12,11 +12,11 @@
 package com.metavize.tran.ids;
 
 import com.metavize.mvvm.logging.EventHandler;
-import com.metavize.mvvm.logging.FilterDesc;
+import com.metavize.mvvm.logging.RepositoryDesc;
 
 public class IDSLogEventHandler implements EventHandler<IDSLogEvent>
 {
-    private static final FilterDesc FILTER_DESC = new FilterDesc("All Events");
+    private static final RepositoryDesc FILTER_DESC = new RepositoryDesc("All Events");
 
     private static final String WARM_QUERY = "FROM IDSLogEvent evt "
         + "WHERE evt.pipelineEndpoints.policy = :policy "
@@ -28,7 +28,7 @@ public class IDSLogEventHandler implements EventHandler<IDSLogEvent>
 
     // EventCache methods -----------------------------------------------------
 
-    public FilterDesc getFilterDesc()
+    public RepositoryDesc getRepositoryDesc()
     {
         return FILTER_DESC;
     }

@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-class EventCache<E extends LogEvent> implements EventFilter<E>
+class EventCache<E extends LogEvent> implements EventRepository<E>
 {
     private final EventLogger<E> eventLogger;
     private final EventHandler<E> eventHandler;
@@ -44,7 +44,7 @@ class EventCache<E extends LogEvent> implements EventFilter<E>
         this.eventHandler = eventHandler;
     }
 
-    // LogFilter methods ------------------------------------------------------
+    // EventRepository methods ------------------------------------------------
 
     public List<E> getEvents()
     {
@@ -56,9 +56,9 @@ class EventCache<E extends LogEvent> implements EventFilter<E>
         }
     }
 
-    public FilterDesc getFilterDesc()
+    public RepositoryDesc getRepositoryDesc()
     {
-        return eventHandler.getFilterDesc();
+        return eventHandler.getRepositoryDesc();
     }
 
     // package protected methods ----------------------------------------------

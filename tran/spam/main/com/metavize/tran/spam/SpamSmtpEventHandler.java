@@ -13,12 +13,12 @@ package com.metavize.tran.spam;
 
 
 import com.metavize.mvvm.logging.EventHandler;
-import com.metavize.mvvm.logging.FilterDesc;
+import com.metavize.mvvm.logging.RepositoryDesc;
 import com.metavize.mvvm.tran.TransformContext;
 
 public class SpamSmtpEventHandler implements EventHandler<SpamEvent>
 {
-    private static final FilterDesc FILTER_DESC = new FilterDesc("SMTP Events");
+    private static final RepositoryDesc FILTER_DESC = new RepositoryDesc("SMTP Events");
     private static final String WARM_QUERY
         = "FROM SpamSmtpEvent evt WHERE evt.messageInfo.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
 
@@ -33,7 +33,7 @@ public class SpamSmtpEventHandler implements EventHandler<SpamEvent>
 
     // EventCache methods -----------------------------------------------------
 
-    public FilterDesc getFilterDesc()
+    public RepositoryDesc getRepositoryDesc()
     {
         return FILTER_DESC;
     }

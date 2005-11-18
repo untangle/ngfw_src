@@ -19,9 +19,9 @@ import javax.swing.table.*;
 
 import com.metavize.gui.transform.*;
 import com.metavize.gui.widgets.editTable.*;
-import com.metavize.mvvm.logging.EventFilter;
+import com.metavize.mvvm.logging.EventRepository;
 import com.metavize.mvvm.logging.EventManager;
-import com.metavize.mvvm.logging.FilterDesc;
+import com.metavize.mvvm.logging.RepositoryDesc;
 import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.tran.http.HttpRequestEvent;
@@ -47,7 +47,7 @@ public class LogJPanel extends MLogTableJPanel {
         setTableModel(new LogTableModel());
 
         EventManager<HttpBlockerEvent> eventManager = httpBlocker.getEventManager();
-        for (FilterDesc fd : eventManager.getFilterDescs()) {
+        for (RepositoryDesc fd : eventManager.getRepositoryDescs()) {
             queryJComboBox.addItem(fd.getName());
         }
     }
@@ -55,7 +55,7 @@ public class LogJPanel extends MLogTableJPanel {
     protected void refreshSettings(){
         HttpBlocker httpBlocker = (HttpBlocker)logTransform;
         EventManager<HttpBlockerEvent> em = httpBlocker.getEventManager();
-        EventFilter<HttpBlockerEvent> ef = em.getFilter((String)queryJComboBox.getSelectedItem());
+        EventRepository<HttpBlockerEvent> ef = em.getRepository((String)queryJComboBox.getSelectedItem());
         settings = ef.getEvents();
     }
 

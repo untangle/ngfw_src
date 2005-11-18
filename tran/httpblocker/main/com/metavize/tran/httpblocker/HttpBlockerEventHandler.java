@@ -13,12 +13,12 @@ package com.metavize.tran.httpblocker;
 
 
 import com.metavize.mvvm.logging.EventHandler;
-import com.metavize.mvvm.logging.FilterDesc;
+import com.metavize.mvvm.logging.RepositoryDesc;
 import com.metavize.mvvm.tran.TransformContext;
 
 public class HttpBlockerEventHandler implements EventHandler<HttpBlockerEvent>
 {
-    private static final FilterDesc FILTER_DESC = new FilterDesc("HTTP Block Events");
+    private static final RepositoryDesc FILTER_DESC = new RepositoryDesc("HTTP Block Events");
 
     private static final String WARM_QUERY
         = "FROM HttpBlockerEvent evt WHERE evt.requestLine.httpRequestEvent.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
@@ -34,7 +34,7 @@ public class HttpBlockerEventHandler implements EventHandler<HttpBlockerEvent>
 
     // EventCache methods -----------------------------------------------------
 
-    public FilterDesc getFilterDesc()
+    public RepositoryDesc getRepositoryDesc()
     {
         return FILTER_DESC;
     }
