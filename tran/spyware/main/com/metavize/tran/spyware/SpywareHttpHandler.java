@@ -285,11 +285,7 @@ public class SpywareHttpHandler extends HttpStateMachine
                 domain = host;
             }
 
-            long t0 = System.currentTimeMillis();
             boolean badDomain = transform.isBlockedCookie(domain);
-            long t1 = System.currentTimeMillis();
-            if (logger.isDebugEnabled())
-                logger.debug("looked up domain in: " + (t1 - t0) + " ms");
 
             if (badDomain) {
                 logger.debug("blocking cookie: " + domain);

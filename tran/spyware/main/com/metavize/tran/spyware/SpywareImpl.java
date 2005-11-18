@@ -292,7 +292,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         boolean match = false;
 
         for (String d = domain; !match && null != d; d = nextHost(d)) {
-            StringRule sr = cookieRules.get(domain);
+            StringRule sr = cookieRules.get(d);
             match = null != sr && sr.isLive();
         }
 
