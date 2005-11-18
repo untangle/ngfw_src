@@ -24,14 +24,14 @@ QUERY=\
 SELECT c_server_port, c_client_addr, host, name, c_server_addr, \
        blk.time_stamp, uri \
   FROM tr_httpblk_evt_blk blk \
-         JOIN tr_http_req_line \
+         JOIN tr_http_req_line line \
            USING (request_id) \
-         JOIN tr_http_evt_req evt \
-           ON (blk.request_id = evt.request_id \
+         JOIN tr_http_evt_req req \
+           ON (blk.request_id = req.request_id \
              AND blk.time_stamp >= $P{startTime} \
              AND blk.time_stamp < $P{endTime}) \
          JOIN pl_endp endp \
-           ON (endp.event_id = evt.pl_endp_id) \
+           ON (line.pl_endp_id = endp.event_id) \
          LEFT OUTER JOIN merged_address_map mam \
            ON (endp.c_client_addr = mam.addr \
              AND blk.time_stamp >= mam.start_time \

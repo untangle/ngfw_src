@@ -17,8 +17,10 @@ SELECT hname, count, top_count, all_count \
   FROM (SELECT COALESCE(NULLIF(name, ''), HOST(c_client_addr)) AS hname, \
                COUNT(*) \
           FROM tr_spyware_evt_activex evt \
+                 JOIN tr_http_req_line line \
+                   USING (request_id) \
                  JOIN pl_endp endp \
-                   ON (evt.pl_endp_id = endp.event_id \
+                   ON (line.pl_endp_id = endp.event_id \
                      AND evt.time_stamp >= $P{startTime} \
                      AND evt.time_stamp < $P{endTime}) \
                  LEFT OUTER JOIN merged_address_map mam \
@@ -32,8 +34,10 @@ SELECT hname, count, top_count, all_count \
           FROM (SELECT COALESCE(NULLIF(name, ''), HOST(c_client_addr)) AS hname, \
                        COUNT(*) \
                   FROM tr_spyware_evt_activex evt \
+                         JOIN tr_http_req_line line \
+                           USING (request_id) \
                          JOIN pl_endp endp \
-                           ON (evt.pl_endp_id = endp.event_id \
+                           ON (line.pl_endp_id = endp.event_id \
                              AND evt.time_stamp >= $P{startTime} \
                              AND evt.time_stamp < $P{endTime}) \
                          LEFT OUTER JOIN merged_address_map mam \
@@ -47,8 +51,10 @@ SELECT hname, count, top_count, all_count \
           FROM (SELECT COALESCE(NULLIF(name, ''), HOST(c_client_addr)) AS hname, \
                        COUNT(*) \
                   FROM tr_spyware_evt_activex evt \
+                         JOIN tr_http_req_line line \
+                           USING (request_id) \
                          JOIN pl_endp endp \
-                           ON (evt.pl_endp_id = endp.event_id \
+                           ON (line.pl_endp_id = endp.event_id \
                              AND evt.time_stamp >= $P{startTime} \
                              AND evt.time_stamp < $P{endTime}) \
                          LEFT OUTER JOIN merged_address_map mam \

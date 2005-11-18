@@ -24,12 +24,14 @@ QUERY=\
 SELECT activex.time_stamp, name, c_client_addr, c_server_addr, c_server_port, \
        ident, host \
   FROM tr_spyware_evt_activex activex \
+         JOIN tr_http_req_line line \
+           USING (request_id) \
          JOIN tr_http_evt_req req \
            ON (activex.request_id = req.request_id \
              AND activex.time_stamp >= $P{startTime} \
              AND activex.time_stamp < $P{endTime}) \
          JOIN pl_endp endp \
-           ON (req.pl_endp_id = endp.event_id) \
+           ON (line.pl_endp_id = endp.event_id) \
          LEFT OUTER JOIN merged_address_map mam \
            ON (endp.c_client_addr = mam.addr \
              AND activex.time_stamp >= mam.start_time \

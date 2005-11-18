@@ -26,6 +26,8 @@ QUERY=\
 SELECT c_server_port, c_client_addr, host, name, c_server_addr, \
        evt.time_stamp, virus_name \
   FROM tr_virus_evt_http evt \
+         JOIN tr_http_req_line line \
+           ON (evt.request_line = line.request_id) \
          JOIN tr_http_evt_req req \
            ON (evt.request_line = req.request_id \
              AND NOT evt.clean \
@@ -33,7 +35,7 @@ SELECT c_server_port, c_client_addr, host, name, c_server_addr, \
              AND evt.time_stamp < $P{endTime} \
              AND evt.vendor_name = $P{virusVendor}) \
          JOIN pl_endp endp \
-           ON (endp.event_id = req.pl_endp_id) \
+           ON (line.pl_endp_id = endp.event_id) \
          LEFT OUTER JOIN merged_address_map mam \
            ON (endp.c_client_addr = mam.addr \
              AND evt.time_stamp >= mam.start_time \
