@@ -61,7 +61,7 @@ component=$2
 
 schema_dir=@MVVM_SCHEMA@/$component
 
-ver=$(echo "SELECT ${type}_version FROM split_schema_ver WHERE component = '$component' AND NOT NULL ${type}_version" | $PSQL)
+ver=$(echo "SELECT ${type}_version FROM split_schema_ver WHERE component = '$component' AND ${type}_version IS NOT NULL" | $PSQL)
 latest_ver=$(ls $schema_dir/*schema-*.sql | sed 's/^.*schema-\([0-9]\+\).sql/\1/' | sort -n -r | head -n1)
 echo "Updating schema: $component on $(date)"
 echo "Current schema version: $ver"
