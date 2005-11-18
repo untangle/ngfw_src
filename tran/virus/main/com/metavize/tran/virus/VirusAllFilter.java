@@ -29,7 +29,7 @@ public class VirusAllFilter implements EventFilter<VirusEvent>
     {
         httpQuery = "FROM VirusHttpEvent evt "
             + "WHERE evt.vendorName = '" + vendorName + "' "
-            + "AND evt.requestLine.httpRequestEvent.pipelineEndpoints.policy = :policy "
+            + "AND evt.requestLine.pipelineEndpoints.policy = :policy "
             + "ORDER BY evt.timeStamp";
 
         ftpQuery = "FROM VirusLogEvent evt "

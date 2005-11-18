@@ -20,7 +20,7 @@ public class HttpBlockerBlockedFilter implements EventFilter<HttpBlockerEvent>
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc("HTTP Block Events");
 
     private static final String WARM_QUERY
-        = "FROM HttpBlockerEvent evt WHERE evt.requestLine.httpRequestEvent.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
+        = "FROM HttpBlockerEvent evt WHERE evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
 
     // EventFilter methods ----------------------------------------------------
 
