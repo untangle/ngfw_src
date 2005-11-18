@@ -68,4 +68,21 @@
       </para>         
     </sect2>   
   </sect1>
+
+  <sect1 id="protofilter_tran_qa">
+    <title>Frequently Asked Questions</title>
+    <qandaset>  
+      <qandaentry>
+        <question>
+          <para>Where is the Q&amp;A list?</para>
+        </question>
+        <answer>
+          <para>
+            TODO Someone needs to write it.
+          </para>
+        </answer>
+      </qandaentry>
+    </qandaset>
+  </sect1>    
+  
 </chapter>

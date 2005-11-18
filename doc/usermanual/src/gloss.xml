@@ -319,6 +319,13 @@ Place new terms under the appropriate alphabetical location.
   <glossdiv>
     <title>P</title>
 
+    <glossentry id="gloss_packet">
+      <glossterm>Packet</glossterm>
+      <glossdef>
+        <para>TODO</para>
+      </glossdef>            
+    </glossentry>    
+
     <glossentry id="gloss_port">
       <glossterm>Port</glossterm>
       <glossdef>
@@ -527,8 +534,7 @@ Place new terms under the appropriate alphabetical location.
       <acronym>UDP</acronym>
       <glossdef>
         <para>
-          One of the primary internet transmission protocols.  Contrasted with <glossterm linkend="gloss_tcp">TCP</glossterm>, UDP is considered faster yet lacks reliability.  Examples of applications built using UDP include <glossterm linkend="glo
-          ss_dns">DNS</glossterm>, many Voice over IP (VOIP) and internet games.
+          One of the primary internet transmission protocols.  Contrasted with <glossterm linkend="gloss_tcp">TCP</glossterm>, UDP is considered faster yet lacks reliability.  Examples of applications built using UDP include <glossterm linkend="gloss_dns">DNS</glossterm>, many Voice over IP (VOIP) and internet games.
         </para>
         <glossseealso otherterm="gloss_tcp"/>         
       </glossdef>
@@ -542,6 +548,16 @@ Place new terms under the appropriate alphabetical location.
   
   <glossdiv>
     <title>V</title>
+
+    
+    <glossentry id="gloss_virtualrack">
+      <glossterm>Virtual Rack</glossterm>
+      <glossdef>
+        <para>
+          TODO
+        </para>
+      </glossdef>
+    </glossentry>    
     
     <glossentry id="gloss_virus">
       <glossterm>Virus</glossterm>

@@ -13,65 +13,156 @@
         <imagedata fileref="figure/firewall/firewall_tran_icon.png"/>
       </imageobject>
     </inlinemediaobject>
-    symbol.
+    symbol.  If the Firewall Appliance is not installed, please refer to <xref linkend="introduction_ui_appliance"/> for installation instructions.
   </para>
-
   <para>
-    TODO COMPLETE ME.  Someone needs to write this section.  As you do, you should refer to <xref linkend="introduction_ui_appliance"/> as the firewall Transform is a "Software appliance".
+    As its name implies, the Firewall Appliance provides traditional firewall functionality, blocking traffic based on rules.  Rules are based on a combination of protocol, source and destination.  Unlike traditional firewalls but like many other &eg; Software Appliances, the Firewall can simply monitor (rather than block) traffic of interest and log events (see <xref linkend="firewall_tran_eventlog"/>.)
   </para>
 
-  <!-- ======================================================== -->
-  <sect1 id="firewall_tran_blockpass">
-    <title>Block/Pass List</title>
+  <sect1 id="firewall_tran_adminui">
+    <title>Administrative Interface</title>
+
     <para>
-      TODO - Also, remember to define the special word "any"
-      <glossterm linkend="gloss_tcp">TCP</glossterm>
-      <glossterm linkend="gloss_udp">UDP</glossterm>      
+      The interface for the Firewall Appliance is presented as three tabs.  The first two tabs, discussed in <xref linkend="firewall_tran_blockpass"/> and <xref linkend="firewall_tran_general"/>, allow the administrator to configure the behavior of the firewall appliance.  The last tab allows administrators to view firewall events (see <xref linkend="introduction_ui_appliance_event_log"/>).
     </para>
-    <figure id="firewall_tran_blockpass_figure">
-      <title>Block/Pass List Tab</title>
-      <mediaobject>
-        <imageobject>
-          <imagedata fileref="figure/firewall/firewall_blockpass.png" />
-        </imageobject>
-      </mediaobject>
-    </figure>
+  
+
+    <!-- ======================================================== -->
+    <sect2 id="firewall_tran_blockpass">
+      <title>Block/Pass List</title>
+      <para>
+        The Block/Pass List, shown in <xref linkend="firewall_tran_blockpass_figure"/>, is an ordered list of rules.  Rules may select (<quote>match</quote>) a connection.  If a given rule does select a connection, the connection is either blocked or passed (depending on the value of <guilabel>action</guilabel>).
+      </para>
+      <figure id="firewall_tran_blockpass_figure">
+        <title>Block/Pass List Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/firewall/firewall_blockpass.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        As new connections are made, the Firewall Appliance evaluates its rules in order.  The relative order of the rules can be determined by observing the <guilabel>#</guilabel> column as seen in  <xref linkend="firewall_tran_blockpass_figure"/>.  The Firewall Appliance attempts to match the connection to each rule based on the rule's criteria (more on that in a moment).  If the connection matches, the <guilabel>action</guilabel> specified is taken.  Should no rule match a given connection, the default action is taken (see <xref linkend="firewall_tran_general"/>).
+      </para>
+      <para>
+        Rules match connections based on six (6) criteria.  These criteria are as follows.  Note that the term <quote>source</quote> means <quote>machine which initiated the connection</quote> and <quote>destination</quote> means <quote>machine receiving the connect requests</quote>.
+
+        <variablelist id="firewall_tran_blockpass_matchingcriteria">
+          <title>Firewall Rule Matching Criteria</title>
+          <varlistentry>
+            <term><guilabel>traffic type</guilabel></term>
+            <listitem>
+              <para>
+                The <guilabel>traffic type</guilabel> criteria selects the protocol to be matched.  Valid values are <glossterm linkend="gloss_tcp">TCP</glossterm>, <glossterm linkend="gloss_udp">UDP</glossterm>, or <glossterm linkend="gloss_ping">PING</glossterm> (as well as a few combinations thereof). 
+              </para>
+            </listitem>
+          </varlistentry>
+          
+          <varlistentry>
+            <term><guilabel>direction</guilabel></term>
+            <listitem>
+              <para>
+                The <guilabel>direction</guilabel> criteria defines the location of the source and destination relative to the protected network.  <guilabel>Inbound</guilabel> means the sorce is outside the protected network, and the destination within.  <guilabel>Outbound</guilabel> means the destination is outside the protected network, and the source within.
+              </para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term><guilabel>source address</guilabel></term>
+            <listitem>
+              <para>
+                This property selects the <glossterm linkend="gloss_ip_addr">IP address</glossterm> of the connection source.  Valid values are in IP Matcher format.  For more information on the IP Matcher syntax, please see <xref linkend="fixme_ui_ip_conventions_ipmatcher"/>.
+              </para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term><guilabel>destination address</guilabel></term>
+            <listitem>
+              <para>
+                This property selects the <glossterm linkend="gloss_ip_addr">IP address</glossterm> of the connection destination.  Valid values are in IP Matcher format.  For more information on the IP Matcher syntax, please see <xref linkend="fixme_ui_ip_conventions_ipmatcher"/>.
+              </para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term><guilabel>source port</guilabel></term>
+            <listitem>
+              <para>
+                This property selects the <glossterm linkend="gloss_port">port</glossterm> of the connection source.  Valid values are in Port Matcher format.  For more information on the Port Matcher syntax, please see <xref linkend="fixme_ui_ip_conventions_portmatcher"/>.
+              </para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term><guilabel>destination port</guilabel></term>
+            <listitem>
+              <para>
+                This property selects the <glossterm linkend="gloss_port">port</glossterm> of the connection destination.  Valid values are in Port Matcher format.  For more information on the Port Matcher syntax, please see <xref linkend="fixme_ui_ip_conventions_portmatcher"/>.
+              </para>
+            </listitem>
+          </varlistentry>          
+        </variablelist>
+      </para>
+    </sect2>
+  
+  
+    <!-- ======================================================== -->
+    <sect2 id="firewall_tran_general">
+      <title>General Settings</title>
+      <para>
+        The General Settings tab contains only a single property, as can be seen in <xref linkend="firewall_tran_general_figure"/>.
+      </para>
+      <figure id="firewall_tran_general_figure">
+        <title>General Settings Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/firewall/firewall_general.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        Note that the <guilabel>Default Action</guilabel> only applies when a given connection fails to match any rule in the <link linkend="firewall_tran_blockpass">BLock/Pass List</link>.
+      </para>
+    </sect2>
+  
+  
+  
+    <!-- ======================================================== -->
+    <sect2 id="firewall_tran_eventlog">
+      <title>Event Log</title>
+      <para>
+        The Events tab contents is shown in <xref linkend="firewall_tran_eventlog_figure"/>.
+      </para>
+      <figure id="firewall_tran_eventlog_figure">
+        <title>Event Log Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/firewall/firewall_eventlog.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        The Events Tab is another implementation of an Event Log, as described in <xref linkend="introduction_ui_appliance_event_log"/>.  
+      </para>         
+    </sect2>     
   </sect1>
 
 
-  <!-- ======================================================== -->
-  <sect1 id="firewall_tran_general">
-    <title>General Settings</title>
-    <para>
-      TODO
-    </para>
-    <figure id="firewall_tran_general_figure">
-      <title>General Settings Tab</title>
-      <mediaobject>
-        <imageobject>
-          <imagedata fileref="figure/firewall/firewall_general.png" />
-        </imageobject>
-      </mediaobject>
-    </figure>
-  </sect1>
-
-
-
-  <!-- ======================================================== -->
-  <sect1 id="firewall_tran_eventlog">
-    <title>Event Log</title>
-    <para>
-      TODO
-    </para>
-    <figure id="firewall_tran_eventlog_figure">
-      <title>Event Log Tab</title>
-      <mediaobject>
-        <imageobject>
-          <imagedata fileref="figure/firewall/firewall_eventlog.png" />
-        </imageobject>
-      </mediaobject>
-    </figure>
-  </sect1>     
-
+  <sect1 id="firewall_tran_qa">
+    <title>Frequently Asked Questions</title>
+    <qandaset>  
+      <qandaentry>
+        <question>
+          <para>Where is the Q&amp;A list?</para>
+        </question>
+        <answer>
+          <para>
+            TODO Someone needs to write it.  Some good things would be CIDR syntax for matching all networks, a reminder of the "any" syntax, etc.
+          </para>
+        </answer>
+      </qandaentry>
+    </qandaset>
+  </sect1>    
 
 </chapter>
