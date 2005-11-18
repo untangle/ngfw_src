@@ -167,9 +167,8 @@
     <!-- ========================================= -->
     <sect2 id="spyware_tran_adminui_eventlog">
       <title>Event Log</title>
-  
       <para>
-        TODO
+        The Events tab contents is shown in <xref linkend="spyware_tran_adminui_eventlog_figure"/>.
       </para>
       <figure id="spyware_tran_adminui_eventlog_figure">
         <title>Event Log</title>
@@ -181,9 +180,26 @@
         </mediaobject>
       </figure>
       <para>
+        TODO This isn't done
         The Events Tab is another implementation of an Event Log, as described in <xref linkend="introduction_ui_appliance_event_log"/>.  The <guilabel>action</guilabel> describes the action which the &eg; took on the mail.  <guilabel>client</guilabel> shows the IP address of the client.  Note that the client in SMTP is the sender of the mail, and in POP and IMAP it is the receiver of the mail.  <guilabel>spam score</guilabel> is the score applied to the email by the spam scanner.  Higher values indicate <quote>more likely to be spam</quote>.
       </para>      
     </sect2>
   </sect1>
+
+  <sect1 id="spyware_tran_qa">
+    <title>Frequently Asked Questions</title>
+    <qandaset>  
+      <qandaentry>
+        <question>
+          <para>TODO put a question here?</para>
+        </question>
+        <answer>
+          <para>
+            TODO put an answer here
+          </para>
+        </answer>
+      </qandaentry>
+    </qandaset>
+  </sect1>  
 
 </chapter>

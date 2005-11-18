@@ -20,137 +20,180 @@
     TODO COMPLETE ME.  Someone needs to write this section.  As you do, you should refer to <xref linkend="introduction_ui_appliance"/> as the httpblocker Transform is a "Software appliance".
   </para>
 
+  <sect1 id="httpblocker_tran_adminui">
+    <title>Administrative Interface</title>
 
-  <!-- ======================================================== -->
-  <sect1 id="httpblocker_tran_block">
-    <title>Block Lists</title>
     <para>
-      TODO
+      The interface for the Web Content Control is presented as three tabs.  The first two tabs, covered in sections <xref linkend="httpblocker_tran_block"/> and <xref linkend="httpblocker_tran_pass"/>, allow control over blocked and permitted content.   The last tab, discussed in <xref linkend="httpblocker_tran_eventlog"/>, allows administrators to view events.
     </para>
-
-    <!-- ############################################################## -->
-    <sect2 id="httpblocker_tran_block_categories">
-      <title>Categories</title>
+    <!-- ======================================================== -->
+    <sect2 id="httpblocker_tran_block">
+      <title>Block Lists</title>
       <para>
-        TODO
+        The Block List tab presents administrators the ability to modify the four major categories of content filtering.  Refer to the section for each sub-tab for more detail.
       </para>
-      <figure id="httpblocker_tran_block_categories_figure">
-        <title>Categories Tab</title>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="figure/httpblocker/httpblocker_block_categories.png" />
-          </imageobject>
-        </mediaobject>
-      </figure>
+  
+      <!-- ############################################################## -->
+      <sect3 id="httpblocker_tran_block_categories">
+        <title>Categories</title>
+        <para>
+          The Categories tab, as shown in <xref linkend="httpblocker_tran_block_categories_figure"/>, presents the administrator with the ability to block logical categories of sites.  The names of the various categories and a description are presented in the table.
+        </para>
+        <figure id="httpblocker_tran_block_categories_figure">
+          <title>Categories Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/httpblocker/httpblocker_block_categories.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          Should a user within the protected network browse to a site which has been selected via the Category tab, they will be presented with an error page.  The page will inform the user that their request has been blocked by the Web Content Control Appliance.  They will also be told the category (<quote>Web Mail</quote>, <quote>Gambling</quote>, etc) of the site in question.
+        </para>
+      </sect3>
+  
+      <!-- ############################################################## -->
+      <sect3 id="httpblocker_tran_block_urls">
+        <title>URLs</title>
+        <para>
+          The block list of <glossterm linkend="gloss_url">URLs</glossterm> is shown in <xref linkend="httpblocker_tran_block_urls_figure"/>
+        </para>        
+        <figure id="httpblocker_tran_block_urls_figure">
+          <title>URLs Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/httpblocker/httpblocker_block_urls.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          The URL block list is initialy empty.  When adding a new entry, you enter a URL which encompases an exact match or any URLs matching that prefix (see <xref linkend="fixme_ui_url_conventions"/> for more details on URL matching).  The <guilabel>category</guilabel> column can contain any category of your choosing (it does not have to correspond to the predefined categories discussed in <xref linkend="httpblocker_tran_block_categories"/>).
+        </para>           
+      </sect3>
+  
+      <!-- ############################################################## -->
+      <sect3 id="httpblocker_tran_block_mime">
+        <title>MIME Types</title>
+        <para>
+          The <glossterm linkend="gloss_mime_type">MIME Types</glossterm> tab lets administrators block the downloading of content by MIME type.  The interface for the MIME Types tab is shown in <xref linkend="httpblocker_tran_block_mime_figure"/>.
+        </para>
+        <figure id="httpblocker_tran_block_mime_figure">
+          <title>MIME Types Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/httpblocker/httpblocker_block_mime.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          As shown in <xref linkend="httpblocker_tran_block_mime_figure"/>, most of the common MIME types have already been entered into the list.  By default, they are not being blocked.  To cause a particular MIME Type to be blocked, check the <guilabel>block</guilabel> box.
+        </para>
+      </sect3>
+  
+      <!-- ############################################################## -->
+      <sect3 id="httpblocker_tran_block_fileext">
+        <title>File Extensions</title>
+        <para>
+          The File Extensions Tab, as shown in <xref linkend="httpblocker_tran_block_fileext_figure"/>, allows Administrators to cause the download of files to be blocked based on file extension (e.g. .exe).
+        </para>
+        <figure id="httpblocker_tran_block_fileext_figure">
+          <title>File Extensions Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/httpblocker/httpblocker_block_fileext.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          As shown in <xref linkend="httpblocker_tran_block_fileext_figure"/>, many common file extensions have already been entered into the list.  By default, they are not being blocked.  To cause files of a given extension to be blocked, check the <guilabel>block</guilabel> box.
+        </para>        
+      </sect3>          
     </sect2>
-
-    <!-- ############################################################## -->
-    <sect2 id="httpblocker_tran_block_urls">
-      <title>URLs</title>
+  
+    <!-- ======================================================== -->  
+    <sect2 id="httpblocker_tran_pass">
+      <title>Pass Lists</title>
       <para>
-        TODO
-        <glossterm linkend="gloss_url">URL</glossterm>
+        As discussed in <xref linkend="httpblocker_tran_block"/>, the Web Content Control Appliance offers several ways to block inappropriate or malicious traffic from entering your protected network.  However, there may be circumstances where you need to bypass these guards for an individual within your company, or a site outside your network.
       </para>
-      <figure id="httpblocker_tran_block_urls_figure">
-        <title>URLs Tab</title>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="figure/httpblocker/httpblocker_block_urls.png" />
-          </imageobject>
-        </mediaobject>
-      </figure>
+      <para>
+        For this reason, the Pass Lists have been created.  When traffic is found to <quote>match</quote> an entry in one of the pass lists, it is <emphasis>not</emphasis> filtered.  Passes can be created for various sites, as discussed in <xref linkend="httpblocker_tran_pass_urls"/>, or for individual machines within the protected network as discussed in <xref linkend="httpblocker_tran_pass_clients"/>
+      </para>
+  
+      <!-- ############################################################## -->
+      <sect3 id="httpblocker_tran_pass_urls">
+        <title>URLs</title>
+        <para>
+          The pass list of <glossterm linkend="gloss_url">URLs</glossterm> is shown in <xref linkend="httpblocker_tran_pass_urls_figure"/>
+        </para>
+        <figure id="httpblocker_tran_pass_urls_figure">
+          <title>URLs Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/httpblocker/httpblocker_pass_urls.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          The URL pass list is initialy empty.  When adding a new entry, you enter a URL which encompases an exact match or any URLs matching that prefix (see <xref linkend="fixme_ui_url_conventions"/> for more details on URL matching).  The <guilabel>category</guilabel> column can contain any category of your choosing (it does not have to correspond to the predefined categories discussed in <xref linkend="httpblocker_tran_block_categories"/>).
+        </para>
+      </sect3>
+  
+      <!-- ############################################################## -->
+      <sect3 id="httpblocker_tran_pass_clients">
+        <title>Clients</title>
+        <para>
+          The <xref linkend="httpblocker_tran_pass_urls"/> lets Administrators define sites outside the protected network which will not receive filtering.  The Clients Tab lets Administrators define machines <emphasis>within</emphasis> the protected network whose requests will not be filtered.  The interface for the client pass list is shown in <xref linkend="httpblocker_tran_pass_clients_figure"/>.
+        </para>
+        <figure id="httpblocker_tran_pass_clients_figure">
+          <title>Clients Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/httpblocker/httpblocker_pass_clients.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          The list shown in <xref linkend="httpblocker_tran_pass_clients_figure"/> is initialy empty.  As new entries are made, administrators must enter <guilabel>client IP address</guilabel>.  The format of <guilabel>client IP address</guilabel> is either a simple IP address (see <xref linkend="fixme_ui_ip_conventions_simpleipaddr"/>) or an address/mask in CIDR format (see <xref linkend="fixme_ui_ip_conventions_cidr"/>).  Note that the <guilabel>category</guilabel> field is only for administrator reference - it need not match up with the predefined categories discussed in <xref linkend="httpblocker_tran_block_categories"/>.
+        </para>
+      </sect3>    
     </sect2>
-
-    <!-- ############################################################## -->
-    <sect2 id="httpblocker_tran_block_mime">
-      <title>MIME Types</title>
+  
+    <!-- ======================================================== -->
+    <sect2 id="httpblocker_tran_eventlog">
+      <title>Event Log</title>
       <para>
-        TODO
-        <glossterm linkend="gloss_mime_type">MIME Type</glossterm>
+        The Events tab contents is shown in <xref linkend="httpblocker_tran_eventlog_figure"/>.
       </para>
-      <figure id="httpblocker_tran_block_mime_figure">
-        <title>MIME Types Tab</title>
+      <figure id="httpblocker_tran_eventlog_figure">
+        <title> Tab</title>
         <mediaobject>
           <imageobject>
-            <imagedata fileref="figure/httpblocker/httpblocker_block_mime.png" />
+            <imagedata fileref="figure/httpblocker/httpblocker_eventlog.png" />
           </imageobject>
         </mediaobject>
       </figure>
-    </sect2>
-
-    <!-- ############################################################## -->
-    <sect2 id="httpblocker_tran_block_fileext">
-      <title>File Extensions</title>
       <para>
-        TODO
-      </para>
-      <figure id="httpblocker_tran_block_fileext_figure">
-        <title>File Extensions Tab</title>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="figure/httpblocker/httpblocker_block_fileext.png" />
-          </imageobject>
-        </mediaobject>
-      </figure>
-    </sect2>          
+        The Events Tab is another implementation of an Event Log, as described in <xref linkend="introduction_ui_appliance_event_log"/>.  The <guilabel>action</guilabel> describes the action which the &eg; took on the web request.  <guilabel>client</guilabel> shows the IP address of the client who made the request.
+      </para>        
+    </sect2>  
   </sect1>
 
-  <!-- ======================================================== -->  
-  <sect1 id="httpblocker_tran_pass">
-    <title>Pass Lists</title>
-    <para>
-    </para>
-
-    <!-- ############################################################## -->
-    <sect2 id="httpblocker_tran_pass_urls">
-      <title>URLs</title>
-      <para>
-        TODO
-        <glossterm linkend="gloss_url">URL</glossterm>
-      </para>
-      <figure id="httpblocker_tran_pass_urls_figure">
-        <title>URLs Tab</title>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="figure/httpblocker/httpblocker_pass_urls.png" />
-          </imageobject>
-        </mediaobject>
-      </figure>
-    </sect2>
-
-    <!-- ############################################################## -->
-    <sect2 id="httpblocker_tran_pass_clients">
-      <title>Clients</title>
-      <para>
-        TODO
-      </para>
-      <figure id="httpblocker_tran_pass_clients_figure">
-        <title>Clients Tab</title>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="figure/httpblocker/httpblocker_pass_clients.png" />
-          </imageobject>
-        </mediaobject>
-      </figure>
-    </sect2>    
-  </sect1>
-
-  <!-- ======================================================== -->
-  <sect1 id="httpblocker_tran_eventlog">
-    <title>Event Log</title>
-    <para>
-      TODO
-    </para>
-    <figure id="httpblocker_tran_eventlog_figure">
-      <title> Tab</title>
-      <mediaobject>
-        <imageobject>
-          <imagedata fileref="figure/httpblocker/httpblocker_eventlog.png" />
-        </imageobject>
-      </mediaobject>
-    </figure>
+  <sect1 id="spyware_tran_qa">
+    <title>Frequently Asked Questions</title>
+    <qandaset>  
+      <qandaentry>
+        <question>
+          <para>Why is there both blocking by MIME Type and File Extension?</para>
+        </question>
+        <answer>
+          <para>
+            In an ideal world, both pieces of information would always be present for every web request.  However, some sites use incorrect content types or extensions.  Also, the behavior of operating systems (Windows vs. Mac) is different when given only file extension or content type.  To be safe, both lists should be used.
+          </para>
+        </answer>
+      </qandaentry>
+    </qandaset>
   </sect1>  
-
-
+  
 
 </chapter>

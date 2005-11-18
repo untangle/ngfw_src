@@ -324,7 +324,14 @@ Place new terms under the appropriate alphabetical location.
       <glossdef>
         <para>TODO - the wikipedia def was too hard</para>
       </glossdef>            
-    </glossentry>  
+    </glossentry>
+
+    <glossentry id="gloss_ping">
+      <glossterm>Ping</glossterm>
+      <glossdef>
+        <para>TODO</para>
+      </glossdef>            
+    </glossentry>      
     
     <glossentry id="gloss_pop">
       <glossterm>Post Office Protocol</glossterm>
@@ -381,12 +388,12 @@ Place new terms under the appropriate alphabetical location.
   <glossdiv>
     <title>R</title>
 
-    <!-- TODO remove this.  It is a joke someone told me about from Borland -->
-    <glossentry id="gloss_recursion">
-      <glossterm>Recursion</glossterm>
+    <glossentry id="gloss_regex">
+      <glossterm>Regular Expression</glossterm>
+      <abbrev>Regex</abbrev>
       <glossdef>
         <para>
-          To refer to <glossterm linkend="gloss_recursion">one's self</glossterm>.
+          TODO
         </para>
       </glossdef>
     </glossentry>

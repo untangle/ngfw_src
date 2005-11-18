@@ -102,6 +102,10 @@
       </para>        
     </sect2>
 
+    <sect2 id="fixme_ui_url_conventions"  xreflabel="Entering URLs">
+      Here we discuss how to enter URLs for blocking/passing, where "http://a/b" matches "http://a/b/c" but not "http://a/d".
+    </sect2>
+
   </sect1>
    
 </chapter>
