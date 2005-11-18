@@ -10,26 +10,18 @@
         <imagedata fileref="figure/spamassassin/spamassassin_tran_icon.png"/>
       </imageobject>
     </inlinemediaobject>
-    symbol.  It is a <link linkend="introduction_ui_appliance"> Virtual Appliance </link>which can be installed into multiple Virtual Racks.
+    symbol.  It is a <link linkend="introduction_ui_appliance"> Software Appliance </link>, which can be installed into multiple Virtual Racks.
   </para>
   <para>
-    SpamGuard works to filter email for <glossterm linkend="gloss_spam">Spam</glossterm>.  <emphasis>TODO Discuss relative location of mail servers (SMTP or IMAP/POP) and the MVVM.</emphasis>  
-  </para>
-  <para>
-    One point which may confuse the reader who is familiar with Internet Mail is the use of the terms <guilabel>Incoming Message</guilabel> and <guilabel>Outgoing Message</guilabel>.  These terms are used to select behavior for messages entering and leaving your protected network.
-  </para>
-  <para>
-    For <glossterm linkend="gloss_smtp">SMTP</glossterm>, an <guilabel>Incoming Message</guilabel> is one which is entering your network.  This means the <glossterm linkend="gloss_smtp_server">SMTP server</glossterm> must be within the protected network.  For <glossterm linkend="gloss_imap">IMAP</glossterm> and <glossterm linkend="gloss_pop">POP</glossterm>, the server is outside of the protected network.
+    The SpamGuard Appliance works to filter email for <glossterm linkend="gloss_spam">Spam</glossterm>.  Email transported by the <glossterm linkend="gloss_smtp">SMTP</glossterm>, <glossterm linkend="gloss_pop">POP</glossterm>, and <glossterm linkend="gloss_imap">IMAP</glossterm> protocols can be scanned.  
   </para>
 
-
-  
   <!-- ############################################################# -->
   <sect1 id="spamassassin_tran_adminui">
     <title>Administrative Interface</title>
 
     <para>
-      The interface for SpamGuard is divided into four tabs.  The first three tabs are for the different email protocols that &eg; can scan.  The last tab allows administrators to view events (see <xref linkend="introduction_ui_appliance_event_log"/>).
+      The interface for SpamGuard is presented as four tabs.  The first three tabs are for the different email protocols that &eg; can scan.  The last tab allows administrators to view events (see <xref linkend="introduction_ui_appliance_event_log"/>).
     </para>
 
     <!-- ================================================================= -->
@@ -38,6 +30,7 @@
         <para>
           The <glossterm linkend="gloss_smtp_server">SMTP</glossterm> tab contents is shown in <xref linkend="spamassassin_tran_smtp_figure"/>.
         </para>
+
         <figure id="spamassassin_tran_smtp_figure">
           <title>SMTP Tab</title>
       

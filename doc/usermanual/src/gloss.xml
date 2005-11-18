@@ -136,13 +136,6 @@ Place new terms under the appropriate alphabetical location.
   <glossdiv>
     <title>G</title>
 
-    <glossentry id="gloss_groupware">
-      <glossterm>Groupware</glossterm>
-      <glossdef>
-        <para>Generic term used to describe client/server applications used to provide email calendar (and other) services.  Groupware consists of a server and client.  Examples include Microsoft Exchange (server) and Outlook (client) and IBM Lotus Domino (server) and Notes (client).  Since the communication between client and server for groupware applications is propriatary to the groupware vendor, such communication often cannot be scanned.</para>
-      </glossdef>            
-    </glossentry>
-    
   </glossdiv>
 
 <!-- ============== H ================ -->
@@ -156,7 +149,17 @@ Place new terms under the appropriate alphabetical location.
       <glossdef>
         <para>TODO</para>
       </glossdef>            
-    </glossentry>      
+    </glossentry>
+
+
+    <glossentry id="gloss_hostname">
+      <glossterm>Hostname</glossterm>
+      <abbrev>Host</abbrev>
+      <glossdef>
+        <para>TODO</para>
+      </glossdef>            
+    </glossentry>  
+        
   </glossdiv>
 
 
@@ -217,7 +220,6 @@ Place new terms under the appropriate alphabetical location.
         <para>Malware is a type of software designed to take over and/ or damage a computer user's operating system, without his or her knowledge or approval. Once installed, it is often very difficult to remove, and depending on the severity of the program installed, its handiwork can range in degree from the slightly annoying (such as unwanted pop up ads while a user is performing regular computing tasks on or offline), to irreparable damage requiring the reformatting of one's hard drive, since much of malware is poorly written. Examples of malware include viruses and trojan horses.</para>
         <glossseealso otherterm="gloss_virus"/>
         <glossseealso otherterm="gloss_spyware"/>
-        <glossseealso otherterm="gloss_trojan"/>
       </glossdef>
 
     </glossentry>
@@ -228,7 +230,9 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>Multipart Internet Mail Extensions</glossterm>
       <acronym>MIME</acronym>
       <glossdef>
-        <para>TODO</para>
+        <para>
+          Internet standard, defining the transmission format for emails.  Web traffic also borrows the definitions (see <glossterm linkend="gloss_mime_type">MIME Type</glossterm>) from the MIME standard to identify the types of files being transmitted over <glossterm linkend="gloss_http">HTTP</glossterm>.
+        </para>
       </glossdef>            
     </glossentry>
 
@@ -251,7 +255,7 @@ Place new terms under the appropriate alphabetical location.
     <glossentry id="gloss_netmask">
       <glossterm>Netmask</glossterm>
       <glossdef>
-        <para>TODO</para>
+        <para>TODO - the wikipedia def was too convoluted</para>
       </glossdef>            
     </glossentry>
 
@@ -260,7 +264,12 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>Network Address Translation</glossterm>
       <acronym>NAT</acronym>
       <glossdef>
-        <para>TODO</para>
+        <blockquote>
+          <attribution><ulink  url="http://en.wikipedia.org">Wikipedia</ulink></attribution>
+          <para>
+            In computer networking, the process of network address translation (also known as network masquerading or IP-masquerading) involves re-writing the source and/or destination addresses of IP packets as they pass through a router or firewall. Most systems using NAT do so in order to enable multiple hosts on a private network to access the Internet using a single public IP address.
+          </para>
+        </blockquote>
       </glossdef>            
     </glossentry>
         
@@ -280,7 +289,7 @@ Place new terms under the appropriate alphabetical location.
     <glossentry id="gloss_port">
       <glossterm>Port</glossterm>
       <glossdef>
-        <para>TODO</para>
+        <para>TODO - the wikipedia def was too hard</para>
       </glossdef>            
     </glossentry>  
     
@@ -288,14 +297,28 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>Post Office Protocol</glossterm>
       <acronym>POP</acronym>
       <glossdef>
-        <para>TODO</para>
+        <para>
+          Internet protocol used to retreive (read) email.  An alternative to <glossterm linkend="gloss_imap">IMAP</glossterm>.  Most email clients (such as Microsoft Outlook Express or Mac Mail) support POP for reading mail.
+        </para>
+        <para>
+          POP uses <glossterm linkend="gloss_tcp">TCP</glossterm> over <glossterm linkend="gloss_port">port</glossterm> 110.
+        </para>
+        <glossseealso otherterm="gloss_smtp"/>
+        <glossseealso otherterm="gloss_imap"/>
       </glossdef>            
     </glossentry>
 
+
+    
     <glossentry id="gloss_phishing">
       <glossterm>Phishing</glossterm>
       <glossdef>
-        <para>TODO</para>
+        <blockquote>
+          <attribution><ulink  url="http://en.wikipedia.org">Wikipedia</ulink></attribution>
+          <para>
+            In computing, phishing (also known as carding and spoofing) is a form of social engineering, characterised by attempts to fraudulently acquire sensitive information, such as passwords and credit card details, by masquerading as a trustworthy person or business in an apparently official electronic communication, such as an email. The term phishing arises from the use of increasingly sophisticated lures to "fish" for users' financial information and passwords.
+          </para>
+        </blockquote>
       </glossdef>            
     </glossentry>      
     
@@ -309,7 +332,12 @@ Place new terms under the appropriate alphabetical location.
     <glossentry id="gloss_quarantine">
       <glossterm>Quarantine</glossterm>
       <glossdef>
-        <para>TODO</para>
+        <para>
+          (n) A store of emails, set asside due to the strong likelyhood that they are <glossterm linkend="gloss_spam">spam</glossterm>.
+        </para>
+        <para>
+          (v) The act of placing a <glossterm linkend="gloss_spam">spam</glossterm> suspect email into storage.
+        </para>        
       </glossdef>            
     </glossentry>      
     
@@ -320,7 +348,15 @@ Place new terms under the appropriate alphabetical location.
   <glossdiv>
     <title>R</title>
 
-
+    <!-- TODO remove this.  It is a joke someone told me about from Borland -->
+    <glossentry id="gloss_recursion">
+      <glossterm>Recursion</glossterm>
+      <glossdef>
+        <para>
+          To refer to <glossterm linkend="gloss_recursion">one's self</glossterm>.
+        </para>
+      </glossdef>
+    </glossentry>
 
     <glossentry id="gloss_redirect">
       <glossterm>Redirect</glossterm>
@@ -341,17 +377,26 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>Simple Mail Transfer Protocol</glossterm>
       <acronym>SMTP</acronym>
       <glossdef>
-        <para>Internet protocol used to transmit (send) email.  SMTP is the defacto way to send email between organizations.  Within a given organization, SMTP may or may not be used to send mails from user desktops to the organization's mail server.</para>
+        <para>
+          Internet protocol used to transmit (send) email.  SMTP is the defacto way to send email between organizations.  Within a given organization, SMTP may or may not be used to send mails from user desktops to the organization's mail server.  Most email clients (such as Microsoft Outlook Express or Mac Mail) support SMTP for sending mail.
+        </para>
+        <para>
+          SMTP uses <glossterm linkend="gloss_tcp">TCP</glossterm> over <glossterm linkend="gloss_port">port</glossterm> 25.
+        </para>
         <glossseealso otherterm="gloss_pop"/>
         <glossseealso otherterm="gloss_imap"/>
-        <glossseealso otherterm="gloss_groupware"/>
       </glossdef>
     </glossentry>     
 
     <glossentry id="gloss_spyware">
       <glossterm>Spyware</glossterm>
       <glossdef>
-        <para>TODO complete me.</para>
+        <blockquote>
+          <attribution><ulink  url="http://en.wikipedia.org">Wikipedia</ulink></attribution>
+          <para>
+            Spyware is a broad category of malicious software designed to intercept or take partial control of a computer's operation without the informed consent of that machine's owner or legitimate user. While the term taken literally suggests software that surreptitiously monitors the user, it has come to refer more broadly to software that subverts the computer's operation for the benefit of a third party.        
+          </para>
+        </blockquote>
       </glossdef>
     </glossentry>
 
@@ -359,7 +404,9 @@ Place new terms under the appropriate alphabetical location.
     <glossentry id="gloss_spam">
       <glossterm>Spam</glossterm>
       <glossdef>
-        <para>TODO complete me.</para>
+        <para>
+          Unwanted or bulk email.
+        </para>
       </glossdef>
     </glossentry>
 
@@ -367,19 +414,23 @@ Place new terms under the appropriate alphabetical location.
     <glossentry id="gloss_smtp_server">
       <glossterm>SMTP Server</glossterm>
       <glossdef>
-        <para>TODO complete me.</para>
+        <para>
+          A Mail Server which can deliver email via the <glossterm linkend="gloss_smtp">SMTP</glossterm> protocol.  
+        </para>
         <glossseealso otherterm="gloss_smtp"/>
       </glossdef>
     </glossentry>      
 
 
     <glossentry id="gloss_subnet">
-      <glossterm>Subnet</glossterm>
+      <glossterm>Subnetwork</glossterm>
+      <abbrev>subnet</abbrev>
       <glossdef>
-        <para>TODO complete me.</para>
-        <glossseealso otherterm="gloss_netmask"/>
+        <para>
+          TODO (the Wikipedia explanation is too wordy)
+        </para>
       </glossdef>
-    </glossentry>     
+    </glossentry>
     
   </glossdiv>
 
@@ -388,20 +439,15 @@ Place new terms under the appropriate alphabetical location.
   <glossdiv>
     <title>T</title>
 
-    <glossentry id="gloss_trojan">
-      <glossterm>Trojan Horse</glossterm>
-      <abbrev>Trojan</abbrev>
-      <glossdef>
-        <para>TODO complete me.</para>
-      </glossdef>
-    </glossentry>
-
 
     <glossentry id="gloss_tcp">
       <glossterm>Transmission Control Protocol</glossterm>
       <acronym>TCP</acronym>
       <glossdef>
-        <para>TODO complete me.</para>
+        <para>
+          One of the primary internet transmission protocols.  Contrasted with <glossterm linkend="gloss_udp">UDP</glossterm>, TCP is more reliable.  Most familiar internet applications (web, email) are built atop TCP.
+        </para>
+        <glossseealso otherterm="gloss_udp"/>
       </glossdef>
     </glossentry>          
     
@@ -416,7 +462,10 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>Uniform Resource Identifier</glossterm>
       <acronym>URI</acronym>
       <glossdef>
-        <para>TODO complete me.</para>
+        <para>
+          Within the context of the &eg;, a URI can be thought of as a <glossterm linkend="gloss_url">web address</glossterm> without the protocol (e.g. <computeroutput>http://</computeroutput>) or machine (e.g. <computeroutput>www.detnews.com</computeroutput>).
+        </para>
+        <glossseealso otherterm="gloss_url"/>
       </glossdef>
     </glossentry>
 
@@ -425,7 +474,10 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>Uniform Resource Locator</glossterm>
       <acronym>URL</acronym>
       <glossdef>
-        <para>TODO complete me.</para>
+        <para>
+          A URL is more commonly known as a <quote>web address</quote>.  Examples include <computeroutput>http://www.google.com</computeroutput> or <computeroutput>http://www.detnews.com/2005/technology/0502/22/01-96826.htm</computeroutput>.  A more formal definition of URL is that it is a concatenation of protocol (<computeroutput>http://</computeroutput>), machine (<computeroutput>www.detnews.com</computeroutput>) and path (<computeroutput>/2005/technology/0502/22/01-96826.htm</computeroutput>)
+        </para>
+        <glossseealso otherterm="gloss_uri"/>         
       </glossdef>
     </glossentry>       
 
@@ -434,9 +486,13 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>User Datagram Protocol</glossterm>
       <acronym>UDP</acronym>
       <glossdef>
-        <para>TODO complete me.</para>
+        <para>
+          One of the primary internet transmission protocols.  Contrasted with <glossterm linkend="gloss_tcp">TCP</glossterm>, UDP is considered faster yet lacks reliability.  Examples of applications built using UDP include <glossterm linkend="glo
+          ss_dns">DNS</glossterm>, many Voice over IP (VOIP) and internet games.
+        </para>
+        <glossseealso otherterm="gloss_tcp"/>         
       </glossdef>
-    </glossentry>     
+    </glossentry>
 
 
     
@@ -453,7 +509,7 @@ Place new terms under the appropriate alphabetical location.
         <para>Software with the ability to install and replicate itself without user permission, usually causing damage to the infected computer system.</para>
         <glossseealso otherterm="gloss_malware"/>
         <glossseealso otherterm="gloss_spyware"/>
-        <glossseealso otherterm="gloss_trojan"/>
+        <glossseealso otherterm="gloss_worm"/>
       </glossdef>
     </glossentry>
 
@@ -462,8 +518,13 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>Virtual Private Network</glossterm>
       <acronym>VPN</acronym>
       <glossdef>
-        <para>TODO complete me.</para>
-      </glossdef>
+        <blockquote>
+          <attribution><ulink  url="http://en.wikipedia.org">Wikipedia</ulink></attribution>
+          <para>
+            A Virtual Private Network, or VPN, is a private communications network usually used within a company, or by several different companies or organizations, to communicate over a public network. VPN message traffic is carried on public networking infrastructure (e.g. the Internet) using standard (often insecure) protocols, or over a service provider's network providing VPN service guarded by well defined Service Level Agreement (SLA) between the VPN customer and the VPN service provider.
+          </para>
+        </blockquote>
+      </glossdef>  
     </glossentry>       
     
   </glossdiv>
@@ -476,9 +537,14 @@ Place new terms under the appropriate alphabetical location.
     <glossentry id="gloss_worm">
       <glossterm>Worm</glossterm>
       <glossdef>
-        <para>TODO complete me.</para>
-      </glossdef>
-    </glossentry>      
+        <blockquote>
+          <attribution><ulink  url="http://en.wikipedia.org">Wikipedia</ulink></attribution>
+          <para>
+            A computer worm is a self-replicating computer program, similar to a computer virus. A virus attaches itself to, and becomes part of, another executable program; however, a worm is self-contained and does not need to be part of another program to propagate itself. They are often designed to exploit the file transmission capabilities found on many computers.        
+          </para>
+        </blockquote>
+      </glossdef>      
+    </glossentry>
     
   </glossdiv>
 

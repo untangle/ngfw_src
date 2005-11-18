@@ -14,9 +14,9 @@
       Briefly describe the admin interface and its UI conventions.
     </para>
     <sect2 id="introduction_ui_appliance">
-      <title>Virtual Appliances</title>
+      <title>Software Appliances</title>
       <para>
-        This is where we explain the concept of a "virtual" appliance, and describe how they are represented in the UI.  The "vendor of source" idea should also be discussed.
+        This is where we explain the concept of a software appliance, and describe how they are represented in the UI.  The "vendor of source" idea should also be discussed.
       </para>
 
         <variablelist>
@@ -54,12 +54,12 @@
     <sect2 id="introduction_ui_system_services">
       <title>System Services</title>
       <para>
-        This is where we explain "System Services" vs. Virtual Appliances and Virtual Racks.
+        This is where we explain "Network Services" vs. Software Appliances and Virtual Racks.
       </para>
     </sect2>       
   </sect1>
   <sect1 id="introduction_purchase_appliance">
-    <title>Purchasing new Virtual Appliances</title>
+    <title>Purchasing new Software Appliances</title>
     <para>
       I guess this is only for Clam, but describe how that model works.
     </para>
@@ -82,6 +82,22 @@
       This section is likely part of a larger section explaining the UI conventions, including how when
       a row is edited you go from a green circle to a yellow triangle.
     </para>
+
+    <sect2 id="fixme_ui_ip_conventions"  xreflabel="Entering Addresses">
+      This section explains that there are a few different ways to enter addresses, depending on the context.
+      <para id="fixme_ui_ip_conventions_simpleipaddr" xreflabel="Simple Address Syntax">
+        Basic IP address
+      </para>
+      <para id="fixme_ui_ip_conventions_cidr" xreflabel="CIDR Syntax">
+        ip/mask
+      </para>
+      <para id="fixme_ui_ip_conventions_range" xreflabel="IP Range Syntax">
+        ip-ip
+      </para>
+      <para id="fixme_ui_ip_conventions_ipmatcher" xreflabel="IP Matcher">
+        "any" | "local" | CIDR | range
+      </para>      
+    </sect2>
 
   </sect1>
    

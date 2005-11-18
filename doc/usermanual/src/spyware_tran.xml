@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter id="spyware_tran">
-
   <title>Spyware Blocker</title>
-
-  <!-- Note that the "introduction" is not within a Section.  This is
-       the convention we'll use
-  -->
   <para>
     The Spyware Blocker Appliance is identified by the
     <inlinemediaobject>
@@ -13,148 +8,182 @@
         <imagedata fileref="figure/spyware/spyware_tran_icon.png"/>
       </imageobject>
     </inlinemediaobject>
-    symbol.
+    symbol.  If the Spyware Blocker Appliance is not installed, please refer to <xref linkend="introduction_ui_appliance"/> for installation instructions.
   </para>
 
   <para>
-    TODO COMPLETE ME.  Someone needs to write this section.  As you do, you should refer to <xref linkend="introduction_ui_appliance"/> as the Spyware Blocker Transform is a "virtual appliance".
+    Spyware Blocker examines web requests from your protected network.  As web resources are accessed, they are compared against several lists for suspicion of being <glossterm linkend="gloss_spyware">spyware</glossterm>.  Spyware Blocker looks for <glossterm linkend="gloss_cookie">cookies</glossterm> from known spyware sites, <glossterm linkend="gloss_url">URLs</glossterm> of known offenders, and <glossterm linkend="gloss_activex">ActiveX Controls</glossterm> known to be spyware applications.  Spyware Blocker also examines the <glossterm linkend="gloss_ip_addr">IP Address</glossterm> of the site being visited, and compares it against a list of offending <glossterm linkend="gloss_subnet">subnets</glossterm>.
   </para>
 
-  <!-- ========================================= -->
-  <sect1 id="spyware_tran_block">
-    <title>Block List</title>
+  <para>
+    In the unusual event that a web site (legitimatly) visited by members of your organization is found in one of the Spyware Blocker Appliance's lists, administrators are able to create exception rules.
+  </para>
+
+  <sect1 id="spyware_tran_adminui">
+    <title>Administrative Interface</title>
 
     <para>
-      TODO Explain what this tab means in general, and explain that we will discuss the four child tabs
+      The interface for the Spyware Blocker is presented as four tabs.  The first two, <xref linkend="spyware_tran_adminui_block"/> and <xref linkend="spyware_tran_adminui_passlist"/> provide the administrator the ability to view/change sites which will or will not be considered spyware.  The <xref linkend="spyware_tran_adminui_generalsettings"/> tab provides access to properties not directly related to spyware lists.   The last tab, <xref linkend="spyware_tran_adminui_eventlog"/>, allows administrators to view events (see <xref linkend="introduction_ui_appliance_event_log"/>).
     </para>
-
-    <!-- ========================================= -->
-    <sect2 id="spyware_tran_block_cookie">
-      <title>Cookie List</title>
-      <figure id="spyware_tran_block_cookie_figure">
-        <title>Cookie List Tab</title>
-
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="figure/spyware/spyware_block_cookie.png" />
-          </imageobject>
-        </mediaobject>
-      </figure>
-      <para>
-        TODO Explain what the Cookie List does, and how the UI works
-        <glossterm linkend="gloss_cookie">Cookie</glossterm>
-      </para>
-    </sect2>
-
-    <!-- ========================================= -->
-    <sect2 id="spyware_tran_block_subnet">
-      <title>Subnet List</title>
-      <figure id="spyware_tran_block_subnet_figure">
-        <title>Subnet List Tab</title>
-
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="figure/spyware/spyware_block_subnet.png" />
-          </imageobject>
-        </mediaobject>
-      </figure>
-      <para>
-        TODO Explain what the Subnet List does, and how the UI works
-        <glossterm linkend="gloss_subnet">Subnet</glossterm>
-      </para>
-    </sect2>
-
-    <!-- ========================================= -->
-    <sect2 id="spyware_tran_block_activex">
-      <title>ActiveX List</title>
-      <figure id="spyware_tran_block_activex_figure">
-        <title>ActiveX List Tab</title>
-
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="figure/spyware/spyware_block_activex.png" />
-          </imageobject>
-        </mediaobject>
-      </figure>
-      <para>
-        TODO Explain what the ActiveX List does, and how the UI works
-        <glossterm linkend="gloss_activex">ActiveX</glossterm>
-      </para>
-    </sect2>
-
-    <!-- ========================================= -->
-    <sect2 id="spyware_tran_block_urllist">
-      <title>URL List</title>
-      <figure id="spyware_tran_block_urllist_figure">
-        <title>URL List Tab</title>
-
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="figure/spyware/spyware_block_urllist.png" />
-          </imageobject>
-        </mediaobject>
-      </figure>
-      <para>
-        TODO Explain what the URL List does, and how the UI works
-        <glossterm linkend="gloss_url">URL</glossterm>
-      </para>
-    </sect2>            
-  </sect1>
-
-  <!-- ========================================= -->
-  <sect1 id="spyware_tran_passlist">
-    <title>Pass List</title>
-
-    <para>
-      TODO
-    </para>
-    <figure id="spyware_tran_passlist_figure">
-      <title>Pass List Tab</title>
-
-      <mediaobject>
-        <imageobject>
-          <imagedata fileref="figure/spyware/spyware_passlist.png" />
-        </imageobject>
-      </mediaobject>
-    </figure>
-  </sect1>
   
+    <!-- ========================================= -->
+    <sect2 id="spyware_tran_adminui_block">
+      <title>Block List</title>
+  
+      <para>
+        The block list tab presents administrators the ability to modify the four major categories of spyware blocking.  Refer to the section for each sub-tab for more detail.
+      </para>
+      <tip>
+        <para>
+          If you wish to prevent a site from being categorized as <glossterm linkend="gloss_spyware">spyware</glossterm>, it is recommended you <emphasis>not</emphasis> attempt to remove that site's data from one of the Block Lists.  Instead, refer to <xref linkend="spyware_tran_adminui_passlist"/> on how to create exclusions to the blocking rules.
+        </para>
+      </tip>
+      
+  
+      <!-- ========================================= -->
+      <sect3 id="spyware_tran_adminui_block_cookie">
+        <title>Cookie List</title>
+        <para>
+          The <glossterm linkend="gloss_cookie">Cookie</glossterm> List is a collection of <glossterm linkend="gloss_ip_addr">IP Addresses</glossterm> and <glossterm linkend="gloss_hostname">Hostnames</glossterm>.  Should someone within the protected network visit one of these sites and that site attempt to set a cookie, &eg; will prevent the cookie from being set.  The interface for viewing and manipulating the cookie list can be seen in <xref linkend="spyware_tran_adminui_block_cookie_figure"/>
+        </para>
+        <figure id="spyware_tran_adminui_block_cookie_figure">
+          <title>Cookie List Tab</title>
+            <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/spyware/spyware_block_cookie.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          As seen in <xref linkend="spyware_tran_adminui_block_cookie_figure"/>, the Cookie List is presented as a table.  The column labeled <guilabel>identification</guilabel> contains the address of the offending site.  The next column, <guilabel>block</guilabel>, is used to enable/disable blocking of cookies from that site.  Note that when creating a new entry, note that the value for <guilabel>identification</guilabel> can either be an IP Address (see <xref linkend="fixme_ui_ip_conventions_simpleipaddr"/>) or hostname.
+        </para>
+        <tip>
+          <para>
+            If you wish to prevent a site from being categorized as <glossterm linkend="gloss_spyware">spyware</glossterm>, it is recommended you <emphasis>not</emphasis> attempt to locate that site in the cookie list and remove the entry.  Instead, refer to <xref linkend="spyware_tran_adminui_passlist"/> on how to create exclusions to the blocking rules.
+          </para>
+        </tip>        
+      </sect3>
+  
+      <!-- ========================================= -->
+      <sect3 id="spyware_tran_adminui_block_subnet">
+        <title>Subnet List</title>
+        <para>
+          The <glossterm linkend="gloss_subnet">Subnet</glossterm> List is a collection of subnets.  When &eg; observes a connection from within the protected network TODO - what can we say w/o "block"?  What is the point of this feature?
 
-  <!-- ========================================= -->
-  <sect1 id="spyware_tran_generalsettings">
-    <title>General Settings</title>
-
-    <para>
-      TODO
-    </para>
-    <figure id="spyware_tran_generalsettings_figure">
-      <title>General Settings Tab</title>
-
-      <mediaobject>
-        <imageobject>
-          <imagedata fileref="figure/spyware/spyware_general.png" />
-        </imageobject>
-      </mediaobject>
-    </figure>
-  </sect1>
-
-
-  <!-- ========================================= -->
-  <sect1 id="spyware_tran_eventlog">
-    <title>Event Log</title>
-
-    <para>
-      TODO
-    </para>
-    <figure id="spyware_tran_eventlog_figure">
+          When creating a new entry, the value for <guilabel>identification</guilabel> can either be in simple IP (see <xref linkend="fixme_ui_ip_conventions_simpleipaddr"/>) or CIDR (see <xref linkend="fixme_ui_ip_conventions_cidr"/>) format.
+        </para>        
+        <figure id="spyware_tran_adminui_block_subnet_figure">
+          <title>Subnet List Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/spyware/spyware_block_subnet.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          TODO Explain what the Subnet List does, and how the UI works
+          <glossterm linkend="gloss_subnet">Subnet</glossterm>
+        </para>
+      </sect3>
+  
+      <!-- ========================================= -->
+      <sect3 id="spyware_tran_adminui_block_activex">
+        <title>ActiveX List</title>
+        <para>
+          The <glossterm linkend="gloss_activex">ActiveX</glossterm> List is a collection of ActiveX Control identifiers.  When &eg; encouters a page being fetched (from a machine within the protected network) with one of the listed ActiveX controls, that control is blocked.  The complete interface for the ActiveX list is shown in <xref linkend="spyware_tran_adminui_block_activex_figure"/>.
+        </para>
+        <figure id="spyware_tran_adminui_block_activex_figure">
+          <title>ActiveX List Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/spyware/spyware_block_activex.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          As seen in <xref linkend="spyware_tran_adminui_block_activex_figure"/>, the ActiveX List is presented as a table.  The column labeled <guilabel>identification</guilabel> contains the <quote>Object ID</quote> of the offending control.  The next column, <guilabel>block</guilabel>, is used to enable/disable blocking of controls with that Object ID.
+        </para>
+      </sect3>
+  
+      <!-- ========================================= -->
+      <sect3 id="spyware_tran_adminui_block_urllist">
+        <title>URL List</title>
+        <figure id="spyware_tran_adminui_block_urllist_figure">
+          <title>URL List Tab</title>
+  
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/spyware/spyware_block_urllist.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          TODO Explain what the URL List does, and how the UI works
+          <glossterm linkend="gloss_url">URL</glossterm>
+        </para>
+      </sect3>            
+    </sect2>
+  
+    <!-- ========================================= -->
+    <sect2 id="spyware_tran_adminui_passlist">
+      <title>Pass List</title>
+      <para>
+        The Pass List is used by administrators to declare those sites which should not be blocked as spyware.  It is used in those rare circumstances where someone within the protected network needs to visit a site which is listed on one of the Block Lists.  The complete interface for the Pass List is shown in <xref linkend="spyware_tran_adminui_passlist_figure"/>
+      </para>
+      <figure id="spyware_tran_adminui_passlist_figure">
+        <title>Pass List Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/spyware/spyware_passlist.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        As seen in <xref linkend="spyware_tran_adminui_passlist_figure"/>, the Pass List is presented as a table of domains.  TODO Work-out how this should be, after we potentialy change things.
+      </para>
+    </sect2>
+    
+  
+    <!-- ========================================= -->
+    <sect2 id="spyware_tran_adminui_generalsettings">
+      <title>General Settings</title>
+      <para>
+        The General Settings tab for the Spyware Blocker Appliance is shown in <xref linkend="spyware_tran_adminui_generalsettings_figure"/>
+      </para>
+      <figure id="spyware_tran_adminui_generalsettings_figure">
+        <title>General Settings Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/spyware/spyware_general.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        There is only one setting on this tab, which allows administrators to disable all ActiveX controls.  Setting this value (checking the box) causes &eg; to block all ActiveX controls from being delivered to machines on the protected network.
+      </para>
+    </sect2>
+  
+  
+    <!-- ========================================= -->
+    <sect2 id="spyware_tran_adminui_eventlog">
       <title>Event Log</title>
-
-      <mediaobject>
-        <imageobject>
-          <imagedata fileref="figure/spyware/spyware_eventlog.jpg" />
-        </imageobject>
-      </mediaobject>
-    </figure>
-  </sect1>    
+  
+      <para>
+        TODO
+      </para>
+      <figure id="spyware_tran_adminui_eventlog_figure">
+        <title>Event Log</title>
+  
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/spyware/spyware_eventlog.jpg" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        The Events Tab is another implementation of an Event Log, as described in <xref linkend="introduction_ui_appliance_event_log"/>.  The <guilabel>action</guilabel> describes the action which the &eg; took on the mail.  <guilabel>client</guilabel> shows the IP address of the client.  Note that the client in SMTP is the sender of the mail, and in POP and IMAP it is the receiver of the mail.  <guilabel>spam score</guilabel> is the score applied to the email by the spam scanner.  Higher values indicate <quote>more likely to be spam</quote>.
+      </para>      
+    </sect2>
+  </sect1>
 
 </chapter>
