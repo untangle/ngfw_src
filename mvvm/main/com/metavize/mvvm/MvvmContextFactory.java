@@ -32,10 +32,11 @@ public class MvvmContextFactory
      */
     public static MvvmLocalContext.MvvmState state()
     {
-        if (MVVM_CONTEXT == null)
+        if (MVVM_CONTEXT == null) {
             return MvvmLocalContext.MvvmState.LOADED;
-        else
+        } else {
             return MVVM_CONTEXT.state();
+        }
     }
 
     /**

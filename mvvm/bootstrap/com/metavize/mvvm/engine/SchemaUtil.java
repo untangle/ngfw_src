@@ -29,6 +29,8 @@ public class SchemaUtil
 
     private static final Logger logger = Logger.getLogger(SchemaUtil.class);
 
+    // static methods ---------------------------------------------------------
+
     /**
      * Initialize component schema.
      *
@@ -50,7 +52,7 @@ public class SchemaUtil
             try {
                 p.waitFor();
             } catch (InterruptedException exn) {
-                // I don't think this ever happens
+                // can happen from the EventLogger
                 logger.debug("waiting for update-schema");
                 break TRY_AGAIN;
             }

@@ -36,6 +36,8 @@ public class EventLogger<E extends LogEvent> implements EventManager<E>
     private static final int DEFAULT_SYNC_TIME = 600000; /* 10 minutes */
     private static final int SYNC_TIME;
 
+    private static final List<String> INIT_QUEUE = new LinkedList<String>();
+
     private static final Map<Tid, Worker> WORKERS = new HashMap<Tid, Worker>();
     private static final Object LOG_LOCK = new Object();
 
@@ -57,6 +59,33 @@ public class EventLogger<E extends LogEvent> implements EventManager<E>
     public EventLogger(TransformContext transformContext)
     {
         this.transformContext = transformContext;
+    }
+
+    // static methods ----------------------------------------------------------
+
+    public static void initSchema(final String name)
+    {
+        synchronized (INIT_QUEUE) {
+            INIT_QUEUE.add(name);
+        }
+
+        new Thread(new Runnable()
+            {
+                public void run()
+                {
+                        MvvmContextFactory.context().waitForStartup();
+
+                        synchronized (INIT_QUEUE) {
+                            for (Iterator<String> i = INIT_QUEUE.iterator(); i.hasNext(); ) {
+                                String n = i.next();
+                                i.remove();
+                                SchemaUtil.initSchema("events", n);
+                            }
+
+                            INIT_QUEUE.notifyAll();
+                        }
+                }
+            }).start();
     }
 
     // EventManager methods ---------------------------------------------------
@@ -174,7 +203,6 @@ public class EventLogger<E extends LogEvent> implements EventManager<E>
         private final TransformContext transformContext;
         private final BlockingQueue<EventDesc> inputQueue
             = new LinkedBlockingQueue<EventDesc>();
-        private final String name;
         private final String tag;
 
         private final SyslogManager syslogManager = MvvmContextFactory
@@ -192,10 +220,9 @@ public class EventLogger<E extends LogEvent> implements EventManager<E>
         {
             this.transformContext = transformContext;
             if (null == transformContext) {
-                this.name = "mvvm";
                 this.tag = "mvvm[0]: ";
             } else {
-                this.name = transformContext.getTransformDesc().getName();
+                String name = transformContext.getTransformDesc().getName();
                 this.tag = name + "[" + transformContext.getTid().getId() + "]: ";
             }
         }
@@ -206,7 +233,15 @@ public class EventLogger<E extends LogEvent> implements EventManager<E>
         {
             thread = Thread.currentThread();
 
-            SchemaUtil.initSchema("events", name);
+            synchronized (INIT_QUEUE) {
+                while (0 < INIT_QUEUE.size() && null != thread) {
+                    try {
+                        INIT_QUEUE.wait();
+                    } catch (InterruptedException exn) {
+                        // reevaluate loop condition
+                    }
+                }
+            }
 
             long lastSync = System.currentTimeMillis();
             long nextSync = lastSync + SYNC_TIME;

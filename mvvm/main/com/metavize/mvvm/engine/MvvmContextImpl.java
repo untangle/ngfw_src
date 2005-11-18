@@ -46,6 +46,7 @@ public class MvvmContextImpl extends MvvmContextBase
 
     private final SessionFactory sessionFactory;
     private final TransactionRunner transactionRunner;
+    private final Object startupWaitLock = new Object();
     private final Logger logger = Logger.getLogger(MvvmContextImpl.class);
 
     private MvvmState state;
@@ -70,6 +71,7 @@ public class MvvmContextImpl extends MvvmContextBase
 
     private MvvmContextImpl()
     {
+        EventLogger.initSchema("mvvm");
         sessionFactory = Util.makeSessionFactory(getClass().getClassLoader());
         transactionRunner = new TransactionRunner(sessionFactory);
         state = MvvmState.LOADED;
@@ -162,6 +164,19 @@ public class MvvmContextImpl extends MvvmContextBase
     public MvvmLoginImpl mvvmLogin()
     {
         return adminManager.mvvmLogin();
+    }
+
+    public void waitForStartup()
+    {
+        synchronized (startupWaitLock) {
+            while (state == MvvmState.LOADED || state == MvvmState.INITIALIZED) {
+                try {
+                    startupWaitLock.wait();
+                } catch (InterruptedException exn) {
+                    // reevaluate exit condition
+                }
+            }
+        }
     }
 
     //Aaron/John - I wasn't ready to
@@ -371,7 +386,10 @@ public class MvvmContextImpl extends MvvmContextBase
         logger.debug("starting HttpInvoker");
         httpInvoker.init();
         logger.debug("postInit complete");
-        state = MvvmState.RUNNING;
+        synchronized (startupWaitLock) {
+            state = MvvmState.RUNNING;
+            startupWaitLock.notifyAll();
+        }
     }
 
     @Override

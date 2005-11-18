@@ -22,6 +22,7 @@ import java.util.Set;
 
 import com.metavize.mvvm.MackageDesc;
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.policy.Policy;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tapi.IPSessionDesc;
@@ -71,6 +72,8 @@ class TransformContextImpl implements TransformContext
                          MackageDesc mackageDesc, boolean isNew)
         throws DeployException
     {
+        EventLogger.initSchema(tDesc.getName());
+
         this.classLoader = classLoader;
 
         this.transformDesc = tDesc;

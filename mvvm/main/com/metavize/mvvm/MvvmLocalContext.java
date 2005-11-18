@@ -202,6 +202,8 @@ public interface MvvmLocalContext
 
     EventLogger eventLogger();
 
+    void waitForStartup();
+
     /**
      * Load a web app.  The web app's files are already assumed to be
      * unpackaged into the root web apps directory of the edgeguard

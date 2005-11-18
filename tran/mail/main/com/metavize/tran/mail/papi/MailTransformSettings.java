@@ -12,7 +12,6 @@
 package com.metavize.tran.mail.papi;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.metavize.tran.mail.papi.quarantine.QuarantineSettings;
@@ -267,7 +266,7 @@ public class MailTransformSettings implements Serializable
     public List getSafelistSettings()
     {
         return safelistSettings;
-    }    
+    }
 
     public void setSafelistSettings(List safelistSettings)
     {
