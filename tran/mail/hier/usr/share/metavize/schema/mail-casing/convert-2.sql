@@ -51,7 +51,7 @@ CREATE TABLE settings.tr_mail_quarantine_settings (
     digest_from text NOT NULL,
     hour_in_day int4,
     minute_in_day int4,
-    max_quarantine_sz int8 NOT NULL
+    max_quarantine_sz int8 NOT NULL,
     PRIMARY KEY (settings_id));
 
 CREATE TABLE settings.tr_mail_safels_recipient (
