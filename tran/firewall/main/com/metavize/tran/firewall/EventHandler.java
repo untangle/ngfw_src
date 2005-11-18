@@ -28,7 +28,6 @@ import com.metavize.mvvm.tapi.event.UDPSessionEvent;
 import com.metavize.mvvm.tran.Transform;
 import org.apache.log4j.Logger;
 
-
 class EventHandler extends AbstractEventHandler
 {
     private static final int BLOCK_COUNTER = Transform.GENERIC_0_COUNTER;

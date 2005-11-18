@@ -11,26 +11,26 @@
 
 package com.metavize.tran.ids;
 
-import com.metavize.mvvm.logging.EventHandler;
+import com.metavize.mvvm.logging.EventFilter;
 import com.metavize.mvvm.logging.RepositoryDesc;
 
-public class IDSBlockedLogEventHandler implements EventHandler<IDSLogEvent>
+public class IDSLogFilter implements EventFilter<IDSLogEvent>
 {
-    private static final RepositoryDesc FILTER_DESC = new RepositoryDesc("Blocked Events");
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc("All Events");
 
     private static final String WARM_QUERY = "FROM IDSLogEvent evt "
-        + "WHERE evt.blocked = true evt.pipelineEndpoints.policy = :policy "
+        + "WHERE evt.pipelineEndpoints.policy = :policy "
         + "ORDER BY evt.timeStamp";
 
     // constructors -----------------------------------------------------------
 
-    IDSBlockedLogEventHandler() { }
+    IDSLogFilter() { }
 
-    // EventCache methods -----------------------------------------------------
+    // EventFilter methods ----------------------------------------------------
 
     public RepositoryDesc getRepositoryDesc()
     {
-        return FILTER_DESC;
+        return REPO_DESC;
     }
 
     public String[] getQueries()
@@ -40,6 +40,6 @@ public class IDSBlockedLogEventHandler implements EventHandler<IDSLogEvent>
 
     public boolean accept(IDSLogEvent e)
     {
-        return e.isBlocked();
+        return true;
     }
 }

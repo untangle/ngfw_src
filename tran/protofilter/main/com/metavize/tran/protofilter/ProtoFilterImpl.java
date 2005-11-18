@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import com.metavize.mvvm.logging.EventFilter;
 import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.tapi.AbstractTransform;
@@ -52,8 +53,8 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
         TransformContext tctx = getTransformContext();
         eventLogger = new EventLogger<ProtoFilterLogEvent>(tctx);
 
-        ProtoFilterAllEventHandler eh = new ProtoFilterAllEventHandler(tctx);
-        eventLogger.addEventHandler(eh);
+        EventFilter ef = new ProtoFilterAllFilter();
+        eventLogger.addEventFilter(ef);
     }
 
     // ProtoFilter methods ----------------------------------------------------

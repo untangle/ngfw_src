@@ -11,12 +11,10 @@
 
 package com.metavize.mvvm.logging;
 
-import java.util.List;
 
-public interface LogFilter<E extends LogEvent>
+public interface EventFilter<E extends LogEvent>
 {
     RepositoryDesc getRepositoryDesc();
-    int getLimit();
-    void setLimit(int limit);
-    List<E> getEvents();
+    String[] getQueries();
+    boolean accept(E e);
 }

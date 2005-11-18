@@ -11,13 +11,12 @@
 
 package com.metavize.tran.virus;
 
-
-import com.metavize.mvvm.logging.EventHandler;
+import com.metavize.mvvm.logging.EventFilter;
 import com.metavize.mvvm.logging.RepositoryDesc;
 
-public class VirusAllEventHandler implements EventHandler<VirusEvent>
+public class VirusAllFilter implements EventFilter<VirusEvent>
 {
-    private static final RepositoryDesc FILTER_DESC = new RepositoryDesc("All Events");
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc("All Events");
 
     private final String httpQuery;
     private final String ftpQuery;
@@ -26,7 +25,7 @@ public class VirusAllEventHandler implements EventHandler<VirusEvent>
 
     // constructors -----------------------------------------------------------
 
-    VirusAllEventHandler(String vendorName)
+    VirusAllFilter(String vendorName)
     {
         httpQuery = "FROM VirusHttpEvent evt "
             + "WHERE evt.vendorName = '" + vendorName + "' "
@@ -49,11 +48,11 @@ public class VirusAllEventHandler implements EventHandler<VirusEvent>
             + "ORDER BY evt.timeStamp";
     }
 
-    // EventCache methods -----------------------------------------------------
+    // EventFilter methods ----------------------------------------------------
 
     public RepositoryDesc getRepositoryDesc()
     {
-        return FILTER_DESC;
+        return REPO_DESC;
     }
 
     public String[] getQueries()

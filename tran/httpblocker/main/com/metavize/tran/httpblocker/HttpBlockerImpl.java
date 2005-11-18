@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.logging.EventFilter;
 import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.tapi.AbstractTransform;
@@ -31,7 +32,6 @@ import com.metavize.tran.token.TokenAdaptor;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import com.metavize.mvvm.logging.EventHandler;
 
 public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 {
@@ -56,8 +56,8 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
     {
         TransformContext tctx = getTransformContext();
         eventLogger = new EventLogger<HttpBlockerEvent>(tctx);
-        EventHandler eh = new HttpBlockerEventHandler(tctx);
-        eventLogger.addEventHandler(eh);
+        EventFilter ef = new HttpBlockerBlockedFilter();
+        eventLogger.addEventFilter(ef);
     }
 
     // HttpBlocker methods ----------------------------------------------------

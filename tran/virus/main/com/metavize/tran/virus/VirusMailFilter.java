@@ -11,19 +11,18 @@
 
 package com.metavize.tran.virus;
 
-
-import com.metavize.mvvm.logging.EventHandler;
+import com.metavize.mvvm.logging.EventFilter;
 import com.metavize.mvvm.logging.RepositoryDesc;
 
-public class VirusMailEventHandler implements EventHandler<VirusEvent>
+public class VirusMailFilter implements EventFilter<VirusEvent>
 {
-    private static final RepositoryDesc FILTER_DESC = new RepositoryDesc("POP/IMAP Events");
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc("POP/IMAP Events");
 
     private final String warmQuery;
 
     // constructors -----------------------------------------------------------
 
-    VirusMailEventHandler(String vendorName)
+    VirusMailFilter(String vendorName)
     {
         warmQuery = "FROM VirusMailEvent evt "
         + "WHERE evt.vendorName = '" + vendorName + "' "
@@ -31,11 +30,11 @@ public class VirusMailEventHandler implements EventHandler<VirusEvent>
         + "ORDER BY evt.timeStamp";
     }
 
-    // EventCache methods -----------------------------------------------------
+    // EventFilter methods ----------------------------------------------------
 
     public RepositoryDesc getRepositoryDesc()
     {
-        return FILTER_DESC;
+        return REPO_DESC;
     }
 
     public String[] getQueries()

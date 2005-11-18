@@ -11,17 +11,15 @@
 
 package com.metavize.tran.spyware;
 
-
-import com.metavize.mvvm.logging.EventHandler;
+import com.metavize.mvvm.logging.EventFilter;
 import com.metavize.mvvm.logging.RepositoryDesc;
-import com.metavize.mvvm.tran.TransformContext;
 
-public class SpywareAllEventHandler implements EventHandler<SpywareEvent>
+public class SpywareBlockedFilter implements EventFilter<SpywareEvent>
 {
-    private static final RepositoryDesc FILTER_DESC = new RepositoryDesc("All Events");
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc("Blocked Events");
 
     private static final String ACCESS_QUERY
-        = "FROM SpywareAccessEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
+        = "FROM SpywareAccessEvent evt WHERE evt.pipelineEndpoints.policy = :policy and evt.blocked = true ORDER BY evt.timeStamp";
     private static final String ACTIVEX_QUERY
         = "FROM SpywareActiveXEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
     private static final String BLACKLIST_QUERY
@@ -29,31 +27,21 @@ public class SpywareAllEventHandler implements EventHandler<SpywareEvent>
     private static final String COOKIE_QUERY
         = "FROM SpywareCookieEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
 
-    private final TransformContext transformContext;
-
-    // constructors -----------------------------------------------------------
-
-    SpywareAllEventHandler(TransformContext transformContext)
-    {
-        this.transformContext = transformContext;
-    }
-
-    // EventCache methods -----------------------------------------------------
+    // EventFilter methods ----------------------------------------------------
 
     public RepositoryDesc getRepositoryDesc()
     {
-        return FILTER_DESC;
+        return REPO_DESC;
     }
 
     public String[] getQueries()
     {
         return new String[] { ACCESS_QUERY, ACTIVEX_QUERY, BLACKLIST_QUERY,
                               COOKIE_QUERY };
-
     }
 
     public boolean accept(SpywareEvent e)
     {
-        return true;
+        return e.isBlocked();
     }
 }

@@ -6,6 +6,7 @@ import java.nio.channels.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.metavize.mvvm.logging.EventFilter;
 import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.tapi.AbstractTransform;
@@ -45,10 +46,10 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 
         eventLogger = new EventLogger<IDSLogEvent>(getTransformContext());
 
-        IDSLogEventHandler ieh = new IDSLogEventHandler();
-        eventLogger.addEventHandler(ieh);
-        IDSBlockedLogEventHandler beh = new IDSBlockedLogEventHandler();
-        eventLogger.addEventHandler(ieh);
+        EventFilter<IDSLogEvent> ef = new IDSLogFilter();
+        eventLogger.addEventFilter(ef);
+        ef = new IDSBlockedFilter();
+        eventLogger.addEventFilter(ef);
     }
 
     @Override

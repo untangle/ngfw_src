@@ -12,32 +12,22 @@
 package com.metavize.tran.nat;
 
 
-import com.metavize.mvvm.logging.EventHandler;
-import com.metavize.mvvm.logging.RepositoryDesc;
+import com.metavize.mvvm.logging.EventFilter;
 import com.metavize.mvvm.logging.LogEvent;
-import com.metavize.mvvm.tran.TransformContext;
+import com.metavize.mvvm.logging.RepositoryDesc;
 
-public class NatRedirectEventHandler implements EventHandler<LogEvent>
+public class NatRedirectFilter implements EventFilter<LogEvent>
 {
-    private static final RepositoryDesc FILTER_DESC = new RepositoryDesc("NAT Redirect Events");
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc("NAT Redirect Events");
 
     private static final String WARM_QUERY
         = "FROM RedirectEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
 
-    private final TransformContext transformContext;
-
-    // constructors -----------------------------------------------------------
-
-    NatRedirectEventHandler(TransformContext transformContext)
-    {
-        this.transformContext = transformContext;
-    }
-
-    // EventCache methods -----------------------------------------------------
+    // EventFilter methods ----------------------------------------------------
 
     public RepositoryDesc getRepositoryDesc()
     {
-        return FILTER_DESC;
+        return REPO_DESC;
     }
 
     public String[] getQueries()

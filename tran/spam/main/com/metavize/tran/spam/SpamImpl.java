@@ -13,7 +13,7 @@ package com.metavize.tran.spam;
 
 import static com.metavize.tran.util.Ascii.CRLF;
 
-import com.metavize.mvvm.logging.EventHandler;
+import com.metavize.mvvm.logging.EventFilter;
 import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.tapi.AbstractTransform;
@@ -92,14 +92,14 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         this.scanner = scanner;
         eventLogger = new EventLogger<SpamEvent>(tctx);
 
-        EventHandler eh = new SpamAllEventHandler(tctx);
-        eventLogger.addEventHandler(eh);
+        EventFilter ef = new SpamAllFilter();
+        eventLogger.addEventFilter(ef);
 
-        eh = new SpamSmtpEventHandler(tctx);
-        eventLogger.addEventHandler(eh);
+        ef = new SpamSmtpFilter();
+        eventLogger.addEventFilter(ef);
 
-        eh = new SpamLogEventHandler(tctx);
-        eventLogger.addEventHandler(eh);
+        ef = new SpamLogFilter();
+        eventLogger.addEventFilter(ef);
     }
 
     // Spam methods -----------------------------------------------------------

@@ -200,6 +200,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <include name="com/metavize/mvvm/engine/ProxyInputStream.java"/>
       <include name="com/metavize/mvvm/engine/SocketInvokerStub.java"/>
       <include name="com/metavize/mvvm/engine/Version.java"/>
+      <include name="com/metavize/mvvm/logging/EventFilter.java"/>
       <include name="com/metavize/mvvm/logging/EventManager.java"/>
       <include name="com/metavize/mvvm/logging/EventRepository.java"/>
       <include name="com/metavize/mvvm/logging/LogEvent.java"/>
@@ -240,6 +241,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
         <include name="com/metavize/mvvm/engine/ProxyInputStream*.class"/>
         <include name="com/metavize/mvvm/engine/SocketInvokerStub*.class"/>
         <include name="com/metavize/mvvm/engine/Version*.class"/>
+        <include name="com/metavize/mvvm/logging/EventFilter.class"/>
         <include name="com/metavize/mvvm/logging/EventManager.class"/>
         <include name="com/metavize/mvvm/logging/EventRepository.class"/>
         <include name="com/metavize/mvvm/logging/LogEvent*.class"/>

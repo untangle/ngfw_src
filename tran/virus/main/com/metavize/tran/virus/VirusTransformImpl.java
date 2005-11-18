@@ -20,7 +20,7 @@ import java.util.Set;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.argon.SessionMatcher;
-import com.metavize.mvvm.logging.EventHandler;
+import com.metavize.mvvm.logging.EventFilter;
 import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.tapi.AbstractTransform;
@@ -132,20 +132,20 @@ public abstract class VirusTransformImpl extends AbstractTransform
 
         String vendor = scanner.getVendorName();
 
-        EventHandler eh = new VirusAllEventHandler(vendor);
-        eventLogger.addEventHandler(eh);
+        EventFilter ef = new VirusAllFilter(vendor);
+        eventLogger.addEventFilter(ef);
 
-        eh = new VirusHttpEventHandler(vendor);
-        eventLogger.addEventHandler(eh);
+        ef = new VirusHttpFilter(vendor);
+        eventLogger.addEventFilter(ef);
 
-        eh = new VirusLogEventHandler(vendor);
-        eventLogger.addEventHandler(eh);
+        ef = new VirusLogFilter(vendor);
+        eventLogger.addEventFilter(ef);
 
-        eh = new VirusMailEventHandler(vendor);
-        eventLogger.addEventHandler(eh);
+        ef = new VirusMailFilter(vendor);
+        eventLogger.addEventFilter(ef);
 
-        eh = new VirusSmtpEventHandler(vendor);
-        eventLogger.addEventHandler(eh);
+        ef = new VirusSmtpFilter(vendor);
+        eventLogger.addEventFilter(ef);
     }
 
     // VirusTransform methods -------------------------------------------------

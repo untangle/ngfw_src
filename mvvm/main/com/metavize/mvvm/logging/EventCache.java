@@ -28,7 +28,7 @@ import org.hibernate.Session;
 class EventCache<E extends LogEvent> implements EventRepository<E>
 {
     private final EventLogger<E> eventLogger;
-    private final EventHandler<E> eventHandler;
+    private final EventFilter<E> eventHandler;
 
     private final LinkedList<E> cache = new LinkedList<E>();
 
@@ -38,7 +38,7 @@ class EventCache<E extends LogEvent> implements EventRepository<E>
 
     // constructors -----------------------------------------------------------
 
-    EventCache(EventLogger<E> eventLogger, EventHandler<E> eventHandler)
+    EventCache(EventLogger<E> eventLogger, EventFilter<E> eventHandler)
     {
         this.eventLogger = eventLogger;
         this.eventHandler = eventHandler;
