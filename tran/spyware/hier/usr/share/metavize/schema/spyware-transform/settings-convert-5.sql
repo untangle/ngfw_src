@@ -1,5 +1,11 @@
 -- convert script for release 3.1
 
+-------------------------
+-- disable subnet rules |
+-------------------------
+
+UPDATE ipmaddr_rule SET live = false WHERE EXISTS (SELECT rule_id FROM tr_spyware_sr WHERE ipmaddr_rule.rule_id = rule_id);
+
 ---------------------
 -- No more varchars |
 ---------------------

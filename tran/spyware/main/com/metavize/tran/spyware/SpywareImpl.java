@@ -413,6 +413,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         HashSet ruleHash = new HashSet();
         for (Iterator i=rules.iterator() ; i.hasNext() ; ) {
             IPMaddrRule rule = (IPMaddrRule) i.next();
+            rule.setLive(false);
             ruleHash.add(rule.getIpMaddr());
         }
 

@@ -80,7 +80,7 @@ public class LogJPanel extends MLogTableJPanel {
             for( SpywareEvent requestLog : requestLogList ){
                 PipelineEndpoints pe = requestLog.getPipelineEndpoints();
                 event = new Vector(7);
-                event.add( pe.getCreateDate() );
+                event.add( requestLog.getTimeStamp() );
                 event.add( requestLog.isBlocked() ? "block" : "pass" );
                 event.add( pe.getCClientAddr() + ":" + ((Integer)pe.getCClientPort()).toString() );
                 event.add( requestLog.getLocation() + " : " + requestLog.getIdentification() );
