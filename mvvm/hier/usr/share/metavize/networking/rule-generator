@@ -420,7 +420,7 @@ function interceptRules() {
 
 ## Redirect all of the TCP traffic that is not antisubscribed
     if [ "${TCP_REDIRECT_PORTS}x" != "x" ]; then
-        ${IPTABLES} -t nat -A PREROUTING -m mark --mark 0/${MARK_ANTISUB} -p tcp \
+        ${IPTABLES} -t nat -A PREROUTING -m mark --mark 0/${MARK_ANTISUB} -p tcp --tcp-flags SYN,ACK SYN \
             -j REDIRECT --to-ports ${TCP_REDIRECT_PORTS/:/-}
     else
         echo "The TCP Redirect port is not set"
