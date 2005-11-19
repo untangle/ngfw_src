@@ -17,7 +17,6 @@ import com.metavize.mvvm.reporting.BaseSummarizer;
 import com.metavize.mvvm.reporting.Util;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.Level;
 
 public class IDSSummarizer extends BaseSummarizer {
 
@@ -27,41 +26,39 @@ public class IDSSummarizer extends BaseSummarizer {
 
     public String getSummaryHtml(Connection conn, Timestamp startDate, Timestamp endDate)
     {
-        long scannedEvtCount 	= 0;
-	long passedEvtCount 	= 0;
-	long blockedEvtCount	= 0;
-	
+        long dncEvtCount = 0;
+        long loggedEvtCount = 0;
+        long blockedEvtCount = 0;
+
         try {
-	    String sql;
-	    PreparedStatement ps;
-	    ResultSet rs;
-	    
-            sql = "SELECT SUM(ids_scanned), SUM(ids_passed), SUM(ids_blocked) FROM tr_ids_statistic_evt WHERE time_stamp >= ? AND time_stamp < ?";
-            ps = conn.prepareStatement(sql);
+            String sql = "SELECT SUM(dnc), SUM(logged), SUM(blocked) FROM tr_ids_statistic_evt WHERE time_stamp >= ? AND time_stamp < ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
-            rs = ps.executeQuery();
+            ResultSet rs = ps.executeQuery();
             rs.first();
-	    
-            scannedEvtCount = rs.getLong(1);
-	    passedEvtCount = rs.getLong(2);
-	    blockedEvtCount = rs.getLong(3);
-	    
-	    rs.close();
+    
+            dncEvtCount = rs.getLong(1);
+            loggedEvtCount = rs.getLong(2);
+            blockedEvtCount = rs.getLong(3);
+    
+            rs.close();
             ps.close();
-	    
+    
         } catch (SQLException exn) {
             log.warn("could not summarize", exn);
         }
-	
-        long matchedEvtCount = blockedEvtCount + passedEvtCount;
-	addEntry("Total Scan Events", Util.trimNumber("",scannedEvtCount));
-        addEntry("&nbsp;&nbsp;&nbsp;Matched &amp; Passed", Util.trimNumber("",passedEvtCount), Util.percentNumber(passedEvtCount,scannedEvtCount));
-        addEntry("&nbsp;&nbsp;&nbsp;Matched &amp; Blocked", Util.trimNumber("",blockedEvtCount), Util.percentNumber(blockedEvtCount,scannedEvtCount));
-        addEntry("&nbsp;&nbsp;&nbsp;Unmatched", Util.trimNumber("",scannedEvtCount - matchedEvtCount), Util.percentNumber(scannedEvtCount-matchedEvtCount,scannedEvtCount));	
+
+        long totalEvtCount = dncEvtCount + loggedEvtCount + blockedEvtCount;
+
+        addEntry("Total Scan Events", Util.trimNumber("",totalEvtCount));
+        addEntry("&nbsp;&nbsp;&nbsp;Matched &amp; Logged", Util.trimNumber("",loggedEvtCount), Util.percentNumber(loggedEvtCount,totalEvtCount));
+        addEntry("&nbsp;&nbsp;&nbsp;Matched &amp; Blocked", Util.trimNumber("",blockedEvtCount), Util.percentNumber(blockedEvtCount,totalEvtCount));
+        addEntry("&nbsp;&nbsp;&nbsp;Unmatched", Util.trimNumber("",dncEvtCount), Util.percentNumber(dncEvtCount,totalEvtCount));
+
         // XXXX
         String tranName = "Intrusion Prevention";
-	
+
         return summarizeEntries(tranName);
     }
 }

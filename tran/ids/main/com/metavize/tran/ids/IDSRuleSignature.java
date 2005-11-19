@@ -6,6 +6,7 @@ import java.util.ListIterator;
 import java.util.Vector;
 
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.tapi.IPSession;
 import com.metavize.mvvm.tapi.event.*;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.tran.ids.options.*;
@@ -105,17 +106,25 @@ public class IDSRuleSignature {
         IDSDetectionEngine engine = transform.getEngine();
 
         for(IDSOption option : options) {
-            if(!option.run(info)) {
-                engine.updateUICount(PASS_COUNTER);
-                transform.statisticManager.incrScanned();
+            if(false == option.run(info)) {
+                // do not execute
+                transform.statisticManager.incrDNC();
+                engine.updateUICount(PASS_COUNTER); // did-not-cares are passed
                 return false;
             }
         }
-        doAction(info);
+
+        doAction(info); // execute
         return true;
     }
 
     private void doAction(IDSSessionInfo info) {
+        IPSession session = info.getSession();
+        if (null == session) {
+            log.error("Session is null; cannot act on event: " + message);
+            return;
+        }
+
         // XXX this is not a good way to get a reference to the transform
         IDSTransformImpl ids = (IDSTransformImpl)MvvmContextFactory.context().transformManager().threadContext().transform();
         IDSDetectionEngine engine = ids.getEngine();
@@ -124,13 +133,13 @@ public class IDSRuleSignature {
         switch(action) {
         case IDSRuleManager.ALERT:
             log.debug("Alert: "+message);
-            ids.statisticManager.incrPassed();
+            ids.statisticManager.incrLogged();
             engine.updateUICount(ALERT_COUNTER);
             break;
 
         case IDSRuleManager.LOG:
             log.debug("Log: "+message);
-            ids.statisticManager.incrPassed();
+            ids.statisticManager.incrLogged();
             engine.updateUICount(LOG_COUNTER);
             break;
 
@@ -142,10 +151,8 @@ public class IDSRuleSignature {
             info.blockSession();
             break;
         }
-        if (info.getSession() == null)
-            log.error("Session null in doAction");
-        else
-            ids.log(new IDSLogEvent(info.getSession().pipelineEndpoints(),message,blocked)); //Add list number that this rule came from
+
+        ids.log(new IDSLogEvent(session.pipelineEndpoints(),message,blocked)); //Add list number that this rule came from
     }
 
     public void setToString(String string) {

@@ -162,7 +162,7 @@ public class IDSDetectionEngine {
     //In process of fixing this
     public void handleChunk(IPDataEvent event, IPSession session, boolean isServer) {
         try {
-            long startTime = System.nanoTime();
+            //long startTime = System.nanoTime();
 		
             SessionStats stats = session.stats();
             if(stats.s2tChunks() > maxChunks || stats.c2tChunks() > maxChunks)
@@ -178,10 +178,10 @@ public class IDSDetectionEngine {
             else
                 info.processS2CSignatures();
 		
-            log.debug("Time: " + (float)(System.nanoTime() - startTime)/1000000f);
+            //log.debug("Time: " + (float)(System.nanoTime() - startTime)/1000000f);
         }
         catch (Exception e) {
-            log.error("Erron parseing chunk: " +e.getMessage());
+            log.error("Error parsing chunk: " +e.getMessage());
         }
     }
 }

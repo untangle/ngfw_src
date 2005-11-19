@@ -43,26 +43,3 @@ create table settings.TR_IDS_RULE (
 	SETTINGS_ID int8, 
 	POSITION int4, 
 	primary key (RULE_ID));
-
------------
--- events |
------------
-create table events.TR_IDS_EVT (
-	event_id int8 NOT NULL,
-        pl_endp_id int8,
-	message text,
-	blocked bool,
-	time_stamp timestamp,
-	PRIMARY KEY (event_id));
-
-create table events.TR_IDS_STATISTIC_EVT (
-	event_id int8 NOT NULL,
-	ids_scanned int4,
-	ids_passed int4,
-	ids_blocked int4,
-	time_stamp timestamp,
-	PRIMARY KEY (event_id));
-
--- indices for reporting
-
-CREATE INDEX tr_ids_evt_plepid_idx ON events.tr_ids_evt (pl_endp_id);

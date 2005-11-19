@@ -36,12 +36,12 @@ class IDSStatisticManager extends StatisticManager {
         return ( this.statisticEvent = new IDSStatisticEvent());
     }
 
-    void incrScanned() {
-        this.statisticEvent.incrScanned();
+    void incrDNC() {
+        this.statisticEvent.incrDNC();
     }
 
-    void incrPassed() {
-        this.statisticEvent.incrPassed();
+    void incrLogged() {
+        this.statisticEvent.incrLogged();
     }
 
     void incrBlocked() {

@@ -25,74 +25,68 @@ import com.metavize.mvvm.logging.SyslogBuilder;
  * mutable="false"
  */
 public class IDSStatisticEvent extends StatisticEvent {
-
-    private int scanned = 0;
-    private int passed  = 0;
+    private int dnc = 0; // did-not-care
+    private int logged = 0; // logged or alerted
     private int blocked = 0;
 
     // Constructors
     /**
      * Hibernate constructor
      */
-    public IDSStatisticEvent()
-    {
-    }
+    public IDSStatisticEvent() {}
 
-    public IDSStatisticEvent( int scanned, int passed, int blocked )
+    public IDSStatisticEvent( int dnc, int logged, int blocked )
     {
-        this.scanned = scanned;
-        this.passed  = passed;
+        this.dnc = dnc;
+        this.logged  = logged;
         this.blocked = blocked;
     }
 
     /**
-     * Number of scanned chunks
+     * Number of dnc chunks (did-not-cares are not logged or blocked)
      *
-     * @return Number of scanned chunks
+     * @return Number of dnc chunks
      * @hibernate.property
-     * column="IDS_SCANNED"
+     * column="DNC"
      */
-    public int getScanned() { return scanned; }
-    public void setScanned( int scanned ) { this.scanned = scanned; }
-    public void incrScanned() { this.scanned++; }
+    public int getDNC() { return dnc; }
+    public void setDNC( int dnc ) { this.dnc = dnc; }
+    public void incrDNC() { dnc++; }
 
     /**
-     * Number of passed chunks
+     * Number of logged chunks
      *
-     * @return Number of matched chunks
+     * @return Number of logged chunks
      * @hibernate.property
-     * column="IDS_PASSED"
+     * column="LOGGED"
      */
-
-    public int getPassed() { return passed; }
-    public void setPassed(int passed) { this.passed = passed; }
-    public void incrPassed() { this.passed++; }
+    public int getLogged() { return logged; }
+    public void setLogged(int logged) { this.logged = logged; }
+    public void incrLogged() { logged++; }
 
     /**
      * Number of blocked chunks
      *
      * @return Number of blocked chunks
      * @hibernate.property
-     * column="IDS_BLOCKED"
+     * column="BLOCKED"
      */
-
     public int getBlocked() { return blocked; }
     public void setBlocked(int blocked) { this.blocked = blocked; }
-    public void incrBlocked() { this.blocked++; }
-
+    public void incrBlocked() { blocked++; }
 
     /**
      * Returns true if any of the stats are non-zero, whenever all the stats are zero,
      * a new log event is not created.
      */
-    public boolean hasStatistics() { return ((scanned + passed + blocked) > 0 ); }
+    public boolean hasStatistics() { return ((dnc + logged + blocked) > 0 ); }
 
     // Syslog methods ---------------------------------------------------------
 
     public void appendSyslog(SyslogBuilder sb)
     {
-        sb.addField("scanned", scanned);
-        sb.addField("passed", passed);
+        sb.addField("did-not-care", dnc);
+        sb.addField("logged", logged);
         sb.addField("blocked", blocked);
     }
 }
