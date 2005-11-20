@@ -20,6 +20,8 @@ import java.net.URL;
 
 
 public class MLauncher {
+
+    private static com.metavize.gui.login.InitialSetupWizard initialSetupWizard;
         
     public static void main(final String args[]) {
 
@@ -85,14 +87,23 @@ public class MLauncher {
 	    isActivated = true;
 	}
 	if( !isActivated ){
-	    javax.swing.SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		(new com.metavize.gui.login.InitialSetupWizard(args)).setVisible(true);
-	    }});
+	    try{
+		javax.swing.SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		    initialSetupWizard = new com.metavize.gui.login.InitialSetupWizard();
+		    initialSetupWizard.setVisible(true);
+		}});
+	    }
+	    catch(Exception e){ Util.handleExceptionNoRestart("unable to show setup wizard", e); }
 	}
-	else{
-	    // load and start the login dialog
-	    new com.metavize.gui.login.MLoginJFrame(args);
+
+	// LOGIN AFTER SETUP WIZARD
+	while( !isActivated && (initialSetupWizard.isVisible() == true) ){
+	    try{ Thread.currentThread().sleep(1000); }
+	    catch(Exception e){}
 	}
+	new com.metavize.gui.login.MLoginJFrame(args);
+
+
     }
 
     

@@ -11,28 +11,42 @@
 
 package com.metavize.gui.login;
 
-import com.metavize.gui.transform.Savable;
+import com.metavize.gui.widgets.wizard.*;
 import com.metavize.gui.util.Util;
 import com.metavize.mvvm.client.*;
 import javax.swing.SwingUtilities;
+import java.awt.Color;
 
-public class InitialSetupKeyJPanel extends javax.swing.JPanel implements Savable {
+public class InitialSetupKeyJPanel extends MWizardPageJPanel {
     
+    private static final String EXCEPTION_KEY_FORMAT = "The key must be exactly 16 alpha-numeric digits long.";
 
     public InitialSetupKeyJPanel() {
         initComponents();
     }
 
     String key;
+    Exception exception;
 
     public void doSave(Object settings, boolean validateOnly) throws Exception {
         
 	SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+	    keyJTextField.setBackground( Color.WHITE );
+
 	    key = keyJTextField.getText().replaceAll("-","").replaceAll(" ","");
+
+	    exception = null;
+
+	    if( key.length() != 16 ){
+		keyJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+		exception = new Exception(EXCEPTION_KEY_FORMAT);
+		return;
+	    }	    
 	}});
 
-        if( key.length() != 16 )
-            throw new Exception("The key must be exactly 16 alpha-numeric digits long.");
+	if( exception != null )
+	    throw exception;
+        
         
         if( !validateOnly){ 
             boolean isActivated = com.metavize.mvvm.client.MvvmRemoteContextFactory.factory().isActivated( Util.getServerCodeBase().getHost(), 0, Util.isSecureViaHttps() );

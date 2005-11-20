@@ -18,7 +18,7 @@
   <SubComponents>
     <Container class="javax.swing.JScrollPane" name="contentJScrollPane">
       <Properties>
-        <Property name="horizontalScrollBarPolicy" type="int" value="32"/>
+        <Property name="horizontalScrollBarPolicy" type="int" value="31"/>
         <Property name="verticalScrollBarPolicy" type="int" value="22"/>
       </Properties>
       <Constraints>
@@ -42,6 +42,9 @@
           <ComponentRef name="acceptButtonGroup"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Accept License Agreement"/>
+        <Property name="enabled" type="boolean" value="false"/>
+        <Property name="focusPainted" type="boolean" value="false"/>
+        <Property name="focusable" type="boolean" value="false"/>
         <Property name="opaque" type="boolean" value="false"/>
       </Properties>
       <Constraints>
@@ -56,6 +59,9 @@
           <ComponentRef name="acceptButtonGroup"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Decline License Agreement"/>
+        <Property name="enabled" type="boolean" value="false"/>
+        <Property name="focusPainted" type="boolean" value="false"/>
+        <Property name="focusable" type="boolean" value="false"/>
         <Property name="opaque" type="boolean" value="false"/>
       </Properties>
       <Constraints>
@@ -69,7 +75,7 @@
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Dialog" size="12" style="0"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="&lt;html&gt;Please read and agree to the following license&lt;br&gt;&#xa;agreement before proceeding.&lt;/html&gt;"/>
+        <Property name="text" type="java.lang.String" value="&lt;html&gt;Please read and agree to the following license&lt;br&gt; agreement before proceeding.  You must&lt;br&gt;scroll to the bottom before you can agree.&lt;/html&gt;"/>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">

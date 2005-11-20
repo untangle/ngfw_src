@@ -12,15 +12,21 @@
 package com.metavize.gui.login;
 
 import com.metavize.mvvm.security.*;
-import com.metavize.gui.transform.Savable;
+import com.metavize.gui.widgets.wizard.*;
 import com.metavize.gui.util.Util;
 import javax.swing.SwingUtilities;
+import java.awt.Color;
 
-public class InitialSetupContactJPanel extends javax.swing.JPanel implements Savable {
-    
+public class InitialSetupContactJPanel extends MWizardPageJPanel {
+
+    private static final String EXCEPTION_COMPANY_MISSING = "You must fill out the company name.";
+    private static final String EXCEPTION_FIRST_NAME_MISSING = "You must fill out your first name.";
+    private static final String EXCEPTION_LAST_NAME_MISSING = "You must fill out your last name.";
+    private static final String EXCEPTION_EMAIL_MISSING = "You must fill out your email address.";
+    private static final String EXCEPTION_COMPUTER_COUNT_MISSING = "You must fill out the number of computers protected by EdgeGuard.";
+
     public InitialSetupContactJPanel() {
         initComponents();
-        countJSpinner.setModel(new javax.swing.SpinnerNumberModel(15,0,10000,1));
     }
 
     String company;
@@ -33,11 +39,22 @@ public class InitialSetupContactJPanel extends javax.swing.JPanel implements Sav
     String zipcode;
     String phone;
     String email;
+    String countString;
     int count;
+    Exception exception;
     
     public void doSave(Object settings, boolean validateOnly) throws Exception {
-	
+
 	SwingUtilities.invokeAndWait( new Runnable(){ public void run() {
+            companyJTextField.setBackground( Color.WHITE );
+            firstNameJTextField.setBackground( Color.WHITE );
+            lastNameJTextField.setBackground( Color.WHITE );
+            emailJTextField.setBackground( Color.WHITE );
+            countJTextField.setBackground( Color.WHITE );
+            
+            company = companyJTextField.getText().trim();
+            firstName = firstNameJTextField.getText().trim();
+            lastName = lastNameJTextField.getText().trim();
 	    address1 = address1JTextField.getText().trim();
 	    address2 = address2JTextField.getText().trim();
 	    city = cityJTextField.getText().trim();
@@ -45,24 +62,51 @@ public class InitialSetupContactJPanel extends javax.swing.JPanel implements Sav
 	    zipcode = zipcodeJTextField.getText().trim();
 	    phone = phoneJTextField.getText().trim();        
 	    email = emailJTextField.getText().trim();
-	    count = (Integer) countJSpinner.getValue();
+	    countString = countJTextField.getText().trim();
+
+	    exception = null;
+            
+	    if(company.length() == 0){
+		companyJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+		exception = new Exception(EXCEPTION_COMPANY_MISSING);
+		return;
+	    }
+        	
+	    if(firstName.length() == 0){
+		firstNameJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+		exception = new Exception(EXCEPTION_FIRST_NAME_MISSING);
+		return;
+	    }
+       	
+	    if(lastName.length() == 0){
+		lastNameJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+		exception = new Exception(EXCEPTION_LAST_NAME_MISSING);
+		return;
+	    }
+
+	    if(email.length() == 0){
+		emailJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+		exception = new Exception(EXCEPTION_EMAIL_MISSING);
+		return;
+	    }
+
+	    try{
+		if(countString.length() == 0)
+		    throw new Exception();
+		count = Integer.parseInt(countString);
+		if( count < 0 )
+		    throw new Exception();
+	    }
+	    catch(Exception e){
+		countJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+		exception = new Exception(EXCEPTION_COMPUTER_COUNT_MISSING);
+		return;
+	    }
 	}});
 
-	company = companyJTextField.getText().trim();
-	if(company.length() == 0)
-	    throw new Exception("You must fill out the company name.");
-        
-	firstName = firstNameJTextField.getText().trim();
-	if(firstName.length() == 0)
-	    throw new Exception("You must fill out your first name.");
-        
-	lastName = lastNameJTextField.getText().trim();
-	if(lastName.length() == 0)
-	    throw new Exception("You must fill out your last name.");
-
-	if(email.length() == 0)
-	    throw new Exception("You must fill out your email address.");
-        
+        if( exception != null)
+            throw exception;
+	        
         if( !validateOnly ){
 	    RegistrationInfo registrationInfo = new RegistrationInfo(company, firstName, lastName, email, count);
 	    registrationInfo.setAddress1(address1);
@@ -103,7 +147,7 @@ public class InitialSetupContactJPanel extends javax.swing.JPanel implements Sav
         jLabel14 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
-        countJSpinner = new javax.swing.JSpinner();
+        countJTextField = new javax.swing.JTextField();
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -203,10 +247,11 @@ public class InitialSetupContactJPanel extends javax.swing.JPanel implements Sav
 
         jLabel16.setFont(new java.awt.Font("Dialog", 0, 12));
         jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel16.setText("Computers protected by EdgeGuard:");
-        add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 300, -1, -1));
+        jLabel16.setText("<html>Number of computers<br>protected by EdgeGuard:</html>");
+        add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 290, -1, -1));
 
-        add(countJSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 300, 70, -1));
+        countJTextField.setColumns(15);
+        add(countJTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 300, 90, -1));
 
     }//GEN-END:initComponents
     
@@ -216,7 +261,7 @@ public class InitialSetupContactJPanel extends javax.swing.JPanel implements Sav
     private javax.swing.JTextField address2JTextField;
     private javax.swing.JTextField cityJTextField;
     private javax.swing.JTextField companyJTextField;
-    private javax.swing.JSpinner countJSpinner;
+    private javax.swing.JTextField countJTextField;
     private javax.swing.JTextField emailJTextField;
     private javax.swing.JTextField firstNameJTextField;
     private javax.swing.JLabel jLabel1;

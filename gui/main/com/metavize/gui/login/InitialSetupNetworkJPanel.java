@@ -11,16 +11,18 @@
 
 package com.metavize.gui.login;
 
-import com.metavize.gui.transform.Savable;
+import com.metavize.gui.widgets.wizard.*;
 import java.util.Arrays;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.gui.util.Util;
 import com.metavize.mvvm.NetworkingManager;
 import com.metavize.mvvm.NetworkingConfiguration;
 import javax.swing.SwingUtilities;
+import java.awt.Color;
 
-public class InitialSetupNetworkJPanel extends javax.swing.JPanel implements Savable {
-    
+public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
+
+    private static final String EXCEPTION_HOSTNAME_MISSING = "You must fill out the hostname.";
     private static final String EXCEPTION_DHCP_IP_ADDRESS = "Invalid \"IP Address\" manually specified.";
     private static final String EXCEPTION_DHCP_NETMASK = "Invalid \"Netmask\" manually specified.";
     private static final String EXCEPTION_DHCP_GATEWAY = "Invalid \"Default Route\" manually specified.";
@@ -45,10 +47,18 @@ public class InitialSetupNetworkJPanel extends javax.swing.JPanel implements Sav
     IPaddr dns1;
     String dns2String;
     IPaddr dns2;
+    Exception exception;
 
     public void doSave(Object settings, boolean validateOnly) throws Exception {
 
         SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+	    hostnameJTextField.setBackground( Color.WHITE );
+	    dhcpIPaddrJTextField.setBackground( Color.WHITE );
+	    dhcpNetmaskJTextField.setBackground( Color.WHITE );
+	    dhcpRouteJTextField.setBackground( Color.WHITE );
+	    dnsPrimaryJTextField.setBackground( Color.WHITE );
+	    dnsSecondaryJTextField.setBackground( Color.WHITE );
+
 	    hostname = hostnameJTextField.getText().trim();
 	    isDhcpEnabled = dhcpEnabledRadioButton.isSelected();
 	    hostString = dhcpIPaddrJTextField.getText();
@@ -56,67 +66,86 @@ public class InitialSetupNetworkJPanel extends javax.swing.JPanel implements Sav
 	    gatewayString = dhcpRouteJTextField.getText();
 	    dns1String = dnsPrimaryJTextField.getText();
 	    dns1String = dnsSecondaryJTextField.getText();
+
+	    exception = null;
+
+	    if(hostname.length() == 0){
+		hostnameJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+		exception = new Exception(EXCEPTION_HOSTNAME_MISSING);   
+		return;
+	    }
+	    
+	    if( !isDhcpEnabled ){
+		try{
+		    host = IPaddr.parse( hostString );
+		    if( host.isEmpty() )
+			throw new Exception();
+		}
+		catch(Exception e){
+		    dhcpIPaddrJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+		    exception = new Exception(EXCEPTION_DHCP_IP_ADDRESS);
+		    return;
+		}
+	    }
+	    
+	    if( !isDhcpEnabled ){
+		try{
+		    netmask = IPaddr.parse( netmaskString );
+		    if( netmask.isEmpty() )
+			throw new Exception();
+		} 
+		catch(Exception e){
+		    dhcpNetmaskJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+		    exception = new Exception(EXCEPTION_DHCP_NETMASK);
+		    return;
+		}
+	    }
+	    
+	    if( !isDhcpEnabled ){
+		try{
+		    gateway = IPaddr.parse( gatewayString );
+		    if( gateway.isEmpty() )
+			throw new Exception();
+		}
+		catch(Exception e){
+		    dhcpRouteJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+		    exception = new Exception(EXCEPTION_DHCP_GATEWAY);
+		    return;
+		}
+	    }
+	    
+	    if( !isDhcpEnabled ){
+		try{
+		    dns1 = IPaddr.parse( dns1String );
+		    if( dns1.isEmpty() )
+			throw new Exception();
+		}
+		catch(Exception e){
+		    dnsPrimaryJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+		    exception = new Exception(EXCEPTION_DHCP_DNS_1);
+		    return;
+		}
+	    }
+	    
+	    if( !isDhcpEnabled ){
+		try{
+		    if ( dns2String.length() > 0 ) {
+			dns2 = IPaddr.parse( dns2String );
+		    } else {
+			/* Ignoring empty secondary DNS entry, dns2 = null is okay for network settings */
+		    }
+		}
+		catch(Exception e){
+		    dnsSecondaryJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+		    exception = new Exception(EXCEPTION_DHCP_DNS_2);
+		    return;
+		}
+	    }
+	    
 	}});
 
-        if(hostname.length() == 0)
-            throw new Exception("You must fill out the hostname.");
-        
-        if( !isDhcpEnabled ){
-            try{
-                host = IPaddr.parse( hostString );
-                if( host.isEmpty() )
-                    throw new Exception();
-            }
-            catch(Exception e){
-		throw new Exception(EXCEPTION_DHCP_IP_ADDRESS);
-            }
-	}
-
-	if( !isDhcpEnabled ){
-            try{
-                netmask = IPaddr.parse( netmaskString );
-                if( netmask.isEmpty() )
-                    throw new Exception();
-            } 
-            catch(Exception e){
-		throw new Exception(EXCEPTION_DHCP_NETMASK);
-            }
-	}
-
-	if( !isDhcpEnabled ){
-            try{
-                gateway = IPaddr.parse( gatewayString );
-                if( gateway.isEmpty() )
-                    throw new Exception();
-            }
-            catch(Exception e){
-		throw new Exception(EXCEPTION_DHCP_GATEWAY);
-            }
-	}
-
-	if( !isDhcpEnabled ){
-            try{
-                dns1 = IPaddr.parse( dns1String );
-                if( dns1.isEmpty() )
-                    throw new Exception();
-            }
-            catch(Exception e){
-		throw new Exception(EXCEPTION_DHCP_DNS_1);
-            }
-	}
-
-	if( !isDhcpEnabled ){
-            try{
-                if ( dns2String.length() > 0 ) {
-                    dns2 = IPaddr.parse( dns2String );
-                } else {
-                    /* Ignoring empty secondary DNS entry, dns2 = null is okay for network settings */
-                }
-            }
-            catch(Exception e){
-		throw new Exception(EXCEPTION_DHCP_DNS_2);
-            }
-        }
+        if( exception != null )
+	    throw exception;
 
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
@@ -158,6 +187,8 @@ public class InitialSetupNetworkJPanel extends javax.swing.JPanel implements Sav
         jLabel8 = new javax.swing.JLabel();
         dnsSecondaryJTextField = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -168,18 +199,18 @@ public class InitialSetupNetworkJPanel extends javax.swing.JPanel implements Sav
 
         jLabel3.setFont(new java.awt.Font("Dialog", 0, 12));
         jLabel3.setText("Hostname:");
-        add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 50, -1, -1));
+        add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 50, -1, -1));
 
         jLabel4.setFont(new java.awt.Font("Dialog", 0, 12));
         jLabel4.setText("Domain Name:");
-        add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 70, -1, -1));
+        add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, -1, -1));
 
         hostnameJTextField.setColumns(15);
         hostnameJTextField.setText("mv-edgeguard");
-        add(hostnameJTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 50, -1, -1));
+        add(hostnameJTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 50, -1, -1));
 
         domainnameJTextField.setColumns(15);
-        add(domainnameJTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 70, -1, -1));
+        add(domainnameJTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 70, -1, -1));
 
         buttonGroup1.add(dhcpEnabledRadioButton);
         dhcpEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -302,6 +333,14 @@ public class InitialSetupNetworkJPanel extends javax.swing.JPanel implements Sav
 
         add(staticIPJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 140, 290, 130));
 
+        jLabel10.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel10.setText(" (Optional)");
+        add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 70, -1, -1));
+
+        jLabel11.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel11.setText("(required)");
+        add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 50, -1, -1));
+
     }//GEN-END:initComponents
 
     private void dhcpDisabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dhcpDisabledRadioButtonActionPerformed
@@ -331,6 +370,8 @@ public class InitialSetupNetworkJPanel extends javax.swing.JPanel implements Sav
     private javax.swing.JTextField domainnameJTextField;
     private javax.swing.JTextField hostnameJTextField;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

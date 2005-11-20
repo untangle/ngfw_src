@@ -316,18 +316,21 @@
           <Font name="Dialog" size="12" style="0"/>
         </Property>
         <Property name="horizontalAlignment" type="int" value="4"/>
-        <Property name="text" type="java.lang.String" value="Computers protected by EdgeGuard:"/>
+        <Property name="text" type="java.lang.String" value="&lt;html&gt;Number of computers&lt;br&gt;protected by EdgeGuard:&lt;/html&gt;"/>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="20" y="300" width="-1" height="-1"/>
+          <AbsoluteConstraints x="20" y="290" width="-1" height="-1"/>
         </Constraint>
       </Constraints>
     </Component>
-    <Component class="javax.swing.JSpinner" name="countJSpinner">
+    <Component class="javax.swing.JTextField" name="countJTextField">
+      <Properties>
+        <Property name="columns" type="int" value="15"/>
+      </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="240" y="300" width="70" height="-1"/>
+          <AbsoluteConstraints x="170" y="300" width="90" height="-1"/>
         </Constraint>
       </Constraints>
     </Component>

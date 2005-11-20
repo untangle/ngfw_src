@@ -11,7 +11,7 @@
 
 package com.metavize.gui.login;
 
-import com.metavize.gui.transform.Savable;
+import com.metavize.gui.widgets.wizard.*;
 import java.util.Arrays;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.gui.util.Util;
@@ -21,21 +21,15 @@ import com.metavize.gui.configuration.NetworkConnectivityTestJDialog;
 
 import java.awt.Dialog;
 
-public class InitialSetupConnectivityJPanel extends javax.swing.JPanel implements Savable {
-    
-
-
+public class InitialSetupConnectivityJPanel extends MWizardPageJPanel {
+   
 
     public InitialSetupConnectivityJPanel() {
         initComponents();
     }
 
-    public void doSave(Object settings, boolean validateOnly) throws Exception {}
-    
-
+   
     private void initComponents() {//GEN-BEGIN:initComponents
-        java.awt.GridBagConstraints gridBagConstraints;
-
         buttonGroup1 = new javax.swing.ButtonGroup();
         jLabel10 = new javax.swing.JLabel();
         connectivityTestJButton = new javax.swing.JButton();

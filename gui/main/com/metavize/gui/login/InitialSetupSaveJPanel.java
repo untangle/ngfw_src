@@ -11,10 +11,10 @@
 
 package com.metavize.gui.login;
 
-import com.metavize.gui.transform.Savable;
+import com.metavize.gui.widgets.wizard.*;
 import javax.swing.SwingUtilities;
 
-public class InitialSetupSaveJPanel extends javax.swing.JPanel implements Savable {
+public class InitialSetupSaveJPanel extends MWizardPageJPanel  {
     
     public InitialSetupSaveJPanel() {
         initComponents();

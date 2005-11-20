@@ -11,12 +11,12 @@
 
 package com.metavize.gui.login;
 
-import com.metavize.gui.transform.Savable;
+import com.metavize.gui.widgets.wizard.*;
 import java.util.TimeZone;
 import com.metavize.gui.util.Util;
 import javax.swing.SwingUtilities;
 
-public class InitialSetupTimezoneJPanel extends javax.swing.JPanel implements Savable {
+public class InitialSetupTimezoneJPanel extends MWizardPageJPanel {
     
     public InitialSetupTimezoneJPanel() {
         initComponents();
@@ -61,6 +61,8 @@ public class InitialSetupTimezoneJPanel extends javax.swing.JPanel implements Sa
         jLabel1.setText("Timezone:");
         add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 100, -1, -1));
 
+        timezoneJComboBox.setFont(new java.awt.Font("Dialog", 0, 12));
+        timezoneJComboBox.setFocusable(false);
         add(timezoneJComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 90, 260, -1));
 
     }//GEN-END:initComponents

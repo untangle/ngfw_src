@@ -11,14 +11,18 @@
 
 package com.metavize.gui.login;
 
-import com.metavize.gui.transform.Savable;
+import com.metavize.gui.widgets.wizard.*;
 import com.metavize.gui.util.Util;
 import com.metavize.mvvm.security.*;
 import java.util.Set;
 import javax.swing.SwingUtilities;
+import java.awt.Color;
 
-public class InitialSetupPasswordJPanel extends javax.swing.JPanel implements Savable {
+public class InitialSetupPasswordJPanel extends MWizardPageJPanel {
     
+    private static final String EXCEPTION_PASSWORD_MISSING = "You must fill out the password.";
+    private static final String EXCEPTION_RETYPE_PASSWORD_MISSING = "You must fill out the retype password.";
+    private static final String EXCEPTION_PASSWORD_MISMATCH = "Your password and retype password do not match.  They must match.";
 
     public InitialSetupPasswordJPanel() {
         initComponents();
@@ -26,22 +30,41 @@ public class InitialSetupPasswordJPanel extends javax.swing.JPanel implements Sa
 
     String password;
     String retypePassword;
+    Exception exception;
 
     public void doSave(Object settings, boolean validateOnly) throws Exception {
 
         SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+	    passwordJPasswordField.setBackground( Color.WHITE );
+	    retypePasswordJPasswordField.setBackground( Color.WHITE );
+
 	    password = new String(passwordJPasswordField.getPassword());
 	    retypePassword = new String(retypePasswordJPasswordField.getPassword());
+
+	    exception = null;
+	    
+	    if(password.length() == 0){
+		passwordJPasswordField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+		exception = new Exception(EXCEPTION_PASSWORD_MISSING);
+		return;
+	    }
+	    
+	    if(retypePassword.length() == 0){
+		retypePasswordJPasswordField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+		exception = new Exception(EXCEPTION_RETYPE_PASSWORD_MISSING);
+		return;
+	    }
+	    
+	    if( !password.equals(retypePassword) ){
+		passwordJPasswordField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+		retypePasswordJPasswordField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+		exception = new Exception(EXCEPTION_PASSWORD_MISMATCH);
+		return;
+	    }
 	}});
 
-        if(password.length() == 0)
-            throw new Exception("You must fill out the password.");
-        
-        if(retypePassword.length() == 0)
-            throw new Exception("You must fill out the retype password.");
-        
-        if( !password.equals(retypePassword) )
-            throw new Exception("Your password and retype password do not match.  They must match.");
+        if( exception != null )
+	    throw exception;
         
         if( !validateOnly ){
             AdminSettings adminSettings = Util.getAdminManager().getAdminSettings();

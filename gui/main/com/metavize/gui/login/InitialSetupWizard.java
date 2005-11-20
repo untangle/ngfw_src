@@ -12,6 +12,7 @@
 package com.metavize.gui.login;
 
 import com.metavize.gui.widgets.wizard.*;
+import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.gui.util.*;
 import com.metavize.gui.transform.*;
 
@@ -21,45 +22,53 @@ import java.awt.Color;
 import java.awt.Frame;
 
 public class InitialSetupWizard extends MWizardJDialog {
-
-    private String[] args;
-    private InitialSetupSaveJPanel initialSetupSaveJPanel;
     
-    public InitialSetupWizard(String[] args) {
-	super((Frame)null, false);
-	this.args = args;
+    private static final String MESSAGE_DIALOG_TITLE = "Setup Wizard Warning";
+    private static final String MESSAGE_NOT_REGISTERED = "You have not registered your EdgeGuard.  Please run the Setup Wizard again.";
+    private static final String MESSAGE_NOT_CONFIGURED = "You have registered your EdgeGuard, but not configured its network settings.  You may do this by logging is with admin/passwd, and going to the Config Panel.";
+    private static final String MESSAGE_NO_EMAIL = "You have registered and configured your EdgeGuard, but you have not configured your email server.  You may do this by logging in with admin/passwd, and going to the Config Panel.";
+    private static final String MESSAGE_NO_ACCOUNT = "You have registered and configured your EdgeGuard, but you have not changed your password.  You may do this by logging in with admin/passwd, and going to the Config Panel.";
+    
+    public InitialSetupWizard() {
         setTitle("Metavize EdgeGuard Setup Wizard");
-        addSavableJPanel(new InitialSetupWelcomeJPanel(), "1. Welcome");
-        addSavableJPanel(new InitialSetupLicenseJPanel(), "2. License Agreement");
-        addSavableJPanel(new InitialSetupKeyJPanel(), "3. Activation Key");
-        addSavableJPanel(new InitialSetupContactJPanel(), "4. Contact Information");
-        addSavableJPanel(new InitialSetupPasswordJPanel(), "5. First Account");
-        addSavableJPanel(new InitialSetupTimezoneJPanel(), "6. Timezone");
-        addSavableJPanel(new InitialSetupNetworkJPanel(), "7. Network Settings");
-        initialSetupSaveJPanel = new InitialSetupSaveJPanel();
-        addSavableJPanel(initialSetupSaveJPanel, "8. Save Configuration");
-        addSavableJPanel(new InitialSetupConnectivityJPanel(), "9. Connectivity Test");
-        addSavableJPanel(new InitialSetupCongratulationsJPanel(), "10. Finished!");
-        super.finishPage = 7;
+        addWizardPageJPanel(new InitialSetupWelcomeJPanel(), "1. Welcome", false, false);
+        addWizardPageJPanel(new InitialSetupLicenseJPanel(), "2. License Agreement", false, false);
+        addWizardPageJPanel(new InitialSetupContactJPanel(), "3. Contact Information", false, false);
+        addWizardPageJPanel(new InitialSetupKeyJPanel(), "4. Activation Key", false, true);
+        addWizardPageJPanel(new InitialSetupTimezoneJPanel(), "5. Timezone", true, true);
+        addWizardPageJPanel(new InitialSetupNetworkJPanel(), "6. Network Settings", false, true);
+        addWizardPageJPanel(new InitialSetupConnectivityJPanel(), "7. Connectivity Test", false, true);
+        addWizardPageJPanel(new InitialSetupEmailJPanel(), "8. Email Server", false, true);
+        addWizardPageJPanel(new InitialSetupPasswordJPanel(), "9. Admin Account", false, true);        
+        addWizardPageJPanel(new InitialSetupCongratulationsJPanel(), "10. Finished!", true, true);
     }
     
-    protected void saveStarted(){
-        initialSetupSaveJPanel.saveStarted();
+    protected void wizardFinishedAbnormal(int currentPage){
+        if( currentPage <= 3 ){ // NOT REGISTERED, MUST DO WIZARD AGAIN
+            new MOneButtonJDialog(this, MESSAGE_DIALOG_TITLE, MESSAGE_NOT_REGISTERED);
+        }
+        else if( currentPage <= 5 ){ // REGISTERED, BUT NOT CONFIGURED, NO EMAIL, NO ACCOUNT
+            new MOneButtonJDialog(this, MESSAGE_DIALOG_TITLE, MESSAGE_NOT_CONFIGURED);
+        }
+        else if( currentPage <= 7 ){ // REGISTERED, CONFIGURED, BUT NO EMAIL, NO ACCOUNT
+            new MOneButtonJDialog(this, MESSAGE_DIALOG_TITLE, MESSAGE_NO_EMAIL);
+        }
+        else if( currentPage <= 8 ){ // REGISTERED, CONFIGURED, EMAIL SET, BUT NO ACCOUNT
+            new MOneButtonJDialog(this, MESSAGE_DIALOG_TITLE, MESSAGE_NO_ACCOUNT);
+        }
+        cleanupConnection();
+	super.wizardFinishedAbnormal(currentPage);
     }
-    
-    protected void saveFinished(String message){
-        initialSetupSaveJPanel.saveFinished(message);
+
+    protected void wizardFinishedNormal(){
+        cleanupConnection();
+	super.wizardFinishedNormal();
     }
-    
-    protected void wizardFinished(){
+    private void cleanupConnection(){
+	boolean wasLoggedIn = (Util.getMvvmContext() != null);
         Util.setMvvmContext(null);
-        MvvmRemoteContextFactory.factory().logout();
-	new MLoginJFrame(args);
-    }
-    
-    public void windowClosing(java.awt.event.WindowEvent evt){
-	super.windowClosing(evt);
-	System.exit(0);
+	if( wasLoggedIn )
+	    MvvmRemoteContextFactory.factory().logout();
     }
     
 }

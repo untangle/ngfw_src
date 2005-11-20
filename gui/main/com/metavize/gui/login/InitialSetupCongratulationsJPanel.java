@@ -11,18 +11,16 @@
 
 package com.metavize.gui.login;
 
-import com.metavize.gui.transform.Savable;
+import com.metavize.gui.widgets.wizard.*;
 import com.metavize.gui.util.Util;
 import com.metavize.mvvm.client.MvvmRemoteContextFactory;
 
-public class InitialSetupCongratulationsJPanel extends javax.swing.JPanel implements Savable {
+public class InitialSetupCongratulationsJPanel extends MWizardPageJPanel {
     
     public InitialSetupCongratulationsJPanel() {
         initComponents();
     }
 
-    public void doSave(Object settings, boolean validateOnly) throws Exception {}
-    
 
     private void initComponents() {//GEN-BEGIN:initComponents
         jLabel1 = new javax.swing.JLabel();
