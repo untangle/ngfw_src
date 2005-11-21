@@ -354,6 +354,8 @@ public class SpywareImpl extends AbstractTransform implements Spyware
             StringRule sr = i.next();
             if (remove.contains(sr.getString())) {
                 i.remove();
+            } else {
+                remove.remove(sr);
             }
         }
 
@@ -392,6 +394,8 @@ public class SpywareImpl extends AbstractTransform implements Spyware
             StringRule sr = i.next();
             if (remove.contains(sr.getString())) {
                 i.remove();
+            } else {
+                remove.remove(sr);
             }
         }
 
@@ -440,6 +444,8 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
             if (remove.contains(imr)) {
                 i.remove();
+            } else {
+                remove.remove(imr);
             }
         }
 

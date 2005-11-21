@@ -26,6 +26,7 @@ activex: activex-diff-$(shell expr `ls activex-init-* | cut -d- -f3 | sort -r -n
 subnet: subnet-diff-$(shell expr `ls subnet-init-* | cut -d- -f3 | sort -r -n | head -n1` + 1)
 
 url:
+	mkdir -p ./files
 	@( cd ./files ; wget http://www.geocities.com/spywarekilla/hosts.zip && unzip -a -o hosts.zip)
 	@( cd ./files ; wget http://www.mvps.org/winhelp2002/hosts.txt )
 	@cat ./files/hosts > ./files/urlblacklist
@@ -34,6 +35,7 @@ url:
 	@cat ./files/urlblacklist.txt | fgrep -vwf domains.clean > urlblacklist.txt
 
 activex-init-%:
+	mkdir -p ./files
 	@( cd ./files ; wget http://www.spywareguide.com/blocklist.reg )
 	cat ./files/blocklist.reg | grep HKEY | sed 's/^.*{\(.*\)}.*$$/\1/' | sort >$@
 
@@ -44,6 +46,7 @@ activex-diff-%: activex-init-%
 	fi
 
 cookie-init-%: domains.clean
+	mkdir -p ./files
 	@( cd ./files ; wget http://www.geocities.com/spywarekilla/autoinstaller.zip  && unzip autoinstaller.zip)
 	@cat ./files/Spyware\ blacklist\ auto-installer.reg | tr -d '\377' | tr -d '\376' | tr -d '\000' >| ./files/cookies
 	@cat ./files/cookies | grep HKEY | sed 's/^.*History\\\(.*\)\]/\1/' | grep -v HKEY > ./files/cookie.txt.tmp
@@ -56,6 +59,7 @@ cookie-diff-%: cookie-init-%
 	fi
 
 subnet-init-%:
+	mkdir -p ./files
 	@( cd ./files ; wget http://www.geocities.com/yosponge/blockips.txt)
 	@cat ./files/blockips.txt | tr -d '\r' | egrep '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | awk '{print $$1 " " $$2 " " $$3}' > ./files/blockips2.txt
 	@cat ./files/blockips2.txt | egrep -v "single IP" | egrep -v "Use a" | sed "s/^ //" > ./files/blockips3.txt
