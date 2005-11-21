@@ -562,7 +562,7 @@ public class HttpParser extends AbstractParser
         }
 
         if (100 != statusCode && 408 != statusCode) {
-            RequestLineToken rl = casing.dequeueRequest();
+            RequestLineToken rl = casing.dequeueRequest(statusCode);
             // casing returns null and logs an error when nothing in queue
             requestLineToken = null != rl ? rl : requestLineToken;
         }

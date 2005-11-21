@@ -63,12 +63,14 @@ class HttpCasing extends AbstractCasing
         requests.add(request);
     }
 
-    RequestLineToken dequeueRequest()
+    RequestLineToken dequeueRequest(int statusCode)
     {
         if (0 < requests.size()) {
             return requests.remove(0);
         } else {
-            logger.error("requests is empty");
+            if (4 != statusCode / 100) {
+                logger.error("requests is empty");
+            }
             return null;
         }
     }
