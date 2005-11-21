@@ -423,7 +423,7 @@ public abstract class BufferingSessionHandler
         closeMessageResources(false);
       }
       else {//State/command misalignment
-        m_txLog.add("Impossible command now");
+        m_txLog.add("Impossible command now: \"" + command + "\"");
         m_txLog.dumpToError(m_logger);
         actions.transactionEnded(this);
         actions.sendCommandToServer(command, new PassthruResponseCompletion());
@@ -450,7 +450,7 @@ public abstract class BufferingSessionHandler
         }
       }
       else {
-        m_txLog.add("Impossible command now");
+        m_txLog.add("Impossible command now: \"" + command + "\"");
         m_txLog.dumpToError(m_logger);
         actions.sendCommandToServer(command, new PassthruResponseCompletion());
         actions.transactionEnded(this);
@@ -474,7 +474,7 @@ public abstract class BufferingSessionHandler
         actions.sendCommandToServer(command, compl);
       }
       else {
-        m_txLog.add("Impossible command now");
+        m_txLog.add("Impossible command now: \"" + command + "\"");
         m_txLog.dumpToError(m_logger);
         actions.sendCommandToServer(command, new PassthruResponseCompletion());
         actions.transactionEnded(this);
@@ -565,7 +565,8 @@ public abstract class BufferingSessionHandler
         case DONE:
           //TODO bscott handle this case better.  Dump anything we have first and
           //     declare passthru
-          m_txLog.add("Impossible command now");
+          m_txLog.add("Impossible command now: MIME chunk (first? " + isFirst +
+            ", isLast? " + isLast);
           m_txLog.dumpToError(m_logger);
           appendChunk(continuedToken);
           changeState(BufTxState.DONE);
