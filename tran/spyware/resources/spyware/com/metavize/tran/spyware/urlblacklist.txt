@@ -105,7 +105,6 @@
 3721.com
 39-93.com
 39.dapfeed.com
-3ps.go.com
 4-counter.com
 4-free-mp3.com
 4-v.net
@@ -152,7 +151,6 @@
 911-search.info
 9310.searchmiracle.com
 9down.us.intellitxt.com
-Ad.go.com
 a-d-w-a-r-e.com
 a-search.biz
 a.abnad.net
@@ -438,11 +436,8 @@ adfu.blockstackers.com
 adidm.supermedia.pl
 adimage.blm.net
 adimages.earthweb.com
-adimages.go.com
-adimages.go.com
 adimages.imaginemedia.com
 adimages.vendaregroup.com
-adimg.com.com
 adimg.egroups.com
 adimg.zdnet.com
 adincl.gopher.com
@@ -451,8 +446,6 @@ adj50.thruport.com
 adj54.thruport.com
 adlegend.com
 adlik2.akavita.com
-adlog.com.com
-adlog.com.com
 adlog2.lzio.com
 adlogix.com
 adman.freeze.com
@@ -572,7 +565,6 @@ ads.clickhouse.com
 ads.clicksor.com
 ads.clickthru.net
 ads.cobrad.com
-ads.com.com
 ads.console.net
 ads.contactmusic.com
 ads.contextclick.com
@@ -777,7 +769,6 @@ ads.surfsidekick.com
 ads.swirve.com
 ads.swirve.com
 ads.tagword.com
-ads.techtv.com
 ads.telegraph.co.uk
 ads.tiscali.fr
 ads.toplayerserver.com
@@ -1955,8 +1946,6 @@ clickbank.net
 clickcash.webpower.com
 clickedyclick.com
 clickit.go2net.com
-clicks.about.com
-clicks.about.com
 clicks.adultplex.com
 clicks.asianamateurpages.com
 clicks.bannerboxes.com
@@ -2344,7 +2333,6 @@ dbbsrv.com
 dbcventures.com
 dbs.advertising.com
 dc.kontera.com
-dcapps.disney.go.com
 dce.nextstat.com
 dclk.net
 dclkcorp.rpts.net
@@ -2475,7 +2463,6 @@ doubleclick.com
 doubleclick.ne.jp
 doubleclick.net
 doubleclick.net
-doubleclick.shockwave.com
 downldcl.adtoolsinc.com
 download-ak.internetwasher.com
 download-ak.systemsoap.com
@@ -2719,7 +2706,6 @@ ezcybersearch.mail.everyone.net
 eziin.com
 ezpolls.superstats.com
 eztracks.aavalue.com
-f.about.com
 f.as-eu.falkag.net
 f.screensavers.com
 f1organizer.com
@@ -3104,7 +3090,6 @@ hardcore.xxxcounter.com
 hardcoreover.com
 hardy.netster.com
 hastalavista.com
-hb.disney.go.com
 hb.geoads.net
 hbmd.hotbar.com
 hc2.humanclick.com
@@ -3179,7 +3164,6 @@ hitx.net
 holland.bpath.com
 home-search.cc
 home.about-blank.biz
-home.about.com
 home.adultcash.com
 home.free-banners.com
 home.iwon.com
@@ -3340,7 +3324,6 @@ images-aud.sourceforge.net
 images.1100i.com
 images.15x.net
 images.163.com
-images.about.com
 images.ads.fairfax.com.au
 images.adultplex.com
 images.allposters.com
@@ -3633,7 +3616,6 @@ js.adsonar.com
 js.count.cc
 js.cybermonitor.com
 js.forrestersurveys.com
-js.get.about.com
 js.livehelper.com
 js.revsci.net
 js.statistici.ro
@@ -3831,7 +3813,6 @@ lsimg.com
 lsjmp.com
 luckyhomepage.com
 luckysearch.net
-lunafetch.about.com
 lust-mature.com
 lustler.com
 lycos-eu.imrworldwide.com
@@ -3852,7 +3833,6 @@ m2.doubleclick.net
 m2.doubleclick.net
 m3.doubleclick.net
 macaddictads.snv.futurenet.com
-mads.com.com
 mads.zdnet.com
 madserver.net
 magic.3721.com
@@ -4268,7 +4248,6 @@ newtopsites.com
 newupdates.lzio.com
 ng3.ads.warnerbros.com
 ng3.ads.warnerbros.com
-ngads.go.com
 ngads.smartage.com
 nht-2.extreme-dm.com
 nichetoolbars.com
@@ -4479,7 +4458,6 @@ php.offshoreclicks.com
 phpadsnew.abac.com
 phpadsnew.com
 phplive.inet-traffic.com
-pic.geocities.com
 pickup-ur-girl.com
 pickup-ur-girl.net
 pigmailer.scarryserv.biz
@@ -4494,7 +4472,6 @@ pix.hotqueens.com
 pix01.revsci.net
 pix4all.net
 pixel.netster.com
-pixel3.about.com
 pixpox.com
 pjn.qsrch.net
 platinumpartner.com
@@ -5356,8 +5333,6 @@ sponsor2.ucmore.com
 sponsoradulto.com
 sponsorships.spln.com
 spotresults.com
-sprinks-clicks.about.com
-sprinks-clicks.about.com
 spweather.whenu.com
 spweb.whenu.com
 spy-crusher.com
@@ -5690,7 +5665,6 @@ tdko.com
 tdmy.com
 tds.megatds.com
 tds.promaxtraffic.com
-te.about.com
 te.adlandpro.com
 te.advance.net
 te.audiencematch.net
@@ -6138,7 +6112,6 @@ vis3.sexlist.com
 vis4.sexlist.com
 vis5.sexlist.com
 visit-link.com
-visit.geocities.com
 visit.referralware.com
 visit.theglobeandmail.com
 visite.weborama.fr
@@ -9713,7 +9686,6 @@ wwwhunter.net
 wwwsearch.cc
 wwwxxxwoman.com
 x-pearl.com
-x.go.com
 x0.nl
 x0x.biz
 x0x0l.pp.ru

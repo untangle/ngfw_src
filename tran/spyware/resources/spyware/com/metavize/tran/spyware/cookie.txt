@@ -12,7 +12,6 @@
 65.61.153.134
 66.70.40.180
 7search.com
-about.com
 absolutely-free-hosting.com
 ad-flow.com
 ad-logics.com
@@ -45,8 +44,6 @@ batleby.com
 bfast.com
 bfndevelopment.com
 bitzi.com
-bizrate.com
-blockbuster.com
 bluestreak.com
 box.sk
 bpath.com
@@ -58,16 +55,10 @@ cash4creatives.com
 centrport.net
 checkstat.nl
 cherryroms.com
-childrensministry.com
 clickagents.com
 clickheretofind.com
 clickzs.com
-columbiahouse.com
-com.com
-comcast.com
-comcast.net
 comclick.com
-compusa.com
 consumerfreedom.com
 coremetrics.com
 counted.com
@@ -106,11 +97,8 @@ freestats.net
 freewebs.com
 gamerzonline.net
 gamerzplanet.net
-gamespot.com
 gamespy.com
 gator.com
-geocities.com
-go.com
 go2net.com
 gorillanation.com
 gotoast.com
@@ -121,7 +109,6 @@ hertz.com
 hitboss.com
 hitbox.com
 hitslink.com
-honda.com
 hostdepartment.com
 hotlog.ru
 humanclick.com
@@ -158,12 +145,10 @@ metareward.com
 metriweb.be
 mircx.com
 mysimon.com
-nbc5.com
 neoholic.com
 neopets.com
 net-filter.com
 newsbank.com
-nintendo.com
 no-frills.net
 oingo.com
 okcounter.com
@@ -189,7 +174,6 @@ roispy.com
 ru4.com
 searchengineforums.com
 selectsmart.com
-shockwave.com
 sirs.com
 smni.com
 sparklit.com
@@ -206,7 +190,6 @@ swirvemail.com
 talkingbuddy.com
 targetnet.com
 tcrecord.org
-techtv.com
 theclow.net
 thruport.com
 tiu.edu
@@ -226,7 +209,6 @@ vibrantmedia.com
 virtualave.net
 wcgalaxy.com
 web-stat.com
-webbyawards.com
 webcriteria.net
 webtrendslive.com
 wtlive.com
