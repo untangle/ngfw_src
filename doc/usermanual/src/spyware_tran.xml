@@ -21,15 +21,12 @@
 
   <sect1 id="spyware_tran_adminui">
     <title>Administrative Interface</title>
-
     <para>
       The interface for the Spyware Blocker is presented as four tabs.  The first two, <xref linkend="spyware_tran_adminui_block"/> and <xref linkend="spyware_tran_adminui_passlist"/> provide the administrator the ability to view/change sites which will or will not be considered spyware.  The <xref linkend="spyware_tran_adminui_generalsettings"/> tab provides access to properties not directly related to spyware lists.   The last tab, <xref linkend="spyware_tran_adminui_eventlog"/>, allows administrators to view events (see <xref linkend="introduction_ui_appliance_event_log"/>).
     </para>
-  
     <!-- ========================================= -->
     <sect2 id="spyware_tran_adminui_block">
       <title>Block List</title>
-  
       <para>
         The block list tab presents administrators the ability to modify the four major categories of spyware blocking.  Refer to the section for each sub-tab for more detail.
       </para>
@@ -38,8 +35,6 @@
           If you wish to prevent a site from being categorized as <glossterm linkend="gloss_spyware">spyware</glossterm>, it is recommended you <emphasis>not</emphasis> attempt to remove that site's data from one of the Block Lists.  Instead, refer to <xref linkend="spyware_tran_adminui_passlist"/> on how to create exclusions to the blocking rules.
         </para>
       </tip>
-      
-  
       <!-- ========================================= -->
       <sect3 id="spyware_tran_adminui_block_cookie">
         <title>Cookie List</title>
@@ -63,7 +58,6 @@
           </para>
         </tip>        
       </sect3>
-  
       <!-- ========================================= -->
       <sect3 id="spyware_tran_adminui_block_subnet">
         <title>Subnet List</title>

@@ -268,6 +268,15 @@ public class Quarantine
 
   public void rescueInbox(String account)
     throws NoSuchInboxException, QuarantineUserActionFailedException {
+
+    InboxIndex index = getInboxIndex(account);
+
+    String[] ids = new String[index.size()];
+    int ptr = 0;
+    for(InboxRecord record : index) {
+      ids[ptr++] = record.getMailID();
+    }
+    rescue(account, ids);
   }
 
   public InboxIndex getInboxIndex(String account)
