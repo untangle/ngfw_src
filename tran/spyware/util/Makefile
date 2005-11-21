@@ -30,8 +30,8 @@ url:
 	@( cd ./files ; wget http://www.mvps.org/winhelp2002/hosts.txt )
 	@cat ./files/hosts > ./files/urlblacklist
 	@cat ./files/hosts.txt >> ./files/urlblacklist
-	@cat ./files/urlblacklist | grep -v "^#.*" | grep "^127.0.0.1" | awk '{print $$2}' | sed -e 's/\#.*//' -e 's///' | sort > ./files/urlblacklist.txt
-	@cat ./files/urlblacklist.txt | grep -vwf domains.clean > urlblacklist.txt
+	@cat ./files/urlblacklist | grep -v "^#.*" | grep "^127.0.0.1" | awk '{print $$2}' | sed -e 's/\#.*//' -e 's///' | sort | uniq > ./files/urlblacklist.txt
+	@cat ./files/urlblacklist.txt | fgrep -vwf domains.clean > urlblacklist.txt
 
 activex-init-%:
 	@( cd ./files ; wget http://www.spywareguide.com/blocklist.reg )
@@ -47,7 +47,7 @@ cookie-init-%: domains.clean
 	@( cd ./files ; wget http://www.geocities.com/spywarekilla/autoinstaller.zip  && unzip autoinstaller.zip)
 	@cat ./files/Spyware\ blacklist\ auto-installer.reg | tr -d '\377' | tr -d '\376' | tr -d '\000' >| ./files/cookies
 	@cat ./files/cookies | grep HKEY | sed 's/^.*History\\\(.*\)\]/\1/' | grep -v HKEY > ./files/cookie.txt.tmp
-	@cat ./files/cookie.txt.tmp | grep -vwf domains.clean | sort > $@
+	@cat ./files/cookie.txt.tmp | fgrep -vwf domains.clean | sort > $@
 
 cookie-diff-%: cookie-init-%
 	if diff cookie-init-$(shell expr $* - 1) $< >$@; then \
