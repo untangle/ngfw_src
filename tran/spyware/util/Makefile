@@ -73,7 +73,6 @@ subnet-diff-%: subnet-init-%
 		rm -f $< $@; \
 	fi
 
-
 .PHONY: all build clean cookie activex subnet url
-.SECONDARY: activex-init-% activex-diff-% cookie-init-% cookie-diff-% subnet-init-% subnet-diff-%
+.SECONDARY:
 
