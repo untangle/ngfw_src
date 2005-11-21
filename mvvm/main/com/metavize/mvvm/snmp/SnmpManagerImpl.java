@@ -173,6 +173,12 @@ public class SnmpManagerImpl
       snmpd_config.append("group MyROGroup v2c local").append(EOL);
       snmpd_config.append("group MyROGroup usm local").append(EOL);
       snmpd_config.append("view mib2 included  .iso.org.dod.internet.mgmt.mib-2").append(EOL);
+      /**
+       * Note re: Bug 985.  For reasons I do not understand, saying you only want to
+       * include "mib-2" seems to include the host MIB.  Whatever.  We can *exclude*
+       * the "HOST-RESOURCES-MIB" explicitly as shown below.
+       */
+      snmpd_config.append("view mib2 excluded  .1.3.6.1.2.1.25.").append(EOL);
       snmpd_config.append("access MyROGroup \"\" any noauth exact mib2 none none").append(EOL);
     }
     else {
