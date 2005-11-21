@@ -113,4 +113,13 @@ public interface ArgonManager
      * IntfConstants.External or IntfConstants.DMZ. or the argonIndex is invalid */
     public void deregisterIntf( byte argonIntf )
         throws ArgonException;
+
+    /** Add an interface to the internal bridge */
+    public void enableInternalBridgeIntf( NetworkingConfiguration netConfig, String intf )
+        throws ArgonException;
+    
+    /** Remove all interfaces bridged with the internal interface */
+    public void disableInternalBridgeIntf( NetworkingConfiguration netConfig )
+        throws ArgonException;;
+    
 }

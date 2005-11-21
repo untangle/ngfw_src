@@ -15,6 +15,9 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import java.util.List;
+import java.util.LinkedList;
+
 import org.apache.log4j.Logger;
 
 import com.metavize.mvvm.tran.ParseException;
@@ -56,9 +59,10 @@ public final class IntfMatcher implements Serializable
 
     private static final int BITSET_ALL     = -1;
     private static final int BITSET_NOTHING = 0;
-    private static final int BITSET_OUTSIDE = 1;
-    private static final int BITSET_INSIDE  = 2;
-    private static final int BITSET_DMZ     = 4;
+    private static final int BITSET_OUTSIDE = ( 1 << IntfConstants.EXTERNAL_INTF );
+    private static final int BITSET_INSIDE  = ( 1 << IntfConstants.INTERNAL_INTF );
+    private static final int BITSET_DMZ     = ( 1 << IntfConstants.DMZ_INTF );
+    private static final int BITSET_VPN     = ( 1 << IntfConstants.VPN_INTF );
 
     /* Using a map for the off chance that the number of interfaces may need to change
      * on the fly?, If there are more interface, this could be a caching structure
@@ -257,24 +261,29 @@ public final class IntfMatcher implements Serializable
 
     public static synchronized void updateEnumeration( IntfEnum intfEnum )
     {
+        /* XXX Probably should be equals */
         if ( INTF_ENUM == intfEnum ) return;
 
-        IntfMatcher user[] = ( intfEnum.getIntfNums().length == 3 ) ? new IntfMatcher[5] : new IntfMatcher[3];
-        int c=0;
+        List<IntfMatcher> matchers = new LinkedList<IntfMatcher>();
 
         /* XXX This is just for DMZ */
-        user[c++] = getInside();
-        user[c++] = getOutside();
+        matchers.add( getInside());
+        matchers.add( getOutside());
 
-        if ( intfEnum.getIntfNums().length == 3 ) {
-            user[c++] = getMatcher( BITSET_DMZ );
-            user[c++] = getMatcher( BITSET_DMZ | BITSET_OUTSIDE );
+        if ( intfEnum.getIntfName( IntfConstants.VPN_INTF ) != null ) {
+            matchers.add( getMatcher( BITSET_VPN ));
+            /* XXX Possibly add VPN and Internal */
         }
 
-        user[c++] = getAll();
+        if ( intfEnum.getIntfName( IntfConstants.DMZ_INTF ) != null ) {
+            matchers.add( getMatcher( BITSET_DMZ ));
+            matchers.add( getMatcher( BITSET_DMZ | BITSET_OUTSIDE ));
+        }
+
+        matchers.add( getAll());
         
         /* Convert to an immutable list */
-        ENUMERATION = user;
+        ENUMERATION = matchers.toArray( new IntfMatcher[matchers.size()]);
         
         /* Set the cache */
         INTF_ENUM = intfEnum;
