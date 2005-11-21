@@ -345,8 +345,9 @@ function antisubscribeRules() {
 }
 
 function antisubscribeLocal() {
-    t_protocol=$1
-    t_portList=$2
+    local t_protocol=$1
+    local t_portList=$2
+    local t_mark
 
     if [ -n ${t_portList} ]; then
         ## Check if antisubscribing on only one interface
@@ -379,8 +380,9 @@ function antisubscribeLocal() {
 
 ## Antisubscribe to all local traffic on a particular interface
 function antisubscribeLocalTraffic() {
-    t_intf=$1
-    t_flag=$2
+    local t_intf=$1
+    local t_flag=$2
+    local t_mark
 
     if [  "${t_flag}x" = "truex" ]; then
         if [ "${t_intf}x" == "${FLAG_INSIDE_INTF}x" ]; then
