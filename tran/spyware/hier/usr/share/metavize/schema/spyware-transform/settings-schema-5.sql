@@ -18,6 +18,9 @@ CREATE TABLE settings.tr_spyware_settings (
     spyware_details text,
     block_all_activex_details text,
     url_blacklist_details text,
+    subnet_version int4 NOT NULL,
+    activex_version int4 NOT NULL,
+    cookie_version int4 NOT NULL,
     PRIMARY KEY (settings_id));
 
 -- com.metavize.tran.spyware.SpywareSettings.cookieRules

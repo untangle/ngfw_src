@@ -19,15 +19,15 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.metavize.mvvm.logging.EventFilter;
 import com.metavize.mvvm.logging.EventLogger;
@@ -50,14 +50,17 @@ import org.hibernate.Session;
 public class SpywareImpl extends AbstractTransform implements Spyware
 {
     private static final String ACTIVEX_LIST
-        = "com/metavize/tran/spyware/blocklist.reg";
+        = "com/metavize/tran/spyware/activex.txt";
+    private static final String ACTIVEX_DIFF_BASE
+        = "com/metavize/tran/spyware/activex-diff-";
     private static final String COOKIE_LIST
         = "com/metavize/tran/spyware/cookie.txt";
+    private static final String COOKIE_DIFF_BASE
+        = "com/metavize/tran/spyware/cookie-diff-";
     private static final String SUBNET_LIST
         = "com/metavize/tran/spyware/subnet.txt";
-
-    private static final Pattern ACTIVEX_PATTERN = Pattern
-        .compile(".*\\{([a-fA-F0-9\\-]+)\\}.*");
+    private static final String SUBNET_DIFF_BASE
+        = "com/metavize/tran/spyware/subnet-diff-";
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -227,8 +230,6 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
                     return true;
                 }
-
-                public Object getResult() { return null; }
             };
         getTransformContext().runTransaction(tw);
 
@@ -311,157 +312,6 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
     // private methods --------------------------------------------------------
 
-    private void updateActiveX(SpywareSettings settings)
-    {
-        List rules = settings.getActiveXRules();
-        InputStream is = getClass().getClassLoader().getResourceAsStream(ACTIVEX_LIST);
-
-        if (null == is) {
-            logger.error("Could not find: " + ACTIVEX_LIST);
-            return;
-        }
-
-        logger.info("Checking for activeX updates...");
-
-        HashSet ruleHash = new HashSet();
-        for (Iterator i=rules.iterator() ; i.hasNext() ; ) {
-            StringRule rule = (StringRule) i.next();
-            ruleHash.add(rule.getString());
-        }
-
-        try {
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
-
-            for (String l = br.readLine(); null != l; l = br.readLine()) {
-                Matcher matcher = ACTIVEX_PATTERN.matcher(l);
-                if (matcher.matches()) {
-                    String clsid = matcher.group(1);
-
-                    if (!ruleHash.contains(clsid)) {
-                        logger.debug("ADDING activeX Rule: " + clsid);
-                        rules.add(new StringRule(clsid.intern()));
-                    }
-                }
-            }
-        } catch (IOException exn) {
-            logger.error("Could not read file: " + ACTIVEX_LIST, exn);
-        } finally {
-            try {
-                is.close();
-            } catch (IOException exn) {
-                logger.warn("Could not close file: " + ACTIVEX_LIST, exn);
-            }
-        }
-
-        return;
-    }
-
-    private void updateCookie(SpywareSettings settings)
-    {
-        List rules = settings.getCookieRules();
-        InputStream is = getClass().getClassLoader().getResourceAsStream(COOKIE_LIST);
-
-        if (null == is) {
-            logger.error("Could not find: " + COOKIE_LIST);
-            return;
-        }
-
-        logger.info("Checking for cookie  updates...");
-
-        HashSet ruleHash = new HashSet();
-        for (Iterator i=rules.iterator() ; i.hasNext() ; ) {
-            StringRule rule = (StringRule) i.next();
-            ruleHash.add(rule.getString());
-        }
-
-        try {
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
-
-            for (String l = br.readLine(); null != l; l = br.readLine()) {
-                if (!ruleHash.contains(l)) {
-                    logger.debug("ADDING cookie Rule: " + l);
-                    rules.add(new StringRule(l.intern()));
-                }
-            }
-        } catch (IOException exn) {
-            logger.error("Could not read file: " + COOKIE_LIST, exn);
-        } finally {
-            try {
-                is.close();
-            } catch (IOException exn) {
-                logger.warn("Could not close file: " + COOKIE_LIST, exn);
-            }
-        }
-
-        return;
-    }
-
-    private void updateSubnet(SpywareSettings settings)
-    {
-        List rules = settings.getSubnetRules();
-        InputStream is = getClass().getClassLoader().getResourceAsStream(SUBNET_LIST);
-
-        if (null == is) {
-            logger.warn("Could not find: " + SUBNET_LIST);
-            return;
-        }
-
-        logger.info("Checking for subnet  updates...");
-
-        HashSet ruleHash = new HashSet();
-        for (Iterator i=rules.iterator() ; i.hasNext() ; ) {
-            IPMaddrRule rule = (IPMaddrRule) i.next();
-            rule.setLive(false);
-            ruleHash.add(rule.getIpMaddr());
-        }
-
-        try {
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
-
-            for (String line = br.readLine(); null != line; line = br.readLine()) {
-                StringTokenizer tok = new StringTokenizer(line, ":,");
-
-                String addr = null;
-                String description = null;
-                String name = null;
-                IPMaddr maddr = null;
-
-                try {
-                    addr = tok.nextToken();
-                    description = tok.nextToken();
-                    name = tok.nextToken();
-                    maddr = IPMaddr.parse(addr);
-                    int i = maddr.maskNumBits(); /* if bad subnet throws exception */
-                }
-                catch (Exception e) {
-                    logger.warn("Invalid Subnet in " + SUBNET_LIST + ": " + line + ": " + e);
-                    maddr = null;
-                }
-
-                if (maddr != null && !ruleHash.contains(maddr)) {
-                    logger.debug("ADDING subnet Rule: " + addr);
-                    IPMaddrRule rule = new IPMaddrRule(maddr, name, "[no category]", description);
-                    rule.setLog(true);
-                    rule.setLive(false);
-                    rules.add(rule);
-                }
-            }
-        } catch (IOException exn) {
-            logger.error("Could not read file: " + SUBNET_LIST, exn);
-        } finally {
-            try {
-                is.close();
-            } catch (IOException exn) {
-                logger.warn("Could not close file: " + SUBNET_LIST, exn);
-            }
-        }
-
-        return;
-    }
-
     private String nextHost(String host)
     {
         int i = host.indexOf('.');
@@ -470,6 +320,217 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         }
 
         return host.substring(i + 1);
+    }
+
+    // settings intialization -------------------------------------------------
+
+    private void updateActiveX(SpywareSettings settings)
+    {
+        int ver = settings.getActiveXVersion();
+
+        if (0 > ver || null == settings.getActiveXRules()) {
+            Set<String> add = initList(ACTIVEX_LIST);
+            Set<String> remove = Collections.emptySet();
+            updateActiveX(settings, add, remove);
+            settings.setActiveXVersion(latestVer(ACTIVEX_DIFF_BASE));
+        } else {
+            Set<String> add = new HashSet<String>();
+            Set<String> remove = new HashSet<String>();
+            ver = diffSets(ACTIVEX_DIFF_BASE, ver, add, remove);
+            updateActiveX(settings, add, remove);
+            settings.setActiveXVersion(ver);
+        }
+    }
+
+    private void updateActiveX(SpywareSettings settings, Set<String> add, Set<String> remove)
+    {
+        List<StringRule> rules = (List<StringRule>)settings.getActiveXRules();
+        if (null == rules) {
+            rules = new LinkedList<StringRule>();
+            settings.setActiveXRules(rules);
+        }
+
+        for (Iterator<StringRule> i = rules.iterator(); i.hasNext(); ) {
+            StringRule sr = i.next();
+            if (remove.contains(sr.getString())) {
+                i.remove();
+            }
+        }
+
+        for (String s : add) {
+            rules.add(new StringRule(s));
+        }
+    }
+
+    private void updateCookie(SpywareSettings settings)
+    {
+        int ver = settings.getCookieVersion();
+
+        if (0 > ver || null == settings.getCookieRules()) {
+            Set<String> add = initList(COOKIE_LIST);
+            Set<String> remove = Collections.emptySet();
+            updateCookie(settings, add, remove);
+            settings.setCookieVersion(latestVer(COOKIE_DIFF_BASE));
+        } else {
+            Set<String> add = new HashSet<String>();
+            Set<String> remove = new HashSet<String>();
+            ver = diffSets(COOKIE_DIFF_BASE, ver, add, remove);
+            updateCookie(settings, add, remove);
+            settings.setCookieVersion(ver);
+        }
+    }
+
+    private void updateCookie(SpywareSettings settings, Set<String> add, Set<String> remove)
+    {
+        List<StringRule> rules = (List<StringRule>)settings.getCookieRules();
+        if (null == rules) {
+            rules = new LinkedList<StringRule>();
+            settings.setCookieRules(rules);
+        }
+
+        for (Iterator<StringRule> i = rules.iterator(); i.hasNext(); ) {
+            StringRule sr = i.next();
+            if (remove.contains(sr.getString())) {
+                i.remove();
+            }
+        }
+
+        for (String s : add) {
+            rules.add(new StringRule(s));
+        }
+    }
+
+    private void updateSubnet(SpywareSettings settings)
+    {
+        int ver = settings.getSubnetVersion();
+
+        if (0 > ver || null == settings.getSubnetRules()) {
+            Set<String> add = initList(SUBNET_LIST);
+            Set<String> remove = Collections.emptySet();
+            updateSubnet(settings, add, remove);
+            settings.setSubnetVersion(latestVer(SUBNET_DIFF_BASE));
+        } else {
+            Set<String> add = new HashSet<String>();
+            Set<String> remove = new HashSet<String>();
+            ver = diffSets(SUBNET_DIFF_BASE, ver, add, remove);
+            updateSubnet(settings, add, remove);
+            settings.setSubnetVersion(ver);
+        }
+    }
+
+    private void updateSubnet(SpywareSettings settings, Set<String> add,
+                              Set<String> rem)
+    {
+        Set<IPMaddrRule> remove = new HashSet<IPMaddrRule>();
+        for (String s : rem) {
+            IPMaddrRule imr = makeIPMAddrRule(s);
+            if (null != imr) {
+                remove.add(imr);
+            }
+        }
+
+        List<IPMaddrRule> rules = (List<IPMaddrRule>)settings.getSubnetRules();
+        if (null == rules) {
+            rules = new LinkedList<IPMaddrRule>();
+            settings.setSubnetRules(rules);
+        }
+
+        for (Iterator<IPMaddrRule> i = rules.iterator(); i.hasNext(); ) {
+            IPMaddrRule imr = i.next();
+
+            if (remove.contains(imr)) {
+                i.remove();
+            }
+        }
+
+        for (String s : add) {
+            IPMaddrRule imr = makeIPMAddrRule(s);
+            if (null != imr) {
+                rules.add(imr);
+            }
+        }
+    }
+
+
+    private Set<String> initList(String file)
+    {
+        Set<String> s = new HashSet<String>();
+
+        try {
+            InputStream is = getClass().getClassLoader().getResourceAsStream(file);
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            for (String l = br.readLine(); null != l; l = br.readLine()) {
+                s.add(l);
+            }
+        } catch (IOException exn) {
+            logger.error("could not read list: " + file, exn);
+        }
+
+        return s;
+    }
+
+    private IPMaddrRule makeIPMAddrRule(String line)
+    {
+        StringTokenizer tok = new StringTokenizer(line, ":,");
+
+        String addr = tok.nextToken();
+        String description = tok.nextToken();
+        String name = tok.hasMoreTokens() ? tok.nextToken() : "[no name]";
+
+        IPMaddr maddr;
+        try {
+            maddr = IPMaddr.parse(addr);
+            int i = maddr.maskNumBits(); /* if bad subnet throws exception */
+        } catch (Exception e) {
+            return null;
+        }
+
+        logger.debug("ADDING subnet Rule: " + addr);
+        IPMaddrRule rule = new IPMaddrRule(maddr, name, "[no category]", description);
+        rule.setLog(true);
+        rule.setLive(false);
+
+        return rule;
+    }
+
+    private int diffSets(String diffBase, int startVersion,
+                         Set<String> add, Set<String> remove)
+    {
+        for (int i = startVersion + 1; ; i++) {
+            String r = diffBase + i;
+            InputStream is = getClass().getClassLoader().getResourceAsStream(r);
+
+            if (null == is) {
+                return i - 1;
+            }
+
+            try {
+                BufferedReader br = new BufferedReader(new InputStreamReader(is));
+                for (String l = br.readLine(); null != l; l = br.readLine()) {
+                    if (l.startsWith("<")) {
+                        String s = l.substring(2);
+                        add.remove(s);
+                        remove.add(s);
+                    } else if (l.startsWith(">")) {
+                        String s = l.substring(2);
+                        add.add(s);
+                        remove.remove(s);
+                    }
+                }
+            } catch (IOException exn) {
+                logger.error("could not make diffs: " + diffBase, exn);
+            }
+        }
+    }
+
+    public int latestVer(String diffBase)
+    {
+        for (int i = 0; ; i++) {
+            URL u = getClass().getClassLoader().getResource(diffBase + i);
+            if (null == u) {
+                return i;
+            }
+        }
     }
 
     // XXX soon to be deprecated ----------------------------------------------

@@ -46,6 +46,11 @@ public class SpywareSettings implements Serializable
     private List subnetRules;
     private List domainWhitelist = new ArrayList();
 
+    // not for the GUI! XXX move to a private class
+    private int accessVersion = -1;
+    private int activeXVersion = -1;
+    private int cookieVersion = -1;
+
     // constructors -----------------------------------------------------------
 
     /**
@@ -362,4 +367,61 @@ public class SpywareSettings implements Serializable
     {
         this.domainWhitelist = domainWhitelist;
     }
+
+    // NOT FOR THE GUI! XXX move to another class -----------------------------
+
+    /**
+     * Current version of subnet list.
+     *
+     * @return -1 for not initialized, otherwise latest version number.
+     * @hibernate.property
+     * column="SUBNET_VERSION"
+     * not-null="true"
+     */
+    public int getSubnetVersion()
+    {
+        return accessVersion;
+    }
+
+    public void setSubnetVersion(int accessVersion)
+    {
+        this.accessVersion = accessVersion;
+    }
+
+    /**
+     * Current version of ActiveX list.
+     *
+     * @return -1 for not initialized, otherwise latest version number.
+     * @hibernate.property
+     * column="ACTIVEX_VERSION"
+     * not-null="true"
+     */
+    public int getActiveXVersion()
+    {
+        return activeXVersion;
+    }
+
+    public void setActiveXVersion(int activeXVersion)
+    {
+        this.activeXVersion = activeXVersion;
+    }
+
+    /**
+     * Current version of Cookie list.
+     *
+     * @return -1 for not initialized, otherwise latest version number.
+     * @hibernate.property
+     * column="COOKIE_VERSION"
+     * not-null="true"
+     */
+    public int getCookieVersion()
+    {
+        return cookieVersion;
+    }
+
+    public void setCookieVersion(int cookieVersion)
+    {
+        this.cookieVersion = cookieVersion;
+    }
 }
+
