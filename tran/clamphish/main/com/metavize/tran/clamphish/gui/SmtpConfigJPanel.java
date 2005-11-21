@@ -16,7 +16,6 @@ import com.metavize.gui.transform.*;
 import com.metavize.gui.util.*;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.tran.spam.*;
-import com.metavize.tran.mail.papi.smtp.SMTPNotifyAction;
 import com.metavize.mvvm.tran.TransformContext;
 
 
@@ -83,7 +82,7 @@ class SmtpTableModel extends MSortedTableModel{
             SpamSMTPConfig spamSMTPConfig = (SpamSMTPConfig) rowVector.elementAt(7);
             spamSMTPConfig.setScan( (Boolean) rowVector.elementAt(3) );
             spamSMTPConfig.setMsgAction( (SMTPSpamMessageAction) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem() );
-            spamSMTPConfig.setNotifyAction( (SMTPNotifyAction) ((ComboBoxModel)rowVector.elementAt(5)).getSelectedItem() );
+            spamSMTPConfig.setNotifyAction( (SpamSMTPNotifyAction) ((ComboBoxModel)rowVector.elementAt(5)).getSelectedItem() );
             spamSMTPConfig.setNotes( (String) rowVector.elementAt(6) );
 	    
 	    if( ((String)rowVector.elementAt(2)).equals(SOURCE_INBOUND) ){
@@ -117,7 +116,7 @@ class SmtpTableModel extends MSortedTableModel{
         inboundRow.add( SOURCE_INBOUND );
         inboundRow.add( spamSMTPConfigInbound.getScan() );
 	inboundRow.add( super.generateComboBoxModel(SMTPSpamMessageAction.getValues(), spamSMTPConfigInbound.getMsgAction()) );
-        inboundRow.add( super.generateComboBoxModel(SMTPNotifyAction.getValues(), spamSMTPConfigInbound.getNotifyAction()) );
+        inboundRow.add( super.generateComboBoxModel(SpamSMTPNotifyAction.getValues(), spamSMTPConfigInbound.getNotifyAction()) );
         inboundRow.add( spamSMTPConfigInbound.getNotes() );
 	inboundRow.add( spamSMTPConfigInbound );
 	allRows.add(inboundRow);
@@ -131,7 +130,7 @@ class SmtpTableModel extends MSortedTableModel{
         outboundRow.add( SOURCE_OUTBOUND );
         outboundRow.add( spamSMTPConfigOutbound.getScan() );
 	outboundRow.add( super.generateComboBoxModel(SMTPSpamMessageAction.getValues(), spamSMTPConfigOutbound.getMsgAction()) );
-        outboundRow.add( super.generateComboBoxModel(SMTPNotifyAction.getValues(), spamSMTPConfigOutbound.getNotifyAction()) );
+        outboundRow.add( super.generateComboBoxModel(SpamSMTPNotifyAction.getValues(), spamSMTPConfigOutbound.getNotifyAction()) );
         outboundRow.add( spamSMTPConfigOutbound.getNotes() );
 	outboundRow.add( spamSMTPConfigOutbound );
 	allRows.add(outboundRow);

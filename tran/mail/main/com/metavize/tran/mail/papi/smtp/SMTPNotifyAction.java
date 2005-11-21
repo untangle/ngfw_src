@@ -24,10 +24,19 @@ public class SMTPNotifyAction implements Serializable
 
     private static final Map INSTANCES = new HashMap();
 
-    public static final SMTPNotifyAction SENDER = new SMTPNotifyAction('S', "notify sender");
-    public static final SMTPNotifyAction RECEIVER = new SMTPNotifyAction('R', "notify receiver");
-    public static final SMTPNotifyAction BOTH = new SMTPNotifyAction('B', "notify sender and receiver");
-    public static final SMTPNotifyAction NEITHER = new SMTPNotifyAction('N', "do not notify");
+    protected static final char sndr_c = 'S';
+    protected static final char rcvr_c = 'R';
+    protected static final char both_c = 'B';
+    protected static final char none_c = 'N';
+    protected static final String sndr_s = "notify sender";
+    protected static final String rcvr_s = "notify receiver";
+    protected static final String both_s = "notify sender and receiver";
+    protected static final String none_s = "do not notify";
+
+    public static final SMTPNotifyAction SENDER = new SMTPNotifyAction(sndr_c, sndr_s);
+    public static final SMTPNotifyAction RECEIVER = new SMTPNotifyAction(rcvr_c, rcvr_s);
+    public static final SMTPNotifyAction BOTH = new SMTPNotifyAction(both_c, both_s);
+    public static final SMTPNotifyAction NEITHER = new SMTPNotifyAction(none_c, none_s);
 
     static {
         INSTANCES.put(SENDER.getKey(), SENDER);
@@ -39,7 +48,7 @@ public class SMTPNotifyAction implements Serializable
     private final String name;
     private final char key;
 
-    private SMTPNotifyAction(char key, String name)
+    protected SMTPNotifyAction(char key, String name)
     {
         this.key = key;
         this.name = name;

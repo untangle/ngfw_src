@@ -13,7 +13,6 @@ package com.metavize.tran.spam;
 
 import java.io.Serializable;
 import com.metavize.tran.mail.papi.smtp.SmtpNotifyMessageGenerator;
-import com.metavize.tran.mail.papi.smtp.SMTPNotifyAction;
 
 /**
  * Spam control: Definition of spam control settings (either direction)
@@ -29,7 +28,7 @@ public class SpamSMTPConfig extends SpamProtoConfig
 
     /* settings */
     private SMTPSpamMessageAction zMsgAction = SMTPSpamMessageAction.MARK;
-    private SMTPNotifyAction zNotifyAction = SMTPNotifyAction.NEITHER;
+    private SpamSMTPNotifyAction zNotifyAction = SpamSMTPNotifyAction.NEITHER;
     private transient SmtpNotifyMessageGenerator m_notifyMsgGenerator;
     private String m_notifySubjectWrapperTemplate;
     private String m_notifyBodyWrapperTemplate;
@@ -43,7 +42,7 @@ public class SpamSMTPConfig extends SpamProtoConfig
 
     public SpamSMTPConfig(boolean bScan,
         SMTPSpamMessageAction zMsgAction,
-        SMTPNotifyAction zNotifyAction,
+        SpamSMTPNotifyAction zNotifyAction,
         int strength,
         String zNotes,
         String subjectTemplate,
@@ -163,15 +162,15 @@ public class SpamSMTPConfig extends SpamProtoConfig
      * @return the action to take if a message is judged to be spam.
      * @hibernate.property
      * column="NOTIFY_ACTION"
-     * type="com.metavize.tran.mail.papi.smtp.SMTPNotifyActionUserType"
+     * type="com.metavize.tran.spam.SpamSMTPNotifyActionUserType"
      * not-null="true"
      */
-    public SMTPNotifyAction getNotifyAction()
+    public SpamSMTPNotifyAction getNotifyAction()
     {
         return zNotifyAction;
     }
 
-    public void setNotifyAction(SMTPNotifyAction zNotifyAction)
+    public void setNotifyAction(SpamSMTPNotifyAction zNotifyAction)
     {
         // Guard XXX
         this.zNotifyAction = zNotifyAction;
@@ -181,7 +180,7 @@ public class SpamSMTPConfig extends SpamProtoConfig
     /* for GUI */
     public String[] getNotifyActionEnumeration()
     {
-        SMTPNotifyAction[] azNotifyAction = SMTPNotifyAction.getValues();
+        SpamSMTPNotifyAction[] azNotifyAction = SpamSMTPNotifyAction.getValues();
         String[] azStr = new String[azNotifyAction.length];
 
         for (int i = 0; i < azNotifyAction.length; i++)

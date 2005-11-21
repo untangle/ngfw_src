@@ -24,7 +24,6 @@ import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.util.TransactionWork;
-import com.metavize.tran.mail.papi.smtp.SMTPNotifyAction;
 import com.metavize.tran.token.TokenAdaptor;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -295,7 +294,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         zTmpSpamSettings.setSMTPInbound(
           new SpamSMTPConfig(true,
                              SMTPSpamMessageAction.MARK,
-                             SMTPNotifyAction.NEITHER,
+                             SpamSMTPNotifyAction.NEITHER,
                              SpamProtoConfig.DEFAULT_STRENGTH,
                              "Scan incoming SMTP e-mail",
                              getDefaultSubjectWrapperTemplate(true),
@@ -309,7 +308,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         zTmpSpamSettings.setSMTPOutbound(
           new SpamSMTPConfig(false,
                              SMTPSpamMessageAction.PASS,
-                             SMTPNotifyAction.NEITHER,
+                             SpamSMTPNotifyAction.NEITHER,
                              SpamProtoConfig.DEFAULT_STRENGTH,
                              "Scan outgoing SMTP e-mail",
                              getDefaultSubjectWrapperTemplate(false),
