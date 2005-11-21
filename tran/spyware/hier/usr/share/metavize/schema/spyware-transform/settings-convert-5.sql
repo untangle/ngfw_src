@@ -19,7 +19,7 @@ CREATE TABLE settings.tr_spyware_new AS
            block_all_activex, url_blacklist_enabled, activex_details::text,
            cookie_details::text, spyware_details::text,
            block_all_activex_details::text, url_blacklist_details::text,
-           -1 AS subnet_version, -1 AS activex_version, -1 AS cookie_version
+           0 AS subnet_version, 0 AS activex_version, 0 AS cookie_version
     FROM settings.tr_spyware_settings;
 
 DROP TABLE settings.tr_spyware_settings CASCADE;

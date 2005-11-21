@@ -342,7 +342,8 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         }
     }
 
-    private void updateActiveX(SpywareSettings settings, Set<String> add, Set<String> remove)
+    private void updateActiveX(SpywareSettings settings, Set<String> add,
+                               Set<String> remove)
     {
         List<StringRule> rules = (List<StringRule>)settings.getActiveXRules();
         if (null == rules) {
@@ -382,7 +383,8 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         }
     }
 
-    private void updateCookie(SpywareSettings settings, Set<String> add, Set<String> remove)
+    private void updateCookie(SpywareSettings settings, Set<String> add,
+                              Set<String> remove)
     {
         List<StringRule> rules = (List<StringRule>)settings.getCookieRules();
         if (null == rules) {
