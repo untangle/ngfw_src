@@ -131,6 +131,12 @@ public abstract class TransformBase implements Transform
     protected void initializeSettings() { }
 
     /**
+     * Called when the transform is being uninstalled, rather than
+     * just being taken down with the MVVM.
+     */
+    protected void uninstall() { }
+
+    /**
      * Called as the instance is created, but is not configured.
      *
      * @param args[] the transform-specific arguments.
@@ -204,6 +210,8 @@ public abstract class TransformBase implements Transform
     void destroy()
         throws TransformException, IllegalStateException
     {
+        uninstall();
+
         synchronized (stateChangeLock) {
             destroy(true);
         }
