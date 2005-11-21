@@ -41,6 +41,13 @@ if [ ! -f /usr/share/metavize/activation.key ]; then
     grep -sq "release.*\.metavize\.com" /etc/apt/sources.list && grep "release.*\.metavize\.com" /etc/apt/sources.list | sed -e "s|^.*http://||" -e "s|:.*||" > /usr/share/metavize/activation.key
 fi
 
+# Fix up older production boxes
+if [ -d /usr/sbin/mv ]; then
+    sed -i -e "s|FSCKFIX=.*|FSCKFIX=yes|" /etc/default/rcS
+    sed -i -e "s|errors=remount-ro|errors=panic|" /etc/fstab
+    grep -sq panic= /boot/grub/menu.lst || sed -i -e "s|nodhcp|nodhcp panic=5|" /boot/grub/menu.lst
+fi
+
 # right permissions for all those dirs
 /bin/chown -R $USER:$GROUP ${MVVM_LOGDIR} ${MVVM_CACHEDIR}
 /bin/chmod 775 ${MVVM_LOGDIR} ${MVVM_CACHEDIR}
