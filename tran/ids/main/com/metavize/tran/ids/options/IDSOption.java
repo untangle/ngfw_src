@@ -72,9 +72,9 @@ public abstract class IDSOption {
             }
             option.negationFlag = flag;
         } catch (ClassNotFoundException e) {
-            log.debug("Could not load option(ClassNotFound): "+e.getMessage());
+            log.debug("Could not load option(ClassNotFound): " + optionName);
         } catch (NoSuchMethodException e) {
-            log.debug("Could not load option(NoSuchMethod): "+e.getMessage());
+            log.debug("Could not load option(NoSuchMethod): ", e);
         }
         return option;
     }
@@ -84,14 +84,13 @@ public abstract class IDSOption {
         try {
             object = constructor.newInstance(arguments);
         } catch (InstantiationException e) {
-            log.warn("Could not create object(InstantiationException): "+e.getMessage());
+            log.warn("Could not create object(InstantiationException): ", e);
         } catch (IllegalAccessException e) {
-            log.warn("Could not create object(IllegalAccessException): "+e.getMessage());
+            log.warn("Could not create object(IllegalAccessException): ", e);
         } catch (IllegalArgumentException e) {
-            log.warn("Could not create object(IllegalArgumentException): "+e.getMessage());
+            log.warn("Could not create object(IllegalArgumentException): ", e);
         } catch (InvocationTargetException e) {
-            log.warn("Could not create object(InvocationTargetException): "+e.getMessage());
-            e.printStackTrace();
+            log.warn("Could not create object(InvocationTargetException): ", e);
         }
         return object;
     }

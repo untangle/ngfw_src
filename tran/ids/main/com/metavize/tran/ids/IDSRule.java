@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2005 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id: SpywareSettings.java 3501 2005-11-21 10:12:33Z amread $
+ */
+
 package com.metavize.tran.ids;
 
 import com.metavize.mvvm.tran.Rule;

@@ -59,6 +59,10 @@ public class IDSSessionInfo {
         for(IDSRuleSignature sig : c2sSignatures)
             sig.execute(this);
     }
+
+    // For debugging/loggin
+    public int numC2SSignatures() {return c2sSignatures.size();}
+    public int numS2CSignatures() {return s2cSignatures.size();}
 	
     public void processS2CSignatures() {
         for(IDSRuleSignature sig : s2cSignatures)

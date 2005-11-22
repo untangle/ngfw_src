@@ -208,7 +208,12 @@ public class IDSRuleManager {
         synchronized(matchList) {
             for(IDSRuleHeader header : matchList) {
                 if(header.matches(protocol, clientAddr, clientPort, serverAddr, serverPort))
-                    returnList.addAll(header.getSignatures());
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Header matches: " + header);
+                        returnList.addAll(header.getSignatures());
+                    } else {
+                        logger.debug("Header doesn't match: " + header);
+                    }
             }
         }
         //logger.debug("Signature List Size: "+returnList.size()); /** *****************************************/
@@ -244,5 +249,12 @@ public class IDSRuleManager {
             }																		
         }
         return string;
+    }
+
+    public void dumpRules()
+    {
+        for(IDSRule rule : knownRules.values()) {
+            logger.debug(rule.getHeader() + " /// " + rule.getSignature().toString());
+        }
     }
 }

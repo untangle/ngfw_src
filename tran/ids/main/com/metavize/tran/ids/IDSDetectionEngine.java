@@ -1,7 +1,9 @@
 package com.metavize.tran.ids;
 
 import java.nio.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -19,8 +21,14 @@ import com.metavize.mvvm.tran.Transform;
 
 public class IDSDetectionEngine {
 
+    // Any chunk that takes this long gets an error
+    public static final long ERROR_ELAPSED = 20;
+    // Any chunk that takes this long gets a warning
+    public static final long WARN_ELAPSED = 5;
+
     private int 	        maxChunks 	= 8;
     private IDSSettings 	settings 	= null;
+    private Map<String,RuleClassification> classifications = null;
 
     private IDSRuleManager 	rules;
     private IDSTransformImpl 	transform;
@@ -52,6 +60,16 @@ public class IDSDetectionEngine {
           } catch (ParseException e) {
           log.warn("Could not parse rule; " + e.getMessage());
           }*/
+    }
+
+    public RuleClassification getClassification(String classificationName) {
+        return classifications.get(classificationName);
+    }
+
+    public void setClassifications(List<RuleClassification> classificationList) {
+        classifications = new HashMap<String, RuleClassification>();
+        for (RuleClassification rc : classificationList)
+            classifications.put(rc.getName(), rc);
     }
 
     public IDSSettings getSettings() {
@@ -116,15 +134,17 @@ public class IDSDetectionEngine {
         if(c2sList == null) {
             c2sList = rules.matchingPortsList(request.serverPort(), IDSRuleManager.TO_SERVER);
             portC2SMap.put(request.serverPort(),c2sList);
-			
-            log.debug("\nc2sList Size: "+c2sList.size() + " For port: "+request.serverPort());
+
+            if (log.isDebugEnabled())
+                log.debug("c2sHeader list Size: "+c2sList.size() + " For port: "+request.serverPort());
         }
 		
         if(s2cList == null) {
             s2cList = rules.matchingPortsList(request.serverPort(), IDSRuleManager.TO_CLIENT);
             portS2CMap.put(request.serverPort(),s2cList);
 			
-            log.debug("\ns2cList Size: "+s2cList.size() + " For port: "+request.serverPort());
+            if (log.isDebugEnabled())
+                log.debug("s2cHeader list Size: "+s2cList.size() + " For port: "+request.serverPort());
         }
 		
         //Check matches
@@ -136,6 +156,9 @@ public class IDSDetectionEngine {
                                                                    protocol, request.serverAddr(), request.serverPort(),
                                                                    request.clientAddr(), request.clientPort(), s2cList);
 			
+        if (log.isDebugEnabled())
+            log.debug("s2cSignature list size: " + s2cSignatures.size() + ", c2sSignature list size: " +
+                      c2sSignatures.size());
         if(c2sSignatures.size() > 0 || s2cSignatures.size() > 0) {
             request.attach(new Object[] { c2sSignatures, s2cSignatures });
         } else {
@@ -159,13 +182,19 @@ public class IDSDetectionEngine {
         return rules;
     }
 	
+    public void dumpRules()
+    {
+        rules.dumpRules();
+    }
+
     //In process of fixing this
     public void handleChunk(IPDataEvent event, IPSession session, boolean isServer) {
         try {
-            //long startTime = System.nanoTime();
+            long startTime = System.currentTimeMillis();
 		
             SessionStats stats = session.stats();
-            if(stats.s2tChunks() > maxChunks || stats.c2tChunks() > maxChunks)
+            if(stats.s2tChunks() >= maxChunks || stats.c2tChunks() >= maxChunks)
+                // Takes effect after this packet/chunk
                 session.release();
 		
             IDSSessionInfo info = (IDSSessionInfo) session.attachment();
@@ -177,11 +206,27 @@ public class IDSDetectionEngine {
                 info.processC2SSignatures();
             else
                 info.processS2CSignatures();
-		
-            //log.debug("Time: " + (float)(System.nanoTime() - startTime)/1000000f);
-        }
-        catch (Exception e) {
-            log.error("Error parsing chunk: " +e.getMessage());
+
+            long elapsed = System.currentTimeMillis() - startTime;
+            if (isServer) {
+                int numsigs = info.numC2SSignatures();
+                if (elapsed > ERROR_ELAPSED)
+                    log.warn("took " + elapsed + "ms to run " + numsigs + " c2s rules");
+                else if (elapsed > WARN_ELAPSED)
+                    log.warn("took " + elapsed + "ms to run " + numsigs + " c2s rules");
+                else if (log.isDebugEnabled())
+                    log.debug("ms to run " + numsigs + " c2s rules: " + elapsed);
+            } else {
+                int numsigs = info.numS2CSignatures();
+                if (elapsed > ERROR_ELAPSED)
+                    log.warn("took " + elapsed + "ms to run " + numsigs + " s2c rules");
+                else if (elapsed > WARN_ELAPSED)
+                    log.warn("took " + elapsed + "ms to run " + numsigs + " s2c rules");
+                if (log.isDebugEnabled())
+                    log.debug("ms to run " + numsigs + " s2c rules: " + elapsed);
+            }
+        } catch (Exception e) {
+            log.error("Error parsing chunk: ", e);
         }
     }
 }

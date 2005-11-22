@@ -52,6 +52,7 @@ public class IDSStringParser {
         } 
         return returnSignature;
     }	
+
     public static IDSRuleHeader parseHeader(String header, int action) throws ParseException {
 		
         List<IPMatcher> ipMatcher, portMatcher;

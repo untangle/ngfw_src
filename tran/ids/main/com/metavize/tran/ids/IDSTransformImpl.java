@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2005 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id: SpywareSettings.java 3501 2005-11-21 10:12:33Z amread $
+ */
+
 package com.metavize.tran.ids;
 
 import java.io.*;
@@ -25,6 +36,8 @@ import org.hibernate.Session;
 public class IDSTransformImpl extends AbstractTransform implements IDSTransform {
     private static final Logger logger = Logger.getLogger(IDSTransformImpl.class);
 
+    private static final boolean DO_TEST = false;
+
     private final EventLogger<IDSLogEvent> eventLogger;
 
     private IDSSettings settings = null;
@@ -50,6 +63,9 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         eventLogger.addEventFilter(ef);
         ef = new IDSBlockedFilter();
         eventLogger.addEventFilter(ef);
+
+        List<RuleClassification> classifications = FileLoader.loadClassifications();
+        engine.setClassifications(classifications);
     }
 
     @Override
@@ -83,7 +99,6 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
     }
 
     protected void initializeSettings() {
-        List<IDSRule> ruleList = new ArrayList<IDSRule>();
 
         logger.info("Loading Rules...");
         IDSSettings settings = new IDSSettings(getTid());
@@ -91,9 +106,8 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         settings.setImmutableVariables(IDSRuleManager.immutableVariables);
 
         logger.info("Settings was null, loading from file");
-        String path =  System.getProperty("bunnicula.home");
-        File file = new File(path+"/idsrules");
-        visitAllFiles(file, ruleList);
+        IDSRuleManager manager = new IDSRuleManager(engine); // A fake one for now.  XXX
+        List<IDSRule> ruleList = FileLoader.loadAllRuleFiles(manager);
 
         settings.setMaxChunks(engine.getMaxChunks());
         settings.setRules(ruleList);
@@ -102,38 +116,6 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         logger.info(ruleList.size() + " rules loaded");
 
         statisticManager.stop();
-    }
-
-    /** Temp subroutines for loading local snort rules.
-     */
-    private void visitAllFiles(File file, List<IDSRule> result) {
-        if (file.isDirectory()) {
-            String[] children = file.list();
-            for (int i=0; i<children.length; i++)
-                visitAllFiles(new File(file, children[i]), result);
-        }
-        else
-            processFile(file, result);
-    }
-
-    /** Temp subroutines for loading local snort rules.
-     */
-    private void processFile(File file, List<IDSRule> result) {
-        IDSRuleManager manager = new IDSRuleManager(engine);
-        try {
-            String category = file.getName().replaceAll(".rules",""); //Should move this to script land
-            category = category.replace("bleeding-",""); //Should move this to script land
-            BufferedReader in = new BufferedReader(new FileReader(file));
-            String str;
-            while ((str = in.readLine()) != null) {
-                IDSRule rule = manager.createRule(str.trim(), category);
-                if (rule != null)
-                    result.add(rule);
-            }
-            in.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private void queryDBForSettings() {
@@ -154,15 +136,17 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 
     protected void postInit(String args[]) {
         logger.info("Post init");
-    queryDBForSettings();
+        queryDBForSettings();
     }
 
     protected void preStart() throws TransformStartException {
-        logger.error("Running test...");
-        IDSTest test = new IDSTest();
         logger.info("Pre Start");
-        if(!test.runTest())
-          throw new TransformStartException("IDS Test failed"); // */
+        if (DO_TEST) {
+            logger.error("Running test...");
+            IDSTest test = new IDSTest();
+            if(!test.runTest())
+                throw new TransformStartException("IDS Test failed"); // */
+        }
 
         try {
             reconfigure();
@@ -192,6 +176,8 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         for(IDSRule rule : rules) {
             engine.updateRule(rule);
         }
+        if (logger.isDebugEnabled())
+            engine.dumpRules();
         //remove all deleted rules XXXX
     }
 

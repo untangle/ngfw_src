@@ -1,36 +1,46 @@
 package com.metavize.tran.ids.options;
 
 import java.nio.ByteBuffer;
+import org.apache.log4j.Logger;
 
+import com.metavize.tran.ids.IDSDetectionEngine;
+import com.metavize.tran.ids.IDSRule;
 import com.metavize.tran.ids.IDSRuleSignature;
+import com.metavize.tran.ids.IDSTransformImpl;
+import com.metavize.tran.ids.RuleClassification;
+import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.event.*;
 
+
 public class ClasstypeOption extends IDSOption {
-    private final String[] HIGH_PRIORITY = {
-        "attempted-admin","attempted-user","shellcode-detect","successful-admin",
-        "sucessful-user","trojan-activity","unsuccessful-user","web-application-attack"
-    };
-	
-    private final String[] MEDIUM_PRIORITY = {
-        "attempted-dos","attempted-recon","bad-unknown","denial-of-service","misc-attack",
-        "non-standard-protocol","rpc-portmap-decode","successful-dos","successful-recon-largescale",
-        "successful-recon-limited","suspicious-filename-detect","suspicious-login","system-call-detect",
-        "unusual-client-port-connection","web-application-activity" 
-    };
+    private static final int HIGH_PRIORITY = 1;
+    private static final int MEDIUM_PRIORITY = 2;
+    private static final int LOW_PRIORITY = 3;
+    private static final int INFORMATIONAL_PRIORITY = 4; // Super low priority
+
+    private static final Logger logger = Logger.getLogger(ClasstypeOption.class);
 
     public ClasstypeOption(IDSRuleSignature signature, String params, boolean initializeSettingsTime) {
         super(signature, params);
         if (initializeSettingsTime) {
-            for(String str : HIGH_PRIORITY) {
-                if(str.equalsIgnoreCase(params)) {
-                    signature.rule().setLog(true);
-                    return;
-                }
-            }
-            for(String str : MEDIUM_PRIORITY) {
-                if(str.equalsIgnoreCase(params)) {
-                    signature.rule().setLog(true);
-                    return;
+            IDSTransformImpl transform = (IDSTransformImpl)MvvmContextFactory.context().transformManager().threadContext().transform();
+            IDSDetectionEngine engine = transform.getEngine();
+            RuleClassification rc = engine.getClassification(params);
+            if (rc == null) {
+                logger.warn("Unable to find rule classification: " + params);
+            } else {
+                IDSRule rule = signature.rule();
+                int priority = rc.getPriority();
+                // logger.debug("Rule Priority for " + rule.getDescription() + " is " + priority);
+                switch (priority) {
+                case HIGH_PRIORITY:
+                    rule.setLive(true);
+                    rule.setLog(true);
+                    break;
+                case MEDIUM_PRIORITY:
+                    rule.setLog(true);
+                    break;
+                default:
                 }
             }
         }
