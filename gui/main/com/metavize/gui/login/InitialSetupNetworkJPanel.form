@@ -21,58 +21,11 @@
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Dialog" size="12" style="0"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="&lt;html&gt;Please choose a hostname for your EdgeGuard&lt;br&gt;and the domain name it will be operating in.&lt;/html&gt;"/>
+        <Property name="text" type="java.lang.String" value="&lt;html&gt;Please specify how EdgeGuard will get its network settings.&lt;/html&gt;"/>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="20" y="10" width="-1" height="-1"/>
-        </Constraint>
-      </Constraints>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel3">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Dialog" size="12" style="0"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Hostname:"/>
-      </Properties>
-      <Constraints>
-        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="40" y="50" width="-1" height="-1"/>
-        </Constraint>
-      </Constraints>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel4">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Dialog" size="12" style="0"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Domain Name:"/>
-      </Properties>
-      <Constraints>
-        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="20" y="70" width="-1" height="-1"/>
-        </Constraint>
-      </Constraints>
-    </Component>
-    <Component class="javax.swing.JTextField" name="hostnameJTextField">
-      <Properties>
-        <Property name="columns" type="int" value="15"/>
-        <Property name="text" type="java.lang.String" value="mv-edgeguard"/>
-      </Properties>
-      <Constraints>
-        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="110" y="50" width="-1" height="-1"/>
-        </Constraint>
-      </Constraints>
-    </Component>
-    <Component class="javax.swing.JTextField" name="domainnameJTextField">
-      <Properties>
-        <Property name="columns" type="int" value="15"/>
-      </Properties>
-      <Constraints>
-        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="110" y="70" width="-1" height="-1"/>
+          <AbsoluteConstraints x="50" y="30" width="-1" height="-1"/>
         </Constraint>
       </Constraints>
     </Component>
@@ -85,7 +38,7 @@
           <Font name="Dialog" size="12" style="0"/>
         </Property>
         <Property name="selected" type="boolean" value="true"/>
-        <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Automatically Set&lt;/b&gt;  EdgeGuard&apos;s network settings.&lt;/html&gt;"/>
+        <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Automatically&lt;/b&gt; through DHCP.&lt;/html&gt;"/>
         <Property name="actionCommand" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Use DHCP&lt;/b&gt; to automatically set EdgeGuard&apos;s IP address from the network&apos;s DHCP server.&lt;/html&gt;"/>
         <Property name="focusPainted" type="boolean" value="false"/>
         <Property name="opaque" type="boolean" value="false"/>
@@ -98,7 +51,7 @@
       </AuxValues>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="60" y="120" width="-1" height="-1"/>
+          <AbsoluteConstraints x="50" y="60" width="-1" height="-1"/>
         </Constraint>
       </Constraints>
     </Component>
@@ -110,7 +63,7 @@
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Dialog" size="12" style="0"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Manually Set&lt;/b&gt; EdgeGuard&apos;s network settings.&lt;/html&gt;"/>
+        <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Manually&lt;/b&gt; through the fields below.&lt;/html&gt;"/>
         <Property name="focusPainted" type="boolean" value="false"/>
         <Property name="opaque" type="boolean" value="false"/>
       </Properties>
@@ -122,7 +75,7 @@
       </AuxValues>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="60" y="100" width="-1" height="-1"/>
+          <AbsoluteConstraints x="50" y="80" width="-1" height="-1"/>
         </Constraint>
       </Constraints>
     </Component>
@@ -132,7 +85,7 @@
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="80" y="140" width="290" height="130"/>
+          <AbsoluteConstraints x="50" y="100" width="290" height="130"/>
         </Constraint>
       </Constraints>
 
@@ -268,29 +221,15 @@
         </Component>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JLabel" name="jLabel10">
+    <Component class="javax.swing.JLabel" name="jLabel3">
       <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Dialog" size="12" style="0"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/com/metavize/gui/login/ProductShot.png"/>
         </Property>
-        <Property name="text" type="java.lang.String" value=" (Optional)"/>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="280" y="70" width="-1" height="-1"/>
-        </Constraint>
-      </Constraints>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel11">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Dialog" size="12" style="0"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="(required)"/>
-      </Properties>
-      <Constraints>
-        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="290" y="50" width="-1" height="-1"/>
+          <AbsoluteConstraints x="-130" y="230" width="-1" height="-1"/>
         </Constraint>
       </Constraints>
     </Component>

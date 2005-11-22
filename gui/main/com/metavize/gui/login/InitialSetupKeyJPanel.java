@@ -67,22 +67,34 @@ public class InitialSetupKeyJPanel extends MWizardPageJPanel {
     private void initComponents() {//GEN-BEGIN:initComponents
         jLabel2 = new javax.swing.JLabel();
         keyJTextField = new javax.swing.JTextField();
+        jLabel16 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         setOpaque(false);
         jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
         jLabel2.setText("<html>Please enter the 16-digit EdgeGuard activation key<br> into the field below. (With or without dashes)</html>");
-        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, -1, -1));
+        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, 310, -1));
 
         keyJTextField.setColumns(19);
-        add(keyJTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 120, -1, -1));
+        add(keyJTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(85, 118, -1, -1));
+
+        jLabel16.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel16.setText("Key:");
+        add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 120, -1, -1));
+
+        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
+        add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(-130, 230, -1, -1));
 
     }//GEN-END:initComponents
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JTextField keyJTextField;
     // End of variables declaration//GEN-END:variables
     

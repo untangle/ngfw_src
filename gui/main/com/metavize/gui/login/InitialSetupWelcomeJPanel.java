@@ -24,6 +24,7 @@ public class InitialSetupWelcomeJPanel extends MWizardPageJPanel {
     private void initComponents() {//GEN-BEGIN:initComponents
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -37,12 +38,16 @@ public class InitialSetupWelcomeJPanel extends MWizardPageJPanel {
         jLabel2.setText("<html>This wizard will help guide you through your<br>\ninitial setup and configuration of the EdgeGuard.</html>");
         add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 110, -1, -1));
 
+        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
+        add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(-130, 230, -1, -1));
+
     }//GEN-END:initComponents
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     // End of variables declaration//GEN-END:variables
     
 }

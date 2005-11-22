@@ -78,42 +78,73 @@ public class InitialSetupPasswordJPanel extends MWizardPageJPanel {
     
 
     private void initComponents() {//GEN-BEGIN:initComponents
+        java.awt.GridBagConstraints gridBagConstraints;
+
         jLabel2 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
         passwordJPasswordField = new javax.swing.JPasswordField();
         retypePasswordJPasswordField = new javax.swing.JPasswordField();
+        jLabel5 = new javax.swing.JLabel();
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         setOpaque(false);
         jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
         jLabel2.setText("<html>Please choose a password for the first account.</html>");
-        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, -1, -1));
+        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, -1, -1));
 
+        jPanel1.setLayout(new java.awt.GridBagLayout());
+
+        jPanel1.setOpaque(false);
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
         jLabel1.setText("Login:");
-        add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 70, -1, -1));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        jPanel1.add(jLabel1, gridBagConstraints);
 
         jLabel3.setFont(new java.awt.Font("Dialog", 0, 12));
         jLabel3.setText("Password:");
-        add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 90, -1, -1));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        jPanel1.add(jLabel3, gridBagConstraints);
 
         jLabel4.setFont(new java.awt.Font("Dialog", 0, 12));
         jLabel4.setText("Retype Password:");
-        add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 110, -1, -1));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        jPanel1.add(jLabel4, gridBagConstraints);
 
         jLabel12.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel12.setText("admin");
-        add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 70, -1, -1));
+        jLabel12.setText(" admin");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
+        jPanel1.add(jLabel12, gridBagConstraints);
 
         passwordJPasswordField.setColumns(15);
-        add(passwordJPasswordField, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 90, -1, -1));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
+        jPanel1.add(passwordJPasswordField, gridBagConstraints);
 
         retypePasswordJPasswordField.setColumns(15);
-        add(retypePasswordJPasswordField, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 110, -1, -1));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
+        jPanel1.add(retypePasswordJPasswordField, gridBagConstraints);
+
+        add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 100, -1, -1));
+
+        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
+        add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(-130, 230, -1, -1));
 
     }//GEN-END:initComponents
     
@@ -124,6 +155,8 @@ public class InitialSetupPasswordJPanel extends MWizardPageJPanel {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JPasswordField passwordJPasswordField;
     private javax.swing.JPasswordField retypePasswordJPasswordField;
     // End of variables declaration//GEN-END:variables

@@ -49,21 +49,25 @@ public class InitialSetupTimezoneJPanel extends MWizardPageJPanel {
         jLabel2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         timezoneJComboBox = new javax.swing.JComboBox();
+        jLabel3 = new javax.swing.JLabel();
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         setOpaque(false);
         jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel2.setText("<html>Please choose the timezone which the EdgeGuard will be<br>operating in.</html>");
-        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, -1, -1));
+        jLabel2.setText("<html>Please choose the timezone your EdgeGuard will be in.</html>");
+        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, -1, -1));
 
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
         jLabel1.setText("Timezone:");
-        add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 100, -1, -1));
+        add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 100, -1, -1));
 
         timezoneJComboBox.setFont(new java.awt.Font("Dialog", 0, 12));
         timezoneJComboBox.setFocusable(false);
-        add(timezoneJComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 90, 260, -1));
+        add(timezoneJComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(115, 95, 260, -1));
+
+        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
+        add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(-130, 230, -1, -1));
 
     }//GEN-END:initComponents
     
@@ -71,6 +75,7 @@ public class InitialSetupTimezoneJPanel extends MWizardPageJPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JComboBox timezoneJComboBox;
     // End of variables declaration//GEN-END:variables
     

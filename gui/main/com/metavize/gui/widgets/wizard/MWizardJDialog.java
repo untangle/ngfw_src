@@ -196,7 +196,7 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
         setResizable(false);
         contentJPanel.setLayout(new java.awt.BorderLayout());
 
-        contentJPanel.setBorder(new javax.swing.border.EtchedBorder());
+        contentJPanel.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EmptyBorder(new java.awt.Insets(4, 4, 4, 4)), new javax.swing.border.EtchedBorder()));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
