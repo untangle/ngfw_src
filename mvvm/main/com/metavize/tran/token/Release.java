@@ -20,7 +20,7 @@ import java.nio.ByteBuffer;
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
  */
-class Release implements Token
+public class Release implements Token
 {
     public static final Release EMPTY = new Release(ByteBuffer.allocate(0));
 
