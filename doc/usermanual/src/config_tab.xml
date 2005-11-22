@@ -252,6 +252,7 @@
       <title>Restore</title>
       <para>
         TODO as seen in <xref linkend="config_tab_backuprestore_restore_figure"/>
+        TODO Someone needs to figure out how to take screenshots of the logged-in console mode.  I'm not sure if the common screen capture utilities will work w/o X (or is that X running)?
       </para>
       <figure id="config_tab_backuprestore_restore_figure">
         <title>Restore Tab</title>
