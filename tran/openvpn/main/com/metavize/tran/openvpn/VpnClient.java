@@ -25,7 +25,6 @@ import java.util.HashMap;
 import com.metavize.mvvm.tran.Rule;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.Validatable;
-
 import com.metavize.mvvm.tran.ValidateException;
 
 /**
@@ -142,16 +141,23 @@ public class VpnClient extends Rule implements Validatable
         return getName().trim().toLowerCase().replace( " ", "_" );
     }
 
-    public void validate() throws Exception
+    public void validate() throws ValidateException
     {
         /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
-        String name = getInternalName();
-        if ( name.length() == 0 ) {
+        String internalName = getInternalName();
+        String name = getName();
+
+        if ( internalName.length() == 0 ) {
             throw new ValidateException( "A client cannot have an empty name" );
         }
         
         if ( !NAME_PATTERN.matcher( name ).matches()) {
-            throw new ValidateException( "A client name should only contains numbers, letters, dashes and periods: " + name );
+            throw new ValidateException( "A client name should only contains numbers, letters, " +
+                                         "dashes and periods: " + name );
+        }
+
+        if ( this.group == null ) {
+            throw new ValidateException( "Group cannot be null" );
         }
     }
 

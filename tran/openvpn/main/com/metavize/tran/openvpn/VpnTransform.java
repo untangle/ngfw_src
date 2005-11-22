@@ -14,6 +14,10 @@ package com.metavize.tran.openvpn;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.mvvm.tran.IPaddr;
 
+import com.metavize.mvvm.tran.TransformException;
+import com.metavize.mvvm.tran.ValidateException;
+
+
 import java.util.List;
 
 public interface VpnTransform extends Transform
@@ -34,18 +38,21 @@ public interface VpnTransform extends Transform
     /* Need the address to log where the request came from */
     public String lookupClientDistributionKey( String key, IPaddr address );
 
-    // XXXX needed for setup wizard control /////
-    public enum ConfigState {UNCONFIGURED, CLIENT, SERVER_BRIDGE, SERVER_ROUTE}
-    public ConfigState getConfigState();
-    public void startConfig(ConfigState state);
-    public void completeConfig() throws Exception;
-    //// the stages of the setup wizard ///
-    public void downloadConfig(IPaddr address, String key) throws Exception;
-    public void generateCertificate(String organization, String country, String state, String locality) throws Exception;
-    public void setAddressGroups(List<VpnGroup> parameters) throws Exception;
-    public void setExportedAddressList(List<SiteNetwork> parameters) throws Exception;
-    public void setClients(List<VpnClient> parameters) throws Exception;
-    public void setSites(List<VpnSite> parameters) throws Exception;
-    
+    /* Send out the client distribution */
+    public void distributeClientConfig( VpnClient client, boolean usbKey, String email )
+        throws TransformException;
 
+    public enum ConfigState { UNCONFIGURED, CLIENT, SERVER_BRIDGE, SERVER_ROUTE }
+    public ConfigState getConfigState();
+
+    public void startConfig(ConfigState state) throws ValidateException;
+    public void completeConfig() throws Exception;
+
+    //// the stages of the setup wizard ///
+    public void downloadConfig( IPaddr address, String key ) throws Exception;
+    public void generateCertificate( CertificateParameters parameters ) throws Exception;
+    public void setAddressGroups( GroupList parameters ) throws Exception;
+    public void setExportedAddressList( ExportList parameters ) throws Exception;
+    public void setClients( ClientList parameters ) throws Exception;
+    public void setSites( SiteList parameters ) throws Exception;    
 }

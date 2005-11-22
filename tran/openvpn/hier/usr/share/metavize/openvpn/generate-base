@@ -8,7 +8,7 @@ GLOBALS=@MVVM_HOME@/openvpn/globals
 if [ -r ${GLOBALS} ]; then
     . ${GLOBALS}
 else
-    echo "Unable to load the openvpn configuration file ${BASE_CONFIG_FILE}"
+    echo "Unable to load the openvpn configuration file ${GLOBALS}"
     exit -2
 fi
 
@@ -22,8 +22,8 @@ DH_DIR="${OPENVPN_HOME}/dh"
 
 function diffieHellman()
 {
-    local dhFile="${DH_DIR}/dh${KEY_SIZE}-$(( ${RANDOM} % 4 )).pem"
-    cp ${dhFile} ${KEY_DIR}/dh.pem
+    local t_dhFile="${DH_DIR}/dh${KEY_SIZE}-$(( ${RANDOM} % 4 )).pem"
+    cp ${t_dhFile} ${KEY_DIR}/dh.pem
 }
 
 function generateCA()

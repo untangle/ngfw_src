@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.TransformStats;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.logging.EventLogger;
 
@@ -76,6 +77,10 @@ class OpenVpnMonitor implements Runnable
     private Map<Key,Stats> statusMap    = new HashMap<Key,Stats>();
     private Map<String,Stats> activeMap = new HashMap<String,Stats>();
     private VpnStatisticEvent statistics = new VpnStatisticEvent();
+
+    private long totalBytesTx = 0;
+    private long totalBytesRx = 0;
+        
 
     /* This is a list that contains the contents of the command "status 2" from openvpn */
     private final List<String> clientStatus = new LinkedList<String>();
@@ -199,6 +204,10 @@ class OpenVpnMonitor implements Runnable
         eventLogger.stop();
     }
 
+    TransformStats updateStats( TransformStats stats )
+    {
+        return stats;
+    }
 
     private void updateStatus( boolean killUndef )
         throws UnknownHostException, SocketException, IOException
@@ -292,7 +301,7 @@ class OpenVpnMonitor implements Runnable
             stats.bytesRxLast = stats.bytesRxTotal;
             stats.lastUpdate = now;
         }
-                
+                        
         eventLogger.log( currentStatistics );
     }
 
@@ -400,7 +409,7 @@ class OpenVpnMonitor implements Runnable
             
         Key key = new Key( name, address, port, start );
         Stats stats = statusMap.get( key );
-
+                
         if ( stats == null ) {
             stats  = activeMap.get( name );
             if ( stats == null ) {

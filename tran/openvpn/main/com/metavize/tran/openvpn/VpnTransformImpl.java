@@ -10,7 +10,12 @@
  */
 package com.metavize.tran.openvpn;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+
 import java.util.List;
+import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -27,9 +32,13 @@ import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformStartException;
 import com.metavize.mvvm.tran.TransformState;
+import com.metavize.mvvm.tran.TransformStats;
 import com.metavize.mvvm.tran.TransformStopException;
+import com.metavize.mvvm.tran.ValidateException;
 import com.metavize.mvvm.util.TransactionWork;
 import com.metavize.mvvm.argon.ArgonException;
+
+import com.metavize.mvvm.MailSender;
 
 public class VpnTransformImpl extends AbstractTransform
     implements VpnTransform
@@ -37,6 +46,8 @@ public class VpnTransformImpl extends AbstractTransform
     private static final String TRAN_NAME    = "openvpn";
     private static final String WEB_APP      = TRAN_NAME;
     private static final String WEB_APP_PATH = "/" + WEB_APP;
+    private static final String MAIL_IMAGE_DIR_PREFIX = "images";
+    private static final String MAIL_IMAGE_DIR = Constants.VPN_SCRIPT_BASE + "/images";
 
     private final Logger logger = Logger.getLogger( VpnTransformImpl.class );
     
@@ -53,6 +64,8 @@ public class VpnTransformImpl extends AbstractTransform
     private final EventHandler handler;
 
     private VpnSettings settings;
+
+    private Sandbox sandbox = null;
 
     // constructor ------------------------------------------------------------
 
@@ -92,27 +105,6 @@ public class VpnTransformImpl extends AbstractTransform
 
         /* Update the status/generate all of the certificates for clients */
         this.certificateManager.updateCertificateStatus( settings );
-
-        /* XXXXXXXXXXXXXXXXX NO, just for testing */
-        for ( final VpnClient client : (List<VpnClient>)settings.getClientList()) {
-            try {
-                client.setDistributionKey( "test" ); /* SOO XXX JENKY */
-                this.openVpnManager.writeClientConfigurationFiles( settings, client );
-            } catch ( TransformException e ) {
-                logger.error( "Error writing config file for " + client.getName());
-            }
-        }
-
-        for ( final VpnClient client : (List<VpnClient>)settings.getSiteList()) {
-            try {
-                client.setDistributionKey( "test" ); /* SOO XXXX JENKY */
-                this.openVpnManager.writeClientConfigurationFiles( settings, client );
-            } catch ( TransformException e ) {
-                logger.error( "Error writing config file for " + client.getName());
-            }
-        }
-        /* XXXXXXXXXXXXXXXXX NO, just for testing */
-
 
         TransactionWork tw = new TransactionWork()
             {
@@ -185,9 +177,65 @@ public class VpnTransformImpl extends AbstractTransform
     }
 
 
-    public void distributeClientKey( VpnClient client, boolean usbKey, String email )
+    public void distributeClientConfig( VpnClient client, boolean usbKey, String email )
+        throws TransformException
     {
+        /* Generate a random key */
+        this.openVpnManager.writeClientConfigurationFiles( settings, client );
+        this.certificateManager.createClient( client );
+        
+        if ( usbKey ) {
+            distributeClientConfigUsb( client );
+        } else {
+            distributeClientConfigEmail( client, email );
+        }
     }
+
+    private void distributeClientConfigUsb( VpnClient client )
+        throws TransformException
+    {
+        
+    }
+
+    private void distributeClientConfigEmail( VpnClient client, String email )
+        throws TransformException
+    {
+        try {
+            String subject = "OpenVPN Client";
+            
+            File imageDirectory = new File( MAIL_IMAGE_DIR );
+            
+            List<File> extraList = new LinkedList<File>();
+            List<String> locationList = new LinkedList<String>();
+            
+            if ( imageDirectory.exists() && imageDirectory.isDirectory()) {
+                for ( File image : imageDirectory.listFiles()) {
+                    extraList.add( image );
+                    locationList.add( MAIL_IMAGE_DIR_PREFIX + "/" + image.getName());
+                }
+            }
+
+            MailSender mailSender = MvvmContextFactory.context().mailSender();
+            
+            /* Read in the contents of the file */
+            FileReader fileReader = new FileReader( Constants.VPN_SCRIPT_BASE + "/mail-template.html" );
+            StringBuilder sb = new StringBuilder();
+            char[] buf = new char[1024];
+            int rs;
+            while (( rs = fileReader.read( buf )) > 0) sb.append( buf, 0, rs );
+            
+            try {
+                fileReader.close();
+            } catch ( IOException e ) {
+                logger.warn( "Unable to close file", e );
+            }
+            
+            mailSender.sendReports( subject, sb.toString(), locationList, extraList );
+        } catch ( Exception e ) {
+            logger.warn( "Error distributing client key", e );
+            throw new TransformException( e );
+        }
+    } 
 
     /* Get the common name for the key, and clear it if it exists */
     public synchronized String lookupClientDistributionKey( String key, IPaddr clientAddress )
@@ -256,8 +304,7 @@ public class VpnTransformImpl extends AbstractTransform
         if ( isWebAppDeployed ) {
             if( MvvmContextFactory.context().unloadWebApp(WEB_APP_PATH )) {
                 logger.debug( "Unloaded openvpn web app" );
-            }
-            logger.error( "Unable to unload openvpn web app" );
+            } else logger.error( "Unable to unload openvpn web app" );
         }
         isWebAppDeployed = false;
     }
@@ -273,7 +320,7 @@ public class VpnTransformImpl extends AbstractTransform
     @Override protected void preInit( final String[] args ) throws TransformException
     {
         super.preInit( args );
-
+        
         /* Initially use tun0, even though it could eventually be configured to the tap interface  */
         try {
             MvvmContextFactory.context().argonManager().registerIntf( IntfConstants.VPN_INTF, "tun0" );
@@ -299,6 +346,8 @@ public class VpnTransformImpl extends AbstractTransform
                 }
             };
         getTransformContext().runTransaction( tw );
+
+        deployWebApp();
 
         /* Register the VPN interface */
         reconfigure();
@@ -350,7 +399,6 @@ public class VpnTransformImpl extends AbstractTransform
 
     @Override protected void preStop() throws TransformStopException {
         super.preStop();
-        unDeployWebApp();
 
         try {
             openVpnMonitor.stop();
@@ -368,11 +416,21 @@ public class VpnTransformImpl extends AbstractTransform
     @Override protected void postDestroy() throws TransformException
     {
         super.postDestroy();
+
+        unDeployWebApp();
+
         try {
             MvvmContextFactory.context().argonManager().deregisterIntf( IntfConstants.VPN_INTF );
         } catch ( ArgonException e ) {
             throw new TransformException( "Unable to deregister vpn interface", e );
         }
+    }
+
+    @Override public TransformStats getStats()
+    {
+        /* Track the session info separately */
+        TransformStats stats = super.getStats();
+        return this.openVpnMonitor.updateStats( stats );
     }
 
     public void reconfigure()
@@ -394,16 +452,56 @@ public class VpnTransformImpl extends AbstractTransform
         setVpnSettings((VpnSettings)settings);
     }
 
-    //////////////// XXXXX wizard methods //////////////
-    public ConfigState getConfigState(){ return ConfigState.UNCONFIGURED; };
-    public void startConfig(ConfigState state){}
-    public void completeConfig() throws Exception{}
-    //// the stages of the setup wizard ///
-    public void downloadConfig(IPaddr address, String key) throws Exception{}
-    public void generateCertificate(String organization, String country, String state, String locality) throws Exception{}
-    public void setAddressGroups(List<VpnGroup> parameters) throws Exception{}
-    public void setExportedAddressList(List<SiteNetwork> parameters) throws Exception{}
-    public void setClients(List<VpnClient> parameters) throws Exception{}
-    public void setSites(List<VpnSite> parameters) throws Exception{}
+    public ConfigState getConfigState()
+    {
+        return ConfigState.UNCONFIGURED; 
+    }
 
+    public void startConfig( ConfigState state ) throws ValidateException
+    {
+        if ( state == ConfigState.UNCONFIGURED || state == ConfigState.SERVER_BRIDGE ) {
+            throw new ValidateException( "Cannot run wizard in the selected state: " + state );
+        }
+
+        this.sandbox = new Sandbox( state );
+    }
+
+    public void completeConfig() throws Exception
+    {
+        setVpnSettings( this.sandbox.completeConfig( this.getTid()));
+        
+        /* No reusing the sanbox */
+        this.sandbox = null;
+    }
+
+    //// the stages of the setup wizard ///
+    public void downloadConfig(IPaddr address, String key) throws Exception
+    {
+    }
+    
+    public void generateCertificate( CertificateParameters parameters ) throws Exception
+    {
+        this.sandbox.generateCertificate( parameters );
+    }
+    
+    public void setAddressGroups( GroupList parameters) throws Exception
+    {
+        this.sandbox.setGroupList( parameters );
+    }
+    
+    public void setExportedAddressList( ExportList parameters) throws Exception
+    {
+        this.sandbox.setExportList( parameters );
+
+    }
+    
+    public void setClients( ClientList parameters) throws Exception
+    {
+        this.sandbox.setClientList( parameters );
+    }
+    
+    public void setSites( SiteList parameters) throws Exception
+    {
+        this.sandbox.setSiteList( parameters );
+    }
 }

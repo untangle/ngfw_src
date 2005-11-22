@@ -10,6 +10,8 @@
  */
 package com.metavize.tran.openvpn;
 
+import java.io.File;
+
 import java.util.List;
 import java.util.Set;
 import java.util.Map;
@@ -74,9 +76,8 @@ class OpenVpnManager
 
     private static final String FLAG_MAX_CLI      = "max-clients";
 
-    /* XXXXXXXXX Need to select a valid cipher to use */
     private static final String FLAG_REMOTE       = "remote";
-    private static final String DEFAULT_CIPHER    = "none";
+    private static final String DEFAULT_CIPHER    = "AES-128-CBC";
 
     private static final String FLAG_CERT         = "cert";
     private static final String FLAG_KEY          = "key";
@@ -176,8 +177,15 @@ class OpenVpnManager
         ScriptRunner.getInstance().exec( VPN_START_SCRIPT );
 
         try {
-            String intf = ( settings.isBridgeMode()) ? DEVICE_BRIDGE : DEVICE_ROUTING;
-            MvvmContextFactory.context().argonManager().registerIntf( IntfConstants.VPN_INTF, intf );
+            boolean isBridgeMode = settings.isBridgeMode();
+            String intf = ( isBridgeMode ) ? DEVICE_BRIDGE : DEVICE_ROUTING;
+            ArgonManager am = MvvmContextFactory.context().argonManager();
+            am.registerIntf( IntfConstants.VPN_INTF, intf );
+
+            if ( isBridgeMode ) {
+                am.enableInternalBridgeIntf( MvvmContextFactory.context().networkingManager().get(), intf );
+                am.updateAddress();
+            }
         } catch ( ArgonException e ) {
             throw new TransformException( e );
         }
@@ -195,7 +203,9 @@ class OpenVpnManager
         ScriptRunner.getInstance().exec( VPN_STOP_SCRIPT );
 
         try {
-            MvvmContextFactory.context().argonManager().updateAddress();
+            ArgonManager am = MvvmContextFactory.context().argonManager();
+            am.disableInternalBridgeIntf( MvvmContextFactory.context().networkingManager().get());
+            am.updateAddress();
         } catch ( ArgonException e ) {
             throw new TransformException( e );
         }
@@ -216,8 +226,7 @@ class OpenVpnManager
 
         /* Bridging or routing */
         if ( settings.isBridgeMode()) {            
-            sw.appendVariable( FLAG_DEVICE, DEVICE_BRIDGE );
-            
+            sw.appendVariable( FLAG_DEVICE, DEVICE_BRIDGE );            
         } else {
             sw.appendVariable( FLAG_DEVICE, DEVICE_ROUTING );
             IPaddr localEndpoint  = settings.getServerAddress();
@@ -227,14 +236,13 @@ class OpenVpnManager
             writePushRoute( sw, localEndpoint, null );
 
             /* Get all of the routes for all of the different groups */
-            writeGroups( sw, settings );
-                                    
-            writeExports( sw, settings );
+            writeGroups( sw, settings );                                    
         }
+        
+        writeExports( sw, settings );
         
         int maxClients = settings.getMaxClients();
         if ( maxClients > 0 ) sw.appendVariable( FLAG_MAX_CLI, String.valueOf( maxClients ));       
-        
         
         sw.writeFile( VPN_SERVER_FILE );
     }
@@ -324,6 +332,22 @@ class OpenVpnManager
 
     private void writeClientFiles( VpnSettings settings )
     {
+
+        /* Delete the old client files */
+        try {
+            File baseDirectory = new File( VPN_CCD_DIR );
+            if ( baseDirectory.exists()) {
+                for ( File clientConfig : baseDirectory.listFiles()) {
+                    logger.debug( "Deleting the file: " + clientConfig );
+                    clientConfig.delete();
+                }
+            } else {
+                baseDirectory.mkdir();
+            }
+        } catch ( Exception e ) {
+            logger.error( "Unable to initialize the client configuration file" );
+        }
+        
         for ( VpnClient client : (List<VpnClient>)settings.getClientList()) {
             if ( !client.isEnabled()) continue;
 

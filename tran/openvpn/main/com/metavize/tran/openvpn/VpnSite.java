@@ -16,6 +16,7 @@ import com.metavize.mvvm.tran.IPaddr;
 import java.util.List;
 import java.util.LinkedList;
 
+import com.metavize.mvvm.tran.ValidateException;
 
 /**
  *  A site network for a client.  Done this way so the client site networks and the server 
@@ -123,6 +124,15 @@ public class  VpnSite extends VpnClient
         site.setLive( true );
         site.setNetwork( network );
         site.setNetmask( netmask );
+    }
+
+    public void validate() throws ValidateException
+    {
+        super.validate();
+
+        if (( this.exportedAddressList == null ) || ( this.exportedAddressList.size()  == 0 )) {
+            throw new ValidateException( "A site must have at least one exported address" );
+        }
     }
 }
 

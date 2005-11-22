@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.ParseException;
+import com.metavize.mvvm.tran.TransformException;
 
 import com.metavize.tran.openvpn.VpnTransform;
 import com.metavize.tran.openvpn.VpnClient;
@@ -171,18 +172,15 @@ public class NetSettingsTwoJPanel extends javax.swing.JPanel {
     private void acceptJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acceptJButtonActionPerformed
         VpnSettings settings = openvpn.getVpnSettings();
         
-        // settings.setIsInternalExported( Boolean.parseBoolean( jTextField1.getText().trim()));
-        // settings.setIsExternalExported( Boolean.parseBoolean( jTextField2.getText().trim()));
+        /* Distribute all of the clients */
+        for ( VpnClient client : (List<VpnClient>)settings.getClientList()) {
+            try {
+                openvpn.distributeClientConfig( client, false, "rbscott@mac.com" );
+            } catch( TransformException e ) {
+                System.err.println( "exception distributing client: " + e );
+            }
+        }
         
-        List siteList = new LinkedList();
-        addSite( jTextField3, siteList );
-        addSite( jTextField4, siteList );
-        addSite( jTextField5, siteList );
-        settings.setExportedAddressList( siteList );
-        
-        openvpn.setVpnSettings( settings );
-        
-        update( openvpn.getVpnSettings());
     }//GEN-LAST:event_acceptJButtonActionPerformed
 
     private void addSite( javax.swing.JTextField field, List siteList )

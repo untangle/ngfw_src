@@ -16,6 +16,7 @@ import java.io.Serializable;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.Rule;
 import com.metavize.mvvm.tran.Validatable;
+import com.metavize.mvvm.tran.ValidateException;
 
 /**
  * A VPN group of address and clients.
@@ -105,7 +106,7 @@ public class VpnGroup extends Rule implements Validatable
         return getName().trim().toLowerCase();
     }
     
-    public void validate() throws Exception
+    public void validate() throws ValidateException
     {
         /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
     }

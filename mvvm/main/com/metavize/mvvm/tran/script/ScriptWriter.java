@@ -102,6 +102,11 @@ public class ScriptWriter
         return SCRIPT_HEADER;
     }
 
+    public String getContents()
+    {
+        return sb.toString();
+    }
+
     public void writeFile( String fileName ) 
     {
         BufferedWriter out = null;

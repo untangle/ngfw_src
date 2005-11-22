@@ -15,6 +15,8 @@ import com.metavize.mvvm.tran.Rule;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.Validatable;
 
+import com.metavize.mvvm.tran.ValidateException;
+
 /**
  * A network that is available at a site.
  *
@@ -79,7 +81,7 @@ public abstract class SiteNetwork extends Rule implements Validatable
         this.netmask = netmask;
     }
     
-    public void validate() throws Exception
+    public void validate() throws ValidateException
     {
         /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
     }
