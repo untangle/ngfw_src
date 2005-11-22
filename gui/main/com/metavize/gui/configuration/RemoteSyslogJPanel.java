@@ -115,8 +115,8 @@ public class RemoteSyslogJPanel extends javax.swing.JPanel implements Savable, R
         syslogButtonGroup = new javax.swing.ButtonGroup();
         trapButtonGroup = new javax.swing.ButtonGroup();
         externalRemoteJPanel = new javax.swing.JPanel();
-        syslogEnabledRadioButton = new javax.swing.JRadioButton();
         syslogDisabledRadioButton = new javax.swing.JRadioButton();
+        syslogEnabledRadioButton = new javax.swing.JRadioButton();
         enableRemoteJPanel = new javax.swing.JPanel();
         restrictIPJPanel = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
@@ -136,22 +136,6 @@ public class RemoteSyslogJPanel extends javax.swing.JPanel implements Savable, R
         externalRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
         externalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Syslog Monitoring", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
-        syslogButtonGroup.add(syslogEnabledRadioButton);
-        syslogEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        syslogEnabledRadioButton.setText("<html><b>Enable</b> Syslog Monitoring.</html>");
-        syslogEnabledRadioButton.setFocusPainted(false);
-        syslogEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                syslogEnabledRadioButtonActionPerformed(evt);
-            }
-        });
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        externalRemoteJPanel.add(syslogEnabledRadioButton, gridBagConstraints);
-
         syslogButtonGroup.add(syslogDisabledRadioButton);
         syslogDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
         syslogDisabledRadioButton.setText("<html><b>Disable</b> Syslog Monitoring. (This is the default setting.)</html>");
@@ -166,8 +150,24 @@ public class RemoteSyslogJPanel extends javax.swing.JPanel implements Savable, R
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
         externalRemoteJPanel.add(syslogDisabledRadioButton, gridBagConstraints);
+
+        syslogButtonGroup.add(syslogEnabledRadioButton);
+        syslogEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        syslogEnabledRadioButton.setText("<html><b>Enable</b> Syslog Monitoring.</html>");
+        syslogEnabledRadioButton.setFocusPainted(false);
+        syslogEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                syslogEnabledRadioButtonActionPerformed(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+        externalRemoteJPanel.add(syslogEnabledRadioButton, gridBagConstraints);
 
         enableRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 

@@ -30,7 +30,6 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel implements Savable, Ref
     
     public RemoteSnmpJPanel() {
         initComponents();
-	snmpPortJSpinner.setModel(new SpinnerNumberModel(0,0,65535,1));
 	trapPortJSpinner.setModel(new SpinnerNumberModel(0,0,65535,1));
     }
 
@@ -46,9 +45,6 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel implements Savable, Ref
 	    snmpCommunityJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
 	    throw new Exception(EXCEPTION_SNMP_COMMUNITY_MISSING);
 	}
-
-	// SNMP PORT //////
-	int snmpPort = (Integer) snmpPortJSpinner.getValue();
 
 	// SNMP SYSTEM CONTACT /////
 	String snmpContact = snmpContactJTextField.getText();
@@ -86,7 +82,6 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel implements Savable, Ref
 	    snmpSettings.setEnabled( isSnmpEnabled );
 	    if( isSnmpEnabled ){
 		snmpSettings.setCommunityString( snmpCommunity );
-		snmpSettings.setPort( snmpPort );
 		snmpSettings.setSysContact( snmpContact );
 		snmpSettings.setSysLocation( snmpLocation );
 		snmpSettings.setSendTraps( isTrapEnabled );
@@ -117,10 +112,6 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel implements Savable, Ref
 	String snmpCommunity = snmpSettings.getCommunityString();
 	snmpCommunityJTextField.setText( snmpCommunity );
 	snmpCommunityJTextField.setBackground( Color.WHITE );
-
-	// SNMP PORT /////
-	int snmpPort = snmpSettings.getPort();
-	snmpPortJSpinner.setValue( snmpPort );
 
 	// SNMP CONTACT //////
 	String snmpContact = snmpSettings.getSysContact();
@@ -161,22 +152,20 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel implements Savable, Ref
         snmpButtonGroup = new javax.swing.ButtonGroup();
         trapButtonGroup = new javax.swing.ButtonGroup();
         externalRemoteJPanel = new javax.swing.JPanel();
-        snmpEnabledRadioButton = new javax.swing.JRadioButton();
         snmpDisabledRadioButton = new javax.swing.JRadioButton();
+        snmpEnabledRadioButton = new javax.swing.JRadioButton();
         enableRemoteJPanel = new javax.swing.JPanel();
         restrictIPJPanel = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         snmpCommunityJTextField = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         snmpContactJTextField = new javax.swing.JTextField();
-        jLabel11 = new javax.swing.JLabel();
-        snmpPortJSpinner = new javax.swing.JSpinner();
         jLabel12 = new javax.swing.JLabel();
         snmpLocationJTextField = new javax.swing.JTextField();
         jSeparator3 = new javax.swing.JSeparator();
         enableRemoteJPanel1 = new javax.swing.JPanel();
-        trapEnabledRadioButton = new javax.swing.JRadioButton();
         trapDisabledRadioButton = new javax.swing.JRadioButton();
+        trapEnabledRadioButton = new javax.swing.JRadioButton();
         restrictIPJPanel1 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         trapCommunityJTextField = new javax.swing.JTextField();
@@ -193,6 +182,22 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel implements Savable, Ref
         externalRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
         externalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "SNMP Monitoring", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+        snmpButtonGroup.add(snmpDisabledRadioButton);
+        snmpDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        snmpDisabledRadioButton.setText("<html><b>Disable</b> SNMP Monitoring. (This is the default setting.)</html>");
+        snmpDisabledRadioButton.setFocusPainted(false);
+        snmpDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                snmpDisabledRadioButtonActionPerformed(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        externalRemoteJPanel.add(snmpDisabledRadioButton, gridBagConstraints);
+
         snmpButtonGroup.add(snmpEnabledRadioButton);
         snmpEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
         snmpEnabledRadioButton.setText("<html><b>Enable</b> SNMP Monitoring.</html>");
@@ -208,23 +213,6 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel implements Savable, Ref
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         externalRemoteJPanel.add(snmpEnabledRadioButton, gridBagConstraints);
-
-        snmpButtonGroup.add(snmpDisabledRadioButton);
-        snmpDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        snmpDisabledRadioButton.setText("<html><b>Disable</b> SNMP Monitoring. (This is the default setting.)</html>");
-        snmpDisabledRadioButton.setFocusPainted(false);
-        snmpDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                snmpDisabledRadioButtonActionPerformed(evt);
-            }
-        });
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
-        externalRemoteJPanel.add(snmpDisabledRadioButton, gridBagConstraints);
 
         enableRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -265,26 +253,6 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel implements Savable, Ref
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
         restrictIPJPanel.add(snmpContactJTextField, gridBagConstraints);
-
-        jLabel11.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel11.setText("Port:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        restrictIPJPanel.add(jLabel11, gridBagConstraints);
-
-        snmpPortJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
-        snmpPortJSpinner.setFocusable(false);
-        snmpPortJSpinner.setMaximumSize(new java.awt.Dimension(75, 19));
-        snmpPortJSpinner.setMinimumSize(new java.awt.Dimension(75, 19));
-        snmpPortJSpinner.setPreferredSize(new java.awt.Dimension(75, 19));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
-        restrictIPJPanel.add(snmpPortJSpinner, gridBagConstraints);
 
         jLabel12.setFont(new java.awt.Font("Dialog", 0, 12));
         jLabel12.setText("System Location:");
@@ -327,22 +295,6 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel implements Savable, Ref
 
         enableRemoteJPanel1.setLayout(new java.awt.GridBagLayout());
 
-        trapButtonGroup.add(trapEnabledRadioButton);
-        trapEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        trapEnabledRadioButton.setText("<html><b>Enable Traps</b> so trap events are sent when they are generated.</html>");
-        trapEnabledRadioButton.setFocusPainted(false);
-        trapEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                trapEnabledRadioButtonActionPerformed(evt);
-            }
-        });
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        enableRemoteJPanel1.add(trapEnabledRadioButton, gridBagConstraints);
-
         trapButtonGroup.add(trapDisabledRadioButton);
         trapDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
         trapDisabledRadioButton.setText("<html><b>Disable Traps</b> so no trap events are generated. (This is the default setting.)</html>");
@@ -358,6 +310,22 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel implements Savable, Ref
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         enableRemoteJPanel1.add(trapDisabledRadioButton, gridBagConstraints);
+
+        trapButtonGroup.add(trapEnabledRadioButton);
+        trapEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        trapEnabledRadioButton.setText("<html><b>Enable Traps</b> so trap events are sent when they are generated.</html>");
+        trapEnabledRadioButton.setFocusPainted(false);
+        trapEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                trapEnabledRadioButtonActionPerformed(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        enableRemoteJPanel1.add(trapEnabledRadioButton, gridBagConstraints);
 
         restrictIPJPanel1.setLayout(new java.awt.GridBagLayout());
 
@@ -463,7 +431,6 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel implements Savable, Ref
 
     private void setSnmpEnabledDependency(boolean enabled){
 	snmpCommunityJTextField.setEnabled( enabled );
-	snmpPortJSpinner.setEnabled( enabled );
 	snmpContactJTextField.setEnabled( enabled );
 	snmpLocationJTextField.setEnabled( enabled );
 	trapEnabledRadioButton.setEnabled( enabled );
@@ -482,7 +449,6 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel implements Savable, Ref
     private javax.swing.JPanel enableRemoteJPanel1;
     private javax.swing.JPanel externalRemoteJPanel;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -497,7 +463,6 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel implements Savable, Ref
     public javax.swing.JRadioButton snmpDisabledRadioButton;
     public javax.swing.JRadioButton snmpEnabledRadioButton;
     public javax.swing.JTextField snmpLocationJTextField;
-    private javax.swing.JSpinner snmpPortJSpinner;
     private javax.swing.ButtonGroup trapButtonGroup;
     public javax.swing.JTextField trapCommunityJTextField;
     public javax.swing.JRadioButton trapDisabledRadioButton;
