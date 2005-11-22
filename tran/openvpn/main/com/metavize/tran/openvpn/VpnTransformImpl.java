@@ -395,8 +395,8 @@ public class VpnTransformImpl extends AbstractTransform
     }
 
     //////////////// XXXXX wizard methods //////////////
-    public CurrentConfigState getConfigState(){ return CurrentConfigState.UNCONFIGURED; };
-    public void startConfig(NewConfigState state){}
+    public ConfigState getConfigState(){ return ConfigState.UNCONFIGURED; };
+    public void startConfig(ConfigState state){}
     public void completeConfig() throws Exception{}
     //// the stages of the setup wizard ///
     public void downloadConfig(IPaddr address, String key) throws Exception{}
