@@ -182,7 +182,7 @@ Description: The Metavize Test Software Appliance
 
 Package: openvpn-transform
 Architecture: any
-Depends: mvvm
+Depends: mvvm openvpn nsis nsis-mv sysutils zip
 XB-Price: 0
 XB-Display-Name: OpenVPN
 XB-Website: http://www.openvpn.net
