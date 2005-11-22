@@ -92,7 +92,7 @@
                     </listitem>
                     <listitem>
                       <para>
-                        <constant>block message</constant> causes the message to be blocked, meaning the sender believes it was delivered yet it was never forwarded to the recipient.
+                        <constant>block message</constant> causes the message to be blocked, meaning the sender believes it was delivered yet it was never forwarded to the recipient.  Although neither sender nor recipient know the message was blocked, it will still be noted in the <link linkend="spamassassin_tran_adminui_events">Event Log</link>
                       </para>
                     </listitem>
                     <listitem>

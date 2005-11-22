@@ -7,7 +7,7 @@
     The Clam Anti-Virus Appliance is identified by the
     <inlinemediaobject>
       <imageobject>
-        <imagedata fileref="figure/clamphish/clamphish_tran_icon.png"/>
+        <imagedata fileref="figure/clam/clam_tran_icon.png"/>
       </imageobject>
     </inlinemediaobject>
     symbol.  The Clam Anti-Virus serves to protect your network against <glossterm linkend="gloss_virus">viruses</glossterm>.  The Clam Anti-Virus Appliance is a <link linkend="introduction_ui_appliance"> Software Appliance </link>, which can be installed into multiple Virtual Racks.  For more information on configuring policies and Software Appliances, please refer to <xref linkend="policy_manager"/>.
@@ -36,7 +36,7 @@
       <sect3 id="clam_tran_adminui_web_http">
         <title>HTTP</title>
         <para>
-          TODO
+          The <glossterm linkend="gloss_http">HTTP</glossterm> Tab, as shown in <xref linkend="clam_tran_adminui_web_http_figure"/>, lets administrators control scanning relative to the document flow and protected network.
         </para>
         <figure id="clam_tran_adminui_web_http_figure">
           <title>HTTP Tab</title>
@@ -46,13 +46,16 @@
             </imageobject>
           </mediaobject>
         </figure>
+        <para>
+          There are two directions for scanning, <constant>incomming documents</constant> and <constant>outgoing documents</constant>.  Each is enabled by checking the <guilabel>scan</guilabel> box corresponding to the given row.  Note that <constant>incomming documents</constant> means that the client (browser) is within the protected network.
+        </para>
       </sect3>
 
       <!-- ======================================== -->
       <sect3 id="clam_tran_adminui_web_mime">
         <title>MIME Type List</title>
         <para>
-          TODO
+          The <glossterm linkend="gloss_mime_type">MIME Types</glossterm> List lets administrators choose which content types to scan for viruses.  The interface for the MIME Types tab is shown in <xref linkend="clam_tran_adminui_web_mime_figure"/>.
         </para>
         <figure id="clam_tran_adminui_web_mime_figure">
           <title>MIME Type List Tab</title>
@@ -61,14 +64,17 @@
               <imagedata fileref="figure/clam/clam_web_mime.png" />
             </imageobject>
           </mediaobject>
-        </figure>      
+        </figure>
+        <para>
+          As shown in <xref linkend="clam_tran_adminui_web_mime_figure"/>, most of the common MIME types have already been entered into the list.  To cause a particular MIME Type to be blocked, check the <guilabel>block</guilabel> box.
+        </para>             
       </sect3>
 
       <!-- ======================================== -->
       <sect3 id="clam_tran_adminui_web_fileext">
         <title>File Extension List</title>
         <para>
-          TODO
+          The File Extensions List, as shown in <xref linkend="clam_tran_adminui_web_fileext_figure"/>, allows Administrators to choose which downloaded files are scanned for viruses, based on file extension (e.g. .exe).
         </para>
         <figure id="clam_tran_adminui_web_fileext_figure">
           <title>File Extension List Tab</title>
@@ -77,7 +83,10 @@
               <imagedata fileref="figure/clam/clam_web_fileext.png" />
             </imageobject>
           </mediaobject>
-        </figure>      
+        </figure>
+        <para>
+          As shown in <xref linkend="clam_tran_adminui_web_fileext_figure"/>, many common file extensions have already been entered into the list.  File types known to carry viruses have been pre-configured for scanning.  To add/remove an extension from being scanned, check the <guilabel>block</guilabel> box.
+        </para>            
       </sect3>      
        
     </sect2>
@@ -87,14 +96,14 @@
     <sect2 id="clam_tran_adminui_email">
       <title>Email</title>
       <para>
-        TODO
+        The Clam Anti-Virus Appliance scans emails transported by the <glossterm linkend="gloss_smtp">SMTP</glossterm>, <glossterm linkend="gloss_pop">POP</glossterm>, and <glossterm linkend="gloss_imap">IMAP</glossterm> protocols.  See the next sections for details on configuring each of these three protocols.
       </para>
 
       <!-- ======================================== -->
       <sect3 id="clam_tran_adminui_email_smtp">
         <title>SMTP</title>
         <para>
-          TODO
+          The SMTP tab controls how the Clam Anti-Virus Appliance handles emails transported over the <glossterm linkend="gloss_smtp_server">SMTP</glossterm> protocol.  Contents of this tab is shown in <xref linkend="clam_tran_adminui_email_smtp_figure"/>.
         </para>
         <figure id="clam_tran_adminui_email_smtp_figure">
           <title>SMTP Tab</title>
@@ -103,7 +112,69 @@
               <imagedata fileref="figure/clam/clam_email_smtp.png" />
             </imageobject>
           </mediaobject>
-        </figure>      
+        </figure>
+
+        <para>
+          There are four properties associated with configuring SMTP incoming/outgoing scanning, as shown in <xref linkend="clam_tran_adminui_email_smtp_figure"/>.  Detailed explanation of these follows.
+
+          <variablelist>
+            <varlistentry>
+              <term><guilabel>source</guilabel></term>
+              <listitem>
+                <para>
+                  The source of the <emphasis>email message</emphasis>.  The value <constant>incomming message</constant> refers to messages entering your network via SMTP.  This implies that there is an SMTP Server within your protected network.  The value <constant>outgoing message</constant> refers to SMTP messages is originating from within your protected network.  This could either be from your internal SMTP server or desktop SMTP clients.
+                </para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term><guilabel>scan</guilabel></term>
+              <listitem>
+                <para>
+                  This checkbox controls scanning for the given <constant>source</constant>.  When the box is checked, this means that the &eg; will scan email for viruses in that direction.
+                </para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term><guilabel>action if Virus detected</guilabel></term>
+              <listitem>
+                <para>
+                  This controls what actions Clam Anti-Virus Appliance should take on the message itself, should the message be found to contain a virus.  There are three possible values.
+                  <itemizedlist>
+                    <listitem>
+                      <para>
+                        <constant>remove infection</constant> causes the infected file(s) to be removed from the email.  The email is then attached to a new email, with a detailed explanation of the type of virus and the original sender.  The subject of this new email starts with <quote><userinput>[VIRUS]...</userinput></quote>.
+                      </para>
+                    </listitem>
+                    <listitem>
+                      <para>
+                        <constant>pass message</constant> causes the message to be passed on to the recipient, even though it was detected as containing a virus.
+                        <warning>
+                          <para>
+                            This setting should only be used for special cases, such as testing.
+                          </para>
+                        </warning>
+                      </para>
+                    </listitem>
+                    <listitem>
+                      <para>
+                        <constant>block message</constant> causes the message to be blocked, meaning the sender believes it was delivered yet it was never forwarded to the recipient.  Although neither sender nor recipient know the message was blocked, it will still be noted in the <link linkend="clam_tran_adminui_events">Event Log</link>
+                      </para>
+                    </listitem>
+                  </itemizedlist>
+                </para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term><guilabel>notification if VIRUS detected</guilabel></term>
+              <listitem>
+                <para>
+                  This controls any notifications.  Notifications are net-new emails, stating that a virus message was detected at your &eg;.  There are four possible values, causing no message, a message to the sender, the receiver, or both.
+                </para>
+              </listitem>
+            </varlistentry>            
+          </variablelist>
+        </para>
       </sect3>
 
 
@@ -111,7 +182,7 @@
       <sect3 id="clam_tran_adminui_email_pop">
         <title>POP</title>
         <para>
-          TODO
+        The <glossterm linkend="gloss_pop">POP</glossterm> tab contents is shown in <xref linkend="clam_tran_adminui_email_pop_figure"/>.
         </para>
         <figure id="clam_tran_adminui_email_pop_figure">
           <title>POP Tab</title>
@@ -120,14 +191,25 @@
               <imagedata fileref="figure/clam/clam_email_pop.png" />
             </imageobject>
           </mediaobject>
-        </figure>      
+        </figure>
+        <para>
+          There are two properties which can be edited for each direction of scanning.  The direction is defined by the column <guilabel>source</guilabel>, where <constant>incomming message</constant> means that the POP client (<quote>email program</quote>) is within the protected network.
+        </para>
+        <para>
+          The <guilabel>scan</guilabel> box turns on/off scanning for that direction.  The <guilabel>action if Virus detected</guilabel> column lets administrators choose what happens should a virus be detected.  The <constant>remove infection</constant> option causes the infected file(s) to be removed from the email.  The email is then attached to a new email, with a detailed explanation of the type of virus and the original sender.  The subject of this new email starts with <quote><userinput>[VIRUS]...</userinput></quote>.  The <constant>pass message</constant> option passes the infected email to the client, even though it was infected.
+          <warning>
+            <para>
+              The <constant>pass message</constant> option should only be used for special cases, such as testing.
+            </para>
+          </warning>
+        </para>
       </sect3>
 
       <!-- ======================================== -->
       <sect3 id="clam_tran_adminui_email_imap">
         <title>IMAP</title>
         <para>
-          TODO
+        The <glossterm linkend="gloss_imap">IMAP</glossterm> tab contents is shown in <xref linkend="clam_tran_adminui_email_imap_figure"/>.
         </para>
         <figure id="clam_tran_adminui_email_imap_figure">
           <title>IMAP Tab</title>
@@ -136,9 +218,200 @@
               <imagedata fileref="figure/clam/clam_email_imap.png" />
             </imageobject>
           </mediaobject>
-        </figure>      
+        </figure>
+        <para>
+          There are two properties which can be edited for each direction of scanning.  The direction is defined by the column <guilabel>source</guilabel>, where <constant>incomming message</constant> means that the IMAP client (<quote>email program</quote>) is within the protected network.
+        </para>
+        <para>
+          The <guilabel>scan</guilabel> box turns on/off scanning for that direction.  The <guilabel>action if Virus detected</guilabel> column lets administrators choose what happens should a virus be detected.  The <constant>remove infection</constant> option causes the infected file(s) to be removed from the email.  The email is then attached to a new email, with a detailed explanation of the type of virus and the original sender.  The subject of this new email starts with <quote><userinput>[VIRUS]...</userinput></quote>.  The <constant>pass message</constant> option passes the infected email to the client, even though it was infected.
+          <warning>
+            <para>
+              The <constant>pass message</constant> option should only be used for special cases, such as testing.
+            </para>
+          </warning>
+        </para>           
       </sect3>          
     </sect2>
+
+
+    <!-- ******************************************************** -->
+    <sect2 id="clam_tran_adminui_ftp">
+      <title>FTP</title>
+      <para>
+        The <glossterm linkend="gloss_ftp">FTP</glossterm> tab contents is shown in <xref linkend="clam_tran_adminui_ftp_figure"/>.
+      </para>
+      <figure id="clam_tran_adminui_ftp_figure">
+        <title>FTP Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/clam/clam_ftp_ftp.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        Administrators can only control if scanning takes place for each direction.  The direction is defined by the column <guilabel>source</guilabel>, where <constant>incomming files</constant> means that the FTP client is within the protected network.
+      </para>
+    </sect2>
+
+    <!-- ******************************************************** -->
+    <sect2 id="clam_tran_adminui_general">
+      <title>General Settings</title>
+      <para>
+        The General Settings Tab, as shown in <xref linkend="clam_tran_adminui_general_figure"/>, lets the Administrator control more advanced features of the Clam Anti-Virus Appliance.
+      </para>
+      <figure id="clam_tran_adminui_general_figure">
+        <title>General Settings Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/clam/clam_general.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        There are three settings on the General Settings Tab.  Their meaning is as follows.
+
+        <variablelist>
+          <varlistentry>
+            <term><guilabel>disable FTP download resume</guilabel></term>
+            <listitem>
+              <para>
+                The <glossterm linkend="gloss_ftp">FTP</glossterm> protocol has an advanced feature where an interrupted file download may be resumed (<quote>restarted</quote>) where it left off.  Although a handy feature for unreliable networks, the &eg; is unable to perform virus scans when this feature is enables.  When FTP download resume is permitted, it is possible that a file containing a virus could be transmitted over multiple connections.  When this occurs, the &eg; only sees parts of the file and cannot know if it contained a virus.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>disable HTTP download resume</guilabel></term>
+            <listitem>
+              <para>
+                The <glossterm linkend="gloss_http">HTTP</glossterm> protocol has an advanced feature where an interrupted file download may be resumed (<quote>restarted</quote>) where it left off.  Although a handy feature for unreliable networks, the &eg; is unable to perform virus scans when this feature is enables.  When HTTP download resume is permitted, it is possible that a file containing a virus could be received over multiple connections.  When this occurs, the &eg; only sees parts of the file and cannot know if it contained a virus.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>scan trickle rate (percent)</guilabel></term>
+            <listitem>
+              <para>
+                This is an advanced feature, controlling how quickly files are downloaded relative to scanning.
+                <caution>
+                  <para>
+                    As an advanced feature, you should not change this value unless instructed to by a member of Metavize support or one of their authorized representitives.
+                  </para>
+                </caution>
+              </para>
+            </listitem>
+          </varlistentry>                     
+        </variablelist>
+      </para>
+    </sect2>
+
+
+    <!-- ******************************************************** -->
+    <sect2 id="clam_tran_adminui_events">
+      <title>Events Tab</title>
+      <para>
+        The Events tab contents is shown in <xref linkend="clam_tran_adminui_events_figure"/>.
+      </para>
+      <figure id="clam_tran_adminui_events_figure">
+        <title>Events Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/clam/clam_eventlog.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        The Events Tab is another implementation of an Event Log, as described in <xref linkend="introduction_ui_appliance_event_log"/>.  The complete list of columns and their meaning is as follows.
+      </para>
+      <para>
+        <variablelist>
+          <title>Events Tab</title>
+          <varlistentry>
+            <term><guilabel>timestamp</guilabel></term>
+            <listitem>
+              <para>
+                The time the event took place
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>action</guilabel></term>
+            <listitem>
+              <para>
+                The action taken on the mail.  The value depends on the mail protocol, but will contain descriptive text such as <constant>block</constant> or <constant>mark</constant>.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>client</guilabel></term>
+            <listitem>
+              <para>
+                The client <glossterm linkend="gloss_ip_addr">IP Address</glossterm> of the protocol client.  For <glossterm linkend="gloss_smtp">SMTP</glossterm> this is the <emphasis>sender</emphasis> of the mail, and for <glossterm linkend="gloss_imap">IMAP</glossterm>/<glossterm linkend="gloss_pop">POP</glossterm> the <emphasis>receiver</emphasis> of the mail.  For <glossterm linkend="gloss_http">HTTP</glossterm> this is the address of the client machine (browser).  For <glossterm linkend="gloss_ftp">FTP</glossterm> this is the address of the machine receiving files.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>traffic</guilabel></term>
+            <listitem>
+              <para>
+                This is a descriptive field discussing the type of traffic (<constant>HTTP</constant>, <constant>mail</constant>, etc).
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>reason for action</guilabel></term>
+            <listitem>
+              <para>
+                The reason the action was taken.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>direction</guilabel></term>
+            <listitem>
+              <para>
+                This field describes the flow of the document relative to the protected network.  For example, <constant>inbound</constant> in the context of HTTP means that the client who requested the document was within the protected network.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>server</guilabel></term>
+            <listitem>
+              <para>
+                The server <glossterm linkend="gloss_ip_addr">IP Address</glossterm>.  For <glossterm linkend="gloss_smtp">SMTP</glossterm> this is the machine <emphasis>receiving</emphasis> the email, and for <glossterm linkend="gloss_imap">IMAP</glossterm>/<glossterm linkend="gloss_pop">POP</glossterm> the machine holding the inbox.  For <glossterm linkend="gloss_http">HTTP</glossterm> this is the address of the server machine (browser) sending the document.  For <glossterm linkend="gloss_ftp">FTP</glossterm> this is the address of the machine which contained the files being downloaded.
+              </para>
+            </listitem>
+          </varlistentry>                                                                 
+        </variablelist>
+      </para>
+    </sect2>     
   </sect1>
+
+
+  <!-- ############################################################# -->
+  <sect1 id="clam_tran_qa">
+    <title>Frequently Asked Questions</title>
+    <qandaset>  
+      <qandaentry>
+        <question>
+          <para>For Email, why is blocking (or quarantining) of emails when a virus is detected not always an option?</para>
+        </question>
+        <answer>
+          <para>
+            Only the SMTP protocol allows the &eg; to block mails.  The details of the POP and IMAP protocols prevent them from being blocked or quarantined.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question>
+          <para>When configuring my &eg; to <guilabel>mark</guilabel> virus emails received over IMAP, the subject of the mails changes to <quote><userinput>[VIRUS]...</userinput></quote> only after I click on the message.  Why?</para>
+        </question>
+        <answer>
+          <para>
+            Most IMAP clients first fetch summary information about emails (subject, sender) so the end user can see a preview list of messages.  Only when the user selects (clicks on) the message is the actual content of the message retreived from the server.  It is then that the &eg; is able to scan the message.  Unfortunatly, some email clients do not detect the change in subject and update their preview list.
+          </para>
+        </answer>
+      </qandaentry>
+    </qandaset>
+  </sect1>    
 
 </chapter>
