@@ -393,4 +393,17 @@ public class VpnTransformImpl extends AbstractTransform
     {
         setVpnSettings((VpnSettings)settings);
     }
+
+    //////////////// XXXXX wizard methods //////////////
+    public CurrentConfigState getConfigState(){ return CurrentConfigState.UNCONFIGURED; };
+    public void startConfig(NewConfigState state){}
+    public void completeConfig() throws Exception{}
+    //// the stages of the setup wizard ///
+    public void downloadConfig(IPaddr address, String key) throws Exception{}
+    public void generateCertificate(String organization, String country, String state, String locality) throws Exception{}
+    public void setAddressGroups(List<VpnGroup> parameters) throws Exception{}
+    public void setExportedAddressList(List<SiteNetwork> parameters) throws Exception{}
+    public void setClients(List<VpnClient> parameters) throws Exception{}
+    public void setSites(List<VpnSite> parameters) throws Exception{}
+
 }
