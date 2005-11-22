@@ -271,38 +271,42 @@ class MailSenderImpl implements MailSender
             String[] recipients = new String[1];
             recipients[0] = reportEmailAddr;
 
-            if (extraLocations == null && extras == null) {
-                // Do this simplest thing.  Shouldn't be used. XX
-                sendSimple(reportSession, recipients, subject, bodyHTML, null);
-                return;
-            } else if ((extraLocations == null && extras != null) ||
-                       (extraLocations != null && extras == null) ||
-                       (extraLocations.size() != extras.size())) {
-                throw new IllegalArgumentException("sendReports mismatch of locations and extras");
-            }
-
-            List<MimeBodyPart> parts = new ArrayList<MimeBodyPart>();
-
-            try {
-                for (int i = 0; i < extras.size(); i++) {
-                    String location = extraLocations.get(i);
-                    File extra = extras.get(i);
-                    DataSource ds = new FileDataSource(extra);
-            ((FileDataSource)ds).setFileTypeMap( mimetypesFileTypeMap );
-                    DataHandler dh = new DataHandler(ds);
-                    MimeBodyPart part = new MimeBodyPart();
-                    part.setDataHandler(dh);
-                    part.setHeader("Content-Location", location);
-                    part.setFileName(extra.getName());
-                    parts.add(part);
-                }
-            } catch (MessagingException x) {
-                logger.error("Unable to parse extras", x);
-                return;
-            }
-
-            sendRelated(reportSession, recipients, subject, bodyHTML, parts);
+            sendMessageWithAttachments(recipients, subject, bodyHTML, extraLocations, extras);
         }
+    }
+
+    public void sendMessageWithAttachments(String[] recipients, String subject, String bodyHTML, List<String> extraLocations, List<File> extras) {
+        if (extraLocations == null && extras == null) {
+            // Do this simplest thing.  Shouldn't be used. XX
+            sendSimple(reportSession, recipients, subject, bodyHTML, null);
+            return;
+        } else if ((extraLocations == null && extras != null) ||
+                   (extraLocations != null && extras == null) ||
+                   (extraLocations.size() != extras.size())) {
+            throw new IllegalArgumentException("sendReports mismatch of locations and extras");
+        }
+
+        List<MimeBodyPart> parts = new ArrayList<MimeBodyPart>();
+
+        try {
+            for (int i = 0; i < extras.size(); i++) {
+                String location = extraLocations.get(i);
+                File extra = extras.get(i);
+                DataSource ds = new FileDataSource(extra);
+                ((FileDataSource)ds).setFileTypeMap( mimetypesFileTypeMap );
+                DataHandler dh = new DataHandler(ds);
+                MimeBodyPart part = new MimeBodyPart();
+                part.setDataHandler(dh);
+                part.setHeader("Content-Location", location);
+                part.setFileName(extra.getName());
+                parts.add(part);
+            }
+        } catch (MessagingException x) {
+            logger.error("Unable to parse extras", x);
+            return;
+        }
+
+        sendRelated(reportSession, recipients, subject, bodyHTML, parts);
     }
 
     public void sendErrorLogs(String subject, String bodyText, List<MimeBodyPart> parts) {
