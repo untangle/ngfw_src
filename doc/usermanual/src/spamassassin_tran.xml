@@ -13,7 +13,7 @@
     symbol.  It is a <link linkend="introduction_ui_appliance"> Software Appliance </link>, which can be installed into multiple Virtual Racks.
   </para>
   <para>
-    The SpamGuard Appliance works to filter email for <glossterm linkend="gloss_spam">Spam</glossterm>.  Email transported by the <glossterm linkend="gloss_smtp">SMTP</glossterm>, <glossterm linkend="gloss_pop">POP</glossterm>, and <glossterm linkend="gloss_imap">IMAP</glossterm> protocols can be scanned.  
+    The SpamGuard Appliance works to filter email for <glossterm linkend="gloss_spam">Spam</glossterm>.  Email transported by the <glossterm linkend="gloss_smtp">SMTP</glossterm>, <glossterm linkend="gloss_pop">POP</glossterm>, and <glossterm linkend="gloss_imap">IMAP</glossterm> protocols can be scanned. 
   </para>
 
   <!-- ############################################################# -->
@@ -28,7 +28,7 @@
     <sect2 id="spamassassin_tran_adminui_smtp">
       <title>SMTP Tab</title>
         <para>
-          The <glossterm linkend="gloss_smtp_server">SMTP</glossterm> tab contents is shown in <xref linkend="spamassassin_tran_smtp_figure"/>.
+          The SMTP tab controls how the &eg; handles emails transported over the <glossterm linkend="gloss_smtp_server">SMTP</glossterm> protocol.  Contents of this tab is shown in <xref linkend="spamassassin_tran_smtp_figure"/>.
         </para>
 
         <figure id="spamassassin_tran_smtp_figure">
@@ -45,58 +45,58 @@
 
           <variablelist>
             <varlistentry>
-              <term>source</term>
+              <term><guilabel>source</guilabel></term>
               <listitem>
                 <para>
-                  The source of the <emphasis>email message</emphasis>.  <guilabel>incomming message</guilabel> means messages entering your network via SMTP.  This implies that there is an SMTP Server within your protected network.  <guilabel>outgoing message</guilabel> means that the SMTP message is originating from within your protected network.  This could either be from your internal SMTP server or desktop SMTP clients.
+                  The source of the <emphasis>email message</emphasis>.  <constant>incomming message</constant> means messages entering your network via SMTP.  This implies that there is an SMTP Server within your protected network.  <constant>outgoing message</constant> means that the SMTP message is originating from within your protected network.  This could either be from your internal SMTP server or desktop SMTP clients.
                 </para>
               </listitem>
             </varlistentry>
             <varlistentry>
-              <term>scan</term>
+              <term><guilabel>scan</guilabel></term>
               <listitem>
                 <para>
-                  This checkbox controls scanning for the given <guilabel>source</guilabel>.  When the box is checked, this means that the &eg; will scan email for spam in that direction.
+                  This checkbox controls scanning for the given <constant>source</constant>.  When the box is checked, this means that the &eg; will scan email for spam in that direction.
                 </para>
               </listitem>
             </varlistentry>
             <varlistentry>
-              <term>scan strength</term>
+              <term><guilabel>scan strength</guilabel></term>
               <listitem>
                 <para>
-                  This controls the sensitivity of the spam scanner.  There are 5 possible values ranging from <guilabel>very high</guilabel> to <guilabel>very log</guilabel>.
+                  This controls the sensitivity of the spam scanner.  There are 5 possible values ranging from <constant>very high</constant> to <constant>very log</constant>.
                   <note>
                     <para>
-                      <guilabel>very high</guilabel> means <quote>most sensitive to spam</quote>.  Setting the <guilabel>scan strength</guilabel> to <guilabel>very high</guilabel> will cause the greatest percentage of your mail to be considered spam.
+                      <constant>very high</constant> means <quote>most sensitive to spam</quote>.  Setting the <constant>scan strength</constant> to <constant>very high</constant> will cause the greatest percentage of your mail to be considered spam.
                     </para>
                   </note>
                 </para>
               </listitem>
             </varlistentry>
             <varlistentry>
-              <term>action if SPAM detected</term>
+              <term><guilabel>action if SPAM detected</guilabel></term>
               <listitem>
                 <para>
                   This controls what actions &eg; should take on the message itself, should the message be determined to be spam.  There are four possible values.
                   <itemizedlist>
                     <listitem>
                       <para>
-                        <guilabel>mark message</guilabel> causes the email message to have its subject changed to start with <userinput>[SPAM]</userinput>.  Users can then set-up email client filter rules to cause such messages to be placed in special folders.
+                        <constant>mark message</constant> causes the email message to have its subject changed to start with <userinput>[SPAM]</userinput>.  Users can then set-up email client filter rules to cause such messages to be placed in special folders.
                       </para>
                     </listitem>
                     <listitem>
                       <para>
-                        <guilabel>pass message</guilabel> causes the message to be passed on to the recipient, even though it was detected as spam.
+                        <constant>pass message</constant> causes the message to be passed on to the recipient, even though it was detected as spam.
                       </para>
                     </listitem>
                     <listitem>
                       <para>
-                        <guilabel>block message</guilabel> causes the message to be blocked, meaning the sender believes it was delivered yet it was never forwarded to the recipient.
+                        <constant>block message</constant> causes the message to be blocked, meaning the sender believes it was delivered yet it was never forwarded to the recipient.
                       </para>
                     </listitem>
                     <listitem>
                       <para>
-                        <guilabel>quarantine message</guilabel> causes the message to be <glossterm linkend="gloss_quarantine">quarantined</glossterm>.  For more information on the operation of this feature, please refer to <xref linkend="config_tab_quarantine"/>
+                        <constant>quarantine message</constant> causes the message to be <glossterm linkend="gloss_quarantine">quarantined</glossterm>.  For more information on the operation of this feature, please refer to <xref linkend="config_tab_quarantine"/>
                       </para>
                     </listitem>                    
                   </itemizedlist>
@@ -105,14 +105,14 @@
             </varlistentry>
 
             <varlistentry>
-              <term>notification if SPAM detected</term>
+              <term><guilabel>notification if SPAM detected</guilabel></term>
               <listitem>
                 <para>
                   This controls any notifications.  Notifications are net-new emails, stating that a spam message was detected at your &eg;.  There are four possible values.
                   <itemizedlist>
                     <listitem>
                       <para>
-                        <guilabel>notify sender</guilabel> causes an email to be sent to the original sender of the email, informing them that they sent spam.
+                        <constant>notify sender</constant> causes an email to be sent to the original sender of the email, informing them that they sent spam.
                         <tip>
                           <para>
                             This feature should only be used for cases when you believe the sender should not be sending spam.  An example is a spam email originating from within your protected network.  Such an email coming from the desktop of one of your company's employees would likely be the result of a <glossterm linkend="gloss_worm">worm</glossterm> or other virus.
@@ -122,16 +122,14 @@
                     </listitem>
                     <listitem>
                       <para>
-                        <guilabel>do not notify</guilabel> causes no messages to be sent.
+                        <constant>do not notify</constant> causes no messages to be sent.
                       </para>
                     </listitem>
                   </itemizedlist>
                 </para>
               </listitem>
             </varlistentry>            
-
           </variablelist>
-          
         </para>
       </sect2>
 
@@ -155,48 +153,48 @@
 
         <variablelist>
           <varlistentry>
-            <term>source</term>
+            <term><guilabel>source</guilabel></term>
             <listitem>
               <para>
-                The source of the <emphasis>email message</emphasis>.  <guilabel>incomming message</guilabel> means messages entering your network via POP.  This implies that the POP client is within the protected network, and the POP server is outside.  <guilabel>outgoing message</guilabel> means that the POP server is within the protected network, and the client is outside.
+                The source of the <emphasis>email message</emphasis>.  <constant>incomming message</constant> means messages entering your network via POP.  This implies that the POP client is within the protected network, and the POP server is outside.  <constant>outgoing message</constant> means that the POP server is within the protected network, and the client is outside.
               </para>
             </listitem>
           </varlistentry>
           <varlistentry>
-            <term>scan</term>
+            <term><guilabel>scan</guilabel></term>
             <listitem>
               <para>
-                This checkbox controls scanning for the given <guilabel>source</guilabel>.  When the box is checked, this means that the &eg; will scan email for spam in that direction.
+                This checkbox controls scanning for the given <constant>source</constant>.  When the box is checked, this means that the &eg; will scan email for spam in that direction.
               </para>
             </listitem>
           </varlistentry>
           <varlistentry>
-            <term>scan strength</term>
+            <term><guilabel>scan strength</guilabel></term>
             <listitem>
               <para>
-                This controls the sensitivity of the spam scanner.  There are 5 possible values ranging from <guilabel>very high</guilabel> to <guilabel>very log</guilabel>.
+                This controls the sensitivity of the spam scanner.  There are 5 possible values ranging from <constant>very high</constant> to <constant>very log</constant>.
                 <note>
                   <para>
-                    <guilabel>very high</guilabel> means <quote>most sensitive to spam</quote>.  Setting the <guilabel>scan strength</guilabel> to <guilabel>very high</guilabel> will cause the greatest percentage of your mail to be considered spam.
+                    <constant>very high</constant> means <quote>most sensitive to spam</quote>.  Setting the <constant>scan strength</constant> to <constant>very high</constant> will cause the greatest percentage of your mail to be considered spam.
                   </para>
                 </note>
               </para>
             </listitem>
           </varlistentry>
           <varlistentry>
-            <term>action if SPAM detected</term>
+            <term><guilabel>action if SPAM detected</guilabel></term>
             <listitem>
               <para>
                 This controls what actions &eg; should take on the message itself, should the message be determined to be spam.  There are four possible values.
                 <itemizedlist>
                   <listitem>
                     <para>
-                      <guilabel>mark message</guilabel> causes the email message to have its subject changed to start with <userinput>[SPAM]</userinput>.  Users can then set-up email client filter rules to cause such messages to be placed in special folders.
+                      <constant>mark message</constant> causes the email message to have its subject changed to start with <userinput>[SPAM]</userinput>.  Users can then set-up email client filter rules to cause such messages to be placed in special folders.
                     </para>
                   </listitem>
                   <listitem>
                     <para>
-                      <guilabel>pass message</guilabel> causes the message to be passed on to the recipient, even though it was detected as spam.
+                      <constant>pass message</constant> causes the message to be passed on to the recipient, even though it was detected as spam.
                     </para>
                   </listitem>
                 </itemizedlist>
@@ -227,48 +225,48 @@
 
         <variablelist>
           <varlistentry>
-            <term>source</term>
+            <term><guilabel>source</guilabel></term>
             <listitem>
               <para>
-                The source of the <emphasis>email message</emphasis>.  <guilabel>incomming message</guilabel> means messages entering your network via IMAP.  This implies that the IMAP client is within the protected network, and the IMAP server is outside.  <guilabel>outgoing message</guilabel> means that the IMAP server is within the protected network, and the client is outside.
+                The source of the <emphasis>email message</emphasis>.  <constant>incomming message</constant> means messages entering your network via IMAP.  This implies that the IMAP client is within the protected network, and the IMAP server is outside.  <constant>outgoing message</constant> means that the IMAP server is within the protected network, and the client is outside.
               </para>
             </listitem>
           </varlistentry>
           <varlistentry>
-            <term>scan</term>
+            <term><guilabel>scan</guilabel></term>
             <listitem>
               <para>
-                This checkbox controls scanning for the given <guilabel>source</guilabel>.  When the box is checked, this means that the &eg; will scan email for spam in that direction.
+                This checkbox controls scanning for the given <constant>source</constant>.  When the box is checked, this means that the &eg; will scan email for spam in that direction.
               </para>
             </listitem>
           </varlistentry>
           <varlistentry>
-            <term>scan strength</term>
+            <term><guilabel>scan strength</guilabel></term>
             <listitem>
               <para>
-                This controls the sensitivity of the spam scanner.  There are 5 possible values ranging from <guilabel>very high</guilabel> to <guilabel>very log</guilabel>.
+                This controls the sensitivity of the spam scanner.  There are 5 possible values ranging from <constant>very high</constant> to <constant>very log</constant>.
                 <note>
                   <para>
-                    <guilabel>very high</guilabel> means <quote>most sensitive to spam</quote>.  Setting the <guilabel>scan strength</guilabel> to <guilabel>very high</guilabel> will cause the greatest percentage of your mail to be considered spam.
+                    <constant>very high</constant> means <quote>most sensitive to spam</quote>.  Setting the <constant>scan strength</constant> to <constant>very high</constant> will cause the greatest percentage of your mail to be considered spam.
                   </para>
                 </note>
               </para>
             </listitem>
           </varlistentry>
           <varlistentry>
-            <term>action if SPAM detected</term>
+            <term><guilabel>action if SPAM detected</guilabel></term>
             <listitem>
               <para>
                 This controls what actions &eg; should take on the message itself, should the message be determined to be spam.  There are four possible values.
                 <itemizedlist>
                   <listitem>
                     <para>
-                      <guilabel>mark message</guilabel> causes the email message to have its subject changed to start with <userinput>[SPAM]</userinput>.  Users can then set-up email client filter rules to cause such messages to be placed in special folders.
+                      <constant>mark message</constant> causes the email message to have its subject changed to start with <userinput>[SPAM]</userinput>.  Users can then set-up email client filter rules to cause such messages to be placed in special folders.
                     </para>
                   </listitem>
                   <listitem>
                     <para>
-                      <guilabel>pass message</guilabel> causes the message to be passed on to the recipient, even though it was detected as spam.
+                      <constant>pass message</constant> causes the message to be passed on to the recipient, even though it was detected as spam.
                     </para>
                   </listitem>
                 </itemizedlist>
@@ -294,7 +292,84 @@
         </mediaobject>
       </figure>
       <para>
-        The Events Tab is another implementation of an Event Log, as described in <xref linkend="introduction_ui_appliance_event_log"/>.  The <guilabel>action</guilabel> describes the action which the &eg; took on the mail.  <guilabel>client</guilabel> shows the IP address of the client.  Note that the client in SMTP is the sender of the mail, and in POP and IMAP it is the receiver of the mail.  <guilabel>spam score</guilabel> is the score applied to the email by the spam scanner.  Higher values indicate <quote>more likely to be spam</quote>.
+        The Events Tab is another implementation of an Event Log, as described in <xref linkend="introduction_ui_appliance_event_log"/>.  The complete list of columns and their meaning is as follows.
+      </para>
+      <para>
+        <variablelist>
+          <title>Events Tab</title>
+          <varlistentry>
+            <term><guilabel>timestamp</guilabel></term>
+            <listitem>
+              <para>
+                The time the event took place
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>action</guilabel></term>
+            <listitem>
+              <para>
+                The action taken on the mail.  The value depends on the mail protocol, but will contain descriptive text such as <constant>block</constant> or <constant>mark</constant>.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>client</guilabel></term>
+            <listitem>
+              <para>
+                The client <glossterm linkend="gloss_ip_addr">IP Address</glossterm> of the protocol client.  Recall that for <glossterm linkend="gloss_smtp">SMTP</glossterm> this is the <emphasis>sender</emphasis> of the mail, and for <glossterm linkend="gloss_imap">IMAP</glossterm>/<glossterm linkend="gloss_pop">POP</glossterm> the <emphasis>receiver</emphasis> of the mail.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>subject</guilabel></term>
+            <listitem>
+              <para>
+                The subject of the email.  This may be blank if the email had no subject.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>Receiver</guilabel></term>
+            <listitem>
+              <para>
+                The recipient email address of the email.  
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>Sender</guilabel></term>
+            <listitem>
+              <para>
+                The sender of the email.  Note that for spam, this is frequently blank.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>SPAM score</guilabel></term>
+            <listitem>
+              <para>
+              This is the score applied to the email by the spam scanner.  Higher values indicate <quote>more likely to be spam</quote>.
+              </para>
+            </listitem>
+          </varlistentry>          
+          <varlistentry>
+            <term><guilabel>direction</guilabel></term>
+            <listitem>
+              <para>
+                This value is either <constant>inbound</constant> or <constant>outbound</constant>, and describes the direction of message flow.  For example, if the protocol was SMTP and this value is <constant>inbound</constant>, then the SMTP server is within the protected network and the client outside.  For IMAP/POP, <constant>inbound</constant> would indicate the client was within the protected network.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>server</guilabel></term>
+            <listitem>
+              <para>
+                The server <glossterm linkend="gloss_ip_addr">IP Address</glossterm>.  Recall that for <glossterm linkend="gloss_smtp">SMTP</glossterm> this is the machine <emphasis>receiving</emphasis> the email, and for <glossterm linkend="gloss_imap">IMAP</glossterm>/<glossterm linkend="gloss_pop">POP</glossterm> the machine holding the inbox.
+              </para>
+            </listitem>
+          </varlistentry>                                                                 
+        </variablelist>
       </para>
     </sect2>
   </sect1>

@@ -11,7 +11,7 @@
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="figure/config_tab.png" />
+        <imagedata fileref="figure/configtab/config_tab.png" />
       </imageobject>
     </mediaobject>
   </figure>    
@@ -25,8 +25,17 @@
   <sect1 id="config_tab_accounts">
     <title>Accounts</title>
     <para>
-    TODO Complete me
+    TODO as seen in <xref linkend="config_tab_accounts_figure"/>
     </para>
+
+    <figure id="config_tab_accounts_figure">
+      <title>Accounts Tab</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figure/configtab/config_tab_accounts.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
   </sect1>
 
   <!-- ========================================================= -->  
@@ -42,6 +51,55 @@
     <glossterm linkend="gloss_dhcp_lease">DHCP Lease</glossterm>
 
     </para>
+
+    <!-- ====================================================== -->
+    <sect2 id="config_tab_network_networksettings">
+      <title>Network Settings</title>
+      <para>
+        TODO as seen in <xref linkend="config_tab_network_networksettings_figure"/>
+      </para>
+      <figure id="config_tab_network_networksettings_figure">
+        <title>Network Settings Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/configtab/config_tab_network_networksettings.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+    </sect2>
+
+    <!-- ====================================================== -->
+    <sect2 id="config_tab_network_email">
+      <title>Email Settings</title>
+      <para>
+        TODO as seen in <xref linkend="config_tab_network_email_figure"/>
+      </para>
+      <figure id="config_tab_network_email_figure">
+        <title>Email Settings Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/configtab/config_tab_network_email.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+    </sect2>    
+
+    <!-- ====================================================== -->
+    <sect2 id="config_tab_network_networkaliases">
+      <title>Network Aliases</title>
+      <para>
+        TODO as seen in <xref linkend="config_tab_network_networkaliases_figure"/>
+      </para>
+      <figure id="config_tab_network_networkaliases_figure">
+        <title>Network Aliases Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/configtab/config_tab_network_networkaliases.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+    </sect2>    
+    
   </sect1>
 
   <!-- ========================================================= -->  
@@ -53,6 +111,58 @@
     
     <glossterm linkend="gloss_http">HTTP</glossterm>
     </para>
+
+
+    <!-- ====================================================== -->
+    <sect2 id="config_tab_remoteadmin_remoteadmin">
+      <title>Remote Administration</title>
+      <para>
+        TODO as seen in <xref linkend="config_tab_remoteadmin_remoteadmin_figure"/>
+      </para>
+      <figure id="config_tab_remoteadmin_remoteadmin_figure">
+        <title>Remote Administration Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/configtab/config_tab_remoteadmin_remoteadmin.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+    </sect2>
+
+
+    <!-- ====================================================== -->
+    <sect2 id="config_tab_remoteadmin_snmp">
+      <title>SNMP Monitoring</title>
+      <para>
+        TODO as seen in <xref linkend="config_tab_remoteadmin_snmp_figure"/>
+      </para>
+      <figure id="config_tab_remoteadmin_snmp_figure">
+        <title>SNMP Monitoring Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/configtab/config_tab_remoteadmin_snmp.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+    </sect2>
+
+
+    <!-- ====================================================== -->
+    <sect2 id="config_tab_remoteadmin_syslog">
+      <title>Syslog Monitoring</title>
+      <para>
+        TODO as seen in <xref linkend="config_tab_remoteadmin_syslog_figure"/>
+      </para>
+      <figure id="config_tab_remoteadmin_syslog_figure">
+        <title>Syslog Monitoring Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/configtab/config_tab_remoteadmin_syslog.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+    </sect2>           
+    
   </sect1>
 
   <!-- ========================================================= -->  
@@ -61,6 +171,58 @@
     <para>
     TODO Complete me
     </para>
+
+
+    <!-- ====================================================== -->
+    <sect2 id="config_tab_backuprestore_disk">
+      <title>Backup to Hard Disk</title>
+      <para>
+        TODO as seen in <xref linkend="config_tab_backuprestore_disk_figure"/>
+      </para>
+      <figure id="config_tab_backuprestore_disk_figure">
+        <title>Backup to Hard Disk Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/configtab/config_tab_backuprestore_disk.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+    </sect2>
+
+
+    <!-- ====================================================== -->
+    <sect2 id="config_tab_backuprestore_usb">
+      <title>Backup to USB Key</title>
+      <para>
+        TODO as seen in <xref linkend="config_tab_backuprestore_usb_figure"/>
+      </para>
+      <figure id="config_tab_backuprestore_usb_figure">
+        <title>Backup to USB Key Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/configtab/config_tab_backuprestore_usb.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+    </sect2>
+
+
+    <!-- ====================================================== -->
+    <sect2 id="config_tab_backuprestore_restore">
+      <title>Restore</title>
+      <para>
+        TODO as seen in <xref linkend="config_tab_backuprestore_restore_figure"/>
+      </para>
+      <figure id="config_tab_backuprestore_restore_figure">
+        <title>Restore Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/configtab/config_tab_backuprestore_restore.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+    </sect2>             
+    
   </sect1>
 
   <!-- ========================================================= -->  
@@ -75,26 +237,54 @@
       <glossterm linkend="gloss_http">HTTP</glossterm>
       <glossterm linkend="gloss_uri">URI</glossterm>
     </para>
-    
+
+
+    <!-- ................................................... -->
     <sect2 id="config_tab_protocol_settings_web">
       <title>Web</title>
       <para>
-        Explain the web tab
+        TODO as seen in <xref linkend="config_tab_protocol_settings_web_figure"/>
       </para>
+      <figure id="config_tab_protocol_settings_web_figure">
+        <title>Web Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/configtab/config_tab_protocol_web.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
     </sect2>
 
+    <!-- ................................................... -->
     <sect2 id="config_tab_protocol_settings_email">
       <title>Email</title>
       <para>
-        Explain the Email tab
+        TODO as seen in <xref linkend="config_tab_protocol_settings_email_figure"/>
       </para>
+      <figure id="config_tab_protocol_settings_email_figure">
+        <title>Email Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/configtab/config_tab_protocol_email.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
     </sect2>
 
+    <!-- ................................................... -->
     <sect2 id="config_tab_protocol_settings_ftp">
       <title>File Transfer</title>
       <para>
-        Explain the file transfer (FTP) tab
+        TODO as seen in <xref linkend="config_tab_protocol_settings_ftp_figure"/>
       </para>
+      <figure id="config_tab_protocol_settings_ftp_figure">
+        <title>File Transfer Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/configtab/config_tab_protocol_ftp.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
     </sect2>        
   </sect1>
 
@@ -104,14 +294,73 @@
     <para>
     TODO Complete me
     </para>
+
+    <!-- ................................................... -->
+    <sect2 id="config_tab_quarantine_releasepurge">
+      <title>Quarantine Release/Purge</title>
+      <para>
+        TODO as seen in <xref linkend="config_tab_quarantine_releasepurge_figure"/>
+      </para>
+      <figure id="config_tab_quarantine_releasepurge_figure">
+        <title>Quarantine Release/Purge Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/configtab/config_tab_quarantine_releasepurge.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+    </sect2>
+
+
+    <!-- ................................................... -->
+    <sect2 id="config_tab_quarantine_passlist">
+      <title>Quarantine Pass List</title>
+      <para>
+        TODO as seen in <xref linkend="config_tab_quarantine_passlist_figure"/>
+      </para>
+      <figure id="config_tab_quarantine_passlist_figure">
+        <title>Quarantine Pass List Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/configtab/config_tab_quarantine_passlist.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+    </sect2>
+
+    <!-- ................................................... -->
+    <sect2 id="config_tab_quarantine_general">
+      <title>General Settings</title>
+      <para>
+        TODO as seen in <xref linkend="config_tab_quarantine_general_figure"/>
+      </para>
+      <figure id="config_tab_quarantine_general_figure">
+        <title>General Settings Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/configtab/config_tab_quarantine_general.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+    </sect2>             
+    
   </sect1>
 
   <!-- ========================================================= -->
   <sect1 id="config_tab_support">
     <title>Support</title>
     <para>
-    TODO Complete me
+    TODO as seen in <xref linkend="config_tab_support_figure"/>
     </para>
+
+    <figure id="config_tab_support_figure">
+      <title>Support Tab</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figure/configtab/config_tab_support.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
   </sect1>
 
   

@@ -22,8 +22,10 @@
         <variablelist>
           <title>Common Features of Appliances</title>
           <varlistentry>
-            <term id="introduction_ui_appliance_event_log"  xreflabel="Event Log">
+            <term>
+              <para id="introduction_ui_appliance_event_log"  xreflabel="Event Log">
               Event Log
+              </para>
             </term>
             <listitem>
               <para>

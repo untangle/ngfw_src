@@ -457,6 +457,16 @@ Place new terms under the appropriate alphabetical location.
       </glossdef>
     </glossentry>
 
+    <glossentry id="gloss_static_ip">
+      <glossterm>Static IP</glossterm>
+      <glossdef>
+        <para>
+          TODO
+        </para>
+        <glossseealso otherterm="gloss_ip_addr"/>
+      </glossdef>
+    </glossentry>    
+
 
     <glossentry id="gloss_smtp_server">
       <glossterm>SMTP Server</glossterm>

@@ -17,53 +17,90 @@
     TODO COMPLETE ME.  Someone needs to write this section.  As you do, you should refer to <xref linkend="introduction_ui_system_services"/> as the Reporting Transform is a "system service".
   </para>
 
-  <!-- ======================================================== -->
-  <sect1 id="reporting_tran_viewreports">
-    <title>View Reports</title>
+
+  <sect1 id="reporting_tran_adminui">
+    <title>Administrative Interface</title>
+
     <para>
-      TODO
-    </para>
-    <figure id="reporting_tran_viewreports_figure">
-      <title>View Reports Tab</title>
-      <mediaobject>
-        <imageobject>
-          <imagedata fileref="figure/reporting/reporting_viewreports.png" />
-        </imageobject>
-      </mediaobject>
-    </figure>
+      The interface for the Reporting Appliance is presented as three tabs.  The first tab, <xref linkend="reporting_tran_viewreports"/> ,is a convienence which launches a web browser to view the current set of reports.  The second tab, <xref linkend="reporting_tran_emailrcpts"/>,is used to provide a list of administrators who will receive daily report summaries via emai.  The last tab, <xref linkend="reporting_tran_ipaddrmap"/>,is used to provide host names for <glossterm linkend="gloss_ip_addr">IP addresses</glossterm>.
+    </para>  
+    <!-- ======================================================== -->
+    <sect2 id="reporting_tran_viewreports">
+      <title>View Reports</title>
+      <para>
+        This tab is simply a convienence to launch a web browser to view the current set of reports.
+      </para>
+      <figure id="reporting_tran_viewreports_figure">
+        <title>View Reports Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/reporting/reporting_viewreports.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <note>
+        <para>
+          For security reasons, Administrators connected via monitor directly to the &eg; cannot launch a browser.
+        </para>
+      </note>
+    </sect2>
+  
+    <!-- ======================================================== -->
+    <sect2 id="reporting_tran_emailrcpts">
+      <title>Email Report Recipients</title>
+      <para>
+        The Email Report tab, as shown in <xref linkend="reporting_tran_emailrcpts_figure"/>, lets Administrators provide a list of email addresses which should receive daily report summaries by email.
+      </para>
+      <figure id="reporting_tran_emailrcpts_figure">
+        <title>Email Report Recipients Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/reporting/reporting_emailrcpts.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+    </sect2>
+  
+    <!-- ======================================================== -->
+    <sect2 id="reporting_tran_ipaddrmap">
+      <title>IP Address to User Map</title>
+      <para>
+        The <glossterm linkend="gloss_ip_addr">IP Addres</glossterm> to User Map tab, as shown in <xref linkend="reporting_tran_ipaddrmap_figure"/> enhances the readability of reports for deployments with <glossterm linkend="gloss_static_ip">static IP addresses</glossterm>.
+      </para>
+      <figure id="reporting_tran_ipaddrmap_figure">
+        <title>IP Address to User Map Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/reporting/reporting_ipaddrmap.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        This applies for addresses in reports.  For external addresses (addresses outside the protected network), it is unlikely that you could (or should) configure all IP addresses.  However, for internal (protected) addresses configuring this panel makes reports more readable.
+      </para>
+      <para>
+        If you are using <glossterm linkend="gloss_dhcp">DHCP</glossterm>, as discussed in <xref linkend="nat_tran_dhcp"/>, then you do not have to configure this tab.
+      </para>
+    </sect2>
   </sect1>
 
-  <!-- ======================================================== -->
-  <sect1 id="reporting_tran_viewreports">
-    <title>Email Report Recipients</title>
-    <para>
-      TODO
-    </para>
-    <figure id="reporting_tran_viewreports_figure">
-      <title>Email Report Recipients Tab</title>
-      <mediaobject>
-        <imageobject>
-          <imagedata fileref="figure/reporting/reporting_viewreports.png" />
-        </imageobject>
-      </mediaobject>
-    </figure>
-  </sect1>
-
-  <!-- ======================================================== -->
-  <sect1 id="reporting_tran_ipaddrmap">
-    <title>IP Address to User Map</title>
-    <para>
-      TODO
-      <glossterm linkend="gloss_ip_addr">IP Address</glossterm>
-    </para>
-    <figure id="reporting_tran_ipaddrmap_figure">
-      <title>IP Address to User Map Tab</title>
-      <mediaobject>
-        <imageobject>
-          <imagedata fileref="figure/reporting/reporting_ipaddrmap.png" />
-        </imageobject>
-      </mediaobject>
-    </figure>
+  <sect1 id="reporting_tran_qa">
+    <title>Frequently Asked Questions</title>
+    <qandaset>  
+      <qandaentry>
+        <question>
+          <para>I'm not getting reports, yet I added my email address to the email list as shown in <xref linkend="reporting_tran_emailrcpts"/>?</para>
+        </question>
+        <answer>
+          <para>
+            First, be aware that reports are sent on a daily basis.  You may have to wait up to 24 hours to receive your first report
+          </para>
+          <para>
+            If you have had the system configured for more than 24 hours, the most likely cause is an issue with the global email settings.  Please refer to <xref linkend="config_tab_network_email"/> for help on these settings.
+          </para>
+        </answer>
+      </qandaentry>
+    </qandaset>
   </sect1>     
-
+  
 </chapter>
