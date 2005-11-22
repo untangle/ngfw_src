@@ -3,31 +3,142 @@
 
   <title>Clam Anti-Virus</title>
 
-  <!-- Note that the "introduction" is not within a Section.  This is
-       the convention we'll use
-  -->
   <para>
-    The Clam Appliance is identified by the
+    The Clam Anti-Virus Appliance is identified by the
     <inlinemediaobject>
       <imageobject>
-        <imagedata fileref="figure/clam/clam_tran_icon.png"/>
+        <imagedata fileref="figure/clamphish/clamphish_tran_icon.png"/>
       </imageobject>
     </inlinemediaobject>
-    symbol.
+    symbol.  The Clam Anti-Virus serves to protect your network against <glossterm linkend="gloss_virus">viruses</glossterm>.  The Clam Anti-Virus Appliance is a <link linkend="introduction_ui_appliance"> Software Appliance </link>, which can be installed into multiple Virtual Racks.  For more information on configuring policies and Software Appliances, please refer to <xref linkend="policy_manager"/>.
+  </para>
+  <para>
+    Viruses can arrive over the network via several techniques, so the Clam Anti-Virus Appliance scans many protocols for the presence of viruses.  For email traffic, the Clam Anti-Virus Appliance will scan the <glossterm linkend="gloss_smtp">SMTP</glossterm>, <glossterm linkend="gloss_pop">POP</glossterm>, and <glossterm linkend="gloss_imap">IMAP</glossterm> protocols.  For web traffic, <glossterm linkend="gloss_http">HTTP</glossterm> traffic is scanned.  For file transfers, the <glossterm linkend="gloss_ftp">FTP</glossterm> protocol is scanned.
   </para>
 
-  <para>
-    TODO COMPLETE ME.  Someone needs to write this section.  As you do, you should refer to <xref linkend="introduction_ui_appliance"/> as the clam Transform is a "Software appliance".
-  </para>
 
-  <para>
-    As this section is written, these glossary refs may come in handy
-    <glossterm linkend="gloss_ftp">FTP</glossterm>
-    <glossterm linkend="gloss_http">HTTP</glossterm>
-    <glossterm linkend="gloss_smtp">SMTP</glossterm>
-    <glossterm linkend="gloss_pop">POP</glossterm>
-    <glossterm linkend="gloss_imap">IMAP</glossterm>
-    <glossterm linkend="gloss_mime_type">MIME Type</glossterm>
-  </para>    
+  <!-- ############################################################# -->
+  <sect1 id="clam_tran_adminui">
+    <title>Administrative Interface</title>
+
+    <para>
+      The interface for Clam Anti-Virus is presented as five tabs.  The first three tabs are for the different protocols that &eg; can scan.  The next tab controls general virus scanning settings.  The last tab allows administrators to view events (see <xref linkend="introduction_ui_appliance_event_log"/>).
+    </para>
+
+    <!-- ******************************************************** -->
+    <sect2 id="clam_tran_adminui_web">
+      <title>Web</title>
+      <para>
+        The Web tab presents administrators the ability to modify settings related to web (<glossterm linkend="gloss_http">HTTP</glossterm>) traffic.  The first tab, covered in <xref linkend="clam_tran_adminui_web_http"/>, lets administrators enable scanning of inbound/outbound traffic.  The next tab, covered in <xref linkend="clam_tran_adminui_web_mime"/>, lets administrators choose which <glossterm linkend="gloss_mime_type">MIME types</glossterm> should be scanned.  The last tab, discussed in <xref linkend="clam_tran_adminui_web_fileext"/>, lets administrators choose which file types receive scanning.
+      </para>
+
+      <!-- ======================================== -->
+      <sect3 id="clam_tran_adminui_web_http">
+        <title>HTTP</title>
+        <para>
+          TODO
+        </para>
+        <figure id="clam_tran_adminui_web_http_figure">
+          <title>HTTP Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/clam/clam_web_http.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+      </sect3>
+
+      <!-- ======================================== -->
+      <sect3 id="clam_tran_adminui_web_mime">
+        <title>MIME Type List</title>
+        <para>
+          TODO
+        </para>
+        <figure id="clam_tran_adminui_web_mime_figure">
+          <title>MIME Type List Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/clam/clam_web_mime.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>      
+      </sect3>
+
+      <!-- ======================================== -->
+      <sect3 id="clam_tran_adminui_web_fileext">
+        <title>File Extension List</title>
+        <para>
+          TODO
+        </para>
+        <figure id="clam_tran_adminui_web_fileext_figure">
+          <title>File Extension List Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/clam/clam_web_fileext.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>      
+      </sect3>      
+       
+    </sect2>
+
+
+    <!-- ******************************************************** -->
+    <sect2 id="clam_tran_adminui_email">
+      <title>Email</title>
+      <para>
+        TODO
+      </para>
+
+      <!-- ======================================== -->
+      <sect3 id="clam_tran_adminui_email_smtp">
+        <title>SMTP</title>
+        <para>
+          TODO
+        </para>
+        <figure id="clam_tran_adminui_email_smtp_figure">
+          <title>SMTP Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/clam/clam_email_smtp.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>      
+      </sect3>
+
+
+      <!-- ======================================== -->
+      <sect3 id="clam_tran_adminui_email_pop">
+        <title>POP</title>
+        <para>
+          TODO
+        </para>
+        <figure id="clam_tran_adminui_email_pop_figure">
+          <title>POP Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/clam/clam_email_pop.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>      
+      </sect3>
+
+      <!-- ======================================== -->
+      <sect3 id="clam_tran_adminui_email_imap">
+        <title>IMAP</title>
+        <para>
+          TODO
+        </para>
+        <figure id="clam_tran_adminui_email_imap_figure">
+          <title>IMAP Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/clam/clam_email_imap.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>      
+      </sect3>          
+    </sect2>
+  </sect1>
 
 </chapter>

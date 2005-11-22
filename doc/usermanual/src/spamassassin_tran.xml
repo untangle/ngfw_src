@@ -10,11 +10,12 @@
         <imagedata fileref="figure/spamassassin/spamassassin_tran_icon.png"/>
       </imageobject>
     </inlinemediaobject>
-    symbol.  It is a <link linkend="introduction_ui_appliance"> Software Appliance </link>, which can be installed into multiple Virtual Racks.
+    symbol.  The SpamGuard Appliance works to filter email for <glossterm linkend="gloss_spam">Spam</glossterm>.  Email transported by the <glossterm linkend="gloss_smtp">SMTP</glossterm>, <glossterm linkend="gloss_pop">POP</glossterm>, and <glossterm linkend="gloss_imap">IMAP</glossterm> protocols can be scanned for the presence of spam.
   </para>
   <para>
-    The SpamGuard Appliance works to filter email for <glossterm linkend="gloss_spam">Spam</glossterm>.  Email transported by the <glossterm linkend="gloss_smtp">SMTP</glossterm>, <glossterm linkend="gloss_pop">POP</glossterm>, and <glossterm linkend="gloss_imap">IMAP</glossterm> protocols can be scanned. 
+    The SpamGuard Appliance is a <link linkend="introduction_ui_appliance"> Software Appliance </link>, which can be installed into multiple Virtual Racks.  For more information on configuring policies and Software Appliances, please refer to <xref linkend="policy_manager"/>.
   </para>
+  
 
   <!-- ############################################################# -->
   <sect1 id="spamassassin_tran_adminui">
@@ -41,14 +42,14 @@
           </mediaobject>
         </figure>
         <para>
-          There are six properties associated with configuring SMTP incoming/outgoing scanning, as shown in <xref linkend="spamassassin_tran_smtp_figure"/>.  Detailed explanation of these follows.
+          There are five properties associated with configuring SMTP incoming/outgoing scanning, as shown in <xref linkend="spamassassin_tran_smtp_figure"/>.  Detailed explanation of these follows.
 
           <variablelist>
             <varlistentry>
               <term><guilabel>source</guilabel></term>
               <listitem>
                 <para>
-                  The source of the <emphasis>email message</emphasis>.  <constant>incomming message</constant> means messages entering your network via SMTP.  This implies that there is an SMTP Server within your protected network.  <constant>outgoing message</constant> means that the SMTP message is originating from within your protected network.  This could either be from your internal SMTP server or desktop SMTP clients.
+                  The source of the <emphasis>email message</emphasis>.  The value <constant>incomming message</constant> refers to messages entering your network via SMTP.  This implies that there is an SMTP Server within your protected network.  The value <constant>outgoing message</constant> refers to SMTP messages is originating from within your protected network.  This could either be from your internal SMTP server or desktop SMTP clients.
                 </para>
               </listitem>
             </varlistentry>
@@ -67,7 +68,7 @@
                   This controls the sensitivity of the spam scanner.  There are 5 possible values ranging from <constant>very high</constant> to <constant>very log</constant>.
                   <note>
                     <para>
-                      <constant>very high</constant> means <quote>most sensitive to spam</quote>.  Setting the <constant>scan strength</constant> to <constant>very high</constant> will cause the greatest percentage of your mail to be considered spam.
+                      The value <constant>very high</constant> means <quote>most sensitive to spam</quote>.  Setting the <constant>scan strength</constant> to <constant>very high</constant> will cause the greatest percentage of your mail to be considered spam.
                     </para>
                   </note>
                 </para>
@@ -81,7 +82,7 @@
                   <itemizedlist>
                     <listitem>
                       <para>
-                        <constant>mark message</constant> causes the email message to have its subject changed to start with <userinput>[SPAM]</userinput>.  Users can then set-up email client filter rules to cause such messages to be placed in special folders.
+                        <constant>mark message</constant> causes the email message to have its subject changed to start with the phrase <quote><userinput>[SPAM]...</userinput></quote>.  Users can then set-up email client filter rules to cause such messages to be placed in special folders.
                       </para>
                     </listitem>
                     <listitem>
@@ -108,21 +109,21 @@
               <term><guilabel>notification if SPAM detected</guilabel></term>
               <listitem>
                 <para>
-                  This controls any notifications.  Notifications are net-new emails, stating that a spam message was detected at your &eg;.  There are four possible values.
+                  This controls any notifications.  Notifications are net-new emails, stating that a spam message was detected at your &eg;.  There are two possible values.
                   <itemizedlist>
                     <listitem>
                       <para>
                         <constant>notify sender</constant> causes an email to be sent to the original sender of the email, informing them that they sent spam.
                         <tip>
                           <para>
-                            This feature should only be used for cases when you believe the sender should not be sending spam.  An example is a spam email originating from within your protected network.  Such an email coming from the desktop of one of your company's employees would likely be the result of a <glossterm linkend="gloss_worm">worm</glossterm> or other virus.
+                            This feature should only be used for cases when you know the sender should not be sending spam.  An example is a spam email originating from within your protected network.  Such an email coming from the desktop of one of your company's employees would likely be the result of a <glossterm linkend="gloss_worm">worm</glossterm> or other virus.
                           </para>
                         </tip>                        
                       </para>
                     </listitem>
                     <listitem>
                       <para>
-                        <constant>do not notify</constant> causes no messages to be sent.
+                        <constant>do not notify</constant> causes no notification messages to be sent.
                       </para>
                     </listitem>
                   </itemizedlist>
@@ -156,7 +157,7 @@
             <term><guilabel>source</guilabel></term>
             <listitem>
               <para>
-                The source of the <emphasis>email message</emphasis>.  <constant>incomming message</constant> means messages entering your network via POP.  This implies that the POP client is within the protected network, and the POP server is outside.  <constant>outgoing message</constant> means that the POP server is within the protected network, and the client is outside.
+                The source of the <emphasis>email message</emphasis>.  The value <constant>incomming message</constant> means messages <emphasis>entering</emphasis> your network via POP.  This implies that the POP client is within the protected network, and the POP server is outside.  The value <constant>outgoing message</constant> means that the POP server is within the protected network, and the client is outside.
               </para>
             </listitem>
           </varlistentry>
@@ -185,11 +186,11 @@
             <term><guilabel>action if SPAM detected</guilabel></term>
             <listitem>
               <para>
-                This controls what actions &eg; should take on the message itself, should the message be determined to be spam.  There are four possible values.
+                This controls what actions &eg; should take on the message itself, should the message be determined to be spam.  There are two possible values.
                 <itemizedlist>
                   <listitem>
                     <para>
-                      <constant>mark message</constant> causes the email message to have its subject changed to start with <userinput>[SPAM]</userinput>.  Users can then set-up email client filter rules to cause such messages to be placed in special folders.
+                      <constant>mark message</constant> causes the email message to have its subject changed to start with the phrase <quote><userinput>[SPAM]...</userinput></quote>.  Users can then set-up email client filter rules to cause such messages to be placed in special folders.
                     </para>
                   </listitem>
                   <listitem>
@@ -228,7 +229,7 @@
             <term><guilabel>source</guilabel></term>
             <listitem>
               <para>
-                The source of the <emphasis>email message</emphasis>.  <constant>incomming message</constant> means messages entering your network via IMAP.  This implies that the IMAP client is within the protected network, and the IMAP server is outside.  <constant>outgoing message</constant> means that the IMAP server is within the protected network, and the client is outside.
+                The source of the <emphasis>email message</emphasis>.  The value <constant>incomming message</constant> refers to messages entering your network via IMAP.  This implies that the IMAP client is within the protected network, and the IMAP server is outside.  The value <constant>outgoing message</constant> means that the IMAP server is within the protected network, and the client is outside.
               </para>
             </listitem>
           </varlistentry>
@@ -261,7 +262,7 @@
                 <itemizedlist>
                   <listitem>
                     <para>
-                      <constant>mark message</constant> causes the email message to have its subject changed to start with <userinput>[SPAM]</userinput>.  Users can then set-up email client filter rules to cause such messages to be placed in special folders.
+                      <constant>mark message</constant> causes the email message to have its subject changed to start with the phrase <quote><userinput>[SPAM]...</userinput></quote>.  Users can then set-up email client filter rules to cause such messages to be placed in special folders.
                     </para>
                   </listitem>
                   <listitem>
@@ -390,7 +391,7 @@
       </qandaentry>
       <qandaentry>
         <question>
-          <para>When configuring my &eg; to <guilabel>mark</guilabel> spam received over IMAP, the subject of the mails changes to <quote>[SPAM]...</quote> only after I click on the message.  Why?</para>
+          <para>When configuring my &eg; to <guilabel>mark</guilabel> spam received over IMAP, the subject of the mails changes to <quote><userinput>[SPAM]...</userinput></quote> only after I click on the message.  Why?</para>
         </question>
         <answer>
           <para>

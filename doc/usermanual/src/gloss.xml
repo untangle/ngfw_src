@@ -200,6 +200,16 @@ Place new terms under the appropriate alphabetical location.
   
   <glossdiv>
     <title>H</title>
+
+
+
+    <glossentry id="gloss_http">
+      <glossterm>Hyper Text Transfer Protocol</glossterm>
+      <abbrev>HTTP</abbrev>
+      <glossdef>
+        <para>TODO</para>
+      </glossdef>            
+    </glossentry>      
   </glossdiv>
 
 <!-- ============== I ================ -->
