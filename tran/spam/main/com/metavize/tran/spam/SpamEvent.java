@@ -104,6 +104,7 @@ public abstract class SpamEvent extends LogEvent
 
     public void appendSyslog(SyslogBuilder sb)
     {
+        sb.startSection("info");
         sb.addField("vendor", getVendorName());
         sb.addField("subject", getSubject());
         sb.addField("score", getScore());

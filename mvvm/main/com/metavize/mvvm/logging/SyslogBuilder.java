@@ -16,6 +16,8 @@ import java.util.Date;
 
 public interface SyslogBuilder
 {
+    void startSection(String s);
+
     void addField(String key, String value);
     void addField(String key, boolean value);
     void addField(String key, int value);

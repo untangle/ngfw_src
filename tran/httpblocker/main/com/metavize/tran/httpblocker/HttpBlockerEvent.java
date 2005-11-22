@@ -121,6 +121,9 @@ public class HttpBlockerEvent extends LogEvent
 
     public void appendSyslog(SyslogBuilder sb)
     {
+        requestLine.getPipelineEndpoints().appendSyslog(sb);
+
+        sb.startSection("info");
         sb.addField("url", requestLine.getUrl().toString());
         sb.addField("action", action.toString());
         sb.addField("reason", reason.toString());

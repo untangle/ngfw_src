@@ -111,8 +111,11 @@ public class RedirectEvent extends PipelineEvent implements Serializable
 
     // PipelineEvent methods --------------------------------------------------
 
-    protected void doSyslog(SyslogBuilder sb)
+    public void appendSyslog(SyslogBuilder sb)
     {
+        getPipelineEndpoints().appendSyslog(sb);
+
+        sb.startSection("info");
         sb.addField("rule", ruleIndex);
         sb.addField("is-dmz", isDmz);
     }

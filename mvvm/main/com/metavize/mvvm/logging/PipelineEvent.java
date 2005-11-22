@@ -12,9 +12,7 @@
 package com.metavize.mvvm.logging;
 
 
-import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tran.PipelineEndpoints;
-import org.apache.log4j.Logger;
 
 public abstract class PipelineEvent extends LogEvent
 {
@@ -48,21 +46,5 @@ public abstract class PipelineEvent extends LogEvent
     public void setPipelineEndpoints(PipelineEndpoints pipelineEndpoints)
     {
         this.pipelineEndpoints = pipelineEndpoints;
-    }
-
-    // Syslog methods ---------------------------------------------------------
-
-    protected abstract void doSyslog(SyslogBuilder sb);
-
-    public void appendSyslog(SyslogBuilder sb)
-    {
-        sb.addField("sid", Integer.toString(pipelineEndpoints.getSessionId()));
-        sb.addField("prot", Short.toString(pipelineEndpoints.getProtocol()));
-        sb.addField("caddr", pipelineEndpoints.getCClientAddr().getHostAddress());
-        sb.addField("cport", Integer.toString(pipelineEndpoints.getCClientPort()));
-        sb.addField("saddr", pipelineEndpoints.getSServerAddr().getHostAddress());
-        sb.addField("sport", Integer.toString(pipelineEndpoints.getSServerPort()));
-
-        doSyslog(sb);
     }
 }

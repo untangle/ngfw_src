@@ -184,6 +184,7 @@ public class ShieldRejectionEvent extends LogEvent implements Serializable
 
     public void appendSyslog(SyslogBuilder sb)
     {
+        sb.startSection("info");
         sb.addField("client-addr", clientAddr);
         sb.addField("client-iface", clientIntf);
         sb.addField("reputation", reputation);

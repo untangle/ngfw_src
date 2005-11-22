@@ -105,6 +105,9 @@ public class HttpResponseEvent extends LogEvent
 
     public void appendSyslog(SyslogBuilder sb)
     {
+        requestLine.getPipelineEndpoints().appendSyslog(sb);
+
+        sb.startSection("info");
         sb.addField("url", requestLine.getUrl().toString());
         sb.addField("content-type", contentType);
         sb.addField("content-length", contentLength);

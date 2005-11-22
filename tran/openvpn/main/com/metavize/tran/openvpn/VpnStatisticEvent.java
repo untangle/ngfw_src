@@ -27,10 +27,10 @@ import com.metavize.mvvm.logging.SyslogPriority;
  * mutable="false"
  */
 public class VpnStatisticEvent extends StatisticEvent
-{    
+{
     private Date start;
     private Date end;
-    
+
     private long bytesTx = 0;
     private long bytesRx = 0;
 
@@ -52,7 +52,7 @@ public class VpnStatisticEvent extends StatisticEvent
     {
         return this.start;
     }
-    
+
     void setStart( Date start )
     {
         this.start = start;
@@ -97,7 +97,7 @@ public class VpnStatisticEvent extends StatisticEvent
         this.bytesRx += bytesRx;
     }
 
-    
+
     /**
      * Total transmitted received during this session.
      *

@@ -133,7 +133,6 @@ public class PipelineEndpoints extends LogEvent
         }
     }
 
-
     // accessors --------------------------------------------------------------
 
     /**
@@ -409,6 +408,7 @@ public class PipelineEndpoints extends LogEvent
 
     public void appendSyslog(SyslogBuilder sb)
     {
+        sb.startSection("endpoints");
         sb.addField("sid", sessionId);
         sb.addField("prot", protocol);
         sb.addField("caddr", cClientAddr);

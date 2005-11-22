@@ -85,6 +85,7 @@ public class IDSStatisticEvent extends StatisticEvent {
 
     public void appendSyslog(SyslogBuilder sb)
     {
+        sb.startSection("info");
         sb.addField("did-not-care", dnc);
         sb.addField("logged", logged);
         sb.addField("blocked", blocked);

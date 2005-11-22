@@ -152,6 +152,7 @@ public class LoginEvent extends LogEvent
 
     public void appendSyslog(SyslogBuilder sb)
     {
+        sb.startSection("info");
         sb.addField("client-addr", clientAddr);
         sb.addField("login", login);
         sb.addField("local", local);

@@ -79,8 +79,11 @@ public class ProtoFilterLogEvent extends PipelineEvent
         this.blocked = blocked;
     }
 
-    protected void doSyslog(SyslogBuilder sb)
+    public void appendSyslog(SyslogBuilder sb)
     {
+        getPipelineEndpoints().appendSyslog(sb);
+
+        sb.startSection("info");
         sb.addField("protocol", protocol);
         sb.addField("blocked", blocked);
     }

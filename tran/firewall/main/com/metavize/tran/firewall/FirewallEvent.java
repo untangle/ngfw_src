@@ -102,8 +102,11 @@ import com.metavize.mvvm.tran.PipelineEndpoints;
          this.rule = rule;
      }
 
-     protected void doSyslog(SyslogBuilder sb)
+     public void appendSyslog(SyslogBuilder sb)
      {
+         getPipelineEndpoints().appendSyslog(sb);
+
+         sb.startSection("info");
          sb.addField("reason", "rule #" + getRuleIndex());
          sb.addField("blocked", wasBlocked);
      }

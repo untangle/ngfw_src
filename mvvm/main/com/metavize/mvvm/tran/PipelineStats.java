@@ -224,8 +224,12 @@ public class PipelineStats extends PipelineEvent
 
     // Syslog methods ---------------------------------------------------------
 
-    protected void doSyslog(SyslogBuilder sb)
+    public void appendSyslog(SyslogBuilder sb)
     {
+        getPipelineEndpoints().appendSyslog(sb);
+
+        sb.startSection("stats");
+
         sb.addField("c2pBytes", c2pBytes);
         sb.addField("p2sBytes", p2sBytes);
         sb.addField("s2pBytes", s2pBytes);

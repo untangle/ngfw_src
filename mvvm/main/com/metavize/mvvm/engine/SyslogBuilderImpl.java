@@ -34,8 +34,17 @@ public class SyslogBuilderImpl implements SyslogBuilder
     private final Logger logger = Logger.getLogger(getClass());
 
     private boolean first = true;
+    private boolean inSection = false;
 
     // public methods ---------------------------------------------------------
+
+    public void startSection(String s)
+    {
+        sb.append(" # ");
+        sb.append(s);
+        sb.append(": ");
+        first = true;
+    }
 
     public void addField(String key, String value)
     {
@@ -115,8 +124,6 @@ public class SyslogBuilderImpl implements SyslogBuilder
 
         // CONTENT
         sb.append(e.getSyslogId());
-
-        sb.append(" # info: ");
 
         e.appendSyslog(this);
 

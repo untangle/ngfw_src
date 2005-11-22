@@ -87,6 +87,7 @@ public class ClientDistributionEvent extends LogEvent implements Serializable
 
     public void appendSyslog(SyslogBuilder sb)
     {
+        sb.startSection("info");
         sb.addField("client-address", address.getAddr());
         sb.addField("client-name", clientName);
     }

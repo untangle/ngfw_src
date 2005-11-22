@@ -34,6 +34,7 @@ public abstract class SpywareEvent extends LogEvent
 
     public void appendSyslog(SyslogBuilder sb)
     {
+        sb.startSection("info");
         sb.addField("info", getIdentification());
         sb.addField("loc", getLocation());
         sb.addField("blocked", Boolean.toString(isBlocked()));

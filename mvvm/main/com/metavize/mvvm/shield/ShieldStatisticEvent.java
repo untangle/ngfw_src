@@ -209,6 +209,7 @@ public class ShieldStatisticEvent extends LogEvent implements Serializable
 
     public void appendSyslog(SyslogBuilder sb)
     {
+        sb.startSection("info");
         sb.addField("accepted", accepted);
         sb.addField("limited", limited);
         sb.addField("dropped", dropped);

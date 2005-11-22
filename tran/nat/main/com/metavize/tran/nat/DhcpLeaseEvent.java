@@ -159,6 +159,8 @@ public class DhcpLeaseEvent extends LogEvent
 
     public void appendSyslog(SyslogBuilder sb)
     {
+        sb.startSection("info");
+
         sb.addField("mac", mac.toString());
         sb.addField("hostname", hostname.toString());
         sb.addField("ip", ip.toString());

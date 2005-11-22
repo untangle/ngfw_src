@@ -370,6 +370,7 @@ public class FirewallStatisticEvent extends StatisticEvent
 
     public void appendSyslog(SyslogBuilder sb)
     {
+        sb.startSection("info");
         sb.addField("tcp-blk-def", tcpBlockedDefault);
         sb.addField("tcp-blk-rule", tcpBlockedRule);
         sb.addField("tcp-pass-def", tcpPassedDefault);

@@ -74,9 +74,11 @@ public class IDSLogEvent extends PipelineEvent {
 
     // Syslog methods ---------------------------------------------------------
 
-    public void doSyslog(SyslogBuilder sb)
+    public void appendSyslog(SyslogBuilder sb)
     {
-        sb.addField("sid", getPipelineEndpoints().getId());
+        getPipelineEndpoints().appendSyslog(sb);
+
+        sb.startSection("info");
         sb.addField("message", message);
         sb.addField("blocked", blocked);
     }

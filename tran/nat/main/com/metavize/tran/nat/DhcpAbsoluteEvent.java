@@ -81,6 +81,7 @@ public class DhcpAbsoluteEvent extends LogEvent implements Serializable
 
     public void appendSyslog(SyslogBuilder sb)
     {
+        sb.startSection("info");
         sb.addField("num-leases", absoluteLeaseList.size());
     }
 }

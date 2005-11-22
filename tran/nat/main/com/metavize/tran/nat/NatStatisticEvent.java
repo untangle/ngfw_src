@@ -251,6 +251,7 @@ public class NatStatisticEvent extends StatisticEvent
 
     public void appendSyslog(SyslogBuilder sb)
     {
+        sb.startSection("info");
         sb.addField("nat-sessions", natSessions);
         sb.addField("tcp-incoming-redirects", tcpIncomingRedirects);
         sb.addField("tcp-outgoing-redirects", tcpOutgoingRedirects);
