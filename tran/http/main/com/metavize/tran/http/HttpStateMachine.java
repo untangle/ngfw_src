@@ -300,7 +300,6 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
                 }
                 TokenStreamer c2s = new SeriesTokenStreamer(l);
 
-
                 tr = new TokenResult(s2c, c2s);
             }
         } finally {
@@ -649,6 +648,7 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
         case RESP_BODY_END_STATE:
             if (Mode.BLOCKED != responseMode) {
                 EndMarker em = (EndMarker)token;
+
                 doResponseBodyEnd();
                 if (100 != statusLine.getStatusCode()) {
                     hosts.remove(responseRequest);
@@ -657,7 +657,6 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
                 switch (responseMode) {
                 case QUEUEING:
                     throw new IllegalStateException("queueing after EndMarker");
-
                 case RELEASED:
                     responseQueue.add(em);
                     Token[] toks = new Token[responseQueue.size()];

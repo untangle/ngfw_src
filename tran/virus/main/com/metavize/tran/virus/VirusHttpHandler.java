@@ -348,6 +348,7 @@ class VirusHttpHandler extends HttpStateMachine
         } catch (IOException e) {
             logger.warn("Unable to create temporary file: " + e);
             this.scan = false;
+            releaseResponse();
         }
     }
 
