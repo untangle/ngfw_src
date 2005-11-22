@@ -82,9 +82,9 @@ public class PopClientParser extends AbstractParser
                 if (1 < iCmdEnd) {
                     ByteBuffer dup = buf.duplicate();
 
-                    try {
-                        PopCommand cmd;
+                    PopCommand cmd = null;
 
+                    try {
                         if (null == zCasing.getUser()) {
                             /* we only check for user once per session */
                             cmd = PopCommand.parseUser(buf);
@@ -93,13 +93,24 @@ public class PopClientParser extends AbstractParser
                                 state = State.AUTH_LOGIN;
                             } else if (true == cmd.isUser()) {
                                 zCasing.setUser(cmd.getUser());
+                            } else if (true == cmd.isTLS()) {
+                                // TLS usually initiates before user info
+                                throw new ParseException("client is initiating TLS negotiation (unable to monitor rest of session); releasing session: " + session);
                             }
                         } else {
                             cmd = PopCommand.parse(buf);
+                            if (true == cmd.isTLS()) {
+                                // TLS may initiate after user info (???)
+                                throw new ParseException("client is initiating TLS negotiation (unable to monitor rest of session); releasing session: " + session);
+                            }
                         }
 
                         zTokens.add(cmd);
                     } catch (ParseException exn) {
+                        if (null != cmd && true == cmd.isTLS()) {
+                            throw exn;
+                        }
+
                         /* long command may break before CRLF sequence
                          * so if parse fails,
                          * we assume long command spans multiple buffers
