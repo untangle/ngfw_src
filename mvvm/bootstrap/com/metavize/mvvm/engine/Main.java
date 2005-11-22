@@ -64,7 +64,7 @@ public class Main
     private String bunniculaWeb;
     private String bunniculaTmp;
 
-    private TomcatManager m_tomcatManager;
+    private TomcatManager tomcatManager;
 
     // constructor ------------------------------------------------------------
 
@@ -123,7 +123,7 @@ public class Main
         logger.info("starting mvvm");
         //Create the tomcat manager *before* the MVVM, so we can "register"
         //webapps to be started before Tomcat exists.
-        m_tomcatManager = new TomcatManager();
+        tomcatManager = new TomcatManager();
         try {
             startMvvm();
         } catch (Throwable exn) {
@@ -133,13 +133,13 @@ public class Main
         logger.info("restarting transforms and socket invoker");
         restartTransfoms();
         logger.info("starting tomcat");
-        m_tomcatManager.startTomcat();
+        tomcatManager.startTomcat();
         System.out.println("MVVM postInit complete");
     }
 
     private void destroy()
     {
-        m_tomcatManager.stopTomcat();
+        tomcatManager.stopTomcat();
 
         mvvmContext.doDestroy();
         try {
@@ -237,27 +237,27 @@ public class Main
     //Callback from the MvvmContext to load
     //a web app
     public boolean loadWebApp(String urlBase,
-      String rootDir) {
-      return m_tomcatManager.loadWebApp(urlBase, rootDir);
+                              String rootDir) {
+        return tomcatManager.loadWebApp(urlBase, rootDir);
     }
 
     //Callback from the MvvmContext to unload
     //a web app
     public boolean unloadWebApp(String contextRoot) {
-      return m_tomcatManager.unloadWebApp(contextRoot);
+        return tomcatManager.unloadWebApp(contextRoot);
     }
 
     /**
      * Little class used to describe a web app to be deployed.
      */
     class WebAppDescriptor {
-      final String urlBase;
-      final String relativeRoot;
+        final String urlBase;
+        final String relativeRoot;
 
-      WebAppDescriptor(String base, String rr) {
-        this.urlBase = base;
-        this.relativeRoot = rr;
-      }
+        WebAppDescriptor(String base, String rr) {
+            this.urlBase = base;
+            this.relativeRoot = rr;
+        }
     }
 
     /**
@@ -268,66 +268,66 @@ public class Main
 
         private Embedded emb = null;
         private StandardHost baseHost;
-        private List<WebAppDescriptor> m_descriptors;
+        private List<WebAppDescriptor> descriptors;
 
         TomcatManager() {
-          //Create the list of web-apps we know we're going to deploy
-          //*before* we actualy create out Tomcat
-          m_descriptors = new ArrayList<WebAppDescriptor>();
-          m_descriptors.add(new WebAppDescriptor("/session-dumper", "session-dumper"));
-          m_descriptors.add(new WebAppDescriptor("/webstart", "webstart"));
-          m_descriptors.add(new WebAppDescriptor("/reports", "reports"));
+            //Create the list of web-apps we know we're going to deploy
+            //*before* we actualy create out Tomcat
+            descriptors = new ArrayList<WebAppDescriptor>();
+            descriptors.add(new WebAppDescriptor("/session-dumper", "session-dumper"));
+            descriptors.add(new WebAppDescriptor("/webstart", "webstart"));
+            descriptors.add(new WebAppDescriptor("/reports", "reports"));
         }
 
         synchronized boolean loadWebApp(String urlBase,
-          String rootDir) {
-          if(emb == null) {
-            //Haven't started yet
-            m_descriptors.add(new WebAppDescriptor(urlBase, rootDir));
-            return true;
-          }
-          else {
-            return loadWebAppImpl(urlBase, rootDir);
-          }
+                                        String rootDir) {
+            if(emb == null) {
+                //Haven't started yet
+                descriptors.add(new WebAppDescriptor(urlBase, rootDir));
+                return true;
+            }
+            else {
+                return loadWebAppImpl(urlBase, rootDir);
+            }
         }
 
 
         private boolean loadWebAppImpl(String urlBase,
-          String rootDir) {
+                                       String rootDir) {
 
 
-          String fqRoot = bunniculaWeb + "/" + rootDir;
+            String fqRoot = bunniculaWeb + "/" + rootDir;
 
-          try {
-            Context ctx = emb.createContext(urlBase, fqRoot);
-            StandardManager mgr = new StandardManager();
-            mgr.setPathname(null); /* disable session persistence */
-            ctx.setManager(mgr);
-            baseHost.addChild(ctx);
-            return true;
-          }
-          catch(Exception ex) {
-            logger.error("Unable to deploy webapp \"" +
-              urlBase + "\" from directory \"" +
-              fqRoot + "\"", ex);
-            return false;
-          }
+            try {
+                Context ctx = emb.createContext(urlBase, fqRoot);
+                StandardManager mgr = new StandardManager();
+                mgr.setPathname(null); /* disable session persistence */
+                ctx.setManager(mgr);
+                baseHost.addChild(ctx);
+                return true;
+            }
+            catch(Exception ex) {
+                logger.error("Unable to deploy webapp \"" +
+                             urlBase + "\" from directory \"" +
+                             fqRoot + "\"", ex);
+                return false;
+            }
         }
 
 
         boolean unloadWebApp(String contextRoot) {
-          try {
-            Container c = baseHost.findChild(contextRoot);
-            if(c != null) {
-              baseHost.removeChild(c);
-              return true;
+            try {
+                Container c = baseHost.findChild(contextRoot);
+                if(c != null) {
+                    baseHost.removeChild(c);
+                    return true;
+                }
             }
-          }
-          catch(Exception ex) {
-            logger.error("Unable to unload web app \"" +
-              contextRoot + "\"", ex);
-          }
-          return false;
+            catch(Exception ex) {
+                logger.error("Unable to unload web app \"" +
+                             contextRoot + "\"", ex);
+            }
+            return false;
         }
 
         /**
@@ -404,8 +404,8 @@ public class Main
 
             //Load the webapps which were requested before the
             //system started-up.
-            for(WebAppDescriptor desc : m_descriptors) {
-              loadWebAppImpl(desc.urlBase, desc.relativeRoot);
+            for(WebAppDescriptor desc : descriptors) {
+                loadWebAppImpl(desc.urlBase, desc.relativeRoot);
             }
 
             // add new Engine to set of
@@ -455,12 +455,12 @@ public class Main
                                 }
                                 if (i == NUM_TOMCAT_RETRIES)
                                     fatalError("Unable to start Tomcat after " +
-                                              NUM_TOMCAT_RETRIES
-                                              + " tries, giving up",
-                                              null);
+                                               NUM_TOMCAT_RETRIES
+                                               + " tries, giving up",
+                                               null);
                             }
                         };
-                    (new Thread(tryAgain, "Tomcat starter")).start();
+                    new Thread(tryAgain, "Tomcat starter").start();
                 } else {
                     // Something else, just die die die.
                     throw exn;

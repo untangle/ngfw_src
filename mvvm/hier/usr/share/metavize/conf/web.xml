@@ -949,4 +949,9 @@
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
 
+    <error-page>
+      <error-code>404</error-code>
+      <location>/errorpage.html</location>
+    </error-page>
+
 </web-app>

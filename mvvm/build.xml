@@ -544,6 +544,8 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <fileset dir="${src.hier}">
         <!-- don't filter binaries -->
         <exclude name="usr/share/metavize/conf/etc/mvverifykey"/>
+        <exclude name="**/*gif"/>
+        <exclude name="**/*jpg"/>
       </fileset>
     </copy>
 
@@ -551,6 +553,8 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <fileset dir="${src.hier}">
         <!-- don't filter binaries -->
         <include name="usr/share/metavize/conf/etc/mvverifykey"/>
+        <include name="**/*gif"/>
+        <include name="**/*jpg"/>
       </fileset>
     </copy>
 
