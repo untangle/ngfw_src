@@ -11,10 +11,10 @@
 
 package com.metavize.tran.spam;
 
-import com.metavize.mvvm.logging.EventFilter;
+import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.logging.RepositoryDesc;
 
-public class SpamSmtpFilter implements EventFilter<SpamEvent>
+public class SpamSmtpFilter implements SimpleEventFilter<SpamEvent>
 {
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc("SMTP Events");
     private static final String WARM_QUERY

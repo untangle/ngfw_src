@@ -11,10 +11,10 @@
 
 package com.metavize.tran.spam;
 
-import com.metavize.mvvm.logging.EventFilter;
+import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.logging.RepositoryDesc;
 
-public class SpamAllFilter implements EventFilter<SpamEvent>
+public class SpamAllFilter implements SimpleEventFilter<SpamEvent>
 {
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc("All Events");
 
@@ -23,7 +23,7 @@ public class SpamAllFilter implements EventFilter<SpamEvent>
     private static final String SMTP_QUERY
         = "FROM SpamSmtpEvent evt WHERE evt.messageInfo.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
 
-    // EventFilter methods ----------------------------------------------------
+    // SimpleEventFilter methods ----------------------------------------------
 
     public RepositoryDesc getRepositoryDesc()
     {

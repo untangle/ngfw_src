@@ -11,17 +11,17 @@
 
 package com.metavize.tran.firewall;
 
-import com.metavize.mvvm.logging.EventFilter;
+import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.logging.RepositoryDesc;
 
-public class FirewallAllFilter implements EventFilter<FirewallEvent>
+public class FirewallAllFilter implements SimpleEventFilter<FirewallEvent>
 {
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc("Firewall Events");
 
     private static final String WARM_QUERY
         = "FROM FirewallEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
 
-    // EventFilter methods ----------------------------------------------------
+    // SimpleEventFilter methods ----------------------------------------------
 
     public RepositoryDesc getRepositoryDesc()
     {

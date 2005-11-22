@@ -136,9 +136,18 @@ public class EventLogger<E extends LogEvent> implements EventManager<E>
 
     // public methods --------------------------------------------------------
 
-    public EventCache addEventFilter(EventFilter<E> eventHandler)
+    public EventCache addSimpleEventFilter(SimpleEventFilter<E> simpleFilter)
     {
-        EventCache<E> ec = new EventCache<E>(this, eventHandler);
+        ListEventFilter lef = new SimpleEventFilterAdaptor(simpleFilter);
+        EventCache<E> ec = new EventCache<E>(this, lef);
+        caches.add(ec);
+
+        return ec;
+    }
+
+    public EventCache addListEventFilter(ListEventFilter<E> listFilter)
+    {
+        EventCache<E> ec = new EventCache<E>(this, listFilter);
         caches.add(ec);
 
         return ec;

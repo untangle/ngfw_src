@@ -19,7 +19,7 @@ import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.argon.SessionMatcher;
 import com.metavize.mvvm.argon.SessionMatcherFactory;
-import com.metavize.mvvm.logging.EventFilter;
+import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.logging.LogEvent;
@@ -87,8 +87,8 @@ public class NatImpl extends AbstractTransform implements Nat
         TransformContext tctx = getTransformContext();
         eventLogger = new EventLogger<LogEvent>(tctx);
 
-        EventFilter ef = new NatRedirectFilter();
-        eventLogger.addEventFilter(ef);
+        SimpleEventFilter ef = new NatRedirectFilter();
+        eventLogger.addSimpleEventFilter(ef);
     }
 
     public NatSettings getNatSettings()

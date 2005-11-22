@@ -11,23 +11,23 @@
 
 package com.metavize.tran.spyware;
 
-import com.metavize.mvvm.logging.EventFilter;
 import com.metavize.mvvm.logging.RepositoryDesc;
+import com.metavize.mvvm.logging.SimpleEventFilter;
 
-public class SpywareBlockedFilter implements EventFilter<SpywareEvent>
+public class SpywareBlockedFilter implements SimpleEventFilter<SpywareEvent>
 {
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc("Blocked Events");
 
     private static final String ACCESS_QUERY
         = "FROM SpywareAccessEvent evt WHERE evt.pipelineEndpoints.policy = :policy and evt.blocked = true ORDER BY evt.timeStamp";
     private static final String ACTIVEX_QUERY
-        = "FROM SpywareActiveXEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
+        = "FROM SpywareActiveXEvent evt WHERE evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
     private static final String BLACKLIST_QUERY
-        = "FROM SpywareBlacklistEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
+        = "FROM SpywareBlacklistEvent evt WHERE evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
     private static final String COOKIE_QUERY
-        = "FROM SpywareCookieEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
+        = "FROM SpywareCookieEvent evt WHERE evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
 
-    // EventFilter methods ----------------------------------------------------
+    // SimpleEventFilter methods ----------------------------------------------
 
     public RepositoryDesc getRepositoryDesc()
     {

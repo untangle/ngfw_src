@@ -11,17 +11,17 @@
 
 package com.metavize.tran.spyware;
 
-import com.metavize.mvvm.logging.EventFilter;
 import com.metavize.mvvm.logging.RepositoryDesc;
+import com.metavize.mvvm.logging.SimpleEventFilter;
 
-public class SpywareCookieFilter implements EventFilter<SpywareEvent>
+public class SpywareCookieFilter implements SimpleEventFilter<SpywareEvent>
 {
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc("Cookie Events");
 
     private static final String WARM_QUERY
-        = "FROM SpywareCookieEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
+        = "FROM SpywareCookieEvent evt WHERE evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
 
-    // EventFilter methods ----------------------------------------------------
+    // SimpleEventFilter methods ----------------------------------------------
 
     public RepositoryDesc getRepositoryDesc()
     {

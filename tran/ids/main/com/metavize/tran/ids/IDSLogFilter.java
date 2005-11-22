@@ -11,10 +11,10 @@
 
 package com.metavize.tran.ids;
 
-import com.metavize.mvvm.logging.EventFilter;
+import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.logging.RepositoryDesc;
 
-public class IDSLogFilter implements EventFilter<IDSLogEvent>
+public class IDSLogFilter implements SimpleEventFilter<IDSLogEvent>
 {
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc("All Events");
 
@@ -26,7 +26,7 @@ public class IDSLogFilter implements EventFilter<IDSLogEvent>
 
     IDSLogFilter() { }
 
-    // EventFilter methods ----------------------------------------------------
+    // SimpleEventFilter methods ----------------------------------------------
 
     public RepositoryDesc getRepositoryDesc()
     {

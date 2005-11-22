@@ -11,8 +11,7 @@
 
 package com.metavize.mvvm.logging;
 
-
-public interface EventFilter<E extends LogEvent>
+public interface SimpleEventFilter<E extends LogEvent>
 {
     RepositoryDesc getRepositoryDesc();
     String[] getQueries();

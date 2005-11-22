@@ -19,7 +19,7 @@ import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.argon.SessionMatcher;
 import com.metavize.mvvm.argon.SessionMatcherFactory;
-import com.metavize.mvvm.logging.EventFilter;
+import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.tapi.AbstractTransform;
@@ -66,10 +66,10 @@ public class FirewallImpl extends AbstractTransform implements Firewall
         TransformContext tctx = getTransformContext();
         eventLogger = new EventLogger<FirewallEvent>(tctx);
 
-        EventFilter ef = new FirewallAllFilter();
-        eventLogger.addEventFilter(ef);
+        SimpleEventFilter ef = new FirewallAllFilter();
+        eventLogger.addSimpleEventFilter(ef);
         ef = new FirewallBlockedFilter();
-        eventLogger.addEventFilter(ef);
+        eventLogger.addSimpleEventFilter(ef);
     }
 
     // Firewall methods -------------------------------------------------------

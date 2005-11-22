@@ -11,17 +11,17 @@
 
 package com.metavize.tran.spyware;
 
-import com.metavize.mvvm.logging.EventFilter;
 import com.metavize.mvvm.logging.RepositoryDesc;
+import com.metavize.mvvm.logging.SimpleEventFilter;
 
-public class SpywareBlacklistFilter implements EventFilter<SpywareEvent>
+public class SpywareBlacklistFilter implements SimpleEventFilter<SpywareEvent>
 {
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc("Blacklist Events");
 
     private static final String WARM_QUERY
-        = "FROM SpywareBlacklistEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
+        = "FROM SpywareBlacklistEvent evt WHERE evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
 
-    // EventFilter methods ----------------------------------------------------
+    // SimpleEventFilter methods ----------------------------------------------
 
     public RepositoryDesc getRepositoryDesc()
     {

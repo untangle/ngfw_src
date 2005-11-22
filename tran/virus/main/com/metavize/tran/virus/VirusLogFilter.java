@@ -11,10 +11,10 @@
 
 package com.metavize.tran.virus;
 
-import com.metavize.mvvm.logging.EventFilter;
+import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.logging.RepositoryDesc;
 
-public class VirusLogFilter implements EventFilter<VirusEvent>
+public class VirusLogFilter implements SimpleEventFilter<VirusEvent>
 {
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc("FTP Events");
 
@@ -30,7 +30,7 @@ public class VirusLogFilter implements EventFilter<VirusEvent>
         + "ORDER BY evt.timeStamp";
     }
 
-    // EventFilter methods ----------------------------------------------------
+    // SimpleEventFilter methods ----------------------------------------------
 
     public RepositoryDesc getRepositoryDesc()
     {

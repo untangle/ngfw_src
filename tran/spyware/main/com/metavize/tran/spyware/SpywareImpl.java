@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import com.metavize.mvvm.logging.EventFilter;
+import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.tapi.AbstractTransform;
@@ -95,18 +95,18 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         TransformContext tctx = getTransformContext();
         eventLogger = new EventLogger<SpywareEvent>(tctx);
 
-        EventFilter ef = new SpywareAllFilter();
-        eventLogger.addEventFilter(ef);
+        SimpleEventFilter ef = new SpywareAllFilter();
+        eventLogger.addSimpleEventFilter(ef);
         ef = new SpywareBlockedFilter();
-        eventLogger.addEventFilter(ef);
+        eventLogger.addSimpleEventFilter(ef);
         ef = new SpywareAccessFilter();
-        eventLogger.addEventFilter(ef);
+        eventLogger.addSimpleEventFilter(ef);
         ef = new SpywareActiveXFilter();
-        eventLogger.addEventFilter(ef);
+        eventLogger.addSimpleEventFilter(ef);
         ef = new SpywareBlacklistFilter();
-        eventLogger.addEventFilter(ef);
+        eventLogger.addSimpleEventFilter(ef);
         ef = new SpywareCookieFilter();
-        eventLogger.addEventFilter(ef);
+        eventLogger.addSimpleEventFilter(ef);
     }
 
     // SpywareTransform methods -----------------------------------------------

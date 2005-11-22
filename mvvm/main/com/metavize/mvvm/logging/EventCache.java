@@ -17,18 +17,19 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
+import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.policy.Policy;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
-import org.hibernate.Query;
 import org.hibernate.Session;
 
 class EventCache<E extends LogEvent> implements EventRepository<E>
 {
     private final EventLogger<E> eventLogger;
-    private final EventFilter<E> eventHandler;
+    private final ListEventFilter<E> eventFilter;
 
     private final LinkedList<E> cache = new LinkedList<E>();
 
@@ -38,10 +39,10 @@ class EventCache<E extends LogEvent> implements EventRepository<E>
 
     // constructors -----------------------------------------------------------
 
-    EventCache(EventLogger<E> eventLogger, EventFilter<E> eventHandler)
+    EventCache(EventLogger<E> eventLogger, ListEventFilter<E> eventFilter)
     {
         this.eventLogger = eventLogger;
-        this.eventHandler = eventHandler;
+        this.eventFilter = eventFilter;
     }
 
     // EventRepository methods ------------------------------------------------
@@ -58,14 +59,14 @@ class EventCache<E extends LogEvent> implements EventRepository<E>
 
     public RepositoryDesc getRepositoryDesc()
     {
-        return eventHandler.getRepositoryDesc();
+        return eventFilter.getRepositoryDesc();
     }
 
     // package protected methods ----------------------------------------------
 
     void log(E e)
     {
-        if (eventHandler.accept(e)) {
+        if (eventFilter.accept(e)) {
             synchronized (cache) {
                 while (cache.size() >= eventLogger.getLimit()) {
                     cache.removeLast();
@@ -78,10 +79,35 @@ class EventCache<E extends LogEvent> implements EventRepository<E>
     void warm()
     {
         synchronized (cache) {
-            int limit = eventLogger.getLimit();
+            final int limit = eventLogger.getLimit();
 
             if (cache.size() < limit) {
-                doWarm(limit, cache);
+                final TransformContext tctx = eventLogger.getTransformContext();
+
+                TransactionWork tw = new TransactionWork()
+                    {
+                        public boolean doWork(Session s) throws SQLException
+                        {
+                            Map params;
+                            if (null != tctx) {
+                                Policy policy = tctx.getTid().getPolicy();
+                                params = Collections.singletonMap("policy", policy);
+                            } else {
+                                params = Collections.emptyMap();
+                            }
+
+                            eventFilter.warm(s, cache, limit, params);
+
+                            return true;
+                        }
+                    };
+
+                if (null == tctx) {
+                    MvvmContextFactory.context().runTransaction(tw);
+                } else {
+                    tctx.runTransaction(tw);
+                }
+
                 Collections.sort(cache);
                 Long last = null;
                 for (Iterator<E> i = cache.iterator(); i.hasNext(); ) {
@@ -103,47 +129,5 @@ class EventCache<E extends LogEvent> implements EventRepository<E>
         synchronized (cache) {
             cold = eventLogger.getLimit() > cache.size();
         }
-    }
-
-    // private methods --------------------------------------------------------
-
-    private void doWarm(final int limit, final List<E> l)
-    {
-        final TransformContext tctx = eventLogger.getTransformContext();
-
-        TransactionWork tw = new TransactionWork()
-            {
-                private final Policy policy = tctx.getTid().getPolicy();
-
-                public boolean doWork(Session s) throws SQLException
-                {
-                    for (String query : eventHandler.getQueries()) {
-                        runQuery(s, query);
-                    }
-
-                    return true;
-                }
-
-                private void runQuery(Session s, String query)
-                    throws SQLException
-                {
-                    Query q = s.createQuery(query);
-                    String[] params = q.getNamedParameters();
-                    for (String param : params) {
-                        if (param.equals("policy")) {
-                            q.setParameter("policy", policy);
-                        } else {
-                            logger.debug("unknown parameter: " + param);
-                        }
-                    }
-
-                    int c = 0;
-                    for (Iterator i = q.iterate(); i.hasNext() && ++c < limit; ) {
-                        E sb = (E)i.next();
-                        l.add(sb);
-                    }
-                }
-            };
-        tctx.runTransaction(tw);
     }
 }
