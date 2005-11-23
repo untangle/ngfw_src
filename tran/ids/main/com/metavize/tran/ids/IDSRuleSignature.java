@@ -104,7 +104,7 @@ public class IDSRuleSignature {
         IDSTransformImpl transform = (IDSTransformImpl)MvvmContextFactory.context().transformManager().threadContext().transform();
         IDSDetectionEngine engine = transform.getEngine();
 
-        engine.updateUICount(PASS_COUNTER);
+        engine.updateUICount(SCAN_COUNTER);
 
         for(IDSOption option : options) {
             if(false == option.run(info)) {
@@ -135,13 +135,13 @@ public class IDSRuleSignature {
             // Can't happen right now.
             log.warn("Alert: "+message);
             ids.statisticManager.incrLogged();
-            engine.updateUICount(LOG_COUNTER);
+            engine.updateUICount(DETECT_COUNTER);
             break;
 
         case IDSRuleManager.LOG:
             log.debug("Log: "+message);
             ids.statisticManager.incrLogged();
-            engine.updateUICount(LOG_COUNTER);
+            engine.updateUICount(DETECT_COUNTER);
             break;
 
         case IDSRuleManager.BLOCK:
