@@ -102,6 +102,7 @@ public class IDSStringParser {
         return ruleHeader;
     }
 
+    /*
     private static int parseAction(String action) throws ParseException {
         String validActions[] = IDSRuleManager.ACTIONS;
         for(int i=0; i < validActions.length;i++) {
@@ -110,6 +111,7 @@ public class IDSStringParser {
         }
         throw new ParseException("Not a valid action: " + action);
     }
+    */
 
     private static Protocol parseProtocol(String protoString) throws ParseException {
         if(protoString.equalsIgnoreCase("tcp"))

@@ -23,10 +23,9 @@ public class IDSRuleSignature {
     private String[] ignoreSafeOptions = { "rev","reference","priority" };
     /** **************************************/
 
-    private static final int BLOCK_COUNTER  = Transform.GENERIC_0_COUNTER;
-    private static final int PASS_COUNTER   = Transform.GENERIC_1_COUNTER;
-    private static final int LOG_COUNTER    = Transform.GENERIC_2_COUNTER;
-    private static final int ALERT_COUNTER  = Transform.GENERIC_3_COUNTER;
+    private static final int SCAN_COUNTER  = Transform.GENERIC_0_COUNTER;
+    private static final int DETECT_COUNTER   = Transform.GENERIC_1_COUNTER;
+    private static final int BLOCK_COUNTER    = Transform.GENERIC_2_COUNTER;
 
     private List<IDSOption> options = new Vector<IDSOption>();
 
@@ -105,11 +104,12 @@ public class IDSRuleSignature {
         IDSTransformImpl transform = (IDSTransformImpl)MvvmContextFactory.context().transformManager().threadContext().transform();
         IDSDetectionEngine engine = transform.getEngine();
 
+        engine.updateUICount(PASS_COUNTER);
+
         for(IDSOption option : options) {
             if(false == option.run(info)) {
                 // do not execute
                 transform.statisticManager.incrDNC();
-                engine.updateUICount(PASS_COUNTER); // did-not-cares are passed
                 return false;
             }
         }
@@ -132,9 +132,10 @@ public class IDSRuleSignature {
         boolean blocked = false;
         switch(action) {
         case IDSRuleManager.ALERT:
-            log.debug("Alert: "+message);
+            // Can't happen right now.
+            log.warn("Alert: "+message);
             ids.statisticManager.incrLogged();
-            engine.updateUICount(ALERT_COUNTER);
+            engine.updateUICount(LOG_COUNTER);
             break;
 
         case IDSRuleManager.LOG:
