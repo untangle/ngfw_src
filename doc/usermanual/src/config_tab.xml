@@ -82,21 +82,14 @@
   <sect1 id="config_tab_network_settings">
     <title>Network Settings</title>
     <para>
-    TODO Complete me.  As you do, here are some glossary entries which you may find handy.
-    <glossterm linkend="gloss_ip_addr">IP Address</glossterm>
-    <glossterm linkend="gloss_netmask">Netmask</glossterm>
-    <glossterm linkend="gloss_dns">DNS</glossterm>
-    <glossterm linkend="gloss_default_route">Default Route</glossterm>
-    <glossterm linkend="gloss_dhcp">DHCP</glossterm>
-    <glossterm linkend="gloss_dhcp_lease">DHCP Lease</glossterm>
-
+      The Networking Settings panel controls various networking-related global properties of your &eg;.  Refer to the three subsections, <xref linkend="config_tab_network_networksettings"/>, <xref linkend="config_tab_network_email"/>, and <xref linkend="config_tab_network_networkaliases"/> for more details.
     </para>
 
     <!-- ====================================================== -->
     <sect2 id="config_tab_network_networksettings">
       <title>Network Settings</title>
       <para>
-        TODO as seen in <xref linkend="config_tab_network_networksettings_figure"/>
+        The Network Settings Tab, as seen in <xref linkend="config_tab_network_networksettings_figure"/>, lets administrators control how their &eg; appears to the outside (non-protected) network.
       </para>
       <figure id="config_tab_network_networksettings_figure">
         <title>Network Settings Tab</title>
@@ -106,13 +99,25 @@
           </imageobject>
         </mediaobject>
       </figure>
+      <para>
+        The &eg; can be set-up to either have a <glossterm linkend="gloss_static_ip">static</glossterm> or dynamic IP address.  For a static IP, administrators must configure the normal network settings.  Dynamic addresses are obtained from <glossterm linkend="gloss_dhcp">DHCP</glossterm>.
+      </para>
+      <para>
+        The interface for configuring these external settings is divided into three sections.  The first, determines if the &eg; is using a static or dynamic address.  To choose between these options, the administrator selects either <guilabel>Automatically Set</guilabel> or <guilabel>Manually Set</guilabel>.  If <guilabel>Automatically Set</guilabel> is selected, the &eg; will use DHCP to obtain network settings and display them in the boxes below.  If <guilabel>Manually Set</guilabel> is selected, the administrator must manually set the <glossterm linkend="gloss_ip_addr">IP Address</glossterm>, <glossterm linkend="gloss_netmask">Netmask</glossterm>, <glossterm linkend="gloss_default_route">Default Route</glossterm> (sometimes refered to as <quote>gateway</quote>), as well as a primary <glossterm linkend="gloss_dns">DNS</glossterm> server and a secondary DNS server (optional).
+      </para>
+      <para>
+        Should <guilabel>Automatically Set</guilabel> be selected, then administrators can optionaly request a renewal of their <glossterm linkend="gloss_dhcp_lease">DHCP Lease</glossterm> via the <guilabel>Renew DHCP Lease</guilabel> button.  This is the second section as seen in <xref linkend="config_tab_network_networksettings_figure"/>.
+      </para>
+      <para>
+        Whether <guilabel>Automatically Set</guilabel> or <guilabel>Manually Set</guilabel> is selected for the external interface, the <guilabel>Run Connectivity Test</guilabel> button can be used to perform a test of these settings.  This is the third section as seen in <xref linkend="config_tab_network_networksettings_figure"/>.  Activating the test will then report its findings (success/failure).
+      </para>
     </sect2>
 
     <!-- ====================================================== -->
     <sect2 id="config_tab_network_email">
       <title>Email Settings</title>
       <para>
-        TODO as seen in <xref linkend="config_tab_network_email_figure"/>
+        The Email Settings tab, as seen in <xref linkend="config_tab_network_email_figure"/>, lets administrators control how &eg; sends emails.
       </para>
       <figure id="config_tab_network_email_figure">
         <title>Email Settings Tab</title>
@@ -122,13 +127,26 @@
           </imageobject>
         </mediaobject>
       </figure>
-    </sect2>    
+      <para>
+        The &eg; sends emails for several reasons.  Various Software Appliances (for example, <link linkend="clam_tran">Virus Scanning</link>) will send end-users emails informing them of malicious payloads such as viruses.  The <link linkend="config_tab_quarantine">Quarantine</link> feature sends users a daily digest of the spams they received, and the <link linkend="reporting_tran">EdgeGuard Reports Appliance</link> sends daily summary reports to administrators about their &eg; activity.
+      </para>
+      <para>
+        The interface for configuring the email settings (as seen in <xref linkend="config_tab_network_email_figure"/>) requires two properties for normal mail traffic.  The first property, <guilabel>Hostname</guilabel> is the name of your <glossterm linkend="gloss_smtp">SMTP</glossterm> mail server (e.g. <quote>mail.mycompany.com</quote> or <quote>4.79.181.14</quote>).  The second property is <guilabel>port</guilabel>.  The standard port for sending email via SMTP is 25.  You should only change this setting if you know your mail server is using a non-standard port.
+      </para>
+      <para>
+        For sites using authenticated SMTP (SMTP which requires a username and password), the <guilabel>Authentication Login</guilabel> and <guilabel>Authentication Password</guilabel> fields should be set.  Otherwise, these can be safely left blank.
+      </para>
+      <para>
+        The final property, <guilabel>From Address</guilabel>, provides a <quote>FROM</quote> value for emails sent from &eg;.  
+      </para>
+    </sect2>
 
     <!-- ====================================================== -->
     <sect2 id="config_tab_network_networkaliases">
       <title>Network Aliases</title>
       <para>
         TODO as seen in <xref linkend="config_tab_network_networkaliases_figure"/>
+        TODO I think I get it, but the dependency/relevance of DMZ and bridging to this tab still confuse me a bit.  Get someone like Robert to help.
       </para>
       <figure id="config_tab_network_networkaliases_figure">
         <title>Network Aliases Tab</title>
@@ -147,9 +165,7 @@
     <title>Remote Administration</title>
 
     <para>
-    TODO Complete me.  As you do, here are some glossary entries which you may find handy.
-    
-    <glossterm linkend="gloss_http">HTTP</glossterm>
+      The Remote Administration tab controls settings for the Administrative Interface itself (who can/cannot access)
     </para>
 
 
@@ -333,7 +349,7 @@
   <sect1 id="config_tab_quarantine">
     <title>Quarantine</title>
     <para>
-    TODO Complete me
+    TODO Complete me.  Put a blurb here about what IP addresses folks can use for requesting a digest.  It is either the external IP (bridge) or the thing set in the NAT transform.
     </para>
 
     <!-- ................................................... -->
