@@ -19,6 +19,6 @@ import org.hibernate.Session;
 public interface ListEventFilter<E extends LogEvent>
 {
     RepositoryDesc getRepositoryDesc();
-    List<E> warm(Session s, List<E> l, int limit, Map<String, Object> params);
+    void warm(Session s, List<E> l, int limit, Map<String, Object> params);
     boolean accept(E e);
 }

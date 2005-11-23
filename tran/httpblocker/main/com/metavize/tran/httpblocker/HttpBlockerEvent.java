@@ -31,9 +31,24 @@ public class HttpBlockerEvent extends LogEvent
     private Reason reason;
     private String category;
 
+    // non-persistent fields --------------------------------------------------
+
+    private boolean nonEvent = false;
+
     // constructors -----------------------------------------------------------
 
     public HttpBlockerEvent() { }
+
+    public HttpBlockerEvent(RequestLine requestLine, Action action,
+                            Reason reason, String category, boolean nonEvent)
+    {
+        this.requestLine = requestLine;
+        this.action = action;
+        this.reason = reason;
+        this.category = category;
+
+        this.nonEvent = nonEvent;
+    }
 
     public HttpBlockerEvent(RequestLine requestLine, Action action,
                             Reason reason, String category)
@@ -42,6 +57,13 @@ public class HttpBlockerEvent extends LogEvent
         this.action = action;
         this.reason = reason;
         this.category = category;
+    }
+
+    // public methods ---------------------------------------------------------
+
+    public boolean isNonEvent()
+    {
+        return nonEvent;
     }
 
     // accessors --------------------------------------------------------------
@@ -115,6 +137,13 @@ public class HttpBlockerEvent extends LogEvent
     public void setCategory(String category)
     {
         this.category = category;
+    }
+
+    // LogEvent methods -------------------------------------------------------
+
+    public boolean isPersistent()
+    {
+        return !nonEvent;
     }
 
     // Syslog methods ---------------------------------------------------------

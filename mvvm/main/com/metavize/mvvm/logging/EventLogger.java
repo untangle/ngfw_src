@@ -313,7 +313,9 @@ public class EventLogger<E extends LogEvent> implements EventManager<E>
                         for (Iterator<LogEvent> i = logQueue.iterator();
                              i.hasNext(); ) {
                             LogEvent e = i.next();
-                            s.saveOrUpdate(e);
+                            if (e.isPersistent()) {
+                                s.saveOrUpdate(e);
+                            }
                             i.remove();
                         }
 

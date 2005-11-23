@@ -15,9 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.EventManager;
+import com.metavize.mvvm.logging.ListEventFilter;
+import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
@@ -56,8 +57,10 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
     {
         TransformContext tctx = getTransformContext();
         eventLogger = new EventLogger<HttpBlockerEvent>(tctx);
-        SimpleEventFilter ef = new HttpBlockerBlockedFilter();
-        eventLogger.addSimpleEventFilter(ef);
+        SimpleEventFilter sef = new HttpBlockerBlockedFilter();
+        eventLogger.addSimpleEventFilter(sef);
+        ListEventFilter lef = new HttpBlockerAllFilter();
+        eventLogger.addListEventFilter(lef);
     }
 
     // HttpBlocker methods ----------------------------------------------------

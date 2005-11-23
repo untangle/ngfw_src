@@ -12,12 +12,13 @@
 package com.metavize.tran.httpblocker;
 
 
-import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.logging.RepositoryDesc;
+import com.metavize.mvvm.logging.SimpleEventFilter;
 
 public class HttpBlockerBlockedFilter implements SimpleEventFilter<HttpBlockerEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc("HTTP Block Events");
+    private static final RepositoryDesc REPO_DESC
+        = new RepositoryDesc("Blocked HTTP Traffic");
 
     private static final String WARM_QUERY
         = "FROM HttpBlockerEvent evt WHERE evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
@@ -36,6 +37,6 @@ public class HttpBlockerBlockedFilter implements SimpleEventFilter<HttpBlockerEv
 
     public boolean accept(HttpBlockerEvent e)
     {
-        return true;
+        return e.isPersistent();
     }
 }

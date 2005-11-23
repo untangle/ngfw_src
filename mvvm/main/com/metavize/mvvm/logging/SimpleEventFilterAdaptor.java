@@ -41,14 +41,12 @@ class SimpleEventFilterAdaptor<E extends LogEvent>
     }
 
 
-    public List<E> warm(Session s, List<E> l, int limit,
+    public void warm(Session s, List<E> l, int limit,
                         Map<String, Object> params)
     {
         for (String q : simpleEventFilter.getQueries()) {
             runQuery(q, s, l, limit, params);
         }
-
-        return l;
     }
 
     // private methods --------------------------------------------------------

@@ -19,15 +19,17 @@ import javax.swing.table.*;
 
 import com.metavize.gui.transform.*;
 import com.metavize.gui.widgets.editTable.*;
-import com.metavize.mvvm.logging.EventRepository;
 import com.metavize.mvvm.logging.EventManager;
+import com.metavize.mvvm.logging.EventRepository;
 import com.metavize.mvvm.logging.RepositoryDesc;
 import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.tran.http.HttpRequestEvent;
 import com.metavize.tran.http.RequestLine;
+import com.metavize.tran.httpblocker.Action;
 import com.metavize.tran.httpblocker.HttpBlocker;
 import com.metavize.tran.httpblocker.HttpBlockerEvent;
+import com.metavize.tran.httpblocker.Reason;
 
 public class LogJPanel extends MLogTableJPanel {
 
@@ -89,10 +91,12 @@ public class LogJPanel extends MLogTableJPanel {
 
                 event = new Vector(7);
                 event.add( requestLog.getTimeStamp() );
-                event.add( requestLog.getAction().toString() );
+                Action a = requestLog.getAction();
+                event.add( null == a ? "none" : a.toString() );
                 event.add( null == pe ? "" : (pe.getCClientAddr().getHostAddress() + ":" + pe.getCClientPort()));
                 event.add( null == rl ? "" : rl.getUrl().toString() );
-                event.add( requestLog.getReason().toString() );
+                Reason r = requestLog.getReason();
+                event.add( null == r ? "none" : r.toString() );
                 event.add( null == pe ? "" : pe.getDirectionName() );
                 event.add( null == pe ? "" : pe.getSServerAddr().getHostAddress() + ":" + pe.getSServerPort());
                 allEvents.add( event );

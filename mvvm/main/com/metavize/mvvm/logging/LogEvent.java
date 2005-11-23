@@ -70,6 +70,18 @@ public abstract class LogEvent implements Comparable, Serializable
         this.timeStamp = timeStamp;
     }
 
+    // public methods ---------------------------------------------------------
+
+    /**
+     * LogEvents inserted into the database when this method returns true.
+     *
+     * @return true when this event is saved to the database.
+     */
+    public boolean isPersistent()
+    {
+        return true;
+    }
+
     // Syslog methods ---------------------------------------------------------
 
     public abstract void appendSyslog(SyslogBuilder a);
@@ -93,7 +105,6 @@ public abstract class LogEvent implements Comparable, Serializable
         LogEvent le = (LogEvent)o;
 
         int i = -timeStamp.compareTo(le.timeStamp);
-
         if (0 == i) {
             if (le.id == id) {
                 return 0;
