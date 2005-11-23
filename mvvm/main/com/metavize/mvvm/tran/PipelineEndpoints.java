@@ -91,7 +91,8 @@ public class PipelineEndpoints extends LogEvent
         this.policyInbound = policyInbound;
     }
 
-    // This one is called by ArgonHook, just to get an object which is filled in later.
+    // This one is called by ArgonHook, just to get an object which is
+    // filled in later.
     public PipelineEndpoints(IPSessionDesc begin)
     {
         sessionId = begin.id();
@@ -420,5 +421,22 @@ public class PipelineEndpoints extends LogEvent
     public SyslogPriority getSyslogPrioritiy()
     {
         return SyslogPriority.DEBUG;
+    }
+
+    // Object methods ---------------------------------------------------------
+
+    public boolean equals(Object o)
+    {
+        if (o instanceof PipelineEndpoints) {
+            PipelineEndpoints pe = (PipelineEndpoints)o;
+            return sessionId == pe.sessionId;
+        } else {
+            return false;
+        }
+    }
+
+    public int hashCode()
+    {
+        return sessionId;
     }
 }
