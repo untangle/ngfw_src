@@ -14,6 +14,7 @@ package com.metavize.tran.virus;
 
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
+import com.metavize.mvvm.logging.SyslogPriority;
 import com.metavize.mvvm.tran.PipelineEndpoints;
 
 public abstract class VirusEvent extends LogEvent
@@ -53,5 +54,10 @@ public abstract class VirusEvent extends LogEvent
         sb.addField("infected", Boolean.toString(isInfected()));
         sb.addField("action", getActionName());
         sb.addField("virus-name", getVirusName());
+    }
+
+    public SyslogPriority getSyslogPrioritiy()
+    {
+        return isInfected() ? SyslogPriority.WARNING : SyslogPriority.INFORMATIONAL;
     }
 }

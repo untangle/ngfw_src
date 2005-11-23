@@ -13,6 +13,7 @@ package com.metavize.tran.protofilter;
 
 import com.metavize.mvvm.logging.PipelineEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
+import com.metavize.mvvm.logging.SyslogPriority;
 import com.metavize.mvvm.tran.PipelineEndpoints;
 
 /**
@@ -86,5 +87,10 @@ public class ProtoFilterLogEvent extends PipelineEvent
         sb.startSection("info");
         sb.addField("protocol", protocol);
         sb.addField("blocked", blocked);
+    }
+
+    public SyslogPriority getSyslogPrioritiy()
+    {
+        return blocked ? SyslogPriority.NOTICE : SyslogPriority.INFORMATIONAL;
     }
 }
