@@ -17,8 +17,8 @@ public class Constants
     static final String BUNNICULA_BASE  = System.getProperty( "bunnicula.home" );
     static final String BUNNICULA_CONF  = System.getProperty( "bunnicula.conf.dir" );
     
-    static final String VPN_SCRIPT_BASE = BUNNICULA_BASE + "/openvpn";
-    public static final String VPN_CONF_BASE   = BUNNICULA_CONF;
+    static final String VPN_SCRIPT_DIR = BUNNICULA_BASE + "/openvpn";
+    public static final String VPN_CONF_BASE = BUNNICULA_CONF;
 
     /* Triggered when there is a VPN session that is blocked */
     /* XXXXXXX Probably want to log block events */

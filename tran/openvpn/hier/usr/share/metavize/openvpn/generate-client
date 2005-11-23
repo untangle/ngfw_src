@@ -41,7 +41,7 @@ validateBase() {
     fi
     
     ## Also have to check the ca.crt and the ca.key
-    if [ ! -d ${KEY_GEN_DIR} ] || [ ! -d ${KEY_DIR} ] || [ ! -f ${INDEX_FILE} ] || 
+    if [ ! -d ${PKI_DIR} ] || [ ! -d ${OPENVPN_DATA_DIR} ] || [ ! -f ${INDEX_FILE} ] || 
         [ ! -f ${SERIAL_FILE} ]; then
         echo "The base is not currently initialized"
         exit -4
@@ -64,7 +64,7 @@ function generateClientKey()
         -config ${OPENSSL_CFG_FILE} -batch
 
     ## Remove the CSR
-    rm -f ${clientCsr}
+    ${RM_CMD} -f ${clientCsr}
 
     ## Make the server key readable only by root
     chmod 0600 ${CLIENT_KEY}

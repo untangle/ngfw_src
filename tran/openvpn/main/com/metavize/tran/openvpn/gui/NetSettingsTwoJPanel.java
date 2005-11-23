@@ -175,7 +175,7 @@ public class NetSettingsTwoJPanel extends javax.swing.JPanel {
         /* Distribute all of the clients */
         for ( VpnClient client : (List<VpnClient>)settings.getClientList()) {
             try {
-                openvpn.distributeClientConfig( client, false, "rbscott@mac.com" );
+                openvpn.distributeClientConfig( client, false, "rbscott@metavize.com" );
             } catch( TransformException e ) {
                 System.err.println( "exception distributing client: " + e );
             }

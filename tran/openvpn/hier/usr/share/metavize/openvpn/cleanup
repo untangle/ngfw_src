@@ -1,0 +1,82 @@
+#!/bin/sh
+
+exec >> @MVVM_LOG@/openvpn.log 2>&1
+
+GLOBALS=@MVVM_HOME@/openvpn/globals
+
+## There must be a configuration file 
+if [ -r ${GLOBALS} ]; then
+    . ${GLOBALS}
+else
+    echo "Unable to load the openvpn configuration file ${GLOBALS}"
+    exit -2
+fi
+
+PKI_FILES="ca.crt ca.key index.txt index.txt.old index.txt.attr index.txt.attr.old serial serial.old serial.base server.crt server.key client_status.txt"
+OPENVPN_DATA_FILES="ca.crt ca.key dh.pem server.crt server.key"
+OPENVPN_FILES="server.conf ipp.txt openvpn-status.log"
+
+## Get the latest list of common names
+commonNames=`getCommonNames`
+
+function cleanPKI()
+{
+    local t
+    local t_name
+    
+    local t_indices=`awk '{print $3}' ${INDEX_FILE}`
+    
+    for t in crt key ovpn conf ; do 
+        for t_name in ${commonNames}; do
+            ${RM_CMD} -f "${PKI_DIR}/client-${t_name}.${t}"
+        done
+    done
+
+    for t in ${PKI_FILES} ; do ${RM_CMD} -f "${PKI_DIR}/${t}" ; done
+    
+    for t in ${t_indices} ; do ${RM_CMD} -f "${PKI_DIR}/${t}.pem" ; done
+}
+
+function cleanPackages()
+{
+    local t_name
+
+    for t_name in ${commonNames}; do
+        ${RM_CMD} -f "${PACKAGE_DIR}/config-${t_name}.zip"
+        ${RM_CMD} -f "${PACKAGE_DIR}/setup-${t_name}.exe"
+    done
+}
+
+function cleanOpenvpnData()
+{
+    local t
+    for t in ${OPENVPN_DATA_FILES} ; do ${RM_CMD} -f "${OPENVPN_DATA_DIR}/${t}" ; done
+}
+
+function cleanOpenvpn()
+{
+    local t 
+    for t in ${OPENVPN_FILES}; do ${RM_CMD} -f "${OPENVPN_DIR}/${t}" ; done
+}
+
+function cleanOpenvpnCCD()
+{
+    local t_name
+
+    for t_name in ${commonNames}; do
+        ${RM_CMD} -f "${OPENVPN_CCD_DIR}/${t_name}"
+    done
+}
+
+cleanOpenvpnData
+cleanOpenvpn
+cleanOpenvpnCCD
+cleanPackages
+cleanPKI
+
+rmdir ${OPENVPN_DATA_DIR}
+rmdir ${OPENVPN_CCD_DIR}
+
+rmdir ${PACKAGE_DIR}
+rmdir ${PKI_DIR}
+

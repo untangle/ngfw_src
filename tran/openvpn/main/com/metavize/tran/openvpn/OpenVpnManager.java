@@ -48,9 +48,9 @@ class OpenVpnManager
     private static final String VPN_CCD_DIR      = VPN_CONF_DIR + "/ccd";
     private static final String VPN_CLIENT_FILE_BASE = VPN_CONF_BASE + "/openvpn/client-";
 
-    private static final String VPN_START_SCRIPT = VPN_SCRIPT_BASE + "/start-openvpn";
-    private static final String VPN_STOP_SCRIPT  = VPN_SCRIPT_BASE + "/stop-openvpn";
-    private static final String GENERATE_DISTRO_SCRIPT = VPN_SCRIPT_BASE + "/generate-distro";
+    private static final String VPN_START_SCRIPT = VPN_SCRIPT_DIR + "/start-openvpn";
+    private static final String VPN_STOP_SCRIPT  = VPN_SCRIPT_DIR + "/stop-openvpn";
+    private static final String GENERATE_DISTRO_SCRIPT = VPN_SCRIPT_DIR + "/generate-distro";
     
     /* Most likely want to bind to the outside address when using NAT */
     private static final String FLAG_LOCAL       = "local";

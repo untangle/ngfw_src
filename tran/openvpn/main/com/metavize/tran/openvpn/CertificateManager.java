@@ -71,9 +71,9 @@ class CertificateManager
 
     private static final String EMPTY_ARRAY[] = new String[0];
 
-    private static final String GENERATE_BASE_SCRIPT   = VPN_SCRIPT_BASE + "/generate-base";
-    private static final String GENERATE_CLIENT_SCRIPT = VPN_SCRIPT_BASE + "/generate-client";
-    private static final String REVOKE_CLIENT_SCRIPT   = VPN_SCRIPT_BASE + "/revoke-client";
+    private static final String GENERATE_BASE_SCRIPT   = VPN_SCRIPT_DIR + "/generate-base";
+    private static final String GENERATE_CLIENT_SCRIPT = VPN_SCRIPT_DIR + "/generate-client";
+    private static final String REVOKE_CLIENT_SCRIPT   = VPN_SCRIPT_DIR + "/revoke-client";
     
     /* Name of the file that stores the configuration data */
     /* The first item is V if the client common name is valid, and R if it has been revoked */

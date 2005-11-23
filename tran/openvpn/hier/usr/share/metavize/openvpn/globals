@@ -1,6 +1,7 @@
 #!/bin/sh
 
-OPENVPN_HOME=@MVVM_HOME@/openvpn
+SCRIPTS_DIR=@MVVM_HOME@/openvpn
+DATA_DIR=${SCRIPTS_DIR}
 BASE_CONFIG_FILE=@MVVM_CONF@/openvpn_base_cfg
 
 ## There must be a configuration file 
@@ -12,29 +13,37 @@ else
 fi
 
 ## This is where all of the keys (client and server) are generated.
-export KEY_GEN_DIR=@MVVM_CONF@/openvpn
-export INDEX_FILE=${KEY_GEN_DIR}/index.txt
-export SERIAL_FILE=${KEY_GEN_DIR}/serial
+export PKI_DIR=@MVVM_CONF@/openvpn
+export INDEX_FILE=${PKI_DIR}/index.txt
+export SERIAL_FILE=${PKI_DIR}/serial
+
+OPENVPN_CONF_DIR=@MVVM_CONF@/openvpn
+PACKAGE_DIR=${OPENVPN_CONF_DIR}/client-packages
 
 ## This is the client status file that java uses to check the certificate status for each client
-CLIENT_STATUS_FILE="${KEY_GEN_DIR}/client_status.txt"
+CLIENT_STATUS_FILE="${PKI_DIR}/client_status.txt"
+
+OPENSSL="openssl"
+RM_CMD="rm"
+
+## Uncomment the following line for debugging the openssl and removal calls.
+#OPENSSL="opensslDbg"
+RM_CMD="rmDbg"
 
 ## Default parameters and file locations for the certificates
-OPENSSL="opensslDbg"
-
-OPENSSL_CFG_FILE="${OPENVPN_HOME}/openssl.cnf"
-CA_KEY="${KEY_GEN_DIR}/ca.key"
-CA_CRT="${KEY_GEN_DIR}/ca.crt"
+OPENSSL_CFG_FILE="${DATA_DIR}/openssl.cnf"
+CA_KEY="${PKI_DIR}/ca.key"
+CA_CRT="${PKI_DIR}/ca.crt"
 
 ## This is where all of the server parameters are placed.
-BASE_DIR=/etc/openvpn
-KEY_DIR=${BASE_DIR}/keys
+OPENVPN_DIR=/etc/openvpn
+OPENVPN_DATA_DIR=${OPENVPN_DIR}/keys
 
 ## Issuing ten year certs
 CERT_DURATION=3650
 
 ## Client configuration directory
-CLIENT_CFG_DIR="${BASE_DIR}/ccd"
+OPENVPN_CCD_DIR="${OPENVPN_DIR}/ccd"
 
 ## dnQualifier for the different certs
 DN_QUALIFIER_SERVER="server"
@@ -43,12 +52,19 @@ DN_QUALIFIER_CA="certificateAuthority"
 
 OPENVPN_SCRIPT="/etc/init.d/openvpn"
 
-## Debugging function
+## Debugging functions
 function opensslDbg()
 {
     echo openssl $@
     openssl $@
 }
+
+function rmDbg()
+{
+    echo rm $@
+    rm $@
+}
+
 
 function validateUsbKey()
 {
@@ -93,12 +109,12 @@ function isRevoked()
 
 function getClientCrtFile()
 {
-    echo "${KEY_GEN_DIR}/client-${1}.crt"
+    echo "${PKI_DIR}/client-${1}.crt"
 }
 
 function getClientKeyFile()
 {
-    echo "${KEY_GEN_DIR}/client-${1}.key"
+    echo "${PKI_DIR}/client-${1}.key"
 }
 
 ## XXXX This function isn't used anymore
@@ -107,12 +123,21 @@ function getClientRevokedCrtFile()
     local commonName="${1}"
     local clientCrt=`getClientCrtFile ${commonName}`
     local serialNumber=`getSerialNumber ${clientCrt}`
-    echo "${KEY_GEN_DIR}/client-revoked-${commonName}-${serialNumber}.crt"
+    echo "${PKI_DIR}/client-revoked-${commonName}-${serialNumber}.crt"
 }
 
 ## Write a new client status file which java uses to check the status of each client
 function updateClientStatus()
 {
     ## Delete any line that has a dnQualifier for the server
-    sed -e "/dnQualifier=${DN_QUALIFIER_SERVER}/d" -e 's/^\(R\|V\).*\/CN=\([^/]*\).*/\1 \2/' ${INDEX_FILE} | uniq > ${CLIENT_STATUS_FILE}
+    sed -e "/dnQualifier=${DN_QUALIFIER_SERVER}/d" \
+        -e 's/^\(R\|V\).*\/CN=\([^/]*\).*/\1 \2/' ${INDEX_FILE} | \
+        uniq > ${CLIENT_STATUS_FILE}
+}
+
+function getCommonNames()
+{
+    sed -e "/dnQualifier=${DN_QUALIFIER_SERVER}/d" \
+        -e 's|.*\/CN=\([^/]*\).*|\1|' ${INDEX_FILE} | \
+        uniq
 }

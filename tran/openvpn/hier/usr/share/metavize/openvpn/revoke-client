@@ -23,7 +23,7 @@ validateBase()
     fi
     
     ## Also have to check the ca.crt and the ca.key
-    if [ ! -d ${KEY_GEN_DIR} ] || [ ! -d ${KEY_DIR} ] || [ ! -f ${INDEX_FILE} ] || 
+    if [ ! -d ${PKI_DIR} ] || [ ! -d ${OPENVPN_DATA_DIR} ] || [ ! -f ${INDEX_FILE} ] || 
         [ ! -f ${SERIAL_FILE} ]; then
         echo "The base is not currently initialized"
         exit -4
@@ -62,13 +62,13 @@ function revokeClient()
     
     ## Remove the key.
     ## Consider shredding the private key.
-    rm -f ${clientKey}
+    ${RM_CMD} -f ${clientKey}
     
     ## Move the cert out of the way
-    rm -f ${clientCrt}
+    ${RM_CMD} -f ${clientCrt}
     
-    rm -f ${clientCrl}
-    rm -f ${revokeTest}
+    ${RM_CMD} -f ${clientCrl}
+    ${RM_CMD} -f ${revokeTest}
 }
 
 if [ -n "`isRevoked ${commonName}`" ]; then

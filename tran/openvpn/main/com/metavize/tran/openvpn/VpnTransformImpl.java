@@ -35,8 +35,11 @@ import com.metavize.mvvm.tran.TransformState;
 import com.metavize.mvvm.tran.TransformStats;
 import com.metavize.mvvm.tran.TransformStopException;
 import com.metavize.mvvm.tran.ValidateException;
+
 import com.metavize.mvvm.util.TransactionWork;
 import com.metavize.mvvm.argon.ArgonException;
+
+import com.metavize.mvvm.tran.script.ScriptRunner;
 
 import com.metavize.mvvm.MailSender;
 
@@ -47,7 +50,9 @@ public class VpnTransformImpl extends AbstractTransform
     private static final String WEB_APP      = TRAN_NAME;
     private static final String WEB_APP_PATH = "/" + WEB_APP;
     private static final String MAIL_IMAGE_DIR_PREFIX = "images";
-    private static final String MAIL_IMAGE_DIR = Constants.VPN_SCRIPT_BASE + "/images";
+    private static final String MAIL_IMAGE_DIR = Constants.VPN_SCRIPT_DIR + "/images";
+
+    private static final String CLEANUP_SCRIPT = Constants.VPN_SCRIPT_DIR + "/cleanup";
 
     private final Logger logger = Logger.getLogger( VpnTransformImpl.class );
     
@@ -85,11 +90,11 @@ public class VpnTransformImpl extends AbstractTransform
     @Override protected void initializeSettings()
     {
         VpnSettings settings = new VpnSettings( this.getTid());
-        logger.info( "Initializing Settings..." );
+        logger.info( "Initializing Settings... to unconfigured" );
 
         setVpnSettings( settings );
 
-        /* Stop the open vpn monitor(I don't think this actually does anything rbs) */
+        /* Stop the open vpn monitor(I don't think this actually does anything, rbs) */
         openVpnMonitor.stop();
     }
 
@@ -180,9 +185,11 @@ public class VpnTransformImpl extends AbstractTransform
     public void distributeClientConfig( VpnClient client, boolean usbKey, String email )
         throws TransformException
     {
+        /* this client may already have a key may have already been done */
+        this.certificateManager.createClient( client );
+
         /* Generate a random key */
         this.openVpnManager.writeClientConfigurationFiles( settings, client );
-        this.certificateManager.createClient( client );
         
         if ( usbKey ) {
             distributeClientConfigUsb( client );
@@ -218,11 +225,11 @@ public class VpnTransformImpl extends AbstractTransform
             MailSender mailSender = MvvmContextFactory.context().mailSender();
             
             /* Read in the contents of the file */
-            FileReader fileReader = new FileReader( Constants.VPN_SCRIPT_BASE + "/mail-template.html" );
+            FileReader fileReader = new FileReader( Constants.VPN_SCRIPT_DIR + "/mail-template.html" );
             StringBuilder sb = new StringBuilder();
             char[] buf = new char[1024];
             int rs;
-            while (( rs = fileReader.read( buf )) > 0) sb.append( buf, 0, rs );
+            while (( rs = fileReader.read( buf )) > 0 ) sb.append( buf, 0, rs );
             
             try {
                 fileReader.close();
@@ -230,7 +237,10 @@ public class VpnTransformImpl extends AbstractTransform
                 logger.warn( "Unable to close file", e );
             }
             
-            mailSender.sendReports( subject, sb.toString(), locationList, extraList );
+            String recipients[] = { email };
+            
+            mailSender.sendMessageWithAttachments( recipients, subject, sb.toString(), 
+                                                   locationList, extraList );
         } catch ( Exception e ) {
             logger.warn( "Error distributing client key", e );
             throw new TransformException( e );
@@ -418,11 +428,25 @@ public class VpnTransformImpl extends AbstractTransform
         super.postDestroy();
 
         unDeployWebApp();
+    }
+
+    @Override protected void uninstall()
+    {
+        super.uninstall();
+
+        unDeployWebApp();
 
         try {
             MvvmContextFactory.context().argonManager().deregisterIntf( IntfConstants.VPN_INTF );
-        } catch ( ArgonException e ) {
-            throw new TransformException( "Unable to deregister vpn interface", e );
+        } catch ( Exception e ) {
+            /* There is nothing else to do but print out the message */
+            logger.error( "Unable to deregister vpn interface", e );
+        }
+
+        try {
+            ScriptRunner.getInstance().exec( CLEANUP_SCRIPT );
+        } catch ( Exception e ) {
+            logger.error( "Unable to cleanup data.", e );
         }
     }
 

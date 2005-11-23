@@ -19,7 +19,7 @@ default_ca	= CA_default		# The default ca section
 
 ####################################################################
 [ CA_default ]
-dir		= $ENV::KEY_GEN_DIR	# Where everything is kept
+dir		= $ENV::PKI_DIR	        # Where everything is kept
 certs		= $dir			# Where the issued certs are kept
 crl_dir		= $dir			# Where the issued crl are kept
 database	= $ENV::INDEX_FILE	# database index file.

@@ -21,17 +21,15 @@ if [ -z "${commonName}" ]; then
     exit -3
 fi
 
-OPENVPN_CONF_DIR=@MVVM_CONF@/openvpn
-OUTPUT_DIRECTORY=${OPENVPN_CONF_DIR}/client-packages
 WIN_CONFIG_FILE=${OPENVPN_CONF_DIR}/client-${commonName}.ovpn
 UNIX_CONFIG_FILE=${OPENVPN_CONF_DIR}/client-${commonName}.conf
 CLI_CRT_FILE=${OPENVPN_CONF_DIR}/client-${commonName}.crt
 CLI_KEY_FILE=${OPENVPN_CONF_DIR}/client-${commonName}.key
 
-NSI_SCRIPT=${OPENVPN_HOME}/installer/openvpn-gui.nsi
+NSI_SCRIPT=${DATA_DIR}/installer/openvpn-gui.nsi
 
 ## Create the output directory
-mkdir -p ${OUTPUT_DIRECTORY}
+mkdir -p ${PACKAGE_DIR}
 
 ## Create a tempory directory for the client
 function buildConfigFile() {
@@ -51,15 +49,15 @@ function buildConfigFile() {
     cp ${CA_CRT}           ${keyDir}/ca.crt
 
     pushd ${tmpDir}
-    zip -r ${OUTPUT_DIRECTORY}/config-${commonName}.zip office-mv
+    zip -r ${PACKAGE_DIR}/config-${commonName}.zip office-mv
     popd
 
     ## Clean up
-    rm -f ${outputDir}/office-mv.conf
-    rm -f ${outputDir}/office-mv.ovpn
-    rm -f ${keyDir}/${commonName}.crt
-    rm -f ${keyDir}/${commonName}.key
-    rm -f ${keyDir}/ca.crt
+    ${RM_CMD} -f ${outputDir}/office-mv.conf
+    ${RM_CMD} -f ${outputDir}/office-mv.ovpn
+    ${RM_CMD} -f ${keyDir}/${commonName}.crt
+    ${RM_CMD} -f ${keyDir}/${commonName}.key
+    ${RM_CMD} -f ${keyDir}/ca.crt
     
     rmdir ${keyDir}
     rmdir ${outputDir}

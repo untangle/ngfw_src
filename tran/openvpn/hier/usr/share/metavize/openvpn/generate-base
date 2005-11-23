@@ -14,16 +14,16 @@ fi
 
 BASE_SERIAL=`printf '%04X%04X' ${RANDOM} ${RANDOM}`
 
-SERVER_KEY="${KEY_GEN_DIR}/server.key"
-SERVER_CRT="${KEY_GEN_DIR}/server.crt"
+SERVER_KEY="${PKI_DIR}/server.key"
+SERVER_CRT="${PKI_DIR}/server.crt"
 
 ## Directory with pre-generated diffie hellman parameters
-DH_DIR="${OPENVPN_HOME}/dh"
+DH_DIR="${DATA_DIR}/dh"
 
 function diffieHellman()
 {
     local t_dhFile="${DH_DIR}/dh${KEY_SIZE}-$(( ${RANDOM} % 4 )).pem"
-    cp ${t_dhFile} ${KEY_DIR}/dh.pem
+    cp ${t_dhFile} ${OPENVPN_DATA_DIR}/dh.pem
 }
 
 function generateCA()
@@ -38,7 +38,7 @@ function generateCA()
     chmod 0600 ${CA_KEY}
 
     ## Copy into into the key dir
-    cp ${CA_KEY} ${CA_CRT} ${KEY_DIR}
+    cp ${CA_KEY} ${CA_CRT} ${OPENVPN_DATA_DIR}
 }
 
 function generateServerKey()
@@ -57,25 +57,25 @@ function generateServerKey()
         -config ${OPENSSL_CFG_FILE} -batch
 
     ## Remove the CSR
-    rm -f ${serverCsr}
+    ${RM_CMD} -f ${serverCsr}
 
     ## Make the server key readable only by root
     chmod 0600 ${SERVER_KEY}
 
-    cp ${SERVER_KEY} ${SERVER_CRT} ${KEY_DIR}
+    cp ${SERVER_KEY} ${SERVER_CRT} ${OPENVPN_DATA_DIR}
 }
 
 function cleanBase()
 {
-    rm -f ${KEY_GEN_DIR}/*
-    rm -f ${KEY_DIR}/*
+    ${RM_CMD} -f ${PKI_DIR}/*
+    ${RM_CMD} -f ${OPENVPN_DATA_DIR}/*
 }
 
 function makeBase()
 {
-    mkdir -p ${KEY_GEN_DIR}        
-    mkdir -p ${KEY_DIR}
-    mkdir -p ${CLIENT_CFG_DIR}
+    mkdir -p ${PKI_DIR}        
+    mkdir -p ${OPENVPN_DATA_DIR}
+    mkdir -p ${OPENVPN_CCD_DIR}
 
     touch ${INDEX_FILE}
     echo ${BASE_SERIAL} > ${SERIAL_FILE}
