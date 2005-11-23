@@ -546,6 +546,7 @@ public class PolicyStateMachine implements ActionListener {
                 long key = Util.getToolboxManager().install(mTransformJButton.getName());
 		com.metavize.gui.util.Visitor visitor = new com.metavize.gui.util.Visitor(progressBar);
 		while (true) {
+				System.err.println("Progress Key: " + key);
 		    java.util.List<InstallProgress> lip = Util.getToolboxManager().getProgress(key);
 		    for (InstallProgress ip : lip) {
 			ip.accept(visitor);
