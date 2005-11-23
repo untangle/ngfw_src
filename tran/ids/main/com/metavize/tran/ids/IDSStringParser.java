@@ -2,7 +2,6 @@ package com.metavize.tran.ids;
 
 import java.util.regex.*;
 import java.util.List;
-import java.util.LinkedList;
 import java.util.Vector;
 
 import com.metavize.tran.ids.options.*;
@@ -14,7 +13,7 @@ import com.metavize.mvvm.tran.ParseException;
 public class IDSStringParser {
 
     public static final String HOME_IP = "Home"+0xBEEF;
-    public static final String EXTERNAL_IP = "EXTERNAL"+0xBEEF;
+    public static final String EXTERNAL_IP = "External"+0xBEEF;
     private static Pattern maskPattern = Pattern.compile("\\d\\d");
     private static Pattern semicolonMask = Pattern.compile("\\;");
 	

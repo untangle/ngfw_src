@@ -30,6 +30,8 @@ public class IDSRule extends Rule implements Serializable {
     //Hibernate Variables
     private String rule;
 
+    private int sid;
+
     // Used from UI to let us know it's changed.
     private boolean modified;
 	
@@ -69,6 +71,13 @@ public class IDSRule extends Rule implements Serializable {
     public String getText() { return this.rule; }
     public void setText(String s) { this.rule = s; }	
 
+    /**
+     * @hibernate.property
+     * column="SID"
+     */
+    public int getSid() { return this.sid; }
+    public void setSid(int sid) { this.sid = sid; }	
+
     //Non Hibernate functions
     public void setHeader(IDSRuleHeader header) {
         this.header = header;
@@ -77,7 +86,6 @@ public class IDSRule extends Rule implements Serializable {
     public IDSRuleHeader getHeader() {
         return header;
     }
-
 
     public void setSignature(IDSRuleSignature signature) {
         this.signature = signature;

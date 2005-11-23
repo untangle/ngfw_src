@@ -1,4 +1,4 @@
--- schema for release 3.1
+-- schema for release 3.0
 
 -------------
 -- settings |

@@ -87,7 +87,7 @@ public class LogJPanel extends MLogTableJPanel {
                 event.add( Util.getLogDateFormat().format( log.getTimeStamp() ));
                 event.add( log.isBlocked() ? "block" : "pass" );
                 event.add( null == pe ? "" : (pe.getCClientAddr().getHostAddress() + ":" + Integer.toString(pe.getCClientPort())));
-                event.add( log.getMessage() );
+                event.add( "#" + log.getRuleSid() + ": " + log.getMessage() );
                 event.add( null == pe ? "" : pe.getDirectionName() );
                 event.add( null == pe ? "" : (pe.getSServerAddr().getHostAddress() + ":" + Integer.toString(pe.getSServerPort())));
                 allEvents.add( event );

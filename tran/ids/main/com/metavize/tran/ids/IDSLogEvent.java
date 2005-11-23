@@ -28,19 +28,30 @@ public class IDSLogEvent extends PipelineEvent {
 
     private String message;
     private boolean blocked;
+    private int ruleSid;
 
     // constructors -----------------------------------------------------------
 
     public IDSLogEvent() { }
 
-    public IDSLogEvent(PipelineEndpoints pe, String message, boolean blocked) {
+    public IDSLogEvent(PipelineEndpoints pe, int ruleSid, String message, boolean blocked) {
         super(pe);
 
+        this.ruleSid = ruleSid;
         this.message = message;
         this.blocked = blocked;
     }
 
     // accessors --------------------------------------------------------------
+
+    /**
+     * SID of the rule that fired.
+     *
+     * @hibernate.property
+     * column="RULE_SID"
+     */
+    public int getRuleSid() { return this.ruleSid; }
+    public void setRuleSid(int sid) { this.ruleSid = ruleSid; }	
 
     /**
      * Message of signature that generated this event.
@@ -85,7 +96,7 @@ public class IDSLogEvent extends PipelineEvent {
 
     public SyslogPriority getSyslogPrioritiy()
     {
-        return blocked ? SyslogPriority.INFORMATIONAL : SyslogPriority.DEBUG;
+        return blocked ? SyslogPriority.NOTICE : SyslogPriority.INFORMATIONAL;
     }
 
     // Object methods ---------------------------------------------------------

@@ -20,7 +20,7 @@ public class IDSRuleSignature {
      *
      * These rules should all be added at some point!
      *****************************************/
-    private String[] ignoreSafeOptions = { "rev","sid","reference","priority" };
+    private String[] ignoreSafeOptions = { "rev","reference","priority" };
     /** **************************************/
 
     private static final int BLOCK_COUNTER  = Transform.GENERIC_0_COUNTER;
@@ -152,7 +152,7 @@ public class IDSRuleSignature {
             break;
         }
 
-        ids.log(new IDSLogEvent(session.pipelineEndpoints(),message,blocked)); //Add list number that this rule came from
+        ids.log(new IDSLogEvent(session.pipelineEndpoints(), rule.getSid(), message, blocked)); //Add list number that this rule came from
     }
 
     public void setToString(String string) {

@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
 
+import com.metavize.mvvm.argon.SessionEndpoints;
 import com.metavize.mvvm.tapi.*;
 import com.metavize.mvvm.tapi.event.*;
 import com.metavize.mvvm.tran.firewall.IPMatcher;
@@ -32,8 +33,11 @@ public class IDSDetectionEngine {
 
     private IDSRuleManager 	rules;
     private IDSTransformImpl 	transform;
-	
-    //Er - I need to remove stuff from the seesion Map??
+
+    // We can't just attach the session info to a session, we have to attach it to the 'pipeline', since
+    // we have to access it from multiple pipes (octet & http).  So we keep the registry here.
+    private Map<Integer, IDSSessionInfo> sessionInfoMap = new ConcurrentHashMap<Integer, IDSSessionInfo>();
+
     Map<Integer,List<IDSRuleHeader>> 	portS2CMap      = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
     Map<Integer,List<IDSRuleHeader>> 	portC2SMap 	= new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
 	
@@ -101,6 +105,12 @@ public class IDSDetectionEngine {
         log.debug("Done with reconfigure");
     }
 
+    public void stop() {
+        portC2SMap = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
+        portS2CMap = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
+        sessionInfoMap = new ConcurrentHashMap<Integer, IDSSessionInfo>();
+    }
+
     public void updateRule(IDSRule rule) {
         try {
             rules.updateRule(rule);
@@ -148,13 +158,9 @@ public class IDSDetectionEngine {
         }
 		
         //Check matches
-        List<IDSRuleSignature> c2sSignatures = rules.matchesHeader(
-                                                                   protocol, request.clientAddr(), request.clientPort(), 
-                                                                   request.serverAddr(), request.serverPort(), c2sList);
+        List<IDSRuleSignature> c2sSignatures = rules.matchesHeader(request, request.isInbound(), IDSRuleManager.TO_SERVER, c2sList);
 
-        List<IDSRuleSignature> s2cSignatures = rules.matchesHeader(
-                                                                   protocol, request.serverAddr(), request.serverPort(),
-                                                                   request.clientAddr(), request.clientPort(), s2cList);
+        List<IDSRuleSignature> s2cSignatures = rules.matchesHeader(request, request.isInbound(), IDSRuleManager.TO_CLIENT, s2cList);
 			
         if (log.isDebugEnabled())
             log.debug("s2cSignature list size: " + s2cSignatures.size() + ", c2sSignature list size: " +
@@ -166,16 +172,26 @@ public class IDSDetectionEngine {
         }
     }
 
+    public IDSSessionInfo getSessionInfo(IPSession session) {
+        return sessionInfoMap.get(session.id());
+    }
+
     public void processNewSession(IPSession session, Protocol protocol) {
         Object[] sigs = (Object[]) session.attachment();
         List<IDSRuleSignature> c2sSignatures = (List<IDSRuleSignature>) sigs[0];
         List<IDSRuleSignature> s2cSignatures = (List<IDSRuleSignature>) sigs[1];
 
-        //I need to fix uricontent XXXX
+        log.debug("registering IDSSessionInfo");
         IDSSessionInfo info = new IDSSessionInfo(session);
         info.setC2SSignatures(c2sSignatures);
         info.setS2CSignatures(s2cSignatures);
-        session.attach(info);
+        sessionInfoMap.put(session.id(), info);
+        session.attach(null);
+    }
+
+    public void processFinalized(IPSession session, Protocol protocol) {
+        log.debug("unregistering IDSSessionInfo");
+        sessionInfoMap.remove(session.id());
     }
 
     public IDSRuleManager getRulesForTesting() {
@@ -197,7 +213,7 @@ public class IDSDetectionEngine {
                 // Takes effect after this packet/chunk
                 session.release();
 		
-            IDSSessionInfo info = (IDSSessionInfo) session.attachment();
+            IDSSessionInfo info = sessionInfoMap.get(session.id());
 		
             info.setEvent(event);
             info.setFlow(isServer);

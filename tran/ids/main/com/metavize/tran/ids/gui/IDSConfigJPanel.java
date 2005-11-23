@@ -110,13 +110,11 @@ class IDSTableModel extends MSortedTableModel{
 	List<IDSRule> rules = (List<IDSRule>) idsSettings.getRules();
 	Vector<Vector> allRows = new Vector<Vector>(rules.size());
 	Vector tempRow = null;
-        int rowIndex = 0;
 
 	for( IDSRule newElem : rules ){
-	    rowIndex++;
             tempRow = new Vector(8);
             tempRow.add( super.ROW_SAVED );
-            tempRow.add( rowIndex );
+            tempRow.add( newElem.getSid() );
             tempRow.add( newElem.isLive() );
             tempRow.add( newElem.getLog() );
             tempRow.add( newElem.getCategory() );

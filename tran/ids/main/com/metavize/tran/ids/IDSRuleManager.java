@@ -4,14 +4,14 @@ import java.util.regex.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
 
 import java.net.InetAddress;
 import com.metavize.mvvm.tapi.Protocol;
+import com.metavize.mvvm.argon.SessionEndpoints;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.PortRange;
 import com.metavize.mvvm.tran.firewall.IPMatcher;
@@ -31,23 +31,23 @@ public class IDSRuleManager {
 
     public static List<IDSVariable> immutableVariables = new ArrayList<IDSVariable>(); 
     static {
-        immutableVariables.add(new IDSVariable("$EXTERNAL_NET","Set by Edgeguard","This is a description"));
-        immutableVariables.add(new IDSVariable("$HOME_NET","Set by EdgeGuard","This is a description"));
+        immutableVariables.add(new IDSVariable("$EXTERNAL_NET",IDSStringParser.EXTERNAL_IP,"Magic EXTERNAL_NET token"));
+        immutableVariables.add(new IDSVariable("$HOME_NET",IDSStringParser.HOME_IP,"Magic HOME_NET token"));
     }
     public static List<IDSVariable> defaultVariables = new ArrayList<IDSVariable>(); 
     static {
-        defaultVariables.add(new IDSVariable("$HTTP_PORTS", "80","This is a description"));
-        defaultVariables.add(new IDSVariable("$HTTP_SERVERS", "!any","This is a description"));
-        defaultVariables.add(new IDSVariable("$SMTP_SERVERS", "!any","This is a description"));
-        defaultVariables.add(new IDSVariable("$SSH_PORTS", "22","This is a description"));
-        defaultVariables.add(new IDSVariable("$SQL_SERVERS", "!any","This is a description"));
-        defaultVariables.add(new IDSVariable("$TELNET_SERVERS", "!any","This is a description"));
-        defaultVariables.add(new IDSVariable("$ORACLE_PORTS", "!any","This is a description"));
-        defaultVariables.add(new IDSVariable("$AIM_SERVERS", "!any","This is a description"));
+        defaultVariables.add(new IDSVariable("$HTTP_SERVERS", "$HOME_NET","Addresses of possible local HTTP servers"));
+        defaultVariables.add(new IDSVariable("$HTTP_PORTS", "80","Port that HTTP servers run on"));
+        defaultVariables.add(new IDSVariable("$SSH_PORTS", "22","Port that SSH servers run on"));
+        defaultVariables.add(new IDSVariable("$SMTP_SERVERS", "$HOME_NET","Addresses of possible local SMTP servers"));
+        defaultVariables.add(new IDSVariable("$TELNET_SERVERS", "$HOME_NET","Addresses of possible local telnet servers"));
+        defaultVariables.add(new IDSVariable("$SQL_SERVERS", "!any","Addresses of local SQL servers"));
+        defaultVariables.add(new IDSVariable("$ORACLE_PORTS", "1521","Port that Oracle servers run on"));
+        defaultVariables.add(new IDSVariable("$AIM_SERVERS", "[64.12.24.0/24,64.12.25.0/24,64.12.26.14/24,64.12.28.0/24,64.12.29.0/24,64.12.161.0/24,64.12.163.0/24,205.188.5.0/24,205.188.9.0/24]","Addresses of possible AOL Instant Messaging servers"));
     }
 	
-    private List<IDSRuleHeader> knownHeaders = Collections.synchronizedList(new LinkedList<IDSRuleHeader>());
-    private Map<Long,IDSRule> knownRules = new ConcurrentHashMap<Long,IDSRule>();
+    private List<IDSRuleHeader> knownHeaders = new ArrayList<IDSRuleHeader>();
+    private Map<Long,IDSRule> knownRules = new HashMap<Long,IDSRule>();
 
     private static Pattern variablePattern = Pattern.compile("\\$[^ \n\r\t]+");
 
@@ -180,40 +180,29 @@ public class IDSRuleManager {
     }
 
     public List<IDSRuleHeader> matchingPortsList(int port, boolean toServer) {
-        List<IDSRuleHeader> returnList = new LinkedList();
-        synchronized(knownHeaders) {
-            for(IDSRuleHeader header : knownHeaders) {
-                if(header.portMatches(port, toServer)) {
-                    returnList.add(header);
-                }
+        List<IDSRuleHeader> returnList = new ArrayList();
+        for(IDSRuleHeader header : knownHeaders) {
+            if(header.portMatches(port, toServer)) {
+                returnList.add(header);
             }
         }
         return returnList;
     }
 	
-    public List<IDSRuleSignature> matchesHeader(
-                                                Protocol protocol, InetAddress clientAddr, int clientPort, 
-                                                InetAddress serverAddr, int serverPort) {
-		
-        return matchesHeader(protocol, clientAddr, clientPort, serverAddr, serverPort, knownHeaders);
+    public List<IDSRuleSignature> matchesHeader(SessionEndpoints sess, boolean sessInbound, boolean forward) {
+        return matchesHeader(sess, sessInbound, forward, knownHeaders);
     }
 	
-    public List<IDSRuleSignature> matchesHeader(
-                                                Protocol protocol, InetAddress clientAddr, int clientPort, 
-                                                InetAddress serverAddr, int serverPort, List<IDSRuleHeader> matchList) {
-		
-        List<IDSRuleSignature> returnList = new LinkedList();
+    public List<IDSRuleSignature> matchesHeader(SessionEndpoints sess, boolean sessInbound, boolean forward, List<IDSRuleHeader> matchList) {
+        List<IDSRuleSignature> returnList = new ArrayList();
         //logger.debug("Total List size: "+matchList.size()); /** *****************************************/
 	
-        synchronized(matchList) {
-            for(IDSRuleHeader header : matchList) {
-                if(header.matches(protocol, clientAddr, clientPort, serverAddr, serverPort))
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Header matches: " + header);
-                        returnList.addAll(header.getSignatures());
-                    } else {
-                        logger.debug("Header doesn't match: " + header);
-                    }
+        for(IDSRuleHeader header : matchList) {
+            if(header.matches(sess, sessInbound, forward)) {
+                // logger.debug("Header matches: " + header);
+                returnList.addAll(header.getSignatures());
+            } else {
+                // logger.debug("Header doesn't match: " + header);
             }
         }
         //logger.debug("Signature List Size: "+returnList.size()); /** *****************************************/
@@ -230,23 +219,33 @@ public class IDSRuleManager {
     }
 	
     private String substituteVariables(String string) {
-        string = string.replaceAll("\\$EXTERNAL_NET",IDSStringParser.EXTERNAL_IP);
-        string = string.replaceAll("\\$HOME_NET",IDSStringParser.HOME_IP);
-		
         //string = string.replaceAll("\\$HOME_NET","10.0.0.1/24");
         //string = string.replaceAll("\\$EXTERNAL_NET","!10.0.0.1/24");
 		
         Matcher match = variablePattern.matcher(string);
         if(match.find()) {
-            List<IDSVariable> varList;
-            if(engine.getSettings() == null)
+            List<IDSVariable> varList, imVarList;
+            if(engine.getSettings() == null) {
+                imVarList = immutableVariables;
                 varList = defaultVariables;
-            else {
+            } else {
+                imVarList = (List<IDSVariable>) engine.getSettings().getImmutableVariables();
                 varList = (List<IDSVariable>) engine.getSettings().getVariables();
             }
-            for(IDSVariable var : varList) {
+            for(IDSVariable var : imVarList) {
                 string = string.replaceAll("\\"+var.getVariable(),var.getDefinition());
-            }																		
+            } 
+            for(IDSVariable var : varList) {
+                // Special case == allow regular variables to refer to immutable variables
+                String def = var.getDefinition();
+                Matcher submatch = variablePattern.matcher(def);
+                if (submatch.find()) {
+                    for(IDSVariable subvar : imVarList) {
+                        def = def.replaceAll("\\"+subvar.getVariable(),subvar.getDefinition());
+                    }
+                }
+                string = string.replaceAll("\\"+var.getVariable(),def);
+            } 
         }
         return string;
     }

@@ -20,7 +20,7 @@ public class IDSLogFilter implements SimpleEventFilter<IDSLogEvent>
 
     private static final String WARM_QUERY = "FROM IDSLogEvent evt "
         + "WHERE evt.pipelineEndpoints.policy = :policy "
-        + "ORDER BY evt.timeStamp";
+        + "ORDER BY evt.timeStamp DESC";
 
     // constructors -----------------------------------------------------------
 

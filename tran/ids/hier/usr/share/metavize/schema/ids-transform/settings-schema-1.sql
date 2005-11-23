@@ -34,6 +34,7 @@ create table settings.TR_IDS_MUTABLE_VARIABLES (
 create table settings.TR_IDS_RULE (
 	RULE_ID int8 not null, 
 	RULE text,
+        SID int4,
 	NAME text,
 	CATEGORY text,
 	DESCRIPTION text,

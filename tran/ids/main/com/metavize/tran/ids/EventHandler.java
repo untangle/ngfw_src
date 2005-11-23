@@ -38,6 +38,18 @@ public class EventHandler extends AbstractEventHandler {
         idsEngine.processNewSession(session, protocol);
     }
 
+    public void handleTCPFinalized(TCPSessionEvent event) throws MPipeException {
+        handleFinalized(event.session(), Protocol.TCP);
+    }
+
+    public void handleUDPFinalized(UDPSessionEvent event) throws MPipeException {
+        handleFinalized(event.session(), Protocol.UDP);
+    }
+
+    private void handleFinalized(IPSession session, Protocol protocol) {
+        idsEngine.processFinalized(session, protocol);
+    }
+
 /*  public void handleTCPNewSession(TCPSessionEvent event) {
 
     }

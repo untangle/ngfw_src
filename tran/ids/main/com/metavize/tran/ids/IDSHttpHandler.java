@@ -1,5 +1,6 @@
 package com.metavize.tran.ids;
 
+import org.apache.log4j.Logger;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.http.HttpStateMachine;
 import com.metavize.tran.http.RequestLineToken;
@@ -9,18 +10,23 @@ import com.metavize.tran.token.Header;
 
 class IDSHttpHandler extends HttpStateMachine {
 
-    // private IDSTransformImpl transform;
-    private IDSSessionInfo info;
+    private static final Logger logger = Logger.getLogger(IDSHttpHandler.class);
+
+    private IDSDetectionEngine engine;
 
     IDSHttpHandler(TCPSession session, IDSTransformImpl transform) {
         super(session);
-        // this.transform = transform;
-        info = new IDSSessionInfo(session);
+        engine = transform.getEngine();
     }
 
     protected RequestLineToken doRequestLine(RequestLineToken requestLine) {
-        String path = requestLine.getRequestUri().getPath();
-        info.setUriPath(path);
+        IDSSessionInfo info = engine.getSessionInfo(getSession());
+        if (info == null) {
+            logger.warn("No session info at doRequestLine time");
+        } else {
+            String path = requestLine.getRequestUri().getPath();
+            info.setUriPath(path);
+        }
         releaseRequest();
         return requestLine;
     }

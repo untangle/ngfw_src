@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
 
+import com.metavize.mvvm.argon.SessionEndpoints;
 import com.metavize.mvvm.tapi.*;
 import com.metavize.mvvm.tapi.event.*;
 import com.metavize.mvvm.tran.ParseException;
@@ -220,18 +221,19 @@ public class IDSTest {
 	}
 
 	private void matchTest(IDSRuleHeader header, Protocol protocol, String clientAddr, int clientPort, String serverAddr, int serverPort, boolean answer) {
-		InetAddress clientAddress = null;
-		InetAddress serverAddress = null;
-		try {
-			clientAddress = InetAddress.getByName(clientAddr);
-			serverAddress = InetAddress.getByName(serverAddr);
-		} catch( Exception e ) { log.error(e); }
+            InetAddress clientAddress = null;
+            InetAddress serverAddress = null;
+            try {
+                clientAddress = InetAddress.getByName(clientAddr);
+                serverAddress = InetAddress.getByName(serverAddr);
+            } catch( Exception e ) { log.error(e); }
 
-		if(!checkAnswer(header.matches(protocol, clientAddress, clientPort, serverAddress, serverPort),answer))
-			log.warn("Match Test Failed:\n"  + 
-					"Client:" +clientAddress+":"+clientPort + 
-					"\nServer:" +serverAddress+":"+serverPort +
-					"\ndoes not match rule:\n" + header +"\n");
+            SessionEndpoints se = new TestEndpoints((short)protocol.getId(), clientAddress, clientPort, serverAddress, serverPort);
+            if(!checkAnswer(header.matches(se, true, true),answer))
+                log.warn("Match Test Failed:\n"  + 
+                         "Client:" +clientAddress+":"+clientPort + 
+                         "\nServer:" +serverAddress+":"+serverPort +
+                         "\ndoes not match rule:\n" + header +"\n");
 	}
 	
 	private boolean checkAnswer(boolean eval, boolean correct) {
@@ -332,4 +334,27 @@ public class IDSTest {
 		}
 		return " "+str;
 	}
+
+    // Helper class
+    class TestEndpoints implements SessionEndpoints {
+        short protocol;
+        InetAddress clientAddr;
+        InetAddress serverAddr;
+        int clientPort;
+        int serverPort;
+        TestEndpoints(short protocol, InetAddress clientAddr, int clientPort, InetAddress serverAddr, int serverPort) {
+            this.protocol = protocol;
+            this.clientAddr = clientAddr;
+            this.serverAddr = serverAddr;
+            this.clientPort = clientPort;
+            this.serverPort = serverPort;
+        }
+        public short protocol() { return protocol; }
+        public InetAddress clientAddr() { return  clientAddr; }
+        public InetAddress serverAddr() { return  serverAddr; }
+        public int clientPort() { return  clientPort; }
+        public int serverPort() { return  serverPort; }
+        public byte clientIntf() { return 0; } // unused
+        public byte serverIntf() { return 0; } // unused
+    }
 }

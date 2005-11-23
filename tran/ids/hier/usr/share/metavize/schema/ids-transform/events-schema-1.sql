@@ -8,6 +8,7 @@ create table events.TR_IDS_EVT (
         pl_endp_id int8,
 	message text,
 	blocked bool,
+        rule_sid int4,
 	time_stamp timestamp,
 	PRIMARY KEY (event_id));
 

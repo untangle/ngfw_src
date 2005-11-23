@@ -53,6 +53,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         engine = new IDSDetectionEngine(this);
         handler = new EventHandler(this);
         statisticManager = new IDSStatisticManager(getTransformContext());
+        // Put the octet stream close to the server so that it is after the http processing.
         octetPipeSpec = new SoloPipeSpec("ids-octet", this, handler,Fitting.OCTET_STREAM, Affinity.SERVER,10);
         httpPipeSpec = new SoloPipeSpec("ids-http", this, new TokenAdaptor(this, new IDSHttpFactory(this)), Fitting.HTTP_TOKENS, Affinity.SERVER,0);
         pipeSpecs = new PipeSpec[] { httpPipeSpec, octetPipeSpec };
@@ -166,6 +167,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
     protected void postStop() {
         statisticManager.stop();
         eventLogger.stop();
+        engine.stop();
     }
 
     public void reconfigure() throws TransformException {

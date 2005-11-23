@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
 class FileLoader {
     public static final String[] IGNORED_RULE_FILES = {
         "chat.rules", "deleted.rules", "experimental.rules",
-        "icmp-info.rules", "local.rules", "oracle.rules", "porn.rules" };
+        "icmp-info.rules", "local.rules", "porn.rules", "shellcode.rules" };
     public static final String SNORT_RULES_HOME = "/etc/snort";
 
     private static final Logger logger = Logger.getLogger(FileLoader.class);
@@ -47,12 +47,12 @@ class FileLoader {
                     int priority = 0;
                     boolean good = false;
                     if (st.hasMoreTokens())
-                        name = st.nextToken();
+                        name = st.nextToken().trim();
                     if (st.hasMoreTokens())
-                        description = st.nextToken();
+                        description = st.nextToken().trim();
                     if (st.hasMoreTokens())
                         try {
-                            priority = Integer.parseInt(st.nextToken());
+                            priority = Integer.parseInt(st.nextToken().trim());
                             good = true;
                         } catch (NumberFormatException x) {
                         }

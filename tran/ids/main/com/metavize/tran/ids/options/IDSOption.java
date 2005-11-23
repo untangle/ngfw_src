@@ -56,7 +56,7 @@ public abstract class IDSOption {
         try {
             optionName = optionName.replaceFirst(""+ch,""+(char)(ch - 'a' + 'A'));
         } catch(PatternSyntaxException e) { 
-            log.error(e.getMessage());
+            log.error("Bad option name", e);
         }
 		
         try {
@@ -72,9 +72,9 @@ public abstract class IDSOption {
             }
             option.negationFlag = flag;
         } catch (ClassNotFoundException e) {
-            log.debug("Could not load option(ClassNotFound): " + optionName);
+            log.warn("Could not load option(ClassNotFound): " + optionName);
         } catch (NoSuchMethodException e) {
-            log.debug("Could not load option(NoSuchMethod): ", e);
+            log.error("Could not load option(NoSuchMethod): ", e);
         }
         return option;
     }
@@ -84,13 +84,13 @@ public abstract class IDSOption {
         try {
             object = constructor.newInstance(arguments);
         } catch (InstantiationException e) {
-            log.warn("Could not create object(InstantiationException): ", e);
+            log.error("Could not create object(InstantiationException): ", e);
         } catch (IllegalAccessException e) {
-            log.warn("Could not create object(IllegalAccessException): ", e);
+            log.error("Could not create object(IllegalAccessException): ", e);
         } catch (IllegalArgumentException e) {
-            log.warn("Could not create object(IllegalArgumentException): ", e);
+            log.error("Could not create object(IllegalArgumentException): ", e);
         } catch (InvocationTargetException e) {
-            log.warn("Could not create object(InvocationTargetException): ", e);
+            log.error("Could not create object(InvocationTargetException): ", e);
         }
         return object;
     }
