@@ -258,11 +258,14 @@ public final class IPMatcher implements Serializable
         } else if ( isRange ) {
             if (( base <= tmp ) && ( tmp <= second )) return true;
         } else if ( isInternal ) {
+            // System.out.println("isMatch internal tmp: " + tmp + ", inside: " + insideLong + ", mask: " + insideNetmaskLong);
             return (( tmp & insideNetmaskLong ) == ( insideLong & insideNetmaskLong ));
         } else if ( isExternal ) {
+            // System.out.println("isMatch external tmp: " + tmp + ", inside: " + insideLong + ", mask: " + insideNetmaskLong);
             return (( tmp & insideNetmaskLong ) != ( insideLong & insideNetmaskLong ));
         } else {
             /* Mask off the bits from the subnet */
+            // System.out.println("isMatch tmp: " + tmp + ", second: " + second + ", base: " + base);
             if (( tmp & second ) == base ) return true;
         }
         
@@ -273,6 +276,10 @@ public final class IPMatcher implements Serializable
     {
         if ( isLocal ) {
             return MARKER_LOCAL;
+        } else if ( isInternal) {
+            return "internal";
+        } else if (isExternal) {
+            return "external";
         }
 
         /* Check for the wildcard matcher */
