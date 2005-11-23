@@ -33,7 +33,7 @@ public class EventLogger<E extends LogEvent> implements EventManager<E>
 {
     private static final int QUEUE_SIZE = 10000;
     private static final int BATCH_SIZE = QUEUE_SIZE;
-    private static final int DEFAULT_SYNC_TIME = 600000; /* 10 minutes */
+    private static final int DEFAULT_SYNC_TIME = 120000; /* 2 minutes */
     private static final int SYNC_TIME;
 
     private static final List<String> INIT_QUEUE = new LinkedList<String>();
