@@ -44,7 +44,7 @@ Depends: mvvm
 XB-Price: 0
 XB-Display-Name: Packet Attack Shield
 XB-Website: http://www.metavize.com/packetshield.html
-XB-Rack-Position: 1001
+XB-Rack-Position: 1010
 XB-Is-Service: true
 Description: The Metavize Packet Attack Shield
  The Packet Attack Shield prevents packet based attacks on your
@@ -56,7 +56,7 @@ Depends: mvvm, http-casing
 XB-Price: 0
 XB-Display-Name: Spyware Blocker
 XB-Website: http://www.metavize.com/spyware.html
-XB-Rack-Position: 2
+XB-Rack-Position: 20
 Description: The Metavize Spyware Blocker
  The Spyware Blocker detects and prevents Spyware infections, with
  ActiveX and Cookie blacklist. It also can detect and block clients
@@ -68,7 +68,7 @@ Depends: mvvm, http-casing, urlblacklist.com-mv
 XB-Price: 0
 XB-Display-Name: Web Content Control
 XB-Website: http://www.metavize.com/webcontrol.html
-XB-Rack-Position: 3
+XB-Rack-Position: 30
 Description: The Metavize Web Content Control
  Web Content Control enforces your web browsing policy.  It can filter
  based on content type (category), web address, MIME type, file
@@ -80,7 +80,7 @@ Depends: mvvm, virus-base, hauri-mv, http-casing, ftp-casing, mail-casing
 XB-Price: 399
 XB-Display-Name: Hauri AntiVirus Scanner
 XB-Website: http://www.metavize.com/hauri_antivirus.html
-XB-Rack-Position: 6
+XB-Rack-Position: 60
 Description: The Hauri AntiVirus Scanner
  The Hauri AntiVirus Scanner, based on Hauri's viRobot, is able to
  scan and block inbound and outbound viruses, on HTTP, FTP, and email.
@@ -92,7 +92,7 @@ Depends: mvvm, virus-base, kav-mv, http-casing, ftp-casing, mail-casing
 XB-Price: 599
 XB-Display-Name: Kaspersky AntiVirus Scanner
 XB-Website: http://www.metavize.com/kaspersky_antivirus.html
-XB-Rack-Position: 5
+XB-Rack-Position: 50
 Description: The Kaspersky AntiVirus Scanner
  The Kaspersky AntiVirus Scanner, based on Kaspersky's award winning
  Anti-Virus, is able to scan and block inbound and outbound viruses,
@@ -104,7 +104,7 @@ Depends: mvvm, virus-base, clamav-mv, http-casing, ftp-casing, mail-casing
 XB-Price: 0
 XB-Display-Name: Clam AntiVirus Scanner
 XB-Website: http://www.metavize.com/clam_antivirus.html
-XB-Rack-Position: 7
+XB-Rack-Position: 70
 Description: The Clam AntiVirus Scanner
  The Clam AntiVirus Scanner, based on ClamAV, is able to scan and
  block inbound and outbound viruses, on HTTP, FTP, and email.
@@ -117,7 +117,7 @@ Conflicts: protoanalyzer-transform
 XB-Price: 0
 XB-Display-Name: Rogue Protocol Control
 XB-Website: http://www.metavize.com/protocolcontrol.html
-XB-Rack-Position: 8
+XB-Rack-Position: 80
 Description: The Metavize Rogue Protocol Control
  The Rogue Protocol Control is able to identify and selectively block
  various protocols running on any port. This enforces acceptable use
@@ -130,7 +130,7 @@ Depends: mvvm, dnsmasq, ftp-casing
 XB-Price: 0
 XB-Display-Name: Network Sharing
 XB-Website: http://www.metavize.com/networksharing.html
-XB-Rack-Position: 10
+XB-Rack-Position: 1000
 XB-Is-Service: true
 Description: The Metavize Network Sharing Software Appliance
  The Network Sharing Software Appliance allows a single public IP
@@ -143,7 +143,7 @@ Depends: mvvm
 XB-Price: 0
 XB-Display-Name: Firewall
 XB-Website: http://www.metavize.com/firewall.html
-XB-Rack-Position: 9
+XB-Rack-Position: 90
 Description: The Metavize Firewall Software Appliance
  The Firewall Software Appliance allows network traffic to be blocked
  based on simple rules.
@@ -154,7 +154,7 @@ Depends: mvvm, spam-base, spamc-mv, mail-casing
 XB-Price: 0
 XB-Display-Name: SpamGuard
 XB-Website: http://www.metavize.com/spam.html
-XB-Rack-Position: 0
+XB-Rack-Position: 1
 Description: The Metavize SpamGuard Software Appliance
  The SpamGuard Software Appliance marks Spam email as Spam.
 
@@ -164,7 +164,7 @@ Depends: mvvm, spam-base, clamav-mv, mail-casing
 XB-Price: 0
 XB-Display-Name: PhishNet
 XB-Website: http://www.metavize.com/phishnet.html
-XB-Rack-Position: 1
+XB-Rack-Position: 10
 Description: The Metavize PhishNet Software Appliance
  The PhishNet Software Appliance protects users from emails,
  commonly known as "phish," intended to steal identity, credit card
@@ -186,21 +186,21 @@ Depends: mvvm openvpn nsis nsis-mv sysutils zip
 XB-Price: 0
 XB-Display-Name: OpenVPN
 XB-Website: http://www.openvpn.net
-XB-Rack-Position: 5
+XB-Rack-Position: 990
 XB-Is-Service: true
 Description: Client VPN.
 
 Package: ids-transform
 Architecture: any
-Depends: mvvm, http-casing
+Depends: mvvm, http-casing, snort-rules-default
 XB-Price: 0
 XB-Display-Name: Intrusion Prevention
 XB-Website: http://www.metavize.com/ips.html
-XB-Rack-Position: 42
+XB-Rack-Position: 75
 Description: The Metavize Intrusion Prevention Appliance
  The Metavize Intrusion Prevention Appliance is an inline traffic
  scanner that detects exploits and intrusion attempts. It contains a
- library of over 2000 rules which can be easily expanded on with
+ library of over 1,500 built-in rules and can be easily expanded with
  custom rules.
 
 Package: reporting-transform
@@ -209,7 +209,7 @@ Depends: mvvm
 XB-Price: 0
 XB-Display-Name: EdgeReport
 XB-Website: http://www.metavize.com/reports.html
-XB-Rack-Position: 10000
+XB-Rack-Position: 1020
 XB-Is-Service: true
 Description: The Metavize Report Generator
  EdgeReport generates document reports about activities on your
