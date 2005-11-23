@@ -12,6 +12,7 @@
 package com.metavize.tran.ids;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -83,6 +84,7 @@ class FileLoader {
     private static void loadRuleFiles(IDSRuleManager manager, File file, List<IDSRule> result) {
         if (file.isDirectory()) {
             String[] children = file.list();
+            Arrays.sort(children);
             for (int i=0; i<children.length; i++)
                 loadRuleFiles(manager, new File(file, children[i]), result);
         }
