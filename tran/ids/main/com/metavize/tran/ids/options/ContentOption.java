@@ -3,6 +3,7 @@ package com.metavize.tran.ids.options;
 import java.util.regex.*;
 //import java.util.Vector;
 
+import org.apache.log4j.Logger;
 import java.nio.ByteBuffer;
 import com.metavize.mvvm.tapi.event.*;
 import com.metavize.tran.ids.IDSDetectionEngine;
@@ -18,6 +19,8 @@ import com.metavize.tran.ids.IDSSessionInfo;
 ///XXX - ADD ERROR HANDELING OMG!
 
 public class ContentOption extends IDSOption {
+
+    private static final Logger logger = Logger.getLogger(ContentOption.class);
 
     private ContentOption previousContentOption = null;
 	
@@ -173,7 +176,7 @@ public class ContentOption extends IDSOption {
 
     private void parseASCIIPattern(String params) {
         if(params.length() > binaryBuffer.remaining()) {
-            System.out.println("Very larger error");
+            logger.warn("Very large ASCII pattern");
             return;
         }
         binaryBuffer.put(params.getBytes());
@@ -181,7 +184,7 @@ public class ContentOption extends IDSOption {
 
     private void parseBinaryPattern(String bytes) {
         if(bytes.length()%2 != 0 || bytes.length() > binaryBuffer.remaining()) {
-            System.out.println("Very larger error"); //throw error
+            logger.warn("Very large binary pattern"); //throw error XXX
             return;
         }
         for(int i = 0; i < bytes.length()/2; i++) {

@@ -286,7 +286,6 @@ public class SmtpSessionHandler
       else {//BLOCK
         m_logger.debug("Blocking SPAM message as-per policy");
         postSpamEvent(msgInfo, report, SMTPSpamMessageAction.BLOCK);
-        System.out.println("INC BLOCK CTR");
         m_spamImpl.incrementBlockCounter();
         return BlockOrPassResult.BLOCK;
       }

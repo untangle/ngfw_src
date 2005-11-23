@@ -70,16 +70,13 @@ public class IDSSessionInfo {
     }
 
     public void blockSession() {
-        System.out.println("In block session");
         if(session instanceof TCPSession) {
-            System.out.println("Resseting TCP");
             ((TCPSession)session).resetClient();
             ((TCPSession)session).resetServer();
         }
         else if(session instanceof UDPSession) {
-            System.out.println("Resseting UDP");
-            ((UDPSession)session).expireClient(); /* XXX correct? */
-            ((UDPSession)session).expireServer(); /* XXX correct? */
+            ((UDPSession)session).expireClient();
+            ((UDPSession)session).expireServer();
         }
         session.release();
     }
