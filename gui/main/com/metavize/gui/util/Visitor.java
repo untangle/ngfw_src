@@ -59,9 +59,9 @@ public class Visitor implements ProgressVisitor{
     }    
     
     public void visitDownloadComplete(final DownloadComplete dc){
+	isSuccessful = dc.getSuccess();
+	isDone = !isSuccessful;
 	SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    isSuccessful = dc.getSuccess();
-	    isDone = !isSuccessful;
 	    currentByteIndex += currentByteIncrement;
 	    currentFileIndex++;
 	    if(!dc.getSuccess()){
@@ -72,9 +72,9 @@ public class Visitor implements ProgressVisitor{
     }
     
     public void visitInstallComplete(final InstallComplete ic){
+	isSuccessful = ic.getSuccess();
+	isDone = true;
 	SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    isSuccessful = ic.getSuccess();
-	    isDone = true;
 	    if(ic.getSuccess())
 		progressBar.setString( "Installation successful." );
 	    else
