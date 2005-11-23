@@ -236,10 +236,6 @@ public final class IntfConverter
         netcapList.add( NETCAP_OUTSIDE );
         deviceNameList.add( this.outsideString );
 
-        argonList.add( INSIDE );
-        netcapList.add( NETCAP_INSIDE );
-        deviceNameList.add( this.insideString );
-
         if ( dmzString != null && this.dmzString.length() > 0 ) {
             argonList.add( DMZ );
             netcapList.add( NETCAP_DMZ );
@@ -253,7 +249,10 @@ public final class IntfConverter
             deviceNameList.add( ti.deviceName());
         }
         
-        
+        argonList.add( INSIDE );
+        netcapList.add( NETCAP_INSIDE );
+        deviceNameList.add( this.insideString );
+
         byte[] argonArray = new byte[argonList.size()];
         int c = 0;
         for ( Byte b : argonList ) argonArray[c++] = b;
