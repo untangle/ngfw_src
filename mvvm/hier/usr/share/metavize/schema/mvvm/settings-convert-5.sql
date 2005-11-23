@@ -213,6 +213,16 @@ UPDATE settings.ipmaddr_rule SET tmp = description;
 ALTER TABLE settings.ipmaddr_rule DROP COLUMN description;
 ALTER TABLE settings.ipmaddr_rule RENAME COLUMN tmp TO description;
 
+-------------------------------
+-- fixup old bad 3.0 defaults |
+-------------------------------
+UPDATE settings.system_policy_rule SET IS_INBOUND = false
+  WHERE (client_intf = 1 AND server_intf = 2)
+    AND policy_id = (SELECT id from settings.policy WHERE is_default);
+UPDATE settings.system_policy_rule SET IS_INBOUND = true
+  WHERE (client_intf = 2 AND server_intf = 1)
+    AND policy_id = (SELECT id from settings.policy WHERE is_default);
+
 -------------------------
 -- recreate constraints |
 -------------------------
