@@ -54,14 +54,21 @@ public abstract class VirusTransformImpl extends AbstractTransform
     //enabled.
     private static final String OUT_MOD_SUB_TEMPLATE =
       "[VIRUS] $MIMEMessage:SUBJECT$";
+
+    // OLD
+    // private static final String OUT_MOD_BODY_TEMPLATE =
+    // "The attached message from $MIMEMessage:FROM$ was found to contain\r\n" +
+    // "the virus \"$VirusReport:VIRUS_NAME$\".  The infected portion of the attached email was removed\r\n" +
+    // "by Metavize EdgeGuard.\r\n";
+
     private static final String OUT_MOD_BODY_TEMPLATE =
-      "The attached message from $MIMEMessage:FROM$ was found to contain\r\n" +
-      "the virus \"$VirusReport:VIRUS_NAME$\".  The infected portion of the attached email was removed\r\n" +
-      "by Metavize EdgeGuard.\r\n";
+        "The attached message from $MIMEMessage:FROM$\r\n" +
+        "was found to contain the virus \"$VirusReport:VIRUS_NAME$\".\r\n"+
+        "The infected portion of the message was removed by Metavize EdgeGuard.\r\n";
     private static final String OUT_MOD_BODY_SMTP_TEMPLATE =
-      "The attached message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$) was found to contain\r\n" +
-      "the virus \"$VirusReport:VIRUS_NAME$\".  The infected portion of the attached email was removed\r\n" +
-      "by Metavize EdgeGuard.\r\n";
+        "The attached message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$)\r\n" +
+        "was found to contain the virus \"$VirusReport:VIRUS_NAME$\".\r\n"+
+        "The infected portion of the message was removed by Metavize EdgeGuard.\r\n";
 
     private static final String IN_MOD_SUB_TEMPLATE = OUT_MOD_SUB_TEMPLATE;
     private static final String IN_MOD_BODY_TEMPLATE = OUT_MOD_BODY_TEMPLATE;
@@ -71,9 +78,10 @@ public abstract class VirusTransformImpl extends AbstractTransform
       "[VIRUS NOTIFICATION] re: $MIMEMessage:SUBJECT$";
 
     private static final String OUT_NOTIFY_BODY_TEMPLATE =
-      "On $MIMEHeader:DATE$ a message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$) was received " + CRLF +
-      "and found to contain the virus \"$VirusReport:VIRUS_NAME$\".  The infected portion of the email " + CRLF +
-      "was removed";
+        "On $MIMEHeader:DATE$ a message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$)" + CRLF +
+        "was received by $SMTPTransaction:TO$.  The message was found" + CRLF + 
+        "to contain the virus \"$VirusReport:VIRUS_NAME$\"." + CRLF +
+        "The infected portion of the message was removed by Metavize EdgeGuard";
 
     private static final String IN_NOTIFY_SUB_TEMPLATE = OUT_NOTIFY_SUB_TEMPLATE;
     private static final String IN_NOTIFY_BODY_TEMPLATE = OUT_NOTIFY_BODY_TEMPLATE;
