@@ -8,7 +8,7 @@
 DROP TABLE events.tr_http_tmp;
 
 CREATE TABLE events.tr_http_tmp AS
-    SELECT request_id, endp.event_id AS pl_end_id, method, uri::text
+    SELECT request_id, endp.event_id AS pl_endp_id, method, uri::text
     FROM events.tr_http_req_line rl
       JOIN events.tr_http_evt_req req USING (request_id)
       JOIN pl_endp endp USING (session_id);

@@ -120,7 +120,6 @@ class EventCache<E extends LogEvent> implements EventRepository<E>
                     if (null == last ? last == id : last.equals(id)) {
                         // XXX we usually use linked lists, otherwise
                         // this is bad, probably better to make a new list
-                        System.out.println("BONG");
                         i.remove();
                     } else {
                         last = id;
