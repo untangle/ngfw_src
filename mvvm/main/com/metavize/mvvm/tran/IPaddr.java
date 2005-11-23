@@ -17,7 +17,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-public class IPaddr implements Serializable
+public class IPaddr implements Comparable, Serializable
 {
     private static final long serialVersionUID = -741858749430271001L;
 
@@ -149,6 +149,20 @@ public class IPaddr implements Serializable
         }
 
         return false;
+    }
+
+    public int compareTo(Object o)
+    {
+        IPaddr other = (IPaddr)o;
+        long oper1 = toLong();
+        long oper2 = other.toLong();
+
+        if (oper1 < oper2)
+            return -1;
+        else if (oper1 > oper2)
+            return 1;
+        else
+            return 0;
     }
 
     private static IPaddr makeIPaddr( long addr )
