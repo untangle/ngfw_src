@@ -23,9 +23,9 @@ import com.metavize.mvvm.tran.Transform;
 public class IDSDetectionEngine {
 
     // Any chunk that takes this long gets an error
-    public static final long ERROR_ELAPSED = 20;
+    public static final long ERROR_ELAPSED = 100;
     // Any chunk that takes this long gets a warning
-    public static final long WARN_ELAPSED = 5;
+    public static final long WARN_ELAPSED = 20;
 
     private int 	        maxChunks 	= 8;
     private IDSSettings 	settings 	= null;
@@ -204,7 +204,7 @@ public class IDSDetectionEngine {
     }
 
     //In process of fixing this
-    public void handleChunk(IPDataEvent event, IPSession session, boolean isServer) {
+    public void handleChunk(IPDataEvent event, IPSession session, boolean isFromServer) {
         try {
             long startTime = System.currentTimeMillis();
 		
@@ -216,15 +216,23 @@ public class IDSDetectionEngine {
             IDSSessionInfo info = sessionInfoMap.get(session.id());
 		
             info.setEvent(event);
-            info.setFlow(isServer);
+            info.setFlow(isFromServer);
 		
-            if(isServer)
-                info.processC2SSignatures();
-            else
+            if(isFromServer)
                 info.processS2CSignatures();
+            else
+                info.processC2SSignatures();
 
             long elapsed = System.currentTimeMillis() - startTime;
-            if (isServer) {
+            if (isFromServer) {
+                int numsigs = info.numS2CSignatures();
+                if (elapsed > ERROR_ELAPSED)
+                    log.warn("took " + elapsed + "ms to run " + numsigs + " s2c rules");
+                else if (elapsed > WARN_ELAPSED)
+                    log.warn("took " + elapsed + "ms to run " + numsigs + " s2c rules");
+                else if (log.isDebugEnabled())
+                    log.debug("ms to run " + numsigs + " s2c rules: " + elapsed);
+            } else {
                 int numsigs = info.numC2SSignatures();
                 if (elapsed > ERROR_ELAPSED)
                     log.warn("took " + elapsed + "ms to run " + numsigs + " c2s rules");
@@ -232,14 +240,6 @@ public class IDSDetectionEngine {
                     log.warn("took " + elapsed + "ms to run " + numsigs + " c2s rules");
                 else if (log.isDebugEnabled())
                     log.debug("ms to run " + numsigs + " c2s rules: " + elapsed);
-            } else {
-                int numsigs = info.numS2CSignatures();
-                if (elapsed > ERROR_ELAPSED)
-                    log.warn("took " + elapsed + "ms to run " + numsigs + " s2c rules");
-                else if (elapsed > WARN_ELAPSED)
-                    log.warn("took " + elapsed + "ms to run " + numsigs + " s2c rules");
-                if (log.isDebugEnabled())
-                    log.debug("ms to run " + numsigs + " s2c rules: " + elapsed);
             }
         } catch (Exception e) {
             log.error("Error parsing chunk: ", e);
