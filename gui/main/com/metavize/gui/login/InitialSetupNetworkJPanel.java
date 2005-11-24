@@ -66,7 +66,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
 	    netmaskString = dhcpNetmaskJTextField.getText();
 	    gatewayString = dhcpRouteJTextField.getText();
 	    dns1String = dnsPrimaryJTextField.getText();
-	    dns1String = dnsSecondaryJTextField.getText();
+	    dns2String = dnsSecondaryJTextField.getText();
 
 	    exception = null;
 	    
