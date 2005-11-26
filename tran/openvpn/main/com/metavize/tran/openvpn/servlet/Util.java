@@ -40,13 +40,13 @@ import com.metavize.tran.openvpn.VpnSettings;
 
 import org.apache.log4j.Logger;
 
-import static com.metavize.tran.openvpn.Constants.VPN_CONF_BASE;
+import com.metavize.tran.openvpn.Constants;
 
 class Util
 {
     private static final Util INSTANCE = new Util();
 
-    private static final String BASE_DIRECTORY = VPN_CONF_BASE + "/openvpn/client-packages";
+    private static final String BASE_DIRECTORY = Constants.PACKAGES_DIR;
 
     public static final  String DISTRIBUTION_KEY_PARAM = "key";
 

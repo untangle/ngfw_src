@@ -39,8 +39,7 @@ public interface VpnTransform extends Transform
     public String lookupClientDistributionKey( String key, IPaddr address );
 
     /* Send out the client distribution */
-    public void distributeClientConfig( VpnClient client, boolean usbKey, String email )
-        throws TransformException;
+    public void distributeClientConfig( VpnClient client ) throws TransformException;
 
     public enum ConfigState { UNCONFIGURED, CLIENT, SERVER_BRIDGE, SERVER_ROUTE }
     public ConfigState getConfigState();

@@ -4,6 +4,8 @@ exec >> @MVVM_LOG@/openvpn.log 2>&1
 
 GLOBALS=@MVVM_HOME@/openvpn/globals
 
+baseNotRequired="false"
+
 ## There must be a configuration file 
 if [ -r ${GLOBALS} ]; then
     . ${GLOBALS}
@@ -12,9 +14,10 @@ else
     exit -2
 fi
 
-PKI_FILES="ca.crt ca.key index.txt index.txt.old index.txt.attr index.txt.attr.old serial serial.old serial.base server.crt server.key client_status.txt"
+PKI_FILES="ca.crt ca.key index.txt index.txt.old index.txt.attr index.txt.attr.old serial serial.old serial.base server.crt server.key"
 OPENVPN_DATA_FILES="ca.crt ca.key dh.pem server.crt server.key"
 OPENVPN_FILES="server.conf ipp.txt openvpn-status.log"
+MISC_FILES="client_status.txt base_cfg"
 
 ## Get the latest list of common names
 commonNames=`getCommonNames`
@@ -44,6 +47,7 @@ function cleanPackages()
     for t_name in ${commonNames}; do
         ${RM_CMD} -f "${PACKAGE_DIR}/config-${t_name}.zip"
         ${RM_CMD} -f "${PACKAGE_DIR}/setup-${t_name}.exe"
+        ${RM_CMD} -f "${PACKAGE_DIR}/mail-${t_name}.eml"
     done
 }
 
@@ -56,7 +60,7 @@ function cleanOpenvpnData()
 function cleanOpenvpn()
 {
     local t 
-    for t in ${OPENVPN_FILES}; do ${RM_CMD} -f "${OPENVPN_DIR}/${t}" ; done
+    for t in ${OPENVPN_FILES}; do ${RM_CMD} -f "${OPENVPN_CONF_DIR}/${t}" ; done
 }
 
 function cleanOpenvpnCCD()
@@ -68,15 +72,25 @@ function cleanOpenvpnCCD()
     done
 }
 
+function cleanMisc()
+{
+    local t_name
+    for t_name in ${MISC_FILES} ; do ${RM_CMD} -f "${MISC_DIR}/${t_name}" ; done
+}
+
 cleanOpenvpnData
 cleanOpenvpn
 cleanOpenvpnCCD
 cleanPackages
 cleanPKI
+cleanMisc
 
 rmdir ${OPENVPN_DATA_DIR}
 rmdir ${OPENVPN_CCD_DIR}
 
 rmdir ${PACKAGE_DIR}
 rmdir ${PKI_DIR}
+rmdir ${MISC_DIR}
+rmdir ${CONF_DIR}
 
+true

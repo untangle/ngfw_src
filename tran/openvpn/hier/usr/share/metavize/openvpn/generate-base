@@ -73,7 +73,9 @@ function cleanBase()
 
 function makeBase()
 {
-    mkdir -p ${PKI_DIR}        
+    mkdir -p ${CONF_DIR}
+    mkdir -p ${PKI_DIR}
+    mkdir -p ${PACKAGE_DIR}
     mkdir -p ${OPENVPN_DATA_DIR}
     mkdir -p ${OPENVPN_CCD_DIR}
 

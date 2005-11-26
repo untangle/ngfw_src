@@ -1,49 +1,53 @@
 #!/bin/sh
 
-SCRIPTS_DIR=@MVVM_HOME@/openvpn
-DATA_DIR=${SCRIPTS_DIR}
-BASE_CONFIG_FILE=@MVVM_CONF@/openvpn_base_cfg
+SCRIPT_DIR=@MVVM_HOME@/openvpn
+DATA_DIR=${SCRIPT_DIR}
+
+CONF_DIR="@MVVM_CONF@/openvpn"
+MISC_DIR="${CONF_DIR}/misc"
+
+BASE_CONFIG_FILE="${MISC_DIR}/base_cfg"
+
+PACKAGE_DIR=${CONF_DIR}/client-packages
+
+## This is where all of the keys (client and server) are generated.
+export PKI_DIR=${CONF_DIR}/pki
+export INDEX_FILE=${PKI_DIR}/index.txt
+export SERIAL_FILE=${PKI_DIR}/serial
+
+## This is where all of the server parameters are placed.
+OPENVPN_CONF_DIR=/etc/openvpn
+OPENVPN_DATA_DIR=${OPENVPN_CONF_DIR}/data
+
+## Client configuration directory
+OPENVPN_CCD_DIR="${OPENVPN_CONF_DIR}/ccd"
+
+## This is the client status file that java uses to check the certificate status for each client
+CLIENT_STATUS_FILE="${MISC_DIR}/client_status.txt"
 
 ## There must be a configuration file 
 if [ -r ${BASE_CONFIG_FILE} ]; then
     . ${BASE_CONFIG_FILE}
 else
     echo "Unable to load the openvpn configuration file ${BASE_CONFIG_FILE}"
-    exit -2
+    ## Exit only if the base is not required.
+    if [ -z "${baseNotRequired}" ]; then exit -2 ; fi
 fi
-
-## This is where all of the keys (client and server) are generated.
-export PKI_DIR=@MVVM_CONF@/openvpn
-export INDEX_FILE=${PKI_DIR}/index.txt
-export SERIAL_FILE=${PKI_DIR}/serial
-
-OPENVPN_CONF_DIR=@MVVM_CONF@/openvpn
-PACKAGE_DIR=${OPENVPN_CONF_DIR}/client-packages
-
-## This is the client status file that java uses to check the certificate status for each client
-CLIENT_STATUS_FILE="${PKI_DIR}/client_status.txt"
 
 OPENSSL="openssl"
 RM_CMD="rm"
 
 ## Uncomment the following line for debugging the openssl and removal calls.
 #OPENSSL="opensslDbg"
-RM_CMD="rmDbg"
+#RM_CMD="rmDbg"
 
 ## Default parameters and file locations for the certificates
 OPENSSL_CFG_FILE="${DATA_DIR}/openssl.cnf"
 CA_KEY="${PKI_DIR}/ca.key"
 CA_CRT="${PKI_DIR}/ca.crt"
 
-## This is where all of the server parameters are placed.
-OPENVPN_DIR=/etc/openvpn
-OPENVPN_DATA_DIR=${OPENVPN_DIR}/keys
-
 ## Issuing ten year certs
 CERT_DURATION=3650
-
-## Client configuration directory
-OPENVPN_CCD_DIR="${OPENVPN_DIR}/ccd"
 
 ## dnQualifier for the different certs
 DN_QUALIFIER_SERVER="server"

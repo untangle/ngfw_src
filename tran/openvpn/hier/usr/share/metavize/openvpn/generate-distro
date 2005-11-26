@@ -12,7 +12,11 @@ else
     exit -2
 fi
 
-commonName=`removeSpaces $1`
+EMAIL_TEMPLATE="${DATA_DIR}/mail-template.html"
+
+commonName=`removeSpaces ${1}`
+distributionKey=${2}
+insideAddress=${3}
 
 ## XXX May need to do some checks to see if files exists etc.
 
@@ -21,10 +25,10 @@ if [ -z "${commonName}" ]; then
     exit -3
 fi
 
-WIN_CONFIG_FILE=${OPENVPN_CONF_DIR}/client-${commonName}.ovpn
-UNIX_CONFIG_FILE=${OPENVPN_CONF_DIR}/client-${commonName}.conf
-CLI_CRT_FILE=${OPENVPN_CONF_DIR}/client-${commonName}.crt
-CLI_KEY_FILE=${OPENVPN_CONF_DIR}/client-${commonName}.key
+WIN_CONFIG_FILE=${PACKAGE_DIR}/client-${commonName}.ovpn
+UNIX_CONFIG_FILE=${PACKAGE_DIR}/client-${commonName}.conf
+CLI_CRT_FILE=${PKI_DIR}/client-${commonName}.crt
+CLI_KEY_FILE=${PKI_DIR}/client-${commonName}.key
 
 NSI_SCRIPT=${DATA_DIR}/installer/openvpn-gui.nsi
 
@@ -64,6 +68,12 @@ function buildConfigFile() {
     rmdir ${tmpDir}
 }
 
+function buildEmail()
+{
+    sed -e "s|%%KEY%%|${distributionKey}|g" -e "s|%%ADDRESS%%|${insideAddress}|g" \
+        ${EMAIL_TEMPLATE} > ${PACKAGE_DIR}/mail-${commonName}.eml
+}
+
 ## Convert the client file to dos
 unix2dos ${WIN_CONFIG_FILE}
 
@@ -71,6 +81,8 @@ unix2dos ${WIN_CONFIG_FILE}
 makensis -V1 -DCOMMON_NAME="${commonName}" ${NSI_SCRIPT}
 
 buildConfigFile
+
+buildEmail
 
 true
 

@@ -93,7 +93,7 @@ public class NetSettingsTwoJPanel extends javax.swing.JPanel {
         jPanel1.add(jTextField10, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 290, 270, 20));
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel1.setText("Exported Internal:");
+        jLabel1.setText("Distribution Email:");
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 180, -1));
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -171,11 +171,14 @@ public class NetSettingsTwoJPanel extends javax.swing.JPanel {
 
     private void acceptJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acceptJButtonActionPerformed
         VpnSettings settings = openvpn.getVpnSettings();
+        String email = jTextField1.getText().trim();
         
         /* Distribute all of the clients */
-        for ( VpnClient client : (List<VpnClient>)settings.getClientList()) {
+        for ( VpnClient client : (List<VpnClient>)settings.getCompleteClientList()) {
             try {
-                openvpn.distributeClientConfig( client, false, "rbscott@metavize.com" );
+                client.setDistributeUsb( false );
+                client.setDistributionEmail( email );
+                openvpn.distributeClientConfig( client );
             } catch( TransformException e ) {
                 System.err.println( "exception distributing client: " + e );
             }
@@ -220,11 +223,13 @@ public class NetSettingsTwoJPanel extends javax.swing.JPanel {
     {
         // jTextField1.setText( String.valueOf( settings.getIsInternalExported()));
         // jTextField2.setText( String.valueOf( settings.getIsExternalExported()));
+        
+        jTextField1.setText( "robert.b.scott@sbcglobal.net" );
 
-        Iterator iter = settings.getExportedAddressList().iterator();
-        updateSite( jTextField3, iter );
-        updateSite( jTextField4, iter );
-        updateSite( jTextField5, iter );
+        // Iterator iter = settings.getExportedAddressList().iterator();
+        // updateSite( jTextField3, iter );
+        // updateSite( jTextField4, iter );
+        // updateSite( jTextField5, iter );
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

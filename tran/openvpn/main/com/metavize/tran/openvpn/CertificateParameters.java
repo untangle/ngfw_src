@@ -32,7 +32,6 @@ public class CertificateParameters implements Serializable, Validatable
 
     public CertificateParameters( String organization, String domain, String country, String state, 
                                   String locality, boolean storeCaUsb )
-                                  
     {
         this.organization = organization;
         this.domain  = domain;

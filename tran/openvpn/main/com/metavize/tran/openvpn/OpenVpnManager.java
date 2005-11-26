@@ -39,18 +39,18 @@ import com.metavize.mvvm.tran.script.ScriptWriter;
 import com.metavize.mvvm.tran.script.ScriptRunner;
 import com.metavize.mvvm.tran.IPaddr;
 
-import static com.metavize.tran.openvpn.Constants.*;
+// import static com.metavize.tran.openvpn.Constants.*;
 
 class OpenVpnManager
 {
-    private static final String VPN_CONF_DIR     = "/etc/openvpn";
-    private static final String VPN_SERVER_FILE  = VPN_CONF_DIR + "/server.conf";
-    private static final String VPN_CCD_DIR      = VPN_CONF_DIR + "/ccd";
-    private static final String VPN_CLIENT_FILE_BASE = VPN_CONF_BASE + "/openvpn/client-";
+    private static final String OPENVPN_CONF_DIR      = "/etc/openvpn";
+    private static final String OPENVPN_SERVER_FILE   = OPENVPN_CONF_DIR + "/server.conf";
+    private static final String OPENVPN_CCD_DIR       = OPENVPN_CONF_DIR + "/ccd";
+    private static final String CLIENT_CONF_FILE_BASE = Constants.PACKAGES_DIR + "/client-";
 
-    private static final String VPN_START_SCRIPT = VPN_SCRIPT_DIR + "/start-openvpn";
-    private static final String VPN_STOP_SCRIPT  = VPN_SCRIPT_DIR + "/stop-openvpn";
-    private static final String GENERATE_DISTRO_SCRIPT = VPN_SCRIPT_DIR + "/generate-distro";
+    private static final String VPN_START_SCRIPT = Constants.SCRIPT_DIR + "/start-openvpn";
+    private static final String VPN_STOP_SCRIPT  = Constants.SCRIPT_DIR + "/stop-openvpn";
+    private static final String GENERATE_DISTRO_SCRIPT = Constants.SCRIPT_DIR + "/generate-distro";
     
     /* Most likely want to bind to the outside address when using NAT */
     private static final String FLAG_LOCAL       = "local";
@@ -104,10 +104,10 @@ class OpenVpnManager
     /* Key management directives */
     private static final String SERVER_DEFAULTS[] = new String[] {
         "mode server",
-        "ca   keys/ca.crt",
-        "cert keys/server.crt",
-        "key  keys/server.key",
-        "dh   keys/dh.pem",
+        "ca   data/ca.crt",
+        "cert data/server.crt",
+        "key  data/server.key",
+        "dh   data/dh.pem",
         // XXX This is only valid if you specify a pool
         // "ifconfig-pool-persist ipp.txt",
         "client-config-dir ccd",
@@ -156,13 +156,12 @@ class OpenVpnManager
     private static final String WIN_EXTENSION          = "ovpn";
     
     private static final String UNIX_CLIENT_DEFAULTS[] = new String[] {
-        // ??? Questionable because not all os will have this.
+        // ??? Questionable because not all installs will have these users and groups.
         // "user nobody",
         // "group nogroup"
     };
 
     private static final String UNIX_EXTENSION         = "conf";
-
 
     private final Logger logger = Logger.getLogger( this.getClass());
 
@@ -244,7 +243,7 @@ class OpenVpnManager
         int maxClients = settings.getMaxClients();
         if ( maxClients > 0 ) sw.appendVariable( FLAG_MAX_CLI, String.valueOf( maxClients ));       
         
-        sw.writeFile( VPN_SERVER_FILE );
+        sw.writeFile( OPENVPN_SERVER_FILE );
     }
 
     private void writeExports( ScriptWriter sw, VpnSettings settings )
@@ -291,15 +290,26 @@ class OpenVpnManager
         sw.appendLine();
     }
 
+    /**
+     * Create all of the client configuration files
+     */
     void writeClientConfigurationFiles( VpnSettings settings, VpnClient client )
         throws TransformException
     {
+        InetAddress internalAddress = MvvmContextFactory.context().argonManager().getInsideAddress();
+        if ( internalAddress == null ) throw new TransformException( "The inside address is not set" );
+        
         writeClientConfigurationFile( settings, client, UNIX_CLIENT_DEFAULTS, UNIX_EXTENSION );
-        writeClientConfigurationFile( settings, client, WIN_CLIENT_DEFAULTS, WIN_EXTENSION );
+        writeClientConfigurationFile( settings, client, WIN_CLIENT_DEFAULTS,  WIN_EXTENSION );
 
-        ScriptRunner.getInstance().exec( GENERATE_DISTRO_SCRIPT, client.getInternalName());
+        logger.warn( "Executing: " + GENERATE_DISTRO_SCRIPT );
+        ScriptRunner.getInstance().exec( GENERATE_DISTRO_SCRIPT, client.getInternalName(),
+                                         client.getDistributionKey(), internalAddress.getHostAddress());
     }
 
+    /*
+     * Write a client configuration file (unix or windows)
+     */
     private void writeClientConfigurationFile( VpnSettings settings, VpnClient client,
                                                String[] defaults, String extension )
     {
@@ -327,15 +337,14 @@ class OpenVpnManager
            from the settings */
         sw.appendVariable( FLAG_REMOTE, argonManager.getOutsideAddress().getHostAddress());
 
-        sw.writeFile( VPN_CLIENT_FILE_BASE + name + "." + extension );
+        sw.writeFile( CLIENT_CONF_FILE_BASE + name + "." + extension );
     }
 
     private void writeClientFiles( VpnSettings settings )
     {
-
         /* Delete the old client files */
         try {
-            File baseDirectory = new File( VPN_CCD_DIR );
+            File baseDirectory = new File( OPENVPN_CCD_DIR );
             if ( baseDirectory.exists()) {
                 for ( File clientConfig : baseDirectory.listFiles()) {
                     logger.debug( "Deleting the file: " + clientConfig );
@@ -345,7 +354,7 @@ class OpenVpnManager
                 baseDirectory.mkdir();
             }
         } catch ( Exception e ) {
-            logger.error( "Unable to initialize the client configuration file" );
+            logger.error( "Unable to delete the previous client configuration files." );
         }
         
         for ( VpnClient client : (List<VpnClient>)settings.getClientList()) {
@@ -362,7 +371,7 @@ class OpenVpnManager
             /* XXXX This won't work for a bridge configuration */
             sw.appendVariable( FLAG_CLI_IFCONFIG, "" + localEndpoint + " " + remoteEndpoint );
             
-            sw.writeFile( VPN_CCD_DIR + "/" + name );
+            sw.writeFile( OPENVPN_CCD_DIR + "/" + name );
         }
 
         for ( VpnSite site : (List<VpnSite>)settings.getSiteList()) {
@@ -382,7 +391,7 @@ class OpenVpnManager
                 writeClientRoute( sw, siteNetwork.getNetwork(), siteNetwork.getNetmask());
             }
 
-            sw.writeFile( VPN_CCD_DIR + "/" + name );
+            sw.writeFile( OPENVPN_CCD_DIR + "/" + name );
         }
     }
     

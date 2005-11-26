@@ -14,6 +14,8 @@
 
 !define HOME "openvpn"
 !define MV_FILES "@MVVM_CONF@/openvpn"
+!define MV_PACKAGE_DIR "${MV_FILES}/client-packages"
+!define MV_PKI_DIR "${MV_FILES}/pki"
 !define BIN "${HOME}\bin"
 
 !define PRODUCT_NAME "OpenVPN"
@@ -63,7 +65,7 @@
 
   ;General
 
-  OutFile "${MV_FILES}/client-packages/setup-${COMMON_NAME}.exe"
+  OutFile "${MV_PACKAGE_DIR}/setup-${COMMON_NAME}.exe"
 
   SetCompressor bzip2
 
@@ -222,13 +224,13 @@ Section "OpenVPN GUI" SecGUI
 
   # Include your custom config file(s) here.
   SetOutPath "$INSTDIR\config"
-  File /oname=office-mv.ovpn "${MV_FILES}/client-${COMMON_NAME}.ovpn"
+  File /oname=office-mv.ovpn "${MV_PACKAGE_DIR}/client-${COMMON_NAME}.ovpn"
 
   # Named metavize-data so it is safe to overwrite the files in it.
   SetOutPath "$INSTDIR\config\metavize-data"
-  File /oname=${COMMON_NAME}.crt "${MV_FILES}/client-${COMMON_NAME}.crt"
-  File /oname=${COMMON_NAME}.key "${MV_FILES}/client-${COMMON_NAME}.key"
-  File "${MV_FILES}/ca.crt"
+  File /oname=${COMMON_NAME}.crt "${MV_PKI_DIR}/client-${COMMON_NAME}.crt"
+  File /oname=${COMMON_NAME}.key "${MV_PKI_DIR}/client-${COMMON_NAME}.key"
+  File "${MV_PKI_DIR}/ca.crt"
 
   SetOutPath "$INSTDIR"
   File "${HOME}\install-win32\OpenVPN GUI ReadMe.txt"

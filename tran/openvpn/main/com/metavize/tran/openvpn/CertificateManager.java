@@ -13,6 +13,7 @@ package com.metavize.tran.openvpn;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.File;
 
 import java.util.List;
 import java.util.Map;
@@ -29,8 +30,6 @@ import com.metavize.mvvm.tran.TransformException;
 
 import com.metavize.mvvm.tran.script.ScriptWriter;
 import com.metavize.mvvm.tran.script.ScriptRunner;
-
-import static com.metavize.tran.openvpn.Constants.*;
 
 class CertificateManager
 {
@@ -71,16 +70,16 @@ class CertificateManager
 
     private static final String EMPTY_ARRAY[] = new String[0];
 
-    private static final String GENERATE_BASE_SCRIPT   = VPN_SCRIPT_DIR + "/generate-base";
-    private static final String GENERATE_CLIENT_SCRIPT = VPN_SCRIPT_DIR + "/generate-client";
-    private static final String REVOKE_CLIENT_SCRIPT   = VPN_SCRIPT_DIR + "/revoke-client";
+    private static final String GENERATE_BASE_SCRIPT   = Constants.SCRIPT_DIR + "/generate-base";
+    private static final String GENERATE_CLIENT_SCRIPT = Constants.SCRIPT_DIR + "/generate-client";
+    private static final String REVOKE_CLIENT_SCRIPT   = Constants.SCRIPT_DIR + "/revoke-client";
     
     /* Name of the file that stores the configuration data */
     /* The first item is V if the client common name is valid, and R if it has been revoked */
     private static final String OPENSSL_VALID_FLAG = "V";
 
-    private static final String VPN_CLIENT_STATUS_FILE = VPN_CONF_BASE + "/openvpn/client_status.txt";
-    private static final String CONFIG_FILE            = VPN_CONF_BASE + "/openvpn_base_cfg";
+    private static final String VPN_CLIENT_STATUS_FILE = Constants.MISC_DIR + "/client_status.txt";
+    private static final String CONFIG_FILE            = Constants.MISC_DIR + "/base_cfg";
 
     private final Logger logger = Logger.getLogger( this.getClass());
 
@@ -90,7 +89,7 @@ class CertificateManager
     {
     }
 
-    public void createBase( VpnSettings settings ) throws TransformException
+    void createBase( VpnSettings settings ) throws TransformException
     {
         ScriptWriter sw = new ScriptWriter( HEADER );
 
@@ -115,6 +114,16 @@ class CertificateManager
 
         sw.appendLines( DEFAULTS );
 
+        try {
+            /* Just in case it doesn't already exist */
+            File directory = new File( Constants.CONF_DIR );
+            directory.mkdir();
+            directory = new File( Constants.MISC_DIR );
+            directory.mkdir();
+        } catch ( Exception e ) {
+            throw new TransformException( "Unable to create misc directory", e );
+        }
+
         sw.writeFile( CONFIG_FILE );
         
         callScript( GENERATE_BASE_SCRIPT );
@@ -128,12 +137,8 @@ class CertificateManager
         Map<String,Boolean> certificateStatusMap = generateCertificateStatusMap();
         Set<String> usedNameSet = new HashSet<String>();
 
-        for ( VpnClient client : (List<VpnClient>)settings.getClientList()) {
+        for ( VpnClient client : (List<VpnClient>)settings.getCompleteClientList()) {
             updateClientCertificateStatus( settings, client, certificateStatusMap, usedNameSet );
-        }
-
-        for ( VpnSite site : (List<VpnSite>)settings.getSiteList()) {
-            updateClientCertificateStatus( settings, site, certificateStatusMap, usedNameSet );
         }
         
         /* Revoke all of the clients that have been deleted */
@@ -235,12 +240,17 @@ class CertificateManager
         }
     }
 
-    public void createClient( VpnClient client ) throws TransformException
+    void createAllClientCertificates( VpnSettings settings ) throws TransformException
+    {
+        for ( VpnClient client : (List<VpnClient>)settings.getCompleteClientList()) createClient( client );
+    }
+
+    void createClient( VpnClient client ) throws TransformException
     {
         callCreateClientScript( client.getInternalName());
     }
 
-    public void revokeClient( VpnClient client ) throws TransformException
+    void revokeClient( VpnClient client ) throws TransformException
     {
         callRevokeClientScript( client.getInternalName());
     }
@@ -271,7 +281,8 @@ class CertificateManager
      */
     private void callCreateClientScript( String commonName ) throws TransformException
     {
-        ScriptRunner.getInstance().exec( GENERATE_CLIENT_SCRIPT, commonName );
+        /* Always set the recreate flag */
+        ScriptRunner.getInstance().exec( GENERATE_CLIENT_SCRIPT, commonName, "recreate" );
     }
 
     private void callRevokeClientScript( String commonName ) throws TransformException

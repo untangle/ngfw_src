@@ -253,7 +253,6 @@ public class VpnSettings implements Serializable, Validatable
         this.clientList = clientList;
     }
 
-
     /**
      * The list of VPN clients.
      *
@@ -277,6 +276,18 @@ public class VpnSettings implements Serializable, Validatable
     public void setSiteList( List siteList )
     {
         this.siteList = siteList;
+    }
+
+    /**
+     * @return a new list containing all of the clients and the sites.(A VpnSite is a subclass of a VpnClient)
+     */
+    public List getCompleteClientList()
+    {
+        /* ??? Is there a better way to do this */
+        List completeList = new LinkedList();
+        completeList.addAll( getClientList());
+        completeList.addAll( getSiteList());
+        return completeList;
     }
 
     /**

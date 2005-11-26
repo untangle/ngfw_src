@@ -57,6 +57,15 @@ public class VpnClient extends Rule implements Validatable
     /* Most likely unused for early versions but a nice possiblity for
      * the future */
     private String distributionPassword;
+
+    /* Not stored to the database hibernate */
+
+    /* Set to true to tell the transform to distribute the configuration files
+     * for this client */
+    private boolean distributeClient = false;
+
+    /* Email addresss where to send the client */
+    private String distributionEmail = null;
     
     // constructors -----------------------------------------------------------
     
@@ -133,7 +142,41 @@ public class VpnClient extends Rule implements Validatable
     public void setDistributionPassword( String distributionPassword )
     {
         this.distributionPassword = distributionPassword;
-    }    
+    }
+
+    /* Indicates whether or not the server should distribute a config for this client */
+    public boolean getDistributeClient()
+    {
+        return this.distributeClient;
+    }
+
+    public void setDistributeClient( boolean distributeClient )
+    {
+        this.distributeClient = distributeClient;
+    }
+    
+    public boolean getDistributeUsb()
+    {
+        return ( this.distributionEmail == null );
+    }
+    
+    public void setDistributeUsb( boolean distributeUsb )
+    {
+        /* In order to distribute over usb, you have to null out the email address  *
+         * in order to distribute over email, you have to just set the distribution *
+         * email. */
+        if ( distributeUsb ) this.distributionEmail = null;
+    }
+    
+    public String getDistributionEmail()
+    {
+        return this.distributionEmail;
+    }
+
+    public void setDistributionEmail( String email )
+    {
+        this.distributionEmail = email;
+    }
 
     /* This is the name that is used as the common name in the certificate */
     public String getInternalName()

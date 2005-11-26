@@ -16,6 +16,7 @@ import java.io.IOException;
 
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Random;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -50,9 +51,9 @@ public class VpnTransformImpl extends AbstractTransform
     private static final String WEB_APP      = TRAN_NAME;
     private static final String WEB_APP_PATH = "/" + WEB_APP;
     private static final String MAIL_IMAGE_DIR_PREFIX = "images";
-    private static final String MAIL_IMAGE_DIR = Constants.VPN_SCRIPT_DIR + "/images";
+    private static final String MAIL_IMAGE_DIR = Constants.DATA_DIR + "/images";
 
-    private static final String CLEANUP_SCRIPT = Constants.VPN_SCRIPT_DIR + "/cleanup";
+    private static final String CLEANUP_SCRIPT = Constants.SCRIPT_DIR + "/cleanup";
 
     private final Logger logger = Logger.getLogger( VpnTransformImpl.class );
     
@@ -60,6 +61,8 @@ public class VpnTransformImpl extends AbstractTransform
 
     private final SoloPipeSpec pipeSpec;
     private final SoloPipeSpec[] pipeSpecs;
+
+    private final Random random = new Random();
 
     private final OpenVpnManager openVpnManager = new OpenVpnManager();
     private final CertificateManager certificateManager = new CertificateManager();
@@ -147,9 +150,11 @@ public class VpnTransformImpl extends AbstractTransform
         return this.settings;
     }
 
+    /* XXXX This function will go away since it has been replaced by the complete config function */
     public VpnSettings generateBaseParameters( VpnSettings settings )
     {
         try {
+            ScriptRunner.getInstance().exec( CLEANUP_SCRIPT );
             certificateManager.createBase( settings );
             setVpnSettings( settings );
         } catch ( TransformException e ) {
@@ -158,7 +163,7 @@ public class VpnTransformImpl extends AbstractTransform
 
         return this.settings;
     }
-
+    
     public VpnClient generateClientCertificate( VpnSettings settings, VpnClient client )
     {
         try {
@@ -181,27 +186,44 @@ public class VpnTransformImpl extends AbstractTransform
         return client;
     }
 
+    private void distributeAllClientFiles( VpnSettings settings ) throws TransformException
+    {
+        for ( VpnClient client : (List<VpnClient>)settings.getCompleteClientList()) {
+            distributeClientConfig( client );
+        }
+    }
 
-    public void distributeClientConfig( VpnClient client, boolean usbKey, String email )
+    public void distributeClientConfig( final VpnClient client )
         throws TransformException
     {
-        /* this client may already have a key may have already been done */
+        /* this client may already have a key, the key may have 
+         * already been created. */
         this.certificateManager.createClient( client );
 
         /* Generate a random key */
+        client.setDistributionKey( String.format( "%04x%04x", random.nextInt(), random.nextInt()));
+        
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork( Session s )
+                {
+                    s.saveOrUpdate( client );
+                    return true;
+                }
+            };
+        
+        getTransformContext().runTransaction( tw );
+
         this.openVpnManager.writeClientConfigurationFiles( settings, client );
         
-        if ( usbKey ) {
-            distributeClientConfigUsb( client );
-        } else {
-            distributeClientConfigEmail( client, email );
-        }
+        if ( client.getDistributeUsb()) distributeClientConfigUsb( client );
+        else distributeClientConfigEmail( client, client.getDistributionEmail());
     }
 
     private void distributeClientConfigUsb( VpnClient client )
         throws TransformException
     {
-        
+        throw new TransformException( "Unsupported" );
     }
 
     private void distributeClientConfigEmail( VpnClient client, String email )
@@ -209,9 +231,7 @@ public class VpnTransformImpl extends AbstractTransform
     {
         try {
             String subject = "OpenVPN Client";
-            
             File imageDirectory = new File( MAIL_IMAGE_DIR );
-            
             List<File> extraList = new LinkedList<File>();
             List<String> locationList = new LinkedList<String>();
             
@@ -225,7 +245,8 @@ public class VpnTransformImpl extends AbstractTransform
             MailSender mailSender = MvvmContextFactory.context().mailSender();
             
             /* Read in the contents of the file */
-            FileReader fileReader = new FileReader( Constants.VPN_SCRIPT_DIR + "/mail-template.html" );
+            FileReader fileReader = new FileReader( Constants.PACKAGES_DIR + "/mail-" + 
+                                                    client.getInternalName() + ".eml" );
             StringBuilder sb = new StringBuilder();
             char[] buf = new char[1024];
             int rs;
@@ -245,7 +266,7 @@ public class VpnTransformImpl extends AbstractTransform
             logger.warn( "Error distributing client key", e );
             throw new TransformException( e );
         }
-    } 
+    }
 
     /* Get the common name for the key, and clear it if it exists */
     public synchronized String lookupClientDistributionKey( String key, IPaddr clientAddress )
@@ -492,7 +513,27 @@ public class VpnTransformImpl extends AbstractTransform
 
     public void completeConfig() throws Exception
     {
-        setVpnSettings( this.sandbox.completeConfig( this.getTid()));
+        VpnSettings newSettings = this.sandbox.completeConfig( this.getTid());
+
+        /* Try to cleanup the previous data */
+        ScriptRunner.getInstance().exec( CLEANUP_SCRIPT );
+
+        /* Generate new settings */
+        if ( settings.getIsEdgeGuardClient()) {
+            /* Finish the configuration for clients */
+
+        } else {
+            /* Create the base certificate and parameters */
+            this.certificateManager.createBase( settings );
+            
+            /* Create clients certificates */
+            this.certificateManager.createAllClientCertificates( settings );
+            
+            /* Distribute emails */
+            distributeAllClientFiles( settings );
+        }
+        
+        setVpnSettings( newSettings );
         
         /* No reusing the sanbox */
         this.sandbox = null;
