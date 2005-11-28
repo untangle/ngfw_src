@@ -3,8 +3,12 @@ package com.metavize.tran.ids.options;
 import java.util.regex.*;
 //import java.util.Vector;
 
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.BMPattern;
 import org.apache.log4j.Logger;
 import java.nio.ByteBuffer;
+import java.text.CharacterIterator;
+import com.metavize.tran.util.AsciiCharBuffer;
+import com.metavize.tran.util.AsciiCharBufferCharacterIterator;
 import com.metavize.mvvm.tapi.event.*;
 import com.metavize.tran.ids.IDSDetectionEngine;
 import com.metavize.tran.ids.IDSRuleSignature;
@@ -30,29 +34,30 @@ public class ContentOption extends IDSOption {
     private int distance = 0;
     private int within = 0;
 
-    private Pattern contentPattern;
+    private BMPattern contentPattern;
 	
     private byte[] bytePattern;	
+    private String stringPattern;
     private ByteBuffer binaryBuffer = ByteBuffer.allocate(2048);
 	
     private boolean hasBinaryData = false;
     private boolean withinFlag = false;
     private boolean distanceFlag = false;
-	
+
     public ContentOption(IDSRuleSignature signature, String params) {
         super(signature, params);
         int index = params.indexOf('|');
         if(index < 0) {
-            contentPattern = Pattern.compile(params, Pattern.LITERAL);
+            stringPattern = params;
         }
         else {
             buildBytePattern(params, index);
             bytePattern = new byte[binaryBuffer.position()];
             binaryBuffer.flip();
             binaryBuffer.get(bytePattern);
-            String pattern = new String(bytePattern);
-            contentPattern = Pattern.compile(pattern, Pattern.LITERAL);
+            stringPattern = new String(bytePattern);
         }	
+        contentPattern = new BMPattern(stringPattern, false);
     }
 	
     //public int getIndexOfLastMatch() {
@@ -60,7 +65,7 @@ public class ContentOption extends IDSOption {
     //}
 	
     public void setNoCase() {
-        contentPattern = Pattern.compile(contentPattern.pattern(), contentPattern.flags() | Pattern.CASE_INSENSITIVE);
+        contentPattern = new BMPattern(stringPattern, true);
     }
 
     public void setOffset(int val) {
@@ -90,11 +95,11 @@ public class ContentOption extends IDSOption {
         previousContentOption = getPreviousContentOption();
 		
         if(previousContentOption == null) {
-            setDepth(val+contentPattern.pattern().length());
+            setDepth(val+stringPattern.length());
             return;
         }
 		
-        within = val+contentPattern.pattern().length();
+        within = val+stringPattern.length();
         withinFlag = true;
     }
 
@@ -119,21 +124,22 @@ public class ContentOption extends IDSOption {
 	
     public boolean run(IDSSessionInfo sessionInfo) {
         ByteBuffer eventData = sessionInfo.getEvent().data();
-        String data = new String(eventData.array());
+        AsciiCharBuffer data = AsciiCharBuffer.wrap(eventData);
+        CharacterIterator iter = new AsciiCharBufferCharacterIterator(data);
 		
-		sessionInfo.start = start;
-		sessionInfo.end = end;
+        sessionInfo.start = start;
+        sessionInfo.end = end;
 
         if(distanceFlag)
-			sessionInfo.start = sessionInfo.indexOfLastMatch + distance;
+            sessionInfo.start = sessionInfo.indexOfLastMatch + distance;
             //start = previousContentOption.getIndexOfLastMatch()+distance;
 		
         if(withinFlag) {
             if(distanceFlag)
                 setStartAndEndPoints(sessionInfo.start,within,sessionInfo);
             else
-				setStartAndEndPoints(sessionInfo.indexOfLastMatch, within, sessionInfo);
-               // setStartAndEndPoints(previousContentOption.getIndexOfLastMatch(),within,sessionInfo);
+                setStartAndEndPoints(sessionInfo.indexOfLastMatch, within, sessionInfo);
+                // setStartAndEndPoints(previousContentOption.getIndexOfLastMatch(),within,sessionInfo);
         }
 		
         if(sessionInfo.start > data.length() || sessionInfo.start < 0)
@@ -141,13 +147,17 @@ public class ContentOption extends IDSOption {
 		
         if(sessionInfo.end <= 0 || sessionInfo.end > data.length())
             sessionInfo.end = data.length();
-        Matcher matcher = contentPattern.matcher(data.substring(sessionInfo.start,sessionInfo.end));
+
+        int result = contentPattern.matches(iter, sessionInfo.start, sessionInfo.end);
         //return super.negationFlag() ^ contentPattern.matcher(data.substring(start,end)).find();
-        if(matcher.find()) {
-            sessionInfo.indexOfLastMatch = matcher.end();
+        if (result >= 0) {
+            if (logger.isDebugEnabled())
+                logger.debug("content matched for rule " + signature.rule().getSid() + ": " + stringPattern);
+            sessionInfo.indexOfLastMatch = result + stringPattern.length();
+            // Was: sessionInfo.indexOfLastMatch = matcher.end();, is my version wrong?
             return true;
         }
-		//sessionInfo.indexOfLastMatch = -1;
+        //sessionInfo.indexOfLastMatch = -1;
         return false;
     }
 
