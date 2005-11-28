@@ -87,7 +87,15 @@ public class MTransformJPanel extends javax.swing.JPanel {
             mTransformControlsJPanel = (MTransformControlsJPanel) mTransformControlsJPanelConstructor.newInstance(new Object[]{this});
         }
         catch(Exception e){
+	    // SHOW A LITTLE MESSAGE TELLING THEM TO RESTART
             mTransformControlsJPanel = new MTransformControlsJPanel(this);
+	    JPanel warningJPanel = new JPanel(new BorderLayout());
+	    JLabel warningJLabel = new JLabel("<html><center><b>Warning:</b> Settings could not be loaded properly." +
+					      "<br>Please restart the EdgeGuard Client to load settings properly.</center></html>");
+	    warningJLabel.setFont(new java.awt.Font("Arial", 0, 14));
+	    warningJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+	    warningJPanel.add(warningJLabel);
+	    mTransformControlsJPanel.getMTabbedPane().add("Warning", warningJPanel);
             Util.handleExceptionNoRestart("Error adding control panel", e);
         }
         	

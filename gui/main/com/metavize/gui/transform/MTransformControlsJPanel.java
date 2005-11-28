@@ -99,6 +99,9 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
 	return mTransformJPanel.getControlsShowing();
     }
 
+
+    public JTabbedPane getMTabbedPane(){ return mTabbedPane; }
+
     public JToggleButton getControlsJToggleButton(){ return mTransformJPanel.getControlsJToggleButton(); }
     
     public void setAllEnabled(boolean enabled){
