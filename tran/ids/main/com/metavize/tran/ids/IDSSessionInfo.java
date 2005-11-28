@@ -14,10 +14,20 @@ public class IDSSessionInfo {
     private 	String 					uriPath;
     private 	boolean 				isServer;
 
+	//ContentOption variables
+	public int start;
+	public int end;
+	public int indexOfLastMatch;
+
     public IDSSessionInfo(IPSession session) {
         this.session = session;
     }
 	
+	//public void setContentOptionStart(int val) { start = val; }
+	//public int getContentOptionStart(int val) { return start; }
+	//public void setContentOptionEnd(int val) { end = val; }
+	//public int getContentOptionEnd(int val) { return end; }
+
     public void setUriPath(String path) {
         uriPath = path;
     }

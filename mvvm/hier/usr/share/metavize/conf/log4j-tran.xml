@@ -110,7 +110,7 @@
   </category>
 
   <category name="com.metavize.tran.ids">
-    <priority value="DEBUG"/>
+    <priority value="INFO"/>
   </category>
 
   <category name="com.metavize.tran.protofilter">

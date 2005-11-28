@@ -24,7 +24,7 @@ public class ContentOption extends IDSOption {
 
     private ContentOption previousContentOption = null;
 	
-    private int indexOfMatch = 0;
+    //private int indexOfMatch = 0;
     private int start = 0;
     private int end = 0;
     private int distance = 0;
@@ -55,20 +55,23 @@ public class ContentOption extends IDSOption {
         }	
     }
 	
-    public int getIndexOfLastMatch() {
-        return indexOfMatch;
-    }
+    //public int getIndexOfLastMatch() {
+      //  return indexOfMatch;
+    //}
 	
     public void setNoCase() {
         contentPattern = Pattern.compile(contentPattern.pattern(), contentPattern.flags() | Pattern.CASE_INSENSITIVE);
     }
 
     public void setOffset(int val) {
-        setStartAndEndPoints(val,end);
+		start = val;
+        //setStartAndEndPoints(val,end);
     }
 
     public void setDepth(int val) {
-        setStartAndEndPoints(start,val);
+        end = start+val;
+        if(start == end)
+			end = 0;
     }
 
     public void setDistance(int val) {
@@ -103,11 +106,11 @@ public class ContentOption extends IDSOption {
     }
 						 
 	
-    private void setStartAndEndPoints(int offset, int depth) {
-        start = offset;
-        end = offset+depth;
-        if(start == end)
-            end = 0;
+    private void setStartAndEndPoints(int offset, int depth, IDSSessionInfo sessionInfo) {
+        sessionInfo.start = offset;
+        sessionInfo.end = offset+depth;
+        if(sessionInfo.start == sessionInfo.end)
+            sessionInfo.end = 0;
     }
 	
     public boolean runnable() {
@@ -118,27 +121,33 @@ public class ContentOption extends IDSOption {
         ByteBuffer eventData = sessionInfo.getEvent().data();
         String data = new String(eventData.array());
 		
+		sessionInfo.start = start;
+		sessionInfo.end = end;
+
         if(distanceFlag)
-            start = previousContentOption.getIndexOfLastMatch()+distance;
+			sessionInfo.start = sessionInfo.indexOfLastMatch + distance;
+            //start = previousContentOption.getIndexOfLastMatch()+distance;
 		
         if(withinFlag) {
             if(distanceFlag)
-                setStartAndEndPoints(start,within);
+                setStartAndEndPoints(sessionInfo.start,within,sessionInfo);
             else
-                setStartAndEndPoints(previousContentOption.getIndexOfLastMatch(),within);
+				setStartAndEndPoints(sessionInfo.indexOfLastMatch, within, sessionInfo);
+               // setStartAndEndPoints(previousContentOption.getIndexOfLastMatch(),within,sessionInfo);
         }
 		
-        if(start > data.length() || start < 0)
+        if(sessionInfo.start > data.length() || sessionInfo.start < 0)
             return false;
 		
-        if(end <= 0 || end > data.length())
-            end = data.length();
-        Matcher matcher = contentPattern.matcher(data.substring(start,end));
+        if(sessionInfo.end <= 0 || sessionInfo.end > data.length())
+            sessionInfo.end = data.length();
+        Matcher matcher = contentPattern.matcher(data.substring(sessionInfo.start,sessionInfo.end));
         //return super.negationFlag() ^ contentPattern.matcher(data.substring(start,end)).find();
         if(matcher.find()) {
-            indexOfMatch = matcher.end();
+            sessionInfo.indexOfLastMatch = matcher.end();
             return true;
         }
+		//sessionInfo.indexOfLastMatch = -1;
         return false;
     }
 
