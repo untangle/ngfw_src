@@ -86,7 +86,7 @@ export PATH LD_LIBRARY_PATH CLASSPATH JAVA_HOME
 if [ "x$PROFILE_MVVM_YJP" = "xyes" ] ; then
     echo "YJP profiling support enabled (concurrent garbage collection disabled)"
     YJP_HOME=/opt/yjp
-    LD_LIBRARY_PATH=$YJP_HOME/bin/linux:$LD_LIBRARY_PATH
+    LD_LIBRARY_PATH=$YJP_HOME/bin/linux-x86-32:$LD_LIBRARY_PATH
     JAVA_OPTS="-agentlib:yjpagent $JAVA_OPTS"
 fi
 
