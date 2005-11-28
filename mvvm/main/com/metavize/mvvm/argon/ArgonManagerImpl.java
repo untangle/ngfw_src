@@ -18,6 +18,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Collections;
+import java.util.Properties;
+
+import java.io.File;
+import java.io.FileOutputStream;
 
 import org.apache.log4j.Logger;
 
@@ -31,8 +35,6 @@ import com.metavize.mvvm.engine.PolicyManagerPriv;
 import com.metavize.mvvm.ArgonManager;
 import com.metavize.mvvm.NetworkingConfiguration;
 
-import com.metavize.mvvm.tran.script.ScriptWriter;
-
 import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.firewall.InterfaceRedirect;
 
@@ -43,9 +45,9 @@ public class ArgonManagerImpl implements ArgonManager
     private static final Shield shield = Shield.getInstance();
 
     private static final String BUNNICULA_CONF      = System.getProperty( "bunnicula.conf.dir" );
-    private static final String TRANSFORM_INTF_FILE = BUNNICULA_CONF + "/transform_intf";
-
-    private static final String FLAG_INTF_LIST = "MVVM_TRANSFORM_INTF_LIST";
+    static final String TRANSFORM_INTF_FILE     = BUNNICULA_CONF + "/argon.properties";
+    static final String PROPERTY_TRANSFORM_INTF = "argon.userintf";
+    private static final String PROPERTY_COMMENT = "Transform interfaces (eg VPN)";
 
     private static final String BOGUS_OUTSIDE_ADDRESS_STRING = "169.254.210.51";
     private static final String BOGUS_INSIDE_ADDRESS_STRING  = "169.254.210.52";
@@ -350,14 +352,21 @@ public class ArgonManagerImpl implements ArgonManager
         
         List<TransformInterface> til = ic.transformInterfaceList();
 
-        ScriptWriter sw = new ScriptWriter();
         String list = "";
         for ( TransformInterface ti : til ) {
             if ( list.length() > 0 ) list += "_";
             list += ti.deviceName() + "," + ti.argonIntf();
         }
-        sw.appendVariable( FLAG_INTF_LIST, list );
-        sw.writeFile( TRANSFORM_INTF_FILE );
+
+        Properties properties = new Properties();
+        properties.setProperty( PROPERTY_TRANSFORM_INTF, list );
+
+        try {
+            logger.debug( "Storing properties into: " + TRANSFORM_INTF_FILE );
+            properties.store( new FileOutputStream( new File( TRANSFORM_INTF_FILE )), PROPERTY_COMMENT );
+        } catch ( Exception e ) {
+            logger.error( "Unable to write transform interface properties:" + TRANSFORM_INTF_FILE, e );
+        }
 
         /* Update the address database */
         updateAddress();

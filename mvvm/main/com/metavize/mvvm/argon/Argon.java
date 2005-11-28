@@ -11,6 +11,11 @@
 
 package com.metavize.mvvm.argon;
 
+import java.util.Properties;
+
+import java.io.File;
+import java.io.FileInputStream;
+
 import com.metavize.jnetcap.Netcap;
 import com.metavize.jnetcap.Shield;
 import com.metavize.jvector.Vector;
@@ -100,10 +105,6 @@ public class Argon
             dmz = temp;
         }
 
-        if (( temp = System.getProperty( "argon.userintf" )) != null ) {
-            userIntfs = temp;
-        }
-
         if (( temp = System.getProperty( "argon.numthreads" )) != null ) {
             int count;
             count = Integer.parseInt( temp );
@@ -144,6 +145,24 @@ public class Argon
         
         if (( temp = System.getProperty( "argon.sessionlimit" )) != null ) {
             sessionThreadLimit  = Integer.parseInt( temp );
+        }
+
+
+        try {
+            Properties properties = new Properties();
+            File f = new File( ArgonManagerImpl.TRANSFORM_INTF_FILE );
+
+            if ( f.exists()) {
+                properties.load( new FileInputStream( f ));
+                if (( temp = properties.getProperty( ArgonManagerImpl.PROPERTY_TRANSFORM_INTF )) != null ) {
+                    this.userIntfs = temp;
+                } else {
+                    this.userIntfs = "";
+                }
+            }
+        } catch ( Exception e ) {
+            logger.warn( "Error loading transform interface file, defaulting to no properties", e );
+            this.userIntfs = "";
         }
     }
 
