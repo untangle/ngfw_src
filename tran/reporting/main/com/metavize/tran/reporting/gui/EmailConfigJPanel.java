@@ -28,6 +28,7 @@ import javax.swing.*;
 import javax.swing.table.*;
 import java.util.*;
 import javax.swing.event.*;
+import java.awt.Window;
 
 public class EmailConfigJPanel extends MEditTableJPanel {
 
@@ -89,12 +90,13 @@ class EmailTableModel extends MSortedTableModel{
 	// WARN USER IF THERE IS NO EMAIL SERVER CONFIGURED
 	if( tableVector.size() > 0){
 	    MailSettings mailSettings = Util.getAdminManager().getMailSettings();
-	    if( mailSettings.getSmtpHost().length() == 0 ){
-		/*		new MOneButtonJDialog(emailConfigJPanel.getTopLevelAncestor(),
+	    String smtpHost = mailSettings.getSmtpHost();
+	    if( (smtpHost==null) || (smtpHost.length()==0) ){
+		MOneButtonJDialog.factory((Window)emailConfigJPanel.getTopLevelAncestor(),
 				      "EdgeReport",
-				      "<html>Your Email Reports Recipients have been saved, however, outgoing email server is not configured.  You must configure it System Config -> Network Settings before you will receive email reports.</html>",
+				      "<html>Your Email Reports Recipients have been saved, however, your outgoing email server is not configured.  You must configure it in System Config -> Network Settings before you will receive email reports.</html>",
 				      "EdgeReport Confirmation",
-				      "Confirmation:");*/
+				      "Confirmation:");
 	    }
 	}
 

@@ -14,6 +14,7 @@ package com.metavize.gui.widgets.dialogs;
 import com.metavize.gui.util.Util;
 import com.metavize.mvvm.ToolboxManager;
 
+import java.awt.Frame;
 import java.awt.Dialog;
 import java.awt.Window;
 
@@ -26,9 +27,27 @@ public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.e
 	init(null);
     }
 
+    public static MOneButtonJDialog factory(Window topLevelWindow, String applianceName, String warning, String title, String subtitle){
+	if( topLevelWindow instanceof Dialog )
+	    return new MOneButtonJDialog((Dialog)topLevelWindow, applianceName, warning, title, subtitle);
+	else if( topLevelWindow instanceof Frame )
+	    return new MOneButtonJDialog((Frame)topLevelWindow, applianceName, warning, title, subtitle);
+	else
+	    return new MOneButtonJDialog((Frame)null, applianceName, warning, title, subtitle);
+    }
+
     public MOneButtonJDialog(Dialog topLevelDialog, String applianceName, String warning, String title, String subtitle){
 	super(topLevelDialog, true);
 	init(topLevelDialog);
+        this.setTitle(title);
+        this.labelJLabel.setText(subtitle);
+        messageJLabel.setText("<html><center>" + warning + "</center></html>");
+        this.setVisible(true);
+    }
+
+    public MOneButtonJDialog(Frame topLevelFrame, String applianceName, String warning, String title, String subtitle){
+	super(topLevelFrame, true);
+	init(topLevelFrame);
         this.setTitle(title);
         this.labelJLabel.setText(subtitle);
         messageJLabel.setText("<html><center>" + warning + "</center></html>");
