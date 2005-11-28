@@ -600,6 +600,9 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
             /* Fallthrough */
         case ENETUNREACH:
             /* Fallthrough */
+        case EINVAL: /* XXX This should not be here, the packets should be dropped before reaching the MVVM, 
+                        see bug(827) for more information */
+            /* Fallthrough */
         case EHOSTUNREACH:
             /* Fallthrough */
             errlog( ERR_WARNING, "UDP: unable to send packet(%s), innocuous response code\n",
