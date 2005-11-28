@@ -429,9 +429,15 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <include name="com/metavize/tran/openvpn/ClientSiteNetwork.class"/>
         <include name="com/metavize/tran/openvpn/VpnClient.class"/>
         <include name="com/metavize/tran/openvpn/VpnTransform.class"/>
+        <include name="com/metavize/tran/openvpn/VpnTransform$$ConfigState.class"/>
         <include name="com/metavize/tran/openvpn/VpnGroup.class"/>
         <include name="com/metavize/tran/openvpn/VpnSettings.class"/>
         <include name="com/metavize/tran/openvpn/Constants.class"/>
+        <include name="com/metavize/tran/openvpn/CertificateParameters.class"/>
+        <include name="com/metavize/tran/openvpn/GroupList.class"/>
+        <include name="com/metavize/tran/openvpn/ExportList.class"/>
+        <include name="com/metavize/tran/openvpn/ClientList.class"/>
+        <include name="com/metavize/tran/openvpn/SiteList.class"/>
         <include name="com/metavize/tran/openvpn/servlet/*.class"/>
       </fileset>
     </jar>
