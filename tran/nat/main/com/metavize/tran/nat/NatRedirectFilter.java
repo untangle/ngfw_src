@@ -12,16 +12,16 @@
 package com.metavize.tran.nat;
 
 
-import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.RepositoryDesc;
+import com.metavize.mvvm.logging.SimpleEventFilter;
 
 public class NatRedirectFilter implements SimpleEventFilter<LogEvent>
 {
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc("NAT Redirect Events");
 
     private static final String WARM_QUERY
-        = "FROM RedirectEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
+        = "FROM RedirectEvent evt ORDER BY evt.timeStamp";
 
     // SimpleEventFilter methods ----------------------------------------------
 
