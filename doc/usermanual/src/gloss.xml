@@ -34,11 +34,11 @@ Place new terms under the appropriate alphabetical location.
   </glossdiv>
 
 <!-- ============== B ================ -->  
-  
+<!--  
   <glossdiv>
     <title>B</title>
   </glossdiv>
-
+-->
 <!-- ============== C ================ -->
   
   <glossdiv>
@@ -136,10 +136,12 @@ Place new terms under the appropriate alphabetical location.
   </glossdiv>
 
 <!-- ============== E ================ -->
-  
+<!--
+  Incomment once we have something with this letter
   <glossdiv>
     <title>E</title>
   </glossdiv>
+-->  
 
 <!-- ============== F ================ -->
   
@@ -165,12 +167,12 @@ Place new terms under the appropriate alphabetical location.
   </glossdiv>  
 
 <!-- ============== G ================ -->
-  
+<!--  
   <glossdiv>
     <title>G</title>
 
   </glossdiv>
-
+-->
 <!-- ============== H ================ -->
   
   <glossdiv>
@@ -195,22 +197,6 @@ Place new terms under the appropriate alphabetical location.
         
   </glossdiv>
 
-
-<!-- ============== H ================ -->
-  
-  <glossdiv>
-    <title>H</title>
-
-
-
-    <glossentry id="gloss_http">
-      <glossterm>Hyper Text Transfer Protocol</glossterm>
-      <abbrev>HTTP</abbrev>
-      <glossdef>
-        <para>TODO</para>
-      </glossdef>            
-    </glossentry>      
-  </glossdiv>
 
 <!-- ============== I ================ -->
   
@@ -238,20 +224,27 @@ Place new terms under the appropriate alphabetical location.
   
   <glossdiv>
     <title>J</title>
+
+    <glossentry id="gloss_java">
+      <glossterm>Java</glossterm>
+      <glossdef>
+        <para>TODO</para>
+      </glossdef>            
+    </glossentry>     
   </glossdiv>
 
 <!-- ============== K ================ -->
-  
+<!--  
   <glossdiv>
     <title>K</title>
   </glossdiv>
-
+-->
 <!-- ============== L ================ -->
-  
+<!--  
   <glossdiv>
     <title>L</title>
   </glossdiv>
-
+-->
 <!-- ============== M ================ -->
   
   <glossdiv>
@@ -319,9 +312,16 @@ Place new terms under the appropriate alphabetical location.
   </glossdiv>
 
 <!-- ============== O ================ -->
-  
+
+
   <glossdiv>
     <title>O</title>
+    <glossentry id="gloss_os">
+      <glossterm>Operating System</glossterm>
+      <glossdef>
+        <para>TODO</para>
+      </glossdef>            
+    </glossentry>     
   </glossdiv>
 
 <!-- ============== P ================ -->
@@ -625,21 +625,24 @@ Place new terms under the appropriate alphabetical location.
   </glossdiv>
 
 <!-- ============== X ================ -->
-  
+<!--
+  Incomment once we have something with this letter  
   <glossdiv>
     <title>X</title>
   </glossdiv>                              
-  
+-->  
 <!-- ============== Y ================ -->
-  
+<!--
+  Incomment once we have something with this letter  
   <glossdiv>
     <title>Y</title>
   </glossdiv>                              
-  
+-->  
 <!-- ============== Z ================ -->
-  
+<!--
+  Incomment once we have something with this letter  
   <glossdiv>
     <title>Z</title>
   </glossdiv>                              
-  
+-->  
 </glossary>

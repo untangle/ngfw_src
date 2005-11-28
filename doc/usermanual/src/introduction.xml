@@ -18,33 +18,13 @@
       <para>
         This is where we explain the concept of a software appliance, and describe how they are represented in the UI.  The "vendor of source" idea should also be discussed.
       </para>
+      <para id="introduction_ui_appliance_event_log"  xreflabel="Event Log">
+        Event Log should be defined here (but the block-level stuff must be changed)
+      </para>
+      <para id="introduction_ui_appliance_blingy_blingers"  xreflabel="Activity Meters">
+        Activity Meters - explain blingy-blingers
+      </para>
 
-        <variablelist>
-          <title>Common Features of Appliances</title>
-          <varlistentry>
-            <term>
-              <para id="introduction_ui_appliance_event_log"  xreflabel="Event Log">
-              Event Log
-              </para>
-            </term>
-            <listitem>
-              <para>
-                Here, we explain in general what the Event Logs are for, and how most appliances have them
-              </para>
-            </listitem>
-          </varlistentry>
-          
-          <varlistentry>
-            <term id="introduction_ui_appliance_blingy_blingers"  xreflabel="Activity Meters">
-              Activity Meters
-            </term>
-            <listitem>
-              <para>
-                Here, we explain in general what the the blingy-blingiers do.
-              </para>
-            </listitem>
-          </varlistentry>
-        </variablelist>
       
     </sect2>
     <sect2 id="introduction_ui_rack">
@@ -86,7 +66,11 @@
     </para>
 
     <sect2 id="fixme_ui_ip_conventions"  xreflabel="Entering Addresses">
+      <title>Random stuff I've referred to</title>
+
+      <para>
       This section explains that there are a few different ways to enter addresses, depending on the context.
+      </para>
       <para id="fixme_ui_ip_conventions_simpleipaddr" xreflabel="Simple Address Syntax">
         Basic IP address
       </para>
@@ -99,13 +83,17 @@
       <para id="fixme_ui_ip_conventions_ipmatcher" xreflabel="IP Matcher">
         "any" | "local" | CIDR | range
       </para>
+     
       <para id="fixme_ui_ip_conventions_portmatcher" xreflabel="Port Matcher">
         "any" | port literal (number) | port range
       </para>        
     </sect2>
 
     <sect2 id="fixme_ui_url_conventions"  xreflabel="Entering URLs">
-      Here we discuss how to enter URLs for blocking/passing, where "http://a/b" matches "http://a/b/c" but not "http://a/d".
+      <title>I guess we need a title</title>
+      <para>
+        Here we discuss how to enter URLs for blocking/passing, where "http://a/b" matches "http://a/b/c" but not "http://a/d".
+      </para>
     </sect2>
 
   </sect1>

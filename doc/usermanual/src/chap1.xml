@@ -317,7 +317,92 @@
       </tip>        
   </para>
 
+  <sect1>
+    <title>New Stuff I just learned about</title>
+    <para>
+      I'd been using a lot of variablelist in this doc, and as it turns out these cannot contain para elements.  The validator I've been using is less strict than one I just tried on another docbook tool.  Oh well.  Let's see what other stuff looks like
+    </para>
 
+    <para>
+      What follows is an itemized list within a highlights block
+    </para>
+    <highlights>
+      <itemizedlist>
+        <listitem>
+          <para>
+            This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample. This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample. This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample.
+          </para>
+          <para>
+            This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample. This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample.
+          </para>          
+        </listitem>
+        <listitem>
+          <para>
+            This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample. This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample.
+          </para>
+        </listitem>
+      </itemizedlist>
+    </highlights>
+
+    <para>
+      What follows is a procedure, which we may want to use to describe how to do something
+    </para>
+    <procedure>
+      <title>An Example Procedure</title>
+    <step>
+      <para>
+        A Step
+      </para>
+    </step>
+    <step>
+      <para>
+        Another Step
+      </para>
+      <substeps>
+        <step>
+          <para>
+            Substeps can be nested indefinitely deep.
+          </para>
+        </step>
+      </substeps>
+    </step>
+    <step>
+      <para>
+        A Final Step
+      </para>
+    </step>
+    </procedure>    
+
+
+    <para>
+      Perhaps as a replacement for my varlists, how about "simplesect"
+    </para>
+
+    <simplesect>
+      <title>Some thing</title>
+      <para>
+        This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample. This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample.
+      </para>
+      <para>
+        This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample. This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample.
+      </para>
+    </simplesect>
+    <simplesect>
+      <title><guilabel>Something as a GUI label</guilabel></title>
+      <para>
+        This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample. This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample.
+      </para>
+      <para>
+        This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample. This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample.This is a sample.  This is a sample.
+      </para>       
+    </simplesect>
+    
+  </sect1>
 
 
 </chapter>
