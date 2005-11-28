@@ -26,6 +26,15 @@ public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.e
 	init(null);
     }
 
+    public MOneButtonJDialog(Dialog topLevelDialog, String applianceName, String warning, String title, String subtitle){
+	super(topLevelDialog, true);
+	init(topLevelDialog);
+        this.setTitle(title);
+        this.labelJLabel.setText(subtitle);
+        messageJLabel.setText("<html><center>" + warning + "</center></html>");
+        this.setVisible(true);
+    }
+
     public MOneButtonJDialog(Dialog topLevelDialog, String applianceName, String warning){
 	super(topLevelDialog, true);
 	init(topLevelDialog);

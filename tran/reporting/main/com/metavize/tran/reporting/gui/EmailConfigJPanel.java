@@ -86,7 +86,10 @@ class EmailTableModel extends MSortedTableModel{
 	if( tableVector.size() > 0){
 	    MailSettings mailSettings = Util.getAdminManager().getMailSettings();
 	    if( mailSettings.getSmtpHost().length() == 0 ){
-		new MOneButtonJDialog("EdgeReport", "<html>You have not set your outgoing email server.  You will not receive emails until setting it.  You can find this setting in Config -> Network Settings</html>");
+		new MOneButtonJDialog("EdgeReport",
+				      "<html>Your Email Reports Recipients have been saved, however, outgoing email server is not configured.  You must configure it System Config -> Network Settings before you will receive email reports.</html>",
+				      "EdgeReport Confirmation",
+				      "Confirmation:");
 	    }
 	}
 
