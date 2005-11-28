@@ -39,7 +39,7 @@ public class EmailConfigJPanel extends MEditTableJPanel {
         super.setAddRemoveEnabled(true);
 
         // create actual table model
-        EmailTableModel emailTableModel = new EmailTableModel();
+        EmailTableModel emailTableModel = new EmailTableModel( this );
         this.setTableModel( emailTableModel );
     }
 
@@ -54,7 +54,11 @@ class EmailTableModel extends MSortedTableModel{
     private static final int C2_MW = 150; /* email address */
     //    private static final int C3_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW), 120); /* description */
 
-    
+    private EmailConfigJPanel emailConfigJPanel;
+    public EmailTableModel( EmailConfigJPanel emailConfigJPanel ){
+	this.emailConfigJPanel = emailConfigJPanel;
+    }
+
     public TableColumnModel getTableColumnModel(){
         
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
@@ -86,10 +90,11 @@ class EmailTableModel extends MSortedTableModel{
 	if( tableVector.size() > 0){
 	    MailSettings mailSettings = Util.getAdminManager().getMailSettings();
 	    if( mailSettings.getSmtpHost().length() == 0 ){
-		new MOneButtonJDialog("EdgeReport",
+		/*		new MOneButtonJDialog(emailConfigJPanel.getTopLevelAncestor(),
+				      "EdgeReport",
 				      "<html>Your Email Reports Recipients have been saved, however, outgoing email server is not configured.  You must configure it System Config -> Network Settings before you will receive email reports.</html>",
 				      "EdgeReport Confirmation",
-				      "Confirmation:");
+				      "Confirmation:");*/
 	    }
 	}
 
