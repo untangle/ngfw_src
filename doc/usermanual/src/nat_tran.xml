@@ -83,7 +83,7 @@
           </mediaobject>
         </figure>
         <para>
-          To enable DHCP, Administrators select the <guilabel>Enabled</guilabel> as seen in <xref linkend="nat_tran_dhcp_settings_figure"/>.  When DHCP is enabled, Administrators must also specify the range of addresses to be served by the Network Sharing Appliance.  This range is set in the <guilabel><glossterm linkend="gloss_ip_addr">IP Address</glossterm> Range Start</guilabel> and <guilabel>IP Address Range End</guilabel> fields.
+          To enable DHCP, Administrators select the <guilabel>Enabled</guilabel> as seen in <xref linkend="nat_tran_dhcp_settings_figure"/>.  When DHCP is enabled, Administrators must also specify the range of addresses to be served by the Network Sharing Appliance.  This range is set in the <guilabel>IP Address Range Start</guilabel> and <guilabel>IP Address Range End</guilabel> fields.
         </para>
       </sect3>
   
@@ -109,9 +109,11 @@
           Recall that DHCP automatically assigns an IP address to machines as they <quote>plug into</quote> your network.  There is no guarantee that a given machine will receive the same address the next time it joins your network.  For most situations, this is an acceptable situation.  However, there may be special circumstances where you wish a host to always receive the same address.  To accomidate these cases, Administrators can <quote>add</quote> machines to the Address Map proactivly.
         </para>
         <para>
-          To add a machine to the Address Map list, push the add (plus) button to the left as seen in <xref linkend="nat_tran_dhcp_addrmap_figure"/>.  This adds a new row to the table.  The <guilabel><glossterm linkend="gloss_mac_addr">MAC address</glossterm></guilabel> and <guilabel>target static IP address</guilabel> fields must be filled-in.  Optionaly, Administrators can populate the <guilabel>category</guilabel> and <guilabel>description</guilabel> fields.
+          To add a machine to the Address Map list, push the add (plus) button to the left as seen in <xref linkend="nat_tran_dhcp_addrmap_figure"/>.  This adds a new row to the table.  The <guilabel>MAC address</guilabel> and <guilabel>target static IP address</guilabel> fields must be filled-in with the correct <glossterm linkend="gloss_mac_addr">MAC address</glossterm> and IP address respectivly.  Optionaly, Administrators can populate the <guilabel>category</guilabel> and <guilabel>description</guilabel> fields.
           <tip>
-            When adding a new machine to the Address Map, sample MAC Address and IP Address appear.  These <emphasis>must</emphasis> be changed to the correct values for the target machine.
+            <para>
+              When adding a new machine to the Address Map, sample MAC Address and IP Address appear.  These <emphasis>must</emphasis> be changed to the correct values for the target machine.
+            </para>
           </tip>
         </para>
         <para>
@@ -203,7 +205,7 @@
             <term><guilabel>traffic type</guilabel></term>
             <listitem>
               <para>
-                This field selects the type of traffic.  Valid values are <constant><glossterm linkend="gloss_tcp">TCP</glossterm></constant>, <constant><glossterm linkend="gloss_udp">UDP</glossterm></constant>, <constant><glossterm linkend="gloss_ping">PING</glossterm></constant> or combinations there of.
+                This field selects the type of traffic.  Valid values are <glossterm linkend="gloss_tcp"><constant>TCP</constant></glossterm>, <glossterm linkend="gloss_udp"><constant>UDP</constant></glossterm>, <glossterm linkend="gloss_ping"><constant>PING</constant></glossterm> or combinations there of.
               </para>
             </listitem>
           </varlistentry>
@@ -299,7 +301,9 @@
       <para>
         To enable all traffic destined to the external address of the &eg; to be redirected to a given host, select the <guilabel>Enabled</guilabel> option under the <guilabel>DMZ Host</guilabel> heading.  If enabled, Administrators must also specify the <glossterm linkend="gloss_ip_addr">IP address</glossterm> of this machine in the <guilabel>Target IP Address</guilabel> field under the <guilabel>Target Address</guilabel> heading.  Administrators can optionaly request these redirects to be logged in the Event Log by selecting <guilabel>Enabled</guilabel> for <guilabel>DMZ Logging</guilabel>.  For more information on the Network Sharing Appliance's Event Log feature, please refer to <xref linkend="nat_tran_eventlog"/>.
         <note>
-          The DMZ Host feature is a special case of redirect, as discussed in <xref linkend="nat_tran_redirect"/>.  When using both DMZ Host and redirect features, the redirect feature takes precidence over DMZ Host.
+          <para>
+            The DMZ Host feature is a special case of redirect, as discussed in <xref linkend="nat_tran_redirect"/>.  When using both DMZ Host and redirect features, the redirect feature takes precidence over DMZ Host.
+          </para>
         </note>
       </para>
     </sect2>
@@ -331,7 +335,9 @@
         <para>
           As seen in <xref linkend="nat_tran_dnsfwd_settings_figure"/>, there is also a field for a <guilabel>Domain Name Suffix</guilabel>.  This is used when passing DNS requests to an external DNS server.  This field should be populated with the domain name suffix (e.g. <constant>mydomain.com</constant>) of your organization.
           <note>
-            Not populating the <guilabel>suffix</guilabel> field may cause resolution problems when resolving against certain versions of Microsoft Windows servers.
+            <para>
+              Not populating the <guilabel>suffix</guilabel> field may cause resolution problems when resolving against certain versions of Microsoft Windows servers.
+            </para>
           </note>
         </para>
       </sect3>
@@ -397,7 +403,7 @@
             <term><guilabel>protocol</guilabel></term>
             <listitem>
               <para>
-                The protocol of the traffic; <constant><glossterm linkend="gloss_tcp">TCP</glossterm></constant>, <constant><glossterm linkend="gloss_udp">UDP</glossterm></constant>, or <constant><glossterm linkend="gloss_ping">PING</glossterm></constant>.
+                The protocol of the traffic; <glossterm linkend="gloss_tcp"><constant>TCP</constant></glossterm>, <glossterm linkend="gloss_udp"><constant>UDP</constant></glossterm>, or <glossterm linkend="gloss_ping"><constant>PING</constant></glossterm>.
               </para>
             </listitem>
           </varlistentry>

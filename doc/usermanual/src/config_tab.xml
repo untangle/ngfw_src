@@ -16,9 +16,9 @@
     </mediaobject>
   </figure>    
 
-  Various global properties of your &eg; are set from the <guilabel>Config</guilabel> tab of the Administrative interface (see <xref linkend="config_tab_config_tab_figure"/>).
-
-  
+  <para>
+    Various global properties of your &eg; are set from the <guilabel>Config</guilabel> tab of the Administrative interface (see <xref linkend="config_tab_config_tab_figure"/>).
+  </para>
   <para>
     The <guilabel>Config</guilabel> tab shown in <xref linkend="config_tab_config_tab_figure"/> is the last tab to the left on the left panel of the Administrative Interface.  We will now discuss in more detail each of the options within the <guilabel>Config</guilabel> Tab in more detail.
   </para>
@@ -189,9 +189,11 @@
     <para>
       <emphasis>External</emphasis> administration is defined as someone accessing the Administrative Interface from outside the protected network.  <emphasis>Internal</emphasis> administration is someone accessing the Administrative Interface from within the protected network.  Someone from the <glossterm linkend="gloss_dmz">DMZ</glossterm> is considered <emphasis>external</emphasis>.
       <note>
-        The current external IP address can be seen (and changed) from the <link linkend="config_tab_network_networksettings">Network Settings</link> panel.  If the &eg; is running <glossterm linikend="gloss_nat">NAT</glossterm>, the internal IP can be found from the NAT settings as explained in <xref linkend="nat_tran"/>.  If the system is not running NAT, then the internal IP is the same as the external IP.
+        <para>
+          The current external IP address can be seen (and changed) from the <link linkend="config_tab_network_networksettings">Network Settings</link> panel.  If the &eg; is running <glossterm linkend="gloss_nat">NAT</glossterm>, the internal IP can be found from the NAT settings as explained in <xref linkend="nat_tran"/>.  If the system is not running NAT, then the internal IP is the same as the external IP.
         
-        TODO There should be a link to something explaining the different configurations (3-4 common cases WRT NAT and other firewalls).
+          TODO There should be a link to something explaining the different configurations (3-4 common cases WRT NAT and other firewalls).
+        </para>
       </note>
       We will now discuss the details of configuring the &eg; for external and internal administration.
     </para>
@@ -235,15 +237,19 @@
       <para>
         If <guilabel>Enable SNMP Monitoring</guilabel> is selected, three additional pieces of information should be provided.  The first is the <guilabel>Community</guilabel>, which is used in SNMP v1 to authenticate queries.
         <warning>
-          Be sure to change the default community value when enabling this feature
+          <para>
+            Be sure to change the default community value when enabling this feature
+          </para>
         </warning>
         The next two fields are <guilabel>System Contact</guilabel> and <guilabel>System Location</guilabel>.  Although not required for normal operation, they greatly assist in troubleshooting.  They should be populated with contact information and the physical location of the &eg; (respectivly).
       </para>
       <para>
         The &eg; can also be configured to send warm and cold start traps.  To enable the sending of traps, select <guilabel>Enable Traps</guilabel> at the bottom of the SNMP Monitoring tab.  You must then provide a host/port (via the <guilabel>Host</guilabel> and <guilabel>Port</guilabel> respectivly).  The field <guilabel>Community</guilabel> must be populated with the community string for the trap-receiving server.
-        <info>
-          Not all SNMP trap receiver tools require a community string.  If your tool does not require a community string, the <guilabel>Community</guilabel> field can be left blank.
-        </info>
+        <note>
+          <para>
+            Not all SNMP trap receiver tools require a community string.  If your tool does not require a community string, the <guilabel>Community</guilabel> field can be left blank.
+          </para>
+        </note>
       </para>
     </sect2>
 
@@ -350,7 +356,9 @@
     <para>
       The Protocol Settings panel contains advanced properties for Web, Email and <glossterm linkend="gloss_ftp">FTP</glossterm> traffic.  These will be discussed in <xref linkend="config_tab_protocol_settings_web"/>, <xref linkend="config_tab_protocol_settings_email"/>, and <xref linkend="config_tab_protocol_settings_ftp"/> respectivly.
       <warning>
-        Administrators should not change any Protocol Settings unless instructed to by a member of Metavize support or one of their authorized representitives.
+        <para>
+          Administrators should not change any Protocol Settings unless instructed to by a member of Metavize support or one of their authorized representitives.
+        </para>
       </warning>
     </para>
 
@@ -363,7 +371,9 @@
       <para>
         The Web tab of the Protocol Settings tab is seen in  <xref linkend="config_tab_protocol_settings_web_figure"/>.
         <warning>
-          Administrators should not change the Web tab unless instructed to by a member of Metavize support or one of their authorized representitives.
+          <para>
+            Administrators should not change the Web tab unless instructed to by a member of Metavize support or one of their authorized representitives.
+          </para>
         </warning>        
       </para>
       <figure id="config_tab_protocol_settings_web_figure">
@@ -378,7 +388,7 @@
         The Web tab of the Protocol Settings panel is divided into four sections.  The first, <guilabel>Web Override</guilabel> disables processing of all <glossterm linkend="gloss_http">HTTP</glossterm> traffic for <emphasis>all Software Appliances</emphasis>.  This should normally be set to <guilabel>Enable Processing</guilabel> unless under special circumstances (for example, you are a software company debugging your own web-enabled products).
       </para>
       <para>
-        <guilabel>Long <glossterm linkend="gloss_uri">URIs</glossterm></guilabel> and <guilabel>Long Headers</guilabel> control the &eg; behavior with abnormal web traffic.  The default settings accomidate most standard web traffic.  
+        <guilabel>Long URIs</guilabel> (see <glossterm linkend="gloss_uri">URIs</glossterm>) and <guilabel>Long Headers</guilabel> control the &eg; behavior with abnormal web traffic.  The default settings accomidate most standard web traffic.
       </para>
       <para>
         <guilabel>Non-HTTP Blocking</guilabel> is used to control the &eg; behavior for non-http traffic over <glossterm linkend="gloss_port">port 80</glossterm>.  The default behavior is to allow such traffic.  Selecting the <guilabel>Stop</guilabel> option may prevent applications such as peer-to-peer or games from operating correctly.  Note that <quote>normal</quote> web traffic (from a browser to a web server) is not effected by this setting.
@@ -391,7 +401,9 @@
       <para>
         The Email tab of the Protocol Settings panel can be seen in <xref linkend="config_tab_protocol_settings_email_figure"/>.
         <warning>
-          Administrators should not change the Email tab unless instructed to by a member of Metavize support or one of their authorized representitives.
+          <para>
+            Administrators should not change the Email tab unless instructed to by a member of Metavize support or one of their authorized representitives.
+          </para>
         </warning>         
       </para>
       <figure id="config_tab_protocol_settings_email_figure">
@@ -411,7 +423,9 @@
       <para>
         The <guilabel>Email Timeouts</guilabel> section instructs the &eg; as to the maximum time it has for scanning.  If a given email takes more than this time to process, scanning is aborted and the mail passed to the client.  Note that setting this value too small risks passing contaminated content, and setting it too large risks timeouts in client programs (with user complaints to follow).
         <note>
-          Default values are 30 seconds.  This is a large value relative to expected mail traffic, and should satisfy most normal installations.
+          <para>
+            Default values are 30 seconds.  This is a large value relative to expected mail traffic, and should satisfy most normal installations.
+          </para>
         </note>
       </para>
     </sect2>
@@ -465,11 +479,15 @@
       <para>
         The daily digest emails are delivered in <glossterm linkend="gloss_htmp">HTML</glossterm> format, such that they contain links to a web server.  The web server is housed within the &eg;.  In this way, the digest emails allow for direct communication with end-users to mainting their inboxes.
         <note>
-          As with any software product, some users will choose not to act on their digest emails.  If a user ignores their inbox for many days (and receives many spams), their inbox will grow.  This is not a concern, as the &eg; automatically deletes emails after a fixed period of time.  This period is configurable, as discussed in <xref linkend="config_tab_quarantine_general"/>
+          <para>
+            As with any software product, some users will choose not to act on their digest emails.  If a user ignores their inbox for many days (and receives many spams), their inbox will grow.  This is not a concern, as the &eg; automatically deletes emails after a fixed period of time.  This period is configurable, as discussed in <xref linkend="config_tab_quarantine_general"/>
+          </para>
         </note>
         While interacting with their inbox, users may also choose to declare that a given sender does <emphasis>not</emphasis> send unwanted email.  This is used to instruct the &eg; to never consider emails from a given sender to be unsolicited.  The set of these <quote>good</quote> senders is said to be the <quote>safelist</quote> for a given user.  From the web interface, end users can maintain their safelist.
         <note>
-          Use of safelists by end users is optional.  Should a given end user choose not to populate their safelist, there is no negative effect on the overall &eg; system.
+          <para>
+            Use of safelists by end users is optional.  Should a given end user choose not to populate their safelist, there is no negative effect on the overall &eg; system.
+          </para>
         </note>
       </para>
     </sect2>
@@ -626,7 +644,9 @@
     <para>
       There are two ways in which Metavize support can assist in troubleshooting.  The first is to access the &eg; remotely via a secure protocol (<glossterm linkend="gloss_ssh">SSH</glossterm>).  This is enabled by selecting <guilabel>Allow</guilabel>, and disabled by selecting <guilabel>Disallow</guilabel>.
       <note>
-        B default, SSH access is disabled.
+        <para>
+          B default, SSH access is disabled.
+        </para>
       </note>
     </para>
     <para>
@@ -708,7 +728,9 @@
             Where <replaceable>your_internal_ip</replaceable> is replaced with the internal <glossterm linkend="gloss_ip_addr">IP address</glossterm> of your &eg;.  To determine the internal IP address of your &eg;, please refer to <xref linkend="config_tab_q1"/>
           </para>
           <tip>
-            This URL to request a digest email on-demand will not change as long as the internal IP address of &eg; does not change.  It may be handy to put a link to this page on an intranet server.
+            <para>
+              This URL to request a digest email on-demand will not change as long as the internal IP address of &eg; does not change.  It may be handy to put a link to this page on an intranet server.
+            </para>
           </tip>
        </answer>
       </qandaentry>           
