@@ -41,12 +41,12 @@ SELECT COUNT(message) AS TOTAL_ACTIONS, message AS DESCRIPTION,
   ORDER BY TOTAL_ACTIONS DESC
   LIMIT 15
          ]]></queryString>
-	<field name="RULE_INDEX" class="java.lang.Long"/>
+	<field name="RULE_SID" class="java.lang.Long"/>
 	<field name="DESCRIPTION" class="java.lang.String"/>
 	<field name="ACTION" class="java.lang.String"/>
 	<field name="TOTAL_ACTIONS" class="java.lang.Long"/>
 	<variable name="RANK" class="java.lang.Integer" resetType="Report" calculation="Count">
-		<variableExpression><![CDATA[$F{RULE_INDEX}]]></variableExpression>
+		<variableExpression><![CDATA[$F{RULE_SID}]]></variableExpression>
 	</variable>
 		<background>
 			<band height="0"  isSplitAllowed="true" >
