@@ -1,4 +1,4 @@
--- schema for release 3.1
+-- settings schema for release 3.1
 
 -------------
 -- settings |
@@ -29,26 +29,21 @@ CREATE TABLE settings.tr_protofilter_pattern (
     position int4,
     PRIMARY KEY (rule_id));
 
------------
--- events |
------------
-
--- com.metavize.tran.protofilter.ProtoFilterLogEvent
-CREATE TABLE events.tr_protofilter_evt (
-    event_id int8 NOT NULL,
-    pl_endp_id int8,
-    protocol text,
-    blocked bool,
-    time_stamp timestamp,
-    PRIMARY KEY (event_id));
-
 ----------------
 -- constraints |
 ----------------
 
--- indeces for reporting
+-- foreign key constraints
 
-CREATE INDEX tr_protofilter_evt_plepid_idx ON events.tr_protofilter_evt (pl_endp_id);
+ALTER TABLE settings.tr_protofilter_settings
+    ADD CONSTRAINT fk_tr_protofilter_settings
+        FOREIGN KEY (tid) REFERENCES settings.tid;
+
+ALTER TABLE settings.tr_protofilter_pattern
+    ADD CONSTRAINT fk_tr_protofilter_pattern
+        FOREIGN KEY (settings_id) REFERENCES settings.tr_protofilter_settings;
+
+ts.tr_protofilter_evt (pl_endp_id);
 
 -- foreign key constraints
 
