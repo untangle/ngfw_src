@@ -135,7 +135,7 @@ public class StoreJPanel extends javax.swing.JPanel {
 	    ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
 	}
 	catch(Exception f){
-            Util.handleExceptionNoRestart("error launching browser for EdgeReport", f);
+            Util.handleExceptionNoRestart("error launching browser for Store", f);
 	}
     }//GEN-LAST:event_moreJButtonActionPerformed
     
