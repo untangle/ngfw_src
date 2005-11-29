@@ -1,8 +1,8 @@
 #!/bin/sh
 
-mode=$1
+. @PREFIX@/etc/default/mvvm
 
-if [ "$mode" = "reboot" ]; then
+if [ "$1" = "reboot" ]; then
     pidfile=$MVVM_REBOOT_PIDFILE
 else
     pidfile=$MVVM_RESTART_PIDFILE

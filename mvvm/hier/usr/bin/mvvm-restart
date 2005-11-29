@@ -1,5 +1,7 @@
 #!/bin/sh
 
+. @PREFIX@/etc/default/mvvm
+
 if [ "xreboot" = "$1" ]; then
     pidfile=$MVVM_REBOOT_PIDFILE
 elif [ "xrestart" = "$1" ]; then
