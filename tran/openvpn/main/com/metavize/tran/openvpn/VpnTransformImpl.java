@@ -114,6 +114,10 @@ public class VpnTransformImpl extends AbstractTransform
         /* Update the status/generate all of the certificates for clients */
         this.certificateManager.updateCertificateStatus( newSettings );
 
+        
+        /* Retain the ID */
+        if ( this.settings != null ) newSettings.setId( this.settings.getId());
+
         TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork( Session s )

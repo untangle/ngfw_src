@@ -37,8 +37,7 @@ import com.metavize.mvvm.IntfConstants;
  */
 public final class IntfMatcher implements Serializable
 {
-    // XXXXXXXX FIXME
-    // private static final long serialVersionUID = 6995354637973561046L;
+    private static final long serialVersionUID = 3286324783016068441L;
 
     private static final Logger logger = Logger.getLogger( IntfMatcher.class );
 

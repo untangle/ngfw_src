@@ -138,17 +138,18 @@ public class VpnSettings implements Serializable, Validatable
         }
     }
 
+    /* Typically private, but package access so the ID can be reused */
     /**
      * @hibernate.id
      * column="ID"
      * generator-class="native"
      */
-    private Long getId()
+    Long getId()
     {
         return id;
     }
 
-    private void setId( Long id )
+    void setId( Long id )
     {
         this.id = id;
     }

@@ -14,8 +14,16 @@ package com.metavize.mvvm.tran.script;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
+
 import org.apache.log4j.Logger;
 
+
+/* XXX This should probably be abstracted, up to a script writer and then have a
+ * class that is a shell script writer
+ */
 public class ScriptWriter
 {
     private static final Logger logger = Logger.getLogger( ScriptWriter.class );
@@ -29,6 +37,13 @@ public class ScriptWriter
     private static final String EXPORT_FLAG     = "export";
 
     private static final String EMPTY_HEADER[]  = new String[0];
+    
+    private static final Pattern ESCAPE_PATTERN;
+    private static final String ESCAPE_STRING = "'";
+    /* For shell, single ticks even escaped single ticks are not
+     * allowed in a string of single ticks.  The only option is to
+     * close the single tick, add one in double ticks and then reopen it */
+    private static final String ESCAPE_REPLACEMENT = "'\"'\"'";
 
     private final StringBuilder sb;
 
@@ -69,6 +84,28 @@ public class ScriptWriter
     // Really only for shell scripts
     public void appendVariable( String variable, String value, boolean isGlobal )
     {
+        appendVariable( variable, value, isGlobal, false );
+    }
+
+    public void appendVariable( String variable, String value )
+    {
+        appendVariable( variable, value, false, false );
+    }
+
+    /** Append a variable that is escaped, and global (exported) */
+    public void appendGlobalEscapedVariable( String variable, String value )
+    {
+        appendVariable( variable, value, true, true );
+    }
+
+    /** Append a variable that is escaped, not global (exported) */
+    public void appendEscapedVariable( String variable, String value )
+    {
+        appendVariable( variable, value, false, true );
+    }
+
+    private void appendVariable( String variable, String value, boolean isGlobal, boolean isEscaped )
+    {
         if (( variable == null ) || ( value == null )) {
             logger.warn( "NULL variable[" + variable +"] or value[" + variable + "], ignoring" );
             return;
@@ -76,20 +113,27 @@ public class ScriptWriter
         
         variable = variable.trim();
         value    = value.trim();
-
+        
         if ( variable.length() == 0 ) {
             /* This is a jenky way to get a stack trace */
             logger.warn( "Empty variable name, ignoring", new Exception());
             return;
         }
 
-        appendLine((( isGlobal ) ? EXPORT_FLAG + " " : "" ) + variable + "=\"" + value + "\"" );
-    }
+        String quotes = "\"";
 
-    public void appendVariable( String variable, String value )
-    {
-        appendVariable( variable, value, false );
+        if ( isEscaped ) {
+            /* Just in case it wasn't able to be compiled at startup, that should never
+             * happpen, but just in case */
+            if ( ESCAPE_PATTERN != null ) {
+                value = ESCAPE_PATTERN.matcher( value ).replaceAll( ESCAPE_REPLACEMENT );
+            }
+            quotes = "'";
+        } 
+
+        appendLine((( isGlobal ) ? EXPORT_FLAG + " " : "" ) + variable + "=" + quotes + value + quotes );
     }
+         
 
     /* Structured this way so different script writers can use different comment indicators */
     protected String comment()
@@ -128,5 +172,18 @@ public class ScriptWriter
         } catch ( Exception ex ) {
             logger.error( "Unable to close file", ex );
         }
+    }
+
+    static {
+        Pattern pattern = null;
+
+        try {
+            pattern = Pattern.compile( ESCAPE_STRING );
+        } catch ( PatternSyntaxException e ) {
+            System.err.println( "Unable to compile pattern, using null" );
+            pattern = null;
+        }
+        
+        ESCAPE_PATTERN = pattern;
     }
 }

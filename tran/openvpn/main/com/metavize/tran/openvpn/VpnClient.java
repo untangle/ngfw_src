@@ -197,7 +197,7 @@ public class VpnClient extends Rule implements Validatable
         
         if ( !NAME_PATTERN.matcher( name ).matches()) {
             throw new ValidateException( "A client name should only contains numbers, letters, " +
-                                         "dashes and periods: " + name );
+                                         "dashes and periods.  Spaces are not allowed. " + name );
         }
 
         if ( this.group == null ) {
@@ -237,7 +237,7 @@ public class VpnClient extends Rule implements Validatable
 
         try {
             /* Limited to prevent funny shell hacks(the name goes to the shell) */
-            p = Pattern.compile( "^[A-Za-z]([-_.0-9A-Za-z]*[0-9A-Za-z])?$" );
+            p = Pattern.compile( "^[A-Za-z0-9]([-_.0-9A-Za-z]*[0-9A-Za-z])?$" );
         } catch ( PatternSyntaxException e ) {
             System.err.println( "Unable to intialize the host label pattern" );
             p = null;

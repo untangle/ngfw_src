@@ -99,12 +99,12 @@ class CertificateManager
         sw.appendVariable( DOMAIN_FLAG,   settings.getDomain());
 
         sw.appendComment( "Certificate configuration parameters" );
-        sw.appendVariable( COUNTRY_FLAG,  settings.getCountry(), true );
-        sw.appendVariable( PROVINCE_FLAG, settings.getProvince(), true );
-        sw.appendVariable( LOCALITY_FLAG, settings.getLocality(), true );
-        sw.appendVariable( ORGANIZATION_FLAG, settings.getOrganization(), true );
-        sw.appendVariable( ORG_UNIT_FLAG, settings.getOrganizationUnit(), true );
-        sw.appendVariable( EMAIL_FLAG, settings.getEmail(), true );
+        sw.appendGlobalEscapedVariable( COUNTRY_FLAG,  settings.getCountry());
+        sw.appendGlobalEscapedVariable( PROVINCE_FLAG, settings.getProvince());
+        sw.appendGlobalEscapedVariable( LOCALITY_FLAG, settings.getLocality());
+        sw.appendGlobalEscapedVariable( ORGANIZATION_FLAG, settings.getOrganization());
+        sw.appendGlobalEscapedVariable( ORG_UNIT_FLAG, settings.getOrganizationUnit());
+        sw.appendGlobalEscapedVariable( EMAIL_FLAG, settings.getEmail());
 
         sw.appendComment( "Key size" );
         sw.appendVariable( KEY_SIZE_FLAG, String.valueOf( settings.getKeySize()), true );
