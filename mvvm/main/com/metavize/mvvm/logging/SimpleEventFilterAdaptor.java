@@ -62,6 +62,8 @@ class SimpleEventFilterAdaptor<E extends LogEvent>
             }
         }
 
+        q.setMaxResults(limit);
+
         int c = 0;
         for (Iterator i = q.iterate(); i.hasNext() && ++c < limit; ) {
             E sb = (E)i.next();

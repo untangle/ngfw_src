@@ -1,0 +1,28 @@
+#!/bin/sh
+
+mode=$1
+
+if [ "$mode" = "reboot" ]; then
+    pidfile=$MVVM_REBOOT_PIDFILE
+else
+    pidfile=$MVVM_RESTART_PIDFILE
+fi
+
+echo $$ >$pidfile
+
+while true; do
+    if [ "$mode" = "restart" -a -x $pidfile ];
+        exit
+    elif ps h -C apt-get; then
+        # restart will have been scheduled by the time apt-get is gone
+        if [ "$mode" = "restart" -a -x $pidfile ];
+            exit
+        elif [ "xreboot" =  "x$1"]; then
+            reboot
+        else
+            /etc/init.d/mvvm start
+        fi
+    else
+        sleep 1
+    fi
+done

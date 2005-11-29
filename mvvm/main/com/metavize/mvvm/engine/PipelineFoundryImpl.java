@@ -182,7 +182,8 @@ class PipelineFoundryImpl implements PipelineFoundry
         eventLogger.log(pe);
     }
 
-    public void destroy(IPSessionDesc start, IPSessionDesc end, PipelineEndpoints pe)
+    public void destroy(IPSessionDesc start, IPSessionDesc end,
+                        PipelineEndpoints pe)
     {
         PipelineImpl pipeline = pipelines.remove(start.id());
 
@@ -244,8 +245,8 @@ class PipelineFoundryImpl implements PipelineFoundry
 
     // private methods --------------------------------------------------------
 
-    private List<MPipeFitting> makeChain(IPSessionDesc sd, Policy p, boolean inbound,
-                                         Fitting start)
+    private List<MPipeFitting> makeChain(IPSessionDesc sd, Policy p,
+                                         boolean inbound, Fitting start)
     {
         Map<Policy, Map<Fitting, List<MPipeFitting>>> chains = inbound
             ? inboundChains : outboundChains;

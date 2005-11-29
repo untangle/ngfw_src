@@ -130,7 +130,7 @@ public class MvvmRemoteContextFactory
     }
 
     /**
-     * Activates the EdgeGuard using the given key. 
+     * Activates the EdgeGuard using the given key.
      *
      * @param host the host of the Mvvm.
      * @param key a <code>String</code> giving the key to be activated under
@@ -139,8 +139,9 @@ public class MvvmRemoteContextFactory
      * @param secure use a SSL connection.
      * @return a <code>MvvmRemoteContext</code> value
      * @exception MvvmConnectException when an MvvmLogin object cannot
-     *    be accessed at given <code>host</code> and <code>port</code>.
-     * @exception FailedLoginException if the key isn't kosher or the product has already been activated
+     * be accessed at given <code>host</code> and <code>port</code>.
+     * @exception FailedLoginException if the key isn't kosher or the
+     * product has already been activated
      */
     public MvvmRemoteContext activationLogin(String host, String key, int timeout, ClassLoader classLoader, boolean secure)
         throws MvvmConnectException, FailedLoginException

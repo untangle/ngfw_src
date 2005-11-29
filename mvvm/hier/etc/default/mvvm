@@ -1,7 +1,7 @@
 # MVVM server settings -*-sh-*-
 
 ## Simply function for taking a string, trim surround space, and the convert
-## space separators to the token string. ( eg join_string " a b c " ";" -> "a;b;c"
+## space separators to the token string. eg join_string " a b c " ";" -> "a;b;c"
 join_string() {
     echo $1 | sed -e 's/^ *//g' -e 's/ *$//g' -e "s/ \\+/$2/g"
 }
@@ -11,6 +11,8 @@ DEFAULT_DMZ="eth2"
 # Use the following to configure your local installation
 MVVM_LOGDIR=@PREFIX@/var/log/mvvm
 MVVM_RUNDIR=@PREFIX@/var/run
+MVVM_RESTART_PIDFILE=$MVVM_RUNDIR/mvvm-restart.pid
+MVVM_REBOOT_PIDFILE=$MVVM_RUNDIR/mvvm-reboot.pid
 MVVM_CONSOLE_LOG=$MVVM_LOGDIR/console.log
 MVVM_WRAPPER_LOG=$MVVM_LOGDIR/wrapper.log
 MVVM_GC_LOG=$MVVM_LOGDIR/gc.log
@@ -48,7 +50,7 @@ if [ -n "${MVVM_DMZ_INTF}" ]; then
 fi
 
 ## Append the session limit if it is set
-if [ -n "${MVVM_SESSION_LIMIT}" ]; then 
+if [ -n "${MVVM_SESSION_LIMIT}" ]; then
     MVVM_ARGS="${MVVM_ARGS} -Dargon.sessionlimit=${MVVM_SESSION_LIMIT}"
 fi
 

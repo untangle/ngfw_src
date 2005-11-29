@@ -58,7 +58,6 @@ echo "UPDATE transform_persistent_state SET name = 'http-casing' WHERE name = 'h
 # start mvvm
 if [ -x "/etc/init.d/mvvm" ]; then
     update-rc.d mvvm defaults 50 > /dev/null
-    /etc/init.d/mvvm start
 fi
 
 ## Touch all of the webstart files so the client always loads the new version

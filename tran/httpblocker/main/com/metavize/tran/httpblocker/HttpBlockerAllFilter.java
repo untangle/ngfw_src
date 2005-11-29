@@ -50,6 +50,8 @@ public class HttpBlockerAllFilter implements ListEventFilter<HttpBlockerEvent>
             }
         }
 
+        q.setMaxResults(limit);
+
         int c = 0;
         for (Iterator i = q.iterate(); i.hasNext() && ++c < limit; ) {
             RequestLine rl = (RequestLine)i.next();
