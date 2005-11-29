@@ -24,4 +24,20 @@
     <glossterm linkend="gloss_dos">DOS</glossterm>
   </para>
 
+  <sect1 id="ids_tran_qa">
+    <title>Frequently Asked Questions</title>
+    <qandaset>  
+      <qandaentry>
+        <question>
+          <para>Where is the Q&amp;A list?</para>
+        </question>
+        <answer>
+          <para>
+            TODO Someone needs to write it.  
+          </para>
+        </answer>
+      </qandaentry>
+    </qandaset>
+  </sect1>  
+
 </chapter>

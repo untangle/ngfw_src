@@ -167,12 +167,19 @@ Place new terms under the appropriate alphabetical location.
   </glossdiv>  
 
 <!-- ============== G ================ -->
-<!--  
+
   <glossdiv>
     <title>G</title>
-
+    
+    <glossentry id="gloss_gateway">
+      <glossterm>Gateway</glossterm>
+      <glossdef>
+        <para>TODO</para>
+      </glossdef>            
+    </glossentry>
+    
   </glossdiv>
--->
+
 <!-- ============== H ================ -->
   
   <glossdiv>
@@ -186,6 +193,14 @@ Place new terms under the appropriate alphabetical location.
       </glossdef>            
     </glossentry>
 
+
+    <glossentry id="gloss_htmp">
+      <glossterm>Hypter Text Markup Language</glossterm>
+      <acronym>HTML</acronym>
+      <glossdef>
+        <para>TODO</para>
+      </glossdef>            
+    </glossentry>    
 
     <glossentry id="gloss_hostname">
       <glossterm>Hostname</glossterm>
@@ -279,7 +294,21 @@ Place new terms under the appropriate alphabetical location.
         <para>TODO</para>
         <glossseealso otherterm="gloss_mime"/>        
       </glossdef>            
-    </glossentry>      
+    </glossentry>
+
+
+    <glossentry id="gloss_mac_addr">
+      <glossterm>Media Access Control Address</glossterm>
+      <abbrev>MAC Address</abbrev>
+      <glossdef>
+        <blockquote>
+          <attribution><ulink  url="http://en.wikipedia.org">Wikipedia</ulink></attribution>
+          <para>
+            In computer networking a Media Access Control address (MAC address) is a unique identifier attached to most forms of networking equipment.
+          </para>
+        </blockquote>
+      </glossdef>            
+    </glossentry>          
     
   </glossdiv>
 
@@ -498,7 +527,49 @@ Place new terms under the appropriate alphabetical location.
         </para>
       </glossdef>
     </glossentry>
-    
+
+
+    <glossentry id="gloss_ssh">
+      <glossterm>Secure Shell</glossterm>
+      <acronym>SSH</acronym>
+      <glossdef>
+        <para>
+          TODO
+        </para>
+      </glossdef>
+    </glossentry>      
+
+    <glossentry id="gloss_syslog">
+      <glossterm>Syslog</glossterm>
+      <glossdef>
+        <para>
+          TODO
+        </para>
+      </glossdef>
+    </glossentry>    
+
+
+    <glossentry id="gloss_snmp">
+      <glossterm>Simple Network Management Protocol</glossterm>
+      <acronym>SNMP</acronym>
+      <glossdef>
+        <para>
+          TODO
+        </para>
+      </glossdef>
+    </glossentry>
+
+
+    <glossentry id="gloss_trap">
+      <glossterm>Simple Network Management Protocol Trap</glossterm>
+      <abbrev>Trap</abbrev>
+      <glossdef>
+        <para>
+          TODO
+        </para>
+      </glossdef>
+    </glossentry>
+             
   </glossdiv>
 
 <!-- ============== T ================ -->

@@ -3,171 +3,471 @@
   <title>Network Sharing</title>
 
   <para>
-    The Reporting Transform is identified by the
+    The Network Sharing Appliance is identified by the
     <inlinemediaobject>
       <imageobject>
         <imagedata fileref="figure/nat/nat_tran_icon.png"/>
       </imageobject>
     </inlinemediaobject>
 
-    symbol.
+    symbol.  It offers a host of features, from <glossterm linkend="gloss_nat">Network Address Translation (NAT)</glossterm> and <glossterm linkend="gloss_dhcp">Dynamic Host Configuration Protocol (DHCP)</glossterm> to redirect and <glossterm linkend="gloss_dmz">DMZ</glossterm> services.  If the Network Sharing Appliance is not installed, please refer to <xref linkend="introduction_ui_appliance"/> for installation instructions.
   </para>
+
+  <sect1 id="nat_tran_adminui">
+    <title>Administrative Interface</title>
+    <para>
+      The Administrative Interface for the Network Sharing Appliance is divided into six tabs.  Please visit the subsequent sections for specfics on each feature.
+    </para>
+    <!-- ======================================================== -->
+    <sect2 id="nat_tran_nat">
+      <title>NAT</title>
+      <para>
+        One of the features found in the Network Sharing Appliance is <glossterm linkend="gloss_nat">Network Address Translation (NAT)</glossterm>.  This enables &eg; to use a single <glossterm linkend="gloss_ip_addr">IP address</glossterm> when communicating with the external network (usualy the internet).  The interface for configuring NAT is shown in <xref linkend="nat_tran_nat_figure"/>.
+      </para>
+      <figure id="nat_tran_nat_figure">
+        <title>NAT Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/nat/nat_nat.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        There are three sections to the interface in <xref linkend="nat_tran_nat_figure"/>.  The first section section titled <guilabel>NAT</guilabel> lets the administrator enable or disable the NAT functionality.  If NAT is enabled, the <guilabel>Internal Address</guilabel> section must be filled-in.  Administrators must provide an address for the &eg; itself in the <guilabel>Internal IP Address</guilabel> field, as well as a <glossterm linkend="gloss_subnet"> subnet mask</glossterm> in the <guilabel>Internal Subnet</guilabel> field.  As a convienence, the external address is also presented at the bottom of the interface shown in <xref linkend="nat_tran_nat_figure"/>.  Note that configuration of the external address is discussed in <xref linkend="config_tab_network_settings"/>.
+      </para>
+      <para>
+        Once NAT is configured, most deployments proceed to configuring their &eg; for <glossterm linkend="gloss_dhcp">Dynamic Host Configuration Protocol (DHCP)</glossterm>.  Configuring the &eg; for DHCP is discussed in <xref linkend="nat_tran_dhcp"/>.
+      </para>
+      <para>
+        If you are <emphasis>not</emphasis> planning to use DHCP for some or all machines within the protected network and wish those machines to use the NAT functionality, you must configure their <glossterm linkend="gloss_gateway">gateway</glossterm> and subnet values.  On these machines, the gateway and subnet should be set to the values found under the <guilabel>Internal Address</guilabel> section of <xref linkend="nat_tran_nat_figure"/>.
+      </para>
+      
+    </sect2>
   
-  <para>
-    TODO COMPLETE ME.  Someone needs to write this section.  As you do, you should refer to <xref linkend="introduction_ui_system_services"/> as the NAT is a "system service".
-  </para>
-
-  <!-- ======================================================== -->
-  <sect1 id="nat_tran_nat">
-    <title>NAT</title>
-    <para>
-      TODO
-      <glossterm linkend="gloss_nat">NAT</glossterm>
-    </para>
-    <figure id="nat_tran_nat_figure">
-      <title>NAT Tab</title>
-      <mediaobject>
-        <imageobject>
-          <imagedata fileref="figure/nat/nat_nat.png" />
-        </imageobject>
-      </mediaobject>
-    </figure>
-  </sect1>
-
-  <!-- ======================================================== -->
-  <sect1 id="nat_tran_dhcp">
-    <title>DHCP</title>
-    <para>
-      TODO
-      <glossterm linkend="gloss_dhcp">DHCP</glossterm>
-    </para>
-
-    <!-- ******************************************************************* -->
-    <sect2 id="nat_tran_dhcp_settings">
-      <title>Settings</title>
+    <!-- ======================================================== -->
+    <sect2 id="nat_tran_dhcp">
+      <title>DHCP</title>
       <para>
-        TODO
+        <glossterm linkend="gloss_dhcp">DHCP</glossterm> is used to enable hosts within the protected network to receive <glossterm linkend="gloss_ip_addr"> IP addresses</glossterm> automatically without having to configure network settings.  It is a convienent technique used by many organizations to reduce IT efforts.  Configuring DHCP is discussed in <xref linkend="nat_tran_dhcp_settings"/> and <xref linkend="nat_tran_dhcp_addrmap"/>
       </para>
-      <figure id="nat_tran_dhcp_settings_figure">
-        <title>Settings Tab</title>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="figure/nat/nat_dhcp_settings.png" />
-          </imageobject>
-        </mediaobject>
-      </figure>
+      <para>
+        Note that DHCP is normally used with <glossterm linkend="gloss_nat">Network Address Translation (NAT)</glossterm> provided by &eg;, as discussed in <xref linkend="nat_tran_nat"/>.  If the &eg; is not configured to provide NAT services, you should ensure that either:
+  
+        <itemizedlist>
+          <listitem>
+            <para>
+              A machine outside of the &eg; appliance (on the external network) is providing NAT services
+            </para>
+          </listitem>
+      
+          <listitem>
+            <para>
+              The range of addresses provided by DHCP are routable on the external network.  If the external network is the Internet, these addresses must be <quote>public</quote> addresses
+            </para>
+          </listitem>
+        </itemizedlist>
+      </para>
+  
+      <!-- ******************************************************************* -->
+      <sect3 id="nat_tran_dhcp_settings">
+        <title>Settings</title>
+        <para>
+          The Settings tab for <glossterm linkend="gloss_dhcp">DHCP</glossterm> is shown in <xref linkend="nat_tran_dhcp_settings_figure"/>.
+        </para>
+        <figure id="nat_tran_dhcp_settings_figure">
+          <title>Settings Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/nat/nat_dhcp_settings.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          To enable DHCP, Administrators select the <guilabel>Enabled</guilabel> as seen in <xref linkend="nat_tran_dhcp_settings_figure"/>.  When DHCP is enabled, Administrators must also specify the range of addresses to be served by the Network Sharing Appliance.  This range is set in the <guilabel><glossterm linkend="gloss_ip_addr">IP Address</glossterm> Range Start</guilabel> and <guilabel>IP Address Range End</guilabel> fields.
+        </para>
+      </sect3>
+  
+  
+      <!-- ******************************************************************* -->
+      <sect3 id="nat_tran_dhcp_addrmap">
+        <title>Address Map</title>
+        <para>
+          The Address Map feature of the Network Sharing Appliance <glossterm linkend="gloss_dhcp">DHCP</glossterm> feature is shown in <xref linkend="nat_tran_dhcp_addrmap_figure"/>.
+        </para>
+        <figure id="nat_tran_dhcp_addrmap_figure">
+          <title>Address Map Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/nat/nat_dhcp_addrmap.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          The Address Map serves two purposes for the Administrator.  First, when DHCP is configured Administrators can use this table to observe all machines currently receiving NAT services from &eg;.  A second, more advanced, use of the Address Map is to ensure that a given machine always receives the same <glossterm linkend="gloss_ip_addr">IP Address</glossterm>.
+        </para>
+        <para>
+          Recall that DHCP automatically assigns an IP address to machines as they <quote>plug into</quote> your network.  There is no guarantee that a given machine will receive the same address the next time it joins your network.  For most situations, this is an acceptable situation.  However, there may be special circumstances where you wish a host to always receive the same address.  To accomidate these cases, Administrators can <quote>add</quote> machines to the Address Map proactivly.
+        </para>
+        <para>
+          To add a machine to the Address Map list, push the add (plus) button to the left as seen in <xref linkend="nat_tran_dhcp_addrmap_figure"/>.  This adds a new row to the table.  The <guilabel><glossterm linkend="gloss_mac_addr">MAC address</glossterm></guilabel> and <guilabel>target static IP address</guilabel> fields must be filled-in.  Optionaly, Administrators can populate the <guilabel>category</guilabel> and <guilabel>description</guilabel> fields.
+          <tip>
+            When adding a new machine to the Address Map, sample MAC Address and IP Address appear.  These <emphasis>must</emphasis> be changed to the correct values for the target machine.
+          </tip>
+        </para>
+        <para>
+          A complete list of the columns in <xref linkend="nat_tran_dhcp_addrmap_figure"/> is as follows.
+          <variablelist>
+            <varlistentry>
+              <term><guilabel>MAC address</guilabel></term>
+              <listitem>
+                <para>
+                  The MAC address of the machine receiving DHCP services.
+                </para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term><guilabel>target static IP address</guilabel></term>
+              <listitem>
+                <para>
+                  This column has a value <emphasis>only</emphasis> if an Administrator has proactivly assigned a static IP address to a given MAC address (machine).  Otherwise, this is blank.
+                </para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term><guilabel>current IP address</guilabel></term>
+              <listitem>
+                <para>
+                  The currently assigned IP address for the given machine
+                </para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term><guilabel>current hostname</guilabel></term>
+              <listitem>
+                <para>
+                  The hostname of the machine currently with the given IP address.  Note that not all systems will advertise their hostnames, so this field may sometimes be blank.
+                </para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term><guilabel>current lease end</guilabel></term>
+              <listitem>
+                <para>
+                  The time when the machine's DHCP lease expires.
+                </para>
+              </listitem>
+            </varlistentry>                                        
+          </variablelist>
+        </para>
+      </sect3>    
     </sect2>
-
-
-    <!-- ******************************************************************* -->
-    <sect2 id="nat_tran_dhcp_addrmap">
-      <title>Address Map</title>
+  
+    <!-- ======================================================== -->
+    <sect2 id="nat_tran_redirect">
+      <title>Redirect</title>
       <para>
-        TODO
+        The redirect feature of the Network Sharing Appliance is seen in <xref linkend="nat_tran_redirect_figure"/>.
+        <glossterm linkend="gloss_redirect">Redirect</glossterm>
       </para>
-      <figure id="nat_tran_dhcp_addrmap_figure">
-        <title>Address Map Tab</title>
+      <figure id="nat_tran_redirect_figure">
+        <title>Redirect Tab</title>
         <mediaobject>
           <imageobject>
-            <imagedata fileref="figure/nat/nat_dhcp_addrmap.png" />
+            <imagedata fileref="figure/nat/nat_redirect.png" />
           </imageobject>
         </mediaobject>
       </figure>
-    </sect2>    
-  </sect1>
-
-  <!-- ======================================================== -->
-  <sect1 id="nat_tran_redirect">
-    <title>Redirect</title>
-    <para>
-      TODO
-      <glossterm linkend="gloss_redirect">Redirect</glossterm>
-    </para>
-    <figure id="nat_tran_redirect_figure">
-      <title>Redirect Tab</title>
-      <mediaobject>
-        <imageobject>
-          <imagedata fileref="figure/nat/nat_redirect.png" />
-        </imageobject>
-      </mediaobject>
-    </figure>
-  </sect1>
-
-
-  <!-- ======================================================== -->
-  <sect1 id="nat_tran_dmzhost">
-    <title>DMZ Host</title>
-    <para>
-      TODO
-      <glossterm linkend="gloss_dmz">DMZ</glossterm>
-    </para>
-    <figure id="nat_tran_dmzhost_figure">
-      <title>DMZ Host Tab</title>
-      <mediaobject>
-        <imageobject>
-          <imagedata fileref="figure/nat/nat_dmzhost.png" />
-        </imageobject>
-      </mediaobject>
-    </figure>
-  </sect1>
-
-  <!-- ======================================================== -->
-  <sect1 id="nat_tran_dnsfwd">
-    <title>DNS Forwarding</title>
-    <para>
-      TODO
-    </para>
-
-    <!-- ******************************************************************* -->
-    <sect2 id="nat_tran_dnsfwd_settings">
-      <title>Settings</title>
       <para>
-        TODO
+        The redirect feature can be used to cause traffic destined for a given <glossterm linkend="gloss_ip_addr">IP address</glossterm> and/or <glossterm linkend="gloss_port">port</glossterm> to be redirected to a different address.  This redirect can take place for traffic across any of the supported network interfaces of your &eg;.  For more information on the network interfaces of your &eg;, please refer to <xref linkend="fixme_interfaces"/>.
       </para>
-      <figure id="nat_tran_dnsfwd_settings_figure">
-        <title>Settings Tab</title>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="figure/nat/nat_dnsfwd_settings.png" />
-          </imageobject>
-        </mediaobject>
-      </figure>
+      <para>
+        To add entries (rules) to the redirect table, push the add (plus) button to the left, as seen in <xref linkend="nat_tran_redirect_figure"/>.  This adds a new rule to the top of the table.  Each rule is evaluated in order.  The Network Sharing Appliance evaluates each new connection against this list, proceeding from the top to the bottom until a match is made.  If a match is made, the traffic is redirected as-per the rule.  The meaning of each field in the rule is as follows.
+        <variablelist>
+          <varlistentry>
+            <term><guilabel>redirect</guilabel></term>
+            <listitem>
+              <para>
+                Checking the box under redirect causes the rule to redirect matching traffic.  If this is not checked, Administrators can still check the <guilabel>log</guilabel> field to log traffic.  Unless auditing your network traffic, this is usualy checked.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>log</guilabel></term>
+            <listitem>
+              <para>
+                Checking the <guilabel>log</guilabel> box causes matching traffic to be logged in the Event Log.  For information on the Network Sharing Appliance Event Log, please refer to <xref linkend="nat_tran_eventlog"/>.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>traffic type</guilabel></term>
+            <listitem>
+              <para>
+                This field selects the type of traffic.  Valid values are <constant><glossterm linkend="gloss_tcp">TCP</glossterm></constant>, <constant><glossterm linkend="gloss_udp">UDP</glossterm></constant>, <constant><glossterm linkend="gloss_ping">PING</glossterm></constant> or combinations there of.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>source interface</guilabel></term>
+            <listitem>
+              <para>
+                This is the source interface on-which &eg; received traffic.  For more information on the network interfaces of your &eg;, please refer to <xref linkend="fixme_interfaces"/>.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>destination interface</guilabel></term>
+            <listitem>
+              <para>
+                This is the interface on-which &eg; would forward the traffic (before any redirection).  For more information on the network interfaces of your &eg;, please refer to <xref linkend="fixme_interfaces"/>.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>source address</guilabel></term>
+            <listitem>
+              <para>
+                This field defines the source IP address of the traffic.  Valid values are in <link linkend="appendix_syntax_ipmatcher">IP Matcher</link> format.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>destination address</guilabel></term>
+            <listitem>
+              <para>
+                This field defines the destination IP address of the traffic (before any redirection).  Valid values are in <link linkend="appendix_syntax_ipmatcher">IP Matcher</link> format.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>source port</guilabel></term>
+            <listitem>
+              <para>
+                The source port of the traffic.  Valid values are in <link linkend="appendix_syntax_portmatcher">Port Matcher</link> format.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>destination port</guilabel></term>
+            <listitem>
+              <para>
+                The destination port of the traffic (before any redirection).  Valid values are in <link linkend="appendix_syntax_portmatcher">Port Matcher</link> format.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>redirect address</guilabel></term>
+            <listitem>
+              <para>
+                This is the new IP address for the traffic, after redirection.  The format of this field is either a <link linkend="appendix_syntax_simpleipaddr">Simple IP Address</link>, or the literal value <constant>unchanged</constant>.  The value <constant>unchanged</constant> means <quote>leave the IP address the same</quote>.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>redirect port</guilabel></term>
+            <listitem>
+              <para>
+                This is the new port for the traffic, after redirection.  The format of this field is either a <link linkend="appendix_syntax_simpleport">Simple Port</link>, or the literal value <constant>unchanged</constant>.  The value <constant>unchanged</constant> means <quote>leave the port the same</quote>.
+              </para>
+            </listitem>
+          </varlistentry>                                                                                
+        </variablelist>
+      </para>
+      <simplesect>
+        <title>Relationship with DMZ Host</title>
+        <para>
+          Before concluding the discussion of the redirect feature, an asside on on its relationship with the DMZ Host feature as discussed in <xref linkend="nat_tran_dmzhost"/>.  The DMZ Host feature is a <quote>catch all</quote> for inbound (from external network) traffic.  It redirects all traffic to a given host, <emphasis>unless a redirect rule takes precidence</emphasis>.  It may be helpful to think of the DMZ Host feature as being an implicit lowest-priority rule in the Redirect Table.
+        </para>
+      </simplesect>
     </sect2>
-
-
-    <!-- ******************************************************************* -->
-    <sect2 id="nat_tran_dnsfwd_addrmap">
-      <title>Address Map</title>
+  
+  
+    <!-- ======================================================== -->
+    <sect2 id="nat_tran_dmzhost">
+      <title>DMZ Host</title>
       <para>
-        TODO
+        The <glossterm linkend="gloss_dmz">DMZ</glossterm> Host feature of the Network Sharing Appliance is a special case of redirect, useful for organizations hosting (for example) a web server within the protected network.  The interface for the DMZ Host feature is shown in <xref linkend="nat_tran_dmzhost_figure"/>.
       </para>
-      <figure id="nat_tran_dnsfwd_addrmap_figure">
-        <title>Address Map Tab</title>
+      <figure id="nat_tran_dmzhost_figure">
+        <title>DMZ Host Tab</title>
         <mediaobject>
           <imageobject>
-            <imagedata fileref="figure/nat/nat_dnsfwd_addrmap.png" />
+            <imagedata fileref="figure/nat/nat_dmzhost.png" />
           </imageobject>
         </mediaobject>
       </figure>
-    </sect2>    
+      <para>
+        To enable all traffic destined to the external address of the &eg; to be redirected to a given host, select the <guilabel>Enabled</guilabel> option under the <guilabel>DMZ Host</guilabel> heading.  If enabled, Administrators must also specify the <glossterm linkend="gloss_ip_addr">IP address</glossterm> of this machine in the <guilabel>Target IP Address</guilabel> field under the <guilabel>Target Address</guilabel> heading.  Administrators can optionaly request these redirects to be logged in the Event Log by selecting <guilabel>Enabled</guilabel> for <guilabel>DMZ Logging</guilabel>.  For more information on the Network Sharing Appliance's Event Log feature, please refer to <xref linkend="nat_tran_eventlog"/>.
+        <note>
+          The DMZ Host feature is a special case of redirect, as discussed in <xref linkend="nat_tran_redirect"/>.  When using both DMZ Host and redirect features, the redirect feature takes precidence over DMZ Host.
+        </note>
+      </para>
+    </sect2>
+  
+    <!-- ======================================================== -->
+    <sect2 id="nat_tran_dnsfwd">
+      <title>DNS Forwarding</title>
+      <para>
+        The <glossterm linkend="gloss_dns">DNS</glossterm> Forwarding feature of the Network Sharing Appliance is used to enable the &eg; to act as a DNS server for the internal (protected) network.  To enable DNS Forwarding, please visit <xref linkend="nat_tran_dnsfwd_settings"/>.  Optionally, Administrators can force entries into DNS as seen by internal machines.  This feature is discussed in <xref linkend="nat_tran_dnsfwd_addrmap"/>.
+      </para>
+  
+      <!-- ******************************************************************* -->
+      <sect3 id="nat_tran_dnsfwd_settings">
+        <title>Settings</title>
+        <para>
+          To enable the &eg; to serve as a DNS server for machines on the internal (protected) network, select <guilabel>Enabled</guilabel> from the <guilabel>DNS Forwarding</guilabel> section as seen in <xref linkend="nat_tran_dnsfwd_settings_figure"/>.
+        </para>
+        <figure id="nat_tran_dnsfwd_settings_figure">
+          <title>Settings Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/nat/nat_dnsfwd_settings.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          Enabling DNS forwarding allows &eg; to act as a DNS server.  If <glossterm linkend="gloss_dhcp">DHCP</glossterm> (see <xref linkend="nat_tran_dhcp"/>) is enabled, then internal machine's host names will resolve to their dynamic addresses.  If DHCP is not being used, then internal machines should use the internal address (see <xref linkend="nat_tran_nat"/>) of their &eg; as their DNS server.
+        </para>
+        <para>
+          As seen in <xref linkend="nat_tran_dnsfwd_settings_figure"/>, there is also a field for a <guilabel>Domain Name Suffix</guilabel>.  This is used when passing DNS requests to an external DNS server.  This field should be populated with the domain name suffix (e.g. <constant>mydomain.com</constant>) of your organization.
+          <note>
+            Not populating the <guilabel>suffix</guilabel> field may cause resolution problems when resolving against certain versions of Microsoft Windows servers.
+          </note>
+        </para>
+      </sect3>
+  
+  
+      <!-- ******************************************************************* -->
+      <sect3 id="nat_tran_dnsfwd_addrmap">
+        <title>Address Map</title>
+        <para>
+          The Address Map is an advanced feature, allowing Administrators to manually add entries into the DNS server to be seen by machines on the internal network.  The interface for this feature is seen in <xref linkend="nat_tran_dnsfwd_addrmap_figure"/>.
+        </para>
+        <figure id="nat_tran_dnsfwd_addrmap_figure">
+          <title>Address Map Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/nat/nat_dnsfwd_addrmap.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          To add an entry to the DNS Address Map, push the add (plus) button to the left as seen in <xref linkend="nat_tran_dnsfwd_addrmap_figure"/>.  This adds a new entry to the table.  Administrators must then fill-in values for <guilabel>translate this hostname</guilabel> and <guilabel>into this IP address </guilabel>.
+        </para>
+      </sect3>    
+    </sect2>
+  
+  
+  
+    <!-- ======================================================== -->
+    <sect2 id="nat_tran_eventlog">
+      <title>Event Log</title>
+      <para>
+        The Events tab contents is shown in <xref linkend="nat_tran_eventlog_figure"/>.
+      </para>
+      <figure id="nat_tran_eventlog_figure">
+        <title>Event Log Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/nat/nat_eventlog.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        The Events Tab is another implementation of an Event Log, as described in <xref linkend="introduction_ui_appliance_event_log"/>.  The complete list of columns and their meaning is as follows.
+        <variablelist>
+          <title>Events Tab</title>
+          <varlistentry>
+            <term><guilabel>timestamp</guilabel></term>
+            <listitem>
+              <para>
+                The time the event took place
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>action</guilabel></term>
+            <listitem>
+              <para>
+                The action which took place (e.g. <constant>redirect</constant>).
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>protocol</guilabel></term>
+            <listitem>
+              <para>
+                The protocol of the traffic; <constant><glossterm linkend="gloss_tcp">TCP</glossterm></constant>, <constant><glossterm linkend="gloss_udp">UDP</glossterm></constant>, or <constant><glossterm linkend="gloss_ping">PING</glossterm></constant>.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>source</guilabel></term>
+            <listitem>
+              <para>
+                The source <glossterm linkend="gloss_ip_addr">IP address</glossterm> and <glossterm linkend="gloss_port">port</glossterm> of the traffic.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>original destination</guilabel></term>
+            <listitem>
+              <para>
+                The original (before any redirect which may have taken place) <glossterm linkend="gloss_ip_addr">IP address</glossterm> and <glossterm linkend="gloss_port">port</glossterm> of the traffic.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>redirected destination</guilabel></term>
+            <listitem>
+              <para>
+                The final (after any redirect which may have taken place) <glossterm linkend="gloss_ip_addr">IP address</glossterm> and <glossterm linkend="gloss_port">port</glossterm> of the traffic.  Note that if no redirect took place, this is the same as <guilabel>original destination</guilabel>.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>reason for action</guilabel></term>
+            <listitem>
+              <para>
+                The reason the action was taken (e.g. <constant>DMZ Host</constant> or a redirect rule).
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>client interface</guilabel></term>
+            <listitem>
+              <para>
+                The client interface on-which the traffic arrived.  For more information on the network interfaces of your &eg;, please refer to <xref linkend="fixme_interfaces"/>.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>redirected server interface</guilabel></term>
+            <listitem>
+              <para>
+                The destination interface on-which the traffic exited the &eg;.  For more information on the network interfaces of your &eg;, please refer to <xref linkend="fixme_interfaces"/>.
+              </para>
+            </listitem>
+          </varlistentry>                                                                                
+        </variablelist>        
+      </para>
+    </sect2>
   </sect1>
 
-
-
-  <!-- ======================================================== -->
-  <sect1 id="nat_tran_eventlog">
-    <title>Event Log</title>
-    <para>
-      TODO
-    </para>
-    <figure id="nat_tran_eventlog_figure">
-      <title>Event Log Tab</title>
-      <mediaobject>
-        <imageobject>
-          <imagedata fileref="figure/nat/nat_eventlog.png" />
-        </imageobject>
-      </mediaobject>
-    </figure>
-  </sect1>  
+  <sect1 id="nat_tran_qa">
+    <title>Frequently Asked Questions</title>
+    <qandaset>  
+      <qandaentry>
+        <question>
+          <para>Where is the Q&amp;A list?</para>
+        </question>
+        <answer>
+          <para>
+            TODO Someone needs to write it.  
+          </para>
+        </answer>
+      </qandaentry>
+    </qandaset>
+  </sect1>    
 
 </chapter>

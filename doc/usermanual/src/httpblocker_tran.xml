@@ -154,7 +154,7 @@
           </mediaobject>
         </figure>
         <para>
-          The list shown in <xref linkend="httpblocker_tran_pass_clients_figure"/> is initialy empty.  As new entries are made, administrators must enter <guilabel>client IP address</guilabel>.  The format of <guilabel>client IP address</guilabel> is either a simple IP address (see <xref linkend="fixme_ui_ip_conventions_simpleipaddr"/>) or an address/mask in CIDR format (see <xref linkend="fixme_ui_ip_conventions_cidr"/>).  Note that the <guilabel>category</guilabel> field is only for administrator reference - it need not match up with the predefined categories discussed in <xref linkend="httpblocker_tran_block_categories"/>.
+          The list shown in <xref linkend="httpblocker_tran_pass_clients_figure"/> is initialy empty.  As new entries are made, administrators must enter <guilabel>client IP address</guilabel>.  The format of <guilabel>client IP address</guilabel> is either in <link linkend="appendix_syntax_simpleipaddr">Simple IP Address</link> or <link linkend="appendix_syntax_networknetmask">Network/Netmask</link> format.  Note that the <guilabel>category</guilabel> field is only for administrator reference - it need not match up with the predefined categories discussed in <xref linkend="httpblocker_tran_block_categories"/>.
         </para>
       </sect3>    
     </sect2>

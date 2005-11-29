@@ -50,7 +50,7 @@
           </mediaobject>
         </figure>
         <para>
-          As seen in <xref linkend="spyware_tran_adminui_block_cookie_figure"/>, the Cookie List is presented as a table.  The column labeled <guilabel>identification</guilabel> contains the address of the offending site.  The next column, <guilabel>block</guilabel>, is used to enable/disable blocking of cookies from that site.  Note that when creating a new entry, note that the value for <guilabel>identification</guilabel> can either be an IP Address (see <xref linkend="fixme_ui_ip_conventions_simpleipaddr"/>) or hostname.
+          As seen in <xref linkend="spyware_tran_adminui_block_cookie_figure"/>, the Cookie List is presented as a table.  The column labeled <guilabel>identification</guilabel> contains the address of the offending site.  The next column, <guilabel>block</guilabel>, is used to enable/disable blocking of cookies from that site.  Note that when creating a new entry, note that the value for <guilabel>identification</guilabel> can either be a <link linkend="appendix_syntax_simpleipaddr">Simple IP Address</link> or hostname.
         </para>
         <tip>
           <para>
@@ -64,7 +64,7 @@
         <para>
           The <glossterm linkend="gloss_subnet">Subnet</glossterm> List is a collection of subnets.  When &eg; observes a connection from within the protected network TODO - what can we say w/o "block"?  What is the point of this feature?
 
-          When creating a new entry, the value for <guilabel>identification</guilabel> can either be in simple IP (see <xref linkend="fixme_ui_ip_conventions_simpleipaddr"/>) or CIDR (see <xref linkend="fixme_ui_ip_conventions_cidr"/>) format.
+          When creating a new entry, the value for <guilabel>identification</guilabel> can either be in <link linkend="appendix_syntax_simpleipaddr">Simple IP Address</link> or <link linkend="appendix_syntax_networknetmask">Network/Netmask</link> format.
         </para>        
         <figure id="spyware_tran_adminui_block_subnet_figure">
           <title>Subnet List Tab</title>

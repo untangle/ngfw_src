@@ -3,7 +3,7 @@
   <title>Global Configuration</title>
 
   <para>
-    Various global properties of your &eg; are set from the <guimenu>Config</guimenu> tab of the Administrative interface (see <xref linkend="config_tab_config_tab_figure"/>).
+    As discussed in <xref linkend="fixme_appliances_and_the_io"/>, your &eg; can consist of many Software Appliances.  Although many of the interesting applications are deployed as Software Appliances, there are also global (shared) properties needed by all components of the system.  There are several such properties, as seen in <xref linkend="config_tab_config_tab_figure"/>.
   </para>
 
   <figure id="config_tab_config_tab_figure">
@@ -16,8 +16,11 @@
     </mediaobject>
   </figure>    
 
+  Various global properties of your &eg; are set from the <guilabel>Config</guilabel> tab of the Administrative interface (see <xref linkend="config_tab_config_tab_figure"/>).
+
+  
   <para>
-    We will now discuss in more detail each of the options within the <guimenu>Config</guimenu> Tab.
+    The <guilabel>Config</guilabel> tab shown in <xref linkend="config_tab_config_tab_figure"/> is the last tab to the left on the left panel of the Administrative Interface.  We will now discuss in more detail each of the options within the <guilabel>Config</guilabel> Tab in more detail.
   </para>
 
 
@@ -103,7 +106,7 @@
         The &eg; can be set-up to either have a <glossterm linkend="gloss_static_ip">static</glossterm> or dynamic IP address.  For a static IP, administrators must configure the normal network settings.  Dynamic addresses are obtained from <glossterm linkend="gloss_dhcp">DHCP</glossterm>.
       </para>
       <para>
-        The interface for configuring these external settings is divided into three sections.  The first, determines if the &eg; is using a static or dynamic address.  To choose between these options, the administrator selects either <guilabel>Automatically Set</guilabel> or <guilabel>Manually Set</guilabel>.  If <guilabel>Automatically Set</guilabel> is selected, the &eg; will use DHCP to obtain network settings and display them in the boxes below.  If <guilabel>Manually Set</guilabel> is selected, the administrator must manually set the <glossterm linkend="gloss_ip_addr">IP Address</glossterm>, <glossterm linkend="gloss_netmask">Netmask</glossterm>, <glossterm linkend="gloss_default_route">Default Route</glossterm> (sometimes refered to as <quote>gateway</quote>), as well as a primary <glossterm linkend="gloss_dns">DNS</glossterm> server and a secondary DNS server (optional).
+        The interface for configuring these external settings is divided into three sections.  The first section determines if the &eg; is using a static or dynamic address.  To choose between these options, the administrator selects either <guilabel>Automatically Set</guilabel> or <guilabel>Manually Set</guilabel>.  If <guilabel>Automatically Set</guilabel> is selected, the &eg; will use DHCP to obtain network settings and display them in the boxes below.  If <guilabel>Manually Set</guilabel> is selected, the administrator must manually set the <glossterm linkend="gloss_ip_addr">IP Address</glossterm>, <glossterm linkend="gloss_netmask">Netmask</glossterm>, <glossterm linkend="gloss_default_route">Default Route</glossterm> (sometimes refered to as <quote>gateway</quote>), as well as a primary <glossterm linkend="gloss_dns">DNS</glossterm> server and a secondary DNS server (optional).
       </para>
       <para>
         Should <guilabel>Automatically Set</guilabel> be selected, then administrators can optionaly request a renewal of their <glossterm linkend="gloss_dhcp_lease">DHCP Lease</glossterm> via the <guilabel>Renew DHCP Lease</guilabel> button.  This is the second section as seen in <xref linkend="config_tab_network_networksettings_figure"/>.
@@ -165,7 +168,7 @@
     <title>Remote Administration</title>
 
     <para>
-      The Remote Administration tab controls settings for the Administrative Interface itself (who can/cannot access)
+      The Remote Administration tab controls settings for the Administrative Interface itself (who can/cannot administer the &eg;)
     </para>
 
 
@@ -173,7 +176,7 @@
     <sect2 id="config_tab_remoteadmin_remoteadmin">
       <title>Remote Administration</title>
       <para>
-        TODO as seen in <xref linkend="config_tab_remoteadmin_remoteadmin_figure"/>
+        The Remote Administration tab, as seen in <xref linkend="config_tab_remoteadmin_remoteadmin_figure"/>, lets Administrators control how the Administrative Interface can be used.
       </para>
       <figure id="config_tab_remoteadmin_remoteadmin_figure">
         <title>Remote Administration Tab</title>
@@ -183,6 +186,32 @@
           </imageobject>
         </mediaobject>
       </figure>
+    <para>
+      <emphasis>External</emphasis> administration is defined as someone accessing the Administrative Interface from outside the protected network.  <emphasis>Internal</emphasis> administration is someone accessing the Administrative Interface from within the protected network.  Someone from the <glossterm linkend="gloss_dmz">DMZ</glossterm> is considered <emphasis>external</emphasis>.
+      <note>
+        The current external IP address can be seen (and changed) from the <link linkend="config_tab_network_networksettings">Network Settings</link> panel.  If the &eg; is running <glossterm linikend="gloss_nat">NAT</glossterm>, the internal IP can be found from the NAT settings as explained in <xref linkend="nat_tran"/>.  If the system is not running NAT, then the internal IP is the same as the external IP.
+        
+        TODO There should be a link to something explaining the different configurations (3-4 common cases WRT NAT and other firewalls).
+      </note>
+      We will now discuss the details of configuring the &eg; for external and internal administration.
+    </para>
+    <simplesect>
+      <title><guilabel>External Remote Administration</guilabel></title>
+      <para>
+        External administration can be enabled/disabled by selecting either the <guilabel>Allow</guilabel> or <guilabel>Deny</guilabel> options within the External Remote Administration section.  Note that if enabled, <emphasis>all administration traffic is passed over a secure (SSL) connection</emphasis>.
+      </para>
+      <para>
+        If administration from outside the protected network is enabled, Administrators can also choose to restrict administration from a select set of machines.  This restriction is set by first selecting <guilabel>Restrict</guilabel> then populating the <glossterm linkend="gloss_ip_addr"><guilabel>IP Address</guilabel></glossterm> and <glossterm linkend="gloss_netmask"><guilabel>Netmask</guilabel></glossterm> fields.
+      </para>
+    </simplesect>
+    <simplesect>
+      <title><guilabel>Internal Remote Administration</guilabel></title>
+      <para>
+        Internal administration can be configured to require an encrypted (SSL) connection or not.  To require an SSL connection, select the <guilabel>Disallow</guilabel> option under <guilabel>Internal Remote Administration</guilabel>.  Note that secure administration is <emphasis>always</emphasis> enabled.
+      </para>
+    </simplesect>
+
+      
     </sect2>
 
 
@@ -190,7 +219,7 @@
     <sect2 id="config_tab_remoteadmin_snmp">
       <title>SNMP Monitoring</title>
       <para>
-        TODO as seen in <xref linkend="config_tab_remoteadmin_snmp_figure"/>
+        The <glossterm linkend="gloss_snmp">SNMP</glossterm> Monitoring tab, as seen in <xref linkend="config_tab_remoteadmin_snmp_figure"/>, controls how &eg; uses SNMP.
       </para>
       <figure id="config_tab_remoteadmin_snmp_figure">
         <title>SNMP Monitoring Tab</title>
@@ -200,6 +229,22 @@
           </imageobject>
         </mediaobject>
       </figure>
+      <para>
+        The &eg; is able to field SNMP read-only queries.  It exports MIB-II (see RFC 1213), as well as (optionaly) sends <glossterm linkend="gloss_trap">traps</glossterm>.  To enable the &eg; to field SNMP queries, select the <guilabel>Enable SNMP Monitoring</guilabel> option as seen in <xref linkend="config_tab_remoteadmin_snmp_figure"/>.
+      </para>
+      <para>
+        If <guilabel>Enable SNMP Monitoring</guilabel> is selected, three additional pieces of information should be provided.  The first is the <guilabel>Community</guilabel>, which is used in SNMP v1 to authenticate queries.
+        <warning>
+          Be sure to change the default community value when enabling this feature
+        </warning>
+        The next two fields are <guilabel>System Contact</guilabel> and <guilabel>System Location</guilabel>.  Although not required for normal operation, they greatly assist in troubleshooting.  They should be populated with contact information and the physical location of the &eg; (respectivly).
+      </para>
+      <para>
+        The &eg; can also be configured to send warm and cold start traps.  To enable the sending of traps, select <guilabel>Enable Traps</guilabel> at the bottom of the SNMP Monitoring tab.  You must then provide a host/port (via the <guilabel>Host</guilabel> and <guilabel>Port</guilabel> respectivly).  The field <guilabel>Community</guilabel> must be populated with the community string for the trap-receiving server.
+        <info>
+          Not all SNMP trap receiver tools require a community string.  If your tool does not require a community string, the <guilabel>Community</guilabel> field can be left blank.
+        </info>
+      </para>
     </sect2>
 
 
@@ -207,7 +252,7 @@
     <sect2 id="config_tab_remoteadmin_syslog">
       <title>Syslog Monitoring</title>
       <para>
-        TODO as seen in <xref linkend="config_tab_remoteadmin_syslog_figure"/>
+        Syslog Monitoring, as seen in <xref linkend="config_tab_remoteadmin_syslog_figure"/>, allows Administrators to redirect information from the &eg; to a <glossterm linkend="gloss_syslog">Syslog</glossterm> server.
       </para>
       <figure id="config_tab_remoteadmin_syslog_figure">
         <title>Syslog Monitoring Tab</title>
@@ -217,6 +262,17 @@
           </imageobject>
         </mediaobject>
       </figure>
+
+      <para>
+        From the Syslog Monitoring tab, Administrators can enable/disable their &eg; from sending Syslog messages via selecting either <guilabel>Disable Syslog Monitoring</guilabel> or <guilabel>Enable Syslog Monitoring</guilabel>.  If <guilabel>Enable Syslog Monitoring</guilabel> is selected, further information is required for this feature to function.
+      </para>
+      <para>
+        The <guilabel>Host</guilabel> field is the name of the server running a Syslog server.  This server should be configured to allow remote submission of Syslog messages.  The next field is <guilabel>Port</guilabel>, and should only be changed from the standard port (512) should the Syslog server be listening on a non-standard port.
+      </para>
+      <para>
+        <guilabel>Facility</guilabel> is the Syslog facility for which &eg; messages will be submitted.  The <guilabel>Facility</guilabel> contains all standard Syslog values for <constant>facility</constant>.  <guilabel>Threshold</guilabel> is the minimum Syslog threshold, such that &eg; will not send messages below this level.  Note that &eg; sends messages at the <constant>informational</constant>, <constant>notice</constant> and <constant>warning</constant> levels.  In general, messages indicating traffic was inspected and found not to contain questionable content is sent as <constant>informational</constant>.  Inspected traffic which required &eg; to take action (for example, blocking a restricted web page) is sent as <constant>notice</constant>.  The exception to this last case is for viruses found, which are sent as <constant>warning</constant> messages.
+      </para>
+      
     </sect2>           
     
   </sect1>
@@ -225,7 +281,7 @@
   <sect1 id="config_tab_backup_restore">
     <title>Backup and Restore</title>
     <para>
-    TODO Complete me
+    The Backup and Restore panel allows Administrators to save the configuration of their &eg;.  Backups can be made to the local hard drive, or to a USB key, as discussed in <xref linkend="config_tab_backuprestore_disk_figure"/> and <xref linkend="config_tab_backuprestore_usb"/> respectivly.
     </para>
 
 
@@ -233,7 +289,7 @@
     <sect2 id="config_tab_backuprestore_disk">
       <title>Backup to Hard Disk</title>
       <para>
-        TODO as seen in <xref linkend="config_tab_backuprestore_disk_figure"/>
+        The interface for performing backups to the local hard disk is seen in <xref linkend="config_tab_backuprestore_disk_figure"/>.
       </para>
       <figure id="config_tab_backuprestore_disk_figure">
         <title>Backup to Hard Disk Tab</title>
@@ -243,6 +299,9 @@
           </imageobject>
         </mediaobject>
       </figure>
+      <para>
+        Note that to restore, TODO Someone needs to get screen shots of how to restore
+      </para>
     </sect2>
 
 
@@ -250,7 +309,7 @@
     <sect2 id="config_tab_backuprestore_usb">
       <title>Backup to USB Key</title>
       <para>
-        TODO as seen in <xref linkend="config_tab_backuprestore_usb_figure"/>
+        The interface for performing backups to a USB key is seen in <xref linkend="config_tab_backuprestore_usb_figure"/>.
       </para>
       <figure id="config_tab_backuprestore_usb_figure">
         <title>Backup to USB Key Tab</title>
@@ -260,6 +319,9 @@
           </imageobject>
         </mediaobject>
       </figure>
+      <para>
+        Error messages will result if the USB key is not present, or is not formatted correctly.
+      </para>
     </sect2>
 
 
@@ -286,21 +348,23 @@
   <sect1 id="config_tab_protocol_settings">
     <title>Protocol Settings</title>
     <para>
-      TODO Complete me.  As you do, here are some glossary entries which you may find handy.    
-      <glossterm linkend="gloss_smtp">SMTP</glossterm>
-      <glossterm linkend="gloss_pop">POP</glossterm>
-      <glossterm linkend="gloss_imap">IMAP</glossterm>
-      <glossterm linkend="gloss_ftp">FTP</glossterm>
-      <glossterm linkend="gloss_http">HTTP</glossterm>
-      <glossterm linkend="gloss_uri">URI</glossterm>
+      The Protocol Settings panel contains advanced properties for Web, Email and <glossterm linkend="gloss_ftp">FTP</glossterm> traffic.  These will be discussed in <xref linkend="config_tab_protocol_settings_web"/>, <xref linkend="config_tab_protocol_settings_email"/>, and <xref linkend="config_tab_protocol_settings_ftp"/> respectivly.
+      <warning>
+        Administrators should not change any Protocol Settings unless instructed to by a member of Metavize support or one of their authorized representitives.
+      </warning>
     </para>
+
+
 
 
     <!-- ................................................... -->
     <sect2 id="config_tab_protocol_settings_web">
       <title>Web</title>
       <para>
-        TODO as seen in <xref linkend="config_tab_protocol_settings_web_figure"/>
+        The Web tab of the Protocol Settings tab is seen in  <xref linkend="config_tab_protocol_settings_web_figure"/>.
+        <warning>
+          Administrators should not change the Web tab unless instructed to by a member of Metavize support or one of their authorized representitives.
+        </warning>        
       </para>
       <figure id="config_tab_protocol_settings_web_figure">
         <title>Web Tab</title>
@@ -310,13 +374,25 @@
           </imageobject>
         </mediaobject>
       </figure>
+      <para>
+        The Web tab of the Protocol Settings panel is divided into four sections.  The first, <guilabel>Web Override</guilabel> disables processing of all <glossterm linkend="gloss_http">HTTP</glossterm> traffic for <emphasis>all Software Appliances</emphasis>.  This should normally be set to <guilabel>Enable Processing</guilabel> unless under special circumstances (for example, you are a software company debugging your own web-enabled products).
+      </para>
+      <para>
+        <guilabel>Long <glossterm linkend="gloss_uri">URIs</glossterm></guilabel> and <guilabel>Long Headers</guilabel> control the &eg; behavior with abnormal web traffic.  The default settings accomidate most standard web traffic.  
+      </para>
+      <para>
+        <guilabel>Non-HTTP Blocking</guilabel> is used to control the &eg; behavior for non-http traffic over <glossterm linkend="gloss_port">port 80</glossterm>.  The default behavior is to allow such traffic.  Selecting the <guilabel>Stop</guilabel> option may prevent applications such as peer-to-peer or games from operating correctly.  Note that <quote>normal</quote> web traffic (from a browser to a web server) is not effected by this setting.
+      </para>
     </sect2>
 
     <!-- ................................................... -->
     <sect2 id="config_tab_protocol_settings_email">
       <title>Email</title>
       <para>
-        TODO as seen in <xref linkend="config_tab_protocol_settings_email_figure"/>
+        The Email tab of the Protocol Settings panel can be seen in <xref linkend="config_tab_protocol_settings_email_figure"/>.
+        <warning>
+          Administrators should not change the Email tab unless instructed to by a member of Metavize support or one of their authorized representitives.
+        </warning>         
       </para>
       <figure id="config_tab_protocol_settings_email_figure">
         <title>Email Tab</title>
@@ -326,13 +402,25 @@
           </imageobject>
         </mediaobject>
       </figure>
+      <para>
+        The Email tab is divided into two sections, <guilabel>Email Overrides</guilabel> and <guilabel>Email Timeouts</guilabel>.  Each section can control settings for the three supported email protocols, <glossterm linkend="gloss_smtp">SMTP</glossterm>, <glossterm linkend="gloss_pop">POP</glossterm>, and <glossterm linkend="gloss_imap">IMAP</glossterm>.
+      </para>
+      <para>
+        <guilabel>Email Overrides</guilabel> lets Administrators turn off scanning for a given email protocol.  This applies <emphasis>to all Software Appliances</emphasis>.  For example, disabling SMTP scanning would affect SPAM, Virus and Phish scanning.
+      </para>
+      <para>
+        The <guilabel>Email Timeouts</guilabel> section instructs the &eg; as to the maximum time it has for scanning.  If a given email takes more than this time to process, scanning is aborted and the mail passed to the client.  Note that setting this value too small risks passing contaminated content, and setting it too large risks timeouts in client programs (with user complaints to follow).
+        <note>
+          Default values are 30 seconds.  This is a large value relative to expected mail traffic, and should satisfy most normal installations.
+        </note>
+      </para>
     </sect2>
 
     <!-- ................................................... -->
     <sect2 id="config_tab_protocol_settings_ftp">
       <title>File Transfer</title>
       <para>
-        TODO as seen in <xref linkend="config_tab_protocol_settings_ftp_figure"/>
+        The File Transfer (<glossterm linkend="gloss_ftp">FTP</glossterm>) tab is seen in <xref linkend="config_tab_protocol_settings_ftp_figure"/>.
       </para>
       <figure id="config_tab_protocol_settings_ftp_figure">
         <title>File Transfer Tab</title>
@@ -342,6 +430,9 @@
           </imageobject>
         </mediaobject>
       </figure>
+      <para>
+        From this tab, Administrators can turn on/off scanning of FTP traffic by selecting either <guilabel>Enable Processing</guilabel> or <guilabel>Disable Processing</guilabel>, respectivly.  If disabled, no Software Appliances within the &eg; will scan FTP traffic.
+      </para>
     </sect2>        
   </sect1>
 
@@ -349,14 +440,44 @@
   <sect1 id="config_tab_quarantine">
     <title>Quarantine</title>
     <para>
-    TODO Complete me.  Put a blurb here about what IP addresses folks can use for requesting a digest.  It is either the external IP (bridge) or the thing set in the NAT transform.
+      The &eg; has the ability to store emails suspected of containing unwanted content.  This store can then be reviewed to ensure no emails were mistakenly labeled as unwanted (sometimes called a <quote>false positive</quote>).  This facility is called the Quarantine.  The decision to quarantine emails is made in each Software Appliance (for example, <link linkend="spamassassin_tran">SpamGuard</link> or <link linkend="clamphish_tran">PhishNet</link>).
     </para>
-
+    <para>
+      This section discusses the Quarantine facility within &eg;.  It begins with an overview, as discussed in <xref linkend="config_tab_quarantine_overview"/>.  Also discussed are Administrative interfaces to manage mails quarantined for individual email addresses in <xref linkend="config_tab_quarantine_releasepurge"/>.
+      <note>
+        <para>
+          The Quarantine facility sends emails to individuals within the protected network.  It may also be accessed by Administrators.  To avoid confusion, we will use the term <quote>end user</quote> to refer to a person within the protected network who receives email.  End users may interact with the Quarantine system via a web interface.  Although end users can purge/release their own emails, they lack privilages to launch the &eg; Administrative Interface.
+        </para>
+        <para>
+          We will use the proper noun <quote>Administrator</quote> when discussing an Administrative User interacting with the &eg; Administrative Interface to control quarantined emails for many users.
+        </para>
+      </note>
+    </para>
+    <!-- ................................................... -->
+    <sect2 id="config_tab_quarantine_overview">
+      <title>Quarantine and Safelist Overview</title>
+      <para>
+        The Quarantine facility of &eg; will store emails suspected of containing unwanted content (for example, <glossterm linkend="gloss_spam">SPAM</glossterm> or <glossterm linkend="gloss_phishing">phishing</glossterm>).  This storage is done on a per-email address basis.  For example, if <constant>escott@yourcompany.com</constant> receives three SPAM emails in a day, those three emails are quarantined for <constant>escott</constant>.  The collection of emails for a given address is said to be an <quote>inbox</quote>.
+      </para>
+      <para>
+        The &eg; quarantine system has been designed so end-users can maintain their own inbox.  They do so via a daily <quote>digest email</quote> which summarizes any quarantined emails.  Users can then release emails (causing them to be sent to their email clients), or delete them.  
+      </para>
+      <para>
+        The daily digest emails are delivered in <glossterm linkend="gloss_htmp">HTML</glossterm> format, such that they contain links to a web server.  The web server is housed within the &eg;.  In this way, the digest emails allow for direct communication with end-users to mainting their inboxes.
+        <note>
+          As with any software product, some users will choose not to act on their digest emails.  If a user ignores their inbox for many days (and receives many spams), their inbox will grow.  This is not a concern, as the &eg; automatically deletes emails after a fixed period of time.  This period is configurable, as discussed in <xref linkend="config_tab_quarantine_general"/>
+        </note>
+        While interacting with their inbox, users may also choose to declare that a given sender does <emphasis>not</emphasis> send unwanted email.  This is used to instruct the &eg; to never consider emails from a given sender to be unsolicited.  The set of these <quote>good</quote> senders is said to be the <quote>safelist</quote> for a given user.  From the web interface, end users can maintain their safelist.
+        <note>
+          Use of safelists by end users is optional.  Should a given end user choose not to populate their safelist, there is no negative effect on the overall &eg; system.
+        </note>
+      </para>
+    </sect2>
     <!-- ................................................... -->
     <sect2 id="config_tab_quarantine_releasepurge">
       <title>Quarantine Release/Purge</title>
       <para>
-        TODO as seen in <xref linkend="config_tab_quarantine_releasepurge_figure"/>
+        As discussed in <xref linkend="config_tab_quarantine_overview"/>, end users normally maintain their own inboxes.  However, there may be special circumstances when Administrators are called upon to maintain end-user inboxes.  This is performed through the administrative release/purge interface, as seen in <xref linkend="config_tab_quarantine_releasepurge_figure"/>.
       </para>
       <figure id="config_tab_quarantine_releasepurge_figure">
         <title>Quarantine Release/Purge Tab</title>
@@ -366,6 +487,37 @@
           </imageobject>
         </mediaobject>
       </figure>
+      <para>
+        The interface for administrative release/purge interface is presented as a table, with each row corresponding to an end user's inbox.  By highlighting on a given row, Administrators can perform one of three actions defined by the buttons at the botton of the panel.
+
+        <variablelist>
+          <varlistentry>
+            <term><guilabel>Purge selected</guilabel></term>
+            <listitem>
+              <para>
+                The <guilabel>Purge selected</guilabel> button causes all emails within a given inbox to be deleted.  This is the same as an end-user triggering a delete of all emails from the web application.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>Release selected</guilabel></term>
+            <listitem>
+              <para>
+                The <guilabel>Release selected</guilabel> button causes all emails within a given inbox to be sent to the email address of the inbox.  This is the same as an end-user triggering a release of all emails from the web application.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>Show detail</guilabel></term>
+            <listitem>
+              <para>
+                The <guilabel>Show detail</guilabel> button triggers a detailed view of the contents of a given inbox.  Administrators can then purge/release individual mails from that account.
+              </para>
+            </listitem>
+          </varlistentry>                    
+        </variablelist>
+        
+      </para>
     </sect2>
 
 
@@ -373,7 +525,7 @@
     <sect2 id="config_tab_quarantine_passlist">
       <title>Quarantine Pass List</title>
       <para>
-        TODO as seen in <xref linkend="config_tab_quarantine_passlist_figure"/>
+        As discussed in <xref linkend="config_tab_quarantine_overview"/>, end users normally maintain their list of email senders who are known <emphasis>not</emphasis> to send unwanted email.  This is called the <quote>passlist</quote>.  Administrators can optionaly view/change passlists for end users.  The interface for this functionality is shown in <xref linkend="config_tab_quarantine_passlist_figure"/>.
       </para>
       <figure id="config_tab_quarantine_passlist_figure">
         <title>Quarantine Pass List Tab</title>
@@ -383,13 +535,36 @@
           </imageobject>
         </mediaobject>
       </figure>
+      <para>
+        The interface for administrative release/purge interface is presented as a table, with each row corresponding to an end user's passlist.  By highlighting on a given row, Administrators can perform one of two actions defined by the buttons at the botton of the panel.
+
+        <variablelist>
+          <varlistentry>
+            <term><guilabel>Remove selected</guilabel></term>
+            <listitem>
+              <para>
+                The <guilabel>Remove selected</guilabel> button causes all addresses within the given passlist to be deleted.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>Show detail</guilabel></term>
+            <listitem>
+              <para>
+                The <guilabel>Show detail</guilabel> button triggers a detailed view of the contents of a given safelist.  Administrators can then delete individual entries from that list.
+              </para>
+            </listitem>
+          </varlistentry>                    
+        </variablelist>
+      </para>
+      
     </sect2>
 
     <!-- ................................................... -->
     <sect2 id="config_tab_quarantine_general">
       <title>General Settings</title>
       <para>
-        TODO as seen in <xref linkend="config_tab_quarantine_general_figure"/>
+        The General Settings tab, as seen in <xref linkend="config_tab_quarantine_general_figure"/>, provides administrative access to overall Quarantine properties.
       </para>
       <figure id="config_tab_quarantine_general_figure">
         <title>General Settings Tab</title>
@@ -399,7 +574,37 @@
           </imageobject>
         </mediaobject>
       </figure>
-    </sect2>             
+      <para>
+        There are three settings on the General Settings Tab.  Their meaning is as follows.
+
+        <variablelist>
+          <varlistentry>
+            <term><guilabel>Maximum Holding Time</guilabel></term>
+            <listitem>
+              <para>
+                This is the maximum time (in days) that a given email can be maintained within an inbox.  If the mail is not purged/released within this time, the mail will be automatically deleted by &eg;.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>Digest From Address</guilabel></term>
+            <listitem>
+              <para>
+                This is the <constant>From</constant> as it appears on digest emails sent to end users.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>Digest Sending Time</guilabel></term>
+            <listitem>
+              <para>
+                This is the time of day when the daily digest emails are sent.
+              </para>
+            </listitem>
+          </varlistentry>                     
+        </variablelist>
+      </para>
+    </sect2>
     
   </sect1>
 
@@ -407,7 +612,7 @@
   <sect1 id="config_tab_support">
     <title>Support</title>
     <para>
-    TODO as seen in <xref linkend="config_tab_support_figure"/>
+      The Support interface, as seen in <xref linkend="config_tab_support_figure"/>, can enable Metavize Support or one of their authorized representitives to greater assist in troubleshooting.
     </para>
 
     <figure id="config_tab_support_figure">
@@ -418,7 +623,97 @@
         </imageobject>
       </mediaobject>
     </figure>
+    <para>
+      There are two ways in which Metavize support can assist in troubleshooting.  The first is to access the &eg; remotely via a secure protocol (<glossterm linkend="gloss_ssh">SSH</glossterm>).  This is enabled by selecting <guilabel>Allow</guilabel>, and disabled by selecting <guilabel>Disallow</guilabel>.
+      <note>
+        B default, SSH access is disabled.
+      </note>
+    </para>
+    <para>
+      Administrators can also choose to have their &eg; send internal log messages to Metavize Support in the event of unexpected conditions.  These logs are internal to the product, and not only assist in troubleshooting but help Metavize produce a better product.  To enable such emails to be sent to Metavize support, check the box labeled <guilabel>Report</guilabel>.
+    </para>
   </sect1>
+
+  <!-- ############################################################# -->
+  <sect1 id="config_tab_qa">
+    <title>Frequently Asked Questions</title>
+    <qandaset>
+
+      <!-- ************************************************************** -->
+      <qandaentry id="config_tab_q1">
+        <question>
+          <para>What is the IP address of my &eg; from within the protected network?</para>
+        </question>
+        <answer>
+          <para>
+            The internal IP address depends on how the &eg; is configured.  If configured for Network Sharing (NAT), then the internal IP is set within the Network Sharing Software Appliance (see <xref linkend="nat_tran"/>).  If the &eg; is not configured for NAT (sometimes called <quote>bridge</quote> mode), then the internal IP is the same as the external IP.  The external IP can be seen from the Networking Settings interface, as described in <xref linkend="config_tab_network_networksettings"/>.
+          </para>
+        </answer>
+      </qandaentry>
+
+      
+      <!-- ************************************************************** -->
+      <qandaentry>
+        <question>
+          <para>What is the IP address of my &eg; from outside the protected network?</para>
+        </question>
+        <answer>
+          <para>
+            The address from outside the protected network (called the <quote>external IP</quote>) can be found/changed on the Networking Settings interface, as described in <xref linkend="config_tab_network_networksettings"/>.
+          </para>
+        </answer>
+      </qandaentry>
+
+      
+      <!-- ************************************************************** -->
+      <qandaentry>
+        <question>
+          <para>Someone left our company, but we still receives emails.  Since some of those emails are SPAM, how can I prevent their inbox from growing forever?</para>
+        </question>
+        <answer>
+          <para>
+            The &eg; does not know vaild from invalid email addresses within your domain.  The easiest way to prevent emails for an ex-employee is to configure your mail server to reject those mails.
+          </para>
+          <para>
+            If causing emails to be rejected is not an option (for example, emails from business partners are still being received and must be reviewed during the transition) then SPAM emails can simply be ignored.  Recall that the system automatically deletes emails from inboxes after a fixed period (see <xref linkend="config_tab_quarantine_general"/> for more details on this setting).  Note that once emails for that user cease, the inbox will automatically be deleted after two months of inactivity.  
+          </para>
+        </answer>
+      </qandaentry>      
+
+      
+      <!-- ************************************************************** -->   
+      <qandaentry>
+        <question>
+          <para>Looking at the Quarantine interface, I cannot find how to cause SPAM-suspect emails to be quarantined.  How do I configure this?</para>
+        </question>
+        <answer>
+          <para>
+            The Quarantine feature is used by several Software Appliances.  The interfaces for each appliance is used to cause emails to be quarantined.  Please see <xref linkend="spamassassin_tran"/> for more information on configuring SpamGuard and <xref linkend="clamphish_tran"/> for configuring PhishNet to use the Quarantine feature.
+          </para>
+        </answer>
+      </qandaentry>
+      
+
+      <!-- ************************************************************** -->
+      <qandaentry>
+        <question>
+          <para>One of my users deleted all of their daily quarantine digest emails, yet they want to check their inbox right now.  How can I cause them to receive a new digest on demand?</para>
+        </question>
+        <answer>
+          <para>
+            If an end-user wants to view their inbox <quote>right now</quote> yet lacks a digest email with the links to do so, they can request a new digest email.  The <glossterm linkend="gloss_url">URL</glossterm> for this request page is
+
+            <programlisting>http://<replaceable>your_internal_ip</replaceable>/quarantine/imc</programlisting>
+
+            Where <replaceable>your_internal_ip</replaceable> is replaced with the internal <glossterm linkend="gloss_ip_addr">IP address</glossterm> of your &eg;.  To determine the internal IP address of your &eg;, please refer to <xref linkend="config_tab_q1"/>
+          </para>
+          <tip>
+            This URL to request a digest email on-demand will not change as long as the internal IP address of &eg; does not change.  It may be handy to put a link to this page on an intranet server.
+          </tip>
+       </answer>
+      </qandaentry>           
+    </qandaset>
+  </sect1>      
 
   
 </chapter>

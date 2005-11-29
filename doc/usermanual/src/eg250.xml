@@ -18,10 +18,9 @@
 <!ENTITY spyware_tran SYSTEM "spyware_tran.xml">
 <!ENTITY clamphish_tran SYSTEM "clamphish_tran.xml">
 <!ENTITY spamassassin_tran SYSTEM "spamassassin_tran.xml">
-<!ENTITY chap1 SYSTEM "chap1.xml">
-<!ENTITY chap2 SYSTEM "chap2.xml">
 <!ENTITY appendix_q_a SYSTEM "appendix_q_a.xml">
 <!ENTITY appendix_changes SYSTEM "appendix_changes.xml">
+<!ENTITY appendix_syntax SYSTEM "appendix_syntax.xml">
 <!ENTITY glossary SYSTEM "gloss.xml">
 <!ENTITY eg "EdgeGuard Appliance">
 <!ENTITY mv "Metavize, Inc">
@@ -68,36 +67,34 @@
   &config_tab;
 
   &policy_manager;
-
-  &reporting_tran;
-
-  &airgap_tran;
-
-  &nat_tran;
-
-  &openvpn_tran;
-
-  &ids_tran;
-
-  &firewall_tran;
-
-  &protofilter_tran;
-  
-  &clam_tran;
-  
-  &hauri_tran;
-
-  &httpblocker_tran;
-  
-  &spyware_tran;
-  
-  &clamphish_tran;
   
   &spamassassin_tran;
 
-  &chap1;
+  &clamphish_tran;
+  
+  &spyware_tran;
+  
+  &httpblocker_tran;
 
-  &chap2;
+  &hauri_tran;
+
+  &clam_tran;
+
+  &ids_tran;
+
+  &protofilter_tran;
+
+  &firewall_tran;
+
+  &openvpn_tran;
+
+  &nat_tran;
+  
+  &airgap_tran;
+  
+  &reporting_tran;
+
+  &appendix_syntax;
 
   &appendix_changes;
   

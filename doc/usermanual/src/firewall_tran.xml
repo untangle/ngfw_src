@@ -71,7 +71,7 @@
             <term><guilabel>source address</guilabel></term>
             <listitem>
               <para>
-                This property selects the <glossterm linkend="gloss_ip_addr">IP address</glossterm> of the connection source.  Valid values are in IP Matcher format.  For more information on the IP Matcher syntax, please see <xref linkend="fixme_ui_ip_conventions_ipmatcher"/>.
+                This property selects the <glossterm linkend="gloss_ip_addr">IP address</glossterm> of the connection source.  Valid values are in <link linkend="appendix_syntax_ipmatcher">IP Matcher</link> format. 
               </para>
             </listitem>
           </varlistentry>
@@ -80,7 +80,7 @@
             <term><guilabel>destination address</guilabel></term>
             <listitem>
               <para>
-                This property selects the <glossterm linkend="gloss_ip_addr">IP address</glossterm> of the connection destination.  Valid values are in IP Matcher format.  For more information on the IP Matcher syntax, please see <xref linkend="fixme_ui_ip_conventions_ipmatcher"/>.
+                This property selects the <glossterm linkend="gloss_ip_addr">IP address</glossterm> of the connection destination.  Valid values are in <link linkend="appendix_syntax_ipmatcher">IP Matcher</link> format. 
               </para>
             </listitem>
           </varlistentry>
@@ -89,7 +89,7 @@
             <term><guilabel>source port</guilabel></term>
             <listitem>
               <para>
-                This property selects the <glossterm linkend="gloss_port">port</glossterm> of the connection source.  Valid values are in Port Matcher format.  For more information on the Port Matcher syntax, please see <xref linkend="fixme_ui_ip_conventions_portmatcher"/>.
+                This property selects the <glossterm linkend="gloss_port">port</glossterm> of the connection source.  Valid values are in <link linkend="appendix_syntax_portmatcher">Port Matcher</link> format.
               </para>
             </listitem>
           </varlistentry>
@@ -98,7 +98,7 @@
             <term><guilabel>destination port</guilabel></term>
             <listitem>
               <para>
-                This property selects the <glossterm linkend="gloss_port">port</glossterm> of the connection destination.  Valid values are in Port Matcher format.  For more information on the Port Matcher syntax, please see <xref linkend="fixme_ui_ip_conventions_portmatcher"/>.
+                This property selects the <glossterm linkend="gloss_port">port</glossterm> of the connection destination.  Valid values are in <link linkend="appendix_syntax_portmatcher">Port Matcher</link> format.
               </para>
             </listitem>
           </varlistentry>          
@@ -158,7 +158,7 @@
         </question>
         <answer>
           <para>
-            TODO Someone needs to write it.  Some good things would be CIDR syntax for matching all networks, a reminder of the "any" syntax, etc.
+            TODO Someone needs to write it.  Some good things would be Network/Netmask syntax for matching all networks, a reminder of the "any" syntax, etc.
           </para>
         </answer>
       </qandaentry>

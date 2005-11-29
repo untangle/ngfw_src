@@ -65,17 +65,19 @@
       a row is edited you go from a green circle to a yellow triangle.
     </para>
 
+    <para id="fixme_interfaces"  xreflabel="Network Interfaces">
+      This is where we explain Internal/External as well as (optionally) DMZ and VPN.
+    </para>    
+
+    <para id="fixme_appliances_and_the_io" xreflabel="Software Appliances and Virtual Racks">
+      This is where we explain some of the global conventions
+    </para>
+
     <sect2 id="fixme_ui_ip_conventions"  xreflabel="Entering Addresses">
       <title>Random stuff I've referred to</title>
 
       <para>
       This section explains that there are a few different ways to enter addresses, depending on the context.
-      </para>
-      <para id="fixme_ui_ip_conventions_simpleipaddr" xreflabel="Simple Address Syntax">
-        Basic IP address
-      </para>
-      <para id="fixme_ui_ip_conventions_cidr" xreflabel="CIDR Syntax">
-        ip/mask
       </para>
       <para id="fixme_ui_ip_conventions_range" xreflabel="IP Range Syntax">
         ip-ip
@@ -83,13 +85,17 @@
       <para id="fixme_ui_ip_conventions_ipmatcher" xreflabel="IP Matcher">
         "any" | "local" | CIDR | range
       </para>
-     
+
+      <para id="fixme_ui_ip_conventions_simpleport" xreflabel="Simple Port Syntax">
+        port literal (number)
+      </para>
+            
       <para id="fixme_ui_ip_conventions_portmatcher" xreflabel="Port Matcher">
         "any" | port literal (number) | port range
       </para>        
     </sect2>
 
-    <sect2 id="fixme_ui_url_conventions"  xreflabel="Entering URLs">
+    <sect2 id="fixme_ui_url_conventions"  xreflabel="URL Matching">
       <title>I guess we need a title</title>
       <para>
         Here we discuss how to enter URLs for blocking/passing, where "http://a/b" matches "http://a/b/c" but not "http://a/d".
