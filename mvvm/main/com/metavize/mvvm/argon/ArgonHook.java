@@ -59,8 +59,8 @@ abstract class ArgonHook implements Runnable
 
     protected SessionGlobalState sessionGlobalState;
 
-    protected IPSessionDesc clientSide;
-    protected IPSessionDesc serverSide;
+    protected IPSessionDesc clientSide = null;
+    protected IPSessionDesc serverSide = null;
 
     protected static final PipelineFoundry pipelineFoundry = MvvmContextFactory.context().pipelineFoundry();
 
@@ -206,10 +206,9 @@ abstract class ArgonHook implements Runnable
         }
 
         try {
-            /* Let the pipeline foundy know */
-            if (endpoints == null)
-                logger.error("Destroying pipeline with null endpoints");
-            pipelineFoundry.destroy( clientSide, serverSide, endpoints );
+            /* Let the pipeline foundry know */
+            if (clientSide != null)
+                pipelineFoundry.destroy(clientSide, serverSide, endpoints);
 
             /* Remove the vector from the vectron table */
             /* You must remove the vector before razing, or else
