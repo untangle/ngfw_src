@@ -11,6 +11,7 @@
 
 package com.metavize.mvvm;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
@@ -22,10 +23,11 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.Equivalence;
 import com.metavize.mvvm.tran.Validatable;
 import com.metavize.mvvm.tran.ValidateException;
 
-public class NetworkingConfiguration implements Serializable, Validatable
+public class NetworkingConfiguration implements Serializable, Validatable, Equivalence
 {
     private static final long serialVersionUID = -7446681327586273258L;
 
@@ -96,9 +98,9 @@ public class NetworkingConfiguration implements Serializable, Validatable
     private boolean isOutsideAccessEnabled    = DEF_IS_OUTSIDE_EN;
     private boolean isOutsideAccessRestricted = DEF_IS_OUTSIDE_RESTRICTED;
 
-
     private IPaddr outsideNetwork = DEF_OUTSIDE_NETWORK;
     private IPaddr outsideNetmask = DEF_OUTSIDE_NETMASK;
+
 
     public NetworkingConfiguration()
     {
@@ -339,7 +341,6 @@ public class NetworkingConfiguration implements Serializable, Validatable
         InetAddress defaultRoute = gateway().getAddr();
         InetAddress host = host().getAddr();
 
-
         if ( host.equals( defaultRoute )) {
             throw new ValidateException( "The \"Default Route\" and \"IP Address\" are the same." );
         }
@@ -361,6 +362,106 @@ public class NetworkingConfiguration implements Serializable, Validatable
                                              " is the \"Default Route\" and an alias." );
             }
         }
+    }
+
+    public boolean equals(Object newObject)
+    {
+        if (null == newObject ||
+            false == (newObject instanceof NetworkingConfiguration)) {
+            return false;
+        }
+
+        NetworkingConfiguration newNC = (NetworkingConfiguration) newObject;
+        NetworkingConfiguration curNC = this;
+
+        if (curNC.isDhcpEnabled() != newNC.isDhcpEnabled()) {
+            return false;
+        }
+
+        if (false == curNC.host().equals(newNC.host())) {
+            return false;
+        }
+
+        if (false == curNC.netmask().equals(newNC.netmask())) {
+            return false;
+        }
+
+        /* we assume that current and new NetworkingConfigurations are valid
+         * (e.g., there are no duplicate InterfaceAliases in either)
+         * before we check them for equivalence
+         */
+        List<InterfaceAlias> curIAL = curNC.getAliasList();
+        List<InterfaceAlias> newIAL = newNC.getAliasList();
+        if (curIAL.size() != newIAL.size()) {
+            return false;
+        }
+
+        ArrayList<InterfaceAlias> unmatchedIAL = new ArrayList(newIAL);
+
+        boolean bMatched;
+
+        for (InterfaceAlias curIA : curIAL) {
+            bMatched = false;
+
+            for (InterfaceAlias newIA : unmatchedIAL) {
+                if (true == curIA.equals(newIA)) {
+                    bMatched = true;
+                    unmatchedIAL.remove(newIA);
+                    break; // for newIA loop
+                }
+            }
+
+            if (false == bMatched) {
+                // current InterfaceAlias not found in new InterfaceAliases
+                return false;
+            }
+        }
+
+        if (false == curNC.gateway().equals(newNC.gateway())) {
+            return false;
+        }
+
+        if (false == curNC.dns1().equals(newNC.dns1())) {
+            return false;
+        }
+
+        if (false == curNC.dns2().equals(newNC.dns2())) {
+            return false;
+        }
+
+        if (curNC.isSshEnabled() != newNC.isSshEnabled()) {
+            return false;
+        }
+
+        if (curNC.isExceptionReportingEnabled() != newNC.isExceptionReportingEnabled()) {
+            return false;
+        }
+
+        if (curNC.isTcpWindowScalingEnabled() != newNC.isTcpWindowScalingEnabled()) {
+            return false;
+        }
+
+        if (curNC.isInsideInsecureEnabled() != newNC.isInsideInsecureEnabled()) {
+            return false;
+        }
+
+        if (curNC.isOutsideAccessEnabled() != newNC.isOutsideAccessEnabled()) {
+            return false;
+        }
+
+        if (curNC.isOutsideAccessRestricted() != newNC.isOutsideAccessRestricted()) {
+            return false;
+        }
+
+        if (false == curNC.outsideNetwork().equals(newNC.outsideNetwork())) {
+            return false;
+        }
+
+        if (false == curNC.outsideNetmask().equals(newNC.outsideNetmask())) {
+            return false;
+        }
+
+        return true;
     }
 
     static

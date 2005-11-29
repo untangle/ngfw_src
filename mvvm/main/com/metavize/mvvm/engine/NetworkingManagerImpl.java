@@ -121,8 +121,12 @@ class NetworkingManagerImpl implements NetworkingManager
         /* Validate the networking configuration before saving it. */
         netConfig.validate();
 
-        this.configuration = netConfig;
-        
+        if (true == configuration.equals(netConfig)) {
+            return; // if NetworkingConfiguration has not changed, do nothing
+        }
+
+        configuration = netConfig;
+
         save();
 
         try {

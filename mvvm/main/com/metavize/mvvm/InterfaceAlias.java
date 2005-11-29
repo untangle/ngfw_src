@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) 2003, 2004, 2005 Metavize Inc.
  * All rights reserved.
@@ -16,9 +17,10 @@ import java.net.InetAddress;
 import java.net.Inet4Address;
 
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.Equivalence;
 import static com.metavize.mvvm.NetworkingConfiguration.EMPTY_IPADDR;
 
-public class InterfaceAlias implements Serializable
+public class InterfaceAlias implements Serializable, Equivalence
 {
     private static final long serialVersionUID = -2103291468092590446L;
 
@@ -32,7 +34,6 @@ public class InterfaceAlias implements Serializable
         this.address   = EMPTY_IPADDR;
         this.netmask   = EMPTY_IPADDR;
         this.broadcast = EMPTY_IPADDR;
-
     }
     
     public InterfaceAlias( IPaddr address, IPaddr netmask )
@@ -80,10 +81,47 @@ public class InterfaceAlias implements Serializable
         this.netmask = netmask;
     }
 
+    public IPaddr getBroadcast()
+    {
+        if ( null == this.broadcast || this.broadcast.isEmpty()) this.broadcast = EMPTY_IPADDR;
+        return this.broadcast;
+    }
+    
+    public void setBroadcast( IPaddr broadcast)
+    {
+        if ( null == broadcast || broadcast.isEmpty()) broadcast = EMPTY_IPADDR;
+        this.broadcast = broadcast;
+    }
+
     public boolean isValid()
     {
         if (( null == this.address ) || ( null == this.netmask )) return false;
         if ( this.address.isEmpty() || this.netmask.isEmpty())    return false;
         return true;
     }    
+
+    public boolean equals(Object newObject)
+    {
+        if (null == newObject ||
+            false == (newObject instanceof InterfaceAlias)) {
+            return false;
+        }
+
+        InterfaceAlias newIA = (InterfaceAlias) newObject;
+        InterfaceAlias curIA = this;
+
+        if (false == curIA.getAddress().equals(newIA.getAddress())) {
+            return false;
+        }
+
+        if (false == curIA.getNetmask().equals(newIA.getNetmask())) {
+            return false;
+        }
+
+        if (false == curIA.getBroadcast().equals(newIA.getBroadcast())) {
+            return false;
+        }
+
+        return true;
+    }
 }
