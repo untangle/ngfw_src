@@ -81,6 +81,7 @@ public class VpnClient extends Rule implements Validatable
     /**
      * @return The address group that this client belongs to.
      * @hibernate.many-to-one
+     * cascade="all"
      * class="com.metavize.tran.openvpn.VpnGroup"
      * column="group_id"
      */

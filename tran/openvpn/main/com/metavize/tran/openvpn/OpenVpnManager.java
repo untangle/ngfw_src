@@ -55,7 +55,7 @@ class OpenVpnManager
     /* Most likely want to bind to the outside address when using NAT */
     private static final String FLAG_LOCAL       = "local";
 
-    /* XXX Have to export this */
+    /* XXX Have to expose this in the GUI */
     private static final String FLAG_PORT        = "port";
     private static final int    DEFAULT_PORT     = 1194;
 
@@ -223,6 +223,9 @@ class OpenVpnManager
         /* Insert all of the default parameters */
         sw.appendLines( SERVER_DEFAULTS );
 
+        /* May want to expose this in the GUI */
+        sw.appendVariable( FLAG_PORT, String.valueOf( DEFAULT_PORT ));
+
         /* Bridging or routing */
         if ( settings.isBridgeMode()) {            
             sw.appendVariable( FLAG_DEVICE, DEVICE_BRIDGE );            
@@ -335,7 +338,8 @@ class OpenVpnManager
         
         /* XXXXXX This needs some global address and possibly the port, possibly an address 
            from the settings */
-        sw.appendVariable( FLAG_REMOTE, argonManager.getOutsideAddress().getHostAddress());
+        sw.appendVariable( FLAG_REMOTE, argonManager.getOutsideAddress().getHostAddress() + " " + 
+                           DEFAULT_PORT );
 
         sw.writeFile( CLIENT_CONF_FILE_BASE + name + "." + extension );
     }

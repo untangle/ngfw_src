@@ -18,6 +18,8 @@ import com.metavize.mvvm.tran.ValidateException;
 
 public class CertificateParameters implements Serializable, Validatable
 {
+    // XXX SERIALVER private static final long serialVersionUID = 1032713361795879615L;
+    
     private String organization;
     private String domain;
     private String country;
@@ -103,7 +105,8 @@ public class CertificateParameters implements Serializable, Validatable
     }
     
     /** 
-     * Validate the object, throw an exception if it is not valid */
+     * Validate the object, throw an exception if it is not valid
+     */
     public void validate() throws ValidateException
     {
         /* XXXXXXXX */

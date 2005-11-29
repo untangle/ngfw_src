@@ -6,12 +6,13 @@
 
 package com.metavize.tran.openvpn.gui;
 
-import com.metavize.mvvm.tran.TransformContext;
+import java.util.List;
+import java.util.LinkedList;
 
-import com.metavize.tran.openvpn.VpnTransform;
-import com.metavize.tran.openvpn.VpnClient;
-import com.metavize.tran.openvpn.VpnSettings;
-import com.metavize.tran.openvpn.VpnGroup;
+import com.metavize.mvvm.tran.TransformContext;
+import com.metavize.mvvm.tran.IPaddr;
+
+import com.metavize.tran.openvpn.*;
 
 /**
  *
@@ -85,37 +86,36 @@ public class RobertsJPanel extends javax.swing.JPanel {
         jPanel1.add(jTextField10, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 290, 270, 20));
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel1.setText("Organization:");
+        jLabel1.setText("Is Client?:");
+        jTextField1.setText( "false" );
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 180, -1));
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel2.setText("Organization Unit[x]:");
-        jTextField2.setEnabled( false );
+        jLabel2.setText("Address or Group:");
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 50, 180, -1));
 
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel3.setText("Country:");
+        jLabel3.setText("Passphrase or Export:");
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, 180, -1));
 
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel4.setText("Provice/State:");
+        jLabel4.setText("Client 1:");
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, 180, -1));
 
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel5.setText("Locality/City:");
+        jLabel5.setText("Client 2:");
         jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, 180, -1));
 
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel6.setText("email:");
+        jLabel6.setText("Group 1:");
         jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, 180, -1));
 
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel7.setText("key size:");
-        jTextField7.setText( "1536" );
+        jLabel7.setText("Group 2:");
         jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 200, 180, -1));
 
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel8.setText( "USB Key:" );
+        jLabel8.setText( "unused:" );
         jTextField8.setText( String.valueOf( false ));
         jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 230, 180, -1));
 
@@ -127,10 +127,15 @@ public class RobertsJPanel extends javax.swing.JPanel {
         jLabel10.setText("unused:");
         jPanel1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 290, 180, -1));
 
-        acceptJButton.setText("Generate Cert!");
+        acceptJButton.setText("Complete Configuration");
         acceptJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                acceptJButtonActionPerformed(evt);
+                try {
+                    acceptJButtonActionPerformed(evt);
+                } catch ( Exception e ) {
+                    System.out.println( "NO: " );
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -155,40 +160,106 @@ public class RobertsJPanel extends javax.swing.JPanel {
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         add(jScrollPane1, gridBagConstraints);
-
-        updateBaseParameters( openvpn.getVpnSettings());
-
     }//GEN-END:initComponents
 
     private void cancelJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelJButtonActionPerformed
         updateBaseParameters( openvpn.getVpnSettings());
     }//GEN-LAST:event_cancelJButtonActionPerformed
 
-    private void acceptJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acceptJButtonActionPerformed
-        VpnSettings settings = openvpn.getVpnSettings();
-        
-        // settings.setOrganizationUnit( jTextField1.getText());
-        settings.setOrganization( jTextField1.getText().trim());
-        settings.setCountry( jTextField3.getText().trim());
-        settings.setProvince( jTextField4.getText().trim());
-        settings.setLocality( jTextField5.getText().trim());
-        settings.setEmail( jTextField6.getText().trim());
-        settings.setKeySize( Integer.parseInt( jTextField7.getText().trim()));
-        settings.setCaKeyOnUsb( Boolean.parseBoolean( jTextField8.getText().trim()));
-        
-        updateBaseParameters( openvpn.generateBaseParameters( settings ));
+    private void acceptJButtonActionPerformed(java.awt.event.ActionEvent evt) 
+        throws Exception
+    {//GEN-FIRST:event_acceptJButtonActionPerformed
+        VpnTransform.ConfigState state = ( Boolean.parseBoolean( jTextField1.getText().trim())) ? 
+            VpnTransform.ConfigState.CLIENT : VpnTransform.ConfigState.SERVER_ROUTE;
+
+        openvpn.startConfig( state );
+
+        if ( state == VpnTransform.ConfigState.CLIENT ) {
+            openvpn.downloadConfig( IPaddr.parse( jTextField2.getText().trim()), 
+                                    jTextField3.getText().trim());
+        } else {
+            openvpn.generateCertificate( new CertificateParameters());
+            
+            /* Address groups */
+            String[] tempArray = jTextField2.getText().split( " " );
+            List<VpnGroup> groupList = new LinkedList<VpnGroup>();
+            VpnGroup group = new VpnGroup();
+            group.setAddress( IPaddr.parse( tempArray[0] ));
+            group.setNetmask( IPaddr.parse( tempArray[1] ));
+            group.setName( "main group" );
+            groupList.add( group );
+            GroupList groupParameter = new GroupList( groupList );
+            openvpn.setAddressGroups( groupParameter );
+
+            /* Exported addresses */
+            tempArray = jTextField3.getText().split( " " );
+            List<ServerSiteNetwork> serverSiteList = new LinkedList<ServerSiteNetwork>();
+            ServerSiteNetwork ssn = new ServerSiteNetwork();
+            ssn.setNetwork( IPaddr.parse( tempArray[0] ));
+            ssn.setNetmask( IPaddr.parse( tempArray[1] ));
+            ssn.setName( "exports" );
+            serverSiteList.add( ssn );
+            openvpn.setExportedAddressList( new ExportList( serverSiteList ));
+
+            /* Vpn clients */
+            List<VpnClient> clientList = new LinkedList<VpnClient>();
+            addClient( jTextField4, group, clientList );
+            addClient( jTextField5, group, clientList );
+            openvpn.setClients( new ClientList( clientList ));
+
+            /* Vpn sites */
+            List<VpnSite> siteList = new LinkedList<VpnSite>();
+            addSite( jTextField6, group, siteList );
+            addSite( jTextField7, group, siteList );
+            openvpn.setSites( new SiteList( siteList ));
+        }
+
+        /* Save the configuration */
+        openvpn.completeConfig();
     }//GEN-LAST:event_acceptJButtonActionPerformed
+
+    private void addClient( javax.swing.JTextField field, VpnGroup group, List<VpnClient> clientList )
+        throws Exception
+    {
+        String text = field.getText().trim();
+        if ( text.length() == 0 ) return;
+
+        String params[] = text.split( " " );
+        
+        VpnClient client = new VpnClient();
+        client.setName( params[0] );
+        client.setDistributionEmail( params[1] );
+        client.setGroup( group );
+        
+        clientList.add( client );
+    }
+
+
+    private void addSite( javax.swing.JTextField field, VpnGroup group, List<VpnSite> siteList )
+        throws Exception
+    {
+        String text = field.getText().trim();
+        if ( text.length() == 0 ) return;
+        String params[] = text.split( " " );
+        
+        VpnSite site = new VpnSite();
+        
+        List<ClientSiteNetwork> exportList = new LinkedList<ClientSiteNetwork>();
+        ClientSiteNetwork csn = new ClientSiteNetwork();
+        site.setName( params[0] );
+        site.setDistributionEmail( params[1] );
+        csn.setNetwork( IPaddr.parse( params[2] ));
+        csn.setNetmask( IPaddr.parse( params[3] ));
+        exportList.add( csn );
+        
+        site.setExportedAddressList( exportList );
+        site.setGroup( group );
+        
+        siteList.add( site );
+    }
 
     private void updateBaseParameters( VpnSettings settings )
     {
-        jTextField1.setText( settings.getOrganization());
-        jTextField2.setText( settings.getOrganizationUnit());
-        jTextField3.setText( settings.getCountry());
-        jTextField4.setText( settings.getProvince());
-        jTextField5.setText( settings.getLocality());
-        jTextField6.setText( settings.getEmail());
-        jTextField7.setText( String.valueOf( settings.getKeySize()));
-        jTextField8.setText( String.valueOf( settings.getCaKeyOnUsb()));
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

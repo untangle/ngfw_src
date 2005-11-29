@@ -11,8 +11,6 @@
 
 package com.metavize.tran.openvpn;
 
-import java.io.Serializable;
-
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.Rule;
 import com.metavize.mvvm.tran.Validatable;
@@ -28,8 +26,7 @@ import com.metavize.mvvm.tran.ValidateException;
  */
 public class VpnGroup extends Rule implements Validatable
 {
-    // XXX update the serial version id
-    // private static final long serialVersionUID = 4143567998376955882L;
+    // XXX SERIALVER private static final long serialVersionUID = 1032713361795879615L;
 
     /* The interface that clients from the client pool are associated with */
     private byte intf;

@@ -25,8 +25,7 @@ import com.metavize.mvvm.tran.ValidateException;
  */
 public abstract class SiteNetwork extends Rule implements Validatable
 {
-    // XXX update the serial version id
-    // private static final long serialVersionUID = 4143567998376955882L;
+    private static final long serialVersionUID = -2918169040527785684L;
 
     private IPaddr network;
     private IPaddr netmask;

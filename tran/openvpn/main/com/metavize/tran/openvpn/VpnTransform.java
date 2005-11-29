@@ -25,9 +25,6 @@ public interface VpnTransform extends Transform
     public void setVpnSettings( VpnSettings settings );
     public VpnSettings getVpnSettings();
 
-    /* Create a new set of base parameters, this invalidates all of the client keys */
-    public VpnSettings generateBaseParameters( VpnSettings settings );
-
     /* Create a client certificate, if the client already has a certificate
      * this will automatically revoke their old one */
     public VpnClient generateClientCertificate( VpnSettings settings, VpnClient client );
@@ -50,6 +47,7 @@ public interface VpnTransform extends Transform
     //// the stages of the setup wizard ///
     public void downloadConfig( IPaddr address, String key ) throws Exception;
     public void generateCertificate( CertificateParameters parameters ) throws Exception;
+    public GroupList getAddressGroups() throws Exception;
     public void setAddressGroups( GroupList parameters ) throws Exception;
     public void setExportedAddressList( ExportList parameters ) throws Exception;
     public void setClients( ClientList parameters ) throws Exception;

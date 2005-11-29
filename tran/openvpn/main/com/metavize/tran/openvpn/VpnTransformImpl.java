@@ -102,24 +102,24 @@ public class VpnTransformImpl extends AbstractTransform
     }
 
     // VpnTransform methods --------------------------------------------------
-    public void setVpnSettings( final VpnSettings settings )
+    public void setVpnSettings( final VpnSettings newSettings )
     {
         /* Attempt to assign all of the clients addresses */
         try {
-            addressMapper.assignAddresses( settings );
+            addressMapper.assignAddresses( newSettings );
         } catch ( TransformException exn ) {
             logger.error( "Could not save VPN settings", exn );
         }
 
         /* Update the status/generate all of the certificates for clients */
-        this.certificateManager.updateCertificateStatus( settings );
+        this.certificateManager.updateCertificateStatus( newSettings );
 
         TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork( Session s )
                 {
                     s.saveOrUpdate( settings );
-                    VpnTransformImpl.this.settings = settings;
+                    VpnTransformImpl.this.settings = newSettings;
                     return true;
                 }
             };
@@ -131,9 +131,9 @@ public class VpnTransformImpl extends AbstractTransform
 
             if ( getRunState() == TransformState.RUNNING ) {
                 /* This stops then starts openvpn */
-                this.openVpnManager.configure( settings );
-                this.openVpnManager.restart( settings );
-                this.handler.configure( settings );
+                this.openVpnManager.configure( this.settings );
+                this.openVpnManager.restart( this.settings );
+                this.handler.configure( this.settings );
             }
         } catch ( TransformException exn ) {
             logger.error( "Could not save VPN settings", exn );
@@ -142,24 +142,9 @@ public class VpnTransformImpl extends AbstractTransform
 
     public VpnSettings getVpnSettings()
     {
-
         /* XXXXXXXXXXXXXXXXXXXX This is not really legit, done so the schema doesn't have to be
          * written for a little while */
         if ( this.settings == null ) this.settings = new VpnSettings( this.getTid());
-
-        return this.settings;
-    }
-
-    /* XXXX This function will go away since it has been replaced by the complete config function */
-    public VpnSettings generateBaseParameters( VpnSettings settings )
-    {
-        try {
-            ScriptRunner.getInstance().exec( CLEANUP_SCRIPT );
-            certificateManager.createBase( settings );
-            setVpnSettings( settings );
-        } catch ( TransformException e ) {
-            logger.warn( "Unable to generate base parameters", e );
-        }
 
         return this.settings;
     }
@@ -274,12 +259,8 @@ public class VpnTransformImpl extends AbstractTransform
         logger.debug( "Looking up client for key: " + key );
 
         /* Could use a hash map, but why bother ? */
-        for ( final VpnClient client : ((List<VpnClient>)this.settings.getClientList())) {
+        for ( final VpnClient client : ((List<VpnClient>)this.settings.getCompleteClientList())) {
             if ( lookupClientDistributionKey( key, clientAddress, client )) return client.getInternalName();
-        }
-
-        for ( final VpnSite site : ((List<VpnSite>)this.settings.getSiteList())) {
-            if ( lookupClientDistributionKey( key, clientAddress, site )) return site.getInternalName();
         }
 
         return null;
@@ -388,7 +369,6 @@ public class VpnTransformImpl extends AbstractTransform
     {
         super.preStart();
 
-        /* XXXXX Need a way of not starting if the transform is not configured */
         if ( this.settings == null ) {
             String[] args = {""};
             try {
@@ -401,6 +381,8 @@ public class VpnTransformImpl extends AbstractTransform
         }
 
         /* Don't start if openvpn cannot be configured */
+        if ( !settings.isConfigured()) throw new TransformStartException( "Openvpn is not configured" );
+
         try {
             settings.validate();
                         
@@ -499,13 +481,17 @@ public class VpnTransformImpl extends AbstractTransform
 
     public ConfigState getConfigState()
     {
-        return ConfigState.UNCONFIGURED; 
+        if ( settings == null || !settings.isConfigured()) return ConfigState.UNCONFIGURED;
+
+        if ( settings.getIsEdgeGuardClient()) return ConfigState.CLIENT;
+        
+        return ( settings.isBridgeMode() ? ConfigState.SERVER_BRIDGE : ConfigState.SERVER_ROUTE );
     }
 
     public void startConfig( ConfigState state ) throws ValidateException
     {
         if ( state == ConfigState.UNCONFIGURED || state == ConfigState.SERVER_BRIDGE ) {
-            throw new ValidateException( "Cannot run wizard in the selected state: " + state );
+            throw new ValidateException( "Cannot run wizard for the selected state: " + state );
         }
 
         this.sandbox = new Sandbox( state );
@@ -521,16 +507,16 @@ public class VpnTransformImpl extends AbstractTransform
         /* Generate new settings */
         if ( settings.getIsEdgeGuardClient()) {
             /* Finish the configuration for clients */
-
+            throw new TransformException( "Unsupported, fixme" );
         } else {
             /* Create the base certificate and parameters */
-            this.certificateManager.createBase( settings );
+            this.certificateManager.createBase( newSettings );
             
             /* Create clients certificates */
-            this.certificateManager.createAllClientCertificates( settings );
+            this.certificateManager.createAllClientCertificates( newSettings );
             
             /* Distribute emails */
-            distributeAllClientFiles( settings );
+            distributeAllClientFiles( newSettings );
         }
         
         setVpnSettings( newSettings );
@@ -542,19 +528,25 @@ public class VpnTransformImpl extends AbstractTransform
     //// the stages of the setup wizard ///
     public void downloadConfig(IPaddr address, String key) throws Exception
     {
+        throw new TransformException( "unsupported, fixme" );
     }
     
     public void generateCertificate( CertificateParameters parameters ) throws Exception
     {
         this.sandbox.generateCertificate( parameters );
     }
+
+    public GroupList getAddressGroups() throws Exception
+    {
+        return this.sandbox.getGroupList();
+    }
     
-    public void setAddressGroups( GroupList parameters) throws Exception
+    public void setAddressGroups( GroupList parameters ) throws Exception
     {
         this.sandbox.setGroupList( parameters );
     }
     
-    public void setExportedAddressList( ExportList parameters) throws Exception
+    public void setExportedAddressList( ExportList parameters ) throws Exception
     {
         this.sandbox.setExportList( parameters );
 

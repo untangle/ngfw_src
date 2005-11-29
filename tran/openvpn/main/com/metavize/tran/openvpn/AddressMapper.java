@@ -84,9 +84,6 @@ class AddressMapper
         /* Iterate each group assigning all of the clients IP addresses */
         final boolean isBridge = settings.isBridgeMode();
 
-        /* Test to make sure this gets set */
-        boolean setServerAddress = false;
-
         for ( Map.Entry<VpnGroup,List<VpnClient>> entry  : groupToClientList.entrySet()) {
             VpnGroup group = entry.getKey();
             List<VpnClient> clients = entry.getValue();

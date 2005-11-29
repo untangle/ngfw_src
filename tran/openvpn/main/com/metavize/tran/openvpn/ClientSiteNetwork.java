@@ -22,8 +22,7 @@ package com.metavize.tran.openvpn;
  */
 public class  ClientSiteNetwork extends SiteNetwork
 {
-    // XXX Fixme
-    // private static final long serialVersionUID = -3950973798403822835L;
+    private static final long serialVersionUID = 4617902554944629290L;
 
     public ClientSiteNetwork()
     {

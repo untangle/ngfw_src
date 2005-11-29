@@ -13,6 +13,10 @@ package com.metavize.tran.openvpn;
 
 import com.metavize.mvvm.security.Tid;
 
+import java.util.Map;
+import java.util.List;
+import java.util.HashMap;
+
 import com.metavize.mvvm.tran.ValidateException;
 
 /* XXX Probably want to make this an abstract class and make this a little more generic */
@@ -27,7 +31,9 @@ class Sandbox
     private ExportList exportList;
     private ClientList clientList;
     private SiteList   siteList;
-    private final VpnTransform.ConfigState configState;    
+    private final VpnTransform.ConfigState configState;
+
+    private final Map<String,VpnGroup> resolveGroupMap = new HashMap<String,VpnGroup>();
 
     Sandbox( VpnTransform.ConfigState configState )
     {
@@ -36,27 +42,66 @@ class Sandbox
 
     void generateCertificate( CertificateParameters parameters ) throws Exception
     {
+        parameters.validate();
+
         this.certificateParameters = parameters;
+    }
+
+    GroupList getGroupList() throws Exception {
+        if ( this.groupList == null ) throw new ValidateException( "Groups haven't been created yet" );
+        return this.groupList;
     }
 
     void setGroupList( GroupList parameters ) throws Exception
     {
+        parameters.validate();
+        
         this.groupList = parameters;
+
+        /* Update the resolve group map */
+        resolveGroupMap.clear();
+
+        for ( VpnGroup group : this.groupList.getGroupList()) {
+            if ( resolveGroupMap.put( group.getName(), group ) != null ) {
+                throw new ValidateException( "Group name must be unique: " + group.getName());
+            }
+        }
     }
 
     void setExportList( ExportList parameters ) throws Exception
     {
+        parameters.validate();
+
         this.exportList = parameters;
     }
 
     void setClientList( ClientList parameters ) throws Exception
     {
+        parameters.validate();
+        
+        fixGroups( parameters.getClientList());
         this.clientList = parameters;
     }
 
     void setSiteList( SiteList parameters ) throws Exception
     {
+        parameters.validate();
+        
+        fixGroups( parameters.getSiteList());
         this.siteList = parameters;
+    }
+
+    private void fixGroups( List newClientList )
+        throws ValidateException
+    {
+        for ( VpnClient client : (List<VpnClient>)newClientList ) {
+            String name = client.getGroup().getName();
+            VpnGroup newGroup = resolveGroupMap.get( name );
+            if ( newGroup == null ) {
+                throw new ValidateException( "The group '" + name + "' is not in the group list" );
+            }
+            client.setGroup( newGroup );
+        }
     }
 
     VpnSettings completeConfig( Tid tid ) throws Exception

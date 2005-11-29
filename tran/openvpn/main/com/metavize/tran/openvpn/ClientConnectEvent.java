@@ -30,6 +30,8 @@ import com.metavize.mvvm.tran.IPaddr;
  */
 public class ClientConnectEvent extends LogEvent implements Serializable
 {
+    private static final long serialVersionUID = 5000360330098789417L;
+    
     private IPaddr address;
     private int    port;
 

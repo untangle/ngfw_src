@@ -28,9 +28,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     private static final String SITE_TO_SITE_NAME = "Site to Site List";
     private static final String NAME_LOG = "Event Log";
 
-    private static final String CERTIFICATE_PANEL_NAME = "Certificate Management";
-    private static final String NET_SETTINGS_1_PANEL_NAME = "Network Settings, Part 1";
-    private static final String NET_SETTINGS_2_PANEL_NAME = "Network Settings, Part 2";
+    private static final String WIZARD_SIMUL_NAME = "Wizard Simulation";
     
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
         super(mTransformJPanel);
@@ -106,11 +104,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	}
 	
 	RobertsJPanel robertsJPanel       = new RobertsJPanel( transformContext );
-	NetSettingsOneJPanel netOneJPanel = new NetSettingsOneJPanel( transformContext );
-	NetSettingsTwoJPanel netTwoJPanel = new NetSettingsTwoJPanel( transformContext );
-	super.mTabbedPane.addTab( CERTIFICATE_PANEL_NAME, null, robertsJPanel );
-	super.mTabbedPane.addTab( NET_SETTINGS_1_PANEL_NAME, null, netOneJPanel );
-	super.mTabbedPane.addTab( NET_SETTINGS_2_PANEL_NAME, null, netTwoJPanel );
+	super.mTabbedPane.addTab( WIZARD_SIMUL_NAME, null, robertsJPanel );
 
 	    // EXPORTS
 	    ExportsConfigJPanel exportsConfigJPanel = new ExportsConfigJPanel();

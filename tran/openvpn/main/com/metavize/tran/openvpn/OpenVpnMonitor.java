@@ -146,8 +146,7 @@ class OpenVpnMonitor implements Runnable
                 boolean killUndef = now.after( nextUpdate );
                 updateStatus( killUndef );
             } catch ( Exception e ) {
-                /* XXX This should be an info, kind of (an error here will print infinite messages */
-                logger.warn( "Error updating status", e );
+                logger.info( "Error updating status", e );
             }
             
             if ( now.after( nextUpdate )) {
@@ -318,7 +317,6 @@ class OpenVpnMonitor implements Runnable
             }
 
             /* Anything that is inactive or didn't get updated, is dead (or going to be dead) */
-            // XXX Log the disconnect event
             
             if ( !stats.updated || !stats.isActive ) {
                 this.statistics.incrBytesTx( stats.bytesTxTotal - stats.bytesTxLast );
@@ -372,9 +370,8 @@ class OpenVpnMonitor implements Runnable
         String valueArray[] = line.split( "," );
         if ( !valueArray[TYPE_INDEX].equals( "CLIENT_LIST" )) return;
         
-        /* XXXX Turn down to info for release */
         if ( valueArray.length != TOTAL_INDEX ) {
-            logger.warn( "Strange client description, ignoring: " + line );
+            logger.info( "Strange client description, ignoring: " + line );
             return;
         }
         
@@ -383,9 +380,9 @@ class OpenVpnMonitor implements Runnable
         /* Ignore undef entries */
         if ( name.equalsIgnoreCase( "undef" )) return;
 
-        String addressAndPort[] = valueArray[ADDRESS_INDEX].split(":" );
+        String addressAndPort[] = valueArray[ADDRESS_INDEX].split( ":" );
         if ( addressAndPort.length != 2 ) {
-            logger.warn( "Strange address description, ignoring: " + line );
+            logger.info( "Strange address description, ignoring: " + line );
             return;
         }
         

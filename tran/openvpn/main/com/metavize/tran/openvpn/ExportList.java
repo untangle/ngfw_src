@@ -19,24 +19,26 @@ import com.metavize.mvvm.tran.ValidateException;
 
 public class ExportList implements Serializable, Validatable
 { 
-    List<SiteNetwork> exportList;
+    // XXX SERIALVER private static final long serialVersionUID = 1032713361795879615L;
+    
+    List<ServerSiteNetwork> exportList;
 
     public ExportList()
     {
-        this( new LinkedList<SiteNetwork>());
+        this( new LinkedList<ServerSiteNetwork>());
     }
 
-    public ExportList( List<SiteNetwork> exportList )
+    public ExportList( List<ServerSiteNetwork> exportList )
     {
         this.exportList = exportList;
     }
 
-    public List<SiteNetwork> getExportList()
+    public List<ServerSiteNetwork> getExportList()
     {
         return this.exportList;
     }
     
-    public void setExportList( List<SiteNetwork> exportList )
+    public void setExportList( List<ServerSiteNetwork> exportList )
     {
         this.exportList = exportList;
     }
@@ -45,7 +47,7 @@ public class ExportList implements Serializable, Validatable
      * Validate the object, throw an exception if it is not valid */
     public void validate() throws ValidateException
     {
-        for ( SiteNetwork export : this.exportList ) export.validate();
+        for ( ServerSiteNetwork export : this.exportList ) export.validate();
 
         /* XXX Check for overlap, and check for conflicts with the network settings */
     }

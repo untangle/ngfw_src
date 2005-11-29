@@ -19,7 +19,9 @@ import com.metavize.mvvm.tran.Validatable;
 import com.metavize.mvvm.tran.ValidateException;
 
 public class SiteList implements Serializable, Validatable
-{ 
+{
+    // XXX SERIALVER private static final long serialVersionUID = 1032713361795879615L;
+
     List<VpnSite> siteList;
 
     public SiteList()

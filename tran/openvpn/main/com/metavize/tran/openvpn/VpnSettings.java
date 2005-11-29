@@ -34,8 +34,7 @@ import com.metavize.mvvm.tran.ValidateException;
  */
 public class VpnSettings implements Serializable, Validatable
 {
-    // XXX update the serial version id
-    // private static final long serialVersionUID = 4143567998376955882L;
+    // XXX SERIALVER private static final long serialVersionUID = 1032713361795879615L;
 
     static private final int KEY_SIZE_ENUMERATION[] = new int[] 
         { 
@@ -69,13 +68,13 @@ public class VpnSettings implements Serializable, Validatable
     private List siteList;
 
     /* Certificate information */
-    private String  domain;
+    private String  domain = "";
     private int     keySize = KEY_SIZE_DEFAULT;
-    private String  country;
-    private String  locality;
-    private String  province;
-    private String  organization;
-    private String  organizationUnit;
+    private String  country = "";
+    private String  locality = "";
+    private String  province = "";
+    private String  organization = "";
+    private String  organizationUnit = "";
     private String  email;
     private boolean caKeyOnUsb;
     
@@ -279,7 +278,8 @@ public class VpnSettings implements Serializable, Validatable
     }
 
     /**
-     * @return a new list containing all of the clients and the sites.(A VpnSite is a subclass of a VpnClient)
+     * @return a new list containing all of the clients and the sites. A VpnSite is a subclass of a 
+     * VpnClient.
      */
     public List getCompleteClientList()
     {
@@ -498,6 +498,14 @@ public class VpnSettings implements Serializable, Validatable
         this.organizationUnit = organizationUnit;
     }
 
+    /**
+     * @return true if the settings have been configured
+     */
+    boolean isConfigured()
+    {
+        return ( !( this.organizationUnit == null ) && ( this.organizationUnit.length() > 0 ));
+    }
+    
     /**
      * @return email.
      * @hibernate.property
