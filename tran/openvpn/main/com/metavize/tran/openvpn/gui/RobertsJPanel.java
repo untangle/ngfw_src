@@ -87,23 +87,27 @@ public class RobertsJPanel extends javax.swing.JPanel {
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel1.setText("Is Client?:");
-        jTextField1.setText( "false" );
+        jTextField1.setText( String.valueOf( false ));
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 180, -1));
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel2.setText("Address or Group:");
+        jTextField2.setText( "172.16.16.1 255.255.255.0" );
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 50, 180, -1));
 
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel3.setText("Passphrase or Export:");
+        jTextField3.setText( "192.168.1.1 255.255.255.0" );
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, 180, -1));
 
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel4.setText("Client 1:");
+        jTextField4.setText( "stan rbscott@metavize.com" );
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, 180, -1));
 
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel5.setText("Client 2:");
+        jTextField5.setText( "wendy rbscott@metavize.com" );
         jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, 180, -1));
 
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -116,7 +120,6 @@ public class RobertsJPanel extends javax.swing.JPanel {
 
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel8.setText( "unused:" );
-        jTextField8.setText( String.valueOf( false ));
         jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 230, 180, -1));
 
         jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);

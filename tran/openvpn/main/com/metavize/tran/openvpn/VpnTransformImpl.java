@@ -118,7 +118,7 @@ public class VpnTransformImpl extends AbstractTransform
             {
                 public boolean doWork( Session s )
                 {
-                    s.saveOrUpdate( settings );
+                    s.saveOrUpdate( newSettings );
                     VpnTransformImpl.this.settings = newSettings;
                     return true;
                 }
@@ -174,6 +174,7 @@ public class VpnTransformImpl extends AbstractTransform
     private void distributeAllClientFiles( VpnSettings settings ) throws TransformException
     {
         for ( VpnClient client : (List<VpnClient>)settings.getCompleteClientList()) {
+            if ( client.getDistributeClient()) continue;
             distributeClientConfig( client );
         }
     }
@@ -186,7 +187,7 @@ public class VpnTransformImpl extends AbstractTransform
         this.certificateManager.createClient( client );
 
         /* Generate a random key */
-        client.setDistributionKey( String.format( "%04x%04x", random.nextInt(), random.nextInt()));
+        client.setDistributionKey( String.format( "%08x%08x", random.nextInt(), random.nextInt()));
         
         TransactionWork tw = new TransactionWork()
             {
@@ -361,7 +362,6 @@ public class VpnTransformImpl extends AbstractTransform
 
         deployWebApp();
 
-        /* Register the VPN interface */
         reconfigure();
     }
 

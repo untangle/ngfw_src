@@ -183,8 +183,8 @@ class OpenVpnManager
 
             if ( isBridgeMode ) {
                 am.enableInternalBridgeIntf( MvvmContextFactory.context().networkingManager().get(), intf );
-                am.updateAddress();
             }
+            am.updateAddress();
         } catch ( ArgonException e ) {
             throw new TransformException( e );
         }
@@ -212,11 +212,14 @@ class OpenVpnManager
     
     void configure( VpnSettings settings ) throws TransformException
     {
+        /* Nothing to start */
+        if ( settings.getIsEdgeGuardClient()) return;
+
         writeSettings( settings );
         writeClientFiles( settings );
     }
     
-    void writeSettings( VpnSettings settings ) throws TransformException
+    private void writeSettings( VpnSettings settings ) throws TransformException
     {
         ScriptWriter sw = new VpnScriptWriter();
         
@@ -305,7 +308,7 @@ class OpenVpnManager
         writeClientConfigurationFile( settings, client, UNIX_CLIENT_DEFAULTS, UNIX_EXTENSION );
         writeClientConfigurationFile( settings, client, WIN_CLIENT_DEFAULTS,  WIN_EXTENSION );
 
-        logger.warn( "Executing: " + GENERATE_DISTRO_SCRIPT );
+        logger.debug( "Executing: " + GENERATE_DISTRO_SCRIPT );
         ScriptRunner.getInstance().exec( GENERATE_DISTRO_SCRIPT, client.getInternalName(),
                                          client.getDistributionKey(), internalAddress.getHostAddress());
     }

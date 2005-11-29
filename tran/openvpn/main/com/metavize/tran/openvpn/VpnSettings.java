@@ -91,6 +91,9 @@ public class VpnSettings implements Serializable, Validatable
     {
         /* XXXXXXXXXXX */
         
+        /* That is the only setting required for edgeguard client */
+        if ( isEdgeGuardClient ) return;
+        
         if (( groupList == null ) || ( groupList.size() == 0 )) throw new ValidateException( "No groups" );
         
         Set nameSet = new HashSet();
