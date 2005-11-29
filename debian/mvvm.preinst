@@ -1,3 +1,5 @@
 #!/bin/sh
 
-mvvm-restart restart
+if [ -x /usr/bin/mvvm-restart ]; then
+    mvvm-restart restart
+fi
