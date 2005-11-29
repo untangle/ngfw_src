@@ -27,12 +27,12 @@ import javax.swing.event.*;
 import javax.swing.table.*;
 
 
-public class ExportsConfigJPanel extends MEditTableJPanel {
+public class ConfigExportsJPanel extends MEditTableJPanel {
 
     private JCheckBox allInternalJCheckBox;
     private JCheckBox allExternalJCheckBox;
 
-    public ExportsConfigJPanel() {
+    public ConfigExportsJPanel() {
 
         super(true, true);
         super.setInsets(new Insets(4, 4, 2, 2));

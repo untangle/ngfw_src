@@ -27,22 +27,21 @@ import javax.swing.event.*;
 import javax.swing.table.*;
 
 
-public class ClientsConfigJPanel extends MEditTableJPanel {
+public class ConfigAddressGroupsJPanel extends MEditTableJPanel {
 
-    public ClientsConfigJPanel() {
+    public ConfigAddressGroupsJPanel() {
         super(true, true);
         super.setInsets(new Insets(4, 4, 2, 2));
         super.setTableTitle("client group rules");
         super.setDetailsTitle("rule notes");
 
         // create actual table model
-        ClientsTableModel clientsTableModel = new ClientsTableModel();
-        this.setTableModel( clientsTableModel );
+        TableModelAddressGroups tableModelAddressGroups = new TableModelAddressGroups();
+        this.setTableModel( tableModelAddressGroups );
     }
 }
 
-
-class ClientsTableModel extends MSortedTableModel{
+class TableModelAddressGroups extends MSortedTableModel{
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH_LARGE;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
@@ -159,3 +158,4 @@ class ClientsTableModel extends MSortedTableModel{
         return allRows;
     }
 }
+

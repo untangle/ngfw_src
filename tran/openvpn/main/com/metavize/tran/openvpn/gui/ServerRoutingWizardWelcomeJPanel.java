@@ -15,11 +15,11 @@ import com.metavize.gui.widgets.wizard.*;
 
 import com.metavize.tran.openvpn.*;
 
-public class ClientWizardWelcomeJPanel extends MWizardPageJPanel {
+public class ServerRoutingWizardWelcomeJPanel extends MWizardPageJPanel {
     
     private VpnTransform vpnTransform;
     
-    public ClientWizardWelcomeJPanel(VpnTransform vpnTransform) {
+    public ServerRoutingWizardWelcomeJPanel(VpnTransform vpnTransform) {
         this.vpnTransform = vpnTransform;
         
         initComponents();
@@ -27,7 +27,7 @@ public class ClientWizardWelcomeJPanel extends MWizardPageJPanel {
 
     public void doSave(Object settings, boolean validateOnly) throws Exception {  
         if( !validateOnly){
-            vpnTransform.startConfig(VpnTransform.ConfigState.CLIENT);
+            vpnTransform.startConfig(VpnTransform.ConfigState.SERVER_ROUTE);
         }
     }
 
@@ -45,7 +45,7 @@ public class ClientWizardWelcomeJPanel extends MWizardPageJPanel {
         add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, -1, -1));
 
         jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel2.setText("<html>This wizard will help guide you through your<br> initial setup and configuration of OpenVPN<br>as a VPN Client.</html>");
+        jLabel2.setText("<html>This wizard will help guide you through your<br> initial setup and configuration of OpenVPN<br>as a VPN Routing Server.</html>");
         add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 110, -1, -1));
 
         jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/tran/openvpn/gui/ProductShot.png")));

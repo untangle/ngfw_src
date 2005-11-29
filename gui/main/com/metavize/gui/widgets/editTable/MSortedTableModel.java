@@ -93,7 +93,11 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
     public static final String ROW_REMOVE  = "MV_remove_";
     public static final StringConstants sc = new StringConstants();
     ////////////////////////////////
-
+	
+    // MODES ///////////////////////
+    private boolean doInstantRemove = false;
+    ////////////////////////////////
+	
     // COLUMN SETUP ////////////////
     private Vector editableVector = new Vector();
     private Vector classTypeVector = new Vector();
@@ -212,6 +216,9 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
     public String getDescription(int row) {
         if( (descriptionModelIndex < 0) || (row < 0) )
             return "[no description]";
+	else if( getDataVector().size() <= 0 ){
+	    return "[no description]";
+	}
         else{
             return (String) super.getValueAt(row, descriptionModelIndex);
         }
@@ -426,6 +433,9 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
     ////////////////////////////////
 
     // ROW OPERATIONS //////////////
+    public void setInstantRemove(boolean enabled){
+	doInstantRemove = enabled;
+    }
     public void moveRow(final int fromModelRow, final int toModelRow){
 	if( fromModelRow != toModelRow ){
 	    // CREATE THE NEW INDEXES
@@ -487,15 +497,40 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
 	}
         dataVector.insertElementAt(generateNewRow(modelRow+1), modelRow);
         fireTableRowsInserted(modelRow, modelRow);
-    }        
+    }
+    public void clearAllRows(){
+	this.getTableHeader().getTable().getCellEditor().stopCellEditing();
+	this.getTableHeader().getTable().clearSelection();
+	Vector<Vector> dataVector = getDataVector();
+	dataVector.removeAllElements();
+	fireTableDataChanged();
+    }
     public void removeSelectedRows(int[] modelRows){
 	Vector<Vector> dataVector = getDataVector();
 	Vector removedRow;
-        for(int i=0; i< modelRows.length; i++){
-	    removedRow = dataVector.elementAt(modelRows[i]);
-	    removedRow.setElementAt(ROW_REMOVE, stateModelIndex);
+	Vector reindexedRow;
+	if( doInstantRemove ){
+	    Vector modelEntries[] = new Vector[modelRows.length];
+	    // XXX not fast, but works for now
+	    for(int i=0; i<modelRows.length; i++){
+		modelEntries[i] = dataVector.get(modelRows[i]);
+	    }
+	    for(int i=0; i<modelEntries.length; i++){
+		dataVector.remove(modelEntries[i]);
+	    }
+	    for(int i=0; i<dataVector.size(); i++){
+		reindexedRow = dataVector.elementAt(i);
+		reindexedRow.setElementAt(i+1, orderModelIndex);
+	    }
+	    fireTableDataChanged();
+	}
+	else{
+	    for(int i=0; i< modelRows.length; i++){
+		removedRow = dataVector.elementAt(modelRows[i]);
+		removedRow.setElementAt(ROW_REMOVE, stateModelIndex);		
+	    }
+	    fireTableRowsUpdated(modelRows[0], modelRows[modelRows.length-1]);
         }
-        fireTableRowsUpdated(modelRows[0], modelRows[modelRows.length-1]);
     }
     public String getRowState(int modelRow){
     	return (String) super.getValueAt(modelRow, stateModelIndex);

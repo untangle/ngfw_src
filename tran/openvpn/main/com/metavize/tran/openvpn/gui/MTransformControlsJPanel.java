@@ -68,28 +68,28 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	    super.mTabbedPane.addTab( WIZARD_NAME, null, wizardJPanel );
 
 	    // EXPORTS
-	    ExportsConfigJPanel exportsConfigJPanel = new ExportsConfigJPanel();
-	    super.savableMap.put( EXPORTS_NAME, exportsConfigJPanel );
-	    super.refreshableMap.put( EXPORTS_NAME, exportsConfigJPanel );
-	    super.mTabbedPane.addTab( EXPORTS_NAME, null, exportsConfigJPanel );
+	    ConfigExportsJPanel configExportsJPanel = new ConfigExportsJPanel();
+	    super.savableMap.put( EXPORTS_NAME, configExportsJPanel );
+	    super.refreshableMap.put( EXPORTS_NAME, configExportsJPanel );
+	    super.mTabbedPane.addTab( EXPORTS_NAME, null, configExportsJPanel );
 	    
 	    // CLIENT TO SITE
-	    ClientToSiteConfigJPanel clientToSiteConfigJPanel = new ClientToSiteConfigJPanel();
-	    super.savableMap.put( CLIENT_TO_SITE_NAME, clientToSiteConfigJPanel );
-	    super.refreshableMap.put( CLIENT_TO_SITE_NAME, clientToSiteConfigJPanel );
-	    super.mTabbedPane.addTab( CLIENT_TO_SITE_NAME, null, clientToSiteConfigJPanel );
+	    ConfigClientToSiteJPanel configClientToSiteJPanel = new ConfigClientToSiteJPanel();
+	    super.savableMap.put( CLIENT_TO_SITE_NAME, configClientToSiteJPanel );
+	    super.refreshableMap.put( CLIENT_TO_SITE_NAME, configClientToSiteJPanel );
+	    super.mTabbedPane.addTab( CLIENT_TO_SITE_NAME, null, configClientToSiteJPanel );
 	    
 	    // SITE TO SITE
-	    SiteToSiteConfigJPanel siteToSiteConfigJPanel = new SiteToSiteConfigJPanel();
-	    super.savableMap.put( SITE_TO_SITE_NAME, siteToSiteConfigJPanel );
-	    super.refreshableMap.put( SITE_TO_SITE_NAME, siteToSiteConfigJPanel );
-	    super.mTabbedPane.addTab( SITE_TO_SITE_NAME, null, siteToSiteConfigJPanel );
+	    ConfigSiteToSiteJPanel configSiteToSiteJPanel = new ConfigSiteToSiteJPanel();
+	    super.savableMap.put( SITE_TO_SITE_NAME, configSiteToSiteJPanel );
+	    super.refreshableMap.put( SITE_TO_SITE_NAME, configSiteToSiteJPanel );
+	    super.mTabbedPane.addTab( SITE_TO_SITE_NAME, null, configSiteToSiteJPanel );
 	    
-	    // CLIENTS (THIS SHOULD BE AFTER CTS AND STS FOR PREVALIDATION REASONS)
-	    ClientsConfigJPanel clientsConfigJPanel = new ClientsConfigJPanel();
-	    super.savableMap.put( CLIENTS_NAME, clientsConfigJPanel );
-	    super.refreshableMap.put( CLIENTS_NAME, clientsConfigJPanel );
-	    super.mTabbedPane.addTab( CLIENTS_NAME, null, clientsConfigJPanel );
+	    // ADDRESS GROUPS (THIS SHOULD BE AFTER CTS AND STS FOR PREVALIDATION REASONS)
+	    ConfigAddressGroupsJPanel configAddressGroupsJPanel = new ConfigAddressGroupsJPanel();
+	    super.savableMap.put( CLIENTS_NAME, configAddressGroupsJPanel );
+	    super.refreshableMap.put( CLIENTS_NAME, configAddressGroupsJPanel );
+	    super.mTabbedPane.addTab( CLIENTS_NAME, null, configAddressGroupsJPanel );
 
 	    // EVENT LOG ///////
 	    //LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
@@ -103,32 +103,6 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	    // BAD SHITE HAPPENED
 	}
 	
-	RobertsJPanel robertsJPanel       = new RobertsJPanel( transformContext );
-	super.mTabbedPane.addTab( WIZARD_SIMUL_NAME, null, robertsJPanel );
-
-	    // EXPORTS
-	    ExportsConfigJPanel exportsConfigJPanel = new ExportsConfigJPanel();
-	    super.savableMap.put( EXPORTS_NAME, exportsConfigJPanel );
-	    super.refreshableMap.put( EXPORTS_NAME, exportsConfigJPanel );
-	    super.mTabbedPane.addTab( EXPORTS_NAME, null, exportsConfigJPanel );
-	    
-	    // CLIENT TO SITE
-	    ClientToSiteConfigJPanel clientToSiteConfigJPanel = new ClientToSiteConfigJPanel();
-	    super.savableMap.put( CLIENT_TO_SITE_NAME, clientToSiteConfigJPanel );
-	    super.refreshableMap.put( CLIENT_TO_SITE_NAME, clientToSiteConfigJPanel );
-	    super.mTabbedPane.addTab( CLIENT_TO_SITE_NAME, null, clientToSiteConfigJPanel );
-	    
-	    // SITE TO SITE
-	    SiteToSiteConfigJPanel siteToSiteConfigJPanel = new SiteToSiteConfigJPanel();
-	    super.savableMap.put( SITE_TO_SITE_NAME, siteToSiteConfigJPanel );
-	    super.refreshableMap.put( SITE_TO_SITE_NAME, siteToSiteConfigJPanel );
-	    super.mTabbedPane.addTab( SITE_TO_SITE_NAME, null, siteToSiteConfigJPanel );
-	    
-	    // CLIENTS (THIS SHOULD BE AFTER CTS AND STS FOR PREVALIDATION REASONS)
-	    ClientsConfigJPanel clientsConfigJPanel = new ClientsConfigJPanel();
-	    super.savableMap.put( CLIENTS_NAME, clientsConfigJPanel );
-	    super.refreshableMap.put( CLIENTS_NAME, clientsConfigJPanel );
-	    super.mTabbedPane.addTab( CLIENTS_NAME, null, clientsConfigJPanel );
 
     }
 

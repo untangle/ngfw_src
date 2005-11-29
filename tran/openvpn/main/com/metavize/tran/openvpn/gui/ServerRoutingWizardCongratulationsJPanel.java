@@ -12,25 +12,28 @@
 package com.metavize.tran.openvpn.gui;
 
 import com.metavize.gui.widgets.wizard.*;
+import com.metavize.gui.util.Util;
 
 import com.metavize.tran.openvpn.*;
 
-public class ClientWizardWelcomeJPanel extends MWizardPageJPanel {
+public class ServerRoutingWizardCongratulationsJPanel extends MWizardPageJPanel {
     
     private VpnTransform vpnTransform;
     
-    public ClientWizardWelcomeJPanel(VpnTransform vpnTransform) {
+    public ServerRoutingWizardCongratulationsJPanel(VpnTransform vpnTransform) {
         this.vpnTransform = vpnTransform;
         
         initComponents();
     }
 
-    public void doSave(Object settings, boolean validateOnly) throws Exception {  
-        if( !validateOnly){
-            vpnTransform.startConfig(VpnTransform.ConfigState.CLIENT);
-        }
-    }
 
+    public void doSave(Object settings, boolean validateOnly) throws Exception {
+        
+        if( !validateOnly){
+            vpnTransform.completeConfig();
+        }
+    
+    }
     private void initComponents() {//GEN-BEGIN:initComponents
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -41,11 +44,11 @@ public class ClientWizardWelcomeJPanel extends MWizardPageJPanel {
         setOpaque(false);
         jLabel1.setFont(new java.awt.Font("Dialog", 1, 18));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("<html>Welcome to the<br>Metavize OpenVPN Setup Wizard!</html>");
+        jLabel1.setText("<html>Congratulations!<br>OpenVPN is configured<br>as a VPN Routing Server.</html>");
         add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, -1, -1));
 
         jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel2.setText("<html>This wizard will help guide you through your<br> initial setup and configuration of OpenVPN<br>as a VPN Client.</html>");
+        jLabel2.setText("<html>\nIf necessary, you can change the configuration of OpenVPN<br>\nby launching the Setup Wizard again.</html>");
         add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 110, -1, -1));
 
         jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/tran/openvpn/gui/ProductShot.png")));

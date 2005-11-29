@@ -92,6 +92,15 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
     public void setFillJButtonEnabled(boolean enabled){
 	fillJButton.setEnabled(enabled);
     }
+    
+    public void setShowDetailJPanelEnabled(boolean enabled){
+	if(!enabled)
+	    tableJPanel.remove(detailJScrollPane);
+    }
+    
+    public void setInstantRemove(boolean enabled){
+	getTableModel().setInstantRemove(enabled);
+    }
 
     public void setAuxJPanelEnabled(boolean enabled){
         auxJPanel.setVisible(enabled);
@@ -188,172 +197,172 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
 	mColoredJTable.doGreedyColumn(entryJScrollPane.getViewport().getExtentSize().width);
     }
     
-    private void initComponents() {//GEN-BEGIN:initComponents
-        java.awt.GridBagConstraints gridBagConstraints;
+        private void initComponents() {//GEN-BEGIN:initComponents
+                java.awt.GridBagConstraints gridBagConstraints;
 
-        contentJPanel = new javax.swing.JPanel();
-        tableJPanel = new javax.swing.JPanel();
-        entryJScrollPane = new javax.swing.JScrollPane();
-        entryJTable = mColoredJTable;
-        addJButton = new javax.swing.JButton();
-        removeJButton = new javax.swing.JButton();
-        fillJButton = new javax.swing.JButton();
-        detailJScrollPane = new javax.swing.JScrollPane();
-        detailJTextArea = new javax.swing.JTextArea();
-        auxJPanel = new javax.swing.JPanel();
+                contentJPanel = new javax.swing.JPanel();
+                tableJPanel = new javax.swing.JPanel();
+                entryJScrollPane = new javax.swing.JScrollPane();
+                entryJTable = mColoredJTable;
+                addJButton = new javax.swing.JButton();
+                removeJButton = new javax.swing.JButton();
+                fillJButton = new javax.swing.JButton();
+                detailJScrollPane = new javax.swing.JScrollPane();
+                detailJTextArea = new javax.swing.JTextArea();
+                auxJPanel = new javax.swing.JPanel();
 
-        setLayout(new java.awt.GridBagLayout());
+                setLayout(new java.awt.GridBagLayout());
 
-        contentJPanel.setLayout(new java.awt.GridBagLayout());
+                contentJPanel.setLayout(new java.awt.GridBagLayout());
 
-        tableJPanel.setLayout(new java.awt.GridBagLayout());
+                tableJPanel.setLayout(new java.awt.GridBagLayout());
 
-        tableJPanel.setMinimumSize(new java.awt.Dimension(40, 40));
-        entryJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        entryJScrollPane.setDoubleBuffered(true);
-        entryJTable.setBackground(new java.awt.Color(213, 213, 226));
-        entryJTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
-        entryJTable.setDoubleBuffered(true);
-        entryJScrollPane.setViewportView(entryJTable);
+                tableJPanel.setMinimumSize(new java.awt.Dimension(40, 40));
+                entryJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+                entryJScrollPane.setDoubleBuffered(true);
+                entryJTable.setBackground(new java.awt.Color(213, 213, 226));
+                entryJTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+                entryJTable.setDoubleBuffered(true);
+                entryJScrollPane.setViewportView(entryJTable);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridheight = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        tableJPanel.add(entryJScrollPane, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.gridheight = 3;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                tableJPanel.add(entryJScrollPane, gridBagConstraints);
 
-        addJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        addJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/widgets/editTable/IconPlus24x24.png")));
-        addJButton.setToolTipText("<html><b>Add New Row</b> - Use this button to insert a new row at a selected point in the table.<br>Hold down the shift key when clicking in order to insert at the end of the table.</html>");
-        addJButton.setDoubleBuffered(true);
-        addJButton.setFocusPainted(false);
-        addJButton.setFocusable(false);
-        addJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        addJButton.setIconTextGap(0);
-        addJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        addJButton.setMaximumSize(new java.awt.Dimension(32, 32));
-        addJButton.setMinimumSize(new java.awt.Dimension(32, 32));
-        addJButton.setPreferredSize(new java.awt.Dimension(32, 32));
-        addJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addJButtonActionPerformed(evt);
-            }
-        });
+                addJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                addJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/widgets/editTable/IconPlus24x24.png")));
+                addJButton.setToolTipText("<html><b>Add New Row</b> - Use this button to insert a new row at a selected point in the table.<br>Hold down the shift key when clicking in order to insert at the end of the table.</html>");
+                addJButton.setDoubleBuffered(true);
+                addJButton.setFocusPainted(false);
+                addJButton.setFocusable(false);
+                addJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+                addJButton.setIconTextGap(0);
+                addJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+                addJButton.setMaximumSize(new java.awt.Dimension(32, 32));
+                addJButton.setMinimumSize(new java.awt.Dimension(32, 32));
+                addJButton.setPreferredSize(new java.awt.Dimension(32, 32));
+                addJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                addJButtonActionPerformed(evt);
+                        }
+                });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
-        gridBagConstraints.weighty = 0.5;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 3, 4);
-        tableJPanel.add(addJButton, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+                gridBagConstraints.weighty = 0.5;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 3, 4);
+                tableJPanel.add(addJButton, gridBagConstraints);
 
-        removeJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        removeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/widgets/editTable/IconMinus24x24.png")));
-        removeJButton.setToolTipText("<html><b>Remove Row</b> - Use this button to remove selected rows in a table.</html>");
-        removeJButton.setDoubleBuffered(true);
-        removeJButton.setFocusPainted(false);
-        removeJButton.setFocusable(false);
-        removeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        removeJButton.setIconTextGap(0);
-        removeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        removeJButton.setMaximumSize(new java.awt.Dimension(32, 32));
-        removeJButton.setMinimumSize(new java.awt.Dimension(32, 32));
-        removeJButton.setPreferredSize(new java.awt.Dimension(32, 32));
-        removeJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                removeJButtonActionPerformed(evt);
-            }
-        });
+                removeJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                removeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/widgets/editTable/IconMinus24x24.png")));
+                removeJButton.setToolTipText("<html><b>Remove Row</b> - Use this button to remove selected rows in a table.</html>");
+                removeJButton.setDoubleBuffered(true);
+                removeJButton.setFocusPainted(false);
+                removeJButton.setFocusable(false);
+                removeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+                removeJButton.setIconTextGap(0);
+                removeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+                removeJButton.setMaximumSize(new java.awt.Dimension(32, 32));
+                removeJButton.setMinimumSize(new java.awt.Dimension(32, 32));
+                removeJButton.setPreferredSize(new java.awt.Dimension(32, 32));
+                removeJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                removeJButtonActionPerformed(evt);
+                        }
+                });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-        gridBagConstraints.weighty = 0.5;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 4);
-        tableJPanel.add(removeJButton, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 2;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+                gridBagConstraints.weighty = 0.5;
+                gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 4);
+                tableJPanel.add(removeJButton, gridBagConstraints);
 
-        fillJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        fillJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/widgets/editTable/IconFill24x24.png")));
-        fillJButton.setToolTipText("<html><b>Fill Check Boxes</b> - Use this button to check or uncheck all the checkboxes in a selected column.</html>");
-        fillJButton.setDoubleBuffered(true);
-        fillJButton.setFocusPainted(false);
-        fillJButton.setFocusable(false);
-        fillJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        fillJButton.setIconTextGap(0);
-        fillJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        fillJButton.setMaximumSize(new java.awt.Dimension(32, 32));
-        fillJButton.setMinimumSize(new java.awt.Dimension(32, 32));
-        fillJButton.setPreferredSize(new java.awt.Dimension(32, 32));
-        fillJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fillJButtonActionPerformed(evt);
-            }
-        });
+                fillJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                fillJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/widgets/editTable/IconFill24x24.png")));
+                fillJButton.setToolTipText("<html><b>Fill Check Boxes</b> - Use this button to check or uncheck all the checkboxes in a selected column.</html>");
+                fillJButton.setDoubleBuffered(true);
+                fillJButton.setFocusPainted(false);
+                fillJButton.setFocusable(false);
+                fillJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+                fillJButton.setIconTextGap(0);
+                fillJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+                fillJButton.setMaximumSize(new java.awt.Dimension(32, 32));
+                fillJButton.setMinimumSize(new java.awt.Dimension(32, 32));
+                fillJButton.setPreferredSize(new java.awt.Dimension(32, 32));
+                fillJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                fillJButtonActionPerformed(evt);
+                        }
+                });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-        gridBagConstraints.weighty = 0.5;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 4);
-        tableJPanel.add(fillJButton, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 3;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+                gridBagConstraints.weighty = 0.5;
+                gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 4);
+                tableJPanel.add(fillJButton, gridBagConstraints);
 
-        detailJScrollPane.setBorder(new javax.swing.border.EtchedBorder());
-        detailJScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        detailJScrollPane.setDoubleBuffered(true);
-        detailJScrollPane.setFocusable(false);
-        detailJScrollPane.setMinimumSize(new java.awt.Dimension(31, 50));
-        detailJScrollPane.setOpaque(false);
-        detailJScrollPane.setPreferredSize(new java.awt.Dimension(104, 50));
-        detailJTextArea.setBackground(new java.awt.Color(204, 204, 204));
-        detailJTextArea.setEditable(false);
-        detailJTextArea.setLineWrap(true);
-        detailJTextArea.setWrapStyleWord(true);
-        detailJTextArea.setBorder(null);
-        detailJTextArea.setFocusable(false);
-        detailJTextArea.setMargin(new java.awt.Insets(2, 2, 2, 2));
-        detailJTextArea.setMinimumSize(new java.awt.Dimension(100, 50));
-        detailJTextArea.setOpaque(false);
-        detailJTextArea.setPreferredSize(null);
-        detailJScrollPane.setViewportView(detailJTextArea);
+                detailJScrollPane.setBorder(new javax.swing.border.EtchedBorder());
+                detailJScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                detailJScrollPane.setDoubleBuffered(true);
+                detailJScrollPane.setFocusable(false);
+                detailJScrollPane.setMinimumSize(new java.awt.Dimension(31, 50));
+                detailJScrollPane.setOpaque(false);
+                detailJScrollPane.setPreferredSize(new java.awt.Dimension(104, 50));
+                detailJTextArea.setBackground(new java.awt.Color(204, 204, 204));
+                detailJTextArea.setEditable(false);
+                detailJTextArea.setLineWrap(true);
+                detailJTextArea.setWrapStyleWord(true);
+                detailJTextArea.setBorder(null);
+                detailJTextArea.setFocusable(false);
+                detailJTextArea.setMargin(new java.awt.Insets(2, 2, 2, 2));
+                detailJTextArea.setMinimumSize(new java.awt.Dimension(100, 50));
+                detailJTextArea.setOpaque(false);
+                detailJTextArea.setPreferredSize(null);
+                detailJScrollPane.setViewportView(detailJTextArea);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
-        tableJPanel.add(detailJScrollPane, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 4;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
+                tableJPanel.add(detailJScrollPane, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
-        tableJPanel.add(auxJPanel, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+                tableJPanel.add(auxJPanel, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        contentJPanel.add(tableJPanel, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                contentJPanel.add(tableJPanel, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        add(contentJPanel, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                add(contentJPanel, gridBagConstraints);
 
-    }//GEN-END:initComponents
+        }//GEN-END:initComponents
 
     private void fillJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fillJButtonActionPerformed
 	try{
@@ -465,35 +474,38 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
 		}	 
 	    }
 	    
+	    // XXX had to remove the following because it was error prone... it doesnt properly handle the case where all rows are deleted...  and who knows what else...
+
 	    // remove the actual rows, and determine the view location of the first selection
+	    entryJTable.clearSelection(); // XXX because if there is a selection after row removal... some null pointer exception gets thrown
 	    MEditTableJPanel.this.getTableModel().removeSelectedRows(selectedModelRows);
-	    int newViewRow = getTableModel().getRowModelToViewIndex(selectedModelRows[minViewIndex]);
+	    //int newViewRow = getTableModel().getRowModelToViewIndex(selectedModelRows[minViewIndex]);
 	    
 	    // highlight row
-	    entryJTable.clearSelection();
-	    entryJTable.getSelectionModel().addSelectionInterval(newViewRow, newViewRow);
+	    //entryJTable.clearSelection();
+	    //entryJTable.getSelectionModel().addSelectionInterval(newViewRow, newViewRow);
 	    
 	    // scroll to row
-	    Rectangle rect = entryJTable.getCellRect(newViewRow, 0, true);
-	    entryJTable.scrollRectToVisible(rect);
+	    //Rectangle rect = entryJTable.getCellRect(newViewRow, 0, true);
+	    //entryJTable.scrollRectToVisible(rect);
 	}
 	catch(Exception e){
 	    Util.handleExceptionNoRestart("Error removing row", e);
 	}
     }//GEN-LAST:event_removeJButtonActionPerformed
     
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton addJButton;
-    protected javax.swing.JPanel auxJPanel;
-    private javax.swing.JPanel contentJPanel;
-    private javax.swing.JScrollPane detailJScrollPane;
-    protected javax.swing.JTextArea detailJTextArea;
-    protected javax.swing.JScrollPane entryJScrollPane;
-    protected javax.swing.JTable entryJTable;
-    private javax.swing.JButton fillJButton;
-    private javax.swing.JButton removeJButton;
-    private javax.swing.JPanel tableJPanel;
-    // End of variables declaration//GEN-END:variables
+        // Variables declaration - do not modify//GEN-BEGIN:variables
+        private javax.swing.JButton addJButton;
+        protected javax.swing.JPanel auxJPanel;
+        private javax.swing.JPanel contentJPanel;
+        private javax.swing.JScrollPane detailJScrollPane;
+        protected javax.swing.JTextArea detailJTextArea;
+        protected javax.swing.JScrollPane entryJScrollPane;
+        protected javax.swing.JTable entryJTable;
+        private javax.swing.JButton fillJButton;
+        private javax.swing.JButton removeJButton;
+        private javax.swing.JPanel tableJPanel;
+        // End of variables declaration//GEN-END:variables
     
 }
 
