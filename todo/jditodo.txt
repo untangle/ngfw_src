@@ -1,26 +1,82 @@
-postrm stop doesn't seem to work
+check what happens on exception in preStart
 
-Fix up email addr schema
+check syslog messages
+
+to do on mephisto:
+    new activation stuff
+    fsckfix
+    /etc/fstab
+    get rid of /usr/sbin/mv if possible
+    ssh from *.metavize.com only
+    how is kiosk pw getting set to *?
+
+
+move index creation to report time
+
+
+Activation
+----------
+To Test:
+    1) close window -> cancel registration
+    2) make box bigger for license agreement
+       AGREE/DO NOT AGREE to match text
+       do not agree + next = cancel
+       not clicking agree pops up window underneath warning.
+    3) doesn't check the key
+    4) have them enter the number, no default
+    5) timezone sort, default
+
+need port list (part of portrange)
+
+IDS
+---
+transformFactory.getengine
+where else state synchrofucked?
+need doResponseLine handling for uripath?
+more exception handling?
+"block/pass/log/alert"?
+
+
+--
+
+To talk about:
+
+rbscott
+    516 -- unk
+    681 -- unk
+    768 -- unk
+    
+dmorris
+    471
+
+nchilders
+    758
+
+
+set all product owners away from dmorris
+--------------------------------------------------------------------------------
+
+memory stuff
+-----------
+memory usage:
+	PortList 2 meg Each * 3 = 6 meg!
+
+concurrency level of casings
+
+set read limit for unparsers
+heap raise to 300 (?)
+could construct a lot of things lazily, like:
+    PipelineImpl.files
+
+--------------------------------------------------------------------------------
+
+replace virusVendor & spamVendor 
+
+postrm stop doesn't seem to work
 
 3 interface isues
 -----------------
-Add to pipeline endpoints:
-    policy_id int8
-    inbound   bool
-
-check all uses of Direction class (most should use policy direction instead)
-    otugoing -> outbound
-
-not done yet:
-    pipeline endpoints
-    argon.weld passes isInbound to newSession
-    http subscriptions not using interface, but instead session.isInbound() 
-
-  UI: mapping from interface number to name (0 = external, 1 = internal, 2 = dmz, 3 = "vpn foo", 4 = "all vpn", etc)
-
     create top level mvvm settings tabe to hang singletons off of
-
-policy manager needs changePolicy()
 
 upgrade warnings in creation of initial hibernate objects (admin manager, etc), and in saving settings
 
@@ -30,9 +86,6 @@ make sure all serializable classes have:
     serial #
     hashcode
     equals
-
-postgres analyze hourly
-
 
 @report_max_count@ instead of 15 in report templates
 
@@ -54,7 +107,6 @@ For 2.5.2
 ----------
 Phishing
   -- put emails into svn/public place
-  -- get order wrt spamassassin fixed somehow
   -- don't have phish score name in events (like virus name)
 
 don't put .jrxml into transform jar files
@@ -75,13 +127,70 @@ Belongs with spam only:
   SpamImpl
 
 
-
-
-
 What should be semantics when a shutdown arrives for a disabled queue.
 
+----------------------------------------------------------------------------------
 
----
+Packages in other
+-----------------
+
+package             other               sarge                           fresh box
+---------------------------------------------------------------------------------
+dnsmasq             2.22-1              2.22-2                          2.22-1
+libc                2.3.2.ds1-22        same                            same
+ntp                 1:4.2.0a+stable-2   same                            same
+ntp-simple          ""                  ""                              ""
+ntp-server          ""                  ""                              ""
+clamav              0.86.2-1            0.84-2.sarge.2 (security)       backport-0.85-1
+clamav-daemon       ""                  ""                              ""
+clamav-freshclam    ""                  ""                              ""
+libclamav1          ""                  ""                              ""
+clamav-base         ""                  ""                              ""
+libcurl3            7.13.2-2            same                            same
+libgmp3             4.1.4-6             same                            same
+libidn11            0.5.13-1            same                            same
+
+spamassassin        3.0.4-1woody1       3.0.3-2 (security)              3.0.2.1
+spamc               3.0.4-1woody1       3.0.3-2 (security)              3.0.2.1
+libdigest-hmac      1.01-3              1.01-3                          1.01-3
+libdigest-nilsimsa  0.06-2              0.06-2                          none
+libdigest-sha1      2.10-1              2.10-1                          2.10-1
+libmailtools-perl   1.62-1              1.62-1                          none
+libnet-dns-perl     0.48-1              0.48-1                          0.48-1
+libssl-0.9.6        0.9.6m-1            0.9.6m-1                        none
+libssl-0.9.7        none                0.9.7e-3                        0.9.7e-2
+libtimedate-perl    1.1600-4            1.1600-4                        none
+
+to add:
+~ $ s apt-get -s install --download-only spamassassin              [jdi @ slab]
+Reading Package Lists... Done
+Building Dependency Tree... Done
+The following extra packages will be installed:
+  libdigest-sha1-perl spamc
+Suggested packages:
+  libmail-spf-query-perl razor libnet-ident-perl libio-socket-ssl-perl
+  libdbi-perl dcc-client pyzor libnet-smtp-perl
+Recommended packages:
+  libnet-dns-perl
+
+~ $ s apt-get -s install clamav clamav-daemon
+Reading Package Lists... Done
+Building Dependency Tree... Done
+The following extra packages will be installed:
+  clamav-base clamav-freshclam libclamav1 libgmp3
+Suggested packages:
+  unrar lha clamav-docs daemon
+Recommended packages:
+  arj unzoo
+The following NEW packages will be installed:
+  clamav clamav-base clamav-daemon clamav-freshclam libclamav1 libgmp3
+
+
+Volatile.debian.net
+
+
+
+----------------------------------------------------------------------------------
 
 check closed/closed state (for released before new session time)
 
@@ -91,9 +200,9 @@ what else is in db dir?
 
 try system when nameserver is slow (when are we doing reverse lookups? known: spam)
 
-Need to use dist-upgrade instead of upgrade?
-
 Use new atomic stuff instead of volatile or synchronized where appropriate
+
+stop exporting ArgonManager
 
 reports
     -- use dhcp names when available
@@ -123,16 +232,9 @@ reports
 
 
 
-email
------
-  -- add per-protocol controls for in/out
-  -- figure out if our hand-written base64 encoding/decoding is sufficient
-
-
 RFEs from one meeting
 ---------------------
   -- remote management from specific outside place
-  -- check out Postini anti-spam
 
 gui
 ---
