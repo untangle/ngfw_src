@@ -174,7 +174,7 @@ public class VpnTransformImpl extends AbstractTransform
     private void distributeAllClientFiles( VpnSettings settings ) throws TransformException
     {
         for ( VpnClient client : (List<VpnClient>)settings.getCompleteClientList()) {
-            if ( client.getDistributeClient()) continue;
+            if ( !client.getDistributeClient()) continue;
             distributeClientConfig( client );
         }
     }
@@ -381,7 +381,7 @@ public class VpnTransformImpl extends AbstractTransform
         }
 
         /* Don't start if openvpn cannot be configured */
-        if ( !settings.isConfigured()) throw new TransformStartException( "Openvpn is not configured" );
+        if ( !settings.isConfigured()) throw new UnconfiguredException( "Openvpn is not configured" );
 
         try {
             settings.validate();
@@ -395,7 +395,7 @@ public class VpnTransformImpl extends AbstractTransform
             } catch ( Exception stopException ) {
                 logger.error( "Unable to stop the openvpn process", stopException );
             }
-            throw new TransformStartException( e );
+            throw new UnconfiguredException( e );
         }
 
         reconfigure();

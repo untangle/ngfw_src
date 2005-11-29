@@ -14,8 +14,19 @@ import com.metavize.mvvm.tran.TransformStartException;
 
 public class UnconfiguredException extends TransformStartException
 {
-    private UnconfiguredException( String message )
+    UnconfiguredException( String message )
     {
         super( message );
     }
+
+    UnconfiguredException( Exception e )
+    {
+        super( e );
+    }
+
+    UnconfiguredException( String message, Exception e )
+    {
+        super( message, e );
+    }
+
 }
