@@ -86,10 +86,22 @@
   </category>
 
   <category name="com.metavize.tran.virus">
-    <priority value="DEBUG"/>
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.metavize.tran.clam">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.metavize.tran.hauri">
+    <priority value="WARN"/>
   </category>
 
   <category name="com.metavize.tran.spam">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.metavize.tran.clamphish">
     <priority value="WARN"/>
   </category>
 

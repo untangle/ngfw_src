@@ -26,7 +26,6 @@
   <!-- ============================================== -->
 
   <appender name="MVVMLog" class="org.apache.log4j.RollingFileAppender">
-    <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler"/>
     <param name="File" value="${bunnicula.home}/log/mvvm.log"/>
     <param name="Append" value="true"/>
     <param name="MaxFileSize" value="500KB"/>

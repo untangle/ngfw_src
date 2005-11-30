@@ -12,9 +12,9 @@
                      debug="false">
 
   <appender name="FILE" class="org.apache.log4j.DailyRollingFileAppender">
-    <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler"/>
     <param name="File" value="@MVVM_HOME@/log/reporter.log"/>
     <param name="Append" value="true"/>
+    <param name="MaxBackupIndex" value="9"/>
     <param name="Threshold" value="INFO"/>
     <!-- Rollover at midnight each day -->
     <param name="DatePattern" value="'.'yyyy-MM-dd"/>
