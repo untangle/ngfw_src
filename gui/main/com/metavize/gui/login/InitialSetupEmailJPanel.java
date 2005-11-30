@@ -12,12 +12,15 @@
 package com.metavize.gui.login;
 
 import com.metavize.gui.widgets.wizard.*;
-import java.util.Arrays;
+import com.metavize.gui.util.Util;
+
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.*;
-import com.metavize.gui.util.Util;
 import com.metavize.mvvm.NetworkingManager;
 import com.metavize.mvvm.NetworkingConfiguration;
+
+
+import java.util.Arrays;
 import javax.swing.SwingUtilities;
 import javax.swing.SpinnerNumberModel;
 import java.awt.Color;
@@ -26,14 +29,19 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
     
     private static final String EXCEPTION_PASSWORD_MISSING = "A \"Password\" must be specified if a \"Login\" is specified.";
     private static final String EXCEPTION_LOGIN_MISSING = "A \"Login\" must be specified if a \"Password\" is specified.";
-    private static final String EXCEPTION_HOSTNAME_MISSING = "A \"Hostanme\" must be specified if \"Login\" or \"Password\" are specified.";
-    private static final String EXCEPTION_ADDRESS_MISSING = "A \"From Address\" must be specified.";
+    private static final String EXCEPTION_HOSTNAME_MISSING = "A \"Hostname\" must be specified if \"Login\" or \"Password\" are specified.";
+    //private static final String EXCEPTION_ADDRESS_MISSING = "A \"From Address\" must be specified.";
     
     public InitialSetupEmailJPanel() {
         initComponents();
 	portJSpinner.setModel(new SpinnerNumberModel(25,0,65535,1));
+	addressJTextField.setText("EdgeGuard@local.domain"); // XXX this should be directly linked from the actual default value
     }
-
+    
+    public void initialFocus(){
+	hostJTextField.requestFocus();
+    }
+    
     String host;
     int port;
     String login;
@@ -100,152 +108,151 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
     
 
 
-    private void initComponents() {//GEN-BEGIN:initComponents
-        java.awt.GridBagConstraints gridBagConstraints;
+        private void initComponents() {//GEN-BEGIN:initComponents
+                java.awt.GridBagConstraints gridBagConstraints;
 
-        buttonGroup1 = new javax.swing.ButtonGroup();
-        jLabel2 = new javax.swing.JLabel();
-        jPanel1 = new javax.swing.JPanel();
-        jLabel8 = new javax.swing.JLabel();
-        hostJTextField = new javax.swing.JTextField();
-        jLabel15 = new javax.swing.JLabel();
-        portJSpinner = new javax.swing.JSpinner();
-        jLabel10 = new javax.swing.JLabel();
-        smtpLoginJTextField = new javax.swing.JTextField();
-        jLabel16 = new javax.swing.JLabel();
-        smtpPasswordJPasswordField = new javax.swing.JPasswordField();
-        jPanel2 = new javax.swing.JPanel();
-        jLabel12 = new javax.swing.JLabel();
-        addressJTextField = new javax.swing.JTextField();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
+                buttonGroup1 = new javax.swing.ButtonGroup();
+                jLabel2 = new javax.swing.JLabel();
+                jPanel1 = new javax.swing.JPanel();
+                jLabel8 = new javax.swing.JLabel();
+                hostJTextField = new javax.swing.JTextField();
+                jLabel15 = new javax.swing.JLabel();
+                portJSpinner = new javax.swing.JSpinner();
+                jLabel10 = new javax.swing.JLabel();
+                smtpLoginJTextField = new javax.swing.JTextField();
+                jLabel16 = new javax.swing.JLabel();
+                smtpPasswordJPasswordField = new javax.swing.JPasswordField();
+                jPanel2 = new javax.swing.JPanel();
+                jLabel12 = new javax.swing.JLabel();
+                addressJTextField = new javax.swing.JTextField();
+                jLabel3 = new javax.swing.JLabel();
+                jLabel4 = new javax.swing.JLabel();
 
-        setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+                setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        setOpaque(false);
-        jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel2.setText("<html>Please choose an email server (SMTP) which EdgeGuard will use<br>to send emails.  This information is optional.</html>");
-        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, -1, -1));
+                setOpaque(false);
+                jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel2.setText("<html>Please choose an email server (SMTP) which EdgeGuard will use<br>to send emails, reports, etc.  This information is optional.</html>");
+                add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, -1, -1));
 
-        jPanel1.setLayout(new java.awt.GridBagLayout());
+                jPanel1.setLayout(new java.awt.GridBagLayout());
 
-        jPanel1.setOpaque(false);
-        jLabel8.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel8.setText("Hostname:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        jPanel1.add(jLabel8, gridBagConstraints);
+                jPanel1.setOpaque(false);
+                jLabel8.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel8.setText("Hostname:");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                jPanel1.add(jLabel8, gridBagConstraints);
 
-        hostJTextField.setMaximumSize(new java.awt.Dimension(170, 19));
-        hostJTextField.setMinimumSize(new java.awt.Dimension(170, 19));
-        hostJTextField.setPreferredSize(new java.awt.Dimension(170, 19));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
-        jPanel1.add(hostJTextField, gridBagConstraints);
+                hostJTextField.setMaximumSize(new java.awt.Dimension(170, 19));
+                hostJTextField.setMinimumSize(new java.awt.Dimension(170, 19));
+                hostJTextField.setPreferredSize(new java.awt.Dimension(170, 19));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
+                jPanel1.add(hostJTextField, gridBagConstraints);
 
-        jLabel15.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel15.setText("Port:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        jPanel1.add(jLabel15, gridBagConstraints);
+                jLabel15.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel15.setText("Port:");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                jPanel1.add(jLabel15, gridBagConstraints);
 
-        portJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
-        portJSpinner.setFocusable(false);
-        portJSpinner.setMaximumSize(new java.awt.Dimension(170, 19));
-        portJSpinner.setMinimumSize(new java.awt.Dimension(170, 19));
-        portJSpinner.setPreferredSize(new java.awt.Dimension(170, 19));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
-        jPanel1.add(portJSpinner, gridBagConstraints);
+                portJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
+                portJSpinner.setMaximumSize(new java.awt.Dimension(170, 19));
+                portJSpinner.setMinimumSize(new java.awt.Dimension(170, 19));
+                portJSpinner.setPreferredSize(new java.awt.Dimension(170, 19));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
+                jPanel1.add(portJSpinner, gridBagConstraints);
 
-        jLabel10.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel10.setText("Authentication Login:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
-        jPanel1.add(jLabel10, gridBagConstraints);
+                jLabel10.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel10.setText("Authentication Login:");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
+                jPanel1.add(jLabel10, gridBagConstraints);
 
-        smtpLoginJTextField.setMaximumSize(new java.awt.Dimension(170, 19));
-        smtpLoginJTextField.setMinimumSize(new java.awt.Dimension(170, 19));
-        smtpLoginJTextField.setPreferredSize(new java.awt.Dimension(170, 19));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 0, 2, 0);
-        jPanel1.add(smtpLoginJTextField, gridBagConstraints);
+                smtpLoginJTextField.setMaximumSize(new java.awt.Dimension(170, 19));
+                smtpLoginJTextField.setMinimumSize(new java.awt.Dimension(170, 19));
+                smtpLoginJTextField.setPreferredSize(new java.awt.Dimension(170, 19));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.insets = new java.awt.Insets(10, 0, 2, 0);
+                jPanel1.add(smtpLoginJTextField, gridBagConstraints);
 
-        jLabel16.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel16.setText("Authentication Password:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        jPanel1.add(jLabel16, gridBagConstraints);
+                jLabel16.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel16.setText("Authentication Password:");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                jPanel1.add(jLabel16, gridBagConstraints);
 
-        smtpPasswordJPasswordField.setMaximumSize(new java.awt.Dimension(170, 19));
-        smtpPasswordJPasswordField.setMinimumSize(new java.awt.Dimension(170, 19));
-        smtpPasswordJPasswordField.setPreferredSize(new java.awt.Dimension(170, 19));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
-        jPanel1.add(smtpPasswordJPasswordField, gridBagConstraints);
+                smtpPasswordJPasswordField.setMaximumSize(new java.awt.Dimension(170, 19));
+                smtpPasswordJPasswordField.setMinimumSize(new java.awt.Dimension(170, 19));
+                smtpPasswordJPasswordField.setPreferredSize(new java.awt.Dimension(170, 19));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
+                jPanel1.add(smtpPasswordJPasswordField, gridBagConstraints);
 
-        add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 60, 340, 110));
+                add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 60, 340, 110));
 
-        jPanel2.setLayout(new java.awt.GridBagLayout());
+                jPanel2.setLayout(new java.awt.GridBagLayout());
 
-        jPanel2.setOpaque(false);
-        jLabel12.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel12.setText("From Address:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        jPanel2.add(jLabel12, gridBagConstraints);
+                jPanel2.setOpaque(false);
+                jLabel12.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel12.setText("From Address:");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                jPanel2.add(jLabel12, gridBagConstraints);
 
-        addressJTextField.setMaximumSize(new java.awt.Dimension(170, 19));
-        addressJTextField.setMinimumSize(new java.awt.Dimension(170, 19));
-        addressJTextField.setPreferredSize(new java.awt.Dimension(170, 19));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        jPanel2.add(addressJTextField, gridBagConstraints);
+                addressJTextField.setMaximumSize(new java.awt.Dimension(170, 19));
+                addressJTextField.setMinimumSize(new java.awt.Dimension(170, 19));
+                addressJTextField.setPreferredSize(new java.awt.Dimension(170, 19));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                jPanel2.add(addressJTextField, gridBagConstraints);
 
-        add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(58, 200, 340, 30));
+                add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(58, 200, 340, 30));
 
-        jLabel3.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel3.setText("<html>Please choose the \"From Address\" of emails sent from EdgeGuard.</html>");
-        add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 180, -1, -1));
+                jLabel3.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel3.setText("<html>Please choose the \"From Address\" of emails sent from EdgeGuard.</html>");
+                add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 180, -1, -1));
 
-        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
-        add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(-130, 230, -1, -1));
+                jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
+                add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(-130, 230, -1, -1));
 
-    }//GEN-END:initComponents
+        }//GEN-END:initComponents
 
     
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    public javax.swing.JTextField addressJTextField;
-    private javax.swing.ButtonGroup buttonGroup1;
-    public javax.swing.JTextField hostJTextField;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel16;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JSpinner portJSpinner;
-    public javax.swing.JTextField smtpLoginJTextField;
-    private javax.swing.JPasswordField smtpPasswordJPasswordField;
-    // End of variables declaration//GEN-END:variables
+        // Variables declaration - do not modify//GEN-BEGIN:variables
+        public javax.swing.JTextField addressJTextField;
+        private javax.swing.ButtonGroup buttonGroup1;
+        public javax.swing.JTextField hostJTextField;
+        private javax.swing.JLabel jLabel10;
+        private javax.swing.JLabel jLabel12;
+        private javax.swing.JLabel jLabel15;
+        private javax.swing.JLabel jLabel16;
+        private javax.swing.JLabel jLabel2;
+        private javax.swing.JLabel jLabel3;
+        private javax.swing.JLabel jLabel4;
+        private javax.swing.JLabel jLabel8;
+        private javax.swing.JPanel jPanel1;
+        private javax.swing.JPanel jPanel2;
+        private javax.swing.JSpinner portJSpinner;
+        public javax.swing.JTextField smtpLoginJTextField;
+        private javax.swing.JPasswordField smtpPasswordJPasswordField;
+        // End of variables declaration//GEN-END:variables
     
 }

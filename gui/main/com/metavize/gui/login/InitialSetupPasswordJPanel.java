@@ -20,14 +20,18 @@ import java.awt.Color;
 
 public class InitialSetupPasswordJPanel extends MWizardPageJPanel {
     
-    private static final String EXCEPTION_PASSWORD_MISSING = "You must fill out the password.";
-    private static final String EXCEPTION_RETYPE_PASSWORD_MISSING = "You must fill out the retype password.";
-    private static final String EXCEPTION_PASSWORD_MISMATCH = "Your password and retype password do not match.  They must match.";
+    private static final String EXCEPTION_PASSWORD_MISSING = "The password must be filled in before proceeding.";
+    private static final String EXCEPTION_RETYPE_PASSWORD_MISSING = "The retype password must be filled in before proceeding.";
+    private static final String EXCEPTION_PASSWORD_MISMATCH = "Your password and retype password do not match.  They must match before proceeding.";
 
     public InitialSetupPasswordJPanel() {
         initComponents();
     }
 
+	public void initialFocus(){
+		passwordJPasswordField.requestFocus();
+	}
+	
     String password;
     String retypePassword;
     Exception exception;
@@ -77,88 +81,88 @@ public class InitialSetupPasswordJPanel extends MWizardPageJPanel {
     }
     
 
-    private void initComponents() {//GEN-BEGIN:initComponents
-        java.awt.GridBagConstraints gridBagConstraints;
+        private void initComponents() {//GEN-BEGIN:initComponents
+                java.awt.GridBagConstraints gridBagConstraints;
 
-        jLabel2 = new javax.swing.JLabel();
-        jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
-        passwordJPasswordField = new javax.swing.JPasswordField();
-        retypePasswordJPasswordField = new javax.swing.JPasswordField();
-        jLabel5 = new javax.swing.JLabel();
+                jLabel2 = new javax.swing.JLabel();
+                jPanel1 = new javax.swing.JPanel();
+                jLabel1 = new javax.swing.JLabel();
+                jLabel3 = new javax.swing.JLabel();
+                jLabel4 = new javax.swing.JLabel();
+                jLabel12 = new javax.swing.JLabel();
+                passwordJPasswordField = new javax.swing.JPasswordField();
+                retypePasswordJPasswordField = new javax.swing.JPasswordField();
+                jLabel5 = new javax.swing.JLabel();
 
-        setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+                setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        setOpaque(false);
-        jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel2.setText("<html>Please choose a password for the first account.</html>");
-        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, -1, -1));
+                setOpaque(false);
+                jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel2.setText("<html>Please choose a password for the first account.<br>This account is known as the \"admin\" account.</html>");
+                add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, -1, -1));
 
-        jPanel1.setLayout(new java.awt.GridBagLayout());
+                jPanel1.setLayout(new java.awt.GridBagLayout());
 
-        jPanel1.setOpaque(false);
-        jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel1.setText("Login:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        jPanel1.add(jLabel1, gridBagConstraints);
+                jPanel1.setOpaque(false);
+                jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel1.setText("Login:");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                jPanel1.add(jLabel1, gridBagConstraints);
 
-        jLabel3.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel3.setText("Password:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        jPanel1.add(jLabel3, gridBagConstraints);
+                jLabel3.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel3.setText("Password:");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                jPanel1.add(jLabel3, gridBagConstraints);
 
-        jLabel4.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel4.setText("Retype Password:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        jPanel1.add(jLabel4, gridBagConstraints);
+                jLabel4.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel4.setText("Retype Password:");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                jPanel1.add(jLabel4, gridBagConstraints);
 
-        jLabel12.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel12.setText(" admin");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
-        jPanel1.add(jLabel12, gridBagConstraints);
+                jLabel12.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel12.setText(" admin");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
+                jPanel1.add(jLabel12, gridBagConstraints);
 
-        passwordJPasswordField.setColumns(15);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
-        jPanel1.add(passwordJPasswordField, gridBagConstraints);
+                passwordJPasswordField.setColumns(15);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
+                jPanel1.add(passwordJPasswordField, gridBagConstraints);
 
-        retypePasswordJPasswordField.setColumns(15);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
-        jPanel1.add(retypePasswordJPasswordField, gridBagConstraints);
+                retypePasswordJPasswordField.setColumns(15);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
+                jPanel1.add(retypePasswordJPasswordField, gridBagConstraints);
 
-        add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 100, -1, -1));
+                add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 100, -1, -1));
 
-        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
-        add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(-130, 230, -1, -1));
+                jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
+                add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(-130, 230, -1, -1));
 
-    }//GEN-END:initComponents
+        }//GEN-END:initComponents
     
     
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPasswordField passwordJPasswordField;
-    private javax.swing.JPasswordField retypePasswordJPasswordField;
-    // End of variables declaration//GEN-END:variables
+        // Variables declaration - do not modify//GEN-BEGIN:variables
+        private javax.swing.JLabel jLabel1;
+        private javax.swing.JLabel jLabel12;
+        private javax.swing.JLabel jLabel2;
+        private javax.swing.JLabel jLabel3;
+        private javax.swing.JLabel jLabel4;
+        private javax.swing.JLabel jLabel5;
+        private javax.swing.JPanel jPanel1;
+        private javax.swing.JPasswordField passwordJPasswordField;
+        private javax.swing.JPasswordField retypePasswordJPasswordField;
+        // End of variables declaration//GEN-END:variables
     
 }

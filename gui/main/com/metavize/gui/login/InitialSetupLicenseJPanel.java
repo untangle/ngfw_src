@@ -20,7 +20,7 @@ import javax.swing.*;
 
 public class InitialSetupLicenseJPanel extends MWizardPageJPanel implements AdjustmentListener {
 
-    private static final String EXCEPTION_NOT_ACCEPT = "You must accept the license agreement before continuing.";
+    private static final String EXCEPTION_NOT_ACCEPT = "You must accept the license agreement before proceeding.";
     
     private JScrollBar verticalScrollBar;
     private boolean readAgreement = false;
@@ -66,64 +66,62 @@ public class InitialSetupLicenseJPanel extends MWizardPageJPanel implements Adju
     }
     
 
-    private void initComponents() {//GEN-BEGIN:initComponents
-        acceptButtonGroup = new javax.swing.ButtonGroup();
-        contentJScrollPane = new javax.swing.JScrollPane();
-        contentJEditorPane = new javax.swing.JEditorPane();
-        acceptJRadioButton = new javax.swing.JRadioButton();
-        declineJRadioButton = new javax.swing.JRadioButton();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
+        private void initComponents() {//GEN-BEGIN:initComponents
+                acceptButtonGroup = new javax.swing.ButtonGroup();
+                contentJScrollPane = new javax.swing.JScrollPane();
+                contentJEditorPane = new javax.swing.JEditorPane();
+                acceptJRadioButton = new javax.swing.JRadioButton();
+                declineJRadioButton = new javax.swing.JRadioButton();
+                jLabel2 = new javax.swing.JLabel();
+                jLabel3 = new javax.swing.JLabel();
 
-        setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+                setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        setOpaque(false);
-        contentJScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        contentJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        contentJEditorPane.setEditable(false);
-        contentJScrollPane.setViewportView(contentJEditorPane);
+                setOpaque(false);
+                contentJScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                contentJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+                contentJScrollPane.setFocusable(false);
+                contentJEditorPane.setEditable(false);
+                contentJEditorPane.setFocusable(false);
+                contentJScrollPane.setViewportView(contentJEditorPane);
 
-        add(contentJScrollPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(7, 80, 460, 210));
+                add(contentJScrollPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(7, 80, 460, 210));
 
-        acceptButtonGroup.add(acceptJRadioButton);
-        acceptJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        acceptJRadioButton.setText("<html><b>Accept</b> License Agreement</html>");
-        acceptJRadioButton.setEnabled(false);
-        acceptJRadioButton.setFocusPainted(false);
-        acceptJRadioButton.setFocusable(false);
-        acceptJRadioButton.setMinimumSize(new java.awt.Dimension(185, 23));
-        acceptJRadioButton.setPreferredSize(new java.awt.Dimension(185, 23));
-        add(acceptJRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 320, -1, -1));
+                acceptButtonGroup.add(acceptJRadioButton);
+                acceptJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                acceptJRadioButton.setText("<html><b>Accept</b> License Agreement</html>");
+                acceptJRadioButton.setEnabled(false);
+                acceptJRadioButton.setMinimumSize(new java.awt.Dimension(185, 23));
+                acceptJRadioButton.setPreferredSize(new java.awt.Dimension(185, 23));
+                add(acceptJRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 320, -1, -1));
 
-        acceptButtonGroup.add(declineJRadioButton);
-        declineJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        declineJRadioButton.setText("<html><b>Decline</b> License Agreement</html>");
-        declineJRadioButton.setEnabled(false);
-        declineJRadioButton.setFocusPainted(false);
-        declineJRadioButton.setFocusable(false);
-        declineJRadioButton.setMinimumSize(new java.awt.Dimension(185, 23));
-        declineJRadioButton.setPreferredSize(new java.awt.Dimension(185, 23));
-        add(declineJRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 300, -1, -1));
+                acceptButtonGroup.add(declineJRadioButton);
+                declineJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                declineJRadioButton.setText("<html><b>Decline</b> License Agreement</html>");
+                declineJRadioButton.setEnabled(false);
+                declineJRadioButton.setMinimumSize(new java.awt.Dimension(185, 23));
+                declineJRadioButton.setPreferredSize(new java.awt.Dimension(185, 23));
+                add(declineJRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 300, -1, -1));
 
-        jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel2.setText("<html>Please read and agree to the following license agreement before<br>proceeding.  You must scroll to the bottom before you can agree.</html>");
-        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, -1, -1));
+                jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel2.setText("<html>Please read and accept the following license agreement before<br>proceeding.  <b><font color=\"#FF0000\">You must scroll to the bottom before you can accept.</font></b></html>");
+                add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, -1, -1));
 
-        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
-        jLabel3.setEnabled(false);
-        add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(-130, 230, -1, -1));
+                jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
+                jLabel3.setEnabled(false);
+                add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(-130, 230, -1, -1));
 
-    }//GEN-END:initComponents
+        }//GEN-END:initComponents
     
     
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.ButtonGroup acceptButtonGroup;
-    private javax.swing.JRadioButton acceptJRadioButton;
-    private javax.swing.JEditorPane contentJEditorPane;
-    private javax.swing.JScrollPane contentJScrollPane;
-    private javax.swing.JRadioButton declineJRadioButton;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    // End of variables declaration//GEN-END:variables
+        // Variables declaration - do not modify//GEN-BEGIN:variables
+        private javax.swing.ButtonGroup acceptButtonGroup;
+        private javax.swing.JRadioButton acceptJRadioButton;
+        private javax.swing.JEditorPane contentJEditorPane;
+        private javax.swing.JScrollPane contentJScrollPane;
+        private javax.swing.JRadioButton declineJRadioButton;
+        private javax.swing.JLabel jLabel2;
+        private javax.swing.JLabel jLabel3;
+        // End of variables declaration//GEN-END:variables
     
 }

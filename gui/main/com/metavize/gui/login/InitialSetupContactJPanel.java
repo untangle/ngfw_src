@@ -29,6 +29,10 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
         initComponents();
     }
 
+	public void initialFocus(){
+		companyJTextField.requestFocus();
+	}
+	
     String company;
     String firstName;
     String lastName;

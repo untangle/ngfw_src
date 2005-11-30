@@ -51,9 +51,8 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
     protected Icon ICON_UNCOMPLETED = null;
 
     // LABEL SPECS ////
-    protected String FONT_TYPE = "Default";
-    protected int FONT_MODE = 0;
-    protected int FONT_SIZE = 16;
+	protected Font NORMAL_FONT = new Font("Default", 0, 16);
+	protected Font BOLD_FONT = new Font("Default", 1, 16);
     protected int FONT_SPACING = 10;
     
     // WIZARD STATE //////
@@ -80,21 +79,33 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
 
     protected void init(Window topLevelWindow){
         initComponents();
+	titleJPanel.setPreferredSize( getTitleJPanelPreferredSize() );
+	titleJPanel.setMinimumSize( getTitleJPanelPreferredSize() );
+	titleJPanel.setMaximumSize( getTitleJPanelPreferredSize() );
+	contentJPanel.setPreferredSize( getContentJPanelPreferredSize() );
+	contentJPanel.setMinimumSize( getContentJPanelPreferredSize() );
+	contentJPanel.setMaximumSize( getContentJPanelPreferredSize() );
+	pack();
+	
         setBounds( Util.generateCenteredBounds( topLevelWindow,
 						getPreferredSize().width,
 						getPreferredSize().height) );
         addWindowListener(this);
 
 	ICON_COMPLETED = new ImageIcon( getClass().getResource("/com/metavize/gui/widgets/wizard/IconCompleteState14x14.png") );
-	ICON_CURRENT = new ImageIcon( getClass().getResource("/com/metavize/gui/widgets/wizard/IconUncompleteState14x14.png") );
+	ICON_CURRENT = new ImageIcon( getClass().getResource("/com/metavize/gui/widgets/wizard/IconCurrentState14x14.png") );
 	ICON_UNCOMPLETED = new ImageIcon( getClass().getResource("/com/metavize/gui/widgets/wizard/IconUncompleteState14x14.png") );
     }
+
+    protected Dimension getTitleJPanelPreferredSize(){ return new Dimension(250,360); }
+    protected Dimension getContentJPanelPreferredSize(){ return new Dimension(485,360); }
 
     public void setVisible(boolean isVisible){
 	if( isVisible ){
 	    updateButtonState(false);
 	    updateLabelState();
-	    updatePageState();	    
+	    updatePageState();
+		nextJButton.requestFocus();
 	}
 	super.setVisible(isVisible);
     }
@@ -105,23 +116,24 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
 	    previousJButton.setEnabled(false);
 	}
 	else{
+		previousJButton.setEnabled(true);
 	    if( currentPage == 0 ){
 		nextJButton.setEnabled(true);
-		previousJButton.setEnabled(false);
+		previousJButton.setVisible(false);
 		nextJButton.setText(STRING_NEXT_PAGE);
 	    }
 	    else if( currentPage < (wizardPageMap.size()-1) ){
 		nextJButton.setEnabled(true);
-		previousJButton.setEnabled(true);
+		previousJButton.setVisible(true);
 		nextJButton.setText(STRING_NEXT_PAGE);
 	    }
 	    else{
 		nextJButton.setEnabled(true);
-		previousJButton.setEnabled(true);
+		previousJButton.setVisible(true);
 		nextJButton.setText(STRING_FINAL_PAGE);
 	    }
 	    if( checkpointVector.elementAt(currentPage) )
-		previousJButton.setEnabled(false);
+		previousJButton.setVisible(false);
 	}
     }
 
@@ -131,14 +143,17 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
 	    if( index < currentPage ){
 		label.setForeground(COLOR_COMPLETED);
 		label.setIcon(ICON_COMPLETED);
+		label.setFont(NORMAL_FONT);
 	    }
 	    else if( index == currentPage ){
 		label.setForeground(COLOR_CURRENT);
 		label.setIcon(ICON_CURRENT);
+		label.setFont(BOLD_FONT);
 	    }
 	    else{ //( index > currentPage )
 		label.setForeground(COLOR_UNCOMPLETED);
 		label.setIcon(ICON_UNCOMPLETED);
+		label.setFont(NORMAL_FONT);
 	    }
 	    index++;
 	}	
@@ -158,8 +173,9 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
         wizardPageMap.put(title, wizardPageJPanel);
 	
         JLabel newJLabel = new JLabel(title);
+		newJLabel.setFocusable(false);
         newJLabel.setBorder(new EmptyBorder(0,0,FONT_SPACING,0));
-        newJLabel.setFont(new Font(FONT_TYPE,FONT_MODE,FONT_SIZE));
+        newJLabel.setFont(NORMAL_FONT);
         titleJPanel.add(newJLabel);
 	labelMap.put(title, newJLabel);
 
@@ -180,131 +196,145 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
     }
     public boolean getFinishedNormal(){ return finishedNormal; }
 
-    private void initComponents() {//GEN-BEGIN:initComponents
-        java.awt.GridBagConstraints gridBagConstraints;
+        private void initComponents() {//GEN-BEGIN:initComponents
+                java.awt.GridBagConstraints gridBagConstraints;
 
-        contentJPanel = new javax.swing.JPanel();
-        titleJPanel = new javax.swing.JPanel();
-        closeJButton = new javax.swing.JButton();
-        previousJButton = new javax.swing.JButton();
-        nextJButton = new javax.swing.JButton();
-        backgroundJLabel = new com.metavize.gui.widgets.MTiledIconLabel();
+                titleJPanel = new javax.swing.JPanel();
+                contentJPanel = new javax.swing.JPanel();
+                buttonJPanel = new javax.swing.JPanel();
+                jPanel1 = new javax.swing.JPanel();
+                nextJButton = new javax.swing.JButton();
+                previousJButton = new javax.swing.JButton();
+                closeJButton = new javax.swing.JButton();
+                backgroundJLabel = new com.metavize.gui.widgets.MTiledIconLabel(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/DarkGreyBackground1600x100.png")));
 
-        getContentPane().setLayout(new java.awt.GridBagLayout());
+                getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setResizable(false);
-        contentJPanel.setLayout(new java.awt.BorderLayout());
+                setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+                setResizable(false);
+                titleJPanel.setLayout(new javax.swing.BoxLayout(titleJPanel, javax.swing.BoxLayout.Y_AXIS));
 
-        contentJPanel.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EmptyBorder(new java.awt.Insets(4, 4, 4, 4)), new javax.swing.border.EtchedBorder()));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(15, 250, 15, 15);
-        getContentPane().add(contentJPanel, gridBagConstraints);
+                titleJPanel.setFocusable(false);
+                titleJPanel.setOpaque(false);
+                titleJPanel.setRequestFocusEnabled(false);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 8, 8);
+                getContentPane().add(titleJPanel, gridBagConstraints);
 
-        titleJPanel.setLayout(new javax.swing.BoxLayout(titleJPanel, javax.swing.BoxLayout.Y_AXIS));
+                contentJPanel.setLayout(new java.awt.BorderLayout());
 
-        titleJPanel.setOpaque(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(15, 15, 15, 520);
-        getContentPane().add(titleJPanel, gridBagConstraints);
+                contentJPanel.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EmptyBorder(new java.awt.Insets(4, 4, 4, 4)), new javax.swing.border.EtchedBorder()));
+                contentJPanel.setFocusable(false);
+                contentJPanel.setRequestFocusEnabled(false);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHEAST;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 7, 8, 15);
+                getContentPane().add(contentJPanel, gridBagConstraints);
 
-        closeJButton.setFont(new java.awt.Font("Default", 0, 12));
-        closeJButton.setText("<html><b>Close</b> Window</html>");
-        closeJButton.setDoubleBuffered(true);
-        closeJButton.setFocusPainted(false);
-        closeJButton.setFocusable(false);
-        closeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        closeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        closeJButton.setMaximumSize(new java.awt.Dimension(140, 25));
-        closeJButton.setMinimumSize(new java.awt.Dimension(140, 25));
-        closeJButton.setPreferredSize(new java.awt.Dimension(140, 25));
-        closeJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                closeJButtonActionPerformed(evt);
-            }
-        });
+                buttonJPanel.setLayout(new java.awt.GridBagLayout());
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 15, 15, 0);
-        getContentPane().add(closeJButton, gridBagConstraints);
+                buttonJPanel.setFocusable(false);
+                buttonJPanel.setOpaque(false);
+                buttonJPanel.setRequestFocusEnabled(false);
+                jPanel1.setLayout(new java.awt.GridBagLayout());
 
-        previousJButton.setFont(new java.awt.Font("Arial", 0, 12));
-        previousJButton.setText("<html><b>Previous</b> page</html>");
-        previousJButton.setDoubleBuffered(true);
-        previousJButton.setFocusPainted(false);
-        previousJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        previousJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
-        previousJButton.setMaximumSize(new java.awt.Dimension(120, 25));
-        previousJButton.setMinimumSize(new java.awt.Dimension(120, 25));
-        previousJButton.setPreferredSize(new java.awt.Dimension(120, 25));
-        previousJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                previousJButtonActionPerformed(evt);
-            }
-        });
+                jPanel1.setOpaque(false);
+                nextJButton.setFont(new java.awt.Font("Arial", 0, 12));
+                nextJButton.setText("<html><b>Next</b> page</html>");
+                nextJButton.setDoubleBuffered(true);
+                nextJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+                nextJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+                nextJButton.setMaximumSize(new java.awt.Dimension(78, 25));
+                nextJButton.setMinimumSize(new java.awt.Dimension(78, 25));
+                nextJButton.setPreferredSize(new java.awt.Dimension(78, 25));
+                nextJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                nextJButtonActionPerformed(evt);
+                        }
+                });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 15, 15);
-        getContentPane().add(previousJButton, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 2;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.ipadx = 40;
+                gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 0);
+                jPanel1.add(nextJButton, gridBagConstraints);
 
-        nextJButton.setFont(new java.awt.Font("Arial", 0, 12));
-        nextJButton.setText("<html><b>Next</b> page</html>");
-        nextJButton.setDoubleBuffered(true);
-        nextJButton.setFocusPainted(false);
-        nextJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        nextJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
-        nextJButton.setMaximumSize(new java.awt.Dimension(78, 25));
-        nextJButton.setMinimumSize(new java.awt.Dimension(78, 25));
-        nextJButton.setPreferredSize(new java.awt.Dimension(78, 25));
-        nextJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                nextJButtonActionPerformed(evt);
-            }
-        });
+                previousJButton.setFont(new java.awt.Font("Arial", 0, 12));
+                previousJButton.setText("<html><b>Previous</b> page</html>");
+                previousJButton.setDoubleBuffered(true);
+                previousJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+                previousJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+                previousJButton.setMaximumSize(new java.awt.Dimension(120, 25));
+                previousJButton.setMinimumSize(new java.awt.Dimension(120, 25));
+                previousJButton.setPreferredSize(new java.awt.Dimension(120, 25));
+                previousJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                previousJButtonActionPerformed(evt);
+                        }
+                });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.ipadx = 40;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 15, 15);
-        getContentPane().add(nextJButton, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                jPanel1.add(previousJButton, gridBagConstraints);
 
-        backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/DarkGreyBackground1600x100.png")));
-        backgroundJLabel.setDoubleBuffered(true);
-        backgroundJLabel.setMaximumSize(new java.awt.Dimension(750, 450));
-        backgroundJLabel.setMinimumSize(new java.awt.Dimension(750, 450));
-        backgroundJLabel.setPreferredSize(new java.awt.Dimension(750, 450));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 3;
-        gridBagConstraints.gridheight = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        getContentPane().add(backgroundJLabel, gridBagConstraints);
+                closeJButton.setFont(new java.awt.Font("Default", 0, 12));
+                closeJButton.setText("<html><b>Close</b> Window</html>");
+                closeJButton.setDoubleBuffered(true);
+                closeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+                closeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+                closeJButton.setMaximumSize(new java.awt.Dimension(140, 25));
+                closeJButton.setMinimumSize(new java.awt.Dimension(140, 25));
+                closeJButton.setPreferredSize(new java.awt.Dimension(140, 25));
+                closeJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                closeJButtonActionPerformed(evt);
+                        }
+                });
 
-        java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds((screenSize.width-750)/2, (screenSize.height-450)/2, 750, 450);
-    }//GEN-END:initComponents
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.weightx = 1.0;
+                jPanel1.add(closeJButton, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                buttonJPanel.add(jPanel1, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.gridwidth = 2;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(7, 15, 15, 15);
+                getContentPane().add(buttonJPanel, gridBagConstraints);
+
+                backgroundJLabel.setDoubleBuffered(true);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.gridwidth = 2;
+                gridBagConstraints.gridheight = 2;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                getContentPane().add(backgroundJLabel, gridBagConstraints);
+
+        }//GEN-END:initComponents
 
     private void previousJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_previousJButtonActionPerformed
 	new PreviousPageThread();
@@ -322,8 +352,8 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
 	    MWizardPageJPanel currentWizardPageJPanel = (MWizardPageJPanel) wizardPageMap.values().toArray()[currentPage];
 	    changePage &= currentWizardPageJPanel.leavingBackwards();	      
 	    // SEND ENTERING EVENT TO PREVIOUS PAGE
-	    if( changePage ){
-		MWizardPageJPanel previousWizardPageJPanel = (MWizardPageJPanel) wizardPageMap.values().toArray()[currentPage-1];
+		if( changePage ){
+		previousWizardPageJPanel = (MWizardPageJPanel) wizardPageMap.values().toArray()[currentPage-1];
 		changePage &= previousWizardPageJPanel.enteringBackwards();
 	    }
 	    // UPDATE CURRENT PAGE
@@ -336,6 +366,8 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
 		    updateButtonState(false);
 		    updateLabelState();
 		    updatePageState();
+			nextJButton.requestFocus();
+			previousWizardPageJPanel.initialFocus();
 		}});
 	    }catch(Exception e){ Util.handleExceptionNoRestart("Error updating wizard on move previous", e); }
 	}
@@ -345,6 +377,9 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
         new NextPageThread();
     }//GEN-LAST:event_nextJButtonActionPerformed
 
+	MWizardPageJPanel previousWizardPageJPanel;
+	MWizardPageJPanel nextWizardPageJPanel;
+	
     private class NextPageThread extends Thread{
         public NextPageThread(){
             setDaemon(true);
@@ -360,7 +395,6 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
 		if( saveVector.elementAt(currentPage) ){
 		    currentWizardPageJPanel.doSave(null, false);  // save
 		    int i=1;
-		    MWizardPageJPanel previousWizardPageJPanel;
 		    while( (currentPage-i >= 0) && !saveVector.elementAt(currentPage-i) ){ // save all previous
 			previousWizardPageJPanel = (MWizardPageJPanel) wizardPageMap.values().toArray()[currentPage-i];
 			previousWizardPageJPanel.doSave(null, false);
@@ -379,8 +413,8 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
 	    }
 	    // SEND ENTERING EVENT TO NEXT PAGE
 	    if( changePage && (currentPage < wizardPageMap.size()-1) ){
-		MWizardPageJPanel previousWizardPageJPanel = (MWizardPageJPanel) wizardPageMap.values().toArray()[currentPage+1];
-		changePage &= previousWizardPageJPanel.enteringForwards();
+		nextWizardPageJPanel = (MWizardPageJPanel) wizardPageMap.values().toArray()[currentPage+1];
+		changePage &= nextWizardPageJPanel.enteringForwards();
 	    }
 	    // UPDATE CURRENT PAGE
 	    if( currentPage < wizardPageMap.size()-1 ){
@@ -393,6 +427,8 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
 			updateButtonState(false);
 			updateLabelState();
 			updatePageState();
+			nextJButton.requestFocus();
+			nextWizardPageJPanel.initialFocus();
 		    }});
 		}catch(Exception e){ Util.handleExceptionNoRestart("Error updating wizard on move next", e); }
 		// FINISH WIZARD
@@ -419,13 +455,15 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
     public void windowIconified(java.awt.event.WindowEvent windowEvent) {}
     public void windowOpened(java.awt.event.WindowEvent windowEvent) {}
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel backgroundJLabel;
-    private javax.swing.JButton closeJButton;
-    private javax.swing.JPanel contentJPanel;
-    protected javax.swing.JButton nextJButton;
-    protected javax.swing.JButton previousJButton;
-    private javax.swing.JPanel titleJPanel;
-    // End of variables declaration//GEN-END:variables
+        // Variables declaration - do not modify//GEN-BEGIN:variables
+        private javax.swing.JLabel backgroundJLabel;
+        private javax.swing.JPanel buttonJPanel;
+        private javax.swing.JButton closeJButton;
+        private javax.swing.JPanel contentJPanel;
+        private javax.swing.JPanel jPanel1;
+        protected javax.swing.JButton nextJButton;
+        protected javax.swing.JButton previousJButton;
+        private javax.swing.JPanel titleJPanel;
+        // End of variables declaration//GEN-END:variables
     
 }

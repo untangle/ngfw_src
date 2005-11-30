@@ -25,9 +25,7 @@ public class InitialSetupWizard extends MWizardJDialog {
     
     private static final String MESSAGE_DIALOG_TITLE = "Setup Wizard Warning";
     private static final String MESSAGE_NOT_REGISTERED = "You have not registered your EdgeGuard.  Please run the Setup Wizard again.";
-    private static final String MESSAGE_NOT_CONFIGURED = "You have registered your EdgeGuard, but not configured its network settings.  You may do this by logging is with admin/passwd, and going to the Config Panel.";
-    private static final String MESSAGE_NO_EMAIL = "You have registered and configured your EdgeGuard, but you have not configured your email server.  You may do this by logging in with admin/passwd, and going to the Config Panel.";
-    private static final String MESSAGE_NO_ACCOUNT = "You have registered and configured your EdgeGuard, but you have not changed your password.  You may do this by logging in with admin/passwd, and going to the Config Panel.";
+    private static final String MESSAGE_NOT_CONFIGURED = "You have registered your EdgeGuard, but you have not configured other necessary settings.  You may do this in the Config Panel after logging in.  Your default login/password is: admin/passwd";
     
     public InitialSetupWizard() {
         setTitle("Metavize EdgeGuard Setup Wizard");
@@ -47,14 +45,8 @@ public class InitialSetupWizard extends MWizardJDialog {
         if( currentPage <= 3 ){ // NOT REGISTERED, MUST DO WIZARD AGAIN
             new MOneButtonJDialog(this, MESSAGE_DIALOG_TITLE, MESSAGE_NOT_REGISTERED);
         }
-        else if( currentPage <= 5 ){ // REGISTERED, BUT NOT CONFIGURED, NO EMAIL, NO ACCOUNT
+        else if( currentPage <= 8 ){ // REGISTERED
             new MOneButtonJDialog(this, MESSAGE_DIALOG_TITLE, MESSAGE_NOT_CONFIGURED);
-        }
-        else if( currentPage <= 7 ){ // REGISTERED, CONFIGURED, BUT NO EMAIL, NO ACCOUNT
-            new MOneButtonJDialog(this, MESSAGE_DIALOG_TITLE, MESSAGE_NO_EMAIL);
-        }
-        else if( currentPage <= 8 ){ // REGISTERED, CONFIGURED, EMAIL SET, BUT NO ACCOUNT
-            new MOneButtonJDialog(this, MESSAGE_DIALOG_TITLE, MESSAGE_NO_ACCOUNT);
         }
         cleanupConnection();
 	super.wizardFinishedAbnormal(currentPage);

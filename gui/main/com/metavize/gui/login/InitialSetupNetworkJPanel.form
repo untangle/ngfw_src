@@ -38,9 +38,8 @@
           <Font name="Dialog" size="12" style="0"/>
         </Property>
         <Property name="selected" type="boolean" value="true"/>
-        <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Automatically&lt;/b&gt; through DHCP.&lt;/html&gt;"/>
+        <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Automatically&lt;/b&gt; through DHCP. (Use this if unsure)&lt;/html&gt;"/>
         <Property name="actionCommand" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Use DHCP&lt;/b&gt; to automatically set EdgeGuard&apos;s IP address from the network&apos;s DHCP server.&lt;/html&gt;"/>
-        <Property name="focusPainted" type="boolean" value="false"/>
         <Property name="opaque" type="boolean" value="false"/>
       </Properties>
       <Events>
@@ -64,7 +63,6 @@
           <Font name="Dialog" size="12" style="0"/>
         </Property>
         <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Manually&lt;/b&gt; through the fields below.&lt;/html&gt;"/>
-        <Property name="focusPainted" type="boolean" value="false"/>
         <Property name="opaque" type="boolean" value="false"/>
       </Properties>
       <Events>
@@ -85,7 +83,7 @@
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="50" y="100" width="290" height="130"/>
+          <AbsoluteConstraints x="50" y="100" width="350" height="130"/>
         </Constraint>
       </Constraints>
 
@@ -142,7 +140,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Dialog" size="12" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Default Route:"/>
+            <Property name="text" type="java.lang.String" value="Default Route / Gateway:"/>
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">

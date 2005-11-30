@@ -44,7 +44,7 @@ import org.hibernate.SessionFactory;
  */
 class MailSenderImpl implements MailSender
 {
-    public static final String DEFAULT_FROM_ADDRESS = "reports@local.domain";
+    public static final String DEFAULT_FROM_ADDRESS = "EdgeGuard@local.domain";
 
     // All error log emails go here.
     public static final String ERROR_LOG_RECIPIENT = "exceptions@metavize.com";

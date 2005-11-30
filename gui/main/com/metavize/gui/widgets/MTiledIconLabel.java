@@ -17,6 +17,8 @@ import javax.swing.*;
 
 public class MTiledIconLabel extends JLabel {
 
+	ImageIcon imageIcon;
+		
     public MTiledIconLabel()
     {
         super();
@@ -26,10 +28,18 @@ public class MTiledIconLabel extends JLabel {
     {
         super(a, b, c);
     }
+	
+	// this is useful because it doesn't mess with the labels preferred size...
+	// so you can get a tiled background without influencing layouts....
+	public MTiledIconLabel(ImageIcon b){
+		this.imageIcon = b;
+	}
     
     public void paintComponent(Graphics g)
     {
         ImageIcon icon = (ImageIcon) getIcon();
+		if(imageIcon != null)
+				icon = imageIcon;
         if (icon == null || icon.getImage() == null) {
             // Don't have an icon (yet), just draw the background.
             super.paintComponent(g);
