@@ -11,12 +11,16 @@
 
 package com.metavize.tran.nat;
 
+import com.metavize.mvvm.logging.LogEvent;
+
 class NatAttachment
 {    
     /* True if this session uses a port that must be released */
     /* Port to release, 0, if a port should not be released */
     private int releasePort = 0;
-    
+
+    private LogEvent eventToLog = null;
+
     /* True if this session has created a session that must be removed from the session
      * manager.  (Presently the session manager only manages ftp sessions) */
     private boolean isManagedSession = false;
@@ -43,5 +47,15 @@ class NatAttachment
     void releasePort( int releasePort )
     {
         this.releasePort = releasePort;
+    }
+
+    LogEvent eventToLog()
+    {
+        return this.eventToLog;
+    }
+
+    void eventToLog(LogEvent eventToLog)
+    {
+        this.eventToLog = eventToLog;
     }
 }

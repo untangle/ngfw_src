@@ -21,10 +21,9 @@ import org.apache.log4j.Logger;
 import com.metavize.mvvm.ArgonManager;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.NetworkingConfiguration;
-import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.IntfConstants;
 
-
+import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.tapi.AbstractEventHandler;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
 import com.metavize.mvvm.tapi.IPSession;
@@ -54,7 +53,6 @@ import static com.metavize.tran.nat.NatConstants.*;
 class NatEventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(NatEventHandler.class);
-    private final EventLogger eventLogger;
 
     /* Number of milliseconds to wait in between updating the address and updating the mvvm */
     private static final int SLEEP_TIME = 1000;
@@ -100,7 +98,6 @@ class NatEventHandler extends AbstractEventHandler
         udpPortList = PortList.makePortList( UDP_NAT_PORT_START, UDP_NAT_PORT_END );
         icmpPidList = PortList.makePortList( ICMP_PID_START, ICMP_PID_END );
         this.transform = transform;
-        this.eventLogger = MvvmContextFactory.context().eventLogger();
     }
 
     public void handleTCPNewSessionRequest( TCPNewSessionRequestEvent event )
@@ -129,12 +126,15 @@ class NatEventHandler extends AbstractEventHandler
 
         /* Check for NAT, Redirects or DMZ */
         try {
-            logger.info( "Testing <" + request + ">" );
+            if (logger.isInfoEnabled())
+                logger.info( "Testing <" + request + ">" );
             if ( isNat( request, protocol )      ||
                  isRedirect( request, protocol ) ||
                  isDmzHost( request,  protocol )) {
 
-                logger.info( "<" + request + "> is nat, redirect or dmz" );
+                
+                if (logger.isInfoEnabled())
+                    logger.info( "<" + request + "> is nat, redirect or dmz" );
 
                 /* Nothing left to do */
                 if ( request.attachment() == null ) return;
@@ -181,6 +181,36 @@ class NatEventHandler extends AbstractEventHandler
 
         /* Otherwise release the session, and don't care about the finalization */
         request.release(false);
+    }
+
+    @Override
+    public void handleTCPComplete(TCPSessionEvent event)
+        throws MPipeException
+    {
+        IPSession s = event.session();
+        NatAttachment na = (NatAttachment)s.attachment();
+        if (na != null) {
+            LogEvent eventToLog = na.eventToLog();
+            if (eventToLog != null) {
+                transform.log(eventToLog);
+                na.eventToLog(null);
+            }
+        }
+    }
+
+    @Override
+    public void handleUDPComplete(UDPSessionEvent event)
+        throws MPipeException
+    {
+        IPSession s = event.session();
+        NatAttachment na = (NatAttachment)s.attachment();
+        if (na != null) {
+            LogEvent eventToLog = na.eventToLog();
+            if (eventToLog != null) {
+                transform.log(eventToLog);
+                na.eventToLog(null);
+            }
+        }
     }
 
     public void handleTCPFinalized(TCPSessionEvent event)
@@ -448,7 +478,7 @@ class NatEventHandler extends AbstractEventHandler
                 if ( matcher.rule() == null ) {
                     logger.warn( "Null rule for a redirect matcher" );
                 } else if ( matcher.rule().getLog()) {
-                    eventLogger.log( new RedirectEvent( request.pipelineEndpoints(), matcher.rule(), matcher.ruleIndex()));
+                    ((NatAttachment)request.attachment()).eventToLog(new RedirectEvent(request.pipelineEndpoints(), matcher.rule(), matcher.ruleIndex()));
                 }
 
                 /* Log the stat */
@@ -473,7 +503,7 @@ class NatEventHandler extends AbstractEventHandler
 
             if ( isDmzLoggingEnabled ) {
                 /* Log the event if necessary */
-                eventLogger.log( new RedirectEvent( request.pipelineEndpoints()));
+                ((NatAttachment)request.attachment()).eventToLog(new RedirectEvent(request.pipelineEndpoints()));
             }
 
             transform.statisticManager.incrDmzSessions();
@@ -546,11 +576,13 @@ class NatEventHandler extends AbstractEventHandler
                 logger.info( "Release port " + releasePort +" is neither client nor server port" );
             }
 
-            logger.debug( "Releasing port: " + releasePort );
+            if (logger.isDebugEnabled())
+                logger.debug( "Releasing port: " + releasePort );
 
             getPortList( protocol ).releasePort( releasePort );
         } else {
-            logger.debug( "Ignoring non-natted port: " + session.clientPort() + "/" + session.serverPort());
+            if (logger.isDebugEnabled())
+                logger.debug( "Ignoring non-natted port: " + session.clientPort() + "/" + session.serverPort());
         }
 
         if ( attachment.isManagedSession()) {
