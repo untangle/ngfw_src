@@ -6,90 +6,93 @@
     Throughout the &eg; Administrative Interface, Administrators must enter information about their network and web locations.  In some cases the values entered can be exact, and others the text entered indicates a range of values.  We cover the various syntaxes used throughout the Administrative Interface in this appendix.
   </para>
 
-  <simplesect id="appendix_syntax_simpleipaddr" xreflabel="Simple IP Address">
-    <title>Simple IP Address Syntax</title>
-    <para>
-      The Simple <glossterm linkend="gloss_ip_addr">IP Address</glossterm> syntax is an exact IP address.  Examples include:
-      <programlisting>192.168.10.1</programlisting>
-      <programlisting>66.94.230.42</programlisting>
-    </para>
-  </simplesect>
-
-
+  <sect1 id="appendix_syntax_net">
+    <title>Networking Syntax</title>
+    
+    <simplesect id="appendix_syntax_simpleipaddr" xreflabel="Simple IP Address">
+      <title>Simple IP Address Syntax</title>
+      <para>
+        The Simple <glossterm linkend="gloss_ip_addr">IP Address</glossterm> syntax is an exact IP address.  Examples include:
+        <programlisting>192.168.10.1</programlisting>
+        <programlisting>66.94.230.42</programlisting>
+      </para>
+    </simplesect>
   
-  <simplesect id="appendix_syntax_networknetmask" xreflabel="Network/Netmask">
-    <title>Network/Netmask Syntax</title>
-    <para>
-      The Network/Netmask syntax is used to define an <glossterm linkend="gloss_ip_addr">IP Address</glossterm> and <glossterm linkend="gloss_netmask">netmask</glossterm> with a single value.  Examples include:
-      
-      <programlisting>192.168.1.1/24</programlisting>
-      <programlisting>66.94.230.42/16</programlisting>
-
-      The format is <constant>&lt;IP Address>/&lt;number></constant> where <constant>&lt;IP Address></constant> is an IP address.  <constant>&lt;number></constant> is a number between 0 and 32.  This second value is short hand for a netmask, defining the number of leading one's when expressed in bit form.  For example, the mask <constant>255.255.255.0</constant> can be expressed as <constant>/24</constant> and the mask <constant>255.255.0.0</constant> can be expressed as <constant>/16</constant>.
-    </para>
-  </simplesect>
-
-
-
   
-  <simplesect id="appendix_syntax_iprange" xreflabel="IP Range">
-    <title>IP Range Syntax</title>
-    <para>
-      The IP Range syntax defines a collection of contiguious <glossterm linkend="gloss_ip_addr">IP Addresses</glossterm>.  It is expressed as <constant>address-address</constant>, where a dash (<constant>-</constant>) is used to separate the ends of the range.  Examples include:
-      <programlisting>192.168.10.1-192.168.10.100</programlisting>
-      <programlisting>66.94.230.1-66.94.230.100</programlisting>
-      
-      In many cases, IP Range Syntax and <link linkend="appendix_syntax_networknetmask">Network/Netmask Syntax</link> can be used interchangably.  
-    </para>
-  </simplesect>
-
-
-
-
+    
+    <simplesect id="appendix_syntax_networknetmask" xreflabel="Network/Netmask">
+      <title>Network/Netmask Syntax</title>
+      <para>
+        The Network/Netmask syntax is used to define an <glossterm linkend="gloss_ip_addr">IP Address</glossterm> and <glossterm linkend="gloss_netmask">netmask</glossterm> with a single value.  Examples include:
+        
+        <programlisting>192.168.1.1/24</programlisting>
+        <programlisting>66.94.230.42/16</programlisting>
   
-  <simplesect id="appendix_syntax_ipmatcher" xreflabel="IP Matcher">
-    <title>IP Matcher Syntax</title>
-    <para>
-      The IP Matcher syntax is used in several components within the &eg;.  It is the most powerful means to express a range of <glossterm linkend="gloss_ip_addr">IP Addresses</glossterm>.  Where a field within the Administrative Interface specifies IP Matcher Syntax, one can enter values in either <link linkend="appendix_syntax_simpleipaddr">Simple IP Address</link>, <link linkend="appendix_syntax_networknetmask">Network/Netmask</link>, or <link linkend="appendix_syntax_iprange">IP Range Syntax</link>.
-    </para>
-    <para>
-      In addition to the other supported syntaxes, fields in the IP Matcher Syntax also understand the literal strings <quote><constant>local</constant></quote> and <quote><constant>any</constant></quote>.  The value <quote><constant>any</constant></quote> matches any address.  The value <quote><constant>local</constant></quote> is used when referring to traffic arriving on the external interface of &eg;, and means any external address hosted by the &eg; machine.
-    </para>
-  </simplesect>
-
-
-
+        The format is <constant>&lt;IP Address>/&lt;number></constant> where <constant>&lt;IP Address></constant> is an IP address.  <constant>&lt;number></constant> is a number between 0 and 32.  This second value is short hand for a netmask, defining the number of leading one's when expressed in bit form.  For example, the mask <constant>255.255.255.0</constant> can be expressed as <constant>/24</constant> and the mask <constant>255.255.0.0</constant> can be expressed as <constant>/16</constant>.
+      </para>
+    </simplesect>
   
-  <simplesect id="appendix_syntax_simpleport" xreflabel="Simple Port">
-    <title>Simple Port Syntax</title>
-    <para>
-      The Simple <glossterm linkend="gloss_port">Port</glossterm> is a port number without expressing range.  It is a  number between 0 and 65,535.
-    </para>
-  </simplesect>
-
-
-
   
-  <simplesect id="appendix_syntax_portrange" xreflabel="Port Range">
-    <title>Port Range Syntax</title>
-    <para>
-      The <glossterm linkend="gloss_port">Port</glossterm> Range syntax defines a collection of contiguious ports.  It is expressed as <constant>port-port</constant>, where a dash (<constant>-</constant>) is used to separate the ends of the range.  <constant>port</constant> is a number between 0 and 65,535.  Examples include:
-
-      <programlisting>1024-2048</programlisting>
-      <programlisting>20-26</programlisting>
-    </para>
-  </simplesect>
-
-
   
-  <simplesect id="appendix_syntax_portmatcher" xreflabel="Port Matcher">
-    <title>Port Matcher Syntax</title>
-    <para>
-      The Port Matcher syntax is used in several components within the &eg;.  It is the most powerful means to express a range of <glossterm linkend="gloss_port">ports</glossterm>.  Where a field within the Administrative Interface specifies Port Matcher Syntax, one can enter values in either Simple Port or Port Range Syntax.
-    </para>
-    <para>
-      In addition to the other supported syntaxes, fields in the Port Matcher Syntax also understand the literal string <quote><constant>any</constant></quote>, where the value <quote><constant>any</constant></quote> matches all ports.
-    </para>
-  </simplesect>
-
+    
+    <simplesect id="appendix_syntax_iprange" xreflabel="IP Range">
+      <title>IP Range Syntax</title>
+      <para>
+        The IP Range syntax defines a collection of contiguious <glossterm linkend="gloss_ip_addr">IP Addresses</glossterm>.  It is expressed as <constant>address-address</constant>, where a dash (<constant>-</constant>) is used to separate the ends of the range.  Examples include:
+        <programlisting>192.168.10.1-192.168.10.100</programlisting>
+        <programlisting>66.94.230.1-66.94.230.100</programlisting>
+        
+        In many cases, IP Range Syntax and <link linkend="appendix_syntax_networknetmask">Network/Netmask Syntax</link> can be used interchangably.  
+      </para>
+    </simplesect>
+  
+  
+  
+  
+    
+    <simplesect id="appendix_syntax_ipmatcher" xreflabel="IP Matcher">
+      <title>IP Matcher Syntax</title>
+      <para>
+        The IP Matcher syntax is used in several components within the &eg;.  It is the most powerful means to express a range of <glossterm linkend="gloss_ip_addr">IP Addresses</glossterm>.  Where a field within the Administrative Interface specifies IP Matcher Syntax, one can enter values in either <link linkend="appendix_syntax_simpleipaddr">Simple IP Address</link>, <link linkend="appendix_syntax_networknetmask">Network/Netmask</link>, or <link linkend="appendix_syntax_iprange">IP Range Syntax</link>.
+      </para>
+      <para>
+        In addition to the other supported syntaxes, fields in the IP Matcher Syntax also understand the literal strings <quote><constant>local</constant></quote> and <quote><constant>any</constant></quote>.  The value <quote><constant>any</constant></quote> matches any address.  The value <quote><constant>local</constant></quote> is used when referring to traffic arriving on the external interface of &eg;, and means any external address hosted by the &eg; machine.
+      </para>
+    </simplesect>
+  
+  
+  
+    
+    <simplesect id="appendix_syntax_simpleport" xreflabel="Simple Port">
+      <title>Simple Port Syntax</title>
+      <para>
+        The Simple <glossterm linkend="gloss_port">Port</glossterm> is a port number without expressing range.  It is a  number between 0 and 65,535.
+      </para>
+    </simplesect>
+  
+  
+  
+    
+    <simplesect id="appendix_syntax_portrange" xreflabel="Port Range">
+      <title>Port Range Syntax</title>
+      <para>
+        The <glossterm linkend="gloss_port">Port</glossterm> Range syntax defines a collection of contiguious ports.  It is expressed as <constant>port-port</constant>, where a dash (<constant>-</constant>) is used to separate the ends of the range.  <constant>port</constant> is a number between 0 and 65,535.  Examples include:
+  
+        <programlisting>1024-2048</programlisting>
+        <programlisting>20-26</programlisting>
+      </para>
+    </simplesect>
+  
+  
+    
+    <simplesect id="appendix_syntax_portmatcher" xreflabel="Port Matcher">
+      <title>Port Matcher Syntax</title>
+      <para>
+        The Port Matcher syntax is used in several components within the &eg;.  It is the most powerful means to express a range of <glossterm linkend="gloss_port">ports</glossterm>.  Where a field within the Administrative Interface specifies Port Matcher Syntax, one can enter values in either Simple Port or Port Range Syntax.
+      </para>
+      <para>
+        In addition to the other supported syntaxes, fields in the Port Matcher Syntax also understand the literal string <quote><constant>any</constant></quote>, where the value <quote><constant>any</constant></quote> matches all ports.
+      </para>
+    </simplesect>
+  </sect1>
 </appendix>
