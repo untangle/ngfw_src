@@ -190,8 +190,12 @@ public class VpnTransformImpl extends AbstractTransform
          * already been created. */
         this.certificateManager.createClient( client );
 
-        /* Generate a random key */
-        client.setDistributionKey( String.format( "%08x%08x", random.nextInt(), random.nextInt()));
+        if ( client.getDistributeUsb()) {
+            client.setDistributionKey( null );
+        } else {
+            /* Generate a random key or USB */
+            client.setDistributionKey( String.format( "%08x%08x", random.nextInt(), random.nextInt()));
+        }
         
         TransactionWork tw = new TransactionWork()
             {
@@ -213,7 +217,7 @@ public class VpnTransformImpl extends AbstractTransform
     private void distributeClientConfigUsb( VpnClient client )
         throws TransformException
     {
-        throw new TransformException( "Unsupported" );
+        /* XXX Nothing to do here, it is copied in writeConfigurationFiles */
     }
 
     private void distributeClientConfigEmail( VpnClient client, String email )

@@ -31,11 +31,18 @@ class VpnScriptWriter extends ScriptWriter
         super();
     }
 
+    @Override
+    public void appendVariable( String variable, String value )
+    {
+        appendVariable( variable, value, false );
+    }
+
     /*
      * Designed to write a variable name pair (there are no equal signs in open vpn)
      * isGlobal is not used
      * @Overrides
      */
+    @Override
     public void appendVariable( String variable, String value, boolean isGlobal )
     {
         if (( variable == null ) || ( value == null )) {

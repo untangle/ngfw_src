@@ -17,6 +17,7 @@ EMAIL_TEMPLATE="${DATA_DIR}/mail-template.html"
 commonName=`removeSpaces ${1}`
 distributionKey=${2}
 insideAddress=${3}
+distributeUsb=${4}
 
 ## XXX May need to do some checks to see if files exists etc.
 
@@ -29,6 +30,10 @@ WIN_CONFIG_FILE=${PACKAGE_DIR}/client-${commonName}.ovpn
 UNIX_CONFIG_FILE=${PACKAGE_DIR}/client-${commonName}.conf
 CLI_CRT_FILE=${PKI_DIR}/client-${commonName}.crt
 CLI_KEY_FILE=${PKI_DIR}/client-${commonName}.key
+
+USB_DEST="metavize-data"
+
+USB_ERROR=4
 
 NSI_SCRIPT=${DATA_DIR}/installer/openvpn-gui.nsi
 
@@ -74,6 +79,56 @@ function buildEmail()
         ${EMAIL_TEMPLATE} > ${PACKAGE_DIR}/mail-${commonName}.eml
 }
 
+
+function lookupUsbDevice()
+{
+    local t_sg
+    local t_dev
+
+    t_sg=`sg_scan -i | grep -B 1 USB | grep '^/dev' | sed 's|\(.*\):.*|\1|'`
+    if [ -z "${t_sg}" ]; then return ; fi
+
+    sg_map | grep ${t_sg} | awk '{ print $2 }'
+}
+
+function usbCleanup()
+{
+    local t_exitCode=$1
+
+    umount ${t_mountPoint}
+    rmdir ${t_mountPoint}
+
+    if [ -n "${t_exitCode}" ]; then exit -${t_exitCode} ; fi
+}
+
+function copyToUsb()
+{
+    local t_usbDevice=`lookupUsbDevice`
+    
+    if [ -z "${t_usbDevice}" ]; then
+        echo "Unable to find USB device"
+        exit -${USB_ERROR}
+    fi
+    
+    echo "Mounting device ${t_usbDevice}1"
+
+    local t_mountPoint=`mktemp -d || exit -3`
+    
+    ## Attempt to mount the usb key {dev}1
+    mount "${t_usbDevice}1" ${t_mountPoint} || usbCleanup ${USB_ERROR}
+    
+    mkdir -p ${t_mountPoint}/${USB_DEST}/ || usbCleanup ${USB_ERROR}
+
+    cp -f ${PACKAGE_DIR}/config-${commonName}.zip \
+        ${t_mountPoint}/${USB_DEST}/config-${commonName}.zip || usbCleanup ${USB_ERROR}
+
+    cp -f ${PACKAGE_DIR}/setup-${commonName}.exe \
+        ${t_mountPoint}/${USB_DEST}/setup-${commonName}.exe || usbCleanup ${USB_ERROR}
+    
+    ## Cleanup
+    usbCleanup
+}
+
 ## Convert the client file to dos
 unix2dos ${WIN_CONFIG_FILE}
 
@@ -82,7 +137,13 @@ makensis -V1 -DCOMMON_NAME="${commonName}" ${NSI_SCRIPT}
 
 buildConfigFile
 
-buildEmail
+if [ "${distributeUsb}x" = "truex" ]; then
+    echo "Copying configuration to USB"
+    copyToUsb
+else
+    echo "Distributing over email"
+    buildEmail
+fi
 
 true
 

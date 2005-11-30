@@ -37,12 +37,16 @@ import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.script.ScriptWriter;
 import com.metavize.mvvm.tran.script.ScriptRunner;
+import com.metavize.mvvm.tran.script.ScriptException;
 import com.metavize.mvvm.tran.IPaddr;
 
 // import static com.metavize.tran.openvpn.Constants.*;
 
 class OpenVpnManager
 {
+    /* The script returns this error code if there was a failure with USB */
+    private static final int USB_ERROR_CODE = 252;
+
     private static final String OPENVPN_CONF_DIR      = "/etc/openvpn";
     private static final String OPENVPN_SERVER_FILE   = OPENVPN_CONF_DIR + "/server.conf";
     private static final String OPENVPN_CCD_DIR       = OPENVPN_CONF_DIR + "/ccd";
@@ -96,7 +100,7 @@ class OpenVpnManager
      * 5  --  Output  R  and W characters to the console for each packet read and write, uppercase is
      * used for TCP/UDP packets and lowercase is used for TUN/TAP packets.
      * 6 to 11 -- Debug info range (see errlevel.h for additional information on debug levels). */
-    private static final int DEFAULT_VERBOSITY   = 2;
+    private static final int DEFAULT_VERBOSITY   = 1;
 
     /* XXX Just pick one that is unused (this is openvpn + 1) */
     static final int MANAGEMENT_PORT     = 1195;
@@ -139,16 +143,18 @@ class OpenVpnManager
     private static final String CLIENT_DEFAULTS[] = new String[] {
         "client",
         "proto udp",
-        "resolv-retry infinite",
+        "resolv-retry 20",
         "nobind",
         "mute-replay-warnings",
         "ns-cert-type server",
         "cipher " + DEFAULT_CIPHER,
         "comp-lzo",
-        "verb 3",
+        "verb 2",
         "persist-key",
         "persist-tun",
         "verb " + DEFAULT_VERBOSITY,
+        /* Exit if unable to connect to the server */
+        "tls-exit",
         "ca " + CLI_KEY_DIR + "/ca.crt"
     };
     
@@ -231,7 +237,7 @@ class OpenVpnManager
 
         /* Bridging or routing */
         if ( settings.isBridgeMode()) {            
-            sw.appendVariable( FLAG_DEVICE, DEVICE_BRIDGE );            
+            sw.appendVariable( FLAG_DEVICE, DEVICE_BRIDGE );
         } else {
             sw.appendVariable( FLAG_DEVICE, DEVICE_ROUTING );
             IPaddr localEndpoint  = settings.getServerAddress();
@@ -309,8 +315,20 @@ class OpenVpnManager
         writeClientConfigurationFile( settings, client, WIN_CLIENT_DEFAULTS,  WIN_EXTENSION );
 
         logger.debug( "Executing: " + GENERATE_DISTRO_SCRIPT );
-        ScriptRunner.getInstance().exec( GENERATE_DISTRO_SCRIPT, client.getInternalName(),
-                                         client.getDistributionKey(), internalAddress.getHostAddress());
+        try {
+            String key = client.getDistributionKey();
+            if ( key == null ) key = "";
+
+            ScriptRunner.getInstance().exec( GENERATE_DISTRO_SCRIPT, client.getInternalName(),
+                                             key, internalAddress.getHostAddress(),
+                                             String.valueOf( client.getDistributeUsb()));
+        } catch ( ScriptException e ) {
+            if ( e.getCode() == USB_ERROR_CODE ) {
+                throw new UsbUnavailableException( "Unable to connect or write to USB device" );
+            } else {
+                throw e;
+            }
+        }
     }
 
     /*
