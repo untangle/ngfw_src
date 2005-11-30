@@ -540,7 +540,7 @@ public abstract class BufferingSessionHandler
 
       handleMIMEChunk(true, true, null, actions);
 
-      m_messageInfo = null;
+//      m_messageInfo = null;
     }
     @Override
     public void handleFinalized() {
