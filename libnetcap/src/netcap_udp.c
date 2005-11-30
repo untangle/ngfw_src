@@ -600,9 +600,6 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
             /* Fallthrough */
         case ENETUNREACH:
             /* Fallthrough */
-        case EINVAL: /* XXX This should not be here, the packets should be dropped before reaching the MVVM, 
-                        see bug(827) for more information */
-            /* Fallthrough */
         case EHOSTUNREACH:
             /* Fallthrough */
             errlog( ERR_WARNING, "UDP: unable to send packet(%s), innocuous response code\n",
@@ -610,6 +607,20 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
             /* Use the data length to fake that the packet was written. This way the packet is consumed */
             ret = data_len;
             break;
+
+        case EINVAL: 
+            errlog( ERR_WARNING, "sendmsg: %s | (%s:%i -> %s:%i) data_len:%i ttl:%i tos:%i nfmark:%#10x\n", 
+                    errstr, 
+                    unet_next_inet_ntoa( pkt->src.host.s_addr ), pkt->src.port,
+                    unet_next_inet_ntoa( pkt->dst.host.s_addr ), pkt->dst.port,
+                    data_len, pkt->ttl, pkt->tos, nfmark );
+            
+            /* Use the data length to fake that the packet was written. This way the packet is consumed */
+            /* XXX This should not be here, the packets should be dropped before reaching the MVVM, 
+               see bug(827) for more information */
+            ret = data_len;
+            break;
+
         default:
             errlog( ERR_CRITICAL, "sendmsg: %s | (%s:%i -> %s:%i) data_len:%i ttl:%i tos:%i nfmark:%#10x\n", 
                     errstr, 
