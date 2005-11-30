@@ -115,7 +115,7 @@ class Blacklist
     String checkRequest(InetAddress clientIp, RequestLineToken requestLine,
                         Header header)
     {
-        URI uri = requestLine.getRequestUri();
+        URI uri = requestLine.getRequestUri().normalize();
 
         String path = uri.getPath().toLowerCase();
 
@@ -202,7 +202,7 @@ class Blacklist
                      Reason.BLOCK_MIME, contentType);
                 transform.log(hbe);
                 String host = header.getValue("host");
-                URI uri = requestLine.getRequestUri();
+                URI uri = requestLine.getRequestUri().normalize();
 
                 return settings.getBlockTemplate()
                     .render(host, uri, "Mime-Type (" + contentType + ")");
@@ -233,7 +233,7 @@ class Blacklist
 
     private String checkBlacklist(String host, RequestLineToken requestLine)
     {
-        URI uri = requestLine.getRequestUri();
+        URI uri = requestLine.getRequestUri().normalize();
 
         StringBuilder sb = new StringBuilder(host);
         sb.reverse();
