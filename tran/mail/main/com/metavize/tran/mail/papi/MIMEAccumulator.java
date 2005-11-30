@@ -345,6 +345,12 @@ public class MIMEAccumulator {
       in.close();
       return m_headers;
     }
+    catch(com.metavize.tran.mime.HeaderParseException hpe) {
+      m_logger.warn("Error parsing MIMEHeaders", hpe);
+      try {in.close();}catch(Exception ignore){}
+      m_fileMIMESource = null;
+      return null;
+    }
     catch(Exception ex) {
       m_logger.error("Error parsing MIMEHeaders", ex);
       try {in.close();}catch(Exception ignore){}
@@ -452,6 +458,11 @@ public class MIMEAccumulator {
       closeInput();
       return m_mimeMessage;
     }
+    catch(com.metavize.tran.mime.HeaderParseException hpe) {
+      m_logger.warn("Error parsing headers of subsection", hpe);
+      try{mimeIn.close();}catch(Exception ignore){}
+      return null;
+    }    
     catch(Exception ex) {
       try{mimeIn.close();}catch(Exception ignore){}
       m_logger.error("Error parsing MIME", ex);
