@@ -39,7 +39,7 @@ public class  VpnSite extends VpnClient
     // initially, may not be supported, just use one address.
     private List    exportedAddressList;
 
-    private boolean isEdgeguard = false;
+    private boolean isEdgeGuard = false;
     
     public VpnSite()
     {
@@ -76,14 +76,14 @@ public class  VpnSite extends VpnClient
      * @hibernate.property
      * column="is_edgeguard"
      */
-    public boolean getIsEdgeguard()
+    public boolean getIsEdgeGuard()
     {
-        return this.isEdgeguard;
+        return this.isEdgeGuard;
     }
 
-    public void setIsEdgeguard( boolean isEdgeguard )
+    public void setIsEdgeGuard( boolean isEdgeGuard )
     {
-        this.isEdgeguard = isEdgeguard;
+        this.isEdgeGuard = isEdgeGuard;
     }
 
     /**

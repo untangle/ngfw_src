@@ -1,0 +1,49 @@
+#!/bin/sh
+
+exec >> @MVVM_LOG@/openvpn.log 2>&1
+
+GLOBALS=@MVVM_HOME@/openvpn/globals
+
+baseNotRequired="true"
+
+## There must be a configuration file 
+if [ -r ${GLOBALS} ]; then
+    . ${GLOBALS}
+else
+    echo "Unable to load the openvpn configuration file ${GLOBALS}"
+    exit -2
+fi
+
+## This is where to write the listing of all of the client files
+destination="${MISC_DIR}/client-list"
+
+function listUsb()
+{
+    local t_usbDevice=`lookupUsbDevice`
+    
+    if [ -z "${t_usbDevice}" ]; then
+        echo "Unable to find USB device"
+        exit -${USB_ERROR}
+    fi
+    
+    t_usbDevice="${t_usbDevice}1"
+
+    echo "Mounting device ${t_usbDevice}"
+    
+    local t_mountPoint=`mktemp -d || exit -3`
+    
+    ## Attempt to mount the usb key {dev}
+    mount "${t_usbDevice}" ${t_mountPoint} || usbCleanup ${t_mountPoint} ${USB_ERROR}
+
+    ## List out the files
+    ls -1 ${t_mountPoint}/${USB_DEST}/config-*.zip | sed 's|.*config-\(.*\).zip|\1|'  \
+        > ${destination}
+    
+    ## Cleanup
+    usbCleanup ${t_mountPoint}
+}
+
+
+listUsb
+
+

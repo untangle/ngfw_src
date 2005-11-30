@@ -4,7 +4,7 @@ exec >> @MVVM_LOG@/openvpn.log 2>&1
 
 GLOBALS=@MVVM_HOME@/openvpn/globals
 
-baseNotRequired="false"
+baseNotRequired="true"
 
 ## There must be a configuration file 
 if [ -r ${GLOBALS} ]; then
@@ -16,8 +16,8 @@ fi
 
 PKI_FILES="ca.crt ca.key index.txt index.txt.old index.txt.attr index.txt.attr.old serial serial.old serial.base server.crt server.key"
 OPENVPN_DATA_FILES="ca.crt ca.key dh.pem server.crt server.key"
-OPENVPN_FILES="server.conf ipp.txt openvpn-status.log"
-MISC_FILES="client_status.txt base_cfg"
+OPENVPN_FILES="server.conf client.conf ipp.txt openvpn-status.log"
+MISC_FILES="client_status.txt base_cfg client-list"
 
 ## Get the latest list of common names
 commonNames=`getCommonNames`

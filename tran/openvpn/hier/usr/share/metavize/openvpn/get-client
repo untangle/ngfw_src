@@ -1,0 +1,127 @@
+#!/bin/sh
+
+exec >> @MVVM_LOG@/openvpn.log 2>&1
+
+GLOBALS=@MVVM_HOME@/openvpn/globals
+
+baseNotRequired="true"
+
+## There must be a configuration file 
+if [ -r ${GLOBALS} ]; then
+    . ${GLOBALS}
+else
+    echo "Unable to load the openvpn configuration file ${GLOBALS}"
+    exit -2
+fi
+
+## Number of times to wait for the Open vpn server to start
+RETRY_ATTEMPTS=6
+TEST_DELAY=1
+TEST_FAILED=-5
+DOWNLOAD_ERROR=-6
+
+getFromUsb=${1}
+serverAddress=${2}
+commonName=${2}
+distributionKey=${3}
+
+destination="${PACKAGE_DIR}/config-${commonName}.zip"
+
+logFile=/var/log/openvpn-eg.log
+
+function copyFromUsb()
+{
+    local t_usbDevice=`lookupUsbDevice`
+    
+    if [ -z "${t_usbDevice}" ]; then
+        echo "Unable to find USB device"
+        exit -${USB_ERROR}
+    fi
+    
+    t_usbDevice="${t_usbDevice}1"
+
+    echo "Mounting device ${t_usbDevice}"
+    
+    local t_mountPoint=`mktemp -d || exit -3`
+    
+    ## Attempt to mount the usb key {dev}
+    mount "${t_usbDevice}" ${t_mountPoint} || usbCleanup ${t_mountPoint} ${USB_ERROR}
+    
+    cp -f ${t_mountPoint}/${USB_DEST}/config-${commonName}.zip \
+        ${destination} || usbCleanup ${t_mountPoint} ${USB_ERROR}
+    
+    ## Cleanup
+    usbCleanup ${t_mountPoint}
+}
+
+function downloadClient()
+{
+    wget "https://${serverAddress}/openvpn/config.zip?key=${distributionKey}" \
+        -O ${destination} || exit ${DOWNLOAD_ERROR}
+}
+
+function installClient()
+{
+    local t_output=`mktemp -d || exit -3`
+    
+    unzip ${destination} -d ${t_output} || ( ${RM_CMD} -rf ${t_output};  exit -4 )
+    
+    ## Cleanup the old files
+    ## A little risky, but hey
+    rm -rf /etc/openvpn
+    mkdir -p /etc/openvpn || ( ${RM_CMD} -rf ${t_output};  exit -4 )
+
+    ## Copy in the necessary files
+    cp ${t_output}/office-mv/office-mv.conf ${OPENVPN_CONF_DIR}/client.conf \
+        || ( ${RM_CMD} -rf ${t_output};  exit -4 )
+
+    ## Update the configuration file to log to a normal place
+    sed -i -e "\$a log ${logFile}" ${OPENVPN_CONF_DIR}/client.conf 
+
+    cp -r ${t_output}/office-mv/metavize-data ${OPENVPN_CONF_DIR}/metavize-data \
+        || ( ${RM_CMD} -f ${OPENVPN_CONF_DIR}/client.conf ; ${RM_CMD} -rf ${t_output};  exit -4 )
+    
+    ## Cleanup
+    ${RM_CMD} -rf ${t_output}
+}
+
+function testInstall()
+{
+    sudo /etc/init.d/openvpn start
+    local t
+    local t_success
+
+    for (( t = 0 ; t < ${RETRY_ATTEMPTS} ; t++ )); do
+        if [ -n "`grep \"Initialization Sequence Completed\" ${logFile}`" ]; then
+            t_success="true"
+            break;
+        fi
+
+        sleep ${TEST_DELAY}
+        
+        ## Indicate the script failed if it never starts
+        false
+    done
+    
+    ## Stop the server
+    sh ${SCRIPT_DIR}/stop-openvpn
+
+    if [ -z "${t_success}" ]; then
+        echo "Unable to start server"
+        exit ${TEST_FAILED}
+    else
+        echo "Succesfully started server"
+    fi
+}
+
+if [ "${getFromUsb}x" = "truex" ]; then 
+    copyFromUsb
+else
+    downloadClient
+fi
+
+installClient
+
+testInstall
+
+true

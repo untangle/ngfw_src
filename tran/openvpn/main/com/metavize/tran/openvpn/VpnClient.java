@@ -39,8 +39,7 @@ public class VpnClient extends Rule implements Validatable
 {
     private static final Pattern NAME_PATTERN;
     
-    // XXX update the serial version id
-    // private static final long serialVersionUID = 4143567998376955882L;
+    // XXX SERIALVER private static final long serialVersionUID = 4143567998376955882L;
     
     private IPaddr address;            // may be null.
     
@@ -223,6 +222,12 @@ public class VpnClient extends Rule implements Validatable
     public void setCertificateStatusRevoked( )
     {
         this.certificateStatus = "revoked";
+    }
+
+    public boolean getIsEdgeGuard()
+    {
+        /* A single client can never be an edgeguard */
+        return false;
     }
 
     /* If the client is alive and the group it is in is enabled */

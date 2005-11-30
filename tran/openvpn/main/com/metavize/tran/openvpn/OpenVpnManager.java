@@ -44,9 +44,6 @@ import com.metavize.mvvm.tran.IPaddr;
 
 class OpenVpnManager
 {
-    /* The script returns this error code if there was a failure with USB */
-    private static final int USB_ERROR_CODE = 252;
-
     private static final String OPENVPN_CONF_DIR      = "/etc/openvpn";
     private static final String OPENVPN_SERVER_FILE   = OPENVPN_CONF_DIR + "/server.conf";
     private static final String OPENVPN_CCD_DIR       = OPENVPN_CONF_DIR + "/ccd";
@@ -85,6 +82,7 @@ class OpenVpnManager
 
     private static final String FLAG_CERT         = "cert";
     private static final String FLAG_KEY          = "key";
+
     /* The directory where the key material ends up for a client */
     private static final String CLI_KEY_DIR       = "metavize-data";
 
@@ -160,13 +158,13 @@ class OpenVpnManager
     
     private static final String WIN_CLIENT_DEFAULTS[]  = new String[] {};
     private static final String WIN_EXTENSION          = "ovpn";
+
     
     private static final String UNIX_CLIENT_DEFAULTS[] = new String[] {
         // ??? Questionable because not all installs will have these users and groups.
         // "user nobody",
         // "group nogroup"
     };
-
     private static final String UNIX_EXTENSION         = "conf";
 
     private final Logger logger = Logger.getLogger( this.getClass());
@@ -174,7 +172,7 @@ class OpenVpnManager
     OpenVpnManager()
     {
     }
-       
+    
     void start( VpnSettings settings ) throws TransformException
     {
         logger.info( "Starting openvpn server" );
@@ -308,8 +306,13 @@ class OpenVpnManager
     void writeClientConfigurationFiles( VpnSettings settings, VpnClient client )
         throws TransformException
     {
-        InetAddress internalAddress = MvvmContextFactory.context().argonManager().getInsideAddress();
-        if ( internalAddress == null ) throw new TransformException( "The inside address is not set" );
+        ArgonManager am = MvvmContextFactory.context().argonManager();
+        InetAddress internalAddress = am.getInsideAddress();
+        InetAddress externalAddress = am.getOutsideAddress();
+
+        if ( internalAddress == null || externalAddress == null ) {
+            throw new TransformException( "The inside address is not set" );
+        }
         
         writeClientConfigurationFile( settings, client, UNIX_CLIENT_DEFAULTS, UNIX_EXTENSION );
         writeClientConfigurationFile( settings, client, WIN_CLIENT_DEFAULTS,  WIN_EXTENSION );
@@ -321,9 +324,11 @@ class OpenVpnManager
 
             ScriptRunner.getInstance().exec( GENERATE_DISTRO_SCRIPT, client.getInternalName(),
                                              key, internalAddress.getHostAddress(),
-                                             String.valueOf( client.getDistributeUsb()));
+                                             externalAddress.getHostAddress(),
+                                             String.valueOf( client.getDistributeUsb()),
+                                             String.valueOf( client.getIsEdgeGuard()));
         } catch ( ScriptException e ) {
-            if ( e.getCode() == USB_ERROR_CODE ) {
+            if ( e.getCode() == Constants.USB_ERROR_CODE ) {
                 throw new UsbUnavailableException( "Unable to connect or write to USB device" );
             } else {
                 throw e;
@@ -353,7 +358,7 @@ class OpenVpnManager
         
         sw.appendVariable( FLAG_CERT, CLI_KEY_DIR + "/" + name + ".crt" );
         sw.appendVariable( FLAG_KEY,  CLI_KEY_DIR + "/" + name + ".key" );
-        
+                
         /* VPN configuratoins needs information from the networking settings. */
         ArgonManager argonManager = MvvmContextFactory.context().argonManager();
         

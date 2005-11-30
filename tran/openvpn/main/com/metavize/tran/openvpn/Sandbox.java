@@ -14,18 +14,37 @@ package com.metavize.tran.openvpn;
 import com.metavize.mvvm.security.Tid;
 
 import java.util.Map;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
+import java.util.LinkedList;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileNotFoundException;
+
+import org.apache.log4j.Logger;
+
+import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.ValidateException;
+
+import com.metavize.mvvm.tran.script.ScriptRunner;
+import com.metavize.mvvm.tran.script.ScriptException;
+
 
 /* XXX Probably want to make this an abstract class and make this a little more generic */
 class Sandbox
 {
+    private final Logger logger = Logger.getLogger( Sandbox.class );
+    
     private static final int DEFAULT_MAX_CLIENTS = 20;
     private static final boolean DEFAULT_KEEP_ALIVE  = true;
     private static final boolean DEFAULT_EXPOSE_CLIENTS = true;
-        
+
+    private static final String DOWNLOAD_SCRIPT = Constants.SCRIPT_DIR + "/get-client";
+    private static final String LS_CLIENTS_SCRIPT = Constants.SCRIPT_DIR + "/list-usb-configs";
+    private static final String CLIENT_LIST_FILE = Constants.MISC_DIR + "/client-list";
+
     private CertificateParameters certificateParameters;
     private GroupList  groupList;
     private ExportList exportList;
@@ -34,12 +53,93 @@ class Sandbox
     private final VpnTransform.ConfigState configState;
 
     private final Map<String,VpnGroup> resolveGroupMap = new HashMap<String,VpnGroup>();
-
+    
     Sandbox( VpnTransform.ConfigState configState )
     {
         this.configState = configState;
     }
 
+    List<String> getAvailableUsbList() throws TransformException
+    {
+        BufferedReader in = null;
+        
+        try {
+            /* Run the script to generate a list of the clients that are available */
+            ScriptRunner.getInstance().exec( LS_CLIENTS_SCRIPT );
+
+            /* Get the List */
+            in = new BufferedReader( new FileReader( CLIENT_LIST_FILE ));
+            List<String> availableList = new LinkedList<String>();
+
+            /* Add each line to the available list */
+            String str;
+            while (( str = in.readLine()) != null ) availableList.add( str.trim());
+            
+            return availableList;
+        } catch ( ScriptException e ) {
+            switch ( e.getCode()) {                
+            case Constants.USB_ERROR_CODE:
+                throw new UsbUnavailableException( "Unable to read the USB device." );
+
+            default:
+                logger.warn( "Unable to read USB files", e );
+                throw new TransformException( "Unable to read the USB device." );
+            }
+        } catch ( FileNotFoundException e ) {
+            /* It is a problem, but no need to let the client know this */
+            logger.warn( "File " + CLIENT_LIST_FILE + " does not exist" );
+        } catch ( Exception e ) {
+            logger.warn( "Unable to read USB files", e );
+            throw new TransformException( "Unable to read USB files." );
+        } finally {
+            try {
+                if ( in != null ) in.close();
+            } catch ( Exception e ) {
+                /* who cares, it is attempting to close the file */
+            }
+        }
+
+        /* This is for any exceptions that are logged, but not errors */
+        return new LinkedList<String>();
+    }
+
+    void downloadConfig( IPaddr address, String key ) throws Exception
+    {
+        /* XXXX Check the key for non-alphas */
+
+        execDownloadScript( true, address.toString(), key );
+    }
+
+    void downloadConfigUsb( String name ) throws Exception
+    {
+        execDownloadScript( true, name, "" );
+    }
+
+    private void execDownloadScript( boolean isUsb, String arg1, String arg2 ) throws Exception
+    {
+        try {
+            ScriptRunner.getInstance().exec( DOWNLOAD_SCRIPT, String.valueOf( isUsb ), arg1, arg2 );
+        } catch ( ScriptException e ) {
+            switch ( e.getCode()) {
+            case Constants.DOWNLOAD_ERROR_CODE: 
+                throw new DownloadException( "Unable to download client." );
+                
+            case Constants.START_ERROR:
+                throw new StartException( "Test connection with OpenVPN server failed." );
+
+            case Constants.USB_ERROR_CODE:
+                throw new UsbUnavailableException( "Unable to read the USB device." );
+
+            default:
+                logger.warn( "Unable to install client configuration", e );
+                throw new TransformException( "Unable to install client configuration" );
+            }
+        } catch ( Exception e ) {
+            logger.warn( "Unable to install client configuration", e );
+            throw new TransformException( "Unable to install client configuration." );
+        }
+    }
+    
     void generateCertificate( CertificateParameters parameters ) throws Exception
     {
         parameters.validate();

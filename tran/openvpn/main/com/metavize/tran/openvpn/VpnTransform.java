@@ -45,7 +45,9 @@ public interface VpnTransform extends Transform
     public void completeConfig() throws Exception;
 
     //// the stages of the setup wizard ///
+    List<String> getAvailableUsbList() throws TransformException;
     public void downloadConfig( IPaddr address, String key ) throws Exception;
+    public void downloadConfigUsb( String name ) throws Exception;
     public void generateCertificate( CertificateParameters parameters ) throws Exception;
     public GroupList getAddressGroups() throws Exception;
     public void setAddressGroups( GroupList parameters ) throws Exception;

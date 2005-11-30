@@ -25,12 +25,18 @@ OPENVPN_CCD_DIR="${OPENVPN_CONF_DIR}/ccd"
 ## This is the client status file that java uses to check the certificate status for each client
 CLIENT_STATUS_FILE="${MISC_DIR}/client_status.txt"
 
+## Destination on the USB drive for metavize openvpn data
+USB_DEST="metavize-data/openvpn"
+
+## Error code for when something goes wrong with the usb device
+USB_ERROR=4
+
 ## There must be a configuration file 
 if [ -r ${BASE_CONFIG_FILE} ]; then
     . ${BASE_CONFIG_FILE}
 else
     echo "Unable to load the openvpn configuration file ${BASE_CONFIG_FILE}"
-    ## Exit only if the base is not required.
+    ## Exit only if the base is required.
     if [ -z "${baseNotRequired}" ]; then exit -2 ; fi
 fi
 
@@ -144,4 +150,27 @@ function getCommonNames()
     sed -e "/dnQualifier=${DN_QUALIFIER_SERVER}/d" \
         -e 's|.*\/CN=\([^/]*\).*|\1|' ${INDEX_FILE} | \
         uniq
+}
+
+function lookupUsbDevice()
+{
+    local t_sg
+    local t_dev
+
+    t_sg=`sg_scan -i | grep -B 1 USB | grep '^/dev' | sed 's|\(.*\):.*|\1|'`
+    if [ -z "${t_sg}" ]; then return ; fi
+
+    ## Append the one to always try dev 1
+    sg_map | grep ${t_sg} | awk '{ print $2 }'
+}
+
+function usbCleanup()
+{
+    local t_mountPoint=$1
+    local t_exitCode=$2
+
+    umount ${t_mountPoint}
+    rmdir ${t_mountPoint}
+
+    if [ -n "${t_exitCode}" ]; then exit -${t_exitCode} ; fi
 }

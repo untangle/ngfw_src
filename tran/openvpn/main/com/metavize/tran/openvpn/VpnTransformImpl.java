@@ -191,10 +191,25 @@ public class VpnTransformImpl extends AbstractTransform
         this.certificateManager.createClient( client );
 
         if ( client.getDistributeUsb()) {
-            client.setDistributionKey( null );
+            // ??? Should this be here?
+            // Uncommented in case there is an email lying around somewhere, and someone
+            // uses it to retrieve the data after the admin distributes it over USB.
+            // client.setDistributionKey( null );
         } else {
-            /* Generate a random key or USB */
-            client.setDistributionKey( String.format( "%08x%08x", random.nextInt(), random.nextInt()));
+            /* Generate a random key for email distribution */
+            String key = client.getDistributionKey();
+            
+            /* Only generate a new key if the key has been modified */
+            if ( key == null || key.length() == 0 ) {
+                if ( client.getIsEdgeGuard()) {
+                    /* Use a shorter key for edge guard clients since they have to be 
+                     * typed in manually */
+                    key = String.format( "%08x", random.nextInt());
+                } else {
+                    key = String.format( "%08x%08x", random.nextInt(), random.nextInt());
+                }
+            }
+            client.setDistributionKey( key );
         }
         
         TransactionWork tw = new TransactionWork()
@@ -509,14 +524,14 @@ public class VpnTransformImpl extends AbstractTransform
     {
         VpnSettings newSettings = this.sandbox.completeConfig( this.getTid());
 
-        /* Try to cleanup the previous data */
-        ScriptRunner.getInstance().exec( CLEANUP_SCRIPT );
-
         /* Generate new settings */
         if ( settings.getIsEdgeGuardClient()) {
-            /* Finish the configuration for clients */
-            throw new TransformException( "Unsupported, fixme" );
+            /* Finish the configuration for clients, nothing left to do,
+             * it is all done at download time */
         } else {
+            /* Try to cleanup the previous data */
+            ScriptRunner.getInstance().exec( CLEANUP_SCRIPT );
+            
             /* Create the base certificate and parameters */
             this.certificateManager.createBase( newSettings );
             
@@ -534,9 +549,19 @@ public class VpnTransformImpl extends AbstractTransform
     }
 
     //// the stages of the setup wizard ///
-    public void downloadConfig(IPaddr address, String key) throws Exception
+    public List<String> getAvailableUsbList() throws TransformException
     {
-        throw new TransformException( "unsupported, fixme" );
+        return this.sandbox.getAvailableUsbList();
+    }
+    
+    public void downloadConfig( IPaddr address, String key ) throws Exception
+    {
+        this.sandbox.downloadConfig( address, key );
+    }
+
+    public void downloadConfigUsb( String name ) throws Exception
+    {
+        this.sandbox.downloadConfigUsb( name );
     }
     
     public void generateCertificate( CertificateParameters parameters ) throws Exception

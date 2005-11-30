@@ -42,4 +42,17 @@ public class Constants
 
     /* Triggered whenever a client connects to the VPN */
     static final int CONNECT_COUNTER = Transform.GENERIC_2_COUNTER;
+
+    /* Error codes from scripts */
+
+    /* Unable to download the client */
+    static final int DOWNLOAD_ERROR_CODE = 250;
+
+    /* Unable to start the openvpn server, may just be the other end is 
+     * not started */
+    static final int START_ERROR         = 251;
+
+    /* Error reading from the usb device */
+    static final int USB_ERROR_CODE      = 252;
+
 }

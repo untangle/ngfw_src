@@ -13,11 +13,14 @@ else
 fi
 
 EMAIL_TEMPLATE="${DATA_DIR}/mail-template.html"
+EG_TEMPLATE="${DATA_DIR}/eg-template.html"
 
 commonName=`removeSpaces ${1}`
 distributionKey=${2}
-insideAddress=${3}
-distributeUsb=${4}
+internalAddress=${3}
+externalAddress=${4}
+distributeUsb=${5}
+isEdgeGuard=${6}
 
 ## XXX May need to do some checks to see if files exists etc.
 
@@ -30,10 +33,6 @@ WIN_CONFIG_FILE=${PACKAGE_DIR}/client-${commonName}.ovpn
 UNIX_CONFIG_FILE=${PACKAGE_DIR}/client-${commonName}.conf
 CLI_CRT_FILE=${PKI_DIR}/client-${commonName}.crt
 CLI_KEY_FILE=${PKI_DIR}/client-${commonName}.key
-
-USB_DEST="metavize-data"
-
-USB_ERROR=4
 
 NSI_SCRIPT=${DATA_DIR}/installer/openvpn-gui.nsi
 
@@ -75,30 +74,15 @@ function buildConfigFile() {
 
 function buildEmail()
 {
-    sed -e "s|%%KEY%%|${distributionKey}|g" -e "s|%%ADDRESS%%|${insideAddress}|g" \
-        ${EMAIL_TEMPLATE} > ${PACKAGE_DIR}/mail-${commonName}.eml
-}
+    local t_emailFile="${PACKAGE_DIR}/mail-${commonName}.eml"
 
-
-function lookupUsbDevice()
-{
-    local t_sg
-    local t_dev
-
-    t_sg=`sg_scan -i | grep -B 1 USB | grep '^/dev' | sed 's|\(.*\):.*|\1|'`
-    if [ -z "${t_sg}" ]; then return ; fi
-
-    sg_map | grep ${t_sg} | awk '{ print $2 }'
-}
-
-function usbCleanup()
-{
-    local t_exitCode=$1
-
-    umount ${t_mountPoint}
-    rmdir ${t_mountPoint}
-
-    if [ -n "${t_exitCode}" ]; then exit -${t_exitCode} ; fi
+    if [ "${isEdgeGuard}x" = "truex" ]; then
+        sed -e "s|%%KEY%%|${distributionKey}|g" -e "s|%%EXTERNAL_ADDRESS%%|${externalAddress}|g" \
+            ${EG_TEMPLATE} > ${t_emailFile}
+    else
+        sed -e "s|%%KEY%%|${distributionKey}|g" -e "s|%%ADDRESS%%|${internalAddress}|g" \
+            ${EMAIL_TEMPLATE} > ${t_emailFile}
+    fi
 }
 
 function copyToUsb()
@@ -109,24 +93,26 @@ function copyToUsb()
         echo "Unable to find USB device"
         exit -${USB_ERROR}
     fi
+
+    ## Attempt to mount the usb key {dev}1
+    t_usbDevice="${t_usbDevice}1"
     
-    echo "Mounting device ${t_usbDevice}1"
+    echo "Mounting device ${t_usbDevice}"
 
     local t_mountPoint=`mktemp -d || exit -3`
     
-    ## Attempt to mount the usb key {dev}1
-    mount "${t_usbDevice}1" ${t_mountPoint} || usbCleanup ${USB_ERROR}
+    mount "${t_usbDevice}" ${t_mountPoint} || usbCleanup ${t_mountPoint} ${USB_ERROR}
     
-    mkdir -p ${t_mountPoint}/${USB_DEST}/ || usbCleanup ${USB_ERROR}
+    mkdir -p ${t_mountPoint}/${USB_DEST}/ || usbCleanup ${t_mountPoint} ${USB_ERROR}
 
     cp -f ${PACKAGE_DIR}/config-${commonName}.zip \
-        ${t_mountPoint}/${USB_DEST}/config-${commonName}.zip || usbCleanup ${USB_ERROR}
+        ${t_mountPoint}/${USB_DEST}/config-${commonName}.zip || usbCleanup ${t_mountPoint} ${USB_ERROR}
 
     cp -f ${PACKAGE_DIR}/setup-${commonName}.exe \
-        ${t_mountPoint}/${USB_DEST}/setup-${commonName}.exe || usbCleanup ${USB_ERROR}
+        ${t_mountPoint}/${USB_DEST}/setup-${commonName}.exe || usbCleanup ${t_mountPoint} ${USB_ERROR}
     
     ## Cleanup
-    usbCleanup
+    usbCleanup ${t_mountPoint}
 }
 
 ## Convert the client file to dos
