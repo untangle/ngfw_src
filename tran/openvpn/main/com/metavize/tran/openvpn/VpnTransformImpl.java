@@ -104,19 +104,26 @@ public class VpnTransformImpl extends AbstractTransform
     // VpnTransform methods --------------------------------------------------
     public void setVpnSettings( final VpnSettings newSettings )
     {
-        /* Attempt to assign all of the clients addresses */
+        final VpnSettings oldSettings = this.settings;
+
+        /* Attempt to assign all of the clients addresses only if in server mode */
         try {
-            addressMapper.assignAddresses( newSettings );
+            if ( !newSettings.getIsEdgeGuardClient()) addressMapper.assignAddresses( newSettings );
         } catch ( TransformException exn ) {
-            logger.error( "Could not save VPN settings", exn );
+            logger.error( "Could not assign client addresses, continuing", exn );
         }
 
         /* Update the status/generate all of the certificates for clients */
         this.certificateManager.updateCertificateStatus( newSettings );
 
-        
-        /* Retain the ID */
-        if ( this.settings != null ) newSettings.setId( this.settings.getId());
+        TransactionWork deletePreviousTW = new TransactionWork()
+            {
+                public boolean doWork( Session s )
+                {
+                    s.delete( oldSettings );
+                    return true;
+                }
+            };
 
         TransactionWork tw = new TransactionWork()
             {
@@ -128,6 +135,11 @@ public class VpnTransformImpl extends AbstractTransform
                 }
             };
 
+        /* If necessary, delete the old settings */
+        if ( oldSettings != null && newSettings.getId() != oldSettings.getId()) {
+            getTransformContext().runTransaction( deletePreviousTW );
+        }
+        
         getTransformContext().runTransaction( tw );
 
         try {

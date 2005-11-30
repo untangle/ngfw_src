@@ -230,10 +230,11 @@ public class VpnClient extends Rule implements Validatable
         return false;
     }
 
-    /* If the client is alive and the group it is in is enabled */
+    /* If the client is alive and the group it is in is enabled, and it has been\
+     * assigned an address. */
     public boolean isEnabled()
     {
-        return isLive() && ( this.group != null ) && ( this.group.isLive());
+        return isLive() && ( this.group != null ) && ( this.group.isLive()) && ( this.address != null );
     }
 
     static

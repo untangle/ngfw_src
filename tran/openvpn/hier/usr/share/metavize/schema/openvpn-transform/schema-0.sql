@@ -129,7 +129,7 @@ create table events.tr_openvpn_connect_evt (
         PRIMARY KEY    (event_id));
 
 alter table tr_openvpn_c_site_network add constraint FKF75374E830D9EF2D
-        foreign key (client_id) references tr_openvpn_client;
+        foreign key (client_id) references tr_openvpn_site;
 
 alter table tr_openvpn_s_site_network add constraint FKF75374E89E4538C5
         foreign key (settings_id) references tr_openvpn_settings;

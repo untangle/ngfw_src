@@ -49,6 +49,7 @@ public class  VpnSite extends VpnClient
 
     /**
      * The list of exported networks for this site.
+     * Should rename the column from client_id to site_id.
      *
      * @return the list of exported networks for this site.
      * @hibernate.list

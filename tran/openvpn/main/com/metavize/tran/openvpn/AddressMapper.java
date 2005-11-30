@@ -55,7 +55,9 @@ class AddressMapper
 
         if ( settings.getGroupList().size() == 0 ) throw new TransformException( "No groups" );
 
-        VpnGroup serverGroup   = (VpnGroup)settings.getGroupList().get( 0 );
+        VpnGroup serverGroup = (VpnGroup)settings.getGroupList().get( 0 );
+
+        /* Create a mapping from the group to its list of clients */
 
         /* Always add the first group, even if there aren't any clients in it, 
          * this is where the server pulls its address from */
@@ -81,7 +83,7 @@ class AddressMapper
             groupClientList.add( client );
         }
 
-        /* Iterate each group assigning all of the clients IP addresses */
+        /* Iterate each group list assigning all of the clients IP addresses */
         final boolean isBridge = settings.isBridgeMode();
 
         for ( Map.Entry<VpnGroup,List<VpnClient>> entry  : groupToClientList.entrySet()) {
@@ -98,7 +100,7 @@ class AddressMapper
             Set<IPaddr> addressSet = createAddressSet( clients.size() + ( isServerGroup ? 1 : 0 ), 
                                                        group, matcher, isBridge );
             
-            /* Remove any duplicates */
+            /* Remove any duplicates in the current list */
             removeDuplicateAddresses( settings, matcher, clients, isServerGroup );
 
             /* Now remove all of the entries that are taken */
@@ -132,9 +134,11 @@ class AddressMapper
             /* Check to see if it is in the range */
             if ( !matcher.isMatch( address.getAddr())) {
                 /* This is a configuration problem */
-                logger.warn( "Unable to configure clients" );
-                throw new TransformException( "Not enough addresses to assign all clients in group " + 
-                                              group.getName());
+                logger.info( "Unable to configure clients, not enough client addresses for " + 
+                             group.getName());
+                // throw new TransformException( "Not enough addresses to assign all clients in group " + 
+                // group.getName());
+                break;
             }
             
             addressSet.add( address );
@@ -145,6 +149,7 @@ class AddressMapper
         return addressSet;
     }
 
+    /** These are addresses that are already assigned upon starting */
     void removeDuplicateAddresses( VpnSettings settings, IPMatcher matcher, List<VpnClient> clientList, 
                                    boolean assignServer )
     {
@@ -155,20 +160,23 @@ class AddressMapper
             IPaddr serverAddress = settings.getServerAddress();
             if (( null != serverAddress ) && matcher.isMatch( serverAddress.getAddr())) {
                 addressSet.add( serverAddress );
+            } else {
+                settings.setServerAddress( null );
             }
         }
 
         /* Check to see if each client has a unique address */
         for ( VpnClient client : clientList ) {
             IPaddr address = client.getAddress();
-            /* If the address is already in the set, then unset it from the client since it is
-             * already taken */
-            if (( null != address ) && matcher.isMatch( address.getAddr()) && !addressSet.add( address )) {
+            /* If the address is already isn't set, it isn't in the current address group
+             * or it is already taken, then clear the address */
+            if (( null == address ) || !matcher.isMatch( address.getAddr()) || !addressSet.add( address )) {
                 client.setAddress( null );
             }
         }
     }
     
+    /* Remove the addresses that are taken in the address pool to be distributed to clients */
     void removeTakenAddresses( VpnSettings settings, IPMatcher matcher, List<VpnClient> clientList, 
                                Set<IPaddr> addressSet, boolean assignServer )
     {
@@ -208,8 +216,9 @@ class AddressMapper
 
         /* Assign each client an address */
         for ( VpnClient client : clientList ) {
-            /* Nothing to do for this clients that current have addresses */
-            if ( client.getAddress() != null ) continue;
+            /* Nothing to do for this clients that current have addresses or there aren't more
+             * more available addresses */
+            if ( client.getAddress() != null || !iter.hasNext()) continue;
             
             /* Once you use the node, you must remove it from the set so it is never used again */
             client.setAddress( iter.next());
