@@ -24,7 +24,7 @@ class IDSHttpHandler extends HttpStateMachine {
         if (info == null) {
             logger.warn("No session info at doRequestLine time");
         } else {
-            String path = requestLine.getRequestUri().getPath();
+            String path = requestLine.getRequestUri().normalize().getPath();
             info.setUriPath(path);
         }
         releaseRequest();
