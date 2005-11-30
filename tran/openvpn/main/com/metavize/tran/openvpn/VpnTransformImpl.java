@@ -32,6 +32,7 @@ import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformStartException;
+import com.metavize.mvvm.tran.UnconfiguredException;
 import com.metavize.mvvm.tran.TransformState;
 import com.metavize.mvvm.tran.TransformStats;
 import com.metavize.mvvm.tran.TransformStopException;
