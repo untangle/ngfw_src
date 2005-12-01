@@ -65,6 +65,7 @@ public class HttpParser extends AbstractParser
     private final int maxHeader;
     private final boolean blockLongHeaders;
     private final int maxUri;
+    private final int maxRequestLine;
     private final boolean blockLongUris;
     private final String sessStr;
 
@@ -89,6 +90,7 @@ public class HttpParser extends AbstractParser
         this.maxHeader = settings.getMaxHeaderLength();
         this.blockLongHeaders = settings.getBlockLongHeaders();
         this.maxUri = settings.getMaxUriLength();
+        this.maxRequestLine = maxUri + 13;
         this.blockLongUris = settings.getBlockLongUris();
         this.casing = casing;
         this.sessStr = "HttpParser" + (clientSide ? " client-side " : " server-side ");
@@ -129,8 +131,17 @@ public class HttpParser extends AbstractParser
                         } else {
                             state = FIRST_LINE_STATE;
                         }
+                    } else if (b.remaining() > maxRequestLine) {
+                        throw new ParseException("URI length exceeded: "
+                                                 + AsciiCharBuffer.wrap(b));
                     } else {
-                        b.compact();
+                        if (b.capacity() < maxRequestLine) {
+                            ByteBuffer r = ByteBuffer.allocate(maxRequestLine);
+                            r.put(b);
+                            b = r;
+                        } else {
+                            b.compact();
+                        }
                         done = true;
                     }
 
