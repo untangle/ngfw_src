@@ -13,12 +13,12 @@ package com.metavize.tran.openvpn.gui;
 
 import com.metavize.mvvm.security.*;
 import com.metavize.gui.widgets.wizard.*;
+import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.util.Util;
-import javax.swing.SwingUtilities;
-import javax.swing.ComboBoxModel;
+import javax.swing.*;
+import java.awt.Dialog;
 
-import java.awt.Color;
 
 import java.util.*;
 
@@ -56,6 +56,8 @@ public class ServerRoutingWizardSitesJPanel extends MWizardPageJPanel {
     Vector<Vector> filteredDataVector;
     List<VpnSite> elemList;
     Exception exception;
+	MProgressJDialog mProgressJDialog;
+    JProgressBar jProgressBar;
     
     public void doSave(Object settings, boolean validateOnly) throws Exception {
 
@@ -95,6 +97,40 @@ public class ServerRoutingWizardSitesJPanel extends MWizardPageJPanel {
         if( !validateOnly ){
 	    SiteList siteList = new SiteList(elemList);
 	    vpnTransform.setSites(siteList);
+		
+		// BRING UP SAVING DIALOG
+		SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		    mProgressJDialog = new MProgressJDialog("Saving Configuration",
+							    "<html><center>Please wait a moment while your configuration is being saved." + 
+							    "<br>This may take up to one minute.</center></html>",
+							    (Dialog)ServerRoutingWizardSitesJPanel.this.getTopLevelAncestor(), false);
+		    jProgressBar = mProgressJDialog.getJProgressBar();
+		    jProgressBar.setValue(0);
+		    jProgressBar.setString("Saving...");
+		    jProgressBar.setIndeterminate(true);
+		    mProgressJDialog.setVisible(true);
+		}});
+		try{
+		    vpnTransform.completeConfig();
+
+		    // SHOW RESULTS AND REMOVE SAVING DIALOG
+		    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+			jProgressBar.setValue(100);
+			jProgressBar.setString("Finished Saving");
+			jProgressBar.setIndeterminate(false);
+		    }});
+		    try{Thread.currentThread().sleep(2000);} catch(Exception e){e.printStackTrace();}
+		    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+			mProgressJDialog.setVisible(false);
+		    }});
+		    
+		}
+		catch(Exception e){
+		    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+			mProgressJDialog.setVisible(false);
+		    }});
+		    throw new Exception("Your VPN Routing Server configuration could not be saved.  Please try again.");
+		}
         }
     }
     
@@ -108,8 +144,8 @@ public class ServerRoutingWizardSitesJPanel extends MWizardPageJPanel {
 
                 setOpaque(false);
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html>You may add sites here.<br>\nSites will be able to connect to your VPN.</html>");
-                add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, -1, -1));
+                jLabel2.setText("<html><b>Optionally add VPN Sites.</b><br>VPN Sites are remote networks that can access any exported hosts and networks on the VPN, and visa versa.</html>");
+                add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, 410, -1));
 
                 add(configSiteToSiteJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 90, 465, 210));
 

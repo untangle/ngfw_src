@@ -78,15 +78,17 @@ public class BlinkJLabel extends JLabel implements ActionListener {
 
     // BLINKING ////////////////////////////
     public synchronized void blink(boolean blink){
-
         this.blink = blink;
 
         if(blink)
             blinkTimer.restart();
         else{
-            if( !blinkTimer.isRunning() ){
-                this.setIcon(targetIcon);
-            }
+	    if( blinkTimer.isRunning() ){
+		lastIcon = targetIcon;
+	    }
+	    else{
+		this.setIcon(targetIcon);
+	    }
         }
     }
 

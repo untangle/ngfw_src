@@ -85,33 +85,31 @@ public class ServerRoutingWizardGroupsJPanel extends MWizardPageJPanel {
     }
     
     
-    private void initComponents() {//GEN-BEGIN:initComponents
-	java.awt.GridBagConstraints gridBagConstraints;
-	
-	jLabel2 = new javax.swing.JLabel();
-	configAddressGroupsJPanel = new ConfigAddressGroupsJPanel();
-	jLabel3 = new javax.swing.JLabel();
-	
-	setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-	
-	setOpaque(false);
-	jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-	jLabel2.setText("<html>Please take a moment to add at least one<br>Address Group.  These groups are used to enforce<br>policies on connecting clients and sites.</html>");
-	add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, -1, -1));
-	
-	add(configAddressGroupsJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 90, 465, 210));
-	
-	jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/tran/openvpn/gui/ProductShot.png")));
-	jLabel3.setEnabled(false);
-	add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(-130, 230, -1, -1));
-	
-    }//GEN-END:initComponents
+        private void initComponents() {//GEN-BEGIN:initComponents
+                jLabel2 = new javax.swing.JLabel();
+                configAddressGroupsJPanel = new ConfigAddressGroupsJPanel();
+                jLabel3 = new javax.swing.JLabel();
+
+                setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+                setOpaque(false);
+                jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel2.setText("<html><b>Please add at least one Address Pool.</b><br>Connecting VPN clients and sites will be assigned IP addresses from these pools, and each pool can have a policy applied to it.</html>");
+                add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, 410, -1));
+
+                add(configAddressGroupsJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 90, 465, 210));
+
+                jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/tran/openvpn/gui/ProductShot.png")));
+                jLabel3.setEnabled(false);
+                add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(-130, 230, -1, -1));
+
+        }//GEN-END:initComponents
     
     
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel configAddressGroupsJPanel;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    // End of variables declaration//GEN-END:variables
+        // Variables declaration - do not modify//GEN-BEGIN:variables
+        private javax.swing.JPanel configAddressGroupsJPanel;
+        private javax.swing.JLabel jLabel2;
+        private javax.swing.JLabel jLabel3;
+        // End of variables declaration//GEN-END:variables
     
 }

@@ -18,6 +18,7 @@ import com.metavize.gui.transform.*;
 
 import com.metavize.tran.openvpn.*;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import java.awt.Color;
 import java.awt.Frame;
 
@@ -33,7 +34,7 @@ public class ClientWizard extends MWizardJDialog {
 	this.mTransformControlsJPanel = mTransformControlsJPanel;
         setTitle("Metavize OpenVPN Client Setup Wizard");
         addWizardPageJPanel(new ClientWizardWelcomeJPanel(vpnTransform), "1. Welcome", false, true);
-        addWizardPageJPanel(new ClientWizardServerJPanel(vpnTransform), "2. Connect to Server", false, true);
+        addWizardPageJPanel(new ClientWizardServerJPanel(vpnTransform), "2. Download Configuration", false, true);
         addWizardPageJPanel(new ClientWizardCongratulationsJPanel(vpnTransform), "3. Congratulations", false, true);
     }
     
@@ -44,8 +45,15 @@ public class ClientWizard extends MWizardJDialog {
 
     protected void wizardFinishedNormal(){
 	super.wizardFinishedNormal();
-	mTransformControlsJPanel.generateGui();
-    }    
+	try{
+	    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		mTransformControlsJPanel.generateGui();
+		mTransformControlsJPanel.refreshGui();
+	    }});
+	}
+	catch(Exception e){ Util.handleExceptionNoRestart("Error updating panel assortment", e); }
+    }  
+        
 }
 
 

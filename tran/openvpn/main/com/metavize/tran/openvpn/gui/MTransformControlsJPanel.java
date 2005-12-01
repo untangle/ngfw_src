@@ -22,10 +22,10 @@ import com.metavize.tran.openvpn.*;
 public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransformControlsJPanel{
     
     private static final String WIZARD_NAME = "Setup Wizard & Status";
-    private static final String EXPORTS_NAME = "Exported Hosts/Networks";
-    private static final String CLIENTS_NAME = "Client Groups";
-    private static final String CLIENT_TO_SITE_NAME = "Client to Site List";
-    private static final String SITE_TO_SITE_NAME = "Site to Site List";
+    private static final String EXPORTS_NAME = "Exported Hosts & Networks";
+    private static final String CLIENTS_NAME = "Address Pools";
+    private static final String CLIENT_TO_SITE_NAME = "VPN Clients";
+    private static final String SITE_TO_SITE_NAME = "VPN Sites";
     private static final String NAME_LOG = "Event Log";
 
     private static final String WIZARD_SIMUL_NAME = "Wizard Simulation";
@@ -34,6 +34,10 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         super(mTransformJPanel);
     }
 
+	void refreshGui(){
+		reloadJButton.doClick();
+	}
+	
     protected void generateGui(){
 
 	TransformContext transformContext = mTransformJPanel.getTransformContext();

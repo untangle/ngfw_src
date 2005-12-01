@@ -21,6 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import java.awt.Color;
 import java.awt.Frame;
+import java.awt.Dimension;
 
 public class ServerRoutingWizard extends MWizardJDialog {
     
@@ -35,12 +36,15 @@ public class ServerRoutingWizard extends MWizardJDialog {
         setTitle("Metavize OpenVPN Server Routing Setup Wizard");
         addWizardPageJPanel(new ServerRoutingWizardWelcomeJPanel(vpnTransform), "1. Welcome", false, true);
         addWizardPageJPanel(new ServerRoutingWizardCertificateJPanel(vpnTransform), "2. Generate Certificate", false, true);
-        addWizardPageJPanel(new ServerRoutingWizardGroupsJPanel(vpnTransform), "3. Add Address Groups", false, true);
-        addWizardPageJPanel(new ServerRoutingWizardExportsJPanel(vpnTransform), "4. Export Hosts", false, true);
-        addWizardPageJPanel(new ServerRoutingWizardClientsJPanel(vpnTransform), "5. List Clients", false, true);
-        addWizardPageJPanel(new ServerRoutingWizardSitesJPanel(vpnTransform), "6. List Sites", false, true);
+        addWizardPageJPanel(new ServerRoutingWizardGroupsJPanel(vpnTransform), "3. Add Address Pools", false, true);
+        addWizardPageJPanel(new ServerRoutingWizardExportsJPanel(vpnTransform), "4. Add Exports", false, true);
+        addWizardPageJPanel(new ServerRoutingWizardClientsJPanel(vpnTransform), "5. Add VPN Clients", false, true);
+        addWizardPageJPanel(new ServerRoutingWizardSitesJPanel(vpnTransform), "6. Add VPN Sites", false, true);
         addWizardPageJPanel(new ServerRoutingWizardCongratulationsJPanel(vpnTransform), "7. Congratulations", false, true);
     }
+
+    protected Dimension getTitleJPanelPreferredSize(){ return new Dimension(250,360); }
+    protected Dimension getContentJPanelPreferredSize(){ return new Dimension(485,360); }
     
     protected void wizardFinishedAbnormal(int currentPage){
 	new MOneButtonJDialog(this, MESSAGE_DIALOG_TITLE, MESSAGE_CLIENT_NOT_CONFIGURED);
@@ -52,6 +56,7 @@ public class ServerRoutingWizard extends MWizardJDialog {
 	try{
 	    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
 		mTransformControlsJPanel.generateGui();
+		mTransformControlsJPanel.refreshGui();
 	    }});
 	}
 	catch(Exception e){ Util.handleExceptionNoRestart("Error updating panel assortment", e); }

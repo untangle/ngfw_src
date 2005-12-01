@@ -21,7 +21,7 @@ import com.metavize.mvvm.tran.*;
 import com.metavize.mvvm.*;
 
 import javax.swing.*;
-
+import java.awt.Window;
 
 public class MStateMachine implements java.awt.event.ActionListener {
     
@@ -37,8 +37,11 @@ public class MStateMachine implements java.awt.event.ActionListener {
     private TransformContext transformContext;
     private MackageDesc mackageDesc;
 
-    public MStateMachine( MTransformJPanel mTransformJPanel ) {
-                             
+    // helpers
+    String transformName;
+    String displayName;
+
+    public MStateMachine( MTransformJPanel mTransformJPanel ) {                             
          this.mTransformJPanel = mTransformJPanel;
          this.mTransformControlsJPanel = mTransformJPanel.mTransformControlsJPanel();
          this.mTransformDisplayJPanel = mTransformJPanel.mTransformDisplayJPanel();
@@ -49,7 +52,10 @@ public class MStateMachine implements java.awt.event.ActionListener {
          this.saveJButton = mTransformControlsJPanel.saveJButton();
          this.reloadJButton = mTransformControlsJPanel.reloadJButton();
          this.removeJButton = mTransformControlsJPanel.removeJButton();
-                  
+    
+	 transformName = mackageDesc.getName();
+	 displayName = mackageDesc.getDisplayName();
+              
          new RefreshStateThread();
     }
 
@@ -60,10 +66,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
 
         if( Util.getIsDemo() && !source.equals(reloadJButton) )
             return;
-        try{
-            String transformName = mackageDesc.getName();
-            String displayName = mackageDesc.getDisplayName();
-            
+        try{            
             if( source.equals(saveJButton) ){
                 if( transformName.equals("nat-transform") ){
 		    saveJButton.setEnabled(false);
@@ -91,6 +94,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
             else if( source.equals(powerJToggleButton) ){ 
 		int modifiers = evt.getModifiers();
 		powerJToggleButton.setEnabled(false);
+		// REMOVE
 		if( (modifiers & java.awt.event.ActionEvent.SHIFT_MASK) > 0 ){
 		    if( (modifiers & java.awt.event.ActionEvent.CTRL_MASK) == 0 ){
                         if( (new RemoveProceedDialog(displayName)).isProceeding() ){
@@ -209,8 +213,9 @@ public class MStateMachine implements java.awt.event.ActionListener {
 
 	public void run(){
 	    try{
-		if(powerOn)
+		if(powerOn){
 		    transformContext.transform().start();
+		}
 		else
 		    transformContext.transform().stop();
 		
@@ -219,6 +224,15 @@ public class MStateMachine implements java.awt.event.ActionListener {
 		else
 		    setOffView(true);
 	    }
+	    catch(UnconfiguredException e){
+		if( transformName.equals("openvpn-transform") ){
+		    MOneButtonJDialog.factory((Window)mTransformJPanel.getTopLevelAncestor(), displayName,
+					      "You must configure OpenVPN as either a VPN Routing Server" +
+					      " or a VPN Client before you can turn it on.  You may do this" +
+					      " through its Setup Wizard (in its settings).", displayName + " Confirmation", "Confirmation");
+		}
+		setOffView(true);
+	    }
 	    catch(Exception e){
 		try{
 		    Util.handleExceptionWithRestart("Error doing power", e);
@@ -226,6 +240,14 @@ public class MStateMachine implements java.awt.event.ActionListener {
 		catch(Exception f){
 		    Util.handleExceptionNoRestart("Error doing power", f);
 		    setProblemView(true);
+		    String action;
+		    if( powerOn )
+			action = "turned on";
+		    else
+			action = "turned off";
+		    MOneButtonJDialog.factory((Window)mTransformJPanel.getTopLevelAncestor(), displayName,
+					      displayName + " could not be " + action + "." +
+					      "  Please contact Metavize for further support.", displayName + " Warning", "Warning");
 		}
 	    }
 	}
