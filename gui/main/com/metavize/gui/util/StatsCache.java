@@ -21,9 +21,9 @@ public class StatsCache
 {
     protected static long SLEEP_MILLIS = 1000l;
 
-    protected UpdateThread updateThread;
+    private final UpdateThread updateThread;
 
-    protected HashMap<Tid, FakeTransform> fakies;
+    private final HashMap<Tid, FakeTransform> fakies;
 
     public StatsCache(){
         fakies = new HashMap<Tid, FakeTransform>();
@@ -33,7 +33,7 @@ public class StatsCache
     public void start(){
         updateThread.start();
     }
-    
+
     public Transform getFakeTransform(Tid tid)
     {
         return fakies.get(tid);
@@ -43,58 +43,86 @@ public class StatsCache
         updateThread.kill();
     }
 
-    protected class UpdateThread extends Thread implements Killable {
-	// KILLABLE //////////
-	private boolean killed;
-	public synchronized void kill(){ this.killed = true; }
-	///////////////////////
+    private class UpdateThread implements Killable {
+        // KILLABLE //////////
+        private volatile Thread thread;
 
-        protected UpdateThread() {
-	    super("MVCLIENT-StatsCache.UpdateThread");
-            this.setDaemon(true);
-	    Util.addKillableThread(this);
-        }
+        public void kill()
+        {
+            synchronized (this) {
+                Thread t = thread;
 
-        public void run() {
-	    Map<Tid, TransformStats> allStats;
-	    boolean mustClear = false;
-            while(true) {
-                try {
-                    // GET ALL TRANSFORM STATS, AND KILL IF NECESSSARY
-		    synchronized(this){
-			if( killed )
-			    return;
-			allStats = Util.getTransformManager().allTransformStats();
-			if(fakies.size() != allStats.size())
-			    fakies.clear();
-			for(Tid tid : allStats.keySet()){
-			    if( fakies.containsKey(tid) )
-				fakies.get(tid).setStats(allStats.get(tid));
-			    else
-				fakies.put(tid, new FakeTransform(allStats.get(tid)));
-			}
-		    }
-                    // PAUSE A NORMAL AMOUNT OF TIME
-                    Thread.sleep(SLEEP_MILLIS);
+                if (null != t) {
+                    thread = null;
+                    t.interrupt();
                 }
-		catch (Exception e) {
-		    try{
-			Util.handleExceptionWithRestart("Error getting graph data", e);
-		    }
-		    catch(Exception f){
-			Util.handleExceptionNoRestart("Error getting graph data", f);
-			// Server is probably down.
-			// This is ugly: XXXXXXXXXXXXXXX
-			try { Thread.currentThread().sleep(10000); } catch(Exception g) {}
-		    }
-		}
             }
         }
 
-        public void setKilled(boolean killed) {
+        public void start()
+        {
+            synchronized (this) {
+                Thread t = new Thread(this, "StatsCache");
+                t.setDaemon(true);
+                t.start();
+                Util.addKillableThread(this);
+            }
+        }
+
+        ///////////////////////
+
+        protected UpdateThread() {
+        }
+
+        public void run() {
+            thread = Thread.currentThread();
+
+            Map<Tid, TransformStats> allStats;
+            boolean mustClear = false;
+
+            while (null != thread) {
+                try {
+                    // GET ALL TRANSFORM STATS, AND KILL IF NECESSSARY
+                    allStats = Util.getTransformManager().allTransformStats();
+
+                    if (fakies.size() != allStats.size()) {
+                        fakies.clear();
+                    }
+                } catch (Exception exn) {
+                    try {
+                        Util.handleExceptionWithRestart("Error getting graph data", exn);
+                    } catch(Exception f){
+                        Util.handleExceptionNoRestart("Error getting graph data", f);
+                        // Server is probably down.
+                        // This is ugly: XXXXXXXXXXXXXXX
+                        try {
+                            Thread.currentThread().sleep(10000);
+                            continue;
+                        } catch (InterruptedException x) {
+                            continue; // reevaluate loop condition
+                        }
+                    }
+                    continue;
+                }
+
+                for(Tid tid : allStats.keySet()){
+                    if( fakies.containsKey(tid) ) {
+                        fakies.get(tid).setStats(allStats.get(tid));
+                    } else {
+                        fakies.put(tid, new FakeTransform(allStats.get(tid)));
+                    }
+                }
+
+                try {
+                    // PAUSE A NORMAL AMOUNT OF TIME
+                    Thread.sleep(SLEEP_MILLIS);
+                } catch (InterruptedException exn) {
+                    continue; // reevaluate loop condition
+                }
+            }
         }
     }
-    
+
     public class FakeTransform implements Transform {
         private TransformStats stats;
 
@@ -118,8 +146,8 @@ public class StatsCache
         public TransformStats getStats() {
             return stats;
         }
-	public void setStats(TransformStats stats){
-	    this.stats = stats;
-	}
+        public void setStats(TransformStats stats){
+            this.stats = stats;
+        }
     }
 }

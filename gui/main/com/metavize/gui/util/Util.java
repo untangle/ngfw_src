@@ -37,10 +37,10 @@ import com.metavize.gui.pipeline.MRackJPanel;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.mvvm.*;
 import com.metavize.mvvm.client.*;
+import com.metavize.mvvm.logging.*;
 import com.metavize.mvvm.policy.*;
 import com.metavize.mvvm.security.*;
 import com.metavize.mvvm.tran.*;
-import com.metavize.mvvm.logging.*;
 
 public class Util {
 
@@ -105,7 +105,7 @@ public class Util {
             adminManager = mvvmContext.adminManager();
             networkingManager = mvvmContext.networkingManager();
             policyManager = mvvmContext.policyManager();
-	    loggingManager = mvvmContext.loggingManager();
+        loggingManager = mvvmContext.loggingManager();
         }
         else{
             toolboxManager = null;
@@ -113,7 +113,7 @@ public class Util {
             adminManager = null;
             networkingManager = null;
             policyManager = null;
-	    loggingManager = null;
+        loggingManager = null;
         }
     }
 
@@ -121,7 +121,7 @@ public class Util {
     public static ToolboxManager getToolboxManager(){ return toolboxManager; }
     public static TransformManager getTransformManager(){ return transformManager; }
     public static AdminManager getAdminManager(){ return adminManager; }
-    public static StatsCache getStatsCache(){ 
+    public static StatsCache getStatsCache(){
         if( statsCache == null )
             statsCache = new StatsCache();
         return statsCache;
@@ -220,7 +220,7 @@ public class Util {
             }
             catch(Exception e){
                 Util.handleExceptionNoRestart("Error (setting code base to http://127.0.0.1/webstart):", e);
-		serverCodeBase = new URL("http://127.0.0.1/webstart");
+        serverCodeBase = new URL("http://127.0.0.1/webstart");
             }
             finally{
                 return serverCodeBase;
@@ -340,11 +340,11 @@ public class Util {
     }
 
     public static Rectangle generateCenteredBounds(Window window, int childWidth, int childHeight){
-	if( window != null )
-	    return generateCenteredBounds(window.getBounds(), childWidth, childHeight);
-	else
-	    return generateCenteredBounds((Rectangle)null, childWidth, childHeight);
-	
+    if( window != null )
+        return generateCenteredBounds(window.getBounds(), childWidth, childHeight);
+    else
+        return generateCenteredBounds((Rectangle)null, childWidth, childHeight);
+
     }
 
     public static Rectangle generateCenteredBounds(Rectangle parentBounds, int childWidth, int childHeight){

@@ -12,6 +12,6 @@
 package com.metavize.gui.util;
 
 
-public interface Killable {
+public interface Killable extends Runnable {
     public void kill();
 }
