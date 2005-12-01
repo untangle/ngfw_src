@@ -174,3 +174,4 @@ function usbCleanup()
 
     if [ -n "${t_exitCode}" ]; then exit -${t_exitCode} ; fi
 }
+

@@ -184,7 +184,7 @@ public class ServerRoutingWizardCertificateJPanel extends MWizardPageJPanel {
                 jPanel1.add(stateJTextField, gridBagConstraints);
 
                 jLabel21.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel21.setText("Locality:");
+                jLabel21.setText("City:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;

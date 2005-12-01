@@ -18,6 +18,15 @@ fi
 RETRY_ATTEMPTS=5
 RESTART_DELAY=1
 
+
+TUN_DEVICE=/dev/net/tun
+
+# If the tun device doesn't exist, then create it
+if [ ! -c ${TUN_DEVICE} ]; then
+    mkdir -p /dev/net
+    mknod ${TUN_DEVICE} c 10 200
+fi
+
 ## XXX May need to run reconfiguration for the bridge
 ## 
 

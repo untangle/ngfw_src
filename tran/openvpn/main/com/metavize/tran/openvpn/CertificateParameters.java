@@ -109,6 +109,8 @@ public class CertificateParameters implements Serializable, Validatable
      */
     public void validate() throws ValidateException
     {
-        /* XXXXXXXX */
+        if ( this.country.length() != 2  && this.country.length() != 0 ) {
+            throw new ValidateException( "Country is two characters." + this.country );
+        }
     }
 }

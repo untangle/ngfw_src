@@ -14,83 +14,36 @@ else
     exit -2
 fi
 
-PKI_FILES="ca.crt ca.key index.txt index.txt.old index.txt.attr index.txt.attr.old serial serial.old serial.base server.crt server.key"
-OPENVPN_DATA_FILES="ca.crt ca.key dh.pem server.crt server.key"
-OPENVPN_FILES="server.conf client.conf ipp.txt openvpn-status.log"
-MISC_FILES="client_status.txt base_cfg client-list"
-
-## Get the latest list of common names
-commonNames=`getCommonNames`
-
 function cleanPKI()
 {
-    local t
-    local t_name
-    
-    local t_indices=`awk '{print $3}' ${INDEX_FILE}`
-    
-    for t in crt key ovpn conf ; do 
-        for t_name in ${commonNames}; do
-            ${RM_CMD} -f "${PKI_DIR}/client-${t_name}.${t}"
-        done
-    done
-
-    for t in ${PKI_FILES} ; do ${RM_CMD} -f "${PKI_DIR}/${t}" ; done
-    
-    for t in ${t_indices} ; do ${RM_CMD} -f "${PKI_DIR}/${t}.pem" ; done
+    ${RM_CMD} -rf '@MVVM_CONF@/openvpn/pki'
+    mkdir -p ${PKI_DIR}
 }
 
 function cleanPackages()
 {
-    local t_name
-
-    for t_name in ${commonNames}; do
-        ${RM_CMD} -f "${PACKAGE_DIR}/config-${t_name}.zip"
-        ${RM_CMD} -f "${PACKAGE_DIR}/setup-${t_name}.exe"
-        ${RM_CMD} -f "${PACKAGE_DIR}/mail-${t_name}.eml"
-    done
-}
-
-function cleanOpenvpnData()
-{
-    local t
-    for t in ${OPENVPN_DATA_FILES} ; do ${RM_CMD} -f "${OPENVPN_DATA_DIR}/${t}" ; done
+    ${RM_CMD} -rf '@MVVM_CONF@/openvpn/client-packages'
+    mkdir -p ${PACKAGE_DIR}
 }
 
 function cleanOpenvpn()
 {
-    local t 
-    for t in ${OPENVPN_FILES}; do ${RM_CMD} -f "${OPENVPN_CONF_DIR}/${t}" ; done
-}
-
-function cleanOpenvpnCCD()
-{
-    local t_name
-
-    for t_name in ${commonNames}; do
-        ${RM_CMD} -f "${OPENVPN_CCD_DIR}/${t_name}"
-    done
+    ${RM_CMD} -rf '/etc/openvpn'
+    mkdir -p ${OPENVPN_CONF_DIR}
+    mkdir -p ${OPENVPN_DATA_DIR}
+    mkdir -p ${OPENVPN_CCD_DIR}    
 }
 
 function cleanMisc()
 {
-    local t_name
-    for t_name in ${MISC_FILES} ; do ${RM_CMD} -f "${MISC_DIR}/${t_name}" ; done
+    ${RM_CMD} -rf '@MVVM_CONF@/openvpn/misc'
+    mkdir -p ${MISC_DIR}
 }
 
-cleanOpenvpnData
 cleanOpenvpn
-cleanOpenvpnCCD
 cleanPackages
 cleanPKI
 cleanMisc
 
-rmdir ${OPENVPN_DATA_DIR}
-rmdir ${OPENVPN_CCD_DIR}
-
-rmdir ${PACKAGE_DIR}
-rmdir ${PKI_DIR}
-rmdir ${MISC_DIR}
-rmdir ${CONF_DIR}
-
 true
+

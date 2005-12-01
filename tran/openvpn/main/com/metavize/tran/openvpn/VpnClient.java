@@ -40,6 +40,7 @@ public class VpnClient extends Rule implements Validatable
     private static final Pattern NAME_PATTERN;
     
     // XXX SERIALVER private static final long serialVersionUID = 4143567998376955882L;
+    private static final int MAX_NAME_LENGTH = 60;
     
     private IPaddr address;            // may be null.
     
@@ -192,6 +193,10 @@ public class VpnClient extends Rule implements Validatable
 
         if ( internalName.length() == 0 ) {
             throw new ValidateException( "A client cannot have an empty name" );
+        }
+
+        if ( internalName.length() > MAX_NAME_LENGTH ) {
+            throw new ValidateException( "A client's name is limited to " + MAX_NAME_LENGTH + "characters." );
         }
         
         if ( !NAME_PATTERN.matcher( name ).matches()) {

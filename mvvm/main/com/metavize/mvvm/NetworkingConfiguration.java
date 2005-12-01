@@ -29,7 +29,7 @@ import com.metavize.mvvm.tran.ValidateException;
 
 public class NetworkingConfiguration implements Serializable, Validatable, Equivalence
 {
-    // XXX FIXME private static final long serialVersionUID = -6748993829692484951L;
+    private static final long serialVersionUID = 172494253701617361L;
 
     public static final IPaddr  EMPTY_IPADDR;
     public static final IPaddr  DEF_OUTSIDE_NETWORK;

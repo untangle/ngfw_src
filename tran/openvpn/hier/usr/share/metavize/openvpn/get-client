@@ -25,6 +25,9 @@ serverAddress=${2}
 commonName=${2}
 distributionKey=${3}
 
+mkdir -p ${PACKAGE_DIR}
+mkdir -p ${MISC_DIR}
+
 destination="${PACKAGE_DIR}/config-${commonName}.zip"
 
 logFile=/var/log/openvpn-eg.log
@@ -98,9 +101,6 @@ function testInstall()
         fi
 
         sleep ${TEST_DELAY}
-        
-        ## Indicate the script failed if it never starts
-        false
     done
     
     ## Stop the server
