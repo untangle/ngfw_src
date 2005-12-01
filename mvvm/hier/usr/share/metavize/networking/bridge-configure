@@ -269,5 +269,11 @@ deconfigureAllInterfaces
 ## Reconfigure all interfaces
 configureInterfaces "${INTERFACE_LIST}"
 
+## If necessary Run the post configuration script
+if [ -n "${MVVM_POST_CONF}" ]; then ${MVVM_POST_CONF} ; fi
+
+## Always configure loopback just in case.
+ifconfig lo 127.0.0.1 netmask 255.0.0.0
+
 ## Guarantee there are no "errors"
-echo "" > /dev/null
+true

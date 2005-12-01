@@ -91,23 +91,23 @@ public class RobertsJPanel extends javax.swing.JPanel {
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 180, -1));
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel2.setText("Address or Group:");
+        jLabel2.setText("Group or isUsb:");
         jTextField2.setText( "172.16.16.1 255.255.255.0" );
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 50, 180, -1));
 
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel3.setText("Passphrase or Export:");
+        jLabel3.setText("Exports or Address:");
         jTextField3.setText( "192.168.1.1 255.255.255.0" );
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, 180, -1));
 
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel4.setText("Client 1:");
+        jLabel4.setText("Client 1 or Passphrase:");
         jTextField4.setText( "stan rbscott@metavize.com" );
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, 180, -1));
 
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel5.setText("Client 2:");
-        jTextField5.setText( "wendy rbscott@metavize.com" );
+        jTextField5.setText( "wendy" );
         jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, 180, -1));
 
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -119,7 +119,7 @@ public class RobertsJPanel extends javax.swing.JPanel {
         jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 200, 180, -1));
 
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel8.setText( "unused:" );
+        jLabel8.setText( "city:" );
         jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 230, 180, -1));
 
         jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -144,7 +144,7 @@ public class RobertsJPanel extends javax.swing.JPanel {
 
         jPanel1.add(acceptJButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 340, -1, -1));
 
-        cancelJButton.setText("Sit down!");
+        cancelJButton.setText("List!");
         cancelJButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cancelJButtonActionPerformed(evt);
@@ -166,7 +166,20 @@ public class RobertsJPanel extends javax.swing.JPanel {
     }//GEN-END:initComponents
 
     private void cancelJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelJButtonActionPerformed
-        updateBaseParameters( openvpn.getVpnSettings());
+        List<String> test;
+        
+        try {
+            openvpn.startConfig( VpnTransform.ConfigState.CLIENT );
+            test = openvpn.getAvailableUsbList();
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            return;
+        }
+        String values = "";
+        
+        for ( String value : test ) values += " " + value;
+
+        jTextField10.setText( values.trim());
     }//GEN-LAST:event_cancelJButtonActionPerformed
 
     private void acceptJButtonActionPerformed(java.awt.event.ActionEvent evt) 
@@ -174,14 +187,20 @@ public class RobertsJPanel extends javax.swing.JPanel {
     {//GEN-FIRST:event_acceptJButtonActionPerformed
         VpnTransform.ConfigState state = ( Boolean.parseBoolean( jTextField1.getText().trim())) ? 
             VpnTransform.ConfigState.CLIENT : VpnTransform.ConfigState.SERVER_ROUTE;
-
+        
         openvpn.startConfig( state );
 
         if ( state == VpnTransform.ConfigState.CLIENT ) {
-            openvpn.downloadConfig( IPaddr.parse( jTextField2.getText().trim()), 
-                                    jTextField3.getText().trim());
+            if ( Boolean.parseBoolean( jTextField2.getText().trim())) {
+                openvpn.downloadConfigUsb( jTextField3.getText().trim());
+            } else {
+                openvpn.downloadConfig( IPaddr.parse( jTextField3.getText().trim()), 
+                                        jTextField4.getText().trim());
+            }
         } else {
-            openvpn.generateCertificate( new CertificateParameters());
+            CertificateParameters certificateParameters = new CertificateParameters();
+            certificateParameters.setLocality( jTextField8.getText().trim());
+            openvpn.generateCertificate( certificateParameters );
             
             /* Address groups */
             String[] tempArray = jTextField2.getText().split( " " );
@@ -231,7 +250,13 @@ public class RobertsJPanel extends javax.swing.JPanel {
         
         VpnClient client = new VpnClient();
         client.setName( params[0] );
-        client.setDistributionEmail( params[1] );
+        client.setDistributeClient( true );
+
+        if ( params.length == 1 ) {
+            client.setDistributeUsb( true );
+        } else {
+            client.setDistributionEmail( params[1] );
+        }
         client.setGroup( group );
         
         clientList.add( client );
@@ -250,7 +275,9 @@ public class RobertsJPanel extends javax.swing.JPanel {
         List<ClientSiteNetwork> exportList = new LinkedList<ClientSiteNetwork>();
         ClientSiteNetwork csn = new ClientSiteNetwork();
         site.setName( params[0] );
+        site.setDistributeClient( true );
         site.setDistributionEmail( params[1] );
+        site.setIsEdgeGuard( true );
         csn.setNetwork( IPaddr.parse( params[2] ));
         csn.setNetmask( IPaddr.parse( params[3] ));
         exportList.add( csn );

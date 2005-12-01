@@ -11,6 +11,8 @@
 
 package com.metavize.gui.login;
 
+import java.net.URL;
+
 import com.metavize.gui.widgets.wizard.*;
 import com.metavize.gui.util.Util;
 import com.metavize.mvvm.client.*;
@@ -52,10 +54,11 @@ public class InitialSetupKeyJPanel extends MWizardPageJPanel {
 	    throw exception;
         
         
-        if( !validateOnly){ 
-            boolean isActivated = com.metavize.mvvm.client.MvvmRemoteContextFactory.factory().isActivated( Util.getServerCodeBase().getHost(), 0, Util.isSecureViaHttps() );
+        if( !validateOnly){
+            URL url = Util.getServerCodeBase();
+            boolean isActivated = com.metavize.mvvm.client.MvvmRemoteContextFactory.factory().isActivated( url.getHost(), url.getPort(), 0, Util.isSecureViaHttps() );
             if( !isActivated ){
-        	    MvvmRemoteContext mvvmContext = MvvmRemoteContextFactory.factory().activationLogin( Util.getServerCodeBase().getHost(),
+                MvvmRemoteContext mvvmContext = MvvmRemoteContextFactory.factory().activationLogin( url.getHost(), url.getPort(),
                 											key,
                         										0,
                                 									Util.getClassLoader(),

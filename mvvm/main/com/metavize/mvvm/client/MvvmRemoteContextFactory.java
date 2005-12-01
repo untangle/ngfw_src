@@ -71,12 +71,24 @@ public class MvvmRemoteContextFactory
     public boolean isActivated(String host, int timeout, boolean secure)
         throws MvvmConnectException
     {
-        URL url;
-        try {
-            url = new URL(secure ? "https" : "http", host, "/http-invoker");
-        } catch (MalformedURLException exn) { /* shouldn't happen */
-            throw new MvvmConnectException(exn);
-        }
+        return this.isActivated(host, 0, timeout, secure );
+    }
+
+    /**
+     * Describe <code>isActivated</code> method here.
+     *
+     * @param host the host of the Mvvm.
+     * @param port an <code>int</code> value, or 0 for undefined.
+     * @param timeout an <code>int</code> value.
+     * @param secure use a SSL connection.
+     * @return a <code>boolean</code> true if already activated
+     * @exception MvvmConnectException when an MvvmLogin object cannot
+     *    be accessed at given <code>host</code>
+     */
+    public boolean isActivated(String host, int port, int timeout, boolean secure)
+        throws MvvmConnectException
+    {
+        URL url = makeURL(host, port, secure);
 
         synchronized (this) {
             MvvmLogin ml = mvvmLogin(url, timeout, null);
@@ -110,12 +122,38 @@ public class MvvmRemoteContextFactory
         throws MvvmConnectException, FailedLoginException,
                MultipleLoginsException
     {
-        URL url;
-        try {
-            url = new URL(secure ? "https" : "http", host, "/http-invoker");
-        } catch (MalformedURLException exn) { /* shouldn't happen */
-            throw new MvvmConnectException(exn);
-        }
+        return interactiveLogin(host, 0, username, password, timeout, classLoader, secure, force);
+    }
+
+
+    /**
+     * Log in and get a MvvmRemoteContext. This method is for
+     * interactive clients that require an exclusive login.
+     *
+     * @param host the host of the Mvvm.
+     * @param port the the port the server is on.
+     * @param username the username.
+     * @param password the password.
+     * @param timeout an <code>int</code> value.
+     * @param classLoader the class loader to be used for deserialization.
+     * @param secure use a SSL connection.
+     * @param force logout other interactive logins, if
+     * @return the <code>MvvmContext</code> for this machine.
+     * @exception MvvmConnectException when an MvvmLogin object cannot
+     *    be accessed at given <code>host</code> and <code>port</code>.
+     * @exception FailedLoginException when the username and password
+     * are incorrect.
+     * @exception MultipleLoginsException when there is already an
+     * interactive login and force is false.
+     */
+    public MvvmRemoteContext interactiveLogin(String host, int port, String username,
+                                              String password, int timeout,
+                                              ClassLoader classLoader,
+                                              boolean secure, boolean force)
+        throws MvvmConnectException, FailedLoginException,
+               MultipleLoginsException
+    {
+        URL url = makeURL(host, port, secure);
 
         synchronized (this) {
             MvvmLogin ml = mvvmLogin(url, timeout, classLoader);
@@ -146,13 +184,27 @@ public class MvvmRemoteContextFactory
     public MvvmRemoteContext activationLogin(String host, String key, int timeout, ClassLoader classLoader, boolean secure)
         throws MvvmConnectException, FailedLoginException
     {
-        URL url;
-        try {
-            url = new URL(secure ? "https" : "http", host, "/http-invoker");
-        } catch (MalformedURLException exn) { /* shouldn't happen */
-            throw new MvvmConnectException(exn);
-        }
+        return activationLogin( host, 0, key, timeout, classLoader, secure );
+    }
 
+    /**
+     * Activates the EdgeGuard using the given key. 
+     *
+     * @param host the host of the Mvvm.
+     * @param port the the port the server is on.
+     * @param key a <code>String</code> giving the key to be activated under
+     * @param timeout an <code>int</code> value.
+     * @param classLoader the class loader to be used for deserialization.
+     * @param secure use a SSL connection.
+     * @return a <code>MvvmRemoteContext</code> value
+     * @exception MvvmConnectException when an MvvmLogin object cannot
+     *    be accessed at given <code>host</code> and <code>port</code>.
+     * @exception FailedLoginException if the key isn't kosher or the product has already been activated
+     */
+    public MvvmRemoteContext activationLogin(String host, int port, String key, int timeout, ClassLoader classLoader, boolean secure)
+        throws MvvmConnectException, FailedLoginException
+    {
+        URL url = makeURL(host, port, secure);
         synchronized (this) {
             MvvmLogin ml = mvvmLogin(url, timeout, classLoader);
             remoteContext = ml.activationLogin(key);
@@ -163,6 +215,24 @@ public class MvvmRemoteContextFactory
         }
 
         return remoteContext;
+    }
+
+    /** Utility to create a URL based on the host, port and whether or not it is secure
+     * @param host the host of the Mvvm.
+     * @param port the the port the server is on.
+     * @param secure use a SSL connection.
+     * @return the remote URL.
+     * @exception MvvmConnectException if an error occurs, this should never occur.
+     */
+    private URL makeURL(String host, int port, boolean secure)
+        throws MvvmConnectException
+    {
+        try {
+            if ( port <= 0 ) return new URL(secure ? "https" : "http", host, "/http-invoker");
+            else             return new URL(secure ? "https" : "http", host, port, "/http-invoker");
+        } catch (MalformedURLException exn) { /* shouldn't happen */
+            throw new MvvmConnectException( exn );
+        }
     }
 
     /**

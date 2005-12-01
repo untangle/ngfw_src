@@ -29,7 +29,7 @@ import com.metavize.mvvm.tran.ValidateException;
 
 public class NetworkingConfiguration implements Serializable, Validatable, Equivalence
 {
-    private static final long serialVersionUID = -7446681327586273258L;
+    // XXX FIXME private static final long serialVersionUID = -6748993829692484951L;
 
     public static final IPaddr  EMPTY_IPADDR;
     public static final IPaddr  DEF_OUTSIDE_NETWORK;
@@ -46,10 +46,15 @@ public class NetworkingConfiguration implements Serializable, Validatable, Equiv
     public static final boolean DEF_IS_EXCEPTION_REPORTING_EN = false;
     public static final boolean DEF_IS_TCP_WIN_EN         = false;
 
+    /* Post configuration script is empty */
+    public static final String DEF_POST_CONFIGURATION = "";
+    
     /**
      * True if DHCP is enabled
      */
     private boolean isDhcpEnabled = DEF_IS_DHCP_EN;
+
+    public static final int DEF_HTTPS_PORT = 443;
 
     /**
      * Host and Netmask of the EdgeGuard GSP
@@ -100,7 +105,11 @@ public class NetworkingConfiguration implements Serializable, Validatable, Equiv
 
     private IPaddr outsideNetwork = DEF_OUTSIDE_NETWORK;
     private IPaddr outsideNetmask = DEF_OUTSIDE_NETMASK;
+    
+    private int httpsPort = DEF_HTTPS_PORT;
 
+    /* This is a script that gets executed after the bridge configuration runs */
+    private String postConfigurationScript = DEF_POST_CONFIGURATION;
 
     public NetworkingConfiguration()
     {
@@ -220,6 +229,20 @@ public class NetworkingConfiguration implements Serializable, Validatable, Equiv
         this.aliasList = aliasList;
     }
 
+    /* Set the post configuration script */
+    public String getPostConfigurationScript()
+    {
+        if ( this.postConfigurationScript == null ) this.postConfigurationScript = DEF_POST_CONFIGURATION;
+        return this.postConfigurationScript;
+    }
+    
+    /* XXXX This should be validated */
+    public void setPostConfigurationScript( String script )
+    {
+        if ( script == null ) script = DEF_POST_CONFIGURATION;
+        this.postConfigurationScript = script;
+    }
+
     public boolean isSshEnabled()
     {
         return this.isSshEnabled;
@@ -333,6 +356,26 @@ public class NetworkingConfiguration implements Serializable, Validatable, Equiv
         return this.outsideNetmask;
     }
 
+    public int httpsPort()
+    {
+        /* Make sure it is a valid port */
+        if ( this.httpsPort == 0 || this.httpsPort > 0xFFFF || httpsPort == 80 ) {
+            this.httpsPort = DEF_HTTPS_PORT;
+        }
+
+        return this.httpsPort;
+    }
+
+    public void httpsPort( int httpsPort )
+    {
+        /* Make sure that it is a valid port */
+        if ( httpsPort == 0 || httpsPort > 0xFFFF || httpsPort == 80 ) httpsPort = DEF_HTTPS_PORT;
+        
+        this.httpsPort = httpsPort;
+    }
+
+    
+    
     public void validate() throws ValidateException
     {
         /* Check for collisions in the alias list */
@@ -383,6 +426,14 @@ public class NetworkingConfiguration implements Serializable, Validatable, Equiv
         }
 
         if (false == curNC.netmask().equals(newNC.netmask())) {
+            return false;
+        }
+
+        if ( false == curNC.getPostConfigurationScript().equals(newNC.getPostConfigurationScript())) {
+            return false;
+        }
+
+        if ( curNC.httpsPort() != newNC.httpsPort()) {
             return false;
         }
 

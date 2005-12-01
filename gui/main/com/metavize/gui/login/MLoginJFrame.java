@@ -11,6 +11,8 @@
 
 package com.metavize.gui.login;
 
+import java.net.URL;
+
 import java.awt.*;
 import java.lang.Thread;
 import java.lang.reflect.*;
@@ -490,7 +492,8 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 try{
 
                     // LOGIN ///////////
-                    MvvmRemoteContext mvvmContext = MvvmRemoteContextFactory.factory().interactiveLogin( Util.getServerCodeBase().getHost(),
+                    URL url = Util.getServerCodeBase();
+                    MvvmRemoteContext mvvmContext = MvvmRemoteContextFactory.factory().interactiveLogin( url.getHost(), url.getPort(),
                                                                                                          loginJTextField.getText(),
                                                                                                          new String(passJPasswordField.getPassword()),
                                                                                                          0, Util.getClassLoader(),

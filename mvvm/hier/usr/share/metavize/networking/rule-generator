@@ -259,7 +259,7 @@ function markIntfVpn() {
     local l_interface=""
     local l_matchType=""
 
-    ## Always use the TUN mark, there isn't really a reason to have two
+    ## Always use the TUN mark, there isn't really a reason to have a separate one for tap vs tun.
     local l_mark=$(( ${VPN_TUN_MARK} | ${MARK_INSIDE_INTF} ))
     local l_addresses
     local l_address
@@ -348,6 +348,7 @@ function antisubscribeLocal() {
     local t_protocol=$1
     local t_portList=$2
     local t_mark
+    local t_mask
 
     if [ -n ${t_portList} ]; then
         ## Check if antisubscribing on only one interface
@@ -355,16 +356,19 @@ function antisubscribeLocal() {
         if [ "${t_intf}x" != "${t_portList}x" ]; then
             t_portList=${t_portList%_*}
             if [ "${t_intf}x" == "${FLAG_INSIDE_INTF}x" ]; then
-                t_mark=2
+                t_mark=${MARK_INSIDE_INTF}
+                t_mask=${MARK_INSIDE_INTF}
             elif [ "${t_intf}x" == "${FLAG_OUTSIDE_INTF}x" ]; then
-                t_mark=1
+                ## This is anything but the inside
+                t_mark=${MARK_INSIDE_INTF}
+                t_mask=0
             else
                 echo "Unable to determine which interface to antisubscribe  for ${t_protocol} ${t_portList}"
                 return
             fi
             
             t_mark=$(( ${t_mark} | ${MARK_LOCAL} ))
-            t_markMask=$(( ${MARK_ANTISUB} | ${MARK_LOCAL} | 0xF ))
+            t_markMask=$(( ${MARK_ANTISUB} | ${MARK_LOCAL} | ${t_mask} ))
         else
             t_mark=${MARK_LOCAL}
             t_markMask=$(( ${MARK_ANTISUB} | ${MARK_LOCAL} ))
@@ -383,19 +387,22 @@ function antisubscribeLocalTraffic() {
     local t_intf=$1
     local t_flag=$2
     local t_mark
+    local t_mask
 
     if [  "${t_flag}x" = "truex" ]; then
         if [ "${t_intf}x" == "${FLAG_INSIDE_INTF}x" ]; then
-            t_mark=2
+            t_mark=${MARK_INSIDE_INTF}
+            t_mask=${MARK_INSIDE_INTF}
         elif [ "${t_intf}x" == "${FLAG_OUTSIDE_INTF}x" ]; then
-            t_mark=1
+            t_mark=${MARK_INSIDE_INTF}
+            t_mask=0
         else
             echo "Unable to determine which interface ${t_intf} to antisubscribe to"
             return
         fi
 
         t_mark=$(( ${t_mark} | ${MARK_LOCAL} ))
-        t_markMask=$(( ${MARK_ANTISUB} | ${MARK_LOCAL} | 0xF ))
+        t_markMask=$(( ${MARK_ANTISUB} | ${MARK_LOCAL} | ${t_mask} ))
 
         ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -m mark --mark ${t_mark}/${t_markMask} \
             -j MARK --set-mark ${MARK_ANTISUB}

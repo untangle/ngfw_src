@@ -19,6 +19,7 @@ import java.net.URLClassLoader;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.catalina.Connector;
 import org.apache.catalina.Container;
@@ -36,11 +37,20 @@ import org.apache.log4j.Logger;
 
 public class Main
 {
+    public static final int DEF_HTTPS_PORT = 443;
+
     public static int HTTP_PORT = 80;
-    public static int HTTPS_PORT = 443;
+    public static int HTTPS_PORT = DEF_HTTPS_PORT;
+    public static int EXTERNAL_HTTPS_PORT = DEF_HTTPS_PORT;
 
     public static long TOMCAT_SLEEP_TIME = 20 * 1000; // 20 seconds
     public static int NUM_TOMCAT_RETRIES = 15;        //  5 minutes total
+
+    private static final long REBIND_SLEEP_TIME = 1 * 1000; // 1 second
+    public static int NUM_REBIND_RETRIES = 5;        //  10 seconds
+
+    /* Give the thread a second to join */
+    private static final int START_JOIN_TIME_MSEC = 1000;
 
     private static String MVVM_LOCAL_CONTEXT_CLASSNAME
         = "com.metavize.mvvm.engine.MvvmContextImpl";
@@ -187,8 +197,33 @@ public class Main
         } else {
             logger.warn("Could not find " + f);
         }
-    }
 
+        f = new File(bunniculaConf + "/mvvm.networking.properties");
+        Properties networkingProperties = new Properties();
+
+        if (f.exists()) {
+            logger.info("Loading " + f);
+            networkingProperties.load(new FileInputStream(f));
+        } /* This file may not exist */
+
+        /* Retrieve the outside HTTPS port from the properties */
+        try {
+            String temp;
+            if (( temp = networkingProperties.getProperty("mvvm.https.port")) != null ) {
+                EXTERNAL_HTTPS_PORT = Integer.parseInt( temp );
+            } else {
+                EXTERNAL_HTTPS_PORT = DEF_HTTPS_PORT;
+            }
+        } catch ( NumberFormatException e ) {
+            logger.warn( "Invalid https port string. using default: " + DEF_HTTPS_PORT );
+            EXTERNAL_HTTPS_PORT = DEF_HTTPS_PORT;
+        }
+        
+        /* Illegal range */
+        if ( EXTERNAL_HTTPS_PORT <= 0 || EXTERNAL_HTTPS_PORT >= 0xFFFF || EXTERNAL_HTTPS_PORT == 80 ) {
+            EXTERNAL_HTTPS_PORT = DEF_HTTPS_PORT;
+        }
+    }
 
     // private methods --------------------------------------------------------
 
@@ -247,6 +282,12 @@ public class Main
         return tomcatManager.unloadWebApp(contextRoot);
     }
 
+    /* A function to rebind the outside HTTPs server */
+    public void rebindExternalHttpsPort( int port ) throws Exception
+    {
+        tomcatManager.rebindExternalHttpsPort(port);
+    }
+    
     /**
      * Little class used to describe a web app to be deployed.
      */
@@ -269,6 +310,8 @@ public class Main
         private Embedded emb = null;
         private StandardHost baseHost;
         private List<WebAppDescriptor> descriptors;
+        private CoyoteConnector externalConnector = null;
+        private Object modifyExternalSynch = new Object();
 
         TomcatManager() {
             //Create the list of web-apps we know we're going to deploy
@@ -330,6 +373,72 @@ public class Main
             return false;
         }
 
+        void rebindExternalHttpsPort(int port) throws Exception
+        {
+            /* Synchronize on the external thread */
+            synchronized(this.modifyExternalSynch) {
+                doRebindExternalHttpsPort( port );
+            }
+        }
+
+        private void doRebindExternalHttpsPort(int port) throws Exception
+        {
+            logger.debug( "Rebinding the HTTPS port" );
+
+            if ( port == 80 || port == 0 || port > 0xFFFF ) {
+                throw new Exception( "Cannot bind external to port 80" );
+            }
+
+            /* If there was a failed attempt, retry, startExternal will only be null */
+            if (EXTERNAL_HTTPS_PORT == port) {
+                logger.info( "External is already bound to port: " + port );
+                return;
+            }
+            
+            /* Need to change the port */
+            if ( externalConnector != null ) {
+                logger.info( "Removing connector on port " + externalConnector.getPort());
+                emb.removeConnector( externalConnector );
+                try { 
+                    externalConnector.stop();
+                } catch ( Exception e ) { 
+                    logger.error( "Unable to stop externalConnector", e );
+                }
+            }
+            
+            externalConnector = null;
+            
+            /* If it is not the default port, then rebind it */
+            if ( port != HTTPS_PORT ) {
+                logger.info( "Rebinding external server to " + port );
+                externalConnector = (CoyoteConnector)emb.createConnector((InetAddress)null, port, true);
+                externalConnector.setKeystoreFile("conf/keystore");
+                emb.addConnector(externalConnector);
+                for (int i = 0; i < NUM_REBIND_RETRIES; i++) {
+                    try { 
+                        externalConnector.start(); 
+                        /* Sucess */
+                        break;
+                    } catch (LifecycleException exn) {
+                        if (i == NUM_REBIND_RETRIES) throw exn;
+                    } catch (Exception exn) {
+                        logger.error("Exception rebinding external connector.", exn);
+                        throw exn;
+                    }
+                    
+                    try { 
+                        Thread.sleep(REBIND_SLEEP_TIME);
+                    } catch (InterruptedException exn) {
+                        /* ??? */
+                        logger.warn("Interrupted, breaking");
+                        return;
+                    }
+                }
+            }
+            
+            EXTERNAL_HTTPS_PORT = port;
+        }
+
         /**
          * Gives no exceptions, even if Tomcat was never started.
          */
@@ -356,7 +465,7 @@ public class Main
             fileLog.setSuffix(".log");
             fileLog.setTimestamp(true);
             // fileLog.setVerbosityLevel("DEBUG");
-
+            
             emb = new Embedded(fileLog, new MvvmRealm());
             emb.setCatalinaHome(bunniculaHome);
 
@@ -418,6 +527,14 @@ public class Main
             con = (CoyoteConnector)emb.createConnector((InetAddress)null, HTTPS_PORT, true);
             con.setKeystoreFile("conf/keystore");
             emb.addConnector(con);
+
+            /* Start the outside https server */
+            if ( EXTERNAL_HTTPS_PORT != HTTPS_PORT ) {
+                externalConnector = (CoyoteConnector)emb.createConnector((InetAddress)null, 
+                                                                         EXTERNAL_HTTPS_PORT, true);
+                externalConnector.setKeystoreFile("conf/keystore");
+                emb.addConnector(externalConnector);
+            }
 
             // start operation
             try {

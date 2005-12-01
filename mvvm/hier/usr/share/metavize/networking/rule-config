@@ -10,6 +10,12 @@ MVVM_TMP_PARAMS_FILE=@MVVM_CONF@/tmp_params
 ## the outside world and the mvvm (eg inside/outside)
 MVVM_DEFAULTS_FILE=@PREFIX@/etc/default/mvvm
 
+## These are the properties that are shared by the mvvm and the networking scripts, these
+## are done as properties so they are always loaded each time the MVVM starts(on crashes
+## the scripts are not reloaded.)
+MVVM_NET_PROPERTY_FILE=@MVVM_CONF@/mvvm.networking.properties
+MVVM_HTTPS_PORT=`grep mvvm.https.port ${MVVM_NET_PROPERTY_FILE} | sed 's|^mvvm.https.port=\(.*\)|\1|g'`
+
 if [ -f ${MVVM_NETWORK_PARAMS_FILE} ]; then
     . ${MVVM_NETWORK_PARAMS_FILE}
 else
@@ -28,8 +34,21 @@ else
     echo "File ${MVVM_TMP_PARAMS_FILE} not found."
 fi
 
+HTTPS_PORT=443
+
+outsideHttpsPort=${HTTPS_PORT}
+
+if [ -n "${MVVM_HTTPS_PORT}" ]; then
+    ## Just to validate the number
+    outsideHttpsPort=`printf "%d" ${MVVM_HTTPS_PORT}`
+    if [ ${outsideHttpsPort} -lt 1 ] || [ ${outsideHttpsPort} -gt 65535 ]; then
+        echo "Invalid https port: ${outsideHttpsPort}, returning to default ${HTTPS_PORT}"
+        outsideHttpsPort=${HTTPS_PORT}
+    fi
+fi
+
 ## Local ports to antisubscribe to
-ANTISUBSCRIBES_LOCAL_TCP_PORTS="22,443 80_inside"
+ANTISUBSCRIBES_LOCAL_TCP_PORTS="22 80_inside"
 
 ## Possible for NAT(53) and 1194 for open vpn.
 ## XXX Look into only using open vpn on the outside ###
@@ -46,13 +65,29 @@ if [ "${MVVM_ALLOW_OUT_HTTPS}x" = "truex" ]; then
     # not restricted by default
     if [ "${MVVM_ALLOW_OUT_RES}x" = "truex" -a "${MVVM_ALLOW_OUT_NET}x" != "x" ]; then
         if [ "${MVVM_ALLOW_OUT_MASK}x" = "x" ]; then
-            GUARD_OUTSIDE_TCP_PORTS="${GUARD_OUTSIDE_TCP_PORTS} 443_$MVVM_ALLOW_OUT_NET"
+            GUARD_OUTSIDE_TCP_PORTS="${GUARD_OUTSIDE_TCP_PORTS} ${outsideHttpsPort}_$MVVM_ALLOW_OUT_NET"
         else
-            GUARD_OUTSIDE_TCP_PORTS="${GUARD_OUTSIDE_TCP_PORTS} 443_$MVVM_ALLOW_OUT_NET/$MVVM_ALLOW_OUT_MASK"
+            GUARD_OUTSIDE_TCP_PORTS="${GUARD_OUTSIDE_TCP_PORTS} ${outsideHttpsPort}_$MVVM_ALLOW_OUT_NET/$MVVM_ALLOW_OUT_MASK"
         fi
     fi
+
+    ## Written this way, so if there is an error it defaults to just antisubscribing on
+    ## the standard HTTPS port
+    if [ ${outsideHttpsPort} -ne ${HTTPS_PORT} ]; then
+        ## Two different ports to antisubscribe
+        ## Always antisubsribe to the HTTPS port on the inside
+        ANTISUBSCRIBES_LOCAL_TCP_PORTS="${ANTISUBSCRIBES_LOCAL_TCP_PORTS} ${HTTPS_PORT}_inside"
+        
+        ## Antisubscribe to whichever outside port the user has selected
+        ANTISUBSCRIBES_LOCAL_TCP_PORTS="${ANTISUBSCRIBES_LOCAL_TCP_PORTS} ${outsideHttpsPort}"
+    else 
+        ## Always just antisubscribe to the HTTPS port, user has not selected another one
+        ANTISUBSCRIBES_LOCAL_TCP_PORTS="${ANTISUBSCRIBES_LOCAL_TCP_PORTS} ${HTTPS_PORT}"
+    fi
 else
-    GUARD_OUTSIDE_TCP_PORTS="${GUARD_OUTSIDE_TCP_PORTS} 443"
+    ## Outside administration is not enabled, a guard is not required, the traffic
+    ## should get vectored
+    ANTISUBSCRIBES_LOCAL_TCP_PORTS="${ANTISUBSCRIBES_LOCAL_TCP_PORTS} ${HTTPS_PORT}_inside"
 fi
 
 # enabled by default
@@ -68,7 +103,6 @@ else
     ## When in the production environment, never antisubscribe to the outside
     ANTISUBSCRIBE_LOCAL_OUTSIDE=false
 fi
-
 
 ## Port guards (always true)
 GUARD_OUTSIDE_UDP_PORTS="53"

@@ -14,6 +14,7 @@ package com.metavize.gui.util;
 
 import java.security.*;
 
+import java.net.URL;
 
 
 public class MLauncher {
@@ -77,7 +78,8 @@ public class MLauncher {
         // HANDLE FIRST TIME LOGINS
         boolean isActivated;
         try{
-            isActivated = com.metavize.mvvm.client.MvvmRemoteContextFactory.factory().isActivated( Util.getServerCodeBase().getHost(), 0, Util.isSecureViaHttps() );
+            URL url = Util.getServerCodeBase();
+            isActivated = com.metavize.mvvm.client.MvvmRemoteContextFactory.factory().isActivated( url.getHost(), url.getPort(), 0, Util.isSecureViaHttps() );
         }
         catch(Exception e){
             Util.handleExceptionNoRestart("unable to connect to server for activation check", e);
