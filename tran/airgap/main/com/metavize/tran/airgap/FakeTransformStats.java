@@ -123,16 +123,16 @@ public class FakeTransformStats extends TransformStats {
 
             while (c2tBytes > totRxBytes)
                 // /proc/net/dev counters overflow at 32 bit unsigned.
-                totRxBytes += 1<<32;
+                totRxBytes += 0x100000000L;
             while (c2tChunks > totRxChunks)
                 // /proc/net/dev counters overflow at 32 bit unsigned.
-                totRxChunks += 1<<32;
+                totRxChunks += 0x100000000L;
             while (s2tBytes > totTxBytes)
                 // /proc/net/dev counters overflow at 32 bit unsigned.
-                totTxBytes += 1<<32;
+                totTxBytes += 0x100000000L;
             while (s2tChunks > totTxChunks)
                 // /proc/net/dev counters overflow at 32 bit unsigned.
-                totTxChunks += 1<<32;
+                totTxChunks += 0x100000000L;
             c2tBytes = totRxBytes;
             t2sBytes = c2tBytes;
             c2tChunks = totRxChunks;
