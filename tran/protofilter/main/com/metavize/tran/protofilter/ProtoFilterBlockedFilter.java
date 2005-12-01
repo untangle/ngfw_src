@@ -9,22 +9,17 @@
  * $Id$
  */
 
-package com.metavize.tran.ids;
+package com.metavize.tran.protofilter;
 
 import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.logging.RepositoryDesc;
 
-public class IDSBlockedFilter implements SimpleEventFilter<IDSLogEvent>
+public class ProtoFilterBlockedFilter implements SimpleEventFilter<ProtoFilterLogEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc("Blocked Events");
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc("Blocked Protocol Events");
 
-    private static final String WARM_QUERY = "FROM IDSLogEvent evt "
-        + "WHERE evt.blocked = true AND evt.pipelineEndpoints.policy = :policy "
-        + "ORDER BY evt.timeStamp";
-
-    // constructors -----------------------------------------------------------
-
-    IDSBlockedFilter () { }
+    private static final String WARM_QUERY
+        = "FROM ProtoFilterLogEvent evt WHERE blocked = true AND evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
 
     // SimpleEventFilter methods ----------------------------------------------
 
@@ -38,8 +33,8 @@ public class IDSBlockedFilter implements SimpleEventFilter<IDSLogEvent>
         return new String[] { WARM_QUERY };
     }
 
-    public boolean accept(IDSLogEvent e)
+    public boolean accept(ProtoFilterLogEvent e)
     {
-        return e.isBlocked();
+        return true;
     }
 }

@@ -55,6 +55,8 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
 
         SimpleEventFilter ef = new ProtoFilterAllFilter();
         eventLogger.addSimpleEventFilter(ef);
+        ef = new ProtoFilterBlockedFilter();
+        eventLogger.addSimpleEventFilter(ef);
     }
 
     // ProtoFilter methods ----------------------------------------------------
