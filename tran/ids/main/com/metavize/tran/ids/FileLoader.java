@@ -21,9 +21,13 @@ import org.apache.log4j.Logger;
 
 class FileLoader {
     public static final String[] IGNORED_RULE_FILES = {
-        "chat.rules", "deleted.rules", "experimental.rules",
+        "deleted.rules", "experimental.rules",
         "icmp-info.rules", "local.rules", "porn.rules", "shellcode.rules" };
     public static final String SNORT_RULES_HOME = "/etc/snort";
+
+    // The default Snort priority for some classifications is stupid.
+    public static final String[] FORCED_LOW_PRIORITY_CLASSIFICATIONS = {
+        "policy-violation" };
 
     private static final Logger logger = Logger.getLogger(FileLoader.class);
 
@@ -58,6 +62,9 @@ class FileLoader {
                         } catch (NumberFormatException x) {
                         }
                     if (good) {
+                        for (String str : FORCED_LOW_PRIORITY_CLASSIFICATIONS)
+                            if (str.equalsIgnoreCase(name))
+                                priority = 3;
                         logger.debug("Found classification: " + name + "(" + description + ") = " + priority);
                         RuleClassification rc = new RuleClassification(name, description, priority);
                         result.add(rc);
