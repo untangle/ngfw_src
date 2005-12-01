@@ -50,8 +50,13 @@ public class IDSLogEvent extends PipelineEvent {
      * @hibernate.property
      * column="RULE_SID"
      */
-    public int getRuleSid() { return this.ruleSid; }
-    public void setRuleSid(int sid) { this.ruleSid = ruleSid; }	
+    public int getRuleSid() {
+        return this.ruleSid;
+    }
+
+    public void setRuleSid(int ruleSid) {
+        this.ruleSid = ruleSid;
+    }
 
     /**
      * Message of signature that generated this event.

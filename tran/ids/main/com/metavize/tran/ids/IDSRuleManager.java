@@ -170,7 +170,15 @@ public class IDSRuleManager {
                 logger.debug("Ignoring rule: " + text);
                 return null;
             }
-            rule.setDescription(signature.getMessage());
+            String msg = signature.getMessage();
+            // remove the category since it's redundant
+            int catlen = category.length();
+            if (msg.length() > catlen) {
+                String beginMsg = msg.substring(0, catlen);
+                if (beginMsg.equalsIgnoreCase(category))
+                    msg = msg.substring(catlen).trim();
+            }
+            rule.setDescription(msg);
         }
         catch(ParseException e) { 
             logger.error("Parsing exception for rule: " + text, e);
