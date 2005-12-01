@@ -290,27 +290,52 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 
         settings.setBlockedMimeTypes(s);
 
-        BlacklistCategory bc = new BlacklistCategory
-            ("porn", "Pornography", "Adult and Sexually Explicit");
-        bc.setBlockDomains(true);
-        bc.setBlockUrls(true);
-        bc.setBlockExpressions(true);
-        settings.addBlacklistCategory(bc);
-        bc = new BlacklistCategory("mail", "Web Mail", "Web Mail");
-        settings.addBlacklistCategory(bc);
-        bc = new BlacklistCategory("drugs", "Illegal Drugs", "Illegal Drugs");
-        settings.addBlacklistCategory(bc);
-        bc = new BlacklistCategory("gambling", "Gambling", "Gambling");
-        settings.addBlacklistCategory(bc);
-        bc = new BlacklistCategory("hacking", "Hacking", "Security Cracking");
-        settings.addBlacklistCategory(bc);
-        bc = new BlacklistCategory("aggressive", "Hate and Aggression",
-                                   "Hate and Agression");
-        settings.addBlacklistCategory(bc);
-        bc = new BlacklistCategory("violence", "Violence", "Violence");
-        settings.addBlacklistCategory(bc);
+        updateToCurrentCategories(settings);
 
         setHttpBlockerSettings(settings);
+    }
+
+    // This is broken out since we added categories in 3.1, and since the list can't be
+    // modified by the user it's quite safe to do this here.
+    private void updateToCurrentCategories(HttpBlockerSettings settings)
+    {
+        List curCategories = settings.getBlacklistCategories();
+
+        if (curCategories.size() == 0) {
+            /*
+             * First time initialization
+             */
+            BlacklistCategory bc = new BlacklistCategory
+                ("porn", "Pornography", "Adult and Sexually Explicit");
+            bc.setBlockDomains(true);
+            bc.setBlockUrls(true);
+            bc.setBlockExpressions(true);
+            settings.addBlacklistCategory(bc);
+            bc = new BlacklistCategory("mail", "Web Mail", "Web Mail");
+            settings.addBlacklistCategory(bc);
+            bc = new BlacklistCategory("drugs", "Illegal Drugs", "Illegal Drugs");
+            settings.addBlacklistCategory(bc);
+            bc = new BlacklistCategory("gambling", "Gambling", "Gambling");
+            settings.addBlacklistCategory(bc);
+            bc = new BlacklistCategory("hacking", "Hacking", "Security Cracking");
+            settings.addBlacklistCategory(bc);
+            bc = new BlacklistCategory("aggressive", "Hate and Aggression",
+                                       "Hate and Aggression");
+            settings.addBlacklistCategory(bc);
+            bc = new BlacklistCategory("violence", "Violence", "Violence");
+            settings.addBlacklistCategory(bc);
+        }
+        if (curCategories.size() < 8) {
+            /*
+             * First time or upgrade from 3.0 to 3.1
+             */
+            BlacklistCategory bc = new BlacklistCategory("sports", "Sports", "Sports");
+            settings.addBlacklistCategory(bc);
+            bc = new BlacklistCategory("jobsearch", "Job Search", "Job Search");
+            settings.addBlacklistCategory(bc);
+            bc = new BlacklistCategory("vacation", "Vacation", "Vacation");
+            settings.addBlacklistCategory(bc);
+        }
     }
 
     protected void postInit(String[] args)
@@ -323,6 +348,8 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
                         ("from HttpBlockerSettings hbs where hbs.tid = :tid");
                     q.setParameter("tid", getTid());
                     settings = (HttpBlockerSettings)q.uniqueResult();
+
+                    updateToCurrentCategories(settings);
 
                     return true;
                 }
