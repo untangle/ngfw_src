@@ -3,61 +3,93 @@
   <title>Policy Manager</title>
 
   <para>
-    The Policy Manager is ...TODO Complete me...  The <application>Policy Manager</application> is launched via the drop down menu shown in <xref linkend="policy_manager_launch_policy_mngr"/>.
+    The Policy Manager is a powerful and advanced feature of the &eg;.  It lets Administrators alter the behavior of their &eg; based on the network interface and/or endpoints of connections.  For more information on the network interfaces available to your &eg;, please refer to <xref linkend="fixme_interfaces"/>.
   </para>
-
+  <para>
+    The Policy Manager is launched from the main Administrative Interface by selecting <guilabel>Show Policy Manager</guilabel> as seen in <xref linkend="policy_manager_launch_policy_mngr"/>.
+  </para>
   <figure id="policy_manager_launch_policy_mngr">
     <title>Launching the Policy Manager</title>
-
     <mediaobject>
       <imageobject>
-        <imagedata fileref="figure/launch_policy_mngr.png" />
+        <imagedata fileref="figure/policymngr/launch_policy_mngr.png" />
       </imageobject>
     </mediaobject>
   </figure>    
-
   <para>
-    Once launched, the policy manager main view should be seen.  This is shown in <xref linkend="policy_manager_policy_mngr"/>.
+    The Policy Manager works by creating rules.  A rule binds traffic matching certain criteria to a Virtual Rack.  For an overview of Policies and Virtual Racks, please refer to <xref linkend="policy_manager_overview"/>.  For modification of the default policies, please refer to <xref linkend="policy_manager_def_policies"/>.  To create your own Virtual Racks and assign them to Policies, please refer to <xref linkend="policy_manager_available_racks"/> and <xref linkend="policy_manager_custom_policies"/>.
   </para>
 
-  <figure id="policy_manager_policy_mngr">
-    <title>Policy Manager Window</title>
 
-    <mediaobject>
-      <imageobject>
-        <imagedata fileref="figure/policy_mngr.png" />
-      </imageobject>
-    </mediaobject>
-  </figure>
+  <sect1 id="policy_manager_overview">
+    <title>Policies and Virtual Racks</title>
+    <para>
+      TODO
+    </para>
+  </sect1>
+
+  <sect1 id="policy_manager_adminui">
+    <title>Administrative Interface</title>
+    <para>
+      The Administrative Interface is divided into three sections.  The first section, covered in <xref linkend="policy_manager_def_policies"/>, discusses how to modify the default policies as shipped with your &eg;.  <xref linkend="policy_manager_available_racks"/> discusses how to create new Virtual Racks, and <xref linkend="policy_manager_custom_policies"/> explains how to create rules routing traffic to your custom racks.
+    </para>
+    <!-- ========================================================= -->
+    <sect2 id="policy_manager_def_policies">
+      <title>Default Policies</title>
+      <para>
+      TODO Complete me
+      </para>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figure/policymngr/policymngr_default.png" />
+        </imageobject>
+      </mediaobject>    
+    </sect2>
   
-  <para>
-    Here, we explain what this thing is for, as an overview.  We then segue by saying that we will discuss each of the three tabs in the subsequent sections
-  </para>
-
-
-  <!-- ========================================================= -->
-  <sect1 id="policy_manager_def_policies">
-    <title>Default Policies</title>
-    <para>
-    TODO Complete me
-    </para>
+    <!-- ========================================================= -->
+    <sect2 id="policy_manager_custom_policies">
+      <title>Custom Policies</title>
+      <para>
+      TODO Complete me    
+      </para>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figure/policymngr/policymngr_custom.png" />
+        </imageobject>
+      </mediaobject>    
+    </sect2>
+  
+    <!-- ========================================================= -->
+    <sect2 id="policy_manager_available_racks">
+      <title>Available Racks</title>
+  
+      <para>
+      TODO Complete me.
+      </para>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figure/policymngr/policymngr_available.png" />
+        </imageobject>
+      </mediaobject>    
+    </sect2>
   </sect1>
 
-  <!-- ========================================================= -->
-  <sect1 id="policy_manager_custom_policies">
-    <title>Custom Policies</title>
-    <para>
-    TODO Complete me    
-    </para>
-  </sect1>
 
-  <!-- ========================================================= -->
-  <sect1 id="policy_manager_available_racks">
-    <title>Available Racks</title>
-
-    <para>
-    TODO Complete me.
-    </para>
-  </sect1>
+  <!-- ############################################################# -->
+  <sect1 id="policy_manager_qa">
+    <title>Frequently Asked Questions</title>
+    <qandaset>  
+      <qandaentry>
+        <question>
+          <para>Where is a Q and A?</para>
+        </question>
+        <answer>
+          <para>
+            Start writing!
+          </para>
+        </answer>
+      </qandaentry>
+    </qandaset>
+  </sect1>    
 
 </chapter>

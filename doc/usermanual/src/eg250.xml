@@ -3,8 +3,10 @@
 "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
 <!ENTITY preface SYSTEM "preface.xml">
 <!ENTITY introduction SYSTEM "introduction.xml">
+<!ENTITY getting_started SYSTEM "getting_started.xml">
 <!ENTITY config_tab SYSTEM "config_tab.xml">
 <!ENTITY policy_manager SYSTEM "policy_manager.xml">
+<!ENTITY upgrade_manager SYSTEM "upgrade_manager.xml">
 <!ENTITY reporting_tran SYSTEM "reporting_tran.xml">
 <!ENTITY airgap_tran SYSTEM "airgap_tran.xml">
 <!ENTITY nat_tran SYSTEM "nat_tran.xml">
@@ -64,9 +66,13 @@
 
   &introduction;
 
+  &getting_started;
+
   &config_tab;
 
   &policy_manager;
+
+  &upgrade_manager;
   
   &spamassassin_tran;
 

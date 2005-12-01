@@ -18,8 +18,7 @@
 -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 version="1.0"
-                xmlns="http://www.w3.org/TR/xhtml1/transitional"
->
+                xmlns="http://www.w3.org/TR/xhtml1/transitional">
 
 <xsl:import href="../../../../../mvdocbook/xsl/xhtml/profile-chunk.xsl" />
 
@@ -119,20 +118,8 @@ procedure after
 <xsl:param name="firstterm.only.link">0</xsl:param>
 
 
-
-<!-- html specific settings -->
-
-
 <!-- add reference purpose and reference entry to toc -->
 <xsl:param name="annotate.toc">1</xsl:param>
-
-
-<!-- separator between toc numbers and labels -->
-<!-- as default a dot and a non-breaking space is used -->
-<!-- value: string -->
-<!--<xsl:param name="autotoc.label.separator">.&#160;</xsl:param>-->
-
-
 
 <!-- render callout lists as definition lists -->
 <xsl:param name="callout.list.table">0</xsl:param>
@@ -142,21 +129,14 @@ procedure after
 <xsl:param name="draft.mode" select="'no'"/>
 <!--<xsl:param name="draft.watermark.image" /> -->
 
-
-
 <!-- enable better table sizing -->
 <xsl:param name="tablecolumns.extension" select="'1'"/>
-
 
 <!-- bibliography entry separator -->
 <xsl:param name="biblioentry.item.separator">. </xsl:param>
 
 <!-- number bibliography entries-->
 <xsl:param name="bibliography.numbered">1</xsl:param>
-
-<!--
-<xsl:param name="bibliography.collection" select="'http://docbook.sourceforge.net/release/bibliography/bibliography.xml'"/>
--->
 
 <!-- -->
 <!--<xsl:param name="css.decoration">1</xsl:param>-->
@@ -177,7 +157,6 @@ procedure after
 <!-- value: 1: create empty paragraphs -->
 <xsl:param name="spacing.paras">0</xsl:param>
 
-
 <!-- render segmented list as html table -->
 <xsl:param name="segmentedlist.as.table">0</xsl:param>
 
@@ -185,35 +164,8 @@ procedure after
 <!-- render variable list as html table -->
 <xsl:param name="variablelist.as.table">0</xsl:param>
 
-
-<!-- format variable list as blocks (fop) -->
-<xsl:param name="variablelist.as.blocks">0</xsl:param>
-
-
 <!-- glossterm auto link -->
 <xsl:param name="glossterm.auto.link">1</xsl:param>
-
-
-<!-- show graphical page navigation -->
-<!--
-<xsl:param name="navig.graphics" select="1"/>
-<xsl:param name="navig.graphics.extension" select="'.png'"/>
-<xsl:param name="navig.graphics.path">images/</xsl:param>
-
-show doc titles for next and prev link
-<xsl:param name="navig.showtitles" select="1"/>
--->
-
-<!-- if no file extension given for graphics, use this -->
-<!--<xsl:param name="graphic.default.extension" select="'.png'"/>-->
-
-<!-- create no extra page for the legal notice -->
-<!-- WRS: <xsl:param name="generate.legalnotice.link" select="0"/> -->
-
-<!-- create css formatted tables -->
-<!--<xsl:param name="table.borders.with.css" select="1"/>-->
-
-
 
 
 <!-- admonitions (caution, note, warning, important, tip)                    -->
@@ -224,63 +176,29 @@ show doc titles for next and prev link
 <!-- value: 1: use graphical symbols for admonitions                       -->
 <xsl:param name="admon.graphics">1</xsl:param>
 
-
-<!-- css style for admonitions                                             -->
-<!-- applies to: html                                                      -->
-<!-- no style defined here; the classes are formatted by the css file      -->
-<!-- value: css style definition, enclosed in a <xsl:text> tag pair        -->
-<!-- value: (empty): no style definition (e.g. css class formatting)       -->
-<!--<xsl:param name="admon.style"></xsl:param>-->
-
-
-
-<!--
-<xsl:text>margin-left: 15px;</xsl:text>
--->
-
-
 <!-- generate numeric callouts                                             -->
 <xsl:param name="callout.graphics">0</xsl:param>
 
 <!--
+ WRS: This controls which types of sections have what at the
+      top (table of contents, etc).  For now, I don't like
+      the "list of figures" as it is too long and adds
+      little value.  To add it back, use a commma separated list
+      such as
+
+      book  toc,figure,table
+-->        
 <xsl:param name="generate.toc">
-article   toc,figure,table,example,equation
-sect1     toc
-sect2     toc
+book   toc
+chapter     toc
+preface toc
+sect1 toc
+appendix toc
 </xsl:param>
--->
-
-
-<!-- title indentation/left margin -->
-<!--
-WRS: - This parameter completely f*ed-up FO.  Why did those german goofballs
-use this default?  Didn't they ever test their stuff?????
-<xsl:param name="title.margin.left">0</xsl:param>
--->
-
-
-
-<!-- indentation in table of contents -->
-<!-- value is in points, used by fop processors that don´t support extensions and can´t calculate it -->
-<xsl:param name="toc.indent.width">20</xsl:param>
-
-
-<!-- display link target url after link name -->
-<!-- (in print, only display name would appear) -->
-<!-- suppresses target if target and name are identical -->
-<!-- applies to: fo output only -->
-<!-- 0: display url name only, suppress url target -->
-<!-- 1: display url name and url target in brackets -->
-<xsl:param name="ulink.show">1</xsl:param>
 
 
 <!-- add page number to cross references -->
 <xsl:param name="insert.xref.page.number">1</xsl:param>
-
-<!-- You should NOT change the following settings unless you know what you   -->
-<!-- are doing and have a good reason for the modification. eDE relies       -->
-<!-- on the following settings and requires them to function properly        -->
-
 
 <!-- Indent generated html                                                   -->
 <!-- Not supported by all XSLT processors.                                   -->
@@ -308,12 +226,6 @@ use this default?  Didn't they ever test their stuff?????
 <!-- capabilities. -->
 <xsl:param name="use.extensions">1</xsl:param>
 
-
-<!-- Enable FOP extensions                                                   -->
-<!-- Allows creation of PDF bookmarks to ease browsing of PDF documents.     -->
-<xsl:param name="fop.extensions">1</xsl:param>
-
-
 <!-- Use Tablecolumns extensions                                             -->
 <!-- Improves HTML table display                                             -->
 <xsl:param name="tablecolumns.extensions">0</xsl:param>
@@ -328,17 +240,6 @@ use this default?  Didn't they ever test their stuff?????
 <!-- Use Textinsert extensions                                               -->
 <!-- Allows inserting text files directly into the XML source.               -->
 <xsl:param name="textinsert.extensions">0</xsl:param>
-
-
-<!-- ENDOF inlined e-novative.xsl -->
-
-
-
-
-<!-- BEGIN inlined e-novative_book.xsl -->
-<!-- <xsl:import href="e-novative_book.xsl" /> -->
-<!-- General configuration (all output formats)                              -->
-
 
 <!-- Enumerate parts (<part>)                                                -->
 <!-- value: 0: parts are unnumbered                                          -->
@@ -402,47 +303,6 @@ use this default?  Didn't they ever test their stuff?????
 <!--<xsl:param name="generate.section.toc.level">5</xsl:param>-->
 
 
-<!-- HTML configuration                                                      -->
-
-
-
-
-<!-- FO- (PDF) related configuration                                         -->
-
-
-<!-- page sided layout                                                       -->
-<!-- 0: single-sided-layout (page numbers are centered)                      -->
-<!-- 1: double-sided layout (page numbers alternate at left and right)       -->
-<!--<xsl:param name="double.sided">0</xsl:param>-->
-<xsl:param name="double.sided">1</xsl:param>
-
-
-
-
-
-
-<!-- hyphenation                                                           -->
-<!-- a language attribute ("lang") must be defined for top level element   -->
-<!-- the most common languages are supported (see c:\docbook\fop\hyph)     -->
-<!-- applies to: fo                                                        -->
-<!-- false: words are not hyphenated                                       -->
-<!-- true: words are hyphenated                                            -->
-<xsl:param name="hyphenate">true</xsl:param>
-
-<!-- text alignment -->
-<!-- left, right, justify -->
-<xsl:param name="alignment">justify</xsl:param>
-
-<!-- number of columns in text body                                        -->
-<!-- value: number of columns -->
-<xsl:param name="column.count.body">1</xsl:param>
-
-<!-- default font for pdf -->
-<xsl:param name="body.font.family">Times</xsl:param>
-
-
-
-
 <!-- add part/chapter label to section label                                 -->
 <!-- applies to: html, fo                                                    -->
 <!-- value: 0: regular section labels                                        -->
@@ -492,6 +352,7 @@ use this default?  Didn't they ever test their stuff?????
 <b><xsl:call-template name="inline.charseq"/></b>
 </xsl:template>
 
+
 <!-- WRS: Added -->
 <xsl:param name="html.stylesheet">metavize.css</xsl:param>
 
@@ -507,7 +368,7 @@ use this default?  Didn't they ever test their stuff?????
 
 <!-- WRS: I prefer not to have a huge page for TOC, so split
           off the List of Figures/Tables (which for the life of
-          me I cannot seem to supress
+          me I cannot seem to supress)
 -->          
 <xsl:param name="chunk.toc.and.lots">1</xsl:param>
 

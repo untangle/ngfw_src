@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="getting_started">
+  <title>Getting Started</title>
+
+  <para>
+    Here, you may put some introductory stuff.  I'm going to lay this chapter out just so you can see some of the docbook basics.  Don't assume that I care about the organization I've laid out.  Rearrange as you see fit, but pay attention to the naming conventions on things with an "id".  These serve two purposes.  They are targets for links.  Since there are hundreds of them in this manual, following conventions is important.  Also, when creating "chunked" HTML, they serve as the basis for the file names.  As we start to integrate the manual into the UI, keeping consistent filenames will be important (otherwise, docbook generates mangled names for sections).
+  </para>
+  <para>
+    Anyway, here are some basic markups you may want.  When referring to a constant (such as an option in the UI) use <constant>this type of markup</constant>.  You can also draw attention to something <emphasis>with this element</emphasis>.  Later on, I'll present a figure.  Note that with docbook (and any writing), never refer to the physical location of diagrams/figures.  When I wrote a book a few years back, our editor used to yell at us when we wrote things like <quote>...in the figure below...</quote> as you're never sure where the figure will end-up in the final rendering.  It may be on the next page, it may be to the left, etc.  That is determined by the stylesheet.  Instead, you can use an "xref" tag.  The nifty thing about the "xref" tags is that they not only create a hyperlink (in html), but also substitute the "title" of the thing being referred to for the xref.  For example, I may say refer to <xref linkend="getting_started_coolpicture"/>.  If you look at the source, you do not see the title of the referrant, yet it is in the final product.
+    <note>
+      <para>
+        We'll spell check this thing at the end.  I'm a terrible speller.  btw: this is also an example of an "admonition" - which is like a little "asside".  You can use "note", "warning", "important", "caution", and "tip".  Nifty little icons are next to these admonitions.
+      </para>
+    </note>
+  </para>
+
+  <para>
+    On the topic of linking, there are three types of links you want to use.  The first has already been demonstrated, an "xref".  It points to a block which has an ID.  It then uses the "title" child of that block as the text displayed for the reference.  If you do not want to use the text provided, you can use a simple link <link linkend="getting_started_coolpicture">where you provide the text</link>.  I don't recommend it, as it makes maintenence harder if we rename stuff.
+    <tip>
+      <para>
+        Before I forget, you can use a shorthand notation to refer to the product itself.  For example, <quote> plug in your &eg;</quote>.  It is the literal &amp;eg&semi;
+      </para>
+    </tip>
+    The last type of link is a link to the glossary.  Unfortunatly, it doesn't seem to pick-up the term from the glossary so you need to add it.  For example, here is a link to <glossterm linkend="gloss_smtp">SMTP</glossterm>.  You'll likely be referring to a lot of terms which are already in the glossary.  If you need to add a term, I'm sure you can figure out the pattern.
+  </para>
+  <para>
+    I'm going to paste a few types of lists below.  The first is a "variablelist".  I use it a lot.  It lets you define terms with more than one paragraph.
+
+
+    <variablelist>
+      <title>This is a variable list (title is optional)</title>
+      <varlistentry>
+        <term>Some Entry</term>
+
+        <listitem>
+          <para>
+            This is a sample.  This is a sample.  This is a sample. This is a sample.  This is a sample.  This is a sample.  This is a sample. This is a sample.  This is a sample.  This is a sample.  This is a sample.  This is a sample.  This is a sample.  This is a sample.  This is a sample. This is a sample.  This is a sample.  This is a sample.  This is a sample.
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>Another Entry</term>
+
+        <listitem>
+          <para>This only has one line, which could look dumb</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>Last Entry</term>
+
+        <listitem>
+          <para>
+            This is a sample.  This is a sample.  This is a sample. This is a sample.  This is a sample.  This is a sample.  This is a sample. This is a sample.  This is a sample.  This is a sample.  This is a sample.  This is a sample.  This is a sample.  This is a sample.  This is a sample. This is a sample.  This is a sample.  This is a sample.  This is a sample.
+            <tip>
+              <para>
+                You can put admonitions in this type of list
+              </para>
+            </tip>
+          </para>
+          <para>
+            This is a sample.  This is a sample.  This is a sample. This is a sample.  This is a sample.  This is a sample.  This is a sample. This is a sample.  This is a sample.  This is a sample.  This is a sample.  This is a sample.  This is a sample.  This is a sample.  This is a sample. This is a sample.  This is a sample.  This is a sample.  This is a sample.
+          </para>
+        </listitem>
+      </varlistentry>
+
+    </variablelist>
+
+    Now, here is an un-numbered list
+
+    <itemizedlist>
+
+      <title>Un-numbered list (title optional) </title>
+
+      <listitem>
+        <para>The first item</para>
+      </listitem>
+
+      <listitem>
+        <para>Yet another</para>
+      </listitem>
+
+      <listitem>
+        <para>And a third</para>
+      </listitem>
+    </itemizedlist>
+
+
+    Here is a numbered list
+
+    <orderedlist id="chap1_list_2">
+      <title>Numbered list (title optional)</title>
+      <listitem>
+        <para>This is some item</para>
+      </listitem>
+
+      <listitem>
+        <para>This is Another item from the list</para>
+      </listitem>
+
+      <listitem>
+        <para>This will be a item in the list, but will have new lines.  This is a sample.
+        This is a sample.  This is a sample.  This is a sample.  This is a sample.
+        This is a sample.  This is a sample.  This is a sample.  This is a sample.</para>
+
+        <para>This is a new paragraph, but still part of the same list item.
+        This is a sample.  This is a sample.  This is a sample.  This is a sample.</para>
+      </listitem>
+
+      <listitem>
+        <para>This continues the list</para>
+      </listitem>
+    </orderedlist>
+
+  </para>
+  <para>
+    And here is a figure.
+
+    <figure id="getting_started_coolpicture">
+      <title>A really cool picture</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figure/gettingstarted/example.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+  </para>
+  
+  
+  <sect1 id="getting_started_network_layouts">
+    <title>The &eg; and your Network</title>
+    <para>
+      Blaaa Blaaa Blaaa
+    </para>
+  </sect1>
+  <sect1 id="getting_started_installation">
+    <title>Installation</title>
+    <para>
+      Blaaa Blaaa
+    </para>
+    <sect2 id="getting_started_installation_plug">
+      <title>Plugging it in</title>
+      <para>
+        I really put this here to show a nested section.  You can go as far as "sect5".
+      </para>
+    </sect2>
+    <sect2 id="getting_started_installation_power">
+      <title>Turning it on</title>
+      <para>
+        Blaaaaa
+      </para>
+    </sect2>
+  </sect1>
+  <sect1 id="getting_started_wizard">
+    <title>Setup Wizard</title>
+    <para>
+      Blaaa Blaaa
+    </para>
+  </sect1>   
+</chapter>

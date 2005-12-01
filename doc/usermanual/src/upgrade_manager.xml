@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="upgrade_manager">
+  <title>Upgrades</title>
+
+  <para>
+    The Upgrade Manager controls software updates and new features for your &eg;.  The Upgrade Manager is launched from the main Administrative Interface by pushing the <guilabel>Upgrade</guilabel> button as seen in <xref linkend="upgrade_manager_launch_upgrade_manager"/>.
+  </para>
+  <figure id="upgrade_manager_launch_upgrade_manager">
+    <title>Launching the upgrade Manager</title>
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="figure/upgrademngr/launch_upgrade.png" />
+      </imageobject>
+    </mediaobject>
+  </figure>    
+  <para>
+    Please visit <xref linkend="upgrade_manager_manual"/> or more details on manually upgrading your &eg;.  To configure your &eg; for automatic upgrades, please refer to <xref linkend="upgrade_manager_automatic"/>.
+  </para>
+
+  <sect1 id="upgrade_manager_adminui">
+    <title>Administrative Interface</title>
+    <para>
+      The Administrative Interface is divided into two sections.  The first section, covered in <xref linkend="upgrade_manager_manual"/>, discusses how to manually upgrade your &eg;.  <xref linkend="upgrade_manager_automatic"/> discusses how to automatically schedule upgrades as they are made available.
+    </para>
+
+    <!-- ========================================================= -->
+    <sect2 id="upgrade_manager_manual">
+      <title>Manual Upgrade</title>
+      <para>
+      TODO Complete me    
+      </para>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figure/upgrademngr/upgrade_manual.png" />
+        </imageobject>
+      </mediaobject>    
+    </sect2>
+  
+    <!-- ========================================================= -->
+    <sect2 id="upgrade_manager_automatic">
+      <title>Automatic Upgrades</title>
+  
+      <para>
+      TODO Complete me.
+      </para>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figure/upgrademngr/upgrade_automatic.png" />
+        </imageobject>
+      </mediaobject>    
+    </sect2>
+  </sect1>
+
+
+  <!-- ############################################################# -->
+  <sect1 id="upgrade_manager_qa">
+    <title>Frequently Asked Questions</title>
+    <qandaset>  
+      <qandaentry>
+        <question>
+          <para>Where is a Q and A?</para>
+        </question>
+        <answer>
+          <para>
+            Start writing!
+          </para>
+        </answer>
+      </qandaentry>
+    </qandaset>
+  </sect1>    
+
+</chapter>

@@ -46,18 +46,25 @@ Place new terms under the appropriate alphabetical location.
 
     <glossentry>
       <glossterm>Computer Virus</glossterm>
-      <glosssee otherterm="gloss_virus"/>
+      <glossdef>
+        <para>
+          In computer security technology, a virus is a self-replicating program that spreads by inserting copies of itself into other executable code or documents. A computer virus behaves in a way similar to a biological virus, which spreads by inserting itself into living cells. Extending the analogy, the insertion of the virus into a program is termed infection, and the infected file (or executable code that is not part of a file) is called a host.
+        </para>
+        <para>
+          (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
+        </para>
+      </glossdef>
     </glossentry>
 
     <glossentry id="gloss_cookie">
       <glossterm>Cookie</glossterm>
       <glossdef>
-        <blockquote>
-          <attribution><ulink  url="http://en.wikipedia.org">Wikipedia</ulink></attribution>
-          <para>
-            An HTTP magic cookie (usually called simply a cookie) is a packet of information sent by a server to a World Wide Web browser and then sent back by the browser each time it accesses that server.       
-          </para>
-        </blockquote>
+        <para>
+          An HTTP magic cookie (usually called simply a cookie) is a packet of information sent by a server to a World Wide Web browser and then sent back by the browser each time it accesses that server.
+        </para>
+        <para>
+          (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
+        </para>        
       </glossdef>
     </glossentry>      
     
@@ -72,33 +79,38 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>Denial Of Service</glossterm>
       <acronym>DOS</acronym>
       <glossdef>
-        <blockquote>
-          <attribution><ulink  url="http://en.wikipedia.org">Wikipedia</ulink></attribution>
-          <para>
-            A denial-of-service attack is an attack on a computer system or network that causes a loss of service to users, typically the loss of network connectivity and services by consuming the bandwidth of the victim network or overloading the computational resources of the victim system.
-          </para>
-        </blockquote>
-      </glossdef>      
+        <para>
+          A denial-of-service attack is an attack on a computer system or network that causes a loss of service to users, typically the loss of network connectivity and services by consuming the bandwidth of the victim network or overloading the computational resources of the victim system.
+        </para>
+        <para>
+          (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
+        </para>        
+      </glossdef>
     </glossentry>
 
     <glossentry id="gloss_dns">
       <glossterm>Domain Name Service</glossterm>
       <acronym>DNS</acronym>
       <glossdef>
-        <blockquote>
-          <attribution><ulink  url="http://en.wikipedia.org">Wikipedia</ulink></attribution>
-          <para>
-            The Domain Name System (DNS) is a system that stores information associated with domain names in a distributed database on networks, such as the Internet. The domain name system associates many types of information with domain names, but most importantly, it provides the IP address associated with the domain name. It also lists mail exchange servers accepting e-mail for each domain.
-          </para>
-        </blockquote>
+        <para>
+          The Domain Name System (DNS) is a system that stores information associated with domain names in a distributed database on networks, such as the Internet. The domain name system associates many types of information with domain names, but most importantly, it provides the IP address associated with the domain name. It also lists mail exchange servers accepting e-mail for each domain.
+        </para>
+        <para>
+          (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
+        </para>        
       </glossdef>   
     </glossentry>
 
     <glossentry id="gloss_default_route">
       <glossterm>Default Route</glossterm>
       <glossdef>
-        <para>TODO</para>
-      </glossdef>            
+        <para>
+          A default route is the network route used by a router or a server when no other known route works for a given IP packet's destination address. All the packets for destinations not known by the server or routers routing table are send to the default route. A router determines which route is valid to reach an IP address by finding the "most specific match". That is, the network with the longest subnet mask that matches the IP address, wins.
+        </para>
+        <para>
+          (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
+        </para>
+      </glossdef>  
     </glossentry>
 
 
@@ -106,16 +118,25 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>Dynamic Configuration Host Protocol</glossterm>
       <acronym>DHCP</acronym>
       <glossdef>
-        <para>TODO</para>
-      </glossdef>            
+        <para>
+          In the context of computer networking, Dynamic Host Configuration Protocol (DHCP) is a client-server networking protocol. A DHCP server provides configuration parameters specific to the DHCP client host requesting, generally, information required by the client host to participate on an IP network. DHCP also provides a mechanism for allocation of IP addresses to client hosts.
+        </para>
+        <para>
+          (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
+        </para>        
+      </glossdef>
     </glossentry>
 
 
     <glossentry id="gloss_dhcp_lease">
       <glossterm>DCHP Lease</glossterm>
       <glossdef>
-        <para>TODO</para>
-      </glossdef>            
+        <para>
+          The virtual contract between DHCP client and server, specifying the length of time that the client may use the IP addresses given by the DHCP server.
+        </para>
+        <glossseealso otherterm="gloss_dhcp"/>
+        <glossseealso otherterm="gloss_ip_addr"/>        
+      </glossdef>
     </glossentry>
 
 
@@ -124,13 +145,13 @@ Place new terms under the appropriate alphabetical location.
       <!-- Avoid the true military history of the term -->
       <glossterm>DMZ</glossterm>
       <glossdef>
-        <blockquote>
-          <attribution><ulink  url="http://en.wikipedia.org">Wikipedia</ulink></attribution>
-          <para>
-            In computer security, a demilitarized zone (DMZ) or perimeter network is a network area (a <glossterm linkend="gloss_subnet">subnet</glossterm>) that sits between an organisation's internal network and an external network, usually the Internet. The point of a DMZ is that connections from the internal and the external network to the DMZ are permitted, whereas connections from the DMZ are only permitted to the external network -- hosts in the DMZ may not connect to the internal network. This allows the DMZ's hosts to provide services to the external network while protecting the internal network in case intruders compromise a host in the DMZ. For someone on the external network who wants to illegally connect to the internal network, the DMZ is a dead end.
-          </para>
-        </blockquote>
-      </glossdef>            
+        <para>
+          In computer security, a demilitarized zone (DMZ) or perimeter network is a network area (a <glossterm linkend="gloss_subnet">subnet</glossterm>) that sits between an organisation's internal network and an external network, usually the Internet. The point of a DMZ is that connections from the internal and the external network to the DMZ are permitted, whereas connections from the DMZ are only permitted to the external network -- hosts in the DMZ may not connect to the internal network. This allows the DMZ's hosts to provide services to the external network while protecting the internal network in case intruders compromise a host in the DMZ. For someone on the external network who wants to illegally connect to the internal network, the DMZ is a dead end.
+        </para>
+        <para>
+          (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
+        </para>        
+      </glossdef>
     </glossentry>     
           
   </glossdiv>
@@ -152,16 +173,16 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>File Transfer Protocol</glossterm>
       <acronym>FTP</acronym>
       <glossdef>
-        <blockquote>
-          <attribution><ulink  url="http://en.wikipedia.org">Wikipedia</ulink></attribution>
-          <para>
-            FTP or file transfer protocol is a protocol used for exchanging files over the Internet. FTP works in the same way as <glossterm linkend="gloss_http">HTTP</glossterm> for transferring Web pages from a server to a user's browser, and <glossterm linkend="gloss_smtp">SMTP</glossterm> for transferring electronic mail across the Internet in that FTP uses the Internet's TCP/IP protocols to enable data transfer. FTP is most commonly used to download a file from a server using the Internet or to upload a file to a server (e.g., uploading a Web page file to a server).
-          </para>
-          <para>
-            FTP is commonly run on two <glossterm linkend="gloss_port">ports</glossterm>, 20 and 21. FTP runs exclusively over <glossterm linkend="gloss_tcp">TCP</glossterm>.
-          </para>
-        </blockquote>
-      </glossdef>            
+        <para>
+          FTP or file transfer protocol is a protocol used for exchanging files over the Internet. FTP works in the same way as <glossterm linkend="gloss_http">HTTP</glossterm> for transferring Web pages from a server to a user's browser, and <glossterm linkend="gloss_smtp">SMTP</glossterm> for transferring electronic mail across the Internet in that FTP uses the Internet's TCP/IP protocols to enable data transfer. FTP is most commonly used to download a file from a server using the Internet or to upload a file to a server (e.g., uploading a Web page file to a server).
+        </para>
+        <para>
+          FTP is commonly run on two <glossterm linkend="gloss_port">ports</glossterm>, 20 and 21. FTP runs exclusively over <glossterm linkend="gloss_tcp">TCP</glossterm>.
+        </para>
+        <para>
+          (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
+        </para>        
+      </glossdef>
     </glossentry>
     
   </glossdiv>  
@@ -174,7 +195,12 @@ Place new terms under the appropriate alphabetical location.
     <glossentry id="gloss_gateway">
       <glossterm>Gateway</glossterm>
       <glossdef>
-        <para>TODO</para>
+        <para>
+          Gateway is a common term in telecommunications; see gateway (telecommunications). A gateway, in afore mentioned sense, is very popular, as it is a computer or a network that allows access to another computer or network.
+        </para>
+        <para>
+          (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
+        </para>           
       </glossdef>            
     </glossentry>
     
@@ -189,7 +215,12 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>Hypter Text Transfer Protocol</glossterm>
       <acronym>HTTP</acronym>
       <glossdef>
-        <para>TODO</para>
+        <para>
+          HyperText Transfer Protocol (HTTP) is the primary method used to convey information on the World Wide Web. The original purpose was to provide a way to publish and receive HTML pages.
+        </para>
+        <para>
+          (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
+        </para>            
       </glossdef>            
     </glossentry>
 
@@ -198,7 +229,12 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>Hypter Text Markup Language</glossterm>
       <acronym>HTML</acronym>
       <glossdef>
-        <para>TODO</para>
+        <para>
+          In computing, HyperText Markup Language (HTML) is a markup language designed for the creation of web pages and other information viewable in a browser. HTML is used to structure information - denoting certain text as headings, paragraphs, lists and so on - and can be used to describe, to some degree, the appearance and semantics of a document.
+        </para>
+        <para>
+          (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
+        </para>            
       </glossdef>            
     </glossentry>    
 
@@ -206,7 +242,12 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>Hostname</glossterm>
       <abbrev>Host</abbrev>
       <glossdef>
-        <para>TODO</para>
+        <para>
+          A hostname (occasionally also, a sitename) is the unique name by which a network attached device ( which could consist of a computer, file server, network storage device, fax machine, copier, cable modem, etc. ) is known on a network. The hostname is used to identify a particular host in various forms of electronic communication such as E-mail or Usenet. Hostnames are used by various naming systems: NIS, DNS, SMB, etc.
+        </para>
+        <para>
+          (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
+        </para>         
       </glossdef>            
     </glossentry>  
         
@@ -221,7 +262,12 @@ Place new terms under the appropriate alphabetical location.
     <glossentry id="gloss_ip_addr">
       <glossterm>IP Address</glossterm>
       <glossdef>
-        <para>TODO</para>
+        <para>
+          An IP address (Internet Protocol address) is a unique number that devices use in order to identify and communicate with each other on a network utilizing the Internet Protocol standard. Any participating device - including routers, computers, time-servers, internet FAX machines, and some telephones - must have its own unique address. This allows information passed onwards on behalf of the sender to indicate where to send it next, and for the receiver of the information to know that it is the intended destination.
+        </para>
+        <para>
+          (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
+        </para>          
       </glossdef>            
     </glossentry>       
 
@@ -229,7 +275,10 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>Internet Mail Access Protocol</glossterm>
       <acronym>IMAP</acronym>
       <glossdef>
-        <para>TODO</para>
+        <para>
+          Protocol for the retreival of email messages.  An alternative to the POP protocol.
+        </para>
+        <glossseealso otherterm="gloss_pop"/>
       </glossdef>            
     </glossentry>      
     
@@ -243,7 +292,9 @@ Place new terms under the appropriate alphabetical location.
     <glossentry id="gloss_java">
       <glossterm>Java</glossterm>
       <glossdef>
-        <para>TODO</para>
+        <para>
+          A programming language created by Sun Microsystems.  Applications written in the Java language run on many platforms unchanged, and can be launched from a web browser.  The &eg; Administrative Console requires Java be installed on a browser in order to run.
+        </para>
       </glossdef>            
     </glossentry>     
   </glossdiv>
@@ -268,7 +319,9 @@ Place new terms under the appropriate alphabetical location.
     <glossentry id="gloss_malware">
       <glossterm>Malware</glossterm>
       <glossdef>
-        <para>Malware is a type of software designed to take over and/ or damage a computer user's operating system, without his or her knowledge or approval. Once installed, it is often very difficult to remove, and depending on the severity of the program installed, its handiwork can range in degree from the slightly annoying (such as unwanted pop up ads while a user is performing regular computing tasks on or offline), to irreparable damage requiring the reformatting of one's hard drive, since much of malware is poorly written. Examples of malware include viruses and trojan horses.</para>
+        <para>
+          Malware is a type of software designed to take over and/ or damage a computer user's operating system, without his or her knowledge or approval. Once installed, it is often very difficult to remove, and depending on the severity of the program installed, its handiwork can range in degree from the slightly annoying (such as unwanted pop up ads while a user is performing regular computing tasks on or offline), to irreparable damage requiring the reformatting of one's hard drive, since much of malware is poorly written. Examples of malware include viruses and trojan horses.
+        </para>
         <glossseealso otherterm="gloss_virus"/>
         <glossseealso otherterm="gloss_spyware"/>
       </glossdef>
@@ -291,7 +344,9 @@ Place new terms under the appropriate alphabetical location.
     <glossentry id="gloss_mime_type">
       <glossterm>MIME Type</glossterm>
       <glossdef>
-        <para>TODO</para>
+        <para>
+          As part of the MIME specification, a standard list of file types was created.  MIME types are expressed as <constant>major/minor</constant> where <constant>major</constant> is a category of type, and <constant>minor</constant> is more specfic.
+        </para>
         <glossseealso otherterm="gloss_mime"/>        
       </glossdef>            
     </glossentry>
@@ -301,12 +356,12 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>Media Access Control Address</glossterm>
       <abbrev>MAC Address</abbrev>
       <glossdef>
-        <blockquote>
-          <attribution><ulink  url="http://en.wikipedia.org">Wikipedia</ulink></attribution>
-          <para>
-            In computer networking a Media Access Control address (MAC address) is a unique identifier attached to most forms of networking equipment.
-          </para>
-        </blockquote>
+        <para>
+          In computer networking a Media Access Control address (MAC address) is a unique identifier attached to most forms of networking equipment.
+        </para>
+        <para>
+          (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
+        </para>
       </glossdef>            
     </glossentry>          
     
@@ -320,7 +375,15 @@ Place new terms under the appropriate alphabetical location.
     <glossentry id="gloss_netmask">
       <glossterm>Netmask</glossterm>
       <glossdef>
-        <para>TODO - the wikipedia def was too convoluted</para>
+        <para>
+          A network mask, also known as a subnet mask, netmask or address mask, is a bitmask used to tell how much of an IP address identifies the subnetwork the host is on and how much identifies the host.
+        </para>
+        <para>
+          Subnet masks are usually represented in the same representation used for addresses themselves; in IPv4, dotted quad notation (four numbers from zero to 255 separated by periods, e.g. 255.128.0.0) or, less commonly, as an eight-digit hexadecimal number (e.g. FF.80.00.00 = 255.128.0.0).
+        </para>
+        <para>
+          (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
+        </para>        
       </glossdef>            
     </glossentry>
 
@@ -329,13 +392,13 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>Network Address Translation</glossterm>
       <acronym>NAT</acronym>
       <glossdef>
-        <blockquote>
-          <attribution><ulink  url="http://en.wikipedia.org">Wikipedia</ulink></attribution>
-          <para>
-            In computer networking, the process of network address translation (also known as network masquerading or IP-masquerading) involves re-writing the source and/or destination addresses of IP packets as they pass through a router or firewall. Most systems using NAT do so in order to enable multiple hosts on a private network to access the Internet using a single public IP address.
-          </para>
-        </blockquote>
-      </glossdef>            
+        <para>
+          In computer networking, the process of network address translation (also known as network masquerading or IP-masquerading) involves re-writing the source and/or destination addresses of IP packets as they pass through a router or firewall. Most systems using NAT do so in order to enable multiple hosts on a private network to access the Internet using a single public IP address.
+        </para>
+        <para>
+          (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
+        </para>        
+      </glossdef>
     </glossentry>
         
   </glossdiv>
@@ -347,8 +410,14 @@ Place new terms under the appropriate alphabetical location.
     <title>O</title>
     <glossentry id="gloss_os">
       <glossterm>Operating System</glossterm>
+      <acronym>OS</acronym>
       <glossdef>
-        <para>TODO</para>
+        <para>
+          In computing, an operating system (OS) is the system software responsible for the direct control and management of hardware and basic system operations. Additionally, it provides a foundation upon which to run application software such as word processing programs, web browsers and others.
+        </para>
+        <para>
+          (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
+        </para>          
       </glossdef>            
     </glossentry>     
   </glossdiv>
@@ -361,21 +430,34 @@ Place new terms under the appropriate alphabetical location.
     <glossentry id="gloss_packet">
       <glossterm>Packet</glossterm>
       <glossdef>
-        <para>TODO</para>
+        <para>
+          A packet is the fundamental unit of information carriage in all modern computer networks that use packet switching.
+        </para>
+        <para>
+          (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
+        </para>          
       </glossdef>            
     </glossentry>    
 
     <glossentry id="gloss_port">
       <glossterm>Port</glossterm>
       <glossdef>
-        <para>TODO - the wikipedia def was too hard</para>
+        <para>
+          Used in conjunction with an IP address, a port is used to identify a unique endpoint in an IP virtual connection.  Ports are expressed as unsigned numbers, ranging from 0 to 65,535.
+        </para>
+        <glossseealso otherterm="gloss_ip_addr"/>
       </glossdef>            
     </glossentry>
 
     <glossentry id="gloss_ping">
       <glossterm>Ping</glossterm>
       <glossdef>
-        <para>TODO</para>
+        <para>
+          Ping is the name of a computer network tool used on TCP/IP networks (such as the Internet). It provides a basic test of whether a particular host is operating properly and is reachable on the network from the testing host. Ping provides estimates of the round-trip time and packet loss rate between hosts. It works by sending ICMP "echo request" packets to the target host and listening for replies (ICMP "echo response" packets)
+        </para>
+        <para>
+          (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
+        </para>         
       </glossdef>            
     </glossentry>      
     
@@ -399,13 +481,13 @@ Place new terms under the appropriate alphabetical location.
     <glossentry id="gloss_phishing">
       <glossterm>Phishing</glossterm>
       <glossdef>
-        <blockquote>
-          <attribution><ulink  url="http://en.wikipedia.org">Wikipedia</ulink></attribution>
-          <para>
-            In computing, phishing (also known as carding and spoofing) is a form of social engineering, characterised by attempts to fraudulently acquire sensitive information, such as passwords and credit card details, by masquerading as a trustworthy person or business in an apparently official electronic communication, such as an email. The term phishing arises from the use of increasingly sophisticated lures to "fish" for users' financial information and passwords.
-          </para>
-        </blockquote>
-      </glossdef>            
+        <para>
+          In computing, phishing (also known as carding and spoofing) is a form of social engineering, characterised by attempts to fraudulently acquire sensitive information, such as passwords and credit card details, by masquerading as a trustworthy person or business in an apparently official electronic communication, such as an email. The term phishing arises from the use of increasingly sophisticated lures to "fish" for users' financial information and passwords.
+        </para>
+        <para>
+          (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
+        </para>        
+      </glossdef>
     </glossentry>      
     
   </glossdiv>
@@ -439,15 +521,22 @@ Place new terms under the appropriate alphabetical location.
       <abbrev>Regex</abbrev>
       <glossdef>
         <para>
-          TODO
+          A regular expression (abbreviated as regexp, regex, or regxp, with plural forms regexps, regexes, or regexen) is a string that describes or matches a set of strings, according to certain syntax rules. Regular expressions are used by many text editors and utilities to search and manipulate bodies of text based on certain patterns.
         </para>
+        <para>
+          (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
+        </para>         
       </glossdef>
     </glossentry>
 
     <glossentry id="gloss_redirect">
       <glossterm>Redirect</glossterm>
       <glossdef>
-        <para>TODO Complete me (note this is "redirect" as defined in the scope of NAT).</para>
+        <para>
+          Within the scope of conputer networking, to redirect is to cause network traffic originally destined for an endpoint (IP address /port) to be routed to another.
+        </para>
+        <glossseealso otherterm="gloss_port"/>
+        <glossseealso otherterm="gloss_ip_addr"/>
       </glossdef>            
     </glossentry>      
     
@@ -477,12 +566,12 @@ Place new terms under the appropriate alphabetical location.
     <glossentry id="gloss_spyware">
       <glossterm>Spyware</glossterm>
       <glossdef>
-        <blockquote>
-          <attribution><ulink  url="http://en.wikipedia.org">Wikipedia</ulink></attribution>
-          <para>
-            Spyware is a broad category of malicious software designed to intercept or take partial control of a computer's operation without the informed consent of that machine's owner or legitimate user. While the term taken literally suggests software that surreptitiously monitors the user, it has come to refer more broadly to software that subverts the computer's operation for the benefit of a third party.        
-          </para>
-        </blockquote>
+        <para>
+          Spyware is a broad category of malicious software designed to intercept or take partial control of a computer's operation without the informed consent of that machine's owner or legitimate user. While the term taken literally suggests software that surreptitiously monitors the user, it has come to refer more broadly to software that subverts the computer's operation for the benefit of a third party.
+        </para>
+        <para>
+          (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
+        </para>
       </glossdef>
     </glossentry>
 
@@ -500,9 +589,10 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>Static IP</glossterm>
       <glossdef>
         <para>
-          TODO
+          An IP address permenantly assigned to a host.  This is in contrast to IP addresses assigned via the DHCP protocol, which are subject to change.
         </para>
         <glossseealso otherterm="gloss_ip_addr"/>
+        <glossseealso otherterm="gloss_dhcp"/>
       </glossdef>
     </glossentry>    
 
@@ -523,8 +613,14 @@ Place new terms under the appropriate alphabetical location.
       <abbrev>subnet</abbrev>
       <glossdef>
         <para>
-          TODO (the Wikipedia explanation is too wordy)
+          In the Internet Protocol (IP), a subnetwork (usually known as a subnet) is a division of a classful network. The rest of this article is about the second meaning.
         </para>
+        <para>
+          Subnetting an IP network allows you to break down what appears (logically) to be a single large network into smaller ones. It was originally introduced before the introduction of classful network numbers in IPv4, to allow a single site to have a number of local area networks. Even after the introduction of classful network numbers, it continued to be useful, as it reduced the number of entries in the Internet-wide routing table (by hiding information about all the individual subnets inside a site). As a side benefit, it also resulted in reduced network overhead, by dividing the parts which receive IP broadcasts
+        </para>
+        <para>
+          (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
+        </para>        
       </glossdef>
     </glossentry>
 
@@ -534,7 +630,7 @@ Place new terms under the appropriate alphabetical location.
       <acronym>SSH</acronym>
       <glossdef>
         <para>
-          TODO
+          A protocol and application to securely connect to a remote machine.
         </para>
       </glossdef>
     </glossentry>      
@@ -543,8 +639,11 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>Syslog</glossterm>
       <glossdef>
         <para>
-          TODO
+          syslog is a de facto standard for forwarding log messages in an IP network. The term "syslog" is often used for both the actual syslog protocol, as well as the application or library sending syslog messages.
         </para>
+        <para>
+          (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
+        </para>         
       </glossdef>
     </glossentry>    
 
@@ -554,7 +653,7 @@ Place new terms under the appropriate alphabetical location.
       <acronym>SNMP</acronym>
       <glossdef>
         <para>
-          TODO
+          Internet standard protocol for the remote management and monitoring of networked devices.
         </para>
       </glossdef>
     </glossentry>
@@ -565,7 +664,7 @@ Place new terms under the appropriate alphabetical location.
       <abbrev>Trap</abbrev>
       <glossdef>
         <para>
-          TODO
+          A message, defined by the SNMP protocol, sent by a networked device to a monitoring system.  Traps are used to convey lifecycle events as well as conditions which warrent further investigation.
         </para>
       </glossdef>
     </glossentry>
@@ -601,7 +700,7 @@ Place new terms under the appropriate alphabetical location.
       <acronym>URI</acronym>
       <glossdef>
         <para>
-          Within the context of the &eg;, a URI can be thought of as a <glossterm linkend="gloss_url">web address</glossterm> without the protocol (e.g. <computeroutput>http://</computeroutput>) or machine (e.g. <computeroutput>www.detnews.com</computeroutput>).
+          Within the context of the &eg;, a URI can be thought of as a <glossterm linkend="gloss_url">web address</glossterm> without the protocol (e.g. <constant>http://</constant>) or machine (e.g. <constant>www.detnews.com</constant>).
         </para>
         <glossseealso otherterm="gloss_url"/>
       </glossdef>
@@ -613,7 +712,7 @@ Place new terms under the appropriate alphabetical location.
       <acronym>URL</acronym>
       <glossdef>
         <para>
-          A URL is more commonly known as a <quote>web address</quote>.  Examples include <computeroutput>http://www.google.com</computeroutput> or <computeroutput>http://www.detnews.com/2005/technology/0502/22/01-96826.htm</computeroutput>.  A more formal definition of URL is that it is a concatenation of protocol (<computeroutput>http://</computeroutput>), machine (<computeroutput>www.detnews.com</computeroutput>) and path (<computeroutput>/2005/technology/0502/22/01-96826.htm</computeroutput>)
+          A URL is more commonly known as a <quote>web address</quote>.  Examples include <constant>http://www.google.com</constant> or <constant>http://www.detnews.com/2005/technology/0502/22/01-96826.htm</constant>.  A more formal definition of URL is that it is a concatenation of protocol (<constant>http://</constant>), machine (<constant>www.detnews.com</constant>) and path (<constant>/2005/technology/0502/22/01-96826.htm</constant>)
         </para>
         <glossseealso otherterm="gloss_uri"/>         
       </glossdef>
@@ -645,7 +744,7 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>Virtual Rack</glossterm>
       <glossdef>
         <para>
-          TODO
+          A Metavize term to describe a set of Software Appliances and their associated policies.
         </para>
       </glossdef>
     </glossentry>    
@@ -665,13 +764,13 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>Virtual Private Network</glossterm>
       <acronym>VPN</acronym>
       <glossdef>
-        <blockquote>
-          <attribution><ulink  url="http://en.wikipedia.org">Wikipedia</ulink></attribution>
-          <para>
-            A Virtual Private Network, or VPN, is a private communications network usually used within a company, or by several different companies or organizations, to communicate over a public network. VPN message traffic is carried on public networking infrastructure (e.g. the Internet) using standard (often insecure) protocols, or over a service provider's network providing VPN service guarded by well defined Service Level Agreement (SLA) between the VPN customer and the VPN service provider.
-          </para>
-        </blockquote>
-      </glossdef>  
+        <para>
+          A Virtual Private Network, or VPN, is a private communications network usually used within a company, or by several different companies or organizations, to communicate over a public network. VPN message traffic is carried on public networking infrastructure (e.g. the Internet) using standard (often insecure) protocols, or over a service provider's network providing VPN service guarded by well defined Service Level Agreement (SLA) between the VPN customer and the VPN service provider.
+        </para>
+        <para>
+          (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
+        </para>        
+      </glossdef>
     </glossentry>       
     
   </glossdiv>
@@ -684,12 +783,12 @@ Place new terms under the appropriate alphabetical location.
     <glossentry id="gloss_worm">
       <glossterm>Worm</glossterm>
       <glossdef>
-        <blockquote>
-          <attribution><ulink  url="http://en.wikipedia.org">Wikipedia</ulink></attribution>
-          <para>
-            A computer worm is a self-replicating computer program, similar to a computer virus. A virus attaches itself to, and becomes part of, another executable program; however, a worm is self-contained and does not need to be part of another program to propagate itself. They are often designed to exploit the file transmission capabilities found on many computers.        
-          </para>
-        </blockquote>
+        <para>
+          A computer worm is a self-replicating computer program, similar to a computer virus. A virus attaches itself to, and becomes part of, another executable program; however, a worm is self-contained and does not need to be part of another program to propagate itself. They are often designed to exploit the file transmission capabilities found on many computers.
+        </para>
+        <para>
+          (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
+        </para>
       </glossdef>      
     </glossentry>
     
