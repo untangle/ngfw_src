@@ -162,8 +162,8 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
 
                 setOpaque(false);
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html>Please take a moment to register yourself as the<br> operator of the EdgeGuard.</html>");
-                add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, -1, -1));
+                jLabel2.setText("<html>Please take a moment to register yourself as the operator of the EdgeGuard.  <b>This information is required.</b></html>");
+                add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, 400, -1));
 
                 jLabel16.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);

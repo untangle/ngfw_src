@@ -167,7 +167,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
         backgroundJLabel = new com.metavize.gui.widgets.MTiledIconLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Metavize EdgeGuard v" + Version.getVersion());
+        setTitle("Metavize EdgeGuard " + Version.getVersion());
         setIconImage((new javax.swing.ImageIcon( this.getClass().getResource("/com/metavize/gui/icons/LogoNoText16x16.gif"))).getImage());
         setName("loginJFrame");
         setResizable(false);
@@ -461,6 +461,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
 
         public ConnectThread(){
             super("MVCLIENT-ConnectThread");
+	    this.setDaemon(true);
             this.setContextClassLoader( Util.getClassLoader() );
             acceptJButton.setEnabled(false);
             this.start();

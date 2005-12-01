@@ -43,7 +43,7 @@ public class InitialSetupConnectivityJPanel extends MWizardPageJPanel {
 
                 setOpaque(false);
                 jLabel10.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel10.setText("<html>The <b>Connectivity Test</b> is not required, but it can tell you if<br>EdgeGuard can contact DNS and the internet with the settings<br>you have just saved.</html>");
+                jLabel10.setText("<html>The <b>Connectivity Test is optional</b>, but it can tell you if<br>EdgeGuard can contact DNS and the internet with the settings<br>you have just saved.</html>");
                 add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, -1, -1));
 
                 connectivityTestJButton.setFont(new java.awt.Font("Dialog", 0, 12));

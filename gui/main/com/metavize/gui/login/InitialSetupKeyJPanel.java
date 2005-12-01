@@ -81,8 +81,8 @@ public class InitialSetupKeyJPanel extends MWizardPageJPanel {
 
                 setOpaque(false);
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html>Please enter the 16-digit EdgeGuard activation key<br> into the field below. (With or without dashes)</html>");
-                add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, 310, -1));
+                jLabel2.setText("<html>Please enter the 16-digit EdgeGuard activation key. (With or without dashes) The key can be found on the side of your EdgeGuard appliance, and also on your QuickStart Guide.<br><b>This information is required.</b></html>");
+                add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, 400, -1));
 
                 keyJTextField.setColumns(19);
                 add(keyJTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(85, 118, -1, -1));

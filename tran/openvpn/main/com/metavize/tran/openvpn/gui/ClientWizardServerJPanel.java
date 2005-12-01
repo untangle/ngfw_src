@@ -27,7 +27,8 @@ public class ClientWizardServerJPanel extends MWizardPageJPanel {
     private static final String EXCEPTION_ADDRESS_FORMAT = "The \"Server IP Address\" is not a valid IP address.";
     private static final String EXCEPTION_NO_PASSWORD = "Please supply a password will be used to connect to the server.";
     private static final String EXCEPTION_KEY_UNREAD = "You must click \"Read USB Key\" before proceeding.";
-    private static final String EXCEPTION_NO_SELECTION = "You must click \"Read USB Key\", and select a valid configuration from the drop-down-list before proceeding.";
+    private static final String EXCEPTION_NO_SELECTION = "You must click \"Read USB Key\", and select a valid configuration " +
+	"from the drop-down-list before proceeding.";
     
 
     private VpnTransform vpnTransform;
@@ -108,59 +109,57 @@ public class ClientWizardServerJPanel extends MWizardPageJPanel {
         
         if( !validateOnly ){
 
-	    if( useServer ){
-		// BRING UP SAVING DIALOG
-		SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		    mProgressJDialog = new MProgressJDialog("Downloading VPN Client Configuration",
-							    "<html><center>Please wait a moment while your configuration is downloaded." + 
-							    "<br>This may take up to one minute.</center></html>",
-							    (Dialog)ClientWizardServerJPanel.this.getTopLevelAncestor(), false);
-		    jProgressBar = mProgressJDialog.getJProgressBar();
-		    jProgressBar.setValue(0);
-		    jProgressBar.setString("Downloading...");
-		    jProgressBar.setIndeterminate(true);
-		    mProgressJDialog.setVisible(true);
-		}});
-		try{
+	    // BRING UP DOWNLOADING DIALOG
+	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		mProgressJDialog = new MProgressJDialog("Downloading Configuration",
+							"<html><center>Please wait a moment while your configuration is downloaded." + 
+							"<br>This may take up to one minute.</center></html>",
+							(Dialog)ClientWizardServerJPanel.this.getTopLevelAncestor(), false);
+		jProgressBar = mProgressJDialog.getJProgressBar();
+		jProgressBar.setValue(0);
+		jProgressBar.setString("Downloading...");
+		jProgressBar.setIndeterminate(true);
+		mProgressJDialog.setVisible(true);
+	    }});
+	    try{
+		// DOWNLOAD THE STUFFS
+		if( useServer )
 		    vpnTransform.downloadConfig( addressIPaddr, password );
-
-		    // SHOW RESULTS AND REMOVE SAVING DIALOG
-		    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-			jProgressBar.setValue(100);
-			jProgressBar.setString("Finished Downloading");
-			jProgressBar.setIndeterminate(false);
-		    }});
-		    try{Thread.currentThread().sleep(2000);} catch(Exception e){e.printStackTrace();}
-		    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-			mProgressJDialog.setVisible(false);
-		    }});
-		    
-		}
-		catch(Exception e){
-		    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-			mProgressJDialog.setVisible(false);
-		    }});
+		else
+		    vpnTransform.downloadConfigUsb( selection );
+		
+		// SHOW RESULTS AND REMOVE DOWNLOADING DIALOG
+		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		    jProgressBar.setValue(100);
+		    jProgressBar.setString("Finished Downloading");
+		    jProgressBar.setIndeterminate(false);
+		}});
+		try{Thread.currentThread().sleep(2000);} catch(Exception e){e.printStackTrace();}
+		SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		    mProgressJDialog.setVisible(false);
+		}});
+		
+	    }
+	    catch(Exception e){
+		SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		    mProgressJDialog.setVisible(false);
+		}});
+		if( useServer ){
 		    Util.handleExceptionNoRestart("Error downloading config from server:", e);
 		    throw new Exception("Your VPN Client configuration could not be downloaded from the server.  Please try again.");
 		}
-		
-		
-	    }
-	    else{
-		try{
-		    vpnTransform.downloadConfigUsb( selection );
-		}
-		catch(Exception e){
-		    Util.handleExceptionNoRestart("Error downloading config from USB:", e);
-		    throw new Exception("Your VPN Client configuration could not be downloaded from the USB Key.  Please try again.");
+		else{
+		    Util.handleExceptionNoRestart("Error downloading config from USB key:", e);
+		    throw new Exception("Your VPN Client configuration could not be downloaded from the USB key.  Please try again.");
 		}
 	    }
-		vpnTransform.completeConfig();
-        }
+	    	    
+	    vpnTransform.completeConfig();
+	}
     }
     
 
-        private void initComponents() {//GEN-BEGIN:initComponents
+    private void initComponents() {//GEN-BEGIN:initComponents
                 methodButtonGroup = new javax.swing.ButtonGroup();
                 jLabel2 = new javax.swing.JLabel();
                 serverJRadioButton = new javax.swing.JRadioButton();

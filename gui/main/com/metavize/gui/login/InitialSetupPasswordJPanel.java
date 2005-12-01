@@ -98,8 +98,8 @@ public class InitialSetupPasswordJPanel extends MWizardPageJPanel {
 
                 setOpaque(false);
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html>Please choose a password for the first account.<br>This account is known as the \"admin\" account.</html>");
-                add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, -1, -1));
+                jLabel2.setText("<html>Please choose a password for the first account.  This account is known as the \"admin\" account.</html>");
+                add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, 360, -1));
 
                 jPanel1.setLayout(new java.awt.GridBagLayout());
 

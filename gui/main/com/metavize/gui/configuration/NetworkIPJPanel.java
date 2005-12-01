@@ -179,242 +179,242 @@ public class NetworkIPJPanel extends javax.swing.JPanel implements Savable, Refr
     }
     
     
-    private void initComponents() {//GEN-BEGIN:initComponents
-        java.awt.GridBagConstraints gridBagConstraints;
+        private void initComponents() {//GEN-BEGIN:initComponents
+                java.awt.GridBagConstraints gridBagConstraints;
 
-        dhcpButtonGroup = new javax.swing.ButtonGroup();
-        tcpWindowButtonGroup = new javax.swing.ButtonGroup();
-        externalAdminButtonGroup = new javax.swing.ButtonGroup();
-        internalAdminButtonGroup = new javax.swing.ButtonGroup();
-        restrictAdminButtonGroup = new javax.swing.ButtonGroup();
-        sshButtonGroup = new javax.swing.ButtonGroup();
-        dhcpJPanel = new javax.swing.JPanel();
-        dhcpEnabledRadioButton = new javax.swing.JRadioButton();
-        dhcpDisabledRadioButton = new javax.swing.JRadioButton();
-        staticIPJPanel = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        dhcpIPaddrJTextField = new javax.swing.JTextField();
-        jLabel7 = new javax.swing.JLabel();
-        dhcpNetmaskJTextField = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
-        dhcpRouteJTextField = new javax.swing.JTextField();
-        jLabel3 = new javax.swing.JLabel();
-        dnsPrimaryJTextField = new javax.swing.JTextField();
-        jLabel4 = new javax.swing.JLabel();
-        dnsSecondaryJTextField = new javax.swing.JTextField();
-        jLabel5 = new javax.swing.JLabel();
-        jSeparator2 = new javax.swing.JSeparator();
-        jLabel9 = new javax.swing.JLabel();
-        renewDhcpLeaseJButton = new javax.swing.JButton();
-        jSeparator3 = new javax.swing.JSeparator();
-        jLabel10 = new javax.swing.JLabel();
-        connectivityTestJButton = new javax.swing.JButton();
+                dhcpButtonGroup = new javax.swing.ButtonGroup();
+                tcpWindowButtonGroup = new javax.swing.ButtonGroup();
+                externalAdminButtonGroup = new javax.swing.ButtonGroup();
+                internalAdminButtonGroup = new javax.swing.ButtonGroup();
+                restrictAdminButtonGroup = new javax.swing.ButtonGroup();
+                sshButtonGroup = new javax.swing.ButtonGroup();
+                dhcpJPanel = new javax.swing.JPanel();
+                dhcpEnabledRadioButton = new javax.swing.JRadioButton();
+                dhcpDisabledRadioButton = new javax.swing.JRadioButton();
+                staticIPJPanel = new javax.swing.JPanel();
+                jLabel1 = new javax.swing.JLabel();
+                dhcpIPaddrJTextField = new javax.swing.JTextField();
+                jLabel7 = new javax.swing.JLabel();
+                dhcpNetmaskJTextField = new javax.swing.JTextField();
+                jLabel2 = new javax.swing.JLabel();
+                dhcpRouteJTextField = new javax.swing.JTextField();
+                jLabel3 = new javax.swing.JLabel();
+                dnsPrimaryJTextField = new javax.swing.JTextField();
+                jLabel4 = new javax.swing.JLabel();
+                dnsSecondaryJTextField = new javax.swing.JTextField();
+                jLabel5 = new javax.swing.JLabel();
+                jSeparator2 = new javax.swing.JSeparator();
+                jLabel9 = new javax.swing.JLabel();
+                renewDhcpLeaseJButton = new javax.swing.JButton();
+                jSeparator3 = new javax.swing.JSeparator();
+                jLabel10 = new javax.swing.JLabel();
+                connectivityTestJButton = new javax.swing.JButton();
 
-        setLayout(new java.awt.GridBagLayout());
+                setLayout(new java.awt.GridBagLayout());
 
-        setMaximumSize(new java.awt.Dimension(563, 413));
-        setMinimumSize(new java.awt.Dimension(563, 413));
-        setPreferredSize(new java.awt.Dimension(563, 413));
-        dhcpJPanel.setLayout(new java.awt.GridBagLayout());
+                setMaximumSize(new java.awt.Dimension(563, 413));
+                setMinimumSize(new java.awt.Dimension(563, 413));
+                setPreferredSize(new java.awt.Dimension(563, 413));
+                dhcpJPanel.setLayout(new java.awt.GridBagLayout());
 
-        dhcpJPanel.setBorder(new javax.swing.border.TitledBorder(null, "External IP Settings", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
-        dhcpButtonGroup.add(dhcpEnabledRadioButton);
-        dhcpEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        dhcpEnabledRadioButton.setText("<html><b>Automatically Set</b>  EdgeGuard's external IP settings from the network's DHCP server.  The settings are shown in the fields below.</html>");
-        dhcpEnabledRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set EdgeGuard's IP address from the network's DHCP server.</html>");
-        dhcpEnabledRadioButton.setFocusPainted(false);
-        dhcpEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                dhcpEnabledRadioButtonActionPerformed(evt);
-            }
-        });
+                dhcpJPanel.setBorder(new javax.swing.border.TitledBorder(null, "External IP Settings", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+                dhcpButtonGroup.add(dhcpEnabledRadioButton);
+                dhcpEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                dhcpEnabledRadioButton.setText("<html><b>Automatically Set</b>  EdgeGuard's external IP settings from the network's DHCP server.  The settings are shown in the fields below.</html>");
+                dhcpEnabledRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set EdgeGuard's IP address from the network's DHCP server.</html>");
+                dhcpEnabledRadioButton.setFocusPainted(false);
+                dhcpEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                dhcpEnabledRadioButtonActionPerformed(evt);
+                        }
+                });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        dhcpJPanel.add(dhcpEnabledRadioButton, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                dhcpJPanel.add(dhcpEnabledRadioButton, gridBagConstraints);
 
-        dhcpButtonGroup.add(dhcpDisabledRadioButton);
-        dhcpDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        dhcpDisabledRadioButton.setText("<html><b>Manually Set</b> EdgeGuard's external IP settings through the fields below.</html>");
-        dhcpDisabledRadioButton.setFocusPainted(false);
-        dhcpDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                dhcpDisabledRadioButtonActionPerformed(evt);
-            }
-        });
+                dhcpButtonGroup.add(dhcpDisabledRadioButton);
+                dhcpDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                dhcpDisabledRadioButton.setText("<html><b>Manually Set</b> EdgeGuard's external IP settings through the fields below.</html>");
+                dhcpDisabledRadioButton.setFocusPainted(false);
+                dhcpDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                dhcpDisabledRadioButtonActionPerformed(evt);
+                        }
+                });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        dhcpJPanel.add(dhcpDisabledRadioButton, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                dhcpJPanel.add(dhcpDisabledRadioButton, gridBagConstraints);
 
-        staticIPJPanel.setLayout(new java.awt.GridBagLayout());
+                staticIPJPanel.setLayout(new java.awt.GridBagLayout());
 
-        jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel1.setText("IP Address:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        staticIPJPanel.add(jLabel1, gridBagConstraints);
+                jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel1.setText("IP Address:");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                staticIPJPanel.add(jLabel1, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
-        staticIPJPanel.add(dhcpIPaddrJTextField, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
+                staticIPJPanel.add(dhcpIPaddrJTextField, gridBagConstraints);
 
-        jLabel7.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel7.setText("Netmask:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        staticIPJPanel.add(jLabel7, gridBagConstraints);
+                jLabel7.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel7.setText("Netmask:");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                staticIPJPanel.add(jLabel7, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
-        staticIPJPanel.add(dhcpNetmaskJTextField, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
+                staticIPJPanel.add(dhcpNetmaskJTextField, gridBagConstraints);
 
-        jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel2.setText("Default Route:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        staticIPJPanel.add(jLabel2, gridBagConstraints);
+                jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel2.setText("Default Route / Gateway:");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 2;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                staticIPJPanel.add(jLabel2, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
-        staticIPJPanel.add(dhcpRouteJTextField, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 2;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
+                staticIPJPanel.add(dhcpRouteJTextField, gridBagConstraints);
 
-        jLabel3.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel3.setText("Primary DNS:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        staticIPJPanel.add(jLabel3, gridBagConstraints);
+                jLabel3.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel3.setText("Primary DNS:");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 3;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                staticIPJPanel.add(jLabel3, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
-        staticIPJPanel.add(dnsPrimaryJTextField, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 3;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
+                staticIPJPanel.add(dnsPrimaryJTextField, gridBagConstraints);
 
-        jLabel4.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel4.setText("Secondary DNS:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        staticIPJPanel.add(jLabel4, gridBagConstraints);
+                jLabel4.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel4.setText("Secondary DNS:");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 4;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                staticIPJPanel.add(jLabel4, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
-        staticIPJPanel.add(dnsSecondaryJTextField, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 4;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
+                staticIPJPanel.add(dnsSecondaryJTextField, gridBagConstraints);
 
-        jLabel5.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel5.setText(" (Optional)");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        staticIPJPanel.add(jLabel5, gridBagConstraints);
+                jLabel5.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel5.setText(" (Optional)");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 2;
+                gridBagConstraints.gridy = 4;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                staticIPJPanel.add(jLabel5, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.ipadx = 150;
-        gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 0);
-        dhcpJPanel.add(staticIPJPanel, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.ipadx = 150;
+                gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 0);
+                dhcpJPanel.add(staticIPJPanel, gridBagConstraints);
 
-        jSeparator2.setForeground(new java.awt.Color(200, 200, 200));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        dhcpJPanel.add(jSeparator2, gridBagConstraints);
+                jSeparator2.setForeground(new java.awt.Color(200, 200, 200));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                dhcpJPanel.add(jSeparator2, gridBagConstraints);
 
-        jLabel9.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel9.setText("<html><b>Renew DHCP Lease</b> tells EdgeGuard to request new IP settings from the DHCP server.  This button is enabled only if DHCP is currently being used.</html>");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
-        dhcpJPanel.add(jLabel9, gridBagConstraints);
+                jLabel9.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel9.setText("<html><b>Renew DHCP Lease</b> tells EdgeGuard to request new IP settings from the DHCP server.  This button is enabled only if DHCP is currently being used.</html>");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
+                dhcpJPanel.add(jLabel9, gridBagConstraints);
 
-        renewDhcpLeaseJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        renewDhcpLeaseJButton.setText("Renew DHCP Lease");
-        renewDhcpLeaseJButton.setFocusPainted(false);
-        renewDhcpLeaseJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                renewDhcpLeaseJButtonActionPerformed(evt);
-            }
-        });
+                renewDhcpLeaseJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                renewDhcpLeaseJButton.setText("Renew DHCP Lease");
+                renewDhcpLeaseJButton.setFocusPainted(false);
+                renewDhcpLeaseJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                renewDhcpLeaseJButtonActionPerformed(evt);
+                        }
+                });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
-        dhcpJPanel.add(renewDhcpLeaseJButton, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+                dhcpJPanel.add(renewDhcpLeaseJButton, gridBagConstraints);
 
-        jSeparator3.setForeground(new java.awt.Color(200, 200, 200));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        dhcpJPanel.add(jSeparator3, gridBagConstraints);
+                jSeparator3.setForeground(new java.awt.Color(200, 200, 200));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                dhcpJPanel.add(jSeparator3, gridBagConstraints);
 
-        jLabel10.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel10.setText("<html><b>Connectivity Test</b> tells you if EdgeGuard can contact DNS and the internet with the settings you have just saved.</html>");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
-        dhcpJPanel.add(jLabel10, gridBagConstraints);
+                jLabel10.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel10.setText("<html><b>Connectivity Test</b> tells you if EdgeGuard can contact DNS and the internet with the settings you have just saved.</html>");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
+                dhcpJPanel.add(jLabel10, gridBagConstraints);
 
-        connectivityTestJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        connectivityTestJButton.setText("Run Connectivity Test");
-        connectivityTestJButton.setFocusPainted(false);
-        connectivityTestJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                connectivityTestJButtonActionPerformed(evt);
-            }
-        });
+                connectivityTestJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                connectivityTestJButton.setText("Run Connectivity Test");
+                connectivityTestJButton.setFocusPainted(false);
+                connectivityTestJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                connectivityTestJButtonActionPerformed(evt);
+                        }
+                });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
-        dhcpJPanel.add(connectivityTestJButton, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+                dhcpJPanel.add(connectivityTestJButton, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
-        add(dhcpJPanel, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
+                add(dhcpJPanel, gridBagConstraints);
 
-    }//GEN-END:initComponents
+        }//GEN-END:initComponents
 
     private void connectivityTestJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectivityTestJButtonActionPerformed
         try{
@@ -453,35 +453,35 @@ public class NetworkIPJPanel extends javax.swing.JPanel implements Savable, Refr
     }
 
     
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton connectivityTestJButton;
-    private javax.swing.ButtonGroup dhcpButtonGroup;
-    public javax.swing.JRadioButton dhcpDisabledRadioButton;
-    public javax.swing.JRadioButton dhcpEnabledRadioButton;
-    public javax.swing.JTextField dhcpIPaddrJTextField;
-    private javax.swing.JPanel dhcpJPanel;
-    public javax.swing.JTextField dhcpNetmaskJTextField;
-    public javax.swing.JTextField dhcpRouteJTextField;
-    public javax.swing.JTextField dnsPrimaryJTextField;
-    public javax.swing.JTextField dnsSecondaryJTextField;
-    private javax.swing.ButtonGroup externalAdminButtonGroup;
-    private javax.swing.ButtonGroup internalAdminButtonGroup;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel9;
-    private javax.swing.JSeparator jSeparator2;
-    private javax.swing.JSeparator jSeparator3;
-    private javax.swing.JButton renewDhcpLeaseJButton;
-    private javax.swing.ButtonGroup restrictAdminButtonGroup;
-    private javax.swing.ButtonGroup sshButtonGroup;
-    private javax.swing.JPanel staticIPJPanel;
-    private javax.swing.ButtonGroup tcpWindowButtonGroup;
-    // End of variables declaration//GEN-END:variables
+        // Variables declaration - do not modify//GEN-BEGIN:variables
+        private javax.swing.JButton connectivityTestJButton;
+        private javax.swing.ButtonGroup dhcpButtonGroup;
+        public javax.swing.JRadioButton dhcpDisabledRadioButton;
+        public javax.swing.JRadioButton dhcpEnabledRadioButton;
+        public javax.swing.JTextField dhcpIPaddrJTextField;
+        private javax.swing.JPanel dhcpJPanel;
+        public javax.swing.JTextField dhcpNetmaskJTextField;
+        public javax.swing.JTextField dhcpRouteJTextField;
+        public javax.swing.JTextField dnsPrimaryJTextField;
+        public javax.swing.JTextField dnsSecondaryJTextField;
+        private javax.swing.ButtonGroup externalAdminButtonGroup;
+        private javax.swing.ButtonGroup internalAdminButtonGroup;
+        private javax.swing.JLabel jLabel1;
+        private javax.swing.JLabel jLabel10;
+        private javax.swing.JLabel jLabel2;
+        private javax.swing.JLabel jLabel3;
+        private javax.swing.JLabel jLabel4;
+        private javax.swing.JLabel jLabel5;
+        private javax.swing.JLabel jLabel7;
+        private javax.swing.JLabel jLabel9;
+        private javax.swing.JSeparator jSeparator2;
+        private javax.swing.JSeparator jSeparator3;
+        private javax.swing.JButton renewDhcpLeaseJButton;
+        private javax.swing.ButtonGroup restrictAdminButtonGroup;
+        private javax.swing.ButtonGroup sshButtonGroup;
+        private javax.swing.JPanel staticIPJPanel;
+        private javax.swing.ButtonGroup tcpWindowButtonGroup;
+        // End of variables declaration//GEN-END:variables
     
 
 }
