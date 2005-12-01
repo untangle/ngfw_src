@@ -304,6 +304,7 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
             }
         } finally {
             task = Task.NONE;
+            preStreamer = postStreamer = null;
         }
 
         return tr;
@@ -339,6 +340,7 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
             }
         } finally {
             task = Task.NONE;
+            preStreamer = postStreamer = null;
         }
 
         return tr;
@@ -452,11 +454,15 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
 
                 switch (requestMode) {
                 case QUEUEING:
-                    requestQueue.add(c);
+                    if (null != c && Chunk.EMPTY != c) {
+                        requestQueue.add(c);
+                    }
                     return TokenResult.NONE;
 
                 case RELEASED:
-                    requestQueue.add(c);
+                    if (null != c && Chunk.EMPTY != c) {
+                        requestQueue.add(c);
+                    }
                     Token[] toks = new Token[requestQueue.size()];
                     toks = requestQueue.toArray(toks);
                     requestQueue.clear();
@@ -622,11 +628,15 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
 
                 switch (responseMode) {
                 case QUEUEING:
-                    responseQueue.add(c);
+                    if (null != c && Chunk.EMPTY != c) {
+                        responseQueue.add(c);
+                    }
                     return TokenResult.NONE;
 
                 case RELEASED:
-                    responseQueue.add(c);
+                    if (null != c && Chunk.EMPTY != c) {
+                        responseQueue.add(c);
+                    }
                     Token[] toks = new Token[responseQueue.size()];
                     toks = responseQueue.toArray(toks);
                     responseQueue.clear();

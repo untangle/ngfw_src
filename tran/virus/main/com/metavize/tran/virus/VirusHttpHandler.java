@@ -389,7 +389,7 @@ class VirusHttpHandler extends HttpStateMachine
                 logger.debug("MAX_SCAN_LIMIT exceeded, not scanning");
                 scan = false;
                 FileChunkStreamer streamer = new FileChunkStreamer
-                    (file, inFile, null, EndMarker.MARKER, false);
+                    (file, inFile, null, null, false);
                 preStream(streamer);
 
                 return Chunk.EMPTY;
