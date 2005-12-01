@@ -214,7 +214,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <src path="${build.gensrc}/${tran.name}"/>
 
       <classpath path="${extra.classes}"/>
-      
+
       <classpath refid="gui.classpath"/>
       <classpath refid="hibernate.classpath"/>
       <classpath refid="jasperreports.classpath"/>
@@ -442,14 +442,13 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       </fileset>
     </jar>
   </target>
-  
+
   <target name="jar.firewall"/>
   <target name="jar.spyware"/>
 
   <target name="jar.http">
     <jar destfile="${build.jar}/http-export.jar">
       <fileset dir="${build.root}/http">
-        <include name="com/metavize/tran/http/BlockingHttpStateMachine*.class"/>
         <include name="com/metavize/tran/http/HttpMethod.class"/>
         <include name="com/metavize/tran/http/HttpMethodUserType.class"/>
         <include name="com/metavize/tran/http/HttpRequestEvent.class"/>
@@ -688,7 +687,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="compile.test"/>
   <target name="compile.ids"/>
   <target name="compile.nat"/>
-  <target name="compile.openvpn">    
+  <target name="compile.openvpn">
     <echo message="Precompiling JSP in ${tran.name}/${src.hier}/${suffix.mvvm.web}/${tran.name}"/>
 
     <java classname="org.apache.jasper.JspC"
@@ -705,7 +704,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     <echo message="Adding JSP servlet mappings to web.xml"/>
 
     <loadfile property="generated-web.xml" srcFile="${build.gensrc}/${tran.name}/web-fragment.xml"/>
-    <copy file="${tran.name}/${src.hier}/${suffix.mvvm.web}/${tran.name}/WEB-INF/web.xml" 
+    <copy file="${tran.name}/${src.hier}/${suffix.mvvm.web}/${tran.name}/WEB-INF/web.xml"
           toFile="${dist.mvvm.web}/${tran.name}/WEB-INF/web.xml" overwrite="true">
       <filterset>
         <filter token="JSP_PRE_COMPILED_SERVLETS" value="${generated-web.xml}"/>
