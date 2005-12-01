@@ -1,6 +1,6 @@
 TEMPLATE=DetailFourCol
-REPORT_NAME=PacketAttackShieldResourceViolations
-REPORT_TITLE=Packet Attack Shield - Resource Violations
+REPORT_NAME=AttackShieldResourceViolations
+REPORT_TITLE=Attack Shield - Resource Violations
 
 EXTRA_PARAM_1.name=reportTitlePrefix
 EXTRA_PARAM_1.type=java.lang.String

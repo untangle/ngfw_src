@@ -42,13 +42,13 @@ Package: airgap-transform
 Architecture: any
 Depends: mvvm
 XB-Price: 0
-XB-Display-Name: Packet Attack Shield
-XB-Website: http://www.metavize.com/packetshield.html
+XB-Display-Name: Attack Shield
+XB-Website: http://www.metavize.com/attackshield.html
 XB-Rack-Position: 1010
 XB-Is-Service: true
-Description: The Metavize Packet Attack Shield
- The Packet Attack Shield prevents packet based attacks on your
- network.
+Description: The Metavize Attack Shield
+ The Attack Shield protects your network from packet based
+ and denial of service attacks.
 
 Package: spyware-transform
 Architecture: any
@@ -200,7 +200,7 @@ XB-Rack-Position: 75
 Description: The Metavize Intrusion Prevention Appliance
  The Metavize Intrusion Prevention Appliance is an inline traffic
  scanner that detects exploits and intrusion attempts. It contains a
- library of over 1,500 built-in rules and can be easily expanded with
+ library of over 1,900 built-in rules and can be easily expanded with
  custom rules.
 
 Package: reporting-transform

@@ -79,7 +79,7 @@ public class AirgapSummarizer extends BaseSummarizer {
         addEntry("&nbsp;&nbsp;&nbsp;Defensive", "", Util.percentNumber(loadClosed, loadTotal));
 
         // XXXX
-        String tranName = "Packet Attack Shield";
+        String tranName = "Attack Shield";
 
         return summarizeEntries(tranName);
     }
