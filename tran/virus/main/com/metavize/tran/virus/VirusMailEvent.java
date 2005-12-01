@@ -55,7 +55,7 @@ public class VirusMailEvent extends VirusEvent
 
     public String getLocation()
     {
-        return messageInfo.getSubject();
+        return null == messageInfo ? "" : messageInfo.getSubject();
     }
 
     public boolean isInfected()
@@ -77,7 +77,7 @@ public class VirusMailEvent extends VirusEvent
 
     public PipelineEndpoints getPipelineEndpoints()
     {
-        return messageInfo.getPipelineEndpoints();
+        return null == messageInfo ? null : messageInfo.getPipelineEndpoints();
     }
 
     // accessors --------------------------------------------------------------

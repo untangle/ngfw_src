@@ -53,7 +53,7 @@ public class VirusLogEvent extends VirusEvent
 
     public String getLocation()
     {
-        return pipelineEndpoints.getSServerAddr().getHostAddress();
+        return null == pipelineEndpoints ? "" : pipelineEndpoints.getSServerAddr().getHostAddress();
     }
 
     public boolean isInfected()
