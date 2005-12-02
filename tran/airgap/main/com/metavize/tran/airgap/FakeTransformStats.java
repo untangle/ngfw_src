@@ -121,26 +121,12 @@ public class FakeTransformStats extends TransformStats {
             }
             rdr.close();
 
-            while (c2tBytes > totRxBytes)
-                // /proc/net/dev counters overflow at 32 bit unsigned.
-                totRxBytes += 0x100000000L;
-            while (c2tChunks > totRxChunks)
-                // /proc/net/dev counters overflow at 32 bit unsigned.
-                totRxChunks += 0x100000000L;
-            while (s2tBytes > totTxBytes)
-                // /proc/net/dev counters overflow at 32 bit unsigned.
-                totTxBytes += 0x100000000L;
-            while (s2tChunks > totTxChunks)
-                // /proc/net/dev counters overflow at 32 bit unsigned.
-                totTxChunks += 0x100000000L;
-            c2tBytes = totRxBytes;
-            t2sBytes = c2tBytes;
-            c2tChunks = totRxChunks;
-            t2sChunks = c2tChunks;
-            s2tBytes = totTxBytes;
-            t2cBytes = c2tBytes;
-            s2tChunks = totTxChunks;
-            t2cChunks = c2tChunks;
+            /* Check for overflow */
+            t2sBytes  = c2tBytes  = incrementCount( c2tBytes,  totRxBytes );
+            t2sChunks = c2tChunks = incrementCount( c2tChunks, totRxChunks );
+
+            t2cBytes  = s2tBytes  = incrementCount( s2tBytes,  totTxBytes );
+            t2cChunks = s2tChunks = incrementCount( s2tChunks, totTxChunks );            
         } catch (FileNotFoundException x) {
             logger.warn("Cannot open " + PATH_PROCNET_DEV + "(" + x.getMessage() +
                         "), no stats available");
@@ -148,5 +134,16 @@ public class FakeTransformStats extends TransformStats {
             logger.warn("Unable to read " + PATH_PROCNET_DEV + "(" + x.getMessage() +
                         "), last line " + line);
         }
+    }
+
+    private long incrementCount( long previousCount, long kernelCount )
+    {
+        /* If the kernel is counting in 64-bits, just return the kernel count */
+        if ( kernelCount >= ( 1L << 32 ) ) return kernelCount;
+
+        long previousKernelCount = previousCount & 0xFFFFFFFFL;
+        if ( previousKernelCount > kernelCount ) previousCount += ( 1L << 32 );
+
+        return (( previousCount & 0x7FFFFFFF00000000L ) + kernelCount );
     }
 }
