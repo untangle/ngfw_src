@@ -1,4 +1,3 @@
 usr/share/metavize/toolbox/ids-transform.mar
-usr/share/metavize/web/webstart/ids-transform.mar
+usr/share/metavize/web/webstart/ids-transform-client.mar
 usr/share/metavize/schema/ids-transform/*
-usr/share/metavize/idsrules/*

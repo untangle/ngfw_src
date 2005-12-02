@@ -3,4 +3,4 @@
 mcli -t 30 register ids-transform 2>/dev/null || true
 
 
-touch /usr/share/metavize/web/webstart/ids-transform.mar > /dev/null 2>&1 
+touch /usr/share/metavize/web/webstart/ids-transform-client.mar > /dev/null 2>&1 

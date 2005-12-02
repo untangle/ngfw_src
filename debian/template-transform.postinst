@@ -2,4 +2,4 @@
 
 mcli -t 30 register template-transform 2>/dev/null || true
 
-touch /usr/share/metavize/web/webstart/template-transform.mar > /dev/null 2>&1 
+touch /usr/share/metavize/web/webstart/template-transform-client.mar > /dev/null 2>&1 
