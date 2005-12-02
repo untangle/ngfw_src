@@ -165,6 +165,103 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <!-- compile tran -->
   <!--              -->
 
+  <target name="compile.tran-client">
+
+    <mkdir dir="${build.root}/${tran.name}-client"/>
+
+    <exec executable="${buildtool.base}/dependset.sh">
+      <arg value="${build.root}/${tran.name}-client"/>
+      <arg value="${build.depcache}/${tran.name}-client.patternset"/>
+    </exec>
+
+    <depend srcdir="${tran.name}/${src.main}"
+            destdir="${build.root}/${tran.name}-client"
+            cache="${build.depcache}/${tran.name}-client" closure="yes">
+      <patternset includesfile="${build.depcache}/${tran.name}-client.patternset"/>
+    </depend>
+
+    <!-- bases need casings -->
+    <if> <equals arg1="${tran.type}" arg2="base"/> <then>
+        <var name="extra.classes" value="../tran/output/jar/http-casing-client.mar:../tran/output/jar/ftp-casing-client.mar:../tran/output/jar/mail-casing-client.mar"/>
+    </then> </if>
+    <!-- transforms need casings and bases -->
+    <if> <equals arg1="${tran.type}" arg2="transform"/> <then>
+        <var name="extra.classes" value="../tran/output/jar/spam-base-client.mar:../tran/output/jar/virus-base-client.mar:../tran/output/jar/http-casing-client.mar:../tran/output/jar/ftp-casing-client.mar:../tran/output/jar/mail-casing-client.mar"/>
+    </then> </if>
+
+    <!-- First do the Fake classes that we use until we've cleaned up our code enough XXX -->
+    <if><available file="${tran.name}/fake" type="dir"/> <then>
+      <javac destdir="${build.root}/${tran.name}-client"
+             debug="on"
+             optimize="false"
+             deprecation="on"
+             source="1.5"
+             includeAntRuntime="false">
+
+        <src path="${tran.name}/fake"/>
+
+        <classpath path="${extra.classes}"/>
+        <classpath refid="gui.classpath"/>
+        <classpath refid="hibernate.classpath"/>
+        <classpath refid="jfreechart.classpath"/>
+        <classpath refid="jnlp.classpath"/>
+        <classpath refid="log4j.classpath"/>
+        <classpath refid="mvvm-client.classpath"/>
+        <classpath refid="netbeans.classpath"/>
+      </javac>
+      </then></if>
+
+    <!-- Now do the settings classes -->
+    <javac destdir="${build.root}/${tran.name}-client"
+           debug="on"
+           optimize="false"
+           deprecation="on"
+           source="1.5"
+           includeAntRuntime="false">
+
+      <src path="${tran.name}/${src.main}"/>
+
+      <containsregexp expression="implements.*Serializable"/>
+
+      <classpath location="${build.root}/${tran.name}-client"/>
+      <classpath path="${extra.classes}"/>
+      <classpath refid="gui.classpath"/>
+      <classpath refid="hibernate.classpath"/>
+      <classpath refid="jfreechart.classpath"/>
+      <classpath refid="jnlp.classpath"/>
+      <classpath refid="log4j.classpath"/>
+      <classpath refid="mvvm-client.classpath"/>
+      <classpath refid="netbeans.classpath"/>
+    </javac>
+
+    <!-- Finally do the gui, events classes, and misc classes -->
+    <javac destdir="${build.root}/${tran.name}-client"
+           debug="on"
+           optimize="false"
+           deprecation="on"
+           source="1.5"
+           includeAntRuntime="false">
+
+      <src path="${tran.name}/${src.main}"/>
+
+      <include name="com/metavize/tran/${tran.name}/gui/**"/>
+      <include name="com/metavize/tran/${tran.name}/*Event.java"/>
+      <include name="com/metavize/tran/${tran.name}/*Event.java"/>
+      <!-- Don't need this since the GUI references them: include name="com/metavize/tran/${tran.name}/*Transform.java" -->
+
+      <classpath location="${build.root}/${tran.name}-client"/>
+      <classpath path="${extra.classes}"/>
+      <classpath refid="gui.classpath"/>
+      <classpath refid="hibernate.classpath"/>
+      <classpath refid="jfreechart.classpath"/>
+      <classpath refid="jnlp.classpath"/>
+      <classpath refid="log4j.classpath"/>
+      <classpath refid="mvvm-client.classpath"/>
+      <classpath refid="netbeans.classpath"/>
+    </javac>
+    
+  </target>
+
   <target name="compile.tran">
 
     <mkdir dir="${build.root}/${tran.name}"/>
@@ -191,11 +288,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <var name="extra.classes" value="../tran/output/jar/spam-base.mar:../tran/output/jar/virus-base.mar:../tran/output/jar/http-casing.mar:../tran/output/jar/ftp-casing.mar:../tran/output/jar/mail-casing.mar"/>
     </then> </if>
 
-    <!-- FIXME email special case -->
-    <if> <equals arg1="${tran.name}" arg2="email"/> <then>
-        <var name="extra.classes" value="../tran/output/jar/kav-transform.mar:../tran/output/jar/hauri-transform.mar:../tran/output/jar/clam-transform.mar"/>
-    </then> </if>
-
     <!-- FIXME clamphish special case -->
     <if><equals arg1="${tran.name}" arg2="clamphish"/>
       <then>
@@ -215,20 +307,18 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
       <classpath path="${extra.classes}"/>
 
-      <classpath refid="gui.classpath"/>
       <classpath refid="hibernate.classpath"/>
+      <classpath refid="jfreechart.classpath"/>
       <classpath refid="jasperreports.classpath"/>
       <classpath refid="javamail.classpath"/>
-      <classpath refid="jfreechart.classpath"/>
       <classpath refid="jnlp.classpath"/>
       <classpath refid="log4j.classpath"/>
       <classpath refid="mvvm-client.classpath"/>
       <classpath refid="mvvm.classpath"/>
-      <classpath refid="netbeans.classpath"/>
       <classpath refid="velocity.classpath"/>
-      <!-- FIXME I DON'T KNOW -->
       <classpath refid="tomcat.classpath"/>
-      <include name="com/metavize/tran/${tran.name}/**"/>
+      <classpath refid="yjp.classpath"/>
+      <exclude name="com/metavize/tran/${tran.name}/gui/**"/>
     </javac>
 
   </target>
@@ -237,7 +327,20 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <!-- mar tran     -->
   <!--              -->
 
-  <target name="mar.tran" depends="xdoclet.tran, compile.tran">
+  <target name="mar.tran-client" depends="xdoclet.tran, compile.tran-client">
+
+    <mkdir dir="${build.root}/${tran.name}-client/META-INF"/>
+
+    <jar destfile="${build.jar}/${tran.name}-${tran.type}-client.mar" index="yes">
+      <fileset dir="${build.root}/${tran.name}-client"/>
+      <fileset dir="${tran.name}/${src.main}/">
+        <include name="**/*png"/>
+      </fileset>
+    </jar>
+
+  </target>
+
+  <target name="mar.tran" depends="xdoclet.tran, compile.tran, mar.tran-client">
 
     <mkdir dir="${build.root}/${tran.name}/META-INF"/>
 
@@ -246,9 +349,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <fileset dir="${build.gensrc}/${tran.name}">
         <exclude name="**/*jrxml"/>
         <exclude name="**/*.java"/>
-      </fileset>
-      <fileset dir="${tran.name}/${src.main}/">
-        <include name="**/*png"/>
       </fileset>
       <fileset dir="${tran.name}/${src.resources}/${tran.name}">
         <include name="**"/>
@@ -263,11 +363,11 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <!-- install tran -->
   <!--              -->
 
-  <target name="install.tran" depends="mar.tran">
+  <target name="install.tran" depends="mar.tran, mar.tran-client">
 
     <copy file="${build.jar}/${tran.name}-${tran.type}.mar"
       todir="${dist.mvvm.toolbox}"/>
-    <copy file="${build.jar}/${tran.name}-${tran.type}.mar"
+    <copy file="${build.jar}/${tran.name}-${tran.type}-client.mar"
       todir="${dist.mvvm.webstart}"/>
 
     <if>
@@ -301,18 +401,18 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     <antcall target="install.${tran.name}" inheritAll="true"/>
 
     <if> <isset property="use-pack200"/> <then>
-      <pack200 src="${dist.mvvm.webstart}/${tran.name}-${tran.type}.mar"
-               destfile="${dist.mvvm.webstart}/${tran.name}-${tran.type}.mar.pack"/>
-      <unpack200 src="${dist.mvvm.webstart}/${tran.name}-${tran.type}.mar.pack"
-                 dest="${dist.mvvm.webstart}/${tran.name}-${tran.type}.mar"/>
+      <pack200 src="${dist.mvvm.webstart}/${tran.name}-${tran.type}-client.mar"
+               destfile="${dist.mvvm.webstart}/${tran.name}-${tran.type}-client.mar.pack"/>
+      <unpack200 src="${dist.mvvm.webstart}/${tran.name}-${tran.type}-client.mar.pack"
+                 dest="${dist.mvvm.webstart}/${tran.name}-${tran.type}-client.mar"/>
       </then></if>
-    <delete file="${dist.mvvm.webstart}/${tran.name}-${tran.type}.mar.pack"/>
-    <signjar jar="${dist.mvvm.webstart}/${tran.name}-${tran.type}.mar"
+    <delete file="${dist.mvvm.webstart}/${tran.name}-${tran.type}-client.mar.pack"/>
+    <signjar jar="${dist.mvvm.webstart}/${tran.name}-${tran.type}-client.mar"
           keystore="../gui/keystore" alias="key"
           storepass="0x7a0f4b2f2b0560fa" />
     <if> <isset property="use-pack200"/> <then>
-      <pack200 src="${dist.mvvm.webstart}/${tran.name}-${tran.type}.mar"
-               destfile="${dist.mvvm.webstart}/${tran.name}-${tran.type}.mar.pack.gz"
+      <pack200 src="${dist.mvvm.webstart}/${tran.name}-${tran.type}-client.mar"
+               destfile="${dist.mvvm.webstart}/${tran.name}-${tran.type}-client.mar.pack.gz"
                gzipoutput="true"/>
       </then></if>
 
@@ -364,52 +464,35 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 <!--     <copy todir="${dist.mvvm.schema}/hauri-transform"> -->
 <!--       <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-base"/> -->
 <!--     </copy> -->
-    <jar update="true" destfile="${dist.mvvm.webstart}/hauri-transform.mar">
-      <fileset dir="${build.root}/mail"/>
-    </jar>
   </target>
 
   <target name="install.kav">
 <!--     <copy todir="${dist.mvvm.schema}/kav-transform"> -->
 <!--       <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-base"/> -->
 <!--     </copy> -->
-    <jar update="true" destfile="${dist.mvvm.webstart}/kav-transform.mar">
-      <fileset dir="${build.root}/mail"/>
-    </jar>
   </target>
 
   <target name="install.clam">
 <!--     <copy todir="${dist.mvvm.schema}/clam-transform"> -->
 <!--       <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-base"/> -->
 <!--     </copy> -->
-    <jar update="true" destfile="${dist.mvvm.webstart}/clam-transform.mar">
-      <fileset dir="${build.root}/mail"/>
-    </jar>
   </target>
-
   <target name="install.spamassassin">
 <!--     <copy todir="${dist.mvvm.schema}/spamassassin-transform"> -->
 <!--       <fileset dir="spam/hier/${suffix.mvvm.schema}/spam-base"/> -->
 <!--     </copy> -->
-    <jar update="true" destfile="${dist.mvvm.webstart}/spamassassin-transform.mar">
-      <fileset dir="${build.root}/mail"/>
-    </jar>
   </target>
 
   <target name="install.clamphish">
 <!--     <copy todir="${dist.mvvm.schema}/clamphish-transform"> -->
 <!--       <fileset dir="spam/hier/${suffix.mvvm.schema}/spam-base"/> -->
 <!--     </copy> -->
-    <jar update="true" destfile="${dist.mvvm.webstart}/clamphish-transform.mar">
-      <fileset dir="${build.root}/mail"/>
-    </jar>
   </target>
 
 
   <target name="install.httpblocker"/>
   <target name="install.airgap"/>
   <target name="install.reporting"/>
-  <target name="install.email"/>
   <target name="install.protofilter"/>
   <target name="install.sigma"/>
 
@@ -614,24 +697,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="jar.sigma"/>
   <target name="jar.airgap"/>
   <target name="jar.reporting"/>
-  <target name="jar.email"> <!-- include KAV, Clam, and Hauri Scanners -->
-    <jar destfile="${build.jar}/${tran.name}-${tran.type}.mar" index="yes"
-         update="true">
-      <fileset dir="${build.root}/hauri"/>
-      <fileset dir="hauri/${src.main}">
-        <include name="**/*png"/>
-      </fileset>
-      <fileset dir="${build.root}/kav"/>
-      <fileset dir="kav/${src.main}">
-        <include name="**/*png"/>
-      </fileset>
-      <fileset dir="${build.root}/clam"/>
-      <fileset dir="clam/${src.main}">
-        <include name="**/*png"/>
-      </fileset>
-      <fileset dir="${build.root}/virus"/>
-    </jar>
-  </target>
   <target name="jar.hauri"> <!-- include Virus Abstract transform -->
     <jar destfile="${build.jar}/${tran.name}-${tran.type}.mar" index="yes"
          update="true">
@@ -639,6 +704,10 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <fileset dir="${build.gensrc}/virus">
         <exclude name="**/*jrxml"/>
       </fileset>
+    </jar>
+    <jar destfile="${build.jar}/${tran.name}-${tran.type}-client.mar" index="yes"
+         update="true">
+      <fileset dir="${build.root}/virus-client"/>
     </jar>
   </target>
   <target name="jar.kav"> <!-- include Virus Abstract transform -->
@@ -649,6 +718,10 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <exclude name="**/*jrxml"/>
       </fileset>
     </jar>
+    <jar destfile="${build.jar}/${tran.name}-${tran.type}-client.mar" index="yes"
+         update="true">
+      <fileset dir="${build.root}/virus-client"/>
+    </jar>
   </target>
   <target name="jar.clam"> <!-- include Virus Abstract transform -->
     <jar destfile="${build.jar}/${tran.name}-${tran.type}.mar" index="yes"
@@ -658,6 +731,10 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <exclude name="**/*jrxml"/>
       </fileset>
     </jar>
+    <jar destfile="${build.jar}/${tran.name}-${tran.type}-client.mar" index="yes"
+         update="true">
+      <fileset dir="${build.root}/virus-client"/>
+    </jar>
   </target>
   <target name="jar.spamassassin"> <!-- include Spam Abstract transform -->
     <jar destfile="${build.jar}/${tran.name}-${tran.type}.mar" index="yes"
@@ -666,6 +743,10 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <fileset dir="${build.gensrc}/spam">
         <exclude name="**/*jrxml"/>
       </fileset>
+    </jar>
+    <jar destfile="${build.jar}/${tran.name}-${tran.type}-client.mar" index="yes"
+         update="true">
+      <fileset dir="${build.root}/spam-client"/>
     </jar>
   </target>
   <target name="jar.clamphish"> <!-- include Spam Abstract transform, include Clam Scanners -->
@@ -681,6 +762,10 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <fileset dir="${build.root}/clam">
         <include name="com/metavize/tran/clam/ClamScannerLauncher.class"/>
       </fileset>
+    </jar>
+    <jar destfile="${build.jar}/${tran.name}-${tran.type}-client.mar" index="yes"
+         update="true">
+      <fileset dir="${build.root}/spam-client"/>
     </jar>
   </target>
 
@@ -727,7 +812,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="compile.httpblocker"/>
   <target name="compile.airgap"/>
   <target name="compile.reporting"/>
-  <target name="compile.email"/>
   <target name="compile.protofilter"/>
   <target name="compile.sigma"/>
 
