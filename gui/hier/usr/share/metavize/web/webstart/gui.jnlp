@@ -69,7 +69,7 @@ MackageDesc[] mds = mvvm.toolboxManager().installed();
         int t = mds[i].getType();
         if (MackageDesc.TRANSFORM_TYPE == t || MackageDesc.CASING_TYPE == t) {
     %>
-            <jar href="./<%=mds[i].getName()%>.mar"/>
+            <jar href="./<%=mds[i].getName()%>-client.mar"/>
     <%
         }
     }

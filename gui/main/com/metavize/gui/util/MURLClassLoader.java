@@ -23,7 +23,7 @@ public class MURLClassLoader extends URLClassLoader {
     
     public void addMar(String marName){
         try{
-            super.addURL( new URL(Util.getServerCodeBase().toString() + marName + ".mar") );
+            super.addURL( new URL(Util.getServerCodeBase().toString() + marName + "-client.mar") );
 	}
         catch(Exception e){
             //System.err.println("  |--> Couldn't add mar: " + marName);

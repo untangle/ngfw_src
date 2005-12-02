@@ -137,18 +137,20 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
     <!-- filtered files -->
     <copy todir="${build.dist}" filtering="true">
       <fileset dir="${src.hier}">
-        <exclude name="**/*.png"/>
         <exclude name="**/*.gif"/>
+        <exclude name="**/*.ico"/>
         <exclude name="**/*.jpg"/>
+        <exclude name="**/*.png"/>
       </fileset>
     </copy>
 
     <!-- binary files -->
     <copy todir="${build.dist}" filtering="false">
       <fileset dir="${src.hier}">
-        <include name="**/*.png"/>
         <include name="**/*.gif"/>
+        <exclude name="**/*.ico"/>
         <include name="**/*.jpg"/>
+        <include name="**/*.png"/>
       </fileset>
     </copy>
 

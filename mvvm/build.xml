@@ -200,7 +200,6 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <include name="com/metavize/mvvm/engine/ProxyInputStream.java"/>
       <include name="com/metavize/mvvm/engine/SocketInvokerStub.java"/>
       <include name="com/metavize/mvvm/engine/Version.java"/>
-      <include name="com/metavize/mvvm/logging/EventFilter.java"/>
       <include name="com/metavize/mvvm/logging/EventManager.java"/>
       <include name="com/metavize/mvvm/logging/EventRepository.java"/>
       <include name="com/metavize/mvvm/logging/LogEvent.java"/>
@@ -208,7 +207,10 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <include name="com/metavize/mvvm/logging/LoggingSettings.java"/>
       <include name="com/metavize/mvvm/logging/PipelineEvent.java"/>
       <include name="com/metavize/mvvm/logging/RepositoryDesc.java"/>
+      <include name="com/metavize/mvvm/logging/StatisticEvent.java"/>
       <include name="com/metavize/mvvm/logging/SyslogBuilder.java"/>
+      <include name="com/metavize/mvvm/logging/SyslogPriority.java"/>
+      <include name="com/metavize/mvvm/logging/SyslogFacility.java"/>
       <include name="com/metavize/mvvm/policy/*.java"/>
       <include name="com/metavize/mvvm/security/*.java"/>
       <include name="com/metavize/mvvm/shield/ShieldNodeSettings.java"/>
@@ -241,17 +243,17 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
         <include name="com/metavize/mvvm/engine/ProxyInputStream*.class"/>
         <include name="com/metavize/mvvm/engine/SocketInvokerStub*.class"/>
         <include name="com/metavize/mvvm/engine/Version*.class"/>
-        <include name="com/metavize/mvvm/logging/EventFilter.class"/>
-        <include name="com/metavize/mvvm/logging/EventManager.class"/>
-        <include name="com/metavize/mvvm/logging/EventRepository.class"/>
+        <include name="com/metavize/mvvm/logging/EventManager*.class"/>
+        <include name="com/metavize/mvvm/logging/EventRepository*.class"/>
         <include name="com/metavize/mvvm/logging/LogEvent*.class"/>
         <include name="com/metavize/mvvm/logging/LoggingManager*.class"/>
-        <include name="com/metavize/mvvm/logging/LoggingSettings.class"/>
-        <include name="com/metavize/mvvm/logging/PipelineEvent.class"/>
-        <include name="com/metavize/mvvm/logging/RepositoryDesc.class"/>
-        <include name="com/metavize/mvvm/logging/SyslogBuilder.class"/>
-        <include name="com/metavize/mvvm/logging/SyslogFacility.class"/>
-        <include name="com/metavize/mvvm/logging/SyslogPriority.class"/>
+        <include name="com/metavize/mvvm/logging/LoggingSettings*.class"/>
+        <include name="com/metavize/mvvm/logging/PipelineEvent*.class"/>
+        <include name="com/metavize/mvvm/logging/RepositoryDesc*.class"/>
+        <include name="com/metavize/mvvm/logging/StatisticEvent*.class"/>
+        <include name="com/metavize/mvvm/logging/SyslogBuilder*.class"/>
+        <include name="com/metavize/mvvm/logging/SyslogPriority*.class"/>
+        <include name="com/metavize/mvvm/logging/SyslogFacility*.class"/>
         <include name="com/metavize/mvvm/policy/*.class"/>
         <include name="com/metavize/mvvm/security/*.class"/>
         <include name="com/metavize/mvvm/shield/ShieldNodeSettings.class"/>
@@ -544,8 +546,10 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <fileset dir="${src.hier}">
         <!-- don't filter binaries -->
         <exclude name="usr/share/metavize/conf/etc/mvverifykey"/>
-        <exclude name="**/*gif"/>
-        <exclude name="**/*jpg"/>
+        <exclude name="**/*.gif"/>
+        <exclude name="**/*.ico"/>
+        <exclude name="**/*.jpg"/>
+        <exclude name="**/*.png"/>
       </fileset>
     </copy>
 
@@ -553,8 +557,10 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <fileset dir="${src.hier}">
         <!-- don't filter binaries -->
         <include name="usr/share/metavize/conf/etc/mvverifykey"/>
-        <include name="**/*gif"/>
-        <include name="**/*jpg"/>
+        <include name="**/*.gif"/>
+        <include name="**/*.ico"/>
+        <include name="**/*.jpg"/>
+        <include name="**/*.png"/>
       </fileset>
     </copy>
 

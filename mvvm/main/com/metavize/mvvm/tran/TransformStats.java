@@ -129,6 +129,10 @@ public class TransformStats implements Serializable
         return c2tBytes;
     }
 
+    public void c2tBytes(long c2tBytes) {
+        this.c2tBytes = c2tBytes;
+    }
+
     /**
      * <code>t2sBytes</code> gives the count of bytes transferred from the transform to the server.
      * This may not be the same as <code>c2tBytes</code> if the transform is changing the data.
@@ -137,6 +141,10 @@ public class TransformStats implements Serializable
      */
     public long t2sBytes() {
         return t2sBytes;
+    }
+
+    public void t2sBytes(long t2sBytes) {
+        this.t2sBytes = t2sBytes;
     }
 
     /**
@@ -149,6 +157,10 @@ public class TransformStats implements Serializable
         return s2tBytes;
     }
 
+    public void s2tBytes(long s2tBytes) {
+        this.s2tBytes = s2tBytes;
+    }
+
     /**
      * <code>t2cBytes</code> gives the count of bytes transferred from the transform to the client.
      * This may not be the same as <code>s2tBytes</code> if the transform is changing the data.
@@ -159,22 +171,43 @@ public class TransformStats implements Serializable
         return t2cBytes;
     }
 
+    public void t2cBytes(long t2cBytes) {
+        this.t2cBytes = t2cBytes;
+    }
+
     // Chunks for tcp, packets for udp (icmp)
     public long c2tChunks() {
         return c2tChunks;
+    }
+
+    public void c2tChunks(long c2tChunks) {
+        this.c2tChunks = c2tChunks;
     }
 
     public long t2sChunks() {
         return t2sChunks;
     }
 
+    public void t2sChunks(long t2sChunks) {
+        this.t2sChunks = t2sChunks;
+    }
+
     public long s2tChunks() {
         return s2tChunks;
+    }
+
+    public void s2tChunks(long s2tChunks) {
+        this.s2tChunks = s2tChunks;
     }
 
     public long t2cChunks() {
         return t2cChunks;
     }
+
+    public void t2cChunks(long t2cChunks) {
+        this.t2cChunks = t2cChunks;
+    }
+
 
     /**
      * <code>startDate</code> gives the time of the transform's start (the last time
