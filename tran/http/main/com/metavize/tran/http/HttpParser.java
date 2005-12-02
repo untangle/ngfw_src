@@ -371,9 +371,11 @@ public class HttpParser extends AbstractParser
                         String mimeType = null == contentType ? null
                             : MimeType.getType(contentType);
 
+                        RequestLine rl = null == requestLineToken ? null
+                            : requestLineToken.getRequestLine();
+
                         HttpResponseEvent evt = new HttpResponseEvent
-                            (requestLineToken.getRequestLine(), mimeType,
-                             contentLength);
+                            (rl, mimeType, contentLength);
 
                         casing.getTransform().log(evt);
                     } else {
