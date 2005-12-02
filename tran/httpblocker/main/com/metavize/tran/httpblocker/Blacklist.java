@@ -128,7 +128,7 @@ class Blacklist
         }
 
         host = host.toLowerCase();
-        while ('.' == host.charAt(host.length() - 1)) {
+        while (0 < host.length() && '.' == host.charAt(host.length() - 1)) {
             host = host.substring(0, host.length() - 1);
         }
 
