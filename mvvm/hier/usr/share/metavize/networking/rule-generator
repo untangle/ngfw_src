@@ -360,8 +360,8 @@ function antisubscribeLocal() {
                 t_mask=${MARK_INSIDE_INTF}
             elif [ "${t_intf}x" == "${FLAG_OUTSIDE_INTF}x" ]; then
                 ## This is anything but the inside
-                t_mark=${MARK_INSIDE_INTF}
-                t_mask=0
+                t_mark=0
+                t_mask=${MARK_INSIDE_INTF}
             else
                 echo "Unable to determine which interface to antisubscribe  for ${t_protocol} ${t_portList}"
                 return
@@ -394,8 +394,8 @@ function antisubscribeLocalTraffic() {
             t_mark=${MARK_INSIDE_INTF}
             t_mask=${MARK_INSIDE_INTF}
         elif [ "${t_intf}x" == "${FLAG_OUTSIDE_INTF}x" ]; then
-            t_mark=${MARK_INSIDE_INTF}
-            t_mask=0
+            t_mark=0
+            t_mask=${MARK_INSIDE_INTF}
         else
             echo "Unable to determine which interface ${t_intf} to antisubscribe to"
             return
