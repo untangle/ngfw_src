@@ -28,8 +28,11 @@ public class NetworkJDialog extends MConfigJDialog {
 
     private static final String NAME_NETWORK_SETTINGS = "Network Settings";
     private static final String NAME_EMAIL_SETTINGS = "Email Settings";
-    /* XXX Better name */
     private static final String NAME_ALIAS_PANEL      = "Network Aliases";
+    private static final String NAME_SECRET_PANEL      = "Advanced Support";
+
+    private static boolean showHiddenPanel;
+    public static void setShowHiddenPanel(boolean showHiddenPanelX){ showHiddenPanel = showHiddenPanelX; }
 
     public NetworkJDialog( ) {
     }
@@ -64,6 +67,14 @@ public class NetworkJDialog extends MConfigJDialog {
         super.contentJTabbedPane.addTab(NAME_ALIAS_PANEL, null, aliasJPanel );
 	super.savableMap.put(NAME_ALIAS_PANEL, aliasJPanel );
 	super.refreshableMap.put(NAME_ALIAS_PANEL, aliasJPanel );
+
+	// SECRED HIDDEN PANEL //////
+	if( showHiddenPanel ){
+	    NetworkSecretJPanel secretJPanel = new NetworkSecretJPanel();
+	    super.contentJTabbedPane.addTab(NAME_SECRET_PANEL, null, secretJPanel);
+	    super.savableMap.put(NAME_SECRET_PANEL, secretJPanel);
+	    super.refreshableMap.put(NAME_SECRET_PANEL, secretJPanel);
+	}
     }
     
     protected void sendSettings(Object settings) throws Exception {

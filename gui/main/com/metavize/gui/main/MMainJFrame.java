@@ -678,7 +678,10 @@ public class MMainJFrame extends javax.swing.JFrame {
     private void networkJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_networkJButtonActionPerformed
 	try{
 	    networkJButton.setEnabled(false);
-	    NetworkJDialog networkJDialog = new NetworkJDialog();
+	    int modifiers = evt.getModifiers();
+	    boolean showHiddenPanel = ((modifiers & evt.SHIFT_MASK) > 0) && ((modifiers & evt.CTRL_MASK) > 0);
+	    NetworkJDialog.setShowHiddenPanel( showHiddenPanel );
+	    NetworkJDialog networkJDialog = new NetworkJDialog( );
 	    networkJDialog.setVisible(true);
 	}
 	catch(Exception e){
