@@ -449,7 +449,10 @@ public class HttpParser extends AbstractParser
     public ParseResult parseEnd(ByteBuffer b) throws ParseException
     {
         if (b.hasRemaining()) {
-            logger.warn("data trapped in read buffer: " + b.remaining());
+            // I think we want to release in most circumstances
+            throw new ParseException("in state: " + state
+                                     + " data trapped in read buffer: "
+                                     + b.remaining());
         }
 
         // we should implement this to make sure end markers get sent always
