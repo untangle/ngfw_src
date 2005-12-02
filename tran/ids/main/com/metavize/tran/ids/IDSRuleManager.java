@@ -111,6 +111,8 @@ public class IDSRuleManager {
 		String ruleParts[] = IDSStringParser.parseRuleSplit(noVarText);
 		
         IDSRuleHeader header = IDSStringParser.parseHeader(ruleParts[0], rule.getAction());
+        if (header == null)
+            throw new ParseException("Unable to parse header of rule " + ruleParts[0]);
         IDSRuleSignature signature = IDSStringParser.parseSignature(ruleParts[1], rule.getAction(), rule, false);
 	
         signature.setToString(ruleParts[1]);
@@ -122,8 +124,6 @@ public class IDSRuleManager {
 					
                     rule.setHeader(known);
                     rule.setSignature(signature);
-                    if(rule.isLive())
-                        logger.info("BLOCK!");
                     knownRules.put(rule.getKeyValue(),rule);
                     return true;
                 }
@@ -131,8 +131,6 @@ public class IDSRuleManager {
             header.addSignature(signature);
             knownHeaders.add(header);
 
-            if(rule.isLive())
-                logger.info("BLOCK!");
             rule.setHeader(header);
             rule.setSignature(signature);
             knownRules.put(rule.getKeyValue(),rule);
@@ -164,10 +162,14 @@ public class IDSRuleManager {
         try {
             String ruleParts[]          = IDSStringParser.parseRuleSplit(text);
             IDSRuleHeader header        = IDSStringParser.parseHeader(ruleParts[0], rule.getAction());
+            if (header == null) {
+                logger.debug("Ignoring rule with bad header: " + text);
+                return null;
+            }
             IDSRuleSignature signature  = IDSStringParser.parseSignature(ruleParts[1], rule.getAction(), rule, true);
 			
             if(signature.remove()) {
-                logger.debug("Ignoring rule: " + text);
+                logger.debug("Ignoring rule with bad sig: " + text);
                 return null;
             }
             String msg = signature.getMessage();

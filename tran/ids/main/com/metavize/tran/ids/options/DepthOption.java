@@ -16,7 +16,7 @@ public class DepthOption extends IDSOption {
         super(signature, params);
         ContentOption option = (ContentOption) signature.getOption("ContentOption",this);
         if(option == null) {
-            logger.warn("Unable to find content option to set depth for sig: " + signature);
+            logger.warn("Unable to find content option to set depth for sig: " + signature.rule().getText());
             return;	
         }
 		

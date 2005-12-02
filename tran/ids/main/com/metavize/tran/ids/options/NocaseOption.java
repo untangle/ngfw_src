@@ -9,13 +9,19 @@ public class NocaseOption extends IDSOption {
 				
     public NocaseOption(IDSRuleSignature signature, String params) {
         super(signature, params);
-        IDSOption option = signature.getOption("ContentOption",this);
+        String[] parents = new String [] { "ContentOption", "UricontentOption" };
+        IDSOption option = signature.getOption(parents, this);
         if(option == null) {
-            logger.warn("Unable to find content option to set nocase for sig: " + signature);
+            logger.warn("Unable to find content option to set nocase for sig: " + signature.rule().getText());
             return;	
         }
 
-        ContentOption content = (ContentOption) option;
-        content.setNoCase();
+        if (option instanceof ContentOption) {
+            ContentOption content = (ContentOption) option;
+            content.setNoCase();
+        } else if (option instanceof UricontentOption) {
+            UricontentOption uricontent = (UricontentOption) option;
+            uricontent.setNoCase();
+        }
     }
 }

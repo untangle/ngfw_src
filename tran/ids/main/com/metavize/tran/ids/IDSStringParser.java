@@ -48,10 +48,14 @@ public class IDSStringParser {
                 String opt = options[i].substring(0,delim).trim();
                 returnSignature.addOption(opt, options[i].substring(delim+1).trim(), initializeSettingsTime);
             }
+            if (returnSignature.remove())
+                // Early exit.  Don't bother with rest of options.
+                break;
         } 
         return returnSignature;
     }	
 
+    // Returns null if the rule is to be removed (like an 'ip' rule for instance)
     public static IDSRuleHeader parseHeader(String header, int action) throws ParseException {
 		
         List<IPMatcher> ipMatcher, portMatcher;
@@ -71,6 +75,9 @@ public class IDSStringParser {
 		
         /*Parse Protocol*/
         protocol = parseProtocol(tokens[0]);
+        if (protocol == null)
+            return null;
+
         /*Parse server and client IP data - this will throw exceptions*/
         clientIPFlag	= parseNegation(tokens[1]);
         tokens[1]		= stripNegation(tokens[1]);
@@ -118,6 +125,10 @@ public class IDSStringParser {
             return Protocol.TCP;
         else if(protoString.equalsIgnoreCase("udp"))
             return Protocol.UDP;
+        else if(protoString.equalsIgnoreCase("ip"))
+            return null;
+        else if(protoString.equalsIgnoreCase("icmp"))
+            return null;
         else
             throw new ParseException("Invalid Protocol string: " + protoString);
     }

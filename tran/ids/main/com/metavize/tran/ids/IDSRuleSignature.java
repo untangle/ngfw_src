@@ -70,24 +70,35 @@ public class IDSRuleSignature {
     }
 
     public IDSOption getOption(String name, IDSOption callingOption) {
+        String[] parents = new String[] { name };
+        return getOption(parents, callingOption);
+    }
+
+    public IDSOption getOption(String[] names, IDSOption callingOption) {
+        Class[] optionDefinitions = new Class[names.length];
+        for (int i = 0; i < names.length; i++) {
+            try {
+                optionDefinitions[i] = Class.forName("com.metavize.tran.ids.options."+names[i]);
+            } catch (ClassNotFoundException e) {
+                log.error("Could not load option: " + e.getMessage());
+                optionDefinitions[i] = null;
+            }
+        }
+
         /**Have to iterate backwards over the options so that options that
          * act as modifiers will modify the correct option
          * eg, in situations where there are multiple content options.
          */
         int index = options.indexOf(callingOption);
         index = (index < 0) ? options.size():index;
-
         ListIterator<IDSOption> it = options.listIterator(index);
-        Class optionDefinition = null;
-        try {
-            optionDefinition = Class.forName("com.metavize.tran.ids.options."+name);
-        } catch (ClassNotFoundException e) {
-            log.error("Could not load option: " + e.getMessage());
-        }
+
         while(it.hasPrevious()) {
             IDSOption option = it.previous();
-            if(optionDefinition.isInstance(option))
-                return option;
+            for (int i = 0; i < optionDefinitions.length; i++) {
+                if (optionDefinitions[i] != null && optionDefinitions[i].isInstance(option))
+                    return option;
+            }
         }
         return null;
     }

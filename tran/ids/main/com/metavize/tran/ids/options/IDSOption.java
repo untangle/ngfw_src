@@ -72,7 +72,8 @@ public abstract class IDSOption {
             }
             option.negationFlag = flag;
         } catch (ClassNotFoundException e) {
-            log.warn("Could not load option(ClassNotFound): " + optionName);
+            log.info("Could not load option(ClassNotFound): " + optionName + ", ignoring rule: " + signature.rule().getText());
+            signature.remove(true);
         } catch (NoSuchMethodException e) {
             log.error("Could not load option(NoSuchMethod): ", e);
         }
