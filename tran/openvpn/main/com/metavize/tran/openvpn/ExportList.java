@@ -42,13 +42,27 @@ public class ExportList implements Serializable, Validatable
     {
         this.exportList = exportList;
     }
+
+    List<AddressRange> buildAddressRange()
+    {
+        List<AddressRange> checkList = new LinkedList<AddressRange>();
+
+        for ( ServerSiteNetwork export : this.exportList ) {
+            checkList.add( AddressRange.makeNetwork( export.getNetwork().getAddr(), 
+                                                     export.getNetmask().getAddr()));
+        }
+
+        return checkList;
+    }
+
    
     /** 
      * Validate the object, throw an exception if it is not valid */
     public void validate() throws ValidateException
     {
         for ( ServerSiteNetwork export : this.exportList ) export.validate();
-
-        /* XXX Check for overlap, and check for conflicts with the network settings */
+        
+        /* Determine if all of the addresses are unique */
+        new AddressValidator().validate( buildAddressRange());
     }
 }

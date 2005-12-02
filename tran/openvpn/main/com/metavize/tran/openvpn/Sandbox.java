@@ -105,13 +105,20 @@ class Sandbox
 
     void downloadConfig( IPaddr address, String key ) throws Exception
     {
-        /* XXXX Check the key for non-alphas */
-
-        execDownloadScript( true, address.toString(), key );
+        /* The key must be a valid hexadecimal number, this is 
+         * an easy check to detect spaces, and anyother weird characters
+         */
+        try {
+            Long.parseLong( key, 16 );
+        } catch ( NumberFormatException e ) { 
+            throw new ValidateException( "A key must only contain numbers and the letters A-F: " + key );
+        }
+        execDownloadScript( false, address.toString(), key );
     }
 
     void downloadConfigUsb( String name ) throws Exception
     {
+        VpnClient.validateName( name );
         execDownloadScript( true, name, "" );
     }
 
@@ -165,7 +172,8 @@ class Sandbox
             if ( resolveGroupMap.put( group.getName(), group ) != null ) {
                 throw new ValidateException( "Group name must be unique: " + group.getName());
             }
-        }
+
+        }        
     }
 
     void setExportList( ExportList parameters ) throws Exception

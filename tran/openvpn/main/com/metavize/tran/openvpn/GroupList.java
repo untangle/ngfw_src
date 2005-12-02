@@ -43,14 +43,27 @@ public class GroupList implements Serializable, Validatable
     {
         this.groupList = groupList;
     }
+
+    List<AddressRange> buildAddressRange()
+    {
+        List<AddressRange> checkList = new LinkedList<AddressRange>();
+
+        for ( VpnGroup group : this.groupList ) {
+            checkList.add( AddressRange.makeNetwork( group.getAddress().getAddr(), 
+                                                     group.getNetmask().getAddr()));
+        }
+        
+        return checkList;
+    }
    
     /** 
      * Validate the object, throw an exception if it is not valid */
     public void validate() throws ValidateException
     {
-        /* XXXXXXXX */
+        /* XXXXXXXX What else belongs in here */
         for ( VpnGroup group : this.groupList ) group.validate();
 
-        /* XXX Check for overlap, and check for conflicts with the network settings */
+        /* Determine if all of the addresses are unique */
+        new AddressValidator().validate( buildAddressRange());
     }
 }

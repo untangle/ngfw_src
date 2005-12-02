@@ -69,31 +69,33 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 
 	    // WIZARD/STATUS
 	    WizardJPanel wizardJPanel = new WizardJPanel( vpnTransform, this );
-	    super.mTabbedPane.addTab( WIZARD_NAME, null, wizardJPanel );
 
 	    // EXPORTS
 	    ConfigExportsJPanel configExportsJPanel = new ConfigExportsJPanel();
 	    super.savableMap.put( EXPORTS_NAME, configExportsJPanel );
 	    super.refreshableMap.put( EXPORTS_NAME, configExportsJPanel );
-	    super.mTabbedPane.addTab( EXPORTS_NAME, null, configExportsJPanel );
 	    
 	    // CLIENT TO SITE
 	    ConfigClientToSiteJPanel configClientToSiteJPanel = new ConfigClientToSiteJPanel();
 	    super.savableMap.put( CLIENT_TO_SITE_NAME, configClientToSiteJPanel );
 	    super.refreshableMap.put( CLIENT_TO_SITE_NAME, configClientToSiteJPanel );
-	    super.mTabbedPane.addTab( CLIENT_TO_SITE_NAME, null, configClientToSiteJPanel );
 	    
 	    // SITE TO SITE
 	    ConfigSiteToSiteJPanel configSiteToSiteJPanel = new ConfigSiteToSiteJPanel();
 	    super.savableMap.put( SITE_TO_SITE_NAME, configSiteToSiteJPanel );
 	    super.refreshableMap.put( SITE_TO_SITE_NAME, configSiteToSiteJPanel );
-	    super.mTabbedPane.addTab( SITE_TO_SITE_NAME, null, configSiteToSiteJPanel );
 	    
 	    // ADDRESS GROUPS (THIS SHOULD BE AFTER CTS AND STS FOR PREVALIDATION REASONS)
 	    ConfigAddressGroupsJPanel configAddressGroupsJPanel = new ConfigAddressGroupsJPanel();
 	    super.savableMap.put( CLIENTS_NAME, configAddressGroupsJPanel );
 	    super.refreshableMap.put( CLIENTS_NAME, configAddressGroupsJPanel );
+
+            // DONE TO REARRANGE THE DISPLAY ORDER indepently of the SAVE ORDER
+	    super.mTabbedPane.addTab( WIZARD_NAME, null, wizardJPanel );
+	    super.mTabbedPane.addTab( EXPORTS_NAME, null, configExportsJPanel );
 	    super.mTabbedPane.addTab( CLIENTS_NAME, null, configAddressGroupsJPanel );
+	    super.mTabbedPane.addTab( CLIENT_TO_SITE_NAME, null, configClientToSiteJPanel );
+	    super.mTabbedPane.addTab( SITE_TO_SITE_NAME, null, configSiteToSiteJPanel );
 
 	    // EVENT LOG ///////
 	    //LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);

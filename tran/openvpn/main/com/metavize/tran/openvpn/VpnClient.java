@@ -191,22 +191,9 @@ public class VpnClient extends Rule implements Validatable
         String internalName = getInternalName();
         String name = getName();
 
-        if ( internalName.length() == 0 ) {
-            throw new ValidateException( "A client cannot have an empty name" );
-        }
+        validateName( name );
 
-        if ( internalName.length() > MAX_NAME_LENGTH ) {
-            throw new ValidateException( "A client's name is limited to " + MAX_NAME_LENGTH + "characters." );
-        }
-        
-        if ( !NAME_PATTERN.matcher( name ).matches()) {
-            throw new ValidateException( "A client name should only contains numbers, letters, " +
-                                         "dashes and periods.  Spaces are not allowed. " + name );
-        }
-
-        if ( this.group == null ) {
-            throw new ValidateException( "Group cannot be null" );
-        }
+        if ( this.group == null ) throw new ValidateException( "Group cannot be null" );
     }
 
     public String getCertificateStatus()
@@ -240,6 +227,25 @@ public class VpnClient extends Rule implements Validatable
     public boolean isEnabled()
     {
         return isLive() && ( this.group != null ) && ( this.group.isLive()) && ( this.address != null );
+    }
+    
+    static void validateName( String name ) throws ValidateException
+    {
+        if ( name == null ) throw new ValidateException( "Name cannot be null" );
+
+        if ( name.length() == 0 ) {
+            throw new ValidateException( "A client cannot have an empty name" );
+        }
+
+        if ( name.length() > MAX_NAME_LENGTH ) {
+            throw new ValidateException( "A client's name is limited to " + 
+                                         MAX_NAME_LENGTH + " characters." );
+        }
+        
+        if ( !NAME_PATTERN.matcher( name ).matches()) {
+            throw new ValidateException( "A client name should only contains numbers, letters, " +
+                                         "dashes and periods.  Spaces are not allowed. " + name );
+        }
     }
 
     static

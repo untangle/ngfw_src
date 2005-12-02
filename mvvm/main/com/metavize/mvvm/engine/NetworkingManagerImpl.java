@@ -304,6 +304,7 @@ class NetworkingManagerImpl implements NetworkingManager
 
         while (( command = in.readLine()) != null ) {
             command = command.trim();
+
             if ( command.equals( "}" )) {
                 isComplete = true;
                 break;
@@ -313,7 +314,7 @@ class NetworkingManagerImpl implements NetworkingManager
         }
 
         if ( isComplete ) {
-            configuration.setPostConfigurationScript( sb.toString());
+            configuration.setPostConfigurationScript( sb.toString().trim());
         } else {
             logger.warn( "Invalid post configuration script: " + sb.toString());
         }
@@ -453,11 +454,11 @@ class NetworkingManagerImpl implements NetworkingManager
             sb.append( DECL_POST_CONF + "\n" );
             /* The post configuration script should be an object, allowing it to
              * be prevalidated */
-            sb.append( configuration.getPostConfigurationScript().toString() + "\n" );
+            sb.append( configuration.getPostConfigurationScript().toString().trim() + "\n" );
             sb.append( "}\n" );
 
             sb.append( "## Flag to indicate that there is a post configuuration script\n" );
-            sb.append( FLAG_POST_FUNC + "=" + POST_FUNC_NAME );
+            sb.append( FLAG_POST_FUNC + "=" + POST_FUNC_NAME + "\n\n" );
         }
 
         writeFile( sb, BUNNICULA_CONF + FLAGS_CFG_FILE );
@@ -478,7 +479,7 @@ class NetworkingManagerImpl implements NetworkingManager
                 String temp = properties.getProperty( PROPERTY_HTTPS_PORT );
                 if ( temp != null ) {
                     configuration.httpsPort( Integer.parseInt( temp ));
-                    logger.debug( "Found HTTPS port" + configuration.httpsPort());
+                    logger.debug( "Found HTTPS port " + configuration.httpsPort());
                 }
             }            
         } catch ( Exception e ) {

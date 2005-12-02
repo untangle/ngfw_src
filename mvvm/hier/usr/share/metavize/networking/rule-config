@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ## These are for network configuration settings.
-MVVM_NETWORK_PARAMS_FILE=@PREFIX@/usr/share/metavize/conf/networking.sh
+MVVM_NETWORK_PARAMS_FILE=@MVVM_CONF@/networking.sh
 
 ## These are for parameters that can change during MVVM execution, eg enable DHCP forwarding
 MVVM_TMP_PARAMS_FILE=@MVVM_CONF@/tmp_params

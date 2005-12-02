@@ -43,6 +43,20 @@ public class SiteList implements Serializable, Validatable
     {
         this.siteList = siteList;
     }
+
+    List<AddressRange> buildAddressRange()
+    {
+        List<AddressRange> checkList = new LinkedList<AddressRange>();
+
+        for ( VpnSite site : this.siteList ) {
+            for ( SiteNetwork siteNetwork : (List<SiteNetwork>)site.getExportedAddressList()) {
+                checkList.add( AddressRange.makeNetwork( siteNetwork.getNetwork().getAddr(), 
+                                                         siteNetwork.getNetmask().getAddr()));
+            }
+        }
+
+        return checkList;
+    }
    
     /** 
      * Validate the object, throw an exception if it is not valid */
@@ -51,5 +65,7 @@ public class SiteList implements Serializable, Validatable
         for ( VpnSite site : this.siteList ) site.validate();
 
         /* XXX Check for overlap, and check for conflicts with the network settings */
+        new AddressValidator().validate( buildAddressRange());
+        
     }
 }

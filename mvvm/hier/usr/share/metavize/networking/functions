@@ -6,6 +6,18 @@ PUMP_FLAG="pump"
 IPTABLES="/sbin/iptables"
 #IPTABLES=iptablesDbg
 
+## don't print out debug messages in the production environment
+LOG_DEBUG=true
+
+if [ "x" != "x@PREFIX@" ] ; then
+    ## Printout debuging info in the non-production environment
+    LOG_DEBUG=logDebug
+fi
+
+
+# if necessary
+LOG_DEBUG=logDebug
+
 TABLE_LIST="nat mangle filter raw"
 CHAIN_MARKINTF="markintf"
 CHAIN_GUARDS="guards"
@@ -251,5 +263,9 @@ function deleteGateways() {
         ## No returning an error here
         echo -n
     done
+}
+
+function logDebug() {
+    echo $@
 }
 

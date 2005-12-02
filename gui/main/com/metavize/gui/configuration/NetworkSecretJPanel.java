@@ -37,9 +37,8 @@ public class NetworkSecretJPanel extends javax.swing.JPanel implements Savable, 
 
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
-			NetworkingConfiguration networkingConfiguration = Util.getNetworkingManager().get();
-			networkingConfiguration.setPostConfigurationScript( script );
-			Util.getNetworkingManager().set( networkingConfiguration );
+	    NetworkingConfiguration networkingConfiguration = (NetworkingConfiguration) settings;
+            networkingConfiguration.setPostConfigurationScript( script );
         }
 
     }

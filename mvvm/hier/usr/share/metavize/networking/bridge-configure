@@ -4,6 +4,8 @@ exec >> @MVVM_LOG@/iptables.log 2>&1
 
 FUNCTIONS_FILE=@MVVM_HOME@/networking/functions
 MVVM_TMP_PARAMS_FILE=/@MVVM_CONF@/bridge-settings
+## These are for network configuration settings.
+MVVM_NETWORK_PARAMS_FILE=@MVVM_CONF@/networking.sh
 
 if [ -r ${FUNCTIONS_FILE} ]; then
     . ${FUNCTIONS_FILE}
@@ -17,6 +19,12 @@ if [ -r ${MVVM_TMP_PARAMS_FILE} ]; then
 else
     echo "Unable to load the functions file ${MVVM_TMP_PARAMS_FILE}"
     exit -2
+fi
+
+if [ -f ${MVVM_NETWORK_PARAMS_FILE} ]; then
+    . ${MVVM_NETWORK_PARAMS_FILE}
+else
+    echo "File ${MVVM_NETWORK_PARAMS_FILE} not found."
 fi
 
 ## Non-zero string if the interface is participating in a bridge
@@ -270,7 +278,11 @@ deconfigureAllInterfaces
 configureInterfaces "${INTERFACE_LIST}"
 
 ## If necessary Run the post configuration script
-if [ -n "${MVVM_POST_CONF}" ]; then ${MVVM_POST_CONF} ; fi
+if [ -n "${MVVM_POST_CONF}" ]; then 
+    ${MVVM_POST_CONF} ; 
+else
+    ${LOG_DEBUG} "Post configuration script is disabled"
+fi
 
 ## Always configure loopback just in case.
 ifconfig lo 127.0.0.1 netmask 255.0.0.0

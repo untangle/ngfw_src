@@ -20,6 +20,12 @@ TEST_DELAY=1
 TEST_FAILED=-5
 DOWNLOAD_ERROR=-6
 
+## Amount of time to spend on each download
+DOWNLOAD_TIMEOUT=6
+
+## Number of times to retry ( 5 times at 6 seconds, 30 seconds)
+DOWNLOAD_RETRIES=5
+
 getFromUsb=${1}
 serverAddress=${2}
 commonName=${2}
@@ -59,7 +65,9 @@ function copyFromUsb()
 
 function downloadClient()
 {
-    wget "https://${serverAddress}/openvpn/config.zip?key=${distributionKey}" \
+    wget --timeout ${DOWNLOAD_TIMEOUT} \
+        --tries ${DOWNLOAD_RETRIES} \
+        "https://${serverAddress}/openvpn/config.zip?key=${distributionKey}" \
         -O ${destination} || exit ${DOWNLOAD_ERROR}
 }
 
