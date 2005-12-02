@@ -25,9 +25,10 @@ import javax.swing.*;
 
 
 public class NetworkJDialog extends MConfigJDialog {
-
+    
     private static final String NAME_NETWORK_SETTINGS = "Network Settings";
     private static final String NAME_EMAIL_SETTINGS = "Email Settings";
+    private static final String NAME_TIMEZONE_PANEL      = "Timezone";
     private static final String NAME_ALIAS_PANEL      = "Network Aliases";
     private static final String NAME_SECRET_PANEL      = "Advanced Support";
 
@@ -62,13 +63,22 @@ public class NetworkJDialog extends MConfigJDialog {
 	super.savableMap.put(NAME_EMAIL_SETTINGS, emailJPanel );
 	super.refreshableMap.put(NAME_EMAIL_SETTINGS, emailJPanel );
         
+	// NETWORK SETTINGS //////
+        NetworkTimezoneJPanel timezoneJPanel = new NetworkTimezoneJPanel();
+        JScrollPane timezoneJScrollPane = new JScrollPane( timezoneJPanel );
+        timezoneJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
+        timezoneJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
+        this.contentJTabbedPane.addTab(NAME_TIMEZONE_PANEL, null, timezoneJScrollPane);
+	super.savableMap.put(NAME_TIMEZONE_PANEL, timezoneJPanel);
+	super.refreshableMap.put(NAME_TIMEZONE_PANEL, timezoneJPanel);
+	
         // ALIASES /////
         NetworkAliasJPanel aliasJPanel = new NetworkAliasJPanel();
         super.contentJTabbedPane.addTab(NAME_ALIAS_PANEL, null, aliasJPanel );
 	super.savableMap.put(NAME_ALIAS_PANEL, aliasJPanel );
 	super.refreshableMap.put(NAME_ALIAS_PANEL, aliasJPanel );
 
-	// SECRED HIDDEN PANEL //////
+	// SECRET HIDDEN PANEL //////
 	if( showHiddenPanel ){
 	    NetworkSecretJPanel secretJPanel = new NetworkSecretJPanel();
 	    super.contentJTabbedPane.addTab(NAME_SECRET_PANEL, null, secretJPanel);
