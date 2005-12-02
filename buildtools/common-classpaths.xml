@@ -81,8 +81,11 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
     <exclude name="lib/c3p0-*.jar"/>
   </fileset>
 
+  <fileset id="hibernate.client.jarset" dir="${HIBERNATE_CLIENT_HOME}">
+    <include name="hibernate-client.jar"/>
+  </fileset>
+
   <fileset id="hibernate.gui.jarset" dir="${HIBERNATE_HOME}">
-    <include name="hibernate3.jar"/>
     <include name="lib/asm.jar"/>
     <include name="lib/commons-logging-1.0.4.jar"/>
     <include name="lib/cglib-2.1.jar"/>

@@ -1,0 +1,19 @@
+#!/bin/sh
+
+util_dir=$(pwd)
+hibernate_home=$util_dir/../../downloads/output/hibernate-3.0
+
+unpacked=$(mktemp -d)
+closure=$(mktemp)
+
+(cd $unpacked && jar xf $hibernate_home/hibernate3.jar)
+
+cat hibernate-client.list \
+    | xargs ./closure -cp $unpacked compute-closure \
+    | sed -e 's/^\(.*\)\$.$/\1/' -e 's|\.|/|g' -e 's/^\(.*\)$/\1.class/' \
+    | sort | uniq | grep hibernate >$closure
+
+(cd $unpacked && jar cf $util_dir/hibernate-client.jar @$closure)
+
+rm -r $unpacked
+rm $closure

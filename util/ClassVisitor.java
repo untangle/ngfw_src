@@ -260,77 +260,62 @@ class ClassVisitor implements Visitor
 
     public void visitConstantClass(ConstantClass obj)
     {
-        System.err.println("visitConstantClass: " + obj);
     }
 
     public void visitConstantFieldref(ConstantFieldref obj)
     {
-        System.err.println("visitConstantFieldref: " + obj);
     }
 
     public void visitConstantInterfaceMethodref(ConstantInterfaceMethodref obj)
     {
-        System.err.println("visitConstantInterfaceMethodref: " + obj);
     }
 
     public void visitConstantLong(ConstantLong obj)
     {
-        System.err.println("visitConstantLong: " + obj);
     }
 
     public void visitConstantMethodref(ConstantMethodref obj)
     {
-        System.err.println("visitConstantMethodref: " + obj);
     }
 
     public void visitConstantNameAndType(ConstantNameAndType obj)
     {
-        System.err.println("visitConstantNameAndType: " + obj);
     }
 
     public void visitConstantString(ConstantString obj)
     {
-        System.err.println("visitConstantString: " + obj);
     }
 
     public void visitConstantUtf8(ConstantUtf8 obj)
     {
-        System.err.println("visitConstantUtf8: " + obj);
     }
 
     public void visitConstantValue(ConstantValue obj)
     {
-        System.err.println("visitConstantValue: " + obj);
     }
 
     public void visitStackMap(StackMap obj)
     {
-        System.err.println("visitStackMap: " + obj);
     }
 
     public void visitStackMapEntry(StackMapEntry obj)
     {
-        System.err.println("visitStackMapEntry: " + obj);
     }
 
     public void visitSynthetic(Synthetic obj)
     {
-        System.err.println("visitSynthetic: " + obj);
     }
 
     public void visitConstantDouble(ConstantDouble obj)
     {
-        System.err.println("visitConstantDouble: " + obj);
     }
 
     public void visitConstantFloat(ConstantFloat obj)
     {
-        System.err.println("visitConstantFloat: " + obj);
     }
 
     public void visitConstantInteger(ConstantInteger obj)
     {
-        System.err.println("visitConstantInteger: " + obj);
     }
 
     // no-ops -----------------------------------------------------------------

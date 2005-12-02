@@ -47,7 +47,7 @@ MackageDesc[] mds = mc.toolboxManager().installed();
     <jar href="./mvvm-client.jar"/>
 
     <jar href="./commons-logging-1.0.4.jar"/>
-    <jar href="./hibernate3.jar"/>
+    <jar href="./hibernate-client.jar"/>
     <jar href="./cglib-2.1.jar"/>
     <jar href="./asm.jar"/>
     <jar href="./jcommon-0.9.6.jar"/>

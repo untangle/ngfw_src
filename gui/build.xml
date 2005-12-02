@@ -79,7 +79,7 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
            optimize="false"
            deprecation="on"
            source="1.5"
-	   target="1.5"
+       target="1.5"
            includeAntRuntime="false">
 
       <classpath refid="mvvm-client.classpath"/>
@@ -163,6 +163,7 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
 
     <copy todir="${dist.mvvm.webstart}" flatten="true">
       <fileset refid="gui.jarset"/>
+      <fileset refid="hibernate.client.jarset"/>
       <fileset refid="hibernate.gui.jarset"/>
       <fileset refid="jfreechart.jarset"/>
       <fileset refid="jnlp.jarset"/>
@@ -225,7 +226,7 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
     </antcall>
   </target>
 
-  <!-- 
+  <!--
     Copy source files to ${jdoc.bigtree.src}
     for inclusion in big JavaDoc generation
   -->

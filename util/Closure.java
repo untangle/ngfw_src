@@ -75,6 +75,10 @@ public class Closure
     {
         ClassVisitor cv = new ClassVisitor(cl, classes);
         cv.visitAll();
+        Set<String> s = cv.getVisited();
+        for (String str : s) {
+            System.out.println(str);
+        }
     }
 
     private static void unused(ClassLoader cl, List<String> classes, URL[] urls)
