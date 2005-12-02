@@ -947,8 +947,7 @@ public class HttpParser extends AbstractParser
         }
 
         if (!foundOne) {
-            throw new ParseException("no digits found, next digit: "
-                                     + b.get(b.position()));
+            throw new ParseException("no digits found");
         }
 
         return i;
