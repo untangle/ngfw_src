@@ -11,39 +11,40 @@
 
 package com.metavize.gui.transform;
 
-import com.metavize.gui.util.*;
-import com.metavize.gui.widgets.MMultilineToolTip;
-import com.metavize.mvvm.security.Tid;
-import com.metavize.mvvm.tran.TransformContext;
-import com.metavize.mvvm.tran.*;
-
 import java.awt.*;
 import java.text.DecimalFormat;
-import javax.swing.*;
 import java.util.*;
+import javax.swing.*;
 
-import org.jfree.chart.*;
-import org.jfree.chart.axis.*;
-import org.jfree.chart.plot.*;
-import org.jfree.data.*;
-import org.jfree.data.xy.*;
-import org.jfree.data.statistics.*;
-import org.jfree.data.time.*;
-import org.jfree.data.category.*;
-
-
+import com.metavize.gui.util.*;
+import com.metavize.mvvm.tran.*;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.AxisLocation;
+import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.time.DynamicTimeSeriesCollection;
+import org.jfree.data.time.RegularTimePeriod;
+import org.jfree.data.time.Second;
+import org.jfree.data.xy.TableXYDataset;
 
 public class MTransformDisplayJPanel extends javax.swing.JPanel {
-        
+
     // GENERAL TRANSFORM
     protected MTransformJPanel mTransformJPanel;
-    
+
     // GENERAL DISPLAY
     protected boolean getUpdateActivity(){ return true; }
     protected boolean getUpdateSessions(){ return true; }
     protected boolean getUpdateThroughput(){ return true; }
     protected UpdateGraphThread updateGraphThread;
-    
+
     // THROUGHPUT & SESSION COUNT DISPLAY
     private static long SLEEP_MILLIS = 1000l;
     protected ChartPanel throughputChartJPanel;
@@ -60,13 +61,13 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
     private static String activityString3 = "Activity 3";  // row key
     private DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-    
+
     public MTransformDisplayJPanel(MTransformJPanel mTransformJPanel) {
         this.mTransformJPanel = mTransformJPanel;
-        
+
         throughputDynamicTimeSeriesCollection = new AreaDynamicTimeSeriesCollection(1, 60, new Second());
         throughputDynamicTimeSeriesCollection.setTimeBase(new Second());
-        throughputChartJPanel = createLineChart(throughputDynamicTimeSeriesCollection, true); 
+        throughputChartJPanel = createLineChart(throughputDynamicTimeSeriesCollection, true);
 
         sessionDynamicTimeSeriesCollection = new AreaDynamicTimeSeriesCollection(2, 60, new Second());
         sessionDynamicTimeSeriesCollection.setTimeBase(new Second());
@@ -86,28 +87,28 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         }
         if( !getUpdateThroughput() ){
             this.remove(throughputChartJPanel);
-	    this.remove(throughputJLabel);
+        this.remove(throughputJLabel);
         }
-        
+
 
         updateGraphThread = new UpdateGraphThread();
     }
-    
+
     void doShutdown(){
-	updateGraphThread.kill();
+    updateGraphThread.kill();
     }
 
     public void setUpdateGraph(boolean updateGraph){
-	updateGraphThread.setUpdateGraph( updateGraph );
+    updateGraphThread.setUpdateGraph( updateGraph );
     }
-    
-    private ChartPanel createBarChart(CategoryDataset dataset) {    
-        
+
+    private ChartPanel createBarChart(CategoryDataset dataset) {
+
         JFreeChart jFreeChart = ChartFactory.createBarChart(null,null,null, dataset, PlotOrientation.HORIZONTAL, false,false,false);
         jFreeChart.setBackgroundPaint(Color.BLACK);
         jFreeChart.setBorderPaint(null);
         jFreeChart.setBorderVisible(false);
-        
+
         // PLOT
         CategoryPlot plot = jFreeChart.getCategoryPlot();
         plot.setBackgroundPaint(Color.BLACK);
@@ -120,7 +121,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         plot.setDomainGridlinePaint(null);
         plot.setRangeGridlinesVisible(false);
         plot.setRangeGridlinePaint(null);
-        
+
         // X AXIS
         CategoryAxis catAxis = plot.getDomainAxis();
         catAxis.setVisible(false);
@@ -129,7 +130,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         //catAxis.setTickLabelPaint(null);
         //catAxis.setTickMarkPaint(null);
         catAxis.setTickMarksVisible(false);
-        
+
         // Y AXIS
         NumberAxis axis = (NumberAxis) plot.getRangeAxis();
         axis.setVisible(false);
@@ -140,19 +141,19 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         axis.setAutoRangeIncludesZero(true);
         axis.setLowerBound(0.0d);
         axis.setUpperBound(100.0d);
-       
+
         // CHART
         ChartPanel chartPanel = new ChartPanel(jFreeChart, false, false, false, false, false);
         chartPanel.setOpaque(true);
         chartPanel.setMinimumDrawHeight(20);
         chartPanel.setMinimumDrawWidth(20);
- 
+
         return chartPanel;
     }
-        
-    
-    private ChartPanel createLineChart(TableXYDataset dataset, boolean showDecimal) {    
-        
+
+
+    private ChartPanel createLineChart(TableXYDataset dataset, boolean showDecimal) {
+
         JFreeChart jFreeChart = ChartFactory.createXYLineChart(null,null,null, dataset, PlotOrientation.VERTICAL, false,false,false);
         jFreeChart.setBackgroundPaint(Color.BLACK);
         XYPlot plot = jFreeChart.getXYPlot();
@@ -161,7 +162,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
 
         plot.getRenderer().setSeriesPaint(0, new Color(.5f, .5f, 1f));
         plot.getRenderer().setSeriesPaint(1, new Color(.5f, .25f, .5f));
-        
+
 
         plot.setInsets(new java.awt.Insets(4,0,6,2), false);
         plot.setDomainCrosshairVisible(false);
@@ -169,16 +170,16 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         plot.setRangeCrosshairVisible(false);
         plot.setRangeGridlinesVisible(false);
         plot.setFixedDomainAxisSpace(null);
-        
-        
+
+
         NumberAxis axis = (NumberAxis) plot.getDomainAxis();
         axis.setVisible(false);
         axis.setFixedAutoRange(60000.0);  // 60 seconds
         axis.setAxisLineVisible(false);
         axis.setTickMarksVisible(false);
-        
-        
-        
+
+
+
         axis = (NumberAxis) plot.getRangeAxis();
         axis.setVisible(true);
         axis.setAutoRange(true);
@@ -188,7 +189,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         axis.setTickLabelFont(new java.awt.Font("Dialog", 0, 8));
         axis.setTickLabelPaint(new Color(190, 190, 190));
 
-        
+
         if( showDecimal == false ){
             DecimalFormat decimalFormat = new DecimalFormat();
             decimalFormat.setMaximumIntegerDigits(7);
@@ -196,7 +197,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
             decimalFormat.setMinimumIntegerDigits(1);
             decimalFormat.setMinimumFractionDigits(0);
             axis.setNumberFormatOverride(decimalFormat);
-	    //axis.setTickUnit( new NumberTickUnit(1d) );
+        //axis.setTickUnit( new NumberTickUnit(1d) );
         }
         else{
             DecimalFormat decimalFormat = new DecimalFormat();
@@ -206,17 +207,17 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
             decimalFormat.setMinimumFractionDigits(0);
             axis.setNumberFormatOverride(decimalFormat);
         }
-        
-        
+
+
         ChartPanel chartPanel = new ChartPanel(jFreeChart, false, false, false, false, false);
         chartPanel.setOpaque(true);
         chartPanel.setMinimumDrawHeight(20);
         chartPanel.setMinimumDrawWidth(20);
         return chartPanel;
     }
-    
-    
-    
+
+
+
     private void initComponents() {//GEN-BEGIN:initComponents
         java.awt.GridBagConstraints gridBagConstraints;
 
@@ -368,22 +369,22 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
 
     }//GEN-END:initComponents
 
-    
+
     private class UpdateGraphThread extends Thread implements Killable {
 
-	// GRAPH CONTROL //////
-	private boolean killed;
-	public synchronized void kill(){
-	    killed = true;
-	    notify();
-	}
-	private boolean updateGraph;
-	public synchronized void setUpdateGraph(boolean updateGraph){ 
-	    this.updateGraph = updateGraph;
-	    if( updateGraph )
-		notify();
-	}
-	//////////////////////
+    // GRAPH CONTROL //////
+    private boolean killed;
+    public synchronized void kill(){
+        killed = true;
+        notify();
+    }
+    private boolean updateGraph;
+    public synchronized void setUpdateGraph(boolean updateGraph){
+        this.updateGraph = updateGraph;
+        if( updateGraph )
+        notify();
+    }
+    //////////////////////
 
         TransformStats currentStats = null;
         long sessionCountCurrent = 0;
@@ -399,64 +400,64 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         DoubleFIFO activity1Count = new DoubleFIFO(60);
         DoubleFIFO activity2Count = new DoubleFIFO(60);
         DoubleFIFO activity3Count = new DoubleFIFO(60);
-        
+
         int newestIndex;
         double activityTotal;
-        
+
         public UpdateGraphThread(){
-	    super("MVCLIENT-UpdateGraphThread: " + MTransformDisplayJPanel.this.mTransformJPanel.getMackageDesc().getDisplayName());
+        super("MVCLIENT-UpdateGraphThread: " + MTransformDisplayJPanel.this.mTransformJPanel.getMackageDesc().getDisplayName());
             this.setDaemon(true);
-	    Util.addKillableThread(this);
+        Util.addKillableThread(this);
             resetCounters();
-	    this.start();
+        this.start();
         }
 
         private UpdateGraphRunnable updateGraphRunnable = new UpdateGraphRunnable();
-	private void doUpdateGraph(){
-	    SwingUtilities.invokeLater( updateGraphRunnable );
-	}
-	private class UpdateGraphRunnable implements Runnable {
-	    public void run(){
-		if(!updateGraph){
-		    resetCounters();
-		    for(int i=0; i<60; i++){
-			newestIndex = sessionDynamicTimeSeriesCollection.getNewestIndex();
-			sessionDynamicTimeSeriesCollection.addValue(0, newestIndex, 0f);
-			sessionDynamicTimeSeriesCollection.addValue(1, newestIndex, 0f);
-			sessionDynamicTimeSeriesCollection.advanceTime();
-			throughputDynamicTimeSeriesCollection.addValue( 0, throughputDynamicTimeSeriesCollection.getNewestIndex(), 0f);
-			throughputDynamicTimeSeriesCollection.advanceTime();
-		    }
-		    byteCountLast = byteCountCurrent = 0;
-		    sessionRequestLast = sessionRequestCurrent = 0;
-		}
-		if( MTransformDisplayJPanel.this.getUpdateSessions() ){
-		    newestIndex = sessionDynamicTimeSeriesCollection.getNewestIndex();
-		    sessionDynamicTimeSeriesCollection.addValue(0, newestIndex, (float) sessionCountCurrent);
-		    sessionDynamicTimeSeriesCollection.addValue(1, newestIndex, (float) sessionRequestCurrent - sessionRequestLast);
-		    sessionDynamicTimeSeriesCollection.advanceTime();
-		    sessionRequestLast = sessionRequestCurrent;
-		    generateCountLabel(sessionCountTotal, " ACC", sessionTotalJLabel);
-		    generateCountLabel(sessionRequestCurrent, " REQ", sessionRequestTotalJLabel);
-		}		    
-		if( MTransformDisplayJPanel.this.getUpdateThroughput() ){
-		    throughputDynamicTimeSeriesCollection.addValue( 0, 
-								    throughputDynamicTimeSeriesCollection.getNewestIndex(), 
-								    ((float)(byteCountCurrent - byteCountLast))/1000f);
-		    throughputDynamicTimeSeriesCollection.advanceTime();
-		    byteCountLast = byteCountCurrent;
-		    generateCountLabel(byteCountCurrent, "B", throughputTotalJLabel);
-		}		    
-		if( MTransformDisplayJPanel.this.getUpdateActivity() ){
-		    dataset.setValue( activity0Count.decayValue(), activitySeriesString, activityString0);
-		    dataset.setValue( activity1Count.decayValue(), activitySeriesString, activityString1);
-		    dataset.setValue( activity2Count.decayValue(), activitySeriesString, activityString2);
-		    dataset.setValue( activity3Count.decayValue(), activitySeriesString, activityString3);
-		}
-	    }
-	}
-        
-        
+    private void doUpdateGraph(){
+        SwingUtilities.invokeLater( updateGraphRunnable );
+    }
+    private class UpdateGraphRunnable implements Runnable {
+        public void run(){
+        if(!updateGraph){
+            resetCounters();
+            for(int i=0; i<60; i++){
+            newestIndex = sessionDynamicTimeSeriesCollection.getNewestIndex();
+            sessionDynamicTimeSeriesCollection.addValue(0, newestIndex, 0f);
+            sessionDynamicTimeSeriesCollection.addValue(1, newestIndex, 0f);
+            sessionDynamicTimeSeriesCollection.advanceTime();
+            throughputDynamicTimeSeriesCollection.addValue( 0, throughputDynamicTimeSeriesCollection.getNewestIndex(), 0f);
+            throughputDynamicTimeSeriesCollection.advanceTime();
+            }
+            byteCountLast = byteCountCurrent = 0;
+            sessionRequestLast = sessionRequestCurrent = 0;
+        }
+        if( MTransformDisplayJPanel.this.getUpdateSessions() ){
+            newestIndex = sessionDynamicTimeSeriesCollection.getNewestIndex();
+            sessionDynamicTimeSeriesCollection.addValue(0, newestIndex, (float) sessionCountCurrent);
+            sessionDynamicTimeSeriesCollection.addValue(1, newestIndex, (float) sessionRequestCurrent - sessionRequestLast);
+            sessionDynamicTimeSeriesCollection.advanceTime();
+            sessionRequestLast = sessionRequestCurrent;
+            generateCountLabel(sessionCountTotal, " ACC", sessionTotalJLabel);
+            generateCountLabel(sessionRequestCurrent, " REQ", sessionRequestTotalJLabel);
+        }
+        if( MTransformDisplayJPanel.this.getUpdateThroughput() ){
+            throughputDynamicTimeSeriesCollection.addValue( 0,
+                                    throughputDynamicTimeSeriesCollection.getNewestIndex(),
+                                    ((float)(byteCountCurrent - byteCountLast))/1000f);
+            throughputDynamicTimeSeriesCollection.advanceTime();
+            byteCountLast = byteCountCurrent;
+            generateCountLabel(byteCountCurrent, "B", throughputTotalJLabel);
+        }
+        if( MTransformDisplayJPanel.this.getUpdateActivity() ){
+            dataset.setValue( activity0Count.decayValue(), activitySeriesString, activityString0);
+            dataset.setValue( activity1Count.decayValue(), activitySeriesString, activityString1);
+            dataset.setValue( activity2Count.decayValue(), activitySeriesString, activityString2);
+            dataset.setValue( activity3Count.decayValue(), activitySeriesString, activityString3);
+        }
+        }
+    }
+
+
         private void generateCountLabel(long count, String suffix, JLabel label){
             if(count < 1000l)
                 label.setText( Long.toString( count ) + " " + suffix);
@@ -466,40 +467,40 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
                 label.setText( Long.toString( count/1000000l ) + "." + Util.padZero( (count%1000000l)/1000l ) + " M" + suffix);
             else if(count < 1000000000000l)
                 label.setText( Long.toString( count/1000000000l ) + "." + Util.padZero( (count%1000000000l)/1000000l ) + " G" + suffix);
-	    else if(count < 1000000000000000l)
+        else if(count < 1000000000000000l)
                 label.setText( Long.toString( count/1000000000000l ) + "." + Util.padZero( (count%1000000000000l)/1000000000l ) + " T" + suffix);
-	    else if(count < 1000000000000000000l)
+        else if(count < 1000000000000000000l)
                 label.setText( Long.toString( count/1000000000000000l ) + "." + Util.padZero( (count%1000000000000000l)/1000000000000l ) + " P" + suffix);
-	    else
+        else
                 label.setText( Long.toString( count/1000000000000000000l ) + "." + Util.padZero( (count%1000000000000000000l)/1000000000000000l ) + " E" + suffix);
         }
-    
+
         private void resetCounters(){
             activity0Count.reset();
             activity1Count.reset();
             activity2Count.reset();
             activity3Count.reset();
         }
-    
+
         public void run() {
             while(true){
                 try{
                     // GET TRANSFORM STATS AND HANDLE KILL/PAUSE
-		    synchronized(this){			
-			if( killed ){
-			    return;
-			}
-			if( !updateGraph ){
-			    doUpdateGraph();
-			    wait();
-			}
-			if( killed ){
-			    return;
-			}
-			currentStats = Util.getStatsCache().getFakeTransform(mTransformJPanel.getTid()).getStats();
-		    }
+            synchronized(this){
+            if( killed ){
+                return;
+            }
+            if( !updateGraph ){
+                doUpdateGraph();
+                wait();
+            }
+            if( killed ){
+                return;
+            }
+            currentStats = Util.getStatsCache().getFakeTransform(mTransformJPanel.getTid()).getStats();
+            }
 
-		    // UPDATE COUNTS
+            // UPDATE COUNTS
                     sessionCountCurrent = currentStats.tcpSessionCount()
                                         + currentStats.udpSessionCount();
                     sessionCountTotal = currentStats.tcpSessionTotal()
@@ -509,14 +510,14 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
                     byteCountCurrent = currentStats.c2tBytes()
                                      + currentStats.s2tBytes();
 
-		    // RESET COUNTS IF NECESSARY
+            // RESET COUNTS IF NECESSARY
                     if( (byteCountLast == 0) || (byteCountLast > byteCountCurrent) )
                         byteCountLast = byteCountCurrent;
                     if( (sessionRequestLast == 0) || (sessionRequestLast > sessionRequestCurrent) )
                         sessionRequestLast = sessionRequestCurrent;
 
-		    // ADD TO COUNTS
-                    activity0Count.add( (double) currentStats.getCount(Transform.GENERIC_0_COUNTER) );                    
+            // ADD TO COUNTS
+                    activity0Count.add( (double) currentStats.getCount(Transform.GENERIC_0_COUNTER) );
                     activity1Count.add( (double) currentStats.getCount(Transform.GENERIC_1_COUNTER) );
                     activity2Count.add( (double) currentStats.getCount(Transform.GENERIC_2_COUNTER) );
                     activity3Count.add( (double) currentStats.getCount(Transform.GENERIC_3_COUNTER) );
@@ -525,17 +526,17 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
                     doUpdateGraph();
 
                     // PAUSE A NORMAL AMOUNT OF TIME
-                    Thread.sleep(SLEEP_MILLIS);     
+                    Thread.sleep(SLEEP_MILLIS);
                 }
                 catch(Exception e){  // handle this exception much more gracefully
-		    try{ Thread.currentThread().sleep(10000); } catch(Exception f){}
+            try{ Thread.currentThread().sleep(10000); } catch(Exception f){}
                 }
             }
         }
-        
+
     }
-    
-    
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     protected javax.swing.JLabel activity0JLabel;
     protected javax.swing.JLabel activity1JLabel;
@@ -552,15 +553,15 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
     protected javax.swing.JLabel throughputJLabel;
     protected javax.swing.JLabel throughputTotalJLabel;
     // End of variables declaration//GEN-END:variables
-    
+
 }
 
 class DoubleFIFO {
-    
+
     static final double BARGRAPH_FALLOFF = .9d;
-    
+
     double tempVal;
-    
+
     double lastTotal;
     double windowTotal;
     int index;
@@ -578,9 +579,9 @@ class DoubleFIFO {
         resetable = true;
         reset();
     }
-    
+
     public synchronized void add(double newTotal){
-        
+
         if(!resetable){
             lastTotal = newTotal;
         }
@@ -593,11 +594,11 @@ class DoubleFIFO {
         }
         resetable = true;
     }
-    
+
     public synchronized double getTotal(){
         return windowTotal;
     }
-    
+
     public synchronized void reset(){
         if(!resetable)
             return;
@@ -609,11 +610,11 @@ class DoubleFIFO {
         decay = 0d;
         resetable = false;
     }
-    
+
     public synchronized double lastValue(){
         return data[ (size + index-1) %size];
     }
-    
+
     public synchronized double decayValue(){
         if(this.lastValue() > 0)
             decay = 98d;
@@ -624,14 +625,14 @@ class DoubleFIFO {
 }
 
 class AreaDynamicTimeSeriesCollection extends DynamicTimeSeriesCollection implements TableXYDataset {
-    
+
     AreaDynamicTimeSeriesCollection(int nSeries, int nMoments){ super(nSeries, nMoments); }
     AreaDynamicTimeSeriesCollection(int nSeries, int nMoments, RegularTimePeriod timeSample){ super(nSeries, nMoments, timeSample); }
     AreaDynamicTimeSeriesCollection(int nSeries, int nMoments, RegularTimePeriod timeSample, java.util.TimeZone zone){ super(nSeries, nMoments, timeSample, zone); }
     AreaDynamicTimeSeriesCollection(int nSeries, int nMoments, java.util.TimeZone zone){ super(nSeries, nMoments, zone); }
-    
+
     public int getItemCount() {
         return super.getItemCount(0);
     }
-    
+
 }
