@@ -26,6 +26,13 @@ import java.io.Serializable;
 
 public class IDSRule extends Rule implements Serializable {
     private static final long serialVersionUID = -7009708957041660234L;
+
+    // Actions
+    public static final int ALERT = 0;
+    public static final int LOG = 1;
+    public static final int PASS = 2;
+    public static final int BLOCK = 3;
+    public static final String[] ACTIONS = { "alert","log","pass","block" };
 	
     //Hibernate Variables
     private String rule;
@@ -110,12 +117,12 @@ public class IDSRule extends Rule implements Serializable {
 
     public int getAction() {
         if (isLive())
-            return IDSRuleManager.BLOCK;
+            return BLOCK;
         else if (getLog())
-            return IDSRuleManager.LOG;
+            return LOG;
         else
             // XX
-            return IDSRuleManager.ALERT;
+            return ALERT;
     }
 
     public boolean equals(Object o) {

@@ -142,20 +142,20 @@ public class IDSRuleSignature {
 
         boolean blocked = false;
         switch(action) {
-        case IDSRuleManager.ALERT:
+        case IDSRule.ALERT:
             // Can't happen right now.
             log.warn("Alert: "+message);
             ids.statisticManager.incrLogged();
             engine.updateUICount(DETECT_COUNTER);
             break;
 
-        case IDSRuleManager.LOG:
+        case IDSRule.LOG:
             log.debug("Log: "+message);
             ids.statisticManager.incrLogged();
             engine.updateUICount(DETECT_COUNTER);
             break;
 
-        case IDSRuleManager.BLOCK:
+        case IDSRule.BLOCK:
             log.debug("Block: "+message);
             blocked = true;
             ids.statisticManager.incrBlocked();

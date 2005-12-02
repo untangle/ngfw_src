@@ -1,7 +1,5 @@
 package com.metavize.tran.ids;
 
-import com.metavize.mvvm.tran.Rule;
-
 import java.io.Serializable;
 
 /**

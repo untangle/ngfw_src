@@ -23,11 +23,6 @@ public class IDSRuleManager {
     public static final boolean TO_SERVER = true;	
     public static final boolean TO_CLIENT = false;
 
-    public static final int ALERT = 0;
-    public static final int LOG = 1;
-    public static final int PASS = 2;
-    public static final int BLOCK = 3;
-    public static final String[] ACTIONS = { "alert","log","pass","block" };
 
     public static List<IDSVariable> immutableVariables = new ArrayList<IDSVariable>(); 
     static {
