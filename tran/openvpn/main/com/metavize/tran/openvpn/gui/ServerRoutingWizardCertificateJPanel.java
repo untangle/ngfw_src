@@ -22,8 +22,8 @@ import com.metavize.tran.openvpn.*;
 public class ServerRoutingWizardCertificateJPanel extends MWizardPageJPanel {
 
     private static final String EXCEPTION_ORGANIZATION_MISSING = "You must fill out the name of your organization.";
-    private static final String EXCEPTION_DOMAIN_MISSING = "You must fill out the name of your domain.";
     private static final String EXCEPTION_COUNTRY_MISSING = "You must fill out the name of your country.";
+	private static final String EXCEPTION_COUNTRY_LENGTH = "The country code must be 2 characters long.";
     private static final String EXCEPTION_STATE_MISSING = "You must fill out the name of your state.";
     private static final String EXCEPTION_LOCALITY_MISSING = "You must fill out the name of your locality.";
 
@@ -35,7 +35,6 @@ public class ServerRoutingWizardCertificateJPanel extends MWizardPageJPanel {
     }
 
 	String organization;
-	String domain;
 	String country;
 	String state;
 	String locality;
@@ -45,13 +44,11 @@ public class ServerRoutingWizardCertificateJPanel extends MWizardPageJPanel {
 
 	SwingUtilities.invokeAndWait( new Runnable(){ public void run() {
 		organizationJTextField.setBackground( Color.WHITE );
-		domainJTextField.setBackground( Color.WHITE );
 		countryJTextField.setBackground( Color.WHITE );
 		stateJTextField.setBackground( Color.WHITE );
 		localityJTextField.setBackground( Color.WHITE );
 
 		organization = organizationJTextField.getText().trim();
-		domain = domainJTextField.getText().trim();
 		country = countryJTextField.getText().trim();
 		state = stateJTextField.getText().trim();
 		locality = localityJTextField.getText().trim();
@@ -63,16 +60,16 @@ public class ServerRoutingWizardCertificateJPanel extends MWizardPageJPanel {
 				exception = new Exception(EXCEPTION_ORGANIZATION_MISSING);
 				return;
 	    }
-        	
-	    if(domain.length() == 0){
-				domainJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
-				exception = new Exception(EXCEPTION_DOMAIN_MISSING);
-				return;
-	    }
        	
 	    if(country.length() == 0){
 				countryJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
 				exception = new Exception(EXCEPTION_COUNTRY_MISSING);
+				return;
+	    }
+		
+		if(country.length() != 2){
+				countryJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+				exception = new Exception(EXCEPTION_COUNTRY_LENGTH);
 				return;
 	    }
 
@@ -94,7 +91,7 @@ public class ServerRoutingWizardCertificateJPanel extends MWizardPageJPanel {
             throw exception;
 	        
         if( !validateOnly ){
-			CertificateParameters certificateParameters = new CertificateParameters( organization, domain, country, state, locality, false );
+			CertificateParameters certificateParameters = new CertificateParameters( organization, "", country, state, locality, false );
 			vpnTransform.generateCertificate( certificateParameters );
         }
     }
@@ -107,8 +104,6 @@ public class ServerRoutingWizardCertificateJPanel extends MWizardPageJPanel {
                 jPanel1 = new javax.swing.JPanel();
                 jLabel17 = new javax.swing.JLabel();
                 organizationJTextField = new javax.swing.JTextField();
-                jLabel18 = new javax.swing.JLabel();
-                domainJTextField = new javax.swing.JTextField();
                 jLabel19 = new javax.swing.JLabel();
                 countryJTextField = new javax.swing.JTextField();
                 jLabel20 = new javax.swing.JLabel();
@@ -121,8 +116,8 @@ public class ServerRoutingWizardCertificateJPanel extends MWizardPageJPanel {
 
                 setOpaque(false);
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html>Please take a moment to specify some information about <br>about your location.  This information is required and is used to<br>generate a secure digital certificate.</html>");
-                add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, -1, -1));
+                jLabel2.setText("<html>Please take a moment to specify some information about your location, to be used to generate a secure digital certificate.<br><b>This information is required.</b></html>");
+                add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, 400, -1));
 
                 jPanel1.setLayout(new java.awt.GridBagLayout());
 
@@ -141,20 +136,6 @@ public class ServerRoutingWizardCertificateJPanel extends MWizardPageJPanel {
                 gridBagConstraints.gridx = 1;
                 jPanel1.add(organizationJTextField, gridBagConstraints);
 
-                jLabel18.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel18.setText("Domain:");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 1;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                jPanel1.add(jLabel18, gridBagConstraints);
-
-                domainJTextField.setColumns(15);
-                domainJTextField.setMinimumSize(new java.awt.Dimension(170, 19));
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                jPanel1.add(domainJTextField, gridBagConstraints);
-
                 jLabel19.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel19.setText("Country:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
@@ -163,10 +144,11 @@ public class ServerRoutingWizardCertificateJPanel extends MWizardPageJPanel {
                 jPanel1.add(jLabel19, gridBagConstraints);
 
                 countryJTextField.setColumns(15);
+                countryJTextField.setText("US");
                 countryJTextField.setMinimumSize(new java.awt.Dimension(170, 19));
-                countryJTextField.setPreferredSize(new java.awt.Dimension(170, 19));
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 jPanel1.add(countryJTextField, gridBagConstraints);
 
                 jLabel20.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -207,9 +189,7 @@ public class ServerRoutingWizardCertificateJPanel extends MWizardPageJPanel {
     
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JTextField countryJTextField;
-        private javax.swing.JTextField domainJTextField;
         private javax.swing.JLabel jLabel17;
-        private javax.swing.JLabel jLabel18;
         private javax.swing.JLabel jLabel19;
         private javax.swing.JLabel jLabel2;
         private javax.swing.JLabel jLabel20;
