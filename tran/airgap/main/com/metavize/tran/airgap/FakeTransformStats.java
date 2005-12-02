@@ -38,7 +38,7 @@ import com.metavize.mvvm.tran.TransformStats;
  * @author <a href="mailto:jdi@slab.ninthwave.com">John Irwin</a>
  * @version 1.0
  */
-public class FakeTransformStats extends TransformStats {
+class FakeTransformStats {
 
     private static final String PATH_PROCNET_DEV = "/proc/net/dev";
     private static final String ETH_DEV_PREFIX = "eth";
@@ -48,7 +48,7 @@ public class FakeTransformStats extends TransformStats {
     private static final Logger logger = Logger
         .getLogger(FakeTransformStats.class.getName());
 
-    public void update() {
+    public static void update(TransformStats stats) {
         String line = null;
 
         long totRxBytes = 0;
@@ -122,11 +122,15 @@ public class FakeTransformStats extends TransformStats {
             rdr.close();
 
             /* Check for overflow */
-            t2sBytes  = c2tBytes  = incrementCount( c2tBytes,  totRxBytes );
-            t2sChunks = c2tChunks = incrementCount( c2tChunks, totRxChunks );
+            long l = incrementCount( stats.c2tBytes(),  totRxBytes );
+            stats.t2sBytes(l); stats.c2tBytes(l);
+            l = incrementCount( stats.c2tChunks(), totRxChunks );
+            stats.t2sChunks(l); stats.c2tChunks(l);
 
-            t2cBytes  = s2tBytes  = incrementCount( s2tBytes,  totTxBytes );
-            t2cChunks = s2tChunks = incrementCount( s2tChunks, totTxChunks );            
+            l = incrementCount( stats.s2tBytes(),  totTxBytes );
+            stats.t2cBytes(l); stats.s2tBytes(l);
+            l = incrementCount( stats.s2tChunks(), totTxChunks );
+            stats.t2cChunks(l); stats.s2tChunks(l);
         } catch (FileNotFoundException x) {
             logger.warn("Cannot open " + PATH_PROCNET_DEV + "(" + x.getMessage() +
                         "), no stats available");
@@ -136,7 +140,7 @@ public class FakeTransformStats extends TransformStats {
         }
     }
 
-    private long incrementCount( long previousCount, long kernelCount )
+    private static long incrementCount( long previousCount, long kernelCount )
     {
         /* If the kernel is counting in 64-bits, just return the kernel count */
         if ( kernelCount >= ( 1L << 32 ) ) return kernelCount;

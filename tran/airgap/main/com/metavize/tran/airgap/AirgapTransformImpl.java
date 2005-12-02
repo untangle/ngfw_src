@@ -60,7 +60,7 @@ public class AirgapTransformImpl extends AbstractTransform
     private AirgapSettings settings;
 
     // We keep a stats around so we don't have to create one each time.
-    private FakeTransformStats fakeStats;
+    private TransformStats fakeStats;
 
     public AirgapTransformImpl() {}
 
@@ -129,7 +129,7 @@ public class AirgapTransformImpl extends AbstractTransform
 
     public TransformStats getStats() throws IllegalStateException
     {
-        fakeStats.update();
+        FakeTransformStats.update(fakeStats);
         return fakeStats;
     }
 
@@ -182,7 +182,7 @@ public class AirgapTransformImpl extends AbstractTransform
     {
         validateSettings();
 
-        fakeStats = new FakeTransformStats();
+        fakeStats = new TransformStats();
     }
 
     protected void postStart() throws TransformStartException

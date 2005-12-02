@@ -13,10 +13,11 @@ package com.metavize.tran.airgap;
 
 import junit.framework.*;
 import java.util.*;
+import com.metavize.mvvm.tran.TransformStats;
 
 public class TestFakeTransformStats extends TestCase {
 
-    private FakeTransformStats stats;
+    private TransformStats stats;
 
     /**
      * Constructs a TestBlacklist with the specified name.
@@ -33,7 +34,7 @@ public class TestFakeTransformStats extends TestCase {
      * Called before every test case method.
      */
     protected void setUp() {
-        stats = new FakeTransformStats();
+        stats = new TransformStats();
     }
 
     /**
@@ -55,7 +56,7 @@ public class TestFakeTransformStats extends TestCase {
         assertEquals(stats.t2cChunks(), 0);
         assertEquals(stats.t2sChunks(), 0);
 
-        stats.update();
+        FakeTransformStats.update(stats);
 
         // After update, at least eth0 > 0
         assertTrue(stats.s2tBytes() > 0);

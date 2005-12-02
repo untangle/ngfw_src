@@ -19,7 +19,6 @@ import java.util.Set;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tran.PipelineEndpoints;
-import com.metavize.tran.mime.*;
 import org.apache.log4j.Logger;
 
 /**

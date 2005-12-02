@@ -14,7 +14,6 @@ package com.metavize.tran.virus;
 import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.tran.mail.papi.MessageInfo;
 import com.metavize.tran.mail.papi.smtp.SMTPNotifyAction;
-import com.metavize.tran.mail.papi.smtp.SMTPNotifyActionUserType;
 
 /**
  * Log for SMTP Virus events.
