@@ -20,8 +20,17 @@
                 version="1.0"
                 xmlns="http://www.w3.org/TR/xhtml1/transitional">
 
-<xsl:import href="../../../../../mvdocbook/xsl/xhtml/profile-chunk.xsl" />
+<xsl:import href="../../../../../mvdocbook/xsl/html/profile-chunk.xsl" />
 
+
+<!--
+  These magical lines get rid of headaches with &#160, causing the
+  stylesheet processor to work as advertized
+
+<xsl:output method="html"/>
+<xsl:param name="chunker.output.method">html</xsl:param>
+<xsl:param name="output.method">html</xsl:param>
+-->
 
 <xsl:param name="section.autolabel">1</xsl:param>
 <xsl:param name="qandadiv.autolabel">1</xsl:param>
@@ -58,6 +67,7 @@
 
 <!-- Use character entities instead of numeric entities where possible       -->
 <xsl:param name="saxon.character.representation">native</xsl:param>
+
 
 
 <!-- multiple profile values are semicolon-separated                         -->
@@ -218,7 +228,7 @@ appendix toc
 <!-- Clean up HTML                                                           -->
 <!-- Try to create "better" HTML by transforming the result HTML. Does not   -->
 <!-- work with all XSLT processors.                                          -->
-<xsl:param name="html.cleanup">0</xsl:param>
+<xsl:param name="html.cleanup">1</xsl:param>
 
 
 <!-- Use XSLT processor extensions                                           -->
@@ -382,6 +392,12 @@ appendix toc
 </xsl:template>
 -->
 
+
+<!--
+  WRS: In the header/footer templates, there is a major hack to embed a non-breaking space.
+  The recommended XML way just didn't work for me.  Saxon bug?  My stupidity?
+-->
+
 <!-- WRS: Crazy attempt to get fancy w/ the headers -->
 <xsl:template name="header.navigation">
   <xsl:param name="prev" select="/foo"/>
@@ -401,24 +417,20 @@ appendix toc
   <xsl:if test="$suppress.navigation = '0' and $suppress.header.navigation = '0'">
     <div class="navheader">
       <xsl:if test="$row1 or $row2">
-        <table width="100%" summary="Navigation header">
+        <table width="100%" summary="Navigation header" class="navheadertable">
           <xsl:if test="$row1">
             <tr>
               <th colspan="3" align="center">
                 <!-- I "borrowed" this stuff from the KDE manuals -->
-                <div style="background-image: url(figure/middle-10.png);width: 100%;height: 127px;">
-                <!--
-                  Comment this back in for an image to the right
+                <div style="background-image: url(figure/middle.png);width: 100%;height: 127px;">
                   <div style="position: absolute; right: 0px;">
                     <img src="figure/right.png" style="margin: 0px;" alt=""/>
                   </div>
-                  -->
-                  
                   <div style="position: absolute; left: 0px;">
                     <img src="figure/left.png" style="margin: 0px;" alt=""/>
                   </div>
                   
-                  <div style="position: absolute; top: 25px; right: 20px; text-align: right; font-size: xx-large; font-weight: bold; text-shadow: rgb(255, 255, 255) 0px 0px 5px; color: rgb(68, 68, 68);">
+                  <div style="position: absolute; top: 25px; right: 20px; text-align: right; font-size: x-large; font-weight: bold; text-shadow: rgb(255, 255, 255) 0px 0px 5px; color: rgb(68, 68, 68);">
                   <xsl:apply-templates select="." mode="object.title.markup"/>
                   </div>
                 </div>
@@ -443,7 +455,7 @@ appendix toc
                     </xsl:call-template>
                   </a>
                 </xsl:if>
-                <xsl:text>&#160;</xsl:text>
+                <xsl:text disable-output-escaping="yes">&#38;nbsp;</xsl:text>
               </td>
               <th width="60%" align="center">
 <!--
@@ -459,7 +471,7 @@ Commented out printing of the parent section.  Didn't look too cool
 -->                
               </th>
               <td width="20%" align="right">
-                <xsl:text>&#160;</xsl:text>
+                <xsl:text disable-output-escaping="yes">&#38;nbsp;</xsl:text>
                 <xsl:if test="count($next)>0">
                   <a accesskey="n">
                     <xsl:attribute name="href">
@@ -488,6 +500,7 @@ Commented out printing of the parent section.  Didn't look too cool
 
 
 <!-- WRS: More crazy stuff for custom footer -->
+
 <xsl:template name="footer.navigation">
   <xsl:param name="prev" select="/foo"/>
   <xsl:param name="next" select="/foo"/>
@@ -514,7 +527,7 @@ Commented out printing of the parent section.  Didn't look too cool
       </xsl:if>
 
       <xsl:if test="$row1 or $row2">
-        <table width="100%" summary="Navigation footer">
+        <table width="100%" summary="Navigation footer" class="navfootertable">
           <xsl:if test="$row1">
             <tr>
               <td width="40%" align="left">
@@ -530,7 +543,7 @@ Commented out printing of the parent section.  Didn't look too cool
                     </xsl:call-template>
                   </a>
                 </xsl:if>
-                <xsl:text>&#160;</xsl:text>
+                <xsl:text disable-output-escaping="yes">&#38;nbsp;</xsl:text>
               </td>
               <td width="20%" align="center">
                 <xsl:choose>
@@ -546,11 +559,13 @@ Commented out printing of the parent section.  Didn't look too cool
                       </xsl:call-template>
                     </a>
                   </xsl:when>
-                  <xsl:otherwise>&#160;</xsl:otherwise>
+                  <xsl:otherwise>
+                    <xsl:text disable-output-escaping="yes">&#38;nbsp;</xsl:text>
+                  </xsl:otherwise>
                 </xsl:choose>
               </td>
               <td width="40%" align="right">
-                <xsl:text>&#160;</xsl:text>
+                <xsl:text disable-output-escaping="yes">&#38;nbsp;</xsl:text>
                 <xsl:if test="count($next)>0">
                   <a accesskey="n">
                     <xsl:attribute name="href">
@@ -573,7 +588,7 @@ Commented out printing of the parent section.  Didn't look too cool
                 <xsl:if test="$navig.showtitles != 0">
                   <xsl:apply-templates select="$prev" mode="object.title.markup"/>
                 </xsl:if>
-                <xsl:text>&#160;</xsl:text>
+                <xsl:text disable-output-escaping="yes">&#38;nbsp;</xsl:text>
               </td>
               <td width="20%" align="center">
                 <xsl:choose>
@@ -589,10 +604,12 @@ Commented out printing of the parent section.  Didn't look too cool
                       </xsl:call-template>
                     </a>
                     <xsl:if test="$chunk.tocs.and.lots != 0 and $nav.context != 'toc'">
-                      <xsl:text>&#160;|&#160;</xsl:text>
+                      <xsl:text disable-output-escaping="yes">&#38;nbsp;|&#38;nbsp;</xsl:text>
                     </xsl:if>
                   </xsl:when>
-                  <xsl:otherwise>&#160;</xsl:otherwise>
+                  <xsl:otherwise>
+                    <xsl:text disable-output-escaping="yes">&#38;nbsp;</xsl:text>
+                  </xsl:otherwise>
                 </xsl:choose>
 
                 <xsl:if test="$chunk.tocs.and.lots != 0 and $nav.context != 'toc'">
@@ -610,7 +627,7 @@ Commented out printing of the parent section.  Didn't look too cool
                 </xsl:if>
               </td>
               <td width="40%" align="right" valign="top">
-                <xsl:text>&#160;</xsl:text>
+                <xsl:text disable-output-escaping="yes">&#38;nbsp;</xsl:text>
                 <xsl:if test="$navig.showtitles != 0">
                   <xsl:apply-templates select="$next" mode="object.title.markup"/>
                 </xsl:if>

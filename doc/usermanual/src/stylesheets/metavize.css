@@ -66,6 +66,20 @@ padding: 0em 0em 0em 1em;
   margin: 0;
 }
 
+.navheadertable {
+  margin: 0;
+  padding: 0;
+  border-width: 0;
+}
+
+/* Of corse this goofs up IE.  Whatever
+.navfootertable {
+  margin: 0;
+  padding: 0;
+  border-width: 0;
+}
+*/
+
 .othercredit {
   line-height: 1em;
 }
