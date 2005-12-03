@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="using_adminui">
+  <title>Using the Administrative Interface</title>
+
+  <para>
+    Once the &eg; is set up and initial configuration complete, further administration of the &eg; generally takes place from the <emphasis>Administrative Interface</emphasis>.  The Administrative Interface is launched from a Web Browser.  To launch the Administrative Interface, point your browser window at the following address (<glossterm linkend="gloss_url">URL</glossterm>).
+    
+    <programlisting>http://<replaceable>your_internal_ip</replaceable></programlisting>
+
+    Where <replaceable>your_internal_ip</replaceable> is replaced with the internal <glossterm linkend="gloss_ip_addr">IP address</glossterm> of your &eg;.  If you do not know the internal IP address of the &eg;, please refer to <xref linkend="fixme_link_internalip"/>.  After accessing the URL, you should see a page similar to that shown in <xref linkend="using_adminui_browserlaunch"/>.
+
+  </para>
+  <figure id="using_adminui_browserlaunch">
+    <title>Initial Web Page</title>
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="figure/usingadminui/launch_from_browser_1.png" />
+      </imageobject>
+    </mediaobject>
+  </figure>
+  <para>
+    In the center of the screen is a link <guilabel>Launch EdgeGuard Client</guilabel>.  Clicking on this link begins the process of launching the Administrative Interface.
+  </para>
+ 
+
+  <sect1 id="using_adminui_navigation">
+    <title>Navigation</title>
+    <para>
+      Bill - put a reference to "rack" here, and take it out of the introduction
+    </para>
+  </sect1>
+  <sect1 id="using_adminui_navigation_appliances">
+    <title>Software Appliances</title>
+    <para>
+      Bill - mention system services and remove from the introduction
+    </para>
+  </sect1>
+</chapter>

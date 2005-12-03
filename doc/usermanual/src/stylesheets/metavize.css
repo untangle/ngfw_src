@@ -51,8 +51,9 @@ body {
   padding-left: 1em;
 }
 
+/* WRS: Changed to only pad left.  It made the hyperlinked area way too small */
 .sect1, .chapter, .synopsis, .appendix, .preface, .article, .refsect1, .index, .glossary, .section {
-  padding: 1em;
+  padding-left: 1em;
 }
 
 .toc .chapter {
@@ -301,6 +302,14 @@ h1, h2, h3, h4, h5, h6 {
 .example { 
   margin-left: 0.5in; 
   margin-right: 0.5in;
+}
+
+
+/* Added WRS to make screenshots look "cleaner" */
+div.mediaobject img {
+  border-style: inset;
+  border-width:5px;
+  border-color: rgb(79,128,192);
 }
 
 div.mediaobject { 

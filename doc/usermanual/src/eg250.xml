@@ -4,6 +4,7 @@
 <!ENTITY preface SYSTEM "preface.xml">
 <!ENTITY introduction SYSTEM "introduction.xml">
 <!ENTITY getting_started SYSTEM "getting_started.xml">
+<!ENTITY using_adminui SYSTEM "using_adminui.xml">
 <!ENTITY config_tab SYSTEM "config_tab.xml">
 <!ENTITY policy_manager SYSTEM "policy_manager.xml">
 <!ENTITY upgrade_manager SYSTEM "upgrade_manager.xml">
@@ -67,6 +68,8 @@
   &introduction;
 
   &getting_started;
+
+  &using_adminui;
 
   &config_tab;
 

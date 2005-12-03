@@ -127,6 +127,10 @@
     </figure>
 
   </para>
+
+  <para id="fixme_link_internalip" xreflabel="Internal IP Address">
+    Dirk - somewhere in your discussion it would be good to mention the internal IP address of the machine, and how it is set (and known).  When discussing launching the admin UI, we need to refer to the internal IP.  I assume this comes out of the quickstart/wizard.  Anyway, I've linked to the "id" above assuming that someday it'll contain the correct verbiage.
+  </para>
   
   
   <sect1 id="getting_started_network_layouts">
