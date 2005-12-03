@@ -47,6 +47,7 @@ public class LoadPatterns {
 	pats.put("Code Red",new ProtoFilterPattern("Code Red","Worm"," a worm that attacks Microsoft IIS web servers","/default\\.ida\\?NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN%u9090%u6858%ucbd3%u7801%u9090%u6858%ucbd3%u7801%u9090%u6858%ucbd3%u7801%u9090%u9090%u8190%u00c3%u0003%u8b00%u531b%u53ff%u0078%u0000%u00=a","ok fast",false,false,false));
 	pats.put("Counterstrike (using the new Source engine)",new ProtoFilterPattern("Counterstrike (using the new Source engine)","Video Game"," network game","^\\xff\\xff\\xff\\xff.*cstrikeCounter-Strike","good veryfast",false,false,false));
 	pats.put("CVS",new ProtoFilterPattern("CVS","Software Development"," Concurrent Versions System","^BEGIN (AUTH|VERIFICATION|GSSAPI) REQUEST\\x0a","good veryfast",false,false,false));
+	pats.put("Day of Defeat",new ProtoFilterPattern("Day of Defeat","Video Game"," network game","^\\xff\\xff\\xff\\xff.*dodDay of Defeat","good veryfast",false,false,false));
 	pats.put("DHCP",new ProtoFilterPattern("DHCP","Networking"," Dynamic Host Configuration Protocol - RFC 1541","^[\\x01\\x02][\\x01- ]\\x06.*c\\x82sc","good veryfast",false,false,false));
 	pats.put("Direct Connect",new ProtoFilterPattern("Direct Connect","Peer to Peer"," P2P filesharing - http://www.neo-modus.com","^(\\$mynick |\\$lock |\\$key )","good veryfast",false,false,false));
 	pats.put("DNS",new ProtoFilterPattern("DNS","Networking"," Domain Name System - RFC 1035","^.?.?.?.?[\\x01\\x02].?.?.?.?.?.?[\\x01-\\x3F][a-z][\\x01-\\x3Fa-z]*[\\x02-\\x06][a-z][a-z][fglmoprstuvz]?[aeop]?(um)?[\\x01-\\x10][\\x01\\x03\\x04\\xFF]","great notsofast",false,false,false));
@@ -88,8 +89,8 @@ public class LoadPatterns {
 	pats.put("POP3",new ProtoFilterPattern("POP3","Email"," Post Office Protocol version 3 (popular e-mail protocol) - RFC 1939","^(\\+ok |-err )","good veryfast",false,false,false));
 	pats.put("pressplay",new ProtoFilterPattern("pressplay","Music"," A legal music distribution site - http://pressplay.com","user-agent: nsplayer","ok fast",false,false,false));
 	pats.put("Tencent QQ Protocol",new ProtoFilterPattern("Tencent QQ Protocol","Instant Messenger"," Chinese instant messenger protocol - http://www.qq.com","^.?\\x02.+\\x03$","good veryfast",false,false,false));
-	pats.put("Quake 1",new ProtoFilterPattern("Quake 1","Video Game"," A popular computer game.","^\\x80\\x0c\\x01quake\\x03","marginal veryfast",false,false,false));
 	pats.put("Half Life 1 engine games (HL 1, Quake 2/3/World, Counterstrike 1.6, etc.)",new ProtoFilterPattern("Half Life 1 engine games (HL 1, Quake 2/3/World, Counterstrike 1.6, etc.)","Video Game","Half Life 1 engine games (HL 1, Quake 2/3/World, Counterstrike 1.6, etc.)","^\\xff\\xff\\xff\\xffget(info|challenge)","good veryfast",false,false,false));
+	pats.put("Quake 1",new ProtoFilterPattern("Quake 1","Video Game"," A popular computer game.","^\\x80\\x0c\\x01quake\\x03","marginal veryfast",false,false,false));
 	pats.put("RDP",new ProtoFilterPattern("RDP","Remote Deskop"," Remote Desktop Protocol (used in Windows Terminal Services)","rdpdr.*cliprdr.*rdpsnd","ok fast",false,false,false));
 	pats.put("rlogin",new ProtoFilterPattern("rlogin","System Administration"," remote login - RFC 1282","^[a-z][a-z0-9][a-z0-9]+/[1-9][0-9]?[0-9]?[0-9]?00","ok veryfast",false,false,false));
 	pats.put("RTSP",new ProtoFilterPattern("RTSP","Networking"," Real Time Streaming Protocol - http://www.rtsp.org","rtsp/1.0 200 ok","good fast",false,false,false));
@@ -113,7 +114,7 @@ public class LoadPatterns {
 	pats.put("VNC",new ProtoFilterPattern("VNC","Remote Desktop"," Virtual Network Computing. Also known as RFB - Remote Frame Buffer","^rfb 00[1-9]\\.00[0-9]\\x0a$","good fast",false,false,false));
 	pats.put("X Windows Version 11",new ProtoFilterPattern("X Windows Version 11","Remote Desktop"," Networked GUI system used in most Unices","^[lb].?\\x0b","good veryfast",false,false,false));
 	pats.put("XBoxLive",new ProtoFilterPattern("XBoxLive","Video Game"," Console gaming","^\\x58\\x80........\\xf3|^\\x06\\x58\\x4e","marginal notsofast",false,false,false));
-	pats.put("Xunlei",new ProtoFilterPattern("Xunlei","Peer to Peer"," Chinese P2P filesharing - http://xunlei.com","^[\\x28\\x29]....?.?(query|get)","ok veryfast",false,false,false));
+	pats.put("Xunlei",new ProtoFilterPattern("Xunlei","Peer to Peer"," Chinese P2P filesharing - http://xunlei.com","^[\\x28\\x29]...?.?.?(reg|get|query)","good veryfast",false,false,false));
 	pats.put("Yahoo messenger",new ProtoFilterPattern("Yahoo messenger","Instant Messenger"," an instant messenger protocol - http://yahoo.com","^(ymsg|ypns|yhoo).?.?.?.?.?.?.?[lwt].*\\xc0\\x80","good veryfast",false,false,false));
 	pats.put("ZMAAP",new ProtoFilterPattern("ZMAAP","Networking"," Zeroconf Multicast Address Allocation Protocol","^\\x1b\\xd7\\x3b\\x48[\\x01\\x02]\\x01?\\x01","ok veryfast",false,false,false));
 	return pats;
