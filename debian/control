@@ -185,10 +185,12 @@ Architecture: any
 Depends: mvvm, openvpn, nsis, nsis-mv, sysutils, zip
 XB-Price: 0
 XB-Display-Name: OpenVPN
-XB-Website: http://www.openvpn.net
+XB-Website: http://www.metavize.com/openvpn.html
 XB-Rack-Position: 990
 XB-Is-Service: true
-Description: Client VPN.
+Description: The Metavize OpenVPN Software Appliance
+ The Openvpn Software Appliances creates a virtual
+ private network with remote offices and users.
 
 Package: ids-transform
 Architecture: any
