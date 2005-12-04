@@ -103,7 +103,7 @@ class Sandbox
         return new LinkedList<String>();
     }
 
-    void downloadConfig( IPaddr address, String key ) throws Exception
+    void downloadConfig( IPaddr address, int port, String key ) throws Exception
     {
         /* The key must be a valid hexadecimal number, this is 
          * an easy check to detect spaces, and anyother weird characters
@@ -113,7 +113,11 @@ class Sandbox
         } catch ( NumberFormatException e ) { 
             throw new ValidateException( "A key must only contain numbers and the letters A-F: " + key );
         }
-        execDownloadScript( false, address.toString(), key );
+        String serverSocketAddress = address.toString();
+        
+        if ( port != 443 && port != 0 ) serverSocketAddress += ":" + port;
+
+        execDownloadScript( false, serverSocketAddress, key );
     }
 
     void downloadConfigUsb( String name ) throws Exception

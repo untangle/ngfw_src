@@ -46,7 +46,7 @@ public interface VpnTransform extends Transform
 
     //// the stages of the setup wizard ///
     List<String> getAvailableUsbList() throws TransformException;
-    public void downloadConfig( IPaddr address, String key ) throws Exception;
+    public void downloadConfig( IPaddr address, int port, String key ) throws Exception;
     public void downloadConfigUsb( String name ) throws Exception;
     public void generateCertificate( CertificateParameters parameters ) throws Exception;
     public GroupList getAddressGroups() throws Exception;

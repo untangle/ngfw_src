@@ -106,7 +106,7 @@ class NetworkingManagerImpl implements NetworkingManager
     private static NetworkingManagerImpl INSTANCE = new NetworkingManagerImpl();
 
     /* A cache of the current configuration */
-    NetworkingConfiguration configuration = new NetworkingConfiguration();
+    NetworkingConfiguration configuration = null;
 
     private IntfEnum intfEnum;
 
@@ -131,8 +131,9 @@ class NetworkingManagerImpl implements NetworkingManager
     {
         /* Validate the networking configuration before saving it. */
         netConfig.validate();
-
-        if (true == configuration.equals(netConfig)) {
+        
+        /* If the configuration is null */
+        if (( this.configuration != null ) && ( this.configuration.equals( netConfig ))) {
             return; // if NetworkingConfiguration has not changed, do nothing
         }
 
@@ -154,7 +155,7 @@ class NetworkingManagerImpl implements NetworkingManager
     private void refresh()
     {
         /* Create a new network configuration with all defaults */
-        configuration = new NetworkingConfiguration();
+        this.configuration = new NetworkingConfiguration();
 
         /* Retrieve the DHCP configuration */
         getInterface();
@@ -506,7 +507,7 @@ class NetworkingManagerImpl implements NetworkingManager
         try {
             logger.debug( "Storing properties into: " + PROPERTY_FILE + "[" + configuration.httpsPort()
                           + "]" );
-        properties.store( new FileOutputStream( new File( PROPERTY_FILE )), PROPERTY_COMMENT );
+            properties.store( new FileOutputStream( new File( PROPERTY_FILE )), PROPERTY_COMMENT );
         } catch ( Exception e ) {
             logger.error( "Error saving HTTPS port" );
         }
@@ -545,6 +546,23 @@ class NetworkingManagerImpl implements NetworkingManager
 
         close( out );
     }
+
+    /* Get the external HTTPS port */
+    public int getExternalHttpsPort()
+    {
+        /* Only refresh if the configuration is null, otherwise */
+        if ( this.configuration == null ) refresh();
+
+        /* Just in case */
+        if ( this.configuration == null ) {
+            logger.warn( "NULL Settings after a refresh, using defaults", new Exception());
+            return 443;
+        }
+
+        /* This doesn't query the file, it just grabs the port */
+        return this.configuration.httpsPort();
+    }
+
 
     static NetworkingManagerImpl getInstance()
     {

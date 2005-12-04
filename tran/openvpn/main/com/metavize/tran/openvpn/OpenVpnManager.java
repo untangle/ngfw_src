@@ -307,8 +307,10 @@ class OpenVpnManager
         throws TransformException
     {
         ArgonManager am = MvvmContextFactory.context().argonManager();
+        
         InetAddress internalAddress = am.getInsideAddress();
         InetAddress externalAddress = am.getOutsideAddress();
+        int externalHttpsPort =  MvvmContextFactory.context().networkingManager().getExternalHttpsPort();
 
         if ( internalAddress == null || externalAddress == null ) {
             throw new TransformException( "The inside address is not set" );
@@ -325,6 +327,7 @@ class OpenVpnManager
             ScriptRunner.getInstance().exec( GENERATE_DISTRO_SCRIPT, client.getInternalName(),
                                              key, internalAddress.getHostAddress(),
                                              externalAddress.getHostAddress(),
+                                             String.valueOf( externalHttpsPort ),
                                              String.valueOf( client.getDistributeUsb()),
                                              String.valueOf( client.getIsEdgeGuard()));
         } catch ( ScriptException e ) {

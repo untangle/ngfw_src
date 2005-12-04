@@ -46,6 +46,7 @@ public class ClientWizardServerJPanel extends MWizardPageJPanel {
     boolean useServer;
     String address;
     IPaddr addressIPaddr;
+    int serverPort;
     String password;
     boolean keyRead = false;
     String selection;
@@ -75,7 +76,19 @@ public class ClientWizardServerJPanel extends MWizardPageJPanel {
 		}
 		
 		try{
-		    addressIPaddr = IPaddr.parse(address);
+                    /* RBS This code is here to allow for <ip address>:<port>
+                     * it should be in a richer object, like a IPAddressAndPort */
+                    String[] values = address.split( ":" );
+                    if ( values.length == 1 ) {
+                        /* XXX Magic number */
+                        serverPort = 443;
+                    } else if ( values.length == 2 ) {
+                        serverPort = Integer.parseInt( values[1] );
+                    } else {
+                        exception = new Exception(EXCEPTION_ADDRESS_FORMAT);
+                        return;
+                    }
+                    addressIPaddr = IPaddr.parse( values[0] );
 		}
 		catch(Exception e){
 		    exception = new Exception(EXCEPTION_ADDRESS_FORMAT);
@@ -124,7 +137,7 @@ public class ClientWizardServerJPanel extends MWizardPageJPanel {
 	    try{
 		// DOWNLOAD THE STUFFS
 		if( useServer )
-		    vpnTransform.downloadConfig( addressIPaddr, password );
+		    vpnTransform.downloadConfig( addressIPaddr, serverPort, password );
 		else
 		    vpnTransform.downloadConfigUsb( selection );
 		

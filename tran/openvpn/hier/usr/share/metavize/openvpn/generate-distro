@@ -19,8 +19,9 @@ commonName=`removeSpaces ${1}`
 distributionKey=${2}
 internalAddress=${3}
 externalAddress=${4}
-distributeUsb=${5}
-isEdgeGuard=${6}
+externalPort=${5}
+distributeUsb=${6}
+isEdgeGuard=${7}
 
 ## XXX May need to do some checks to see if files exists etc.
 
@@ -75,9 +76,18 @@ function buildConfigFile() {
 function buildEmail()
 {
     local t_emailFile="${PACKAGE_DIR}/mail-${commonName}.eml"
+    
+    local t_externalAddress
+    
+    if [ "${externalPort}x" = "443x" ]; then
+        t_externalAddress=${externalAddress}
+    else
+        t_externalAddress="${externalAddress}:${externalPort}"
+    fi
 
     if [ "${isEdgeGuard}x" = "truex" ]; then
-        sed -e "s|%%KEY%%|${distributionKey}|g" -e "s|%%EXTERNAL_ADDRESS%%|${externalAddress}|g" \
+        sed -e "s|%%KEY%%|${distributionKey}|g" \
+            -e "s|%%EXTERNAL_ADDRESS%%|${t_externalAddress}|g" \
             ${EG_TEMPLATE} > ${t_emailFile}
     else
         sed -e "s|%%KEY%%|${distributionKey}|g" -e "s|%%ADDRESS%%|${internalAddress}|g" \

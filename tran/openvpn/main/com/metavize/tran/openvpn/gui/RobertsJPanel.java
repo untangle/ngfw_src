@@ -194,7 +194,7 @@ public class RobertsJPanel extends javax.swing.JPanel {
             if ( Boolean.parseBoolean( jTextField2.getText().trim())) {
                 openvpn.downloadConfigUsb( jTextField3.getText().trim());
             } else {
-                openvpn.downloadConfig( IPaddr.parse( jTextField3.getText().trim()), 
+                openvpn.downloadConfig( IPaddr.parse( jTextField3.getText().trim()), 0,
                                         jTextField4.getText().trim());
             }
         } else {

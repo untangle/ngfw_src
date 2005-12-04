@@ -567,9 +567,9 @@ public class VpnTransformImpl extends AbstractTransform
         return this.sandbox.getAvailableUsbList();
     }
     
-    public void downloadConfig( IPaddr address, String key ) throws Exception
+    public void downloadConfig( IPaddr address, int port, String key ) throws Exception
     {
-        this.sandbox.downloadConfig( address, key );
+        this.sandbox.downloadConfig( address, port, key );
     }
 
     public void downloadConfigUsb( String name ) throws Exception
