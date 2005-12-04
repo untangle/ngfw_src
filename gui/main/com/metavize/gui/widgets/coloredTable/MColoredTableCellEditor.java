@@ -12,10 +12,12 @@
 package com.metavize.gui.widgets.coloredTable;
 
 import com.metavize.gui.util.*;
+import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.widgets.MPasswordField;
 
 import javax.swing.*;
+import javax.swing.border.*;
 import java.awt.event.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
@@ -43,7 +45,9 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
     private final JSpinner jSpinner;
     private final JSpinner jDateSpinner;
     private final MPasswordField mPasswordField;
-    
+    private final JButton jButton;
+    private final JPanel jButtonJPanel;
+
     private JComponent editedComponent;
     
     private MSortedTableModel mSortedTableModel;
@@ -63,7 +67,15 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	this.mColoredJTable = mColoredJTable;
 	//this.setClickCountToStart(1);
 	
-	
+	jButton = new JButton();
+	jButton.setFont(new java.awt.Font("Default", 0, 12));
+	jButton.setFocusable(false);
+	jButtonJPanel = new JPanel();
+	jButtonJPanel.setOpaque(false);
+	jButtonJPanel.setLayout(new BorderLayout());
+	jButtonJPanel.setBorder(new EmptyBorder(2,2,2,2));
+	jButtonJPanel.add(jButton);
+
 	jCheckBox = new JCheckBox();
 	jCheckBox.setHorizontalAlignment(JCheckBox.CENTER);
 	jCheckBox.setOpaque(true);
@@ -146,7 +158,15 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	selectedModelCol = selectedViewCol;
 	selectedState = mSortedTableModel.getRowState( selectedModelRow );
 	
-	if(value instanceof ComboBoxModel){
+	if( value instanceof ButtonRunnable ){
+	    selectedValue = jButton;
+	    editedComponent = jButton;
+	    returnValue = value;
+	    jButton.setText( ((ButtonRunnable)value).getButtonText() );
+	    jButton.setEnabled( ((ButtonRunnable)value).isEnabled() );
+	    return jButtonJPanel;
+	}
+	else if(value instanceof ComboBoxModel){
 	    selectedValue  = ((ComboBoxModel)value).getSelectedItem();
 	    editedComponent = jComboBox;
 	    ((JComboBox)editedComponent).setModel((ComboBoxModel) value);
@@ -213,7 +233,10 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
     }
     
     private void updateValues(){
-	if(editedComponent instanceof JComboBox){
+	if(editedComponent instanceof JButton){
+	    newValue = selectedValue;
+	}
+	else if(editedComponent instanceof JComboBox){
 	    returnValue = ((JComboBox)editedComponent).getModel();
 	    newValue = ((ComboBoxModel)returnValue).getSelectedItem();
 	}

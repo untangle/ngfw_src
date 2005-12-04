@@ -13,7 +13,7 @@ package com.metavize.gui.widgets.coloredTable;
 
 import com.metavize.gui.widgets.editTable.MSortedTableModel;
 import com.metavize.gui.widgets.MPasswordField;
-import com.metavize.gui.util.Util;
+import com.metavize.gui.util.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -49,40 +49,42 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
     private static final MLineBorder uneditableOddBorder = unselectedOddBorder; //new MLineBorder(uneditableOddColor, 2);
     private static final MLineBorder uneditableEvenBorder = unselectedEvenBorder; //new MLineBorder(uneditableEvenColor, 2);
     
-        private static final Color unselectedColor = new Color(193, 193, 206);
-        private static final Color selectedColor = new Color(193, 193, 226);
-        
-        private static final Color editableColor = new Color(64, 64, 236);
-        private static final Color uneditableColor = new Color(236, 64, 64);
-        
-        private static final Color focusBackgroundEditableColor = selectedColor;
-        private static final Color selectedBackgroundEditableColor = selectedColor;
-        private static final Color normalBackgroundEditableColor = unselectedColor;
-        private static final Color focusBackgroundUneditableColor = selectedColor;
-        private static final Color selectedBackgroundUneditableColor = selectedColor;
-        private static final Color normalBackgroundUneditableColor = unselectedColor;
-        
-        private static final Color focusBorderEditableColor = selectedColor;
-        private static final Color selectedBorderEditableColor = selectedColor;
-        private static final Color normalBorderEditableColor = unselectedColor;
-        private static final Color focusBorderUneditableColor = selectedColor;
-        private static final Color selectedBorderUneditableColor = selectedColor;
-        private static final Color normalBorderUneditableColor = unselectedColor;
-        
-        private static final MLineBorder mLineHighlightedSelectedEditableBorder = new MLineBorder(selectedColor, 2);
-        private static final MLineBorder mLineHighlightedSelectedUneditableBorder = new MLineBorder(selectedColor, 2);        
-        private static final MLineBorder mLineHighlightedUnselectedEditableBorder = new MLineBorder(editableColor, 2);
-        private static final MLineBorder mLineHighlightedUnselectedUneditableBorder = new MLineBorder(uneditableColor, 2);
-        
-        private static final MLineBorder mLineEditableNormalBorder = new MLineBorder(unselectedColor, 2);
-        private static final MLineBorder mLineUneditableNormalBorder = new MLineBorder(unselectedColor, 2);        
-                
-        private static JLabel renderJLabel = new JLabel();
-        private static JTextField renderJTextField = new JTextField();
-        private static JComboBox renderJComboBox = new JComboBox();
-        private static JCheckBox renderJCheckBox = new JCheckBox();
-        private static JSlider renderJSlider = new JSlider();
-        private static JSpinner renderJSpinner = new JSpinner();
+    private static final Color unselectedColor = new Color(193, 193, 206);
+    private static final Color selectedColor = new Color(193, 193, 226);
+    
+    private static final Color editableColor = new Color(64, 64, 236);
+    private static final Color uneditableColor = new Color(236, 64, 64);
+    
+    private static final Color focusBackgroundEditableColor = selectedColor;
+    private static final Color selectedBackgroundEditableColor = selectedColor;
+    private static final Color normalBackgroundEditableColor = unselectedColor;
+    private static final Color focusBackgroundUneditableColor = selectedColor;
+    private static final Color selectedBackgroundUneditableColor = selectedColor;
+    private static final Color normalBackgroundUneditableColor = unselectedColor;
+    
+    private static final Color focusBorderEditableColor = selectedColor;
+    private static final Color selectedBorderEditableColor = selectedColor;
+    private static final Color normalBorderEditableColor = unselectedColor;
+    private static final Color focusBorderUneditableColor = selectedColor;
+    private static final Color selectedBorderUneditableColor = selectedColor;
+    private static final Color normalBorderUneditableColor = unselectedColor;
+    
+    private static final MLineBorder mLineHighlightedSelectedEditableBorder = new MLineBorder(selectedColor, 2);
+    private static final MLineBorder mLineHighlightedSelectedUneditableBorder = new MLineBorder(selectedColor, 2);        
+    private static final MLineBorder mLineHighlightedUnselectedEditableBorder = new MLineBorder(editableColor, 2);
+    private static final MLineBorder mLineHighlightedUnselectedUneditableBorder = new MLineBorder(uneditableColor, 2);
+    
+    private static final MLineBorder mLineEditableNormalBorder = new MLineBorder(unselectedColor, 2);
+    private static final MLineBorder mLineUneditableNormalBorder = new MLineBorder(unselectedColor, 2);        
+    
+    private static JButton renderJButton = new JButton();
+    private static JPanel renderJButtonJPanel = new JPanel();
+    private static JLabel renderJLabel = new JLabel();
+    private static JTextField renderJTextField = new JTextField();
+    private static JComboBox renderJComboBox = new JComboBox();
+    private static JCheckBox renderJCheckBox = new JCheckBox();
+    private static JSlider renderJSlider = new JSlider();
+    private static JSpinner renderJSpinner = new JSpinner();
     private static JSpinner renderDateJSpinner = new JSpinner( new SpinnerDateModel((new GregorianCalendar()).getTime(), null, null, Calendar.MINUTE) );
     
     private static SpinnerNumberModel indexSpinnerNumberModel = new SpinnerNumberModel(1, Integer.MIN_VALUE, Integer.MAX_VALUE, 1);
@@ -100,6 +102,15 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
             if(savedImageIcon == null)
                 savedImageIcon = new ImageIcon( this.getClass().getResource("/com/metavize/gui/widgets/coloredTable/IconSaved13x13.png") );
             
+	    renderJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+	    renderJButton.setFocusable(false);
+	    renderJButton.setEnabled(true);
+	    renderJButtonJPanel = new JPanel();
+	    renderJButtonJPanel.setOpaque(false);
+	    renderJButtonJPanel.setLayout(new BorderLayout());
+	    renderJButtonJPanel.setBorder(new EmptyBorder(2,2,2,2));
+	    renderJButtonJPanel.add(renderJButton);
+
             renderJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
             renderJLabel.setHorizontalAlignment(JTextField.LEFT);
             renderJLabel.setOpaque(true);
@@ -164,7 +175,12 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
 	    JComponent renderSecondaryJComponent = null;
             
             // CONTENT
-            if(value instanceof ComboBoxModel){
+	    if(value instanceof ButtonRunnable ){
+		renderJButton.setText( ((ButtonRunnable)value).getButtonText() );
+		renderJButton.setEnabled( ((ButtonRunnable)value).isEnabled() );
+		renderJComponent = renderJButtonJPanel;
+	    }
+            else if(value instanceof ComboBoxModel){
                 renderJComboBox.setModel( (ComboBoxModel) value);
                 renderJComponent = renderJComboBox;
             }
@@ -283,7 +299,7 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
                 }
                 
             }
-            else if( !hasFocus && isSelected){
+            else if(!hasFocus && isSelected){
                 if(isEditable){
                     backgroundColor = selectedBackgroundEditableColor;
                     borderColor = mLineHighlightedSelectedEditableBorder;
@@ -315,8 +331,14 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
                     }
                 }
             }
-	    renderJComponent.setBackground(backgroundColor);
-	    renderJComponent.setBorder(borderColor);
+	    if( renderJComponent == renderJButton ){
+		//renderJComponent.setBorder( new CompoundBorder(borderColor, ((CompoundBorder)renderJButton.getBorder()).getInsideBorder()) );
+	    }
+	    else{
+		renderJComponent.setBackground(backgroundColor);
+		renderJComponent.setBorder(borderColor);
+	    }
+
 	    if( renderSecondaryJComponent != null )
 		renderSecondaryJComponent.setBackground(backgroundColor);
             return renderJComponent;
