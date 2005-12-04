@@ -11,6 +11,8 @@
 package com.metavize.tran.openvpn;
 
 import java.io.Serializable;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.List;
 import java.util.LinkedList;
 
@@ -47,8 +49,13 @@ public class ClientList implements Serializable, Validatable
      * Validate the object, throw an exception if it is not valid */
     public void validate() throws ValidateException
     {
-        for ( VpnClient client : this.clientList ) client.validate();
-
-        /* XXX Check for overlap, and check for conflicts with the network settings */
+        Set<String> nameSet = new HashSet<String>();
+        for ( VpnClient client : this.clientList ) {
+            client.validate();
+            String name = client.getInternalName();
+            if ( !nameSet.add( name )) {
+                throw new ValidateException( "Client and site names must all be unique: '" + name + "'" );
+            }
+        }
     }
 }

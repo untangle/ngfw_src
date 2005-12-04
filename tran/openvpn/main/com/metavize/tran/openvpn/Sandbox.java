@@ -15,6 +15,8 @@ import com.metavize.mvvm.security.Tid;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.List;
 import java.util.LinkedList;
 
@@ -174,7 +176,8 @@ class Sandbox
 
         for ( VpnGroup group : this.groupList.getGroupList()) {
             if ( resolveGroupMap.put( group.getName(), group ) != null ) {
-                throw new ValidateException( "Group name must be unique: " + group.getName());
+                /* This shouldn't happen because this is validated in parameters.validate */
+                throw new ValidateException( "Group name must be unique: '" + group.getName() + "'" );
             }
 
         }        
@@ -197,8 +200,9 @@ class Sandbox
 
     void setSiteList( SiteList parameters ) throws Exception
     {
-        parameters.validate();
-        
+        /* Validate the site list against the client list */
+        parameters.validate( clientList );
+
         fixGroups( parameters.getSiteList());
         this.siteList = parameters;
     }

@@ -14,8 +14,6 @@ package com.metavize.tran.openvpn;
 import java.io.Serializable;
 import java.util.List;
 import java.util.LinkedList;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.Iterator;
 
 import com.metavize.mvvm.security.Tid;
@@ -96,46 +94,19 @@ public class VpnSettings implements Serializable, Validatable
         
         if (( groupList == null ) || ( groupList.size() == 0 )) throw new ValidateException( "No groups" );
         
-        Set nameSet = new HashSet();
+        GroupList validateGroupList = new GroupList( this.groupList );
+        validateGroupList.validate();
         
-        for ( Iterator iter = groupList.iterator(); iter.hasNext() ; ) {
-            VpnGroup group = (VpnGroup)iter.next();
-            /* XXXX Have to check if these are all in the correct range */
-            
-            String name = group.getInternalName();
-            group.validate();
-            if ( !nameSet.add( name )) {
-                throw new ValidateException( "Group names must all be unique:" + name );
-            }
-        }
+        ClientList validateClientList = new ClientList( this.clientList );
+        validateClientList.validate();
+        
+        SiteList validateSiteList = new SiteList( this.siteList );
+        validateSiteList.validate( validateClientList );
 
-        nameSet.clear();
-
-        /* XXX??? Should there be a check for no clients */
-        if ( clientList != null ) {
-
-            for ( Iterator iter = clientList.iterator() ; iter.hasNext() ; ) {
-                VpnClient client = (VpnClient)iter.next();
-                /* Validate that the client is okay */
-                client.validate();
-                String name = client.getInternalName();
-                if ( !nameSet.add( name )) {
-                    throw new ValidateException( "Client names must all be unique:" + name );
-                }
-            }
-        }
-
-        if ( siteList != null ) {
-            for ( Iterator iter = siteList.iterator() ; iter.hasNext() ; ) {
-                VpnClient site = (VpnClient)iter.next();
-                /* Validate that the client is okay */
-                site.validate();
-                String name = site.getInternalName();
-                if ( !nameSet.add( name )) {
-                    throw new ValidateException( "Client names must all be unique:" + name );
-                }
-            }
-        }
+        ExportList validateExportList = new ExportList( this.exportedAddressList );
+        validateExportList.validate();
+        
+        /* XXX Check for overlap in all of the settings */        
     }
 
     /* Typically private, but package access so the ID can be reused */

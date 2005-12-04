@@ -12,6 +12,8 @@ package com.metavize.tran.openvpn;
 
 import java.io.Serializable;
 
+import java.util.Set;
+import java.util.HashSet;
 import java.util.List;
 import java.util.LinkedList;
 
@@ -60,8 +62,16 @@ public class GroupList implements Serializable, Validatable
      * Validate the object, throw an exception if it is not valid */
     public void validate() throws ValidateException
     {
+        Set<String> nameSet = new HashSet<String>();
+        
         /* XXXXXXXX What else belongs in here */
-        for ( VpnGroup group : this.groupList ) group.validate();
+        for ( VpnGroup group : this.groupList ) {
+            String name = group.getInternalName();
+            if ( !nameSet.add( name )) {
+                throw new ValidateException( "Group names must be unique: '" + name + "'" );
+            }
+            group.validate();
+        }
 
         /* Determine if all of the addresses are unique */
         new AddressValidator().validate( buildAddressRange());
