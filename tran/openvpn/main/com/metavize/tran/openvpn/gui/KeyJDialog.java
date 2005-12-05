@@ -174,7 +174,7 @@ public class KeyJDialog extends javax.swing.JDialog implements java.awt.event.Wi
 		}//GEN-LAST:event_emailJRadioButtonActionPerformed
 
     private void proceedJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proceedJButtonActionPerformed
-        if( emailJTextField.getText().length() == 0) {
+        if( !isUsbSelected && emailJTextField.getText().trim().length() == 0) {
 				emailJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
 				MOneButtonJDialog.factory(this, "OpenVPN", "You must specify an email address to send the key to.", "OpenVPN Warning", "Warning");
 				return;

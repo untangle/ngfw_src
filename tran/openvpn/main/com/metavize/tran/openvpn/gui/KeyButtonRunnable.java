@@ -43,8 +43,8 @@ public class KeyButtonRunnable implements ButtonRunnable {
 	    }
 	    else if( keyJDialog.isEmailSelected() ){
 		vpnClient.setDistributeUsb(false);
+                vpnClient.setDistributionEmail( keyJDialog.getEmailAddress() );
 	    }
-	    vpnClient.setDistributionEmail( keyJDialog.getEmailAddress() );
 	    try{
 		vpnTransform.distributeClientConfig( vpnClient );
 		String successString;
