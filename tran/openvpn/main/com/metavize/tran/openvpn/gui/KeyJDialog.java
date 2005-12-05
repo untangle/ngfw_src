@@ -6,34 +6,48 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MTwoButtonJDialog.java 194 2005-04-06 19:13:55Z inieves $
+ * $Id$
  */
 
-package com.metavize.gui.widgets.dialogs;
+package com.metavize.tran.openvpn.gui;
 
 import com.metavize.gui.util.Util;
 import com.metavize.mvvm.ToolboxManager;
+import com.metavize.gui.widgets.dialogs.*;
 import java.awt.Container;
 import java.awt.Frame;
 import java.awt.Dialog;
 import java.awt.Window;
 
-public class MTwoButtonJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
+public class KeyJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
     
     private boolean isProceeding = false;
+	private boolean isUsbSelected;
+	private String emailAddress;
 
-    public MTwoButtonJDialog(Dialog topLevelDialog, boolean isModal) {
-        super( topLevelDialog , isModal);
+	public static KeyJDialog factory(Container topLevelContainer){
+			KeyJDialog keyJDialog;
+			if(topLevelContainer instanceof Frame)
+					keyJDialog = new KeyJDialog((Frame)topLevelContainer);
+			else
+					keyJDialog = new KeyJDialog((Dialog)topLevelContainer);
+			return keyJDialog;
+	}
+	
+    public KeyJDialog(Dialog topLevelDialog) {
+        super( topLevelDialog, true);
 	init( topLevelDialog );
+	
     }
 
-    public MTwoButtonJDialog(Frame topLevelFrame, boolean isModal) {
-        super( topLevelFrame , isModal);
+    public KeyJDialog(Frame topLevelFrame) {
+        super( topLevelFrame, true);
 	init( topLevelFrame );
     }
 
     private void init(Window topLevelWindow) {
         initComponents();
+		isUsbSelected = usbJRadioButton.isSelected();
         this.addWindowListener(this);
         this.setBounds( Util.generateCenteredBounds(topLevelWindow.getBounds(), this.getWidth(), this.getHeight()) );
     }
@@ -41,20 +55,25 @@ public class MTwoButtonJDialog extends javax.swing.JDialog implements java.awt.e
         private void initComponents() {//GEN-BEGIN:initComponents
                 java.awt.GridBagConstraints gridBagConstraints;
 
+                buttonGroup1 = new javax.swing.ButtonGroup();
                 cancelJButton = new javax.swing.JButton();
                 proceedJButton = new javax.swing.JButton();
                 messageJLabel = new javax.swing.JLabel();
                 labelJLabel = new javax.swing.JLabel();
+                emailJRadioButton = new javax.swing.JRadioButton();
+                emailJLabel = new javax.swing.JLabel();
+                emailJTextField = new javax.swing.JTextField();
+                usbJRadioButton = new javax.swing.JRadioButton();
                 backgroundJLabel = new com.metavize.gui.widgets.MTiledIconLabel();
 
-                getContentPane().setLayout(new java.awt.GridBagLayout());
+                getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
                 setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-                setTitle("Confirm Upgrade...");
+                setTitle("OpenVPN Question...");
                 setModal(true);
                 setResizable(false);
                 cancelJButton.setFont(new java.awt.Font("Default", 0, 12));
-                cancelJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/Button_Cancel_Upgrade_106x17.png")));
+                cancelJButton.setText("<html><b>Cancel</b></html>");
                 cancelJButton.setDoubleBuffered(true);
                 cancelJButton.setFocusable(false);
                 cancelJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -68,15 +87,10 @@ public class MTwoButtonJDialog extends javax.swing.JDialog implements java.awt.e
                         }
                 });
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 13, 180);
-                getContentPane().add(cancelJButton, gridBagConstraints);
+                getContentPane().add(cancelJButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(73, 295, -1, -1));
 
                 proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
-                proceedJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/Button_Continue_Upgrade_106x17.png")));
+                proceedJButton.setText("<html><b>Proceed</b></html>");
                 proceedJButton.setDoubleBuffered(true);
                 proceedJButton.setFocusPainted(false);
                 proceedJButton.setFocusable(false);
@@ -91,36 +105,48 @@ public class MTwoButtonJDialog extends javax.swing.JDialog implements java.awt.e
                         }
                 });
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
-                gridBagConstraints.insets = new java.awt.Insets(0, 180, 13, 0);
-                getContentPane().add(proceedJButton, gridBagConstraints);
+                getContentPane().add(proceedJButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(243, 295, -1, -1));
 
                 messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
                 messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                messageJLabel.setText("<html><center>\nThis upgrade requires that the Metavize EdgeGuard Client be<br>\nautomatically shut down.  The Metavize EdgeGuard may also be<br>\nautomatically restarted.  You may log in again after a restart.<br>\n<br>\nWould you like to continue with this upgrade?\n</center></html>");
+                messageJLabel.setText("<html>\nPlease choose how you would like to distribute your digital key.  Note: If you choose to send via email, you must supply an email address to send the email to.  If you choose to download to USB key, the data will be located on the key at /metavize-data/openvpn/setup-<client-name>.exe\n</html>");
                 messageJLabel.setDoubleBuffered(true);
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-                gridBagConstraints.insets = new java.awt.Insets(40, 30, 0, 30);
-                getContentPane().add(messageJLabel, gridBagConstraints);
+                getContentPane().add(messageJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 40, 396, -1));
 
                 labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
                 labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                labelJLabel.setText("Warning:");
+                labelJLabel.setText("Question:");
                 labelJLabel.setDoubleBuffered(true);
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-                gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
-                getContentPane().add(labelJLabel, gridBagConstraints);
+                getContentPane().add(labelJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 456, -1));
+
+                buttonGroup1.add(emailJRadioButton);
+                emailJRadioButton.setSelected(true);
+                emailJRadioButton.setText("Distribute via Email");
+                emailJRadioButton.setFocusPainted(false);
+                emailJRadioButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                emailJRadioButtonActionPerformed(evt);
+                        }
+                });
+
+                getContentPane().add(emailJRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 140, -1, -1));
+
+                emailJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                emailJLabel.setText("Email Address:");
+                getContentPane().add(emailJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 170, -1, -1));
+
+                getContentPane().add(emailJTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 169, 150, -1));
+
+                buttonGroup1.add(usbJRadioButton);
+                usbJRadioButton.setText("Distribute via USB Key");
+                usbJRadioButton.setFocusPainted(false);
+                usbJRadioButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                usbJRadioButtonActionPerformed(evt);
+                        }
+                });
+
+                getContentPane().add(usbJRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 210, -1, -1));
 
                 backgroundJLabel.setFont(new java.awt.Font("Default", 0, 12));
                 backgroundJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -129,20 +155,32 @@ public class MTwoButtonJDialog extends javax.swing.JDialog implements java.awt.e
                 backgroundJLabel.setFocusable(false);
                 backgroundJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 backgroundJLabel.setOpaque(true);
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.weighty = 1.0;
-                getContentPane().add(backgroundJLabel, gridBagConstraints);
+                getContentPane().add(backgroundJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 456, 333));
 
                 java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-                setBounds((screenSize.width-466)/2, (screenSize.height-200)/2, 466, 200);
+                setBounds((screenSize.width-456)/2, (screenSize.height-355)/2, 456, 355);
         }//GEN-END:initComponents
 
+		private void usbJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usbJRadioButtonActionPerformed
+				emailJLabel.setEnabled(false);
+				emailJTextField.setEnabled(false);
+				isUsbSelected = true;
+		}//GEN-LAST:event_usbJRadioButtonActionPerformed
+
+		private void emailJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_emailJRadioButtonActionPerformed
+				emailJLabel.setEnabled(true);
+				emailJTextField.setEnabled(true);
+				isUsbSelected = false;
+		}//GEN-LAST:event_emailJRadioButtonActionPerformed
+
     private void proceedJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proceedJButtonActionPerformed
-        isProceeding = true;
+        if( emailJTextField.getText().length() == 0) {
+				emailJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+				MOneButtonJDialog.factory(this, "OpenVPN", "You must specify an email address to send the key to.", "OpenVPN Warning", "Warning");
+				return;
+		}
+		emailAddress = emailJTextField.getText();
+		isProceeding = true;
         windowClosing(null);
     }//GEN-LAST:event_proceedJButtonActionPerformed
 
@@ -167,13 +205,22 @@ public class MTwoButtonJDialog extends javax.swing.JDialog implements java.awt.e
     public boolean isProceeding(){
         return isProceeding;
     }
+	
+	public boolean isUsbSelected(){ return isUsbSelected; }
+	public boolean isEmailSelected(){ return !isUsbSelected; }
+	public String getEmailAddress(){ return emailAddress; }
     
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JLabel backgroundJLabel;
+        private javax.swing.ButtonGroup buttonGroup1;
         protected javax.swing.JButton cancelJButton;
+        private javax.swing.JLabel emailJLabel;
+        private javax.swing.JRadioButton emailJRadioButton;
+        private javax.swing.JTextField emailJTextField;
         private javax.swing.JLabel labelJLabel;
         protected javax.swing.JLabel messageJLabel;
         protected javax.swing.JButton proceedJButton;
+        private javax.swing.JRadioButton usbJRadioButton;
         // End of variables declaration//GEN-END:variables
     
 }

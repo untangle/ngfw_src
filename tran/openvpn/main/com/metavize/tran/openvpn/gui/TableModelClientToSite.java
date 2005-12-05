@@ -38,6 +38,7 @@ public class TableModelClientToSite extends MSortedTableModel{
     private static final int C5_MW = 120; /* action */
     private static final int C6_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW), 120); /* description */
 
+    
     private DefaultComboBoxModel groupModel = new DefaultComboBoxModel();
 
     public void updateGroupModel(List<VpnGroup> vpnGroups){
@@ -104,7 +105,9 @@ public class TableModelClientToSite extends MSortedTableModel{
 	    ComboBoxModel groupComboBoxModel = super.copyComboBoxModel(groupModel);
 	    groupComboBoxModel.setSelectedItem( vpnClient.getGroup() );
 	    tempRow.add( groupComboBoxModel );
-	    tempRow.add( new KeyButtonRunnable("true")  );
+	    KeyButtonRunnable keyButtonRunnable = new KeyButtonRunnable("true");
+	    keyButtonRunnable.setVpnClient( vpnClient );
+	    tempRow.add( keyButtonRunnable  );
 	    tempRow.add( vpnClient.getDescription() );
 	    tempRow.add( vpnClient );
 	    allRows.add(tempRow);

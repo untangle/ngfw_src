@@ -44,6 +44,8 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	VpnTransform vpnTransform = (VpnTransform) transformContext.transform();
 	VpnTransform.ConfigState configState = vpnTransform.getConfigState();
 
+	KeyButtonRunnable.setVpnTransform( vpnTransform );
+
 	super.mTabbedPane.removeAll();
 	if( VpnTransform.ConfigState.UNCONFIGURED == configState ){
 	    // SHOW WIZARD/STATUS

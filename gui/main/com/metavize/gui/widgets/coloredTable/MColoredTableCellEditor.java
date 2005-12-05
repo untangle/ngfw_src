@@ -164,6 +164,8 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	    returnValue = value;
 	    jButton.setText( ((ButtonRunnable)value).getButtonText() );
 	    jButton.setEnabled( ((ButtonRunnable)value).isEnabled() );
+	    ((ButtonRunnable)value).setTopLevelWindow((Window)mColoredJTable.getTopLevelAncestor());
+	    ((ButtonRunnable)value).run();
 	    return jButtonJPanel;
 	}
 	else if(value instanceof ComboBoxModel){
