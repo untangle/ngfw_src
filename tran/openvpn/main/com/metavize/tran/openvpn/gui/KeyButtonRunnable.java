@@ -15,25 +15,28 @@ import com.metavize.tran.openvpn.*;
 import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.gui.util.*;
 import java.awt.Window;
+import java.awt.event.*;
 
 public class KeyButtonRunnable implements ButtonRunnable {
-    private boolean enabled;
+    private boolean isEnabled;
     private VpnClient vpnClient;
     private static VpnTransform vpnTransform;
     private Window topLevelWindow;
-    public KeyButtonRunnable(String enabled){
-	if( "true".equals(enabled) ) {
-	    this.enabled = true;
+    public KeyButtonRunnable(String isEnabled){
+	if( "true".equals(isEnabled) ) {
+	    this.isEnabled = true;
 	}
-	else if( "false".equals(enabled) ){
-	    this.enabled = false;
+	else if( "false".equals(isEnabled) ){
+	    this.isEnabled = false;
 	}
     }
     public String getButtonText(){ return "Distribute Key"; }
-    public boolean isEnabled(){ return enabled; }
+    public boolean isEnabled(){ return isEnabled; }
+	public void setEnabled(boolean isEnabled){ this.isEnabled = isEnabled; }
     public void setVpnClient(VpnClient vpnClient){ this.vpnClient = vpnClient; }
     public static void setVpnTransform(VpnTransform vpnTransformX){ vpnTransform = vpnTransformX; }
     public void setTopLevelWindow(Window topLevelWindow){ this.topLevelWindow = topLevelWindow; }
+	public void actionPerformed(ActionEvent evt){ run(); }
     public void run(){
 	KeyJDialog keyJDialog = KeyJDialog.factory(topLevelWindow);
 	keyJDialog.setVisible(true);

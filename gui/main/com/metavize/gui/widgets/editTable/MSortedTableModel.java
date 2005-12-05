@@ -117,7 +117,9 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
     public static final int NOT_SORTED = 0;
     public static final int ASCENDING = 1;
 
+	// PROTECTEDS ///////////////
     protected boolean getSortable(){ return true; }
+	public void handleDependencies(int modelCol, int modelRow){ fireTableRowsUpdated(modelRow, modelRow); }
 
     private static Directive EMPTY_DIRECTIVE = new Directive(-1, NOT_SORTED);
 
@@ -539,7 +541,7 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
 	Vector<Vector> dataVector = getDataVector();
 	Vector row = dataVector.elementAt(modelRow);
 	row.setElementAt(state, stateModelIndex);
-	fireTableCellUpdated(modelRow, stateModelIndex);
+	fireTableRowsUpdated(modelRow, modelRow);
     }
     public void setRowChanged(int modelRow){
 	Vector<Vector> dataVector = getDataVector();
@@ -547,7 +549,7 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
 	String state = (String) changedRow.elementAt(stateModelIndex);
         if( !ROW_ADD.equals(state) ){
             changedRow.setElementAt(ROW_CHANGED, stateModelIndex);
-	    fireTableCellUpdated(modelRow, stateModelIndex);
+	    fireTableRowsUpdated(modelRow, modelRow);
 	}
     }
     ///////////////////////////////////

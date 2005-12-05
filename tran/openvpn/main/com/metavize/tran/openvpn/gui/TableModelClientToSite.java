@@ -62,6 +62,18 @@ public class TableModelClientToSite extends MSortedTableModel{
         return tableColumnModel;
     }
 
+    public void handleDependencies(int modelCol, int modelRow){
+	Vector rowVector = (Vector) getDataVector().elementAt(modelRow);
+	String rowState = (String) rowVector.elementAt( getStateModelIndex() );
+	KeyButtonRunnable keyButtonRunnable = (KeyButtonRunnable) rowVector.elementAt(5);
+	if( !rowState.equals(ROW_SAVED) ){
+	    keyButtonRunnable.setEnabled(false);	
+	}
+	else{
+	    keyButtonRunnable.setEnabled(true);	
+	}
+	super.handleDependencies(modelCol,modelRow);
+    }
 
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
 	List elemList = new ArrayList(tableVector.size());

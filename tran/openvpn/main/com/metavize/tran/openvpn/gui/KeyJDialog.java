@@ -53,8 +53,6 @@ public class KeyJDialog extends javax.swing.JDialog implements java.awt.event.Wi
     }
     
         private void initComponents() {//GEN-BEGIN:initComponents
-                java.awt.GridBagConstraints gridBagConstraints;
-
                 buttonGroup1 = new javax.swing.ButtonGroup();
                 cancelJButton = new javax.swing.JButton();
                 proceedJButton = new javax.swing.JButton();
@@ -123,6 +121,7 @@ public class KeyJDialog extends javax.swing.JDialog implements java.awt.event.Wi
                 emailJRadioButton.setSelected(true);
                 emailJRadioButton.setText("Distribute via Email");
                 emailJRadioButton.setFocusPainted(false);
+                emailJRadioButton.setOpaque(false);
                 emailJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 emailJRadioButtonActionPerformed(evt);
@@ -140,6 +139,7 @@ public class KeyJDialog extends javax.swing.JDialog implements java.awt.event.Wi
                 buttonGroup1.add(usbJRadioButton);
                 usbJRadioButton.setText("Distribute via USB Key");
                 usbJRadioButton.setFocusPainted(false);
+                usbJRadioButton.setOpaque(false);
                 usbJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 usbJRadioButtonActionPerformed(evt);

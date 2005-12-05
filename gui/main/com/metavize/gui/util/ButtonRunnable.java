@@ -12,9 +12,12 @@
 package com.metavize.gui.util;
 
 import java.awt.Window;
+import java.awt.event.*;
 
-public interface ButtonRunnable extends Runnable {
+public interface ButtonRunnable extends Runnable, ActionListener  {
     public String getButtonText();
     public boolean isEnabled();
+	public void setEnabled(boolean isEnabled);
     public void setTopLevelWindow(Window topLevelWindow);
+	public void actionPerformed(ActionEvent evt);
 }

@@ -70,11 +70,12 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	jButton = new JButton();
 	jButton.setFont(new java.awt.Font("Default", 0, 12));
 	jButton.setFocusable(false);
+	jButton.addActionListener(this);
 	jButtonJPanel = new JPanel();
 	jButtonJPanel.setOpaque(false);
 	jButtonJPanel.setLayout(new BorderLayout());
 	jButtonJPanel.setBorder(new EmptyBorder(2,2,2,2));
-	jButtonJPanel.add(jButton);
+	jButtonJPanel.add(jButton);	
 
 	jCheckBox = new JCheckBox();
 	jCheckBox.setHorizontalAlignment(JCheckBox.CENTER);
@@ -164,8 +165,11 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	    returnValue = value;
 	    jButton.setText( ((ButtonRunnable)value).getButtonText() );
 	    jButton.setEnabled( ((ButtonRunnable)value).isEnabled() );
-	    ((ButtonRunnable)value).setTopLevelWindow((Window)mColoredJTable.getTopLevelAncestor());
-	    ((ButtonRunnable)value).run();
+		((ButtonRunnable)value).setTopLevelWindow( (Window) mColoredJTable.getTopLevelAncestor() );
+		ActionListener[] actionListeners = jButton.getActionListeners();
+		for( ActionListener actionListener : actionListeners )
+				jButton.removeActionListener(actionListener);
+		jButton.addActionListener( (ButtonRunnable) value );
 	    return jButtonJPanel;
 	}
 	else if(value instanceof ComboBoxModel){
@@ -278,7 +282,8 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	    mSortedTableModel.setRowState(selectedState, selectedModelRow);
 	}
 	else{
-	    //System.err.println("row CHANGED from: " + selectedValue.toString() + " to: " + newValue.toString());
+		
+	    //System.err.println("row CHANGED from: " + selectedValue.toString() + " to: " + newValue.toString());		
 	    if(editedComponent instanceof MPasswordField){
 		if( ((MPasswordField)editedComponent).getGeneratesChangeEvent() ){
 		    mSortedTableModel.setRowChanged(selectedModelRow);
@@ -287,7 +292,9 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	    else{
 		mSortedTableModel.setRowChanged(selectedModelRow);
 	    }
+		
 	}
+	mSortedTableModel.handleDependencies(selectedModelCol, selectedModelRow);
     }
 
     public Object getCellEditorValue(){
@@ -304,7 +311,7 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 
     // for check boxes, and combo boxes
     public void actionPerformed(java.awt.event.ActionEvent actionEvent) {
-	update();
+	update();	
     }        
     
     // for the sliders, spinners

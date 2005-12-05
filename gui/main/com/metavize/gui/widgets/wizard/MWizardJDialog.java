@@ -93,7 +93,7 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
         addWindowListener(this);
 
 	ICON_COMPLETED = new ImageIcon( getClass().getResource("/com/metavize/gui/widgets/wizard/IconCompleteState14x14.png") );
-	ICON_CURRENT = new ImageIcon( getClass().getResource("/com/metavize/gui/widgets/wizard/IconCurrentState14x14.png") );
+	ICON_CURRENT = ICON_COMPLETED; //new ImageIcon( getClass().getResource("/com/metavize/gui/widgets/wizard/IconCurrentState14x14.png") );
 	ICON_UNCOMPLETED = new ImageIcon( getClass().getResource("/com/metavize/gui/widgets/wizard/IconUncompleteState14x14.png") );
     }
 
