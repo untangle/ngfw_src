@@ -13,7 +13,7 @@
     symbol.  The SpamGuard Appliance works to filter email for <glossterm linkend="gloss_spam">Spam</glossterm>.  Email transported by the <glossterm linkend="gloss_smtp">SMTP</glossterm>, <glossterm linkend="gloss_pop">POP</glossterm>, and <glossterm linkend="gloss_imap">IMAP</glossterm> protocols can be scanned for the presence of spam.
   </para>
   <para>
-    The SpamGuard Appliance is a <link linkend="introduction_ui_appliance"> Software Appliance </link>, which can be installed into multiple Virtual Racks.  For more information on configuring policies and Software Appliances, please refer to <xref linkend="policy_manager"/>.
+    The SpamGuard Appliance is a <link linkend="using_adminui_appliances"> Software Appliance </link>, which can be installed into multiple Virtual Racks.  For more information on configuring policies and Software Appliances, please refer to <xref linkend="policy_manager"/>.
   </para>
   
 
@@ -22,7 +22,7 @@
     <title>Administrative Interface</title>
 
     <para>
-      The interface for SpamGuard is presented as four tabs.  The first three tabs are for the different email protocols that &eg; can scan.  The last tab allows administrators to view events (see <xref linkend="introduction_ui_appliance_event_log"/>).
+      The interface for SpamGuard is presented as four tabs.  The first three tabs are for the different email protocols that &eg; can scan.  The last tab allows administrators to view events (see <xref linkend="using_adminui_appliances_eventlog"/>).
     </para>
 
     <!-- ================================================================= -->
@@ -293,7 +293,7 @@
         </mediaobject>
       </figure>
       <para>
-        The Events Tab is another implementation of an Event Log, as described in <xref linkend="introduction_ui_appliance_event_log"/>.  The complete list of columns and their meaning is as follows.
+        The Events Tab is another implementation of an Event Log, as described in <xref linkend="using_adminui_appliances"/>.  The complete list of columns and their meaning is as follows.
       </para>
       <para>
         <variablelist>

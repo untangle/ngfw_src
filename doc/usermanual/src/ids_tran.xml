@@ -13,18 +13,140 @@
         <imagedata fileref="figure/ids/ids_tran_icon.png"/>
       </imageobject>
     </inlinemediaobject>
-    symbol.
-  </para>
-
-  <para>
-    TODO COMPLETE ME.  Someone needs to write this section.  As you do, you should refer to <xref linkend="introduction_ui_appliance"/> as the ids Transform is a "Software appliance".
+    symbol.  If the Intrusion Prevention Appliance is not installed, please refer to <xref linkend="using_adminui_appliances"/> for installation instructions.
   </para>
   <para>
-    As this section is written, these glossary refs may come in handy
-    <glossterm linkend="gloss_dos">DOS</glossterm>
+    As its name implies, the Intrusion Prevention Appliance serves to prevent known malicious exploits from entering your protected network.  It is based on technology from <ulink  url="http://www.snort.org/">Snort.org</ulink>.  The Snort community maintains data on known exploits, and produces lists of <emphasis>signatures</emphasis> for these exploits.  The Intrusion Prevention Appliance then interprets these lists to protect your network.  Note that with the exception of the <xref linkend="ids_tran_eventlog"/>, configuration of the Intrusion Prevention Appliance is an advanced topic.
   </para>
 
-  <sect1 id="ids_tran_qa">
+  <sect1 id="ids_tran_adminui">
+    <title>Administrative Interface</title>
+
+    <para>
+      The interface for the Intrusion Prevention Appliance is presented as three tabs.  The first two tabs, discussed in <xref linkend="ids_tran_rule"/> and <xref linkend="ids_tran_varlist"/>, allow the administrator to configure <emphasis>advanced</emphasis> settings.  The last tab, <xref linkend="ids_tran_eventlog"/>, allows administrators to view intrusion scanning events (see <xref linkend="using_adminui_appliances_eventlog"/>).
+    </para>
+  
+
+    <!-- ======================================================== -->
+    <sect2 id="ids_tran_rule">
+      <title>Rule List</title>
+      <para>
+        The interface for the Rule List tab of the Intrusion Prevention Appliance is seen in <xref linkend="ids_tran_rule_figure"/>.
+      </para>
+      <figure id="ids_tran_rule_figure">
+        <title>Rule List Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/ids/ids_rulelist.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        As stated previously, the Intrusion Prevention Appliance is based on technology from <ulink  url="http://www.snort.org/">Snort.org</ulink>.  <emphasis>Adding or modifying rules in the syntax defined by Snort.org is a advanced topic,</emphasis> and will not be covered in this manual.
+      </para>
+      <para>
+        All that the average Administrator may want to do is to alter the <guilabel>block</guilabel> or <guilabel>log</guilabel> values for a given rule.  The <guilabel>block</guilabel> field causes the Intrusion Prevention Appliance to block traffic matching the given pattern.  The <guilabel>log</guilabel> field causes the Intrusion Prevention Appliance to log traffic which matches the rule's pattern.
+        <tip>
+          <para>
+            The Intrusion Prevention Appliance ships with a default set of rules set to <guilabel>block</guilabel> harmful traffic.  You should only disable such a rule if a unique software you use happens to collide with a rule.
+          </para>
+        </tip> 
+      </para>
+    </sect2>
+
+
+    <!-- ======================================================== -->
+    <sect2 id="ids_tran_varlist">
+      <title>Variable List</title>
+      <para>
+        TODO
+      </para>
+      <figure id="ids_tran_varlist_figure">
+        <title>Variable Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/ids/ids_varlist.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        TODO
+      </para>
+    </sect2>
+    
+
+    <!-- ======================================================== -->
+    <sect2 id="ids_tran_eventlog">
+      <title>Rule List</title>
+      <para>
+        The Events tab contents is shown in <xref linkend="ids_tran_eventlog_figure"/>.
+      </para>
+      <figure id="ids_tran_eventlog_figure">
+        <title>Event Log Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/ids/ids_eventlog.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        The Events Tab is another implementation of an Event Log, as described in <xref linkend="using_adminui_appliances_eventlog"/>.  The complete list of columns and their meaning is as follows.
+        <variablelist>
+          <title>Events Tab</title>
+          <varlistentry>
+            <term><guilabel>timestamp</guilabel></term>
+            <listitem>
+              <para>
+                The time the event took place
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>action</guilabel></term>
+            <listitem>
+              <para>
+                The action which took place (e.g. <constant>block</constant>).
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>client</guilabel></term>
+            <listitem>
+              <para>
+                The client <glossterm linkend="gloss_ip_addr">IP address</glossterm> of the traffic.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>reason for action</guilabel></term>
+            <listitem>
+              <para>
+                The rule number which cause the event to take place.  All Intrusion Prevention Appliance rules are numbered, as shown in <xref linkend="ids_tran_rule_figure"/>.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>direction</guilabel></term>
+            <listitem>
+              <para>
+                The direction (<constant>inbound</constant> or <constant>outbound</constant>) of the traffic.  Most Intrusion Prevention Appliance rules only apply to the <constant>inbound</constant> (into the protected network) direction.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>server</guilabel></term>
+            <listitem>
+              <para>
+                The intended server <glossterm linkend="gloss_ip_addr">IP address</glossterm> of the traffic.
+              </para>
+            </listitem>
+          </varlistentry>                                                                
+        </variablelist>        
+      </para>
+    </sect2>
+  </sect1>
+
+  <sect1 id="ids_tran_qaXXX">
     <title>Frequently Asked Questions</title>
     <qandaset>  
       <qandaentry>

@@ -9,7 +9,7 @@
         <imagedata fileref="figure/protofilter/protofilter_tran_icon.png"/>
       </imageobject>
     </inlinemediaobject>
-    symbol.  If the Rogue Protocol Control Appliance is not installed, please refer to <xref linkend="introduction_ui_appliance"/> for installation instructions.
+    symbol.  If the Rogue Protocol Control Appliance is not installed, please refer to <xref linkend="using_adminui_appliances"/> for installation instructions.
   </para>
   <para>
     The Rogue Protocol Control Appliance is used by Administrators to block well known protocols from entering or leaving the protected network.  For example, Peer to Peer (P2P) protocols can be blocked from a corporate office or game protocols from a school.
@@ -64,7 +64,7 @@
         </mediaobject>
       </figure>
       <para>
-        The Events Tab is another implementation of an Event Log, as described in <xref linkend="introduction_ui_appliance_event_log"/>.  The <guilabel>action</guilabel> describes the action which the &eg; took on the connection.
+        The Events Tab is another implementation of an Event Log, as described in <xref linkend="using_adminui_appliances_eventlog"/>.  The <guilabel>action</guilabel> describes the action which the &eg; took on the connection.
       </para>         
     </sect2>   
   </sect1>

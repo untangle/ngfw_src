@@ -3,7 +3,7 @@
   <title>Global Configuration</title>
 
   <para>
-    As discussed in <xref linkend="fixme_appliances_and_the_io"/>, your &eg; can consist of many Software Appliances.  Although many of the interesting applications are deployed as Software Appliances, there are also global (shared) properties needed by all components of the system.  There are several such properties, as seen in <xref linkend="config_tab_config_tab_figure"/>.
+    As discussed in <xref linkend="using_adminui"/>, your &eg; can consist of many Software Appliances.  Although many of the interesting applications are deployed as Software Appliances, there are also global (shared) properties needed by all components of the system.  There are several such properties, as seen in <xref linkend="config_tab_config_tab_figure"/>.
   </para>
 
   <figure id="config_tab_config_tab_figure">

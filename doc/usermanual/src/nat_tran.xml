@@ -10,7 +10,7 @@
       </imageobject>
     </inlinemediaobject>
 
-    symbol.  It offers a host of features, from <glossterm linkend="gloss_nat">Network Address Translation (NAT)</glossterm> and <glossterm linkend="gloss_dhcp">Dynamic Host Configuration Protocol (DHCP)</glossterm> to redirect and <glossterm linkend="gloss_dmz">DMZ</glossterm> services.  If the Network Sharing Appliance is not installed, please refer to <xref linkend="introduction_ui_appliance"/> for installation instructions.
+    symbol.  It offers a host of features, from <glossterm linkend="gloss_nat">Network Address Translation (NAT)</glossterm> and <glossterm linkend="gloss_dhcp">Dynamic Host Configuration Protocol (DHCP)</glossterm> to redirect and <glossterm linkend="gloss_dmz">DMZ</glossterm> services.  If the Network Sharing Appliance is not installed, please refer to <xref linkend="using_adminui_appliances"/> for installation instructions.
   </para>
 
   <sect1 id="nat_tran_adminui">
@@ -380,7 +380,7 @@
         </mediaobject>
       </figure>
       <para>
-        The Events Tab is another implementation of an Event Log, as described in <xref linkend="introduction_ui_appliance_event_log"/>.  The complete list of columns and their meaning is as follows.
+        The Events Tab is another implementation of an Event Log, as described in <xref linkend="using_adminui_appliances_eventlog"/>.  The complete list of columns and their meaning is as follows.
         <variablelist>
           <title>Events Tab</title>
           <varlistentry>

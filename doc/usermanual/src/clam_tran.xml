@@ -10,7 +10,7 @@
         <imagedata fileref="figure/clam/clam_tran_icon.png"/>
       </imageobject>
     </inlinemediaobject>
-    symbol.  The Clam Anti-Virus serves to protect your network against <glossterm linkend="gloss_virus">viruses</glossterm>.  The Clam Anti-Virus Appliance is a <link linkend="introduction_ui_appliance"> Software Appliance </link>, which can be installed into multiple Virtual Racks.  For more information on configuring policies and Software Appliances, please refer to <xref linkend="policy_manager"/>.
+    symbol.  The Clam Anti-Virus serves to protect your network against <glossterm linkend="gloss_virus">viruses</glossterm>.  The Clam Anti-Virus Appliance is a <link linkend="using_adminui_appliances"> Software Appliance </link>, which can be installed into multiple Virtual Racks.  For more information on configuring policies and Software Appliances, please refer to <xref linkend="policy_manager"/>.
   </para>
   <para>
     Viruses can arrive over the network via several techniques, so the Clam Anti-Virus Appliance scans many protocols for the presence of viruses.  For email traffic, the Clam Anti-Virus Appliance will scan the <glossterm linkend="gloss_smtp">SMTP</glossterm>, <glossterm linkend="gloss_pop">POP</glossterm>, and <glossterm linkend="gloss_imap">IMAP</glossterm> protocols.  For web traffic, <glossterm linkend="gloss_http">HTTP</glossterm> traffic is scanned.  For file transfers, the <glossterm linkend="gloss_ftp">FTP</glossterm> protocol is scanned.
@@ -22,7 +22,7 @@
     <title>Administrative Interface</title>
 
     <para>
-      The interface for Clam Anti-Virus is presented as five tabs.  The first three tabs are for the different protocols that &eg; can scan.  The next tab controls general virus scanning settings.  The last tab allows administrators to view events (see <xref linkend="introduction_ui_appliance_event_log"/>).
+      The interface for Clam Anti-Virus is presented as five tabs.  The first three tabs are for the different protocols that &eg; can scan.  The next tab controls general virus scanning settings.  The last tab allows administrators to view events (see <xref linkend="using_adminui_appliances_eventlog"/>).
     </para>
 
     <!-- ******************************************************** -->
@@ -320,7 +320,7 @@
         </mediaobject>
       </figure>
       <para>
-        The Events Tab is another implementation of an Event Log, as described in <xref linkend="introduction_ui_appliance_event_log"/>.  The complete list of columns and their meaning is as follows.
+        The Events Tab is another implementation of an Event Log, as described in <xref linkend="using_adminui_appliances_eventlog"/>.  The complete list of columns and their meaning is as follows.
       </para>
       <para>
         <variablelist>

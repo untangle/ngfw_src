@@ -8,7 +8,7 @@
         <imagedata fileref="figure/spyware/spyware_tran_icon.png"/>
       </imageobject>
     </inlinemediaobject>
-    symbol.  If the Spyware Blocker Appliance is not installed, please refer to <xref linkend="introduction_ui_appliance"/> for installation instructions.
+    symbol.  If the Spyware Blocker Appliance is not installed, please refer to <xref linkend="using_adminui_appliances"/> for installation instructions.
   </para>
 
   <para>
@@ -22,7 +22,7 @@
   <sect1 id="spyware_tran_adminui">
     <title>Administrative Interface</title>
     <para>
-      The interface for the Spyware Blocker is presented as four tabs.  The first two, <xref linkend="spyware_tran_adminui_block"/> and <xref linkend="spyware_tran_adminui_passlist"/> provide the administrator the ability to view/change sites which will or will not be considered spyware.  The <xref linkend="spyware_tran_adminui_generalsettings"/> tab provides access to properties not directly related to spyware lists.   The last tab, <xref linkend="spyware_tran_adminui_eventlog"/>, allows administrators to view events (see <xref linkend="introduction_ui_appliance_event_log"/>).
+      The interface for the Spyware Blocker is presented as four tabs.  The first two, <xref linkend="spyware_tran_adminui_block"/> and <xref linkend="spyware_tran_adminui_passlist"/> provide the administrator the ability to view/change sites which will or will not be considered spyware.  The <xref linkend="spyware_tran_adminui_generalsettings"/> tab provides access to properties not directly related to spyware lists.   The last tab, <xref linkend="spyware_tran_adminui_eventlog"/>, allows administrators to view events (see <xref linkend="using_adminui_appliances_eventlog"/>).
     </para>
     <!-- ========================================= -->
     <sect2 id="spyware_tran_adminui_block">
@@ -175,7 +175,7 @@
       </figure>
       <para>
         TODO This isn't done
-        The Events Tab is another implementation of an Event Log, as described in <xref linkend="introduction_ui_appliance_event_log"/>.  The <guilabel>action</guilabel> describes the action which the &eg; took on the mail.  <guilabel>client</guilabel> shows the IP address of the client.  Note that the client in SMTP is the sender of the mail, and in POP and IMAP it is the receiver of the mail.  <guilabel>spam score</guilabel> is the score applied to the email by the spam scanner.  Higher values indicate <quote>more likely to be spam</quote>.
+        The Events Tab is another implementation of an Event Log, as described in <xref linkend="using_adminui_appliances_eventlog"/>.  The <guilabel>action</guilabel> describes the action which the &eg; took on the mail.  <guilabel>client</guilabel> shows the IP address of the client.  Note that the client in SMTP is the sender of the mail, and in POP and IMAP it is the receiver of the mail.  <guilabel>spam score</guilabel> is the score applied to the email by the spam scanner.  Higher values indicate <quote>more likely to be spam</quote>.
       </para>      
     </sect2>
   </sect1>

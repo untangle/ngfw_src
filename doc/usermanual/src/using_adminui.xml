@@ -19,20 +19,214 @@
     </mediaobject>
   </figure>
   <para>
-    In the center of the screen is a link <guilabel>Launch EdgeGuard Client</guilabel>.  Clicking on this link begins the process of launching the Administrative Interface.
+    In the center of the screen is a link <guilabel>Launch EdgeGuard Client</guilabel>.  Clicking on this link begins the process of launching the Administrative Interface.  You may receive a warning from your web browser regarding <emphasis>certificates</emphasis>, example of such a warning is shown in <xref linkend="using_adminui_cert_warning"/>. 
   </para>
- 
+  <figure id="using_adminui_cert_warning">
+    <title>Certificate Checking</title>
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="figure/usingadminui/cert_warning.png" />
+      </imageobject>
+    </mediaobject>
+  </figure>
+  <para>
+    It is safe to dismiss this warning, as you are connecting to the &eg; appliance.
+    <note>
+      <para>
+        Depending on your web browser and <glossterm linkend="gloss_os">operating system</glossterm>, you may be prompted to install <glossterm linkend="gloss_java">Java</glossterm> Web Start.  This is an additional browser technology required to run the Administrative Interface.  Please follow the instructions provided in your browser to install Java Web Start.
+      </para>
+    </note>
+    The first time you launch the Administrative Interface from a given machine, it may take a few moments to download the required files, as shown in <xref linkend="using_adminui_jws_spash"/>.
+  </para>
+  <figure id="using_adminui_jws_spash">
+    <title>Loading Administrative Interface</title>
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="figure/usingadminui/jws_spash.png" />
+      </imageobject>
+    </mediaobject>
+  </figure>
+  <para>
+    Once the Administrative Interface is loaded, you will be prompted to provide a username and password to log in, as seen in <xref linkend="using_adminui_login_dialog"/>.
+  </para>
+  <figure id="using_adminui_login_dialog">
+    <title>Logging In</title>
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="figure/usingadminui/login_dialog.png" />
+      </imageobject>
+    </mediaobject>
+  </figure>
+  <para>
+    The initial <guilabel>Login</guilabel> is <constant>admin</constant> and the initial <guilabel>Password</guilabel> is <constant>passwd</constant>.  You should make a note that you should change this default password (as described in <xref linkend="config_tab_accounts"/>).  If all goes correctly, you should see initial Administrative Interface screen as shown in <xref linkend="using_adminui_empty_rack"/>.
+  </para>
+  <figure id="using_adminui_empty_rack">
+    <title>Initial Screen</title>
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="figure/usingadminui/empty_rack.png" />
+      </imageobject>
+    </mediaobject>
+  </figure>
+  <para>
+    If you see the screen shown in <xref linkend="using_adminui_empty_rack"/>, please proceed to <xref linkend="using_adminui_navigation"/> for an overview of the Administrative Interface then <xref linkend="using_adminui_appliances"/> for a discussion of installing Software Appliances.
+  </para>
+  <para>
+    If you encounter problems launching the Administrative Interface, please consult the <link linkend="using_adminui_qa">Frequently Asked Question section</link> for more assistance.
+  </para>
 
   <sect1 id="using_adminui_navigation">
     <title>Navigation</title>
     <para>
-      Bill - put a reference to "rack" here, and take it out of the introduction
+      In this section, we will introduce the overall layout and navigation of the Administrative Interface.  The Administrative Interface is laid out as a set of <quote>global</quote> controls to the left, and a <quote>Virtual Rack</quote> to the right.  The metaphore presented by the interface is similar to the physical network rack (a cabinet with a collection of hardware) seen in many organizations.  The complete layout is seen in <xref linkend="using_adminui_navigation_annotated_rack"/>.
+    </para>
+    <figure id="using_adminui_navigation_annotated_rack">
+      <title>Initial Screen</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figure/usingadminui/annotated_rack.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para>
+      The image shown in <xref linkend="using_adminui_navigation_annotated_rack"/> has several numbered elements.  The meaning of these elements is as follows.
+    </para>
+    <orderedlist>
+      <listitem>
+        <para>
+          This is the <guilabel>Store</guilabel> tab, listing any Software Appliances available yet not purchased.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          This is the <guilabel>Toolbox</guilabel> tab, listing any Software Appliances available to install.  When installed, Software Appliances appear <quote>gray</quote> in this list and are expanded in the Virtual Rack to the right.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          This is the <guilabel>Config</guilabel> tab, providing access to global properties.  These are properties of your &eg;, which are not unique to a single Software Appliance.  Using the <guilabel>Config</guilabel> tab is covered later in <xref linkend="config_tab"/>.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          This is the Policy and Virtual Rack selector.  Configuring Policies and multiple Virtual Racks is an advanced feature covered later in <xref linkend="policy_manager"/>.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          This button launches the Upgrade Manager.  The Upgrade Manager is used to select available software upgrades, as well as schedule automatic upgrades as they are available.  More information on the Upgrade Manager can be found in <xref linkend="upgrade_manager"/>.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          This is a Software Appliance.  There are actualy three such appliances shown in <xref linkend="using_adminui_navigation_annotated_rack"/>.  Understanding the interface to Software Appliances as well as their installation is covered in <xref linkend="using_adminui_appliances"/>.
+        </para>
+      </listitem>
+    </orderedlist>
+    <para>
+      It should be noted that the Software Appliances shown in <xref linkend="using_adminui_navigation_annotated_rack"/> are divided into two sections - the <emphasis>Default Rack</emphasis> and <emphasis>System Services</emphasis>.  The distinction between the two is important only when using multiple Virtual Racks and Policies (an advanced topic, covered in <xref linkend="policy_manager"/>).
     </para>
   </sect1>
-  <sect1 id="using_adminui_navigation_appliances">
+  <sect1 id="using_adminui_appliances">
     <title>Software Appliances</title>
     <para>
-      Bill - mention system services and remove from the introduction
+      One of the unique features of the &eg; is the ability to add and remove Software Appliances to fit the needs of your deployment.  Each Software Appliance had a dedicated task to enhance your network, and can be installed/configured independently of other appliances.
+    </para>
+    <para>
+      Although Software Appliances act independently, they share many common interface characteristics.  They are all installed by clicking on the appliance from the <guilabel>Toolbox</guilabel>.  This causes an appliance to be installed into the Rack to the right.
+      <note>
+        <para>
+          The system will prevent you from installing the same type of appliance into the same rack twice.
+        </para>
+      </note>
+      Once installed, each appliance shows its faceplate.  An example faceplate is shown in <xref linkend="using_adminui_appliances_faceplate"/>.
+    </para>
+    <figure id="using_adminui_appliances_faceplate">
+      <title>Appliance Faceplate</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="figure/usingadminui/appliance_faceplate.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para>
+      The image in <xref linkend="using_adminui_appliances_faceplate"/> is annotated with numbers, corresponding to components of each Software Appliance.  Explanation of these components is as follows.
+    </para>
+    <orderedlist>
+      <listitem>
+        <para>
+          The on/off button for the Software Appliance.  Pushing the button with the mouse toggles the on/off state.  
+          <note>
+            <para>
+              When you first install a Software Appliance, it is <emphasis>turned off</emphasis>.
+            </para>
+          </note>
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Power indicator light.  This is green when the Software Appliance is on, and gray when off.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Each Software Appliance has one or more Activity Meter.  Activity meters provide a quick view into the activity of a Software Appliance.  They change in real time as a given Software Appliance processes network traffic.
+          <tip>
+            <para>
+              The Activity Meters are a quick means to see if a given Software Appliance <quote>is working</quote>.  Although the data may be interesting, much more detailed information can be obtained from the Edge Reports Software Appliance (see <xref linkend="reporting_tran"/>) as well as the Event Logs for each appliance.  More on Event Logs shortly.
+            </para>
+          </tip>
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          The visual icon, identifying the Software Appliance.  Each Software Appliance has a unique icon.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          The <guilabel>Show Settings</guilabel> button launches screens to configure each Software Appliance.
+        </para>
+      </listitem>
+    </orderedlist>
+
+    <bridgehead id="using_adminui_appliances_eventlog"  xreflabel="Event Logs">Event Logs</bridgehead>
+    <para>
+      Most Software Appliances have an <emphasis>Event Log</emphasis> as part of their controls.  The Event Logs are seen by expanding the settings (the <guilabel>Show Settings</guilabel> button in <xref linkend="using_adminui_appliances_faceplate"/>). 
+    </para>
+    <para>
+      The Event Logs for each Software Appliance present a table of interesting events which were observed.  Sometimes they simply provide a dialog of which traffic was filtered (<quote>...examined this web request from <constant>1.2.3.4</constant> and found no viruses...</quote>).  Other times, they indicate malicious content which was stopped by the Software Appliance (<quote>...blocked email with subject '<constant>Urgent Business Request</constant>' as it was found to be a phishing email...</quote>).
+    </para>
+    <para>
+      The set and meaning of columns depends on the Software Appliance, and is discussed in the documentation for each.
     </para>
   </sect1>
+
+  <!-- ############################################################# -->
+  <sect1 id="using_adminui_qa">
+    <title>Frequently Asked Questions</title>
+    <qandaset>  
+      <qandaentry>
+        <question>
+          <para>I am not using Internet Explorer.  How can I get the required Java technology to run the Administrative Console?</para>
+        </question>
+        <answer>
+          <para>
+            The Java Web Start techology for non-Internet Explorer (and non-windows) platforms can be downloaded free of change from Sun Microsystems at <ulink  url="http://java.sun.com/products/javawebstart/index.jsp"><constant>http://java.sun.com/products/javawebstart/index.jsp</constant></ulink>.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question>
+          <para>XXXXXXXXX?</para>
+        </question>
+        <answer>
+          <para>
+            YYYYYYYYYYY TODO more troubleshooting of Java Web Start, even if it sounds "stupid" or "obvious".
+          </para>
+        </answer>
+      </qandaentry>      
+    </qandaset>
+  </sect1>  
+  
 </chapter>

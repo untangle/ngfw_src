@@ -10,7 +10,7 @@
       </imageobject>
     </inlinemediaobject>
 
-    symbol.  If the Packet Attack Shield Appliance is not installed, please refer to <xref linkend="introduction_ui_appliance"/> for installation instructions.
+    symbol.  If the Packet Attack Shield Appliance is not installed, please refer to <xref linkend="using_adminui_appliances"/> for installation instructions.
   </para>
 
   <para>
@@ -53,7 +53,7 @@
   <sect1 id="airgap_tran_adminui">
     <title>Administrative Interface</title>
     <para>
-      The Administrative Interface to the Packet Attack Shield Appliance is minimal, as most of the behavior is automatic.  The only real setting is to instruct the system that a given host should be permitted to consume extra resources when its <link linkend="airgap_tran_shield_explained">reputation</link> is computed.  This administrative setting is explained in <xref linkend="airgap_tran_exceptionlist"/>.  The Event Log tab, explained in <xref linkend="airgap_tran_eventlog"/>, allows administrators to view events (see <xref linkend="introduction_ui_appliance_event_log"/> for general information about &eg; Event Logs).
+      The Administrative Interface to the Packet Attack Shield Appliance is minimal, as most of the behavior is automatic.  The only real setting is to instruct the system that a given host should be permitted to consume extra resources when its <link linkend="airgap_tran_shield_explained">reputation</link> is computed.  This administrative setting is explained in <xref linkend="airgap_tran_exceptionlist"/>.  The Event Log tab, explained in <xref linkend="airgap_tran_eventlog"/>, allows administrators to view events (see <xref linkend="using_adminui_appliances_eventlog"/> for general information about &eg; Event Logs).
     </para>
     <!-- ======================================================== -->
     <sect2 id="airgap_tran_exceptionlist">

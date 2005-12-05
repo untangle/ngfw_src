@@ -315,7 +315,7 @@
         To add a new Virtual Rack, push the add (plus) button to the left as seen in <xref linkend="policy_manager_available_racks_figure"/>.  This adds a new row to the Available Racks table.  The only required field is <guilabel>rack name</guilabel>, and should be descriptive of the purpose of the rack.
         <note>
           <para>
-            Creating a Virtual Rack and assigning it to Policies is not useful unless you assign some Software Appliances to your new rack.  To add Software Appliances to your new Virtual Rack, select your rack from the list of Virtual Racks as seen in <xref linkend="policy_manager_launch_policy_mngr"/>.  From there, appliances can be added as described in <xref linkend="introduction_ui_appliance"/>.
+            Creating a Virtual Rack and assigning it to Policies is not useful unless you assign some Software Appliances to your new rack.  To add Software Appliances to your new Virtual Rack, select your rack from the list of Virtual Racks as seen in <xref linkend="policy_manager_launch_policy_mngr"/>.  From there, appliances can be added as described in <xref linkend="using_adminui_appliances"/>.
           </para>
         </note>
       </para>

@@ -2,10 +2,6 @@
 <chapter id="firewall_tran">
 
   <title>Firewall</title>
-
-  <!-- Note that the "introduction" is not within a Section.  This is
-       the convention we'll use
-  -->
   <para>
     The Firewall Appliance is identified by the
     <inlinemediaobject>
@@ -13,7 +9,7 @@
         <imagedata fileref="figure/firewall/firewall_tran_icon.png"/>
       </imageobject>
     </inlinemediaobject>
-    symbol.  If the Firewall Appliance is not installed, please refer to <xref linkend="introduction_ui_appliance"/> for installation instructions.
+    symbol.  If the Firewall Appliance is not installed, please refer to <xref linkend="using_adminui_appliances"/> for installation instructions.
   </para>
   <para>
     As its name implies, the Firewall Appliance provides traditional firewall functionality, blocking traffic based on rules.  Rules are based on a combination of protocol, source and destination.  Unlike traditional firewalls but like many other &eg; Software Appliances, the Firewall can simply monitor (rather than block) traffic of interest and log events (see <xref linkend="firewall_tran_eventlog"/>.)
@@ -23,7 +19,7 @@
     <title>Administrative Interface</title>
 
     <para>
-      The interface for the Firewall Appliance is presented as three tabs.  The first two tabs, discussed in <xref linkend="firewall_tran_blockpass"/> and <xref linkend="firewall_tran_general"/>, allow the administrator to configure the behavior of the firewall appliance.  The last tab allows administrators to view firewall events (see <xref linkend="introduction_ui_appliance_event_log"/>).
+      The interface for the Firewall Appliance is presented as three tabs.  The first two tabs, discussed in <xref linkend="firewall_tran_blockpass"/> and <xref linkend="firewall_tran_general"/>, allow the administrator to configure the behavior of the firewall appliance.  The last tab allows administrators to view firewall events (see <xref linkend="using_adminui_appliances_eventlog"/>).
     </para>
   
 
@@ -143,7 +139,7 @@
         </mediaobject>
       </figure>
       <para>
-        The Events Tab is another implementation of an Event Log, as described in <xref linkend="introduction_ui_appliance_event_log"/>.  
+        The Events Tab is another implementation of an Event Log, as described in <xref linkend="using_adminui_appliances_eventlog"/>.  
       </para>         
     </sect2>     
   </sect1>

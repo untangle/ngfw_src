@@ -17,7 +17,7 @@
   </para>
 
   <para>
-    TODO COMPLETE ME.  Someone needs to write this section.  As you do, you should refer to <xref linkend="introduction_ui_appliance"/> as the httpblocker Transform is a "Software appliance".
+    TODO COMPLETE ME.  Someone needs to write this section.  As you do, you should refer to <xref linkend="using_adminui_appliances"/> as the httpblocker Transform is a "Software appliance".
   </para>
 
   <sect1 id="httpblocker_tran_adminui">
@@ -174,7 +174,7 @@
         </mediaobject>
       </figure>
       <para>
-        The Events Tab is another implementation of an Event Log, as described in <xref linkend="introduction_ui_appliance_event_log"/>.  The <guilabel>action</guilabel> describes the action which the &eg; took on the web request.  <guilabel>client</guilabel> shows the IP address of the client who made the request.
+        The Events Tab is another implementation of an Event Log, as described in <xref linkend="using_adminui_appliances_eventlog"/>.  The <guilabel>action</guilabel> describes the action which the &eg; took on the web request.  <guilabel>client</guilabel> shows the IP address of the client who made the request.
       </para>        
     </sect2>  
   </sect1>
