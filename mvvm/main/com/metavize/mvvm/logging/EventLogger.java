@@ -41,6 +41,8 @@ public class EventLogger<E extends LogEvent> implements EventManager<E>
     private static final Map<Tid, Worker> WORKERS = new HashMap<Tid, Worker>();
     private static final Object LOG_LOCK = new Object();
 
+    private static volatile boolean conversionComplete = true;
+
     private final List<EventCache<E>> caches = new LinkedList<EventCache<E>>();
     private final TransformContext transformContext;
 
@@ -61,11 +63,13 @@ public class EventLogger<E extends LogEvent> implements EventManager<E>
         this.transformContext = transformContext;
     }
 
-    // static methods ----------------------------------------------------------
+    // static methods ---------------------------------------------------------
 
     public static void initSchema(final String name)
     {
         synchronized (INIT_QUEUE) {
+            conversionComplete = false;
+
             INIT_QUEUE.add(name);
         }
 
@@ -82,10 +86,16 @@ public class EventLogger<E extends LogEvent> implements EventManager<E>
                                 SchemaUtil.initSchema("events", n);
                             }
 
+                            conversionComplete = true;
                             INIT_QUEUE.notifyAll();
                         }
                 }
             }).start();
+    }
+
+    static boolean isConversionComplete()
+    {
+        return conversionComplete;
     }
 
     // EventManager methods ---------------------------------------------------
@@ -242,16 +252,6 @@ public class EventLogger<E extends LogEvent> implements EventManager<E>
         {
             thread = Thread.currentThread();
 
-            synchronized (INIT_QUEUE) {
-                while (0 < INIT_QUEUE.size() && null != thread) {
-                    try {
-                        INIT_QUEUE.wait();
-                    } catch (InterruptedException exn) {
-                        // reevaluate loop condition
-                    }
-                }
-            }
-
             long lastSync = System.currentTimeMillis();
             long nextSync = lastSync + SYNC_TIME;
 
@@ -288,10 +288,12 @@ public class EventLogger<E extends LogEvent> implements EventManager<E>
                 }
 
                 if (logQueue.size() >= BATCH_SIZE || t >= nextSync) {
-                    try {
-                        persist();
-                    } catch (Exception exn) { // never say die
-                        logger.error("something bad happened", exn);
+                    if (EventLogger.isConversionComplete()) {
+                        try {
+                            persist();
+                        } catch (Exception exn) { // never say die
+                            logger.error("something bad happened", exn);
+                        }
                     }
 
                     lastSync = System.currentTimeMillis();

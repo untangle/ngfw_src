@@ -50,7 +50,7 @@ class EventCache<E extends LogEvent> implements EventRepository<E>
     public List<E> getEvents()
     {
         synchronized (cache) {
-            if (cold) {
+            if (cold && EventLogger.isConversionComplete()) {
                 warm();
             }
             return new ArrayList<E>(cache);
@@ -76,7 +76,16 @@ class EventCache<E extends LogEvent> implements EventRepository<E>
         }
     }
 
-    void warm()
+    void checkCold()
+    {
+        synchronized (cache) {
+            cold = eventLogger.getLimit() > cache.size();
+        }
+    }
+
+    // private methods --------------------------------------------------------
+
+    private void warm()
     {
         synchronized (cache) {
             final int limit = eventLogger.getLimit();
@@ -127,13 +136,6 @@ class EventCache<E extends LogEvent> implements EventRepository<E>
                 }
                 cold = false;
             }
-        }
-    }
-
-    void checkCold()
-    {
-        synchronized (cache) {
-            cold = eventLogger.getLimit() > cache.size();
         }
     }
 }

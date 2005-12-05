@@ -20,9 +20,9 @@ import java.util.Set;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.argon.SessionMatcher;
-import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.EventManager;
+import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
@@ -79,7 +79,7 @@ public abstract class VirusTransformImpl extends AbstractTransform
 
     private static final String OUT_NOTIFY_BODY_TEMPLATE =
         "On $MIMEHeader:DATE$ a message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$)" + CRLF +
-        "was received by $SMTPTransaction:TO$.  The message was found" + CRLF + 
+        "was received by $SMTPTransaction:TO$.  The message was found" + CRLF +
         "to contain the virus \"$VirusReport:VIRUS_NAME$\"." + CRLF +
         "The infected portion of the message was removed by Metavize EdgeGuard";
 
@@ -141,6 +141,9 @@ public abstract class VirusTransformImpl extends AbstractTransform
         String vendor = scanner.getVendorName();
 
         SimpleEventFilter ef = new VirusAllFilter(vendor);
+        eventLogger.addSimpleEventFilter(ef);
+
+        ef = new VirusInfectedFilter(vendor);
         eventLogger.addSimpleEventFilter(ef);
 
         ef = new VirusHttpFilter(vendor);
