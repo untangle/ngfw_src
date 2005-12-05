@@ -84,7 +84,7 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
 
       <classpath refid="mvvm-client.classpath"/>
 
-      <classpath refid="jfreechart.classpath"/>
+      <classpath refid="jfreechart.gui.classpath"/>
       <classpath refid="netbeans.classpath"/>
       <classpath refid="kunststoff.classpath"/>
       <classpath refid="jnlp.classpath"/>
@@ -165,7 +165,7 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
       <fileset refid="gui.jarset"/>
       <fileset refid="hibernate.client.jarset"/>
       <fileset refid="hibernate.gui.jarset"/>
-      <fileset refid="jfreechart.jarset"/>
+      <fileset refid="jfreechart.gui.jarset"/>
       <fileset refid="jnlp.jarset"/>
       <fileset refid="kunststoff.jarset"/>
       <fileset refid="log4j.jarset"/>

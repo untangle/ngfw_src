@@ -1,0 +1,19 @@
+#!/bin/sh
+
+util_dir=$(pwd)
+jfreechart_home=$util_dir/../../downloads/output/jfreechart-0.9.21
+
+unpacked=$(mktemp -d)
+closure=$(mktemp)
+
+(cd $unpacked && jar xf $jfreechart_home/jfreechart-0.9.21.jar && jar xf $jfreechart_home/jcommon-0.9.6.jar)
+
+cat jfreechart-gui.list \
+    | xargs ./closure -cp $unpacked compute-closure \
+    | grep jfree \
+    | sed -e 's|\.|/|g' -e 's/^\(.*\)$/\1.class/' | sort | uniq >$closure
+
+(cd $unpacked && jar cf $util_dir/jfreechart-gui.jar @$closure $(find . -name '*.properties'))
+
+rm -r $unpacked
+rm $closure

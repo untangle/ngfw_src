@@ -53,12 +53,11 @@ MackageDesc[] mds = mvvm.toolboxManager().installed();
     <jar href="./gui.jar" main="true"/>
     <jar href="./mvvm-client.jar"/>
 
+    <jar href="./asm.jar"/>
+    <jar href="./cglib-2.1.jar"/>
     <jar href="./commons-logging-1.0.4.jar"/>
     <jar href="./hibernate-client.jar"/>
-    <jar href="./cglib-2.1.jar"/>
-    <jar href="./asm.jar"/>
-    <jar href="./jcommon-0.9.6.jar"/>
-    <jar href="./jfreechart-0.9.21.jar"/>
+    <jar href="./jfreechart-gui.jar"/>
     <jar href="./jnlp.jar"/>
     <jar href="./kunststoff-mv.jar"/>
     <jar href="./log4j-1.2.9.jar"/>

@@ -18,7 +18,6 @@ import javax.swing.*;
 
 import com.metavize.gui.util.*;
 import com.metavize.mvvm.tran.*;
-import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.AxisLocation;
@@ -104,7 +103,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
 
     private ChartPanel createBarChart(CategoryDataset dataset) {
 
-        JFreeChart jFreeChart = ChartFactory.createBarChart(null,null,null, dataset, PlotOrientation.HORIZONTAL, false,false,false);
+        JFreeChart jFreeChart = MVChartFactory.createBarChart(null,null,null, dataset, PlotOrientation.HORIZONTAL, false,false,false);
         jFreeChart.setBackgroundPaint(Color.BLACK);
         jFreeChart.setBorderPaint(null);
         jFreeChart.setBorderVisible(false);
@@ -154,7 +153,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
 
     private ChartPanel createLineChart(TableXYDataset dataset, boolean showDecimal) {
 
-        JFreeChart jFreeChart = ChartFactory.createXYLineChart(null,null,null, dataset, PlotOrientation.VERTICAL, false,false,false);
+        JFreeChart jFreeChart = MVChartFactory.createXYLineChart(null,null,null, dataset, PlotOrientation.VERTICAL, false,false,false);
         jFreeChart.setBackgroundPaint(Color.BLACK);
         XYPlot plot = jFreeChart.getXYPlot();
         plot.setBackgroundPaint(Color.BLACK);

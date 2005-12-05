@@ -34,6 +34,7 @@
       "../downloads/output/jakarta-tomcat-5.0.28-embed/lib/servlet-api.jar"
       "../downloads/output/javamail-1.3.1/mail.jar"
       "../downloads/output/javassist-2.6/javassist.jar"
+      "../downloads/output/jfreechart-0.9.21/jfreechart-0.9.21.jar"
       "../downloads/output/junit3.8.1/junit.jar"
       "../downloads/output/logging-log4j-1.2.9/dist/lib/log4j-1.2.9.jar"
       "../downloads/output/trove/lib/trove.jar"

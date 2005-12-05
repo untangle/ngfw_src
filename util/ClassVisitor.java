@@ -11,7 +11,9 @@
 
 import static org.apache.bcel.Constants.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -19,6 +21,7 @@ import java.util.Set;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
+import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantDouble;
 import org.apache.bcel.classfile.ConstantFieldref;
@@ -53,10 +56,11 @@ import org.apache.bcel.classfile.Visitor;
 import org.apache.bcel.generic.Type;
 import org.apache.bcel.util.ClassLoaderRepository;
 
-class ClassVisitor implements Visitor
+class ClassVisitor
+    implements org.apache.bcel.classfile.Visitor
 {
     private final ClassLoaderRepository clr;
-    private final List<String> toVisit = new LinkedList<String>();
+    private final Set<String> toVisit = new HashSet<String>();
     private final Set<String> unavailable = new HashSet<String>();
     private final Set<String> visited = new HashSet<String>();
     private final List<ConstantPool> constantPoolStack
@@ -69,7 +73,6 @@ class ClassVisitor implements Visitor
     public ClassVisitor(ClassLoader classLoader, List<String> toVisit)
     {
         this.clr = new ClassLoaderRepository(classLoader);
-        this.toVisit.addAll(toVisit);
 
         visited.add("Z");
         visited.add("B");
@@ -79,6 +82,11 @@ class ClassVisitor implements Visitor
         visited.add("I");
         visited.add("J");
         visited.add("S");
+        visited.add("V");
+
+        for (String s : toVisit) {
+            scheduleVisit(s);
+        }
     }
 
     // public methods ---------------------------------------------------------
@@ -86,15 +94,15 @@ class ClassVisitor implements Visitor
     public void visitAll()
     {
         while (!toVisit.isEmpty()) {
-            String s = toVisit.remove(0);
+            Iterator<String> i = toVisit.iterator();
+            String s = i.next();
+            i.remove();
 
-            if (!visited.contains(s) && !unavailable.contains(s)) {
-                try {
-                    JavaClass jc = clr.loadClass(s);
-                    jc.accept(this);
-                } catch (ClassNotFoundException exn) {
-                    unavailable.add(s);
-                }
+            try {
+                JavaClass jc = clr.loadClass(s);
+                jc.accept(this);
+            } catch (ClassNotFoundException exn) {
+                unavailable.add(s);
             }
         }
     }
@@ -109,7 +117,7 @@ class ClassVisitor implements Visitor
         return unavailable;
     }
 
-    // Visitor methods --------------------------------------------------------
+    // org.apache.bcel.classfile.Visitor methods ------------------------------
 
     public void visitJavaClass(JavaClass obj)
     {
@@ -131,14 +139,14 @@ class ClassVisitor implements Visitor
         }
 
         for (String s : obj.getInterfaceNames()) {
-            toVisit.add(s);
+            scheduleVisit(s);
         }
 
         for (Method m : obj.getMethods()) {
             m.accept(this);
         }
 
-        toVisit.add(obj.getSuperclassName());
+        scheduleVisit(obj.getSuperclassName());
 
         popConstantPool();
     }
@@ -154,19 +162,25 @@ class ClassVisitor implements Visitor
     {
         String n = constantPool.getConstantString(obj.getInnerClassIndex(),
                                                   CONSTANT_Class);
-        toVisit.add(convertPath(n));
+        scheduleVisit(convertPath(n));
     }
 
     public void visitField(Field field)
     {
         Type t = field.getType();
-        toVisit.add(convertPath(t.getSignature()));
+        scheduleVisit(convertPath(t.getSignature()));
+        ConstantValue cv = field.getConstantValue();
+        if (null != cv) {
+            cv.accept(this);
+        }
     }
 
     public void visitMethod(Method obj)
     {
+        pushConstantPool(obj.getConstantPool());
+
         for (Type t : obj.getArgumentTypes()) {
-            toVisit.add(convertPath(t.getSignature()));
+            scheduleVisit(convertPath(t.getSignature()));
         }
 
         Code c = obj.getCode();
@@ -189,7 +203,9 @@ class ClassVisitor implements Visitor
             lvt.accept(this);
         }
 
-        toVisit.add(convertPath(obj.getReturnType().getSignature()));
+        scheduleVisit(convertPath(obj.getReturnType().getSignature()));
+
+        popConstantPool();
     }
 
     public void visitCode(Code obj)
@@ -232,7 +248,7 @@ class ClassVisitor implements Visitor
     {
         pushConstantPool(obj.getConstantPool());
 
-        toVisit.add(convertPath(obj.getSignature()));
+        scheduleVisit(convertPath(obj.getSignature()));
 
         popConstantPool();
     }
@@ -242,7 +258,7 @@ class ClassVisitor implements Visitor
         pushConstantPool(obj.getConstantPool());
 
         for (String en : obj.getExceptionNames()) {
-            toVisit.add(convertPath(en));
+            scheduleVisit(convertPath(en));
         }
 
         popConstantPool();
@@ -254,20 +270,23 @@ class ClassVisitor implements Visitor
 
         if (0 != ct) {
             String t = constantPool.getConstantString(ct, CONSTANT_Class);
-            toVisit.add(convertPath(t));
+            scheduleVisit(convertPath(t));
         }
     }
 
     public void visitConstantClass(ConstantClass obj)
     {
+        scheduleVisit(convertPath(obj.getConstantValue(constantPool).toString()));
     }
 
     public void visitConstantFieldref(ConstantFieldref obj)
     {
+        scheduleVisit(obj.getClass(constantPool));
     }
 
     public void visitConstantInterfaceMethodref(ConstantInterfaceMethodref obj)
     {
+        scheduleVisit(obj.getClass(constantPool));
     }
 
     public void visitConstantLong(ConstantLong obj)
@@ -276,10 +295,14 @@ class ClassVisitor implements Visitor
 
     public void visitConstantMethodref(ConstantMethodref obj)
     {
+        scheduleVisit(obj.getClass(constantPool));
     }
 
     public void visitConstantNameAndType(ConstantNameAndType obj)
     {
+        for (String s : splitSignature(obj.getSignature(constantPool))) {
+            scheduleVisit(convertPath(s));
+        }
     }
 
     public void visitConstantString(ConstantString obj)
@@ -292,6 +315,8 @@ class ClassVisitor implements Visitor
 
     public void visitConstantValue(ConstantValue obj)
     {
+        pushConstantPool(obj.getConstantPool());
+        popConstantPool();
     }
 
     public void visitStackMap(StackMap obj)
@@ -304,6 +329,9 @@ class ClassVisitor implements Visitor
 
     public void visitSynthetic(Synthetic obj)
     {
+        System.out.println("SYNTH");
+        pushConstantPool(obj.getConstantPool());
+        popConstantPool();
     }
 
     public void visitConstantDouble(ConstantDouble obj)
@@ -318,16 +346,26 @@ class ClassVisitor implements Visitor
     {
     }
 
-    // no-ops -----------------------------------------------------------------
-
     public void visitSourceFile(SourceFile obj) { }
-    public void visitConstantPool(ConstantPool obj) { }
+
+    public void visitConstantPool(ConstantPool obj)
+    {
+        for (Constant c : obj.getConstantPool()) {
+            if (null != c) {
+                c.accept(this);
+            }
+        }
+    }
+
     public void visitLineNumberTable(LineNumberTable obj) { }
     public void visitLineNumber(LineNumber obj) { }
     public void visitUnknown(Unknown obj) { }
     public void visitDeprecated(Deprecated obj) { }
-    public void visitSignature(Signature obj) { }
 
+    public void visitSignature(Signature obj)
+    {
+        System.err.println("SIG: " + obj);
+    }
 
     // private methods --------------------------------------------------------
 
@@ -335,6 +373,7 @@ class ClassVisitor implements Visitor
     {
         constantPoolStack.add(0, constantPool);
         this.constantPool = constantPool;
+        constantPool.accept(this);
     }
 
     private void popConstantPool()
@@ -349,4 +388,27 @@ class ClassVisitor implements Visitor
             .replaceFirst("^\\[+", "")
             .replaceFirst("^L+", "");
     }
+
+    private List<String> splitSignature(String sig)
+    {
+        String[] a = sig.split("[;()]");
+        List<String> l = new ArrayList<String>(a.length);
+        for (String s : a) {
+            if (!s.equals("")) {
+                l.add(s);
+            }
+        }
+
+        return l;
+    }
+
+    public void scheduleVisit(String c)
+    {
+        if (c.startsWith("java") || c.startsWith("javax")) { // make configurable
+            return;
+        } else if (!visited.contains(c) && !unavailable.contains(c)) {
+            boolean b = toVisit.add(c);
+        }
+    }
 }
+

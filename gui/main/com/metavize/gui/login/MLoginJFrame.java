@@ -11,11 +11,10 @@
 
 package com.metavize.gui.login;
 
-import java.net.URL;
-
 import java.awt.*;
 import java.lang.Thread;
 import java.lang.reflect.*;
+import java.net.URL;
 import javax.security.auth.login.FailedLoginException;
 import javax.swing.*;
 
@@ -24,8 +23,6 @@ import com.metavize.gui.util.*;
 import com.metavize.mvvm.*;
 import com.metavize.mvvm.client.*;
 import com.metavize.mvvm.security.*;
-
-
 
 public class MLoginJFrame extends javax.swing.JFrame {
 
@@ -461,15 +458,13 @@ public class MLoginJFrame extends javax.swing.JFrame {
 
         public ConnectThread(){
             super("MVCLIENT-ConnectThread");
-	    this.setDaemon(true);
+            this.setDaemon(true);
             this.setContextClassLoader( Util.getClassLoader() );
             acceptJButton.setEnabled(false);
             this.start();
         }
 
         public void run() {
-
-            // (UPDATE GUI) PREPARE FOR LOGIN
             try{
                 SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
                     loginJTextField.setEnabled(false);

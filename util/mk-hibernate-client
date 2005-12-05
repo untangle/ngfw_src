@@ -10,8 +10,9 @@ closure=$(mktemp)
 
 cat hibernate-client.list \
     | xargs ./closure -cp $unpacked compute-closure \
+    | grep hibernate \
     | sed -e 's/^\(.*\)\$.$/\1/' -e 's|\.|/|g' -e 's/^\(.*\)$/\1.class/' \
-    | sort | uniq | grep hibernate >$closure
+    | sort | uniq >$closure
 
 (cd $unpacked && jar cf $util_dir/hibernate-client.jar @$closure)
 
