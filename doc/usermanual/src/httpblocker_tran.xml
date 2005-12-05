@@ -3,9 +3,6 @@
 
   <title>Web Content Control</title>
 
-  <!-- Note that the "introduction" is not within a Section.  This is
-       the convention we'll use
-  -->
   <para>
     The Web Content Control is identified by the
     <inlinemediaobject>
@@ -13,11 +10,7 @@
         <imagedata fileref="figure/httpblocker/httpblocker_tran_icon.png"/>
       </imageobject>
     </inlinemediaobject>
-    symbol.
-  </para>
-
-  <para>
-    TODO COMPLETE ME.  Someone needs to write this section.  As you do, you should refer to <xref linkend="using_adminui_appliances"/> as the httpblocker Transform is a "Software appliance".
+    symbol.  If the Web Content Control Appliance is not installed, please refer to <xref linkend="using_adminui_appliances"/> for installation instructions.
   </para>
 
   <sect1 id="httpblocker_tran_adminui">

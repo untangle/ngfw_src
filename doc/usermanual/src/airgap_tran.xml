@@ -59,7 +59,7 @@
     <sect2 id="airgap_tran_exceptionlist">
       <title>Exception List</title>
       <para>
-        TODO
+        The Exception List of the Packet Attack Shield Appliance is shown in <xref linkend="airgap_tran_exceptionlist_figure"/>.
       </para>
       <figure id="airgap_tran_exceptionlist_figure">
         <title>Exception List Tab</title>
@@ -69,6 +69,54 @@
           </imageobject>
         </mediaobject>
       </figure>
+      <para>
+        The Exception List is used to cause a given system (<glossterm linkend="gloss_ip_addr">IP Address</glossterm>) to be treated as more than one machine.  Recall from <xref linkend="airgap_tran_shield_explained"/> that the Packet Attack Shield Appliance keeps track of the relative activity of machines on its network.  If a given address represents more than one physical machine (for example, with <glossterm linkend="gloss_nat">NAT</glossterm>), then the Packet Attack Shield Appliance must know this or it will consider the NATed network as an unusualy active single host.
+      </para>
+      <para>
+        To add a new entry to the Exception List, push the add (plus) button to the left of the table.  This adds a new entry.  All fields and their meaning for adding/modifying exception entries is as follows.
+        <variablelist>
+          <varlistentry>
+            <term><guilabel>enable</guilabel></term>
+            <listitem>
+              <para>
+                If this box is checked, the exception rule is enabled.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>address</guilabel></term>
+            <listitem>
+              <para>
+                The <glossterm linkend="gloss_ip_addr">IP Address</glossterm> of the system to receive special consideration.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>user count</guilabel></term>
+            <listitem>
+              <para>
+                The number of users (machines) that this address should be considered to represent.  For example, if 5 users are behind a <glossterm linkend="gloss_nat">NAT</glossterm> system, the external IP address of that NAT system should receive a <guilabel>user count</guilabel> of <constant>5</constant>.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>category</guilabel></term>
+            <listitem>
+              <para>
+                A category for the entry.  This is not administrative reference only.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>description</guilabel></term>
+            <listitem>
+              <para>
+                A description of the entry.  This is not administrative reference only.
+              </para>
+            </listitem>
+          </varlistentry>                                        
+        </variablelist>   
+      </para>
     </sect2>    
     
   
@@ -76,7 +124,7 @@
     <sect2 id="airgap_tran_eventlog">
       <title>Event Log</title>
       <para>
-        TODO
+        The Events tab contents is shown in <xref linkend="airgap_tran_eventlog_figure"/>.
       </para>
       <figure id="airgap_tran_eventlog_figure">
         <title>Event Log Tab</title>
@@ -86,6 +134,68 @@
           </imageobject>
         </mediaobject>
       </figure>
+      <para>
+        The Events Tab is another implementation of an Event Log, as described in <xref linkend="using_adminui_appliances_eventlog"/>.  The complete list of columns and their meaning is as follows.
+        <variablelist>
+          <title>Events Tab</title>
+          <varlistentry>
+            <term><guilabel>timestamp</guilabel></term>
+            <listitem>
+              <para>
+                The time the event took place
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>source</guilabel></term>
+            <listitem>
+              <para>
+                The source <glossterm linkend="gloss_ip_addr">IP address</glossterm> of the traffic.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>source interface</guilabel></term>
+            <listitem>
+              <para>
+                The network interface on-which the traffic arrived at the &eg;.  For more information on the network interfaces of your &eg;, please refer to <xref linkend="fixme_interfaces"/>.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>reputation</guilabel></term>
+            <listitem>
+              <para>
+                XXXXX TODO XXXXXXX
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>limited</guilabel></term>
+            <listitem>
+              <para>
+                XXXXX TODO XXXXXXX
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>dropped</guilabel></term>
+            <listitem>
+              <para>
+                XXXXX TODO XXXXXXX
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>reject</guilabel></term>
+            <listitem>
+              <para>
+                XXXXX TODO XXXXXXX
+              </para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+      </para>      
     </sect2>
   </sect1>
 

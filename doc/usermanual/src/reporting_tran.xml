@@ -1,20 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter id="reporting_tran">
-  <title>Reporting</title>
+  <title>EdgeReports</title>
 
   <para>
-    The Reporting Transform is identified by the
+    The EdgeReports Appliance is identified by the
     <inlinemediaobject>
       <imageobject>
         <imagedata fileref="figure/reporting/reporting_tran_icon.png"/>
       </imageobject>
     </inlinemediaobject>
 
-    symbol.
-  </para>
-  
-  <para>
-    TODO COMPLETE ME.  Someone needs to write this section.  As you do, you should refer to <xref linkend="using_adminui_navigation"/> as the Reporting Transform is a "system service".
+    symbol.  If the EdgeReports Appliance is not installed, please refer to <xref linkend="using_adminui_appliances"/> for installation instructions.
   </para>
 
 
@@ -22,7 +18,7 @@
     <title>Administrative Interface</title>
 
     <para>
-      The interface for the Reporting Appliance is presented as three tabs.  The first tab, <xref linkend="reporting_tran_viewreports"/> ,is a convienence which launches a web browser to view the current set of reports.  The second tab, <xref linkend="reporting_tran_emailrcpts"/>,is used to provide a list of administrators who will receive daily report summaries via emai.  The last tab, <xref linkend="reporting_tran_ipaddrmap"/>,is used to provide host names for <glossterm linkend="gloss_ip_addr">IP addresses</glossterm>.
+      The interface for the EdgeReports Appliance is presented as three tabs.  The first tab, <xref linkend="reporting_tran_viewreports"/> ,is a convienence which launches a web browser to view the current set of reports.  The second tab, <xref linkend="reporting_tran_emailrcpts"/>,is used to provide a list of administrators who will receive daily report summaries via emai.  The last tab, <xref linkend="reporting_tran_ipaddrmap"/>,is used to provide host names for <glossterm linkend="gloss_ip_addr">IP addresses</glossterm>.
     </para>  
     <!-- ======================================================== -->
     <sect2 id="reporting_tran_viewreports">

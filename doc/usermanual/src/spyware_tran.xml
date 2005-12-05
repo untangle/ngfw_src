@@ -133,7 +133,7 @@
         </mediaobject>
       </figure>
       <para>
-        As seen in <xref linkend="spyware_tran_adminui_passlist_figure"/>, the Pass List is presented as a table of domains.  TODO Work-out how this should be, after we potentialy change things.
+        As seen in <xref linkend="spyware_tran_adminui_passlist_figure"/>, the Pass List is presented as a table of domains.  To add a new entry, push the add (plus) botton to the left of the table.  The <guilabel>domain</guilabel> TODO what is the format of this?
       </para>
     </sect2>
     
@@ -174,8 +174,66 @@
         </mediaobject>
       </figure>
       <para>
-        TODO This isn't done
-        The Events Tab is another implementation of an Event Log, as described in <xref linkend="using_adminui_appliances_eventlog"/>.  The <guilabel>action</guilabel> describes the action which the &eg; took on the mail.  <guilabel>client</guilabel> shows the IP address of the client.  Note that the client in SMTP is the sender of the mail, and in POP and IMAP it is the receiver of the mail.  <guilabel>spam score</guilabel> is the score applied to the email by the spam scanner.  Higher values indicate <quote>more likely to be spam</quote>.
+        The Events Tab is another implementation of an Event Log, as described in <xref linkend="using_adminui_appliances_eventlog"/>.  The complete list of columns and their meaning is as follows.
+        <variablelist>
+          <title>Events Tab</title>
+          <varlistentry>
+            <term><guilabel>timestamp</guilabel></term>
+            <listitem>
+              <para>
+                The time the event took place
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>action</guilabel></term>
+            <listitem>
+              <para>
+                The action which took place (e.g. <constant>block</constant>).
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>client</guilabel></term>
+            <listitem>
+              <para>
+                The client <glossterm linkend="gloss_ip_addr">IP address</glossterm> of the traffic.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>request</guilabel></term>
+            <listitem>
+              <para>
+                A description of the request made (e.g. <constant>http://someurl/sompath.html</constant>).
+              </para>
+            </listitem>
+          </varlistentry>          
+          <varlistentry>
+            <term><guilabel>reason for action</guilabel></term>
+            <listitem>
+              <para>
+                The reason the action was taken (e.g. <constant>in URL list</constant>).
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>direction</guilabel></term>
+            <listitem>
+              <para>
+                The direction (<constant>inbound</constant> or <constant>outbound</constant>) of the traffic.  Note that <constant>inbound</constant> mean into the protected network.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>server</guilabel></term>
+            <listitem>
+              <para>
+                The server <glossterm linkend="gloss_ip_addr">IP address</glossterm> of the traffic.
+              </para>
+            </listitem>
+          </varlistentry>                                                                
+        </variablelist>        
       </para>      
     </sect2>
   </sect1>

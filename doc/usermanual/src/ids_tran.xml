@@ -59,7 +59,7 @@
     <sect2 id="ids_tran_varlist">
       <title>Variable List</title>
       <para>
-        TODO
+        The interface for the Variable List tab of the Intrusion Prevention Appliance is seen in <xref linkend="ids_tran_varlist_figure"/>.
       </para>
       <figure id="ids_tran_varlist_figure">
         <title>Variable Tab</title>
@@ -70,7 +70,7 @@
         </mediaobject>
       </figure>
       <para>
-        TODO
+        As stated previously, the Intrusion Prevention Appliance is based on technology from <ulink  url="http://www.snort.org/">Snort.org</ulink>.  <emphasis>Modifying the variables is a advanced topic,</emphasis> and will not be covered in this manual.
       </para>
     </sect2>
     
