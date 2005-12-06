@@ -122,6 +122,15 @@ function testInstall()
     fi
 }
 
+function completeInstall()
+{
+    ## Modify the startup script to run a command to update the route after startup
+    sed  -i -e "\$ a route-up ${SCRIPT_DIR}/route-up" ${OPENVPN_CONF_DIR}/client.conf
+    
+    ## Make this script executable, just in case
+    chmod +x ${SCRIPT_DIR}/route-up
+}
+
 if [ "${getFromUsb}x" = "truex" ]; then 
     copyFromUsb
 else
@@ -131,5 +140,7 @@ fi
 installClient
 
 testInstall
+
+completeInstall
 
 true

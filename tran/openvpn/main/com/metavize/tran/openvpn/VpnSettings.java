@@ -478,6 +478,7 @@ public class VpnSettings implements Serializable, Validatable
      */
     boolean isConfigured()
     {
+        if ( isEdgeGuardClient ) return true;
         return ( !( this.organizationUnit == null ) && ( this.organizationUnit.length() > 0 ));
     }
     

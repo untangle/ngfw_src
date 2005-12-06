@@ -116,7 +116,7 @@ public class VpnTransformImpl extends AbstractTransform
             logger.error( "Could not assign client addresses, continuing", exn );
         }
         
-        if ( newSettings.getIsEdgeGuardClient()) {
+        if ( !newSettings.getIsEdgeGuardClient()) {
             /* Update the status/generate all of the certificates for clients */
             this.certificateManager.updateCertificateStatus( newSettings );
         }
@@ -144,10 +144,9 @@ public class VpnTransformImpl extends AbstractTransform
         // logger.debug( "Old settings: '" + oldSettings.getId() + " : newSettings " + newSettings.getId());
 
         Long newSettingsId = newSettings.getId();
-        Long oldSettingsId = ( oldSettings == null ) ? new Long( 0 ) : oldSettings.getId();
+        Long oldSettingsId = ( oldSettings == null ) ? null : oldSettings.getId();
 
-        if ( oldSettings != null && oldSettingsId != null && newSettingsId != null &&
-             !newSettingsId.equals( oldSettingsId )) {
+        if ( oldSettings != null && oldSettingsId != null && !oldSettingsId.equals( newSettingsId )) {
             logger.debug( "Deleting old instance" );
             getTransformContext().runTransaction( deletePreviousTW );
         }
@@ -574,7 +573,7 @@ public class VpnTransformImpl extends AbstractTransform
         VpnSettings newSettings = this.sandbox.completeConfig( this.getTid());
 
         /* Generate new settings */
-        if ( settings.getIsEdgeGuardClient()) {
+        if ( newSettings.getIsEdgeGuardClient()) {
             /* Finish the configuration for clients, nothing left to do,
              * it is all done at download time */
         } else {

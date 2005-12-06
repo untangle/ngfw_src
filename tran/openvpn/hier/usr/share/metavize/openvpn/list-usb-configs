@@ -35,6 +35,8 @@ function listUsb()
     ## Attempt to mount the usb key {dev}
     mount "${t_usbDevice}" ${t_mountPoint} || usbCleanup ${t_mountPoint} ${USB_ERROR}
 
+    mkdir -p `dirname ${destination}` || usbCleanup ${t_mountPoint} ${USB_ERROR}
+
     ## List out the files, only show the files with the stamp for eg.
     ls -1 ${t_mountPoint}/${USB_DEST}/config-*.zip  ${t_mountPoint}/${USB_DEST}/eg-*.stamp \
         | sed -e 's|.*config-\(.*\).zip|\1|' -e 's|.*eg-\(.*\).stamp|\1|' | sort | uniq -d \

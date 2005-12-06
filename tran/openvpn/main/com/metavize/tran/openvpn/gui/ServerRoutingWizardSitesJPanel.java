@@ -129,8 +129,7 @@ public class ServerRoutingWizardSitesJPanel extends MWizardPageJPanel {
 		    SwingUtilities.invokeLater( new Runnable(){ public void run(){
 			mProgressJDialog.setVisible(false);
 		    }});
-                    e.printStackTrace();
-		    throw new Exception("Your VPN Routing Server configuration could not be saved.  Please try again.", e);
+		    throw new Exception("Your VPN Routing Server configuration could not be saved.  Please try again.");
 		}
         }
     }

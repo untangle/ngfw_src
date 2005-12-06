@@ -1,0 +1,9 @@
+#!/bin/sh
+
+exec >> @MVVM_LOG@/openvpn.log 2>&1
+
+## Sleep a little while
+sleep 1
+
+@PREFIX@/usr/bin/mcli updateAddress
+
