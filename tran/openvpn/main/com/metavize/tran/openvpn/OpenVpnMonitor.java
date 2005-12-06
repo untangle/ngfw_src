@@ -344,6 +344,7 @@ class OpenVpnMonitor implements Runnable
         logStatistics( now );
     }
 
+    /* XXX Passing in now is very hockey */
     private void logStatistics( Date now )
     {
         VpnStatisticEvent currentStatistics = this.statistics;
@@ -354,8 +355,9 @@ class OpenVpnMonitor implements Runnable
         }
 
         this.statistics = new VpnStatisticEvent();
-        this.statistics.setStart( now );
-        currentStatistics.setEnd( now );
+        Date temp = new Date( now.getTime());
+        this.statistics.setStart( temp );
+        currentStatistics.setEnd( temp );
         
         /* Add any values that haven't been added yet */
         for ( Stats stats : activeMap.values()) {
