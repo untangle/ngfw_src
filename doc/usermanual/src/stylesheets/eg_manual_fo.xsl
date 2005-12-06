@@ -616,7 +616,7 @@ This document was created using the &gt;e-novative&gt; DocBook Environment (<a h
 
 <xsl:param name="hyphenate">true</xsl:param>
 
-<xsl:param name="body.font.family">Verdana</xsl:param>
+<xsl:param name="body.font.family">Helvetica</xsl:param>
 <xsl:param name="body.font.master">8</xsl:param>
 
 

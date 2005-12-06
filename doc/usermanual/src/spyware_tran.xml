@@ -29,12 +29,13 @@
       <title>Block List</title>
       <para>
         The block list tab presents administrators the ability to modify the four major categories of spyware blocking.  Refer to the section for each sub-tab for more detail.
+        <tip>
+          <para>
+            If you wish to prevent a site from being categorized as <glossterm linkend="gloss_spyware">spyware</glossterm>, it is recommended you <emphasis>not</emphasis> attempt to remove that site's data from one of the Block Lists.  Instead, refer to <xref linkend="spyware_tran_adminui_passlist"/> on how to create exclusions to the blocking rules.
+          </para>
+        </tip>        
       </para>
-      <tip>
-        <para>
-          If you wish to prevent a site from being categorized as <glossterm linkend="gloss_spyware">spyware</glossterm>, it is recommended you <emphasis>not</emphasis> attempt to remove that site's data from one of the Block Lists.  Instead, refer to <xref linkend="spyware_tran_adminui_passlist"/> on how to create exclusions to the blocking rules.
-        </para>
-      </tip>
+
       <!-- ========================================= -->
       <sect3 id="spyware_tran_adminui_block_cookie">
         <title>Cookie List</title>
@@ -102,9 +103,12 @@
       <!-- ========================================= -->
       <sect3 id="spyware_tran_adminui_block_urllist">
         <title>URL List</title>
+        <para>
+          TODO
+        </para>
+        
         <figure id="spyware_tran_adminui_block_urllist_figure">
           <title>URL List Tab</title>
-  
           <mediaobject>
             <imageobject>
               <imagedata fileref="figure/spyware/spyware_block_urllist.png" />
@@ -233,25 +237,39 @@
               </para>
             </listitem>
           </varlistentry>                                                                
-        </variablelist>        
-      </para>      
+        </variablelist>
+      </para>
     </sect2>
   </sect1>
 
   <sect1 id="spyware_tran_qa">
     <title>Frequently Asked Questions</title>
-    <qandaset>  
+    <qandaset>
       <qandaentry>
         <question>
-          <para>TODO put a question here?</para>
+          <para>
+            XXXXXX TODO put a question here?
+          </para>
         </question>
         <answer>
           <para>
-            TODO put an answer here
+            XXXXXX TODO put an answer here
           </para>
         </answer>
       </qandaentry>
+      <qandaentry>
+        <question>
+          <para>
+            XXXXXX TODO put a question here?
+          </para>
+        </question>
+        <answer>
+          <para>
+            XXXXXX TODO put an answer here
+          </para>
+        </answer>
+      </qandaentry>      
     </qandaset>
-  </sect1>  
+  </sect1>
 
 </chapter>

@@ -72,7 +72,7 @@
     If you see the screen shown in <xref linkend="using_adminui_empty_rack"/>, please proceed to <xref linkend="using_adminui_navigation"/> for an overview of the Administrative Interface then <xref linkend="using_adminui_appliances"/> for a discussion of installing Software Appliances.
   </para>
   <para>
-    If you encounter problems launching the Administrative Interface, please consult the <link linkend="using_adminui_qa">Frequently Asked Question section</link> for more assistance.
+    If you encounter problems launching the Administrative Interface, please consult the <link linkend="using_adminui_qaX">Frequently Asked Question section</link> for more assistance.
   </para>
 
   <sect1 id="using_adminui_navigation">
@@ -127,6 +127,11 @@
       It should be noted that the Software Appliances shown in <xref linkend="using_adminui_navigation_annotated_rack"/> are divided into two sections - the <emphasis>Default Rack</emphasis> and <emphasis>System Services</emphasis>.  The distinction between the two is important only when using multiple Virtual Racks and Policies (an advanced topic, covered in <xref linkend="policy_manager"/>).
     </para>
   </sect1>
+
+
+
+
+  
   <sect1 id="using_adminui_appliances">
     <title>Software Appliances</title>
     <para>
@@ -203,12 +208,14 @@
   </sect1>
 
   <!-- ############################################################# -->
-  <sect1 id="using_adminui_qa">
+  <sect1 id="using_adminui_qaX">
     <title>Frequently Asked Questions</title>
     <qandaset>  
       <qandaentry>
         <question>
-          <para>I am not using Internet Explorer.  How can I get the required Java technology to run the Administrative Console?</para>
+          <para>
+            I am not using Internet Explorer.  How can I get the required Java technology to run the Administrative Console?
+          </para>
         </question>
         <answer>
           <para>
