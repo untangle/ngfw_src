@@ -188,6 +188,10 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     <if> <equals arg1="${tran.type}" arg2="transform"/> <then>
         <var name="extra.classes" value="../tran/output/jar/spam-base-client.mar:../tran/output/jar/virus-base-client.mar:../tran/output/jar/http-casing-client.mar:../tran/output/jar/ftp-casing-client.mar:../tran/output/jar/mail-casing-client.mar"/>
     </then> </if>
+    <!-- Because of automatic proxies, a few things don't get referenced but are still nedeed --> 
+    <if> <equals arg1="${tran.name}" arg2="reporting"/> <then>
+        <patternset id="extra.sources" includes="com/metavize/tran/reporting/ReportingTransform.java"/>
+    </then> </if>
 
     <!-- First do the Fake classes that we use until we've cleaned up our code enough XXX -->
     <if><available file="${tran.name}/fake" type="dir"/> <then>
@@ -244,8 +248,8 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
       <src path="${tran.name}/${src.main}"/>
 
+      <patternset refid="extra.sources"/>
       <include name="com/metavize/tran/${tran.name}/gui/**"/>
-      <include name="com/metavize/tran/${tran.name}/*Event.java"/>
       <include name="com/metavize/tran/${tran.name}/*Event.java"/>
       <!-- Don't need this since the GUI references them: include name="com/metavize/tran/${tran.name}/*Transform.java" -->
 

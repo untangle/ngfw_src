@@ -28,9 +28,4 @@ public class MTransformJPanel extends com.metavize.gui.transform.MTransformJPane
         super(transformContext);
                 
     }
-    
-    // Reference this since we need it and we don't have a Log panel to reference it. XXX
-    public void fake(com.metavize.tran.reporting.ReportingTransform transform) {
-        transform.getReportingSettings();
-    }
 }
