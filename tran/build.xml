@@ -350,6 +350,9 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <exclude name="**/*jrxml"/>
         <exclude name="**/*.java"/>
       </fileset>
+      <fileset dir="${tran.name}/${src.main}/">
+        <include name="**/*png"/>
+      </fileset>
       <fileset dir="${tran.name}/${src.resources}/${tran.name}">
         <include name="**"/>
       </fileset>
