@@ -190,8 +190,13 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     </then> </if>
     <!-- Because of automatic proxies, a few things don't get referenced but are still nedeed --> 
     <if> <equals arg1="${tran.name}" arg2="reporting"/> <then>
-        <patternset id="extra.sources" includes="com/metavize/tran/reporting/ReportingTransform.java"/>
+      <patternset id="extra.sources" includes="com/metavize/tran/reporting/ReportingTransform.java"/>
     </then> </if>
+
+    <if> <equals arg1="${tran.name}" arg2="openvpn"/> <then>
+      <patternset id="extra.sources" includes="com/metavize/tran/openvpn/*Exception.java"/>
+    </then> </if>
+
 
     <!-- First do the Fake classes that we use until we've cleaned up our code enough XXX -->
     <if><available file="${tran.name}/fake" type="dir"/> <then>
