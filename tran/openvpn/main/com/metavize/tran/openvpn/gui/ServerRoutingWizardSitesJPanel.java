@@ -86,7 +86,7 @@ public class ServerRoutingWizardSitesJPanel extends MWizardPageJPanel {
 		try{ netmask = IPaddr.parse((String) rowVector.elementAt(6)); }
 		catch(Exception e){ exception = new Exception("Invalid \"network netmask\" in row: " + rowIndex); return; }
 		newElem.setSiteNetwork(network, netmask);
-		newElem.setDescription( (String) rowVector.elementAt(7) );
+		newElem.setDescription( (String) rowVector.elementAt(8) );
 		elemList.add(newElem);
 	    }       		
 	}});
@@ -129,7 +129,8 @@ public class ServerRoutingWizardSitesJPanel extends MWizardPageJPanel {
 		    SwingUtilities.invokeLater( new Runnable(){ public void run(){
 			mProgressJDialog.setVisible(false);
 		    }});
-		    throw new Exception("Your VPN Routing Server configuration could not be saved.  Please try again.");
+                    e.printStackTrace();
+		    throw new Exception("Your VPN Routing Server configuration could not be saved.  Please try again.", e);
 		}
         }
     }

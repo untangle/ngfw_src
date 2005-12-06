@@ -106,7 +106,7 @@ class EventHandler extends AbstractEventHandler
 
         for ( IPMatcher matcher : this.clientAddressList ) {
             if ( logger.isDebugEnabled()) {
-                logger.debug( "Testing " + vpn.getHostAddress() + " against " + matcher );
+                logger.debug( "Testing vpn " + vpn.getHostAddress() + " against " + matcher );
             }
             if ( matcher.isMatch( vpn )) {
                 isValid = true;
@@ -124,7 +124,7 @@ class EventHandler extends AbstractEventHandler
 
         for ( IPMatcher matcher : this.exportedAddressList ) {
             if ( logger.isDebugEnabled()) {
-                logger.debug( "Testing " + local.getHostAddress() + " against " + matcher );
+                logger.debug( "Testing local " + local.getHostAddress() + " against " + matcher );
             }
             if ( matcher.isMatch( local )) {
                 isValid = true;

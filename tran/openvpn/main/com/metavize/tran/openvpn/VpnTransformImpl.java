@@ -109,13 +109,17 @@ public class VpnTransformImpl extends AbstractTransform
 
         /* Attempt to assign all of the clients addresses only if in server mode */
         try {
-            if ( !newSettings.getIsEdgeGuardClient()) addressMapper.assignAddresses( newSettings );
+            if ( !newSettings.getIsEdgeGuardClient()) {
+                addressMapper.assignAddresses( newSettings );
+            }
         } catch ( TransformException exn ) {
             logger.error( "Could not assign client addresses, continuing", exn );
         }
-
-        /* Update the status/generate all of the certificates for clients */
-        this.certificateManager.updateCertificateStatus( newSettings );
+        
+        if ( newSettings.getIsEdgeGuardClient()) {
+            /* Update the status/generate all of the certificates for clients */
+            this.certificateManager.updateCertificateStatus( newSettings );
+        }
 
         TransactionWork deletePreviousTW = new TransactionWork()
             {
@@ -137,9 +141,18 @@ public class VpnTransformImpl extends AbstractTransform
             };
 
         /* If necessary, delete the old settings */
-        if ( oldSettings != null && newSettings.getId() != oldSettings.getId()) {
+        // logger.debug( "Old settings: '" + oldSettings.getId() + " : newSettings " + newSettings.getId());
+
+        Long newSettingsId = newSettings.getId();
+        Long oldSettingsId = ( oldSettings == null ) ? new Long( 0 ) : oldSettings.getId();
+
+        if ( oldSettings != null && oldSettingsId != null && newSettingsId != null &&
+             !newSettingsId.equals( oldSettingsId )) {
+            logger.debug( "Deleting old instance" );
             getTransformContext().runTransaction( deletePreviousTW );
         }
+
+        //logger.debug( "Old settings: '" + oldSettings.getId() + " : newSettings " + newSettings.getId());
         
         getTransformContext().runTransaction( tw );
 
@@ -437,8 +450,9 @@ public class VpnTransformImpl extends AbstractTransform
         reconfigure();
 
         deployWebApp();
-
-        openVpnMonitor.start();
+        
+        /* Only start the monitor for servers */
+        if ( !settings.getIsEdgeGuardClient()) openVpnMonitor.start();
     }
 
     @Override protected void postStop() throws TransformStopException
