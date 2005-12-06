@@ -45,7 +45,8 @@ public class Separator extends JLabel {
     public void paint(Graphics g){
 	super.paint(g);
 	if( foregroundText.length() > 0 ){
-	    g.drawImage(arrowImageIcon.getImage(), 67, 20, (java.awt.image.ImageObserver)null);
+	    //g.drawImage(arrowImageIcon.getImage(), 67, 20, (java.awt.image.ImageObserver)null);
+	    g.drawImage(arrowImageIcon.getImage(), 60, 15, (java.awt.image.ImageObserver)null);
 	    Graphics2D g2 = (Graphics2D) g;
 	    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
