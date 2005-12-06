@@ -205,15 +205,37 @@ public class VpnTransformImpl extends AbstractTransform
     {
         for ( VpnClient client : (List<VpnClient>)settings.getCompleteClientList()) {
             if ( !client.getDistributeClient()) continue;
-            distributeClientConfig( client );
+            distributeRealClientConfig( client );
         }
     }
 
-    public void distributeClientConfig( final VpnClient client )
+    public void distributeClientConfig( VpnClient client )
+        throws TransformException
+    {
+        /* Retrieve the client configuration object from the settings */
+        boolean foundRealClient = false;
+        for ( VpnClient realClient : (List<VpnClient>)settings.getCompleteClientList()) {
+            if ( client.getInternalName().equals( realClient.getInternalName())) {
+                realClient.setDistributionEmail( client.getDistributionEmail());
+                realClient.setDistributeUsb( client.getDistributeUsb());
+                client = realClient;
+                foundRealClient = true;
+                break;
+            }            
+        }
+
+        if ( foundRealClient ) distributeRealClientConfig( client );
+        else throw new TransformException( "Attempt to distribute an unsaved client" );
+    }
+
+    /** The client config is the same client configuration object that is in settings */
+    private void distributeRealClientConfig( final VpnClient client )
         throws TransformException
     {
         /* this client may already have a key, the key may have 
          * already been created. */
+        
+        
         this.certificateManager.createClient( client );
 
         if ( client.getDistributeUsb()) {

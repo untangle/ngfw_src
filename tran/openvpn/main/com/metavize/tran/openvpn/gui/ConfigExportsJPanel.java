@@ -66,7 +66,7 @@ class ExportTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  1, C1_MW, false, false, false, false, Integer.class, null, sc.TITLE_INDEX);
         addTableColumn( tableColumnModel,  2, C2_MW, false, true,  false, false, Boolean.class, "true", sc.bold("export"));
         addTableColumn( tableColumnModel,  3, C3_MW, true,  true,  false, false, String.class,  sc.EMPTY_NAME, sc.html("host/network name") );
-        addTableColumn( tableColumnModel,  4, C4_MW, false, true,  false, false, String.class,  "1.2.3.4", sc.html("IP address"));
+        addTableColumn( tableColumnModel,  4, C4_MW, false, true,  false, false, String.class,  "192.168.1.0", sc.html("IP address"));
         addTableColumn( tableColumnModel,  5, C5_MW, false, true,  false, false, String.class,  "255.255.255.0", sc.html("netmask"));
         addTableColumn( tableColumnModel,  6, C6_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
         addTableColumn( tableColumnModel,  7, 10,    false, false, true,  false, ServerSiteNetwork.class, null, "");

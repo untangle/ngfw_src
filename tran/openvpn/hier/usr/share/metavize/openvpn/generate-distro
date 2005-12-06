@@ -120,6 +120,13 @@ function copyToUsb()
 
     cp -f ${PACKAGE_DIR}/setup-${commonName}.exe \
         ${t_mountPoint}/${USB_DEST}/setup-${commonName}.exe || usbCleanup ${t_mountPoint} ${USB_ERROR}
+
+    # A stamp which indicates whether or not this client is an edgeguard
+    if [ "${isEdgeGuard}x" = "truex" ]; then
+        touch ${t_mountPoint}/${USB_DEST}/eg-${commonName}.stamp || usbCleanup ${t_mountPoint} ${USB_ERROR}
+    else
+        rm -f ${t_mountPoint}/${USB_DEST}/eg-${commonName}.stamp || usbCleanup ${t_mountPoint} ${USB_ERROR}
+    fi
     
     ## Cleanup
     usbCleanup ${t_mountPoint}
