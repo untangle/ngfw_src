@@ -77,16 +77,17 @@ public class ServerRoutingWizardSitesJPanel extends MWizardPageJPanel {
 		newElem = new VpnSite();
 		newElem.setDistributeClient(false);
 		newElem.setLive( (Boolean) rowVector.elementAt(2) );
-		newElem.setName( (String) rowVector.elementAt(3) );
-		newElem.setGroup( (VpnGroup) ((ComboBoxModel) rowVector.elementAt(4)).getSelectedItem() );
+                newElem.setIsEdgeGuard( (Boolean) rowVector.elementAt(3) );
+		newElem.setName( (String) rowVector.elementAt(4) );
+		newElem.setGroup( (VpnGroup) ((ComboBoxModel) rowVector.elementAt(5)).getSelectedItem() );
 		IPaddr network;
-		try{ network = IPaddr.parse((String) rowVector.elementAt(5)); }
+		try{ network = IPaddr.parse((String) rowVector.elementAt(6)); }
 		catch(Exception e){ exception = new Exception("Invalid \"network address\" in row: " + rowIndex); return; }
 		IPaddr netmask;
-		try{ netmask = IPaddr.parse((String) rowVector.elementAt(6)); }
+		try{ netmask = IPaddr.parse((String) rowVector.elementAt(7)); }
 		catch(Exception e){ exception = new Exception("Invalid \"network netmask\" in row: " + rowIndex); return; }
 		newElem.setSiteNetwork(network, netmask);
-		newElem.setDescription( (String) rowVector.elementAt(8) );
+		newElem.setDescription( (String) rowVector.elementAt(9) );
 		elemList.add(newElem);
 	    }       		
 	}});

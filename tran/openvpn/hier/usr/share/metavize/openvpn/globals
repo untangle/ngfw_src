@@ -157,7 +157,8 @@ function lookupUsbDevice()
     local t_sg
     local t_dev
 
-    t_sg=`sg_scan -i | grep -B 1 USB | grep '^/dev' | sed 's|\(.*\):.*|\1|'`
+    ## The sed command just joins every other line
+    t_sg=`sg_scan -i | sed -e '{N;s|\n| |g;}' | grep -v ATA | head -n 1 | sed 's|\(.*\):.*|\1|'`
     if [ -z "${t_sg}" ]; then return ; fi
 
     ## Append the one to always try dev 1

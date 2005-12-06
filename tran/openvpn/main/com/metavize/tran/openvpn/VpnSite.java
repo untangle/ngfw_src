@@ -92,7 +92,7 @@ public class  VpnSite extends VpnClient
      * multiple networks and netmasks
      */
     
-    public ClientSiteNetwork getSiteNetwork( IPaddr network, IPaddr netmask )
+    public ClientSiteNetwork getSiteNetwork()
     {
         List list = getExportedAddressList();
 
