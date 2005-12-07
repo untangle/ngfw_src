@@ -21,6 +21,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import java.awt.Color;
 import java.awt.Frame;
+import java.awt.Window;
+import java.awt.Dialog;
 import java.awt.Dimension;
 
 public class ServerRoutingWizard extends MWizardJDialog {
@@ -30,8 +32,27 @@ public class ServerRoutingWizard extends MWizardJDialog {
 
     private MTransformControlsJPanel mTransformControlsJPanel;
 
-    public ServerRoutingWizard(Frame topLevelFrame, boolean isModal, VpnTransform vpnTransform, MTransformControlsJPanel mTransformControlsJPanel) {
-        super(topLevelFrame, isModal);
+    public static ServerRoutingWizard factory(Window topLevelWindow, VpnTransform vpnTransform,
+					      MTransformControlsJPanel mTransformControlsJPanel) {
+	if( topLevelWindow instanceof Frame )
+	    return new ServerRoutingWizard((Frame)topLevelWindow, vpnTransform, mTransformControlsJPanel);
+	else if( topLevelWindow instanceof Dialog )
+	    return new ServerRoutingWizard((Dialog)topLevelWindow, vpnTransform, mTransformControlsJPanel);
+	else
+	    return null;
+    }
+
+    public ServerRoutingWizard(Frame topLevelFrame, VpnTransform vpnTransform, MTransformControlsJPanel mTransformControlsJPanel) {
+        super(topLevelFrame, true);
+	init(mTransformControlsJPanel, vpnTransform);
+    }
+
+    public ServerRoutingWizard(Dialog topLevelDialog, VpnTransform vpnTransform, MTransformControlsJPanel mTransformControlsJPanel) {
+        super(topLevelDialog, true);
+	init(mTransformControlsJPanel, vpnTransform);
+    }
+
+    private void init(MTransformControlsJPanel mTransformControlsJPanel, VpnTransform vpnTransform){
 	this.mTransformControlsJPanel = mTransformControlsJPanel;
         setTitle("Metavize OpenVPN Server Routing Setup Wizard");
         addWizardPageJPanel(new ServerRoutingWizardWelcomeJPanel(vpnTransform), "1. Welcome", false, true);

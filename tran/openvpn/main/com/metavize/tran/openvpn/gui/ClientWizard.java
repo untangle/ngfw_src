@@ -21,6 +21,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import java.awt.Color;
 import java.awt.Frame;
+import java.awt.Dialog;
+import java.awt.Window;
 
 public class ClientWizard extends MWizardJDialog {
     
@@ -29,15 +31,34 @@ public class ClientWizard extends MWizardJDialog {
 
     private MTransformControlsJPanel mTransformControlsJPanel;
 
-    public ClientWizard(Frame topLevelFrame, boolean isModal, VpnTransform vpnTransform, MTransformControlsJPanel mTransformControlsJPanel) {
-        super(topLevelFrame, isModal);
+    public static ClientWizard factory(Window topLevelWindow, VpnTransform vpnTransform,
+				       MTransformControlsJPanel mTransformControlsJPanel) {
+	if( topLevelWindow instanceof Frame )
+	    return new ClientWizard((Frame)topLevelWindow, vpnTransform, mTransformControlsJPanel);
+	else if( topLevelWindow instanceof Dialog )
+	    return new ClientWizard((Dialog)topLevelWindow, vpnTransform, mTransformControlsJPanel);
+	else
+	    return null;
+    }
+
+    public ClientWizard(Frame topLevelFrame, VpnTransform vpnTransform, MTransformControlsJPanel mTransformControlsJPanel) {
+        super(topLevelFrame, true);
+	init(mTransformControlsJPanel, vpnTransform);
+    }
+
+    public ClientWizard(Dialog topLevelDialog, VpnTransform vpnTransform, MTransformControlsJPanel mTransformControlsJPanel) {
+        super(topLevelDialog, true);
+	init(mTransformControlsJPanel, vpnTransform);
+    }
+    
+    private void init(MTransformControlsJPanel mTransformControlsJPanel, VpnTransform vpnTransform){
 	this.mTransformControlsJPanel = mTransformControlsJPanel;
         setTitle("Metavize OpenVPN Client Setup Wizard");
         addWizardPageJPanel(new ClientWizardWelcomeJPanel(vpnTransform), "1. Welcome", false, true);
         addWizardPageJPanel(new ClientWizardServerJPanel(vpnTransform), "2. Download Configuration", false, true);
         addWizardPageJPanel(new ClientWizardCongratulationsJPanel(vpnTransform), "3. Congratulations", false, true);
     }
-    
+
     protected void wizardFinishedAbnormal(int currentPage){
 	if( currentPage <= 1 ){
 	    new MOneButtonJDialog(this, MESSAGE_DIALOG_TITLE, MESSAGE_CLIENT_NOT_CONFIGURED);

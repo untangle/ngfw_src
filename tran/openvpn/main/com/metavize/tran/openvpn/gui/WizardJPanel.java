@@ -11,7 +11,7 @@
 
 package com.metavize.tran.openvpn.gui;
 
-import java.awt.Frame;
+import java.awt.Window;
 
 import com.metavize.tran.openvpn.*;
 
@@ -192,13 +192,13 @@ public class WizardJPanel extends javax.swing.JPanel {
 
     private void serverRoutingJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverRoutingJButtonActionPerformed
         serverRoutingJButton.setEnabled(false);
-	(new ServerRoutingWizard((Frame)this.getTopLevelAncestor(),true,vpnTransform,mTransformControlsJPanel)).setVisible(true);
+	ServerRoutingWizard.factory((Window)this.getTopLevelAncestor(),vpnTransform,mTransformControlsJPanel).setVisible(true);
 	serverRoutingJButton.setEnabled(true);
     }//GEN-LAST:event_serverRoutingJButtonActionPerformed
 
     private void clientJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clientJButtonActionPerformed
 	clientJButton.setEnabled(false);
-	(new ClientWizard((Frame)this.getTopLevelAncestor(),true,vpnTransform,mTransformControlsJPanel)).setVisible(true);
+	ClientWizard.factory((Window)this.getTopLevelAncestor(),vpnTransform,mTransformControlsJPanel).setVisible(true);
 	clientJButton.setEnabled(true);
     }//GEN-LAST:event_clientJButtonActionPerformed
     
