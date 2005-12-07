@@ -39,14 +39,18 @@ public class ClientWizard extends MWizardJDialog {
     }
     
     protected void wizardFinishedAbnormal(int currentPage){
-	new MOneButtonJDialog(this, MESSAGE_DIALOG_TITLE, MESSAGE_CLIENT_NOT_CONFIGURED);
-	super.wizardFinishedAbnormal(currentPage);
+	if( currentPage <= 1 ){
+	    new MOneButtonJDialog(this, MESSAGE_DIALOG_TITLE, MESSAGE_CLIENT_NOT_CONFIGURED);
+	    super.wizardFinishedAbnormal(currentPage);
+	}
+	else
+	    this.wizardFinishedNormal();
     }
 
     protected void wizardFinishedNormal(){
 	super.wizardFinishedNormal();
 	try{
-	    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
 		mTransformControlsJPanel.generateGui();
 		mTransformControlsJPanel.refreshGui();
 	    }});

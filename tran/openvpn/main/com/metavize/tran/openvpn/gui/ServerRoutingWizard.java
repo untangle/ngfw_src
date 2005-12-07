@@ -45,16 +45,20 @@ public class ServerRoutingWizard extends MWizardJDialog {
 
     protected Dimension getTitleJPanelPreferredSize(){ return new Dimension(250,360); }
     protected Dimension getContentJPanelPreferredSize(){ return new Dimension(485,360); }
-    
+   
     protected void wizardFinishedAbnormal(int currentPage){
-	new MOneButtonJDialog(this, MESSAGE_DIALOG_TITLE, MESSAGE_CLIENT_NOT_CONFIGURED);
-	super.wizardFinishedAbnormal(currentPage);
+	if( currentPage <= 5 ){
+	    new MOneButtonJDialog(this, MESSAGE_DIALOG_TITLE, MESSAGE_CLIENT_NOT_CONFIGURED);
+	    super.wizardFinishedAbnormal(currentPage);
+	}
+	else
+	    this.wizardFinishedNormal();
     }
 
     protected void wizardFinishedNormal(){
 	super.wizardFinishedNormal();
 	try{
-	    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
 		mTransformControlsJPanel.generateGui();
 		mTransformControlsJPanel.refreshGui();
 	    }});
