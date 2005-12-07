@@ -1,4 +1,4 @@
-TEMPLATE=MasterOfThreeChildren
+TEMPLATE=MasterOfThreeChildrenStacked
 REPORT_NAME=IDSMaster
 REPORT_TITLE=Intrusion Prevention - Summary
 EXTRA_PARAM_1.name=reportTitlePrefix

@@ -40,7 +40,8 @@ SELECT rule_sid,
        COUNT(c_server_addr) AS TOTAL_ACTIONS
   FROM tr_ids_evt evt
          JOIN pl_endp endp ON (evt.pl_endp_id = endp.event_id)
-  WHERE evt.time_stamp >= $P{startTime} and evt.time_stamp < $P{endTime}
+  WHERE evt.time_stamp >= $P{startTime}
+    AND evt.time_stamp < $P{endTime}
   GROUP BY rule_sid, c_server_addr
   ORDER BY TOTAL_ACTIONS DESC
   LIMIT 15
@@ -127,7 +128,7 @@ SELECT rule_sid,
                     <textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
                         <font fontName="SansSerif" pdfFontName="Helvetica" size="9" isBold="false" isItalic="true" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
                     </textElement>
-                <text><![CDATA[Rank]]></text>
+                <text><![CDATA[Rule #]]></text>
                 </staticText>
                 <staticText>
                     <reportElement
@@ -246,7 +247,7 @@ SELECT rule_sid,
                     <textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
                         <font fontName="SansSerif" pdfFontName="Helvetica" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
                     </textElement>
-                <textFieldExpression   class="java.lang.Integer"><![CDATA[$V{RANK}.intValue()]]></textFieldExpression>
+                <textFieldExpression   class="java.lang.Long"><![CDATA[$F{RULE_SID}]]></textFieldExpression>
                 </textField>
                 <textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
                     <reportElement
