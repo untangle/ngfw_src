@@ -59,7 +59,7 @@ public class AboutJDialog extends MConfigJDialog {
         
         // LISCENSE ////////////
         try{
-	    URL licenseURL = Util.getClassLoader().getResource("EvalLicense.txt");
+	    URL licenseURL = Util.getClassLoader().getResource("License.txt");
 	    contentJEditorPane = new JEditorPane();
 	    contentJEditorPane.setEditable(false);
 	    contentJEditorPane.setPage(licenseURL);

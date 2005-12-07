@@ -32,7 +32,7 @@ public class InitialSetupLicenseJPanel extends MWizardPageJPanel implements Adju
         verticalScrollBar.addAdjustmentListener(this);
         
         try{
-	    URL licenseURL = Util.getClassLoader().getResource("EvalLicense.txt");
+	    URL licenseURL = Util.getClassLoader().getResource("LicenseForInstall.txt");
 	    contentJEditorPane.setPage(licenseURL);
 	}
 	catch(Exception e){

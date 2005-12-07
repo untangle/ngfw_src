@@ -107,7 +107,7 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
         <include name="**/*jpg"/>
       </fileset>
       <fileset dir="../mvvm/resources">
-        <include name="EvalLicense.txt"/>
+        <include name="License*.txt"/>
       </fileset>
     </jar>
   </target>

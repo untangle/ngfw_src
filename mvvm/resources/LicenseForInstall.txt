@@ -1,0 +1,195 @@
+              METAVIZE INC.
+            LICENSE AGREEMENT
+
+CAREFULLY READ THE TERMS AND CONDITIONS OF THIS LICENSE AGREEMENT
+("LICENSE") BEFORE YOU CLICK ON THE "ACCEPT LICENSE AGREEMENT" BUTTON.
+THE METAVIZE INC. ("METAVIZE") HARDWARE (THE "HARDWARE") YOU HAVE
+PURCHASED CONTAINS PREVIOUSLY INSTALLED SOFTWARE (THE "INSTALLED
+CODE"). METAVIZE IS ONLY WILLING TO LICENSE THE INSTALLED CODE, AND
+THE USER MANUALS AND ONLINE INSTRUCTIONS CONCERNING THE HARDWARE AND
+THE INSTALLED CODE (THE "DOCUMENTATION"), AMONG OTHER THINGS, TO THE
+INDIVIDUAL OR ENTITY (THE "LICENSEE") PURCHASING THE HARDWARE, UNDER
+THE TERMS AND CONDITIONS OF THIS LICENSE. BY CLICKING ON THE "ACCEPT
+LICENSE AGREEMENT" BUTTON, LICENSEE ACKNOWLEDGES ITS ACCEPTANCE OF
+THESE TERMS AND CONDITIONS AND FORMS A BINDING LEGAL CONTRACT WITH
+METAVIZE. IF LICENSEE DOES NOT ACCEPT THESE TERMS AND CONDITIONS,
+CLICK ON THE "DECLINE LICENSE AGREEMENT" BUTTON AND RETURN THE
+HARDWARE WITH THE INSTALLED CODE AND DOCUMENTATION TO METAVIZE.
+
+1. Grant of License to Installed Code. Upon payment of the applicable
+   fees for a Metavize maintenance and support service (the
+   "Subscription Service"), Metavize grants to Licensee a
+   nontransferable, nonexclusive license to use the Installed Code
+   solely in connection with Licensee's use of the Hardware on
+   Licensee's computer network.
+
+2. Maintenance and Support. Upon payment of the applicable fees for
+   the Subscription Service, Licensee shall have the right to receive
+   the maintenance and support services provided by Metavize generally
+   to its other subscribers purchasing the same subscription service
+   as Licensee. If any software is provided to Licensee as part of the
+   Subscription Service, such software shall be provided to Licensee
+   either (a) under the terms of this License, as if such software
+   were Installed Code, or (b) under the terms of a separate license
+   if a separate license is provided. Metavize shall have the right to
+   change the maintenance and support services provided to Licensee in
+   the Subscription Service from time to time, or cancel the
+   Subscription Service at any time, without notice, and refund the
+   pro-rata portion any unearned prepaid Subscription Fees.
+
+   Provided that Licensee is current on payment of its Subscription
+   Service fees and not otherwise in default of this License, Metavize
+   or its distributors will:
+
+   a. provide to Licensee technical support by telephone or electronic
+      mail during Metavize normal business hours concerning the use of
+      the Hardware and the Installed Code as set forth in the
+      Documentation;
+
+   b. exercise commercially reasonable efforts to correct any
+      programming defect in any Installed Code designed by Metavize; and
+
+   c. deliver automatically to Licensee's Hardware unit maintenance
+      releases, updates, enhancements, and/or modifications to the
+      Installed Code.
+
+   Licensee shall do nothing to prevent Metavize from automatically
+   delivering and installing on the Hardware additional software
+   ordered by Licensee, or delivering and installing maintenance
+   releases, updates, enhancements, additional software and/or
+   modifications to the Installed Code. Such maintenance releases,
+   updates, enhancements, additional software, and/or modifications to
+   the Installed Code shall constitute Installed Code for purposes of
+   this License and shall be subject to all terms and conditions of
+   this License.
+
+3. Metavize Right to Disable. IF LICENSEE FAILS TO PAY ANY FEE FOR THE
+   SUBSCRIPTION SERVICE WHEN DUE, METAVIZE SHALL HAVE THE RIGHT,
+   WITHOUT PRIOR NOTICE TO LICENSEE, TO DISABLE ANY SOFTWARE INSTALLED
+   ON LICENSEE'S HARDWARE UNIT INCLUDING, WITHOUT LIMITATION, THE
+   INSTALLED SOFTWARE. METAVIZE SHALL NOT BE LIABLE FOR ANY COSTS OR
+   DAMAGES INCURRED BY LICENSEE OR ANY THIRD PARTY AS A RESULT OF ANY
+   SOFTWARE BEING DISABLED BY METAVIZE.
+
+4. Title. Title to the Installed Code shall remain with Metavize or
+   its suppliers at all times. The rights granted under this License
+   are personal to Licensee, and do not extend to any subsidiary,
+   parent, or affiliate of Licensee. Title to the Hardware remains
+   with Licensee.
+
+5. Third Party Code. Portions of the Installed Code are licensed by
+   third parties under various licenses including, without limitation,
+   the General Public License, the Lesser General Public License, the
+   Apache License, the Berkeley Software Distribution License, and the
+   Sun Public License (collectively, the "Open Source"). Copies of
+   such licenses are available in the Installed Software, , the
+   applicable source code files for the portion of Installed Code to
+   which they pertain, or from Metavize at www.metavize.com. Copies of
+   the source code for files licensed under the General Public
+   License, the Lesser General Public License, the Apache License, and
+   the Sun Public License, including Metavize modifications to such
+   source code, are available from Metavize at www.metavize.com. All
+   Open Source is licensed under the terms of applicable third party
+   licenses.
+
+6. Exclusions.  Licensee shall not:
+
+   a. copy any part of the Installed Code except to make one copy for
+      back-up purposes;
+
+   b. reverse engineer, reverse compile, or disassemble any portion of
+      the Installed Code or circumvent any License or disabling code;
+
+   c. distribute, rent, lease, assign, or otherwise transfer any
+      interest in the Installed Code separate from the Hardware;
+
+   d. export the Installed Code;
+
+   e. disclose benchmarks or other comparisons of the Installed Code
+      without Metavize's prior written consent;
+
+   f. modify the Installed Code; or
+
+   g. allow others to reverse engineer, reverse compile, disassemble,
+      or make or obtain copies of the Installed Code.
+
+   In addition, Licensee shall not transfer or assign any interest in
+   the Installed Code except in connection with an assignment or other
+   transfer of the Hardware containing the Installed Code, and then
+   only upon the agreement by the assignee or transferee to the terms
+   of this License.
+
+7. SPECIFIC DISCLAIMERS OF WARRANTY AND LIMITATION OF LIABILITY.
+   Licensee understands that Metavize provides no assurance that
+   Licensee's network will operate with the Hardware. In addition, any
+   change in the operating system or other software or configuration
+   of Licensee's network may affect the performance and operation of
+   the Hardware. ACCORDINGLY, METAVIZE SHALL HAVE NO LIABILITY TO
+   LICENSEE FOR ANY IMPAIRMENT OR NONPERFORMANCE OF ANY COMPUTER
+   NETWORK OR ANY PORTION THEREOF.
+
+   METAVIZE DOES NOT WARRANT THAT THE INSTALLED CODE IS ERROR-FREE OR
+   THAT IT WILL OPERATE WITH LICENSEE'S COMPUTER NETWORK WITHOUT ANY
+   IMPAIRMENT OF THE INSTALLED CODE OR LICENSEE'S COMPUTER NETWORK.
+   THE HARDWARE AND THE INSTALLED CODE IS PROVIDED "AS IS" WITHOUT
+   WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, WITH THE
+   EXCEPTION OF A THREE YEAR PARTS AND LABOR WARRANTY ON THE HARDWARE,
+   INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
+   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND
+   NONINFRINGEMENT. METAVIZE ALSO DISCLAIMS ANY EXPRESS OR IMPLIED
+   WARRANTY CONCERNING ANY MAINTENANCE OR SUPPORT SERVICES PROVIDED TO
+   LICENSEE INCLUDING, WITHOUT LIMITATION, THE SUBSCRIPTION SERVICE.
+   NEITHER METAVIZE NOR ANY CONTRIBUTOR OF OPEN SOURCE SHALL BE LIABLE
+   TO LICENSEE OR ANY THIRD PARTY FOR ANY DEFECTS IN THE INSTALLED
+   CODE. METAVIZE WILL NOT BE LIABLE TO LICENSEE FOR ANY LOST PROFITS,
+   LOST SAVINGS, LOSS OF USE, OR OTHER SPECIAL, INCIDENTAL, OR
+   CONSEQUENTIAL DAMAGES ARISING IN TORT, CONTRACT, OR OTHERWISE, OR
+   FOR ANY CLAIM BY ANY OTHER PARTY, ARISING OUT OF THE USE OF OR
+   INABILITY TO USE THE INSTALLED CODE OR THE HARDWARE EVEN IF
+   METAVIZE HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+   METAVIZE'S LIABILTY TO LICENSEE IN ANY EVENT SHALL NOT EXCEED THE
+   AMOUNT OF FEES PAID BY LICENSEE TO METAVIZE. THIS DISCLAIMER
+   CONSTITUTES AN ESSENTIAL PART OF THIS AGREEMENT, AND NO USE OF THE
+   HARDWARE, INSTALLED CODE, OR SUBSCRIPTION SERVICE IS AUTHORIZED
+   HEREUNDER EXCEPT UNDER THIS DISCLAIMER.
+
+8. High Risk Activities. None of the Hardware, Installed Code, or
+   Subscription Service is fault-tolerant and is not licensed for use
+   in hazardous environments requiring fail-safe performance, such as
+   in the operation of nuclear facilities, aircraft navigation or
+   communication systems, air traffic control, direct life support
+   machines, or weapons systems, in which the failure of the Hardware
+   or Installed Code could lead directly to death, personal injury, or
+   severe physical or environmental damage ("High Risk Activities").
+   ACCORDINGLY, LICENSOR AND ITS SUPPLIERS SPECIFICALLY DISCLAIM ANY
+   EXPRESS OR IMPLIED WARRANTY OF FITNESS FOR HIGH RISK ACTIVITIES.
+   LICENSEE AGREES THAT METAVIZE AND ITS SUPPLIERS WILL NOT BE LIABLE
+   FOR ANY CLAIMS OR DAMAGES ARISING FROM THE USE OF THE HARDWARE OR
+   INSTALLED CODE IN SUCH APPLICATIONS.
+
+9. Termination: This License automatically terminates upon any breach
+   by Licensee of any of its terms or conditions.
+
+10.Governing Law: This License shall be governed by the laws of the
+   State of California, U.S.A, without regard to its conflicts of
+   laws rules or the United Nations Convention on the International
+   Sale of Goods. If either party employs attorneys to enforce any
+   rights arising out of or relating to this License, the prevailing
+   party shall be entitled to recover reasonable attorney's fees. The
+   parties consent to the exclusive jurisdiction of the state and
+   federal courts located in San Mateo County, California, USA.
+
+11.Entire Agreement. This License constitutes the entire agreement
+   between the parties concerning Licensee's use of the Installed
+   Code. This License supersedes any prior verbal understanding
+   between the parties and any Licensee purchase order or other
+   ordering document, regardless of whether such document is received
+   by Metavize before or after Licensee agrees to this License. This
+   License may be amended only in a writing signed by an authorized
+   officer of Metavize specifically evidencing an intent to amend
+   this License. Metavize may use Licensee's name in any customer
+   reference list or in any press release issued by Metavize
+   regarding the purchase of the Hardware and the Subscription
+   Service and/or provide to third parties Licensee's name and the
+   names of the Hardware and Subscription Service purchased by
+   Licensee.
