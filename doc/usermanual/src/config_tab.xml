@@ -15,12 +15,8 @@
       </imageobject>
     </mediaobject>
   </figure>    
-
   <para>
-    Various global properties of your &eg; are set from the <guilabel>Config</guilabel> tab of the Administrative interface (see <xref linkend="config_tab_config_tab_figure"/>).
-  </para>
-  <para>
-    The <guilabel>Config</guilabel> tab shown in <xref linkend="config_tab_config_tab_figure"/> is the last tab to the left on the left panel of the Administrative Interface.  We will now discuss in more detail each of the options within the <guilabel>Config</guilabel> Tab in more detail.
+    The <guilabel>Config</guilabel> tab shown in <xref linkend="config_tab_config_tab_figure"/> is the last tab to the left on the left panel of the Administrative Interface.  We will now discuss each of the options within the <guilabel>Config</guilabel> Tab in more detail.
   </para>
 
 
@@ -134,7 +130,7 @@
         The &eg; sends emails for several reasons.  Various Software Appliances (for example, <link linkend="clam_tran">Virus Scanning</link>) will send end-users emails informing them of malicious payloads such as viruses.  The <link linkend="config_tab_quarantine">Quarantine</link> feature sends users a daily digest of the spams they received, and the <link linkend="reporting_tran">EdgeGuard Reports Appliance</link> sends daily summary reports to administrators about their &eg; activity.
       </para>
       <para>
-        The interface for configuring the email settings (as seen in <xref linkend="config_tab_network_email_figure"/>) requires two properties for normal mail traffic.  The first property, <guilabel>Hostname</guilabel> is the name of your <glossterm linkend="gloss_smtp">SMTP</glossterm> mail server (e.g. <quote>mail.mycompany.com</quote> or <quote>4.79.181.14</quote>).  The second property is <guilabel>port</guilabel>.  The standard port for sending email via SMTP is 25.  You should only change this setting if you know your mail server is using a non-standard port.
+        The interface for configuring the email settings (as seen in <xref linkend="config_tab_network_email_figure"/>) requires two properties for normal mail traffic.  The first property, <guilabel>Hostname</guilabel>, is the name of your <glossterm linkend="gloss_smtp">SMTP</glossterm> mail server (e.g. <constant>mail.mycompany.com</constant> or <constant>4.79.181.14</constant>).  The second property is <guilabel>port</guilabel>.  The standard port for sending email via SMTP is <constant>25</constant>.  You should only change this setting if you know your mail server is using a non-standard port.
       </para>
       <para>
         For sites using authenticated SMTP (SMTP which requires a username and password), the <guilabel>Authentication Login</guilabel> and <guilabel>Authentication Password</guilabel> fields should be set.  Otherwise, these can be safely left blank.
@@ -209,7 +205,7 @@
     <simplesect>
       <title><guilabel>Internal Remote Administration</guilabel></title>
       <para>
-        Internal administration can be configured to require an encrypted (SSL) connection or not.  To require an SSL connection, select the <guilabel>Disallow</guilabel> option under <guilabel>Internal Remote Administration</guilabel>.  Note that secure administration is <emphasis>always</emphasis> enabled.
+        Internal administration can be configured to require an encrypted (SSL) connection or not.  To require an SSL connection, select the <guilabel>Disallow</guilabel> option under <guilabel>Internal Remote Administration</guilabel>.  Note that secure remote administration is <emphasis>always</emphasis> enabled from the internal network.
       </para>
     </simplesect>
 
@@ -645,7 +641,7 @@
       There are two ways in which Metavize support can assist in troubleshooting.  The first is to access the &eg; remotely via a secure protocol (<glossterm linkend="gloss_ssh">SSH</glossterm>).  This is enabled by selecting <guilabel>Allow</guilabel>, and disabled by selecting <guilabel>Disallow</guilabel>.
       <note>
         <para>
-          B default, SSH access is disabled.
+          By default, SSH access is disabled.
         </para>
       </note>
     </para>

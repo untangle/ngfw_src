@@ -2,8 +2,8 @@
 <preface>
   <title>Preface</title>
 
-
-
+<!--
+  TODO - we really should have some safety stuff here.
   <sect1 id="preface_safety">
     <title>Safety</title>
     <para>
@@ -14,7 +14,7 @@
     </para>
   </sect1>
   
-
+-->
   <sect1 id="preface_support">
     <title>Support</title>
     <para>
@@ -30,5 +30,13 @@
     </address>    
 -->    
   </sect1>
+
+  <sect1 id="preface_corrections_suggestions">
+    <title>Corrections Suggestions</title>
+    <para>
+      The Documentation Team at Metavize is always striving to produce a better, more usable set of guides.  To provide any feedback or to alert us of any errors, please email <constant>docs@metavize.com</constant>.
+    </para>
+  </sect1>
+  
   
 </preface>  
