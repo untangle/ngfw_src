@@ -90,18 +90,16 @@ public class MLauncher {
                 javax.swing.SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
                     initialSetupWizard = new com.metavize.gui.login.InitialSetupWizard();
                     initialSetupWizard.setVisible(true);
-                }});
-            }
-            catch(Exception e){ Util.handleExceptionNoRestart("unable to show setup wizard", e); }
+		}});
+	    }
+	    catch(Exception e){ Util.handleExceptionNoRestart("unable to show setup wizard", e); }
         }
 
-        // LOGIN AFTER SETUP WIZARD
-        while( !isActivated && (initialSetupWizard.isVisible() == true) ){
-            try{ Thread.currentThread().sleep(1000); }
-            catch(Exception e){}
-        }
-        new com.metavize.gui.login.MLoginJFrame(args);
-
+        // LOGIN
+	if( isActivated || (!isActivated && initialSetupWizard.isRegistered()) )
+	    new com.metavize.gui.login.MLoginJFrame(args);
+	else
+	    System.exit(0);
 
     }
 

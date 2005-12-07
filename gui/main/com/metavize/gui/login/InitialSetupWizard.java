@@ -22,6 +22,8 @@ import java.awt.Color;
 import java.awt.Frame;
 
 public class InitialSetupWizard extends MWizardJDialog {
+
+    private boolean isRegistered = false;
     
     private static final String MESSAGE_DIALOG_TITLE = "Setup Wizard Warning";
     private static final String MESSAGE_NOT_REGISTERED = "You have not registered your EdgeGuard.  Please run the Setup Wizard again.";
@@ -29,6 +31,7 @@ public class InitialSetupWizard extends MWizardJDialog {
     
     public InitialSetupWizard() {
         setTitle("Metavize EdgeGuard Setup Wizard");
+	setModal(true);
         addWizardPageJPanel(new InitialSetupWelcomeJPanel(), "1. Welcome", false, false);
         addWizardPageJPanel(new InitialSetupLicenseJPanel(), "2. License Agreement", false, false);
         addWizardPageJPanel(new InitialSetupContactJPanel(), "3. Contact Information", false, false);
@@ -48,11 +51,14 @@ public class InitialSetupWizard extends MWizardJDialog {
         else if( currentPage <= 8 ){ // REGISTERED
             new MOneButtonJDialog(this, MESSAGE_DIALOG_TITLE, MESSAGE_NOT_CONFIGURED);
         }
+	if( currentPage >= 4 )
+	    isRegistered = true;
         cleanupConnection();
 	super.wizardFinishedAbnormal(currentPage);
     }
 
     protected void wizardFinishedNormal(){
+	isRegistered = true;
         cleanupConnection();
 	super.wizardFinishedNormal();
     }
@@ -63,6 +69,8 @@ public class InitialSetupWizard extends MWizardJDialog {
 	    MvvmRemoteContextFactory.factory().logout();
     }
     
+    public boolean isRegistered(){ return isRegistered; }    
+
 }
 
 
