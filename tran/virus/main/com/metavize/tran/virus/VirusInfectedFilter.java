@@ -66,6 +66,6 @@ public class VirusInfectedFilter implements SimpleEventFilter<VirusEvent>
 
     public boolean accept(VirusEvent e)
     {
-        return true;
+        return e.isInfected();
     }
 }
