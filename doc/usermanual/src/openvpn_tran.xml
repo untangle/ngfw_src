@@ -514,7 +514,10 @@
     <sect2 id="openvpn_tran_adminui_serverscreens">
       <title>Administration as a Routing Server</title>
       <para>
-        TODO
+        To configure an &eg; as a Routing Server, Administrators must first have run through the corresponding wizard, as described in <xref linkend="openvpn_tran_adminui_wizards_server"/>.  
+      </para>
+      <para>
+        Once configured, address pools can be added or removed as described in <xref linkend="openvpn_tran_adminui_serverscreens_addrpools"/>.  Hosts and Machines can be exported as described in <xref linkend="openvpn_tran_adminui_serverscreens_exportedhosts"/>.  Finally, VPN clients and sites can be added or removed as discussed in <xref linkend="openvpn_tran_adminui_serverscreens_vpnclients"/> and <xref linkend="openvpn_tran_adminui_serverscreens_vpnsites"/> respectivly.
       </para>
 
       <!-- *********************************************** -->
@@ -522,6 +525,9 @@
         <title>Client and Site Address Pools</title>
         <para>
           The Client and Site Address Pools tab, as seen in <xref linkend="openvpn_tran_adminui_serverscreens_addrpools_figure"/>, lets Administrators configure pools of addresses for VPN-connected clients and sites.
+        </para>
+        <para>
+          Most deployments will only have a single address pool (it is recommended to use the name <constant>default</constant> for this pool).  Multiple address pools should only be used if Policies wish to differentiate classes of VPN-connected users.  For a discussion of creating policies based on subnets, please refer to <xref linkend="policy_manager"/>.
         </para>
 
         <figure id="openvpn_tran_adminui_serverscreens_addrpools_figure">
@@ -531,7 +537,57 @@
               <imagedata fileref="figure/openvpn/openvpn_routing_clientpools.png" />
             </imageobject>
           </mediaobject>
-        </figure>         
+        </figure>
+        <para>
+          Each address pool described a range of addresses, expressed in <glossterm linkend="gloss_ip_addr">address</glossterm> and <glossterm linkend="gloss_netmask">netmask</glossterm> syntax.  The complete list of fields for each entry in the address pool table are as follows.
+        </para>
+        <variablelist>
+          <varlistentry>
+            <term><guilabel>Enabled</guilabel></term>
+            <listitem>
+              <para>
+                This is a box indicating if the pool is enabled.  Disabling an address pool prevents any clients assigned to that pool from being able to establish a VPN connection.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>address pool name</guilabel></term>
+            <listitem>
+              <para>
+                A logical name for the address pool.  Names should be chosen to be descriptive, such as <quote>default</quote> or <quote>partners</quote>.  This name will later be used when configuring individual VPN clients.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>IP Address</guilabel></term>
+            <listitem>
+              <para>
+                Address, used in conjunction with <guilabel>netmask</guilabel>, to define the set of addresses which will be assigned to remote clients as they join the protected network.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>netmask</guilabel></term>
+            <listitem>
+              <para>
+                <glossterm linkend="gloss_netmask">Netmask</glossterm> used in conjunction with <guilabel>IP Address</guilabel>, to define the set of addresses which will be assigned to remote clients as they join the protected network.
+                <tip>
+                  <para>
+                    The set of addresses defined by <guilabel>netmask</guilabel> must be large enough to handle all configured clients.  For example, a netmask of <constant>255.255.255.252</constant> allows for only 4 client addresses.  A system with 5 possible clients could not use this netmask.
+                  </para>
+                </tip>
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>description</guilabel></term>
+            <listitem>
+              <para>
+                A description of this address pool (for Administrator reference only)
+              </para>
+            </listitem>
+          </varlistentry>                                                                  
+        </variablelist>                       
         
       </sect3>
 
@@ -539,7 +595,7 @@
       <sect3 id="openvpn_tran_adminui_serverscreens_exportedhosts">
         <title>Exported Hosts and Networks</title>
         <para>
-          TODO
+          The Exported Hosts and Networks, as seen in <xref linkend="openvpn_tran_adminui_serverscreens_exportedhosts_figure"/>, is used by Administrators to define which resources on the internal (protected) network should be visible to VPN connected clients and sites.
         </para>
 
         <figure id="openvpn_tran_adminui_serverscreens_exportedhosts_figure">
@@ -549,7 +605,57 @@
               <imagedata fileref="figure/openvpn/openvpn_routing_exportedhosts.png" />
             </imageobject>
           </mediaobject>
-        </figure>         
+        </figure>
+        <para>
+          Recall from <xref linkend="openvpn_tran_overview"/> that to be useful a VPN server should export at least one network or machine.  Networks or machines are added via adding rows to the table as seen in <xref linkend="openvpn_tran_adminui_serverscreens_exportedhosts_figure"/>.  A complete list of the fields in the Add Exports Screen are as follows.
+        </para>
+        <variablelist>
+          <varlistentry>
+            <term><guilabel>export</guilabel></term>
+            <listitem>
+              <para>
+                When this box is checked, the resource described by the row is exported.  Resources can be temporarially hidden from export by unchecking this box.  To remove an export entirely, one can simply push the remove (minus) button to the left of the table.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>host/network name</guilabel></term>
+            <listitem>
+              <para>
+                For Administrator use only, this is a descriptive name of the exported resource (e.g. <constant>File Server</constant> or <constant>Intranet Servers</constant>).
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>IP Address</guilabel></term>
+            <listitem>
+              <para>
+                The <glossterm linkend="gloss_ip_addr">IP address</glossterm> to be exported.  This is used in conjunction with <guilabel>netmask</guilabel> to define a single machine or a range of addresses.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>netmask</guilabel></term>
+            <listitem>
+              <para>
+                Used with <guilabel>IP Address</guilabel>, defines a collection of addresses to be exported.
+                <tip>
+                  <para>
+                    If you wish to export a single machine, enter that machine's IP address in <guilabel>IP Address</guilabel> and <constant>255.255.255.255</constant> as the <guilabel>netmask</guilabel>.
+                  </para>
+                </tip>
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>description</guilabel></term>
+            <listitem>
+              <para>
+                A description of this exported resource (for Administrator reference only)
+              </para>
+            </listitem>
+          </varlistentry>  
+        </variablelist>               
         
       </sect3>
 
@@ -557,7 +663,7 @@
       <sect3 id="openvpn_tran_adminui_serverscreens_vpnclients">
         <title>VPN Clients</title>
         <para>
-          TODO
+          The VPN Clients Tab, as seen in <xref linkend="openvpn_tran_adminui_serverscreens_vpnclients_figure"/>, is used by Administrators to one or more remote clients who can establish VPN connections to the &eg;.
         </para>
 
         <figure id="openvpn_tran_adminui_serverscreens_vpnclients_figure">
@@ -567,7 +673,52 @@
               <imagedata fileref="figure/openvpn/openvpn_routing_vpnclients.png" />
             </imageobject>
           </mediaobject>
-        </figure>         
+        </figure>
+        <para>
+          Recall from <xref linkend="openvpn_tran_overview"/> that to be useful a VPN server should have at least one client or site configured (or else no one will ever use it).  A complete list of the fields for each VPN client entry are as follows.
+        </para>
+        <variablelist>
+          <varlistentry>
+            <term><guilabel>enabled</guilabel></term>
+            <listitem>
+              <para>
+                If selected (<quote>checked</quote>), this allows the client to establish VPN connections.  When disabled, clients cannot connect.  Note that clients may be enabled/disabled without having to re-provision their keys.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>client name</guilabel></term>
+            <listitem>
+              <para>
+                A descriptive name of the intended client.  In most cases, this is the machine's host name (e.g. <constant>escott</constant> or <constant>sales_laptop_2</constant>).
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>address pool</guilabel></term>
+            <listitem>
+              <para>
+                The Address Pool to which this client will be assigned.  For more information on Address Pools, please review <xref linkend="openvpn_tran_overview"/>.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>secure key distribution</guilabel></term>
+            <listitem>
+              <para>
+                <emphasis>This field is only enabled once a new VPN client has been saved</emphasis>.  It is an action button, allowing administrators to distribute the configuration (key) created for the remote client.  Pushing the button brings up a window asking if the configuration should be distributed via email or USB key.  When selecting <guilabel>Distribute via Email</guilabel> an email address should be entered to receive the configuration information.  When selecting <guilabel>Distribute via USB Key</guilabel>, Administrators need physical access to the &eg; machine as it will write to the USB slot.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>description</guilabel></term>
+            <listitem>
+              <para>
+                A description of this VPN client (for Administrator reference only)
+              </para>
+            </listitem>
+          </varlistentry> 
+        </variablelist>                        
         
       </sect3>          
 
@@ -575,7 +726,7 @@
       <sect3 id="openvpn_tran_adminui_serverscreens_vpnsites">
         <title>VPN Sites</title>
         <para>
-          TODO
+          The interface for configuring one or more remote VPN sites is shown in <xref linkend="openvpn_tran_adminui_serverscreens_vpnsites_figure"/>.
         </para>
 
         <figure id="openvpn_tran_adminui_serverscreens_vpnsites_figure">
@@ -585,9 +736,69 @@
               <imagedata fileref="figure/openvpn/openvpn_routing_vpnsites.png" />
             </imageobject>
           </mediaobject>
-        </figure>         
-        
-      </sect3>  
+        </figure>
+        <para>
+          Recall from <xref linkend="openvpn_tran_overview"/> that a remote VPN site is another &eg; acting to connect a network to a VPN server (as in the satalite office case).  A complete list of the fields for each VPN site entry is as follows.
+        </para>
+        <variablelist>
+          <varlistentry>
+            <term><guilabel>enabled</guilabel></term>
+            <listitem>
+              <para>
+                If selected (<quote>checked</quote>), this allows the remote VPN site to establish VPN connections.  When disabled, the site cannot connect.  Note that sites may be enabled/disabled without having to re-provision their keys.
+              </para>
+            </listitem>
+          </varlistentry>        
+          <varlistentry>
+            <term><guilabel>site name</guilabel></term>
+            <listitem>
+              <para>
+                A descriptive name of the site, for Administrator reference (e.g. <constant>san_mateo_sales_office</constant>).
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>address pool</guilabel></term>
+            <listitem>
+              <para>
+                The Address Pool to which the remote &eg; itself will be assigned.  Administrators will rarely act on this pool data, so it can be assigned to the general (default) pool.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>network address</guilabel></term>
+            <listitem>
+              <para>
+                An <glossterm linkend="gloss_ip_addr">IP address</glossterm> defining the start of the remote network.  This is used in conjunction with <guilabel>netmask</guilabel> to define the range of addresses expected from machines hosted by the remote &eg; acting as a VPN site.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>netmask</guilabel></term>
+            <listitem>
+              <para>
+                A <glossterm linkend="gloss_netmask">netmask</glossterm> defining the size of the remote network.  This is used in conjunction with <guilabel>network address</guilabel> to define the range of addresses expected from machines hosted by the remote &eg; acting as a VPN site.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>secure key distribution</guilabel></term>
+            <listitem>
+              <para>
+                <emphasis>This field is only enabled once a new VPN site has been saved</emphasis>.  It is an action button, allowing administrators to distribute the configuration (key) created for the remote site.  Pushing the button brings up a window asking if the configuration should be distributed via email or USB key.  When selecting <guilabel>Distribute via Email</guilabel> an email address should be entered to receive the configuration information.  Since a remote VPN site is not an individual machine, it should be emailed to the &eg; Administrator for the remote site.  When selecting <guilabel>Distribute via USB Key</guilabel>, Administrators need physical access to the &eg; machine as it will write to the USB slot.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>description</guilabel></term>
+            <listitem>
+              <para>
+                A description of this VPN client (for Administrator reference only)
+              </para>
+            </listitem>
+          </varlistentry> 
+        </variablelist>          
+      </sect3>
     </sect2>
   </sect1>  
 
