@@ -384,18 +384,18 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <echo message="Copying OPENVPN with filtering"/>
         <copy todir="${build.dist}" filtering="true" failonerror="false">
           <fileset dir="${tran.name}/hier">
-            <exclude name="**/*.exe"/>
-            <exclude name="**/*.dll"/>
-            <exclude name="**/*.bmp"/>
-            <exclude name="**/*.ico"/>
+            <exclude name="usr/share/metavize/openvpn/installer/openvpn/**"/>
+            <exclude name="usr/share/metavize/openvpn/images/**"/>
+            <exclude name="usr/share/metavize/openvpn/dh/**"/>
+            <exclude name="usr/share/metavize/web/openvpn/images/**"/>
           </fileset>
         </copy>
         <copy todir="${build.dist}" failonerror="false">
           <fileset dir="${tran.name}/hier">
-            <include name="**/*.exe"/>
-            <include name="**/*.dll"/>
-            <include name="**/*.bmp"/>
-            <include name="**/*.ico"/>
+            <include name="usr/share/metavize/openvpn/installer/openvpn/**"/>
+            <include name="usr/share/metavize/openvpn/images/**"/>
+            <include name="usr/share/metavize/openvpn/dh/**"/>
+            <include name="usr/share/metavize/web/openvpn/images/**"/>
           </fileset>
         </copy>
       </then>

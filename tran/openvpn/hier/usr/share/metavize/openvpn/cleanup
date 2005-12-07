@@ -45,5 +45,16 @@ cleanPackages
 cleanPKI
 cleanMisc
 
+## Always make sure to disable the openvpn server
+# Backup the initialization script
+mv /etc/init.d/openvpn /etc/init.d/openvpn.tmp
+
+# Disable openvpn startup at bootup
+update-rc.d openvpn remove > /dev/null
+
+# Restore the openvpn initialization script
+mv /etc/init.d/openvpn.tmp /etc/init.d/openvpn
+
+
 true
 
