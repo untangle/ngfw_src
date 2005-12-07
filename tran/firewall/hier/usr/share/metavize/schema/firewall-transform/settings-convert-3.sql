@@ -44,3 +44,9 @@ UPDATE settings.firewall_rule SET tmp = description;
 ALTER TABLE settings.firewall_rule DROP COLUMN description;
 ALTER TABLE settings.firewall_rule RENAME COLUMN tmp TO description;
 
+------------------------
+-- clean convert cruft |
+------------------------
+
+ALTER TABLE tr_firewall_settings DROP CONSTRAINT tr_firewall_settings_uk;
+ALTER TABLE tr_firewall_settings ADD CONSTRAINT tr_firewall_settings_tid_key UNIQUE (tid);

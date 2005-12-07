@@ -61,3 +61,5 @@ ALTER TABLE settings.tr_spyware_cr
     ADD CONSTRAINT fk_tr_spyware_cr_rule
     FOREIGN KEY (rule_id) REFERENCES settings.string_rule;
 
+ALTER TABLE tr_spyware_settings DROP CONSTRAINT tr_spyware_settings_uk;
+ALTER TABLE tr_spyware_settings ADD CONSTRAINT tr_spyware_settings_tid_key UNIQUE (tid);

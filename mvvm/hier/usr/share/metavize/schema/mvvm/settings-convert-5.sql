@@ -108,8 +108,8 @@ ALTER TABLE settings.user_policy_rule ADD PRIMARY KEY (rule_id);
 DROP TABLE settings.mvvm_tmp;
 
 CREATE TABLE settings.mvvm_tmp AS
-    SELECT rule_id, client_intf, server_intf, policy_id, is_inbound, name,
-           category, description, live, alert, log
+    SELECT rule_id, client_intf, server_intf, policy_id, is_inbound, name::text,
+           category::text, description::text, live, alert, log
     FROM settings.system_policy_rule;
 
 DROP TABLE settings.system_policy_rule;

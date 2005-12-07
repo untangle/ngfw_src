@@ -55,3 +55,7 @@ UPDATE settings.tr_virus_imap_config SET tmp = notes;
 ALTER TABLE settings.tr_virus_imap_config DROP COLUMN notes;
 ALTER TABLE settings.tr_virus_imap_config RENAME COLUMN tmp TO notes;
 
+-- rename constraints
+
+ALTER TABLE tr_virus_settings DROP CONSTRAINT tr_virus_settings_uk;
+ALTER TABLE tr_virus_settings ADD CONSTRAINT tr_virus_settings_tid_key UNIQUE (tid);

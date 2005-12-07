@@ -32,3 +32,16 @@ ALTER TABLE events.tr_mail_message_info_addr
 
 DROP INDEX tr_mail_mio_sid_idx;
 CREATE INDEX tr_mail_mio_plepid_idx ON events.tr_mail_message_info (pl_endp_id);
+
+-- bye bye picasso
+DROP TABLE tr_email_ctl_definition CASCADE;
+DROP TABLE tr_email_custom_evt CASCADE;
+DROP TABLE tr_email_handler_info CASCADE;
+DROP TABLE tr_email_message_info CASCADE;
+DROP TABLE tr_email_ml_definition CASCADE;
+DROP TABLE tr_email_settings CASCADE;
+DROP TABLE tr_email_spam_evt CASCADE;
+DROP TABLE tr_email_ssctl_definition CASCADE;
+DROP TABLE tr_email_szrelay_evt CASCADE;
+DROP TABLE tr_email_virus_evt CASCADE;
+DROP TABLE tr_email_vsctl_definition CASCADE;

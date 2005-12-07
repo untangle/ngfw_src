@@ -20,3 +20,12 @@ ALTER TABLE events.tr_nat_redirect_evt ADD PRIMARY KEY (event_id);
 
 DROP INDEX tr_nat_redirect_evt_sess_idx;
 CREATE INDEX tr_nat_redirect_evt_plepid_idx ON events.tr_nat_redirect_evt (pl_endp_id);
+
+-- SET NOT NULL
+
+ALTER TABLE tr_nat_evt_dhcp_abs_leases ALTER COLUMN lease_id SET NOT NULL;
+
+-- rename constraints
+
+ALTER TABLE tr_nat_evt_dhcp_abs_leases DROP CONSTRAINT tr_nat_evt_dhcp_abs_leasespkey;
+ALTER TABLE tr_nat_evt_dhcp_abs_leases ADD CONSTRAINT tr_nat_evt_dhcp_abs_leases_pkey PRIMARY KEY (event_id, "position");

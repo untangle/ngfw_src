@@ -23,12 +23,14 @@ CREATE TABLE settings.split_schema_ver AS
 DROP TABLE settings.schema_ver;
 
 CREATE TABLE settings.split_schema_ver (
-    component varchar(64),
+    component text,
     settings_version int4,
     events_version int4);
 
 ALTER TABLE settings.split_schema_ver
     ADD CONSTRAINT schema_ver_pkey PRIMARY KEY (component);
+
+ALTER TABLE split_schema_ver ALTER COLUMN component SET NOT NULL;
 
 -- hack for version 2.5
 -- convert clam, fprot, hauri, and sophos to use virus-base schema
