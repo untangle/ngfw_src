@@ -3,6 +3,7 @@
 while (<>) {
     $line .= $_;
 
+    # unfold lines
     if ($line =~ /^--/ || $line =~ /^$/) {
         $line = "";
         next;
@@ -12,16 +13,15 @@ while (<>) {
         $_ = $line;
         $line = "";
     }
-
     s/\n//g;
+
     # normalize argument order
     if ($_ =~ /^CREATE TABLE/) {
         ($start, $args, $end) = ($_ =~ /(^CREATE TABLE [^\(]+\()(.*)(\);)$/);
         $_ = $start . (join(', ', sort(split(/,/, $args)))) . $end;
-        $lines[++$#lines] = $_;
-    } else {
-        $lines[++$#lines] = $_;
     }
+
+    $lines[++$#lines] = $_;
 }
 
 # sort uniq
