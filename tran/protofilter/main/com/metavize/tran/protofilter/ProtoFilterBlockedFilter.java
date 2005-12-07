@@ -35,6 +35,6 @@ public class ProtoFilterBlockedFilter implements SimpleEventFilter<ProtoFilterLo
 
     public boolean accept(ProtoFilterLogEvent e)
     {
-        return true;
+        return e.isBlocked();
     }
 }
