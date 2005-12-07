@@ -58,7 +58,7 @@ function buildConfigFile() {
     cp ${CA_CRT}           ${keyDir}/ca.crt
 
     pushd ${tmpDir}
-    zip -r ${PACKAGE_DIR}/config-${commonName}.zip office-mv
+    zip -r ${PACKAGE_DIR}/config-${commonName}.zip office-mv > /dev/null
     popd
 
     ## Clean up
@@ -136,7 +136,7 @@ function copyToUsb()
 unix2dos ${WIN_CONFIG_FILE}
 
 ## Run NSIS to create client distro.
-makensis -V1 -DCOMMON_NAME="${commonName}" ${NSI_SCRIPT}
+makensis -V1 -DCOMMON_NAME="${commonName}" ${NSI_SCRIPT} > /dev/null
 
 buildConfigFile
 

@@ -104,6 +104,9 @@ class OpenVpnMonitor implements Runnable
     /* Status of the monitor */
     private volatile boolean isAlive = true;
 
+    /* Whether or not openvpn is started */
+    private volatile boolean isEnabled = false;
+
     private final MvvmLocalContext localContext;
     
     OpenVpnMonitor( VpnTransformImpl transform )
@@ -121,12 +124,11 @@ class OpenVpnMonitor implements Runnable
         statusMap = new HashMap<Key,Stats>();
         activeMap = new HashMap<String,Stats>();
         
-        Date lastUpdate = new Date();
-        Date nextUpdate = new Date( lastUpdate.getTime() + LOG_TIME_MSEC );
+        Date nextUpdate = new Date(( new Date()).getTime() + LOG_TIME_MSEC );
         
         /* Flush the statistics */
         this.statistics = new VpnStatisticEvent();
-        this.statistics.setStart( lastUpdate );
+        this.statistics.setStart( new Date());
         
         if ( !isAlive ) {
             logger.error( "died before starting" );
@@ -147,6 +149,9 @@ class OpenVpnMonitor implements Runnable
 
             logClientDistributionEvents();
 
+            /* Only log when enabled */
+            if ( !isEnabled ) continue;
+
             /* Update the current time */
             now.setTime( System.currentTimeMillis());
             
@@ -160,7 +165,6 @@ class OpenVpnMonitor implements Runnable
             
             if ( now.after( nextUpdate )) {
                 logStatistics( now );
-                lastUpdate = now;
                 nextUpdate.setTime( now.getTime() + LOG_TIME_MSEC );
             }
 
@@ -177,6 +181,7 @@ class OpenVpnMonitor implements Runnable
     public synchronized void start()
     {
         isAlive = true;
+        isEnabled = false;
 
         logger.debug( "Starting OpenVpn monitor" );
 
@@ -187,9 +192,20 @@ class OpenVpnMonitor implements Runnable
         }
 
         eventLogger.start();
-
         thread = this.localContext.newThread( this );
         thread.start();
+    }
+    
+    public synchronized void enable()
+    {
+        start();
+        isEnabled = true;
+    }
+
+    public synchronized void disable()
+    {
+        start();
+        isEnabled = false;
     }
 
     public synchronized void stop()

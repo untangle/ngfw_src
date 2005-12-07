@@ -163,6 +163,9 @@ public class VpnTransformImpl extends AbstractTransform
                 this.openVpnManager.configure( this.settings );
                 this.openVpnManager.restart( this.settings );
                 this.handler.configure( this.settings );
+
+                if ( !this.settings.getIsEdgeGuardClient()) openVpnMonitor.enable();
+                else                                        openVpnMonitor.disable();
             }
         } catch ( TransformException exn ) {
             logger.error( "Could not save VPN settings", exn );
@@ -377,7 +380,7 @@ public class VpnTransformImpl extends AbstractTransform
             if ( MvvmContextFactory.context().loadWebApp( WEB_APP_PATH, WEB_APP )) {
                 logger.debug( "Deployed openvpn web app" );
             }
-            else logger.error( "Unable to deploy openvpn web app" );
+            else logger.warn( "Unable to deploy openvpn web app" );
         }
         isWebAppDeployed = true;
     }
@@ -387,7 +390,7 @@ public class VpnTransformImpl extends AbstractTransform
         if ( isWebAppDeployed ) {
             if( MvvmContextFactory.context().unloadWebApp(WEB_APP_PATH )) {
                 logger.debug( "Unloaded openvpn web app" );
-            } else logger.error( "Unable to unload openvpn web app" );
+            } else logger.warn( "Unable to unload openvpn web app" );
         }
         isWebAppDeployed = false;
     }
@@ -403,6 +406,12 @@ public class VpnTransformImpl extends AbstractTransform
     @Override protected void preInit( final String[] args ) throws TransformException
     {
         super.preInit( args );
+
+        try {
+            this.openVpnMonitor.start();
+        } catch ( Exception e ) {
+            logger.warn( "Unable to start openvpn monitor." );
+        }
         
         /* Initially use tun0, even though it could eventually be configured to the tap interface  */
         try {
@@ -473,7 +482,8 @@ public class VpnTransformImpl extends AbstractTransform
         deployWebApp();
         
         /* Only start the monitor for servers */
-        if ( !settings.getIsEdgeGuardClient()) openVpnMonitor.start();
+        if ( !settings.getIsEdgeGuardClient()) this.openVpnMonitor.enable();
+        else                                   this.openVpnMonitor.disable();
     }
 
     @Override protected void postStop() throws TransformStopException
@@ -485,9 +495,9 @@ public class VpnTransformImpl extends AbstractTransform
         super.preStop();
 
         try {
-            openVpnMonitor.stop();
+            openVpnMonitor.disable();
         } catch ( Exception e ) {
-            logger.warn( "Error stopping openvpn monitor", e );
+            logger.warn( "Error disabling openvpn monitor", e );
         }
         
         try {
@@ -500,6 +510,12 @@ public class VpnTransformImpl extends AbstractTransform
     @Override protected void postDestroy() throws TransformException
     {
         super.postDestroy();
+
+        try {
+            this.openVpnMonitor.stop();
+        } catch ( Exception e ) {
+            logger.warn( "Error stopping openvpn monitor", e );
+        }
 
         unDeployWebApp();
     }
