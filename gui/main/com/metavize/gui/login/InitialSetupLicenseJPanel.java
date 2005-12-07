@@ -12,9 +12,11 @@
 package com.metavize.gui.login;
 
 import com.metavize.gui.widgets.wizard.*;
+import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.gui.util.Util;
 import java.net.URL;
 
+import java.awt.Window;
 import java.awt.event.*;
 import javax.swing.*;
 
@@ -49,15 +51,25 @@ public class InitialSetupLicenseJPanel extends MWizardPageJPanel implements Adju
     }
 
     Exception exception;
+    Window topLevelWindow;
 
     public void doSave(Object settings, boolean validateOnly) throws Exception {
+	topLevelWindow = (Window) this.getTopLevelAncestor();
 
         SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
 
 	    exception = null;
 
 	    if( !acceptJRadioButton.isSelected() ){
-		exception = new Exception(EXCEPTION_NOT_ACCEPT);
+		if( declineJRadioButton.isSelected() ){
+		    MOneButtonJDialog.factory(topLevelWindow,"","<html>You have declined the Metavize License Agreement.  The setup wizard will now exit.  You may run the setup wizard again later.</html>","Setup Wizard Warning","Warning");
+		    System.exit(0);
+		    return;		
+		}
+		else{
+		    exception = new Exception(EXCEPTION_NOT_ACCEPT);
+		    return;
+		}
 	    }
 	}});
 
