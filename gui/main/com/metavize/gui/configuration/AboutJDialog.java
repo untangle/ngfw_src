@@ -51,7 +51,7 @@ public class AboutJDialog extends MConfigJDialog {
         }
 	contentJEditorPane = new JEditorPane("text/html", buildString + aboutString);
 	contentJEditorPane.setEditable(false);
-	contentJEditorPane.setFont(new java.awt.Font("Arial", 11, 0) );
+	contentJEditorPane.setFont(new java.awt.Font("Arial", 0, 11) );
 	contentJScrollPane = new JScrollPane( contentJEditorPane );
 	contentJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
 	contentJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );

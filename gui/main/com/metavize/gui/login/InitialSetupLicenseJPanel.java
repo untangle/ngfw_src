@@ -83,6 +83,7 @@ public class InitialSetupLicenseJPanel extends MWizardPageJPanel implements Adju
                 contentJScrollPane.setFocusable(false);
                 contentJEditorPane.setEditable(false);
                 contentJEditorPane.setFocusable(false);
+                contentJEditorPane.setFont(new java.awt.Font("Arial", 0, 11) );
                 contentJScrollPane.setViewportView(contentJEditorPane);
 
                 add(contentJScrollPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(7, 80, 460, 210));
