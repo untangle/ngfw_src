@@ -147,6 +147,6 @@ public class SpywareEventHandler extends AbstractEventHandler
             /* XXX alerts */
         }
 
-        if (release) { ipr.release(); }
+        if (release) { ipr.release(true); }
     }
 }
