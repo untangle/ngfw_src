@@ -62,11 +62,12 @@
       <!-- ========================================= -->
       <sect3 id="spyware_tran_adminui_block_subnet">
         <title>Subnet List</title>
+        <!--
+          WRS: I am having trouble justifying this feature.
+        -->
         <para>
-          The <glossterm linkend="gloss_subnet">Subnet</glossterm> List is a collection of subnets.  When &eg; observes a connection from within the protected network TODO - what can we say w/o "block"?  What is the point of this feature?
-
-          When creating a new entry, the value for <guilabel>identification</guilabel> can either be in <link linkend="appendix_syntax_simpleipaddr">Simple IP Address</link> or <link linkend="appendix_syntax_networknetmask">Network/Netmask</link> format.
-        </para>        
+          The <glossterm linkend="gloss_subnet">Subnet</glossterm> List is a collection of subnets.  When &eg; observes a connection from within the protected network, log entries can be made.  This alerts Administrators of questionable traffic they may wish to block via other mechanisms (such as Firewall, as discussed in <xref linkend="firewall_tran"/>).  The interface for the Subnet list is shown in <xref linkend="spyware_tran_adminui_block_subnet_figure"/>.
+        </para>
         <figure id="spyware_tran_adminui_block_subnet_figure">
           <title>Subnet List Tab</title>
           <mediaobject>
@@ -76,8 +77,10 @@
           </mediaobject>
         </figure>
         <para>
-          TODO Explain what the Subnet List does, and how the UI works
-          <glossterm linkend="gloss_subnet">Subnet</glossterm>
+          The Subnet list comes pre-populated with known questionable sites, categorized by their content type.  Administrators can turn on/off the tracking of subnets by checking/unchecking the <guilabel>log</guilabel> field.
+        </para>
+        <para>
+          Optionaly, Administrators can add their own entries by pushing the add (plus) button to the left.  When creating a new entry, the value for <guilabel>identification</guilabel> can either be in <link linkend="appendix_syntax_simpleipaddr">Simple IP Address</link> or <link linkend="appendix_syntax_networknetmask">Network/Netmask</link> format.  The <guilabel>name</guilabel> and <guilabel>description</guilabel> fields are simply for Administrator reference.
         </para>
       </sect3>
   
@@ -104,7 +107,7 @@
       <sect3 id="spyware_tran_adminui_block_urllist">
         <title>URL List</title>
         <para>
-          TODO
+          The <glossterm linkend="gloss_url">URL</glossterm> List, as shown in <xref linkend="spyware_tran_adminui_block_urllist_figure"/>, is used to enable the blocking of web traffic to sites known to be hosting <glossterm linkend="gloss_spyware">spyware</glossterm> or advertizements.
         </para>
         
         <figure id="spyware_tran_adminui_block_urllist_figure">
@@ -116,8 +119,7 @@
           </mediaobject>
         </figure>
         <para>
-          TODO Explain what the URL List does, and how the UI works
-          <glossterm linkend="gloss_url">URL</glossterm>
+          To enable blocking of these sites, select <guilabel>Enable</guilabel>.
         </para>
       </sect3>            
     </sect2>
@@ -137,7 +139,13 @@
         </mediaobject>
       </figure>
       <para>
-        As seen in <xref linkend="spyware_tran_adminui_passlist_figure"/>, the Pass List is presented as a table of domains.  To add a new entry, push the add (plus) botton to the left of the table.  The <guilabel>domain</guilabel> TODO what is the format of this?
+        As seen in <xref linkend="spyware_tran_adminui_passlist_figure"/>, the Pass List is presented as a table of domains.  To add a new entry, push the add (plus) botton to the left of the table.  The <guilabel>domain</guilabel> field is the only required field.  The format of the <guilabel>domain</guilabel> is <constant>http://<replaceable>approved_domain</replaceable></constant> where <replaceable>approved_domain</replaceable> is replaced with the approved domain.
+        <tip>
+          <para>
+            Although it may seem asif it may work, the <guilabel>domain</guilabel> only handles top-level domains.  For example, attempting to place <constant>http://some_domain.com/site1</constant> into the Pass List will cause all paths at <constant>http://some_domain.com</constant> to be passed such as <constant>http://some_domain.com/site2</constant>.
+          </para>
+        </tip>
+        Administrators can enable/disable a given domain from being bypassed by checking the <guilabel>pass</guilabel> field.
       </para>
     </sect2>
     

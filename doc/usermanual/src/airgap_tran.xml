@@ -41,7 +41,7 @@
       </listitem>
       <listitem>
         <para>
-        <guilabel>Reject</guilabel> - When the Packet Attack Shield Appliance causes a host's traffic to be rejected, it has the effect of preventing that host from communicating across the &eg;.
+        <guilabel>Reject</guilabel> - When the Packet Attack Shield Appliance causes a host's traffic to be rejected, it has the effect of temporarily preventing that host from communicating across the &eg;.
         </para>
       </listitem>
     </itemizedlist>  
@@ -166,7 +166,7 @@
             <term><guilabel>reputation</guilabel></term>
             <listitem>
               <para>
-                XXXXX TODO XXXXXXX
+                As described in <xref linkend="airgap_tran_shield_explained"/>, the <guilabel>reputation</guilabel> is a relative value assigned to clients reflecting their consumption of netwkr resources.  This value is usualy between 0 and 100, with higher numbers indicating greater resource consumption.
               </para>
             </listitem>
           </varlistentry>
@@ -174,7 +174,7 @@
             <term><guilabel>limited</guilabel></term>
             <listitem>
               <para>
-                XXXXX TODO XXXXXXX
+                The number of times the <guilabel>source</guilabel> client was limited in period of time corresponding to the event.  For a review of what it means for clients to be <emphasis>limited</emphasis>, please refer to <xref linkend="airgap_tran_shield_explained"/>.
               </para>
             </listitem>
           </varlistentry>
@@ -182,7 +182,7 @@
             <term><guilabel>dropped</guilabel></term>
             <listitem>
               <para>
-                XXXXX TODO XXXXXXX
+                The number of times the <guilabel>source</guilabel> client was had traffic dropped in period of time corresponding to the event.  For a review of what it means for clients to have traffic <emphasis>dropped</emphasis>, please refer to <xref linkend="airgap_tran_shield_explained"/>.
               </para>
             </listitem>
           </varlistentry>
@@ -190,7 +190,7 @@
             <term><guilabel>reject</guilabel></term>
             <listitem>
               <para>
-                XXXXX TODO XXXXXXX
+                The number of times the <guilabel>source</guilabel> client had traffic rejected in period of time corresponding to the event.  For a review of what it means for clients to have traffic  <emphasis>dropped</emphasis>, please refer to <xref linkend="airgap_tran_shield_explained"/>.
               </para>
             </listitem>
           </varlistentry>

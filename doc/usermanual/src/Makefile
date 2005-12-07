@@ -1,7 +1,8 @@
 MKDOC=../../../../mvdocbook/mkdoc.sh
 OUT_DIR=../output
 
-all: pdf chunk
+#all: pdf chunk
+all: chunk
 
 pdf: $(OUT_DIR)/pdf/eg250.pdf
 
@@ -14,7 +15,7 @@ $(OUT_DIR)/pdf/eg250.pdf: eg250.xml
 	$(MKDOC) -v -t pdf -o $(OUT_DIR) -s eg250.xml -x stylesheets/eg_manual_fo.xsl
 	mv $(OUT_DIR)/pdf/output.pdf $(OUT_DIR)/pdf/eg250.pdf
 
-$(OUT_DIR)/chunk/index.html: eg250.xml
+$(OUT_DIR)/chunk/index.html: *.xml
 	$(MKDOC) -v -t chunk -o $(OUT_DIR) -s eg250.xml -c stylesheets/metavize.css -x stylesheets/eg_manual_chunk.xsl
 
 chunk_clean:
