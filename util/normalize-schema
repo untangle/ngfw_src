@@ -1,0 +1,38 @@
+#!/usr/bin/perl
+
+while (<>) {
+    $line .= $_;
+
+    if ($line =~ /^--/ || $line =~ /^$/) {
+        $line = "";
+        next;
+    } elsif ($line !~ /;$/) {
+        next;
+    } else {
+        $_ = $line;
+        $line = "";
+    }
+
+    s/\n//g;
+    # normalize argument order
+    if ($_ =~ /^CREATE TABLE/) {
+        ($start, $args, $end) = ($_ =~ /(^CREATE TABLE [^\(]+\()(.*)(\);)$/);
+        $_ = $start . (join(', ', sort(split(/,/, $args)))) . $end;
+        $lines[++$#lines] = $_;
+    } else {
+        $lines[++$#lines] = $_;
+    }
+}
+
+# sort uniq
+$last = "";
+foreach $_ (sort @lines) {
+    if (!($last eq $_)) {
+        $last = $_;
+        s/ +/ /g;
+        s/\( /\(/g;
+        print "$_\n";
+    }
+}
+
+
