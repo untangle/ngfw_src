@@ -564,10 +564,33 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       </fileset>
     </copy>
 
+    <!-- This stuff was moved here from gui/build.xml, since it belongs here. -->
+    <copy todir="${dist.mvvm.webstart}/WEB-INF/lib">
+      <fileset refid="mvvm-client.jarset"/>
+    </copy>
+
+    <copy todir="${dist.mvvm.webstart}" flatten="true">
+      <fileset refid="mvvm-client.jarset"/>
+    </copy>
+    <if> <isset property="use-pack200"/> <then>
+      <pack200 src="${dist.mvvm.webstart}/mvvm-client.jar"
+               destfile="${dist.mvvm.webstart}/mvvm-client.jar.pack"/>
+      <unpack200 src="${dist.mvvm.webstart}/mvvm-client.jar.pack"
+                 dest="${dist.mvvm.webstart}/mvvm-client.jar"/>
+      </then></if>
+    <delete file="${dist.mvvm.webstart}/mvvm-client.jar.pack"/>
+    <signjar jar="${dist.mvvm.webstart}/mvvm-client.jar"
+             keystore="../gui/keystore" alias="key"
+             storepass="0x7a0f4b2f2b0560fa" />
+    <if> <isset property="use-pack200"/> <then>
+      <pack200 src="${dist.mvvm.webstart}/mvvm-client.jar"
+               destfile="${dist.mvvm.webstart}/mvvm-client.jar.pack.gz"
+               gzipoutput="true"/>
+      </then></if>
+
     <copy tofile="${build.dist}/tmp/pkg-list" filtering="true">
       <fileset file="../debian/control"/>
     </copy>
-
 
     <exec executable="sh">
       <arg line='-c "if ! [ -a ${dist.mvvm.log} ] ; then ln -fs ${build.prefix}/${suffix.log}/ ${dist.mvvm.log} ; fi "'/>

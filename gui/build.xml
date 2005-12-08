@@ -130,7 +130,6 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
 
   <target name="install.hier">
     <copy todir="${dist.mvvm.webstart}/WEB-INF/lib">
-      <fileset refid="mvvm-client.jarset"/>
       <fileset refid="jnlp-servlet.jarset"/>
     </copy>
 
@@ -169,7 +168,6 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
       <fileset refid="jnlp.jarset"/>
       <fileset refid="kunststoff.jarset"/>
       <fileset refid="log4j.jarset"/>
-      <fileset refid="mvvm-client.jarset"/>
       <fileset refid="netbeans.jarset"/>
     </copy>
 
@@ -179,6 +177,7 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
                parallel="false">
         <fileset dir="${dist.mvvm.webstart}">
           <include name="*.jar"/>
+          <exclude name="mvvm-client.jar"/>
         </fileset>
       </foreach>
       </then></if>
@@ -187,6 +186,7 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
              storepass="0x7a0f4b2f2b0560fa" lazy="true">
       <fileset dir="${dist.mvvm.webstart}">
         <include name="*.jar"/>
+        <exclude name="mvvm-client.jar"/>
       </fileset>
     </signjar>
 
@@ -196,6 +196,7 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
                parallel="false">
         <fileset dir="${dist.mvvm.webstart}">
           <include name="*.jar"/>
+          <exclude name="mvvm-client.jar"/>
         </fileset>
       </foreach>
       </then></if>
