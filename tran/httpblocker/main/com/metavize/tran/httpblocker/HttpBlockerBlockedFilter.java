@@ -21,7 +21,7 @@ public class HttpBlockerBlockedFilter implements SimpleEventFilter<HttpBlockerEv
         = new RepositoryDesc("Blocked HTTP Traffic");
 
     private static final String WARM_QUERY
-        = "FROM HttpBlockerEvent evt WHERE evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
+        = "FROM HttpBlockerEvent evt WHERE evt.action = 'B' AND evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
 
     // SimpleEventFilter methods ----------------------------------------------
 
