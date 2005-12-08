@@ -23,9 +23,7 @@
       want dangling references.
     </para>
 
-    <para id="fixme_interfaces"  xreflabel="Network Interfaces">
-      This is where we explain Internal/External as well as (optionally) DMZ and VPN.
-    </para>    
+
 
   </sect1>
    

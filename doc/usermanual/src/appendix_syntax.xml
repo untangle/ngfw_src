@@ -8,7 +8,8 @@
 
   <sect1 id="appendix_syntax_net">
     <title>Networking Syntax</title>
-    
+
+      
     <simplesect id="appendix_syntax_simpleipaddr" xreflabel="Simple IP Address">
       <title>Simple IP Address Syntax</title>
       <para>
