@@ -1,0 +1,3 @@
+com.metavize.tran.openvpn.reports.VpnSummarizer:summarizer:Summarizer
+com.metavize.tran.openvpn.reports.SummaryGraph:summaryGraph:OpenVpn--Summary_Graph
+reportTitlePrefix:parameter:none

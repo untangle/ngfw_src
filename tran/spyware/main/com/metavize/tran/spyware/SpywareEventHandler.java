@@ -134,7 +134,7 @@ public class SpywareEventHandler extends AbstractEventHandler
             transform.log(new SpywareAccessEvent(ipr.pipelineEndpoints(), ir.getName(), ir.getIpMaddr(), ir.isLive()));
 
         if (ir.isLive()) {
-            transform.incrementCount(Spyware.BLOCK);
+            transform.incrementCount(Spyware.BLOCK); //XXX logged but not blocked (count as blocked anyway)???
             if (ipr instanceof TCPNewSessionRequest)
                 ((TCPNewSessionRequest)ipr).rejectReturnRst();
             if (ipr instanceof UDPNewSessionRequest)

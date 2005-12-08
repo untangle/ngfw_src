@@ -6,38 +6,38 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id$
+ * $Id: $
  */
 
-package com.metavize.tran.spam.reports;
+package com.metavize.tran.openvpn.reports;
 
+import java.awt.Color;
 import java.sql.*;
 import java.util.*;
 
 import com.metavize.mvvm.reporting.*;
-import net.sf.jasperreports.engine.JRDefaultScriptlet;
+
 import net.sf.jasperreports.engine.JRScriptletException;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.JFreeChart;
+import org.jfree.chart.*;
+import org.jfree.chart.plot.*;
 import org.jfree.data.time.Minute;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
-
 
 public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 {
     private String chartTitle;
 
     private String seriesATitle;
-    private String seriesBTitle;
-    private String seriesCTitle;
+    private String seriesBTitle; // received
+    private String seriesCTitle; // transmitted
 
     private long totalQueryTime = 0l;
     private long totalProcessTime = 0l;
 
-    public SummaryGraph() {          // out, in, total
-        // Total counts (identified as "A") are not displayed
-        this("Traffic", true, true, "Total", "Spam Detected", "Clean/Passed", "Email/min.");
+    public SummaryGraph() {
+        // Total counts are not displayed
+        this("Traffic", true, true, "Total", "Outgoing Traffic", "Incoming Traffic", "Kilobytes/sec.");
     }
 
     // Produces a single line graph of one series
@@ -89,7 +89,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
             size = BUCKETS;
         else
             size = periodMinutes/(BUCKETS*MINUTES_PER_BUCKET) + (periodMinutes%(BUCKETS*MINUTES_PER_BUCKET)>0?1:0);
-        //double countsA[] = new double[ size ];
+
         double countsB[] = new double[ size ];
         double countsC[] = new double[ size ];
 
@@ -104,13 +104,13 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         PreparedStatement stmt;
         ResultSet rs;
 
-        sql = "SELECT date_trunc('minute', time_stamp) AS time_stamp,"
-            + " COUNT(CASE is_spam WHEN true THEN 1 ELSE null END),"
-            + " COUNT(CASE is_spam WHEN false THEN 1 ELSE null END)"
-            + " FROM tr_spam_evt"
-            + " WHERE time_stamp <= ? AND time_stamp > ? AND vendor_name='SpamAssassin'"
-            + " GROUP BY time_stamp"
-            + " ORDER BY time_stamp";
+        sql = "SELECT DATE_TRUNC('minute', time_stamp),"
+                + " SUM(rx_bytes),"
+                + " SUM(tx_bytes)"
+                + " FROM tr_openvpn_statistic_evt"
+                + " WHERE time_stamp <= ? AND time_stamp > ?"
+                + " GROUP BY time_stamp"
+                + " ORDER BY time_stamp";
 
         bindIdx = 1;
         stmt = con.prepareStatement(sql);
@@ -124,61 +124,22 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         // PROCESS EACH ROW
         while (rs.next()) {
             // GET RESULTS
-            Timestamp eventDate = rs.getTimestamp(1);
-            //long countA = rs.getLong(2) + rs.getLong(3);
+            Timestamp createDate = rs.getTimestamp(1);
             long countB = rs.getLong(2);
             long countC = rs.getLong(3);
-            
+
             // ALLOCATE COUNT TO EACH MINUTE WE WERE ALIVE EQUALLY
-            long eventStart = (eventDate.getTime() / MINUTE_INTERVAL) * MINUTE_INTERVAL;
-            long realStart = eventStart < startMinuteInMillis ? (long) 0 : eventStart - startMinuteInMillis;
+            long sesStart = (createDate.getTime() / MINUTE_INTERVAL) * MINUTE_INTERVAL;
+            long realStart = sesStart < startMinuteInMillis ? (long) 0 : sesStart - startMinuteInMillis;
             int startInterval = (int)(realStart / MINUTE_INTERVAL)/MINUTES_PER_BUCKET;
 
-            // COMPUTE COUNTS IN INTERVALS
-            //countsA[startInterval%BUCKETS] += countA;
+            // INCREMENT COUNTS
             countsB[startInterval%BUCKETS] += countB;
             countsC[startInterval%BUCKETS] += countC;
         }
         try { stmt.close(); } catch (SQLException x) { }
 
-        sql = "SELECT date_trunc('minute', time_stamp) AS time_stamp,"
-            + " COUNT(CASE is_spam WHEN true THEN 1 ELSE null END),"
-            + " COUNT(CASE is_spam WHEN false THEN 1 ELSE null END)"
-            + " FROM tr_spam_evt_smtp"
-            + " WHERE time_stamp <= ? AND time_stamp > ? AND vendor_name='SpamAssassin'"
-            + " GROUP BY time_stamp"
-            + " ORDER BY time_stamp";
-
-        bindIdx = 1;
-        stmt = con.prepareStatement(sql);
-        stmt.setTimestamp(bindIdx++, endTimestamp);
-        stmt.setTimestamp(bindIdx++, startTimestamp);
-
-        rs = stmt.executeQuery();
-        totalQueryTime = System.currentTimeMillis() - totalQueryTime;
-        totalProcessTime = System.currentTimeMillis();
-
-        // PROCESS EACH ROW
-        while (rs.next()) {
-            // GET RESULTS
-            Timestamp eventDate = rs.getTimestamp(1);
-            //long countA = rs.getLong(2) + rs.getLong(3);
-            long countB = rs.getLong(2);
-            long countC = rs.getLong(3);
-            
-            // ALLOCATE COUNT TO EACH MINUTE WE WERE ALIVE EQUALLY
-            long eventStart = (eventDate.getTime() / MINUTE_INTERVAL) * MINUTE_INTERVAL;
-            long realStart = eventStart < startMinuteInMillis ? (long) 0 : eventStart - startMinuteInMillis;
-            int startInterval = (int)(realStart / MINUTE_INTERVAL)/MINUTES_PER_BUCKET;
-
-            // COMPUTE COUNTS IN INTERVALS
-            //countsA[startInterval%BUCKETS] += countA;
-            countsB[startInterval%BUCKETS] += countB;
-            countsC[startInterval%BUCKETS] += countC;
-        }
-        try { stmt.close(); } catch (SQLException x) { }
-
-        // POST PROCESS: PRODUCE UNITS OF email/min, AVERAGED PER DAY, FROM emails PER BUCKET
+        // POST PROCESS: PRODUCE UNITS OF KBytes/sec., AVERAGED PER DAY, FROM BYTES PER BUCKET
         //double averageACount;
         double averageBCount;
         double averageCCount;
@@ -191,16 +152,15 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
             int newIndex = 0;
             int denom = 0;
 
-            for(int j=0; j<MOVING_AVERAGE_MINUTES; j++){
+            for(int j=0; j<MOVING_AVERAGE_MINUTES; j++) {
                 newIndex = i-j;
                 if( newIndex >= 0 )
                     denom++;
                 else
                     continue;
 
-                //averageACount += countsA[newIndex] / (double)queries;
-                averageBCount += countsB[newIndex] / (double)queries;
-                averageCCount += countsC[newIndex] / (double)queries;
+                averageBCount += countsB[newIndex] / 1024.0d / (double)queries / (double)(60*MINUTES_PER_BUCKET);
+                averageCCount += countsC[newIndex] / 1024.0d / (double)queries / (double)(60*MINUTES_PER_BUCKET);
             }
 
             //averageACount /= denom;
@@ -215,11 +175,11 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 
         totalProcessTime = System.currentTimeMillis() - totalProcessTime;
         System.out.println("====== RESULTS ======");
-        System.out.println("TOTAL query time:   " 
-               + totalQueryTime/1000 + "s" 
+        System.out.println("TOTAL query time:   "
+               + totalQueryTime/1000 + "s"
                + " (" + ((float)totalQueryTime/(float)(totalQueryTime+totalProcessTime))  + ")");
-        System.out.println("TOTAL process time: " 
-               + totalProcessTime/1000 + "s" 
+        System.out.println("TOTAL process time: "
+               + totalProcessTime/1000 + "s"
                + " (" + ((float)totalProcessTime/(float)(totalQueryTime+totalProcessTime))  + ")");
         System.out.println("=====================");
 
@@ -228,9 +188,14 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         tsc.addSeries(datasetB);
         tsc.addSeries(datasetC);
 
-        return ChartFactory.createTimeSeriesChart(chartTitle,
-                                                  timeAxisLabel, valueAxisLabel,
-                                                  tsc,
-                                                  true, true, false);
+        JFreeChart timeSeriesChart =
+            ChartFactory.createTimeSeriesChart(chartTitle,
+                                               timeAxisLabel, valueAxisLabel,
+                                               tsc,
+                                               true, true, false);
+        XYPlot plot = timeSeriesChart.getXYPlot();
+        plot.getRenderer().setSeriesPaint(0, new Color(0, 255, 0));
+        plot.getRenderer().setSeriesPaint(1, new Color(0, 0, 255));
+        return timeSeriesChart;
     }
 }
