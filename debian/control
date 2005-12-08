@@ -189,8 +189,10 @@ XB-Website: http://www.metavize.com/openvpn.html
 XB-Rack-Position: 990
 XB-Is-Service: true
 Description: The Metavize OpenVPN Software Appliance
- The Openvpn Software Appliances creates a virtual
- private network with remote offices and users.
+ The OpenVPN Software Appliance allows for site-to-site VPN for branch 
+ offices or partners, and client-to-site VPN for home users or road warriors.
+ OpenVPN is SSL-based; it offers powerful security and controls features
+ while remaining easy to setup and use.
 
 Package: ids-transform
 Architecture: any
