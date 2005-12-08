@@ -55,9 +55,12 @@ public class NetworkTimezoneJPanel extends javax.swing.JPanel implements Savable
 	
 	// TIMEZONE ////
 	String timezone = Util.getAdminManager().getTimeZone().getID();
-	for( String tz : timezones )
-			if( tz.startsWith(timezone) )
+	for( String tz : timezones ){
+			if( tz.startsWith(timezone) ){
 					timezone = tz;
+					break;
+			}
+	}
 	timezoneJComboBox.setSelectedItem(timezone);
 			
     }
