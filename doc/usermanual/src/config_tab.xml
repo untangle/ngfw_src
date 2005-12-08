@@ -164,8 +164,7 @@
     <sect2 id="config_tab_network_networkaliases">
       <title>Network Aliases</title>
       <para>
-        TODO as seen in <xref linkend="config_tab_network_networkaliases_figure"/>
-        TODO I think I get it, but the dependency/relevance of DMZ and bridging to this tab still confuse me a bit.  Get someone like Robert to help.
+        The Network Aliases tab, as seen in, <xref linkend="config_tab_network_networkaliases_figure"/>, is for complex &eg; deployments.
       </para>
       <figure id="config_tab_network_networkaliases_figure">
         <title>Network Aliases Tab</title>
@@ -175,6 +174,12 @@
           </imageobject>
         </mediaobject>
       </figure>
+      <para>
+        Use of this feature depends on if the &eg; is providing <glossterm linkend="gloss_nat">NAT</glossterm> services to the internal (protected) network.  If running NAT (see <xref linkend="nat_tran"/>), then this feature can be used to receive traffic for more than just the external IP address.
+      </para>
+      <para>
+        If your &eg; is not running NAT (sometimes called <quote>bridge</quote> mode), then each addition to the Network Aliases will allow &eg; to route traffic for networks other than that defined by its external IP address.
+      </para>
     </sect2>    
     
   </sect1>
@@ -207,8 +212,6 @@
       <note>
         <para>
           The current external IP address can be seen (and changed) from the <link linkend="config_tab_network_networksettings">Network Settings</link> panel.  If the &eg; is running <glossterm linkend="gloss_nat">NAT</glossterm>, the internal IP can be found from the NAT settings as explained in <xref linkend="nat_tran"/>.  If the system is not running NAT, then the internal IP is the same as the external IP.
-        
-          TODO There should be a link to something explaining the different configurations (3-4 common cases WRT NAT and other firewalls).
         </para>
       </note>
       We will now discuss the details of configuring the &eg; for external and internal administration.
@@ -322,7 +325,7 @@
         </mediaobject>
       </figure>
       <para>
-        Note that to restore, TODO Someone needs to get screen shots of how to restore
+        Note that to restore from a backup, please refer to <xref linkend="config_tab_backuprestore_restore"/>.
       </para>
     </sect2>
 
@@ -342,7 +345,7 @@
         </mediaobject>
       </figure>
       <para>
-        Error messages will result if the USB key is not present, or is not formatted correctly.
+        Error messages will result if the USB key is not present, or is not formatted correctly.  Note that to restore from a backup, please refer to <xref linkend="config_tab_backuprestore_restore"/>.
       </para>
     </sect2>
 

@@ -27,27 +27,41 @@
     <sect2 id="upgrade_manager_manual">
       <title>Manual Upgrade</title>
       <para>
-      TODO Complete me    
+        If the &eg; is not configured to receive and install updates automatically (see <xref linkend="upgrade_manager_automatic"/>), then this tab displays available upgrades.  The Manual Upgrade tab is seen in <xref linkend="upgrade_manager_manual_figure"/>.
       </para>
-      <mediaobject>
-        <imageobject>
-          <imagedata fileref="figure/upgrademngr/upgrade_manual.png" />
-        </imageobject>
-      </mediaobject>    
+      <figure id="upgrade_manager_manual_figure">
+        <title>Manual Upgrade Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/upgrademngr/upgrade_manual.png" />
+          </imageobject>
+        </mediaobject>  
+      </figure>
+      <para>
+        When available, upgrades are displayed and may be selected for installation.
+      </para>     
     </sect2>
   
     <!-- ========================================================= -->
     <sect2 id="upgrade_manager_automatic">
-      <title>Automatic Upgrades</title>
-  
+      <title>Schedule Automatic Upgrade Upgrade</title>
       <para>
-      TODO Complete me.
+        The Schedule Automatic Upgrade, as seen in <xref linkend="upgrade_manager_automatic_figure"/>, is used to configure the &eg; to contact Metavize periodically to check for upgrades.  It can also optionaly be configured to install such upgrades without Administrative intervention.
       </para>
-      <mediaobject>
-        <imageobject>
-          <imagedata fileref="figure/upgrademngr/upgrade_automatic.png" />
-        </imageobject>
-      </mediaobject>    
+      <figure id="upgrade_manager_automatic_figure">
+        <title>Schedule Automatic Upgrade Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/upgrademngr/upgrade_automatic.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        The Schedule Automatic Upgrade Tab is divided into two sections.  The left section is used to confiure the times when &eg; checks to updates.  To the right, Administrators can configure the behavior once &eg; discovers updates.  If <guilabel>Do not automatically install new upgrades</guilabel> is selected then &eg; will only download updates and not install them.  Installation must be done manually (see <xref linkend="upgrade_manager_manual"/>.
+      </para>
+      <para>
+        If <guilabel>Automatically install new upgrades</guilabel> is selected, then &eg; will install upgrades as they become available from Metavize.
+      </para>
     </sect2>
   </sect1>
 

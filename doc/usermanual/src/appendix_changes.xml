@@ -36,6 +36,17 @@
           </para>
         </listitem>
       </varlistentry>
+
+  
+      <varlistentry>
+        <term>Syslog Support</term>
+  
+        <listitem>
+          <para>
+            The &eg; now supports <emphasis>syslog</emphasis>, the leading standard for collecting data from machines and systems on your network.  &eg; can send important logging information to both Windows and Unix machines via the standard syslog protocol.
+          </para>
+        </listitem>
+      </varlistentry>      
   
       <varlistentry>
         <term>Email Quarantine</term>
