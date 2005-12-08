@@ -1,0 +1,42 @@
+/*
+ * Copyright (c) 2005 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
+package com.metavize.tran.spam;
+
+import com.metavize.mvvm.logging.RepositoryDesc;
+import com.metavize.mvvm.logging.SimpleEventFilter;
+
+public class SpamSpamFilter implements SimpleEventFilter<SpamEvent>
+{
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc("Spam Events");
+
+    private static final String LOG_QUERY
+        = "FROM SpamLogEvent evt WHERE evt.spam = true AND evt.messageInfo.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
+    private static final String SMTP_QUERY
+        = "FROM SpamSmtpEvent evt WHERE evt.spam = true AND evt.messageInfo.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
+
+    // SimpleEventFilter methods ----------------------------------------------
+
+    public RepositoryDesc getRepositoryDesc()
+    {
+        return REPO_DESC;
+    }
+
+    public String[] getQueries()
+    {
+        return new String[] { LOG_QUERY, SMTP_QUERY };
+    }
+
+    public boolean accept(SpamEvent e)
+    {
+        return e.isSpam();
+    }
+}
