@@ -132,9 +132,9 @@ public class MMainJFrame extends javax.swing.JFrame {
                 quarantineJButton = new javax.swing.JButton();
                 maintenanceJButton = new javax.swing.JButton();
                 aboutJButton = new javax.swing.JButton();
+                helpJButton = new javax.swing.JButton();
                 configurationSpacerJPanel1 = new javax.swing.JPanel();
                 rackJComboBox = new javax.swing.JComboBox();
-                helpJButton = new javax.swing.JButton();
                 upgradeJButton = new javax.swing.JButton();
                 mPipelineJPanel = new com.metavize.gui.pipeline.MPipelineJPanel();
                 backgroundJLabel = new com.metavize.gui.widgets.MTiledIconLabel();
@@ -495,6 +495,29 @@ public class MMainJFrame extends javax.swing.JFrame {
                 gridBagConstraints.insets = new java.awt.Insets(10, 1, 3, 3);
                 jPanel8.add(aboutJButton, gridBagConstraints);
 
+                helpJButton.setFont(new java.awt.Font("Arial", 0, 12));
+                helpJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
+                helpJButton.setText("<html>Help</html>");
+                helpJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
+                helpJButton.setDoubleBuffered(true);
+                helpJButton.setFocusPainted(false);
+                helpJButton.setFocusable(false);
+                helpJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+                helpJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
+                helpJButton.setMaximumSize(new java.awt.Dimension(810, 370));
+                helpJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                helpJButtonActionPerformed(evt);
+                        }
+                });
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
+                jPanel8.add(helpJButton, gridBagConstraints);
+
                 configurationSpacerJPanel1.setFocusable(false);
                 configurationSpacerJPanel1.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
@@ -541,27 +564,6 @@ public class MMainJFrame extends javax.swing.JFrame {
                 gridBagConstraints.gridy = 2;
                 gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
                 controlsJPanel.add(rackJComboBox, gridBagConstraints);
-
-                helpJButton.setFont(new java.awt.Font("Default", 0, 12));
-                helpJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/main/IconHelp32x32.png")));
-                helpJButton.setText("<html>Help</html>");
-                helpJButton.setDoubleBuffered(true);
-                helpJButton.setFocusPainted(false);
-                helpJButton.setFocusable(false);
-                helpJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-                helpJButton.setMargin(new java.awt.Insets(2, 2, 2, 4));
-                helpJButton.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                helpJButtonActionPerformed(evt);
-                        }
-                });
-
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 3;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.insets = new java.awt.Insets(15, 20, 5, 20);
-                controlsJPanel.add(helpJButton, gridBagConstraints);
 
                 upgradeJButton.setFont(new java.awt.Font("Default", 0, 12));
                 upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/upgrade/IconAvailable32x32.png")));
@@ -617,9 +619,8 @@ public class MMainJFrame extends javax.swing.JFrame {
                 setBounds((screenSize.width-1024)/2, (screenSize.height-768)/2, 1024, 768);
         }//GEN-END:initComponents
 
-    private void helpJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpJButtonActionPerformed
-
-        if( Util.isLocal() ){
+		private void helpJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpJButtonActionPerformed
+	if( Util.isLocal() ){
 	    try{
 		URL newURL = new URL( Util.getServerCodeBase(), "../docs");
 		MOneButtonJDialog.factory(this,"","<html>You cannot view the help documents because there is "
@@ -640,8 +641,7 @@ public class MMainJFrame extends javax.swing.JFrame {
 		Util.handleExceptionNoRestart("Error showing help for EdgeReport", f);
 	    }
 	}
-        
-    }//GEN-LAST:event_helpJButtonActionPerformed
+		}//GEN-LAST:event_helpJButtonActionPerformed
 
     private void quarantineJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_quarantineJButtonActionPerformed
         try{
