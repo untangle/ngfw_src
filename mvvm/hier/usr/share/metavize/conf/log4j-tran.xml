@@ -118,7 +118,7 @@
   </category>
 
   <category name="com.metavize.tran.httpblocker">
-    <priority value="wARN"/>
+    <priority value="WARN"/>
   </category>
 
   <category name="com.metavize.tran.ids">

@@ -54,9 +54,9 @@
     <priority value="INFO"/>
   </category>
 
-  <!-- Engine's normal logging level is INFO -->
+  <!-- normal level for engine is INFO -->
   <category name="com.metavize.mvvm.engine">
-    <priority value="DEBUG"/>
+    <priority value="INFO"/>
   </category>
 
   <category name="com.metavize.mvvm.logging">
@@ -64,7 +64,7 @@
   </category>
 
   <category name="com.metavize.mvvm.policy">
-    <priority value="DEBUG"/>
+    <priority value="WARN"/>
   </category>
 
   <category name="com.metavize.mvvm.argon">
