@@ -104,13 +104,15 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         PreparedStatement stmt;
         ResultSet rs;
 
-        sql = "SELECT date_trunc('minute', time_stamp) AS time_stamp,"
-            + " COUNT(CASE is_spam WHEN true THEN 1 ELSE null END),"
-            + " COUNT(CASE is_spam WHEN false THEN 1 ELSE null END)"
-            + " FROM tr_spam_evt"
-            + " WHERE time_stamp <= ? AND time_stamp > ? AND vendor_name='SpamAssassin'"
-            + " GROUP BY time_stamp"
-            + " ORDER BY time_stamp";
+        sql = "SELECT trunc_ts, SUM(spam_ct), SUM(clean_ct)"
+            + "  FROM (SELECT date_trunc('minute', time_stamp) AS trunc_ts,"
+            + "          COUNT(CASE is_spam WHEN true THEN 1 ELSE null END) AS spam_ct,"
+            + "          COUNT(CASE is_spam WHEN false THEN 1 ELSE null END) AS clean_ct"
+            + "        FROM tr_spam_evt"
+            + "        WHERE time_stamp <= ? AND time_stamp > ? AND vendor_name='SpamAssassin'"
+            + "        GROUP BY trunc_ts"
+            + "        ORDER BY trunc_ts) AS foo"
+            + "  GROUP BY trunc_ts";
 
         bindIdx = 1;
         stmt = con.prepareStatement(sql);
@@ -141,13 +143,15 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         }
         try { stmt.close(); } catch (SQLException x) { }
 
-        sql = "SELECT date_trunc('minute', time_stamp) AS time_stamp,"
-            + " COUNT(CASE is_spam WHEN true THEN 1 ELSE null END),"
-            + " COUNT(CASE is_spam WHEN false THEN 1 ELSE null END)"
-            + " FROM tr_spam_evt_smtp"
-            + " WHERE time_stamp <= ? AND time_stamp > ? AND vendor_name='SpamAssassin'"
-            + " GROUP BY time_stamp"
-            + " ORDER BY time_stamp";
+        sql = "SELECT trunc_ts, SUM(spam_ct), SUM(clean_ct)"
+            + "  FROM (SELECT date_trunc('minute', time_stamp) AS trunc_ts,"
+            + "          COUNT(CASE is_spam WHEN true THEN 1 ELSE null END) AS spam_ct,"
+            + "          COUNT(CASE is_spam WHEN false THEN 1 ELSE null END) AS clean_ct"
+            + "        FROM tr_spam_evt_smtp"
+            + "        WHERE time_stamp <= ? AND time_stamp > ? AND vendor_name='SpamAssassin'"
+            + "        GROUP BY trunc_ts"
+            + "        ORDER BY trunc_ts) AS foo"
+            + "  GROUP BY trunc_ts";
 
         bindIdx = 1;
         stmt = con.prepareStatement(sql);
