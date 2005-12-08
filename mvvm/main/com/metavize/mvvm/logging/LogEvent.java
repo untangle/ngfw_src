@@ -12,8 +12,8 @@
 package com.metavize.mvvm.logging;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * A log event and message.

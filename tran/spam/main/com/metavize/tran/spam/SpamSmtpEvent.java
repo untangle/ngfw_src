@@ -11,6 +11,7 @@
 
 package com.metavize.tran.spam;
 
+
 import com.metavize.tran.mail.papi.MessageInfo;
 
 /**

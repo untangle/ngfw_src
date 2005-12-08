@@ -163,8 +163,13 @@ public class MessageInfoAddr implements Serializable
         return kind;
     }
 
-    public void setKind(AddressKind king)
+    public void setKind(AddressKind kind)
     {
         this.kind = kind;
+    }
+
+    public String toString()
+    {
+        return kind + ": " + addr;
     }
 }

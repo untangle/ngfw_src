@@ -28,6 +28,7 @@ public abstract class SpamEvent extends LogEvent
 
     // abstract methods -------------------------------------------------------
 
+    public abstract boolean isSpam();
     public abstract float getScore();
     public abstract String getActionName();
     public abstract MessageInfo getMessageInfo();

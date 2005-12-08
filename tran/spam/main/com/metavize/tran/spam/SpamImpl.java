@@ -13,9 +13,9 @@ package com.metavize.tran.spam;
 
 import static com.metavize.tran.util.Ascii.CRLF;
 
-import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.EventManager;
+import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
@@ -98,6 +98,9 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         eventLogger = new EventLogger<SpamEvent>(tctx);
 
         SimpleEventFilter ef = new SpamAllFilter();
+        eventLogger.addSimpleEventFilter(ef);
+
+        ef = new SpamSpamFilter();
         eventLogger.addSimpleEventFilter(ef);
 
         ef = new SpamSmtpFilter();
