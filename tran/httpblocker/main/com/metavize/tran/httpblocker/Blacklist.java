@@ -209,6 +209,10 @@ class Blacklist
             }
         }
 
+        HttpBlockerEvent e = new HttpBlockerEvent(requestLine.getRequestLine(),
+                                                  null, null, null, true);
+        transform.log(e);
+
         return null;
     }
 
