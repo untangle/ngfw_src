@@ -65,20 +65,26 @@ public class IDSSessionInfo {
         return isServer;
     }
 
-    public void processC2SSignatures() {
+    // First match wins. XX
+    public boolean processC2SSignatures() {
         for(IDSRuleSignature sig : c2sSignatures)
-            sig.execute(this);
+            if (sig.execute(this))
+                return true;
+        return false;
+    }
+
+    // First match wins. XX
+    public boolean processS2CSignatures() {
+        for(IDSRuleSignature sig : s2cSignatures)
+            if (sig.execute(this))
+                return true;
+        return false;
     }
 
     // For debugging/loggin
     public int numC2SSignatures() {return c2sSignatures.size();}
     public int numS2CSignatures() {return s2cSignatures.size();}
 	
-    public void processS2CSignatures() {
-        for(IDSRuleSignature sig : s2cSignatures)
-            sig.execute(this);
-    }
-
     public void blockSession() {
         if(session instanceof TCPSession) {
             ((TCPSession)session).resetClient();

@@ -95,6 +95,7 @@ public class IDSLogEvent extends PipelineEvent {
         getPipelineEndpoints().appendSyslog(sb);
 
         sb.startSection("info");
+        sb.addField("sid", ruleSid);
         sb.addField("message", message);
         sb.addField("blocked", blocked);
     }

@@ -27,6 +27,8 @@ public class IDSDetectionEngine {
     // Any chunk that takes this long gets a warning
     public static final long WARN_ELAPSED = 20;
 
+    private static final int SCAN_COUNTER  = Transform.GENERIC_0_COUNTER;
+
     private int 	        maxChunks 	= 8;
     private IDSSettings 	settings 	= null;
     private Map<String,RuleClassification> classifications = null;
@@ -218,16 +220,22 @@ public class IDSDetectionEngine {
             info.setEvent(event);
             info.setFlow(isFromServer);
 		
+            updateUICount(SCAN_COUNTER);
+
+            boolean result;
             if(isFromServer)
-                info.processS2CSignatures();
+                result = info.processS2CSignatures();
             else
-                info.processC2SSignatures();
+                result = info.processC2SSignatures();
+
+            if (!result)
+                transform.statisticManager.incrDNC();
 
             long elapsed = System.currentTimeMillis() - startTime;
             if (isFromServer) {
                 int numsigs = info.numS2CSignatures();
                 if (elapsed > ERROR_ELAPSED)
-                    log.warn("took " + elapsed + "ms to run " + numsigs + " s2c rules");
+                    log.error("took " + elapsed + "ms to run " + numsigs + " s2c rules");
                 else if (elapsed > WARN_ELAPSED)
                     log.warn("took " + elapsed + "ms to run " + numsigs + " s2c rules");
                 else if (log.isDebugEnabled())
@@ -235,7 +243,7 @@ public class IDSDetectionEngine {
             } else {
                 int numsigs = info.numC2SSignatures();
                 if (elapsed > ERROR_ELAPSED)
-                    log.warn("took " + elapsed + "ms to run " + numsigs + " c2s rules");
+                    log.error("took " + elapsed + "ms to run " + numsigs + " c2s rules");
                 else if (elapsed > WARN_ELAPSED)
                     log.warn("took " + elapsed + "ms to run " + numsigs + " c2s rules");
                 else if (log.isDebugEnabled())

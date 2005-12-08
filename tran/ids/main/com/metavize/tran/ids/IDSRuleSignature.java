@@ -23,7 +23,6 @@ public class IDSRuleSignature {
     private String[] ignoreSafeOptions = { "rev","reference","priority" };
     /** **************************************/
 
-    private static final int SCAN_COUNTER  = Transform.GENERIC_0_COUNTER;
     private static final int DETECT_COUNTER   = Transform.GENERIC_1_COUNTER;
     private static final int BLOCK_COUNTER    = Transform.GENERIC_2_COUNTER;
 
@@ -112,20 +111,14 @@ public class IDSRuleSignature {
     }
 
     public boolean execute(IDSSessionInfo info) {
-        IDSTransformImpl transform = (IDSTransformImpl)MvvmContextFactory.context().transformManager().threadContext().transform();
-        IDSDetectionEngine engine = transform.getEngine();
-
-        engine.updateUICount(SCAN_COUNTER);
-
         for(IDSOption option : options) {
             if(false == option.run(info)) {
-                // do not execute
-                transform.statisticManager.incrDNC();
+                // do not match
                 return false;
             }
         }
 
-        doAction(info); // execute
+        doAction(info); // match
         return true;
     }
 
@@ -156,7 +149,7 @@ public class IDSRuleSignature {
             break;
 
         case IDSRule.BLOCK:
-            log.debug("Block: "+message);
+            log.info("Block: "+message);
             blocked = true;
             ids.statisticManager.incrBlocked();
             engine.updateUICount(BLOCK_COUNTER);
