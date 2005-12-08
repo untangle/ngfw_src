@@ -73,26 +73,23 @@ public class MMainJFrame extends javax.swing.JFrame {
 	Runnable updateButtonInSwing = new Runnable(){
 		public void run() {
 		    if( count == 0 ){
-			upgradeJButton.setText("<html><center>Upgrade<br>(no upgrades)</center></html>");
+			upgradeJButton.setText("<html><center>Upgrade<br>(none)</center></html>");
 			upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/upgrade/IconUnavailable32x32.png")));
-                        upgradeJButton.setEnabled(true);
+            upgradeJButton.setEnabled(true);
 		    }
-		    else if( count == 1 ){
-			upgradeJButton.setText("<html><center><b>Upgrade<br>(1 upgrade)</b></center></html>");
+		    else if( count >= 1 ){
+			upgradeJButton.setText("<html><center><b>Upgrade<br>(" + count + ")</b></center></html>");
 			upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/upgrade/IconAvailable32x32.png")));
-                        upgradeJButton.setEnabled(true);
-		    }
-		    else if( count > 1 ){
-			upgradeJButton.setText("<html><center><b>Upgrade<br>(" + count + " upgrades)</b></center></html>");
-			upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/upgrade/IconAvailable32x32.png")));
-                        upgradeJButton.setEnabled(true);
+            upgradeJButton.setEnabled(true);
 		    }
 		    else if( count == Util.UPGRADE_UNAVAILABLE ){
-			upgradeJButton.setText("<html><center>Upgrade<br>(unavailable)</center></html>");
+			upgradeJButton.setText("<html><center>Upgrade<br>(unavail.)</center></html>");
+			upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/upgrade/IconUnavailable32x32.png")));
 			upgradeJButton.setEnabled(true);
 		    }
 		    else if( count == Util.UPGRADE_CHECKING ){
-			upgradeJButton.setText("<html><center>Upgrade<br>(checking...)</center></html>");
+			upgradeJButton.setText("<html><center>Upgrade<br>(checking)</center></html>");
+			upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/upgrade/IconUnavailable32x32.png")));
 			upgradeJButton.setEnabled(true);
 		    }
 		}
@@ -132,10 +129,10 @@ public class MMainJFrame extends javax.swing.JFrame {
                 quarantineJButton = new javax.swing.JButton();
                 maintenanceJButton = new javax.swing.JButton();
                 aboutJButton = new javax.swing.JButton();
-                helpJButton = new javax.swing.JButton();
                 configurationSpacerJPanel1 = new javax.swing.JPanel();
                 rackJComboBox = new javax.swing.JComboBox();
                 upgradeJButton = new javax.swing.JButton();
+                upgradeJButton1 = new javax.swing.JButton();
                 mPipelineJPanel = new com.metavize.gui.pipeline.MPipelineJPanel();
                 backgroundJLabel = new com.metavize.gui.widgets.MTiledIconLabel();
 
@@ -495,29 +492,6 @@ public class MMainJFrame extends javax.swing.JFrame {
                 gridBagConstraints.insets = new java.awt.Insets(10, 1, 3, 3);
                 jPanel8.add(aboutJButton, gridBagConstraints);
 
-                helpJButton.setFont(new java.awt.Font("Arial", 0, 12));
-                helpJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
-                helpJButton.setText("<html>Help</html>");
-                helpJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
-                helpJButton.setDoubleBuffered(true);
-                helpJButton.setFocusPainted(false);
-                helpJButton.setFocusable(false);
-                helpJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-                helpJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
-                helpJButton.setMaximumSize(new java.awt.Dimension(810, 370));
-                helpJButton.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                helpJButtonActionPerformed(evt);
-                        }
-                });
-
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
-                jPanel8.add(helpJButton, gridBagConstraints);
-
                 configurationSpacerJPanel1.setFocusable(false);
                 configurationSpacerJPanel1.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
@@ -567,12 +541,16 @@ public class MMainJFrame extends javax.swing.JFrame {
 
                 upgradeJButton.setFont(new java.awt.Font("Default", 0, 12));
                 upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/upgrade/IconAvailable32x32.png")));
-                upgradeJButton.setText("<html>Upgrade<br></html>");
+                upgradeJButton.setText("<html><center>Upgrade<br>(1)</center></html>");
                 upgradeJButton.setDoubleBuffered(true);
                 upgradeJButton.setFocusPainted(false);
                 upgradeJButton.setFocusable(false);
                 upgradeJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-                upgradeJButton.setMargin(new java.awt.Insets(2, 2, 2, 4));
+                upgradeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+                upgradeJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+                upgradeJButton.setMaximumSize(new java.awt.Dimension(114, 42));
+                upgradeJButton.setMinimumSize(new java.awt.Dimension(114, 42));
+                upgradeJButton.setPreferredSize(new java.awt.Dimension(114, 42));
                 upgradeJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 upgradeJButtonActionPerformed(evt);
@@ -582,9 +560,32 @@ public class MMainJFrame extends javax.swing.JFrame {
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 4;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 gridBagConstraints.insets = new java.awt.Insets(10, 20, 10, 20);
                 controlsJPanel.add(upgradeJButton, gridBagConstraints);
+
+                upgradeJButton1.setFont(new java.awt.Font("Default", 0, 12));
+                upgradeJButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/main/IconHelp32x32.png")));
+                upgradeJButton1.setText("<html>Upgrade<br></html>");
+                upgradeJButton1.setDoubleBuffered(true);
+                upgradeJButton1.setFocusPainted(false);
+                upgradeJButton1.setFocusable(false);
+                upgradeJButton1.setMargin(new java.awt.Insets(2, 2, 2, 2));
+                upgradeJButton1.setMaximumSize(new java.awt.Dimension(36, 42));
+                upgradeJButton1.setMinimumSize(new java.awt.Dimension(36, 42));
+                upgradeJButton1.setPreferredSize(new java.awt.Dimension(36, 42));
+                upgradeJButton1.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                upgradeJButton1ActionPerformed(evt);
+                        }
+                });
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 4;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                gridBagConstraints.insets = new java.awt.Insets(10, 20, 10, 20);
+                controlsJPanel.add(upgradeJButton1, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -619,7 +620,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                 setBounds((screenSize.width-1024)/2, (screenSize.height-768)/2, 1024, 768);
         }//GEN-END:initComponents
 
-		private void helpJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpJButtonActionPerformed
+		private void upgradeJButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeJButton1ActionPerformed
 	if( Util.isLocal() ){
 	    try{
 		URL newURL = new URL( Util.getServerCodeBase(), "../docs");
@@ -641,7 +642,7 @@ public class MMainJFrame extends javax.swing.JFrame {
 		Util.handleExceptionNoRestart("Error showing help for EdgeReport", f);
 	    }
 	}
-		}//GEN-LAST:event_helpJButtonActionPerformed
+		}//GEN-LAST:event_upgradeJButton1ActionPerformed
 
     private void quarantineJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_quarantineJButtonActionPerformed
         try{
@@ -809,7 +810,6 @@ public class MMainJFrame extends javax.swing.JFrame {
         private javax.swing.JScrollPane configurationJScrollPane;
         private javax.swing.JPanel configurationSpacerJPanel1;
         private javax.swing.JPanel controlsJPanel;
-        private javax.swing.JButton helpJButton;
         private javax.swing.JLabel jLabel1;
         private javax.swing.JPanel jPanel8;
         private javax.swing.JPanel mPipelineJPanel;
@@ -832,6 +832,7 @@ public class MMainJFrame extends javax.swing.JFrame {
         private javax.swing.JPanel toolboxScrollJPanel;
         private javax.swing.JPanel toolboxSpacerJPanel;
         private javax.swing.JButton upgradeJButton;
+        private javax.swing.JButton upgradeJButton1;
         // End of variables declaration//GEN-END:variables
 
 
