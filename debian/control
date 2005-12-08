@@ -202,7 +202,7 @@ XB-Rack-Position: 75
 Description: The Metavize Intrusion Prevention Appliance
  The Metavize Intrusion Prevention Appliance is an inline traffic
  scanner that detects exploits and intrusion attempts. It contains a
- library of over 1,900 built-in rules and can be easily expanded with
+ library of over 1,800 built-in rules and can be easily expanded with
  custom rules.
 
 Package: reporting-transform
