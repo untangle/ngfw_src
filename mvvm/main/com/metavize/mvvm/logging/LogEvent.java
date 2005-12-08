@@ -13,6 +13,7 @@ package com.metavize.mvvm.logging;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.sql.Timestamp;
 
 /**
  * A log event and message.
@@ -67,7 +68,11 @@ public abstract class LogEvent implements Comparable, Serializable
 
     void setTimeStamp(Date timeStamp)
     {
-        this.timeStamp = timeStamp;
+        if (timeStamp instanceof Timestamp) {
+            this.timeStamp = new Date(timeStamp.getTime());
+        } else {
+            this.timeStamp = timeStamp;
+        }
     }
 
     // public methods ---------------------------------------------------------
