@@ -12,17 +12,27 @@
   
         <listitem>
           <para>
-            This sould be a description of Open VPN TODO
+            A new Software Appliance, Open VPN, has been added to the &eg; suite.  The Open VPN appliance brings enterprise-class <glossterm linkend="gloss_vpn">VPN</glossterm> services to the Metavize customer, while maintaing the ease of use and simplicity found throughout the other Software Appliances.
           </para>
         </listitem>
       </varlistentry>
+
+      <varlistentry>
+        <term>Intrusion Prevention</term>
+  
+        <listitem>
+          <para>
+            Intrusion Prevention capabilities have been added to &eg; via a new Software Appliance of the same name.  The Intrusion Prevention Appliance is based on technology used in hundreds of organizations world wide, to thwart attacks (buffer overflows, remote code execution) based on the signatures of thousands of known exploits.
+          </para>
+        </listitem>
+      </varlistentry>      
   
       <varlistentry>
         <term>SNMP Support</term>
   
         <listitem>
           <para>
-            This sould be a description of SNMP TODO
+            Organizations can now use the industry standard Simple Network Management Protocol (<glossterm linkend="gloss_snmp">SNMP</glossterm> to manage their &eg;.  The &eg; not only supports the standard MIB-II query interface, but also sending <glossterm linkend="gloss_trap">SNMP Traps</glossterm>.
           </para>
         </listitem>
       </varlistentry>
@@ -32,13 +42,13 @@
   
         <listitem>
           <para>
-            This sould be a description of Quarantine TODO
+            The &eg; has been enhanced to now sequester, or <emphasis>quarantine</emphasis> emails categorized as unwanted (phishing, SPAM) by various Software Appliances.  End users are able to manage their quarantine of emails (review, release, delete) as well as declare certain senders "safe" via a self-service <emphasis>pass list</emphasis> feature.
           </para>
         </listitem>
       </varlistentry>    
     </variablelist>
   
-  
+<!--  
     <variablelist>
       <title>Resolved Issues</title>
       <varlistentry>
@@ -61,7 +71,8 @@
         </listitem>
       </varlistentry>
   
-    </variablelist>  
+    </variablelist>
+-->    
   </sect1>
 
 </appendix>

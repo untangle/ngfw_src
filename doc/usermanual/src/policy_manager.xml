@@ -80,7 +80,7 @@
       The example of Emma's Google request in <xref linkend="policy_manager_overview_example_pagereq"/> omitted one important detail.  Between steps 2 and 3, the &eg; had to determine <emphasis>which</emphasis> Virtual Rack should inspect the traffic.
     </para>
     <para>
-      As discussed in <xref linkend="introduction"/>, Software Appliances are not installed into an &eg; but <emphasis>into a (virtual) rack</emphasis>.  A given &eg; may have many such <quote>virtual</quote> racks.  Virtual Racks contain zero or more Software Appliances.
+      As discussed in <xref linkend="using_adminui"/>, Software Appliances are not installed into an &eg; but <emphasis>into a (virtual) rack</emphasis>.  A given &eg; may have many such <quote>virtual</quote> racks.  Virtual Racks contain zero or more Software Appliances.
     </para>
     <para>
       At this point in our discussion, we must address the question <quote>...why would I want more than one Virtual Rack?</quote>.  The simple answer is <quote>...you do not, unless you hit a situation where you cannot configure a given Software Appliance yet meet your needs</quote>.  Examples when using multiple Virtual Racks solve practical business problems are presented in <xref linkend="policy_manager_overview_mvr_examples"/>.

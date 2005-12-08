@@ -95,4 +95,34 @@
       </para>
     </simplesect>
   </sect1>
+
+  <sect1 id="appendix_syntax_url">
+    <title>Web Address (URL) Syntax</title>
+    
+    <simplesect id="appendix_syntax_urldomain" xreflabel="Web Domain Syntax">
+      <title>Web Domain Syntax</title>
+      <para>
+        The Web Domain Syntax syntax is used to describe a top-level web domain.  Examples include:
+        <programlisting>http://www.google.com</programlisting>
+        <programlisting>http://www.metavize.com</programlisting>
+      </para>
+      <para>
+        Users are cautioned not to confuse this with a complete <glossterm linkend="gloss_url">URL</glossterm> including path.  For example, the domain <constant>http://some_site.com/malk</constant> will also match <constant>http://some_site.com/duff</constant>.   Only the top of the URL (the <glossterm linkend="gloss_hostname">hostname</glossterm>) is used by &eg;.
+      </para>
+    </simplesect>
+
+    
+    <simplesect id="appendix_syntax_urlmatcher" xreflabel="URL Matcher Syntax">
+      <title>URL Matcher Syntax</title>
+      <para>
+        The <glossterm linkend="gloss_url">URL</glossterm> Matcher Syntax is used to describe all or part of a web site.  Unlike <xref linkend="appendix_syntax_urldomain"/>, the URL Matcher syntax is able to specify locations within a domain instead of just the top-level of the domain.  Examples include:
+        <programlisting>http://some_site.com/duff</programlisting>
+        <programlisting>http://www.metavize.com/products_overview.php</programlisting>
+      </para>
+      <para>
+        Note that in the first example above, <constant>http://some_site.com/duff/about.html</constant> would match, but <constant>http://some_site.com/malk</constant> would not.
+      </para>
+    </simplesect>
+  </sect1>
+  
 </appendix>

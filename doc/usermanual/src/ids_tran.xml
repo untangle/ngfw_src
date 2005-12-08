@@ -2,10 +2,6 @@
 <chapter id="ids_tran">
 
   <title>Intrusion Prevention</title>
-
-  <!-- Note that the "introduction" is not within a Section.  This is
-       the convention we'll use
-  -->
   <para>
     The Intrusion Prevention Appliance is identified by the
     <inlinemediaobject>

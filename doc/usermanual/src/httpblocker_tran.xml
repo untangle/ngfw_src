@@ -60,7 +60,7 @@
           </mediaobject>
         </figure>
         <para>
-          The URL block list is initialy empty.  When adding a new entry, you enter a URL which encompases an exact match or any URLs matching that prefix (see <xref linkend="fixme_ui_url_conventions"/> for more details on URL matching).  The <guilabel>category</guilabel> column can contain any category of your choosing (it does not have to correspond to the predefined categories discussed in <xref linkend="httpblocker_tran_block_categories"/>).
+          The URL block list is initialy empty.  When adding a new entry, you enter a URL which encompases an exact match or any URLs matching that prefix (see <xref linkend="appendix_syntax_urlmatcher"/> for more details on URL matching).  The <guilabel>category</guilabel> column can contain any category of your choosing (it does not have to correspond to the predefined categories discussed in <xref linkend="httpblocker_tran_block_categories"/>).
         </para>           
       </sect3>
   
@@ -128,7 +128,7 @@
           </mediaobject>
         </figure>
         <para>
-          The URL pass list is initialy empty.  When adding a new entry, you enter a URL which encompases an exact match or any URLs matching that prefix (see <xref linkend="fixme_ui_url_conventions"/> for more details on URL matching).  The <guilabel>category</guilabel> column can contain any category of your choosing (it does not have to correspond to the predefined categories discussed in <xref linkend="httpblocker_tran_block_categories"/>).
+          The URL pass list is initialy empty.  When adding a new entry, you enter a URL which encompases an exact match or any URLs matching that prefix (see <xref linkend="appendix_syntax_urlmatcher"/> for more details on URL matching).  The <guilabel>category</guilabel> column can contain any category of your choosing (it does not have to correspond to the predefined categories discussed in <xref linkend="httpblocker_tran_block_categories"/>).
         </para>
       </sect3>
   

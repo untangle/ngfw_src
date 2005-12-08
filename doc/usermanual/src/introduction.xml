@@ -27,21 +27,6 @@
       This is where we explain Internal/External as well as (optionally) DMZ and VPN.
     </para>    
 
-    <sect2 id="fixme_ui_ip_conventions"  xreflabel="Entering Addresses">
-      <title>Random stuff I've referred to</title>
-
-      <para>
-      This section explains that there are a few different ways to enter addresses, depending on the context.
-      </para>
-    </sect2>
-
-    <sect2 id="fixme_ui_url_conventions"  xreflabel="URL Matching">
-      <title>I guess we need a title</title>
-      <para>
-        Here we discuss how to enter URLs for blocking/passing, where "http://a/b" matches "http://a/b/c" but not "http://a/d".
-      </para>
-    </sect2>
-
   </sect1>
    
 </chapter>

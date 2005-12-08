@@ -140,6 +140,26 @@
       </para>
     </sect2>
 
+
+    <!-- ====================================================== -->
+    <sect2 id="config_tab_network_timezone">
+      <title>Timezone</title>
+      <para>
+        The Timezone for your &eg; is set as seen in <xref linkend="config_tab_network_timezone_figure"/>.
+      </para>
+      <figure id="config_tab_network_timezone_figure">
+        <title>Timezone Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/configtab/config_tab_network_timezone.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        Administrators should select the timezone where the &eg; is deployed.
+      </para>
+    </sect2>     
+
     <!-- ====================================================== -->
     <sect2 id="config_tab_network_networkaliases">
       <title>Network Aliases</title>
@@ -651,8 +671,22 @@
             </listitem>
           </varlistentry>                    
         </variablelist>
-        
       </para>
+      <para>
+        Selecting the <guilabel>Show detail</guilabel> button brings up a full listing of emails in a given user's inbox, as seen in <xref linkend="config_tab_quarantine_releasepurge_detail_figure"/>.
+      </para>
+      <figure id="config_tab_quarantine_releasepurge_detail_figure">
+        <title>Quarantine Details Window</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/configtab/config_tab_quarantine_releasepurge_detail.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>        
+      <para>
+        Individual mails may be purged (deleted) or released by highlighting rows and pushing the <guilabel>Purge Selected</guilabel> or <guilabel>Release Selected</guilabel> buttons respectivly.
+      </para>  
+
     </sect2>
 
 
