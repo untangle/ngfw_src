@@ -12,12 +12,13 @@
 %>
 <%@ taglib uri="/WEB-INF/taglibs/quarantine_euv.tld" prefix="quarantine" %>
 
-<html>
-<link rel="StyleSheet" href="styles/mv_quarantine.css" type="text/css">
-  <head>
-    <title>
-    Quarantine Digest for <quarantine:currentAddress/>
-    </title>  
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+<!-- HEADING -->
+  <title>Metavize | Quarantine Digest for <quarantine:currentAddress/></title>
     <script> 
       function CheckAll() {
         count = document.form1.elements.length;
@@ -37,11 +38,13 @@
       
       function doRescue() {
         document.form1.<quarantine:constants keyName="action"/>.value = "<quarantine:constants valueName="rescue"/>";
-        document.form1.submit();
       }
+        document.form1.submit();
     </script>
-  </head>
-  <body>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+  <link rel="stylesheet" href="styles/style.css" type="text/css"/>
+</head>
+<body>
 
 <!--
 Prev link: <quarantine:pagnationLink linkType="prev"/>
@@ -63,100 +66,100 @@ SEP
 <quarantine:hasPagnation linkType="next" includeIfTrue="false">
   LinkType="next" includeIfTrue="false"
 </quarantine:hasPagnation>
-
 -->  
 
-    <table class="outertable" cellpadding="0" cellspacing="0">
-      <% // Outer table, first row %>
-      <tr>
-        <% // Because of IE stupidity, there can be no LWS between the tags below %>
-        <td WIDTH="20" valign="top"><img src="images/tl.gif" ALT=""></td>
-        <td>
-          <table class="intro"
-            border="0"
-            cellpadding="0"
-            cellspacing="0"
-            height="100%"
-            width="100%">
-              <tbody>
-                <tr>
-                  <% // I cannot get things to work correctly w/o putting an absolute value here %>
-                  <td width="200">
-                    <% // IE ignores this class if applied to the table below %>
-                    <div class="logoTable">
-                      <table>
-                        <tbody>
-                          <tr>
-                            <td>
-                              <img src="images/logo.gif">
-                            </td>
-                            <td class="logotext">
-                            &nbsp;&nbsp;Metavize EdgeGuard
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </td>
-                  <td>
-                    <table class="introUserInfo" height="100%" width="100%">
-                      <tbody>
-                        <tr>
-                          <td>
-                            Quarantine Digest for <quarantine:currentAddress/>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </td>
-                </tr><tr>
-                </tr><tr>
-                <td class="infotext" colspan="2">
-  The emails listed below have been quarantined by Metavize EdgeGuard.
-  These emails will be deleted automatically after 20 days.<br><br>
-  To release any email from the quarantine and deliver the email to your inbox,
-  click the checkboxes for one or more emails and click <code>Release</code>.
-  To delete any email in the quarantine,
-  click the checkboxes for one or more emails and click <code>Delete</code>.<br><br>
-  <quarantine:hasSafelist includeIfTrue="true">
-  You may also view your <a href="/quarantine/smc?<quarantine:constants keyName="action"/>=<quarantine:constants valueName="slview"/>&<quarantine:constants keyName="tkn"/>=<quarantine:currentAuthToken encoded="true"/>">safelist</a>
-  of email senders whose emails you do not want to quarantine.<br><br>
-  </quarantine:hasSafelist>
-                </td>
-              </tr>
+<center>
+<table border="0" cellpadding="0" cellspacing="0" width="904">
+
+<!-- TOP THIRD -->
+  <tbody>
+    <tr>
+      <td id="table_main_top_left"><img src="images/spacer.gif" alt=" " height="23" width="23"/><br/>
+      </td>
+      
+      <td id="table_main_top" width="100%"><img src="images/spacer.gif" alt=" " height="1" width="1"/><br/>
+      </td>
+
+      <td id="table_main_top_right"> <img src="images/spacer.gif" alt=" " height="23" width="23"/><br/>
+      </td>
+    </tr>
+
+    <!-- END TOP THIRD -->
+
+    <!-- MIDDLE THIRD -->
+    <tr>
+      <td id="table_main_left"><img src="images/spacer.gif" alt=" " height="1" width="1"/></td>
+
+      <td id="table_main_center">
+        <table width="100%">
+          <tbody>
+            <tr>
+              <td valign="middle" width="96">
+                <a href="http://www.metavize.com">
+                  <img src="images/logo_no_text_shiny_96x96.gif" border="0" alt="Metavize logo"/>
+                </a>
+              </td>
+              
+              <td style="padding: 0px 0px 0px 10px;" class="page_header_title" align="left" valign="middle">
+		Quarantine Digest for:<br/><quarantine:currentAddress/>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+
+      <td id="table_main_right"> <img src="images/spacer.gif" alt=" " height="1" width="1"/></td>
+    </tr>
+
+    <!-- END MIDDLE THIRD -->
+    <!-- CONTENT AREA -->
+    <tr>
+      
+      <td id="table_main_left"></td>
+
+      <!-- CENTER CELL --> 
+      <td id="table_main_center" style="padding: 8px 0px 0px;">
+        <hr size="1" width="100%"/>
+
+		<!-- INTRO MESSAGE -->
+		  The emails listed below have been quarantined by Metavize EdgeGuard.
+		  These emails will be deleted automatically after 20 days.<br><br>
+		  To release any email from the quarantine and deliver the email to your inbox,
+		  click the checkboxes for one or more emails and click <code>Release</code>.
+		  To delete any email in the quarantine,
+		  click the checkboxes for one or more emails and click <code>Delete</code>.<br><br>
+		  <quarantine:hasSafelist includeIfTrue="true">
+		  You may also view your <a href="/quarantine/smc?<quarantine:constants keyName="action"/>=<quarantine:constants valueName="slview"/>&<quarantine:constants keyName="tkn"/>=<quarantine:currentAuthToken encoded="true"/>">safelist</a>
+		  of email senders whose emails you do not want to quarantine.<br><br>
+		  </quarantine:hasSafelist>
+
+		<!-- MAIN MESSAGE -->
+		<br/>
+		<center>
+		<table>
               <quarantine:hasMessages type="info">
-              <tr>
-                <td>
+		<tr><td>
                   <ul class="messageText">
                     <quarantine:forEachMessage type="info">
                       <li><quarantine:message/></li>
                     </quarantine:forEachMessage>
                   </ul>
-                </td>              
-              </tr>
+		</td></tr>
               </quarantine:hasMessages>
               <quarantine:hasMessages type="error">
-              <tr>
-                <td>
+		<tr><td>
                   <ul class="errortext">
                     <quarantine:forEachMessage type="error">
                       <li><quarantine:message/></li>
                     </quarantine:forEachMessage>
                   </ul>
-                </td>              
-              </tr>
+		</td></tr>
               </quarantine:hasMessages>                      
-            </tbody>
-          </table>
-        </td>
-        <% // Because of IE stupidity, there can be no LWS between the tags below %>
-        <td WIDTH="20" valign="top"><img src="images/tr.gif"></td>
-      </tr>
-      <% // Outer table, middle row %>
-      <tr>
-        <td>
-        </td>
-        <td>
+		</table>
+		</center>
+
+		<!-- MAIN TABLE -->
+	<center>
           <quarantine:hasInboxRecords includeIfTrue="true">
           <form name="form1" method="POST" action="imc">
             <input type="hidden"
@@ -277,22 +280,34 @@ SEP
             </table>
           </form>
           </quarantine:hasInboxRecords>
+	</center>
+
+	
+		<br/>
+	<center>Powered by Metavize&reg; EdgeGuard&reg;</center>
+
+          <hr size="1" width="100%"/>
         </td>
-        <td>
-        </td>
-      </tr>
-      <% // Outer table, last row %>
-      <tr>
-        <% // Because of IE stupidity, there can be no LWS between the tags below %>
-        <td WIDTH="20" valign="bottom"><img src="images/bl.gif" ALT=""></td>
-        <td class="smallLogo" height="100%">
-          Powered by <br>
-          Metavize&reg; EdgeGuard&reg;
-        </td>
-        <% // Because of IE stupidity, there can be no LWS between the tags below %>
-        <td WIDTH="20" valign="bottom"><img src="images/br.gif" ALT=""></td>
-      </tr>
-    </table>
+      <!-- END CENTER CELL -->
+      <td id="table_main_right"></td>
+    </tr>
+    <!-- END CONTENT AREA -->
     
-  </body>
+    <!-- BOTTOM THIRD -->
+    <tr>
+      <td id="table_main_bottom_left"><img src="images/spacer.gif" alt=" " height="23" width="23"/><br/>
+      </td>
+      <td id="table_main_bottom"><img src="images/spacer.gif" alt=" " height="1" width="1"/><br/>
+      </td>
+      <td id="table_main_bottom_right"> <img src="images/spacer.gif" alt=" " height="23" width="23"/><br/>
+      </td>
+    </tr>
+    <!-- END BOTTOM THIRD -->
+  </tbody>
+</table>
+
+</center>
+
+<!-- END BRUSHED METAL PAGE BACKGROUND -->
+</body>
 </html>
