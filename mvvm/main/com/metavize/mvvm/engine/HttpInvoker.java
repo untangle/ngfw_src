@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.zip.GZIPOutputStream;
 
 import com.metavize.mvvm.client.InvocationTargetExpiredException;
 import com.metavize.mvvm.client.LoginExpiredException;
@@ -88,7 +89,10 @@ class HttpInvoker extends InvokerBase
         try {
             pis = new ProxyInputStream(is);
             HttpInvocation hi = (HttpInvocation)pis.readObject();
-            pos = new ProxyOutputStream(os, hi.url, hi.timeout);
+            if (GZIP_RESPONSE)
+                pos = new ProxyOutputStream(new GZIPOutputStream(os), hi.url, hi.timeout);
+            else
+                pos = new ProxyOutputStream(os, hi.url, hi.timeout);
 
             LoginSession loginSession = hi.loginSession;
 

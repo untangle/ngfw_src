@@ -17,6 +17,8 @@ import java.net.InetAddress;
 
 public abstract class InvokerBase
 {
+    public static boolean GZIP_RESPONSE = true;
+
     protected InvokerBase() { }
 
     protected abstract void handleStream(InputStream is, OutputStream os,

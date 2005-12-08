@@ -40,6 +40,8 @@ public class HttpInvokerServlet extends HttpServlet
             // Can't happen
             throw new Error(x);
         }
+        if (InvokerBase.GZIP_RESPONSE)
+            resp.setHeader("Content-Encoding", "gzip");
         ib.handle(is, os, req.getLocalAddr().equals("127.0.0.1"), clientAddr);
     }
 

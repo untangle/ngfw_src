@@ -19,6 +19,7 @@ import java.lang.reflect.Method;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.zip.GZIPInputStream;
 
 import com.metavize.mvvm.client.InvocationConnectionException;
 import com.metavize.mvvm.client.InvocationException;
@@ -85,10 +86,11 @@ public class HttpInvokerStub implements InvocationHandler, Serializable
         throws Exception
     {
         HttpURLConnection huc = (HttpURLConnection)url.openConnection();
-        huc.setRequestProperty("ContentType", "application/octet-stream");
+        huc.setRequestMethod("POST");
+        huc.setRequestProperty("Accept-Encoding", "gzip");
+        huc.setRequestProperty("Content-Type", "application/octet-stream");
         huc.setDoInput(true);
         huc.setDoOutput(true);
-        huc.setRequestMethod("POST");
         huc.setConnectTimeout(timeout);
 
         // XXX hack: null for login proxy
@@ -132,7 +134,13 @@ public class HttpInvokerStub implements InvocationHandler, Serializable
         boolean read = false;
         IOException readExn = null;
         for (int i = 0; i < SLEEP_TIMES.length && !read; i++) {
-            ProxyInputStream pis = new ProxyInputStream(huc.getInputStream());
+            ProxyInputStream pis;
+            String ce = huc.getContentEncoding();
+            if (ce != null && ce.indexOf("gzip") != -1)
+                pis = new ProxyInputStream(new GZIPInputStream(huc.getInputStream()));
+            else
+                pis = new ProxyInputStream(huc.getInputStream());
+
             try {
                 if (classLoader != null) {
                     o = pis.readObject(classLoader);
