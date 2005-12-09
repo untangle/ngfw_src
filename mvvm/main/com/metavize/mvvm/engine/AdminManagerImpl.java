@@ -146,7 +146,7 @@ class AdminManagerImpl implements AdminManager
             TimeZone current = TimeZone.getTimeZone(str);
             return current;
         } catch (Exception x) {
-            logger.error("Unable to get timezone, using java default:" , x);
+            logger.warn("Unable to get timezone, using java default:" , x);
             return TimeZone.getDefault();
         }
     }
