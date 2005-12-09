@@ -109,11 +109,11 @@ public class VpnTransformImpl extends AbstractTransform
 
         /* Attempt to assign all of the clients addresses only if in server mode */
         try {
-            if ( !newSettings.getIsEdgeGuardClient()) {
+            if ( !newSettings.getIsEdgeGuardClient() && newSettings.isConfigured()) {
                 addressMapper.assignAddresses( newSettings );
             }
         } catch ( TransformException exn ) {
-            logger.error( "Could not assign client addresses, continuing", exn );
+            logger.warn( "Could not assign client addresses, continuing", exn );
         }
         
         if ( !newSettings.getIsEdgeGuardClient()) {
@@ -574,6 +574,24 @@ public class VpnTransformImpl extends AbstractTransform
         
         return ( settings.isBridgeMode() ? ConfigState.SERVER_BRIDGE : ConfigState.SERVER_ROUTE );
     }
+    
+    public IPaddr getVpnServerAddress()
+    {
+        /* Return the empty address */
+        if ( getConfigState() != ConfigState.CLIENT ) {
+            logger.info( "non-client state, and request for server address" );
+            return new IPaddr( null );
+        }
+
+        IPaddr address = ( this.settings == null ) ? new IPaddr( null ) : this.settings.getServerAddress();
+        if ( address == null ) {
+            logger.info( "null settings, and request for vpn server address" );
+            return new IPaddr( null );
+        }
+
+        return address;
+    }
+
 
     public void startConfig( ConfigState state ) throws ValidateException
     {

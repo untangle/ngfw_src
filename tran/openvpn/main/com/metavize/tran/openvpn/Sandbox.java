@@ -47,6 +47,10 @@ class Sandbox
     private static final String LS_CLIENTS_SCRIPT = Constants.SCRIPT_DIR + "/list-usb-configs";
     private static final String CLIENT_LIST_FILE = Constants.MISC_DIR + "/client-list";
 
+    private static final String OPENVPN_CLIENT_FILE = OpenVpnManager.OPENVPN_CONF_DIR + "/client.conf";
+
+    private IPaddr vpnServerAddress;
+
     private CertificateParameters certificateParameters;
     private GroupList  groupList;
     private ExportList exportList;
@@ -151,6 +155,32 @@ class Sandbox
             logger.warn( "Unable to install client configuration", e );
             throw new TransformException( "Unable to install client configuration." );
         }
+
+        /* Parse out the client configuration address */
+        BufferedReader in = null;
+        try { 
+            in = new BufferedReader( new FileReader( OPENVPN_CLIENT_FILE ));
+            String line;
+            while(( line = in.readLine()) != null ) {
+                line = line.trim();
+                if ( line.startsWith( OpenVpnManager.FLAG_REMOTE )) {
+                    String valueArray[] = line.split( " " );
+
+                    if ( valueArray.length != 3 ) {
+                        logger.warn( "Invalid client configuration" );
+                        break;
+                    }
+                    
+                    vpnServerAddress = IPaddr.parse( valueArray[1] );
+                    break;
+                }
+            }
+        } catch ( Exception e ) {
+            logger.warn( "Error reading client configuration file", e );
+            vpnServerAddress = new IPaddr( null );
+        } finally {
+            if ( in != null ) try { in.close(); } catch ( Exception e ) {};
+        }
     }
     
     void generateCertificate( CertificateParameters parameters ) throws Exception
@@ -238,6 +268,7 @@ class Sandbox
         case CLIENT:
             settings.setIsEdgeGuardClient( true );
             settings.setBridgeMode( false ); /* This would come from the other box */
+            settings.setServerAddress( vpnServerAddress );
 
             /* Nothing left to do */
             return settings;

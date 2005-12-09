@@ -49,6 +49,11 @@ a:hover {
     color: #777777;
 }
 
+.page_sub_text {
+    font: bold normal normal 14pt Arial,Sans-Serif;
+    color: #777777;
+}
+
 h1 {
     font: normal normal bold 11pt Arial,Sans-Serif;
     color: #999999;
@@ -177,10 +182,18 @@ hr {
         <table style="padding: 1px; text-align: left; margin-left: auto; margin-right: auto; width: 480px; border: 1px;" border="0"><tbody><tr><td>
           <table style="padding: 10px 40px 10px 40px;">
             <tbody>
+
+              <tr>
+                <td valign="top" class="page_sub_text">
+                  If you are located in your office:
+                </td>
+              </tr>
               
               <tr>
-                <td valign="top" class="page_sub_title">
-                  <a href="https://%%ADDRESS%%/openvpn/download.html?key=%%KEY%%">Download OpenVPN client</a>
+                <td valign="top" class="page_sub_text">
+                  <a href="https://%%ADDRESS%%/openvpn/download.html?key=%%KEY%%">
+                    Click here to download the OpenVPN client.
+                  </a>
                 </td>
               </tr>
               
@@ -188,6 +201,27 @@ hr {
                 <td valign="top">
                   Or copy and paste the following link into your Web Browser.<br/>
                   <b><code>https://%%ADDRESS%%/openvpn/download.html?key=%%KEY%%</code></b>
+                </td>
+              </tr>
+
+              <tr>
+                <td valign="top" class="page_sub_text" style="padding: 20px 0px 0px 0px;">
+                  If you are away from your office:
+                </td>
+              </tr>
+
+              <tr>
+                <td valign="top" class="page_sub_text">
+                  <a href="https://%%EXTERNAL_ADDRESS%%/openvpn/download.html?key=%%KEY%%">
+                    Click here to download the OpenVPN client.
+                  </a>
+                </td>
+              </tr>
+              
+              <tr>
+                <td valign="top">
+                  Or copy and paste the following link into your Web Browser.<br/>
+                  <b><code>https://%%EXTERNAL_ADDRESS%%/openvpn/download.html?key=%%KEY%%</code></b>
                 </td>
               </tr>
               

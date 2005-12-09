@@ -44,7 +44,7 @@ import com.metavize.mvvm.tran.IPaddr;
 
 class OpenVpnManager
 {
-    private static final String OPENVPN_CONF_DIR      = "/etc/openvpn";
+    static final String OPENVPN_CONF_DIR      = "/etc/openvpn";
     private static final String OPENVPN_SERVER_FILE   = OPENVPN_CONF_DIR + "/server.conf";
     private static final String OPENVPN_CCD_DIR       = OPENVPN_CONF_DIR + "/ccd";
     private static final String CLIENT_CONF_FILE_BASE = Constants.PACKAGES_DIR + "/client-";
@@ -77,7 +77,7 @@ class OpenVpnManager
 
     private static final String FLAG_MAX_CLI      = "max-clients";
 
-    private static final String FLAG_REMOTE       = "remote";
+    static final String FLAG_REMOTE               = "remote";
     private static final String DEFAULT_CIPHER    = "AES-128-CBC";
 
     private static final String FLAG_CERT         = "cert";

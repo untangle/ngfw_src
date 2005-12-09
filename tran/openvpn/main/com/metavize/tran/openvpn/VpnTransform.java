@@ -40,6 +40,7 @@ public interface VpnTransform extends Transform
 
     public enum ConfigState { UNCONFIGURED, CLIENT, SERVER_BRIDGE, SERVER_ROUTE }
     public ConfigState getConfigState();
+    public IPaddr getVpnServerAddress();
 
     public void startConfig(ConfigState state) throws ValidateException;
     public void completeConfig() throws Exception;

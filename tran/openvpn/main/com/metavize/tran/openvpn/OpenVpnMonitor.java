@@ -150,7 +150,10 @@ class OpenVpnMonitor implements Runnable
             logClientDistributionEvents();
 
             /* Only log when enabled */
-            if ( !isEnabled ) continue;
+            if ( !isEnabled ) {
+                flushLogEvents();
+                continue;
+            }
 
             /* Update the current time */
             now.setTime( System.currentTimeMillis());
@@ -280,12 +283,16 @@ class OpenVpnMonitor implements Runnable
     private long incrementCount( long previousCount, long kernelCount )
     {
         /* If the kernel is counting in 64-bits, just return the kernel count */
-        if ( kernelCount >= ( 1L << 32 ) ) return kernelCount;
+        /* This following doesn't work very well because the tun0 count gets reset to zero often */
+        /* XXX This could overflow, but transmitting 4GB of VPN traffic is difficult */
+//         if ( kernelCount >= ( 1L << 32 ) ) return kernelCount;
 
-        long previousKernelCount = previousCount & 0xFFFFFFFFL;
-        if ( previousKernelCount > kernelCount ) previousCount += ( 1L << 32 );
 
-        return (( previousCount & 0x7FFFFFFF00000000L ) + kernelCount );
+//         long previousKernelCount = previousCount & 0xFFFFFFFFL;
+//         if ( previousKernelCount > kernelCount ) previousCount += ( 1L << 32 );
+
+//         return (( previousCount & 0x7FFFFFFF00000000L ) + kernelCount );
+        return kernelCount;
     }
 
 
@@ -356,6 +363,8 @@ class OpenVpnMonitor implements Runnable
             stats.fillEvent( now );
             eventLogger.log( stats.sessionEvent );
         }
+
+        activeMap.clear();
 
         logStatistics( now );
     }

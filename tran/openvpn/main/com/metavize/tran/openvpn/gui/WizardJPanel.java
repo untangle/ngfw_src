@@ -30,7 +30,7 @@ public class WizardJPanel extends javax.swing.JPanel {
 	    statusJLabel.setText("Unconfigured: Use buttons below.");
 	}
 	else if( VpnTransform.ConfigState.CLIENT == configState ){
-	    statusJLabel.setText("VPN Client: Connected to " + "1.2.3.4"); // XXX
+	    statusJLabel.setText("VPN Client: Connected to " + vpnTransform.getVpnServerAddress().toString());
 	}
 	else if( VpnTransform.ConfigState.SERVER_ROUTE == configState ){
 	    statusJLabel.setText("VPN Routing Server");

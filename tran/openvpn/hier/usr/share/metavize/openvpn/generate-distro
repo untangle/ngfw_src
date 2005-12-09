@@ -76,6 +76,7 @@ function buildConfigFile() {
 function buildEmail()
 {
     local t_emailFile="${PACKAGE_DIR}/mail-${commonName}.eml"
+    local t_mailTemplate=${EMAIL_TEMPLATE}
     
     local t_externalAddress
     
@@ -85,14 +86,15 @@ function buildEmail()
         t_externalAddress="${externalAddress}:${externalPort}"
     fi
 
+    
     if [ "${isEdgeGuard}x" = "truex" ]; then
-        sed -e "s|%%KEY%%|${distributionKey}|g" \
-            -e "s|%%EXTERNAL_ADDRESS%%|${t_externalAddress}|g" \
-            ${EG_TEMPLATE} > ${t_emailFile}
-    else
-        sed -e "s|%%KEY%%|${distributionKey}|g" -e "s|%%ADDRESS%%|${internalAddress}|g" \
-            ${EMAIL_TEMPLATE} > ${t_emailFile}
+        t_mailTemplate=${EG_TEMPLATE}
     fi
+
+    sed -e "s|%%KEY%%|${distributionKey}|g" \
+        -e "s|%%ADDRESS%%|${internalAddress}|g" \
+        -e "s|%%EXTERNAL_ADDRESS%%|${t_externalAddress}|g" \
+        ${t_mailTemplate} > ${t_emailFile}
 }
 
 function copyToUsb()
