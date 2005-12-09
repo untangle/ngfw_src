@@ -767,7 +767,8 @@ public class UpgradeJDialog extends javax.swing.JDialog implements Savable, Refr
 		final int upgradesTotal = upgradableMackages.length;
 		int tempUpgradesVisible = 0;
 		for( MackageDesc mackageDesc : upgradableMackages ){
-		    if( mackageDesc.getType() == MackageDesc.CASING_TYPE )
+		    if( mackageDesc.getType() == MackageDesc.CASING_TYPE ||
+                        mackageDesc.getType() == MackageDesc.TRANSFORM_BASE_TYPE)
 			continue;
 		    else
 			tempUpgradesVisible++;
@@ -919,7 +920,8 @@ class UpgradeTableModel extends MSortedTableModel {
 	int rowIndex = 0;
 
         for( MackageDesc mackageDesc : mackageDescs ){
-            if( mackageDesc.getType() == MackageDesc.CASING_TYPE )
+            if( mackageDesc.getType() == MackageDesc.CASING_TYPE ||
+                mackageDesc.getType() == MackageDesc.TRANSFORM_BASE_TYPE)
                 continue;
 	    try{
 		rowIndex++;

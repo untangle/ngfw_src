@@ -956,7 +956,7 @@ public class PolicyStateMachine implements ActionListener {
 		transformContext = Util.getTransformManager().transformContext(casingInstances.get(0));
 		transformDesc = transformContext.getTransformDesc();
 		casingGuiClassName = transformDesc.getGuiClassName();
-		casingGuiClass = Util.getClassLoader().loadClass( casingGuiClassName, casingName );
+		casingGuiClass = Util.getClassLoader().loadClass( casingGuiClassName, transformDesc );
 		if(generateGuis){
 		    casingGuiConstructor = casingGuiClass.getConstructor(new Class[]{TransformContext.class});
 		    mCasingJPanel = (MCasingJPanel) casingGuiConstructor.newInstance(new Object[]{transformContext});

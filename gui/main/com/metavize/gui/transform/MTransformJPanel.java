@@ -51,7 +51,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
 
     public static MTransformJPanel instantiate(TransformContext transformContext) throws Exception {
 	TransformDesc transformDesc = transformContext.getTransformDesc();
-	Class guiClass = Util.getClassLoader().loadClass( transformDesc.getGuiClassName(), transformDesc.getName() );
+	Class guiClass = Util.getClassLoader().loadClass( transformDesc.getGuiClassName(), transformDesc );
 	Constructor guiConstructor = guiClass.getConstructor( new Class[]{TransformContext.class} );
 	MTransformJPanel mTransformJPanel = (MTransformJPanel) guiConstructor.newInstance(new Object[]{transformContext});
 	return mTransformJPanel;

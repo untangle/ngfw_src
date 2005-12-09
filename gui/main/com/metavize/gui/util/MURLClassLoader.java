@@ -11,23 +11,44 @@
 
 package com.metavize.gui.util;
 
+import com.metavize.mvvm.tran.TransformDesc;
 import java.io.InputStream;
+import java.util.List;
 import java.net.*;
 
 public class MURLClassLoader extends URLClassLoader {
-    
-    
+
     public MURLClassLoader(ClassLoader parent){
         super( new URL[0], parent );
     }
-    
-    public void addMar(String marName){
-        try{
-            super.addURL( new URL(Util.getServerCodeBase().toString() + marName + "-client.mar") );
-	}
-        catch(Exception e){
+
+    private void addMarIfNeeded(String marName) {
+        try {
+            URL marURL = new URL(Util.getServerCodeBase().toString() + marName + "-client.mar");
+            URL[] existingURLs = getURLs();
+            for (URL url : existingURLs)
+                if (url.equals(marURL))
+                    return;
+            System.out.println("Adding " + marURL + " to class path");
+            addURL(marURL);
+	} catch(Exception e){
+            System.err.println("Couldn't do it:" + e.getMessage());
+            e.printStackTrace();
             //System.err.println("  |--> Couldn't add mar: " + marName);
         }
+    }
+
+    // This now adds all mars for the transform, including the base and parents (if any)
+    private void addMarsFor(TransformDesc desc) {
+        String main = desc.getName();
+        String base = desc.getTransformBase();
+        List<String> parents = desc.getParents();
+        if (parents != null)
+            for (String parent : parents)
+                addMarIfNeeded(parent);
+        if (base != null)
+            addMarIfNeeded(base);
+        addMarIfNeeded(main);
     }
     
     /*
@@ -80,16 +101,14 @@ public class MURLClassLoader extends URLClassLoader {
     }
     */
     
-    public Class loadClass(String className, String marName){
-        
+    public synchronized Class loadClass(String className, TransformDesc transformDesc){
+
         Class returnClass = null;
 	//System.out.println("--> Trying to load class: " + className + " with mar: " + marName);
         // try to load the class as normal
         try{
             returnClass = this.loadClass(className);
-        }
-        catch(Exception e){
-            //e.printStackTrace();
+        } catch (ClassNotFoundException e) {
             returnClass = null;
         }
         if(returnClass != null){
@@ -100,7 +119,8 @@ public class MURLClassLoader extends URLClassLoader {
         
         // try to dynamically load the class
         try{
-            this.addMar(marName);
+            this.addMarsFor(transformDesc);
+
             //URL[] availableURLs = Util.getClassLoader().getURLs();
             //for(int i=0; i<availableURLs.length; i++)
             //    System.err.println( "  |--> Found: " + availableURLs[i].toString() );

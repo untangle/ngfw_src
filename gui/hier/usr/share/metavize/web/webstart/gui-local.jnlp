@@ -59,7 +59,7 @@ MackageDesc[] mds = mc.toolboxManager().installed();
     <%
     for(int i = 0; i < mds.length; i++){
         int t = mds[i].getType();
-        if (MackageDesc.TRANSFORM_TYPE == t || MackageDesc.CASING_TYPE == t) {
+        if (t != MackageDesc.SYSTEM_TYPE) {
     %>
             <jar href="./<%=mds[i].getName()%>-client.mar"/>
     <%

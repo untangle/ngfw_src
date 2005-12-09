@@ -70,12 +70,14 @@ public class QuarantineJDialog extends MConfigJDialog {
 		return;
 	    }
 	}
+
+	TransformDesc transformDesc = transformContext.getTransformDesc();
 	
         // QUARANTINE CONTROLS //////
         String quarantineAllJPanelName = "com.metavize.tran.mail.gui.QuarantineAllJPanel";
         JPanel quarantineAllJPanel = null;
         try{
-            Class objectClass = Util.getClassLoader().loadClass( quarantineAllJPanelName, casingName );
+            Class objectClass = Util.getClassLoader().loadClass( quarantineAllJPanelName, transformDesc );
             Constructor objectConstructor = objectClass.getConstructor(new Class[]{TransformContext.class});
             quarantineAllJPanel = (JPanel) objectConstructor.newInstance(transformContext);
         }
@@ -89,7 +91,7 @@ public class QuarantineJDialog extends MConfigJDialog {
         String whitelistAllJPanelName = "com.metavize.tran.mail.gui.WhitelistAllJPanel";
         JPanel whitelistAllJPanel = null;
         try{
-            Class objectClass = Util.getClassLoader().loadClass( whitelistAllJPanelName, casingName );
+            Class objectClass = Util.getClassLoader().loadClass( whitelistAllJPanelName, transformDesc );
             Constructor objectConstructor = objectClass.getConstructor(new Class[]{TransformContext.class});
             whitelistAllJPanel = (JPanel) objectConstructor.newInstance(transformContext);
         }
@@ -103,7 +105,7 @@ public class QuarantineJDialog extends MConfigJDialog {
         String quarantineGeneralSettingsJPanelName = "com.metavize.tran.mail.gui.QuarantineGeneralSettingsJPanel";
         JPanel quarantineGeneralSettingsJPanel = null;
         try{
-            Class objectClass = Util.getClassLoader().loadClass( quarantineGeneralSettingsJPanelName, casingName );
+            Class objectClass = Util.getClassLoader().loadClass( quarantineGeneralSettingsJPanelName, transformDesc );
             Constructor objectConstructor = objectClass.getConstructor(new Class[]{TransformContext.class});
             quarantineGeneralSettingsJPanel = (JPanel) objectConstructor.newInstance(transformContext);
         }
