@@ -38,7 +38,7 @@ public class KeyButtonRunnable implements ButtonRunnable {
     public void setTopLevelWindow(Window topLevelWindow){ this.topLevelWindow = topLevelWindow; }
 	public void actionPerformed(ActionEvent evt){ run(); }
     public void run(){
-	KeyJDialog keyJDialog = KeyJDialog.factory(topLevelWindow);
+	KeyJDialog keyJDialog = KeyJDialog.factory(topLevelWindow, vpnClient);
 	keyJDialog.setVisible(true);
 	if( keyJDialog.isProceeding() ){
 	    if( keyJDialog.isUsbSelected() ){

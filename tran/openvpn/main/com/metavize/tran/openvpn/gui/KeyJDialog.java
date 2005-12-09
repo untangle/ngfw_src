@@ -11,6 +11,8 @@
 
 package com.metavize.tran.openvpn.gui;
 
+import com.metavize.tran.openvpn.*;
+
 import com.metavize.gui.util.Util;
 import com.metavize.mvvm.ToolboxManager;
 import com.metavize.gui.widgets.dialogs.*;
@@ -21,33 +23,43 @@ import java.awt.Window;
 
 public class KeyJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
     
+    private VpnClient vpnClient;
+
     private boolean isProceeding = false;
-	private boolean isUsbSelected;
-	private String emailAddress;
+    private boolean isUsbSelected;
+    private String emailAddress;
 
-	public static KeyJDialog factory(Container topLevelContainer){
-			KeyJDialog keyJDialog;
-			if(topLevelContainer instanceof Frame)
-					keyJDialog = new KeyJDialog((Frame)topLevelContainer);
-			else
-					keyJDialog = new KeyJDialog((Dialog)topLevelContainer);
-			return keyJDialog;
-	}
-	
-    public KeyJDialog(Dialog topLevelDialog) {
+    private String message;
+    
+    public static KeyJDialog factory(Container topLevelContainer, VpnClient vpnClient){
+	KeyJDialog keyJDialog;
+	if(topLevelContainer instanceof Frame)
+	    keyJDialog = new KeyJDialog((Frame)topLevelContainer, vpnClient);
+	else
+	    keyJDialog = new KeyJDialog((Dialog)topLevelContainer, vpnClient);
+	return keyJDialog;
+    }
+    
+    public KeyJDialog(Dialog topLevelDialog, VpnClient vpnClient) {
         super( topLevelDialog, true);
-	init( topLevelDialog );
+	init( topLevelDialog, vpnClient );
 	
     }
-
-    public KeyJDialog(Frame topLevelFrame) {
+    
+    public KeyJDialog(Frame topLevelFrame, VpnClient vpnClient) {
         super( topLevelFrame, true);
-	init( topLevelFrame );
+	init( topLevelFrame, vpnClient );
     }
-
-    private void init(Window topLevelWindow) {
+    
+    private void init(Window topLevelWindow, VpnClient vpnClient) {
+	this.vpnClient = vpnClient;
+	message = "<html>\nPlease choose how you would like to distribute your digital key.  "
+	    + "Note: If you choose to send via email, you must supply an email address to send the email to.  "
+	    + "If you choose to download to USB key, the data will be located on the key at: /metavize-data/openvpn/setup-"
+	    + vpnClient.getInternalName()
+	    + ".exe\n</html>";
         initComponents();
-		isUsbSelected = usbJRadioButton.isSelected();
+	isUsbSelected = usbJRadioButton.isSelected();
         this.addWindowListener(this);
         this.setBounds( Util.generateCenteredBounds(topLevelWindow.getBounds(), this.getWidth(), this.getHeight()) );
     }
@@ -107,7 +119,7 @@ public class KeyJDialog extends javax.swing.JDialog implements java.awt.event.Wi
 
                 messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
                 messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                messageJLabel.setText("<html>\nPlease choose how you would like to distribute your digital key.  Note: If you choose to send via email, you must supply an email address to send the email to.  If you choose to download to USB key, the data will be located on the key at /metavize-data/openvpn/setup-<client-name>.exe\n</html>");
+                messageJLabel.setText(message);
                 messageJLabel.setDoubleBuffered(true);
                 getContentPane().add(messageJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 40, 396, -1));
 
