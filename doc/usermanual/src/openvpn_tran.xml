@@ -31,7 +31,7 @@
       With any VPN connection, there is a <emphasis>client</emphasis> and <emphasis>server</emphasis>.  The client connects to the server, establishing an encrypted communication channel.  Implicit is that the server is protecting network resources from another untrusted network (usualy the Internet).  The VPN connection allows the remote client to reside on an untrusted network yet access protected resources <quote>behind</quote> the VPN server.  
     </para>
     <para>
-      A secure communication channel itself is of only limited value.  Once a client established a VPN connection to a server, that server then <emphasis>exports</emphasis> network resources to the client.  These are the protected machines or <glossterm linkend="gloss_subnet">subnets</glossterm>, shielded from the untrusted network but through a VPN connection.
+      A secure communication channel itself is of only limited value.  Once a client established a VPN connection to a server, that server then <emphasis>exports</emphasis> network resources to the client.  These exported resources are the protected machines or <glossterm linkend="gloss_subnet">subnets</glossterm>, shielded from the untrusted network but through a VPN connection.
     </para>
     <para>
       This concept of <quote>exporting</quote> resources is a subtle one.  A very simple VPN deployment may export the entire internal (protected) network to VPN clients.  This can be thought of as the VPN client simply <quote>joining</quote> the internal network from a remote location via a secure channel.  For many deployments, this may be appropriate.  In other deployments, a further level of protection may be appropriate.  For example, the most common use of VPN is employees working from home.  Many homes now have wireless networks, which are not always properly secured.  When a user establishes a VPN connection from their home, they may be exposing the corporation to any <glossterm linkend="gloss_malware">malware</glossterm> residing on their home network.  To mimimize this risk, the corporation may choose to only <emphasis>export</emphasis> the intranet server to VPN clients.  Such clients could not connect to other internal resources (file servers, printers, ERP systems) they could reach from their desk at work.
@@ -45,7 +45,7 @@
       </tip>
     </para>
     <para>
-      Thus far in our discussion, we have provided examples of a remote client machine connecting to a VPN server.  It is also possible to bridge an entire remote network to a VPN server.  A common use for this is a remote office, where a handful of employees need to join the protected network at headquarters.  When a group of computers (a network) establish a VPN connection to a server, the group of computers is said to be a <emphasis>site</emphasis>.  A given &eg; can act as a VPN server, allowing remote clients or sites to connect to the exported internal resources.  An &eg; can also act as a remote site, bridging the internal network at that remote location to an &eg; acting as a VPN server.
+      Thus far in our discussion, we have provided examples of a remote client machine connecting to a VPN server.  It is also possible to connect an entire remote network to a VPN server.  A common use for this is a remote office, where a handful of employees need to join the protected network at headquarters.  When a group of computers (a network) establish a VPN connection to a server, the group of computers is said to be a <emphasis>site</emphasis>.  A given &eg; can act as a VPN server, allowing remote clients or sites to connect to the exported internal resources.  An &eg; can also act as a remote site, bridging the internal network at that remote location to an &eg; acting as a VPN server.
     </para>     
     <para>
       As a convienence when configuring the Open VPN Appliance, the following is a list of definitions used throughout the Open VPN Appliance Administrative interface.
@@ -217,7 +217,7 @@
                 <glossterm linkend="gloss_netmask">Netmask</glossterm> used in conjunction with <guilabel>IP Address</guilabel>, to define the set of addresses which will be assigned to remote clients as they join the protected network.
                 <tip>
                   <para>
-                    The set of addresses defined by <guilabel>netmask</guilabel> must be large enough to handle all configured clients.  For example, a netmask of <constant>255.255.255.252</constant> allows for only 4 client addresses.  A system with 5 possible clients could not use this netmask.
+                    The set of addresses defined by <guilabel>netmask</guilabel> must be large enough to handle all configured clients.  For example, a netmask of <constant>255.255.255.0</constant> allows for only 64 client addresses.  A system with 100 possible clients could not use this netmask.
                   </para>
                 </tip>
               </para>
@@ -254,7 +254,7 @@
             <term><guilabel>export</guilabel></term>
             <listitem>
               <para>
-                When this box is checked, the resource described by the row is exported.  Resources can be temporarially hidden fro mexport by unchecking this box.  To remove an export entirely, one can simply push the remove (minus) button to the left of the table.
+                When this box is checked, the resource described by the row is exported.  Resources can be temporarially hidden from export by unchecking this box.  To remove an export entirely, one can simply push the remove (minus) button to the left of the table.
               </para>
             </listitem>
           </varlistentry>
@@ -453,6 +453,11 @@
         <para>
           The Client Site Wizard is used to configure an &eg; as a remote VPN site, providing a route for one or more machines within its internal network.  For a review of the Open VPN Appliance and terminology, please refer to <xref linkend="openvpn_tran_overview"/>.
         </para>
+        <warning>
+          <para>
+            Due to current limitations in the Open VPN Appliance, Administrators must turn on then off the Appliance before running the Client Site Wizard.  Please refer to <xref linkend="using_adminui"/> for information on turning on/off appliances.
+          </para>
+        </warning>
 
         <!-- ........................................... -->
         <para>
@@ -483,12 +488,17 @@
           The configuration information can be entered in one of two ways.  The first is via network, and requires the <guilabel>Server IP Address</guilabel> and <guilabel>Password</guilabel>.  These values were emailed to an email address as described in <xref linkend="openvpn_tran_adminui_serverscreens_vpnsites"/>.  
         </para>
         <para>
-          The alternative mechanism for configuration distribution is via USB key.  As with the first distribution mechanism, configuration is written to USB key as described in <xref linkend="openvpn_tran_adminui_serverscreens_vpnsites"/>.
+          The alternative mechanism for configuration distribution is via USB key.  As with the first distribution mechanism, configuration is written to USB key as described in <xref linkend="openvpn_tran_adminui_serverscreens_vpnsites"/>.  Note that one must push <guilabel>Read USB Key</guilabel> for the &eg; to read the configuration information.
         </para>
+        <tip>
+          <para>
+            The Open VPN Appliance confirms settings with the remote VPN server before the wizard completes.   In order to confirm settings, the remote VPN server must be turned on.
+          </para>
+        </tip>
 
         <!-- ........................................... -->
         <para>
-          Once the configuration information has been entered, Administrators can complete the process and save settings by puching the <guilabel>finish</guilabel> button as seen in <xref linkend="openvpn_tran_adminui_wizards_client_figure3"/>.
+          Once the configuration information has been entered, Administrators can complete the process and save settings by pushing the <guilabel>finish</guilabel> button as seen in <xref linkend="openvpn_tran_adminui_wizards_client_figure3"/>.
         </para>
         <figure id="openvpn_tran_adminui_wizards_client_figure3">
           <title>Final Screen</title>
@@ -654,7 +664,7 @@
       <sect3 id="openvpn_tran_adminui_serverscreens_vpnclients">
         <title>VPN Clients</title>
         <para>
-          The VPN Clients Tab, as seen in <xref linkend="openvpn_tran_adminui_serverscreens_vpnclients_figure"/>, is used by Administrators to one or more remote clients who can establish VPN connections to the &eg;.
+          The VPN Clients Tab, as seen in <xref linkend="openvpn_tran_adminui_serverscreens_vpnclients_figure"/>, is used by Administrators to configure remote clients who can establish VPN connections to the &eg;.
         </para>
 
         <figure id="openvpn_tran_adminui_serverscreens_vpnclients_figure">
@@ -729,7 +739,7 @@
           </mediaobject>
         </figure>
         <para>
-          Recall from <xref linkend="openvpn_tran_overview"/> that a remote VPN site is another &eg; acting to connect a network to a VPN server (as in the satalite office case).  A complete list of the fields for each VPN site entry is as follows.
+          Recall from <xref linkend="openvpn_tran_overview"/> that a remote VPN site is another &eg; acting to connect a network to a VPN server (as in the satellite office case).  A complete list of the fields for each VPN site entry is as follows.
         </para>
         <variablelist>
           <varlistentry>

@@ -33,7 +33,7 @@
       <sect3 id="httpblocker_tran_block_categories">
         <title>Categories</title>
         <para>
-          The Categories tab, as shown in <xref linkend="httpblocker_tran_block_categories_figure"/>, presents the administrator with the ability to block logical categories of sites.  The names of the various categories and a description are presented in the table.
+          The Categories tab, as shown in <xref linkend="httpblocker_tran_block_categories_figure"/>, allows the administrator the ability to block categories of sites.  The names of the various categories and a description are presented in the table.
         </para>
         <figure id="httpblocker_tran_block_categories_figure">
           <title>Categories Tab</title>
@@ -44,7 +44,7 @@
           </mediaobject>
         </figure>
         <para>
-          Should a user within the protected network browse to a site which has been selected via the Category tab, they will be presented with an error page.  The page will inform the user that their request has been blocked by the Web Content Control Appliance.  They will also be told the category (<quote>Web Mail</quote>, <quote>Gambling</quote>, etc) of the site in question.
+          When a user within the protected network browses a site selected in the Category tab, they will be presented with an error page.  The page will inform the user that their request has been blocked by the Web Content Control Appliance.  They will also be told the category (<quote>Web Mail</quote>, <quote>Gambling</quote>, etc) of the site in question.
         </para>
       </sect3>
   
@@ -82,7 +82,7 @@
           </mediaobject>
         </figure>
         <para>
-          As shown in <xref linkend="httpblocker_tran_block_mime_figure"/>, most of the common MIME types have already been entered into the list.  By default, they are not being blocked.  To cause a particular MIME Type to be blocked, check the <guilabel>block</guilabel> box.
+          As shown in <xref linkend="httpblocker_tran_block_mime_figure"/>, the list contains the most common MIME types.  By default, they are no MIME types blocked.  To block a particular MIME Type, check the <guilabel>block</guilabel> box.
         </para>
       </sect3>
   
@@ -101,7 +101,7 @@
           </mediaobject>
         </figure>
         <para>
-          As shown in <xref linkend="httpblocker_tran_block_fileext_figure"/>, many common file extensions have already been entered into the list.  By default, they are not being blocked.  To cause files of a given extension to be blocked, check the <guilabel>block</guilabel> box.
+          As shown in <xref linkend="httpblocker_tran_block_fileext_figure"/>, the list contains the most common file extensions.  No file extensions are blocked by default.  To block a file extension, check the <guilabel>block</guilabel> box.
         </para>        
       </sect3>          
     </sect2>
@@ -113,7 +113,7 @@
         As discussed in <xref linkend="httpblocker_tran_block"/>, the Web Content Control Appliance offers several ways to block inappropriate or malicious traffic from entering your protected network.  However, there may be circumstances where you need to bypass these guards for an individual within your company, or a site outside your network.
       </para>
       <para>
-        For this reason, the Pass Lists have been created.  When traffic is found to <quote>match</quote> an entry in one of the pass lists, it is <emphasis>not</emphasis> filtered.  Passes can be created for various sites, as discussed in <xref linkend="httpblocker_tran_pass_urls"/>, or for individual machines within the protected network as discussed in <xref linkend="httpblocker_tran_pass_clients"/>
+        The Pass List allows individuals and groups to bypass filtering.  When traffic is found to <quote>match</quote> an entry in one of the pass lists, it is <emphasis>not</emphasis> filtered.  Passes can be created for various sites, as discussed in <xref linkend="httpblocker_tran_pass_urls"/>, or for individual machines within the protected network as discussed in <xref linkend="httpblocker_tran_pass_clients"/>.
       </para>
   
       <!-- ############################################################## -->
@@ -150,7 +150,7 @@
           </mediaobject>
         </figure>
         <para>
-          The list shown in <xref linkend="httpblocker_tran_pass_clients_figure"/> is initialy empty.  As new entries are made, administrators must enter <guilabel>client IP address</guilabel>.  The format of <guilabel>client IP address</guilabel> is either in <link linkend="appendix_syntax_simpleipaddr">Simple IP Address</link> or <link linkend="appendix_syntax_networknetmask">Network/Netmask</link> format.  Note that the <guilabel>category</guilabel> field is only for administrator reference - it need not match up with the predefined categories discussed in <xref linkend="httpblocker_tran_block_categories"/>.
+          The list shown in <xref linkend="httpblocker_tran_pass_clients_figure"/> is initialy empty.  As new entries are made, administrators must enter <guilabel>client IP address</guilabel>.  The format of the  <guilabel>client IP address</guilabel> field is either in <link linkend="appendix_syntax_simpleipaddr">Simple IP Address</link> or <link linkend="appendix_syntax_networknetmask">Network/Netmask</link> format.  Note that the <guilabel>category</guilabel> field is only for administrator reference - it need not match up with the predefined categories discussed in <xref linkend="httpblocker_tran_block_categories"/>.
         </para>
       </sect3>    
     </sect2>
@@ -170,7 +170,7 @@
         </mediaobject>
       </figure>
       <para>
-        The Events Tab is another implementation of an Event Log, as described in <xref linkend="using_adminui_appliances_eventlog"/>.  The <guilabel>action</guilabel> describes the action which the &eg; took on the web request.  <guilabel>client</guilabel> shows the IP address of the client who made the request.
+        The Events Tab is another implementation of an Event Log, as described in <xref linkend="using_adminui_appliances_eventlog"/>.  The <guilabel>action</guilabel> column describes the action which the &eg; took on the web request.  The <guilabel>client</guilabel> column shows the IP address of the client who made the request.
       </para>        
     </sect2>  
   </sect1>
@@ -180,7 +180,7 @@
     <qandaset>  
       <qandaentry>
         <question>
-          <para>Why is there both blocking by MIME Type and File Extension?</para>
+          <para>Why block both MIME Type and File Extension?</para>
         </question>
         <answer>
           <para>
@@ -190,11 +190,11 @@
       </qandaentry>
       <qandaentry>
         <question>
-          <para>We run a hotel, where employees are not permitted to browse to inappropriate content yet guests using a public internet terminal are not restricted.  How can we handle this situation?</para>
+          <para>We run a hotel, where employees are not permitted to browse to inappropriate content yet guests using a public Internet terminal are not restricted.  How can we handle this situation?</para>
         </question>
         <answer>
           <para>
-            Set-up the policies as you would for employees.  Then, enter the addresses of alll public internet terminals into the Client Pass List as described in <xref linkend="httpblocker_tran_pass_clients"/>.
+            Set-up the policies as you would for employees.  Then, enter the addresses of alll public Internet terminals into the Client Pass List as described in <xref linkend="httpblocker_tran_pass_clients"/>.
           </para>
         </answer>
       </qandaentry>      

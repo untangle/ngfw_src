@@ -620,6 +620,13 @@ This document was created using the &gt;e-novative&gt; DocBook Environment (<a h
 <xsl:param name="body.font.master">12</xsl:param>
 
 
+<!--
+  An attempt to make guilabels bold, but makes other
+  crap bold as well.  Too bad...
+<xsl:template match="guilabel">
+  <xsl:call-template name="inline.boldseq"/>
+</xsl:template>
+-->
 
 
 

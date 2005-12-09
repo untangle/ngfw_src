@@ -39,7 +39,7 @@
         Once NAT is configured, most deployments proceed to configuring their &eg; for <glossterm linkend="gloss_dhcp">Dynamic Host Configuration Protocol (DHCP)</glossterm>.  Configuring the &eg; for DHCP is discussed in <xref linkend="nat_tran_dhcp"/>.
       </para>
       <para>
-        If you are <emphasis>not</emphasis> planning to use DHCP for some or all machines within the protected network and wish those machines to use the NAT functionality, you must configure their <glossterm linkend="gloss_gateway">gateway</glossterm> and subnet values.  On these machines, the gateway and subnet should be set to the values found under the <guilabel>Internal Address</guilabel> section of <xref linkend="nat_tran_nat_figure"/>.
+        If you are <emphasis>not</emphasis> planning to use DHCP for some or all machines within the protected network and wish those machines to use the NAT functionality, you must manually confirue the networking settup for your machine.  On these machines, the gateway and subnet should be set to the values found under the <guilabel>Internal Address</guilabel> section of <xref linkend="nat_tran_nat_figure"/>.
       </para>
       
     </sect2>
@@ -106,15 +106,22 @@
           The Address Map serves two purposes for the Administrator.  First, when DHCP is configured Administrators can use this table to observe all machines currently receiving NAT services from &eg;.  A second, more advanced, use of the Address Map is to ensure that a given machine always receives the same <glossterm linkend="gloss_ip_addr">IP Address</glossterm>.
         </para>
         <para>
-          Recall that DHCP automatically assigns an IP address to machines as they <quote>plug into</quote> your network.  There is no guarantee that a given machine will receive the same address the next time it joins your network.  For most situations, this is an acceptable situation.  However, there may be special circumstances where you wish a host to always receive the same address.  To accomidate these cases, Administrators can <quote>add</quote> machines to the Address Map proactivly.
+          Recall that DHCP automatically assigns an IP address to machines as they <quote>plug into</quote> your network.  There is no guarantee that a given machine will receive the same address the next time it joins your network.  For most situations, this is an acceptable situation.  However, there may be special circumstances where you wish a host to always receive the same address.  To accomidate these cases, Administrators can <quote>add</quote> machines to the Address Map.
         </para>
         <para>
-          To add a machine to the Address Map list, push the add (plus) button to the left as seen in <xref linkend="nat_tran_dhcp_addrmap_figure"/>.  This adds a new row to the table.  The <guilabel>MAC address</guilabel> and <guilabel>target static IP address</guilabel> fields must be filled-in with the correct <glossterm linkend="gloss_mac_addr">MAC address</glossterm> and IP address respectivly.  Optionaly, Administrators can populate the <guilabel>category</guilabel> and <guilabel>description</guilabel> fields.
+          To add a machine to the Address Map list, push the add (plus) button to the left as seen in <xref linkend="nat_tran_dhcp_addrmap_figure"/>.
           <tip>
             <para>
               When adding a new machine to the Address Map, sample MAC Address and IP Address appear.  These <emphasis>must</emphasis> be changed to the correct values for the target machine.
             </para>
-          </tip>
+          </tip>          
+          This adds a new row to the table.  The <guilabel>MAC address</guilabel> and <guilabel>target static IP address</guilabel> fields must be filled-in with the correct <glossterm linkend="gloss_mac_addr">MAC address</glossterm> and IP address respectivly.  Optionaly, Administrators can populate the <guilabel>category</guilabel> and <guilabel>description</guilabel> fields.
+          <tip>
+            <para>
+              You can permanently assign an address without having to obtain the MAC address as follows.  Let the machine join the network without a permanent address.  Then, go into the Address Map Tab and add an entry to the <guilabel>target static IP address</guilabel> field.  After hitting <guilabel>Save Settings</guilabel> the entry becomes permanent.
+            </para>
+          </tip> 
+          
         </para>
         <para>
           A complete list of the columns in <xref linkend="nat_tran_dhcp_addrmap_figure"/> is as follows.
@@ -189,7 +196,7 @@
             <term><guilabel>redirect</guilabel></term>
             <listitem>
               <para>
-                Checking the box under redirect causes the rule to redirect matching traffic.  If this is not checked, Administrators can still check the <guilabel>log</guilabel> field to log traffic.  Unless auditing your network traffic, this is usualy checked.
+                Checking the box under redirect causes the rule to redirect matching traffic.  Unchecking <guilabel>redirect</guilabel> will temporarily disable the rule.  Unless auditing your network traffic, this is usualy checked.
               </para>
             </listitem>
           </varlistentry>
@@ -278,7 +285,7 @@
       <simplesect>
         <title>Relationship with DMZ Host</title>
         <para>
-          Before concluding the discussion of the redirect feature, an asside on on its relationship with the DMZ Host feature as discussed in <xref linkend="nat_tran_dmzhost"/>.  The DMZ Host feature is a <quote>catch all</quote> for inbound (from external network) traffic.  It redirects all traffic to a given host, <emphasis>unless a redirect rule takes precidence</emphasis>.  It may be helpful to think of the DMZ Host feature as being an implicit lowest-priority rule in the Redirect Table.
+          Before concluding the discussion of the redirect feature, an asside on on its relationship with the DMZ Host feature as discussed in <xref linkend="nat_tran_dmzhost"/>.  The DMZ Host feature is a <quote>catch all</quote> for inbound (from external network) traffic.  It redirects all traffic to a given host, <emphasis>unless a redirect rule takes precidence</emphasis>.  It may be helpful to think of the DMZ Host feature as a default action for traffic destined for the external IP address.
         </para>
       </simplesect>
     </sect2>
@@ -451,7 +458,7 @@
             <term><guilabel>redirected server interface</guilabel></term>
             <listitem>
               <para>
-                The destination interface on-which the traffic exited the &eg;.  For more information on the network interfaces of your &eg;, please refer to <xref linkend="getting_started_interfaces"/>.
+                The destination interface on-which the redirected traffic exited the &eg;.  For more information on the network interfaces of your &eg;, please refer to <xref linkend="getting_started_interfaces"/>.
               </para>
             </listitem>
           </varlistentry>                                                                                

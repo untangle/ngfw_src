@@ -32,12 +32,12 @@
     <!-- ============================================================ -->
     <bridgehead id="policy_manager_overview_int_end_rtg"  xreflabel="Interfaces, Endpoints and Routing">Interfaces, Endpoints and Routing</bridgehead>
     <para>
-      Traffic arrives at one network interface of &eg; and leaves on another (for more information on the network interfaces available to your &eg;, please refer to <xref linkend="getting_started_interfaces"/>).  Between when the traffic enters and exits the &eg;, several Software Appliances may scan and/or modify the traffic.  To illustrate how the &eg; handles traffic, we will use the example in <xref linkend="policy_manager_overview_example_pagereq"/>.
+      Traffic arrives at one network interface of &eg; and leaves on another (for more information on the network interfaces available to your &eg;, please refer to <xref linkend="getting_started_interfaces"/>).  Between when the traffic enters and exits the &eg;, several Software Appliances may scan and/or modify the traffic.  To illustrate how the &eg; handles traffic, we will use <xref linkend="policy_manager_overview_example_pagereq"/>.
     </para>
     <example id="policy_manager_overview_example_pagereq">
       <title>Simple Web Page Request</title>
       <para>
-        Emma is sitting at here desktop on the protected network (the <constant>internal</constant> interface).  Emma decides she wants to learn more about <quote>networking</quote> so she visits Google in her web browser.  Since Emma's computer is behind an &eg; running <glossterm linkend="gloss_nat">NAT</glossterm>, the IP address of her computer is <constant>10.0.0.129</constant>.  From the perspective of the &eg;, Emma's pointing her browser at Google is a <glossterm linkend="gloss_tcp">TCP</glossterm> request from the <glossterm linkend="gloss_ip_addr">IP address</glossterm> <constant>10.0.0.129</constant> (Emma's machine) to the IP address <constant>66.102.7.99</constant> on <glossterm linkend="gloss_port">port</glossterm> <constant>80</constant> (<constant>66.102.7.99</constant> is one of the many IP addresses of Google).
+        Emma is sitting at her desktop on the protected network (connected to the <constant>internal</constant> interface).  Emma decides she wants to learn more about <quote>networking</quote> so she visits Google in her web browser.  Since Emma's computer is behind an &eg; running <glossterm linkend="gloss_nat">NAT</glossterm> (via the Network Sharing Appliance discussed in <xref linkend="nat_tran"/>), the IP address of her computer is <constant>10.0.0.129</constant>.  From the perspective of the &eg;, Emma's pointing her browser at Google is a <glossterm linkend="gloss_tcp">TCP</glossterm> request from the <glossterm linkend="gloss_ip_addr">IP address</glossterm> <constant>10.0.0.129</constant> (Emma's machine) to the IP address <constant>66.102.7.99</constant> on <glossterm linkend="gloss_port">port</glossterm> <constant>80</constant> (<constant>66.102.7.99</constant> is one of the many IP addresses of Google).
       </para>
     </example>
     <para>
@@ -51,7 +51,7 @@
       </step>
       <step>
         <para>
-          The &eg; inspects the request, and find it contains the client IP address to be <constant>10.0.0.129</constant>.  It finds the server IP:port to be <constant>66.102.7.99:80</constant>.
+          The &eg; inspects the request, and finds the client IP address to be <constant>10.0.0.129</constant>.  It finds the server IP:port to be <constant>66.102.7.99:80</constant>.
         </para>
       </step>
       <step>
@@ -61,7 +61,7 @@
       </step>      
       <step>
         <para>
-          The &eg; consults its rules to determine how to route traffic to that server IP:port,  <constant>66.102.7.99:80</constant>.  These rules determine the <emphasis>server interface</emphasis> of the request.  In this case, the &eg; determines that the server interface is the <constant>external</constant> interface.
+          The &eg; consults its rules to determine how to route traffic to that server IP:port,  <constant>66.102.7.99:80</constant>.  These rules determine the <emphasis>server interface</emphasis> of the request.  In this case, the &eg; determines that the server is connected to the <constant>external</constant> interface.
         </para>
       </step>
       <step>
@@ -83,13 +83,13 @@
       As discussed in <xref linkend="using_adminui"/>, Software Appliances are not installed into an &eg; but <emphasis>into a (virtual) rack</emphasis>.  A given &eg; may have many such <quote>virtual</quote> racks.  Virtual Racks contain zero or more Software Appliances.
     </para>
     <para>
-      At this point in our discussion, we must address the question <quote>...why would I want more than one Virtual Rack?</quote>.  The simple answer is <quote>...you do not, unless you hit a situation where you cannot configure a given Software Appliance yet meet your needs</quote>.  Examples when using multiple Virtual Racks solve practical business problems are presented in <xref linkend="policy_manager_overview_mvr_examples"/>.
+      At this point in our discussion, we must address the question <quote>...why would I want more than one Virtual Rack?</quote>.  The simple answer is <quote>...you do not, unless you hit a situation where you cannot configure a given Software Appliance to meet all your needs</quote>.  Examples when using multiple Virtual Racks to solve practical business problems are presented in <xref linkend="policy_manager_overview_mvr_examples"/>.
       
       <itemizedlist id="policy_manager_overview_mvr_examples">
-        <title>Applications for Multiple Virtual Racks</title>
+        <title>Example Applications for Multiple Virtual Racks</title>
         <listitem>
           <para>
-            Setting up a <!-- <glossterm linkend="gloss_dmz"> -->DMZ<!-- </glossterm> --> to host an internet-facing web server.  The policies associated with the web traffic to your own web server (filtering, scanning) are different than those for employees browsing the web.
+            Setting up a <!-- <glossterm linkend="gloss_dmz"> -->DMZ<!-- </glossterm> --> to host an internet-facing web server.  The policies associated with the web traffic to your own web server (filtering, scanning) should be different than those for employees browsing the web.
           </para>
         </listitem>
 
@@ -108,14 +108,14 @@
     </para>
 
     <para>
-      The previous list highlights cases where a single Software Appliance cannot be configured for all situations (for example, <link linkend="httpblocker_tran">Web Content Control</link> should scan for traffic from desktops yet not to a company's own web server).  Virtual Racks let you install just those appliances which are needed for the type of traffic encountered.
+      The previous list highlights cases where a single Software Appliance cannot always be configured for all situations (for example, <link linkend="httpblocker_tran">Web Content Control</link> should scan for traffic from desktops yet not to a company's own web server).  Virtual Racks let you install just those appliances which are needed for the type of traffic encountered.
     </para>
 
     <!-- ============================================================ -->
     <bridgehead>Bringing it All Together</bridgehead>    
 
     <para>
-      Now that we have discussed the mechanics of how the &eg; routes traffic and the uses for multiple Virtual Racks, we must conclude with how the &eg; chooses to route a given piece of traffic to a given Virtual Rack.
+      Now that we have discussed the mechanics of how the &eg; routes traffic and some uses for multiple Virtual Racks, we must conclude with how the &eg; chooses to route a given piece of traffic to a given Virtual Rack.
     </para>
     <para>
       The &eg; routes traffic to a Virtual Rack by consulting its list of <emphasis>Policies</emphasis>.  Policies can be thought of as a rule, binding a <quote>type</quote> of traffic to a Virtual Rack. A given policy can be expressed as
@@ -125,7 +125,7 @@
         </para>
       </blockquote>
 
-      where '<constant>Y</constant>' is the name of the Virtual Rack, and '<constant>X</constant>' defines the type traffic.  The simplest way to differentiate traffic is by its client and server interfaces.  Recall from <xref linkend="policy_manager_overview_int_end_rtg"/> that all traffic through the &eg; can be classified by four characteristics: its two interfaces (client/server) and two endpoints (client/server).  Administrators configure Policies to partition traffic into types based on specifying (at a minimum) the two interfaces of the traffic.  For example, the first item in <xref linkend="policy_manager_overview_mvr_examples"/> would require two policies.  The first policy would define its traffic as <quote>from <constant>external</constant> interface to <constant>DMZ</constant> nterface</quote> and the second as <quote>from <constant>DMZ</constant> interface to <constant>external</constant> interface</quote>.  Both policies would select the Virtual Rack <quote>DMZ Traffic</quote>.
+      where '<constant>Y</constant>' is the name of the Virtual Rack, and '<constant>X</constant>' defines the type of traffic.  The simplest way to differentiate traffic is by its client and server interfaces.  Recall from <xref linkend="policy_manager_overview_int_end_rtg"/> that all traffic through the &eg; can be classified by four characteristics: its two interfaces (client/server) and two endpoints (client/server).  Administrators configure Policies to partition traffic into types based on specifying (at a minimum) the two interfaces of the traffic.  For example, the first item in <xref linkend="policy_manager_overview_mvr_examples"/> would require two policies.  The first policy would define its traffic as <quote>inbound from <constant>external</constant> interface to <constant>DMZ</constant> nterface</quote> and the second as <quote>outbound from <constant>DMZ</constant> interface to <constant>external</constant> interface</quote>.  Both policies would select the Virtual Rack <quote>DMZ Traffic</quote>.
     </para>
     <para>
       More advanced Policies can partition traffic based not only on the interfaces, but also on one or both endpoints.  This allows Administrators to target Software Appliances between locations as explicit as specfic machines.
@@ -175,12 +175,12 @@
         </tip>
       </para>
       <para>
-        The direction specifier is required because some Software Appliances have different settings depending if the traffic is <constant>inbound</constant> or <constant>outbound</constant>.  For example, an organization may wish to scan <constant>inbound</constant> <glossterm linkend="gloss_smtp">SMTP</glossterm> (email) traffic for SPAM but not <constant>outbound</constant>.  When assigning a Virtual Rack to a Policy, the Policy needs to know if the traffic should be labeled <constant>inbound</constant> or <constant>outbound</constant> when it is handed to a Software Appliance.  The default settings should provide guidance for the Administrator.  For example, the Policy handling traffic from the <constant>external</constant> interface to the <constant>internal</constant> interface is handled by the <constant>default rack</constant> as inbound traffic.
+        The direction specifier is required because some Software Appliances have different settings depending if the traffic is <constant>inbound</constant> or <constant>outbound</constant>.  For example, an organization may wish to scan <constant>inbound</constant> <glossterm linkend="gloss_smtp">SMTP</glossterm> (email) traffic for SPAM but not <constant>outbound</constant>.  When assigning a Virtual Rack to a Policy, the Policy needs to know if the traffic should be labeled <constant>inbound</constant> or <constant>outbound</constant> when it is handed to each Software Appliance in that rack.  The default settings should provide guidance for the Administrator.  For example, the Policy handling traffic from the <constant>external</constant> interface to the <constant>internal</constant> interface is handled by the <constant>default rack</constant> as inbound traffic.
         <tip>
           <para>
             When configuring policies and direction, think from the perspective of the Virtual Rack <emphasis>and the interface being protected</emphasis>.  You will usualy find that of any two network interfaces, one is more <quote>sensitive</quote> and should be though of as the one being protected from the other.
           </para>
-          <para>Most people find it easier to picture <quote>inside</quote> resources being protected.  For a given Policy, traffic flowing to the more sensitive network is generally <constant>inbound</constant> and should select the <constant>inbound</constant> version of a Virtual Rack.
+          <para>Most people find it easier to picture <quote>inside</quote> resources being protected.  For a given Policy, traffic flowing to the more sensitive network is generally <constant>inbound</constant> and should select the <constant>inbound</constant> side of a Virtual Rack.
           </para>
         </tip>
       </para>
@@ -204,7 +204,7 @@
         </mediaobject>
       </figure>
       <para>
-        To create a new Custom Policy, one must first have created a Virtual Rack other than <constant>default rack</constant> (see <xref linkend="policy_manager_available_racks"/> for more information on creating new Virtual Racks).  The process of creating a new Custom Policy begins by pushing the add (plus) button as seen in <xref linkend="policy_manager_custom_policies_figure"/>.  This creates a new row in the Custom Policies table.  Administrators must then specify the endpoints, interfaces, and Virtual Rack for the new Custom Policy.  The complete list of fields for a given Custom Policy is as follows.
+        To create a new Custom Policy, one must first have created a Virtual Rack other than <constant>Default Rack</constant> (see <xref linkend="policy_manager_available_racks"/> for more information on creating new Virtual Racks).  The process of creating a new Custom Policy begins by pushing the add (plus) button as seen in <xref linkend="policy_manager_custom_policies_figure"/>.  This creates a new row in the Custom Policies table.  Administrators must then specify the endpoints, interfaces, and Virtual Rack for the new Custom Policy.  The complete list of fields for a given Custom Policy is as follows.
         <variablelist>
           <varlistentry>
             <term><guilabel>number (#)</guilabel></term>
@@ -231,26 +231,18 @@
             </listitem>
           </varlistentry>
           <varlistentry>
-            <term><guilabel>source interface</guilabel></term>
-            <listitem>
-              <para>
-                This is the source interface on-which &eg; received traffic.  For more information on the network interfaces of your &eg;, please refer to <xref linkend="getting_started_interfaces"/>.
-              </para>
-            </listitem>
-          </varlistentry>
-          <varlistentry>
             <term><guilabel>rack</guilabel></term>
             <listitem>
               <para>
                 The <guilabel>rack</guilabel> selects which Virtual Rack will handle traffic selected by this policy.  When selecting the <guilabel>rack</guilabel>, you select not just the Virtual Rack's name but also the <emphasis>direction</emphasis>.  There are two choices for each Virtual Rack in the list <guilabel>rack</guilabel>, corresponding to <constant>inbound</constant> and <constant>outbound</constant> traffic.
               </para>
               <para>
-                The direction specifier is required because some Software Appliances have different settings depending if the traffic is <constant>inbound</constant> or <constant>outbound</constant>.  For example, an organization may wish to scan <constant>inbound</constant> <glossterm linkend="gloss_smtp">SMTP</glossterm> (email) traffic for SPAM but not <constant>outbound</constant>.  When assigning a Virtual Rack to a Policy, the Policy needs to know if the traffic should be labeled <constant>inbound</constant> or <constant>outbound</constant> when it is handed to a Software Appliance.  The default settings should provide guidance for the Administrator.  For example, the Policy handling traffic from the <constant>external</constant> interface to the <constant>internal</constant> interface is handled by the <constant>default rack</constant> as inbound traffic.
+                The direction specifier is required because some Software Appliances have different settings depending if the traffic is <constant>inbound</constant> or <constant>outbound</constant>.  For example, an organization may wish to scan <constant>inbound</constant> <glossterm linkend="gloss_smtp">SMTP</glossterm> (email) traffic for SPAM but not <constant>outbound</constant>.  When assigning a Virtual Rack to a Policy, the Policy needs to know if the traffic should be labeled <constant>inbound</constant> or <constant>outbound</constant> when it is handed to a Software Appliance.  The default settings should provide guidance for the Administrator.  For example, the Policy handling traffic from the <constant>external</constant> interface to the <constant>internal</constant> interface is handled by the <constant>Default Rack</constant> as <emphasis>inbound</emphasis> traffic.
                 <tip>
                   <para>
                     When configuring policies and direction, think from the perspective of the Virtual Rack <emphasis>and the interface being protected</emphasis>.  You will usualy find that of any two network interfaces, one is more <quote>sensitive</quote> and should be though of as the one being protected from the other.
                   </para>
-                  <para>Most people find it easier to picture <quote>inside</quote> resources being protected.  For a given Policy, traffic flowing to the more sensitive network is generally <constant>inbound</constant> and should select the <constant>inbound</constant> version of a Virtual Rack.
+                  <para>Most people find it easier to picture <quote>inside</quote> resources being protected.  For a given Policy, traffic flowing to the more sensitive network is generally <constant>inbound</constant> and should select the <constant>inbound</constant> side of a Virtual Rack.
                   </para>
                 </tip>
               </para>
@@ -335,7 +327,7 @@
         </question>
         <answer>
           <para>
-            The default policies ensure that all possible traffic is handled by a Virtual Rack.  Deleting one of these entries without a corresponding entry in the <guilabel>Custom Policies</guilabel> tab would cause the &eg; not to know how to handle types of traffic.
+            The default policies ensure that all possible traffic is handled by a Virtual Rack.  Deleting one of these entries without a corresponding entry in the <guilabel>Custom Policies</guilabel> tab would cause the &eg; not to know how to handle some types of traffic.
           </para>
         </answer>
       </qandaentry>    
@@ -359,7 +351,10 @@
         </question>
         <answer>
           <para>
-            You do not have to create extra Virtual Racks/Policies in order to use VPN.  You only need to do so if you want to scan traffic <emphasis>differently</emphasis> for VPN users.  If you consider VPN users are equivilant to machines on your network, just route the Policies dealing with the VPN interface to the <constant>default rack</constant>.
+            You do not have to create extra Virtual Racks/Policies in order to use VPN.  The <constant>VPN</constant> interface is, by default, inside the <constant>external</constant> and <constant>DNZ</constant> interfaces, but outside of the <constant>internal</constant> interface.  The single <constant>Default Rack</constant> is correct for most deployments.
+          </para>
+          <para>
+            One situation where you would need to do so if you want to scan traffic  <emphasis>differently</emphasis> for different VPN users.  If you consider all VPN users are equivilant, just route the Policies dealing with the VPN interface to <constant>Default Rack</constant>.
           </para>
         </answer>
       </qandaentry>      

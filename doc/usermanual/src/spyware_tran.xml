@@ -16,7 +16,7 @@
   </para>
 
   <para>
-    In the unusual event that a web site (legitimatly) visited by members of your organization is found in one of the Spyware Blocker Appliance's lists, administrators are able to create exception rules.
+    In the unusual event that a web site legitimatly visited by members of your organization is found in one of the Spyware Blocker Appliance's lists, administrators are able to create exception rules.
   </para>
 
   <sect1 id="spyware_tran_adminui">
@@ -40,7 +40,7 @@
       <sect3 id="spyware_tran_adminui_block_cookie">
         <title>Cookie List</title>
         <para>
-          The <glossterm linkend="gloss_cookie">Cookie</glossterm> List is a collection of <glossterm linkend="gloss_ip_addr">IP Addresses</glossterm> and <glossterm linkend="gloss_hostname">Hostnames</glossterm>.  Should someone within the protected network visit one of these sites and that site attempt to set a cookie, &eg; will prevent the cookie from being set.  The interface for viewing and manipulating the cookie list can be seen in <xref linkend="spyware_tran_adminui_block_cookie_figure"/>
+          The <glossterm linkend="gloss_cookie">Cookie</glossterm> List is a collection of <glossterm linkend="gloss_hostname">Hostnames</glossterm>.  Should someone within the protected network visit one of these sites and that site attempt to set a cookie, &eg; will prevent the cookie from being set.  The interface for viewing and manipulating the cookie list can be seen in <xref linkend="spyware_tran_adminui_block_cookie_figure"/>
         </para>
         <figure id="spyware_tran_adminui_block_cookie_figure">
           <title>Cookie List Tab</title>
@@ -51,7 +51,7 @@
           </mediaobject>
         </figure>
         <para>
-          As seen in <xref linkend="spyware_tran_adminui_block_cookie_figure"/>, the Cookie List is presented as a table.  The column labeled <guilabel>identification</guilabel> contains the address of the offending site.  The next column, <guilabel>block</guilabel>, is used to enable/disable blocking of cookies from that site.  Note that when creating a new entry, note that the value for <guilabel>identification</guilabel> can either be a <link linkend="appendix_syntax_simpleipaddr">Simple IP Address</link> or hostname.
+          As seen in <xref linkend="spyware_tran_adminui_block_cookie_figure"/>, the Cookie List is presented as a table.  The column labeled <guilabel>identification</guilabel> contains the address of the offending site.  The next column, <guilabel>block</guilabel>, is used to enable/disable blocking of cookies from that site.  Note that when creating a new entry, the value for <guilabel>identification</guilabel> can either be a <link linkend="appendix_syntax_simpleipaddr">Simple IP Address</link> or hostname.
         </para>
         <tip>
           <para>
@@ -77,7 +77,7 @@
           </mediaobject>
         </figure>
         <para>
-          The Subnet list comes pre-populated with known questionable sites, categorized by their content type.  Administrators can turn on/off the tracking of subnets by checking/unchecking the <guilabel>log</guilabel> field.
+          The Subnet list comes pre-populated with known spyware, categorized by their content type.  Administrators can turn on/off the tracking of subnets by checking/unchecking the <guilabel>log</guilabel> field.
         </para>
         <para>
           Optionaly, Administrators can add their own entries by pushing the add (plus) button to the left.  When creating a new entry, the value for <guilabel>identification</guilabel> can either be in <link linkend="appendix_syntax_simpleipaddr">Simple IP Address</link> or <link linkend="appendix_syntax_networknetmask">Network/Netmask</link> format.  The <guilabel>name</guilabel> and <guilabel>description</guilabel> fields are simply for Administrator reference.
@@ -88,7 +88,7 @@
       <sect3 id="spyware_tran_adminui_block_activex">
         <title>ActiveX List</title>
         <para>
-          The <glossterm linkend="gloss_activex">ActiveX</glossterm> List is a collection of ActiveX Control identifiers.  When &eg; encouters a page being fetched (from a machine within the protected network) with one of the listed ActiveX controls, that control is blocked.  The complete interface for the ActiveX list is shown in <xref linkend="spyware_tran_adminui_block_activex_figure"/>.
+          The <glossterm linkend="gloss_activex">ActiveX</glossterm> List is a collection of ActiveX Control identifiers.  When a page is fetched from a machine within the protected network with one of the listed ActiveX controls, that control is blocked.  The complete interface for the ActiveX list is shown in <xref linkend="spyware_tran_adminui_block_activex_figure"/>.
         </para>
         <figure id="spyware_tran_adminui_block_activex_figure">
           <title>ActiveX List Tab</title>
@@ -128,7 +128,7 @@
     <sect2 id="spyware_tran_adminui_passlist">
       <title>Pass List</title>
       <para>
-        The Pass List is used by administrators to declare those sites which should not be blocked as spyware.  It is used in those rare circumstances where someone within the protected network needs to visit a site which is listed on one of the Block Lists.  The complete interface for the Pass List is shown in <xref linkend="spyware_tran_adminui_passlist_figure"/>
+        The Pass List is used by administrators to declare those sites which should not be blocked as spyware.  It is used when someone within the protected network needs to visit a site which is listed on one of the Block Lists.  The complete interface for the Pass List is shown in <xref linkend="spyware_tran_adminui_passlist_figure"/>
       </para>
       <figure id="spyware_tran_adminui_passlist_figure">
         <title>Pass List Tab</title>
@@ -142,7 +142,7 @@
         As seen in <xref linkend="spyware_tran_adminui_passlist_figure"/>, the Pass List is presented as a table of domains.  To add a new entry, push the add (plus) botton to the left of the table.  The <guilabel>domain</guilabel> field is the only required field.  The format of the <guilabel>domain</guilabel> is <constant>http://<replaceable>approved_domain</replaceable></constant> where <replaceable>approved_domain</replaceable> is replaced with the approved domain.
         <tip>
           <para>
-            Although it may seem asif it may work, the <guilabel>domain</guilabel> only handles top-level domains.  For example, attempting to place <constant>http://some_domain.com/site1</constant> into the Pass List will cause all paths at <constant>http://some_domain.com</constant> to be passed (such as <constant>http://some_domain.com/site2</constant>).
+            Although it may seem as one could enter a full URL path into the <guilabel>domain</guilabel> field, <guilabel>domain</guilabel> only handles top-level domains.  For example, attempting to place <constant>http://some_domain.com/site1</constant> into the Pass List will cause all paths at <constant>http://some_domain.com</constant> to be passed (such as <constant>http://some_domain.com/site2</constant>).
           </para>
         </tip>
         Administrators can enable/disable a given domain from being bypassed by checking the <guilabel>pass</guilabel> field.
@@ -165,7 +165,7 @@
         </mediaobject>
       </figure>
       <para>
-        There is only one setting on this tab, which allows administrators to disable all ActiveX controls.  Setting this value (checking the box) causes &eg; to block all ActiveX controls from being delivered to machines on the protected network.
+        There is only one setting on this tab, which allows administrators to disable all ActiveX controls.  Setting this value by checking the box causes &eg; to block all ActiveX controls from being delivered to machines on the protected network.
       </para>
     </sect2>
   
@@ -217,7 +217,7 @@
             <term><guilabel>request</guilabel></term>
             <listitem>
               <para>
-                A description of the request made (e.g. <constant>http://someurl/sompath.html</constant>).
+                A description of the request made (e.g. <constant>http://someurl/somepath.html</constant>).
               </para>
             </listitem>
           </varlistentry>          

@@ -12,7 +12,7 @@
     symbol.  If the Firewall Appliance is not installed, please refer to <xref linkend="using_adminui_appliances"/> for installation instructions.
   </para>
   <para>
-    As its name implies, the Firewall Appliance provides traditional firewall functionality, blocking traffic based on rules.  Rules are based on a combination of protocol, source and destination.  Unlike traditional firewalls but like many other &eg; Software Appliances, the Firewall can simply monitor (rather than block) traffic of interest and log events (see <xref linkend="firewall_tran_eventlog"/>.)
+    The Firewall Appliance provides traditional firewall functionality, blocking traffic based on rules.  Rules are based on a combination of protocol, source and destination.  Unlike traditional firewalls, but like many other &eg; Software Appliances, the Firewall can simply monitor and log traffic rather than block.
   </para>
 
   <sect1 id="firewall_tran_adminui">
@@ -38,10 +38,10 @@
         </mediaobject>
       </figure>
       <para>
-        As new connections are made, the Firewall Appliance evaluates its rules in order.  The relative order of the rules can be determined by observing the <guilabel>#</guilabel> column as seen in  <xref linkend="firewall_tran_blockpass_figure"/>.  The Firewall Appliance attempts to match the connection to each rule based on the rule's criteria (more on that in a moment).  If the connection matches, the <guilabel>action</guilabel> specified is taken.  Should no rule match a given connection, the default action is taken (see <xref linkend="firewall_tran_general"/>).
+        The Firewall Appliance evaluates its rules in order on each new connection.  The relative order of the rules can be determined by observing the <guilabel>#</guilabel> column as seen in  <xref linkend="firewall_tran_blockpass_figure"/>.  The Firewall Appliance attempts to match the connection to each rule based on the rule's criteria (more on that in a moment).  If the connection matches, the specified <guilabel>action</guilabel> is taken.  Should no rule match a given connection, the default action is taken (see <xref linkend="firewall_tran_general"/>).
       </para>
       <para>
-        Rules match connections based on six (6) criteria.  These criteria are as follows.  Note that the term <quote>source</quote> means <quote>machine which initiated the connection</quote> and <quote>destination</quote> means <quote>machine receiving the connect requests</quote>.
+        Rules match connections based on six (6) criteria.  These criteria are as follows (note that the term <quote>source</quote> means <quote>machine which initiated the connection</quote> and <quote>destination</quote> means <quote>machine receiving the connect requests</quote>).
 
         <variablelist id="firewall_tran_blockpass_matchingcriteria">
           <title>Firewall Rule Matching Criteria</title>
@@ -118,7 +118,7 @@
         </mediaobject>
       </figure>
       <para>
-        Note that the <guilabel>Default Action</guilabel> only applies when a given connection fails to match any rule in the <link linkend="firewall_tran_blockpass">BLock/Pass List</link>.
+        Note that the <guilabel>Default Action</guilabel> only applies when a given connection does not match any rule in the <link linkend="firewall_tran_blockpass">Block/Pass List</link>.
       </para>
     </sect2>
   
@@ -139,7 +139,7 @@
         </mediaobject>
       </figure>
       <para>
-        The Events Tab is another implementation of an Event Log, as described in <xref linkend="using_adminui_appliances_eventlog"/>.  It lists actions taken, as well as the rule number which triggered the action in <guilabel>reason for action</guilabel>.
+        The Events Tab is another implementation of an Event Log, as described in <xref linkend="using_adminui_appliances_eventlog"/>.  It lists actions taken, as well as the number of the rule which triggered the action in <guilabel>reason for action</guilabel>.
       </para>         
     </sect2>     
   </sect1>
