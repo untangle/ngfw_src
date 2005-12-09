@@ -93,11 +93,13 @@ if [ -z $prefix ] ; then
         (my_dpkg_query '*-transform'
             my_dpkg_query '*-casing' ;
             my_dpkg_query 'metavize-client';
+            my_dpkg_query 'virus-base';
+            my_dpkg_query 'spam-base';
             my_dpkg_query 'mvvm') 2>/dev/null \
                 | awk '{ if ($2) printf("%s %s\n",$1,$2) }'
         #RET=$? return code ignored
     elif [ "$1" = "available" ] ; then
-        pkgs=$(apt-cache search '.-transform$|.-casing$|^mvvm$|^metavize-client$'\
+        pkgs=$(apt-cache search '.-transform$|.-casing$|^virus-base$|^spam-base$|^mvvm$|^metavize-client$'\
             | cut -d ' ' -f 1)
         for pkg in $pkgs; do
             apt-cache show --no-all-versions $pkg

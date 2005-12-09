@@ -23,6 +23,7 @@ public class MackageDesc implements Serializable
     public static final int SYSTEM_TYPE = 0;
     public static final int TRANSFORM_TYPE = 1;
     public static final int CASING_TYPE = 2;
+    public static final int TRANSFORM_BASE_TYPE = 3;
 
     private final String name;
     private final String displayName;
@@ -48,6 +49,7 @@ public class MackageDesc implements Serializable
         // XXX hack
         boolean isTransform = name.endsWith("-transform");
         boolean isCasing = name.endsWith("-casing");
+        boolean isBase = name.endsWith("-base");
 
         displayName = m.get("display-name");
 
@@ -56,6 +58,8 @@ public class MackageDesc implements Serializable
             type = TRANSFORM_TYPE;
         } else if (isCasing) {
             type = CASING_TYPE;
+        } else if (isBase) {
+            type = TRANSFORM_BASE_TYPE;
         } else {
             type = SYSTEM_TYPE;
         }
