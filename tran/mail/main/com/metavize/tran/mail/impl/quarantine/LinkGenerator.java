@@ -30,7 +30,7 @@ public class LinkGenerator {
     StringBuilder sb = new StringBuilder();
     sb.append("http://");
     sb.append(base);
-    sb.append("/quarantine/imc?");
+    sb.append("/quarantine/manageuser?");
     sb.append(WebConstants.AUTH_TOKEN_RP);
     sb.append('=');
     sb.append(URLEncoder.encode(authTkn));

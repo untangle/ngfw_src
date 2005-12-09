@@ -106,7 +106,7 @@
 		</center>
 
 		<!-- INPUT FORM -->
-            <form name="form1" method="POST" action="rdc">
+            <form name="form1" method="POST" action="requestdigest">
 		<center>
                   <table style="border: 1px solid; padding: 10px">
                     <tr>

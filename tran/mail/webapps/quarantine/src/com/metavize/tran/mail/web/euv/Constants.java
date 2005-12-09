@@ -37,7 +37,7 @@ public final class Constants
   /**
    * FWD for requesting a digest email/login
    */
-  public static final String REQ_DIGEST_CTL = "/rdc";
+  public static final String REQ_DIGEST_CTL = "/requestdigest";
 
   /**
    * View for requesting a digest email/login
@@ -48,7 +48,7 @@ public final class Constants
 
   public static final String SAFELIST_VIEW = "/Safelist.jsp";
 
-  public static final String INBOX_MAINTENENCE_CTL = "/imc";
+  public static final String INBOX_MAINTENENCE_CTL = "/manageuser";
   
   
 }

@@ -161,7 +161,7 @@ SEP
 		<!-- MAIN TABLE -->
 	<center>
           <quarantine:hasInboxRecords includeIfTrue="true">
-          <form name="form1" method="POST" action="imc">
+          <form name="form1" method="POST" action="manageuser">
             <input type="hidden"
               name="<quarantine:constants keyName="action"/>"
               value="<quarantine:constants valueName="viewibx"/>"/>
@@ -265,7 +265,7 @@ SEP
                             <td>
                               <quarantine:inboxRecord prop="from"/>
                               <quarantine:hasSafelist includeIfTrue="true">
-                                <a href="/quarantine/imc?<quarantine:constants keyName="action"/>=<quarantine:constants valueName="sladd"/>&<quarantine:constants keyName="tkn"/>=<quarantine:currentAuthToken encoded="false"/>&<quarantine:constants keyName="sort"/>=<quarantine:pagnationProperties propName="sorting"/>&<quarantine:constants keyName="ascend"/>=<quarantine:pagnationProperties propName="ascending"/>&<quarantine:constants keyName="first"/>=<quarantine:pagnationProperties propName="thisId"/>&<quarantine:constants keyName="sladdr"/>=<quarantine:inboxRecord prop="from"/>">(Safelist)</a>
+                                <a href="/quarantine/manageuser?<quarantine:constants keyName="action"/>=<quarantine:constants valueName="sladd"/>&<quarantine:constants keyName="tkn"/>=<quarantine:currentAuthToken encoded="false"/>&<quarantine:constants keyName="sort"/>=<quarantine:pagnationProperties propName="sorting"/>&<quarantine:constants keyName="ascend"/>=<quarantine:pagnationProperties propName="ascending"/>&<quarantine:constants keyName="first"/>=<quarantine:pagnationProperties propName="thisId"/>&<quarantine:constants keyName="sladdr"/>=<quarantine:inboxRecord prop="from"/>">(Safelist)</a>
                               </quarantine:hasSafelist>
                             </td>
                             <td><quarantine:inboxRecord prop="detail"/></td>

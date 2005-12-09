@@ -46,12 +46,12 @@
 
 	<servlet-mapping>
 		<servlet-name>InboxMaintenenceControler</servlet-name>
-		<url-pattern>/imc</url-pattern>
+		<url-pattern>/manageuser</url-pattern>
 	</servlet-mapping>
 
   <servlet-mapping>
     <servlet-name>RequestDigestControler</servlet-name>
-    <url-pattern>/rdc</url-pattern>
+    <url-pattern>/requestdigest</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>
