@@ -46,13 +46,21 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 
 	KeyButtonRunnable.setVpnTransform( vpnTransform );
 
+	// BASE STATE
 	super.mTabbedPane.removeAll();
+	super.saveJButton.setVisible(true);
+	super.reloadJButton.setVisible(true);
+
 	if( VpnTransform.ConfigState.UNCONFIGURED == configState ){
 	    // SHOW WIZARD/STATUS
 
 	    // WIZARD/STATUS
 	    WizardJPanel wizardJPanel = new WizardJPanel( vpnTransform, this );
 	    super.mTabbedPane.addTab( WIZARD_NAME, null, wizardJPanel );
+
+	    // BUTTON CONTROLS
+	    super.saveJButton.setVisible(false);
+	    super.reloadJButton.setVisible(false);	
 	}
 	else if( VpnTransform.ConfigState.CLIENT == configState ){
 	    // SHOW WIZARD/STATUS, AND EVENT LOG
