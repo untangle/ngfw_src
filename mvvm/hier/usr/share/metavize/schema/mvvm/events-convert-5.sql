@@ -39,9 +39,6 @@ ALTER TABLE events.mvvm_login_evt ADD PRIMARY KEY (event_id);
 DROP INDEX pl_stats_sid_idx;
 CREATE INDEX pl_stats_plepid_idx ON events.pl_stats (pl_endp_id);
 
-DROP INDEX pl_stats_sid_idx;
-CREATE INDEX pl_stats_plepid_idx ON events.pl_stats (pl_endp_id);
-
 -- foreign keys
 
 ALTER TABLE events.pl_stats
