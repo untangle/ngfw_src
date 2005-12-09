@@ -58,7 +58,9 @@ public class QuarantineUserJDialog extends MConfigJDialog {
         String objectName = "com.metavize.tran.mail.gui.QuarantineUserJPanel";
         JPanel quarantineAllJPanel = null;
         try{
-            Class objectClass = Util.getClassLoader().loadClass( objectName, casingName );
+	    List<Tid> casingInstances = Util.getTransformManager().transformInstances(casingName);
+	    TransformContext transformContext = Util.getTransformManager().transformContext(casingInstances.get(0));
+            Class objectClass = Util.getClassLoader().loadClass( objectName, transformContext.getTransformDesc() );
             Constructor objectConstructor = objectClass.getConstructor(new Class[]{QuarantineMaintenenceView.class, String.class});
             quarantineAllJPanel = (JPanel) objectConstructor.newInstance(quarantineMaintenenceView, account);
         }

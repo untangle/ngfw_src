@@ -58,7 +58,9 @@ public class WhitelistUserJDialog extends MConfigJDialog {
         String objectName = "com.metavize.tran.mail.gui.WhitelistUserJPanel";
         JPanel whitelistAllJPanel = null;
         try{
-            Class objectClass = Util.getClassLoader().loadClass( objectName, casingName );
+	    List<Tid> casingInstances = Util.getTransformManager().transformInstances(casingName);
+	    TransformContext transformContext = Util.getTransformManager().transformContext(casingInstances.get(0));
+            Class objectClass = Util.getClassLoader().loadClass( objectName, transformContext.getTransformDesc() );
             Constructor objectConstructor = objectClass.getConstructor(new Class[]{SafelistAdminView.class, String.class});
             whitelistAllJPanel = (JPanel) objectConstructor.newInstance(safelistAdminView, account);
         }
