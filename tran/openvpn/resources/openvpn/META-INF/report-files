@@ -1,3 +1,6 @@
+reports/VpnMaster.jasper:OpenVpn--Summary:Summary
+reports/VpnClientsLoggedInDetail.jasper:OpenVpn--Clients_Logged_In_Detail:Clients Logged In Events
+reports/VpnClientsDistributedDetail.jasper:OpenVpn--Clients_Distributed_Detail:Clients Distributed Events
 com.metavize.tran.openvpn.reports.VpnSummarizer:summarizer:Summarizer
 com.metavize.tran.openvpn.reports.SummaryGraph:summaryGraph:OpenVpn--Summary_Graph
 reportTitlePrefix:parameter:none
