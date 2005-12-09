@@ -153,6 +153,9 @@ abstract class ArgonHook implements Runnable
                 PolicyRule pr = pipelineDesc.getPolicyRule();
                 endpoints.completeEndpoints(clientSide, serverSide, pr.getPolicy(), pr.isInbound());
                 pipelineFoundry.registerEndpoints(endpoints);
+            } else {
+                // Null them out here so we don't log the pl_stats below.
+                endpoints = null;
             }
 
             /* Remove all non-vectored sessions, it is non-efficient to iterate the session
