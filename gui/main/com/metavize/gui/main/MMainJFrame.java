@@ -623,7 +623,7 @@ public class MMainJFrame extends javax.swing.JFrame {
 		private void upgradeJButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeJButton1ActionPerformed
 	if( Util.isLocal() ){
 	    try{
-		URL newURL = new URL( Util.getServerCodeBase(), "../docs");
+		URL newURL = new URL( "http://www.metavize.com/docs/" + Version.getVersion());
 		MOneButtonJDialog.factory(this,"","<html>You cannot view the help documents because there is "
 					  + "no web browser installed on this system.  Please try the help system "
 					  + "from a computer with a web browser installed.  The help files are located at: "
@@ -635,7 +635,7 @@ public class MMainJFrame extends javax.swing.JFrame {
 	}
 	else{
 	    try{
-		URL newURL = new URL( Util.getServerCodeBase(), "../docs");;
+		URL newURL = new URL( "http://www.metavize.com/docs/" + Version.getVersion());
 		((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
 	    }
 	    catch(Exception f){

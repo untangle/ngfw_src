@@ -606,7 +606,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                         else
                             securedString = "  |  Connection: http (standard)";
 
-                        mMainJFrame.setTitle( "Metavize EdgeGuard v" +
+                        mMainJFrame.setTitle( "Metavize EdgeGuard " +
                                               Version.getVersion() + "  |  Login: " +
                                               loginJTextField.getText() + "  |  Server: " +
                                               Util.getServerCodeBase().getHost() + securedString );

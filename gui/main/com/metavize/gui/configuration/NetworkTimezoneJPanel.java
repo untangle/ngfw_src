@@ -50,8 +50,6 @@ public class NetworkTimezoneJPanel extends javax.swing.JPanel implements Savable
     }
 
     public void doRefresh(Object settings){
-	MailSettings mailSettings = Util.getAdminManager().getMailSettings();
-
 	
 	// TIMEZONE ////
 	String timezone = Util.getAdminManager().getTimeZone().getID();
