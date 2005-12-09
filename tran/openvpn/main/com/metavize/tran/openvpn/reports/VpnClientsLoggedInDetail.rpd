@@ -13,9 +13,12 @@ FIELD_3.name=raddr
 FIELD_3.type=String
 FIELD_4.name=rport
 FIELD_4.type=String
+FIELD_5.name=end_time
+FIELD_5.type=Timestamp
 
 QUERY=\
 SELECT start_time, \
+       end_time, \
        client_name AS user, \
        HOST(remote_address) AS raddr, \
        remote_port AS rport \
@@ -25,7 +28,7 @@ SELECT start_time, \
   ORDER BY client_name ASC
 
 TOPLEFT.label=Timestamp
-TOPLMID.label=
+TOPLMID.label=Logged Off
 BOTLMID.label=
 TOPRMID.label=User
 BOTRMID.label=
@@ -33,9 +36,11 @@ TOPRIGHT.label=Remote Address
 BOTRIGHT.label=Remote Port
 
 TOPLEFT.expr=$F{start_time}
-TOPLMID.expr=""
+TOPLMID.expr=$F{end_time}
 BOTLMID.expr=""
 TOPRMID.expr=$F{user}
 BOTRMID.expr=""
 TOPRIGHT.expr=$F{raddr}
 BOTRIGHT.expr=$F{rport}
+
+TOPLMID.type=java.sql.Timestamp
