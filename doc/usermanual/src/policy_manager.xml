@@ -112,7 +112,7 @@
     </para>
 
     <!-- ============================================================ -->
-    <bridgehead>Brining it All Together</bridgehead>    
+    <bridgehead>Bringing it All Together</bridgehead>    
 
     <para>
       Now that we have discussed the mechanics of how the &eg; routes traffic and the uses for multiple Virtual Racks, we must conclude with how the &eg; chooses to route a given piece of traffic to a given Virtual Rack.
