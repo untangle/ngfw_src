@@ -2,4 +2,10 @@
 
 mcli -t 30 register openvpn-transform 2>/dev/null || true
 
+# If the tun device doesn't exist, then create it
+if [ ! -c ${TUN_DEVICE} ]; then
+    mkdir -p /dev/net
+    mknod ${TUN_DEVICE} c 10 200
+fi
+
 touch /usr/share/metavize/web/webstart/openvpn-transform-client.mar > /dev/null 2>&1 
