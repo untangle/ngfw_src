@@ -3,7 +3,7 @@
   <title>Policy Manager</title>
 
   <para>
-    The Policy Manager is a powerful and advanced feature of the &eg;.  It lets Administrators configure several Software Appliances of the same type (e.g. Virus Scanner), and route different types of traffic to different instances of each appliance.   Traffic is routed based on the network interface and/or endpoints of traffic.  For more information on the network interfaces available to your &eg;, please refer to <xref linkend="fixme_interfaces"/>.
+    The Policy Manager is a powerful and advanced feature of the &eg;.  It lets Administrators configure several Software Appliances of the same type (e.g. Virus Scanner), and route different types of traffic to different instances of each appliance.   Traffic is routed based on the network interface and/or endpoints of traffic.  For more information on the network interfaces available to your &eg;, please refer to <xref linkend="getting_started_interfaces"/>.
   </para>
   <para>
     The Policy Manager is launched from the main Administrative Interface by selecting <guilabel>Show Policy Manager</guilabel> as seen in <xref linkend="policy_manager_launch_policy_mngr"/>.
@@ -32,7 +32,7 @@
     <!-- ============================================================ -->
     <bridgehead id="policy_manager_overview_int_end_rtg"  xreflabel="Interfaces, Endpoints and Routing">Interfaces, Endpoints and Routing</bridgehead>
     <para>
-      Traffic arrives at one network interface of &eg; and leaves on another (for more information on the network interfaces available to your &eg;, please refer to <xref linkend="fixme_interfaces"/>).  Between when the traffic enters and exits the &eg;, several Software Appliances may scan and/or modify the traffic.  To illustrate how the &eg; handles traffic, we will use the example in <xref linkend="policy_manager_overview_example_pagereq"/>.
+      Traffic arrives at one network interface of &eg; and leaves on another (for more information on the network interfaces available to your &eg;, please refer to <xref linkend="getting_started_interfaces"/>).  Between when the traffic enters and exits the &eg;, several Software Appliances may scan and/or modify the traffic.  To illustrate how the &eg; handles traffic, we will use the example in <xref linkend="policy_manager_overview_example_pagereq"/>.
     </para>
     <example id="policy_manager_overview_example_pagereq">
       <title>Simple Web Page Request</title>
@@ -234,7 +234,7 @@
             <term><guilabel>source interface</guilabel></term>
             <listitem>
               <para>
-                This is the source interface on-which &eg; received traffic.  For more information on the network interfaces of your &eg;, please refer to <xref linkend="fixme_interfaces"/>.
+                This is the source interface on-which &eg; received traffic.  For more information on the network interfaces of your &eg;, please refer to <xref linkend="getting_started_interfaces"/>.
               </para>
             </listitem>
           </varlistentry>

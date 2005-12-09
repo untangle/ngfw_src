@@ -3,168 +3,84 @@
   <title>Getting Started</title>
 
   <para>
-    Here, you may put some introductory stuff.  I'm going to lay this chapter out just so you can see some of the docbook basics.  Don't assume that I care about the organization I've laid out.  Rearrange as you see fit, but pay attention to the naming conventions on things with an "id".  These serve two purposes.  They are targets for links.  Since there are hundreds of them in this manual, following conventions is important.  Also, when creating "chunked" HTML, they serve as the basis for the file names.  As we start to integrate the manual into the UI, keeping consistent filenames will be important (otherwise, docbook generates mangled names for sections).
-  </para>
-  <para>
-    Anyway, here are some basic markups you may want.  When referring to a constant (such as an option in the UI) use <constant>this type of markup</constant>.  You can also draw attention to something <emphasis>with this element</emphasis>.  Later on, I'll present a figure.  Note that with docbook (and any writing), never refer to the physical location of diagrams/figures.  When I wrote a book a few years back, our editor used to yell at us when we wrote things like <quote>...in the figure below...</quote> as you're never sure where the figure will end-up in the final rendering.  It may be on the next page, it may be to the left, etc.  That is determined by the stylesheet.  Instead, you can use an "xref" tag.  The nifty thing about the "xref" tags is that they not only create a hyperlink (in html), but also substitute the "title" of the thing being referred to for the xref.  For example, I may say refer to <xref linkend="getting_started_coolpicture"/>.  If you look at the source, you do not see the title of the referrant, yet it is in the final product.
-    <note>
-      <para>
-        We'll spell check this thing at the end.  I'm a terrible speller.  btw: this is also an example of an "admonition" - which is like a little "asside".  You can use "note", "warning", "important", "caution", and "tip".  Nifty little icons are next to these admonitions.
-      </para>
-    </note>
+    Welcome to EdgeGuard!
   </para>
 
   <para>
-    On the topic of linking, there are three types of links you want to use.  The first has already been demonstrated, an "xref".  It points to a block which has an ID.  It then uses the "title" child of that block as the text displayed for the reference.  If you do not want to use the text provided, you can use a simple link <link linkend="getting_started_coolpicture">where you provide the text</link>.  I don't recommend it, as it makes maintenence harder if we rename stuff.
-    <tip>
-      <para>
-        Before I forget, you can use a shorthand notation to refer to the product itself.  For example, <quote> plug in your &eg;</quote>.  It is the literal &amp;eg&semi;
-      </para>
-    </tip>
-    The last type of link is a link to the glossary.  Unfortunatly, it doesn't seem to pick-up the term from the glossary so you need to add it.  For example, here is a link to <glossterm linkend="gloss_smtp">SMTP</glossterm>.  You'll likely be referring to a lot of terms which are already in the glossary.  If you need to add a term, I'm sure you can figure out the pattern.
-  </para>
-  <para>
-    I'm going to paste a few types of lists below.  The first is a "variablelist".  I use it a lot.  It lets you define terms with more than one paragraph.
-
-
-    <variablelist>
-      <title>This is a variable list (title is optional)</title>
-      <varlistentry>
-        <term>Some Entry</term>
-
-        <listitem>
-          <para>
-            This is a sample.  This is a sample.  This is a sample. This is a sample.  This is a sample.  This is a sample.  This is a sample. This is a sample.  This is a sample.  This is a sample.  This is a sample.  This is a sample.  This is a sample.  This is a sample.  This is a sample. This is a sample.  This is a sample.  This is a sample.  This is a sample.
-          </para>
-        </listitem>
-      </varlistentry>
-
-      <varlistentry>
-        <term>Another Entry</term>
-
-        <listitem>
-          <para>This only has one line, which could look dumb</para>
-        </listitem>
-      </varlistentry>
-
-      <varlistentry>
-        <term>Last Entry</term>
-
-        <listitem>
-          <para>
-            This is a sample.  This is a sample.  This is a sample. This is a sample.  This is a sample.  This is a sample.  This is a sample. This is a sample.  This is a sample.  This is a sample.  This is a sample.  This is a sample.  This is a sample.  This is a sample.  This is a sample. This is a sample.  This is a sample.  This is a sample.  This is a sample.
-            <tip>
-              <para>
-                You can put admonitions in this type of list
-              </para>
-            </tip>
-          </para>
-          <para>
-            This is a sample.  This is a sample.  This is a sample. This is a sample.  This is a sample.  This is a sample.  This is a sample. This is a sample.  This is a sample.  This is a sample.  This is a sample.  This is a sample.  This is a sample.  This is a sample.  This is a sample. This is a sample.  This is a sample.  This is a sample.  This is a sample.
-          </para>
-        </listitem>
-      </varlistentry>
-
-    </variablelist>
-
-    Now, here is an un-numbered list
-
-    <itemizedlist>
-
-      <title>Un-numbered list (title optional) </title>
-
-      <listitem>
-        <para>The first item</para>
-      </listitem>
-
-      <listitem>
-        <para>Yet another</para>
-      </listitem>
-
-      <listitem>
-        <para>And a third</para>
-      </listitem>
-    </itemizedlist>
-
-
-    Here is a numbered list
-
-    <orderedlist id="chap1_list_2">
-      <title>Numbered list (title optional)</title>
-      <listitem>
-        <para>This is some item</para>
-      </listitem>
-
-      <listitem>
-        <para>This is Another item from the list</para>
-      </listitem>
-
-      <listitem>
-        <para>This will be a item in the list, but will have new lines.  This is a sample.
-        This is a sample.  This is a sample.  This is a sample.  This is a sample.
-        This is a sample.  This is a sample.  This is a sample.  This is a sample.</para>
-
-        <para>This is a new paragraph, but still part of the same list item.
-        This is a sample.  This is a sample.  This is a sample.  This is a sample.</para>
-      </listitem>
-
-      <listitem>
-        <para>This continues the list</para>
-      </listitem>
-    </orderedlist>
-
-  </para>
-  <para>
-    And here is a figure.
-
-    <figure id="getting_started_coolpicture">
-      <title>A really cool picture</title>
-      <mediaobject>
-        <imageobject>
-          <imagedata fileref="figure/gettingstarted/example.png" />
-        </imageobject>
-      </mediaobject>
-    </figure>
-
+    This section will help you decide where to install EdgeGuard, connect it properly, and start the setup wizard.
   </para>
 
-  <para id="fixme_link_internalip" xreflabel="Internal IP Address">
-    Dirk - somewhere in your discussion it would be good to mention the internal IP address of the machine, and how it is set (and known).  When discussing launching the admin UI, we need to refer to the internal IP.  I assume this comes out of the quickstart/wizard.  Anyway, I've linked to the "id" above assuming that someday it'll contain the correct verbiage.
-  </para>
-
-  <para id="fixme_interfaces"  xreflabel="Network Interfaces">
-    This is where we explain Internal/External as well as (optionally) DMZ and VPN.
-  </para>
-  
-  
-  <sect1 id="getting_started_network_layouts">
-    <title>The &eg; and your Network</title>
-    <para>
-      Blaaa Blaaa Blaaa
-    </para>
-  </sect1>
   <sect1 id="getting_started_installation">
     <title>Installation</title>
-    <para>
-      Blaaa Blaaa
-    </para>
+
     <sect2 id="getting_started_installation_plug">
-      <title>Plugging it in</title>
+      <title>Where to install</title>
+
       <para>
-        I really put this here to show a nested section.  You can go as far as "sect5".
+	EdgeGuard will fit into many network configurations. There are three basic configurations we will discuss here.
+      </para>
+
+      <figure id="getting_started_network1">
+	<title>EdgeGuard as a Router</title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata fileref="figure/gettingstarted/network1.png" />
+	  </imageobject>
+	</mediaobject>
+      </figure>
+
+      <para>
+	Commonly, EdgeGuard is installed as a router/firewall. You will need to plug your internet device (modem, T1 router, etc) into the external port of the &eg;. You will also need to plug in the internal port of &eg; into the main switch. If you have a DMZ (public subnet) you may plug that into the third port on the &eg;. If you wish to have a private subnet on the internal subnet (ie 192.168.x.x, 10.x.x.x), you will need to install the Network Sharing Software Appliance and enable NAT (Network Address Translation). You can read more on this under <xref linkend="nat_tran"/>.
+      </para>
+
+      <figure id="getting_started_network2">
+	<title>EdgeGuard as a Bridge</title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata fileref="figure/gettingstarted/network2.png" />
+	  </imageobject>
+	</mediaobject>
+      </figure>
+      
+      <para>
+	If you already have a router/firewall and wish to keep it installed, you may simply install EdgeGuard between the firewall and the main switch. Simply plug the external port directly into the internal port on your firewall, and the internal port on the &eg; to the main internal switch which connects your host. In this scenario, the &eg; will function as a bridge. You do not need to change your default route (gateway) on any of the machines behind the firewall, nor change the routes on your router.
+      </para>
+
+      <figure id="getting_started_network3">
+	<title>EdgeGuard as a Bridge</title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata fileref="figure/gettingstarted/network2.png" />
+	  </imageobject>
+	</mediaobject>
+      </figure>
+      
+      <para>
+	You may also install the &eg; as a bridge between the firewall and the internet device. This is not recommended because the Denial-of-Service protection will not be able to differentiate between the internal machines behind your firewall. Also, the reports produced by EdgeGuard (<xref linkend="reporting_tran"/>) will not be able to differentiate between internal machines behind your firewall.
       </para>
     </sect2>
-    <sect2 id="getting_started_installation_power">
-      <title>Turning it on</title>
+
+    <sect2 id="getting_started_installation_quickstart">
+      <title>QuickStart</title>
       <para>
-        Blaaaaa
+	Once you have decided how you will configure EdgeGuard follow the QuickStart guide included with your appliance to setup the appliance. The QuickStart guide can also downloaded from http://metavize.com/docs/quickstart/
       </para>
     </sect2>
   </sect1>
-  <sect1 id="getting_started_wizard">
-    <title>Setup Wizard</title>
-    <para>
-      Blaaa Blaaa
-    </para>
-  </sect1>   
+
+  <sect1 id="getting_started_installation_interfaces">
+      <title>Interfaces</title>
+      <para id="getting_started_interfaces"  xreflabel="Network Interfaces">
+	The &eg; has several interfaces. The internal, external and DMZ interfaces do not need seperate IP addresses or IP address spaces. In the default configuration they are all bridged and share the same IP address and address space. Traffic is transparently captured and forwarded to the correct interface. If multiple address spaces are bridged you can specify "aliases" in the network settings <xref linkend="config_tab_network_networkaliases"/>.  
+      </para>
+      
+      <para id="getting_started_internalip" xreflabel="Internal IP Address">
+	When Network Sharing is installed and NAT is enabled, the internal interface has its own address and address space. The address will serve as the default route (gateway) for internal machines. In this case, the external and DMZ interfaces are still bridged and share the same address space.
+      </para>
+
+      <para id="getting_started_interfaces_vpn" xreflabel="Internal IP Address">
+	VPN can also create virtual interfaces. This is covered in <xref linkend="openvpn_tran"/>.
+      </para>
+
+  </sect1>
 </chapter>

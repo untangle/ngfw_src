@@ -158,7 +158,7 @@
             <term><guilabel>source interface</guilabel></term>
             <listitem>
               <para>
-                The network interface on-which the traffic arrived at the &eg;.  For more information on the network interfaces of your &eg;, please refer to <xref linkend="fixme_interfaces"/>.
+                The network interface on-which the traffic arrived at the &eg;.  For more information on the network interfaces of your &eg;, please refer to <xref linkend="getting_started_interfaces"/>.
               </para>
             </listitem>
           </varlistentry>

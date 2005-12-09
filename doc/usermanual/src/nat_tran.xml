@@ -180,7 +180,7 @@
         </mediaobject>
       </figure>
       <para>
-        The redirect feature can be used to cause traffic destined for a given <glossterm linkend="gloss_ip_addr">IP address</glossterm> and/or <glossterm linkend="gloss_port">port</glossterm> to be redirected to a different address.  This redirect can take place for traffic across any of the supported network interfaces of your &eg;.  For more information on the network interfaces of your &eg;, please refer to <xref linkend="fixme_interfaces"/>.
+        The redirect feature can be used to cause traffic destined for a given <glossterm linkend="gloss_ip_addr">IP address</glossterm> and/or <glossterm linkend="gloss_port">port</glossterm> to be redirected to a different address.  This redirect can take place for traffic across any of the supported network interfaces of your &eg;.  For more information on the network interfaces of your &eg;, please refer to <xref linkend="getting_started_interfaces"/>.
       </para>
       <para>
         To add entries (rules) to the redirect table, push the add (plus) button to the left, as seen in <xref linkend="nat_tran_redirect_figure"/>.  This adds a new rule to the top of the table.  Each rule is evaluated in order.  The Network Sharing Appliance evaluates each new connection against this list, proceeding from the top to the bottom until a match is made.  If a match is made, the traffic is redirected as-per the rule.  The meaning of each field in the rule is as follows.
@@ -213,7 +213,7 @@
             <term><guilabel>source interface</guilabel></term>
             <listitem>
               <para>
-                This is the source interface on-which &eg; received traffic.  For more information on the network interfaces of your &eg;, please refer to <xref linkend="fixme_interfaces"/>.
+                This is the source interface on-which &eg; received traffic.  For more information on the network interfaces of your &eg;, please refer to <xref linkend="getting_started_interfaces"/>.
               </para>
             </listitem>
           </varlistentry>
@@ -221,7 +221,7 @@
             <term><guilabel>destination interface</guilabel></term>
             <listitem>
               <para>
-                This is the interface on-which &eg; would forward the traffic (before any redirection).  For more information on the network interfaces of your &eg;, please refer to <xref linkend="fixme_interfaces"/>.
+                This is the interface on-which &eg; would forward the traffic (before any redirection).  For more information on the network interfaces of your &eg;, please refer to <xref linkend="getting_started_interfaces"/>.
               </para>
             </listitem>
           </varlistentry>
@@ -443,7 +443,7 @@
             <term><guilabel>client interface</guilabel></term>
             <listitem>
               <para>
-                The client interface on-which the traffic arrived.  For more information on the network interfaces of your &eg;, please refer to <xref linkend="fixme_interfaces"/>.
+                The client interface on-which the traffic arrived.  For more information on the network interfaces of your &eg;, please refer to <xref linkend="getting_started_interfaces"/>.
               </para>
             </listitem>
           </varlistentry>
@@ -451,7 +451,7 @@
             <term><guilabel>redirected server interface</guilabel></term>
             <listitem>
               <para>
-                The destination interface on-which the traffic exited the &eg;.  For more information on the network interfaces of your &eg;, please refer to <xref linkend="fixme_interfaces"/>.
+                The destination interface on-which the traffic exited the &eg;.  For more information on the network interfaces of your &eg;, please refer to <xref linkend="getting_started_interfaces"/>.
               </para>
             </listitem>
           </varlistentry>                                                                                
