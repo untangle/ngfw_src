@@ -139,7 +139,7 @@
         </mediaobject>
       </figure>
       <para>
-        The Events Tab is another implementation of an Event Log, as described in <xref linkend="using_adminui_appliances_eventlog"/>.  
+        The Events Tab is another implementation of an Event Log, as described in <xref linkend="using_adminui_appliances_eventlog"/>.  It lists actions taken, as well as the rule number which triggered the action in <guilabel>reason for action</guilabel>.
       </para>         
     </sect2>     
   </sect1>
@@ -150,14 +150,24 @@
     <qandaset>  
       <qandaentry>
         <question>
-          <para>Where is the Q&amp;A list?</para>
+          <para>We currently have <constant>XYZ</constant> firewall, which lets us do port mapping.  I don't see that feature in your Firewall.  Will you be adding it, or is there an alternative?</para>
         </question>
         <answer>
           <para>
-            TODO Someone needs to write it.  Some good things would be Network/Netmask syntax for matching all networks, a reminder of the "any" syntax, etc.
+            Port mapping (redirection) is a feature of the Network Sharing appliance, discussed in <xref linkend="nat_tran"/>.
           </para>
         </answer>
       </qandaentry>
+      <qandaentry>
+        <question>
+          <para>I want to lock-down my network but for a few exceptions.  What is the best way to do this?</para>
+        </question>
+        <answer>
+          <para>
+            You can set the default behavior to <constant>block</constant>, as discussed in <xref linkend="firewall_tran_general"/>.  Then, create a few rules to <constant>pass</constant> as discussed in <xref linkend="firewall_tran_blockpass"/>.
+          </para>
+        </answer>
+      </qandaentry>      
     </qandaset>
   </sect1>    
 
