@@ -5,7 +5,7 @@ REPORT_TITLE=OpenVPN - Clients Logged In
 EXTRA_PARAM_1.name=reportTitlePrefix
 EXTRA_PARAM_1.type=java.lang.String
 
-FIELD_1.name=time_stamp
+FIELD_1.name=start_time
 FIELD_1.type=Timestamp
 FIELD_2.name=user
 FIELD_2.type=String
@@ -15,13 +15,13 @@ FIELD_4.name=rport
 FIELD_4.type=String
 
 QUERY=\
-SELECT time_stamp, \
+SELECT start_time, \
        client_name AS user, \
        HOST(remote_address) AS raddr, \
        remote_port AS rport \
   FROM tr_openvpn_connect_evt \
-  WHERE time_stamp >= $P{startTime} \
-     AND time_stamp < $P{endTime} \
+  WHERE start_time >= $P{startTime} \
+     AND start_time < $P{endTime} \
   ORDER BY client_name ASC
 
 TOPLEFT.label=Timestamp
@@ -32,7 +32,7 @@ BOTRMID.label=
 TOPRIGHT.label=Remote Address
 BOTRIGHT.label=Remote Port
 
-TOPLEFT.expr=$F{time_stamp}
+TOPLEFT.expr=$F{start_time}
 TOPLMID.expr=""
 BOTLMID.expr=""
 TOPRMID.expr=$F{user}
