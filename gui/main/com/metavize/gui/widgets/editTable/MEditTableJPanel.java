@@ -34,6 +34,7 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
     private MColoredJTable mColoredJTable;
             
     private boolean addRemoveUsable = false;
+    private boolean fillUsable = false;
     
     private static final Color TABLE_BACKGROUND_COLOR = new Color(213, 213, 226);
     
@@ -81,6 +82,7 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
         }
         else{
             addRemoveUsable = true;
+	    fillUsable = true;
         }
                 
         if(!showDetailJPanel)
@@ -91,6 +93,7 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
 
     public void setFillJButtonEnabled(boolean enabled){
 	fillJButton.setEnabled(enabled);
+	fillUsable = enabled;
     }
     
     public void setShowDetailJPanelEnabled(boolean enabled){
@@ -138,9 +141,7 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
     public void setAddRemoveEnabled(boolean enabled){
         addJButton.setEnabled(enabled);
         removeJButton.setEnabled(enabled);
-        
-        if(!enabled)
-            addRemoveUsable = false;
+	addRemoveUsable = enabled;
     }
     
     public void setTableModel(MSortedTableModel mSortedTableModel){
@@ -185,9 +186,12 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
     
     public void setAllEnabled(boolean enabled){
         mColoredJTable.setEnabled(enabled);
-        addJButton.setVisible(enabled);
-        removeJButton.setVisible(enabled);
-        fillJButton.setVisible(enabled);
+	if(addRemoveUsable){
+	    addJButton.setEnabled(enabled);
+	    removeJButton.setEnabled(enabled);
+	}
+	if(fillUsable)
+	    fillJButton.setEnabled(enabled);
     }
 
     public void componentHidden(ComponentEvent e){}
