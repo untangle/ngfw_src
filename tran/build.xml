@@ -192,6 +192,12 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     <if> <equals arg1="${tran.name}" arg2="reporting"/> <then>
       <patternset id="extra.sources" includes="com/metavize/tran/reporting/ReportingTransform.java"/>
     </then> </if>
+    <if> <equals arg1="${tran.name}" arg2="http"/> <then>
+      <patternset id="extra.sources" includes="com/metavize/tran/http/HttpTransform.java"/>
+    </then> </if>
+    <if> <equals arg1="${tran.name}" arg2="ftp"/> <then>
+      <patternset id="extra.sources" includes="com/metavize/tran/ftp/FtpTransform.java"/>
+    </then> </if>
 
     <!-- First do the Fake classes that we use until we've cleaned up our code enough XXX -->
     <if><available file="${tran.name}/fake" type="dir"/> <then>
@@ -713,10 +719,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <exclude name="**/*jrxml"/>
       </fileset>
     </jar>
-    <jar destfile="${build.jar}/${tran.name}-${tran.type}-client.mar" index="yes"
-         update="true">
-      <fileset dir="${build.root}/virus-client"/>
-    </jar>
   </target>
   <target name="jar.kav"> <!-- include Virus Abstract transform -->
     <jar destfile="${build.jar}/${tran.name}-${tran.type}.mar" index="yes"
@@ -725,10 +727,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <fileset dir="${build.gensrc}/virus">
         <exclude name="**/*jrxml"/>
       </fileset>
-    </jar>
-    <jar destfile="${build.jar}/${tran.name}-${tran.type}-client.mar" index="yes"
-         update="true">
-      <fileset dir="${build.root}/virus-client"/>
     </jar>
   </target>
   <target name="jar.clam"> <!-- include Virus Abstract transform -->
@@ -739,10 +737,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <exclude name="**/*jrxml"/>
       </fileset>
     </jar>
-    <jar destfile="${build.jar}/${tran.name}-${tran.type}-client.mar" index="yes"
-         update="true">
-      <fileset dir="${build.root}/virus-client"/>
-    </jar>
   </target>
   <target name="jar.spamassassin"> <!-- include Spam Abstract transform -->
     <jar destfile="${build.jar}/${tran.name}-${tran.type}.mar" index="yes"
@@ -751,10 +745,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <fileset dir="${build.gensrc}/spam">
         <exclude name="**/*jrxml"/>
       </fileset>
-    </jar>
-    <jar destfile="${build.jar}/${tran.name}-${tran.type}-client.mar" index="yes"
-         update="true">
-      <fileset dir="${build.root}/spam-client"/>
     </jar>
   </target>
   <target name="jar.clamphish"> <!-- include Spam Abstract transform, include Clam Scanners -->
@@ -770,10 +760,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <fileset dir="${build.root}/clam">
         <include name="com/metavize/tran/clam/ClamScannerLauncher.class"/>
       </fileset>
-    </jar>
-    <jar destfile="${build.jar}/${tran.name}-${tran.type}-client.mar" index="yes"
-         update="true">
-      <fileset dir="${build.root}/spam-client"/>
     </jar>
   </target>
 
