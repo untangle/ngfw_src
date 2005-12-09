@@ -20,7 +20,9 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import java.util.TimeZone;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import javax.transaction.TransactionRolledbackException;
@@ -33,10 +35,14 @@ class AdminManagerImpl implements AdminManager
     private static final String INITIAL_USER_LOGIN = "admin";
     private static final String INITIAL_USER_PASSWORD = "passwd";
 
-    private static final AdminManagerImpl ADMIN_MANAGER = new AdminManagerImpl();
+    private static final String SET_TIMEZONE_SCRIPT = System.getProperty("bunnicula.home")
+        + "/../../bin/mvtimezone";
+    private static final String TIMEZONE_FILE = System.getProperty("bunnicula.conf.dir")
+        + "/timezone";
+    private static final String REGISTRATION_INFO_FILE = System.getProperty("bunnicula.home")
+        + "/registration.info";
 
-    private static final String SET_TIMEZONE_SCRIPT;
-    private static final String REGISTRATION_INFO_FILE;
+    private static final AdminManagerImpl ADMIN_MANAGER = new AdminManagerImpl();
 
     private final MvvmLoginImpl mvvmLogin;
 
@@ -71,6 +77,15 @@ class AdminManagerImpl implements AdminManager
 
         snmpManager = SnmpManagerImpl.snmpManager();
 
+        // If timezone on box is different (example: kernel upgrade), reset it:
+        TimeZone currentZone = getTimeZone();
+        if (!currentZone.equals(TimeZone.getDefault()))
+            try {
+                setTimeZone(currentZone);
+            } catch (Exception x) {
+                // Already logged.
+            }
+        
         logger.info("Initialized AdminManager");
     }
 
@@ -123,13 +138,22 @@ class AdminManagerImpl implements AdminManager
 
     public TimeZone getTimeZone()
     {
-        return TimeZone.getDefault();
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(TIMEZONE_FILE));
+            String str = in.readLine();
+            str = str.trim();
+            in.close();
+            TimeZone current = TimeZone.getTimeZone(str);
+            return current;
+        } catch (Exception x) {
+            logger.error("Unable to get timezone, using java default:" , x);
+            return TimeZone.getDefault();
+        }
     }
 
     public void setTimeZone(TimeZone timezone)
         throws TransactionRolledbackException
     {
-        TimeZone.setDefault(timezone);
         String id = timezone.getID();
 
         try {
@@ -142,6 +166,7 @@ class AdminManagerImpl implements AdminManager
                 throw new TransactionRolledbackException(message);
             } else {
                 logger.info("Time zone set to : " + id);
+                TimeZone.setDefault(timezone); // Note: Only works for threads who haven't yet cached the zone!  XX
             }
         } catch (InterruptedException exn) {
             String message = "Interrupted during set time zone";
@@ -186,10 +211,4 @@ class AdminManagerImpl implements AdminManager
       return snmpManager;
     }
 
-    static {
-        SET_TIMEZONE_SCRIPT = System.getProperty("bunnicula.home")
-            + "/../../bin/mvtimezone";
-        REGISTRATION_INFO_FILE = System.getProperty("bunnicula.home")
-            + "/registration.info";
-    }
 }
