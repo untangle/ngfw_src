@@ -47,8 +47,8 @@ XB-Website: http://www.metavize.com/attackshield.html
 XB-Rack-Position: 1010
 XB-Is-Service: true
 Description: The Metavize Attack Shield
- The Attack Shield protects your network from packet based
- and denial of service attacks.
+ The Attack Shield protects your network from denial-of-service
+ attacks and malformed packet attacks.
 
 Package: spyware-transform
 Architecture: any
