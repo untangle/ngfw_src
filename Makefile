@@ -93,7 +93,7 @@ pkgs: chk
 	@rm -f ./*stamp
 	@fakeroot debian/rules binary
 
-release: pkgs
+release: clean pkgs
 	@buildtools/incVersion.sh "$(packages)"
 	@buildtools/release.sh    "$(packages)" $(RELEASE)
 
