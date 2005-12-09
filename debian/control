@@ -96,7 +96,7 @@ XB-Rack-Position: 50
 Description: The Kaspersky AntiVirus Scanner
  The Kaspersky AntiVirus Scanner, based on Kaspersky's award winning
  Anti-Virus, is able to scan and block inbound and outbound viruses,
- on HTTP, FTP, and email Updates are automatically installed hourly.
+ on HTTP, FTP, and email. Updates are automatically installed hourly.
 
 Package: clam-transform
 Architecture: any
@@ -156,7 +156,9 @@ XB-Display-Name: SpamGuard
 XB-Website: http://www.metavize.com/spam.html
 XB-Rack-Position: 1
 Description: The Metavize SpamGuard Software Appliance
- The SpamGuard Software Appliance marks Spam email as Spam.
+ The SpamGuard Software Appliance controls Spam email.
+ SMTP emails can be blocked, marked, or quarantined. IMAP and POP3
+ email can be blocked or marked as spam.
 
 Package: clamphish-transform
 Architecture: any
