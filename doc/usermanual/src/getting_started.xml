@@ -30,7 +30,7 @@
       </figure>
 
       <para>
-	Commonly, EdgeGuard is installed as a router/firewall. You will need to plug your internet device (modem, T1 router, etc) into the external port of the &eg;. You will also need to plug in the internal port of &eg; into the main switch. If you have a DMZ (public subnet) you may plug that into the third port on the &eg;. If you wish to have a private subnet on the internal subnet (ie 192.168.x.x, 10.x.x.x), you will need to install the Network Sharing Software Appliance and enable NAT (Network Address Translation). You can read more on this under <xref linkend="nat_tran"/>.
+	Commonly, EdgeGuard is installed as a router/firewall. You will need to plug your internet device (modem, T1 router, etc) into the external port of the &eg;. You will also need to plug in the internal port of &eg; into the main switch. If you have a <glossterm linkend="gloss_dmz">DMZ</glossterm> (public subnet) you may plug that into the third port on the &eg;. If you wish to have a private subnet on the internal subnet (ie <constant>192.168.x.x</constant>, <constant>10.x.x.x</constant>), you will need to install the Network Sharing Software Appliance and enable <glossterm linkend="gloss_nat">NAT</glossterm> (Network Address Translation). You can read more on this under <xref linkend="nat_tran"/>.
       </para>
 
       <figure id="getting_started_network2">
@@ -63,7 +63,7 @@
     <sect2 id="getting_started_installation_quickstart">
       <title>QuickStart</title>
       <para>
-	Once you have decided how you will configure EdgeGuard follow the QuickStart guide included with your appliance to setup the appliance. The QuickStart guide can also downloaded from http://metavize.com/docs/quickstart/
+	Once you have decided how you will configure EdgeGuard follow the QuickStart guide included with your appliance to setup the appliance. The QuickStart guide can also downloaded from <ulink  url="http://metavize.com/docs/quickstart/">http://metavize.com/docs/quickstart/</ulink>
       </para>
     </sect2>
   </sect1>
@@ -78,7 +78,7 @@
 	When Network Sharing is installed and NAT is enabled, the internal interface has its own address and address space. The address will serve as the default route (gateway) for internal machines. In this case, the external and DMZ interfaces are still bridged and share the same address space.
       </para>
 
-      <para id="getting_started_interfaces_vpn" xreflabel="Internal IP Address">
+      <para id="getting_started_interfaces_vpn" xreflabel="VPN Interface">
 	VPN can also create virtual interfaces. This is covered in <xref linkend="openvpn_tran"/>.
       </para>
 
