@@ -34,6 +34,12 @@ distributionKey=${3}
 mkdir -p ${PACKAGE_DIR}
 mkdir -p ${MISC_DIR}
 
+# If the tun device doesn't exist, then create it
+if [ ! -c ${TUN_DEVICE} ]; then
+    mkdir -p /dev/net
+    mknod ${TUN_DEVICE} c 10 200
+fi
+
 destination="${PACKAGE_DIR}/config-${commonName}.zip"
 
 logFile=/var/log/openvpn-eg.log
