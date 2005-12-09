@@ -3,7 +3,7 @@
   <title>Global Configuration</title>
 
   <para>
-    As discussed in <xref linkend="using_adminui"/>, your &eg; can consist of many Software Appliances.  Although many of the interesting applications are deployed as Software Appliances, there are also global (shared) properties needed by all components of the system.  There are several such properties, as seen in <xref linkend="config_tab_config_tab_figure"/>.
+    As discussed in <xref linkend="using_adminui"/>, your &eg; can consist of many Software Appliances.  Although many of the interesting applications are deployed as Software Appliances, there are also global (shared) properties needed by all components of the system.  These properties are grouped into 7 categories, as seen in <xref linkend="config_tab_config_tab_figure"/>.
   </para>
 
   <figure id="config_tab_config_tab_figure">
@@ -16,7 +16,7 @@
     </mediaobject>
   </figure>    
   <para>
-    The <guilabel>Config</guilabel> tab shown in <xref linkend="config_tab_config_tab_figure"/> is the last tab to the left on the left panel of the Administrative Interface.  We will now discuss each of the options within the <guilabel>Config</guilabel> Tab in more detail.
+    The <guilabel>Config</guilabel> tab shown in <xref linkend="config_tab_config_tab_figure"/> is the last tab to the left on the left panel of the Administrative Interface.  Each of the options within the <guilabel>Config</guilabel> Tab will now be discussed in more detail.
   </para>
 
 
@@ -81,7 +81,7 @@
   <sect1 id="config_tab_network_settings">
     <title>Network Settings</title>
     <para>
-      The Networking Settings panel controls various networking-related global properties of your &eg;.  Refer to the three subsections, <xref linkend="config_tab_network_networksettings"/>, <xref linkend="config_tab_network_email"/>, and <xref linkend="config_tab_network_networkaliases"/> for more details.
+      The Networking Settings panel controls several global networking-related properties of your &eg;.  Refer to the three subsections, <xref linkend="config_tab_network_networksettings"/>, <xref linkend="config_tab_network_email"/>, and <xref linkend="config_tab_network_networkaliases"/> for more details.
     </para>
 
     <!-- ====================================================== -->
@@ -99,7 +99,7 @@
         </mediaobject>
       </figure>
       <para>
-        The &eg; can be set-up to either have a <glossterm linkend="gloss_static_ip">static</glossterm> or dynamic IP address.  For a static IP, administrators must configure the normal network settings.  Dynamic addresses are obtained from <glossterm linkend="gloss_dhcp">DHCP</glossterm>.
+        The &eg; can be set-up to either have a <glossterm linkend="gloss_static_ip">static</glossterm> or dynamic IP address.  For a static IP, administrators must configure the network settings as they would for any system on the network.  Dynamic addresses are obtained from <glossterm linkend="gloss_dhcp">DHCP</glossterm>.
       </para>
       <para>
         The interface for configuring these external settings is divided into three sections.  The first section determines if the &eg; is using a static or dynamic address.  To choose between these options, the administrator selects either <guilabel>Automatically Set</guilabel> or <guilabel>Manually Set</guilabel>.  If <guilabel>Automatically Set</guilabel> is selected, the &eg; will use DHCP to obtain network settings and display them in the boxes below.  If <guilabel>Manually Set</guilabel> is selected, the administrator must manually set the <glossterm linkend="gloss_ip_addr">IP Address</glossterm>, <glossterm linkend="gloss_netmask">Netmask</glossterm>, <glossterm linkend="gloss_default_route">Default Route</glossterm> (sometimes refered to as <quote>gateway</quote>), as well as a primary <glossterm linkend="gloss_dns">DNS</glossterm> server and a secondary DNS server (optional).
@@ -175,7 +175,7 @@
         </mediaobject>
       </figure>
       <para>
-        Use of this feature depends on if the &eg; is providing <glossterm linkend="gloss_nat">NAT</glossterm> services to the internal (protected) network.  If running NAT (see <xref linkend="nat_tran"/>), then this feature can be used to receive traffic for more than just the external IP address.
+        Use of this feature depends on if the &eg; is providing <glossterm linkend="gloss_nat">NAT</glossterm> services to the internal (protected) network.  If running NAT (see <xref linkend="nat_tran"/>), then this feature can be used to receive traffic for more than just the network of the &eg;'s external interface.
       </para>
       <para>
         If your &eg; is not running NAT (sometimes called <quote>bridge</quote> mode), then each addition to the Network Aliases will allow &eg; to route traffic for networks other than that defined by its external IP address.
@@ -189,7 +189,7 @@
     <title>Remote Administration</title>
 
     <para>
-      The Remote Administration tab controls settings for the Administrative Interface itself (who can/cannot administer the &eg;)
+      The Remote Administration tab controls settings for the Administrative Interface itself (who can/cannot administer the &eg;) as well as remote monitoring.
     </para>
 
 
@@ -211,7 +211,7 @@
       <emphasis>External</emphasis> administration is defined as someone accessing the Administrative Interface from outside the protected network.  <emphasis>Internal</emphasis> administration is someone accessing the Administrative Interface from within the protected network.  Someone from the <glossterm linkend="gloss_dmz">DMZ</glossterm> is considered <emphasis>external</emphasis>.
       <note>
         <para>
-          The current external IP address can be seen (and changed) from the <link linkend="config_tab_network_networksettings">Network Settings</link> panel.  If the &eg; is running <glossterm linkend="gloss_nat">NAT</glossterm>, the internal IP can be found from the NAT settings as explained in <xref linkend="nat_tran"/>.  If the system is not running NAT, then the internal IP is the same as the external IP.
+          The current external IP address can be found from the <link linkend="config_tab_network_networksettings">Network Settings</link> panel.  If the &eg; is running <glossterm linkend="gloss_nat">NAT</glossterm>, the internal IP can be found from the NAT settings as explained in <xref linkend="nat_tran"/>.  If the system is not running NAT, then the internal IP is the same as the external IP.
         </para>
       </note>
       We will now discuss the details of configuring the &eg; for external and internal administration.
@@ -251,7 +251,7 @@
         </mediaobject>
       </figure>
       <para>
-        The &eg; is able to field SNMP read-only queries.  It exports MIB-II (see RFC 1213), as well as (optionaly) sends <glossterm linkend="gloss_trap">traps</glossterm>.  To enable the &eg; to field SNMP queries, select the <guilabel>Enable SNMP Monitoring</guilabel> option as seen in <xref linkend="config_tab_remoteadmin_snmp_figure"/>.
+        The &eg; is able to respond to read-only SNMP queries.  It exports MIB-II (see RFC 1213), as well as (optionaly) sends <glossterm linkend="gloss_trap">traps</glossterm>.  To enable the &eg; to field SNMP queries, select the <guilabel>Enable SNMP Monitoring</guilabel> option as seen in <xref linkend="config_tab_remoteadmin_snmp_figure"/>.
       </para>
       <para>
         If <guilabel>Enable SNMP Monitoring</guilabel> is selected, three additional pieces of information should be provided.  The first is the <guilabel>Community</guilabel>, which is used in SNMP v1 to authenticate queries.
@@ -354,7 +354,7 @@
     <sect2 id="config_tab_backuprestore_restore">
       <title>Restore</title>
       <para>
-        For safety reasons, restoring after a backup must be performed directly from the &eg;.  Administrators must attach a keyboard, mouse and monitor to perform restart.
+        For safety reasons, restoring after a backup must be performed directly from the &eg;.  Administrators must attach a keyboard, mouse and monitor to perform restore.
       </para>
       <para>
         When connected directly to the &eg;, all that is visible is a screen with the Metavize logo.  Actions are accesses by right mouse clicking anywhere on this initial screen.  Right clicking reveals a menu, and the restore functionality are located under the <guilabel>Advanced</guilabel> option.  The default screen and menu selection are shown in <xref linkend="config_tab_backuprestore_restore_figure"/>.
@@ -386,7 +386,7 @@
         </mediaobject>
       </figure>
       <para>
-        Select <guilabel>Yes</guilabel> to continue with the restore.  
+        Select <guilabel>Yes</guilabel> to continue with the restore.  The next screen offers a few options.  Select <guilabel>Backup &amp; Restore</guilabel>, after which the screen should appear as seen in <xref linkend="config_tab_backuprestore_restore_figure_s2"/>.
       </para>
 
 
@@ -400,7 +400,7 @@
         </mediaobject>
       </figure>
       <para>
-        The next screen offers a few options.  Select <guilabel>Backup &amp; Restore</guilabel>, after which the screen should appear as seen in <xref linkend="config_tab_backuprestore_restore_figure_s2"/>.
+        The next screen offers the option of restoring from <guilabel>Local Hard Drive</guilabel> or <guilabel>USB Key</guilabel>.  The remainder of these examples assume <guilabel>USB Key</guilabel>, although the process is similar for both techniques.
       </para>
 
 
@@ -413,9 +413,6 @@
           </imageobject>
         </mediaobject>
       </figure>
-      <para>
-        The next screen offers the option of restoring from <guilabel>Local Hard Drive</guilabel> or <guilabel>USB Key</guilabel>.  The remainder of these examples assume <guilabel>USB Key</guilabel>, although the process is similar for both techniques.
-      </para>
       <para>
         After selecting <guilabel>USB Key</guilabel>, you must insert the USB key (which contains the backed-up data, as discussed in <xref linkend="config_tab_backuprestore_usb"/>).  Once the USB key has been inserted into the machine, click the <guilabel>OK</guilabel> button.
       </para>
@@ -531,7 +528,7 @@
         <guilabel>Long URIs</guilabel> (see <glossterm linkend="gloss_uri">URIs</glossterm>) and <guilabel>Long Headers</guilabel> control the &eg; behavior with abnormal web traffic.  The default settings accomidate most standard web traffic.
       </para>
       <para>
-        <guilabel>Non-HTTP Blocking</guilabel> is used to control the &eg; behavior for non-http traffic over <glossterm linkend="gloss_port">port 80</glossterm>.  The default behavior is to allow such traffic.  Selecting the <guilabel>Stop</guilabel> option may prevent applications such as peer-to-peer or games from operating correctly.  Note that <quote>normal</quote> web traffic (from a browser to a web server) is not effected by this setting.
+        <guilabel>Non-HTTP Blocking</guilabel> is used to control the &eg; behavior for non-http traffic over <glossterm linkend="gloss_port">port 80</glossterm>.  The default behavior is to allow such traffic.  Selecting the <guilabel>Stop</guilabel> option may prevent applications such as peer-to-peer file sharing or networked games from operating correctly.  Note that <quote>normal</quote> web traffic (from a browser to a web server) is not effected by this setting.
       </para>
     </sect2>
 
@@ -558,7 +555,7 @@
         The Email tab is divided into two sections, <guilabel>Email Overrides</guilabel> and <guilabel>Email Timeouts</guilabel>.  Each section can control settings for the three supported email protocols, <glossterm linkend="gloss_smtp">SMTP</glossterm>, <glossterm linkend="gloss_pop">POP</glossterm>, and <glossterm linkend="gloss_imap">IMAP</glossterm>.
       </para>
       <para>
-        <guilabel>Email Overrides</guilabel> lets Administrators turn off scanning for a given email protocol.  This applies <emphasis>to all Software Appliances</emphasis>.  For example, disabling SMTP scanning would affect SPAM, Virus and Phish scanning.
+        <guilabel>Email Overrides</guilabel> lets Administrators turn off scanning for a given email protocol.  This applies <emphasis>to all Software Appliances</emphasis>.  For example, disabling SMTP would affect SPAM, Virus and Phish scanning.
       </para>
       <para>
         The <guilabel>Email Timeouts</guilabel> section instructs the &eg; as to the maximum time it has for scanning.  If a given email takes more than this time to process, scanning is aborted and the mail passed to the client.  Note that setting this value too small risks passing contaminated content, and setting it too large risks timeouts in client programs (with user complaints to follow).
@@ -585,7 +582,7 @@
         </mediaobject>
       </figure>
       <para>
-        From this tab, Administrators can turn on/off scanning of FTP traffic by selecting either <guilabel>Enable Processing</guilabel> or <guilabel>Disable Processing</guilabel>, respectivly.  If disabled, no Software Appliances within the &eg; will scan FTP traffic.
+        From this tab, Administrators can turn on/off scanning of FTP traffic by selecting either <guilabel>Enable Processing</guilabel> or <guilabel>Disable Processing</guilabel>, respectivly.  If disabled, no software appliances within the &eg; will scan FTP traffic.
       </para>
     </sect2>        
   </sect1>
@@ -609,7 +606,7 @@
     </para>
     <!-- ................................................... -->
     <sect2 id="config_tab_quarantine_overview">
-      <title>Quarantine and Safelist Overview</title>
+      <title>Quarantine and Passlist Overview</title>
       <para>
         The Quarantine facility of &eg; will store emails suspected of containing unwanted content (for example, <glossterm linkend="gloss_spam">SPAM</glossterm> or <glossterm linkend="gloss_phishing">phishing</glossterm>).  This storage is done on a per-email address basis.  For example, if <constant>escott@yourcompany.com</constant> receives three SPAM emails in a day, those three emails are quarantined for <constant>escott</constant>.  The collection of emails for a given address is said to be an <quote>inbox</quote>.
       </para>
@@ -620,13 +617,13 @@
         The daily digest emails are delivered in <glossterm linkend="gloss_htmp">HTML</glossterm> format, such that they contain links to a web server.  The web server is housed within the &eg;.  In this way, the digest emails allow for direct communication with end-users to mainting their inboxes.
         <note>
           <para>
-            As with any software product, some users will choose not to act on their digest emails.  If a user ignores their inbox for many days (and receives many spams), their inbox will grow.  This is not a concern, as the &eg; automatically deletes emails after a fixed period of time.  This period is configurable, as discussed in <xref linkend="config_tab_quarantine_general"/>
+            Some users will choose not to act on (ignore) their digest emails.  If a user ignores their inbox for many days (and receives many spams), their inbox will grow.  This is not a concern, as the &eg; automatically deletes emails after a fixed period of time.  This period is configurable, as discussed in <xref linkend="config_tab_quarantine_general"/>
           </para>
         </note>
-        While interacting with their inbox, users may also choose to declare that a given sender does <emphasis>not</emphasis> send unwanted email.  This is used to instruct the &eg; to never consider emails from a given sender to be unsolicited.  The set of these <quote>good</quote> senders is said to be the <quote>safelist</quote> for a given user.  From the web interface, end users can maintain their safelist.
+        While interacting with their inbox, users may also choose to declare that a given sender does <emphasis>not</emphasis> send unwanted email.  This is used to instruct the &eg; to never consider emails from a given sender to be unsolicited.  The set of these <quote>good</quote> senders is said to be the <quote>passlist</quote> for a given user.  From the web interface, end users can maintain their passlist.
         <note>
           <para>
-            Use of safelists by end users is optional.  Should a given end user choose not to populate their safelist, there is no negative effect on the overall &eg; system.
+            Use of passlists by end users is optional.  Should a given end user choose not to populate their passlist, there is no negative effect on the overall &eg; system.
           </para>
         </note>
       </para>
@@ -697,7 +694,7 @@
     <sect2 id="config_tab_quarantine_passlist">
       <title>Quarantine Pass List</title>
       <para>
-        As discussed in <xref linkend="config_tab_quarantine_overview"/>, end users normally maintain their list of email senders who are known <emphasis>not</emphasis> to send unwanted email.  This is called the <quote>passlist</quote>.  Administrators can optionaly view/change passlists for end users.  The interface for this functionality is shown in <xref linkend="config_tab_quarantine_passlist_figure"/>.
+        As discussed in <xref linkend="config_tab_quarantine_overview"/>, end users may maintain their own list of email senders who are known <emphasis>not</emphasis> to send unwanted email.  This is called the <quote>passlist</quote>.  Administrators can optionaly view/change passlists for end users.  The interface for this functionality is shown in <xref linkend="config_tab_quarantine_passlist_figure"/>.
       </para>
       <figure id="config_tab_quarantine_passlist_figure">
         <title>Quarantine Pass List Tab</title>
@@ -723,7 +720,7 @@
             <term><guilabel>Show detail</guilabel></term>
             <listitem>
               <para>
-                The <guilabel>Show detail</guilabel> button triggers a detailed view of the contents of a given safelist.  Administrators can then delete individual entries from that list.
+                The <guilabel>Show detail</guilabel> button triggers a detailed view of the contents of a given passlist.  Administrators can then delete individual entries from that list.
               </para>
             </listitem>
           </varlistentry>                    

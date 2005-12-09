@@ -66,7 +66,7 @@
           </mediaobject>
         </figure>
         <para>
-          As shown in <xref linkend="clam_tran_adminui_web_mime_figure"/>, most of the common MIME types have already been entered into the list.  To cause a particular MIME Type to be blocked, check the <guilabel>block</guilabel> box.
+          As shown in <xref linkend="clam_tran_adminui_web_mime_figure"/>, most of the common MIME types have already been entered into the list.  To cause a particular MIME Type to be scanned, check the <guilabel>scan</guilabel> box.
         </para>             
       </sect3>
 
@@ -85,7 +85,7 @@
           </mediaobject>
         </figure>
         <para>
-          As shown in <xref linkend="clam_tran_adminui_web_fileext_figure"/>, many common file extensions have already been entered into the list.  File types known to carry viruses have been pre-configured for scanning.  To add/remove an extension from being scanned, check the <guilabel>block</guilabel> box.
+          As shown in <xref linkend="clam_tran_adminui_web_fileext_figure"/>, many common file extensions have already been entered into the list.  File types known to carry viruses have been pre-configured for scanning.  To add/remove an extension from being scanned, check the <guilabel>scan</guilabel> box.
         </para>            
       </sect3>      
        
@@ -283,7 +283,7 @@
             <term><guilabel>disable HTTP download resume</guilabel></term>
             <listitem>
               <para>
-                The <glossterm linkend="gloss_http">HTTP</glossterm> protocol has an advanced feature where an interrupted file download may be resumed (<quote>restarted</quote>) where it left off.  Although a handy feature for unreliable networks, the &eg; is unable to perform virus scans when this feature is enables.  When HTTP download resume is permitted, it is possible that a file containing a virus could be received over multiple connections.  When this occurs, the &eg; only sees parts of the file and cannot know if it contained a virus.
+                The <glossterm linkend="gloss_http">HTTP</glossterm> protocol has an advanced feature where an interrupted file download may be resumed (<quote>restarted</quote>) where it left off.  Although a handy feature for unreliable networks, the &eg; is unable to perform virus scans when this feature is enabled.  When HTTP download resume is permitted, it is possible that a file containing a virus could be received over multiple connections.  When this occurs, the &eg; only sees parts of the file and cannot know if it contained a virus.
               </para>
             </listitem>
           </varlistentry>

@@ -69,7 +69,7 @@
 
 <!-- Paper format                                                            -->
 <!-- All DIN A, B and C sizes are understood.                                -->
-<xsl:param name="paper.type">A4</xsl:param>
+<xsl:param name="paper.type">USletter</xsl:param>
 <!--<xsl:param name="paper.type">A5</xsl:param>-->
 <!--<xsl:param name="paper.type">USletter</xsl:param>-->
 
@@ -356,13 +356,13 @@ show doc titles for next and prev link
 <!-- generate numeric callouts                                             -->
 <xsl:param name="callout.graphics">0</xsl:param>
 
-<!--
 <xsl:param name="generate.toc">
-article   toc,figure,table,example,equation
-sect1     toc
-sect2     toc
+book   toc
+chapter     toc
+preface toc
+sect1 toc
+appendix toc
 </xsl:param>
--->
 
 
 <!-- title indentation/left margin -->

@@ -72,11 +72,11 @@
     <qandaset>  
       <qandaentry>
         <question>
-          <para>Where is a Q and A?</para>
+          <para>Which should I use - manual or automatic upgrades?</para>
         </question>
         <answer>
           <para>
-            Start writing!
+            It all depends on your preference.  For example, some organizations configure desktop Virus Scanning software to automatically update, while others prefer to perform this manually.
           </para>
         </answer>
       </qandaentry>

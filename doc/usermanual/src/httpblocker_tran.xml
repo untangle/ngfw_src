@@ -12,6 +12,9 @@
     </inlinemediaobject>
     symbol.  If the Web Content Control Appliance is not installed, please refer to <xref linkend="using_adminui_appliances"/> for installation instructions.
   </para>
+  <para>
+    As its name implies, the Web Content Control Appliance is used to filter web traffic to your protected network for inappropriate content.  Unlike other software appliances, the the criteria used by the Web Content Control Appliance can be seen as subjective.  Inappropriate content may be executables to some, while to others it is web sites discussing Illegal Drugs.  
+  </para>
 
   <sect1 id="httpblocker_tran_adminui">
     <title>Administrative Interface</title>
@@ -23,7 +26,7 @@
     <sect2 id="httpblocker_tran_block">
       <title>Block Lists</title>
       <para>
-        The Block List tab presents administrators the ability to modify the four major categories of content filtering.  Refer to the section for each sub-tab for more detail.
+        The Block List tab presents administrators the ability to modify the four major criteria of content filtering: by category, URL, MIME Type and File Extension.  Refer to the section for each sub-tab for more detail.
       </para>
   
       <!-- ############################################################## -->
@@ -185,6 +188,16 @@
           </para>
         </answer>
       </qandaentry>
+      <qandaentry>
+        <question>
+          <para>We run a hotel, where employees are not permitted to browse to inappropriate content yet guests using a public internet terminal are not restricted.  How can we handle this situation?</para>
+        </question>
+        <answer>
+          <para>
+            Set-up the policies as you would for employees.  Then, enter the addresses of alll public internet terminals into the Client Pass List as described in <xref linkend="httpblocker_tran_pass_clients"/>.
+          </para>
+        </answer>
+      </qandaentry>      
     </qandaset>
   </sect1>  
   

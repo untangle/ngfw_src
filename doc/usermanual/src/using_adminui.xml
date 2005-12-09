@@ -58,7 +58,7 @@
     </mediaobject>
   </figure>
   <para>
-    The initial <guilabel>Login</guilabel> is <constant>admin</constant> and the initial <guilabel>Password</guilabel> is <constant>passwd</constant>.  You should make a note that you should change this default password (as described in <xref linkend="config_tab_accounts"/>).  If all goes correctly, you should see initial Administrative Interface screen as shown in <xref linkend="using_adminui_empty_rack"/>.
+    The initial <guilabel>Login</guilabel> is <constant>admin</constant> and the initial <guilabel>Password</guilabel> is <constant>passwd</constant>.  Please make a note that you should change this default password (as described in <xref linkend="config_tab_accounts"/>).  If all goes correctly, you should see initial Administrative Interface screen as shown in <xref linkend="using_adminui_empty_rack"/>.
   </para>
   <figure id="using_adminui_empty_rack">
     <title>Initial Screen</title>
@@ -89,7 +89,7 @@
       </mediaobject>
     </figure>
     <para>
-      The image shown in <xref linkend="using_adminui_navigation_annotated_rack"/> has several numbered elements.  The meaning of these elements is as follows.
+      The image shown in <xref linkend="using_adminui_navigation_annotated_rack"/> has several numbered callouts.  The meaning of these elements is as follows.
     </para>
     <orderedlist>
       <listitem>
@@ -114,7 +114,7 @@
       </listitem>
       <listitem>
         <para>
-          This button launches the Upgrade Manager.  The Upgrade Manager is used to select available software upgrades, as well as schedule automatic upgrades as they are available.  More information on the Upgrade Manager can be found in <xref linkend="upgrade_manager"/>.
+          This button launches the Upgrade Manager.  The Upgrade Manager is used to install software upgrades, as well as schedule automatic upgrades as they are available.  More information on the Upgrade Manager can be found in <xref linkend="upgrade_manager"/>.
         </para>
       </listitem>
       <listitem>
@@ -138,7 +138,7 @@
       One of the unique features of the &eg; is the ability to add and remove Software Appliances to fit the needs of your deployment.  Each Software Appliance had a dedicated task to enhance your network, and can be installed/configured independently of other appliances.
     </para>
     <para>
-      Although Software Appliances act independently, they share many common interface characteristics.  They are all installed by clicking on the appliance from the <guilabel>Toolbox</guilabel>.  This causes an appliance to be installed into the Rack to the right.
+      Although Software Appliances act independently, they share many common interface characteristics.  They are all installed by clicking on the appliance from the <guilabel>Toolbox</guilabel>.  This causes an appliance to be installed into the rack to the right.
       <note>
         <para>
           The system will prevent you from installing the same type of appliance into the same rack twice.
@@ -200,7 +200,7 @@
       Most Software Appliances have an <emphasis>Event Log</emphasis> as part of their controls.  The Event Logs are seen by expanding the settings (the <guilabel>Show Settings</guilabel> button in <xref linkend="using_adminui_appliances_faceplate"/>). 
     </para>
     <para>
-      The Event Logs for each Software Appliance present a table of interesting events which were observed.  Sometimes they simply provide a dialog of which traffic was filtered (<quote>...examined this web request from <constant>1.2.3.4</constant> and found no viruses...</quote>).  Other times, they indicate malicious content which was stopped by the Software Appliance (<quote>...blocked email with subject '<constant>Urgent Business Request</constant>' as it was found to be a phishing email...</quote>).
+      The Event Logs for each Software Appliance present a table of interesting events which were observed by the &eg;.  Sometimes they simply provide a dialog of which traffic was filtered (<quote>...examined this web request from <constant>1.2.3.4</constant> and found no viruses...</quote>).  Other times, they indicate malicious content which was stopped by the Software Appliance (<quote>...blocked email with subject '<constant>Urgent Business Request</constant>' as it was found to be a phishing email...</quote>).
     </para>
     <para>
       The set and meaning of columns depends on the Software Appliance, and is discussed in the documentation for each.
@@ -225,14 +225,24 @@
       </qandaentry>
       <qandaentry>
         <question>
-          <para>XXXXXXXXX?</para>
+          <para>Why does it take so long to load the Administrative Interface in my browser?</para>
         </question>
         <answer>
           <para>
-            XXXXXXXXXXXXXXXX TODO more troubleshooting of Java Web Start, even if it sounds "stupid" or "obvious".
+            The first time the Administrative Interface is launched, it downloads several files.  These files are then cached (left) on the machine to reduce startup time on subsequent restarts.
           </para>
         </answer>
-      </qandaentry>      
+      </qandaentry>
+      <qandaentry>
+        <question>
+          <para>I received a message indicating I was logged off by the system by another user.  What happened?</para>
+        </question>
+        <answer>
+          <para>
+            To ensure that two Administrators do not mistakenly attempt to change the same items at the same time, only one Administrator may be logged into the &eg; at a time.  When a second Administrator attempts to log in, they may cause the other Administrator to be logged off.  Note that the second Administrator is offered the chance to not do this when logging in.
+          </para>
+        </answer>
+      </qandaentry>           
     </qandaset>
   </sect1>  
   
