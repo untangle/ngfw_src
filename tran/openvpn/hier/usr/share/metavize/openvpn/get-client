@@ -35,6 +35,7 @@ mkdir -p ${PACKAGE_DIR}
 mkdir -p ${MISC_DIR}
 
 # If the tun device doesn't exist, then create it
+TUN_DEVICE=/dev/net/tun
 if [ ! -c ${TUN_DEVICE} ]; then
     mkdir -p /dev/net
     mknod ${TUN_DEVICE} c 10 200
