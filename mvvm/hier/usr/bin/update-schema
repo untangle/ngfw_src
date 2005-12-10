@@ -18,9 +18,9 @@ CREATE SCHEMA settings;
 -- convert pre-3.1 schema_ver to split_schema_ver
 CREATE TABLE settings.split_schema_ver AS
     SELECT component::text, version AS settings_version, version AS events_version
-    FROM settings.schema_ver;
+    FROM schema_ver;
 
-DROP TABLE settings.schema_ver;
+DROP TABLE schema_ver;
 
 CREATE TABLE settings.split_schema_ver (
     component text,
