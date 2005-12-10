@@ -81,7 +81,9 @@ public class InitialSetupLicenseJPanel extends MWizardPageJPanel implements Adju
         private void initComponents() {//GEN-BEGIN:initComponents
                 acceptButtonGroup = new javax.swing.ButtonGroup();
                 contentJScrollPane = new javax.swing.JScrollPane();
+                jPanel1 = new javax.swing.JPanel();
                 contentJEditorPane = new javax.swing.JEditorPane();
+                actionJPanel = new javax.swing.JPanel();
                 acceptJRadioButton = new javax.swing.JRadioButton();
                 declineJRadioButton = new javax.swing.JRadioButton();
                 jLabel2 = new javax.swing.JLabel();
@@ -93,12 +95,13 @@ public class InitialSetupLicenseJPanel extends MWizardPageJPanel implements Adju
                 contentJScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
                 contentJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
                 contentJScrollPane.setFocusable(false);
+                jPanel1.setLayout(new java.awt.BorderLayout());
+
                 contentJEditorPane.setEditable(false);
                 contentJEditorPane.setFocusable(false);
-                contentJEditorPane.setFont(new java.awt.Font("Arial", 0, 11) );
-                contentJScrollPane.setViewportView(contentJEditorPane);
+                jPanel1.add(contentJEditorPane, java.awt.BorderLayout.CENTER);
 
-                add(contentJScrollPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(7, 80, 460, 210));
+                actionJPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
                 acceptButtonGroup.add(acceptJRadioButton);
                 acceptJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -106,7 +109,7 @@ public class InitialSetupLicenseJPanel extends MWizardPageJPanel implements Adju
                 acceptJRadioButton.setEnabled(false);
                 acceptJRadioButton.setMinimumSize(new java.awt.Dimension(185, 23));
                 acceptJRadioButton.setPreferredSize(new java.awt.Dimension(185, 23));
-                add(acceptJRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 320, -1, -1));
+                actionJPanel.add(acceptJRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 30, -1, -1));
 
                 acceptButtonGroup.add(declineJRadioButton);
                 declineJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -114,14 +117,19 @@ public class InitialSetupLicenseJPanel extends MWizardPageJPanel implements Adju
                 declineJRadioButton.setEnabled(false);
                 declineJRadioButton.setMinimumSize(new java.awt.Dimension(185, 23));
                 declineJRadioButton.setPreferredSize(new java.awt.Dimension(185, 23));
-                add(declineJRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 300, -1, -1));
+                actionJPanel.add(declineJRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 10, -1, -1));
+
+                jPanel1.add(actionJPanel, java.awt.BorderLayout.SOUTH);
+
+                contentJScrollPane.setViewportView(jPanel1);
+
+                add(contentJScrollPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(7, 80, 460, 260));
 
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel2.setText("<html>Please read and accept the following license agreement before<br>proceeding.  <b><font color=\"#FF0000\">You must scroll to the bottom before you can accept.</font></b></html>");
                 add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, -1, -1));
 
                 jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
-                jLabel3.setEnabled(false);
                 add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(-130, 230, -1, -1));
 
         }//GEN-END:initComponents
@@ -130,11 +138,13 @@ public class InitialSetupLicenseJPanel extends MWizardPageJPanel implements Adju
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.ButtonGroup acceptButtonGroup;
         private javax.swing.JRadioButton acceptJRadioButton;
+        private javax.swing.JPanel actionJPanel;
         private javax.swing.JEditorPane contentJEditorPane;
         private javax.swing.JScrollPane contentJScrollPane;
         private javax.swing.JRadioButton declineJRadioButton;
         private javax.swing.JLabel jLabel2;
         private javax.swing.JLabel jLabel3;
+        private javax.swing.JPanel jPanel1;
         // End of variables declaration//GEN-END:variables
     
 }
