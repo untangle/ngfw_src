@@ -18,7 +18,7 @@ while (<>) {
     # normalize argument order
     if ($_ =~ /^CREATE TABLE/) {
         ($start, $args, $end) = ($_ =~ /(^CREATE TABLE [^\(]+\()(.*)(\);)$/);
-        $_ = $start . (join(', ', sort(split(/,/, $args)))) . $end;
+        $_ = $start . (join (', ', (sort (map { s/^ +//; $_ } (split(/,/, $args)))))) . $end;
     }
 
     $lines[++$#lines] = $_;
