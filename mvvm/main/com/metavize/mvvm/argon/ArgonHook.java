@@ -205,7 +205,17 @@ abstract class ArgonHook implements Runnable
             /* Must raze sessions all sessions in the session list */
             razeSessions();
         } catch ( Exception e ) {
-            logger.error( "Exception executing argon hook:", e);
+            /* XXXX A janky way of checking if this is an interface conversion error */
+            if ( e.getMessage().startsWith( "Invalid netcap interface" )) {
+                try {
+                    logger.warn( "invalid interface: " + sessionGlobalState.netcapSession());
+                } catch( Exception exn ) {
+                    /* Just in case */
+                    logger.warn( "exception debugging invalid netcap interface: ", exn );
+                }
+            } else {
+                logger.error( "Exception executing argon hook:", e );
+            }
         }
 
         try {
