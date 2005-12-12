@@ -19,7 +19,7 @@ public class SpamLogFilter implements SimpleEventFilter<SpamEvent>
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc("POP/IMAP Events");
 
     private static final String WARM_QUERY
-        = "FROM SpamLogEvent evt WHERE evt.messageInfo.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
+        = "FROM SpamLogEvent evt WHERE evt.messageInfo.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
 
     // SimpleEventFilter methods ----------------------------------------------
 

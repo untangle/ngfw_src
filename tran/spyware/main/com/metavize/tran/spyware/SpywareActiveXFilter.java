@@ -19,7 +19,7 @@ public class SpywareActiveXFilter implements SimpleEventFilter<SpywareEvent>
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc("ActiveX Events");
 
     private static final String WARM_QUERY
-        = "FROM SpywareActiveXEvent evt WHERE evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
+        = "FROM SpywareActiveXEvent evt WHERE evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
 
     // SimpleEventFilter methods ----------------------------------------------
 

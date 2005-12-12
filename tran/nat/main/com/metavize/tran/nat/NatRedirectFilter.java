@@ -21,7 +21,7 @@ public class NatRedirectFilter implements SimpleEventFilter<LogEvent>
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc("NAT Redirect Events");
 
     private static final String WARM_QUERY
-        = "FROM RedirectEvent evt ORDER BY evt.timeStamp";
+        = "FROM RedirectEvent evt ORDER BY evt.timeStamp DESC";
 
     // SimpleEventFilter methods ----------------------------------------------
 

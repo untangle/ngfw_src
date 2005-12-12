@@ -19,7 +19,7 @@ public class SpywareBlacklistFilter implements SimpleEventFilter<SpywareEvent>
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc("Blacklist Events");
 
     private static final String WARM_QUERY
-        = "FROM SpywareBlacklistEvent evt WHERE evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
+        = "FROM SpywareBlacklistEvent evt WHERE evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
 
     // SimpleEventFilter methods ----------------------------------------------
 

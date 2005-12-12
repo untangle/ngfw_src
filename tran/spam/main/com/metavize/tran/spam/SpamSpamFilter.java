@@ -19,9 +19,9 @@ public class SpamSpamFilter implements SimpleEventFilter<SpamEvent>
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc("Spam Events");
 
     private static final String LOG_QUERY
-        = "FROM SpamLogEvent evt WHERE evt.spam = true AND evt.messageInfo.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
+        = "FROM SpamLogEvent evt WHERE evt.spam = true AND evt.messageInfo.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
     private static final String SMTP_QUERY
-        = "FROM SpamSmtpEvent evt WHERE evt.spam = true AND evt.messageInfo.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
+        = "FROM SpamSmtpEvent evt WHERE evt.spam = true AND evt.messageInfo.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
 
     // SimpleEventFilter methods ----------------------------------------------
 

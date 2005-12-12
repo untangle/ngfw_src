@@ -11,15 +11,15 @@
 
 package com.metavize.tran.protofilter;
 
-import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.logging.RepositoryDesc;
+import com.metavize.mvvm.logging.SimpleEventFilter;
 
 public class ProtoFilterBlockedFilter implements SimpleEventFilter<ProtoFilterLogEvent>
 {
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc("Blocked Protocol Events");
 
     private static final String WARM_QUERY
-        = "FROM ProtoFilterLogEvent evt WHERE blocked = true AND evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
+        = "FROM ProtoFilterLogEvent evt WHERE blocked = true AND evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
 
     // SimpleEventFilter methods ----------------------------------------------
 

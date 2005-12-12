@@ -11,8 +11,8 @@
 
 package com.metavize.tran.ids;
 
-import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.logging.RepositoryDesc;
+import com.metavize.mvvm.logging.SimpleEventFilter;
 
 public class IDSBlockedFilter implements SimpleEventFilter<IDSLogEvent>
 {
@@ -20,7 +20,7 @@ public class IDSBlockedFilter implements SimpleEventFilter<IDSLogEvent>
 
     private static final String WARM_QUERY = "FROM IDSLogEvent evt "
         + "WHERE evt.blocked = true AND evt.pipelineEndpoints.policy = :policy "
-        + "ORDER BY evt.timeStamp";
+        + "ORDER BY evt.timeStamp DESC";
 
     // constructors -----------------------------------------------------------
 

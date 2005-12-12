@@ -11,8 +11,8 @@
 
 package com.metavize.tran.virus;
 
-import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.logging.RepositoryDesc;
+import com.metavize.mvvm.logging.SimpleEventFilter;
 
 public class VirusAllFilter implements SimpleEventFilter<VirusEvent>
 {
@@ -30,22 +30,22 @@ public class VirusAllFilter implements SimpleEventFilter<VirusEvent>
         httpQuery = "FROM VirusHttpEvent evt "
             + "WHERE evt.vendorName = '" + vendorName + "' "
             + "AND evt.requestLine.pipelineEndpoints.policy = :policy "
-            + "ORDER BY evt.timeStamp";
+            + "ORDER BY evt.timeStamp DESC";
 
         ftpQuery = "FROM VirusLogEvent evt "
             + "WHERE evt.vendorName = '" + vendorName + "' "
             + "AND evt.pipelineEndpoints.policy = :policy "
-            + "ORDER BY evt.timeStamp";
+            + "ORDER BY evt.timeStamp DESC";
 
         mailQuery = "FROM VirusMailEvent evt "
             + "WHERE evt.vendorName = '" + vendorName + "' "
             + "AND evt.messageInfo.pipelineEndpoints.policy = :policy "
-            + "ORDER BY evt.timeStamp";
+            + "ORDER BY evt.timeStamp DESC";
 
         smtpQuery = "FROM VirusSmtpEvent evt "
             + "WHERE evt.vendorName = '" + vendorName + "' "
             + "AND evt.messageInfo.pipelineEndpoints.policy = :policy "
-            + "ORDER BY evt.timeStamp";
+            + "ORDER BY evt.timeStamp DESC";
     }
 
     // SimpleEventFilter methods ----------------------------------------------

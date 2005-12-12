@@ -11,8 +11,8 @@
 
 package com.metavize.tran.virus;
 
-import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.logging.RepositoryDesc;
+import com.metavize.mvvm.logging.SimpleEventFilter;
 
 public class VirusHttpFilter implements SimpleEventFilter<VirusEvent>
 {
@@ -27,7 +27,7 @@ public class VirusHttpFilter implements SimpleEventFilter<VirusEvent>
         warmQuery = "FROM VirusHttpEvent evt "
         + "WHERE evt.vendorName = '" + vendorName + "' "
         + "AND evt.requestLine.pipelineEndpoints.policy = :policy "
-        + "ORDER BY evt.timeStamp";
+        + "ORDER BY evt.timeStamp DESC";
     }
 
     // SimpleEventFilter methods ----------------------------------------------

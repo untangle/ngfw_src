@@ -11,15 +11,15 @@
 
 package com.metavize.tran.firewall;
 
-import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.logging.RepositoryDesc;
+import com.metavize.mvvm.logging.SimpleEventFilter;
 
 public class FirewallBlockedFilter implements SimpleEventFilter<FirewallEvent>
 {
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc("Firewall Block Events");
 
     private static final String WARM_QUERY
-        = "FROM FirewallEvent evt WHERE evt.wasBlocked = true AND evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
+        = "FROM FirewallEvent evt WHERE evt.wasBlocked = true AND evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
 
     // SimpleEventFilter methods ----------------------------------------------
 

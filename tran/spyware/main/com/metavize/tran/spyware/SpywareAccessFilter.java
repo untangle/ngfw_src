@@ -11,15 +11,15 @@
 
 package com.metavize.tran.spyware;
 
-import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.logging.RepositoryDesc;
+import com.metavize.mvvm.logging.SimpleEventFilter;
 
 public class SpywareAccessFilter implements SimpleEventFilter<SpywareEvent>
 {
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc("Access Events");
 
     private static final String WARM_QUERY
-        = "FROM SpywareAccessEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp";
+        = "FROM SpywareAccessEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
 
     // SimpleEventFilter methods ----------------------------------------------
 
