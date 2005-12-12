@@ -20,7 +20,8 @@ import com.metavize.tran.mail.papi.smtp.SMTPNotifyAction;
 // XXX convert to enum when we dump XDoclet
 
 public class SpamSMTPNotifyAction// extends SMTPNotifyAction
-{
+  implements java.io.Serializable {
+   
     private static final long serialVersionUID = -6364692037092527263L;
 
     private static final Map INSTANCES = new HashMap();
