@@ -32,7 +32,7 @@ MVVM_ARGS=""
 MVVM_INSIDE_INTF=${MVVM_INSIDE_INTF:-"eth1"}
 MVVM_OUTSIDE_INTF=${MVVM_OUTSIDE_INTF:-"eth0"}
 
-if [ "x${USER}" = "xroot" ]; then
+if [ "x${USER}" = "x" -o "x${USER}" = "xroot" ]; then
         MVVM_NICENESS=-15
 else
         MVVM_NICENESS=0
