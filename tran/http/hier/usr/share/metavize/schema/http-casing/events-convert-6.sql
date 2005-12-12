@@ -53,15 +53,3 @@ ALTER TABLE events.tr_http_evt_resp ALTER COLUMN event_id SET NOT NULL;
 CREATE INDEX tr_http_evt_req_ts_idx ON events.tr_http_evt_req (time_stamp);
 CREATE INDEX tr_http_evt_req_rid_idx ON events.tr_http_evt_req (request_id);
 CREATE INDEX tr_http_evt_resp_rid_idx ON events.tr_http_evt_resp (request_id);
-
--------------------------
--- recreate constraints |
--------------------------
-
-ALTER TABLE events.tr_http_evt_req
-    ADD CONSTRAINT fk_tr_http_reqevt_req
-    FOREIGN KEY (request_id) REFERENCES tr_http_req_line;
-
-ALTER TABLE events.tr_http_evt_resp
-    ADD CONSTRAINT fk_tr_http_respevt_req
-    FOREIGN KEY (request_id) REFERENCES tr_http_req_line;
