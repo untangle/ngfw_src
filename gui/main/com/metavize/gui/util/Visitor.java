@@ -50,7 +50,6 @@ public class Visitor implements ProgressVisitor{
 	SwingUtilities.invokeLater( new Runnable(){ public void run(){
 	    currentByteIncrement = dp.getSize();
 	    String progressString = "Downloading file " + (currentFileIndex+1) + " of " + fileCountTotal
-		+ " : " + dp.getName()
 		+ " (" + byteCountTotal/1000 + "KBytes " + "@ "  + dp.getSpeed() + ")";
 	    progressBar.setString( progressString );
 	    float currentPercentComplete = ((float)(currentByteIndex + dp.getBytesDownloaded())) / ((float)byteCountTotal);
@@ -76,9 +75,9 @@ public class Visitor implements ProgressVisitor{
 	isDone = true;
 	SwingUtilities.invokeLater( new Runnable(){ public void run(){
 	    if(ic.getSuccess())
-		progressBar.setString( "Installation successful." );
+		progressBar.setString( "Download successful." );
 	    else
-		progressBar.setString( "Installation failed.  Please try again." );
+		progressBar.setString( "Download failed.  Please try again." );
 	    progressBar.setValue( 100 );
 	}});
     }
@@ -87,7 +86,7 @@ public class Visitor implements ProgressVisitor{
 	isSuccessful = false;
 	isDone = true;
 	SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    progressBar.setString( "Installation timed out.  Please try again." );
+	    progressBar.setString( "Download timed out.  Please try again." );
 	    progressBar.setValue( 100 );
 	}});
     }

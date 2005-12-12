@@ -59,7 +59,7 @@ public class PolicyStateMachine implements ActionListener {
     private Map<ButtonKey,MTransformJButton> storeMap;
     private Map<Policy,Map<ButtonKey,MTransformJButton>> policyToolboxMap;
     private Map<Policy,Map<ButtonKey,MTransformJPanel>> policyRackMap;
-    public Map<Policy,Map<ButtonKey,MTransformJPanel>> getPolicyRackMap(){ return policyRackMap; }
+    public  Map<Policy,Map<ButtonKey,MTransformJPanel>> getPolicyRackMap(){ return policyRackMap; }
     private Map<ButtonKey,MTransformJButton> serviceToolboxMap;
     private Map<ButtonKey,MTransformJPanel> serviceRackMap;
     // GUI VIEW MODELS //////////
@@ -99,6 +99,9 @@ public class PolicyStateMachine implements ActionListener {
     private static final int DOWNLOAD_INITIAL_SLEEP_MILLIS = 3000;
     private static final int DOWNLOAD_SLEEP_MILLIS = 500;
     private static final int DOWNLOAD_FINAL_SLEEP_MILLIS = 3000;
+    // INSTALL DELAYS ////////////////
+    private static final int INSTALL_CHECK_TIMEOUT_MILLIS = 60000;
+    private static final int INSTALL_SLEEP_MILLIS = 5000;
 
     public PolicyStateMachine(JTabbedPane actionJTabbedPane, JComboBox viewSelector, JPanel rackViewJPanel,
 			      JScrollPane toolboxJScrollPane, JPanel policyToolboxSocketJPanel, JPanel serviceToolboxSocketJPanel,
@@ -539,7 +542,7 @@ public class PolicyStateMachine implements ActionListener {
 		    progressBar.setIndeterminate(true);		    
 		}});
 		Thread.currentThread().sleep(DOWNLOAD_INITIAL_SLEEP_MILLIS);                		
-		// DO THE DOWNLOAD AND INSTALL
+		// DO THE DOWNLOAD
 		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
 		    progressBar.setIndeterminate(false);
 		}});
@@ -558,27 +561,52 @@ public class PolicyStateMachine implements ActionListener {
 			Thread.currentThread().sleep(DOWNLOAD_SLEEP_MILLIS);
 		    }
 		}
+		Thread.currentThread().sleep(DOWNLOAD_INITIAL_SLEEP_MILLIS);
+		if( !visitor.isSuccessful() )
+		    throw new Exception();
+		// DO THE INSTALL
+		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		    progressBar.setValue(0);
+		    progressBar.setString("Installing...");
+		    progressBar.setIndeterminate(true);
+		}});
+		//Thread.currentThread().sleep(INSTALL_SLEEP_MILLIS);
+		long installationFirstCheckTime = System.currentTimeMillis();
+		boolean mackageInstalled = false;
+		while( !mackageInstalled && ((System.currentTimeMillis() - installationFirstCheckTime) < INSTALL_CHECK_TIMEOUT_MILLIS) ){
+		    MackageDesc[] installedMackages = Util.getToolboxManager().installed();
+		    for( MackageDesc mackageDesc : installedMackages ){
+			if(mackageDesc.getName().equals(mTransformJButton.getName())){
+			    mackageInstalled = true;
+			    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+				progressBar.setValue(100);
+				progressBar.setString("Installation successful.");
+				progressBar.setIndeterminate(false);
+			    }});			    
+			    break;
+			}
+		    }
+		    if( !mackageInstalled )
+			Thread.currentThread().sleep(INSTALL_SLEEP_MILLIS);
+		}
 		Thread.currentThread().sleep(DOWNLOAD_FINAL_SLEEP_MILLIS);
-		// GIVE OPTIONS BASED ON RESULTS
-		if( visitor.isSuccessful() ){
-		    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-			dialog.setVisible(false);
-		    }});
-		    // REMOVE FROM STORE AND ADD TO ALL TOOLBOXES
-		    removeFromStore(mTransformJButton.getMackageDesc());
-		    if( mTransformJButton.getMackageDesc().isService() ){
-			addToToolbox(null,mTransformJButton.getMackageDesc(),false);
-		    }
-		    else{
-			for( Policy policy : policyToolboxMap.keySet() )
-			    addToToolbox(policy,mTransformJButton.getMackageDesc(),false);
-		    }
-		    // FOCUS AND HIGHLIGHT IN CURRENT TOOLBOX
-		    focusInToolbox(mTransformJButton, true);
+		if( !mackageInstalled )
+		    throw new Exception();
+		// REMOVE DIALOG
+		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		    dialog.setVisible(false);
+		}});
+		// REMOVE FROM STORE AND ADD TO ALL TOOLBOXES
+		removeFromStore(mTransformJButton.getMackageDesc());
+		if( mTransformJButton.getMackageDesc().isService() ){
+		    addToToolbox(null,mTransformJButton.getMackageDesc(),false);
 		}
 		else{
-		    throw new Exception();
-		}				
+		    for( Policy policy : policyToolboxMap.keySet() )
+			addToToolbox(policy,mTransformJButton.getMackageDesc(),false);
+		}
+		// FOCUS AND HIGHLIGHT IN CURRENT TOOLBOX
+		focusInToolbox(mTransformJButton, true);		
 	    }
 	    catch(Exception e){
 		try{
