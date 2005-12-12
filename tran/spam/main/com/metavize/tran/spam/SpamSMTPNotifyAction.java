@@ -19,11 +19,16 @@ import com.metavize.tran.mail.papi.smtp.SMTPNotifyAction;
 
 // XXX convert to enum when we dump XDoclet
 
-public class SpamSMTPNotifyAction extends SMTPNotifyAction
+public class SpamSMTPNotifyAction// extends SMTPNotifyAction
 {
     private static final long serialVersionUID = -6364692037092527263L;
 
     private static final Map INSTANCES = new HashMap();
+
+    protected static final char sndr_c = 'S';
+    protected static final char none_c = 'N';
+    protected static final String sndr_s = "notify sender";
+    protected static final String none_s = "do not notify";
 
     public static final SpamSMTPNotifyAction SENDER = new SpamSMTPNotifyAction(sndr_c, sndr_s);
     public static final SpamSMTPNotifyAction NEITHER = new SpamSMTPNotifyAction(none_c, none_s);
@@ -33,9 +38,13 @@ public class SpamSMTPNotifyAction extends SMTPNotifyAction
         INSTANCES.put(NEITHER.getKey(), NEITHER);
     }
 
+    private final String name;
+    private final char key;    
+
     protected SpamSMTPNotifyAction(char key, String name)
     {
-        super(key, name);
+        this.key = key;
+        this.name = name;
     }
 
     public static SpamSMTPNotifyAction getInstance(char key)
@@ -56,6 +65,27 @@ public class SpamSMTPNotifyAction extends SMTPNotifyAction
         return null;
     }
 
+    public String toString()
+    {
+        return name;
+    }
+
+    public char getKey()
+    {
+        return key;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    Object readResolve()
+    {
+        return getInstance(key);
+    }    
+    
+
     public static SpamSMTPNotifyAction[] getValues()
     {
         SpamSMTPNotifyAction[] azNotifyAction = new SpamSMTPNotifyAction[INSTANCES.size()];
@@ -66,5 +96,15 @@ public class SpamSMTPNotifyAction extends SMTPNotifyAction
             azNotifyAction[i] = zNotifyAction;
         }
         return azNotifyAction;
+    }
+
+    public static SMTPNotifyAction toSMTPNotifyAction(SpamSMTPNotifyAction action) {
+      if(action == SENDER) {
+        return SMTPNotifyAction.SENDER;
+      }
+      if(action == NEITHER) {
+        return SMTPNotifyAction.NEITHER;
+      }
+      return null;
     }
 }

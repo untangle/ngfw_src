@@ -142,7 +142,7 @@ public class SmtpSessionHandler
       //Perform notification (if we should)
       if(m_config.getNotifyMessageGenerator().sendNotification(
         MvvmContextFactory.context().mailSender(),
-        m_config.getNotifyAction(),
+        SpamSMTPNotifyAction.toSMTPNotifyAction(m_config.getNotifyAction()),
         msg,
         tx,
         tx, report)) {

@@ -121,7 +121,7 @@ public class SmtpNotifyMessageGenerator
     //TODO bscott Use a "set" instead of a list, to prevent dupes
     //     if sender was also a recipient
 
-    if(action == SMTPNotifyAction.NEITHER) {
+    if(action == SMTPNotifyAction.NEITHER || action == null) {
       return true;
     }
     List<EmailAddress> recipients = new ArrayList<EmailAddress>();
