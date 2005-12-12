@@ -18,8 +18,14 @@ public class SpamLogFilter implements SimpleEventFilter<SpamEvent>
 {
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc("POP/IMAP Events");
 
-    private static final String WARM_QUERY
-        = "FROM SpamLogEvent evt WHERE evt.messageInfo.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
+    private final String warmQuery;
+
+    // constructors -----------------------------------------------------------
+
+    public SpamLogFilter(String vendor)
+    {
+        warmQuery = "FROM SpamLogEvent evt WHERE evt.vendorName = '" + vendor + "' AND evt.messageInfo.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
+    }
 
     // SimpleEventFilter methods ----------------------------------------------
 
@@ -30,7 +36,7 @@ public class SpamLogFilter implements SimpleEventFilter<SpamEvent>
 
     public String[] getQueries()
     {
-        return new String[] { WARM_QUERY };
+        return new String[] { warmQuery };
     }
 
     public boolean accept(SpamEvent e)

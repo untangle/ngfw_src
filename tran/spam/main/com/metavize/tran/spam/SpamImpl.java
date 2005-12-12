@@ -95,18 +95,21 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         TransformContext tctx = getTransformContext();
 
         this.scanner = scanner;
+
+        String vendor = scanner.getVendorName();
+
         eventLogger = new EventLogger<SpamEvent>(tctx);
 
-        SimpleEventFilter ef = new SpamAllFilter();
+        SimpleEventFilter ef = new SpamAllFilter(vendor);
         eventLogger.addSimpleEventFilter(ef);
 
-        ef = new SpamSpamFilter();
+        ef = new SpamSpamFilter(vendor);
         eventLogger.addSimpleEventFilter(ef);
 
-        ef = new SpamSmtpFilter();
+        ef = new SpamSmtpFilter(vendor);
         eventLogger.addSimpleEventFilter(ef);
 
-        ef = new SpamLogFilter();
+        ef = new SpamLogFilter(vendor);
         eventLogger.addSimpleEventFilter(ef);
     }
 

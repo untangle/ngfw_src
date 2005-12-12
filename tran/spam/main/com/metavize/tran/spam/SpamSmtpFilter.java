@@ -17,8 +17,12 @@ import com.metavize.mvvm.logging.SimpleEventFilter;
 public class SpamSmtpFilter implements SimpleEventFilter<SpamEvent>
 {
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc("SMTP Events");
-    private static final String WARM_QUERY
-        = "FROM SpamSmtpEvent evt WHERE evt.messageInfo.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
+    private final String warmQuery;
+
+    public SpamSmtpFilter(String vendor)
+    {
+        warmQuery = "FROM SpamSmtpEvent evt WHERE evt.vendorName = '" + vendor + "' AND evt.messageInfo.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
+    }
 
     // EventCache methods -----------------------------------------------------
 
@@ -29,7 +33,7 @@ public class SpamSmtpFilter implements SimpleEventFilter<SpamEvent>
 
     public String[] getQueries()
     {
-        return new String[] { WARM_QUERY };
+        return new String[] { warmQuery };
     }
 
     public boolean accept(SpamEvent e)

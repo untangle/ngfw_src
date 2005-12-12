@@ -18,10 +18,16 @@ public class SpamAllFilter implements SimpleEventFilter<SpamEvent>
 {
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc("All Events");
 
-    private static final String LOG_QUERY
-        = "FROM SpamLogEvent evt WHERE evt.messageInfo.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
-    private static final String SMTP_QUERY
-        = "FROM SpamSmtpEvent evt WHERE evt.messageInfo.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
+    private final String logQuery;
+    private final String smtpQuery;
+
+    // constructors -----------------------------------------------------------
+
+    public SpamAllFilter(String vendor)
+    {
+        logQuery = "FROM SpamLogEvent evt WHERE evt.vendorName = '" + vendor + "' AND evt.messageInfo.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
+        smtpQuery = "FROM SpamSmtpEvent evt WHERE evt.vendorName = '" + vendor + "' AND evt.messageInfo.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
+    }
 
     // SimpleEventFilter methods ----------------------------------------------
 
@@ -32,7 +38,7 @@ public class SpamAllFilter implements SimpleEventFilter<SpamEvent>
 
     public String[] getQueries()
     {
-        return new String[] { LOG_QUERY, SMTP_QUERY };
+        return new String[] { logQuery, smtpQuery };
     }
 
     public boolean accept(SpamEvent e)
