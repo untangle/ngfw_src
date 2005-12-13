@@ -58,7 +58,11 @@ public final class InboxRecordTag
       return record.getMailSummary().getSubject();
     }
     if(name.equals(SCORE_PROP)) {
-      return record.getMailSummary().getQuarantineDetail();
+      try {
+        return String.format("%03.1f", Float.parseFloat(record.getMailSummary().getQuarantineDetail()));
+      }
+      catch(Exception ex) {
+      }
     }
     return null;          
   }
