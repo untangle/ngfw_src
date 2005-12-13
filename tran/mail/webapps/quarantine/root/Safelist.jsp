@@ -12,12 +12,14 @@
 %>
 <%@ taglib uri="/WEB-INF/taglibs/quarantine_euv.tld" prefix="quarantine" %>
 
-<html>
-<link rel="StyleSheet" href="styles/mv_quarantine.css" type="text/css">
-  <head>
-    <title>
-    Safelist for <quarantine:currentAddress/>
-    </title>
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+<!-- HEADING -->
+  <title>Metavize | Safelist for <quarantine:currentAddress/></title>
     <script> 
       function CheckAll() {
         count = document.form1.elements.length;
@@ -27,64 +29,77 @@
         }
       }
     </script>
-  </head>
-  <body>
-    <table class="outertable" cellpadding="0" cellspacing="0">
-      <% // Outer table, first row %>
-      <tr>
-        <% // Because of IE stupidity, there can be no LWS between the tags below %>
-        <td WIDTH="20" valign="top"><img src="images/tl.gif" ALT=""></td>
-        <td>
-          <table class="intro"
-            border="0"
-            cellpadding="0"
-            cellspacing="0"
-            height="100%"
-            width="100%">
-              <tbody>
-                <tr>
-                  <% // I cannot get things to work correctly w/o putting an absolute value here %>
-                  <td width="200">
-                    <% // IE ignores this class if applied to the table below %>
-                    <div class="logoTable">
-                      <table>
-                        <tbody>
-                          <tr>
-                            <td>
-                              <img src="images/logo.gif">
-                            </td>
-                            <td class="logotext">
-                            &nbsp;&nbsp;Metavize EdgeGuard
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </td>
-                  <td>
-                    <table class="introUserInfo" height="100%" width="100%">
-                      <tbody>
-                        <tr>
-                          <td>
-                            Safelist for <quarantine:currentAddress/>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </td>
-                </tr><tr>
-                </tr><tr>
-                <td class="infotext" colspan="2">
-Welcome to your &quot;safelist.&quot;
-A safelist is a list of email addresses,
-usually email addresses of your friends and colleagues.
-Emails, sent by anyone on a safelist, will <i>not</i> be quarantined if the emails are identified as spam or phish.<br><br>
-To delete any email address on the safelist,
-click the checkboxes for one or more email addresses and click <code>Remove Selected Addresses</code>.
-To add an email address to the safelist,
-enter the email address in the text field and click <code>Submit</code>.<br><br>
-                </td>
-              </tr>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+  <link rel="stylesheet" href="styles/style.css" type="text/css"/>
+</head>
+<body>
+
+<center>
+<table border="0" cellpadding="0" cellspacing="0" width="904">
+
+<!-- TOP THIRD -->
+  <tbody>
+    <tr>
+      <td id="table_main_top_left"><img src="images/spacer.gif" alt=" " height="23" width="23"/><br/>
+      </td>
+      
+      <td id="table_main_top" width="100%"><img src="images/spacer.gif" alt=" " height="1" width="1"/><br/>
+      </td>
+
+      <td id="table_main_top_right"> <img src="images/spacer.gif" alt=" " height="23" width="23"/><br/>
+      </td>
+    </tr>
+
+    <!-- END TOP THIRD -->
+
+    <!-- MIDDLE THIRD -->
+    <tr>
+      <td id="table_main_left"><img src="images/spacer.gif" alt=" " height="1" width="1"/></td>
+
+      <td id="table_main_center">
+        <table width="100%">
+          <tbody>
+            <tr>
+              <td valign="middle" width="96">
+                <a href="http://www.metavize.com">
+                  <img src="images/logo_no_text_shiny_96x96.gif" border="0" alt="Metavize logo"/>
+                </a>
+              </td>
+              
+              <td style="padding: 0px 0px 0px 10px;" class="page_header_title" align="left" valign="middle">
+	    Safelist for:<br/><quarantine:currentAddress/>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+
+      <td id="table_main_right"> <img src="images/spacer.gif" alt=" " height="1" width="1"/></td>
+    </tr>
+
+    <!-- END MIDDLE THIRD -->
+    <!-- CONTENT AREA -->
+    <tr>
+      
+      <td id="table_main_left"></td>
+
+      <!-- CENTER CELL --> 
+      <td id="table_main_center" style="padding: 8px 0px 0px;">
+        <hr size="1" width="100%"/>
+
+		<!-- INTRO MESSAGE -->
+		Welcome to your &quot;safelist.&quot;
+		A safelist is a list of email addresses,
+		usually email addresses of your friends and colleagues.
+		Emails, sent by anyone on a safelist, will <i>not</i> be quarantined if the emails are identified as spam or phish.<br><br>
+		To delete any email address on the safelist,
+		click the checkboxes for one or more email addresses and click <code>Remove Selected Addresses</code>.
+		To add an email address to the safelist,
+		enter the email address in the text field and click <code>Submit</code>.<br><br>
+
+		<!-- INITIAL TABLE -->
+		<center>
+		<table>
               <quarantine:hasMessages type="info">
               <tr>
                 <td>
@@ -107,17 +122,11 @@ enter the email address in the text field and click <code>Submit</code>.<br><br>
                 </td>              
               </tr>
               </quarantine:hasMessages>                      
-            </tbody>
-          </table>
-        </td>
-        <% // Because of IE stupidity, there can be no LWS between the tags below %>
-        <td WIDTH="20" valign="top"><img src="images/tr.gif"></td>
-      </tr>
-      <% // Outer table, middle row %>
-      <tr>
-        <td>
-        </td>
-        <td>
+		</center>
+		</table>
+
+
+		<!-- INPUT FORM 1 -->
           <form name="form1" method="POST" action="smc">
             <input type="hidden"
               name="<quarantine:constants keyName="action"/>"
@@ -163,6 +172,8 @@ enter the email address in the text field and click <code>Submit</code>.<br><br>
               </tr>
             </table>
           </form>
+
+		<!-- INPUT FORM 2 -->
           <br><br>
           <form name="form2" action="smc">
             <input type="hidden"
@@ -185,22 +196,35 @@ enter the email address in the text field and click <code>Submit</code>.<br><br>
               </tr>
             </table>
           </form>          
+
+
+		<br/>
+	<center>Powered by Metavize&reg; EdgeGuard&reg;</center>
+
+          <hr size="1" width="100%"/>
         </td>
-        <td>
-        </td>
-      </tr>
-      <% // Outer table, last row %>
-      <tr>
-        <% // Because of IE stupidity, there can be no LWS between the tags below %>
-        <td WIDTH="20" valign="bottom"><img src="images/bl.gif" ALT=""></td>
-        <td class="smallLogo" height="100%">
-          Powered by <br>
-          Metavize&reg; EdgeGuard&reg;
-        </td>
-        <% // Because of IE stupidity, there can be no LWS between the tags below %>
-        <td WIDTH="20" valign="bottom"><img src="images/br.gif" ALT=""></td>
-      </tr>
-    </table>
+      <!-- END CENTER CELL -->
+      <td id="table_main_right"></td>
+    </tr>
+    <!-- END CONTENT AREA -->
     
-  </body>
+    <!-- BOTTOM THIRD -->
+    <tr>
+      <td id="table_main_bottom_left"><img src="images/spacer.gif" alt=" " height="23" width="23"/><br/>
+      </td>
+      <td id="table_main_bottom"><img src="images/spacer.gif" alt=" " height="1" width="1"/><br/>
+      </td>
+      <td id="table_main_bottom_right"> <img src="images/spacer.gif" alt=" " height="23" width="23"/><br/>
+      </td>
+    </tr>
+    <!-- END BOTTOM THIRD -->
+  </tbody>
+</table>
+
+</center>
+
+<!-- END BRUSHED METAL PAGE BACKGROUND -->
+
+</body>
 </html>
+
