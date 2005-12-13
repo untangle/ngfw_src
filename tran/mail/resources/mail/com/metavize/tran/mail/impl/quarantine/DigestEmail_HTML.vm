@@ -576,7 +576,9 @@ hr {
                         </td>
                         <td>
                           <div class="msiehack1">
+<!--                          
                             <a href="$linkgenerator.generateHelpLink()">Help</a>
+-->                            
                           </div>
                         </td>
                       </tr>
