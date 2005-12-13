@@ -100,8 +100,8 @@ public class PolicyStateMachine implements ActionListener {
     private static final int DOWNLOAD_SLEEP_MILLIS = 500;
     private static final int DOWNLOAD_FINAL_SLEEP_MILLIS = 3000;
     // INSTALL DELAYS ////////////////
-    private static final int INSTALL_CHECK_TIMEOUT_MILLIS = 60000;
-    private static final int INSTALL_SLEEP_MILLIS = 5000;
+    private static final int INSTALL_CHECK_TIMEOUT_MILLIS = 3 * 60 * 1000;
+    private static final int INSTALL_SLEEP_MILLIS = 5 * 1000;
 
     public PolicyStateMachine(JTabbedPane actionJTabbedPane, JComboBox viewSelector, JPanel rackViewJPanel,
 			      JScrollPane toolboxJScrollPane, JPanel policyToolboxSocketJPanel, JPanel serviceToolboxSocketJPanel,
