@@ -54,7 +54,7 @@ public class HttpBlockerSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "SELECT SUM(c2p_bytes), SUM(s2p_bytes), SUM(p2c_bytes), SUM(p2s_bytes) FROM tr_http_evt_req AS evt, tr_http_req_line AS line, pl_stats AS stats WHERE evt.time_stamp >= ? AND evt.time_stamp < ? AND evt.request_id = line.request_id AND line.pl_endp_id = stats.event_id";
+            sql = "SELECT SUM(c2p_bytes), SUM(s2p_bytes), SUM(p2c_bytes), SUM(p2s_bytes) FROM tr_http_evt_req AS evt, tr_http_req_line AS line, pl_stats AS stats WHERE evt.time_stamp >= ? AND evt.time_stamp < ? AND evt.request_id = line.request_id AND line.pl_endp_id = stats.pl_endp_id";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
