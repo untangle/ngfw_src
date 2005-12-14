@@ -68,9 +68,30 @@ public class SafelistManager
     public boolean isSafelisted(EmailAddress envelopeSender,
       EmailAddress mimeFrom, List<EmailAddress> recipients)
     {
-        EmailAddress eAddr = (null != envelopeSender ? envelopeSender : (null != mimeFrom ? mimeFrom : null));
+        //Fix for bug 1174 - check not only for a null
+        //EmailAddress object, but a null internal address
+        //String.  This is because of the special "null"
+        //address used by MTAs
+        //
+        // wrs - 12/05
+        String addrStr = null;
 
+        if(envelopeSender != null && envelopeSender.getAddress() != null) {
+          addrStr = envelopeSender.getAddress().toLowerCase();
+        }
+        if(addrStr == null) {
+          if(mimeFrom != null && mimeFrom.getAddress() != null) {
+            addrStr = mimeFrom.getAddress().toLowerCase();
+          }
+        }
+
+        boolean bReturn = addrStr == null?
+          false:m_allSndrs.contains(addrStr);
+          
+/*        
+        EmailAddress eAddr = (null != envelopeSender ? envelopeSender : (null != mimeFrom ? mimeFrom : null));
         boolean bReturn = (null == eAddr) ? bReturn = false : m_allSndrs.contains(eAddr.getAddress().toLowerCase());
+*/        
         m_logger.debug("sender ( " + envelopeSender + ", " + mimeFrom + "): is safelisted: " + bReturn);
         return bReturn;
     }
