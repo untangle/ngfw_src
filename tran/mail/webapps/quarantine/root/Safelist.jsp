@@ -111,10 +111,10 @@
                 </td>              
               </tr>
               </quarantine:hasMessages>
-		</center>
 		</table>
-		<table>
+		</center>
 		<center>
+		<table>
               <quarantine:hasMessages type="error">
               <tr>
                 <td>
@@ -126,9 +126,8 @@
                 </td>              
               </tr>
               </quarantine:hasMessages>                      
-		</center>
 		</table>
-
+		</center>
 
 		<!-- INPUT FORM 1 -->
           <form name="form1" method="POST" action="safelist">
