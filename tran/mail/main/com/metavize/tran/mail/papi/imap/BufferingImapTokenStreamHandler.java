@@ -276,16 +276,22 @@ public abstract class BufferingImapTokenStreamHandler
 
   private TokenResult callHandleMessage(MIMEMessage msg,
     MessageInfo info) {
-    
-    HandleMailResult result = handleMessage(msg, info);
-    
-    if(result.replacedMail()) {
-      m_logger.debug("handleMessage replaced MIME");
-      msg = result.getReplacedMail();
+
+    try {
+      HandleMailResult result = handleMessage(msg, info);
+      if(result.replacedMail()) {
+        m_logger.debug("handleMessage replaced MIME");
+        msg = result.getReplacedMail();
+      }
+      else {
+        m_logger.debug("handleMessage passed message w/o change");
+      }      
     }
-    else {
-      m_logger.debug("handleMessage passed message w/o change");
+    catch(Throwable t) {
+      m_logger.error("Exception handling IMAP mail", t);
     }
+    
+
     return new TokenResult(new Token[] {
       new CompleteImapMIMEToken(msg, info)}, null);
   }

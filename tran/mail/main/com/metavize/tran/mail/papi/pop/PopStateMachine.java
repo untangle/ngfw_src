@@ -235,7 +235,11 @@ public abstract class PopStateMachine extends AbstractTokenHandler
                 logger.warn("problem occurred during scan; scan result for message may have been discarded: " + exn);
                 zResult = handleException(ExceptionState.MESSAGE_COMPLETE, zMMessageT);
                 /* fall through */
-            }
+            } catch (Throwable t) {
+                logger.error("problem occurred during scan; scan result for message may have been discarded: " + t);
+                zResult = handleException(ExceptionState.MESSAGE_COMPLETE, zMMessageT);
+                /* fall through */
+            }            
 
             resetServer(); /* done so reset */
             return zResult;
@@ -307,6 +311,10 @@ public abstract class PopStateMachine extends AbstractTokenHandler
             zResult = scanMessage();
         } catch (TokenException exn) {
             logger.warn("problem occurred during scan; scan result for message may have been discarded: " + exn);
+            zResult = handleException(ExceptionState.MESSAGE_COMPLETE, zMMessageT);
+            /* fall through */
+        } catch (Throwable t) {
+            logger.error("problem occurred during scan; scan result for message may have been discarded: " + t);
             zResult = handleException(ExceptionState.MESSAGE_COMPLETE, zMMessageT);
             /* fall through */
         }

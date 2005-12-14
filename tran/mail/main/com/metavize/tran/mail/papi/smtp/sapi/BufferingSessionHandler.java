@@ -218,8 +218,36 @@ public abstract class BufferingSessionHandler
   public abstract BlockOrPassResult blockOrPass(MIMEMessage msg,
     SmtpTransaction tx,
     MessageInfo msgInfo);
+    
 
+  private BPMEvaluationResult callBlockPassOrModify(MIMEMessage msg,
+    SmtpTransaction tx,
+    MessageInfo msgInfo) {
+    
+    try {
+      return blockPassOrModify(msg, tx, msgInfo);
+    }
+    catch(Throwable t) {
+      m_logger.error("Exception calling subclass.  Pass message", t);
+      return PASS_MESSAGE;
+    }
+  }    
+    
 
+  private BlockOrPassResult callBlockOrPass(MIMEMessage msg,
+    SmtpTransaction tx,
+    MessageInfo msgInfo) {
+    
+    try {
+      return blockOrPass(msg, tx, msgInfo);
+    }
+    catch(Throwable t) {
+      m_logger.error("Exception calling subclass.  Pass message", t);
+      return BlockOrPassResult.PASS;
+    }
+  }
+    
+    
   /**
    * Get the name fhe client used on a HELO/EHLO line.
    * This *should* be the remote client's hostname
@@ -815,7 +843,7 @@ public abstract class BufferingSessionHandler
         }
       }
       if(canModify) {
-        BPMEvaluationResult result = blockPassOrModify(m_msg,
+        BPMEvaluationResult result = callBlockPassOrModify(m_msg,
           getTransaction(),
           m_messageInfo);
         if(result.messageModified()) {
@@ -828,7 +856,7 @@ public abstract class BufferingSessionHandler
         }
       }
       else {
-        return blockOrPass(m_msg, getTransaction(), m_messageInfo) == BlockOrPassResult.PASS;
+        return callBlockOrPass(m_msg, getTransaction(), m_messageInfo) == BlockOrPassResult.PASS;
       }
     }  
   
