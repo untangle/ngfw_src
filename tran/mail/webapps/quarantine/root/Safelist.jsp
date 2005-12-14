@@ -111,6 +111,10 @@
                 </td>              
               </tr>
               </quarantine:hasMessages>
+		</center>
+		</table>
+		<table>
+		<center>
               <quarantine:hasMessages type="error">
               <tr>
                 <td>
@@ -127,7 +131,7 @@
 
 
 		<!-- INPUT FORM 1 -->
-          <form name="form1" method="POST" action="smc">
+          <form name="form1" method="POST" action="safelist">
             <input type="hidden"
               name="<quarantine:constants keyName="action"/>"
               value="<quarantine:constants valueName="slremove"/>"/>
@@ -173,9 +177,10 @@
             </table>
           </form>
 
-		<!-- INPUT FORM 2 -->
+
+	 <!-- INPUT FORM 2 -->
           <br><br>
-          <form name="form2" action="smc">
+          <form name="form2" action="safelist">
             <input type="hidden"
               name="<quarantine:constants keyName="action"/>"
               value="<quarantine:constants valueName="sladd"/>"/>
@@ -197,7 +202,7 @@
             </table>
           </form>          
 
-
+		 
 		<br/>
 	<center>Powered by Metavize&reg; EdgeGuard&reg;</center>
 

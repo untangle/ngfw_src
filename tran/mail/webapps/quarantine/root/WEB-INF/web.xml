@@ -56,7 +56,7 @@
   
   <servlet-mapping>
     <servlet-name>SafelistMaintenenceControler</servlet-name>
-    <url-pattern>/smc</url-pattern>
+    <url-pattern>/safelist</url-pattern>
   </servlet-mapping>    
 
 </web-app>

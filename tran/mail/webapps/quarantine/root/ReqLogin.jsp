@@ -93,6 +93,11 @@
                   </ul>
 		</td></tr>
               </quarantine:hasMessages>
+		</table>
+		</center>
+
+		<center>
+		<table>
               <quarantine:hasMessages type="error">
 		<tr><td>
                   <ul class="errortext">
