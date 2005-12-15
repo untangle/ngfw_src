@@ -93,6 +93,7 @@
         <answer>
           <para>
             The most common error is to configure yet not turn-on the EdgeReports Appliance.  Please be sure that the EdgeReports Appliance is turned on (see <xref linkend="using_adminui"/> for a discussion of turning on/off appliances).
+          </para>
           <para>
             The next most common error is that the reports have yet to be emailed.  Reports are emailed on a daily basis, so you need to wait up to 24 hours to receive your first report email.
           </para>

@@ -29,12 +29,16 @@ class InboxDirectoryTree {
 
   private Object m_lock = new Object();
 
-  private File m_rootDir;
+  private File m_inboxRootDir;
+  private File m_quarantineRootDir;
 
   InboxDirectoryTree(File quarantineRootDir) {
-    m_rootDir = new File(quarantineRootDir, DATA_DIR_NAME);
-    if(!m_rootDir.exists()) {
-      m_rootDir.mkdirs();
+
+    m_quarantineRootDir = quarantineRootDir;
+  
+    m_inboxRootDir = new File(m_quarantineRootDir, DATA_DIR_NAME);
+    if(!m_inboxRootDir.exists()) {
+      m_inboxRootDir.mkdirs();
     }
   }
 
@@ -49,7 +53,7 @@ class InboxDirectoryTree {
    * @param visitor the visitor
    */
   void visitInboxes(InboxDirectoryTreeVisitor visitor) {
-    visitInboxesImpl(m_rootDir, visitor, DATA_DIR_NAME);
+    visitInboxesImpl(m_inboxRootDir, visitor, DATA_DIR_NAME);
   }
 
   private void visitInboxesImpl(File dir,
@@ -87,14 +91,14 @@ class InboxDirectoryTree {
    * @param dir the doomed directory.
    */
   void deleteInboxDir(RelativeFileName dir) {
-    IOUtil.rmDir(new File(m_rootDir, dir.relativePath));
+    IOUtil.rmDir(new File(m_quarantineRootDir, dir.relativePath));
   }
 
   private RelativeFile createInboxDirImpl() {
     long num = System.currentTimeMillis();
     File f = null;
     for(int i = 0; i<MAX_TRIES; i++) {
-      f = new File(m_rootDir, Long.toString(num + i));
+      f = new File(m_inboxRootDir, Long.toString(num + i));
       synchronized(m_lock) {
         if(!f.exists()) {
           f.mkdirs();
