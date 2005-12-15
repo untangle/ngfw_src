@@ -35,6 +35,8 @@ public abstract class IteratingTag<T>
     m_it = createIterator();
     
     if(m_it == null || !m_it.hasNext()) {
+      //Putting a silly print here didn't do anything.
+      mvSetEmpty();
       return SKIP_BODY;
     }
     OddEvenTag.setCurrent(pageContext, m_even);

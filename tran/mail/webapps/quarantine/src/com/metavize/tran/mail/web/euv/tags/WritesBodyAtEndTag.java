@@ -25,10 +25,17 @@ import java.util.Iterator;
 public abstract class WritesBodyAtEndTag
   extends BodyTagSupport {
 
+  private boolean m_isEmpty = false;
+
+  protected void mvSetEmpty() {
+    m_isEmpty = true;
+  }
+
   public int doEndTag() throws JspException{
     try {
       BodyContent body = getBodyContent();
-      if(body == null || body.getString() == null) {
+      if(m_isEmpty || body == null || body.getString() == null) {
+        m_isEmpty = false;
         return EVAL_PAGE;
       }
       JspWriter writer = body.getEnclosingWriter();
@@ -40,5 +47,10 @@ public abstract class WritesBodyAtEndTag
       ioe.printStackTrace(System.out);
       throw new JspException(ioe.getMessage());
     }
-  }   
+  }
+
+  public void release() {
+    m_isEmpty = false;
+    super.release();
+  }  
 }
