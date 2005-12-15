@@ -1,0 +1,681 @@
+## ######################################################################
+## Copyright (c) 2005 Metavize Inc.
+## All rights reserved.
+##
+## This software is the confidential and proprietary information of
+## Metavize Inc. ("Confidential Information").  You shall
+## not disclose such Confidential Information.
+##
+## $Id$
+## ######################################################################
+##
+##
+#*
+---------------------------------------------------------------------------
+
+***** First off, this is the only place this documentation exists.  If you decide to re-write the contents of this file, please make sure to include this blurb at the top of your new file.  Otherwise, everyone will need to go back and learn "Velocity" and read the Java source for the types of Objects referenced.*****
+
+This is a template file.  It is merged with data at runtime to produce a text stream.  In this case, it is the HTML portion of a "multipart/alternative" email summarizing someone's Quarantine inbox.
+
+The template processing engine used is called "Velocity".  It's one of those Apache/Jakarta things.  There are decent docs on the web for Velocity, but I'll present some minimal docs here so you don't have to start from scratch.
+
+Velocity templates consist of the data to be outputted execept for directives and variable substitution.  So, things like whitespace, quoting, etc are taken literally.
+
+There are two comment conventions for Velocity.  Single-line comments begin with pound-pound, and multiline comments begine with pound-star, and end with star-pound.  This readme is within a multiline comment.
+
+Velocity follows the intuitive dollar ("$") syntax for variables.  For example, "$user_email" will become the current email address when the template is processed.  Some of the variables are treated as Object references, with methods being called.  If you want to know more, go read about Velocity.  Otherwise, I'll present the Objects used in *this* template below, along with any other potentialy confusing syntax.
+
+
+
+1) Summary of Objects/variables referenced
+
+$user_email - the user's email address (a string)
+$image_root - URL root for image sources
+$linkgenerator - An object which creates a URL based on a mail ID  generateInboxLink, generateHelpLink
+$inboxrecords - An array of inbox records.  This array has been trimmed to be the
+                "correct" length of stuff to display
+
+Note that the next few *should* be able to be set from
+Velocity, but I had endless problems with their math
+
+$hasRecords - Boolean indicating if there are any records
+$hasRecsNotShown - Boolean indicating that there are extra records which could not be shown
+                   for space reasons
+$numRecsNotShown - Number of records which could not be shown for space reasons
+
+$totalNumRecords - total number of records (because this Velocity junk would
+                   not understand "$inboxrecords.length")
+
+
+2) Conditionals
+
+There are a few places where conditionals are used.  The basic syntax is "#if"/"#else"/"#end".  For example:
+
+  #if ($hasRecsNotShown)
+    There are more records
+  #else
+    Here are all of your records
+  #end
+
+In the above example, "There are more records" will be included in the generated stream if "$hasRecsNotShown" evaluates to true.
+
+
+3) Methods
+
+The "$linkgenerator" class has a few methods called.  This follows normal Java syntax.  The methods are:
+
+$linkgenerator.generateInboxLink()
+$linkgenerator.generateHelpLink()
+$linkgenerator.generatePurgeLink(arg)
+$linkgenerator.generateRescueLink(arg)
+
+
+Hopefully, the names make sense.  Note that the link generator already "knows" the current user's address, so it need not be passed as an argument.  The purge/rescue links need to know the mailID.  There is an example of this below.
+
+
+4) Loops
+
+There is one loop you can use, iterating over the elements of $inboxrecords.  Example of the syntax for such a loop is:
+
+#foreach( $record in $inboxrecords )
+  ...
+#end
+
+Where "$record" will be replaced with the "current" record while iterating over the record set.
+
+
+---------------------------------------------------------------
+*#
+##
+##
+##
+##
+##
+##
+<html>
+  <head>
+    <title>Metavize | Quarantine Digest for $user_email</title>
+  <style>
+table.outertable {
+  background:#FFFFFF;
+  padding: 0;
+  margin: 0;
+  /* Note the magic trick below to center the table */
+  width: 96%;
+  height: 95%;
+  margin-left:2%;
+  margin-right:2%;
+  margin-top:1%;
+  margin-bottom:4%;
+}
+
+.logoTable {
+  padding-left: 15; 
+  padding-top: 15;
+}
+
+table.intro {
+  padding-left: 10;
+  padding-top: 15;
+}
+
+table.introUserInfo {
+  padding-left: 10;
+  text-align: right;
+}
+
+.infotext {
+  color: #372F2F;
+  padding-left: 10;
+  padding-right: 20;
+  padding-top: 20;
+  padding-bottom: 10;
+}
+
+table.actions {
+  margin: 0;
+  padding: 0;
+  color: #FFFFFF
+}
+
+table.actions tbody TD {
+  background-color: #34609B;
+  padding: 15;
+}
+
+table.actions tbody TD + TD {
+  background-color: #34609B;
+  text-align: right;
+  padding-right: 10;
+}
+
+.tableFooter {
+  text-align: right;
+  padding-right: 10;
+}
+
+.msiehack1 {
+  background-color: #34609B;
+  text-align: right;
+  padding-right: 10;
+}
+.msiehack2 {
+  background-color: #34609B;
+  text-align: left;
+  padding-left: 10;
+}
+
+table.actions a {
+  color: #FFFFFF;
+}
+table.actions a:visited {
+  color: #CCFFFF;
+}
+table.actions a:hover {
+  color: #33FFFF;
+}
+table.actions a:active {
+  color: #FF0000;
+}
+
+.errortext {
+  font:  normal 20 Arial,Geneva; color: #FF0000;
+  padding-left: 10;
+  padding-right: 10;
+  padding-bottom: 10;
+}
+
+.messageText {
+  font:  normal 20 Arial,Geneva; color: #00ff00;
+  padding-left: 10;
+  padding-right: 10;
+  padding-bottom: 10;
+}
+
+table.topofsl {
+  border-collapse: collapse;
+  border-style:  solid;
+  border-width: 1;
+  border-color: #666;
+  width: 98%;
+  margin-left:1%;
+  margin-right:1%;
+  background-color: #34609B;  
+}
+
+
+
+table.slist {
+  border-collapse: collapse;
+  border-style:  solid;
+  border-width: 1;
+  border-color: #666;
+  width: 98%;
+  margin-left:1%;
+  margin-right:1%;
+}
+
+table.slist th, table.slist td {
+  border-bottom: 1px solid #666;
+  border-top: 1px solid #666;
+  padding: 0.6em;
+  vertical-align: 4px;
+}
+
+table.slist th {
+  text-align: left;
+  text-transform: uppercase;
+}
+
+table.slist tbody td.first {
+  text-align: left;
+  padding-left: 20;
+}
+
+table.slist thead th {
+  background-color: #E0E0E0;
+  border-left: 1px solid #666;
+}
+
+table.slist table.slist tfoot th, table.slist tfoot td {
+  background-color: #E0E0E0;
+}
+
+table.slist thead th.first {
+  padding-left: 24px;
+}
+
+table.slist tbody th {
+  padding-left: 24px;
+}
+
+table.slist tr.even td, table.slist tr.even th {
+  background-color:#C1C1CE;
+}
+
+table.slist tr.odd td, table.slist tr.odd th {
+  background-color: #B7B7C4;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+table.inbox {
+  border-collapse: collapse;
+  margin: 0;
+  padding: 0;
+
+}
+
+table.inbox th, table.inbox td {
+  border-bottom: 1px solid #666;
+  border-top: 1px solid #666;
+  padding: 0.6em;
+  vertical-align: 4px;
+}
+
+table.inbox th {
+  text-align: left;
+  text-transform: uppercase;
+}
+
+table.inbox tbody td.first {
+  text-align: left;
+  padding-left: 20;
+}
+
+table.inbox thead th, table.inbox tfoot th, table.inbox tfoot td {
+  background-color: #E0E0E0;
+}
+
+table.inbox thead th.first {
+  padding-left: 24px;
+}
+
+table.inbox tbody th {
+  padding-left: 24px;
+}
+
+table.inbox tr.even td, table.inbox tr.even th {
+  background-color:#eee;
+}
+
+table.inbox tr.odd td, table.inbox tr.odd th {
+  background-color: #ddd;
+}
+
+table.inbox tbody a {
+  color: #333;
+}
+
+table.inbox tbody a:visited {
+  color: #999999;
+}
+
+table.inbox tbody a:hover {
+  color: #33c;
+}
+
+table.inbox tbody a:active {
+  color: #33c;
+}
+
+table.inbox tfoot th {
+  text-align: right;
+}
+
+table.inbox tfoot th:after {
+  content: ":";
+}
+
+.enteremail {
+  border-style: solid;
+  border-width: 1;
+  padding: 20;
+  background: #D0D0D0;
+  border-color: #000000;
+}
+
+.msiehack3 {
+  padding: 20;
+}
+
+.smallLogo {
+  font:  normal 12 arial, helvetica, sans serif;
+  text-align: center;
+  padding-top: 30;
+  padding-bottom: 30;
+  height: 100%;
+  vertical-align: bottom;
+}
+
+
+
+
+
+
+
+
+
+
+
+body {
+     margin: 15px;
+     background: #FFFFFF url($image_root/background_body.gif) repeat-x top left;
+     text-align: center;
+}  
+
+table {
+    font: normal normal normal 10pt/14pt Arial,Sans-Serif;
+    text-align: left;
+    color: #606060;
+}
+
+input {
+    font: normal normal normal 10pt/14pt Arial,Sans-Serif;
+    text-align: left;
+    color: #606060;
+}
+
+form {
+    margin: 0px;
+}
+
+
+a:link, a:visited {
+    font: normal normal normal 10pt/14pt Arial,Sans-Serif;
+    color: #1997FE;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #1997FE;
+    text-decoration: underline;
+}
+
+.page_header_title {
+    font: bold normal normal 25pt Arial,Sans-Serif;
+    color: #777777;
+}
+
+.page_sub_title {
+    font: bold normal normal 17pt Arial,Sans-Serif;
+    color: #777777;
+}
+
+
+.page_header_alternate {
+    font: normal normal normal 20pt Arial,Sans-Serif;
+    color: #777777;
+}
+
+h1 {
+    font: normal normal bold 11pt Arial,Sans-Serif;
+    color: #999999;
+    letter-spacing: 1px;
+    margin: 0px;
+    padding: 0px;
+}
+
+h2 {
+    font: normal normal bold 10pt Arial,Sans-Serif;
+    color: #999999;
+    letter-spacing: 1px;
+    margin: 0px;
+    padding: 0px;
+}
+
+h3 {
+    font: normal normal bold 11pt Arial,Sans-Serif;
+    color: #606060;
+    letter-spacing: 1px;
+    margin: 0px;
+    padding: 0px;
+}
+
+h4 {
+    font: normal normal bold 14pt Arial,Sans-Serif;
+    color: #0044D7;
+    letter-spacing: 1px;
+    margin: 0px;
+    padding: 0px;
+}
+
+/* the following pertain to the main content (i.e. the main 'metal-brushed') table */
+#table_main_center {
+    background: url($image_root/background_table_main_center.gif) repeat-y;
+}
+
+#table_main_top {
+    background: url($image_root/background_table_main_top.gif) repeat-x;
+}
+
+#table_main_top_left {
+    background: url($image_root/rounded_corner_main_top_left.gif) no-repeat;
+}
+
+#table_main_top_right {
+    background: url($image_root/rounded_corner_main_top_right.gif) no-repeat;
+}
+
+#table_main_right {
+    background: url($image_root/background_table_main_right.gif) repeat-y;
+}
+
+#table_main_bottom {
+    background: url($image_root/background_table_main_bottom.gif) repeat-x;
+}
+
+#table_main_bottom_left {
+    background: url($image_root/rounded_corner_main_bottom_left.gif) no-repeat;
+}
+
+#table_main_bottom_right {
+    background: url($image_root/rounded_corner_main_bottom_right.gif) no-repeat;
+}
+
+#table_main_left {
+    background: url($image_root/background_table_main_left.gif) repeat-y;
+}
+
+hr {
+     color: "#969696";
+     background-color: "#969696";
+}
+
+
+  </style>
+  </head>
+  <body>
+
+
+
+
+<center>
+<table border="0" cellpadding="0" cellspacing="0" width="904">
+
+<!-- TOP THIRD -->
+  <tbody>
+    <tr>
+      <td id="table_main_top_left"><img src="$image_root/spacer.gif" alt=" " height="23" width="23"/><br/>
+      </td>
+      
+      <td id="table_main_top" width="100%"><img src="$image_root/spacer.gif" alt=" " height="1" width="1"/><br/>
+      </td>
+
+      <td id="table_main_top_right"> <img src="$image_root/spacer.gif" alt=" " height="23" width="23"/><br/>
+      </td>
+    </tr>
+
+    <!-- END TOP THIRD -->
+
+    <!-- MIDDLE THIRD -->
+    <tr>
+      <td id="table_main_left"><img src="$image_root/spacer.gif" alt=" " height="1" width="1"/></td>
+
+      <td id="table_main_center">
+        <table width="100%">
+          <tbody>
+            <tr>
+              <td valign="middle" width="96">
+                <a href="http://www.metavize.com">
+                  <img src="$image_root/logo_no_text_shiny_96x96.gif" border="0" alt="Metavize logo"/>
+                </a>
+              </td>
+              
+              <td style="padding: 0px 0px 0px 10px;" class="page_header_title" align="left" valign="middle">
+                Quarantine Digest for<br/>$user_email
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+
+      <td id="table_main_right"> <img src="$image_root/spacer.gif" alt=" " height="1" width="1"/></td>
+    </tr>
+
+    <!-- END MIDDLE THIRD -->
+    <!-- CONTENT AREA -->
+    <tr>
+      
+      <td id="table_main_left"></td>
+
+      <!-- CENTER CELL --> 
+      <td id="table_main_center" style="padding: 8px 0px 0px;">
+        <hr size="1" width="100%"/>
+
+		<!-- INTRO MESSAGE -->
+		  The emails listed below have been quarantined by Metavize EdgeGuard.
+		  These emails will be deleted automatically after 20 days.<br><br>
+		  To release a specific email from the quarantine and deliver the email to your inbox,
+		  click <code>Release</code>.
+		  To delete a specific email from the quarantine,
+		  click <code>Delete</code>.<br><br>
+
+		<!-- MAIN MESSAGE -->
+          #if ($hasRecords)
+          <table border="0" cellpadding="0" cellspacing="0" width="100%">
+            <tbody>
+              <tr>
+                <td>
+                  <table class="actions" border="0" cellpadding="0" cellspacing="0" width="100%">
+                    <tbody>
+                      <tr>
+                        <td>
+                          <div class="msiehack2">
+                            <a href="$linkgenerator.generateInboxLink()">Visit Your Inbox</a>
+                          </div>
+                        </td>
+                        <td>
+                          <div class="msiehack1">
+<!--                          
+                            <a href="$linkgenerator.generateHelpLink()">Help</a>
+-->                            
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <table class="inbox" width="100%">
+                    <thead>
+                      <tr>
+                        <th class="first" scope="col">Actions</th>
+                        <th scope="col">From</th>
+                        <th scope="col">Score</th>
+                        <th scope="col">Subject</th>
+                      </tr>
+                    </thead>
+                    <tfoot>
+                    #if ($hasRecsNotShown)
+                      <tr>
+                        <th scope="row">Not Listed</th>
+                        <td colspan="4">
+                          $numRecsNotShown older mails
+                          <a href="$linkgenerator.generateInboxLink()">in your online inbox</a></td>
+                      </tr>
+                    #else
+                      <tr>
+                        <th scope="row">Total</th>
+                        <td colspan="4">$totalNumRecords mails</td>
+                      </tr>
+                    #end
+                    </tfoot>
+                    <tbody>
+                      #if ($hasRecords)
+                        ## Booleans don't seem to work with Velocity
+                        #set ($isEven = 0)
+                        #set ($parity = "even")
+                        #foreach( $record in $inboxrecords )
+                          #if ($isEven == 0)
+                            #set ($parity = "even")
+                          #else
+                            #set ($parity = "odd")
+                          #end
+                          <tr class="$parity">
+                            <td class="first">
+                              <a href="$linkgenerator.generatePurgeLink($record.getMailID())">Delete</a>&nbsp;|
+                              &nbsp;<a href="$linkgenerator.generateRescueLink($record.getMailID())">Release</a></td>
+                            <td>$record.getMailSummary().Sender</td>
+                            <td>$record.getMailSummary().QuarantineDetail</td>
+                            <td>$record.getMailSummary().Subject</td>
+                          </tr>
+                          #set ($isEven = $isEven + 1)
+                          #if ($isEven > 1)
+                            #set ($isEven = 0)
+                          #end
+                        #end
+                      #end
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          #else
+            There are no records but you can always <a href="$linkgenerator.generateInboxLink()">go to to your online inbox</a> (make me pretty)
+          #end
+
+		<br/>
+	<center>Powered by Metavize&reg; EdgeGuard&reg;</center>
+
+          <hr size="1" width="100%"/>
+        </td>
+      <!-- END CENTER CELL -->
+      <td id="table_main_right"></td>
+    </tr>
+    <!-- END CONTENT AREA -->
+    
+    <!-- BOTTOM THIRD -->
+    <tr>
+      <td id="table_main_bottom_left"><img src="$image_root/spacer.gif" alt=" " height="23" width="23"/><br/>
+      </td>
+      <td id="table_main_bottom"><img src="$image_root/spacer.gif" alt=" " height="1" width="1"/><br/>
+      </td>
+      <td id="table_main_bottom_right"> <img src="$image_root/spacer.gif" alt=" " height="23" width="23"/><br/>
+      </td>
+    </tr>
+    <!-- END BOTTOM THIRD -->
+  </tbody>
+</table>
+
+</center>
+
+<!-- END BRUSHED METAL PAGE BACKGROUND -->
+
+
+
+
+  </body>
+</html>

@@ -1,0 +1,171 @@
+/*
+ * Copyright (c) 2005 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+package com.metavize.tran.mail.web.euv;
+
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.ServletException;
+
+import com.metavize.tran.util.Pair;
+
+import com.metavize.tran.mail.web.euv.tags.MessagesSetTag;
+import com.metavize.tran.mail.web.euv.tags.CurrentEmailAddressTag;
+import com.metavize.tran.mail.web.euv.tags.CurrentAuthTokenTag;
+
+import com.metavize.tran.mail.papi.quarantine.QuarantineUserView;
+import com.metavize.tran.mail.papi.quarantine.BadTokenException;
+import com.metavize.tran.mail.papi.quarantine.NoSuchInboxException;
+import com.metavize.tran.mail.papi.quarantine.QuarantineUserActionFailedException;
+import com.metavize.tran.mail.papi.quarantine.InboxIndex;
+import com.metavize.tran.mail.papi.quarantine.InboxRecord;
+import com.metavize.tran.mail.papi.safelist.SafelistEndUserView;
+import com.metavize.tran.mail.papi.safelist.NoSuchSafelistException;
+import com.metavize.tran.mail.papi.safelist.SafelistActionFailedException;
+
+import java.util.HashSet;
+
+
+
+/**
+ * Base class for common controler functionality
+ */
+public abstract class MaintenenceControlerBase
+  extends HttpServlet {
+
+  protected void service(HttpServletRequest req,
+    HttpServletResponse resp)
+    throws ServletException, IOException {
+
+    String authTkn = req.getParameter(Constants.AUTH_TOKEN_RP);
+    if(authTkn == null) {
+      log("[SafelistMaintenenceControler] Auth token null");
+      req.getRequestDispatcher(Constants.REQ_DIGEST_VIEW).forward(req, resp);
+      return;
+    }
+
+    //Get the QuarantineUserView reference.  If we cannot,
+    //the user is SOL
+    SafelistEndUserView safelist =
+      QuarantineEnduserServlet.instance().getSafelist();
+    if(safelist == null) {
+      log("[MaintenenceControlerBase] Safelist Hosed");
+      req.getRequestDispatcher(Constants.SERVER_UNAVAILABLE_ERRO_VIEW).forward(req, resp);
+      return;
+    }
+    QuarantineUserView quarantine =
+      QuarantineEnduserServlet.instance().getQuarantine();
+    if(quarantine == null) {
+      log("[MaintenenceControlerBase] Quarantine Hosed");
+      req.getRequestDispatcher(Constants.SERVER_UNAVAILABLE_ERRO_VIEW).forward(req, resp);
+      return;
+    }    
+
+
+    String account = null;
+    try {
+      //Attempt to decrypt their token
+      account = quarantine.getAccountFromToken(authTkn);
+    }
+    catch(BadTokenException ex) {
+      //Put a message in the request
+      MessagesSetTag.setErrorMessages(req, "Unable to determine your email address from your previous request");
+      req.getRequestDispatcher(Constants.REQ_DIGEST_VIEW).forward(req, resp);
+      return;      
+    }
+    catch(Exception ex) {
+      log("[MaintenenceControlerBase] Exception servicing request", ex);
+      req.getRequestDispatcher(Constants.SERVER_UNAVAILABLE_ERRO_VIEW).forward(req, resp);
+      return;    
+    }
+    CurrentEmailAddressTag.setCurrent(req, account);
+    CurrentAuthTokenTag.setCurrent(req, authTkn);
+
+    serviceImpl(req, resp, account, quarantine, safelist);
+    
+  }
+
+  protected abstract void serviceImpl(HttpServletRequest req,
+    HttpServletResponse resp,
+    String account,
+    QuarantineUserView quarantine,
+    SafelistEndUserView safelist)
+    throws ServletException, IOException;
+
+
+
+  /**
+   * Adds any messages to the message set
+   */
+  protected Pair<String[], InboxIndex> addToSafelist(HttpServletRequest req,
+    HttpServletResponse resp,
+    String thisUserAccount,
+    QuarantineUserView quarantine,
+    SafelistEndUserView safelist,
+    String[] addressesToSafelist)
+      throws ServletException,
+      IOException,
+      NoSuchSafelistException,
+      SafelistActionFailedException,
+      NoSuchInboxException,
+      QuarantineUserActionFailedException {
+
+    if(addressesToSafelist == null ||
+      addressesToSafelist.length == 0) {
+      return new Pair<String[], InboxIndex>(
+        safelist.getSafelistContents(thisUserAccount),
+        quarantine.getInboxIndex(thisUserAccount));
+    }
+
+    String[] addresses = new String[addressesToSafelist.length];
+    for(int i = 0; i<addresses.length; i++) {
+      addresses[i] = addressesToSafelist[i].toLowerCase();
+    }
+
+    String[] safelistToReturn = null;
+
+    int numAdded = 0;
+    int msgsReleased = 0;
+    for(String addr : addresses) {
+      safelistToReturn = safelist.addToSafelist(thisUserAccount, addr);
+      numAdded++;
+    }
+
+    InboxIndex index = null;
+
+    MessagesSetTag.addInfoMessage(req, "Added " +
+      numAdded + " address" + (numAdded>1?"es":"") + " to safelist");
+
+    //Now, find any messages to release  
+    HashSet<String> midsToRelease =
+      new HashSet<String>();
+    index = quarantine.getInboxIndex(thisUserAccount);
+    for(InboxRecord record : index) {
+      for(String addr : addresses) {
+        if(record.getMailSummary().getSender().equalsIgnoreCase(addr)) {
+          midsToRelease.add(record.getMailID());
+        }
+      }
+    }
+    if(midsToRelease.size() > 0) {
+      index = quarantine.rescue(thisUserAccount,
+        (String[]) midsToRelease.toArray(new String[midsToRelease.size()]));
+        MessagesSetTag.addInfoMessage(req,
+          midsToRelease.size() + " message" + (midsToRelease.size()>0?"s":"") +
+          " released for safelisted senders");
+    }
+
+    return new Pair<String[], InboxIndex>(safelistToReturn, index);
+  }
+
+} 
