@@ -18,6 +18,7 @@ import javax.swing.table.*;
 
 import com.metavize.gui.transform.*;
 import com.metavize.gui.widgets.editTable.*;
+import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.logging.EventRepository;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.logging.RepositoryDesc;
@@ -93,13 +94,29 @@ public class LogJPanel extends MLogTableJPanel
                 event.add( null == pe ? "" : pe.getCServerAddr().getHostAddress() );
                 event.add( null == pe ? "" : pe.getSServerAddr().getHostAddress() );
                 event.add( log.getIsDmz() ? "Destined to DMZ" : ("Redirect Rule #" + log.getRuleIndex()));
-                event.add( null == pe ? "" : pe.getClientIntf());
-                event.add( null == pe ? "" : pe.getServerIntf());
+                String clientIntf = ( null == pe ? "" : convertIntf( pe.getClientIntf()));
+                String serverIntf = ( null == pe ? "" : convertIntf( pe.getServerIntf()));
+                event.add( clientIntf );
+                event.add( serverIntf );
                 allEvents.add( event );
             }
 
             return allEvents;
         }
 
+    }
+
+    /* This function shouldn't be here */
+    public String convertIntf( byte intf )
+    {
+        switch ( intf ) {
+        case IntfConstants.EXTERNAL_INTF: return IntfConstants.EXTERNAL;
+        case IntfConstants.INTERNAL_INTF: return IntfConstants.INTERNAL;
+        case IntfConstants.DMZ_INTF:      return IntfConstants.DMZ;
+        case IntfConstants.VPN_INTF:      return IntfConstants.VPN;
+        }
+
+        
+        return "";
     }
 }
