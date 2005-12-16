@@ -56,17 +56,21 @@ class CronManager
 
     private CronJob schedule(final CronJobImpl cronJob)
     {
-        TimerTask task = new TimerTask() {
+        TimerTask task = cronJob.getTask();
+        if (null != task) {
+            task.cancel();
+        }
+
+        task = new TimerTask() {
                 public void run()
                 {
                     if (cronJob.getTask() == this) {
                         cronJob.getRunnable().run();
-
-                        Calendar next = cronJob.getPeriod().nextTime();
-                        timer.schedule(this, next.getTime());
+                        schedule(cronJob);
                     }
                 }
             };
+
         cronJob.setTask(task);
 
         Calendar next = cronJob.getPeriod().nextTime();
