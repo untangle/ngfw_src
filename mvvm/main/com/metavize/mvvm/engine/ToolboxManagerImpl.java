@@ -336,6 +336,27 @@ class ToolboxManagerImpl implements ToolboxManager
 
     // private classes --------------------------------------------------------
 
+    private class UpdateTask implements Runnable
+    {
+        public void run()
+        {
+            logger.debug("doing automatic update");
+            try {
+                update();
+            } catch (MackageException exn) {
+                logger.warn("could not update", exn);
+            }
+
+            if (getUpgradeSettings().getAutoUpgrade()) {
+                logger.debug("doing automatic upgrade");
+                try {
+                    upgrade();
+                } catch (MackageException exn) {
+                    logger.warn("could not upgrade", exn);
+                }
+            }
+        }
+    }
 
     // private methods --------------------------------------------------------
 
@@ -628,27 +649,5 @@ class ToolboxManagerImpl implements ToolboxManager
     private void execMkg(String command) throws MackageException
     {
         execMkg(command, -1);
-    }
-
-    private class UpdateTask implements Runnable
-    {
-        public void run()
-        {
-            logger.debug("doing automatic update");
-            try {
-                update();
-            } catch (MackageException exn) {
-                logger.warn("could not update", exn);
-            }
-
-            if (getUpgradeSettings().getAutoUpgrade()) {
-                logger.debug("doing automatic upgrade");
-                try {
-                    upgrade();
-                } catch (MackageException exn) {
-                    logger.warn("could not upgrade", exn);
-                }
-            }
-        }
     }
 }
