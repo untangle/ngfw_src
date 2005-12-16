@@ -18,16 +18,14 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.StringTokenizer;
-import java.util.Timer;
-import java.util.TimerTask;
 
+import com.metavize.mvvm.CronJob;
 import com.metavize.mvvm.InstallProgress;
 import com.metavize.mvvm.MackageDesc;
 import com.metavize.mvvm.MackageException;
@@ -68,7 +66,8 @@ class ToolboxManagerImpl implements ToolboxManager
         }
     }
 
-    private final UpdateDaemon updateDaemon = new UpdateDaemon();
+    private final CronJob cronJob;
+    private final UpdateTask updateTask = new UpdateTask();
     private final Map<Long, AptLogTail> tails
         = new HashMap<Long, AptLogTail>();
 
@@ -84,10 +83,11 @@ class ToolboxManagerImpl implements ToolboxManager
     private ToolboxManagerImpl()
     {
         UpgradeSettings us = getUpgradeSettings();
+        Period p = us.getPeriod();
+
+        cronJob = MvvmContextFactory.context().makeCronJob(p, updateTask);
 
         refreshLists();
-
-        updateDaemon.reschedule(us);
     }
 
     static ToolboxManagerImpl toolboxManager()
@@ -103,7 +103,7 @@ class ToolboxManagerImpl implements ToolboxManager
     void destroy()
     {
         logger.info("ToolboxManager destroyed");
-        updateDaemon.destroy();
+        cronJob.cancel();
     }
 
     // ToolboxManager implementation ------------------------------------------
@@ -289,7 +289,7 @@ class ToolboxManagerImpl implements ToolboxManager
             };
         MvvmContextFactory.context().runTransaction(tw);
 
-        updateDaemon.reschedule(us);
+        cronJob.reschedule(us.getPeriod());
     }
 
     public UpgradeSettings getUpgradeSettings()
@@ -630,61 +630,25 @@ class ToolboxManagerImpl implements ToolboxManager
         execMkg(command, -1);
     }
 
-    private class UpdateDaemon
+    private class UpdateTask implements Runnable
     {
-        private final Timer timer = new Timer();
-
-        private TimerTask task;
-
-        private UpgradeSettings upgradeSettings;
-
-        public synchronized void reschedule(UpgradeSettings upgradeSettings)
+        public void run()
         {
-            this.upgradeSettings = upgradeSettings;
-            reschedule();
-        }
-
-        public void destroy()
-        {
-            task.cancel();
-        }
-
-        private synchronized void reschedule()
-        {
-            logger.debug("scheduling update");
-
-            if (null != task) {
-                task.cancel();
+            logger.debug("doing automatic update");
+            try {
+                update();
+            } catch (MackageException exn) {
+                logger.warn("could not update", exn);
             }
 
-            Calendar next = upgradeSettings.getPeriod().nextTime();
-            if (null == next) { return; } /* never */
-
-            logger.debug("scheduling timer for: " + next);
-
-            task = new TimerTask() {
-                    public void run()
-                    {
-                        logger.debug("doing automatic update");
-                        try {
-                            update();
-                        } catch (MackageException exn) {
-                            logger.warn("could not update", exn);
-                        }
-
-                        if (upgradeSettings.getAutoUpgrade()) {
-                            logger.debug("doing automatic upgrade");
-                            try {
-                                upgrade();
-                            } catch (MackageException exn) {
-                                logger.warn("could not upgrade", exn);
-                            }
-                        }
-                        reschedule();
-                    }
-                };
-
-            timer.schedule(task, next.getTime());
+            if (getUpgradeSettings().getAutoUpgrade()) {
+                logger.debug("doing automatic upgrade");
+                try {
+                    upgrade();
+                } catch (MackageException exn) {
+                    logger.warn("could not upgrade", exn);
+                }
+            }
         }
     }
 }

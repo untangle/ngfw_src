@@ -11,37 +11,39 @@
 
 package com.metavize.tran.mail.impl.quarantine;
 
-import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.MvvmLocalContext;
-import com.metavize.tran.mail.papi.quarantine.NoSuchInboxException;
-import com.metavize.tran.mail.papi.quarantine.InboxIndex;
-import com.metavize.tran.mail.impl.quarantine.store.InboxIndexImpl;
-import com.metavize.tran.mail.papi.quarantine.QuarantineUserActionFailedException;
-import com.metavize.tran.mail.papi.quarantine.BadTokenException;
-import com.metavize.tran.mail.papi.quarantine.QuarantineManipulation;
-import com.metavize.tran.mail.papi.quarantine.QuarantineMaintenenceView;
-import com.metavize.tran.mail.papi.quarantine.QuarantineTransformView;
-import com.metavize.tran.mail.papi.quarantine.QuarantineUserView;
-import com.metavize.tran.mail.papi.quarantine.QuarantineSettings;
-import com.metavize.tran.mail.papi.quarantine.InboxRecord;
-import com.metavize.tran.mail.papi.quarantine.Inbox;
-import com.metavize.tran.mail.papi.quarantine.QuarantineEjectionHandler;
-import com.metavize.tran.mail.papi.quarantine.MailSummary;
-import com.metavize.tran.mail.impl.quarantine.store.QuarantineStore;
-import com.metavize.tran.mail.impl.quarantine.store.QuarantinePruningObserver;
-import com.metavize.tran.mime.EmailAddress;
-import com.metavize.tran.mime.MIMEMessage;
-import com.metavize.tran.util.Pair;
-import com.metavize.tran.util.IOUtil;
-import com.metavize.tran.util.ByteBufferInputStream;
-import java.util.List;
-import java.util.ArrayList;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.metavize.mvvm.CronJob;
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.Period;
+import com.metavize.tran.mail.impl.quarantine.store.InboxIndexImpl;
+import com.metavize.tran.mail.impl.quarantine.store.QuarantinePruningObserver;
+import com.metavize.tran.mail.impl.quarantine.store.QuarantineStore;
+import com.metavize.tran.mail.papi.quarantine.BadTokenException;
+import com.metavize.tran.mail.papi.quarantine.Inbox;
+import com.metavize.tran.mail.papi.quarantine.InboxIndex;
+import com.metavize.tran.mail.papi.quarantine.InboxRecord;
+import com.metavize.tran.mail.papi.quarantine.MailSummary;
+import com.metavize.tran.mail.papi.quarantine.NoSuchInboxException;
+import com.metavize.tran.mail.papi.quarantine.QuarantineEjectionHandler;
+import com.metavize.tran.mail.papi.quarantine.QuarantineMaintenenceView;
+import com.metavize.tran.mail.papi.quarantine.QuarantineManipulation;
+import com.metavize.tran.mail.papi.quarantine.QuarantineSettings;
+import com.metavize.tran.mail.papi.quarantine.QuarantineTransformView;
+import com.metavize.tran.mail.papi.quarantine.QuarantineUserActionFailedException;
+import com.metavize.tran.mail.papi.quarantine.QuarantineUserView;
+import com.metavize.tran.mime.EmailAddress;
+import com.metavize.tran.mime.MIMEMessage;
+import com.metavize.tran.util.ByteBufferInputStream;
+import com.metavize.tran.util.IOUtil;
+import com.metavize.tran.util.Pair;
 import org.apache.log4j.Logger;
 
 
@@ -54,14 +56,14 @@ public class Quarantine
     QuarantineMaintenenceView, QuarantineUserView {
 
   private final Logger m_logger =
-    Logger.getLogger(Quarantine.class);    
+    Logger.getLogger(Quarantine.class);
   private QuarantineStore m_store;
   private RescueEjectionHandler m_rescueHandler =
     new RescueEjectionHandler();
   private DigestGenerator m_digestGenerator;
   private AuthTokenManager m_atm;
   private QuarantineSettings m_settings = new QuarantineSettings();
-  private CronThread m_chronThread;
+  private CronJob m_cronJob;
 
 
   public Quarantine() {
@@ -70,9 +72,8 @@ public class Quarantine
       );
     m_digestGenerator = new DigestGenerator();
     m_atm = new AuthTokenManager();
-    m_chronThread = new CronThread(this);
   }
-  
+
 
   /**
    * Properties are not maintained explicitly
@@ -93,9 +94,13 @@ public class Quarantine
     }
 */
     m_atm.setKey(m_settings.getSecretKey());
-    m_chronThread.setHourInDay(m_settings.getDigestHourOfDay());
-    m_chronThread.setMinuteInDay(m_settings.getDigestMinuteOfDay());
-    
+
+    if (null != m_cronJob) {
+        int h = m_settings.getDigestHourOfDay();
+        int m = m_settings.getDigestMinuteOfDay();
+        Period p = new Period(h, m, true);
+        m_cronJob.reschedule(p);
+    }
   }
 
   private boolean m_opened = false;
@@ -107,7 +112,23 @@ public class Quarantine
       synchronized(this) {
         if(!m_opened) {
           m_opened = true;
-          MvvmContextFactory.context().newThread(m_chronThread).start();
+          Period p;
+          if (null == m_settings) {
+              p = new Period(6, 0, true);
+          } else {
+              int h = m_settings.getDigestHourOfDay();
+              int m = m_settings.getDigestMinuteOfDay();
+              p = new Period(h, m, true);
+          }
+
+          Runnable r = new Runnable()
+              {
+                  public void run()
+                  {
+                      cronCallback();
+                  }
+              };
+          MvvmContextFactory.context().makeCronJob(p, r);
         }
       }
     }
@@ -120,7 +141,9 @@ public class Quarantine
    */
   public void close() {
     m_store.close();
-    m_chronThread.done();
+    if (null != m_cronJob) {
+        m_cronJob.cancel();
+    }
   }
 
   /**
@@ -145,7 +168,7 @@ public class Quarantine
    * Warning - this method executes synchronously
    */
   public void sendDigestsNow() {
-    
+
     List<Inbox> allInboxes = m_store.listInboxes();
 
     for(Inbox inbox : allInboxes) {
@@ -169,7 +192,7 @@ public class Quarantine
     }
     return addr.getHostAddress();
   }
-    
+
 
   //--QuarantineTransformView--
 
@@ -248,21 +271,21 @@ public class Quarantine
 
     Pair<QuarantineStore.GenericStatus, InboxIndexImpl> result =
       m_store.purge(account, doomedMails);
-      
+
     checkAndThrowCommonErrors(result.a, account);
-    
+
     return result.b;
   }
 
   public InboxIndex rescue(String account,
     String...rescuedMails)
     throws NoSuchInboxException, QuarantineUserActionFailedException {
-    
+
     Pair<QuarantineStore.GenericStatus, InboxIndexImpl> result =
       m_store.rescue(account, m_rescueHandler, rescuedMails);
-      
+
     checkAndThrowCommonErrors(result.a, account);
-    
+
     return result.b;
   }
 
@@ -285,7 +308,7 @@ public class Quarantine
     Pair<QuarantineStore.GenericStatus, InboxIndexImpl> result = m_store.getIndex(account);
 
     checkAndThrowCommonErrors(result.a, account);
-    
+
     return result.b;
   }
 
@@ -295,7 +318,7 @@ public class Quarantine
 
 
   //--QuarantineMaintenenceView --
-  
+
   public List<Inbox> listInboxes()
     throws QuarantineUserActionFailedException {
     return m_store.listInboxes();
@@ -319,7 +342,7 @@ public class Quarantine
   public String getAccountFromToken(String token)
     throws /*NoSuchInboxException, */BadTokenException {
 
-    Pair<AuthTokenManager.DecryptOutcome, String> p = 
+    Pair<AuthTokenManager.DecryptOutcome, String> p =
       m_atm.decryptAuthToken(token);
 
     if(p.a != AuthTokenManager.DecryptOutcome.OK) {
@@ -338,11 +361,11 @@ public class Quarantine
       m_logger.warn("Unable to send digest email to account \"" +
         account + "\"");
     }
-    
+
     return true;
   }
 
-  
+
 
   /**
    * Helper method which sends a digest email.  Returns
@@ -388,30 +411,30 @@ public class Quarantine
     IOUtil.close(in);
 
     return ret;
-    
+
   }
 
 
   private void checkAndThrowCommonErrors(QuarantineStore.GenericStatus status,
     String account)
       throws NoSuchInboxException, QuarantineUserActionFailedException {
-      
+
     if(status == QuarantineStore.GenericStatus.NO_SUCH_INBOX) {
       throw new NoSuchInboxException(account);
     }
     else if(status == QuarantineStore.GenericStatus.ERROR) {
       throw new QuarantineUserActionFailedException();
-    }    
+    }
   }
 
 
-  
+
 
   //------------- Inner Class --------------------
-  
+
   private class RescueEjectionHandler
     implements QuarantineEjectionHandler {
-    
+
     public void ejectMail(InboxRecord record,
       String recipient,
       File data) {
@@ -438,5 +461,5 @@ public class Quarantine
       IOUtil.delete(data);
     }
   }
-    
+
 }

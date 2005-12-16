@@ -6,7 +6,8 @@
 (setq casings '("mail" "http" "ftp"))
 
 (setq transforms '("airgap" "email" "fprot" "httpblocker" "protofilter"
-                   "reporting" "sophos" "spyware" "test" "virus" "spam"))
+                   "reporting" "sophos" "spyware" "test" "virus" "spam"
+                   "exploder"))
 
 (setq jni-projects '("jnetcap" "jvector"))
 

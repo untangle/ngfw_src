@@ -16,7 +16,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+import com.metavize.mvvm.CronJob;
 import com.metavize.mvvm.MvvmLocalContext;
+import com.metavize.mvvm.Period;
 import com.metavize.mvvm.ToolboxManager;
 import com.metavize.mvvm.argon.Argon;
 import com.metavize.mvvm.argon.ArgonManagerImpl;
@@ -66,6 +68,7 @@ public class MvvmContextImpl extends MvvmContextBase
     private ToolboxManagerImpl toolboxManager;
     private TransformManagerImpl transformManager;
     private MvvmRemoteContext remoteContext;
+    private CronManager cronManager;
 
     // constructor ------------------------------------------------------------
 
@@ -296,20 +299,6 @@ public class MvvmContextImpl extends MvvmContextBase
         }
     }
 
-    String getActivationKey()
-    {
-        try {
-            File keyFile = new File(ACTIVATION_KEY_FILE);
-            if (keyFile.exists()) {
-                BufferedReader reader = new BufferedReader(new FileReader(keyFile));
-                return reader.readLine();
-            }
-        } catch (IOException x) {
-            logger.error("Unable to get activation key: ", x);
-        }
-        return null;
-    }
-
     public void doFullGC()
     {
         // XXX check access permission
@@ -321,11 +310,17 @@ public class MvvmContextImpl extends MvvmContextBase
         return eventLogger;
     }
 
+    public CronJob makeCronJob(Period p, Runnable r)
+    {
+        return cronManager.makeCronJob(p, r);
+    }
+
     // MvvmContextBase methods ------------------------------------------------
 
     @Override
     protected void init()
     {
+        cronManager = new CronManager();
         syslogManager = SyslogManagerImpl.manager();
         loggingManager = LoggingManagerImpl.loggingManager();
         eventLogger = new EventLogger();
@@ -461,6 +456,13 @@ public class MvvmContextImpl extends MvvmContextBase
         } catch (HibernateException exn) {
             logger.warn("could not close Hibernate SessionFactory", exn);
         }
+
+        try {
+            cronManager.destroy();
+            cronManager = null;
+        } catch (Exception exn) {
+            logger.warn("could not stop CronManager", exn);
+        }
     }
 
     @Override
@@ -474,6 +476,20 @@ public class MvvmContextImpl extends MvvmContextBase
     MvvmRemoteContext remoteContext()
     {
         return remoteContext;
+    }
+
+    String getActivationKey()
+    {
+        try {
+            File keyFile = new File(ACTIVATION_KEY_FILE);
+            if (keyFile.exists()) {
+                BufferedReader reader = new BufferedReader(new FileReader(keyFile));
+                return reader.readLine();
+            }
+        } catch (IOException x) {
+            logger.error("Unable to get activation key: ", x);
+        }
+        return null;
     }
 
     // private methods --------------------------------------------------------

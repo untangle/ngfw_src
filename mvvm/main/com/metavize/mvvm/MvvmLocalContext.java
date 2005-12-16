@@ -217,4 +217,6 @@ public interface MvvmLocalContext
       String rootDir);
 
     boolean unloadWebApp(String urlBase);
+
+    CronJob makeCronJob(Period p, Runnable r);
 }
