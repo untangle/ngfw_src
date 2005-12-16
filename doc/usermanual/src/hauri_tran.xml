@@ -23,7 +23,13 @@
 
     <para>
       The interface for Hauri Anti-Virus is presented as five tabs.  The first three tabs are for the protocols that the &eg; scans.  The next tab controls general virus scanning settings.  The last tab allows administrators to view recent events (see <xref linkend="using_adminui_appliances_eventlog"/>).
+      <note>
+        <para>
+          When changing any of the Virus Scanning settings, existing connections will be reset (terminated).  This will likely only be seen with email clients, which will then re-establish connections.  However, users may notice an informational message from their email clients if this occurs.
+        </para>
+      </note>      
     </para>
+
 
     <!-- ******************************************************** -->
     <sect2 id="hauri_tran_adminui_web">

@@ -175,11 +175,16 @@ public class Quarantine
       Pair<QuarantineStore.GenericStatus, InboxIndexImpl> result =
         m_store.getIndex(inbox.getAddress());
       if(result.a == QuarantineStore.GenericStatus.SUCCESS) {
-        if(sendDigestEmail(inbox.getAddress(), result.b)) {
-          m_logger.debug("Sent digest to \"" + inbox.getAddress() + "\"");
+        if(result.b.size() > 0) {
+          if(sendDigestEmail(inbox.getAddress(), result.b)) {
+            m_logger.debug("Sent digest to \"" + inbox.getAddress() + "\"");
+          }
+          else {
+            m_logger.warn("Unable to send digest to \"" + inbox.getAddress() + "\"");
+          }
         }
         else {
-          m_logger.warn("Unable to send digest to \"" + inbox.getAddress() + "\"");
+          m_logger.debug("No need to send digest to \"" + inbox.getAddress() + "\", no mails");
         }
       }
     }
