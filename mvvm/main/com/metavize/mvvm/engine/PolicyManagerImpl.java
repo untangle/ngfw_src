@@ -277,7 +277,9 @@ class PolicyManagerImpl implements PolicyManagerPriv
                 {
                     public boolean doWork(Session s)
                     {
-                        userRuleSet.setRules(rules);
+                        List urs = userRuleSet.getRules();
+                        urs.clear();
+                        urs.addAll(rules);
                         userRules = (UserPolicyRule[])rules.toArray(new UserPolicyRule[] { });
                         s.saveOrUpdate(userRuleSet);
                         return true;
@@ -410,7 +412,7 @@ class PolicyManagerImpl implements PolicyManagerPriv
     // in-memory UserPolicyRule list.
     //
     // Note that the interfaces list should be sorted from outside to inside.  This is because
-    // we create the missing system policy rules given this sorting. 
+    // we create the missing system policy rules given this sorting.
     public void reconfigure(final byte[] interfaces)
     {
         /* Reconfigure the networking interfaces */
