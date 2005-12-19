@@ -146,269 +146,269 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel implements Savable, Ref
     }
     
     
-    private void initComponents() {//GEN-BEGIN:initComponents
-        java.awt.GridBagConstraints gridBagConstraints;
+        private void initComponents() {//GEN-BEGIN:initComponents
+                java.awt.GridBagConstraints gridBagConstraints;
 
-        snmpButtonGroup = new javax.swing.ButtonGroup();
-        trapButtonGroup = new javax.swing.ButtonGroup();
-        externalRemoteJPanel = new javax.swing.JPanel();
-        snmpDisabledRadioButton = new javax.swing.JRadioButton();
-        snmpEnabledRadioButton = new javax.swing.JRadioButton();
-        enableRemoteJPanel = new javax.swing.JPanel();
-        restrictIPJPanel = new javax.swing.JPanel();
-        jLabel5 = new javax.swing.JLabel();
-        snmpCommunityJTextField = new javax.swing.JTextField();
-        jLabel8 = new javax.swing.JLabel();
-        snmpContactJTextField = new javax.swing.JTextField();
-        jLabel12 = new javax.swing.JLabel();
-        snmpLocationJTextField = new javax.swing.JTextField();
-        jSeparator3 = new javax.swing.JSeparator();
-        enableRemoteJPanel1 = new javax.swing.JPanel();
-        trapDisabledRadioButton = new javax.swing.JRadioButton();
-        trapEnabledRadioButton = new javax.swing.JRadioButton();
-        restrictIPJPanel1 = new javax.swing.JPanel();
-        jLabel6 = new javax.swing.JLabel();
-        trapCommunityJTextField = new javax.swing.JTextField();
-        jLabel9 = new javax.swing.JLabel();
-        trapHostJTextField = new javax.swing.JTextField();
-        jLabel10 = new javax.swing.JLabel();
-        trapPortJSpinner = new javax.swing.JSpinner();
+                snmpButtonGroup = new javax.swing.ButtonGroup();
+                trapButtonGroup = new javax.swing.ButtonGroup();
+                externalRemoteJPanel = new javax.swing.JPanel();
+                snmpDisabledRadioButton = new javax.swing.JRadioButton();
+                snmpEnabledRadioButton = new javax.swing.JRadioButton();
+                enableRemoteJPanel = new javax.swing.JPanel();
+                restrictIPJPanel = new javax.swing.JPanel();
+                snmpCommunityJLabel = new javax.swing.JLabel();
+                snmpCommunityJTextField = new javax.swing.JTextField();
+                snmpContactJLabel = new javax.swing.JLabel();
+                snmpContactJTextField = new javax.swing.JTextField();
+                snmpLocationJLabel = new javax.swing.JLabel();
+                snmpLocationJTextField = new javax.swing.JTextField();
+                jSeparator3 = new javax.swing.JSeparator();
+                enableRemoteJPanel1 = new javax.swing.JPanel();
+                trapDisabledRadioButton = new javax.swing.JRadioButton();
+                trapEnabledRadioButton = new javax.swing.JRadioButton();
+                restrictIPJPanel1 = new javax.swing.JPanel();
+                trapCommunityJLabel = new javax.swing.JLabel();
+                trapCommunityJTextField = new javax.swing.JTextField();
+                trapHostJLabel = new javax.swing.JLabel();
+                trapHostJTextField = new javax.swing.JTextField();
+                trapPortJLabel = new javax.swing.JLabel();
+                trapPortJSpinner = new javax.swing.JSpinner();
 
-        setLayout(new java.awt.GridBagLayout());
+                setLayout(new java.awt.GridBagLayout());
 
-        setMaximumSize(new java.awt.Dimension(563, 343));
-        setMinimumSize(new java.awt.Dimension(563, 343));
-        setPreferredSize(new java.awt.Dimension(563, 343));
-        externalRemoteJPanel.setLayout(new java.awt.GridBagLayout());
+                setMaximumSize(new java.awt.Dimension(563, 343));
+                setMinimumSize(new java.awt.Dimension(563, 343));
+                setPreferredSize(new java.awt.Dimension(563, 343));
+                externalRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
-        externalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "SNMP Monitoring", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
-        snmpButtonGroup.add(snmpDisabledRadioButton);
-        snmpDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        snmpDisabledRadioButton.setText("<html><b>Disable</b> SNMP Monitoring. (This is the default setting.)</html>");
-        snmpDisabledRadioButton.setFocusPainted(false);
-        snmpDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                snmpDisabledRadioButtonActionPerformed(evt);
-            }
-        });
+                externalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "SNMP Monitoring", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+                snmpButtonGroup.add(snmpDisabledRadioButton);
+                snmpDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                snmpDisabledRadioButton.setText("<html><b>Disable</b> SNMP Monitoring. (This is the default setting.)</html>");
+                snmpDisabledRadioButton.setFocusPainted(false);
+                snmpDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                snmpDisabledRadioButtonActionPerformed(evt);
+                        }
+                });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        externalRemoteJPanel.add(snmpDisabledRadioButton, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                externalRemoteJPanel.add(snmpDisabledRadioButton, gridBagConstraints);
 
-        snmpButtonGroup.add(snmpEnabledRadioButton);
-        snmpEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        snmpEnabledRadioButton.setText("<html><b>Enable</b> SNMP Monitoring.</html>");
-        snmpEnabledRadioButton.setFocusPainted(false);
-        snmpEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                snmpEnabledRadioButtonActionPerformed(evt);
-            }
-        });
+                snmpButtonGroup.add(snmpEnabledRadioButton);
+                snmpEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                snmpEnabledRadioButton.setText("<html><b>Enable</b> SNMP Monitoring.</html>");
+                snmpEnabledRadioButton.setFocusPainted(false);
+                snmpEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                snmpEnabledRadioButtonActionPerformed(evt);
+                        }
+                });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        externalRemoteJPanel.add(snmpEnabledRadioButton, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                externalRemoteJPanel.add(snmpEnabledRadioButton, gridBagConstraints);
 
-        enableRemoteJPanel.setLayout(new java.awt.GridBagLayout());
+                enableRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
-        restrictIPJPanel.setLayout(new java.awt.GridBagLayout());
+                restrictIPJPanel.setLayout(new java.awt.GridBagLayout());
 
-        jLabel5.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel5.setText("Community:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        restrictIPJPanel.add(jLabel5, gridBagConstraints);
+                snmpCommunityJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                snmpCommunityJLabel.setText("Community:");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                restrictIPJPanel.add(snmpCommunityJLabel, gridBagConstraints);
 
-        snmpCommunityJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
-        snmpCommunityJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
-        snmpCommunityJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
-        restrictIPJPanel.add(snmpCommunityJTextField, gridBagConstraints);
+                snmpCommunityJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
+                snmpCommunityJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
+                snmpCommunityJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
+                restrictIPJPanel.add(snmpCommunityJTextField, gridBagConstraints);
 
-        jLabel8.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel8.setText("System Contact:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        restrictIPJPanel.add(jLabel8, gridBagConstraints);
+                snmpContactJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                snmpContactJLabel.setText("System Contact:");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 2;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                restrictIPJPanel.add(snmpContactJLabel, gridBagConstraints);
 
-        snmpContactJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
-        snmpContactJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
-        snmpContactJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
-        restrictIPJPanel.add(snmpContactJTextField, gridBagConstraints);
+                snmpContactJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
+                snmpContactJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
+                snmpContactJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 2;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
+                restrictIPJPanel.add(snmpContactJTextField, gridBagConstraints);
 
-        jLabel12.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel12.setText("System Location:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        restrictIPJPanel.add(jLabel12, gridBagConstraints);
+                snmpLocationJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                snmpLocationJLabel.setText("System Location:");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 3;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                restrictIPJPanel.add(snmpLocationJLabel, gridBagConstraints);
 
-        snmpLocationJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
-        snmpLocationJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
-        snmpLocationJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
-        restrictIPJPanel.add(snmpLocationJTextField, gridBagConstraints);
+                snmpLocationJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
+                snmpLocationJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
+                snmpLocationJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 3;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
+                restrictIPJPanel.add(snmpLocationJTextField, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 0);
-        enableRemoteJPanel.add(restrictIPJPanel, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 0);
+                enableRemoteJPanel.add(restrictIPJPanel, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
-        externalRemoteJPanel.add(enableRemoteJPanel, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
+                externalRemoteJPanel.add(enableRemoteJPanel, gridBagConstraints);
 
-        jSeparator3.setForeground(new java.awt.Color(200, 200, 200));
-        jSeparator3.setPreferredSize(new java.awt.Dimension(0, 1));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        externalRemoteJPanel.add(jSeparator3, gridBagConstraints);
+                jSeparator3.setForeground(new java.awt.Color(200, 200, 200));
+                jSeparator3.setPreferredSize(new java.awt.Dimension(0, 1));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                externalRemoteJPanel.add(jSeparator3, gridBagConstraints);
 
-        enableRemoteJPanel1.setLayout(new java.awt.GridBagLayout());
+                enableRemoteJPanel1.setLayout(new java.awt.GridBagLayout());
 
-        trapButtonGroup.add(trapDisabledRadioButton);
-        trapDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        trapDisabledRadioButton.setText("<html><b>Disable Traps</b> so no trap events are generated. (This is the default setting.)</html>");
-        trapDisabledRadioButton.setFocusPainted(false);
-        trapDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                trapDisabledRadioButtonActionPerformed(evt);
-            }
-        });
+                trapButtonGroup.add(trapDisabledRadioButton);
+                trapDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                trapDisabledRadioButton.setText("<html><b>Disable Traps</b> so no trap events are generated.</html>");
+                trapDisabledRadioButton.setFocusPainted(false);
+                trapDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                trapDisabledRadioButtonActionPerformed(evt);
+                        }
+                });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        enableRemoteJPanel1.add(trapDisabledRadioButton, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                enableRemoteJPanel1.add(trapDisabledRadioButton, gridBagConstraints);
 
-        trapButtonGroup.add(trapEnabledRadioButton);
-        trapEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        trapEnabledRadioButton.setText("<html><b>Enable Traps</b> so trap events are sent when they are generated.</html>");
-        trapEnabledRadioButton.setFocusPainted(false);
-        trapEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                trapEnabledRadioButtonActionPerformed(evt);
-            }
-        });
+                trapButtonGroup.add(trapEnabledRadioButton);
+                trapEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                trapEnabledRadioButton.setText("<html><b>Enable Traps</b> so trap events are sent when they are generated.  (This is the default setting.)</html>");
+                trapEnabledRadioButton.setFocusPainted(false);
+                trapEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                trapEnabledRadioButtonActionPerformed(evt);
+                        }
+                });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        enableRemoteJPanel1.add(trapEnabledRadioButton, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                enableRemoteJPanel1.add(trapEnabledRadioButton, gridBagConstraints);
 
-        restrictIPJPanel1.setLayout(new java.awt.GridBagLayout());
+                restrictIPJPanel1.setLayout(new java.awt.GridBagLayout());
 
-        jLabel6.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel6.setText("Community:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        restrictIPJPanel1.add(jLabel6, gridBagConstraints);
+                trapCommunityJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                trapCommunityJLabel.setText("Community:");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                restrictIPJPanel1.add(trapCommunityJLabel, gridBagConstraints);
 
-        trapCommunityJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
-        trapCommunityJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
-        trapCommunityJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
-        restrictIPJPanel1.add(trapCommunityJTextField, gridBagConstraints);
+                trapCommunityJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
+                trapCommunityJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
+                trapCommunityJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
+                restrictIPJPanel1.add(trapCommunityJTextField, gridBagConstraints);
 
-        jLabel9.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel9.setText("Host:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        restrictIPJPanel1.add(jLabel9, gridBagConstraints);
+                trapHostJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                trapHostJLabel.setText("Host:");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                restrictIPJPanel1.add(trapHostJLabel, gridBagConstraints);
 
-        trapHostJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
-        trapHostJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
-        trapHostJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
-        restrictIPJPanel1.add(trapHostJTextField, gridBagConstraints);
+                trapHostJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
+                trapHostJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
+                trapHostJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
+                restrictIPJPanel1.add(trapHostJTextField, gridBagConstraints);
 
-        jLabel10.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel10.setText("Port:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        restrictIPJPanel1.add(jLabel10, gridBagConstraints);
+                trapPortJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                trapPortJLabel.setText("Port:");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 2;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                restrictIPJPanel1.add(trapPortJLabel, gridBagConstraints);
 
-        trapPortJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
-        trapPortJSpinner.setFocusable(false);
-        trapPortJSpinner.setMaximumSize(new java.awt.Dimension(75, 19));
-        trapPortJSpinner.setMinimumSize(new java.awt.Dimension(75, 19));
-        trapPortJSpinner.setPreferredSize(new java.awt.Dimension(75, 19));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
-        restrictIPJPanel1.add(trapPortJSpinner, gridBagConstraints);
+                trapPortJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
+                trapPortJSpinner.setFocusable(false);
+                trapPortJSpinner.setMaximumSize(new java.awt.Dimension(75, 19));
+                trapPortJSpinner.setMinimumSize(new java.awt.Dimension(75, 19));
+                trapPortJSpinner.setPreferredSize(new java.awt.Dimension(75, 19));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 2;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
+                restrictIPJPanel1.add(trapPortJSpinner, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 50, 5, 0);
-        enableRemoteJPanel1.add(restrictIPJPanel1, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 50, 5, 0);
+                enableRemoteJPanel1.add(restrictIPJPanel1, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
-        externalRemoteJPanel.add(enableRemoteJPanel1, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
+                externalRemoteJPanel.add(enableRemoteJPanel1, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
-        add(externalRemoteJPanel, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
+                add(externalRemoteJPanel, gridBagConstraints);
 
-    }//GEN-END:initComponents
+        }//GEN-END:initComponents
 
     private void trapDisabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_trapDisabledRadioButtonActionPerformed
 	setTrapEnabledDependency( false );
@@ -431,45 +431,51 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel implements Savable, Ref
 
     private void setSnmpEnabledDependency(boolean enabled){
 	snmpCommunityJTextField.setEnabled( enabled );
+	snmpCommunityJLabel.setEnabled( enabled );
 	snmpContactJTextField.setEnabled( enabled );
+	snmpContactJLabel.setEnabled( enabled );
 	snmpLocationJTextField.setEnabled( enabled );
+	snmpLocationJLabel.setEnabled( enabled );
 	trapEnabledRadioButton.setEnabled( enabled );
 	trapDisabledRadioButton.setEnabled( enabled );
     }
 
     private void setTrapEnabledDependency(boolean enabled){
 	trapCommunityJTextField.setEnabled( enabled );
+	trapCommunityJLabel.setEnabled( enabled );
 	trapHostJTextField.setEnabled( enabled );
+	trapHostJLabel.setEnabled( enabled );
 	trapPortJSpinner.setEnabled( enabled );
+	trapPortJLabel.setEnabled( enabled );
     }
 
     
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel enableRemoteJPanel;
-    private javax.swing.JPanel enableRemoteJPanel1;
-    private javax.swing.JPanel externalRemoteJPanel;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
-    private javax.swing.JSeparator jSeparator3;
-    private javax.swing.JPanel restrictIPJPanel;
-    private javax.swing.JPanel restrictIPJPanel1;
-    private javax.swing.ButtonGroup snmpButtonGroup;
-    public javax.swing.JTextField snmpCommunityJTextField;
-    public javax.swing.JTextField snmpContactJTextField;
-    public javax.swing.JRadioButton snmpDisabledRadioButton;
-    public javax.swing.JRadioButton snmpEnabledRadioButton;
-    public javax.swing.JTextField snmpLocationJTextField;
-    private javax.swing.ButtonGroup trapButtonGroup;
-    public javax.swing.JTextField trapCommunityJTextField;
-    public javax.swing.JRadioButton trapDisabledRadioButton;
-    public javax.swing.JRadioButton trapEnabledRadioButton;
-    public javax.swing.JTextField trapHostJTextField;
-    private javax.swing.JSpinner trapPortJSpinner;
-    // End of variables declaration//GEN-END:variables
+        // Variables declaration - do not modify//GEN-BEGIN:variables
+        private javax.swing.JPanel enableRemoteJPanel;
+        private javax.swing.JPanel enableRemoteJPanel1;
+        private javax.swing.JPanel externalRemoteJPanel;
+        private javax.swing.JSeparator jSeparator3;
+        private javax.swing.JPanel restrictIPJPanel;
+        private javax.swing.JPanel restrictIPJPanel1;
+        private javax.swing.ButtonGroup snmpButtonGroup;
+        private javax.swing.JLabel snmpCommunityJLabel;
+        public javax.swing.JTextField snmpCommunityJTextField;
+        private javax.swing.JLabel snmpContactJLabel;
+        public javax.swing.JTextField snmpContactJTextField;
+        public javax.swing.JRadioButton snmpDisabledRadioButton;
+        public javax.swing.JRadioButton snmpEnabledRadioButton;
+        private javax.swing.JLabel snmpLocationJLabel;
+        public javax.swing.JTextField snmpLocationJTextField;
+        private javax.swing.ButtonGroup trapButtonGroup;
+        private javax.swing.JLabel trapCommunityJLabel;
+        public javax.swing.JTextField trapCommunityJTextField;
+        public javax.swing.JRadioButton trapDisabledRadioButton;
+        public javax.swing.JRadioButton trapEnabledRadioButton;
+        private javax.swing.JLabel trapHostJLabel;
+        public javax.swing.JTextField trapHostJTextField;
+        private javax.swing.JLabel trapPortJLabel;
+        private javax.swing.JSpinner trapPortJSpinner;
+        // End of variables declaration//GEN-END:variables
     
 
 }
