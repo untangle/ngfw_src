@@ -22,7 +22,7 @@
   <sect1 id="airgap_tran_shield_explained">
     <title>Denial Of Service Protection</title>
     <para>
-      The Attack Shield Appliance keeps tracks traffic from all hosts (IP addresses).  The number of connections and the volume of data are monitored.  If a given host is significantly more active than others, its <quote>reputation</quote> increases.  Reputation is expressed as a number on a relative scale.  Large reputation numbers intidate that a given host is consuming more resources (more connections, more bytes transferred) than its peers.
+      The Attack Shield Appliance keeps tracks traffic from all hosts (IP addresses).  The number of connections and the volume of data are monitored.  If a given host is significantly more active than others, its <quote>reputation</quote> increases.  Reputation is expressed as a number on a relative scale.  Large reputation numbers indicate that a given host is consuming more resources (more connections, more bytes transferred) than its peers.
     </para>
     <para>
       As the load on an &eg; increases, it will not have enough resources to service all requests.  Rather than <quote>slow everyone down</quote>, the Attack Shield Appliance takes action against those hosts with the largest reputation numbers.  In this way, hosts that <quote>hog all the bandwidth</quote> are allocated fewer resources while <quote>normal</quote> clients see no change in service and performance levels.  There are three actions that the Attack Shield Appliance can take against hosts with large reputation numbers, enumerated in <xref linkend="airgap_tran_shield_actions"/>.
@@ -46,7 +46,7 @@
       </listitem>
     </itemizedlist>  
     <para>
-      By using reputation numbers to allocate resources, the Attack Shield Appliance protects a network from Denial of Service attacks.  When a host attempts to flood a network protected by the &eg;, the attacking host's reputation number quickly increases so that the host moves from experiencing a limited slowdown to being deined access to protected resources. 
+      By using reputation numbers to allocate resources, the Attack Shield Appliance protects a network from Denial of Service attacks.  When a host attempts to flood a network protected by the &eg;, the attacking host's reputation number quickly increases so that the host moves from experiencing a limited slowdown to being denied access to protected resources. 
     </para>
   </sect1>
 
@@ -70,7 +70,7 @@
         </mediaobject>
       </figure>
       <para>
-        The Exception List is used to identify a virtual host (<glossterm linkend="gloss_ip_addr">IP Address</glossterm>) that represents more than one physical machine.  As discussed in <xref linkend="airgap_tran_shield_explained"/> the Attack Shield Appliance tracks the relative activity of hosts on its network.  If a given address represents more than one physical machine (for example, with <glossterm linkend="gloss_nat">NAT</glossterm>), then the Attack Shield Appliance must know this or it will consider the NATed network to be an unusualy active single host.
+        The Exception List is used to identify a virtual host (<glossterm linkend="gloss_ip_addr">IP Address</glossterm>) that represents more than one physical machine.  As discussed in <xref linkend="airgap_tran_shield_explained"/> the Attack Shield Appliance tracks the relative activity of hosts on its network.  If a given address represents more than one physical machine (for example, with <glossterm linkend="gloss_nat">NAT</glossterm>), then the Attack Shield Appliance must know this or it will consider the NATed network to be an unusually active single host.
       </para>
       <para>
         To add a new entry to the Exception List, push the add (plus) button to the left of the table.  All fields and their meaning for adding/modifying exception entries is as follows.
@@ -166,7 +166,7 @@
             <term><guilabel>reputation</guilabel></term>
             <listitem>
               <para>
-                As described in <xref linkend="airgap_tran_shield_explained"/>, the <guilabel>reputation</guilabel> is a relative value assigned to clients to indicate their consumption of network resources.  This value is usualy between 0 and 100, with larger numbers indicating greater resource consumption.
+                As described in <xref linkend="airgap_tran_shield_explained"/>, the <guilabel>reputation</guilabel> is a relative value assigned to clients to indicate their consumption of network resources.  This value is usually between 0 and 100, with larger numbers indicating greater resource consumption.
               </para>
             </listitem>
           </varlistentry>
@@ -208,7 +208,7 @@
         </question>
         <answer>
           <para>
-            The reputation for the <quote>big</quote> machine will be larger than the small machine.  In a normal deployment this should not be a concern, as the &eg; should not be limited in its overall resources.  If slowdown under heavy load is a concern, the <quote>big</quote> machine can have its reputuation calculated differently as discussed in <xref linkend="airgap_tran_exceptionlist"/>.
+            The reputation for the <quote>big</quote> machine will be larger than the small machine.  In a normal deployment this should not be a concern, as the &eg; should not be limited in its overall resources.  If slowdown under heavy load is a concern, the <quote>big</quote> machine can have its reputation calculated differently as discussed in <xref linkend="airgap_tran_exceptionlist"/>.
           </para>
         </answer>
       </qandaentry>

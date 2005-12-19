@@ -75,7 +75,7 @@
           As shown in <xref linkend="hauri_tran_adminui_web_mime_figure"/>, most common MIME types are already on the list.
         </para>
         <para>
-          To scan a particular MIME Type, check its <guilabel>scan</guilabel> box and push the <guilabel>Save Settings</guilabel> button.  To add a new MIME type to the list, push the add (plus) button to the left, enter the MIME speficiation, and push the <guilabel>Save Settings</guilabel> button.
+          To scan a particular MIME Type, check its <guilabel>scan</guilabel> box and push the <guilabel>Save Settings</guilabel> button.  To add a new MIME type to the list, push the add (plus) button to the left, enter the MIME specification, and push the <guilabel>Save Settings</guilabel> button.
         </para>             
       </sect3>
 
@@ -94,7 +94,7 @@
           </mediaobject>
         </figure>
         <para>
-          As shown in <xref linkend="hauri_tran_adminui_web_fileext_figure"/>, many common filename extensions are already on the list.  File types known to carry viruses have been pre-configured for scanning.  To scan files with a specfic filename extension, check its <guilabel>scan</guilabel> box and push the <guilabel>Save Settings</guilabel> button.
+          As shown in <xref linkend="hauri_tran_adminui_web_fileext_figure"/>, many common filename extensions are already on the list.  File types known to carry viruses have been pre-configured for scanning.  To scan files with a specific filename extension, check its <guilabel>scan</guilabel> box and push the <guilabel>Save Settings</guilabel> button.
         </para>            
       </sect3>      
        
@@ -139,7 +139,7 @@
               <term><guilabel>scan</guilabel></term>
               <listitem>
                 <para>
-                  This checkbox controls scanning for the given <constant>source</constant>.  When the box is checked, this means that the &eg; will scan email for viruses in that direction and take the action specified by <guilabel>action if Virus detected</guilabel>.
+                  This check box controls scanning for the given <constant>source</constant>.  When the box is checked, this means that the &eg; will scan email for viruses in that direction and take the action specified by <guilabel>action if Virus detected</guilabel>.
                 </para>
               </listitem>
             </varlistentry>
@@ -178,7 +178,7 @@
               <term><guilabel>notification if VIRUS detected</guilabel></term>
               <listitem>
                 <para>
-                  This controls what notifcations should be sent by the Hauri Antivirus Appliance should the message contain a virus.  Notifications are net-new emails, stating that a virus message was detected by your &eg;.  There are four possible values, causing no message, a message to the sender, the receiver, or both.
+                  This controls what notifications should be sent by the Hauri Antivirus Appliance should the message contain a virus.  Notifications are net-new emails, stating that a virus message was detected by your &eg;.  There are four possible values, causing no message, a message to the sender, the receiver, or both.
                 </para>
               </listitem>
             </varlistentry>            
@@ -202,7 +202,7 @@
           </mediaobject>
         </figure>
         <para>
-          There are two properties associated with incomming/outgoing scanning.  The direction is defined by the column <guilabel>source</guilabel>, where <constant>incoming message</constant> means that the POP client (<quote>email program</quote>) is within the protected network.
+          There are two properties associated with incoming/outgoing scanning.  The direction is defined by the column <guilabel>source</guilabel>, where <constant>incoming message</constant> means that the POP client (<quote>email program</quote>) is within the protected network.
         </para>
         <para>
           The <guilabel>scan</guilabel> box turns on/off scanning for that direction.  The <guilabel>action if Virus detected</guilabel> column lets administrators choose what happens should a virus be detected.  The <constant>remove infection</constant> option causes the infected file(s) to be removed from the email.  The email is then attached to a new email, with a detailed explanation of the type of virus and the original sender.  The subject of this new email starts with <quote><userinput>[VIRUS]...</userinput></quote>.  The <constant>pass message</constant> option passes the infected email to the client, even though it was infected.
@@ -229,7 +229,7 @@
           </mediaobject>
         </figure>
         <para>
-          There are two properties which can be edited for each direction of scanning.  The direction is defined by the column <guilabel>source</guilabel>, where <constant>incomming message</constant> means that the IMAP client (<quote>email program</quote>) is within the protected network.
+          There are two properties which can be edited for each direction of scanning.  The direction is defined by the column <guilabel>source</guilabel>, where <constant>incoming message</constant> means that the IMAP client (<quote>email program</quote>) is within the protected network.
         </para>
         <para>
           The <guilabel>scan</guilabel> box turns on/off scanning for that direction.  The <guilabel>action if Virus detected</guilabel> column lets administrators choose what happens should a virus be detected.  The <constant>remove infection</constant> option causes the infected file(s) to be removed from the email.  The email is then attached to a new email, with a detailed explanation of the type of virus and the original sender.  The subject of this new email starts with <quote><userinput>[VIRUS]...</userinput></quote>.  The <constant>pass message</constant> option passes the infected email to the client, even though it was infected.
@@ -303,7 +303,7 @@
                 This is an advanced feature, controlling how quickly files are downloaded relative to scanning.
                 <caution>
                   <para>
-                    As an advanced feature, you should not change this value unless instructed to by a member of Metavize support or one of their authorized representitives.
+                    As an advanced feature, you should not change this value unless instructed to by a member of Metavize support or one of their authorized representatives.
                   </para>
                 </caution>
               </para>
@@ -416,7 +416,7 @@
         </question>
         <answer>
           <para>
-            Most IMAP clients first fetch summary information about emails (subject, sender) so the end user can see a preview list of messages.  Only when the user selects (clicks on) the message is the actual content of the message retreived from the server and the &eg; is able to scan the message.  Unfortunatly, some email clients do not detect the change in subject and update their preview list when the &eg; marks the message.
+            Most IMAP clients first fetch summary information about emails (subject, sender) so the end user can see a preview list of messages.  Only when the user selects (clicks on) the message is the actual content of the message retrieved from the server and the &eg; is able to scan the message.  Unfortunately, some email clients do not detect the change in subject and update their preview list when the &eg; marks the message.
           </para>
         </answer>
       </qandaentry>

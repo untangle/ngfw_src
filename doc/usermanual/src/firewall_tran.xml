@@ -58,7 +58,7 @@
             <term><guilabel>direction</guilabel></term>
             <listitem>
               <para>
-                The <guilabel>direction</guilabel> criteria defines the location of the source and destination relative to the protected network.  <guilabel>Inbound</guilabel> means the sorce is outside the protected network, and the destination within.  <guilabel>Outbound</guilabel> means the destination is outside the protected network, and the source within.
+                The <guilabel>direction</guilabel> criteria defines the location of the source and destination relative to the protected network.  <guilabel>Inbound</guilabel> means the source is outside the protected network, and the destination within.  <guilabel>Outbound</guilabel> means the destination is outside the protected network, and the source within.
               </para>
             </listitem>
           </varlistentry>

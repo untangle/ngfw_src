@@ -3,7 +3,7 @@
   <title>Using the Administrative Interface</title>
 
   <para>
-    Once the &eg; is set up and initial configuration complete, further administration of the &eg; generally takes place from the <emphasis>Administrative Interface</emphasis>.  The Administrative Interface is launched from the appliance or a Web Browser.  To launch the Adimistrative Interface from the appliance, simply right click on the desktop and click on "Metavize Client." To launch the Administrative Interface from a remote machine, point your browser window at the following address (<glossterm linkend="gloss_url">URL</glossterm>).
+    Once the &eg; is set up and initial configuration complete, further administration of the &eg; generally takes place from the <emphasis>Administrative Interface</emphasis>.  The Administrative Interface is launched from the appliance or a Web Browser.  To launch the Administrative Interface from the appliance, simply right click on the desktop and click on "Metavize Client." To launch the Administrative Interface from a remote machine, point your browser window at the following address (<glossterm linkend="gloss_url">URL</glossterm>).
     
     <programlisting>http://<replaceable>your_internal_ip</replaceable></programlisting>
 
@@ -78,7 +78,7 @@
   <sect1 id="using_adminui_navigation">
     <title>Navigation</title>
     <para>
-      In this section, we will introduce the overall layout and navigation of the Administrative Interface.  The Administrative Interface is laid out as a set of <quote>global</quote> controls to the left, and a <quote>Virtual Rack</quote> to the right.  The metaphore presented by the interface is similar to the physical network rack (a cabinet with a collection of hardware) seen in many organizations.  The complete layout is seen in <xref linkend="using_adminui_navigation_annotated_rack"/>.
+      In this section, we will introduce the overall layout and navigation of the Administrative Interface.  The Administrative Interface is laid out as a set of <quote>global</quote> controls to the left, and a <quote>Virtual Rack</quote> to the right.  The metaphor presented by the interface is similar to the physical network rack (a cabinet with a collection of hardware) seen in many organizations.  The complete layout is seen in <xref linkend="using_adminui_navigation_annotated_rack"/>.
     </para>
     <figure id="using_adminui_navigation_annotated_rack">
       <title>Initial Screen</title>
@@ -89,7 +89,7 @@
       </mediaobject>
     </figure>
     <para>
-      The image shown in <xref linkend="using_adminui_navigation_annotated_rack"/> has several numbered callouts.  The meaning of these elements is as follows.
+      The image shown in <xref linkend="using_adminui_navigation_annotated_rack"/> has several numbered call-outs.  The meaning of these elements is as follows.
     </para>
     <orderedlist>
       <listitem>
@@ -119,7 +119,7 @@
       </listitem>
       <listitem>
         <para>
-          This is a Software Appliance.  There are actualy three such appliances shown in <xref linkend="using_adminui_navigation_annotated_rack"/>.  Understanding the interface to Software Appliances as well as their installation is covered in <xref linkend="using_adminui_appliances"/>.
+          This is a Software Appliance.  There are actually three such appliances shown in <xref linkend="using_adminui_navigation_annotated_rack"/>.  Understanding the interface to Software Appliances as well as their installation is covered in <xref linkend="using_adminui_appliances"/>.
         </para>
       </listitem>
     </orderedlist>
@@ -219,7 +219,7 @@
         </question>
         <answer>
           <para>
-            The Java Web Start techology for non-Internet Explorer (and non-windows) platforms can be downloaded free of change from Sun Microsystems at <ulink  url="http://java.sun.com/products/javawebstart/index.jsp"><constant>http://java.sun.com/products/javawebstart/index.jsp</constant></ulink>.
+            The Java Web Start technology for non-Internet Explorer (and non-windows) platforms can be downloaded free of change from Sun Microsystems at <ulink  url="http://java.sun.com/products/javawebstart/index.jsp"><constant>http://java.sun.com/products/javawebstart/index.jsp</constant></ulink>.
           </para>
         </answer>
       </qandaentry>
@@ -229,7 +229,7 @@
         </question>
         <answer>
           <para>
-            The first time the Administrative Interface is launched, it downloads several files.  These files are then cached (left) on the machine to reduce startup time on subsequent restarts.
+            The first time the Administrative Interface is launched, it downloads several files.  These files are then cached (left) on the machine to reduce startle time on subsequent restarts.
           </para>
         </answer>
       </qandaentry>

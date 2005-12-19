@@ -146,7 +146,7 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>DMZ</glossterm>
       <glossdef>
         <para>
-          In computer security, a demilitarized zone (DMZ) or perimeter network is a network area (a <glossterm linkend="gloss_subnet">subnet</glossterm>) that sits between an organisation's internal network and an external network, usually the Internet. The point of a DMZ is that connections from the internal and the external network to the DMZ are permitted, whereas connections from the DMZ are only permitted to the external network -- hosts in the DMZ may not connect to the internal network. This allows the DMZ's hosts to provide services to the external network while protecting the internal network in case intruders compromise a host in the DMZ. For someone on the external network who wants to illegally connect to the internal network, the DMZ is a dead end.
+          In computer security, a demilitarized zone (DMZ) or perimeter network is a network area (a <glossterm linkend="gloss_subnet">subnet</glossterm>) that sits between an organization's internal network and an external network, usually the Internet. The point of a DMZ is that connections from the internal and the external network to the DMZ are permitted, whereas connections from the DMZ are only permitted to the external network -- hosts in the DMZ may not connect to the internal network. This allows the DMZ's hosts to provide services to the external network while protecting the internal network in case intruders compromise a host in the DMZ. For someone on the external network who wants to illegally connect to the internal network, the DMZ is a dead end.
         </para>
         <para>
           (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
@@ -212,7 +212,7 @@ Place new terms under the appropriate alphabetical location.
     <title>H</title>
 
     <glossentry id="gloss_http">
-      <glossterm>Hypter Text Transfer Protocol</glossterm>
+      <glossterm>Hyper Text Transfer Protocol</glossterm>
       <acronym>HTTP</acronym>
       <glossdef>
         <para>
@@ -226,7 +226,7 @@ Place new terms under the appropriate alphabetical location.
 
 
     <glossentry id="gloss_htmp">
-      <glossterm>Hypter Text Markup Language</glossterm>
+      <glossterm>Hyper Text Markup Language</glossterm>
       <acronym>HTML</acronym>
       <glossdef>
         <para>
@@ -263,7 +263,7 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>IP Address</glossterm>
       <glossdef>
         <para>
-          An IP address (Internet Protocol address) is a unique number that devices use in order to identify and communicate with each other on a network utilizing the Internet Protocol standard. Any participating device - including routers, computers, time-servers, internet FAX machines, and some telephones - must have its own unique address. This allows information passed onwards on behalf of the sender to indicate where to send it next, and for the receiver of the information to know that it is the intended destination.
+          An IP address (Internet Protocol address) is a unique number that devices use in order to identify and communicate with each other on a network utilizing the Internet Protocol standard. Any participating device - including routers, computers, time-servers, Internet FAX machines, and some telephones - must have its own unique address. This allows information passed onwards on behalf of the sender to indicate where to send it next, and for the receiver of the information to know that it is the intended destination.
         </para>
         <para>
           (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
@@ -276,7 +276,7 @@ Place new terms under the appropriate alphabetical location.
       <acronym>IMAP</acronym>
       <glossdef>
         <para>
-          Protocol for the retreival of email messages.  An alternative to the POP protocol.
+          Protocol for the retrieval of email messages.  An alternative to the POP protocol.
         </para>
         <glossseealso otherterm="gloss_pop"/>
       </glossdef>            
@@ -320,7 +320,7 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>Malware</glossterm>
       <glossdef>
         <para>
-          Malware is a type of software designed to take over and/ or damage a computer user's operating system, without his or her knowledge or approval. Once installed, it is often very difficult to remove, and depending on the severity of the program installed, its handiwork can range in degree from the slightly annoying (such as unwanted pop up ads while a user is performing regular computing tasks on or offline), to irreparable damage requiring the reformatting of one's hard drive, since much of malware is poorly written. Examples of malware include viruses and trojan horses.
+          Malware is a type of software designed to take over and/ or damage a computer user's operating system, without his or her knowledge or approval. Once installed, it is often very difficult to remove, and depending on the severity of the program installed, its handiwork can range in degree from the slightly annoying (such as unwanted pop up ads while a user is performing regular computing tasks on or offline), to irreparable damage requiring the reformatting of one's hard drive, since much of malware is poorly written. Examples of malware include viruses and Trojan horses.
         </para>
         <glossseealso otherterm="gloss_virus"/>
         <glossseealso otherterm="gloss_spyware"/>
@@ -345,7 +345,7 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>MIME Type</glossterm>
       <glossdef>
         <para>
-          As part of the MIME specification, a standard list of file types was created.  MIME types are expressed as <constant>major/minor</constant> where <constant>major</constant> is a category of type, and <constant>minor</constant> is more specfic.
+          As part of the MIME specification, a standard list of file types was created.  MIME types are expressed as <constant>major/minor</constant> where <constant>major</constant> is a category of type, and <constant>minor</constant> is more specific.
         </para>
         <glossseealso otherterm="gloss_mime"/>        
       </glossdef>            
@@ -466,7 +466,7 @@ Place new terms under the appropriate alphabetical location.
       <acronym>POP</acronym>
       <glossdef>
         <para>
-          Internet protocol used to retreive (read) email.  An alternative to <glossterm linkend="gloss_imap">IMAP</glossterm>.  Most email clients (such as Microsoft Outlook Express or Mac Mail) support POP for reading mail.
+          Internet protocol used to retrieve (read) email.  An alternative to <glossterm linkend="gloss_imap">IMAP</glossterm>.  Most email clients (such as Microsoft Outlook Express or Mac Mail) support POP for reading mail.
         </para>
         <para>
           POP uses <glossterm linkend="gloss_tcp">TCP</glossterm> over <glossterm linkend="gloss_port">port</glossterm> 110.
@@ -482,7 +482,7 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>Phishing</glossterm>
       <glossdef>
         <para>
-          In computing, phishing (also known as carding and spoofing) is a form of social engineering, characterised by attempts to fraudulently acquire sensitive information, such as passwords and credit card details, by masquerading as a trustworthy person or business in an apparently official electronic communication, such as an email. The term phishing arises from the use of increasingly sophisticated lures to "fish" for users' financial information and passwords.
+          In computing, phishing (also known as carding and spoofing) is a form of social engineering, characterized by attempts to fraudulently acquire sensitive information, such as passwords and credit card details, by masquerading as a trustworthy person or business in an apparently official electronic communication, such as an email. The term phishing arises from the use of increasingly sophisticated lures to "fish" for users' financial information and passwords.
         </para>
         <para>
           (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
@@ -501,7 +501,7 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>Quarantine</glossterm>
       <glossdef>
         <para>
-          (n) A store of emails, set asside due to the strong likelyhood that they are <glossterm linkend="gloss_spam">spam</glossterm>.
+          (n) A store of emails, set aside due to the strong likelihood that they are <glossterm linkend="gloss_spam">spam</glossterm>.
         </para>
         <para>
           (v) The act of placing a <glossterm linkend="gloss_spam">spam</glossterm> suspect email into storage.
@@ -533,7 +533,7 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>Redirect</glossterm>
       <glossdef>
         <para>
-          Within the scope of conputer networking, to redirect is to cause network traffic originally destined for an endpoint (IP address /port) to be routed to another.
+          Within the scope of computer networking, to redirect is to cause network traffic originally destined for an endpoint (IP address /port) to be routed to another.
         </para>
         <glossseealso otherterm="gloss_port"/>
         <glossseealso otherterm="gloss_ip_addr"/>
@@ -589,7 +589,7 @@ Place new terms under the appropriate alphabetical location.
       <glossterm>Static IP</glossterm>
       <glossdef>
         <para>
-          An IP address permenantly assigned to a host.  This is in contrast to IP addresses assigned via the DHCP protocol, which are subject to change.
+          An IP address permanently assigned to a host.  This is in contrast to IP addresses assigned via the DHCP protocol, which are subject to change.
         </para>
         <glossseealso otherterm="gloss_ip_addr"/>
         <glossseealso otherterm="gloss_dhcp"/>
@@ -664,7 +664,7 @@ Place new terms under the appropriate alphabetical location.
       <abbrev>Trap</abbrev>
       <glossdef>
         <para>
-          A message, defined by the SNMP protocol, sent by a networked device to a monitoring system.  Traps are used to convey lifecycle events as well as conditions which warrent further investigation.
+          A message, defined by the SNMP protocol, sent by a networked device to a monitoring system.  Traps are used to convey lifecycle events as well as conditions which warrant further investigation.
         </para>
       </glossdef>
     </glossentry>
@@ -682,7 +682,7 @@ Place new terms under the appropriate alphabetical location.
       <acronym>TCP</acronym>
       <glossdef>
         <para>
-          One of the primary internet transmission protocols.  Contrasted with <glossterm linkend="gloss_udp">UDP</glossterm>, TCP is more reliable.  Most familiar internet applications (web, email) are built atop TCP.
+          One of the primary Internet transmission protocols.  Contrasted with <glossterm linkend="gloss_udp">UDP</glossterm>, TCP is more reliable.  Most familiar Internet applications (web, email) are built atop TCP.
         </para>
         <glossseealso otherterm="gloss_udp"/>
       </glossdef>
@@ -724,7 +724,7 @@ Place new terms under the appropriate alphabetical location.
       <acronym>UDP</acronym>
       <glossdef>
         <para>
-          One of the primary internet transmission protocols.  Contrasted with <glossterm linkend="gloss_tcp">TCP</glossterm>, UDP is considered faster yet lacks reliability.  Examples of applications built using UDP include <glossterm linkend="gloss_dns">DNS</glossterm>, many Voice over IP (VOIP) and internet games.
+          One of the primary Internet transmission protocols.  Contrasted with <glossterm linkend="gloss_tcp">TCP</glossterm>, UDP is considered faster yet lacks reliability.  Examples of applications built using UDP include <glossterm linkend="gloss_dns">DNS</glossterm>, many Voice over IP (VOIP) and Internet games.
         </para>
         <glossseealso otherterm="gloss_tcp"/>         
       </glossdef>

@@ -102,10 +102,10 @@
         The &eg; can be set-up to either have a <glossterm linkend="gloss_static_ip">static</glossterm> or dynamic IP address.  For a static IP, administrators must configure the network settings as they would for any system on the network.  Dynamic addresses are obtained from <glossterm linkend="gloss_dhcp">DHCP</glossterm>.
       </para>
       <para>
-        The interface for configuring these external settings is divided into three sections.  The first section determines if the &eg; is using a static or dynamic address.  To choose between these options, the administrator selects either <guilabel>Automatically Set</guilabel> or <guilabel>Manually Set</guilabel>.  If <guilabel>Automatically Set</guilabel> is selected, the &eg; will use DHCP to obtain network settings and display them in the boxes below.  If <guilabel>Manually Set</guilabel> is selected, the administrator must manually set the <glossterm linkend="gloss_ip_addr">IP Address</glossterm>, <glossterm linkend="gloss_netmask">Netmask</glossterm>, <glossterm linkend="gloss_default_route">Default Route</glossterm> (sometimes refered to as <quote>gateway</quote>), as well as a primary <glossterm linkend="gloss_dns">DNS</glossterm> server and a secondary DNS server (optional).
+        The interface for configuring these external settings is divided into three sections.  The first section determines if the &eg; is using a static or dynamic address.  To choose between these options, the administrator selects either <guilabel>Automatically Set</guilabel> or <guilabel>Manually Set</guilabel>.  If <guilabel>Automatically Set</guilabel> is selected, the &eg; will use DHCP to obtain network settings and display them in the boxes below.  If <guilabel>Manually Set</guilabel> is selected, the administrator must manually set the <glossterm linkend="gloss_ip_addr">IP Address</glossterm>, <glossterm linkend="gloss_netmask">Netmask</glossterm>, <glossterm linkend="gloss_default_route">Default Route</glossterm> (sometimes referred to as <quote>gateway</quote>), as well as a primary <glossterm linkend="gloss_dns">DNS</glossterm> server and a secondary DNS server (optional).
       </para>
       <para>
-        Should <guilabel>Automatically Set</guilabel> be selected, then administrators can optionaly request a renewal of their <glossterm linkend="gloss_dhcp_lease">DHCP Lease</glossterm> via the <guilabel>Renew DHCP Lease</guilabel> button.  This is the second section as seen in <xref linkend="config_tab_network_networksettings_figure"/>.
+        Should <guilabel>Automatically Set</guilabel> be selected, then administrators can optionally request a renewal of their <glossterm linkend="gloss_dhcp_lease">DHCP Lease</glossterm> via the <guilabel>Renew DHCP Lease</guilabel> button.  This is the second section as seen in <xref linkend="config_tab_network_networksettings_figure"/>.
       </para>
       <para>
         Whether <guilabel>Automatically Set</guilabel> or <guilabel>Manually Set</guilabel> is selected for the external interface, the <guilabel>Run Connectivity Test</guilabel> button can be used to perform a test of these settings.  This is the third section as seen in <xref linkend="config_tab_network_networksettings_figure"/>.  Activating the test will then report its findings (success/failure).
@@ -251,7 +251,7 @@
         </mediaobject>
       </figure>
       <para>
-        The &eg; is able to respond to read-only SNMP queries.  It exports MIB-II (see RFC 1213), as well as (optionaly) sends <glossterm linkend="gloss_trap">traps</glossterm>.  To enable the &eg; to field SNMP queries, select the <guilabel>Enable SNMP Monitoring</guilabel> option as seen in <xref linkend="config_tab_remoteadmin_snmp_figure"/>.
+        The &eg; is able to respond to read-only SNMP queries.  It exports MIB-II (see RFC 1213), as well as (optionally) sends <glossterm linkend="gloss_trap">traps</glossterm>.  To enable the &eg; to field SNMP queries, select the <guilabel>Enable SNMP Monitoring</guilabel> option as seen in <xref linkend="config_tab_remoteadmin_snmp_figure"/>.
       </para>
       <para>
         If <guilabel>Enable SNMP Monitoring</guilabel> is selected, three additional pieces of information should be provided.  The first is the <guilabel>Community</guilabel>, which is used in SNMP v1 to authenticate queries.
@@ -260,10 +260,10 @@
             Be sure to change the default community value when enabling this feature
           </para>
         </warning>
-        The next two fields are <guilabel>System Contact</guilabel> and <guilabel>System Location</guilabel>.  Although not required for normal operation, they greatly assist in troubleshooting.  They should be populated with contact information and the physical location of the &eg; (respectivly).
+        The next two fields are <guilabel>System Contact</guilabel> and <guilabel>System Location</guilabel>.  Although not required for normal operation, they greatly assist in troubleshooting.  They should be populated with contact information and the physical location of the &eg; (respectively).
       </para>
       <para>
-        The &eg; can also be configured to send warm and cold start traps.  To enable the sending of traps, select <guilabel>Enable Traps</guilabel> at the bottom of the SNMP Monitoring tab.  You must then provide a host/port (via the <guilabel>Host</guilabel> and <guilabel>Port</guilabel> respectivly).  The field <guilabel>Community</guilabel> must be populated with the community string for the trap-receiving server.
+        The &eg; can also be configured to send warm and cold start traps.  To enable the sending of traps, select <guilabel>Enable Traps</guilabel> at the bottom of the SNMP Monitoring tab.  You must then provide a host/port (via the <guilabel>Host</guilabel> and <guilabel>Port</guilabel> respectively).  The field <guilabel>Community</guilabel> must be populated with the community string for the trap-receiving server.
         <note>
           <para>
             Not all SNMP trap receiver tools require a community string.  If your tool does not require a community string, the <guilabel>Community</guilabel> field can be left blank.
@@ -306,7 +306,7 @@
   <sect1 id="config_tab_backup_restore">
     <title>Backup and Restore</title>
     <para>
-    The Backup and Restore panel allows Administrators to save the configuration of their &eg;.  Backups can be made to the local hard drive, or to a USB key, as discussed in <xref linkend="config_tab_backuprestore_disk_figure"/> and <xref linkend="config_tab_backuprestore_usb"/> respectivly.
+    The Backup and Restore panel allows Administrators to save the configuration of their &eg;.  Backups can be made to the local hard drive, or to a USB key, as discussed in <xref linkend="config_tab_backuprestore_disk_figure"/> and <xref linkend="config_tab_backuprestore_usb"/> respectively.
     </para>
 
 
@@ -491,10 +491,10 @@
   <sect1 id="config_tab_protocol_settings">
     <title>Protocol Settings</title>
     <para>
-      The Protocol Settings panel contains advanced properties for Web, Email and <glossterm linkend="gloss_ftp">FTP</glossterm> traffic.  These will be discussed in <xref linkend="config_tab_protocol_settings_web"/>, <xref linkend="config_tab_protocol_settings_email"/>, and <xref linkend="config_tab_protocol_settings_ftp"/> respectivly.
+      The Protocol Settings panel contains advanced properties for Web, Email and <glossterm linkend="gloss_ftp">FTP</glossterm> traffic.  These will be discussed in <xref linkend="config_tab_protocol_settings_web"/>, <xref linkend="config_tab_protocol_settings_email"/>, and <xref linkend="config_tab_protocol_settings_ftp"/> respectively.
       <warning>
         <para>
-          Administrators should not change any Protocol Settings unless instructed to by a member of Metavize support or one of their authorized representitives.
+          Administrators should not change any Protocol Settings unless instructed to by a member of Metavize support or one of their authorized representatives.
         </para>
       </warning>
     </para>
@@ -509,7 +509,7 @@
         The Web tab of the Protocol Settings tab is seen in  <xref linkend="config_tab_protocol_settings_web_figure"/>.
         <warning>
           <para>
-            Administrators should not change the Web tab unless instructed to by a member of Metavize support or one of their authorized representitives.
+            Administrators should not change the Web tab unless instructed to by a member of Metavize support or one of their authorized representatives.
           </para>
         </warning>        
       </para>
@@ -525,7 +525,7 @@
         The Web tab of the Protocol Settings panel is divided into four sections.  The first, <guilabel>Web Override</guilabel> disables processing of all <glossterm linkend="gloss_http">HTTP</glossterm> traffic for <emphasis>all Software Appliances</emphasis>.  This should normally be set to <guilabel>Enable Processing</guilabel> unless under special circumstances (for example, you are a software company debugging your own web-enabled products).
       </para>
       <para>
-        <guilabel>Long URIs</guilabel> (see <glossterm linkend="gloss_uri">URIs</glossterm>) and <guilabel>Long Headers</guilabel> control the &eg; behavior with abnormal web traffic.  The default settings accomidate most standard web traffic.
+        <guilabel>Long URIs</guilabel> (see <glossterm linkend="gloss_uri">URIs</glossterm>) and <guilabel>Long Headers</guilabel> control the &eg; behavior with abnormal web traffic.  The default settings accommodate most standard web traffic.
       </para>
       <para>
         <guilabel>Non-HTTP Blocking</guilabel> is used to control the &eg; behavior for non-http traffic over <glossterm linkend="gloss_port">port 80</glossterm>.  The default behavior is to allow such traffic.  Selecting the <guilabel>Stop</guilabel> option may prevent applications such as peer-to-peer file sharing or networked games from operating correctly.  Note that <quote>normal</quote> web traffic (from a browser to a web server) is not effected by this setting.
@@ -539,7 +539,7 @@
         The Email tab of the Protocol Settings panel can be seen in <xref linkend="config_tab_protocol_settings_email_figure"/>.
         <warning>
           <para>
-            Administrators should not change the Email tab unless instructed to by a member of Metavize support or one of their authorized representitives.
+            Administrators should not change the Email tab unless instructed to by a member of Metavize support or one of their authorized representatives.
           </para>
         </warning>         
       </para>
@@ -582,7 +582,7 @@
         </mediaobject>
       </figure>
       <para>
-        From this tab, Administrators can turn on/off scanning of FTP traffic by selecting either <guilabel>Enable Processing</guilabel> or <guilabel>Disable Processing</guilabel>, respectivly.  If disabled, no software appliances within the &eg; will scan FTP traffic.
+        From this tab, Administrators can turn on/off scanning of FTP traffic by selecting either <guilabel>Enable Processing</guilabel> or <guilabel>Disable Processing</guilabel>, respectively.  If disabled, no software appliances within the &eg; will scan FTP traffic.
       </para>
     </sect2>        
   </sect1>
@@ -597,7 +597,7 @@
       This section discusses the Quarantine facility within &eg;.  It begins with an overview, as discussed in <xref linkend="config_tab_quarantine_overview"/>.  Also discussed are Administrative interfaces to manage mails quarantined for individual email addresses in <xref linkend="config_tab_quarantine_releasepurge"/>.
       <note>
         <para>
-          The Quarantine facility sends emails to individuals within the protected network.  It may also be accessed by Administrators.  To avoid confusion, we will use the term <quote>end user</quote> to refer to a person within the protected network who receives email.  End users may interact with the Quarantine system via a web interface.  Although end users can purge/release their own emails, they lack privilages to launch the &eg; Administrative Interface.
+          The Quarantine facility sends emails to individuals within the protected network.  It may also be accessed by Administrators.  To avoid confusion, we will use the term <quote>end user</quote> to refer to a person within the protected network who receives email.  End users may interact with the Quarantine system via a web interface.  Although end users can purge/release their own emails, they lack privileges to launch the &eg; Administrative Interface.
         </para>
         <para>
           We will use the proper noun <quote>Administrator</quote> when discussing an Administrative User interacting with the &eg; Administrative Interface to control quarantined emails for many users.
@@ -614,7 +614,7 @@
         The &eg; quarantine system has been designed so end-users can maintain their own inbox.  They do so via a daily <quote>digest email</quote> which summarizes any quarantined emails.  Users can then release emails (causing them to be sent to their email clients), or delete them.  
       </para>
       <para>
-        The daily digest emails are delivered in <glossterm linkend="gloss_htmp">HTML</glossterm> format, such that they contain links to a web server.  The web server is housed within the &eg;.  In this way, the digest emails allow for direct communication with end-users to mainting their inboxes.
+        The daily digest emails are delivered in <glossterm linkend="gloss_htmp">HTML</glossterm> format, such that they contain links to a web server.  The web server is housed within the &eg;.  In this way, the digest emails allow for direct communication with end-users to maintain their inboxes.
         <note>
           <para>
             Some users will choose not to act on (ignore) their digest emails.  If a user ignores their inbox for many days (and receives many spams), their inbox will grow.  This is not a concern, as the &eg; automatically deletes emails after a fixed period of time.  This period is configurable, as discussed in <xref linkend="config_tab_quarantine_general"/>
@@ -643,7 +643,7 @@
         </mediaobject>
       </figure>
       <para>
-        The interface for administrative release/purge interface is presented as a table, with each row corresponding to an end user's inbox.  By highlighting on a given row, Administrators can perform one of three actions defined by the buttons at the botton of the panel.
+        The interface for administrative release/purge interface is presented as a table, with each row corresponding to an end user's inbox.  By highlighting on a given row, Administrators can perform one of three actions defined by the buttons at the bottom of the panel.
 
         <variablelist>
           <varlistentry>
@@ -684,7 +684,7 @@
         </mediaobject>
       </figure>        
       <para>
-        Individual mails may be purged (deleted) or released by highlighting rows and pushing the <guilabel>Purge Selected</guilabel> or <guilabel>Release Selected</guilabel> buttons respectivly.
+        Individual mails may be purged (deleted) or released by highlighting rows and pushing the <guilabel>Purge Selected</guilabel> or <guilabel>Release Selected</guilabel> buttons respectively.
       </para>  
 
     </sect2>
@@ -694,7 +694,7 @@
     <sect2 id="config_tab_quarantine_passlist">
       <title>Quarantine Pass List</title>
       <para>
-        As discussed in <xref linkend="config_tab_quarantine_overview"/>, end users may maintain their own list of email senders who are known <emphasis>not</emphasis> to send unwanted email.  This is called the <quote>passlist</quote>.  Administrators can optionaly view/change passlists for end users.  The interface for this functionality is shown in <xref linkend="config_tab_quarantine_passlist_figure"/>.
+        As discussed in <xref linkend="config_tab_quarantine_overview"/>, end users may maintain their own list of email senders who are known <emphasis>not</emphasis> to send unwanted email.  This is called the <quote>passlist</quote>.  Administrators can optionally view/change passlists for end users.  The interface for this functionality is shown in <xref linkend="config_tab_quarantine_passlist_figure"/>.
       </para>
       <figure id="config_tab_quarantine_passlist_figure">
         <title>Quarantine Pass List Tab</title>
@@ -705,7 +705,7 @@
         </mediaobject>
       </figure>
       <para>
-        The interface for administrative release/purge interface is presented as a table, with each row corresponding to an end user's passlist.  By highlighting on a given row, Administrators can perform one of two actions defined by the buttons at the botton of the panel.
+        The interface for administrative release/purge interface is presented as a table, with each row corresponding to an end user's passlist.  By highlighting on a given row, Administrators can perform one of two actions defined by the buttons at the bottom of the panel.
 
         <variablelist>
           <varlistentry>
@@ -781,7 +781,7 @@
   <sect1 id="config_tab_support">
     <title>Support</title>
     <para>
-      The Support interface, as seen in <xref linkend="config_tab_support_figure"/>, can enable Metavize Support or one of their authorized representitives to greater assist in troubleshooting.
+      The Support interface, as seen in <xref linkend="config_tab_support_figure"/>, can enable Metavize Support or one of their authorized representatives to greater assist in troubleshooting.
     </para>
 
     <figure id="config_tab_support_figure">
@@ -843,7 +843,7 @@
         </question>
         <answer>
           <para>
-            The &eg; does not know vaild from invalid email addresses within your domain.  The easiest way to prevent emails for an ex-employee is to configure your mail server to reject those mails.
+            The &eg; does not know valid from invalid email addresses within your domain.  The easiest way to prevent emails for an ex-employee is to configure your mail server to reject those mails.
           </para>
           <para>
             If causing emails to be rejected is not an option (for example, emails from business partners are still being received and must be reviewed during the transition) then SPAM emails can simply be ignored.  Recall that the system automatically deletes emails from inboxes after a fixed period (see <xref linkend="config_tab_quarantine_general"/> for more details on this setting).  Note that once emails for that user cease, the inbox will automatically be deleted after two months of inactivity.  

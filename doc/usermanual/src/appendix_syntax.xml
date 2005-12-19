@@ -29,7 +29,7 @@
         <programlisting>192.168.1.1/24</programlisting>
         <programlisting>66.94.230.42/16</programlisting>
   
-        The format is <constant>&lt;IP Address>/&lt;number></constant> where <constant>&lt;IP Address></constant> is an IP address.  <constant>&lt;number></constant> is a number between 0 and 32.  This second value is short hand for a netmask, defining the number of leading one's when expressed in bit form.  For example, the mask <constant>255.255.255.0</constant> can be expressed as <constant>/24</constant> and the mask <constant>255.255.0.0</constant> can be expressed as <constant>/16</constant>.
+        The format is <constant>&lt;IP Address>/&lt;number></constant> where <constant>&lt;IP Address></constant> is an IP address.  <constant>&lt;number></constant> is a number between 0 and 32.  This second value is short hand for a netmask, defining the number of leading ones when expressed in bit form.  For example, the mask <constant>255.255.255.0</constant> can be expressed as <constant>/24</constant> and the mask <constant>255.255.0.0</constant> can be expressed as <constant>/16</constant>.
       </para>
     </simplesect>
   
@@ -39,11 +39,11 @@
     <simplesect id="appendix_syntax_iprange" xreflabel="IP Range">
       <title>IP Range Syntax</title>
       <para>
-        The IP Range syntax defines a collection of contiguious <glossterm linkend="gloss_ip_addr">IP Addresses</glossterm>.  It is expressed as <constant>address-address</constant>, where a dash (<constant>-</constant>) is used to separate the ends of the range.  Examples include:
+        The IP Range syntax defines a collection of contiguous <glossterm linkend="gloss_ip_addr">IP Addresses</glossterm>.  It is expressed as <constant>address-address</constant>, where a dash (<constant>-</constant>) is used to separate the ends of the range.  Examples include:
         <programlisting>192.168.10.1-192.168.10.100</programlisting>
         <programlisting>66.94.230.1-66.94.230.100</programlisting>
         
-        In many cases, IP Range Syntax and <link linkend="appendix_syntax_networknetmask">Network/Netmask Syntax</link> can be used interchangably.  
+        In many cases, IP Range Syntax and <link linkend="appendix_syntax_networknetmask">Network/Netmask Syntax</link> can be used interchangeably.  
       </para>
     </simplesect>
   
@@ -77,7 +77,7 @@
     <simplesect id="appendix_syntax_portrange" xreflabel="Port Range">
       <title>Port Range Syntax</title>
       <para>
-        The <glossterm linkend="gloss_port">Port</glossterm> Range syntax defines a collection of contiguious ports.  It is expressed as <constant>port-port</constant>, where a dash (<constant>-</constant>) is used to separate the ends of the range.  <constant>port</constant> is a number between 0 and 65,535.  Examples include:
+        The <glossterm linkend="gloss_port">Port</glossterm> Range syntax defines a collection of contiguous ports.  It is expressed as <constant>port-port</constant>, where a dash (<constant>-</constant>) is used to separate the ends of the range.  <constant>port</constant> is a number between 0 and 65,535.  Examples include:
   
         <programlisting>1024-2048</programlisting>
         <programlisting>20-26</programlisting>

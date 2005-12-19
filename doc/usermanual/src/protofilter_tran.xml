@@ -37,10 +37,10 @@
         </mediaobject>
       </figure>
       <para>
-        Each protocol is given a logical <guilabel>category</guilabel>, as well as its common-name <guilabel>protocol</guilabel>.  To cause a given protocol to be blocked from <emphasis>either entering or leaving</emphasis> your protected network, check the box in the <guilabel>block</guilabel> column.  If you only want to audit your traffic (for example, to see if anyone within the network is participating in file sharing), you can check the <guilabel>log</guilabel> box for that protocol.  If <guilabel>log</guilabel> is checked, occurances of the protocol found by &eg; can be seen in the Event Log (see <xref linkend="protofilter_tran_eventlog"/> and in reports.
+        Each protocol is given a logical <guilabel>category</guilabel>, as well as its common-name <guilabel>protocol</guilabel>.  To cause a given protocol to be blocked from <emphasis>either entering or leaving</emphasis> your protected network, check the box in the <guilabel>block</guilabel> column.  If you only want to audit your traffic (for example, to see if anyone within the network is participating in file sharing), you can check the <guilabel>log</guilabel> box for that protocol.  If <guilabel>log</guilabel> is checked, occurrences of the protocol found by &eg; can be seen in the Event Log (see <xref linkend="protofilter_tran_eventlog"/> and in reports.
       </para>
       <para>
-        As with most Software Appliances within &eg;, administrators can define their own entries in the Protocol Block table.  However, this appliance is configured with <glossterm linkend="gloss_regex">regular expressions</glossterm>.  Configuring regular expressions to match internet protocols is an advanced topic, which will not be covered in this document.
+        As with most Software Appliances within &eg;, administrators can define their own entries in the Protocol Block table.  However, this appliance is configured with <glossterm linkend="gloss_regex">regular expressions</glossterm>.  Configuring regular expressions to match Internet protocols is an advanced topic, which will not be covered in this document.
         <caution>
           <para>
           Attempting to create your own entry in the Protocol Block List could result in legitimate traffic being blocked if your regular expression contains errors.
@@ -74,11 +74,11 @@
     <qandaset>  
       <qandaentry>
         <question>
-          <para>I've already installed the Firewall Appliance.  Isn't The Rougue Protocol Control Appliance redundant?</para>
+          <para>I've already installed the Firewall Appliance.  Isn't The Rogue Protocol Control Appliance redundant?</para>
         </question>
         <answer>
           <para>
-            The Firewall application works to block traffic for <glossterm linkend="gloss_ip_addr">IP addresses</glossterm> and/or <glossterm linkend="gloss_port">ports</glossterm>.  For well behaved applications (such as legitimate web and email servers) the port can be used to identify the protocol.  However, less legitimate applications may use different ports, or malicious users may deliberatly use unwanted services on obscure ports.  
+            The Firewall application works to block traffic for <glossterm linkend="gloss_ip_addr">IP addresses</glossterm> and/or <glossterm linkend="gloss_port">ports</glossterm>.  For well behaved applications (such as legitimate web and email servers) the port can be used to identify the protocol.  However, less legitimate applications may use different ports, or malicious users may deliberately use unwanted services on obscure ports.  
           </para>
           <para>
             The Rogue Protocol Control Appliance scans <emphasis>all</emphasis> traffic, looking for a <quote>match</quote> even if the traffic was not transported across the expected port for that protocol.
@@ -87,11 +87,11 @@
       </qandaentry>
       <qandaentry>
         <question>
-          <para>I want to block <constant>[some file sharing protocol]</constant> for some of my users but not all.  How can I do this with Rougue Protocol Control?</para>
+          <para>I want to block <constant>[some file sharing protocol]</constant> for some of my users but not all.  How can I do this with Rogue Protocol Control?</para>
         </question>
         <answer>
           <para>
-            The Rougue Protocol Appliance cannot by itself filter just for <quote>some</quote> machines, and not others.  However, you can create new Policies and Virtual Racks (see <xref linkend="policy_manager"/>) to partition some of your users through a Rogue Protocol Appliance with <constant>[some file sharing protocol]</constant> blocked and not others.
+            The Rogue Protocol Appliance cannot by itself filter just for <quote>some</quote> machines, and not others.  However, you can create new Policies and Virtual Racks (see <xref linkend="policy_manager"/>) to partition some of your users through a Rogue Protocol Appliance with <constant>[some file sharing protocol]</constant> blocked and not others.
           </para>
         </answer>
       </qandaentry>      

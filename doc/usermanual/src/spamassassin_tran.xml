@@ -49,7 +49,7 @@
               <term><guilabel>source</guilabel></term>
               <listitem>
                 <para>
-                  The source of the <emphasis>email message</emphasis>.  The value <constant>incomming message</constant> refers to messages entering your network via SMTP.  This implies that there is an SMTP Server within your protected network.  The value <constant>outgoing message</constant> refers to SMTP messages is originating from within your protected network.  This could either be from your internal SMTP server or desktop SMTP clients.
+                  The source of the <emphasis>email message</emphasis>.  The value <constant>incoming message</constant> refers to messages entering your network via SMTP.  This implies that there is an SMTP Server within your protected network.  The value <constant>outgoing message</constant> refers to SMTP messages is originating from within your protected network.  This could either be from your internal SMTP server or desktop SMTP clients.
                 </para>
               </listitem>
             </varlistentry>
@@ -57,7 +57,7 @@
               <term><guilabel>scan</guilabel></term>
               <listitem>
                 <para>
-                  This checkbox controls scanning for the given <constant>source</constant>.  When the box is checked, this means that the &eg; will scan email for spam in that direction.
+                  This check box controls scanning for the given <constant>source</constant>.  When the box is checked, this means that the &eg; will scan email for spam in that direction.
                 </para>
               </listitem>
             </varlistentry>
@@ -157,7 +157,7 @@
             <term><guilabel>source</guilabel></term>
             <listitem>
               <para>
-                The source of the <emphasis>email message</emphasis>.  The value <constant>incomming message</constant> means messages <emphasis>entering</emphasis> your network via POP.  This implies that the POP client is within the protected network, and the POP server is outside.  The value <constant>outgoing message</constant> means that the POP server is within the protected network, and the client is outside.
+                The source of the <emphasis>email message</emphasis>.  The value <constant>incoming message</constant> means messages <emphasis>entering</emphasis> your network via POP.  This implies that the POP client is within the protected network, and the POP server is outside.  The value <constant>outgoing message</constant> means that the POP server is within the protected network, and the client is outside.
               </para>
             </listitem>
           </varlistentry>
@@ -165,7 +165,7 @@
             <term><guilabel>scan</guilabel></term>
             <listitem>
               <para>
-                This checkbox controls scanning for the given <constant>source</constant>.  When the box is checked, this means that the &eg; will scan email for spam in that direction.
+                This check box controls scanning for the given <constant>source</constant>.  When the box is checked, this means that the &eg; will scan email for spam in that direction.
               </para>
             </listitem>
           </varlistentry>
@@ -229,7 +229,7 @@
             <term><guilabel>source</guilabel></term>
             <listitem>
               <para>
-                The source of the <emphasis>email message</emphasis>.  The value <constant>incomming message</constant> refers to messages entering your network via IMAP.  This implies that the IMAP client is within the protected network, and the IMAP server is outside.  The value <constant>outgoing message</constant> means that the IMAP server is within the protected network, and the client is outside.
+                The source of the <emphasis>email message</emphasis>.  The value <constant>incoming message</constant> refers to messages entering your network via IMAP.  This implies that the IMAP client is within the protected network, and the IMAP server is outside.  The value <constant>outgoing message</constant> means that the IMAP server is within the protected network, and the client is outside.
               </para>
             </listitem>
           </varlistentry>
@@ -237,7 +237,7 @@
             <term><guilabel>scan</guilabel></term>
             <listitem>
               <para>
-                This checkbox controls scanning for the given <constant>source</constant>.  When the box is checked, this means that the &eg; will scan email for spam in that direction.
+                This check box controls scanning for the given <constant>source</constant>.  When the box is checked, this means that the &eg; will scan email for spam in that direction.
               </para>
             </listitem>
           </varlistentry>
@@ -395,7 +395,7 @@
         </question>
         <answer>
           <para>
-            Most IMAP clients first fetch summary information about emails (subject, sender) so the end user can see a preview list of messages.  Only when the user selects (clicks on) the message is the actual content of the message retreived from the server.  It is then that the &eg; is able to scan the message.  Unfortunatly, some email clients do not detect the change in subject and update their preview list.
+            Most IMAP clients first fetch summary information about emails (subject, sender) so the end user can see a preview list of messages.  Only when the user selects (clicks on) the message is the actual content of the message retrieved from the server.  It is then that the &eg; is able to scan the message.  Unfortunately, some email clients do not detect the change in subject and update their preview list.
           </para>
         </answer>
       </qandaentry>

@@ -63,7 +63,7 @@
           </mediaobject>
         </figure>
         <para>
-          The URL block list is initialy empty.  When adding a new entry, you enter a URL which encompases an exact match or any URLs matching that prefix (see <xref linkend="appendix_syntax_urlmatcher"/> for more details on URL matching).  The <guilabel>category</guilabel> column can contain any category of your choosing (it does not have to correspond to the predefined categories discussed in <xref linkend="httpblocker_tran_block_categories"/>).
+          The URL block list is initially empty.  When adding a new entry, you enter a URL which encompasses an exact match or any URLs matching that prefix (see <xref linkend="appendix_syntax_urlmatcher"/> for more details on URL matching).  The <guilabel>category</guilabel> column can contain any category of your choosing (it does not have to correspond to the predefined categories discussed in <xref linkend="httpblocker_tran_block_categories"/>).
         </para>           
       </sect3>
   
@@ -131,7 +131,7 @@
           </mediaobject>
         </figure>
         <para>
-          The URL pass list is initialy empty.  When adding a new entry, you enter a URL which encompases an exact match or any URLs matching that prefix (see <xref linkend="appendix_syntax_urlmatcher"/> for more details on URL matching).  The <guilabel>category</guilabel> column can contain any category of your choosing (it does not have to correspond to the predefined categories discussed in <xref linkend="httpblocker_tran_block_categories"/>).
+          The URL pass list is initially empty.  When adding a new entry, you enter a URL which encompasses an exact match or any URLs matching that prefix (see <xref linkend="appendix_syntax_urlmatcher"/> for more details on URL matching).  The <guilabel>category</guilabel> column can contain any category of your choosing (it does not have to correspond to the predefined categories discussed in <xref linkend="httpblocker_tran_block_categories"/>).
         </para>
       </sect3>
   
@@ -150,7 +150,7 @@
           </mediaobject>
         </figure>
         <para>
-          The list shown in <xref linkend="httpblocker_tran_pass_clients_figure"/> is initialy empty.  As new entries are made, administrators must enter <guilabel>client IP address</guilabel>.  The format of the  <guilabel>client IP address</guilabel> field is either in <link linkend="appendix_syntax_simpleipaddr">Simple IP Address</link> or <link linkend="appendix_syntax_networknetmask">Network/Netmask</link> format.  Note that the <guilabel>category</guilabel> field is only for administrator reference - it need not match up with the predefined categories discussed in <xref linkend="httpblocker_tran_block_categories"/>.
+          The list shown in <xref linkend="httpblocker_tran_pass_clients_figure"/> is initially empty.  As new entries are made, administrators must enter <guilabel>client IP address</guilabel>.  The format of the  <guilabel>client IP address</guilabel> field is either in <link linkend="appendix_syntax_simpleipaddr">Simple IP Address</link> or <link linkend="appendix_syntax_networknetmask">Network/Netmask</link> format.  Note that the <guilabel>category</guilabel> field is only for administrator reference - it need not match up with the predefined categories discussed in <xref linkend="httpblocker_tran_block_categories"/>.
         </para>
       </sect3>    
     </sect2>
@@ -194,7 +194,7 @@
         </question>
         <answer>
           <para>
-            Set-up the policies as you would for employees.  Then, enter the addresses of alll public Internet terminals into the Client Pass List as described in <xref linkend="httpblocker_tran_pass_clients"/>.
+            Set-up the policies as you would for employees.  Then, enter the addresses of all public Internet terminals into the Client Pass List as described in <xref linkend="httpblocker_tran_pass_clients"/>.
           </para>
         </answer>
       </qandaentry>      

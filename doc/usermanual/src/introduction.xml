@@ -3,7 +3,7 @@
   <title>Introduction</title>
 
   <sect1 id="introduction_box">
-    <title>EdgeGuard Machine</title>
+    <title>Adequate Machine</title>
     <para>
       Describe the machine, saying that it has network interfaces.  Forward reference to <xref linkend="introduction_topology"/>, so folks know we'll explain more later.
     </para>

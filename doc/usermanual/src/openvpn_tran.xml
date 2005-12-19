@@ -28,16 +28,16 @@
         </para>
       </blockquote>
 
-      With any VPN connection, there is a <emphasis>client</emphasis> and <emphasis>server</emphasis>.  The client connects to the server, establishing an encrypted communication channel.  Implicit is that the server is protecting network resources from another untrusted network (usualy the Internet).  The VPN connection allows the remote client to reside on an untrusted network yet access protected resources <quote>behind</quote> the VPN server.  
+      With any VPN connection, there is a <emphasis>client</emphasis> and <emphasis>server</emphasis>.  The client connects to the server, establishing an encrypted communication channel.  Implicit is that the server is protecting network resources from another untrusted network (usually the Internet).  The VPN connection allows the remote client to reside on an untrusted network yet access protected resources <quote>behind</quote> the VPN server.  
     </para>
     <para>
       A secure communication channel itself is of only limited value.  Once a client established a VPN connection to a server, that server then <emphasis>exports</emphasis> network resources to the client.  These exported resources are the protected machines or <glossterm linkend="gloss_subnet">subnets</glossterm>, shielded from the untrusted network but through a VPN connection.
     </para>
     <para>
-      This concept of <quote>exporting</quote> resources is a subtle one.  A very simple VPN deployment may export the entire internal (protected) network to VPN clients.  This can be thought of as the VPN client simply <quote>joining</quote> the internal network from a remote location via a secure channel.  For many deployments, this may be appropriate.  In other deployments, a further level of protection may be appropriate.  For example, the most common use of VPN is employees working from home.  Many homes now have wireless networks, which are not always properly secured.  When a user establishes a VPN connection from their home, they may be exposing the corporation to any <glossterm linkend="gloss_malware">malware</glossterm> residing on their home network.  To mimimize this risk, the corporation may choose to only <emphasis>export</emphasis> the intranet server to VPN clients.  Such clients could not connect to other internal resources (file servers, printers, ERP systems) they could reach from their desk at work.
+      This concept of <quote>exporting</quote> resources is a subtle one.  A very simple VPN deployment may export the entire internal (protected) network to VPN clients.  This can be thought of as the VPN client simply <quote>joining</quote> the internal network from a remote location via a secure channel.  For many deployments, this may be appropriate.  In other deployments, a further level of protection may be appropriate.  For example, the most common use of VPN is employees working from home.  Many homes now have wireless networks, which are not always properly secured.  When a user establishes a VPN connection from their home, they may be exposing the corporation to any <glossterm linkend="gloss_malware">malware</glossterm> residing on their home network.  To minimize this risk, the corporation may choose to only <emphasis>export</emphasis> the intranet server to VPN clients.  Such clients could not connect to other internal resources (file servers, printers, ERP systems) they could reach from their desk at work.
     </para>
     <para>
-      Implied in the establishment of a <quote>secure</quote> connection is not only encryption (preventing evesdropping by malicious parties between the VPN client and server) but also <emphasis>authentication</emphasis>.  With the Open VPN implementation within &eg;, authentication takes place <quote>key pairs</quote>.  A discussion of Public Key Infrastructure (PKI) is beyond the scope of this document.  What is important is that there need be a key placed on each client wishing to connect to a VPN server.  This is known as <emphasis>key distribution</emphasis>.  There are two options for key distribution with the Open VPN implementation within &eg;, via email or via USB key.
+      Implied in the establishment of a <quote>secure</quote> connection is not only encryption (preventing eavesdropping by malicious parties between the VPN client and server) but also <emphasis>authentication</emphasis>.  With the Open VPN implementation within &eg;, authentication takes place <quote>key pairs</quote>.  A discussion of Public Key Infrastructure (PKI) is beyond the scope of this document.  What is important is that there need be a key placed on each client wishing to connect to a VPN server.  This is known as <emphasis>key distribution</emphasis>.  There are two options for key distribution with the Open VPN implementation within &eg;, via email or via USB key.
       <tip>
         <para>
           What is most important in this discussion of authentication is that the key placed on each client must not be lost.  If a key is lost (for example, someone loosing their laptop) it must be invalidated.  Invalidating clients and their keys will be discussed later in this section.
@@ -48,7 +48,7 @@
       Thus far in our discussion, we have provided examples of a remote client machine connecting to a VPN server.  It is also possible to connect an entire remote network to a VPN server.  A common use for this is a remote office, where a handful of employees need to join the protected network at headquarters.  When a group of computers (a network) establish a VPN connection to a server, the group of computers is said to be a <emphasis>site</emphasis>.  A given &eg; can act as a VPN server, allowing remote clients or sites to connect to the exported internal resources.  An &eg; can also act as a remote site, bridging the internal network at that remote location to an &eg; acting as a VPN server.
     </para>     
     <para>
-      As a convienence when configuring the Open VPN Appliance, the following is a list of definitions used throughout the Open VPN Appliance Administrative interface.
+      As a convenience when configuring the Open VPN Appliance, the following is a list of definitions used throughout the Open VPN Appliance Administrative interface.
     </para>
     <variablelist id="openvpn_tran_overview_terms">
       <title>Common Open VPN Terms</title>
@@ -254,7 +254,7 @@
             <term><guilabel>export</guilabel></term>
             <listitem>
               <para>
-                When this box is checked, the resource described by the row is exported.  Resources can be temporarially hidden from export by unchecking this box.  To remove an export entirely, one can simply push the remove (minus) button to the left of the table.
+                When this box is checked, the resource described by the row is exported.  Resources can be temporarily hidden from export by unchecking this box.  To remove an export entirely, one can simply push the remove (minus) button to the left of the table.
               </para>
             </listitem>
           </varlistentry>
@@ -359,7 +359,7 @@
         <bridgehead renderas="sect3">Step 6</bridgehead>
         <!-- ........................................... -->
         <para>
-          Once zero or more VPN clients have been added to the system, Administrators can optionaly add remote VPN Sites as seen in <xref linkend="openvpn_tran_adminui_wizards_server_figure6"/>.
+          Once zero or more VPN clients have been added to the system, Administrators can optionally add remote VPN Sites as seen in <xref linkend="openvpn_tran_adminui_wizards_server_figure6"/>.
         </para>
         <figure id="openvpn_tran_adminui_wizards_server_figure6">
           <title>Add VPN Sites Screen</title>
@@ -370,7 +370,7 @@
           </mediaobject>
         </figure>      
         <para>
-          Recall from <xref linkend="openvpn_tran_overview"/> that a remote VPN site is another &eg; acting to connect a network to a VPN server (as in the satalite office case).  A complete list of the fields for each VPN site entry is as follows.
+          Recall from <xref linkend="openvpn_tran_overview"/> that a remote VPN site is another &eg; acting to connect a network to a VPN server (as in the satellite office case).  A complete list of the fields for each VPN site entry is as follows.
         </para>
         <variablelist>
           <varlistentry>
@@ -518,7 +518,7 @@
         To configure an &eg; as a Routing Server, Administrators must first have run through the corresponding wizard, as described in <xref linkend="openvpn_tran_adminui_wizards_server"/>.  
       </para>
       <para>
-        Once configured, address pools can be added or removed as described in <xref linkend="openvpn_tran_adminui_serverscreens_addrpools"/>.  Hosts and Machines can be exported as described in <xref linkend="openvpn_tran_adminui_serverscreens_exportedhosts"/>.  Finally, VPN clients and sites can be added or removed as discussed in <xref linkend="openvpn_tran_adminui_serverscreens_vpnclients"/> and <xref linkend="openvpn_tran_adminui_serverscreens_vpnsites"/> respectivly.
+        Once configured, address pools can be added or removed as described in <xref linkend="openvpn_tran_adminui_serverscreens_addrpools"/>.  Hosts and Machines can be exported as described in <xref linkend="openvpn_tran_adminui_serverscreens_exportedhosts"/>.  Finally, VPN clients and sites can be added or removed as discussed in <xref linkend="openvpn_tran_adminui_serverscreens_vpnclients"/> and <xref linkend="openvpn_tran_adminui_serverscreens_vpnsites"/> respectively.
       </para>
 
       <!-- *********************************************** -->
@@ -615,7 +615,7 @@
             <term><guilabel>export</guilabel></term>
             <listitem>
               <para>
-                When this box is checked, the resource described by the row is exported.  Resources can be temporarially hidden from export by unchecking this box.  To remove an export entirely, one can simply push the remove (minus) button to the left of the table.
+                When this box is checked, the resource described by the row is exported.  Resources can be temporarily hidden from export by unchecking this box.  To remove an export entirely, one can simply push the remove (minus) button to the left of the table.
               </para>
             </listitem>
           </varlistentry>

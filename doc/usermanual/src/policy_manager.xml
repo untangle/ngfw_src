@@ -71,7 +71,7 @@
       </step>
     </procedure>
     <para>
-      This simple example highlights several important concepts required in the understanding of Policies and Virtual Racks.  The &eg; used four pieces of information in the processing of the request.  It used the IP address of the requestor (client) and the IP:port of the requestee (server).  We call these <emphasis>endpoints</emphasis>, and there were two of them with Emma's request (Emma's machine and Google's Web Server).  There were also two network interfaces involved, one where the request was received at the &eg; (the <constant>internal</constant> interface), and one where the request left (the <constant>external</constant> interface).
+      This simple example highlights several important concepts required in the understanding of Policies and Virtual Racks.  The &eg; used four pieces of information in the processing of the request.  It used the IP address of the requester (client) and the IP:port of the requestee (server).  We call these <emphasis>endpoints</emphasis>, and there were two of them with Emma's request (Emma's machine and Google's Web Server).  There were also two network interfaces involved, one where the request was received at the &eg; (the <constant>internal</constant> interface), and one where the request left (the <constant>external</constant> interface).
     </para>
 
     <!-- ============================================================ -->
@@ -89,7 +89,7 @@
         <title>Example Applications for Multiple Virtual Racks</title>
         <listitem>
           <para>
-            Setting up a <!-- <glossterm linkend="gloss_dmz"> -->DMZ<!-- </glossterm> --> to host an internet-facing web server.  The policies associated with the web traffic to your own web server (filtering, scanning) should be different than those for employees browsing the web.
+            Setting up a <!-- <glossterm linkend="gloss_dmz"> -->DMZ<!-- </glossterm> --> to host an Internet-facing web server.  The policies associated with the web traffic to your own web server (filtering, scanning) should be different than those for employees browsing the web.
           </para>
         </listitem>
 
@@ -125,10 +125,10 @@
         </para>
       </blockquote>
 
-      where '<constant>Y</constant>' is the name of the Virtual Rack, and '<constant>X</constant>' defines the type of traffic.  The simplest way to differentiate traffic is by its client and server interfaces.  Recall from <xref linkend="policy_manager_overview_int_end_rtg"/> that all traffic through the &eg; can be classified by four characteristics: its two interfaces (client/server) and two endpoints (client/server).  Administrators configure Policies to partition traffic into types based on specifying (at a minimum) the two interfaces of the traffic.  For example, the first item in <xref linkend="policy_manager_overview_mvr_examples"/> would require two policies.  The first policy would define its traffic as <quote>inbound from <constant>external</constant> interface to <constant>DMZ</constant> nterface</quote> and the second as <quote>outbound from <constant>DMZ</constant> interface to <constant>external</constant> interface</quote>.  Both policies would select the Virtual Rack <quote>DMZ Traffic</quote>.
+      where '<constant>Y</constant>' is the name of the Virtual Rack, and '<constant>X</constant>' defines the type of traffic.  The simplest way to differentiate traffic is by its client and server interfaces.  Recall from <xref linkend="policy_manager_overview_int_end_rtg"/> that all traffic through the &eg; can be classified by four characteristics: its two interfaces (client/server) and two endpoints (client/server).  Administrators configure Policies to partition traffic into types based on specifying (at a minimum) the two interfaces of the traffic.  For example, the first item in <xref linkend="policy_manager_overview_mvr_examples"/> would require two policies.  The first policy would define its traffic as <quote>inbound from <constant>external</constant> interface to <constant>DMZ</constant> interface</quote> and the second as <quote>outbound from <constant>DMZ</constant> interface to <constant>external</constant> interface</quote>.  Both policies would select the Virtual Rack <quote>DMZ Traffic</quote>.
     </para>
     <para>
-      More advanced Policies can partition traffic based not only on the interfaces, but also on one or both endpoints.  This allows Administrators to target Software Appliances between locations as explicit as specfic machines.
+      More advanced Policies can partition traffic based not only on the interfaces, but also on one or both endpoints.  This allows Administrators to target Software Appliances between locations as explicit as specific machines.
     </para>
 
 
@@ -178,7 +178,7 @@
         The direction specifier is required because some Software Appliances have different settings depending if the traffic is <constant>inbound</constant> or <constant>outbound</constant>.  For example, an organization may wish to scan <constant>inbound</constant> <glossterm linkend="gloss_smtp">SMTP</glossterm> (email) traffic for SPAM but not <constant>outbound</constant>.  When assigning a Virtual Rack to a Policy, the Policy needs to know if the traffic should be labeled <constant>inbound</constant> or <constant>outbound</constant> when it is handed to each Software Appliance in that rack.  The default settings should provide guidance for the Administrator.  For example, the Policy handling traffic from the <constant>external</constant> interface to the <constant>internal</constant> interface is handled by the <constant>default rack</constant> as inbound traffic.
         <tip>
           <para>
-            When configuring policies and direction, think from the perspective of the Virtual Rack <emphasis>and the interface being protected</emphasis>.  You will usualy find that of any two network interfaces, one is more <quote>sensitive</quote> and should be though of as the one being protected from the other.
+            When configuring policies and direction, think from the perspective of the Virtual Rack <emphasis>and the interface being protected</emphasis>.  You will usually find that of any two network interfaces, one is more <quote>sensitive</quote> and should be though of as the one being protected from the other.
           </para>
           <para>Most people find it easier to picture <quote>inside</quote> resources being protected.  For a given Policy, traffic flowing to the more sensitive network is generally <constant>inbound</constant> and should select the <constant>inbound</constant> side of a Virtual Rack.
           </para>
@@ -240,7 +240,7 @@
                 The direction specifier is required because some Software Appliances have different settings depending if the traffic is <constant>inbound</constant> or <constant>outbound</constant>.  For example, an organization may wish to scan <constant>inbound</constant> <glossterm linkend="gloss_smtp">SMTP</glossterm> (email) traffic for SPAM but not <constant>outbound</constant>.  When assigning a Virtual Rack to a Policy, the Policy needs to know if the traffic should be labeled <constant>inbound</constant> or <constant>outbound</constant> when it is handed to a Software Appliance.  The default settings should provide guidance for the Administrator.  For example, the Policy handling traffic from the <constant>external</constant> interface to the <constant>internal</constant> interface is handled by the <constant>Default Rack</constant> as <emphasis>inbound</emphasis> traffic.
                 <tip>
                   <para>
-                    When configuring policies and direction, think from the perspective of the Virtual Rack <emphasis>and the interface being protected</emphasis>.  You will usualy find that of any two network interfaces, one is more <quote>sensitive</quote> and should be though of as the one being protected from the other.
+                    When configuring policies and direction, think from the perspective of the Virtual Rack <emphasis>and the interface being protected</emphasis>.  You will usually find that of any two network interfaces, one is more <quote>sensitive</quote> and should be though of as the one being protected from the other.
                   </para>
                   <para>Most people find it easier to picture <quote>inside</quote> resources being protected.  For a given Policy, traffic flowing to the more sensitive network is generally <constant>inbound</constant> and should select the <constant>inbound</constant> side of a Virtual Rack.
                   </para>
@@ -260,7 +260,7 @@
             <term><guilabel>client address</guilabel></term>
             <listitem>
               <para>
-                This field defines the source IP address of the traffic.  Valid values are in <link linkend="appendix_syntax_ipmatcher">IP Matcher</link> format.  Note that IP Matcher supports the value <quote><constant>any</constant></quote>.  Assigning this field to <constant>any</constant> means that the <guilabel>client address</guilabel> is effectlvly removed as a traffic selection criteria.
+                This field defines the source IP address of the traffic.  Valid values are in <link linkend="appendix_syntax_ipmatcher">IP Matcher</link> format.  Note that IP Matcher supports the value <quote><constant>any</constant></quote>.  Assigning this field to <constant>any</constant> means that the <guilabel>client address</guilabel> is effectively removed as a traffic selection criteria.
               </para>
             </listitem>
           </varlistentry>
@@ -268,7 +268,7 @@
             <term><guilabel>server address</guilabel></term>
             <listitem>
               <para>
-                This field defines the destination IP address of the traffic.  Valid values are in <link linkend="appendix_syntax_ipmatcher">IP Matcher</link> format.  Note that IP Matcher supports the value <quote><constant>any</constant></quote>.  Assigning this field to <constant>any</constant> means that the <guilabel>server address</guilabel> is effectlvly removed as a traffic selection criteria.
+                This field defines the destination IP address of the traffic.  Valid values are in <link linkend="appendix_syntax_ipmatcher">IP Matcher</link> format.  Note that IP Matcher supports the value <quote><constant>any</constant></quote>.  Assigning this field to <constant>any</constant> means that the <guilabel>server address</guilabel> is effectively removed as a traffic selection criteria.
               </para>
             </listitem>
           </varlistentry>
@@ -276,7 +276,7 @@
             <term><guilabel>server port</guilabel></term>
             <listitem>
               <para>
-                The destination port of the traffic.  Valid values are in <link linkend="appendix_syntax_portmatcher">Port Matcher</link> format.  Note that Port Matcher supports the value <quote><constant>any</constant></quote>.  Assigning this field to <constant>any</constant> means that the <guilabel>server port</guilabel> is effectlvly removed as a traffic selection criteria.
+                The destination port of the traffic.  Valid values are in <link linkend="appendix_syntax_portmatcher">Port Matcher</link> format.  Note that Port Matcher supports the value <quote><constant>any</constant></quote>.  Assigning this field to <constant>any</constant> means that the <guilabel>server port</guilabel> is effectively removed as a traffic selection criteria.
               </para>
             </listitem>
           </varlistentry>
@@ -354,7 +354,7 @@
             You do not have to create extra Virtual Racks/Policies in order to use VPN.  The <constant>VPN</constant> interface is, by default, inside the <constant>external</constant> and <constant>DNZ</constant> interfaces, but outside of the <constant>internal</constant> interface.  The single <constant>Default Rack</constant> is correct for most deployments.
           </para>
           <para>
-            One situation where you would need to do so if you want to scan traffic  <emphasis>differently</emphasis> for different VPN users.  If you consider all VPN users are equivilant, just route the Policies dealing with the VPN interface to <constant>Default Rack</constant>.
+            One situation where you would need to do so if you want to scan traffic  <emphasis>differently</emphasis> for different VPN users.  If you consider all VPN users are equivalent, just route the Policies dealing with the VPN interface to <constant>Default Rack</constant>.
           </para>
         </answer>
       </qandaentry>      

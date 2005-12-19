@@ -16,13 +16,13 @@
   <sect1 id="nat_tran_adminui">
     <title>Administrative Interface</title>
     <para>
-      The Administrative Interface for the Network Sharing Appliance is divided into six tabs.  Please visit the subsequent sections for specfics on each feature.
+      The Administrative Interface for the Network Sharing Appliance is divided into six tabs.  Please visit the subsequent sections for specifics on each feature.
     </para>
     <!-- ======================================================== -->
     <sect2 id="nat_tran_nat">
       <title>NAT</title>
       <para>
-        One of the features found in the Network Sharing Appliance is <glossterm linkend="gloss_nat">Network Address Translation (NAT)</glossterm>.  This enables &eg; to use a single <glossterm linkend="gloss_ip_addr">IP address</glossterm> when communicating with the external network (usualy the internet).  The interface for configuring NAT is shown in <xref linkend="nat_tran_nat_figure"/>.
+        One of the features found in the Network Sharing Appliance is <glossterm linkend="gloss_nat">Network Address Translation (NAT)</glossterm>.  This enables &eg; to use a single <glossterm linkend="gloss_ip_addr">IP address</glossterm> when communicating with the external network (usually the Internet).  The interface for configuring NAT is shown in <xref linkend="nat_tran_nat_figure"/>.
       </para>
       <figure id="nat_tran_nat_figure">
         <title>NAT Tab</title>
@@ -33,13 +33,13 @@
         </mediaobject>
       </figure>
       <para>
-        There are three sections to the interface in <xref linkend="nat_tran_nat_figure"/>.  The first section section titled <guilabel>NAT</guilabel> lets the administrator enable or disable the NAT functionality.  If NAT is enabled, the <guilabel>Internal Address</guilabel> section must be filled-in.  Administrators must provide an address for the &eg; itself in the <guilabel>Internal IP Address</guilabel> field, as well as a <glossterm linkend="gloss_subnet"> subnet mask</glossterm> in the <guilabel>Internal Subnet</guilabel> field.  As a convienence, the external address is also presented at the bottom of the interface shown in <xref linkend="nat_tran_nat_figure"/>.  Note that configuration of the external address is discussed in <xref linkend="config_tab_network_settings"/>.
+        There are three sections to the interface in <xref linkend="nat_tran_nat_figure"/>.  The first section section titled <guilabel>NAT</guilabel> lets the administrator enable or disable the NAT functionality.  If NAT is enabled, the <guilabel>Internal Address</guilabel> section must be filled-in.  Administrators must provide an address for the &eg; itself in the <guilabel>Internal IP Address</guilabel> field, as well as a <glossterm linkend="gloss_subnet"> subnet mask</glossterm> in the <guilabel>Internal Subnet</guilabel> field.  As a convenience, the external address is also presented at the bottom of the interface shown in <xref linkend="nat_tran_nat_figure"/>.  Note that configuration of the external address is discussed in <xref linkend="config_tab_network_settings"/>.
       </para>
       <para>
         Once NAT is configured, most deployments proceed to configuring their &eg; for <glossterm linkend="gloss_dhcp">Dynamic Host Configuration Protocol (DHCP)</glossterm>.  Configuring the &eg; for DHCP is discussed in <xref linkend="nat_tran_dhcp"/>.
       </para>
       <para>
-        If you are <emphasis>not</emphasis> planning to use DHCP for some or all machines within the protected network and wish those machines to use the NAT functionality, you must manually confirue the networking settup for your machine.  On these machines, the gateway and subnet should be set to the values found under the <guilabel>Internal Address</guilabel> section of <xref linkend="nat_tran_nat_figure"/>.
+        If you are <emphasis>not</emphasis> planning to use DHCP for some or all machines within the protected network and wish those machines to use the NAT functionality, you must manually configure the networking setup for your machine.  On these machines, the gateway and subnet should be set to the values found under the <guilabel>Internal Address</guilabel> section of <xref linkend="nat_tran_nat_figure"/>.
       </para>
       
     </sect2>
@@ -48,7 +48,7 @@
     <sect2 id="nat_tran_dhcp">
       <title>DHCP</title>
       <para>
-        <glossterm linkend="gloss_dhcp">DHCP</glossterm> is used to enable hosts within the protected network to receive <glossterm linkend="gloss_ip_addr"> IP addresses</glossterm> automatically without having to configure network settings.  It is a convienent technique used by many organizations to reduce IT efforts.  Configuring DHCP is discussed in <xref linkend="nat_tran_dhcp_settings"/> and <xref linkend="nat_tran_dhcp_addrmap"/>
+        <glossterm linkend="gloss_dhcp">DHCP</glossterm> is used to enable hosts within the protected network to receive <glossterm linkend="gloss_ip_addr"> IP addresses</glossterm> automatically without having to configure network settings.  It is a convenient technique used by many organizations to reduce IT efforts.  Configuring DHCP is discussed in <xref linkend="nat_tran_dhcp_settings"/> and <xref linkend="nat_tran_dhcp_addrmap"/>
       </para>
       <para>
         Note that DHCP is normally used with <glossterm linkend="gloss_nat">Network Address Translation (NAT)</glossterm> provided by &eg;, as discussed in <xref linkend="nat_tran_nat"/>.  If the &eg; is not configured to provide NAT services, you should ensure that either:
@@ -106,7 +106,7 @@
           The Address Map serves two purposes for the Administrator.  First, when DHCP is configured Administrators can use this table to observe all machines currently receiving NAT services from &eg;.  A second, more advanced, use of the Address Map is to ensure that a given machine always receives the same <glossterm linkend="gloss_ip_addr">IP Address</glossterm>.
         </para>
         <para>
-          Recall that DHCP automatically assigns an IP address to machines as they <quote>plug into</quote> your network.  There is no guarantee that a given machine will receive the same address the next time it joins your network.  For most situations, this is an acceptable situation.  However, there may be special circumstances where you wish a host to always receive the same address.  To accomidate these cases, Administrators can <quote>add</quote> machines to the Address Map.
+          Recall that DHCP automatically assigns an IP address to machines as they <quote>plug into</quote> your network.  There is no guarantee that a given machine will receive the same address the next time it joins your network.  For most situations, this is an acceptable situation.  However, there may be special circumstances where you wish a host to always receive the same address.  To accommodate these cases, Administrators can <quote>add</quote> machines to the Address Map.
         </para>
         <para>
           To add a machine to the Address Map list, push the add (plus) button to the left as seen in <xref linkend="nat_tran_dhcp_addrmap_figure"/>.
@@ -115,7 +115,7 @@
               When adding a new machine to the Address Map, sample MAC Address and IP Address appear.  These <emphasis>must</emphasis> be changed to the correct values for the target machine.
             </para>
           </tip>          
-          This adds a new row to the table.  The <guilabel>MAC address</guilabel> and <guilabel>target static IP address</guilabel> fields must be filled-in with the correct <glossterm linkend="gloss_mac_addr">MAC address</glossterm> and IP address respectivly.  Optionaly, Administrators can populate the <guilabel>category</guilabel> and <guilabel>description</guilabel> fields.
+          This adds a new row to the table.  The <guilabel>MAC address</guilabel> and <guilabel>target static IP address</guilabel> fields must be filled-in with the correct <glossterm linkend="gloss_mac_addr">MAC address</glossterm> and IP address respectively.  Optionally, Administrators can populate the <guilabel>category</guilabel> and <guilabel>description</guilabel> fields.
           <tip>
             <para>
               You can permanently assign an address without having to obtain the MAC address as follows.  Let the machine join the network without a permanent address.  Then, go into the Address Map Tab and add an entry to the <guilabel>target static IP address</guilabel> field.  After hitting <guilabel>Save Settings</guilabel> the entry becomes permanent.
@@ -138,7 +138,7 @@
               <term><guilabel>target static IP address</guilabel></term>
               <listitem>
                 <para>
-                  This column has a value <emphasis>only</emphasis> if an Administrator has proactivly assigned a static IP address to a given MAC address (machine).  Otherwise, this is blank.
+                  This column has a value <emphasis>only</emphasis> if an Administrator has proactively assigned a static IP address to a given MAC address (machine).  Otherwise, this is blank.
                 </para>
               </listitem>
             </varlistentry>
@@ -196,7 +196,7 @@
             <term><guilabel>redirect</guilabel></term>
             <listitem>
               <para>
-                Checking the box under redirect causes the rule to redirect matching traffic.  Unchecking <guilabel>redirect</guilabel> will temporarily disable the rule.  Unless auditing your network traffic, this is usualy checked.
+                Checking the box under redirect causes the rule to redirect matching traffic.  Unchecking <guilabel>redirect</guilabel> will temporarily disable the rule.  Unless auditing your network traffic, this is usually checked.
               </para>
             </listitem>
           </varlistentry>
@@ -285,7 +285,7 @@
       <simplesect>
         <title>Relationship with DMZ Host</title>
         <para>
-          Before concluding the discussion of the redirect feature, an asside on on its relationship with the DMZ Host feature as discussed in <xref linkend="nat_tran_dmzhost"/>.  The DMZ Host feature is a <quote>catch all</quote> for inbound (from external network) traffic.  It redirects all traffic to a given host, <emphasis>unless a redirect rule takes precidence</emphasis>.  It may be helpful to think of the DMZ Host feature as a default action for traffic destined for the external IP address.
+          Before concluding the discussion of the redirect feature, an aside on on its relationship with the DMZ Host feature as discussed in <xref linkend="nat_tran_dmzhost"/>.  The DMZ Host feature is a <quote>catch all</quote> for inbound (from external network) traffic.  It redirects all traffic to a given host, <emphasis>unless a redirect rule takes precedence</emphasis>.  It may be helpful to think of the DMZ Host feature as a default action for traffic destined for the external IP address.
         </para>
       </simplesect>
     </sect2>
@@ -306,10 +306,10 @@
         </mediaobject>
       </figure>
       <para>
-        To enable all traffic destined to the external address of the &eg; to be redirected to a given host, select the <guilabel>Enabled</guilabel> option under the <guilabel>DMZ Host</guilabel> heading.  If enabled, Administrators must also specify the <glossterm linkend="gloss_ip_addr">IP address</glossterm> of this machine in the <guilabel>Target IP Address</guilabel> field under the <guilabel>Target Address</guilabel> heading.  Administrators can optionaly request these redirects to be logged in the Event Log by selecting <guilabel>Enabled</guilabel> for <guilabel>DMZ Logging</guilabel>.  For more information on the Network Sharing Appliance's Event Log feature, please refer to <xref linkend="nat_tran_eventlog"/>.
+        To enable all traffic destined to the external address of the &eg; to be redirected to a given host, select the <guilabel>Enabled</guilabel> option under the <guilabel>DMZ Host</guilabel> heading.  If enabled, Administrators must also specify the <glossterm linkend="gloss_ip_addr">IP address</glossterm> of this machine in the <guilabel>Target IP Address</guilabel> field under the <guilabel>Target Address</guilabel> heading.  Administrators can optionally request these redirects to be logged in the Event Log by selecting <guilabel>Enabled</guilabel> for <guilabel>DMZ Logging</guilabel>.  For more information on the Network Sharing Appliance's Event Log feature, please refer to <xref linkend="nat_tran_eventlog"/>.
         <note>
           <para>
-            The DMZ Host feature is a special case of redirect, as discussed in <xref linkend="nat_tran_redirect"/>.  When using both DMZ Host and redirect features, the redirect feature takes precidence over DMZ Host.
+            The DMZ Host feature is a special case of redirect, as discussed in <xref linkend="nat_tran_redirect"/>.  When using both DMZ Host and redirect features, the redirect feature takes precedence over DMZ Host.
           </para>
         </note>
       </para>

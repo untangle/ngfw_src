@@ -30,7 +30,7 @@
       </figure>
 
       <para>
-	Commonly, EdgeGuard is installed as a router/firewall. You will need to plug your internet device (modem, T1 router, etc) into the external port of the &eg;. You will also need to plug in the internal port of &eg; into the main switch. If you have a <glossterm linkend="gloss_dmz">DMZ</glossterm> (public subnet) you may plug that into the third port on the &eg;. If you wish to have a private subnet on the internal subnet (ie <constant>192.168.x.x</constant>, <constant>10.x.x.x</constant>), you will need to install the Network Sharing Software Appliance and enable <glossterm linkend="gloss_nat">NAT</glossterm> (Network Address Translation). You can read more on this under <xref linkend="nat_tran"/>.
+	Commonly, EdgeGuard is installed as a router/firewall. You will need to plug your Internet device (modem, T1 router, etc) into the external port of the &eg;. You will also need to plug in the internal port of &eg; into the main switch. If you have a <glossterm linkend="gloss_dmz">DMZ</glossterm> (public subnet) you may plug that into the third port on the &eg;. If you wish to have a private subnet on the internal subnet (ie <constant>192.168.x.x</constant>, <constant>10.x.x.x</constant>), you will need to install the Network Sharing Software Appliance and enable <glossterm linkend="gloss_nat">NAT</glossterm> (Network Address Translation). You can read more on this under <xref linkend="nat_tran"/>.
       </para>
 
       <figure id="getting_started_network2">
@@ -56,7 +56,7 @@
       </figure>
       
       <para>
-	You may also install the &eg; as a bridge between the firewall and the internet device. This is not recommended because the Denial-of-Service protection will not be able to differentiate between the internal machines behind your firewall. Also, the reports produced by EdgeGuard (<xref linkend="reporting_tran"/>) will not be able to differentiate between internal machines behind your firewall.
+	You may also install the &eg; as a bridge between the firewall and the Internet device. This is not recommended because the Denial-of-Service protection will not be able to differentiate between the internal machines behind your firewall. Also, the reports produced by EdgeGuard (<xref linkend="reporting_tran"/>) will not be able to differentiate between internal machines behind your firewall.
       </para>
     </sect2>
 
@@ -71,7 +71,7 @@
   <sect1 id="getting_started_installation_interfaces">
       <title>Interfaces</title>
       <para id="getting_started_interfaces"  xreflabel="Network Interfaces">
-	The &eg; has several interfaces. The internal, external and DMZ interfaces do not need seperate IP addresses or IP address spaces. In the default configuration they are all bridged and share the same IP address and address space. Traffic is transparently captured and forwarded to the correct interface. If multiple address spaces are bridged you can specify "aliases" in the network settings <xref linkend="config_tab_network_networkaliases"/>.  
+	The &eg; has several interfaces. The internal, external and DMZ interfaces do not need separate IP addresses or IP address spaces. In the default configuration they are all bridged and share the same IP address and address space. Traffic is transparently captured and forwarded to the correct interface. If multiple address spaces are bridged you can specify "aliases" in the network settings <xref linkend="config_tab_network_networkaliases"/>.  
       </para>
       
       <para id="getting_started_internalip" xreflabel="Internal IP Address">
