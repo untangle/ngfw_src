@@ -114,7 +114,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
 
         String mySessionName = loginSession.getMvvmPrincipal().getName();
 
-
         int tempSessionId;
         String otherUserName = null;
         if(loggedInUsers.length > 1){
@@ -465,19 +464,15 @@ public class MLoginJFrame extends javax.swing.JFrame {
         }
 
         public void run() {
-            try{
-                SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-                    loginJTextField.setEnabled(false);
-                    passJPasswordField.setEnabled(false);
-                    serverJTextField.setEnabled(false);
-                    protocolJTextField.setEnabled(false);
-                    statusJProgressBar.setValue(0);
-                    statusJProgressBar.setIndeterminate(true);
-                    statusJProgressBar.setString("Authenticating");
-                }});
-                Thread.sleep(1000);
-            }
-            catch(Exception e){ /* do nothing on purpose*/  }
+	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		loginJTextField.setEnabled(false);
+		passJPasswordField.setEnabled(false);
+		serverJTextField.setEnabled(false);
+		protocolJTextField.setEnabled(false);
+		statusJProgressBar.setValue(0);
+		statusJProgressBar.setIndeterminate(true);
+		statusJProgressBar.setString("Authenticating");
+	    }});
 
             // ATTEMPT TO LOG IN
             int retryLogin = 0;
@@ -518,7 +513,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                         statusJProgressBar.setString("Successful authentication");
                         passJPasswordField.setText("");
                     }});
-                    Thread.sleep(2000);
+                    Thread.sleep(500);
                     retryLogin = -1;
                     break;
                 }
@@ -590,9 +585,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
                         statusJProgressBar.setString("Showing EdgeGuard client...");
                         statusJProgressBar.setValue(100);
                     }});
-
-                    // wait for a little bit
-                    Thread.sleep(3000);
 
                     // (UPDATE GUI) show the main window
                     SwingUtilities.invokeAndWait( new Runnable(){ public void run (){
