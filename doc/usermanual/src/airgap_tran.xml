@@ -14,25 +14,25 @@
   </para>
 
   <para>
-    The Attack Shield Appliance protects your network in two ways.  First, it sanitizes all <glossterm linkend="gloss_packet">packets</glossterm> which traverse the &eg;.  As this is a built-in function, it has no administrative settings.
+    The Attack Shield Appliance protects your network in two ways.  It sanitizes all <glossterm linkend="gloss_packet">packets</glossterm> the &eg; receives.  This packet-cleaning is a built-in function and has no administrative settings.
   </para>
   <para>
-    Where the packet sanatizing feature protects against lower-level networking attacks, the Attack Shield also protects against <glossterm linkend="gloss_dos">Denial of Service (DOS)</glossterm> attacks.  This feature is explained in more detail in <xref linkend="airgap_tran_shield_explained"/>.
+    In addition to protecting against lower-level networking attacks, the Attack Shield also protects against <glossterm linkend="gloss_dos">Denial of Service (DOS)</glossterm> attacks.  This feature is explained in more detail in <xref linkend="airgap_tran_shield_explained"/>.
   </para>
   <sect1 id="airgap_tran_shield_explained">
     <title>Denial Of Service Protection</title>
     <para>
-      The Attack Shield Appliance keeps track of traffic from all hosts (IP addresses).  The quantity of connections and the volume of data are monitored.  Should a given host be significantly more active than others, it's <quote>reputation</quote> increases.  Reputation is expressed as a number on a relative scale.  Higher reputation numbers intidate a given host is consuming greater resources (more connections, more bytes transferred).
+      The Attack Shield Appliance keeps tracks traffic from all hosts (IP addresses).  The number of connections and the volume of data are monitored.  If a given host is significantly more active than others, its <quote>reputation</quote> increases.  Reputation is expressed as a number on a relative scale.  Large reputation numbers intidate that a given host is consuming more resources (more connections, more bytes transferred) than its peers.
     </para>
     <para>
-      As the load on a given &eg; increases, the system does not have enough resources to service all requests.  Rather than <quote>slow everyone down</quote>, Attack Shield Appliance begins to take action against those hosts with the greatest reputation.  In this way, hosts that are <quote>hogging all the bandwidth</quote> are forced to make due with less while <quote>normal</quote> clients see no change in service levels.  There are actualy three actions that the Attack Shield Appliance can take against hosts with high reputations, enumerated in <xref linkend="airgap_tran_shield_actions"/>.
+      As the load on an &eg; increases, it will not have enough resources to service all requests.  Rather than <quote>slow everyone down</quote>, the Attack Shield Appliance takes action against those hosts with the largest reputation numbers.  In this way, hosts that <quote>hog all the bandwidth</quote> are allocated fewer resources while <quote>normal</quote> clients see no change in service and performance levels.  There are three actions that the Attack Shield Appliance can take against hosts with large reputation numbers, enumerated in <xref linkend="airgap_tran_shield_actions"/>.
     </para>
     
     <itemizedlist id="airgap_tran_shield_actions">
       <title>Attack Shield Actions</title>
       <listitem>
         <para>
-        <guilabel>Limited</guilabel> - When the Attack Shield Appliance causes a host's traffic to be limited, it has the effect of a mild slowdown.</para>
+        <guilabel>Limited</guilabel> - When the Attack Shield Appliance limits a host's access to resources inside the protected networks.  The limited host experiences a mild slowdown in network performance.</para>
       </listitem>
       <listitem>
         <para>
@@ -41,19 +41,19 @@
       </listitem>
       <listitem>
         <para>
-        <guilabel>Reject</guilabel> - When the Attack Shield Appliance causes a host's traffic to be rejected, it has the effect of temporarily preventing that host from communicating across the &eg;.
+        <guilabel>Rejected</guilabel> - When the Attack Shield Appliance rejects a host's traffic, the host is temporarily prevented from accessing the protected networks through the &eg;.
         </para>
       </listitem>
     </itemizedlist>  
     <para>
-      This feature of limiting resources based on reputation is used to prevent Denial Of Service attacks and other forms of malicious code.  Consider the host attempting to flood a given network protected by an &eg;.  The attacking host's reputation would increase, such that their communications would move quickly from being limited to rejected.
+      By using reputation numbers to allocate resources, the Attack Shield Appliance protects a network from Denial of Service attacks.  When a host attempts to flood a network protected by the &eg;, the attacking host's reputation number quickly increases so that the host moves from experiencing a limited slowdown to being deined access to protected resources. 
     </para>
   </sect1>
 
   <sect1 id="airgap_tran_adminui">
     <title>Administrative Interface</title>
     <para>
-      The Administrative Interface to the Attack Shield Appliance is minimal, as most of the behavior is automatic.  The only real setting is to instruct the system that a given host should be permitted to consume extra resources when its <link linkend="airgap_tran_shield_explained">reputation</link> is computed.  This administrative setting is explained in <xref linkend="airgap_tran_exceptionlist"/>.  The Event Log tab, explained in <xref linkend="airgap_tran_eventlog"/>, allows administrators to view events (see <xref linkend="using_adminui_appliances_eventlog"/> for general information about &eg; Event Logs).
+      The Attack Shield Appliance does not have any settings for sanitizing packets, but does have a setting to specify a host that is treated differently than its peers in terms of reputation calculation.  This administrative setting is explained in <xref linkend="airgap_tran_exceptionlist"/>.  The Event Log tab, explained in <xref linkend="airgap_tran_eventlog"/>, allows administrators to view events (see <xref linkend="using_adminui_appliances_eventlog"/> for general information about &eg; Event Logs).
     </para>
     <!-- ======================================================== -->
     <sect2 id="airgap_tran_exceptionlist">
@@ -70,16 +70,16 @@
         </mediaobject>
       </figure>
       <para>
-        The Exception List is used to cause a given system (<glossterm linkend="gloss_ip_addr">IP Address</glossterm>) to be treated as more than one machine.  Recall from <xref linkend="airgap_tran_shield_explained"/> that the Attack Shield Appliance keeps track of the relative activity of machines on its network.  If a given address represents more than one physical machine (for example, with <glossterm linkend="gloss_nat">NAT</glossterm>), then the Attack Shield Appliance must know this or it will consider the NATed network as an unusualy active single host.
+        The Exception List is used to identify a virtual host (<glossterm linkend="gloss_ip_addr">IP Address</glossterm>) that represents more than one physical machine.  As discussed in <xref linkend="airgap_tran_shield_explained"/> the Attack Shield Appliance tracks the relative activity of hosts on its network.  If a given address represents more than one physical machine (for example, with <glossterm linkend="gloss_nat">NAT</glossterm>), then the Attack Shield Appliance must know this or it will consider the NATed network to be an unusualy active single host.
       </para>
       <para>
-        To add a new entry to the Exception List, push the add (plus) button to the left of the table.  This adds a new entry.  All fields and their meaning for adding/modifying exception entries is as follows.
+        To add a new entry to the Exception List, push the add (plus) button to the left of the table.  All fields and their meaning for adding/modifying exception entries is as follows.
         <variablelist>
           <varlistentry>
             <term><guilabel>enable</guilabel></term>
             <listitem>
               <para>
-                If this box is checked, the exception rule is enabled.
+                When this box is checked, the exception rule is enabled.
               </para>
             </listitem>
           </varlistentry>
@@ -87,7 +87,7 @@
             <term><guilabel>address</guilabel></term>
             <listitem>
               <para>
-                The <glossterm linkend="gloss_ip_addr">IP Address</glossterm> of the system to receive special consideration.
+                The <glossterm linkend="gloss_ip_addr">IP Address</glossterm> of the host that will receive special consideration.
               </para>
             </listitem>
           </varlistentry>
@@ -103,7 +103,7 @@
             <term><guilabel>category</guilabel></term>
             <listitem>
               <para>
-                A category for the entry.  This is not administrative reference only.
+                A category for the entry.  This is for administrative reference only.
               </para>
             </listitem>
           </varlistentry>
@@ -111,7 +111,7 @@
             <term><guilabel>description</guilabel></term>
             <listitem>
               <para>
-                A description of the entry.  This is not administrative reference only.
+                A description of the entry.  This is for administrative reference only.
               </para>
             </listitem>
           </varlistentry>                                        
@@ -166,7 +166,7 @@
             <term><guilabel>reputation</guilabel></term>
             <listitem>
               <para>
-                As described in <xref linkend="airgap_tran_shield_explained"/>, the <guilabel>reputation</guilabel> is a relative value assigned to clients reflecting their consumption of netwkr resources.  This value is usualy between 0 and 100, with higher numbers indicating greater resource consumption.
+                As described in <xref linkend="airgap_tran_shield_explained"/>, the <guilabel>reputation</guilabel> is a relative value assigned to clients to indicate their consumption of network resources.  This value is usualy between 0 and 100, with larger numbers indicating greater resource consumption.
               </para>
             </listitem>
           </varlistentry>
@@ -174,7 +174,7 @@
             <term><guilabel>limited</guilabel></term>
             <listitem>
               <para>
-                The number of times the <guilabel>source</guilabel> client was limited in period of time corresponding to the event.  For a review of what it means for clients to be <emphasis>limited</emphasis>, please refer to <xref linkend="airgap_tran_shield_explained"/>.
+                The number of times the <guilabel>source</guilabel> client was limited (in a period of time) corresponding to the event.  For a review of what it means for clients to be <emphasis>limited</emphasis>, please refer to <xref linkend="airgap_tran_shield_explained"/>.
               </para>
             </listitem>
           </varlistentry>
@@ -182,7 +182,7 @@
             <term><guilabel>dropped</guilabel></term>
             <listitem>
               <para>
-                The number of times the <guilabel>source</guilabel> client was had traffic dropped in period of time corresponding to the event.  For a review of what it means for clients to have traffic <emphasis>dropped</emphasis>, please refer to <xref linkend="airgap_tran_shield_explained"/>.
+                The number of times the <guilabel>source</guilabel> client was had traffic dropped (in a period of time) corresponding to the event.  For a review of what it means for clients to have traffic <emphasis>dropped</emphasis>, please refer to <xref linkend="airgap_tran_shield_explained"/>.
               </para>
             </listitem>
           </varlistentry>
@@ -190,7 +190,7 @@
             <term><guilabel>reject</guilabel></term>
             <listitem>
               <para>
-                The number of times the <guilabel>source</guilabel> client had traffic rejected in period of time corresponding to the event.  For a review of what it means for clients to have traffic  <emphasis>dropped</emphasis>, please refer to <xref linkend="airgap_tran_shield_explained"/>.
+                The number of times the <guilabel>source</guilabel> client had traffic rejected (in a period of time) corresponding to the event.  For a review of what it means for clients to have traffic  <emphasis>dropped</emphasis>, please refer to <xref linkend="airgap_tran_shield_explained"/>.
               </para>
             </listitem>
           </varlistentry>
@@ -204,11 +204,11 @@
     <qandaset>  
       <qandaentry>
         <question>
-          <para>Where is the Q&amp;A list?</para>
+          <para>If I have a single <quote>big</quote> machine (database, file server, print server, etc) and another smaller server.  Will my <quote>big</quote> machine develop a bad reputation?</para>
         </question>
         <answer>
           <para>
-            TODO Someone needs to write it.  
+            The reputation for the <quote>big</quote> machine will be larger than the small machine.  In a normal deployment this should not be a concern, as the &eg; should not be limited in its overall resources.  If slowdown under heavy load is a concern, the <quote>big</quote> machine can have its reputuation calculated differently as discussed in <xref linkend="airgap_tran_exceptionlist"/>.
           </para>
         </answer>
       </qandaentry>

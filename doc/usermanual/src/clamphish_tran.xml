@@ -10,7 +10,16 @@
         <imagedata fileref="figure/clamphish/clamphish_tran_icon.png"/>
       </imageobject>
     </inlinemediaobject>
-    symbol.  The PhishNet Appliance works to inspect email for <glossterm linkend="gloss_phishing">Phish</glossterm>, or fradulent, emails.  Email transported by the <glossterm linkend="gloss_smtp">SMTP</glossterm>, <glossterm linkend="gloss_pop">POP</glossterm>, and <glossterm linkend="gloss_imap">IMAP</glossterm> protocols can be scanned for the presence of phishing emails.
+    symbol.  The PhishNet Appliance works to inspect email for <glossterm linkend="gloss_phishing">Phish</glossterm>, or fradulent, emails.  A Phishing email is defined as follows:
+
+    <blockquote>
+      <attribution>Wikipedia</attribution>
+      <para>
+        In computing, phishing (also known as carding and spoofing) is a form of social engineering, characterised by attempts to fraudulently acquire sensitive information, such as passwords and credit card details, by masquerading as a trustworthy person or business in an apparently official electronic communication, such as an email. The term phishing arises from the use of increasingly sophisticated lures to "fish" for users' financial information and passwords.
+      </para>
+    </blockquote>
+
+    Email transported by the <glossterm linkend="gloss_smtp">SMTP</glossterm>, <glossterm linkend="gloss_pop">POP</glossterm>, and <glossterm linkend="gloss_imap">IMAP</glossterm> protocols can be scanned for the presence of phishing emails.
   </para>
   <para>
     The PhishNet Appliance is a <link linkend="using_adminui_appliances"> Software Appliance </link>, which can be installed into multiple Virtual Racks.  For more information on configuring policies and Software Appliances, please refer to <xref linkend="policy_manager"/>.
