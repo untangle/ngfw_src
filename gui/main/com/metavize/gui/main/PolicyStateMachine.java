@@ -96,9 +96,9 @@ public class PolicyStateMachine implements ActionListener {
     private static final int CONCURRENT_LOAD_MAX = 2;
     private static Semaphore loadSemaphore;
     // DOWNLOAD DELAYS //////////////
-    private static final int DOWNLOAD_INITIAL_SLEEP_MILLIS = 3000;
+    //private static final int DOWNLOAD_INITIAL_SLEEP_MILLIS = 3000;
     private static final int DOWNLOAD_SLEEP_MILLIS = 500;
-    private static final int DOWNLOAD_FINAL_SLEEP_MILLIS = 3000;
+    private static final int DOWNLOAD_FINAL_PAUSE_MILLIS = 1000;
     // INSTALL DELAYS ////////////////
     private static final int INSTALL_CHECK_TIMEOUT_MILLIS = 3 * 60 * 1000;
     private static final int INSTALL_SLEEP_MILLIS = 5 * 1000;
@@ -535,15 +535,9 @@ public class PolicyStateMachine implements ActionListener {
 	}
 	public void run(){
 	    try{
-		// WARM UP
-		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-		    progressBar.setValue(0);
-		    progressBar.setString("Starting download...");
-		    progressBar.setIndeterminate(true);		    
-		}});
-		Thread.currentThread().sleep(DOWNLOAD_INITIAL_SLEEP_MILLIS);                		
 		// DO THE DOWNLOAD
 		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		    progressBar.setValue(0);
 		    progressBar.setIndeterminate(false);
 		}});
                 long key = Util.getToolboxManager().install(mTransformJButton.getName());
@@ -561,7 +555,6 @@ public class PolicyStateMachine implements ActionListener {
 			Thread.currentThread().sleep(DOWNLOAD_SLEEP_MILLIS);
 		    }
 		}
-		Thread.currentThread().sleep(DOWNLOAD_INITIAL_SLEEP_MILLIS);
 		if( !visitor.isSuccessful() )
 		    throw new Exception();
 		// DO THE INSTALL
@@ -570,7 +563,6 @@ public class PolicyStateMachine implements ActionListener {
 		    progressBar.setString("Installing...");
 		    progressBar.setIndeterminate(true);
 		}});
-		//Thread.currentThread().sleep(INSTALL_SLEEP_MILLIS);
 		long installationFirstCheckTime = System.currentTimeMillis();
 		boolean mackageInstalled = false;
 		while( !mackageInstalled && ((System.currentTimeMillis() - installationFirstCheckTime) < INSTALL_CHECK_TIMEOUT_MILLIS) ){
@@ -589,7 +581,7 @@ public class PolicyStateMachine implements ActionListener {
 		    if( !mackageInstalled )
 			Thread.currentThread().sleep(INSTALL_SLEEP_MILLIS);
 		}
-		Thread.currentThread().sleep(DOWNLOAD_FINAL_SLEEP_MILLIS);
+		Thread.currentThread().sleep(DOWNLOAD_FINAL_PAUSE_MILLIS);
 		if( !mackageInstalled )
 		    throw new Exception();
 		// REMOVE DIALOG
