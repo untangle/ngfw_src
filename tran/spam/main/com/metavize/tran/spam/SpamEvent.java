@@ -115,9 +115,9 @@ public abstract class SpamEvent extends LogEvent
         sb.addField("sender", getSender());
     }
 
-    // public methods ---------------------------------------------------------
+    // internal methods ---------------------------------------------------------
 
-    private String get(AddressKind kind)
+    protected String get(AddressKind kind)
     {
         MessageInfo messageInfo = getMessageInfo();
 
@@ -127,8 +127,12 @@ public abstract class SpamEvent extends LogEvent
             for (Iterator i = messageInfo.getAddresses().iterator(); i.hasNext(); ) {
                 MessageInfoAddr mi = (MessageInfoAddr)i.next();
 
-                if (mi.getKind() == kind) {
-                    return mi.getAddr();
+                if (mi.getKind() == kind && mi.getPosition() == 1) {
+                    String addr = mi.getAddr();
+                    if (addr == null)
+                        return "";
+                    else
+                        return addr;
                 }
             }
 

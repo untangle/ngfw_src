@@ -13,6 +13,7 @@ package com.metavize.tran.spam;
 
 
 import com.metavize.tran.mail.papi.MessageInfo;
+import com.metavize.tran.mail.papi.AddressKind;
 
 /**
  * Log for SMTP Spam events.
@@ -55,6 +56,30 @@ public class SpamSmtpEvent extends SpamEvent
         return action.toString();
     }
 
+    // Better sender/receiver info available for smtp
+    public String getSender()
+    {
+        String sender = get(AddressKind.ENVELOPE_FROM);
+        if (sender.equals(""))
+            // Just go back to the FROM header (if any).
+            return super.getSender();
+        else
+            return sender;
+    }
+
+    public String getReceiver()
+    {
+        String receiver = get(AddressKind.ENVELOPE_TO);
+
+        // This next should never happen, but just in case...
+        if (receiver.equals(""))
+            // Just go back to the TO header (if any).
+            return super.getReceiver();
+        else
+            return receiver;
+    }
+
+    
     // accessors --------------------------------------------------------------
 
     /**
