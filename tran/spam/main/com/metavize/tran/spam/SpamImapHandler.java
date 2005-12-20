@@ -17,6 +17,7 @@ import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.mail.papi.MessageInfo;
 import com.metavize.tran.mail.papi.imap.BufferingImapTokenStreamHandler;
+import com.metavize.tran.mail.papi.safelist.SafelistTransformView;
 import com.metavize.tran.mime.HeaderParseException;
 import com.metavize.tran.mime.LCString;
 import com.metavize.tran.mime.MIMEMessage;
@@ -32,20 +33,22 @@ public class SpamImapHandler
   private final SpamImpl m_spamImpl;
   private final SpamIMAPConfig m_config;
   private final TempFileFactory m_fileFactory;
+    private final SafelistTransformView m_safelist;
 
   public SpamImapHandler(TCPSession session,
     long maxClientWait,
     long maxSvrWait,
     SpamImpl impl,
-    SpamIMAPConfig config) {
+    SpamIMAPConfig config,
+    SafelistTransformView safelist) {
 
     super(maxClientWait, maxSvrWait, config.getMsgSizeLimit());
 
     m_spamImpl = impl;
+    m_safelist = safelist;
     m_config = config;
     m_fileFactory = new TempFileFactory(MvvmContextFactory.context().
       pipelineFoundry().getPipeline(session.id()));
-
   }
 
   @Override
@@ -71,6 +74,12 @@ public class SpamImapHandler
       return HandleMailResult.forPassMessage();
     }
 
+    if(m_safelist.isSafelisted(null, msg.getMMHeaders().getFrom(), null)) {
+        m_logger.debug("Message sender safelisted");
+        m_spamImpl.incrementPassCounter();
+        return HandleMailResult.forPassMessage();
+    }
+
     SpamMessageAction action = m_config.getMsgAction();
 
     SpamReport report = scanFile(f);
@@ -81,7 +90,6 @@ public class SpamImapHandler
       m_spamImpl.incrementPassCounter();
       return HandleMailResult.forPassMessage();
     }
-
 
     //Create an event for the reports
     SpamLogEvent spamEvent = new SpamLogEvent(
@@ -158,5 +166,4 @@ public class SpamImapHandler
       return null;
     }
   }
-
 }

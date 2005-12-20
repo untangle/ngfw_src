@@ -15,27 +15,26 @@ import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.mail.papi.MailExport;
 import com.metavize.tran.mail.papi.MailExportFactory;
 import com.metavize.tran.mail.papi.imap.ImapTokenStream;
+import com.metavize.tran.mail.papi.safelist.SafelistTransformView;
 import com.metavize.tran.spam.SpamIMAPConfig;
 import com.metavize.tran.token.TokenHandler;
 import com.metavize.tran.token.TokenHandlerFactory;
 import org.apache.log4j.Logger;
 
-
-
 public class PhishImapFactory implements TokenHandlerFactory
 {
-
-
   private static final Logger m_logger =
     Logger.getLogger(PhishImapFactory.class);
 
   private final MailExport m_mailExport;
   private final ClamPhishTransform m_transform;
+    private SafelistTransformView m_safelist;
 
     PhishImapFactory(ClamPhishTransform transform) {
       m_transform = transform;
       /* XXX RBS I don't know if this will work */
       m_mailExport = MailExportFactory.factory().getExport();
+        m_safelist = m_mailExport.getSafelistTransformView();
     }
 
     // TokenHandlerFactory methods --------------------------------------------
@@ -62,7 +61,7 @@ public class PhishImapFactory implements TokenHandlerFactory
             timeout,
             timeout,
             m_transform,
-            config)
-        );
+            config,
+            m_safelist));
     }
 }

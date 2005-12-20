@@ -65,6 +65,5 @@ public class PhishSmtpFactory
         spamConfig,
         m_quarantine,
         m_safelist));
-
   }
 }

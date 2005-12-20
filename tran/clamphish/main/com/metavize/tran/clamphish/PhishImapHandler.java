@@ -11,19 +11,19 @@
 
 package com.metavize.tran.clamphish;
 
-
 import com.metavize.mvvm.tapi.TCPSession;
+import com.metavize.tran.mail.papi.safelist.SafelistTransformView;
 import com.metavize.tran.spam.SpamImapHandler;
 import com.metavize.tran.spam.SpamIMAPConfig;
 
 class PhishImapHandler extends SpamImapHandler
 {
-
     PhishImapHandler(TCPSession session,
-      long maxClientWait,
-      long maxSvrWait,
-      ClamPhishTransform impl,
-      SpamIMAPConfig config) {
-      super(session, maxClientWait, maxSvrWait, impl, config);
+                     long maxClientWait,
+                     long maxSvrWait,
+                     ClamPhishTransform impl,
+                     SpamIMAPConfig config,
+                     SafelistTransformView safelist) {
+        super(session, maxClientWait, maxSvrWait, impl, config, safelist);
     }
 }

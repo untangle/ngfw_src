@@ -65,6 +65,5 @@ public class SpamSmtpFactory
         spamConfig,
         m_quarantine,
         m_safelist));
-
   }
 }

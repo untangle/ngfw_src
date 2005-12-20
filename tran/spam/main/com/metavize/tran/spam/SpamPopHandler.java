@@ -21,6 +21,7 @@ import com.metavize.tran.mail.papi.MailExport;
 import com.metavize.tran.mail.papi.MailTransformSettings;
 import com.metavize.tran.mail.papi.WrappedMessageGenerator;
 import com.metavize.tran.mail.papi.pop.PopStateMachine;
+import com.metavize.tran.mail.papi.safelist.SafelistTransformView;
 import com.metavize.tran.mime.HeaderParseException;
 import com.metavize.tran.mime.LCString;
 import com.metavize.tran.mime.MIMEMessage;
@@ -42,8 +43,9 @@ public class SpamPopHandler extends PopStateMachine
     private final SpamScanner zScanner;
     private final String zVendorName;
 
-    private final SpamMessageAction zMsgAction;
+    private final SafelistTransformView zSLTransformView;
     private final SpamPOPConfig zConfig;
+    private final SpamMessageAction zMsgAction;
     private final boolean bScan;
     private final int strength;
     private final int giveUpSize;
@@ -60,24 +62,22 @@ public class SpamPopHandler extends PopStateMachine
         zScanner = transform.getScanner();
         zVendorName = zScanner.getVendorName();
 
-        MailTransformSettings zMTSettings = zMExport.getExportSettings();
+        zSLTransformView = zMExport.getSafelistTransformView();
 
-        WrappedMessageGenerator zWMGenerator;
+        MailTransformSettings zMTSettings = zMExport.getExportSettings();
 
         if (!session.isInbound()) {
             zConfig = transform.getSpamSettings().getPOPInbound();
-            zWMGenerator = zConfig.getMessageGenerator();
             lTimeout = zMTSettings.getPopInboundTimeout();
         } else {
             zConfig = transform.getSpamSettings().getPOPOutbound();
-            zWMGenerator = zWMGenerator = zConfig.getMessageGenerator();
             lTimeout = zMTSettings.getPopOutboundTimeout();
         }
         bScan = zConfig.getScan();
         zMsgAction = zConfig.getMsgAction();
         strength = zConfig.getStrength();
         giveUpSize = zConfig.getMsgSizeLimit();
-        zWMsgGenerator = zWMGenerator;
+        zWMsgGenerator = zConfig.getMessageGenerator();
         //logger.debug("scan: " + bScan + ", message action: " + zMsgAction + ", timeout: " + lTimeout);
     }
 
@@ -86,7 +86,8 @@ public class SpamPopHandler extends PopStateMachine
     protected TokenResult scanMessage() throws TokenException
     {
         if (true == bScan &&
-            giveUpSize >= zMsgFile.length()) {
+            giveUpSize >= zMsgFile.length() &&
+            false == zSLTransformView.isSafelisted(null, zMMessage.getMMHeaders().getFrom(), null)) {
 
             SpamReport zReport;
 

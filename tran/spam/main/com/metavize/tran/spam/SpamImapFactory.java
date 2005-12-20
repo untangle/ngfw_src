@@ -15,6 +15,7 @@ import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.mail.papi.MailExport;
 import com.metavize.tran.mail.papi.MailExportFactory;
 import com.metavize.tran.mail.papi.imap.ImapTokenStream;
+import com.metavize.tran.mail.papi.safelist.SafelistTransformView;
 import com.metavize.tran.token.TokenHandler;
 import com.metavize.tran.token.TokenHandlerFactory;
 import org.apache.log4j.Logger;
@@ -27,11 +28,13 @@ public class SpamImapFactory
 
   private final SpamImpl m_impl;
   private final MailExport m_mailExport;
+    private SafelistTransformView m_safelist;
 
   SpamImapFactory(SpamImpl impl) {
     m_impl = impl;
     /* XXX RBS I don't know if this will work */
     m_mailExport = MailExportFactory.factory().getExport();
+    m_safelist = m_mailExport.getSafelistTransformView();
   }
 
 
@@ -57,7 +60,7 @@ public class SpamImapFactory
           timeout,
           timeout,
           m_impl,
-          config)
-      );
+          config,
+          m_safelist));
   }
 }

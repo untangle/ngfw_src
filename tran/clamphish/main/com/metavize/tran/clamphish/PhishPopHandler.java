@@ -17,9 +17,7 @@ import com.metavize.tran.spam.SpamPopHandler;
 
 public class PhishPopHandler extends SpamPopHandler
 {
-
     // constructors -----------------------------------------------------------
-
     PhishPopHandler(TCPSession session, ClamPhishTransform transform, MailExport zMExport)
     {
         super(session, transform, zMExport);
