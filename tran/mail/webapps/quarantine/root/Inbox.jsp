@@ -38,8 +38,9 @@
       
       function doRescue() {
         document.form1.<quarantine:constants keyName="action"/>.value = "<quarantine:constants valueName="rescue"/>";
-      }
         document.form1.submit();
+      }
+
     </script>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
   <link rel="stylesheet" href="styles/style.css" type="text/css"/>
