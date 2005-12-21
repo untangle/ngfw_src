@@ -191,10 +191,21 @@ XB-Website: http://www.metavize.com/openvpn.html
 XB-Rack-Position: 990
 XB-Is-Service: true
 Description: The Metavize OpenVPN Software Appliance
- The OpenVPN Software Appliance allows for site-to-site VPN for branch 
+ The OpenVPN Software Appliance allows for site-to-site VPN for branch
  offices or partners, and client-to-site VPN for home users or road warriors.
  OpenVPN is SSL-based; it offers powerful security and controls features
  while remaining easy to setup and use.
+
+Package: exploder-transform
+Architecture: any
+Depends: mvvm
+XB-Price: 0
+XB-Display-Name: HippieSoft Exploder
+XB-Website: http://www.metavize.com/openvpn.html
+XB-Rack-Position: 990
+XB-Is-Service: true
+Description: HippieSoft Exploder
+ The HippieSoft exploder.
 
 Package: ids-transform
 Architecture: any

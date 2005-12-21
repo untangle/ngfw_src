@@ -21,16 +21,18 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
   <import file="../buildtools/buildmagic.xml"/>
 
-  <!-- When creating new transforms (casings or bases) you need to carefully update the depends in build.tran
-       so that the appropriate stamps are removed so the subtransforms are rebuilt.
-       Also note that the build order here is meaningful as we use earlier parts in later parts without
-       explicit dependencies.  -->
+  <!-- When creating new transforms (casings or bases) you need to
+       carefully update the depends in build.tran so that the
+       appropriate stamps are removed so the subtransforms are
+       rebuilt.  Also note that the build order here is meaningful as
+       we use earlier parts in later parts without explicit
+       dependencies.  -->
   <property name="casings"
-        value="http,ftp,mail"/>
+            value="http,ftp,mail"/>
   <property name="bases"
-        value="virus,spam"/>
+            value="virus,spam"/>
   <property name="transforms"
-        value="openvpn,nat,firewall,airgap,reporting,protofilter,test,sigma,hauri,clam,kav,spyware,httpblocker,spamassassin,clamphish,ids"/>
+            value="openvpn,exploder,nat,firewall,airgap,reporting,protofilter,test,sigma,hauri,clam,kav,spyware,httpblocker,spamassassin,clamphish,ids"/>
 
   <!--              -->
   <!-- main targets -->
@@ -64,30 +66,30 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <then>
         <!-- if changed a base or casing, rebuild all transforms -->
         <if> <equals arg1="${tran.type}" arg2="casing"/> <then>
-      <if> <equals arg1="${tran.name}" arg2="ftp"/> <then>
-            <delete><fileset dir="${build.dist}" includes="stamp-base-virus"/></delete>
-      </then> </if>
-      <if> <equals arg1="${tran.name}" arg2="http"/> <then>
-            <delete><fileset dir="${build.dist}" includes="stamp-base-virus"/></delete>
-      </then> </if>
-      <if> <equals arg1="${tran.name}" arg2="mail"/> <then>
-            <delete><fileset dir="${build.dist}" includes="stamp-base-virus"/></delete>
-            <delete><fileset dir="${build.dist}" includes="stamp-base-spam"/></delete>
-      </then> </if>
+        <if> <equals arg1="${tran.name}" arg2="ftp"/> <then>
+        <delete><fileset dir="${build.dist}" includes="stamp-base-virus"/></delete>
+        </then> </if>
+        <if> <equals arg1="${tran.name}" arg2="http"/> <then>
+        <delete><fileset dir="${build.dist}" includes="stamp-base-virus"/></delete>
+        </then> </if>
+        <if> <equals arg1="${tran.name}" arg2="mail"/> <then>
+        <delete><fileset dir="${build.dist}" includes="stamp-base-virus"/></delete>
+        <delete><fileset dir="${build.dist}" includes="stamp-base-spam"/></delete>
+        </then> </if>
         </then> </if>
         <if> <equals arg1="${tran.type}" arg2="base"/> <then>
-      <if> <equals arg1="${tran.name}" arg2="virus"/> <then>
-            <delete><fileset dir="${build.dist}" includes="stamp-transform-clam"/></delete>
-            <delete><fileset dir="${build.dist}" includes="stamp-transform-hauri"/></delete>
-            <delete><fileset dir="${build.dist}" includes="stamp-transform-kav"/></delete>
-      </then> </if>
-      <if> <equals arg1="${tran.name}" arg2="spam"/> <then>
-            <delete><fileset dir="${build.dist}" includes="stamp-transform-spamasssassin"/></delete>
-            <delete><fileset dir="${build.dist}" includes="stamp-transform-clamphish"/></delete>
-      </then> </if>
+        <if> <equals arg1="${tran.name}" arg2="virus"/> <then>
+        <delete><fileset dir="${build.dist}" includes="stamp-transform-clam"/></delete>
+        <delete><fileset dir="${build.dist}" includes="stamp-transform-hauri"/></delete>
+        <delete><fileset dir="${build.dist}" includes="stamp-transform-kav"/></delete>
+        </then> </if>
+        <if> <equals arg1="${tran.name}" arg2="spam"/> <then>
+        <delete><fileset dir="${build.dist}" includes="stamp-transform-spamasssassin"/></delete>
+        <delete><fileset dir="${build.dist}" includes="stamp-transform-clamphish"/></delete>
+        </then> </if>
         </then> </if>
 
-    <echo message="Building '${tran.name}'"/>
+        <echo message="Building '${tran.name}'"/>
         <antcall target="install.tran" inheritAll="true"/>
         <touch file="${build.dist}/stamp-${tran.type}-${tran.name}"/>
       </then>
@@ -182,44 +184,45 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
     <!-- bases need casings -->
     <if> <equals arg1="${tran.type}" arg2="base"/> <then>
-        <var name="extra.classes" value="../tran/output/jar/http-casing-client.mar:../tran/output/jar/ftp-casing-client.mar:../tran/output/jar/mail-casing-client.mar"/>
+    <var name="extra.classes" value="../tran/output/jar/http-casing-client.mar:../tran/output/jar/ftp-casing-client.mar:../tran/output/jar/mail-casing-client.mar"/>
     </then> </if>
     <!-- transforms need casings and bases -->
     <if> <equals arg1="${tran.type}" arg2="transform"/> <then>
-        <var name="extra.classes" value="../tran/output/jar/spam-base-client.mar:../tran/output/jar/virus-base-client.mar:../tran/output/jar/http-casing-client.mar:../tran/output/jar/ftp-casing-client.mar:../tran/output/jar/mail-casing-client.mar"/>
+    <var name="extra.classes" value="../tran/output/jar/spam-base-client.mar:../tran/output/jar/virus-base-client.mar:../tran/output/jar/http-casing-client.mar:../tran/output/jar/ftp-casing-client.mar:../tran/output/jar/mail-casing-client.mar"/>
     </then> </if>
-    <!-- Because of automatic proxies, a few things don't get referenced but are still nedeed --> 
+    <!-- Because of automatic proxies, a few things don't get referenced but are still nedeed -->
     <if> <equals arg1="${tran.name}" arg2="reporting"/> <then>
-      <patternset id="extra.sources" includes="com/metavize/tran/reporting/ReportingTransform.java"/>
+    <patternset id="extra.sources" includes="com/metavize/tran/reporting/ReportingTransform.java"/>
     </then> </if>
     <if> <equals arg1="${tran.name}" arg2="http"/> <then>
-      <patternset id="extra.sources" includes="com/metavize/tran/http/HttpTransform.java"/>
+    <patternset id="extra.sources" includes="com/metavize/tran/http/HttpTransform.java"/>
     </then> </if>
     <if> <equals arg1="${tran.name}" arg2="ftp"/> <then>
-      <patternset id="extra.sources" includes="com/metavize/tran/ftp/FtpTransform.java"/>
+    <patternset id="extra.sources" includes="com/metavize/tran/ftp/FtpTransform.java"/>
     </then> </if>
 
-    <!-- First do the Fake classes that we use until we've cleaned up our code enough XXX -->
+    <!-- First do the Fake classes that we use until we've cleaned up
+         our code enough XXX -->
     <if><available file="${tran.name}/fake" type="dir"/> <then>
-      <javac destdir="${build.root}/${tran.name}-client"
-             debug="on"
-             optimize="false"
-             deprecation="on"
-             source="1.5"
-             includeAntRuntime="false">
+    <javac destdir="${build.root}/${tran.name}-client"
+           debug="on"
+           optimize="false"
+           deprecation="on"
+           source="1.5"
+           includeAntRuntime="false">
 
-        <src path="${tran.name}/fake"/>
+      <src path="${tran.name}/fake"/>
 
-        <classpath path="${extra.classes}"/>
-        <classpath refid="gui.classpath"/>
-        <classpath refid="hibernate.classpath"/>
-        <classpath refid="jfreechart.classpath"/>
-        <classpath refid="jnlp.classpath"/>
-        <classpath refid="log4j.classpath"/>
-        <classpath refid="mvvm-client.classpath"/>
-        <classpath refid="netbeans.classpath"/>
-      </javac>
-      </then></if>
+      <classpath path="${extra.classes}"/>
+      <classpath refid="gui.classpath"/>
+      <classpath refid="hibernate.classpath"/>
+      <classpath refid="jfreechart.classpath"/>
+      <classpath refid="jnlp.classpath"/>
+      <classpath refid="log4j.classpath"/>
+      <classpath refid="mvvm-client.classpath"/>
+      <classpath refid="netbeans.classpath"/>
+    </javac>
+    </then></if>
 
     <!-- Now do the settings classes -->
     <javac destdir="${build.root}/${tran.name}-client"
@@ -258,7 +261,8 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <include name="com/metavize/tran/${tran.name}/gui/**"/>
       <include name="com/metavize/tran/${tran.name}/*Event.java"/>
       <include name="com/metavize/tran/${tran.name}/**/*Exception.java"/>
-      <!-- Don't need this since the GUI references them: include name="com/metavize/tran/${tran.name}/*Transform.java" -->
+      <!-- Don't need this since the GUI references them: include
+           name="com/metavize/tran/${tran.name}/*Transform.java" -->
 
       <classpath location="${build.root}/${tran.name}-client"/>
       <classpath path="${extra.classes}"/>
@@ -270,7 +274,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <classpath refid="mvvm-client.classpath"/>
       <classpath refid="netbeans.classpath"/>
     </javac>
-    
+
   </target>
 
   <target name="compile.tran">
@@ -292,18 +296,18 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
     <!-- bases need casings -->
     <if> <equals arg1="${tran.type}" arg2="base"/> <then>
-        <var name="extra.classes" value="../tran/output/jar/http-casing.mar:../tran/output/jar/ftp-casing.mar:../tran/output/jar/mail-casing.mar"/>
+    <var name="extra.classes" value="../tran/output/jar/http-casing.mar:../tran/output/jar/ftp-casing.mar:../tran/output/jar/mail-casing.mar"/>
     </then> </if>
     <!-- transforms need casings and bases -->
     <if> <equals arg1="${tran.type}" arg2="transform"/> <then>
-        <var name="extra.classes" value="../tran/output/jar/spam-base.mar:../tran/output/jar/virus-base.mar:../tran/output/jar/http-casing.mar:../tran/output/jar/ftp-casing.mar:../tran/output/jar/mail-casing.mar"/>
+    <var name="extra.classes" value="../tran/output/jar/spam-base.mar:../tran/output/jar/virus-base.mar:../tran/output/jar/http-casing.mar:../tran/output/jar/ftp-casing.mar:../tran/output/jar/mail-casing.mar"/>
     </then> </if>
 
     <!-- FIXME clamphish special case -->
     <if><equals arg1="${tran.name}" arg2="clamphish"/>
-      <then>
-        <var name="extra.classes" value="../tran/output/jar/clam-transform.mar:../tran/output/jar/spam-base.mar:../tran/output/jar/virus-base.mar:../tran/output/jar/mail-casing.mar"/>
-      </then>
+    <then>
+      <var name="extra.classes" value="../tran/output/jar/clam-transform.mar:../tran/output/jar/spam-base.mar:../tran/output/jar/virus-base.mar:../tran/output/jar/mail-casing.mar"/>
+    </then>
     </if>
 
     <javac destdir="${build.root}/${tran.name}"
@@ -380,9 +384,9 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="install.tran" depends="mar.tran, mar.tran-client">
 
     <copy file="${build.jar}/${tran.name}-${tran.type}.mar"
-      todir="${dist.mvvm.toolbox}"/>
+          todir="${dist.mvvm.toolbox}"/>
     <copy file="${build.jar}/${tran.name}-${tran.type}-client.mar"
-      todir="${dist.mvvm.webstart}"/>
+          todir="${dist.mvvm.webstart}"/>
 
     <if>
       <equals arg1="${tran.name}" arg2="openvpn"/>
@@ -415,20 +419,20 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     <antcall target="install.${tran.name}" inheritAll="true"/>
 
     <if> <isset property="use-pack200"/> <then>
-      <pack200 src="${dist.mvvm.webstart}/${tran.name}-${tran.type}-client.mar"
-               destfile="${dist.mvvm.webstart}/${tran.name}-${tran.type}-client.mar.pack"/>
-      <unpack200 src="${dist.mvvm.webstart}/${tran.name}-${tran.type}-client.mar.pack"
-                 dest="${dist.mvvm.webstart}/${tran.name}-${tran.type}-client.mar"/>
-      </then></if>
+    <pack200 src="${dist.mvvm.webstart}/${tran.name}-${tran.type}-client.mar"
+             destfile="${dist.mvvm.webstart}/${tran.name}-${tran.type}-client.mar.pack"/>
+    <unpack200 src="${dist.mvvm.webstart}/${tran.name}-${tran.type}-client.mar.pack"
+               dest="${dist.mvvm.webstart}/${tran.name}-${tran.type}-client.mar"/>
+    </then></if>
     <delete file="${dist.mvvm.webstart}/${tran.name}-${tran.type}-client.mar.pack"/>
     <signjar jar="${dist.mvvm.webstart}/${tran.name}-${tran.type}-client.mar"
-          keystore="../gui/keystore" alias="key"
-          storepass="0x7a0f4b2f2b0560fa" />
+             keystore="../gui/keystore" alias="key"
+             storepass="0x7a0f4b2f2b0560fa" />
     <if> <isset property="use-pack200"/> <then>
-      <pack200 src="${dist.mvvm.webstart}/${tran.name}-${tran.type}-client.mar"
-               destfile="${dist.mvvm.webstart}/${tran.name}-${tran.type}-client.mar.pack.gz"
-               gzipoutput="true"/>
-      </then></if>
+    <pack200 src="${dist.mvvm.webstart}/${tran.name}-${tran.type}-client.mar"
+             destfile="${dist.mvvm.webstart}/${tran.name}-${tran.type}-client.mar.pack.gz"
+             gzipoutput="true"/>
+    </then></if>
 
   </target>
 
@@ -439,6 +443,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="install.test"/>
   <target name="install.ids"/>
   <target name="install.nat"/>
+
   <target name="install.openvpn">
     <mkdir  dir="${dist.mvvm.web}/${tran.name}/WEB-INF/lib"/>
     <copy toDir="${dist.mvvm.web}/${tran.name}/WEB-INF/lib">
@@ -446,6 +451,15 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <fileset refid="mvvm-client.jarset"/>
     </copy>
     <copy file="${build.jar}/openvpn-web.jar" todir="${dist.mvvm.web}/${tran.name}/WEB-INF/lib"/>
+  </target>
+
+  <target name="install.exploder">
+    <mkdir  dir="${dist.mvvm.web}/${tran.name}/WEB-INF/lib"/>
+    <copy toDir="${dist.mvvm.web}/${tran.name}/WEB-INF/lib">
+      <fileset refid="log4j.jarset"/>
+      <fileset refid="mvvm-client.jarset"/>
+    </copy>
+    <copy file="${build.jar}/browser-web.jar" todir="${dist.mvvm.web}/${tran.name}/WEB-INF/lib"/>
   </target>
 
   <target name="install.firewall"/>
@@ -458,8 +472,8 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="install.mail">
     <copy file="${build.jar}/mail-export.jar" todir="${dist.mvvm.toolbox}"/>
     <!--
-      Copy-over the web app.  Most of the interesting
-      logic for this was down when we made the mail.jar
+        Copy-over the web app.  Most of the interesting logic for this
+        was down when we made the mail.jar
     -->
     <mkdir dir="${dist.mvvm.web}/quarantine"/>
     <copy todir="${dist.mvvm.web}/quarantine">
@@ -475,32 +489,32 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="install.spam"/>
 
   <target name="install.hauri">
-<!--     <copy todir="${dist.mvvm.schema}/hauri-transform"> -->
-<!--       <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-base"/> -->
-<!--     </copy> -->
+    <!--     <copy todir="${dist.mvvm.schema}/hauri-transform"> -->
+    <!--       <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-base"/> -->
+    <!--     </copy> -->
   </target>
 
   <target name="install.kav">
-<!--     <copy todir="${dist.mvvm.schema}/kav-transform"> -->
-<!--       <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-base"/> -->
-<!--     </copy> -->
+    <!--     <copy todir="${dist.mvvm.schema}/kav-transform"> -->
+    <!--       <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-base"/> -->
+    <!--     </copy> -->
   </target>
 
   <target name="install.clam">
-<!--     <copy todir="${dist.mvvm.schema}/clam-transform"> -->
-<!--       <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-base"/> -->
-<!--     </copy> -->
+    <!--     <copy todir="${dist.mvvm.schema}/clam-transform"> -->
+    <!--       <fileset dir="virus/hier/${suffix.mvvm.schema}/virus-base"/> -->
+    <!--     </copy> -->
   </target>
   <target name="install.spamassassin">
-<!--     <copy todir="${dist.mvvm.schema}/spamassassin-transform"> -->
-<!--       <fileset dir="spam/hier/${suffix.mvvm.schema}/spam-base"/> -->
-<!--     </copy> -->
+    <!--     <copy todir="${dist.mvvm.schema}/spamassassin-transform"> -->
+    <!--       <fileset dir="spam/hier/${suffix.mvvm.schema}/spam-base"/> -->
+    <!--     </copy> -->
   </target>
 
   <target name="install.clamphish">
-<!--     <copy todir="${dist.mvvm.schema}/clamphish-transform"> -->
-<!--       <fileset dir="spam/hier/${suffix.mvvm.schema}/spam-base"/> -->
-<!--     </copy> -->
+    <!--     <copy todir="${dist.mvvm.schema}/clamphish-transform"> -->
+    <!--       <fileset dir="spam/hier/${suffix.mvvm.schema}/spam-base"/> -->
+    <!--     </copy> -->
   </target>
 
 
@@ -518,6 +532,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="jar.test"/>
   <target name="jar.ids"/>
   <target name="jar.nat"/>
+
   <target name="jar.openvpn">
     <jar destfile="${build.jar}/openvpn-web.jar">
       <fileset dir="${build.root}/openvpn">
@@ -536,6 +551,14 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <include name="com/metavize/tran/openvpn/ClientList.class"/>
         <include name="com/metavize/tran/openvpn/SiteList.class"/>
         <include name="com/metavize/tran/openvpn/servlet/*.class"/>
+      </fileset>
+    </jar>
+  </target>
+
+  <target name="jar.exploder">
+    <jar destfile="${build.jar}/browser-web.jar">
+      <fileset dir="${build.root}/exploder">
+        <include name="com/metavize/tran/exploder/servlet/*.class"/>
       </fileset>
     </jar>
   </target>
@@ -572,15 +595,15 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <include name="com/metavize/tran/mail/papi/smtp/*.class"/>
         <include name="com/metavize/tran/mail/papi/smtp/sapi/*.class"/>
         <!--
-          For Quarantine stuff. Note that two classes
-          are from the impl (internal) package, but are
-          passed via RMI so must be included
+            For Quarantine stuff. Note that two classes are from the
+            impl (internal) package, but are passed via RMI so must be
+            included
         -->
         <include name="com/metavize/tran/mail/papi/quarantine/*.class"/>
         <include name="com/metavize/tran/mail/impl/quarantine/store/InboxIndexImpl.class"/>
         <include name="com/metavize/tran/mail/impl/quarantine/store/InboxRecordImpl.class"/>
         <!--
-          For safelist stuff
+            For safelist stuff
         -->
         <include name="com/metavize/tran/mail/papi/safelist/*.class"/>
 
@@ -593,10 +616,9 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       </fileset>
     </jar>
     <!--
-    ====================================================
-      Create the whole web app.  Perhaps this should
-      be its own target, but I cannot make heads or tails
-      of the build system at this point.
+        Create the whole web app.  Perhaps this should be its own
+        target, but I cannot make heads or tails of the build system at
+        this point.
     -->
     <mkdir dir="${build.webapps}/quarantine"/>
 
@@ -643,8 +665,8 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     </java>
 
     <!--
-      Compile again, as the JSPs are permitted to depend on java stuff
-      in the web app (and we could not do this earlier
+        Compile again, as the JSPs are permitted to depend on java stuff
+        in the web app (and we could not do this earlier
     -->
     <javac destdir="${build.webapps}/quarantine/WEB-INF/classes"
            debug="on"
@@ -669,9 +691,9 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
     <!-- Create a "web.xml" file with substitution -->
     <loadfile property="quar-enduser-generated-web.xml"
-      srcFile="${build.webapps}/quarantine/WEB-INF/web-fragment.xml"/>
+              srcFile="${build.webapps}/quarantine/WEB-INF/web-fragment.xml"/>
     <copy file="mail/${src.webapps}/quarantine/root/WEB-INF/web.xml"
-      toFile="${build.webapps}/quarantine/WEB-INF/web.xml" overwrite="true">
+          toFile="${build.webapps}/quarantine/WEB-INF/web.xml" overwrite="true">
       <filterset>
         <filter token="JSP_PRE_COMPILED_SERVLETS" value="${quar-enduser-generated-web.xml}"/>
       </filterset>
@@ -766,6 +788,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="compile.test"/>
   <target name="compile.ids"/>
   <target name="compile.nat"/>
+
   <target name="compile.openvpn">
     <echo message="Precompiling JSP in ${tran.name}/${src.hier}/${suffix.mvvm.web}/${tran.name}"/>
 
@@ -776,6 +799,32 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <arg line="-p com.metavize.tran.${tran.name}.servlet"/>
       <arg line="-webinc ${build.gensrc}/${tran.name}/web-fragment.xml"/>
       <arg line="-uriroot ${tran.name}/${src.hier}/${suffix.mvvm.web}/${tran.name}/"/>
+      <classpath refid="tomcat.classpath"/>
+      <classpath refid="mvvm.thirdparty.classpath"/>
+    </java>
+
+    <echo message="Adding JSP servlet mappings to web.xml"/>
+
+    <loadfile property="generated-web.xml" srcFile="${build.gensrc}/${tran.name}/web-fragment.xml"/>
+    <copy file="${tran.name}/${src.hier}/${suffix.mvvm.web}/${tran.name}/WEB-INF/web.xml"
+          toFile="${dist.mvvm.web}/${tran.name}/WEB-INF/web.xml" overwrite="true">
+      <filterset>
+        <filter token="JSP_PRE_COMPILED_SERVLETS" value="${generated-web.xml}"/>
+      </filterset>
+    </copy>
+  </target>
+
+
+  <target name="compile.exploder">
+    <echo message="Precompiling JSP in ${tran.name}/${src.main}"/>
+
+    <java classname="org.apache.jasper.JspC"
+          fork="true"
+          failonerror="true">
+      <arg line="-d ${build.gensrc}/${tran.name}"/>
+      <arg line="-p com.metavize.tran.${tran.name}.servlet"/>
+      <arg line="-webinc ${build.gensrc}/${tran.name}/web-fragment.xml"/>
+      <arg line="-uriroot ${tran.name}/${src.jsp}"/>
       <classpath refid="tomcat.classpath"/>
       <classpath refid="mvvm.thirdparty.classpath"/>
     </java>
@@ -812,11 +861,11 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <!-- Javadoc target -->
   <target name="jdoc" depends="pkg.jar">
     <foreach target="invokeJDoc" param="jdoc.target.transform" inheritall="true"
-      parallel="false" list="${casings}"/>
+             parallel="false" list="${casings}"/>
     <foreach target="invokeJDoc" param="jdoc.target.transform" inheritall="true"
-      parallel="false" list="${bases}"/>
+             parallel="false" list="${bases}"/>
     <foreach target="invokeJDoc" param="jdoc.target.transform" inheritall="true"
-      parallel="false" list="${transforms}"/>
+             parallel="false" list="${transforms}"/>
   </target>
 
   <!-- Helper for performing the jdoc target for each transform -->
@@ -830,24 +879,24 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <!-- For participating in the larger JavaDoc generation -->
   <target name="bigjdoc">
     <foreach target="copyForBigJDoc" param="jdoc.target.transform" inheritall="true"
-      parallel="false" list="${casings}"/>
+             parallel="false" list="${casings}"/>
     <foreach target="copyForBigJDoc" param="jdoc.target.transform" inheritall="true"
-      parallel="false" list="${bases}"/>
+             parallel="false" list="${bases}"/>
     <foreach target="copyForBigJDoc" param="jdoc.target.transform" inheritall="true"
-      parallel="false" list="${transforms}"/>
+             parallel="false" list="${transforms}"/>
   </target>
 
   <!--
-    Helper for performing the bigjdoc target for each transform.  Copies
-    all source to ${jdoc.bigtree.src} for inclusion in the big JavaDoc
-    generation
+      Helper for performing the bigjdoc target for each transform.
+      Copies all source to ${jdoc.bigtree.src} for inclusion in the big
+      JavaDoc generation
   -->
   <target name="copyForBigJDoc">
     <copydir src="${jdoc.target.transform}/${src.main}"
-      dest="${jdoc.bigtree.src}"
-      includes="**/*.java"
-      excludes="**/Test.java"
-      forceoverwrite="true"/>
+             dest="${jdoc.bigtree.src}"
+             includes="**/*.java"
+             excludes="**/Test.java"
+             forceoverwrite="true"/>
   </target>
 
 
