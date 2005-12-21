@@ -15,7 +15,6 @@ import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tran.TransformException;
-import com.metavize.tran.mail.impl.quarantine.Quarantine;
 import org.apache.log4j.Logger;
 
 public class ExploderImpl extends AbstractTransform implements Exploder
@@ -31,27 +30,19 @@ public class ExploderImpl extends AbstractTransform implements Exploder
         logger.debug("<init>");
     }
 
-    private static synchronized void deployWebAppIfRequired(Logger logger) {
-        if(!s_deployedWebApp) {
-            if(MvvmContextFactory.context().loadWebApp("/quarantine", "quarantine")) {
-                logger.debug("Deployed Quarantine web app");
-            }
-            else {
-                logger.error("Unable to deploy Quarantine web app");
-            }
-            s_deployedWebApp = true;
+    private void deployWebAppIfRequired(Logger logger) {
+        if(MvvmContextFactory.context().loadWebApp("/exploder", "exploder")) {
+            logger.debug("Deployed Exploder web app");
+        } else {
+            logger.error("Unable to deploy Exploder web app");
         }
     }
 
-    private static synchronized void unDeployWebAppIfRequired(Logger logger) {
-        if(!s_unDeployedWebApp) {
-            if(MvvmContextFactory.context().unloadWebApp("/quarantine")) {
-                logger.debug("Unloaded Quarantine web app");
-            }
-            else {
-                logger.error("Unable to unload Quarantine web app");
-            }
-            s_unDeployedWebApp = true;
+    private void unDeployWebAppIfRequired(Logger logger) {
+        if(MvvmContextFactory.context().unloadWebApp("/exploder")) {
+            logger.debug("Unloaded Exploder web app");
+        } else {
+            logger.error("Unable to unload Exploder web app");
         }
     }
 
@@ -76,7 +67,6 @@ public class ExploderImpl extends AbstractTransform implements Exploder
     {
         logger.debug("postInit()");
 
-        logger.debug("Initialize SafeList/Quarantine...");
         deployWebAppIfRequired(logger);
     }
 
@@ -90,7 +80,7 @@ public class ExploderImpl extends AbstractTransform implements Exploder
 
     // XXX soon to be deprecated ----------------------------------------------
 
-    public Object getSettings() { }
+    public Object getSettings() { return null; }
 
     public void setSettings(Object settings) { }
 }
