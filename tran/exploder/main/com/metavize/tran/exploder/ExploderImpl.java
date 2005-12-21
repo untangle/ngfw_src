@@ -31,7 +31,7 @@ public class ExploderImpl extends AbstractTransform implements Exploder
     }
 
     private void deployWebAppIfRequired(Logger logger) {
-        if(MvvmContextFactory.context().loadWebApp("/exploder", "exploder")) {
+        if (MvvmContextFactory.context().loadWebApp("/browser", "browser")) {
             logger.debug("Deployed Exploder web app");
         } else {
             logger.error("Unable to deploy Exploder web app");
@@ -39,7 +39,7 @@ public class ExploderImpl extends AbstractTransform implements Exploder
     }
 
     private void unDeployWebAppIfRequired(Logger logger) {
-        if(MvvmContextFactory.context().unloadWebApp("/exploder")) {
+        if (MvvmContextFactory.context().unloadWebApp("/browser")) {
             logger.debug("Unloaded Exploder web app");
         } else {
             logger.error("Unable to unload Exploder web app");
