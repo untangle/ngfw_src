@@ -323,16 +323,18 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <classpath path="${extra.classes}"/>
 
       <classpath refid="hibernate.classpath"/>
-      <classpath refid="jfreechart.classpath"/>
       <classpath refid="jasperreports.classpath"/>
       <classpath refid="javamail.classpath"/>
+      <classpath refid="jcifs.classpath"/>
+      <classpath refid="jfreechart.classpath"/>
       <classpath refid="jnlp.classpath"/>
       <classpath refid="log4j.classpath"/>
       <classpath refid="mvvm-client.classpath"/>
       <classpath refid="mvvm.classpath"/>
-      <classpath refid="velocity.classpath"/>
       <classpath refid="tomcat.classpath"/>
+      <classpath refid="velocity.classpath"/>
       <classpath refid="yjp.classpath"/>
+
       <exclude name="com/metavize/tran/${tran.name}/gui/**"/>
     </javac>
 
@@ -458,6 +460,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     <copy toDir="${dist.mvvm.web}/${tran.name}/WEB-INF/lib">
       <fileset refid="log4j.jarset"/>
       <fileset refid="mvvm-client.jarset"/>
+      <fileset refid="jcifs.jarset"/>
     </copy>
     <copy file="${build.jar}/browser-web.jar" todir="${dist.mvvm.web}/${tran.name}/WEB-INF/lib"/>
   </target>

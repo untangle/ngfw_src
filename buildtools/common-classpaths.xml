@@ -241,6 +241,14 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
     <include name="*jdbc3.jar"/>
   </fileset>
 
+  <fileset id="jcifs.jarset" dir="${JCIFS_HOME}">
+    <include name="jcifs-*.jar"/>
+  </fileset>
+
+  <path id="jcifs.classpath">
+    <fileset refid="jcifs.jarset"/>
+  </path>
+
   <fileset id="bcel.jarset" dir="${BCEL_HOME}">
     <include name="bcel-5.1.jar"/>
   </fileset>
@@ -267,7 +275,6 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
   </path>
 
   <path id="mvvm.thirdparty.classpath">
-    <path refid="jnlp-servlet.classpath"/>
     <path refid="activation.classpath"/>
     <path refid="bcel.classpath"/>
     <path refid="c3p0.classpath"/>
@@ -275,11 +282,13 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
     <path refid="hibernate.classpath"/>
     <path refid="jasperreports.classpath"/>
     <path refid="javamail.classpath"/>
+    <path refid="jcifs.classpath"/>
+    <path refid="jnlp-servlet.classpath"/>
     <path refid="junit.classpath"/>
     <path refid="log4j.classpath"/>
     <path refid="tomcat.classpath"/>
     <path refid="trove.classpath"/>
-    <path refid="yjp.classpath"/>
     <path refid="velocity.classpath"/>
+    <path refid="yjp.classpath"/>
   </path>
 </project>
