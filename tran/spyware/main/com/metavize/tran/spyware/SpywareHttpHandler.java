@@ -127,13 +127,13 @@ public class SpywareHttpHandler extends HttpStateMachine
         URI uri = requestLine.getRequestUri();
 
         if (transform.isWhitelistDomain(host)) {
+            transform.statisticManager.incrPass(); // pass URL
             getSession().release();
             releaseRequest();
             return requestHeader;
         } else if (transform.isBlacklistDomain(host, uri)) {
-            SpywareBlacklistEvent evt = new SpywareBlacklistEvent
-                (requestLine.getRequestLine());
-            transform.log(evt);
+            transform.statisticManager.incrURL();
+            transform.log(new SpywareBlacklistEvent(requestLine.getRequestLine()));
             // XXX we could send a page back instead, this isn't really right
             logger.debug("detected spyware, shutting down");
 
@@ -251,7 +251,6 @@ public class SpywareHttpHandler extends HttpStateMachine
     {
         String replacement = String.format(BLOCK_TEMPLATE, host, uri);
 
-
         // XXX make canned responses in constructor
         // XXX Do template replacement
         ByteBuffer buf = ByteBuffer.allocate(replacement.length());
@@ -290,11 +289,13 @@ public class SpywareHttpHandler extends HttpStateMachine
             if (badDomain) {
                 logger.debug("blocking cookie: " + domain);
                 transform.incrementCount(Spyware.BLOCK);
-
+                transform.statisticManager.incrCookie();
                 transform.log(new SpywareCookieEvent(requestLine.getRequestLine(), domain, true));
                 i.remove();
                 logger.debug("making cookieKiller: " + domain);
                 cookieKillers.addAll(makeCookieKillers(cookie, host));
+            } else {
+                transform.statisticManager.incrPass(); // pass cookie
             }
         }
 
@@ -339,10 +340,12 @@ public class SpywareHttpHandler extends HttpStateMachine
             if (badDomain) {
                 logger.debug("cookie deleted: " + domain);
                 transform.incrementCount(Spyware.BLOCK);
+                transform.statisticManager.incrCookie();
                 transform.log(new SpywareCookieEvent(rl.getRequestLine(), domain, false));
                 i.remove();
             } else {
                 logger.debug("cookie not deleted: " + domain);
+                transform.statisticManager.incrPass(); // pass cookie
             }
         }
 
@@ -464,6 +467,7 @@ public class SpywareHttpHandler extends HttpStateMachine
             if (block) {
                 logger.debug("blocking activeX");
                 transform.incrementCount(Spyware.BLOCK);
+                transform.statisticManager.incrActiveX();
                 transform.log(new SpywareActiveXEvent(rl.getRequestLine(), ident));
                 int len = findEnd(cb, os);
                 if (-1 == len) {
@@ -474,6 +478,8 @@ public class SpywareHttpHandler extends HttpStateMachine
                         cb.put(os + i, ' ');
                     }
                 }
+            } else {
+                transform.statisticManager.incrPass(); // pass activeX
             }
 
             return c;

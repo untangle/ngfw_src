@@ -71,6 +71,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     private final TokenAdaptor tokenAdaptor = new TokenAdaptor(this, factory);
     private final SpywareEventHandler streamHandler = new SpywareEventHandler(this);
 
+    final SpywareStatisticManager statisticManager;
     private final EventLogger<SpywareEvent> eventLogger;
 
     private final Set urlBlacklist;
@@ -94,6 +95,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
         TransformContext tctx = getTransformContext();
         eventLogger = new EventLogger<SpywareEvent>(tctx);
+        statisticManager = new SpywareStatisticManager(tctx);
 
         SimpleEventFilter ef = new SpywareAllFilter();
         eventLogger.addSimpleEventFilter(ef);
@@ -211,6 +213,8 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         updateSubnet(settings);
 
         setSpywareSettings(settings);
+
+        statisticManager.stop();
     }
 
     protected void postInit(String[] args)
@@ -240,12 +244,14 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     protected void preStart()
     {
         eventLogger.start();
+        statisticManager.start();
     }
 
     @Override
     protected void postStop()
     {
         eventLogger.stop();
+        statisticManager.stop();
     }
 
     // package private methods ------------------------------------------------

@@ -87,6 +87,7 @@ public class SpywareEventHandler extends AbstractEventHandler
         Session s = event.session();
         SpywareAccessEvent spe = (SpywareAccessEvent)s.attachment();
         if (null != spe) {
+            transform.statisticManager.incrSubnetAccess();
             transform.log(spe);
         }
     }
@@ -98,12 +99,17 @@ public class SpywareEventHandler extends AbstractEventHandler
         Session s = event.session();
         SpywareAccessEvent spe = (SpywareAccessEvent)s.attachment();
         if (null != spe) {
+            transform.statisticManager.incrSubnetAccess();
             transform.log(spe);
         }
     }
 
     void detectSpyware(IPNewSessionRequest ipr, boolean release)
     {
+        // subnet accesses are logged but are no longer blocked
+        // so pass counts also include subnet access counts
+        transform.statisticManager.incrPass(); // pass subnet access
+
         IPMaddr ipm = new IPMaddr(ipr.serverAddr().getHostAddress());
 
         IPMaddrRule ir = (IPMaddrRule)this.subnetSet.getMostSpecific(ipm);
@@ -130,8 +136,10 @@ public class SpywareEventHandler extends AbstractEventHandler
 
         if (release)
             ipr.attach(new SpywareAccessEvent(ipr.pipelineEndpoints(), ir.getName(), ir.getIpMaddr(), ir.isLive()));
-        else
+        else {
+            transform.statisticManager.incrSubnetAccess();
             transform.log(new SpywareAccessEvent(ipr.pipelineEndpoints(), ir.getName(), ir.getIpMaddr(), ir.isLive()));
+        }
 
         if (ir.isLive()) {
             transform.incrementCount(Spyware.BLOCK); //XXX logged but not blocked (count as blocked anyway)???
@@ -141,7 +149,6 @@ public class SpywareEventHandler extends AbstractEventHandler
                 ipr.rejectReturnUnreachable(IPNewSessionRequest.PROHIBITED);
             return;
         }
-
 
         if (ir.getAlert()) {
             /* XXX alerts */
