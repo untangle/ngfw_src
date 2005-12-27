@@ -1,3 +1,5 @@
+-- convert script for release 3.2
+
 -- com.metavize.tran.spyware.SpywareStatisticEvent
 CREATE TABLE events.tr_spyware_statistic_evt (
     event_id int8 NOT NULL,
