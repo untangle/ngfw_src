@@ -71,7 +71,7 @@ class DigestGenerator {
   private static final String NUM_RECS_NOT_SHOWN_VV = "numRecsNotShown";
   private static final String TOTAL_NUM_RECORDS_VV = "totalNumRecords";
   
-
+  private static final String MAIL_BLAST = "http://216.129.106.57/mail_blast/images";
 
   private static final Integer MAX_RECORDS_PER_EMAIL = new Integer(25);
 
@@ -269,7 +269,7 @@ the line below is commented-out
       //Create the Velocity context, for template generation
       VelocityContext context = new VelocityContext();
       context.put(USER_EMAIL_VV, to);
-      context.put(IMAGE_ROOT_VV, "http://" + serverHost + "/quarantine/images");
+      context.put(IMAGE_ROOT_VV, MAIL_BLAST);
       context.put(LINK_GENERATOR_VV, new LinkGenerator(serverHost, authToken));
 
       InboxRecord[] allRecords = index.getAllRecords();
