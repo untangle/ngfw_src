@@ -297,7 +297,7 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel implements Savable, Ref
 
                 trapButtonGroup.add(trapDisabledRadioButton);
                 trapDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                trapDisabledRadioButton.setText("<html><b>Disable Traps</b> so no trap events are generated.</html>");
+                trapDisabledRadioButton.setText("<html><b>Disable Traps</b> so no trap events are generated.  (This is the default setting.)</html>");
                 trapDisabledRadioButton.setFocusPainted(false);
                 trapDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -313,7 +313,7 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel implements Savable, Ref
 
                 trapButtonGroup.add(trapEnabledRadioButton);
                 trapEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                trapEnabledRadioButton.setText("<html><b>Enable Traps</b> so trap events are sent when they are generated.  (This is the default setting.)</html>");
+                trapEnabledRadioButton.setText("<html><b>Enable Traps</b> so trap events are sent when they are generated.</html>");
                 trapEnabledRadioButton.setFocusPainted(false);
                 trapEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
