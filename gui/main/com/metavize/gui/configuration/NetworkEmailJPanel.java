@@ -248,9 +248,9 @@ public class NetworkEmailJPanel extends javax.swing.JPanel implements Savable, R
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 restrictIPJPanel1.add(jLabel6, gridBagConstraints);
 
-                addressJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
-                addressJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
-                addressJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
+                addressJTextField.setMaximumSize(new java.awt.Dimension(200, 19));
+                addressJTextField.setMinimumSize(new java.awt.Dimension(200, 19));
+                addressJTextField.setPreferredSize(new java.awt.Dimension(200, 19));
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
                 gridBagConstraints.gridy = 0;
