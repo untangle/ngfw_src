@@ -31,6 +31,7 @@ public class NetworkingConfiguration implements Serializable, Validatable, Equiv
 {
     private static final long serialVersionUID = 172494253701617361L;
 
+    public static final String  DEFAULT_HOSTNAME = "edgeguard";
     public static final IPaddr  EMPTY_IPADDR;
     public static final IPaddr  DEF_OUTSIDE_NETWORK;
     public static final IPaddr  DEF_OUTSIDE_NETMASK;
@@ -57,8 +58,9 @@ public class NetworkingConfiguration implements Serializable, Validatable, Equiv
     public static final int DEF_HTTPS_PORT = 443;
 
     /**
-     * Host and Netmask of the EdgeGuard GSP
+     * Hostname, Host and Netmask of the EdgeGuard GSP
      */
+    private String hostname = DEFAULT_HOSTNAME;
     private IPaddr host = EMPTY_IPADDR;
     private IPaddr netmask = EMPTY_IPADDR;
 
@@ -123,6 +125,20 @@ public class NetworkingConfiguration implements Serializable, Validatable, Equiv
     public boolean isDhcpEnabled()
     {
         return isDhcpEnabled;
+    }
+
+
+    /**
+     * Set the hostname with a string
+     */
+    public void hostname( String hostname )
+    {
+	// do some shizzle 'n checks here
+	this.hostname = hostname;
+    }
+    public String hostname()
+    {
+	return hostname;
     }
 
     /**
