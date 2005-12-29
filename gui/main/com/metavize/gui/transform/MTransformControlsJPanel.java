@@ -188,9 +188,22 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
     protected void refreshAll(){
 	String transformName = mTransformJPanel.getMackageDesc().getDisplayName();
 	StringBuilder message = new StringBuilder();
+	// GET SETTINGS OBJECT FROM MVVM
 	try{
 	    message.append("Refreshing: " + transformName );
 	    settings = mTransformJPanel.getTransformContext().transform().getSettings();
+	}
+	catch(Exception e){
+	    try{
+		Util.handleExceptionWithRestart("ERROR GETTING SETTINGS: " + transformName, e);
+	    }
+	    catch(Exception f){
+		Util.handleExceptionNoRestart("ERROR GETTING SETTINGS: " + transformName, f);
+		new RefreshFailureDialog( transformName );
+	    }
+	}
+	// SEND SETTINGS TO EACH PANEL, SERIALLY, INDEPENDANTLY
+	try{
 	    for( Map.Entry<String, Refreshable> refreshableMapEntry : refreshableMap.entrySet() ){
 		String componentName = refreshableMapEntry.getKey();
 		final Refreshable refreshableComponent = refreshableMapEntry.getValue();
@@ -205,21 +218,21 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
 		}});
 		if( refreshException != null )
 		    throw refreshException;
-		message.append("\n  " + componentName);
+		else
+		    message.append("\n  " + componentName);
 	    }
 	}
 	catch(Exception e){
 	    try{
-		Util.handleExceptionWithRestart("ERROR REFRESHING: " + transformName, e);
+		Util.handleExceptionWithRestart("ERROR DISPLAYING SETTINGS: " + transformName, e);
 	    }
 	    catch(Exception f){
-		Util.handleExceptionNoRestart("ERROR REFRESHING: " + transformName, f);
+		Util.handleExceptionNoRestart("ERROR DISPLAYING SETTINGS: " + transformName, f);
 		new RefreshFailureDialog( transformName );
 	    }
 	}
-	finally{
-	    Util.printMessage(message.toString());
-	}
+	// PRINT OUT WHAT WAS ACTUALLY REFRESHED
+	Util.printMessage(message.toString());	
 	
     }
     
