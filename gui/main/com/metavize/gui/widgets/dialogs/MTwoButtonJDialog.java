@@ -22,6 +22,47 @@ public class MTwoButtonJDialog extends javax.swing.JDialog implements java.awt.e
     
     private boolean isProceeding = false;
 
+    public MTwoButtonJDialog() {
+	super( (Util.getMMainJFrame()!=null?Util.getMMainJFrame():Util.getMLoginJFrame() ),
+	       (Util.getMMainJFrame()!=null?true:false) );
+	init(null);
+    }
+
+    public static MTwoButtonJDialog factory(Window topLevelWindow, String applianceName, String warning, String title, String subtitle){
+	if( topLevelWindow instanceof Dialog )
+	    return new MTwoButtonJDialog((Dialog)topLevelWindow, applianceName, warning, title, subtitle);
+	else if( topLevelWindow instanceof Frame )
+	    return new MTwoButtonJDialog((Frame)topLevelWindow, applianceName, warning, title, subtitle);
+	else
+	    return new MTwoButtonJDialog((Frame)null, applianceName, warning, title, subtitle);
+    }
+
+    public MTwoButtonJDialog(Dialog topLevelDialog, String applianceName, String warning, String title, String subtitle){
+	super(topLevelDialog, true);
+	init(topLevelDialog);
+        this.setTitle(title);
+        this.labelJLabel.setText(subtitle);
+        messageJLabel.setText("<html><center>" + warning + "</center></html>");
+        this.cancelJButton.setIcon(null);
+	this.cancelJButton.setText("<html><b>Cancel</b></html>");
+        this.proceedJButton.setIcon(null);
+	this.proceedJButton.setText("<html><b>Continue</b></html>");
+        this.setVisible(true);
+    }
+
+    public MTwoButtonJDialog(Frame topLevelFrame, String applianceName, String warning, String title, String subtitle){
+	super(topLevelFrame, true);
+	init(topLevelFrame);
+        this.setTitle(title);
+        this.labelJLabel.setText(subtitle);
+        messageJLabel.setText("<html><center>" + warning + "</center></html>");
+        this.cancelJButton.setIcon(null);
+	this.cancelJButton.setText("<html><b>Cancel</b></html>");
+        this.proceedJButton.setIcon(null);
+	this.proceedJButton.setText("<html><b>Continue</b></html>");
+        this.setVisible(true);
+    }
+
     public MTwoButtonJDialog(Dialog topLevelDialog, boolean isModal) {
         super( topLevelDialog , isModal);
 	init( topLevelDialog );
@@ -31,13 +72,16 @@ public class MTwoButtonJDialog extends javax.swing.JDialog implements java.awt.e
         super( topLevelFrame , isModal);
 	init( topLevelFrame );
     }
-
-    private void init(Window topLevelWindow) {
+    
+    private void init(Window window){
         initComponents();
         this.addWindowListener(this);
-        this.setBounds( Util.generateCenteredBounds(topLevelWindow.getBounds(), this.getWidth(), this.getHeight()) );
+	if( window == null)
+	    this.setBounds( Util.generateCenteredBounds((Util.getMMainJFrame()!=null?Util.getMMainJFrame().getBounds():Util.getMLoginJFrame().getBounds() ), this.getWidth(), this.getHeight()) );
+	else
+	    this.setBounds( Util.generateCenteredBounds(window, this.getWidth(), this.getHeight()) );
     }
-    
+
         private void initComponents() {//GEN-BEGIN:initComponents
                 java.awt.GridBagConstraints gridBagConstraints;
 

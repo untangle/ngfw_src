@@ -26,6 +26,7 @@ public class RemoteJDialog extends MConfigJDialog {
     private static final String NAME_ADMINISTRATION_SETTINGS = "Remote Administration";
     private static final String NAME_SNMP_SETTINGS = "SNMP Monitoring";
     private static final String NAME_SYSLOG_SETTINGS = "Syslog Monitoring";
+    private static final String NAME_MANUAL_REBOOT = "Manual Reboot";
 
     public RemoteJDialog( ) {
     }
@@ -59,6 +60,10 @@ public class RemoteJDialog extends MConfigJDialog {
         this.contentJTabbedPane.addTab(NAME_SYSLOG_SETTINGS, null, remoteSyslogJScrollPane);
         super.savableMap.put(NAME_SYSLOG_SETTINGS, remoteSyslogJPanel);
         super.refreshableMap.put(NAME_SYSLOG_SETTINGS, remoteSyslogJPanel);
+
+        // MANUAL REBOOT //////
+        RemoteRebootJPanel remoteRebootJPanel = new RemoteRebootJPanel();
+        this.contentJTabbedPane.addTab(NAME_MANUAL_REBOOT, null, remoteRebootJPanel);
     }
 
     protected void sendSettings(Object settings) throws Exception {

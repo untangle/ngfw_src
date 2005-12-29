@@ -24,6 +24,7 @@ public class MLauncher {
     public static void main(final String args[]) {
 
         // set the proper look and feel, and dynamic resizing
+	/*
         try {
             com.incors.plaf.kunststoff.KunststoffLookAndFeel kunststoffLaf = new com.incors.plaf.kunststoff.KunststoffLookAndFeel();
             kunststoffLaf.setCurrentTheme(new com.incors.plaf.kunststoff.KunststoffTheme());
@@ -33,7 +34,7 @@ public class MLauncher {
         catch (Exception e) {
             Util.handleExceptionNoRestart("Error setting LAF:", e);
         }
-
+	*/
         // SET THE REPAINT MANAGER
         javax.swing.RepaintManager.setCurrentManager( new DebugRepaintManager() );
 
@@ -59,21 +60,7 @@ public class MLauncher {
         Thread.currentThread().setContextClassLoader(mUrlClassLoader);
 
         // apply the new class loader to future swing threads
-        javax.swing.UIManager.getLookAndFeelDefaults().put("ClassLoader", mUrlClassLoader);
-
-        // THE OLD WAY OF SETTING THE CLASSLOADER
-        /*        try{
-                  java.awt.EventQueue eq = java.awt.Toolkit.getDefaultToolkit().getSystemEventQueue();
-                  eq.invokeAndWait(new Runnable() {
-                  public void run() {
-                  Thread.currentThread().setContextClassLoader(Util.getClassLoader());
-                  }
-                  });
-                  }
-                  catch(Exception e){
-                  System.err.println(e);
-                  }
-        */
+        //javax.swing.UIManager.getLookAndFeelDefaults().put("ClassLoader", mUrlClassLoader);
 
         // HANDLE FIRST TIME LOGINS
         boolean isActivated;
@@ -99,7 +86,7 @@ public class MLauncher {
 	if( isActivated || (!isActivated && initialSetupWizard.isRegistered()) )
 	    new com.metavize.gui.login.MLoginJFrame(args);
 	else
-	    System.exit(0);
+	    Util.exit(0);
 
     }
 
