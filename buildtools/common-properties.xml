@@ -39,7 +39,6 @@ $Id: common-properties.xml,v 1.25 2005/03/23 04:52:36 amread Exp $
   <!-- standard src places -->
   <property name="src.main" value="main"/>
   <property name="src.hier" value="hier"/>
-  <property name="src.jsp" value="jsp"/>
   <property name="src.resources" value="resources"/>
   <property name="src.thirdparty" value="thirdparty"/>
   <property name="src.webapps" value="webapps"/>

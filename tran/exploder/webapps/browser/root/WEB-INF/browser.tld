@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE taglib
+PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.1//EN"
+"http://java.sun.com/j2ee/dtds/web-jsptaglibrary_1_1.dtd">
+
+<taglib>
+  <tlibversion>1.0</tlibversion>
+  <jspversion>1.1</jspversion>
+  <shortname>browser</shortname>
+  <info>CIFS file browser tags</info>
+
+  <tag>
+    <name>hello</name>
+    <tagclass>com.metavize.tran.exploder.browser.Hello</tagclass>
+    <bodycontent>empty</bodycontent>
+    <info>
+      This is a simple hello tag.
+    </info>
+    <attribute>
+      <name>name</name>
+      <required>false</required>
+      <rtexpvalue>false</rtexpvalue>
+    </attribute>
+  </tag>
+</taglib>

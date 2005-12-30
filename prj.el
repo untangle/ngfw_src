@@ -12,9 +12,11 @@
 (setq jni-projects '("jnetcap" "jvector"))
 
 (jde-set-variables
+ ;; TODO base on dir listing, include webapps
  '(jde-sourcepath
    (append
-    '("./mvvm/main" "./mvvm/bootstrap" "./util")
+    '("./mvvm/main" "./mvvm/bootstrap" "./util"
+      "./tran/exploder/webapps/browser/src")
     (mapcar (lambda (a) (concat "./tran/" a "/main")) transforms)
     (mapcar (lambda (a) (concat "./tran/" a "/main")) casings)
     (mapcar (lambda (a) (concat "./" a "/src/")) jni-projects)))

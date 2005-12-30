@@ -358,7 +358,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   </target>
 
   <target name="mar.tran" depends="xdoclet.tran, compile.tran, mar.tran-client">
-
     <mkdir dir="${build.root}/${tran.name}/META-INF"/>
 
     <jar destfile="${build.jar}/${tran.name}-${tran.type}.mar" index="yes">
@@ -376,7 +375,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     </jar>
 
     <antcall target="jar.${tran.name}" inheritAll="true"/>
-
   </target>
 
   <!--              -->
@@ -456,13 +454,12 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   </target>
 
   <target name="install.exploder">
-    <mkdir  dir="${dist.mvvm.web}/${tran.name}/WEB-INF/lib"/>
-    <copy toDir="${dist.mvvm.web}/${tran.name}/WEB-INF/lib">
+    <mkdir dir="${dist.mvvm.web}/browser/WEB-INF/lib"/>
+    <copy todir="${dist.mvvm.web}/browser/WEB-INF/lib">
       <fileset refid="log4j.jarset"/>
       <fileset refid="mvvm-client.jarset"/>
       <fileset refid="jcifs.jarset"/>
     </copy>
-    <copy file="${build.jar}/browser-web.jar" todir="${dist.mvvm.web}/${tran.name}/WEB-INF/lib"/>
   </target>
 
   <target name="install.firewall"/>
@@ -558,13 +555,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     </jar>
   </target>
 
-  <target name="jar.exploder">
-    <jar destfile="${build.jar}/browser-web.jar">
-      <fileset dir="${build.root}/exploder">
-        <include name="com/metavize/tran/exploder/servlet/*.class"/>
-      </fileset>
-    </jar>
-  </target>
+  <target name="jar.exploder"/>
 
   <target name="jar.firewall"/>
   <target name="jar.spyware"/>
@@ -817,26 +808,52 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     </copy>
   </target>
 
-
   <target name="compile.exploder">
-    <echo message="Precompiling JSP in ${tran.name}/${src.main}"/>
+    <mkdir dir="${dist.mvvm.web}/browser"/>
+
+    <copy todir="${dist.mvvm.web}/browser">
+      <fileset dir="${tran.name}/webapps/browser/root"/>
+    </copy>
+
+    <mkdir dir="${dist.mvvm.web}/browser/WEB-INF/classes"/>
+
+    <javac destdir="${dist.mvvm.web}/browser/WEB-INF/classes"
+           debug="on"
+           optimize="false"
+           deprecation="on"
+           source="1.5"
+           includeAntRuntime="false">
+
+      <src path="${tran.name}/webapps/browser/src"/>
+
+      <classpath refid="tomcat.classpath"/>
+    </javac>
+
+    <mkdir dir="${build.gensrc}/browser/"/>
 
     <java classname="org.apache.jasper.JspC"
           fork="true"
           failonerror="true">
-      <arg line="-d ${build.gensrc}/${tran.name}"/>
-      <arg line="-p com.metavize.tran.${tran.name}.servlet"/>
-      <arg line="-webinc ${build.gensrc}/${tran.name}/web-fragment.xml"/>
-      <arg line="-uriroot ${tran.name}/${src.jsp}"/>
+      <arg line="-s"/>
+      <arg line="-l"/>
+      <arg line="-v"/>
+      <arg line="-compile"/>
+      <arg line="-d ${dist.mvvm.web}/browser/WEB-INF/classes"/>
+      <arg line="-p com.metavize.tran.${tran.name}.browser"/>
+      <arg line="-webinc ${build.gensrc}/browser/web-fragment.xml"/>
+      <arg line="-uriroot ${dist.mvvm.web}/browser"/>
+      <classpath path="${java.home}/../lib/tools.jar"/>
       <classpath refid="tomcat.classpath"/>
       <classpath refid="mvvm.thirdparty.classpath"/>
     </java>
 
     <echo message="Adding JSP servlet mappings to web.xml"/>
 
-    <loadfile property="generated-web.xml" srcFile="${build.gensrc}/${tran.name}/web-fragment.xml"/>
-    <copy file="${tran.name}/${src.hier}/${suffix.mvvm.web}/${tran.name}/WEB-INF/web.xml"
-          toFile="${dist.mvvm.web}/${tran.name}/WEB-INF/web.xml" overwrite="true">
+    <loadfile property="generated-web.xml"
+              srcFile="${build.gensrc}/browser/web-fragment.xml"/>
+    <copy file="${tran.name}/webapps/browser/root/WEB-INF/web.xml"
+          toFile="${dist.mvvm.web}/browser/WEB-INF/web.xml"
+          overwrite="true">
       <filterset>
         <filter token="JSP_PRE_COMPILED_SERVLETS" value="${generated-web.xml}"/>
       </filterset>

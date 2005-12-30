@@ -66,6 +66,14 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
     <fileset refid="tomcat.jarset"/>
   </path>
 
+  <fileset id="jspc.jarset" dir="${TOMCAT_EMBED_HOME}/lib">
+    <include name="jasper-compiler.jar"/>
+  </fileset>
+
+  <path id="jspc.classpath">
+    <fileset refid="jspc.jarset"/>
+  </path>
+
   <fileset id="trove.jarset" dir="${TROVE_HOME}/lib">
     <include name="trove.jar"/>
   </fileset>
