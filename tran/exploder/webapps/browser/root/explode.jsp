@@ -4,13 +4,19 @@
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
+<%
+    String userName = request.getParameter("NAME");
+%>
+
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>explode</title>
 </head>
 <body>
 <ol>
-  <browser:hello name="Aaron"/>
+  <browser:hello name="<%=userName%>" iterations="2">
+  <tr><td><b>have a nice day</b></td></tr>
+  </browser:hello>
 
   <%
   SmbFile f = new SmbFile("smb://dmorris:chakas@metaloft.com/sambaloft/");

@@ -11,12 +11,14 @@
 
 package com.metavize.tran.exploder.browser;
 
+import java.io.IOException;
 import javax.servlet.jsp.*;
 import javax.servlet.jsp.tagext.*;
 
-public class Hello extends TagSupport
+public class Hello extends BodyTagSupport
 {
     private String name = null;
+    private int iterations = 1;
 
     public void setName(String value)
     {
@@ -26,6 +28,20 @@ public class Hello extends TagSupport
     public String getName()
     {
         return name;
+    }
+
+    public void setIterations(String value)
+    {
+        try {
+            iterations = Integer.parseInt(value);
+        } catch (NumberFormatException exn) {
+            iterations = 1;
+        }
+    }
+
+    public String getIterations()
+    {
+        return Integer.toString(iterations);
     }
 
     public int doStartTag()
@@ -41,7 +57,7 @@ public class Hello extends TagSupport
             throw new Error("All is not well in the world.");
         }
 
-        return SKIP_BODY;
+        return EVAL_BODY_TAG;
     }
 
     public int doEndTag()
@@ -54,5 +70,22 @@ public class Hello extends TagSupport
         }
 
         return EVAL_PAGE;
+    }
+
+    public int doAfterBody() throws JspTagException
+    {
+        if (iterations-- >= 1) {
+            BodyContent body = getBodyContent();
+            try {
+                JspWriter out = body.getEnclosingWriter();
+                out.println(body.getString());
+                body.clearBody();
+            } catch (IOException exn) {
+                throw new JspTagException("Error in Hello Tag doAfterBody " + exn);
+            }
+            return EVAL_BODY_TAG;
+        } else {
+            return SKIP_BODY;
+        }
     }
 }
