@@ -32,24 +32,20 @@
 	<import value="net.sf.jasperreports.engine.data.*" />
 	<parameter name="startTime" isForPrompting="true" class="java.sql.Timestamp"/>
 	<parameter name="endTime" isForPrompting="true" class="java.sql.Timestamp"/>
-	<queryString><![CDATA[
-SELECT client_name AS user,
-       HOST(remote_address) AS raddr,
-       remote_port AS rport,
+	<queryString><![CDATA[SELECT client_name AS user,
        SUM(rx_bytes) AS rx_total,
-       SUM(tx_bytes) AS tx_total
+       SUM(tx_bytes) AS tx_total,
+       SUM(rx_bytes + tx_bytes) AS data_total
   FROM tr_openvpn_connect_evt
   WHERE start_time >= $P{startTime}
     AND start_time < $P{endTime}
-  GROUP BY client_name, raddr, remote_port
-  ORDER BY client_name ASC
-  LIMIT 15
-         ]]></queryString>
+  GROUP BY client_name
+  ORDER BY data_total DESC
+  LIMIT 15]]></queryString>
 	<field name="user" class="java.lang.String"/>
-	<field name="raddr" class="java.lang.String"/>
-	<field name="rport" class="java.lang.Integer"/>
 	<field name="rx_total" class="java.lang.Long"/>
 	<field name="tx_total" class="java.lang.Long"/>
+	<field name="data_total" class="java.lang.Long"/>
 	<variable name="RANK" class="java.lang.Integer" resetType="Report" calculation="Count">
 		<variableExpression><![CDATA[$F{user}]]></variableExpression>
 	</variable>
@@ -132,51 +128,7 @@ SELECT client_name AS user,
 				<staticText>
 					<reportElement
 						mode="Opaque"
-						x="135"
-						y="0"
-						width="75"
-						height="13"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="staticText"
-						stretchType="NoStretch"
-						positionType="Float"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#FFFFFF" bottomBorder="None" bottomBorderColor="#000000"/>
-					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font fontName="SansSerif" pdfFontName="Helvetica" size="9" isBold="false" isItalic="true" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-					</textElement>
-				<text><![CDATA[Remote Address]]></text>
-				</staticText>
-				<staticText>
-					<reportElement
-						mode="Opaque"
-						x="213"
-						y="0"
-						width="75"
-						height="13"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="staticText-3"
-						stretchType="NoStretch"
-						positionType="Float"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#FFFFFF" bottomBorder="None" bottomBorderColor="#000000"/>
-					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font fontName="SansSerif" pdfFontName="Helvetica" size="9" isBold="false" isItalic="true" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-					</textElement>
-				<text><![CDATA[Remote Port]]></text>
-				</staticText>
-				<staticText>
-					<reportElement
-						mode="Opaque"
-						x="291"
+						x="137"
 						y="0"
 						width="75"
 						height="13"
@@ -198,7 +150,7 @@ SELECT client_name AS user,
 				<staticText>
 					<reportElement
 						mode="Opaque"
-						x="369"
+						x="215"
 						y="0"
 						width="75"
 						height="13"
@@ -215,7 +167,29 @@ SELECT client_name AS user,
 					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="SansSerif" pdfFontName="Helvetica" size="9" isBold="false" isItalic="true" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<text><![CDATA[Transmitted (MB)]]></text>
+				<text><![CDATA[Sent (MB)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="301"
+						y="0"
+						width="75"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-5"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#FFFFFF" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="SansSerif" pdfFontName="Helvetica" size="9" isBold="false" isItalic="true" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Total (MB)]]></text>
 				</staticText>
 			</band>
 		</pageHeader>
@@ -246,7 +220,7 @@ SELECT client_name AS user,
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="SansSerif" pdfFontName="Helvetica" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.Integer"><![CDATA[$V{RANK}.intValue() ]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.Integer"><![CDATA[$V{RANK}.intValue()]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
@@ -273,51 +247,7 @@ SELECT client_name AS user,
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						mode="Opaque"
-						x="135"
-						y="0"
-						width="75"
-						height="13"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="textField"
-						stretchType="NoStretch"
-						positionType="Float"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#FFFFFF" bottomBorder="None" bottomBorderColor="#000000"/>
-					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font fontName="Monospaced" pdfFontName="Helvetica" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$F{raddr}]]></textFieldExpression>
-				</textField>
-				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
-					<reportElement
-						mode="Opaque"
-						x="213"
-						y="0"
-						width="75"
-						height="13"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="textField-2"
-						stretchType="NoStretch"
-						positionType="Float"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#FFFFFF" bottomBorder="None" bottomBorderColor="#000000"/>
-					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font fontName="Monospaced" pdfFontName="Helvetica" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-					</textElement>
-				<textFieldExpression   class="java.lang.Integer"><![CDATA[$F{rport}]]></textFieldExpression>
-				</textField>
-				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
-					<reportElement
-						mode="Opaque"
-						x="291"
+						x="137"
 						y="0"
 						width="50"
 						height="13"
@@ -339,7 +269,7 @@ SELECT client_name AS user,
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						mode="Opaque"
-						x="369"
+						x="215"
 						y="0"
 						width="60"
 						height="13"
@@ -357,6 +287,28 @@ SELECT client_name AS user,
 						<font fontName="Monospaced" pdfFontName="Helvetica" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[new Formatter().format("%,.2f", new Object[] { new Double( $F{tx_total}.doubleValue() / 1048576 ) }).toString()]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="301"
+						y="0"
+						width="60"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-4"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#FFFFFF" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Monospaced" pdfFontName="Helvetica" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[new Formatter().format("%,.2f", new Object[] { new Double( $F{data_total}.doubleValue() / 1048576 ) }).toString()]]></textFieldExpression>
 				</textField>
 			</band>
 		</detail>

@@ -57,8 +57,8 @@ public class VpnSummarizer extends BaseSummarizer {
             logger.warn("could not summarize", exn);
         }
 
-        addEntry("Clients logged in", Util.trimNumber("",clientsLoggedIn));
-        addEntry("Clients distributed", Util.trimNumber("",clientsDistributed));
+        addEntry("User logins", Util.trimNumber("",clientsLoggedIn));
+        addEntry("Client distributions", Util.trimNumber("",clientsDistributed));
 
         // XXXX
         String tranName = "OpenVpn";
