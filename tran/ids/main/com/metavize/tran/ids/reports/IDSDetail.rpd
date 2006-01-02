@@ -1,6 +1,6 @@
 TEMPLATE=Detail
 REPORT_NAME=IDSDetail
-REPORT_TITLE=Intrusion Prevention Events Detail
+REPORT_TITLE=Intrusion Prevention Events
 
 EXTRA_PARAM_1.name=reportTitlePrefix
 EXTRA_PARAM_1.type=java.lang.String
