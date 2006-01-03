@@ -10,27 +10,26 @@
  */
 package com.metavize.tran.nat;
 
-import java.util.List;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.LinkedList;
-
-import java.util.Set;
-import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
 
 import org.apache.log4j.Logger;
 
-import java.util.Random;
-
 class PortList {
+    private static final int MAX_PORTS = 65535;
+
     private final List<Integer> portList = new LinkedList<Integer>();
 
-    private final Set<Integer> usedPortSet = new HashSet<Integer>();
+    private final BitSet usedPortSet = new BitSet(MAX_PORTS);
 
     private final Logger logger = Logger.getLogger( PortList.class );
 
     final int start;
     final int end;
-    
+
     private PortList( int start, int end ) {
         this.start = start;
         this.end   = end;
@@ -40,34 +39,35 @@ class PortList {
         }
 
         /* Randomize the port list */
-        Collections.shuffle( portList, new Random());        
+        Collections.shuffle( portList, new Random());
     }
-    
+
     static PortList makePortList( int start, int end )
     {
-        if ( start < 0 || start > 65535 ) {
+        if ( start < 0 || start > MAX_PORTS ) {
             throw new IllegalArgumentException( "Invalid start port: " + start );
         }
-        
-        if ( end < 0 || end > 65535 ) {
+
+        if ( end < 0 || end > MAX_PORTS ) {
             throw new IllegalArgumentException( "Invalid end port: " + end );
         }
-        
+
         if ( start > end ) {
             throw new IllegalArgumentException( "Start(" + start + ") < end(" + end + ")" );
         }
 
         return new PortList( start, end );
     }
-    
+
     synchronized int getNextPort()
     {
         int port = portList.remove( 0 );
-        
-        if ( !usedPortSet.add( port )) {
+
+        if (usedPortSet.get(port)) {
             logger.error( "Reusing port that is on the used port list: " + port );
         }
-        
+        usedPortSet.set(port);
+
         return port;
     }
 
@@ -77,10 +77,11 @@ class PortList {
             throw new IllegalArgumentException( "Invalid port: " + port );
         }
 
-        if ( !usedPortSet.remove( port )) {
+        if (usedPortSet.get(port)) {
             logger.error( "Removing port that is not on the used list: " + port );
         }
-        
+        usedPortSet.set(port);
+
         portList.add( port );
     }
 }
