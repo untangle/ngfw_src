@@ -131,7 +131,7 @@ public class Quarantine
                       cronCallback();
                   }
               };
-          MvvmContextFactory.context().makeCronJob(p, r);
+          m_cronJob = MvvmContextFactory.context().makeCronJob(p, r);
         }
       }
     }
@@ -175,7 +175,7 @@ public class Quarantine
     List<Inbox> allInboxes = m_store.listInboxes();
 
     long cutoff = System.currentTimeMillis() - ONE_DAY;
-    
+
     for(Inbox inbox : allInboxes) {
       Pair<QuarantineStore.GenericStatus, InboxIndexImpl> result =
         m_store.getIndex(inbox.getAddress());
