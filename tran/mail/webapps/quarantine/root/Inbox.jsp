@@ -269,13 +269,13 @@ SEP
                                 value="<quarantine:inboxRecord prop="mid"/>"/>
                             </th>
                             <td>
-                              <quarantine:inboxRecord prop="from"/>
+                              <quarantine:inboxRecord prop="from" JSEscape="true"/>
                               <quarantine:hasSafelist includeIfTrue="true">
                                 <a href="/quarantine/manageuser?<quarantine:constants keyName="action"/>=<quarantine:constants valueName="sladd"/>&<quarantine:constants keyName="tkn"/>=<quarantine:currentAuthToken encoded="false"/>&<quarantine:constants keyName="sort"/>=<quarantine:pagnationProperties propName="sorting"/>&<quarantine:constants keyName="ascend"/>=<quarantine:pagnationProperties propName="ascending"/>&<quarantine:constants keyName="first"/>=<quarantine:pagnationProperties propName="thisId"/>&<quarantine:constants keyName="sladdr"/>=<quarantine:inboxRecord prop="from"/>">(Safelist)</a>
                               </quarantine:hasSafelist>
                             </td>
-                            <td><quarantine:inboxRecord prop="detail"/></td>
-                            <td><quarantine:inboxRecord prop="subject"/></td>
+                            <td><quarantine:inboxRecord prop="detail" JSEscape="true"/></td>
+                            <td><quarantine:inboxRecord prop="subject" JSEscape="true"/></td>
                           </tr>
                         </quarantine:forEachInboxRecord>
                       </tbody>

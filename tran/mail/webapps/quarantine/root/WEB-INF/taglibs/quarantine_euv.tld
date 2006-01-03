@@ -131,6 +131,11 @@
       <required>true</required>
       <rtexpvalue>false</rtexpvalue>
     </attribute>
+    <attribute>
+      <name>JSEscape</name>
+      <required>false</required>
+      <rtexpvalue>false</rtexpvalue>
+    </attribute>     
   </tag>
 
   <!--

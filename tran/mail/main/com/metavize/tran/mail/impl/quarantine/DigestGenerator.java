@@ -70,6 +70,7 @@ class DigestGenerator {
   private static final String HAS_RECORDS_NOT_SHOWN_VV = "hasRecsNotShown";
   private static final String NUM_RECS_NOT_SHOWN_VV = "numRecsNotShown";
   private static final String TOTAL_NUM_RECORDS_VV = "totalNumRecords";
+  private static final String JS_ESCAPER = "jsEscaper";
   
   private static final String MAIL_BLAST = "http://216.129.106.57/mail_blast/images";
 
@@ -90,6 +91,10 @@ class DigestGenerator {
   private VelocityEngine m_velocityEngine;
   private Template m_htmlTemplate;
   private Template m_txtTemplate;
+
+  //Silly little Object needed because Velocity seems to get grumpy with static methods.  It
+  //simply acts as an object to wrap the JS escaping calls.
+  private QuarJSEscaper s_escaper = new QuarJSEscaper();
 
   DigestGenerator() {
 
@@ -268,6 +273,7 @@ the line below is commented-out
 
       //Create the Velocity context, for template generation
       VelocityContext context = new VelocityContext();
+      context.put(JS_ESCAPER, s_escaper);
       context.put(USER_EMAIL_VV, to);
       context.put(IMAGE_ROOT_VV, MAIL_BLAST);
       context.put(LINK_GENERATOR_VV, new LinkGenerator(serverHost, authToken));

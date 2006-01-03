@@ -11,6 +11,7 @@
 package com.metavize.tran.mail.web.euv.tags;
 
 import com.metavize.tran.mail.papi.quarantine.InboxRecord;
+import com.metavize.tran.util.JSEscape;
 import javax.servlet.jsp.PageContext;
 
 
@@ -29,6 +30,7 @@ public final class InboxRecordTag
   public static final String SCORE_PROP = "detail";
 
   private String m_propName;
+  private boolean m_jsEscape = true;
 
 
   public void setProp(String s) {
@@ -37,10 +39,20 @@ public final class InboxRecordTag
   public String getProp() {
     return m_propName;
   }
-  
+
+  public void setJSEscape(boolean escape) {
+    m_jsEscape = escape;
+  }
+
+  public boolean isJSEscape() {
+    return m_jsEscape;
+  }
+
   @Override
   protected String getValue() {
-    return propNameToProp(getCurrent(pageContext), getProp());
+    String ret = propNameToProp(getCurrent(pageContext), getProp());
+    ret = m_jsEscape?JSEscape.escapeJS(ret):ret;
+    return ret;
   }
 
   private String propNameToProp(InboxRecord record, String name) {
@@ -77,4 +89,9 @@ public final class InboxRecordTag
   public static void setCurrent(PageContext pageContext, InboxRecord record) {
     pageContext.setAttribute(INBOX_RECORD_PS_KEY, record, PageContext.PAGE_SCOPE);
   }
+
+  public void release() {
+    m_jsEscape = true;
+    super.release();
+  }   
 }

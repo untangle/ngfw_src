@@ -46,6 +46,8 @@ $numRecsNotShown - Number of records which could not be shown for space reasons
 $totalNumRecords - total number of records (because this Velocity junk would
                    not understand "$inboxrecords.length")
 
+$jsEscaper - Instance which can escape JavaScript if found in subject                   
+
 
 2) Conditionals
 
@@ -627,9 +629,9 @@ hr {
                             <td class="first">
                               <a href="$linkgenerator.generatePurgeLink($record.getMailID())">Delete</a>&nbsp;|
                               &nbsp;<a href="$linkgenerator.generateRescueLink($record.getMailID())">Release</a></td>
-                            <td>$record.getMailSummary().Sender</td>
+                            <td>$jsEscaper.escapeJS($record.getMailSummary().Sender)</td>
                             <td>$record.getMailSummary().QuarantineDetail</td>
-                            <td>$record.getMailSummary().Subject</td>
+                            <td>$jsEscaper.escapeJS($record.getMailSummary().Subject)</td>
                           </tr>
                           #set ($isEven = $isEven + 1)
                           #if ($isEven > 1)
@@ -644,7 +646,7 @@ hr {
             </tbody>
           </table>
           #else
-            There are no records but you can always <a href="$linkgenerator.generateInboxLink()">go to to your online inbox</a> (make me pretty)
+            There are no quarantined emails, but you may visit your <a href="$linkgenerator.generateInboxLink()"> online inbox</a> for more options
           #end
 
 		<br/>
