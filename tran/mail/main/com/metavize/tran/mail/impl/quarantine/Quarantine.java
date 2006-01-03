@@ -55,6 +55,9 @@ public class Quarantine
   implements QuarantineTransformView,
     QuarantineMaintenenceView, QuarantineUserView {
 
+  private static final long ONE_DAY =
+    1000*60*60*24;
+
   private final Logger m_logger =
     Logger.getLogger(Quarantine.class);
   private QuarantineStore m_store;
@@ -171,16 +174,25 @@ public class Quarantine
 
     List<Inbox> allInboxes = m_store.listInboxes();
 
+    long cutoff = System.currentTimeMillis() - ONE_DAY;
+    
     for(Inbox inbox : allInboxes) {
       Pair<QuarantineStore.GenericStatus, InboxIndexImpl> result =
         m_store.getIndex(inbox.getAddress());
       if(result.a == QuarantineStore.GenericStatus.SUCCESS) {
         if(result.b.size() > 0) {
-          if(sendDigestEmail(inbox.getAddress(), result.b)) {
-            m_logger.debug("Sent digest to \"" + inbox.getAddress() + "\"");
+          if(result.b.getNewestMailTimestamp() < cutoff) {
+            m_logger.debug("No need to send digest to \"" +
+              inbox.getAddress() + "\", no new mails in last 24 hours (" +
+                result.b.getNewestMailTimestamp() + " millis)");
           }
           else {
-            m_logger.warn("Unable to send digest to \"" + inbox.getAddress() + "\"");
+            if(sendDigestEmail(inbox.getAddress(), result.b)) {
+              m_logger.debug("Sent digest to \"" + inbox.getAddress() + "\"");
+            }
+            else {
+              m_logger.warn("Unable to send digest to \"" + inbox.getAddress() + "\"");
+            }
           }
         }
         else {

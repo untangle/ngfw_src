@@ -13,8 +13,10 @@ package com.metavize.tran.mail.impl.quarantine.store;
 
 import com.metavize.tran.mail.papi.quarantine.InboxRecord;
 import com.metavize.tran.mail.papi.quarantine.InboxIndex;
+import com.metavize.tran.mail.papi.quarantine.InboxRecordComparator;
 import java.util.Iterator;
 import java.util.HashMap;
+import java.util.Collections;
 import java.io.Serializable;
 
 /**
@@ -40,6 +42,19 @@ public final class InboxIndexImpl
   }
   public void setLastAccessTimestamp(long timestamp) {
     m_timestamp = timestamp;
+  }
+
+  /**
+   * Helper method which returns the timestamp of the most recently
+   * added mail, or 0 if the inbox is empty.
+   */
+  public long getNewestMailTimestamp() {
+    if(size() == 0) {
+      return 0;
+    }
+    InboxRecord rec = Collections.max(this.values(), InboxRecordComparator.getComparator(
+      InboxRecordComparator.SortBy.INTERN_DATE, true));
+    return rec==null?0:rec.getInternDate();
   }
 
   public Iterator<InboxRecord> iterator() {
