@@ -40,7 +40,7 @@ public final class IntfConverter
     public static final byte  ARGON_MAX      = IntfConstants.MAX_INTF;
 
     public static final byte  ARGON_ERROR    = ARGON_MIN - 1;
-    public static final byte  ARGON_LOOPBACK = IntfConstants.MAX_INTF;
+    public static final byte  ARGON_LOOPBACK = IntfConstants.LOOPBACK_INTF;
     public static final byte  ARGON_UNKNOWN  = IntfConstants.UNKNOWN_INTF;
 
     public static final byte  NETCAP_MIN      = 1;
