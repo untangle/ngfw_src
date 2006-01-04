@@ -24,7 +24,6 @@ public class MLauncher {
     public static void main(final String args[]) {
 
         // set the proper look and feel, and dynamic resizing
-	/*
         try {
             com.incors.plaf.kunststoff.KunststoffLookAndFeel kunststoffLaf = new com.incors.plaf.kunststoff.KunststoffLookAndFeel();
             kunststoffLaf.setCurrentTheme(new com.incors.plaf.kunststoff.KunststoffTheme());
@@ -34,7 +33,7 @@ public class MLauncher {
         catch (Exception e) {
             Util.handleExceptionNoRestart("Error setting LAF:", e);
         }
-	*/
+	
         // SET THE REPAINT MANAGER
         javax.swing.RepaintManager.setCurrentManager( new DebugRepaintManager() );
 
@@ -60,7 +59,7 @@ public class MLauncher {
         Thread.currentThread().setContextClassLoader(mUrlClassLoader);
 
         // apply the new class loader to future swing threads
-        //javax.swing.UIManager.getLookAndFeelDefaults().put("ClassLoader", mUrlClassLoader);
+        javax.swing.UIManager.getLookAndFeelDefaults().put("ClassLoader", mUrlClassLoader);
 
         // HANDLE FIRST TIME LOGINS
         boolean isActivated;
