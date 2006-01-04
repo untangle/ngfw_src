@@ -389,6 +389,8 @@ public class PolicyStateMachine implements ActionListener {
 		addToRack(policy, mTransformJPanel);
 		// FOCUS AND HIGHLIGHT IN CURRENT RACK
 		focusInRack(mTransformJPanel);
+		// REMIND USER TO START THAT SUCKER
+		mTransformJPanel.setPowerOnHintVisible(true);
 	    }
 	    catch(Exception e){
 		try{ Util.handleExceptionWithRestart("Error moving from toolbox to rack", e); }

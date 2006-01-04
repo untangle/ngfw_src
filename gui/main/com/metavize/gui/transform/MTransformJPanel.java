@@ -167,8 +167,12 @@ public class MTransformJPanel extends javax.swing.JPanel {
     public void setPowerOnHintVisible(boolean isVisible){
 	if( isVisible )
 	    powerOnTimer.start();
-	else
+	else{
 	    powerOnTimer.stop();
+	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		powerOnHintJLabel.setVisible(false);
+	    }});
+	}
     }
     
     public void doShutdown(){
