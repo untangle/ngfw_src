@@ -11,35 +11,24 @@
 package com.metavize.tran.nat;
 
 import java.util.BitSet;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
 
 import org.apache.log4j.Logger;
 
 class PortList {
     private static final int MAX_PORTS = 65535;
 
-    private final List<Integer> portList = new LinkedList<Integer>();
-
     private final BitSet usedPortSet = new BitSet(MAX_PORTS);
 
     private final Logger logger = Logger.getLogger( PortList.class );
 
-    final int start;
-    final int end;
+    private final int start;
+    private final int range;
+
+    private int nextPort;
 
     private PortList( int start, int end ) {
-        this.start = start;
-        this.end   = end;
-
-        for ( int c = start; c <= end ; c++ ) {
-            portList.add( c );
-        }
-
-        /* Randomize the port list */
-        Collections.shuffle( portList, new Random());
+        this.start = this.nextPort = start;
+        this.range = end - start;
     }
 
     static PortList makePortList( int start, int end )
@@ -61,27 +50,29 @@ class PortList {
 
     synchronized int getNextPort()
     {
-        int port = portList.remove( 0 );
-
-        if (usedPortSet.get(port)) {
-            logger.error( "Reusing port that is on the used port list: " + port );
+        for (int i = 0; i < range; i++) {
+            nextPort = (nextPort + i) % range;
+            if (!usedPortSet.get(nextPort)) {
+                usedPortSet.set(nextPort);
+                return nextPort++;
+            }
         }
-        usedPortSet.set(port);
 
-        return port;
+        // XXX we need to do something here!!!
+        logger.error("Reusing port: " + nextPort );
+        return nextPort++;
     }
 
     synchronized void releasePort( int port )
     {
-        if ( start > port || port > end ) {
+        if ( start > port || port > start + range ) {
             throw new IllegalArgumentException( "Invalid port: " + port );
         }
 
-        if (usedPortSet.get(port)) {
+        if (!usedPortSet.get(port)) {
+            // XXX we need to do something here
             logger.error( "Removing port that is not on the used list: " + port );
         }
-        usedPortSet.set(port);
-
-        portList.add( port );
+        usedPortSet.clear(port);
     }
 }
