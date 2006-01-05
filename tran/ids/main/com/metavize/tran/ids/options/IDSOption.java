@@ -63,7 +63,6 @@ public abstract class IDSOption {
             // First look for a three arg one, then the two arg one (since most don't care about
             // initializeSettingsTime).
             optionDefinition = Class.forName("com.metavize.tran.ids.options."+optionName+"Option");
-log.debug("option class: " + optionDefinition);
 
             try {
                 optionConstructor = optionDefinition.getConstructor(threeArgsClass);
