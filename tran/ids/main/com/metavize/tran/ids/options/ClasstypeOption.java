@@ -1,6 +1,5 @@
 package com.metavize.tran.ids.options;
 
-import java.nio.ByteBuffer;
 import org.apache.log4j.Logger;
 
 import com.metavize.tran.ids.IDSDetectionEngine;
@@ -10,7 +9,6 @@ import com.metavize.tran.ids.IDSTransformImpl;
 import com.metavize.tran.ids.RuleClassification;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.event.*;
-
 
 public class ClasstypeOption extends IDSOption {
     private static final int HIGH_PRIORITY = 1;
@@ -22,13 +20,18 @@ public class ClasstypeOption extends IDSOption {
 
     public ClasstypeOption(IDSRuleSignature signature, String params, boolean initializeSettingsTime) {
         super(signature, params);
-        if (initializeSettingsTime) {
-            IDSTransformImpl transform = (IDSTransformImpl)MvvmContextFactory.context().transformManager().threadContext().transform();
-            IDSDetectionEngine engine = transform.getEngine();
-            RuleClassification rc = engine.getClassification(params);
-            if (rc == null) {
-                logger.warn("Unable to find rule classification: " + params);
-            } else {
+
+        IDSTransformImpl transform = (IDSTransformImpl)MvvmContextFactory.context().transformManager().threadContext().transform();
+        IDSDetectionEngine engine = transform.getEngine();
+
+        RuleClassification rc = engine.getClassification(params);
+        if (rc == null) {
+            logger.warn("Unable to find rule classification: " + params);
+            // use default classification text for signature
+        } else {
+            signature.setClassification(rc.getDescription());
+
+            if (true == initializeSettingsTime) {
                 IDSRule rule = signature.rule();
                 int priority = rc.getPriority();
                 // logger.debug("Rule Priority for " + rule.getDescription() + " is " + priority);
@@ -41,6 +44,7 @@ public class ClasstypeOption extends IDSOption {
                     rule.setLog(true);
                     break;
                 default:
+                    break;
                 }
             }
         }

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: SpywareSettings.java 3501 2005-11-21 10:12:33Z amread $
+ * $Id: $
  */
 
 package com.metavize.tran.ids;
@@ -27,7 +27,7 @@ import java.io.Serializable;
 public class IDSRule extends Rule implements Serializable {
     private static final long serialVersionUID = -7009708957041660234L;
 
-    // Actions
+    // Actions (indices to ACTIONS)
     public static final int ALERT = 0;
     public static final int LOG = 1;
     public static final int PASS = 2;
@@ -45,6 +45,8 @@ public class IDSRule extends Rule implements Serializable {
     //Variables set at run time
     private transient IDSRuleHeader header;
     private transient IDSRuleSignature signature;
+    private transient String classification;
+    private transient String url;
     private transient boolean remove; //Should no longer be in the list
 
     /**
@@ -101,6 +103,26 @@ public class IDSRule extends Rule implements Serializable {
 
     public IDSRuleSignature getSignature() {
         return signature;
+    }
+
+    /* every rule signature has classification (so default text is replaced) */
+    public void setClassification(String classification) {
+        this.classification = classification;
+        return;
+    }
+
+    public String getClassification() {
+        return classification;
+    }
+
+    /* not all rule signatures have url (so default text may be returned) */
+    public void setURL(String url) {
+        this.url = url;
+        return;
+    }
+
+    public String getURL() {
+        return url;
     }
 
     public boolean remove() {

@@ -20,7 +20,7 @@ public class IDSRuleSignature {
      *
      * These rules should all be added at some point!
      *****************************************/
-    private String[] ignoreSafeOptions = { "rev","reference","priority" };
+    private String[] ignoreSafeOptions = { "rev","priority" };
     /** **************************************/
 
     private static final int DETECT_COUNTER   = Transform.GENERIC_1_COUNTER;
@@ -31,6 +31,8 @@ public class IDSRuleSignature {
     private IDSRule rule;
     private String toString = "Starting..";
     private String message = "No message set";
+    private String classification = "Rule is not classified";
+    private String url = "Rule is not documented";
     private int action;
     private boolean removeFlag = false;
 
@@ -108,6 +110,24 @@ public class IDSRuleSignature {
 
     public String getMessage() {
         return message;
+    }
+
+    public void setClassification(String classification) {
+        this.classification = classification;
+        return;
+    }
+
+    public String getClassification() {
+        return classification;
+    }
+
+    public void setURL(String url) {
+        this.url = url;
+        return;
+    }
+
+    public String getURL() {
+        return url;
     }
 
     public boolean execute(IDSSessionInfo info) {
