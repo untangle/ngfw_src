@@ -136,7 +136,7 @@ public class PhishSummarizer extends BaseSummarizer {
             logger.warn("could not summarize", exn);
         }
 
-        addEntry("Scanned Email messages (SMTP)", Util.trimNumber("",smtpScanned));
+        addEntry("Scanned emails (SMTP)", Util.trimNumber("",smtpScanned));
         addEntry("&nbsp;&nbsp;&nbsp;Phish & Quarantined", Util.trimNumber("",smtpQuarantined), Util.percentNumber(smtpQuarantined, smtpScanned));
         addEntry("&nbsp;&nbsp;&nbsp;Phish & Blocked", Util.trimNumber("",smtpBlocked), Util.percentNumber(smtpBlocked, smtpScanned));
         addEntry("&nbsp;&nbsp;&nbsp;Phish & Marked", Util.trimNumber("",smtpMarked), Util.percentNumber(smtpMarked, smtpScanned));
@@ -146,7 +146,7 @@ public class PhishSummarizer extends BaseSummarizer {
 
         addEntry("&nbsp;","&nbsp;");
 
-        addEntry("Scanned Email messages (POP/IMAP)", Util.trimNumber("",popimapScanned));
+        addEntry("Scanned emails (POP/IMAP)", Util.trimNumber("",popimapScanned));
         addEntry("&nbsp;&nbsp;&nbsp;Phish & Marked", Util.trimNumber("",popimapMarked), Util.percentNumber(popimapMarked, popimapScanned));
         addEntry("&nbsp;&nbsp;&nbsp;Phish & Passed", Util.trimNumber("",popimapPassed), Util.percentNumber(popimapPassed, popimapScanned));
         totalSpam = popimapMarked + popimapPassed;

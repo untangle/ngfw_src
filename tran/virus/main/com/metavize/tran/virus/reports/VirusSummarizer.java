@@ -161,7 +161,7 @@ public class VirusSummarizer extends BaseSummarizer {
 
         addEntry("&nbsp;","&nbsp;");
 
-        addEntry("Scanned Email downloads", Util.trimNumber("",emailScanned));
+        addEntry("Scanned emails", Util.trimNumber("",emailScanned));
         addEntry("&nbsp;&nbsp;&nbsp;Infected & Blocked", Util.trimNumber("",emailBlocked), Util.percentNumber(emailBlocked, emailScanned));
         addEntry("&nbsp;&nbsp;&nbsp;Clean & Passed", Util.trimNumber("",emailScanned-emailBlocked), Util.percentNumber(emailScanned-emailBlocked, emailScanned));
 
