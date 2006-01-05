@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004,2005 Metavize Inc.
+ * Copyright (c) 2004,2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,22 +11,14 @@
 package com.metavize.tran.kav;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.util.List;
 import java.util.StringTokenizer;
 
-import com.metavize.tran.util.AlarmTimer;
-import com.metavize.tran.virus.VirusScanner;
 import com.metavize.tran.virus.VirusScannerLauncher;
 import com.metavize.tran.virus.VirusScannerResult;
-import org.apache.log4j.Logger;
 
 public class KavScannerLauncher extends VirusScannerLauncher
 {
@@ -50,7 +42,7 @@ public class KavScannerLauncher extends VirusScannerLauncher
             /* already done */
             return;
         }
-            
+
         try {
             String command = "kavclient " + pathName;
             this.scanProcess = Runtime.getRuntime().exec(command);
@@ -74,7 +66,7 @@ public class KavScannerLauncher extends VirusScannerLauncher
                  * Clean
                  * $ kavclient /tmp/q347558.exe
                  * Infected: Email-Worm.Win32.Swen /
-                 * 
+                 *
                  */
 
                 while ((s = in.readLine()) != null) {
@@ -91,8 +83,9 @@ public class KavScannerLauncher extends VirusScannerLauncher
                         }
                     }
                 }
-                if (logger.isDebugEnabled())
+                if (logger.isDebugEnabled()) {
                     logger.debug("kavclient output: " + wholeOutput.toString());
+                }
             }
             catch (Exception e) {
                 logger.error("Scan Exception: ", e);

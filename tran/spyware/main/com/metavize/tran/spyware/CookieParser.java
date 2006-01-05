@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -37,7 +37,9 @@ public class CookieParser
      */
     public static Map<String, String> parseCookie(String v)
     {
-        logger.debug("parsing cookie: " + v);
+        if (logger.isDebugEnabled()) {
+            logger.debug("parsing cookie: " + v);
+        }
 
         int state = KEY_STATE;
 

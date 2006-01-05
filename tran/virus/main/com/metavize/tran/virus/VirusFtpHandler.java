@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -132,7 +132,9 @@ class VirusFtpHandler extends FtpStateMachine
                 logger.warn("could not close out channel");
             }
 
-            logger.debug("c2s file: " + file);
+            if (logger.isDebugEnabled()) {
+                logger.debug("c2s file: " + file);
+            }
             TCPStreamer ts = scan();
             if (null != ts) {
                 getSession().beginServerStream(ts);
@@ -155,7 +157,9 @@ class VirusFtpHandler extends FtpStateMachine
                 logger.warn("could not close out channel", exn);
             }
 
-            logger.debug("!c2s file: " + file);
+            if (logger.isDebugEnabled()) {
+                logger.debug("!c2s file: " + file);
+            }
             TCPStreamer ts = scan();
             if (null != ts) {
                 getSession().beginClientStream(ts);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,21 +11,16 @@
 
 package com.metavize.tran.clamphish;
 
-import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.tran.virus.VirusScannerResult;
-import com.metavize.tran.clam.ClamScannerLauncher;
-import com.metavize.tran.spam.SpamScanner;
-import com.metavize.tran.spam.SpamReport;
-import com.metavize.tran.spam.ReportItem;
-
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.tran.clam.ClamScannerLauncher;
+import com.metavize.tran.spam.ReportItem;
+import com.metavize.tran.spam.SpamReport;
+import com.metavize.tran.spam.SpamScanner;
+import com.metavize.tran.virus.VirusScannerResult;
 import org.apache.log4j.Logger;
 
 class ClamPhishScanner implements SpamScanner
@@ -46,14 +41,17 @@ class ClamPhishScanner implements SpamScanner
     public SpamReport scanFile(File f, float threshold)
     {
         String filePath = f.getPath();
-        if (logger.isDebugEnabled())
+        if (logger.isDebugEnabled()) {
             logger.debug("scanning file " + filePath);
+        }
         ClamScannerLauncher scan = new ClamScannerLauncher(filePath);
         Thread thread = MvvmContextFactory.context().newThread(scan);
         thread.start();
         VirusScannerResult vsr = scan.waitFor(this.timeout);
-        if (logger.isDebugEnabled())
-            logger.debug("scan finished, clean: " + vsr.isClean() + ", name: " + vsr.getVirusName());
+        if (logger.isDebugEnabled()) {
+            logger.debug("scan finished, clean: " + vsr.isClean()
+                         + ", name: " + vsr.getVirusName());
+        }
         if (vsr.isClean() || vsr.getVirusName() == null || !vsr.getVirusName().contains("Phish")) {
             return SpamReport.EMPTY;
         } else {

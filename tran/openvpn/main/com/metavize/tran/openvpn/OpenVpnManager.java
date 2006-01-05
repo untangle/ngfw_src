@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,34 +11,21 @@
 package com.metavize.tran.openvpn;
 
 import java.io.File;
-
-import java.util.List;
-import java.util.Set;
-import java.util.Map;
-import java.util.Iterator;
-
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-
-import java.net.InetAddress;
 import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
-
-import org.apache.log4j.Logger;
+import java.util.List;
 
 import com.metavize.mvvm.ArgonManager;
-import com.metavize.mvvm.argon.ArgonException;
-
-import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.IntfConstants;
-
-import com.metavize.mvvm.tran.TransformException;
-import com.metavize.mvvm.tran.script.ScriptWriter;
-import com.metavize.mvvm.tran.script.ScriptRunner;
-import com.metavize.mvvm.tran.script.ScriptException;
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.argon.ArgonException;
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.TransformException;
+import com.metavize.mvvm.tran.script.ScriptException;
+import com.metavize.mvvm.tran.script.ScriptRunner;
+import com.metavize.mvvm.tran.script.ScriptWriter;
+import org.apache.log4j.Logger;
 
 // import static com.metavize.tran.openvpn.Constants.*;
 
@@ -52,7 +39,7 @@ class OpenVpnManager
     private static final String VPN_START_SCRIPT = Constants.SCRIPT_DIR + "/start-openvpn";
     private static final String VPN_STOP_SCRIPT  = Constants.SCRIPT_DIR + "/stop-openvpn";
     private static final String GENERATE_DISTRO_SCRIPT = Constants.SCRIPT_DIR + "/generate-distro";
-    
+
     /* Most likely want to bind to the outside address when using NAT */
     private static final String FLAG_LOCAL       = "local";
 
@@ -65,7 +52,7 @@ class OpenVpnManager
     private static final String FLAG_DEVICE      = "dev";
     private static final String DEVICE_BRIDGE    = "tap0";
     private static final String DEVICE_ROUTING   = "tun0";
-    
+
     private static final String FLAG_ROUTE        = "route";
     private static final String FLAG_IFCONFIG     = "ifconfig";
     private static final String FLAG_CLI_IFCONFIG = "ifconfig-push";
@@ -88,13 +75,13 @@ class OpenVpnManager
 
     /* Ping every x seconds */
     private static final int DEFAULT_PING_TIME      = 10;
-    
+
     /* If a ping response isn't received in this amount time, assume the connection is dead */
     private static final int DEFAULT_PING_TIMEOUT   = 120;
 
     /* Default verbosity in the log messages(0-9) *
      * 0 -- No output except fatal errors.
-     * 1 to 4 -- Normal usage range. 
+     * 1 to 4 -- Normal usage range.
      * 5  --  Output  R  and W characters to the console for each packet read and write, uppercase is
      * used for TCP/UDP packets and lowercase is used for TUN/TAP packets.
      * 6 to 11 -- Debug info range (see errlevel.h for additional information on debug levels). */
@@ -117,7 +104,7 @@ class OpenVpnManager
         "cipher " + DEFAULT_CIPHER,
         "user nobody",
         "group nogroup",
-        
+
         /* Only talk to clients with a client configuration file */
         /* XXX This may need to go away to support pools */
         "ccd-exclusive",
@@ -155,11 +142,11 @@ class OpenVpnManager
         "tls-exit",
         "ca " + CLI_KEY_DIR + "/ca.crt"
     };
-    
+
     private static final String WIN_CLIENT_DEFAULTS[]  = new String[] {};
     private static final String WIN_EXTENSION          = "ovpn";
 
-    
+
     private static final String UNIX_CLIENT_DEFAULTS[] = new String[] {
         // ??? Questionable because not all installs will have these users and groups.
         // "user nobody",
@@ -172,7 +159,7 @@ class OpenVpnManager
     OpenVpnManager()
     {
     }
-    
+
     void start( VpnSettings settings ) throws TransformException
     {
         logger.info( "Starting openvpn server" );
@@ -193,7 +180,7 @@ class OpenVpnManager
             throw new TransformException( e );
         }
     }
-    
+
     void restart( VpnSettings settings ) throws TransformException
     {
         /* The start script handles the case where it has to be stopped */
@@ -213,7 +200,7 @@ class OpenVpnManager
             throw new TransformException( e );
         }
     }
-    
+
     void configure( VpnSettings settings ) throws TransformException
     {
         /* Nothing to start */
@@ -222,11 +209,11 @@ class OpenVpnManager
         writeSettings( settings );
         writeClientFiles( settings );
     }
-    
+
     private void writeSettings( VpnSettings settings ) throws TransformException
     {
         ScriptWriter sw = new VpnScriptWriter();
-        
+
         /* Insert all of the default parameters */
         sw.appendLines( SERVER_DEFAULTS );
 
@@ -234,41 +221,41 @@ class OpenVpnManager
         sw.appendVariable( FLAG_PORT, String.valueOf( DEFAULT_PORT ));
 
         /* Bridging or routing */
-        if ( settings.isBridgeMode()) {            
+        if ( settings.isBridgeMode()) {
             sw.appendVariable( FLAG_DEVICE, DEVICE_BRIDGE );
         } else {
             sw.appendVariable( FLAG_DEVICE, DEVICE_ROUTING );
             IPaddr localEndpoint  = settings.getServerAddress();
             IPaddr remoteEndpoint = getRemoteEndpoint( localEndpoint );
-            
+
             sw.appendVariable( FLAG_IFCONFIG, "" + localEndpoint + " " + remoteEndpoint );
             writePushRoute( sw, localEndpoint, null );
 
             /* Get all of the routes for all of the different groups */
-            writeGroups( sw, settings );                                    
+            writeGroups( sw, settings );
         }
-        
+
         writeExports( sw, settings );
-        
+
         int maxClients = settings.getMaxClients();
-        if ( maxClients > 0 ) sw.appendVariable( FLAG_MAX_CLI, String.valueOf( maxClients ));       
-        
+        if ( maxClients > 0 ) sw.appendVariable( FLAG_MAX_CLI, String.valueOf( maxClients ));
+
         sw.writeFile( OPENVPN_SERVER_FILE );
     }
 
     private void writeExports( ScriptWriter sw, VpnSettings settings )
     {
         sw.appendComment( "Exports" );
-        
+
         /* XXX This may need additional entries in the routing table,
          * because the edgeguard must also know how to route this
          * traffic
-         * not sure about this comment, the entries seem to get 
+         * not sure about this comment, the entries seem to get
          * pushed automatically. */
         for ( SiteNetwork siteNetwork : (List<SiteNetwork>)settings.getExportedAddressList()) {
             writePushRoute( sw, siteNetwork.getNetwork(), siteNetwork.getNetmask());
         }
-        
+
         /* The client configuration file is written in writeClientFiles */
         for ( VpnSite site : (List<VpnSite>)settings.getSiteList()) {
             if ( !site.isEnabled()) continue;
@@ -276,12 +263,12 @@ class OpenVpnManager
             for ( SiteNetwork siteNetwork : (List<SiteNetwork>)site.getExportedAddressList()) {
                 IPaddr network = siteNetwork.getNetwork();
                 IPaddr netmask = siteNetwork.getNetmask();
-                
+
                 writeRoute( sw, network, netmask );
                 writePushRoute( sw, network, netmask );
             }
         }
-        
+
         sw.appendLine();
     }
 
@@ -290,7 +277,7 @@ class OpenVpnManager
         /* XXX Need some group consolidation */
         /* XXX Need some checking for overlapping groups */
         /* XXX Do not exports groups that are not used */
-        
+
         sw.appendComment( "Groups" );
 
         for ( VpnGroup group : (List<VpnGroup>)settings.getGroupList()) {
@@ -307,7 +294,7 @@ class OpenVpnManager
         throws TransformException
     {
         ArgonManager am = MvvmContextFactory.context().argonManager();
-        
+
         InetAddress internalAddress = am.getInsideAddress();
         InetAddress externalAddress = am.getOutsideAddress();
         int externalHttpsPort =  MvvmContextFactory.context().networkingManager().getExternalHttpsPort();
@@ -315,11 +302,13 @@ class OpenVpnManager
         if ( internalAddress == null || externalAddress == null ) {
             throw new TransformException( "The inside address is not set" );
         }
-        
+
         writeClientConfigurationFile( settings, client, UNIX_CLIENT_DEFAULTS, UNIX_EXTENSION );
         writeClientConfigurationFile( settings, client, WIN_CLIENT_DEFAULTS,  WIN_EXTENSION );
 
-        logger.debug( "Executing: " + GENERATE_DISTRO_SCRIPT );
+        if (logger.isDebugEnabled()) {
+            logger.debug( "Executing: " + GENERATE_DISTRO_SCRIPT );
+        }
         try {
             String key = client.getDistributionKey();
             if ( key == null ) key = "";
@@ -358,16 +347,16 @@ class OpenVpnManager
         }
 
         String name = client.getInternalName();
-        
+
         sw.appendVariable( FLAG_CERT, CLI_KEY_DIR + "/" + name + ".crt" );
         sw.appendVariable( FLAG_KEY,  CLI_KEY_DIR + "/" + name + ".key" );
-                
+
         /* VPN configuratoins needs information from the networking settings. */
         ArgonManager argonManager = MvvmContextFactory.context().argonManager();
-        
-        /* XXXXXX This needs some global address and possibly the port, possibly an address 
+
+        /* XXXXXX This needs some global address and possibly the port, possibly an address
            from the settings */
-        sw.appendVariable( FLAG_REMOTE, argonManager.getOutsideAddress().getHostAddress() + " " + 
+        sw.appendVariable( FLAG_REMOTE, argonManager.getOutsideAddress().getHostAddress() + " " +
                            DEFAULT_PORT );
 
         sw.writeFile( CLIENT_CONF_FILE_BASE + name + "." + extension );
@@ -380,7 +369,9 @@ class OpenVpnManager
             File baseDirectory = new File( OPENVPN_CCD_DIR );
             if ( baseDirectory.exists()) {
                 for ( File clientConfig : baseDirectory.listFiles()) {
-                    logger.debug( "Deleting the file: " + clientConfig );
+                    if (logger.isDebugEnabled()) {
+                        logger.debug( "Deleting the file: " + clientConfig );
+                    }
                     clientConfig.delete();
                 }
             } else {
@@ -389,37 +380,37 @@ class OpenVpnManager
         } catch ( Exception e ) {
             logger.error( "Unable to delete the previous client configuration files." );
         }
-        
+
         for ( VpnClient client : (List<VpnClient>)settings.getClientList()) {
             if ( !client.isEnabled()) continue;
 
             ScriptWriter sw = new VpnScriptWriter();
-            
+
             IPaddr localEndpoint  = client.getAddress();
             IPaddr remoteEndpoint = getRemoteEndpoint( localEndpoint );
             String name           = client.getInternalName();
-            
+
             logger.info( "Writing client configuration file for [" + name + "]" );
 
             /* XXXX This won't work for a bridge configuration */
             sw.appendVariable( FLAG_CLI_IFCONFIG, "" + localEndpoint + " " + remoteEndpoint );
-            
+
             sw.writeFile( OPENVPN_CCD_DIR + "/" + name );
         }
 
         for ( VpnSite site : (List<VpnSite>)settings.getSiteList()) {
             if ( !site.isEnabled()) continue;
             ScriptWriter sw = new VpnScriptWriter();
-            
+
             IPaddr localEndpoint  = site.getAddress();
             IPaddr remoteEndpoint = getRemoteEndpoint( localEndpoint );
             String name           = site.getInternalName();
-            
+
             logger.info( "Writing site configuration file for [" + name + "]" );
 
             /* XXXX This won't work for a bridge configuration */
             sw.appendVariable( FLAG_CLI_IFCONFIG, "" + localEndpoint + " " + remoteEndpoint );
-            
+
             for ( SiteNetwork siteNetwork : (List<SiteNetwork>)site.getExportedAddressList()) {
                 writeClientRoute( sw, siteNetwork.getNetwork(), siteNetwork.getNetmask());
             }
@@ -427,7 +418,7 @@ class OpenVpnManager
             sw.writeFile( OPENVPN_CCD_DIR + "/" + name );
         }
     }
-    
+
     private void writePushRoute( ScriptWriter sw, IPaddr address, IPaddr netmask )
     {
         if ( address == null ) {
@@ -458,9 +449,9 @@ class OpenVpnManager
         } else {
             value += address.getHostAddress();
         }
-        
+
         value += "\"";
-        
+
         sw.appendVariable( FLAG_PUSH,  value );
     }
 
@@ -480,16 +471,16 @@ class OpenVpnManager
             logger.warn( "attempt to write a route with a null address" );
             return;
         }
-        
+
         String value = "";
-        
+
         if ( netmask != null && ( netmask.getAddr() != null )) {
             value += IPaddr.and( address, netmask );
             value += " " + netmask;
         } else {
             value += address;
         }
-        
+
         sw.appendVariable( type, value );
     }
 
@@ -504,7 +495,7 @@ class OpenVpnManager
         return null;
     }
 
-    /* For Tunnel nodes, this gets the corresponding remote endpoint, see the openvpn howto for 
+    /* For Tunnel nodes, this gets the corresponding remote endpoint, see the openvpn howto for
      * the definition of a remote and local endpoint */
     IPaddr getRemoteEndpoint( IPaddr localEndpoint )
     {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -233,7 +233,9 @@ class DhcpManager
         }
 
         if ( eol.before( now )) {
-            logger.debug( "Lease already expired: " + str );
+            if (logger.isDebugEnabled()) {
+                logger.debug( "Lease already expired: " + str );
+            }
             return;
         }
 
@@ -333,8 +335,8 @@ class DhcpManager
             sb.append( FLAG_DHCP_RANGE + "=" + settings.getDhcpStartAddress().toString());
             sb.append( "," + settings.getDhcpEndAddress().toString() + ",4h\n\n\n" );
 
-            
-            /* XXXX Could move this outside of the is dhcp enabled, which would bind to the 
+
+            /* XXXX Could move this outside of the is dhcp enabled, which would bind to the
              * inside interface if using NAT, without DHCP but with DNS forwarding
              */
             /* Bind to the inside interface if using Nat */

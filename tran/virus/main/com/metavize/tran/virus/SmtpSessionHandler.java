@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -63,7 +63,10 @@ public class SmtpSessionHandler
     m_virusImpl.incrementScanCounter();
 
     MIMEPart[] candidateParts = MIMEUtil.getCandidateParts(msg);
-    m_logger.debug("Message has: " + candidateParts.length + " scannable parts");
+    if (m_logger.isDebugEnabled()) {
+        m_logger.debug("Message has: " + candidateParts.length
+                       + " scannable parts");
+    }
 
     boolean foundVirus = false;
     //Kind-of a hack.  I need the scanResult
@@ -182,7 +185,10 @@ public class SmtpSessionHandler
     //     with the "blockPassOrModify" method
 
     MIMEPart[] candidateParts = MIMEUtil.getCandidateParts(msg);
-    m_logger.debug("Message has: " + candidateParts.length + " scannable parts");
+    if (m_logger.isDebugEnabled()) {
+        m_logger.debug("Message has: " + candidateParts.length
+                       + " scannable parts");
+    }
     SMTPVirusMessageAction action = m_config.getMsgAction();
 
     //Check for the impossible-to-satisfy action of "REMOVE"

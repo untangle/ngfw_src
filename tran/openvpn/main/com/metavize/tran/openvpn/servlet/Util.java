@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,36 +11,28 @@
 
 package com.metavize.tran.openvpn.servlet;
 
-import java.io.OutputStream;
-import java.io.InputStream;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.FileInputStream;
-
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Date;
-
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpSession;
-import javax.servlet.ServletException;
 
-import com.metavize.mvvm.client.MvvmRemoteContextFactory;
 import com.metavize.mvvm.client.MvvmRemoteContext;
+import com.metavize.mvvm.client.MvvmRemoteContextFactory;
 import com.metavize.mvvm.security.Tid;
-
-import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.IPaddr;
-
-import com.metavize.tran.openvpn.VpnTransform;
-import com.metavize.tran.openvpn.VpnSettings;
-
-import org.apache.log4j.Logger;
-
+import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.tran.openvpn.Constants;
+import com.metavize.tran.openvpn.VpnTransform;
+import org.apache.log4j.Logger;
 
 class Util
 {
@@ -68,9 +60,9 @@ class Util
     private Util()
     {
     }
-    
+
     /* Returns true if this page requires a secure redirect */
-    boolean requiresSecure( HttpServletRequest request, HttpServletResponse response ) 
+    boolean requiresSecure( HttpServletRequest request, HttpServletResponse response )
         throws ServletException, IOException
     {
         if ( request.getScheme().equals( "https" )) return false;
@@ -79,19 +71,21 @@ class Util
         rejectFile( request, response );
         return true;
     }
-    
+
     /* Returns the commonName for the request, or null if the request is not valid */
     String getCommonName( HttpServletRequest request )
     {
         String key = request.getParameter( DISTRIBUTION_KEY_PARAM );
-        
+
         if ( key != null ) key = key.trim();
 
-        logger.debug( "key is : " + key );
+        if (logger.isDebugEnabled()) {
+            logger.debug( "key is : " + key );
+        }
 
         if ( key != null && key.length() > 0 ) {
             String commonName = null;
-            
+
             try {
                 /* XXX Should this be cached?? */
                 IPaddr address = IPaddr.parse( request.getRemoteAddr());
@@ -112,7 +106,7 @@ class Util
             }
 
             HttpSession session = request.getSession( true );
-            
+
             session.setAttribute( COMMON_NAME_SESSION_ATTR, commonName );
             session.setAttribute( EXPIRATION_SESSION_ATTR, new Date( System.currentTimeMillis() + TIMEOUT ));
 
@@ -144,18 +138,18 @@ class Util
             return commonName;
         }
     }
-    
+
     /** Send a file to a user */
     /**
      * @param fileName - Full path of the file to download
      * @param downloadFileName - Name that should be given to the file that is downloaded
      */
-    void streamFile( HttpServletRequest request, HttpServletResponse response, 
+    void streamFile( HttpServletRequest request, HttpServletResponse response,
                      String fileName, String downloadFileName, String type )
         throws ServletException, IOException
     {
         fileName = BASE_DIRECTORY + "/" + fileName;
-        
+
         InputStream fileData;
 
         long length = 0;
@@ -164,7 +158,7 @@ class Util
             File file = new File( fileName );
             fileData  = new FileInputStream( file );
             length = file.length();
-        } catch ( FileNotFoundException e ) { 
+        } catch ( FileNotFoundException e ) {
             logger.info( "The file '" + fileName + "' does not exist" );
             request.setAttribute( Util.REASON_ATTR, "The file '" + fileName + "' does not exist" );
             rejectFile( request, response );
@@ -194,7 +188,7 @@ class Util
             } catch ( Exception e ) {
                 logger.warn( "Error closing input stream [" + fileName + "]", e );
             }
-            
+
             try {
                 if ( bos != null ) bos.close();
             } catch ( Exception e ) {
@@ -209,7 +203,7 @@ class Util
         }
     }
 
-    void rejectFile( HttpServletRequest request, HttpServletResponse response ) 
+    void rejectFile( HttpServletRequest request, HttpServletResponse response )
         throws ServletException, IOException
     {
         request.setAttribute( DEBUGGING_ATTR, "" );

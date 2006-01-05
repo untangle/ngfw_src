@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -15,13 +15,10 @@ import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.tapi.AbstractEventHandler;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
 import com.metavize.mvvm.tapi.MPipeException;
-
-import com.metavize.mvvm.IntfConstants;
-
-import com.metavize.mvvm.tapi.TCPNewSessionRequest;
 import com.metavize.mvvm.tapi.event.TCPNewSessionRequestEvent;
 import com.metavize.mvvm.tapi.event.UDPNewSessionRequestEvent;
 import com.metavize.mvvm.tran.Transform;
@@ -34,7 +31,7 @@ class EventHandler extends AbstractEventHandler
 
     /* Are the VPNs bridged with the other networks */
     private boolean isBridge = false;
-    
+
     /* Is this a VPN client, a VPN client passes all traffic */
     private boolean isEdgeGuardClient = false;
 
@@ -68,13 +65,13 @@ class EventHandler extends AbstractEventHandler
     {
         if ( logger.isDebugEnabled()) logger.debug( "New session: [" + request.id() + "]" );
 
-        if ( request.clientIntf() != IntfConstants.VPN_INTF && 
+        if ( request.clientIntf() != IntfConstants.VPN_INTF &&
              request.serverIntf() != IntfConstants.VPN_INTF ) {
             /* Nothing to do */
             request.release();
             return;
         }
-        else if ( request.clientIntf() == IntfConstants.VPN_INTF && 
+        else if ( request.clientIntf() == IntfConstants.VPN_INTF &&
                   request.serverIntf() == IntfConstants.VPN_INTF ) {
             /* XXXXXXXXXX sort this out */
             request.release();
@@ -99,7 +96,7 @@ class EventHandler extends AbstractEventHandler
         boolean isValid = false;
 
         /* Clients pass all traffic */
-        if ( this.isEdgeGuardClient ) { 
+        if ( this.isEdgeGuardClient ) {
             transform.incrementCount( Constants.PASS_COUNTER );
             request.release();
         }
@@ -181,7 +178,9 @@ class EventHandler extends AbstractEventHandler
             if ( !group.isLive()) continue;
             IPMatcher matcher = new IPMatcher( group.getAddress(), group.getNetmask(), false );
             clientAddressList.add( matcher );
-            logger.debug( "clientAddressList: [" + matcher + "]" );
+            if (logger.isDebugEnabled()) {
+                logger.debug( "clientAddressList: [" + matcher + "]" );
+            }
         }
 
         for ( VpnSite site : (List<VpnSite>)settings.getSiteList()) {
@@ -193,7 +192,9 @@ class EventHandler extends AbstractEventHandler
                 IPMatcher matcher = new IPMatcher( siteNetwork.getNetwork(), siteNetwork.getNetmask(),
                                                    false );
                 clientAddressList.add( matcher );
-                logger.debug( "clientAddressList: [" + matcher + "]" );
+                if (logger.isDebugEnabled()) {
+                    logger.debug( "clientAddressList: [" + matcher + "]" );
+                }
             }
         }
 
@@ -201,7 +202,9 @@ class EventHandler extends AbstractEventHandler
             if ( !siteNetwork.isLive()) continue;
             IPMatcher matcher = new IPMatcher( siteNetwork.getNetwork(), siteNetwork.getNetmask(), false );
             exportedAddressList.add( matcher );
-            logger.debug( "exportedAddressList: [" + matcher + "]" );
+            if (logger.isDebugEnabled()) {
+                logger.debug( "exportedAddressList: [" + matcher + "]" );
+            }
         }
 
         this.clientAddressList   = clientAddressList;

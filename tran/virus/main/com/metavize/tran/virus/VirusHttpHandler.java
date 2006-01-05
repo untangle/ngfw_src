@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -147,9 +147,13 @@ class VirusHttpHandler extends HttpStateMachine
         } else {
             logger.debug("else...");
             String mimeType = header.getValue("content-type");
-            logger.debug("content-type: " + mimeType);
+
             this.scan = matchesMimeType(mimeType);
-            logger.debug("matches mime-type: " + scan);
+            if (logger.isDebugEnabled()) {
+                logger.debug("content-type: " + mimeType
+                             + "matches mime-type: " + scan);
+            }
+
             reason = mimeType;
         }
 
@@ -192,7 +196,9 @@ class VirusHttpHandler extends HttpStateMachine
     {
         VirusScannerResult result;
         try {
-            logger.debug("Scanning the file: " + fileName);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Scanning the file: " + fileName);
+            }
             transform.incrementCount(SCAN_COUNTER);
             result = transform.getScanner().scanFile(fileName);
         } catch (Exception e) {
@@ -394,7 +400,9 @@ class VirusHttpHandler extends HttpStateMachine
 
                 return Chunk.EMPTY;
             } else {
-                logger.debug("continuing to trickle: " + totalSize);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("continuing to trickle: " + totalSize);
+                }
                 Chunk c = trickle();
                 return c;
             }

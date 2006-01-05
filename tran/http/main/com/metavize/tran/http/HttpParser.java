@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -117,7 +117,9 @@ public class HttpParser extends AbstractParser
             switch (state) {
             case PRE_FIRST_LINE_STATE:
                 {
-                    logger.debug(sessStr + "in PRE_FIRST_LINE_STATE");
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(sessStr + "in PRE_FIRST_LINE_STATE");
+                    }
 
                     lengthCounter = 0;
 
@@ -153,7 +155,9 @@ public class HttpParser extends AbstractParser
                     // we're done with HEADER state.
                     this.buf = new byte[maxUri];
 
-                    logger.debug(sessStr + "in FIRST_LINE_STATE");
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(sessStr + "in FIRST_LINE_STATE");
+                    }
                     if (completeLine(b)) {
                         l.add(firstLine(b));
 
@@ -166,7 +170,9 @@ public class HttpParser extends AbstractParser
                 }
             case ACCUMULATE_HEADER_STATE:
                 {
-                    logger.debug(sessStr + "in ACCUMULATE_HEADER_STATE");
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(sessStr + "in ACCUMULATE_HEADER_STATE");
+                    }
 
                     if (!completeHeader(b)) {
                         if (b.capacity() < maxHeader) {
@@ -199,7 +205,9 @@ public class HttpParser extends AbstractParser
                 }
             case HEADER_STATE:
                 {
-                    logger.debug(sessStr + "in HEADER_STATE");
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(sessStr + "in HEADER_STATE");
+                    }
                     header = header(b);
                     l.add(header);
 
@@ -252,7 +260,9 @@ public class HttpParser extends AbstractParser
                 }
             case CLOSED_BODY_STATE:
                 {
-                    logger.debug(sessStr + "in CLOSED_BODY_STATE!");
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(sessStr + "in CLOSED_BODY_STATE!");
+                    }
                     l.add(closedBody(b));
                     b = null;
                     done = true;
@@ -260,7 +270,9 @@ public class HttpParser extends AbstractParser
                 }
             case CONTENT_LENGTH_BODY_STATE:
                 {
-                    logger.debug(sessStr + "in CONTENT_LENGTH_BODY_STATE");
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(sessStr + "in CONTENT_LENGTH_BODY_STATE");
+                    }
                     l.add(chunk(b));
                     if (0 == contentLength) {
                         b = null;
@@ -276,7 +288,9 @@ public class HttpParser extends AbstractParser
             case CHUNK_LENGTH_STATE:
                 // chunk-size     = 1*HEX
                 {
-                    logger.debug(sessStr + "in CHUNK_LENGTH_STATE");
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(sessStr + "in CHUNK_LENGTH_STATE");
+                    }
                     if (!completeLine(b)) {
                         b.compact();
                         done = true;
@@ -284,8 +298,10 @@ public class HttpParser extends AbstractParser
                     }
 
                     contentLength = chunkLength(b);
-                    logger.debug(sessStr + "CHUNK contentLength = "
-                                 + contentLength);
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(sessStr + "CHUNK contentLength = "
+                                     + contentLength);
+                    }
                     if (0 == contentLength) {
                         b = null;
                         state = LAST_CHUNK_STATE;
@@ -303,7 +319,9 @@ public class HttpParser extends AbstractParser
                 }
             case CHUNK_BODY_STATE:
                 {
-                    logger.debug(sessStr + "in CHUNKED_BODY_STATE");
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(sessStr + "in CHUNKED_BODY_STATE");
+                    }
 
                     l.add(chunk(b));
 
@@ -321,7 +339,9 @@ public class HttpParser extends AbstractParser
                 }
             case CHUNK_END_STATE:
                 {
-                    logger.debug(sessStr + "in END_CHUNK_STATE");
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(sessStr + "in END_CHUNK_STATE");
+                    }
 
                     if (!completeLine(b)) {
                         b.compact();
@@ -341,7 +361,10 @@ public class HttpParser extends AbstractParser
             case LAST_CHUNK_STATE:
                 // last-chunk     = 1*("0") [ chunk-extension ] CRLF
                 {
-                    logger.debug(sessStr + "in LAST_CHUNK_STATE");
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(sessStr + "in LAST_CHUNK_STATE");
+                    }
+
                     if (!completeLine(b)) {
                         b.compact();
                         done = true;
@@ -359,7 +382,9 @@ public class HttpParser extends AbstractParser
                 }
             case END_MARKER_STATE:
                 {
-                    logger.debug(sessStr + "in END_MARKER_STATE");
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(sessStr + "in END_MARKER_STATE");
+                    }
                     EndMarker endMarker = EndMarker.MARKER;
                     l.add(endMarker);
                     lineBuffering(true);
@@ -522,11 +547,15 @@ public class HttpParser extends AbstractParser
         byte cs = session.clientState();
         byte ss = session.serverState();
 
-        logger.debug(sessStr + "handling timer cs=" + cs + " ss=" + ss);
+        if (logger.isDebugEnabled()) {
+            logger.debug(sessStr + "handling timer cs=" + cs + " ss=" + ss);
+        }
 
         if (cs == TCPSessionDesc.HALF_OPEN_OUTPUT
             && ss == TCPSessionDesc.HALF_OPEN_INPUT) {
-            logger.debug(sessStr + "closing session because its in halfstate");
+            if (logger.isDebugEnabled()) {
+                logger.debug(sessStr + "closing session in halfstate");
+            }
             session.shutdownClient();
         } else {
             scheduleTimer(TIMEOUT);
@@ -550,7 +579,9 @@ public class HttpParser extends AbstractParser
         transferEncoding = NO_BODY;
 
         HttpMethod method = HttpMethod.getInstance(token(data));
-        logger.debug(sessStr + "method: " + method);
+        if (logger.isDebugEnabled()) {
+            logger.debug(sessStr + "method: " + method);
+        }
         eat(data, SP);
         URI requestUri = requestUri(data);
         eat(data, SP);
@@ -666,8 +697,9 @@ public class HttpParser extends AbstractParser
         eat(data, ':');
         String value = eatText(data).trim();
 
-        if (logger.isDebugEnabled())
+        if (logger.isDebugEnabled()) {
             logger.debug(sessStr + "field key: " + key + " value: " + value);
+        }
 
         // 4.3: The presence of a message-body in a request is signaled by the
         // inclusion of a Content-Length or Transfer-Encoding header field in
@@ -675,16 +707,22 @@ public class HttpParser extends AbstractParser
         // XXX check for valid body in the *reply* as well!
         if (key.equalsIgnoreCase("transfer-encoding")) {
             if (value.equalsIgnoreCase("chunked")) {
-                logger.debug(sessStr + "using chunked encoding");
+                if (logger.isDebugEnabled()) {
+                    logger.debug(sessStr + "using chunked encoding");
+                }
                 transferEncoding = CHUNKED_ENCODING;
             } else {
                 logger.warn("don't know transfer-encoding: " + value);
             }
         } else if (key.equalsIgnoreCase("content-length")) {
-            logger.debug(sessStr + "using content length encoding");
+            if (logger.isDebugEnabled()) {
+                logger.debug(sessStr + "using content length encoding");
+            }
             transferEncoding = CONTENT_LENGTH_ENCODING;
             contentLength = Integer.parseInt(value);
-            logger.debug(sessStr + "CL contentLength = " + contentLength);
+            if (logger.isDebugEnabled()) {
+                logger.debug(sessStr + "CL contentLength = " + contentLength);
+            }
         } else if (key.equalsIgnoreCase("accept-encoding")) {
             //value = "identity";
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -115,24 +115,31 @@ public class SpywareEventHandler extends AbstractEventHandler
         IPMaddrRule ir = (IPMaddrRule)this.subnetSet.getMostSpecific(ipm);
 
         if (ir == null) {
-            logger.debug("Subnet scan: " + ipm.toString() + " -> clean.");
+            if (logger.isDebugEnabled()) {
+                logger.debug("Subnet scan: " + ipm.toString() + " -> clean.");
+            }
             if (release) { ipr.release(); }
             return;
         }
 
-        logger.debug("Subnet scan: " + ipm.toString() + " -> DETECTED.");
+        if (logger.isDebugEnabled()) {
+            logger.debug("Subnet scan: " + ipm.toString() + " -> DETECTED.");
+        }
+
         transform.incrementCount(Spyware.ADDRESS);
 
-        logger.info("-------------------- Detected Spyware --------------------");
-        logger.info("Spyware Name  : " + ir.getName());
-        logger.info("Host          : " + ipr.clientAddr().getHostAddress() + ":" + ipr.clientPort());
-        logger.info("Suspicious IP : " + ipr.serverAddr().getHostAddress() + ":" + ipr.serverPort());
-        logger.info("Matches       : " + ir.getIpMaddr());
-        if (ipr instanceof TCPNewSessionRequest)
-            logger.info("Protocol      : TCP");
-        if (ipr instanceof UDPNewSessionRequest)
-            logger.info("Protocol      : UDP");
-        logger.info("----------------------------------------------------------");
+        if (logger.isInfoEnabled()) {
+            logger.info("-------------------- Detected Spyware --------------------");
+            logger.info("Spyware Name  : " + ir.getName());
+            logger.info("Host          : " + ipr.clientAddr().getHostAddress() + ":" + ipr.clientPort());
+            logger.info("Suspicious IP : " + ipr.serverAddr().getHostAddress() + ":" + ipr.serverPort());
+            logger.info("Matches       : " + ir.getIpMaddr());
+            if (ipr instanceof TCPNewSessionRequest)
+                logger.info("Protocol      : TCP");
+            if (ipr instanceof UDPNewSessionRequest)
+                logger.info("Protocol      : UDP");
+            logger.info("----------------------------------------------------------");
+        }
 
         if (release)
             ipr.attach(new SpywareAccessEvent(ipr.pipelineEndpoints(), ir.getName(), ir.getIpMaddr(), ir.isLive()));

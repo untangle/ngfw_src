@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -16,13 +16,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import com.metavize.mvvm.ArgonManager;
+import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.NetworkingConfiguration;
-import com.metavize.mvvm.IntfConstants;
-
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.tapi.AbstractEventHandler;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
@@ -38,7 +35,6 @@ import com.metavize.mvvm.tapi.event.UDPSessionEvent;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.mvvm.tran.TransformException;
-
 import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.firewall.InterfaceAddressRedirect;
 import com.metavize.mvvm.tran.firewall.InterfaceRedirect;
@@ -46,6 +42,7 @@ import com.metavize.mvvm.tran.firewall.InterfaceStaticRedirect;
 import com.metavize.mvvm.tran.firewall.IntfMatcher;
 import com.metavize.mvvm.tran.firewall.PortMatcher;
 import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
+import org.apache.log4j.Logger;
 
 /* Import all of the constants from NatConstants (1.5 feature) */
 import static com.metavize.tran.nat.NatConstants.*;
@@ -132,7 +129,7 @@ class NatEventHandler extends AbstractEventHandler
                  isRedirect( request, protocol ) ||
                  isDmzHost( request,  protocol )) {
 
-                
+
                 if (logger.isInfoEnabled())
                     logger.info( "<" + request + "> is nat, redirect or dmz" );
 
@@ -162,7 +159,7 @@ class NatEventHandler extends AbstractEventHandler
                 request.release( false );
                 return;
             }
-            
+
             /* If nat is on, and this session wasn't natted, redirected or dmzed, it
              * must be rejected */
             if ( nat.isEnabled()) {
@@ -244,10 +241,12 @@ class NatEventHandler extends AbstractEventHandler
             }
 
             if ( releasePid != 0 ) {
-                logger.debug( "ICMP: Releasing pid: " + releasePid );
+                if (logger.isDebugEnabled()) {
+                    logger.debug( "ICMP: Releasing pid: " + releasePid );
+                }
 
                 icmpPidList.releasePort( releasePid );
-            } else {
+            } else if (logger.isDebugEnabled()) {
                 logger.debug( "Ignoring non-natted pid: " + pid );
             }
 
@@ -276,7 +275,7 @@ class NatEventHandler extends AbstractEventHandler
 
             /* This really should be anything but VPN and internal, but this setup will have to
              * do until there are more effective interface matchers */
-            IntfMatcher serverIntfMatcher = IntfMatcher.getByteMatcher( IntfConstants.EXTERNAL_INTF, 
+            IntfMatcher serverIntfMatcher = IntfMatcher.getByteMatcher( IntfConstants.EXTERNAL_INTF,
                                                                         IntfConstants.DMZ_INTF );
 
             /* This should NEVER happen */
@@ -401,7 +400,7 @@ class NatEventHandler extends AbstractEventHandler
         throws MPipeException, NatUnconfiguredException
     {
         int port;
-        
+
         if ( nat.isMatch( request, protocol ) || vpn.isMatch( request, protocol )) {
             /* Check to see if this is destined to the NATd network, if it is drop it */
             if ( natLocalNetwork.isMatch( request.serverAddr())) {
@@ -429,12 +428,16 @@ class NatEventHandler extends AbstractEventHandler
             if ( request.clientPort() == 0 && request.serverPort() == 0 ) {
                 port = icmpPidList.getNextPort();
                 ((UDPNewSessionRequest)request).icmpId( port );
-                logger.debug( "Redirect PING session to id: " + port );
+                if (logger.isDebugEnabled()) {
+                    logger.debug( "Redirect PING session to id: " + port );
+                }
             } else {
                 port = getNextPort( protocol );
                 request.clientPort( port );
 
-                logger.debug( "Redirecting session to port: " + port );
+                if (logger.isDebugEnabled()) {
+                    logger.debug( "Redirecting session to port: " + port );
+                }
             }
 
             ((NatAttachment)request.attachment()).releasePort( port );
@@ -528,7 +531,7 @@ class NatEventHandler extends AbstractEventHandler
 
     private boolean isVpn( IPNewSessionRequest request, Protocol protocol )
     {
-        if ( request.clientIntf() == IntfConstants.VPN_INTF || 
+        if ( request.clientIntf() == IntfConstants.VPN_INTF ||
              request.serverIntf() == IntfConstants.VPN_INTF ) {
             return true;
         }
@@ -576,13 +579,18 @@ class NatEventHandler extends AbstractEventHandler
                 logger.info( "Release port " + releasePort +" is neither client nor server port" );
             }
 
-            if (logger.isDebugEnabled())
+            if (logger.isDebugEnabled()) {
                 logger.debug( "Releasing port: " + releasePort );
+            }
 
             getPortList( protocol ).releasePort( releasePort );
         } else {
             if (logger.isDebugEnabled())
-                logger.debug( "Ignoring non-natted port: " + session.clientPort() + "/" + session.serverPort());
+                if (logger.isDebugEnabled()) {
+                    logger.debug( "Ignoring non-natted port: "
+                                  + session.clientPort()
+                                  + "/" + session.serverPort());
+                }
         }
 
         if ( attachment.isManagedSession()) {

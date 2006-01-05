@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -43,24 +43,24 @@ public class CharSequenceUtil
      * sequence ends with an EOL, then 1 is returned.
      */
     public static int countLines(CharSequence cs) {
-      int ret = 0;
-      final int len = cs.length();
+        int ret = 0;
+        final int len = cs.length();
 
-      for(int i = 0; i<len; i++) {
-        if(cs.charAt(i) == CR) {
-          if(
-            (i+1<len) &&
-            (cs.charAt(i+1) == LF)) {
-            i++;
-          }
-          ret++;
-          continue;
+        for(int i = 0; i<len; i++) {
+            if(cs.charAt(i) == CR) {
+                if(
+                   (i+1<len) &&
+                   (cs.charAt(i+1) == LF)) {
+                    i++;
+                }
+                ret++;
+                continue;
+            }
+            if(cs.charAt(i) == LF) {
+                ret++;
+            }
         }
-        if(cs.charAt(i) == LF) {
-          ret++;
-        }
-      }
-      return ret;
+        return ret;
     }
 
     // private classes --------------------------------------------------------

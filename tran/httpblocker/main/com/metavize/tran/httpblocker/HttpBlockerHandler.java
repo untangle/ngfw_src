@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -55,13 +55,15 @@ public class HttpBlockerHandler extends HttpStateMachine
     @Override
     protected Header doRequestHeader(Header requestHeader)
     {
-        logger.debug("in doRequestHeader(): " + requestHeader);
         transform.incrementCount(SCAN, 1);
 
         String c2sReplacement = transform.getBlacklist()
             .checkRequest(getSession().clientAddr(), getRequestLine(),
                           requestHeader);
-        logger.debug("check request returns: " + c2sReplacement);
+        if (logger.isDebugEnabled()) {
+            logger.debug("in doRequestHeader(): " + requestHeader
+                         + "check request returns: " + c2sReplacement);
+        }
 
         if (null == c2sReplacement) {
             releaseRequest();
@@ -94,12 +96,13 @@ public class HttpBlockerHandler extends HttpStateMachine
         if (100 == getStatusLine().getStatusCode()) {
             releaseResponse();
         } else {
-            logger.debug("in doResponseHeader: " + responseHeader);
-
             String s2cReplacement = transform.getBlacklist()
                 .checkResponse(getSession().clientAddr(), getResponseRequest(),
                                responseHeader);
-            logger.debug("checkResponse returns: " + s2cReplacement);
+            if (logger.isDebugEnabled()) {
+                logger.debug("in doResponseHeader: " + responseHeader
+                             + "checkResponse returns: " + s2cReplacement);
+            }
 
             if (null == s2cReplacement) {
                 transform.incrementCount(PASS, 1);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -61,23 +61,35 @@ class HttpUnparser extends AbstractUnparser
 
     public UnparseResult unparse(Token token)
     {
-        logger.debug(sessStr + " got unparse event node: " + token);
+        if (logger.isDebugEnabled()) {
+            logger.debug(sessStr + " got unparse event node: " + token);
+        }
 
         if (token instanceof StatusLine) {
-            logger.debug(sessStr + " got status line!");
+            if (logger.isDebugEnabled()) {
+                logger.debug(sessStr + " got status line!");
+            }
             transferEncoding = CLOSE_ENCODING;
             return statusLine((StatusLine)token);
         } else if (token instanceof RequestLineToken) {
-            logger.debug(sessStr + " got request line!");
+            if (logger.isDebugEnabled()) {
+                logger.debug(sessStr + " got request line!");
+            }
             return requestLine((RequestLineToken)token);
         } else if (token instanceof Header) {
-            logger.debug(sessStr + " got header!");
+            if (logger.isDebugEnabled()) {
+                logger.debug(sessStr + " got header!");
+            }
             return header((Header)token);
         } else if (token instanceof Chunk) {
-            logger.debug(sessStr + " got chunk!");
+            if (logger.isDebugEnabled()) {
+                logger.debug(sessStr + " got chunk!");
+            }
             return chunk((Chunk)token);
         } else if (token instanceof EndMarker) {
-            logger.debug(sessStr + " got endmarker");
+            if (logger.isDebugEnabled()) {
+                logger.debug(sessStr + " got endmarker");
+            }
             return endMarker();
         } else {
             throw new IllegalArgumentException("unexpected: " + token);
@@ -91,7 +103,9 @@ class HttpUnparser extends AbstractUnparser
 
     private UnparseResult statusLine(StatusLine s)
     {
-        logger.debug(sessStr + " status-line");
+        if (logger.isDebugEnabled()) {
+            logger.debug(sessStr + " status-line");
+        }
 
         queueOutput(s.getBytes());
 
@@ -100,10 +114,12 @@ class HttpUnparser extends AbstractUnparser
 
     private UnparseResult requestLine(RequestLineToken rl)
     {
-        logger.debug(sessStr + " request-line");
-
         HttpMethod method = rl.getMethod();
-        logger.debug(sessStr + " Unparser got method: " + method);
+
+        if (logger.isDebugEnabled()) {
+            logger.debug(sessStr + " request-line"
+                         + sessStr + " Unparser got method: " + method);
+        }
 
         httpCasing.queueRequest(rl);
 
@@ -114,7 +130,9 @@ class HttpUnparser extends AbstractUnparser
 
     private UnparseResult header(Header h)
     {
-        logger.debug(sessStr + " header");
+        if (logger.isDebugEnabled()) {
+            logger.debug(sessStr + " header");
+        }
 
         String encoding = h.getValue("transfer-encoding");
         if (null != encoding && encoding.equalsIgnoreCase("chunked")) {
@@ -133,7 +151,9 @@ class HttpUnparser extends AbstractUnparser
 
     private UnparseResult chunk(Chunk c)
     {
-        logger.debug(sessStr + " chunk");
+        if (logger.isDebugEnabled()) {
+            logger.debug(sessStr + " chunk");
+        }
 
         ByteBuffer cBuf = c.getBytes();
 
@@ -172,7 +192,9 @@ class HttpUnparser extends AbstractUnparser
 
     private UnparseResult endMarker()
     {
-        logger.debug(sessStr + " GOT END MARER!!");
+        if (logger.isDebugEnabled()) {
+            logger.debug(sessStr + " GOT END MARER!!");
+        }
 
         ByteBuffer buf = null;
 

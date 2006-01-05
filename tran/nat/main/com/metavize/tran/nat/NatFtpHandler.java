@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -61,11 +61,15 @@ class NatFtpHandler extends FtpStateMachine
         FtpFunction function = command.getFunction();
 
         if ( !updateSessionData()) {
-            logger.debug( "Ignoring unmodified session" );
+            if (logger.isDebugEnabled()) {
+                logger.debug( "Ignoring unmodified session" );
+            }
             return new TokenResult( null, new Token[] { command } );
         }
 
-        logger.debug( "Received command: " + function );
+        if (logger.isDebugEnabled()) {
+            logger.debug( "Received command: " + function );
+        }
 
         /* Ignore the previous port command */
         receivedPortCommand        = false;
@@ -83,7 +87,9 @@ class NatFtpHandler extends FtpStateMachine
             return eprtCommand( command );
         }
 
-        logger.debug( "Passing command: " + function );
+        if (logger.isDebugEnabled()) {
+            logger.debug( "Passing command: " + function );
+        }
         return new TokenResult( null, new Token[] { command } );
     }
 
@@ -97,7 +103,9 @@ class NatFtpHandler extends FtpStateMachine
             return new TokenResult( new Token[] { reply }, null );
         }
 
-        logger.debug( "Received reply: " + reply );
+        if (logger.isDebugEnabled()) {
+            logger.debug( "Received reply: " + reply );
+        }
 
         if ( receivedPortCommand && replyCode == 200 && portCommandKey != null &&
              portCommandSessionRedirect != null ) {
@@ -118,7 +126,9 @@ class NatFtpHandler extends FtpStateMachine
         portCommandSessionRedirect = null;
         portCommandKey             = null;
 
-        logger.debug( "Passing reply: " + reply );
+        if (logger.isDebugEnabled()) {
+            logger.debug( "Passing reply: " + reply );
+        }
         return new TokenResult( new Token[] { reply }, null );
     }
 
@@ -199,7 +209,9 @@ class NatFtpHandler extends FtpStateMachine
                                      portCommandKey );
 
             addr = new InetSocketAddress( sessionData.modifiedClientAddr(), port );
-            logger.debug( "Mangling PORT command to address: " + addr );
+            if (logger.isDebugEnabled()) {
+                logger.debug( "Mangling PORT command to address: " + addr );
+            }
 
             command = FtpCommand.portCommand( addr );
         } else if ( sessionData.isServerRedirect()) {
@@ -269,7 +281,9 @@ class NatFtpHandler extends FtpStateMachine
              * is connecting to. */
             addr = new InetSocketAddress( sessionData.originalServerAddr(), addr.getPort());
 
-            logger.debug( "Mangling PASV reply to address: " + addr );
+            if (logger.isDebugEnabled()) {
+                logger.debug( "Mangling PASV reply to address: " + addr );
+            }
 
             /* Modify the reply to the client */
             reply = FtpReply.pasvReply( addr );

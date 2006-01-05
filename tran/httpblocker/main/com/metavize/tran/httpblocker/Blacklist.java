@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -169,7 +169,9 @@ class Blacklist
         for (StringRule rule : (List<StringRule>)settings.getBlockedExtensions()) {
             String exn = rule.getString().toLowerCase();
             if (rule.isLive() && path.endsWith(exn)) {
-                logger.debug("blocking extension " + exn);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("blocking extension " + exn);
+                }
                 HttpBlockerEvent hbe = new HttpBlockerEvent
                     (requestLine.getRequestLine(), Action.BLOCK,
                      Reason.BLOCK_EXTENSION, exn);

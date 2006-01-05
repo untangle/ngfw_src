@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,34 +11,36 @@
 
 package com.metavize.tran.mail.impl.smtp;
 
-import org.apache.log4j.Logger;
-import com.metavize.tran.token.Chunk;
-import com.metavize.tran.token.Token;
-import com.metavize.tran.token.ParseResult;
-import com.metavize.tran.token.PassThruToken;
-import com.metavize.tran.token.ParseException;
-import com.metavize.mvvm.tapi.TCPSession;
-import com.metavize.tran.mime.MIMEMessageHeaders;
-import com.metavize.tran.mime.EmailAddress;
-import java.nio.ByteBuffer;
-import java.io.IOException;
-import java.util.List;
-import java.util.LinkedList;
 import static com.metavize.tran.util.BufferUtil.*;
-import com.metavize.tran.util.ASCIIUtil;
-import com.metavize.tran.mail.papi.smtp.SASLExchangeToken;
-import com.metavize.tran.mail.papi.smtp.CommandParser;
-import com.metavize.tran.mail.papi.smtp.Command;
-import com.metavize.tran.mail.papi.smtp.UnparsableCommand;
-import com.metavize.tran.mail.papi.smtp.AUTHCommand;
-import com.metavize.tran.mail.papi.smtp.SmtpTransaction;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.LinkedList;
+import java.util.List;
+
+import com.metavize.mvvm.tapi.TCPSession;
+import com.metavize.tran.mail.papi.AddressKind;
 import com.metavize.tran.mail.papi.BeginMIMEToken;
 import com.metavize.tran.mail.papi.ContinuedMIMEToken;
 import com.metavize.tran.mail.papi.MIMEAccumulator;
+import com.metavize.tran.mail.papi.MessageBoundaryScanner;
 import com.metavize.tran.mail.papi.MessageInfo;
 import com.metavize.tran.mail.papi.MessageInfoFactory;
-import com.metavize.tran.mail.papi.AddressKind;
-import com.metavize.tran.mail.papi.MessageBoundaryScanner;
+import com.metavize.tran.mail.papi.smtp.AUTHCommand;
+import com.metavize.tran.mail.papi.smtp.Command;
+import com.metavize.tran.mail.papi.smtp.CommandParser;
+import com.metavize.tran.mail.papi.smtp.SASLExchangeToken;
+import com.metavize.tran.mail.papi.smtp.SmtpTransaction;
+import com.metavize.tran.mail.papi.smtp.UnparsableCommand;
+import com.metavize.tran.mime.EmailAddress;
+import com.metavize.tran.mime.MIMEMessageHeaders;
+import com.metavize.tran.token.Chunk;
+import com.metavize.tran.token.ParseException;
+import com.metavize.tran.token.ParseResult;
+import com.metavize.tran.token.PassThruToken;
+import com.metavize.tran.token.Token;
+import com.metavize.tran.util.ASCIIUtil;
+import org.apache.log4j.Logger;
 
 
 
@@ -54,13 +56,13 @@ class SmtpClientParser
   private final Logger m_logger = Logger.getLogger(SmtpClientParser.class);
 
   private static final int MAX_COMMAND_LINE_SZ = 1024*2;
-  
+
   private enum SmtpClientState {
     COMMAND,
     HEADERS,
     BODY
   };
-  
+
   //Transient
   private SmtpClientState m_state = SmtpClientState.COMMAND;
   private ScannerAndAccumulator m_sac;
@@ -69,15 +71,15 @@ class SmtpClientParser
   SmtpClientParser(TCPSession session,
     SmtpCasing parent,
     CasingSessionTracker tracker) {
-    
+
     super(session, parent, tracker, true);
-    
+
     m_logger.debug("Created");
     lineBuffering(false);
   }
-  
 
-  
+
+
   @Override
   protected ParseResult doParse(ByteBuffer buf) {
 
@@ -94,10 +96,12 @@ class SmtpClientParser
 
     List<Token> toks = new LinkedList<Token>();
     boolean done = false;
-    
+
     while(!done && buf.hasRemaining()) {
-      m_logger.debug("Draining tokens from buffer (" + toks.size() +
-        " tokens so far)");
+        if (m_logger.isDebugEnabled()) {
+            m_logger.debug("Draining tokens from buffer (" + toks.size() +
+                           " tokens so far)");
+        }
 
       //Re-check passthru, in case we hit it while looping in
       //this method.
@@ -107,9 +111,9 @@ class SmtpClientParser
         }
         return new ParseResult(toks);
       }
-        
+
       switch(m_state) {
-      
+
         //==================================================
         case COMMAND:
 
@@ -121,7 +125,7 @@ class SmtpClientParser
             switch(observer.clientData(buf)) {
               case EXCHANGE_COMPLETE:
                 m_logger.debug("SASL Exchange complete");
-                getSmtpCasing().closeSASLExchange();          
+                getSmtpCasing().closeSASLExchange();
               case IN_PROGRESS:
                 //There should not be any extra bytes
                 //left with "in progress", but what the hell
@@ -138,7 +142,7 @@ class SmtpClientParser
             }
             break;
           }
-        
+
           if(findCrLf(buf) >= 0) {//BEGIN Complete Command
             //Parse the next command.  If there is a parse error,
             //pass along the original chunk
@@ -160,7 +164,7 @@ class SmtpClientParser
                 ASCIIUtil.bbToString(badBuf) + "\".  Pass to server and monitor response", pe);
 
               cmd = new UnparsableCommand(badBuf);
-                
+
               getSessionTracker().commandReceived(cmd,
                 new CommandParseErrorResponseCallback(badBuf));
 
@@ -170,19 +174,21 @@ class SmtpClientParser
 
             //If we're here, we have a legitimate command
             toks.add(cmd);
-            
+
 
             if(cmd.getType() == Command.CommandType.AUTH) {
               m_logger.debug("Received an AUTH command (hiding details for privacy reasons)");
               AUTHCommand authCmd = (AUTHCommand) cmd;
               String mechName = authCmd.getMechanismName();
               if(!getSmtpCasing().openSASLExchange(mechName)) {
-                m_logger.debug("Unable to find SASLObserver for \"" +
-                  mechName + "\"");
+                if (m_logger.isDebugEnabled()) {
+                  m_logger.debug("Unable to find SASLObserver for \"" +
+                    mechName + "\"");
+                }
                 declarePassthru();
                 toks.add(PassThruToken.PASSTHRU);
                 toks.add(new Chunk(buf));
-                return new ParseResult(toks, null);        
+                return new ParseResult(toks, null);
               }
               else {
                 m_logger.debug("Opening SASL Exchange");
@@ -192,7 +198,7 @@ class SmtpClientParser
                 authCmd.getInitialResponse())) {
                 case EXCHANGE_COMPLETE:
                   m_logger.debug("SASL Exchange complete");
-                  getSmtpCasing().closeSASLExchange();                   
+                  getSmtpCasing().closeSASLExchange();
                 case IN_PROGRESS:
                   break;//Nothing interesting to do
                 case RECOMMEND_PASSTHRU:
@@ -200,14 +206,16 @@ class SmtpClientParser
                   declarePassthru();
                   toks.add(PassThruToken.PASSTHRU);
                   toks.add(new Chunk(buf));
-                  return new ParseResult(toks);                
+                  return new ParseResult(toks);
               }
               break;
             }
             else {
               //This is broken off so we don't put folks
               //passwords into the log
-              m_logger.debug("Received command: " + cmd.toDebugString());
+              if (m_logger.isDebugEnabled()) {
+                m_logger.debug("Received command: " + cmd.toDebugString());
+              }
             }
 
             if(cmd.getType() == Command.CommandType.STARTTLS) {
@@ -225,18 +233,18 @@ class SmtpClientParser
                 declarePassthru();
                 toks.add(PassThruToken.PASSTHRU);
                 toks.add(new Chunk(buf));
-                return new ParseResult(toks, null);                
+                return new ParseResult(toks, null);
               }
               m_logger.debug("Change state to " +
                 SmtpClientState.HEADERS + ".  Enqueue response handler in case DATA " +
                 "command rejected (returning us to " + SmtpClientState.COMMAND + ")");
-              getSessionTracker().commandReceived(cmd, new DATAResponseCallback(m_sac));                
+              getSessionTracker().commandReceived(cmd, new DATAResponseCallback(m_sac));
               changeState(SmtpClientState.HEADERS);
               //Go back and start evaluating the header bytes.
             }
             else {
               getSessionTracker().commandReceived(cmd);
-            }            
+            }
           }//ENDOF Complete Command
           else {//BEGIN Not complete Command
             //Check for attack
@@ -252,7 +260,7 @@ class SmtpClientParser
             done = true;
           }//ENDOF Not complete Command
           break;
-          
+
         //==================================================
         case HEADERS:
           //Duplicate the buffer, in case we have a problem
@@ -277,7 +285,7 @@ class SmtpClientParser
           if(!m_sac.accumulator.addHeaderBytes(dup2, endOfHeaders)) {
             m_logger.error("Unable to write header bytes to disk.  Enter passthru");
             //TODO bscott THis still needs to be more gracefully unwound
-            //     in the stateful transforms            
+            //     in the stateful transforms
             puntDuringHeaders(toks, dup);
             return new ParseResult(toks, null);
           }
@@ -336,7 +344,7 @@ class SmtpClientParser
 
     if(buf == null) {
       m_logger.debug("returning ParseResult with " +
-        toks.size() + " tokens and a null buffer");    
+        toks.size() + " tokens and a null buffer");
     }
     else {
       m_logger.debug("returning ParseResult with " +
@@ -382,11 +390,11 @@ class SmtpClientParser
     implements CasingSessionTracker.ResponseAction {
 
     private ScannerAndAccumulator m_targetSAC;
-    
+
     DATAResponseCallback(ScannerAndAccumulator sac) {
       m_targetSAC = sac;
     }
-    
+
     public void response(int code) {
       if(code < 400) {
         m_logger.debug("DATA command accepted");
@@ -396,7 +404,7 @@ class SmtpClientParser
         if(m_sac != null &&
           m_targetSAC == m_sac &&
           m_sac.isMasterOfAccumulator()) {
-          
+
           m_sac.accumulator.dispose();
           m_sac = null;
           changeState(SmtpClientState.COMMAND);
@@ -405,8 +413,8 @@ class SmtpClientParser
           m_logger.debug("DATA command rejected, yet we have moved on to a new transaction");
         }
       }
-    }    
-  }  
+    }
+  }
 
   //================ Inner Class =================
 
@@ -423,7 +431,7 @@ class SmtpClientParser
       else {
         m_logger.debug("STARTTLS command rejected.  Do not go into passthru");
       }
-    }    
+    }
   }
 
   //================ Inner Class =================
@@ -443,7 +451,7 @@ class SmtpClientParser
     CommandParseErrorResponseCallback(ByteBuffer bufWithOffendingLine) {
       m_offendingCommand = ASCIIUtil.bbToString(bufWithOffendingLine);
     }
-    
+
     public void response(int code) {
       if(code < 300) {
         m_logger.error("Could not parse command line \"" +
@@ -454,16 +462,16 @@ class SmtpClientParser
         m_logger.debug("Command \"" + m_offendingCommand + "\" unparsable, and rejected " +
           "by server.  Do not enter passthru (assume errant client)");
       }
-    }    
-  }   
-  
+    }
+  }
+
   /**
    * Open the MIMEAccumulator and Scanner (ScannerAndAccumulator).
    * If there was an error,
    * the ScannerAndAccumulator is not
    * set as a data member and any files/streams
    * are cleaned-up.
-   * 
+   *
    * @return false if there was an error creating the file.
    */
   private boolean openSAC() {
@@ -475,9 +483,9 @@ class SmtpClientParser
     catch(IOException ex) {
       m_logger.error("Exception creating MIME Accumulator", ex);
       return false;
-    }    
+    }
   }
-  
+
 
   /**
    * Helper method to break-out the
@@ -488,7 +496,7 @@ class SmtpClientParser
     if(headers == null) {
       headers = new MIMEMessageHeaders();
     }
-  
+
     MessageInfo ret = MessageInfoFactory.fromMIMEMessage(headers,
       getSession().pipelineEndpoints(),
       getSession().serverPort());
@@ -549,7 +557,7 @@ class SmtpClientParser
    * as-one.
    */
   private class ScannerAndAccumulator {
-  
+
     final MessageBoundaryScanner scanner;
     final MIMEAccumulator accumulator;
     private boolean m_isMasterOfAccumulator = true;

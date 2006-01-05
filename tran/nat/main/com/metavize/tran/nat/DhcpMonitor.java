@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -308,7 +308,9 @@ class DhcpMonitor implements Runnable
             currentLeaseMap.put( ip, lease );
 
             int eventType = lease.isActive() ? DhcpLeaseEvent.REGISTER : DhcpLeaseEvent.EXPIRE;
-            logger.debug( "Logging new lease: " + ip.toString());
+            if (logger.isDebugEnabled()) {
+                logger.debug( "Logging new lease: " + ip.toString());
+            }
 
             transform.log( new DhcpLeaseEvent( lease, eventType ));
         } else {

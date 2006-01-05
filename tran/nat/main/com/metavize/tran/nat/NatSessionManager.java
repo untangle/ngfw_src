@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -47,7 +47,9 @@ class NatSessionManager
                                 serverAddr, serverPort,
                                 request.serverAddr(), request.serverPort());
 
-        logger.debug( "Registering session: " + request.id());
+        if (logger.isDebugEnabled()) {
+            logger.debug( "Registering session: " + request.id());
+        }
 
         /* Insert the data into the map */
         NatSessionData tmp;
@@ -59,7 +61,9 @@ class NatSessionManager
     void releaseSession( IPSession session, Protocol protocol )
     {
         NatSessionData sessionData;
-        logger.debug( "Releasing session: " + session.id());
+        if (logger.isDebugEnabled()) {
+            logger.debug( "Releasing session: " + session.id());
+        }
         if (( sessionData = map.remove( session.id())) == null ) {
             logger.error( "Released an unmanaged session: " + session );
             return;

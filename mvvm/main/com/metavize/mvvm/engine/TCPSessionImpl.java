@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2005 Metavize Inc.
+ * Copyright (c) 2003-2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -22,8 +22,8 @@ import com.metavize.jvector.ShutdownCrumb;
 import com.metavize.mvvm.tapi.*;
 import com.metavize.mvvm.tapi.client.TCPSessionDescImpl;
 import com.metavize.mvvm.tapi.event.*;
-import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.mvvm.tran.MutateTStats;
+import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.mvvm.util.MetaEnv;
 
 class TCPSessionImpl extends IPSessionImpl implements TCPSession
@@ -31,6 +31,8 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     protected static final ByteBuffer SHUTDOWN_COOKIE_BUF = ByteBuffer.allocate(1);
 
     private static final ByteBuffer EMPTY_BUF = ByteBuffer.allocate(0);
+
+    private final String logPrefix;
 
     protected int[] readLimit;
     protected int[] readBufferSize;
@@ -44,6 +46,8 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
                              int serverReadBufferSize)
     {
         super(disp, pSession, isInbound, pe);
+
+        logPrefix = "T" + id();
 
         if (clientReadBufferSize < 2 || clientReadBufferSize > TCP_MAX_CHUNK_SIZE)
             throw new IllegalArgumentException("Illegal maximum client read bufferSize: " + clientReadBufferSize);
@@ -607,9 +611,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     @Override
     String idForMDC()
     {
-        StringBuilder logPrefix = new StringBuilder("T");
-        logPrefix.append(id());
-        return logPrefix.toString();
+        return logPrefix;
     }
 
     @Override
@@ -640,9 +642,3 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     // Don't need equal or hashcode since we can only have one of these objects per
     // session (so the memory address is ok for equals/hashcode).
 }
-
-
-
-
-
-

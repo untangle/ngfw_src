@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -28,9 +28,9 @@ import org.apache.log4j.*;
 
 
 /**
- *
- * One dispatcher per MPipe.  The dispatcher is the reading quarter of the bottom half (writing
- * is in the MPipeImpl class), containing the main event loop and all threads.
+ * One dispatcher per MPipe.  The dispatcher is the reading quarter of
+ * the bottom half (writing is in the MPipeImpl class), containing the
+ * main event loop and all threads.
  *
  * @author <a href="mailto:jdi@SLAB"></a>
  * @version 1.0
@@ -39,19 +39,19 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
 
     // This should be a config param XXX
     // Note we only send a heartbeat once we haven't communicated with
-    // mPipe in that long.  any command or new session (incoming command)
-    // resets the timer.
+    // mPipe in that long.  any command or new session (incoming
+    // command) resets the timer.
     public static final int DEFAULT_HEARTBEAT_INTERVAL = 30000;
     public static final int DEFAULT_CHECKUP_RESPONSE_TIMEOUT = 10000;
 
-    // 8 seconds is the longest interval we wait between each attempt to try
-    // to connect to MPipe.
+    // 8 seconds is the longest interval we wait between each attempt
+    // to try to connect to MPipe.
     public static final int MAX_CONNECT_BACKOFF_TIME = 8000;
 
     private static final int COMMAND_DISPATCHER_POLL_TIME = 3000;
 
-    // Set to true to disable use of the session and newSession thread pools and run everything
-    // in the command/session dispatchers.
+    // Set to true to disable use of the session and newSession thread
+    // pools and run everything in the command/session dispatchers.
     public static final boolean HANDLE_ALL_INLINE = true;
 
     static final String SESSION_ID_MDC_KEY = "SessionID";
@@ -65,24 +65,24 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
     private final TransformManagerImpl transformManager;
 
     /**
-     * <code>mainThread</code> is the master thread started by <code>start</code>.  It handles
-     * connecting to mPipe, monitoring of the command/session master threads for mPipe death,
-     * and reconnection.
-     *
+     * <code>mainThread</code> is the master thread started by
+     * <code>start</code>.  It handles connecting to mPipe, monitoring
+     * of the command/session master threads for mPipe death, and
+     * reconnection.
      */
     private volatile Thread mainThread;
 
     /**
-     * <code>comThread</code> is the command master thread started by the mainThread.  It handles
-     * reading from the command socket and heartbeat.
-     *
+     * <code>comThread</code> is the command master thread started by
+     * the mainThread.  It handles reading from the command socket and
+     * heartbeat.
      */
     private volatile Thread comThread;
 
     /**
-     * <code>sessThread</code> is the session master thread started by the mainThread.  It handles
-     * every session (which isn't in double-endpoint mode).
-     *
+     * <code>sessThread</code> is the session master thread started by
+     * the mainThread.  It handles every session (which isn't in
+     * double-endpoint mode).
      */
     private volatile Thread sessThread;
 
@@ -94,15 +94,16 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
 
 
     /**
-     * We need a single global <code>releasedHandler</code> for all sessions that have been release();
-     * ed after session request time.  We use the default abstract event handler implmentation to
-     * become a transparent proxy.
-     *
+     * We need a single global <code>releasedHandler</code> for all
+     * sessions that have been release(); ed after session request
+     * time.  We use the default abstract event handler implmentation
+     * to become a transparent proxy.
      */
     private SessionEventListener releasedHandler;
 
-    // All sessions with active timers.  There aren't many of these, so we don't worry about
-    // keeping them in a priority queue.  Map from SessionImpl to Date
+    // All sessions with active timers.  There aren't many of these,
+    // so we don't worry about keeping them in a priority queue.  Map
+    // from SessionImpl to Date
     private Map timers;
 
     // The session with the nearest timeout
@@ -116,36 +117,38 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
     // private LinkedQueue dirtySessions;
 
     /**
-     * We keep a queue of ready sessions so that we can have short decoupling.
-     * This is a queue of SessionHandler objects.  Only used when HANDLE_ALL_INLINE is true,
-     * since it doesn't make sense in the pooled case.
+     * We keep a queue of ready sessions so that we can have short
+     * decoupling.  This is a queue of SessionHandler objects.  Only
+     * used when HANDLE_ALL_INLINE is true, since it doesn't make
+     * sense in the pooled case.
      */
     // private LinkedQueue readySessions;
 
 
     /**
-     * Where new sessions are passed between command thread and new session handler threads.
-     * Uses itself for locking.
+     * Where new sessions are passed between command thread and new
+     * session handler threads.  Uses itself for locking.
      */
     // private PooledExecutor newSessionPool;
 
     // private PooledExecutor sessionPool;
 
     /**
-     * The set of active sessions (both TCP and UDP), kept as weak references to SessionState object (both TCP/UDP)
+     * The set of active sessions (both TCP and UDP), kept as weak
+     * references to SessionState object (both TCP/UDP)
      */
     private ConcurrentHashMap liveSessions;
 
     /**
-     * This is the command selector for the transform. We handle the command
-     * socket.
+     * This is the command selector for the transform. We handle the
+     * command socket.
      */
     private Selector comSelector = null;
 
     /**
-     * This is the session selector for the transform. We handle all sockets
-     * for sessions in the normal mode. (Sessions in double-endpoint-mode are
-     * handled by themselves).
+     * This is the session selector for the transform. We handle all
+     * sockets for sessions in the normal mode. (Sessions in
+     * double-endpoint-mode are handled by themselves).
      */
     private Selector sesSelector = null;
 
@@ -156,7 +159,8 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
     private int newsThreadNum = 1;
 
     /**
-     * We hold this lock while calling select(), so that only one thread is selecting at a time.
+     * We hold this lock while calling select(), so that only one
+     * thread is selecting at a time.
      */
     // private Object selectLock = new Object();
 
@@ -167,11 +171,11 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
     private boolean lastCommandReadFailed = false;
     private long lastCommandReadTime;
 
-    // A dispatcher is created MPipe.start() when user decides this dispatcher should begin
-    // handling a newly connected MPipe.
+    // A dispatcher is created MPipe.start() when user decides this
+    // dispatcher should begin handling a newly connected MPipe.
     //
-    // Note that order of initialization is important in here, since the "inner" classes access
-    // stuff from us.
+    // Note that order of initialization is important in here, since
+    // the "inner" classes access stuff from us.
     Dispatcher(MPipeImpl mPipe) {
         logger = Logger.getLogger(Dispatcher.class.getName());
         this.mPipe = mPipe;
@@ -256,14 +260,11 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
         Thread ct = Thread.currentThread();
         ClassLoader oldCl = ct.getContextClassLoader();
 
-        StringBuilder sb = new StringBuilder("NT");
-        sb.append(request.id());
-
         // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         ct.setContextClassLoader(classLoader);
         try {
             transformManager.registerThreadContext(transformContext);
-            MDC.put(SESSION_ID_MDC_KEY, sb.toString());
+            MDC.put(SESSION_ID_MDC_KEY, "NT" + request.id());
             return newSessionInternal(request, isInbound);
         } finally {
             transformManager.deregisterThreadContext();
@@ -280,14 +281,11 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
         Thread ct = Thread.currentThread();
         ClassLoader oldCl = ct.getContextClassLoader();
 
-        StringBuilder sb = new StringBuilder("NU");
-        sb.append(request.id());
-
         // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         ct.setContextClassLoader(classLoader);
         try {
             transformManager.registerThreadContext(transformContext);
-            MDC.put(SESSION_ID_MDC_KEY, sb.toString());
+            MDC.put(SESSION_ID_MDC_KEY, "NU" + request.id());
             return newSessionInternal(request, isInbound);
         } finally {
             transformManager.deregisterThreadContext();
@@ -318,7 +316,8 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
                 dispatchRequestTime = MetaEnv.currentTimeMillis();
             MutateTStats.requestTCPSession(mPipe);
 
-            // Give the request event to the user, to give them a chance to reject the session.
+            // Give the request event to the user, to give them a
+            // chance to reject the session.
             logger.debug("sending TCP new session request event");
             TCPNewSessionRequestEvent revent = new TCPNewSessionRequestEvent(mPipe, treq);
             dispatchTCPNewSessionRequest(revent);
@@ -1094,12 +1093,13 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
     private void elog(Level level, String eventName, int sessionId)
     {
         if (sessionEventLogger.isEnabledFor(level)) {
-            StringBuffer message = new StringBuffer("EV[");
+            StringBuilder message = new StringBuilder("EV[");
             message.append(sessionId);
             message.append(",");
             message.append(eventName);
             message.append("] T: ");
             message.append(Thread.currentThread().getName());
+
             sessionEventLogger.log(level, message.toString());
         }
     }
@@ -1107,7 +1107,7 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
     private void elog(Level level, String eventName, int sessionId, long dataSize)
     {
         if (sessionEventLogger.isEnabledFor(level)) {
-            StringBuffer message = new StringBuffer("EV[");
+            StringBuilder message = new StringBuilder("EV[");
             message.append(sessionId);
             message.append(",");
             message.append(eventName);
@@ -1115,6 +1115,7 @@ class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {
             message.append(dataSize);
             message.append(" T: ");
             message.append(Thread.currentThread().getName());
+
             sessionEventLogger.log(level, message.toString());
         }
     }

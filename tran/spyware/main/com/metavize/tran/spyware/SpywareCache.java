@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -72,7 +72,9 @@ class SpywareCache
             BufferedReader br = new BufferedReader(isr);
 
             for (String line = br.readLine(); null != line; line = br.readLine()) {
-                logger.debug("ADDING URL: " + line);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("ADDING URL: " + line);
+                }
                 s.add(line);
             }
         } catch (IOException exn) {

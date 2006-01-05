@@ -1,5 +1,5 @@
 /*
- * copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -87,7 +87,9 @@ class EventHandler extends AbstractEventHandler
         }
 
         if ( reject ) {
-            logger.debug( "Rejecting session: " + request );
+            if (logger.isDebugEnabled()) {
+                logger.debug( "Rejecting session: " + request );
+            }
 
             if ( rejectSilently ) {
                 request.rejectSilently();
@@ -108,7 +110,9 @@ class EventHandler extends AbstractEventHandler
             }
 
         } else {
-            logger.debug( "Releasing session: " + request );
+            if (logger.isDebugEnabled()) {
+                logger.debug( "Releasing session: " + request );
+            }
             request.release( true );
 
             /* Increment the pass counter */

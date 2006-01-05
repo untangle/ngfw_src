@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -13,17 +13,14 @@ package com.metavize.tran.openvpn;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
-
-import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.IntfConstants;
+import com.metavize.mvvm.MailSender;
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.argon.ArgonException;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
@@ -32,18 +29,16 @@ import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformStartException;
-import com.metavize.mvvm.tran.UnconfiguredException;
 import com.metavize.mvvm.tran.TransformState;
 import com.metavize.mvvm.tran.TransformStats;
 import com.metavize.mvvm.tran.TransformStopException;
+import com.metavize.mvvm.tran.UnconfiguredException;
 import com.metavize.mvvm.tran.ValidateException;
-
-import com.metavize.mvvm.util.TransactionWork;
-import com.metavize.mvvm.argon.ArgonException;
-
 import com.metavize.mvvm.tran.script.ScriptRunner;
-
-import com.metavize.mvvm.MailSender;
+import com.metavize.mvvm.util.TransactionWork;
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 public class VpnTransformImpl extends AbstractTransform
     implements VpnTransform
@@ -57,7 +52,7 @@ public class VpnTransformImpl extends AbstractTransform
     private static final String CLEANUP_SCRIPT = Constants.SCRIPT_DIR + "/cleanup";
 
     private final Logger logger = Logger.getLogger( VpnTransformImpl.class );
-    
+
     private boolean isWebAppDeployed = false;
 
     private final SoloPipeSpec pipeSpec;
@@ -90,7 +85,7 @@ public class VpnTransformImpl extends AbstractTransform
              SoloPipeSpec.MAX_STRENGTH - 2);
         this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
     }
-    
+
     @Override protected void initializeSettings()
     {
         VpnSettings settings = new VpnSettings( this.getTid());
@@ -115,7 +110,7 @@ public class VpnTransformImpl extends AbstractTransform
         } catch ( TransformException exn ) {
             logger.warn( "Could not assign client addresses, continuing", exn );
         }
-        
+
         if ( !newSettings.getIsEdgeGuardClient()) {
             /* Update the status/generate all of the certificates for clients */
             this.certificateManager.updateCertificateStatus( newSettings );
@@ -152,7 +147,7 @@ public class VpnTransformImpl extends AbstractTransform
         }
 
         //logger.debug( "Old settings: '" + oldSettings.getId() + " : newSettings " + newSettings.getId());
-        
+
         getTransformContext().runTransaction( tw );
 
         try {
@@ -180,7 +175,7 @@ public class VpnTransformImpl extends AbstractTransform
 
         return this.settings;
     }
-    
+
     public VpnClient generateClientCertificate( VpnSettings settings, VpnClient client )
     {
         try {
@@ -223,7 +218,7 @@ public class VpnTransformImpl extends AbstractTransform
                 client = realClient;
                 foundRealClient = true;
                 break;
-            }            
+            }
         }
 
         if ( foundRealClient ) distributeRealClientConfig( client );
@@ -234,10 +229,10 @@ public class VpnTransformImpl extends AbstractTransform
     private void distributeRealClientConfig( final VpnClient client )
         throws TransformException
     {
-        /* this client may already have a key, the key may have 
+        /* this client may already have a key, the key may have
          * already been created. */
-        
-        
+
+
         this.certificateManager.createClient( client );
 
         if ( client.getDistributeUsb()) {
@@ -248,11 +243,11 @@ public class VpnTransformImpl extends AbstractTransform
         } else {
             /* Generate a random key for email distribution */
             String key = client.getDistributionKey();
-            
+
             /* Only generate a new key if the key has been modified */
             if ( key == null || key.length() == 0 ) {
                 if ( client.getIsEdgeGuard()) {
-                    /* Use a shorter key for edge guard clients since they have to be 
+                    /* Use a shorter key for edge guard clients since they have to be
                      * typed in manually */
                     key = String.format( "%08x", random.nextInt());
                 } else {
@@ -261,7 +256,7 @@ public class VpnTransformImpl extends AbstractTransform
             }
             client.setDistributionKey( key );
         }
-        
+
         TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork( Session s )
@@ -270,11 +265,11 @@ public class VpnTransformImpl extends AbstractTransform
                     return true;
                 }
             };
-        
+
         getTransformContext().runTransaction( tw );
 
         this.openVpnManager.writeClientConfigurationFiles( settings, client );
-        
+
         if ( client.getDistributeUsb()) distributeClientConfigUsb( client );
         else distributeClientConfigEmail( client, client.getDistributionEmail());
     }
@@ -293,7 +288,7 @@ public class VpnTransformImpl extends AbstractTransform
             File imageDirectory = new File( MAIL_IMAGE_DIR );
             List<File> extraList = new LinkedList<File>();
             List<String> locationList = new LinkedList<String>();
-            
+
             if ( imageDirectory.exists() && imageDirectory.isDirectory()) {
                 for ( File image : imageDirectory.listFiles()) {
                     extraList.add( image );
@@ -302,24 +297,24 @@ public class VpnTransformImpl extends AbstractTransform
             }
 
             MailSender mailSender = MvvmContextFactory.context().mailSender();
-            
+
             /* Read in the contents of the file */
-            FileReader fileReader = new FileReader( Constants.PACKAGES_DIR + "/mail-" + 
+            FileReader fileReader = new FileReader( Constants.PACKAGES_DIR + "/mail-" +
                                                     client.getInternalName() + ".eml" );
             StringBuilder sb = new StringBuilder();
             char[] buf = new char[1024];
             int rs;
             while (( rs = fileReader.read( buf )) > 0 ) sb.append( buf, 0, rs );
-            
+
             try {
                 fileReader.close();
             } catch ( IOException e ) {
                 logger.warn( "Unable to close file", e );
             }
-            
+
             String recipients[] = { email };
-            
-            mailSender.sendMessageWithAttachments( recipients, subject, sb.toString(), 
+
+            mailSender.sendMessageWithAttachments( recipients, subject, sb.toString(),
                                                    locationList, extraList );
         } catch ( Exception e ) {
             logger.warn( "Error distributing client key", e );
@@ -330,7 +325,9 @@ public class VpnTransformImpl extends AbstractTransform
     /* Get the common name for the key, and clear it if it exists */
     public synchronized String lookupClientDistributionKey( String key, IPaddr clientAddress )
     {
-        logger.debug( "Looking up client for key: " + key );
+        if (logger.isDebugEnabled()) {
+            logger.debug( "Looking up client for key: " + key );
+        }
 
         /* Could use a hash map, but why bother ? */
         for ( final VpnClient client : ((List<VpnClient>)this.settings.getCompleteClientList())) {
@@ -345,15 +342,17 @@ public class VpnTransformImpl extends AbstractTransform
         String clientKey = client.getDistributionKey();
 
         /* XXX, possible check if it is live ??? */
-        
+
         if ( clientKey != null ) clientKey = clientKey.trim();
-        logger.debug( "Checking: " + clientKey );
-        
+        if (logger.isDebugEnabled()) {
+            logger.debug( "Checking: " + clientKey );
+        }
+
         if ( clientKey == null || clientKey.length() == 0 ) return false;
         if ( !clientKey.equalsIgnoreCase( key )) return false;
-            
+
         client.setDistributionKey( null );
-        
+
         TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork( Session s )
@@ -362,15 +361,15 @@ public class VpnTransformImpl extends AbstractTransform
                     return true;
                 }
             };
-        
+
         getTransformContext().runTransaction( tw );
-        
+
         /* Log the client distribution event.  Must be done with
-         * the openvpn monitor because the thread is not currently 
+         * the openvpn monitor because the thread is not currently
          * registered for the event logger. */
         this.openVpnMonitor.
             addClientDistributionEvent( new ClientDistributionEvent( clientAddress, client.getName()));
-        
+
         return true;
     }
 
@@ -412,7 +411,7 @@ public class VpnTransformImpl extends AbstractTransform
         } catch ( Exception e ) {
             logger.warn( "Unable to start openvpn monitor." );
         }
-        
+
         /* Initially use tun0, even though it could eventually be configured to the tap interface  */
         try {
             MvvmContextFactory.context().argonManager().registerIntf( IntfConstants.VPN_INTF, "tun0" );
@@ -420,7 +419,7 @@ public class VpnTransformImpl extends AbstractTransform
             throw new TransformException( "Unable to register VPN interface", e );
         }
     }
-    
+
     @Override protected void postInit(final String[] args) throws TransformException
     {
         super.postInit( args );
@@ -464,7 +463,7 @@ public class VpnTransformImpl extends AbstractTransform
 
         try {
             settings.validate();
-                        
+
             this.openVpnManager.configure( settings );
             this.handler.configure( settings );
             this.openVpnManager.restart( settings );
@@ -480,7 +479,7 @@ public class VpnTransformImpl extends AbstractTransform
         reconfigure();
 
         deployWebApp();
-        
+
         /* Only start the monitor for servers */
         if ( !settings.getIsEdgeGuardClient()) this.openVpnMonitor.enable();
         else                                   this.openVpnMonitor.disable();
@@ -499,7 +498,7 @@ public class VpnTransformImpl extends AbstractTransform
         } catch ( Exception e ) {
             logger.warn( "Error disabling openvpn monitor", e );
         }
-        
+
         try {
             this.openVpnManager.stop();
         } catch ( TransformException e ) {
@@ -571,10 +570,10 @@ public class VpnTransformImpl extends AbstractTransform
         if ( settings == null || !settings.isConfigured()) return ConfigState.UNCONFIGURED;
 
         if ( settings.getIsEdgeGuardClient()) return ConfigState.CLIENT;
-        
+
         return ( settings.isBridgeMode() ? ConfigState.SERVER_BRIDGE : ConfigState.SERVER_ROUTE );
     }
-    
+
     public IPaddr getVpnServerAddress()
     {
         /* Return the empty address */
@@ -613,19 +612,19 @@ public class VpnTransformImpl extends AbstractTransform
         } else {
             /* Try to cleanup the previous data */
             ScriptRunner.getInstance().exec( CLEANUP_SCRIPT );
-            
+
             /* Create the base certificate and parameters */
             this.certificateManager.createBase( newSettings );
-            
+
             /* Create clients certificates */
             this.certificateManager.createAllClientCertificates( newSettings );
-            
+
             /* Distribute emails */
             distributeAllClientFiles( newSettings );
         }
-        
+
         setVpnSettings( newSettings );
-        
+
         /* No reusing the sanbox */
         this.sandbox = null;
     }
@@ -635,7 +634,7 @@ public class VpnTransformImpl extends AbstractTransform
     {
         return this.sandbox.getAvailableUsbList();
     }
-    
+
     public void downloadConfig( IPaddr address, int port, String key ) throws Exception
     {
         this.sandbox.downloadConfig( address, port, key );
@@ -645,7 +644,7 @@ public class VpnTransformImpl extends AbstractTransform
     {
         this.sandbox.downloadConfigUsb( name );
     }
-    
+
     public void generateCertificate( CertificateParameters parameters ) throws Exception
     {
         this.sandbox.generateCertificate( parameters );
@@ -655,23 +654,23 @@ public class VpnTransformImpl extends AbstractTransform
     {
         return this.sandbox.getGroupList();
     }
-    
+
     public void setAddressGroups( GroupList parameters ) throws Exception
     {
         this.sandbox.setGroupList( parameters );
     }
-    
+
     public void setExportedAddressList( ExportList parameters ) throws Exception
     {
         this.sandbox.setExportList( parameters );
 
     }
-    
+
     public void setClients( ClientList parameters) throws Exception
     {
         this.sandbox.setClientList( parameters );
     }
-    
+
     public void setSites( SiteList parameters) throws Exception
     {
         this.sandbox.setSiteList( parameters );

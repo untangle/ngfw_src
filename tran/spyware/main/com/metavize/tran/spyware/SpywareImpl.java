@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -7,6 +7,40 @@
  * not disclose such Confidential Information.
  *
  * $Id$
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
+
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
+4037 2005-12-23 01:48:47Z cng $
  */
 
 package com.metavize.tran.spyware;
@@ -501,7 +535,9 @@ public class SpywareImpl extends AbstractTransform implements Spyware
             return null;
         }
 
-        logger.debug("ADDING subnet Rule: " + addr);
+        if (logger.isDebugEnabled()) {
+            logger.debug("ADDING subnet Rule: " + addr);
+        }
         IPMaddrRule rule = new IPMaddrRule(maddr, name, "[no category]", description);
         rule.setLog(true);
         rule.setLive(false);

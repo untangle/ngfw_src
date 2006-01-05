@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -287,12 +287,16 @@ public class SpywareHttpHandler extends HttpStateMachine
             boolean badDomain = transform.isBlockedCookie(domain);
 
             if (badDomain) {
-                logger.debug("blocking cookie: " + domain);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("blocking cookie: " + domain);
+                }
                 transform.incrementCount(Spyware.BLOCK);
                 transform.statisticManager.incrCookie();
                 transform.log(new SpywareCookieEvent(requestLine.getRequestLine(), domain, true));
                 i.remove();
-                logger.debug("making cookieKiller: " + domain);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("making cookieKiller: " + domain);
+                }
                 cookieKillers.addAll(makeCookieKillers(cookie, host));
             } else {
                 transform.statisticManager.incrPass(); // pass cookie
@@ -321,30 +325,45 @@ public class SpywareHttpHandler extends HttpStateMachine
             transform.incrementCount(Spyware.COOKIE);
             String v = (String)i.next();
 
-            logger.debug("handling server cookie: " + v);
+            if (logger.isDebugEnabled()) {
+                logger.debug("handling server cookie: " + v);
+            }
 
             Map<String, String> m = CookieParser.parseCookie(v);
+
             String domain = m.get("domain");
-            logger.debug("got domain: " + domain);
+            if (logger.isDebugEnabled()) {
+                logger.debug("got domain: " + domain);
+            }
+
             if (null == domain) {
-                logger.debug("NULL domain IN: " + m);
-                for (String foo : m.keySet()) {
-                    logger.debug("eq " + foo + "? " + foo.equals("domain"));
+                if (logger.isDebugEnabled()) {
+                    logger.debug("NULL domain IN: " + m);
+                    for (String foo : m.keySet()) {
+                        logger.debug("eq " + foo + "? "
+                                     + foo.equals("domain"));
+                    }
                 }
                 domain = reqDomain;
-                logger.debug("using request domain: " + domain);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("using request domain: " + domain);
+                }
             }
 
             boolean badDomain = transform.isBlockedCookie(domain);
 
             if (badDomain) {
-                logger.debug("cookie deleted: " + domain);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("cookie deleted: " + domain);
+                }
                 transform.incrementCount(Spyware.BLOCK);
                 transform.statisticManager.incrCookie();
                 transform.log(new SpywareCookieEvent(rl.getRequestLine(), domain, false));
                 i.remove();
             } else {
-                logger.debug("cookie not deleted: " + domain);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("cookie not deleted: " + domain);
+                }
                 transform.statisticManager.incrPass(); // pass cookie
             }
         }
@@ -361,7 +380,9 @@ public class SpywareHttpHandler extends HttpStateMachine
 
         for (Iterator i = cookieKillers.iterator(); i.hasNext(); ) {
             String killer = (String)i.next();
-            logger.debug("adding killer to header: " + killer);
+            if (logger.isDebugEnabled()) {
+                logger.debug("adding killer to header: " + killer);
+            }
             h.addField("Set-Cookie", killer);
         }
 
@@ -379,7 +400,9 @@ public class SpywareHttpHandler extends HttpStateMachine
         while (true) {
             cookieKiller = makeCookieKiller(c, "." + h);
             l.add(cookieKiller);
-            logger.debug("added cookieKiller: " + cookieKiller);
+            if (logger.isDebugEnabled()) {
+                logger.debug("added cookieKiller: " + cookieKiller);
+            }
 
             int i = h.indexOf('.');
             if (0 <= i && (i + 1) < h.length()) {
@@ -447,7 +470,9 @@ public class SpywareHttpHandler extends HttpStateMachine
                 long t0 = System.currentTimeMillis();
                 StringRule rule = transform.getBlockedActiveX(clsid);
                 long t1 = System.currentTimeMillis();
-                logger.debug("looked up activeX in: " + (t1 - t0) + " ms");
+                if (logger.isDebugEnabled()) {
+                    logger.debug("looked up activeX in: " + (t1 - t0) + " ms");
+                }
 
                 if (null != rule) {
                     transform.incrementCount(Spyware.ACTIVE_X);
@@ -455,10 +480,12 @@ public class SpywareHttpHandler extends HttpStateMachine
                     ident = rule.getString();
                 }
 
-                if (block) {
-                    logger.debug("blacklisted classid: " + clsid);
-                } else {
-                    logger.debug("not blacklisted classid: " + clsid);
+                if (logger.isDebugEnabled()) {
+                    if (block) {
+                        logger.debug("blacklisted classid: " + clsid);
+                    } else {
+                        logger.debug("not blacklisted classid: " + clsid);
+                    }
                 }
             } else {
                 ident = "All ActiveX Blocked";

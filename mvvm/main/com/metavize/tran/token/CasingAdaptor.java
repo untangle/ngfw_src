@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -18,7 +18,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.AbstractEventHandler;
-import com.metavize.mvvm.tapi.IPSessionDesc;
 import com.metavize.mvvm.tapi.MPipeException;
 import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.tapi.PipelineFoundry;
@@ -30,8 +29,8 @@ import com.metavize.mvvm.tapi.event.TCPChunkEvent;
 import com.metavize.mvvm.tapi.event.TCPChunkResult;
 import com.metavize.mvvm.tapi.event.TCPSessionEvent;
 import com.metavize.mvvm.tapi.event.TCPStreamer;
-import org.apache.log4j.Logger;
 import com.metavize.mvvm.tran.Transform;
+import org.apache.log4j.Logger;
 
 public class CasingAdaptor extends AbstractEventHandler
 {
@@ -72,12 +71,16 @@ public class CasingAdaptor extends AbstractEventHandler
     @Override
     public void handleTCPNewSession(TCPSessionEvent e)
     {
-        logger.debug("new session");
         TCPSession session = e.session();
 
         Casing casing = casingFactory.casing(session, clientSide);
         Pipeline pipeline = pipeFoundry.getPipeline(session.id());
-        logger.debug("setting: " + pipeline + " for: " + session.id());
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("new session setting: " + pipeline
+                         + " for: " + session.id());
+        }
+
         addCasing(session, casing, pipeline);
 
         Parser parser = casing.parser();
@@ -93,10 +96,12 @@ public class CasingAdaptor extends AbstractEventHandler
     @Override
     public IPDataResult handleTCPClientChunk(TCPChunkEvent e)
     {
-        logger.debug("handling client chunk, session: " + e.session().id());
         boolean inbound = e.session().isInbound();
 
-        logger.debug("client inbound: " + inbound);
+        if (logger.isDebugEnabled()) {
+            logger.debug("handling client chunk, session: " + e.session().id()
+                         + "client inbound: " + inbound);
+        }
 
         if (clientSide) {
             return parse(e, false, false);
@@ -108,10 +113,12 @@ public class CasingAdaptor extends AbstractEventHandler
     @Override
     public IPDataResult handleTCPServerChunk(TCPChunkEvent e)
     {
-        logger.debug("handling server chunk, session: " + e.session().id());
         boolean inbound = e.session().isInbound();
 
-        logger.debug("server inbound: " + inbound);
+        if (logger.isDebugEnabled()) {
+            logger.debug("handling server chunk, session: " + e.session().id()
+                         + "server inbound: " + inbound);
+        }
 
         if (clientSide) {
             return unparse(e, true);
@@ -123,10 +130,12 @@ public class CasingAdaptor extends AbstractEventHandler
     @Override
     public IPDataResult handleTCPClientDataEnd(TCPChunkEvent e)
     {
-        logger.debug("handling client chunk, session: " + e.session().id());
         boolean inbound = e.session().isInbound();
 
-        logger.debug("client inbound: " + inbound);
+        if (logger.isDebugEnabled()) {
+            logger.debug("handling client chunk, session: " + e.session().id()
+                         + "client inbound: " + inbound);
+        }
 
         if (clientSide) {
             return parse(e, false, true);
@@ -141,10 +150,12 @@ public class CasingAdaptor extends AbstractEventHandler
     @Override
     public IPDataResult handleTCPServerDataEnd(TCPChunkEvent e)
     {
-        logger.debug("handling server chunk, session: " + e.session().id());
         boolean inbound = e.session().isInbound();
 
-        logger.debug("server inbound: " + inbound);
+        if (logger.isDebugEnabled()) {
+            logger.debug("handling server chunk, session: " + e.session().id()
+                         + "server inbound: " + inbound);
+        }
 
         if (clientSide) {
             if (e.chunk().hasRemaining()) {
@@ -207,7 +218,9 @@ public class CasingAdaptor extends AbstractEventHandler
     @Override
     public void handleTCPFinalized(TCPSessionEvent e) throws MPipeException
     {
-        logger.debug("finalizing " + e.session().id());
+        if (logger.isDebugEnabled()) {
+            logger.debug("finalizing " + e.session().id());
+        }
         Casing c = getCasing((TCPSession)e.ipsession());
         c.parser().handleFinalized();
         c.unparser().handleFinalized();
@@ -278,7 +291,9 @@ public class CasingAdaptor extends AbstractEventHandler
             // read limit 2
             b.compact();
             b.limit(8);
-            logger.debug("unparse returning buffer, for more: " + b);
+            if (logger.isDebugEnabled()) {
+                logger.debug("unparse returning buffer, for more: " + b);
+            }
             return new TCPChunkResult(null, null, b);
         }
 
@@ -289,8 +304,10 @@ public class CasingAdaptor extends AbstractEventHandler
 
         Long key = new Long(b.getLong());
         Token tok = (Token)pipeline.detach(key);
-        logger.debug("RETRIEVED object: " + tok + " with key: " + key
-                     + " on pipeline: " + pipeline);
+        if (logger.isDebugEnabled()) {
+            logger.debug("RETRIEVED object: " + tok + " with key: " + key
+                         + " on pipeline: " + pipeline);
+        }
 
         b.limit(8);
 
@@ -311,6 +328,7 @@ public class CasingAdaptor extends AbstractEventHandler
                 s.resetClient();
             }
             logger.debug("returning DO_NOT_PASS");
+
             return IPDataResult.DO_NOT_PASS;
         }
 
@@ -326,15 +344,19 @@ public class CasingAdaptor extends AbstractEventHandler
             if (s2c) {
                 logger.debug("unparse result to client");
                 ByteBuffer[] r = ur.result();
-                for (int i = 0; null != null && i < r.length; i++) {
-                    logger.debug("  to client: " + r[i]);
+                if (logger.isDebugEnabled()) {
+                    for (int i = 0; null != null && i < r.length; i++) {
+                        logger.debug("  to client: " + r[i]);
+                    }
                 }
                 return new TCPChunkResult(r, null, null);
             } else {
                 logger.debug("unparse result to server");
                 ByteBuffer[] r = ur.result();
-                for (int i = 0; null != r && i < r.length; i++) {
-                    logger.debug("  to server: " + r[i]);
+                if (logger.isDebugEnabled()) {
+                    for (int i = 0; null != r && i < r.length; i++) {
+                        logger.debug("  to server: " + r[i]);
+                    }
                 }
                 return new TCPChunkResult(null, r, null);
             }
@@ -425,8 +447,10 @@ public class CasingAdaptor extends AbstractEventHandler
             // XXX add magic:
             for (Token t : results) {
                 Long key = pipeline.attach(t);
-                logger.debug("SAVED object: " + t + " with key: " + key
-                             + " on pipeline: " + pipeline);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("SAVED object: " + t + " with key: " + key
+                                 + " on pipeline: " + pipeline);
+                }
                 bb.putLong(key);
             }
             bb.flip();
@@ -434,12 +458,18 @@ public class CasingAdaptor extends AbstractEventHandler
             ByteBuffer[] r = new ByteBuffer[] { bb };
 
             if (s2c) {
-                logger.debug("parse result to server, read buffer: "
-                             + pr.getReadBuffer() + "  to client: " + r[0]);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("parse result to server, read buffer: "
+                                 + pr.getReadBuffer()
+                                 + "  to client: " + r[0]);
+                }
                 return new TCPChunkResult(r, null, pr.getReadBuffer());
             } else {
-                logger.debug("parse result to client, read buffer: "
-                             + pr.getReadBuffer() + "  to server: " + r[0]);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("parse result to client, read buffer: "
+                                 + pr.getReadBuffer()
+                                 + "  to server: " + r[0]);
+                }
                 return new TCPChunkResult(null, r, pr.getReadBuffer());
             }
         }

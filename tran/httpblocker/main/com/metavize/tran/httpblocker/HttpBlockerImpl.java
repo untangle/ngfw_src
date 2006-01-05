@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -117,7 +117,10 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 
     protected void initializeSettings()
     {
-        logger.debug(getTid() + " init settings");
+        if (logger.isDebugEnabled()) {
+            logger.debug(getTid() + " init settings");
+        }
+
         HttpBlockerSettings settings = new HttpBlockerSettings(getTid());
 
         List s = new ArrayList();
@@ -358,7 +361,9 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
             };
         getTransformContext().runTransaction(tw);
 
-        logger.debug("IN POSTINIT SET BLACKLIST " + settings);
+        if (logger.isDebugEnabled()) {
+            logger.debug("IN POSTINIT SET BLACKLIST " + settings);
+        }
         blacklist.configure(settings);
         reconfigure();
     }
