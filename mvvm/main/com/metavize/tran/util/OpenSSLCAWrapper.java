@@ -15,6 +15,12 @@ import static com.metavize.tran.util.Ascii.LF;
 
 //Uses Exit code 1 if there is a problem.
 
+//This command is used to verify the signature of the
+//CA on the given signed cert
+//openssl verify -CAfile ca-pub.crt my-cert.crt
+//
+//The output is lame - "my-cert.crt: OK"
+
 /**
  * Wrapper around using OpenSSL as a small CA.  To "delete" the CA
  * simply delete the root file.  One handy thing to do is to create
@@ -44,7 +50,7 @@ public class OpenSSLCAWrapper {
    *         ".crt" file. 
    */
   public byte[] getCACert() throws IOException {
-    return IOUtil.fileToBytes(new File(m_rootDir, CONF_FILE_NAME));
+    return IOUtil.fileToBytes(new File(m_rootDir, "ca-cert.pem"));
   }
 
   /**
@@ -335,13 +341,13 @@ public class OpenSSLCAWrapper {
     }
 
   
-
+/*
   public static void main(String[] args) throws Exception {
 
     OpenSSLCAWrapper.create(new File("myNewCA"), false);
   
   }    
-  
+*/  
     
 }
 
