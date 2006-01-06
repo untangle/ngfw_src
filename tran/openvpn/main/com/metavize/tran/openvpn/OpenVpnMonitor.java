@@ -389,7 +389,7 @@ class OpenVpnMonitor implements Runnable
             currentStatistics.incrBytesTx( stats.bytesTxTotal - stats.bytesTxLast );
             currentStatistics.incrBytesRx( stats.bytesRxTotal - stats.bytesRxLast );
             stats.bytesRxLast = stats.bytesRxTotal;
-            stats.bytesRxLast = stats.bytesRxTotal;
+            stats.bytesTxLast = stats.bytesTxTotal;
             stats.lastUpdate = now;
         }
                         
