@@ -11,7 +11,7 @@ FIELD_1.name=time_stamp
 FIELD_1.type=Timestamp
 FIELD_2.name=score
 FIELD_2.type=Float
-FIELD_3.name=recip_addr
+FIELD_3.name=user_nm
 FIELD_3.type=String
 FIELD_4.name=from_addr
 FIELD_4.type=String
@@ -23,12 +23,13 @@ FIELD_7.name=action
 FIELD_7.type=String
 
 QUERY=\
-SELECT evt.time_stamp, score, recip_addr.addr AS recip_addr, \
-       from_addr.addr AS from_addr, is_spam, s_server_addr AS ip_addr, action \
+SELECT evt.time_stamp, score, user_addr.addr AS user_nm, \
+       LOWER(from_addr.addr) AS from_addr, is_spam, \
+       s_server_addr AS ip_addr, action \
   FROM tr_mail_message_info msg \
-         LEFT OUTER JOIN tr_mail_message_info_addr recip_addr \
-           ON (msg.id = recip_addr.msg_id \
-             AND recip_addr.kind = 'U') \
+         LEFT OUTER JOIN tr_mail_message_info_addr user_addr \
+           ON (msg.id = user_addr.msg_id \
+             AND user_addr.kind = 'U') \
          LEFT OUTER JOIN tr_mail_message_info_addr from_addr \
            ON (msg.id = from_addr.msg_id \
              AND from_addr.kind = 'F') \
@@ -53,7 +54,7 @@ TOPLEFT.expr=$F{time_stamp}
 TOPLMID.expr=$F{is_spam}.booleanValue() ? "SPAM" : ""
 BOTLMID.expr=$F{is_spam}.booleanValue() ? ($F{action}.charAt(0) == 'P' ? "pass message" : $F{action}.charAt(0) == 'M' ? "mark message" : "pass message") : "pass message"
 TOPRMID.expr=$F{from_addr}
-BOTRMID.expr=$F{recip_addr} == null ? "unknown" : $F{recip_addr}
+BOTRMID.expr=$F{user_nm} == null ? "unknown" : $F{user_nm}
 TOPRIGHT.expr=$F{ip_addr}
 BOTRIGHT.expr=$F{score}
 

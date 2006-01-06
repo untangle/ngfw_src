@@ -26,7 +26,8 @@ FIELD_8.type=String
 
 QUERY=\
 (SELECT evt.time_stamp, msg.server_type, \
-        recip_addr.addr AS recip_addr, from_addr.addr AS from_addr, \
+        LOWER(recip_addr.addr) AS recip_addr, \
+        LOWER(from_addr.addr) AS from_addr, \
         evt.virus_name, c_client_addr AS ip_addr, \
         evt.action, evt.notify_action \
    FROM tr_mail_message_info msg \
@@ -47,13 +48,14 @@ QUERY=\
    ORDER BY evt.time_stamp DESC) \
  UNION \
 (SELECT evt.time_stamp, msg.server_type, \
-        recip_addr.addr AS recip_addr, from_addr.addr AS from_addr, \
-        evt.virus_name, \
-        s_server_addr AS ip_addr, evt.action, 'N' AS notify_action \
+        user_addr.addr AS recip_addr, \
+        LOWER(from_addr.addr) AS from_addr, \
+        evt.virus_name, s_server_addr AS ip_addr, \
+        evt.action, 'N' AS notify_action \
    FROM tr_mail_message_info msg  \
-          LEFT OUTER JOIN tr_mail_message_info_addr recip_addr \
-            ON (msg.id = recip_addr.msg_id \
-                  AND recip_addr.kind = 'U') \
+          LEFT OUTER JOIN tr_mail_message_info_addr user_addr \
+            ON (msg.id = user_addr.msg_id \
+                  AND user_addr.kind = 'U') \
           LEFT OUTER JOIN tr_mail_message_info_addr from_addr \
             ON (msg.id = from_addr.msg_id \
                   AND from_addr.kind = 'F') \

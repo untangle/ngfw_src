@@ -16,27 +16,27 @@ FIELD_4.name=all_count
 FIELD_4.type=Long
 
 QUERY=\
-SELECT addr, count, top_count, all_count \
-  FROM (SELECT addr, COUNT(addr) \
+SELECT lower AS addr, count, top_count, all_count \
+  FROM (SELECT LOWER(addr), COUNT(addr) \
           FROM tr_mail_message_info msg \
-                 JOIN tr_mail_message_info_addr user_addr \
-                   ON (msg.id = user_addr.msg_id \
-                     AND user_addr.kind = 'B') \
+                 JOIN tr_mail_message_info_addr recip_addr \
+                   ON (msg.id = recip_addr.msg_id \
+                     AND recip_addr.kind = 'B') \
                  JOIN tr_spam_evt_smtp evt \
                    ON (msg.id = evt.msg_id \
                      AND evt.is_spam \
                      AND evt.time_stamp >= $P{startTime} \
                      AND evt.time_stamp < $P{endTime} \
                      AND evt.vendor_name = $P{spamVendor}) \
-          GROUP BY addr \
+          GROUP BY lower \
           ORDER BY count DESC \
           LIMIT @REPORT_MAX_LENGTH@) AS foo, \
        (SELECT SUM(count) AS top_count \
           FROM (SELECT COUNT(addr) \
                   FROM tr_mail_message_info msg \
-                         JOIN tr_mail_message_info_addr user_addr \
-                           ON (msg.id = user_addr.msg_id \
-                             AND user_addr.kind = 'B') \
+                         JOIN tr_mail_message_info_addr recip_addr \
+                           ON (msg.id = recip_addr.msg_id \
+                             AND recip_addr.kind = 'B') \
                          JOIN tr_spam_evt_smtp evt \
                            ON (msg.id = evt.msg_id \
                              AND evt.is_spam \
@@ -49,9 +49,9 @@ SELECT addr, count, top_count, all_count \
        (SELECT SUM(count) AS all_count \
           FROM (SELECT COUNT(addr) \
                   FROM tr_mail_message_info msg \
-                         JOIN tr_mail_message_info_addr user_addr \
-                           ON (msg.id = user_addr.msg_id \
-                             AND user_addr.kind = 'B') \
+                         JOIN tr_mail_message_info_addr recip_addr \
+                           ON (msg.id = recip_addr.msg_id \
+                             AND recip_addr.kind = 'B') \
                          JOIN tr_spam_evt_smtp evt \
                            ON (msg.id = evt.msg_id \
                              AND evt.is_spam \

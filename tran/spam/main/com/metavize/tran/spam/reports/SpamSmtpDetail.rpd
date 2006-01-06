@@ -23,8 +23,9 @@ FIELD_7.name=action
 FIELD_7.type=String
 
 QUERY=\
-SELECT evt.time_stamp, score, recip_addr.addr AS recip_addr, \
-       from_addr.addr AS from_addr, is_spam, c_client_addr AS ip_addr, action \
+SELECT evt.time_stamp, score, LOWER(recip_addr.addr) AS recip_addr, \
+       LOWER(from_addr.addr) AS from_addr, is_spam, \
+       c_client_addr AS ip_addr, action \
   FROM tr_mail_message_info msg \
          LEFT OUTER JOIN tr_mail_message_info_addr recip_addr \
            ON (msg.id = recip_addr.msg_id \
