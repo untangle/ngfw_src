@@ -163,6 +163,91 @@ public class IOUtil {
     return dir.delete();
   }
 
+  
+  /**
+   * Reads the contents of a file as a byte[].  Obviously be careful
+   * with memory.
+   *
+   * @param f the file
+   * @return the byte[] with the bytes of the file
+   */
+  public static byte[] fileToBytes(
+    File source)
+    throws IOException {
+    
+    FileInputStream fIn = null;
+
+    try {
+      fIn = new FileInputStream(source);
+      byte[] bytes = new byte[(int) source.length()];
+      int read = 0;
+      while(read < bytes.length) {
+        int thisRead = fIn.read(bytes, read, bytes.length - read);
+        if(thisRead == -1) {
+          throw new IOException("Premature end of stream");
+        }
+        read+=thisRead;
+      }
+      close(fIn);
+      return bytes;    
+    }
+    catch(IOException ex) {
+      close(fIn);
+      throw ex;
+    }
+    
+  }    
+
+  /**
+   * Write the bytes to the file in a single operation.  If an exception
+   * is thrown there will <b>not</b> be any open streams.  If the file already
+   * exists, its content is clobbered.
+   *
+   * @param bytes the bytes
+   * @param writeTo the target file
+   */
+  public static void bytesToFile(
+    byte[] bytes,
+    File writeTo)
+    throws IOException {
+    bytesToFile(bytes, 0, bytes.length, writeTo, false);
+  }  
+
+
+  /**
+   * Write the bytes to the file in a single operation.  If an exception
+   * is thrown there will <b>not</b> be any open streams.
+   *
+   * @param bytes the bytes
+   * @param start the offset
+   * @param len the length to write
+   * @param writeTo the target file
+   * @param append should these bytes be appended if the file
+   *        already exists
+   */
+  public static void bytesToFile(
+    byte[] bytes,
+    int start,
+    int len,
+    File writeTo,
+    boolean append)
+    throws IOException {
+
+    FileOutputStream fOut = null;
+
+    try {
+      fOut = new FileOutputStream(writeTo, append);
+      fOut.write(bytes, start, len);
+      fOut.flush();
+      fOut.close();
+    }
+    catch(IOException ex) {
+      close(fOut);
+      throw ex;
+    }
+    
+  }
+
   public static long pipe(final InputStream in,
     final OutputStream out) throws IOException {
 
