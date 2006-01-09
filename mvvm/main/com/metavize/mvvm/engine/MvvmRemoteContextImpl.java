@@ -98,6 +98,11 @@ class MvvmRemoteContextImpl implements MvvmRemoteContext
         context.shutdown();
     }
 
+    public void rebootBox()
+    {
+        context.rebootBox();
+    }
+
     public void doFullGC()
     {
         context.doFullGC();

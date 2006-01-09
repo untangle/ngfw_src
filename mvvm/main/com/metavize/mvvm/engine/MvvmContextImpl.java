@@ -39,6 +39,8 @@ public class MvvmContextImpl extends MvvmContextBase
 {
     private static final MvvmContextImpl CONTEXT = new MvvmContextImpl();
 
+    private static final String REBOOT_SCRIPT = "/sbin/reboot";
+
     private static final String BACKUP_SCRIPT;
     private static final String ACTIVATE_SCRIPT;
     private static final String ACTIVATION_KEY_FILE;
@@ -243,6 +245,23 @@ public class MvvmContextImpl extends MvvmContextBase
                     System.exit(0);
                 }
             }).start();
+    }
+
+    public void rebootBox() {
+        try {
+            Process p = Runtime.getRuntime().exec(new String[] { REBOOT_SCRIPT });
+            for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
+            int exitValue = p.waitFor();
+            if (0 != exitValue) {
+                logger.error("Unable to reboot (" + exitValue + ")");
+            } else {
+                logger.info("Rebooted at admin request");
+            }
+        } catch (InterruptedException exn) {
+            logger.error("Interrupted during reboot");
+        } catch (IOException exn) {
+            logger.error("Exception during rebooot");
+        }
     }
 
     public String version()

@@ -111,6 +111,14 @@ public interface MvvmRemoteContext
 
     void shutdown();
 
+    /**
+     * Reboots the EdgeGuard box as if the right button menu was used and confirmed.
+     * Note that this currently will not reboot a non-production (dev) box; this
+     * behavior may change in the future.  XXX
+     *
+     */
+    void rebootBox();
+
     // debugging / performance management
     void doFullGC();
 
