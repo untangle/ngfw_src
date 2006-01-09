@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!--
-Copyright (c) 2004, 2005 Metavize Inc.
+Copyright (c) 2004, 2005, 2006 Metavize Inc.
 All rights reserved.
 
 This software is the confidential and proprietary information of
@@ -826,6 +826,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
       <src path="${tran.name}/webapps/browser/src"/>
 
+      <classpath refid="mvvm.thirdparty.classpath"/>
       <classpath refid="tomcat.classpath"/>
     </javac>
 

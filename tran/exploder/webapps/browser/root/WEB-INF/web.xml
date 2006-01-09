@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -17,6 +18,18 @@
 <web-app>
 
   <display-name>Exploder</display-name>
+
+  <servlet>
+    <servlet-name>FileLister</servlet-name>
+    <servlet-class>
+      com.metavize.tran.exploder.browser.FileLister
+    </servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>FileLister</servlet-name>
+    <url-pattern>/ls</url-pattern>
+  </servlet-mapping>
 
   @JSP_PRE_COMPILED_SERVLETS@
 
