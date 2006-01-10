@@ -76,6 +76,7 @@ public class FileLister extends HttpServlet
             if (f.isDirectory()) {
                 listDirectory(f, os);
             } else {
+                // XXX
                 os.println("A FILE");
             }
         } catch (IOException exn) {
@@ -103,7 +104,7 @@ public class FileLister extends HttpServlet
         try {
             for (SmbFile d : f.listFiles()) {
                 os.println("<dir name='" + escapeXml(d.getName()) + "'/>");
-            }
+             }
         } catch (SmbException exn) {
             throw new ServletException("could not list directory", exn);
         }
