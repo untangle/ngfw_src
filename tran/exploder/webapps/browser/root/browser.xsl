@@ -30,7 +30,7 @@
 
     <span class="dir">
       <xsl:attribute name="id">
-        <xsl:value-of select="@name"/>
+        <xsl:value-of select="$path"/>
       </xsl:attribute>
       <xsl:apply-templates>
         <xsl:with-param name="parent-dir" select="$path"/>
