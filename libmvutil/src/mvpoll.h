@@ -11,6 +11,8 @@
 #ifndef __MVPOLL_H_
 #define __MVPOLL_H_
 
+#include <pthread.h>
+
 #include <sys/types.h>
 #include <sys/epoll.h>
 #include "list.h"
@@ -60,6 +62,8 @@ struct mvpoll {
 
     int       notify_pipe[2];
 #define       event_fd notify_pipe[0]
+
+    pthread_mutex_t mutex;
     
     int (*notify_status) (mvpoll_t* mvp, mvpoll_key_t* key, int evstate);
 };

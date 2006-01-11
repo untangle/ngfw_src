@@ -10,6 +10,8 @@
  */
 #include "mvpoll.h"
 
+#include <pthread.h>
+
 #include <stdlib.h>
 #include <unistd.h>
 #include "hash.h"
@@ -99,6 +101,8 @@ mvpoll_id_t mvpoll_create (int size)
     if (epoll_ctl(mvp->epfd,EPOLL_CTL_ADD,ev.data.fd,&ev)<0)
         return perrlog_null("epoll_ctl");
 
+    if ( pthread_mutex_init( &mvp->mutex, NULL ) < 0 ) return perrlog_null( "pthread_mutex_init\n" );
+    
     return mvp;
 }
 
@@ -437,74 +441,83 @@ static int _mvpoll_notify_status (mvpoll_t* mvp, mvpoll_key_t* key, int evstate)
  */
 static int _mvpoll_update_status (mvpoll_t* mvp, mvpoll_keystate_t* keystate, int evstate)
 {
-    u_int32_t ev;
+    int _critical_section() {
+        u_int32_t ev;
+        
+        if (!mvp || !keystate)
+            return errlogargs();
+        
+        ev = (evstate & keystate->eventmask);
+        
+        debug(10,"MVPOLL: update_status (0x%08x) ev = 0x%08x, node = 0x%08x\n",mvp,ev,keystate->node);
+        
+        /**
+         * If there is some event and its not in the list, add one
+         */
+        if (ev && !keystate->node) {
+            
+            keystate->event.key = keystate->key;
+            keystate->event.events   = ev;
+            
+            /**
+             * Add the event and wakeup mvp if necessary
+             */
+            if (!(keystate->node = list_add_tail(&mvp->rdy,&keystate->event)))
+                return perrlog("mailbox_put");
+            
+            /**
+             * If this is the first event, we need to send a wakeup signal
+             */
+            if (list_size(&mvp->rdy) == 1)
+                _mvpoll_wake(mvp);
+            
+            debug(10,"MVPOLL: Add to rdy list\n");
+            
+            return 0;
+        }
+        /**
+         * Else if there is no event and its in the list
+         */
+        else if  (!ev && keystate->node) {
+            list_node_t* node = keystate->node;
+            
+            keystate->node = NULL;
+            keystate->event.key = NULL;
+            keystate->event.events   = 0;
+            
+            /**
+             * Remove from the ready event list
+             */
+            if (list_remove(&mvp->rdy,node)<0)
+                perrlog("list_remove");
+            
+            debug(10,"MVPOLL: Remove from rdy list\n");
+            
+            /**
+             * If there are no ready events, clear the wakeup 
+             */
+            if (list_size(&mvp->rdy) == 0)
+                _mvpoll_clear_event_fd(mvp);
+            
+        }
+        /**
+         * Else 1) its in the list and there is an event
+         * or   2) its not in the list and there are no events
+         * so just set events correctly for case 1
+         */
+        else {
+            keystate->event.events = ev;
+        }
+    }
     
-    if (!mvp || !keystate)
-        return errlogargs();
-
-    ev = (evstate & keystate->eventmask);
-
-    debug(10,"MVPOLL: update_status (0x%08x) ev = 0x%08x, node = 0x%08x\n",mvp,ev,keystate->node);
+    int ret = 0;
     
-    /**
-     * If there is some event and its not in the list, add one
-     */
-    if (ev && !keystate->node) {
+    if ( pthread_mutex_lock( &mvp->mutex ) < 0 ) return perrlog( "pthread_mutex_lock\n" );
+    ret = _critical_section();
+    if ( pthread_mutex_unlock( &mvp->mutex ) < 0 ) return perrlog( "pthread_mutex_unlock\n" );
+    
 
-        keystate->event.key = keystate->key;
-        keystate->event.events   = ev;
-
-        /**
-         * Add the event and wakeup mvp if necessary
-         */
-        if (!(keystate->node = list_add_tail(&mvp->rdy,&keystate->event)))
-            return perrlog("mailbox_put");
-
-        /**
-         * If this is the first event, we need to send a wakeup signal
-         */
-        if (list_size(&mvp->rdy) == 1)
-            _mvpoll_wake(mvp);
-
-        debug(10,"MVPOLL: Add to rdy list\n");
-
-        return 0;
-    }
-    /**
-     * Else if there is no event and its in the list
-     */
-    else if  (!ev && keystate->node) {
-        list_node_t* node = keystate->node;
-
-        keystate->node = NULL;
-        keystate->event.key = NULL;
-        keystate->event.events   = 0;
-
-        /**
-         * Remove from the ready event list
-         */
-        if (list_remove(&mvp->rdy,node)<0)
-            perrlog("list_remove");
-
-        debug(10,"MVPOLL: Remove from rdy list\n");
-
-        /**
-         * If there are no ready events, clear the wakeup 
-         */
-        if (list_size(&mvp->rdy) == 0)
-            _mvpoll_clear_event_fd(mvp);
-
-    }
-    /**
-     * Else 1) its in the list and there is an event
-     * or   2) its not in the list and there are no events
-     * so just set events correctly for case 1
-     */
-    else {
-        keystate->event.events = ev;
-    }
-
-    return 0;
+    return ret;
 }
 
 /**

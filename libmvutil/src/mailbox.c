@@ -15,12 +15,14 @@
 #include <time.h>
 #include <sys/time.h>
 #include <semaphore.h>
+#include <stdlib.h>
 
 #include "errlog.h"
 #include "debug.h"
 #include "list.h"
 #include "unet.h"
 #include "utime.h"
+#include "mvpoll.h"
 
 #define MB_LOCK(mb)       if (lock_wrlock(&(mb)->lock)<0) \
                                     return errlog(ERR_CRITICAL,"Unable to lock mailbox\n")
@@ -31,11 +33,21 @@
 #define MB_UNLOCK_NULL(mb)     if (lock_unlock(&(mb)->lock)<0) \
                                     errlog_null(ERR_CRITICAL,"Unable to unlock mailbox\n")
 
+
+typedef struct mb_mvpoll_key
+{
+    mvpoll_key_t key;
+    
+    mailbox_t* mb;
+} mb_mvpoll_key_t;
+
 typedef int (*wait_func_t) (sem_t* sem);
 
 static void*   _mailbox_get (mailbox_t* mb, wait_func_t wfunc);
 static void*   _mailbox_timed_get ( mailbox_t* mb, struct timespec* ts );
 
+static eventmask_t   _src_poll_wrapper  ( mvpoll_key_t* key );
+static int           _src_key_destroy   ( mvpoll_key_t* key ); 
 
 int          mailbox_init (mailbox_t* mb)
 {
@@ -47,6 +59,7 @@ int          mailbox_init (mailbox_t* mb)
         return perrlog("lock_init");
     mb->pipe[0] = -1;
     mb->pipe[1] = -1;
+    mb->mv_key  = NULL;
     mb->size    = 0;
     return 0;
 }
@@ -59,6 +72,11 @@ int          mailbox_destroy (mailbox_t* mb)
         perrlog("list_destroy");
     if (lock_destroy(&mb->lock)<0)
         perrlog("lock_destroy");
+    if (mb->mv_key != NULL ) {
+        errlog( ERR_WARNING, "Destroying registered key\n" );
+        free( mb->mv_key );
+        mb->mv_key = NULL;
+    }
 
     if ((mb->pipe[0] != -1) && (close(mb->pipe[0])<0))
         perrlog("close");
@@ -118,15 +136,15 @@ void*        mailbox_ntimed_get ( mailbox_t* mb, struct timespec* ts )
     if ( mb == NULL || ts == NULL )
         return errlogargs_null();
     
-    return _mailbox_timed_get ( mb, ts );
+    return _mailbox_timed_get( mb, ts );
 }
 
 void*        mailbox_try_get (mailbox_t* mb)
 {
     if (!mb) 
-        return errlog_null(ERR_WARNING,"Invalid arguments\n");
+        return errlog_null( ERR_WARNING, "Invalid arguments\n" );
     
-    return _mailbox_get(mb,sem_trywait);
+    return _mailbox_get( mb, sem_trywait );
 }
 
 int          mailbox_put (mailbox_t* mb, void* mail)
@@ -153,6 +171,9 @@ int          mailbox_put (mailbox_t* mb, void* mail)
         if (write(mb->pipe[1],".",1)<1) 
             perrlog("write");
     }
+
+    /* Notify any observers if the key is non-null */
+    if ( mb->mv_key != NULL ) mvpoll_key_notify_observers( mb->mv_key, MVPOLLIN );
 
     MB_UNLOCK(mb);
 
@@ -214,6 +235,43 @@ int          mailbox_clear_pollable_event(mailbox_t* mb)
     return 0;
 }
 
+/* Create a mvpoll key for a source. (sinks aren't really necessary right now) */
+mvpoll_key_t* mailbox_get_mvpoll_src_key( mailbox_t* mb )
+{
+    if ( mb == NULL ) return errlogargs_null();
+    
+    int _critical_section( mailbox_t* mb ) {
+        if ( mb->mv_key != NULL ) return 0;
+        
+        if (( mb->mv_key = malloc( sizeof( mb_mvpoll_key_t ))) == NULL ) return errlogmalloc();
+
+        mb_mvpoll_key_t* key = (mb_mvpoll_key_t*)mb->mv_key;
+        
+        if ( mvpoll_key_base_init( mb->mv_key ) < 0 ) {
+            return errlog( ERR_CRITICAL, "mvpoll_key_base_init\n" );
+        }
+        
+        mb->mv_key->type            = MB_SRC_KEY_TYPE;
+        mb->mv_key->poll            = _src_poll_wrapper;
+        mb->mv_key->special_destroy = _src_key_destroy;
+        
+        /* Loop the key back to its owning mailbox */
+        key->mb = mb;
+
+        return 0;
+    }
+    
+    int ret = 0;
+
+    MB_LOCK_NULL( mb );
+    ret = _critical_section( mb );
+    MB_UNLOCK( mb );
+
+    if ( ret < 0 ) return errlog_null( ERR_CRITICAL, "_critical_section\n" );
+
+    return (mvpoll_key_t*)(mb->mv_key);
+}
+
 int          mailbox_size (mailbox_t* mb)
 {
     if (!mb) 
@@ -250,6 +308,9 @@ static void*   _mailbox_timed_get ( mailbox_t* mb, struct timespec* ts )
         if (read(mb->pipe[0],buf,1)<1) 
            perrlog("read");
     }
+
+    /* Update MVPOLL if necessary */
+    if ( mb->mv_key != NULL ) mvpoll_key_notify_observers( mb->mv_key, ( mb->size > 1 ) ? MVPOLLIN : 0 );
 
     mail = list_node_val(node);
     
@@ -301,3 +362,54 @@ static void*   _mailbox_get (mailbox_t* mb, wait_func_t wfunc)
     MB_UNLOCK_NULL(mb);
     return mail;
 }
+
+static eventmask_t   _src_poll_wrapper  ( mvpoll_key_t* key )
+{
+    mb_mvpoll_key_t* mb_key = (mb_mvpoll_key_t*)key;
+    int size;
+    
+    if (( mb_key == NULL ) || ( mb_key->mb == NULL )) {
+        errlogargs();
+        return MVPOLLERR;
+    }
+
+    if ( key->type != MB_SRC_KEY_TYPE ) {
+        errlog( ERR_CRITICAL, "Incorrect key type[%d], expecting %d\n", key->type, MB_SRC_KEY_TYPE );
+        return MVPOLLERR;
+    }
+    
+    if ( sem_getvalue( &mb_key->mb->list_size_sem, &size ) < 0 ) {
+        perrlog( "sem_getvalue" );
+        return MVPOLLERR;
+    }
+    
+    if ( size < 0 ) {
+        errlog( ERR_CRITICAL, "mailbox size is less than zero[%d]\n", size );
+        return MVPOLLERR;
+    } else if ( size > 0 ) {
+        return MVPOLLIN;
+    }
+
+    return 0;
+}
+
+static int           _src_key_destroy   ( mvpoll_key_t* key )
+{
+    if ( key == NULL ) return errlogargs();
+    
+    if ( key->type != MB_SRC_KEY_TYPE ) return errlog( ERR_CRITICAL, "Invalid key type: %d\n", key->type );
+    mb_mvpoll_key_t* mb_key = (mb_mvpoll_key_t*)key;
+    
+    mailbox_t* mb = mb_key->mb;
+    if  ( mb  == NULL ) errlog( ERR_CRITICAL, "NULL mailbox for the mailbox key\n" );
+    else {
+        if ( mb->mv_key != key ) errlog( ERR_CRITICAL, "Key is pointing to the incorrect mailbox\n" );
+        else  mb->mv_key = NULL;
+    }
+    
+    mb_key->mb = NULL;
+    
+    return 0;
+}
+
+

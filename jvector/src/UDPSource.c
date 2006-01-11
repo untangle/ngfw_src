@@ -20,6 +20,7 @@
 #include <libnetcap.h>
 #include <mvutil/debug.h>
 #include <mvutil/mvpoll.h>
+#include <mvutil/mailbox.h>
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
 #include <vector/event.h>
@@ -40,15 +41,12 @@ JNIEXPORT jint JNICALL JF_UDPSource( create )
 {
     jvector_source_t* src;
     mvpoll_key_t* key;
-    int fd;
     mailbox_t* mb;
     
     if (( mb = (mailbox_t*)pointer) == NULL ) return (jint)errlogargs_null();
-    
-    fd = mailbox_get_pollable_event( mb );
-    
-    if (( key = mvpoll_key_fd_create( fd )) == NULL ) {
-        return (jint)errlog_null( ERR_CRITICAL, "mvpoll_key_fd_create\n" );
+        
+    if (( key = mailbox_get_mvpoll_src_key( mb )) == NULL ) {
+        return (jint)errlog_null( ERR_CRITICAL, "mailbox_get_mvpoll_src_key\n" );
     }
 
     if (( src = jvector_source_create( _this, key )) == NULL ) {

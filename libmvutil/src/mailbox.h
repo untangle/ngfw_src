@@ -5,9 +5,13 @@
 #include <semaphore.h>
 #include "lock.h"
 #include "list.h"
+#include "mvpoll.h"
 
-typedef struct mailbox {
-    
+/* XXX These all have to be consolidated somewhere */
+#define MB_SRC_KEY_TYPE 0x4100
+
+typedef struct mailbox
+{
     list_t list;
 
     sem_t  list_size_sem;
@@ -16,8 +20,9 @@ typedef struct mailbox {
     
     int pipe[2];
     
-    int    size; 
-    
+    int    size;
+
+    mvpoll_key_t* mv_key;
 } mailbox_t;
 
 
@@ -40,5 +45,7 @@ int          mailbox_size (mailbox_t* mb);
 
 int          mailbox_get_pollable_event (mailbox_t* mb);
 int          mailbox_clear_pollable_event (mailbox_t* mb);
+mvpoll_key_t* mailbox_get_mvpoll_src_key( mailbox_t* mb );
+
 
 #endif
