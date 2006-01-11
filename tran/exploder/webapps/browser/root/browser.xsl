@@ -8,6 +8,7 @@
       <head>
         <title>HippieSoft.com(tm) Exploder(r)</title>
         <link rel="stylesheet" type="text/css" href="browser.css"/>
+        <script type="text/javascript" src="prototype-1.3.1.js"></script>
         <script type="text/javascript" src="browser.js"></script>
       </head>
       <xsl:apply-templates/>

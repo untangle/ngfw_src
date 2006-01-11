@@ -12,12 +12,12 @@
 package com.metavize.tran.exploder.browser;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 public class FileLister extends HttpServlet
 {
     private final Logger logger = Logger.getLogger(getClass());
+
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException
     {
@@ -69,9 +70,9 @@ public class FileLister extends HttpServlet
             throw new ServletException(exn);
         }
 
-        ServletOutputStream os = null;
+        PrintWriter os = null;
         try {
-            os = resp.getOutputStream();
+            os = resp.getWriter();
 
             if (f.isDirectory()) {
                 listDirectory(f, os);
@@ -83,16 +84,12 @@ public class FileLister extends HttpServlet
             throw new ServletException("could not emit listing", exn);
         } finally {
             if (null != os) {
-                try {
-                    os.close();
-                } catch (IOException exn) {
-                    logger.warn("could not close OutputStream", exn);
-                }
+                os.close();
             }
         }
     }
 
-    private void listDirectory(SmbFile f, ServletOutputStream os)
+    private void listDirectory(SmbFile f, PrintWriter os)
         throws IOException, ServletException
     {
         os.println("<?xml version=\"1.0\" ?>");

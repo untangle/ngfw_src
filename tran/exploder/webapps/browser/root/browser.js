@@ -5,19 +5,20 @@ closedImg.src = "closed.gif";
 
 function showDir(dir)
 {
-    var objDir = document.getElementById(dir).style;
+    var dirElem = $(dir);
 
-    if (objDir.display == "block") {
-        objDir.display = "none";
+    var dirStyle = $(dir).style;
+    if (dirElem.display == "block") {
+        dirElem.display = "none";
     } else {
-        objDir.display = "block";
+        dirElem.display = "block";
     }
     swapFolder('I' + dir);
 }
 
 function swapFolder(img)
 {
-    objImg = document.getElementById(img);
+    objImg = $(img);
 
     if (objImg.src.indexOf('closed.gif') > -1) {
         objImg.src = openImg.src;
