@@ -11,7 +11,9 @@
         <script type="text/javascript" src="prototype-1.3.1.js"></script>
         <script type="text/javascript" src="browser.js"></script>
       </head>
-      <xsl:apply-templates/>
+      <xsl:apply-templates>
+        <xsl:with-param name="parent-dir"/>
+      </xsl:apply-templates>
     </html>
   </xsl:template>
 

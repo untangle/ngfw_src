@@ -36,6 +36,7 @@
       "../downloads/output/jakarta-tomcat-5.0.28-embed/lib/catalina-optional.jar"
       "../downloads/output/jakarta-tomcat-5.0.28-embed/lib/catalina.jar"
       "../downloads/output/jakarta-tomcat-5.0.28-embed/lib/servlet-api.jar"
+      "../downloads/output/jakarta-tomcat-5.0.28-embed/lib/jsp-api.jar"
       "../downloads/output/javamail-1.3.1/mail.jar"
       "../downloads/output/javassist-2.6/javassist.jar"
       "../downloads/output/jfreechart-0.9.21/jfreechart-0.9.21.jar"

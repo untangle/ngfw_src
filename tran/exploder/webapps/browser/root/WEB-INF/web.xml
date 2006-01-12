@@ -19,16 +19,6 @@
 
   <display-name>Exploder</display-name>
 
-  <filter>
-    <filter-name>XsltFilter</filter-name>
-    <filter-class>com.metavize.tran.exploder.browser.XsltFilter</filter-class>
-  </filter>
-
-  <filter-mapping>
-    <filter-name>XsltFilter</filter-name>
-    <servlet-name>FileLister</servlet-name>
-  </filter-mapping>
-
   <servlet>
     <servlet-name>FileLister</servlet-name>
     <servlet-class>

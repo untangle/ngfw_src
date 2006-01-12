@@ -4,26 +4,18 @@
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
-<%
-    String userName = request.getParameter("NAME");
-%>
-
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title>explode</title>
-</head>
-<body>
-<ol>
-  <browser:hello name="<%=userName%>" iterations="2">
-  <tr><td><b>have a nice day</b></td></tr>
-  </browser:hello>
 
-  <%
-  SmbFile f = new SmbFile("smb://dmorris:chakas@metaloft.com/sambaloft/");
-  for (String s : f.list()) {
-  %>
-  <li><%=s%></li>
-  <%}%>
-</ol>
+<head>
+<title>HippieSoft.com(tm) Exploder(r)</title>
+<link rel="stylesheet" type="text/css" href="browser.css"/>
+<script type="text/javascript" src="prototype-1.3.1.js"></script>
+<script type="text/javascript" src="browser.js"></script>
+</head>
+
+<body>
+
+<browser:dirtree url="smb://metaloft.com/"/>
+
 </body>
 </html>

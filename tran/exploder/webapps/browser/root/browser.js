@@ -5,24 +5,39 @@ closedImg.src = "closed.gif";
 
 function showDir(dir)
 {
-    var dirElem = $(dir);
+  var dirElem = $(dir);
 
-    var dirStyle = $(dir).style;
+  alert(dirElem + " id: " + dirElem.id);
+
+  if (0 == dirElem.childNodes.length) {
+    alert("SENDING AJAX REQUEST");
+    // XXX XXX wrong path!!
+    new Ajax.Request("http://localhost/browser/ls",
+                     { method: "get",
+                       parameters: "url=" + dir,
+                       onComplete: function(req) {
+                                     alert("GOT RESPONSE: " + req.responseText);
+                                   }
+                     });
+  } else {
+    var dirStyle = dirElem.style;
+
     if (dirElem.display == "block") {
-        dirElem.display = "none";
+      dirStyle.display = "none";
     } else {
-        dirElem.display = "block";
+      dirStyle.display = "block";
     }
     swapFolder('I' + dir);
+  }
 }
 
 function swapFolder(img)
 {
-    objImg = $(img);
+  objImg = $(img);
 
-    if (objImg.src.indexOf('closed.gif') > -1) {
-        objImg.src = openImg.src;
-    } else {
-        objImg.src = closedImg.src;
-    }
+  if (objImg.src.indexOf('closed.gif') > -1) {
+    objImg.src = openImg.src;
+  } else {
+    objImg.src = closedImg.src;
+  }
 }

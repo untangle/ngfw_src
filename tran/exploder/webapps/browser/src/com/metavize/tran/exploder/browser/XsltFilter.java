@@ -35,9 +35,13 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.log4j.Logger;
+
 public class XsltFilter implements Filter
 {
     private static final String XSL_PATH = "browser.xsl";
+
+    private final Logger logger = Logger.getLogger(getClass());
 
     private ServletContext servletContext;
 
@@ -45,6 +49,8 @@ public class XsltFilter implements Filter
                          FilterChain fc)
         throws ServletException
     {
+        resp.setContentType("text/html");
+
         try {
             Wrapper wrapper = new Wrapper((HttpServletResponse)resp);
 
@@ -88,30 +94,34 @@ public class XsltFilter implements Filter
             throw new ServletException("couldn't create Transformer", exn);
         }
     }
+
+    private static class Wrapper extends HttpServletResponseWrapper
+    {
+        private final PipedReader reader;
+        private final PrintWriter writer;
+
+        public Wrapper(HttpServletResponse resp) throws IOException
+        {
+            super(resp);
+
+            reader = new PipedReader();
+            writer = new PrintWriter(new PipedWriter(reader));
+        }
+
+        public PrintWriter getWriter()
+        {
+            return writer;
+        }
+
+        public Reader getReader()
+        {
+            return reader;
+        }
+
+        public void setContentType(String contentType)
+        {
+            // output is 'text/html'
+        }
+    }
 }
 
-
-
-class Wrapper extends HttpServletResponseWrapper
-{
-    private final PipedReader reader;
-    private final PrintWriter writer;
-
-    public Wrapper(HttpServletResponse resp) throws IOException
-    {
-        super(resp);
-
-        reader = new PipedReader();
-        writer = new PrintWriter(new PipedWriter(reader));
-    }
-
-    public PrintWriter getWriter()
-    {
-        return writer;
-    }
-
-    public Reader getReader()
-    {
-        return reader;
-    }
-}

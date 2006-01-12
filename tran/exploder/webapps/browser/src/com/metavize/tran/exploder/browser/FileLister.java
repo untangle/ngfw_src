@@ -52,15 +52,13 @@ public class FileLister extends HttpServlet
         } catch (UnsupportedEncodingException exn) {
             throw new ServletException("couldn't decode parameters", exn);
         }
-        String[] ss = params.get("server");
-        if (null == ss) {
-            throw new ServletException("need server");
-        }
-        String server = ss[0];
-        ss = params.get("path");
-        String path = null == ss ? "/" : ss[0];
 
-        String url = "smb://" + server + path;
+        String[] ss = params.get("url");
+        if (null == ss) {
+            throw new ServletException("need url");
+        }
+
+        String url = ss[0];
 
         SmbFile f = null;
 
@@ -93,14 +91,12 @@ public class FileLister extends HttpServlet
         throws IOException, ServletException
     {
         os.println("<?xml version=\"1.0\" ?>");
-        os.println("<?xml-stylesheet type=\"text/xsl\" href=\"browser.xsl\"?>");
 
-        // XXX do empty tree up to this point
         os.println("<dir name='" + f.getPath() + "'>");
 
         try {
             for (SmbFile d : f.listFiles()) {
-                os.println("<dir name='" + escapeXml(d.getName()) + "'/>");
+                os.println("  <dir name='" + escapeXml(d.getName()) + "'/>");
              }
         } catch (SmbException exn) {
             throw new ServletException("could not list directory", exn);
