@@ -107,7 +107,6 @@ public class FileLister extends HttpServlet
 
         try {
             for (SmbFile d : f.listFiles(DIR_FILTER)) {
-
                 os.println("  <dir name='" + escapeXml(d.getName()) + "'/>");
              }
         } catch (SmbException exn) {

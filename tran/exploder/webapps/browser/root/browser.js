@@ -34,33 +34,36 @@ function addChildDirectories(target, dom)
     if ("dir" == dom.childNodes[i].tagName) {
       var name = dom.childNodes[i].getAttribute("name");
       var childPath = path + name;
-
-      var trig = document.createElement("span");
-      trig.setAttribute("class", "trigger");
-      trig.setAttribute("onClick", "showDir(\"" + childPath + "\");");
-
-      var img = document.createElement("img");
-      img.setAttribute("src", "closed.gif");
-      img.setAttribute("id", "I" + childPath);
-      trig.appendChild(img);
-
-      var text = document.createTextNode(name);
-      trig.appendChild(text);
-
-      var br = document.createElement("br");
-      trig.appendChild(br);
-
-      var dir = document.createElement("span");
-      dir.setAttribute("class", "dir");
-      dir.setAttribute("id", childPath);
-
-      target.appendChild(trig);
-      target.appendChild(dir);
-
+      addChildDirectory(target, name, childPath);
     }
   }
 
   toggleTree(path);
+}
+
+function addChildDirectory(target, name, childPath)
+{
+  var trig = document.createElement("span");
+  Element.addClassName(trig, "trigger");
+  trig.onclick = function() { showDir(childPath); };
+
+  var img = document.createElement("img");
+  img.setAttribute("src", "closed.gif");
+  img.setAttribute("id", "I" + childPath);
+  trig.appendChild(img);
+
+  var text = document.createTextNode(name);
+  trig.appendChild(text);
+
+  var br = document.createElement("br");
+  trig.appendChild(br);
+
+  var dir = document.createElement("span");
+  Element.addClassName(dir, "dir");
+  dir.setAttribute("id", childPath);
+
+  target.appendChild(trig);
+  target.appendChild(dir);
 }
 
 function toggleTree(dir)
