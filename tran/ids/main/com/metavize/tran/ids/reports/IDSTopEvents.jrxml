@@ -6,9 +6,9 @@
     columnCount="1"
     printOrder="Vertical"
     orientation="Portrait"
-    pageWidth="360"
+    pageWidth="612"
     pageHeight="791"
-    columnWidth="360"
+    columnWidth="612"
     columnSpacing="0"
     leftMargin="0"
     rightMargin="0"
@@ -36,17 +36,19 @@
 SELECT rule_sid,
        blocked,
        COUNT(rule_sid) AS TOTAL_ACTIONS,
+       classification,
        message AS DESCRIPTION
   FROM tr_ids_evt
   WHERE time_stamp >= $P{startTime}
     AND time_stamp < $P{endTime}
-  GROUP BY rule_sid, blocked, message
+  GROUP BY rule_sid, blocked, classification, message
   ORDER BY TOTAL_ACTIONS DESC
   LIMIT 15
          ]]></queryString>
     <field name="RULE_SID" class="java.lang.Long"/>
     <field name="BLOCKED" class="java.lang.Boolean"/>
     <field name="TOTAL_ACTIONS" class="java.lang.Long"/>
+    <field name="CLASSIFICATION" class="java.lang.String"/>
     <field name="DESCRIPTION" class="java.lang.String"/>
     <variable name="RANK" class="java.lang.Integer" resetType="Report" calculation="Count">
         <variableExpression><![CDATA[$F{RULE_SID}]]></variableExpression>
@@ -86,28 +88,6 @@ SELECT rule_sid,
             <staticText>
                 <reportElement
                     mode="Opaque"
-                    x="44"
-                    y="0"
-                    width="250"
-                    height="13"
-                    forecolor="#000000"
-                    backcolor="#FFFFFF"
-                    key="staticText"
-                    stretchType="NoStretch"
-                    positionType="Float"
-                    isPrintRepeatedValues="true"
-                    isRemoveLineWhenBlank="false"
-                    isPrintInFirstWholeBand="false"
-                    isPrintWhenDetailOverflows="false"/>
-                <box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#FFFFFF" bottomBorder="None" bottomBorderColor="#000000"/>
-                <textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-                    <font fontName="SansSerif" pdfFontName="Helvetica" size="9" isBold="false" isItalic="true" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-                </textElement>
-            <text><![CDATA[Description]]></text>
-            </staticText>
-            <staticText>
-                <reportElement
-                    mode="Opaque"
                     x="2"
                     y="0"
                     width="40"
@@ -130,7 +110,51 @@ SELECT rule_sid,
             <staticText>
                 <reportElement
                     mode="Opaque"
-                    x="296"
+                    x="44"
+                    y="0"
+                    width="140"
+                    height="13"
+                    forecolor="#000000"
+                    backcolor="#FFFFFF"
+                    key="staticText"
+                    stretchType="NoStretch"
+                    positionType="Float"
+                    isPrintRepeatedValues="true"
+                    isRemoveLineWhenBlank="false"
+                    isPrintInFirstWholeBand="false"
+                    isPrintWhenDetailOverflows="false"/>
+                <box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#FFFFFF" bottomBorder="None" bottomBorderColor="#000000"/>
+                <textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+                    <font fontName="SansSerif" pdfFontName="Helvetica" size="9" isBold="false" isItalic="true" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+                </textElement>
+            <text><![CDATA[Classification]]></text>
+            </staticText>
+            <staticText>
+                <reportElement
+                    mode="Opaque"
+                    x="186"
+                    y="0"
+                    width="235"
+                    height="13"
+                    forecolor="#000000"
+                    backcolor="#FFFFFF"
+                    key="staticText"
+                    stretchType="NoStretch"
+                    positionType="Float"
+                    isPrintRepeatedValues="true"
+                    isRemoveLineWhenBlank="false"
+                    isPrintInFirstWholeBand="false"
+                    isPrintWhenDetailOverflows="false"/>
+                <box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#FFFFFF" bottomBorder="None" bottomBorderColor="#000000"/>
+                <textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+                    <font fontName="SansSerif" pdfFontName="Helvetica" size="9" isBold="false" isItalic="true" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+                </textElement>
+            <text><![CDATA[Description]]></text>
+            </staticText>
+            <staticText>
+                <reportElement
+                    mode="Opaque"
+                    x="423"
                     y="0"
                     width="60"
                     height="13"
@@ -152,7 +176,7 @@ SELECT rule_sid,
             <staticText>
                 <reportElement
                     mode="Opaque"
-                    x="358"
+                    x="485"
                     y="0"
                     width="85"
                     height="13"
@@ -185,28 +209,6 @@ SELECT rule_sid,
             <textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
                 <reportElement
                     mode="Opaque"
-                    x="44"
-                    y="0"
-                    width="250"
-                    height="13"
-                    forecolor="#000000"
-                    backcolor="#FFFFFF"
-                    key="textField"
-                    stretchType="NoStretch"
-                    positionType="Float"
-                    isPrintRepeatedValues="true"
-                    isRemoveLineWhenBlank="false"
-                    isPrintInFirstWholeBand="false"
-                    isPrintWhenDetailOverflows="false"/>
-                <box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#FFFFFF" bottomBorder="None" bottomBorderColor="#000000"/>
-                <textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-                    <font fontName="SansSerif" pdfFontName="Helvetica" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-                </textElement>
-            <textFieldExpression   class="java.lang.String"><![CDATA[$F{DESCRIPTION}]]></textFieldExpression>
-            </textField>
-            <textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
-                <reportElement
-                    mode="Opaque"
                     x="2"
                     y="0"
                     width="40"
@@ -229,7 +231,51 @@ SELECT rule_sid,
             <textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
                 <reportElement
                     mode="Opaque"
-                    x="296"
+                    x="44"
+                    y="0"
+                    width="140"
+                    height="13"
+                    forecolor="#000000"
+                    backcolor="#FFFFFF"
+                    key="textField"
+                    stretchType="NoStretch"
+                    positionType="Float"
+                    isPrintRepeatedValues="true"
+                    isRemoveLineWhenBlank="false"
+                    isPrintInFirstWholeBand="false"
+                    isPrintWhenDetailOverflows="false"/>
+                <box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#FFFFFF" bottomBorder="None" bottomBorderColor="#000000"/>
+                <textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+                    <font fontName="SansSerif" pdfFontName="Helvetica" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+                </textElement>
+            <textFieldExpression   class="java.lang.String"><![CDATA[$F{CLASSIFICATION}]]></textFieldExpression>
+            </textField>
+            <textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+                <reportElement
+                    mode="Opaque"
+                    x="186"
+                    y="0"
+                    width="235"
+                    height="13"
+                    forecolor="#000000"
+                    backcolor="#FFFFFF"
+                    key="textField"
+                    stretchType="NoStretch"
+                    positionType="Float"
+                    isPrintRepeatedValues="true"
+                    isRemoveLineWhenBlank="false"
+                    isPrintInFirstWholeBand="false"
+                    isPrintWhenDetailOverflows="false"/>
+                <box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#FFFFFF" bottomBorder="None" bottomBorderColor="#000000"/>
+                <textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+                    <font fontName="SansSerif" pdfFontName="Helvetica" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+                </textElement>
+            <textFieldExpression   class="java.lang.String"><![CDATA[$F{DESCRIPTION}]]></textFieldExpression>
+            </textField>
+            <textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+                <reportElement
+                    mode="Opaque"
+                    x="423"
                     y="0"
                     width="60"
                     height="13"
@@ -251,7 +297,7 @@ SELECT rule_sid,
             <textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
                 <reportElement
                     mode="Opaque"
-                    x="358"
+                    x="485"
                     y="0"
                     width="85"
                     height="13"
@@ -277,7 +323,7 @@ SELECT rule_sid,
         </band>
     </columnFooter>
     <pageFooter>
-        <band height="105"  isSplitAllowed="true" >
+        <band height="0"  isSplitAllowed="true" >
         </band>
     </pageFooter>
     <summary>

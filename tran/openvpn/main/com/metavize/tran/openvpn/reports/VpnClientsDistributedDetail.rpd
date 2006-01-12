@@ -26,7 +26,7 @@ TOPLMID.label=
 BOTLMID.label=
 TOPRMID.label=User
 BOTRMID.label=
-TOPRIGHT.label=Remote Address
+TOPRIGHT.label=Remote IP
 BOTRIGHT.label=
 
 TOPLEFT.expr=$F{time_stamp}

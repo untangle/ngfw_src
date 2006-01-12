@@ -26,6 +26,7 @@ import com.metavize.mvvm.tran.PipelineEndpoints;
  */
 public class IDSLogEvent extends PipelineEvent {
 
+    private String classification;
     private String message;
     private boolean blocked;
     private int ruleSid;
@@ -34,10 +35,11 @@ public class IDSLogEvent extends PipelineEvent {
 
     public IDSLogEvent() { }
 
-    public IDSLogEvent(PipelineEndpoints pe, int ruleSid, String message, boolean blocked) {
+    public IDSLogEvent(PipelineEndpoints pe, int ruleSid, String classification, String message, boolean blocked) {
         super(pe);
 
         this.ruleSid = ruleSid;
+        this.classification = classification;
         this.message = message;
         this.blocked = blocked;
     }
@@ -56,6 +58,21 @@ public class IDSLogEvent extends PipelineEvent {
 
     public void setRuleSid(int ruleSid) {
         this.ruleSid = ruleSid;
+    }
+
+    /**
+     * Classification of signature that generated this event.
+     *
+     * @return the classification
+     * @hibernate.property
+     * column="CLASSIFICATION"
+     */
+    public String getClassification() {
+        return classification;
+    }
+
+    public void setClassification(String classification) {
+        this.classification = classification;
     }
 
     /**

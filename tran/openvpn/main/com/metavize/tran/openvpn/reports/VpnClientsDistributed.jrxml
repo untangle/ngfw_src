@@ -229,7 +229,7 @@ SELECT client_name AS user,
         </band>
     </columnFooter>
     <pageFooter>
-        <band height="105"  isSplitAllowed="true" >
+        <band height="0"  isSplitAllowed="true" >
         </band>
     </pageFooter>
     <summary>

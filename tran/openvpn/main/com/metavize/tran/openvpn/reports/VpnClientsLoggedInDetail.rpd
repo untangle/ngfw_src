@@ -32,7 +32,7 @@ TOPLMID.label=Logged Off
 BOTLMID.label=
 TOPRMID.label=User
 BOTRMID.label=
-TOPRIGHT.label=Remote Address
+TOPRIGHT.label=Remote IP
 BOTRIGHT.label=Remote Port
 
 TOPLEFT.expr=$F{start_time}

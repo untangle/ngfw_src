@@ -145,7 +145,7 @@ public class IDSRuleSignature {
     private void doAction(IDSSessionInfo info) {
         IPSession session = info.getSession();
         if (null == session) {
-            log.error("Session is null; cannot act on event: " + message);
+            log.error("Session is null; cannot act on event: " + classification + ", " + message);
             return;
         }
 
@@ -157,19 +157,19 @@ public class IDSRuleSignature {
         switch(action) {
         case IDSRule.ALERT:
             // Can't happen right now.
-            log.warn("Alert: "+message);
+            log.warn("Alert: "+classification + ", " + message);
             ids.statisticManager.incrLogged();
             engine.updateUICount(DETECT_COUNTER);
             break;
 
         case IDSRule.LOG:
-            log.debug("Log: "+message);
+            log.debug("Log: "+classification + ", " + message);
             ids.statisticManager.incrLogged();
             engine.updateUICount(DETECT_COUNTER);
             break;
 
         case IDSRule.BLOCK:
-            log.info("Block: "+message);
+            log.info("Block: "+classification + ", " + message);
             blocked = true;
             ids.statisticManager.incrBlocked();
             engine.updateUICount(BLOCK_COUNTER);
@@ -177,7 +177,7 @@ public class IDSRuleSignature {
             break;
         }
 
-        ids.log(new IDSLogEvent(session.pipelineEndpoints(), rule.getSid(), message, blocked)); //Add list number that this rule came from
+        ids.log(new IDSLogEvent(session.pipelineEndpoints(), rule.getSid(), classification, message, blocked)); //Add list number that this rule came from
     }
 
     public void setToString(String string) {
