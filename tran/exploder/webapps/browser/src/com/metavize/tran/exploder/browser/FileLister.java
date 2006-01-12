@@ -45,6 +45,7 @@ public class FileLister extends HttpServlet
         }
 
         resp.setContentType("text/xml");
+        resp.addHeader("Cache-Control", "no-cache");
 
         Map<String, String[]> params = new HashMap<String, String[]>();
         try {
@@ -92,7 +93,7 @@ public class FileLister extends HttpServlet
     {
         os.println("<?xml version=\"1.0\" ?>");
 
-        os.println("<dir name='" + f.getPath() + "'>");
+        os.println("<root path='" + f.getPath() + "'>");
 
         try {
             for (SmbFile d : f.listFiles()) {
@@ -102,7 +103,7 @@ public class FileLister extends HttpServlet
             throw new ServletException("could not list directory", exn);
         }
 
-        os.println("</dir>");
+        os.println("</root>");
     }
 
     private String escapeXml(String in)

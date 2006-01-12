@@ -7,16 +7,16 @@ function showDir(dir)
 {
   var dirElem = $(dir);
 
-  alert(dirElem + " id: " + dirElem.id);
-
   if (0 == dirElem.childNodes.length) {
-    alert("SENDING AJAX REQUEST");
-    // XXX XXX wrong path!!
-    new Ajax.Request("http://localhost/browser/ls",
+
+    new Ajax.Request("ls",
                      { method: "get",
                        parameters: "url=" + dir,
-                       onComplete: function(req) {
-                                     alert("GOT RESPONSE: " + req.responseText);
+                       onComplete: function(req)
+                                   {
+                                     var resp = parseDomFromString(req.responseText);
+                                     var root = resp.getElementsByTagName('root')[0];
+                                     alert("ROOT: " + root);
                                    }
                      });
   } else {
@@ -40,4 +40,19 @@ function swapFolder(img)
   } else {
     objImg.src = closedImg.src;
   }
+}
+
+function parseDomFromString(text)
+{
+  return Try.these(function()
+                   {
+                     return new DOMParser().parseFromString(text, 'text/xml');
+                   },
+                   function()
+                   {
+                     var xmlDom = new ActiveXObject("Microsoft.XMLDOM")
+                     xmlDom.async = "false"
+                     xmlDom.loadXML(text)
+                     return xmlDom;
+                   });
 }
