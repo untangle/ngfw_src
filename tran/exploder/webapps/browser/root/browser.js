@@ -11,7 +11,6 @@ function showDir(dir)
   var dirElem = $(dir);
 
   if (0 == dirElem.childNodes.length) {
-
     new Ajax.Request("ls",
                      { method: "get",
                        parameters: "url=" + dir,
@@ -59,9 +58,9 @@ function addChildDirectories(target, dom)
       target.appendChild(dir);
 
     }
-
-    toggleTree(path);
   }
+
+  toggleTree(path);
 }
 
 function toggleTree(dir)
@@ -70,7 +69,7 @@ function toggleTree(dir)
   var dirStyle = dirElem.style;
   var dirImg = $("I" + dir);
 
-  if (dirElem.display == "block") {
+  if (dirStyle.display == "block") {
     dirStyle.display = "none";
     dirImg.src = closedImg.src;
   } else {
