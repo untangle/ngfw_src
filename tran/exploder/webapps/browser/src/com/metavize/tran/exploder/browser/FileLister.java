@@ -26,11 +26,21 @@ import javax.servlet.http.HttpSession;
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
+import jcifs.smb.SmbFileFilter;
 import org.apache.catalina.util.RequestUtil;
 import org.apache.log4j.Logger;
 
 public class FileLister extends HttpServlet
 {
+    private static final SmbFileFilter DIR_FILTER = new SmbFileFilter()
+        {
+            public boolean accept(SmbFile f)
+                throws SmbException
+            {
+                return f.isDirectory();
+            }
+        };
+
     private final Logger logger = Logger.getLogger(getClass());
 
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -96,7 +106,8 @@ public class FileLister extends HttpServlet
         os.println("<root path='" + f.getPath() + "'>");
 
         try {
-            for (SmbFile d : f.listFiles()) {
+            for (SmbFile d : f.listFiles(DIR_FILTER)) {
+
                 os.println("  <dir name='" + escapeXml(d.getName()) + "'/>");
              }
         } catch (SmbException exn) {

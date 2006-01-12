@@ -1,3 +1,6 @@
+// Copyright (c) 2006 Metavize Inc.
+// All rights reserved.
+
 var openImg = new Image();
 openImg.src = "open.gif";
 var closedImg = new Image();
@@ -16,29 +19,63 @@ function showDir(dir)
                                    {
                                      var resp = parseDomFromString(req.responseText);
                                      var root = resp.getElementsByTagName('root')[0];
-                                     alert("ROOT: " + root);
+                                     addChildDirectories(dirElem, root);
                                    }
                      });
   } else {
-    var dirStyle = dirElem.style;
-
-    if (dirElem.display == "block") {
-      dirStyle.display = "none";
-    } else {
-      dirStyle.display = "block";
-    }
-    swapFolder('I' + dir);
+    toggleTree(dir);
   }
 }
 
-function swapFolder(img)
+function addChildDirectories(target, dom)
 {
-  objImg = $(img);
+  var path = target.getAttribute("id");
 
-  if (objImg.src.indexOf('closed.gif') > -1) {
-    objImg.src = openImg.src;
+  for (var i = 0; i < dom.childNodes.length; i++) {
+    if ("dir" == dom.childNodes[i].tagName) {
+      var name = dom.childNodes[i].getAttribute("name");
+      var childPath = path + name;
+
+      var trig = document.createElement("span");
+      trig.setAttribute("class", "trigger");
+      trig.setAttribute("onClick", "showDir(\"" + childPath + "\");");
+
+      var img = document.createElement("img");
+      img.setAttribute("src", "closed.gif");
+      img.setAttribute("id", "I" + childPath);
+      trig.appendChild(img);
+
+      var text = document.createTextNode(name);
+      trig.appendChild(text);
+
+      var br = document.createElement("br");
+      trig.appendChild(br);
+
+      var dir = document.createElement("span");
+      dir.setAttribute("class", "dir");
+      dir.setAttribute("id", childPath);
+
+      target.appendChild(trig);
+      target.appendChild(dir);
+
+    }
+
+    toggleTree(path);
+  }
+}
+
+function toggleTree(dir)
+{
+  var dirElem = $(dir);
+  var dirStyle = dirElem.style;
+  var dirImg = $("I" + dir);
+
+  if (dirElem.display == "block") {
+    dirStyle.display = "none";
+    dirImg.src = closedImg.src;
   } else {
-    objImg.src = closedImg.src;
+    dirStyle.display = "block";
+    dirImg.src = openImg.src;
   }
 }
 

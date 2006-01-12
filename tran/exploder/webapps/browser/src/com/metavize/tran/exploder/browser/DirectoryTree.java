@@ -39,7 +39,10 @@ public class DirectoryTree extends TagSupport
             JspWriter out = pageContext.getOut();
 
             out.println("<span class='trigger' onClick='showDir(\"" + url + "\");'>");
-            out.println("<img src='closed.gif' id='I" + url + "'>" + url + "</img>");
+
+            out.println("<img src='closed.gif' id='I" + url + "'/>");
+            out.println(url);
+
             out.println("<br/>");
             out.println("</span>");
             out.println("<span class='dir' id='" + url + "'></span>");
