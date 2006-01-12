@@ -23,11 +23,10 @@ import static com.metavize.tran.util.Ascii.LF;
 
 /**
  * Wrapper around using OpenSSL as a small CA.  To "delete" the CA
- * simply delete the root file.  One handy thing to do is to create
- * a CA, have it sign a {@link OpenSSLWrapper cert request}, get the
- * {@link #getCACert CA cert} for importing into browsers, then kill
- * the CA.
+ * simply delete the root file.
  * <br>
+ * This was created for the wrong reasons (don't ask), but may be useful
+ * in the future.
  */
 public class OpenSSLCAWrapper {
 
@@ -61,7 +60,7 @@ public class OpenSSLCAWrapper {
    * @return the bytes of the signed certificate
    */
   public byte[] signCSR(byte[] certRequest)
-    throws IOException, java.util.concurrent.TimeoutException {
+    throws IOException {
     
     File temp = File.createTempFile("cert", ".tmp", m_rootDir);
     try {
@@ -74,10 +73,6 @@ public class OpenSSLCAWrapper {
       IOUtil.delete(temp);
       throw ex;
     }
-    catch(java.util.concurrent.TimeoutException ex) {
-      IOUtil.delete(temp);
-      throw ex;
-    }    
   }
 
   /**
@@ -88,7 +83,9 @@ public class OpenSSLCAWrapper {
    * @return the bytes of the signed certificate
    */  
   public byte[] signCSR(File certRequest)
-    throws IOException, java.util.concurrent.TimeoutException {
+    throws IOException {
+
+    //openssl ca -batch -config file -in file
 
     SimpleExec.SimpleExecResult result = SimpleExec.exec(
       "openssl",
@@ -98,16 +95,15 @@ public class OpenSSLCAWrapper {
         "-config",
         m_rootDir.getAbsolutePath() + File.separator + CONF_FILE_NAME,
         "-in",
-        certRequest.getAbsolutePath()
+        certRequest.getAbsolutePath(),
+        "-notext"
       },
       null,
       m_rootDir,
       true,
       false,
-      1000*60,
-      null,
-      m_useMVVMThreads);
-
+      1000*60);
+      
     if(result.exitCode==0) {
       return result.stdOut;
     }
@@ -117,7 +113,7 @@ public class OpenSSLCAWrapper {
 
   /**
    * Create a new CA with all programatic defaults (i.e. identifies itself
-   * as "mv-edgeguard" from san mateo.
+   * as "mv-edgeguard" from san mateo).
    *
    * @param rootDir the root dir of this CA.  <b>Warning</b> - there is currently
    *        no check to see if you're clobbering existing files
@@ -128,14 +124,14 @@ public class OpenSSLCAWrapper {
    * @return an initialized instance
    */
   public static OpenSSLCAWrapper create(File rootDir, boolean useMVVMThreads)
-    throws IOException, java.util.concurrent.TimeoutException {
+    throws IOException {
     return create(rootDir,
       useMVVMThreads,
       "mv-edgeguard" + System.currentTimeMillis(),
       "US",
       "CA",
       "San Mateo",
-      "mv-edgeguard",
+      "mv-devices",
       "mv-edgeguard@localhost");
   }
   
@@ -162,7 +158,7 @@ public class OpenSSLCAWrapper {
     String state,
     String city,
     String organization,
-    String email) throws IOException, java.util.concurrent.TimeoutException {
+    String email) throws IOException {
 
     if(!rootDir.exists()) {
       rootDir.mkdirs();
@@ -241,9 +237,8 @@ public class OpenSSLCAWrapper {
       rootDir,
       false,
       false,
-      1000*60,
-      null,
-      useMVVMThreads);
+      1000*60);
+      
     
     return new OpenSSLCAWrapper(rootDir, useMVVMThreads);
     
@@ -263,91 +258,116 @@ public class OpenSSLCAWrapper {
     String organization,
     String email) {
 
-      StringBuilder sb = new StringBuilder();
+    StringBuilder sb = new StringBuilder();
 
-      
-      sb.append("HOME                    = .").append(LF);
-      sb.append("RANDFILE                = $ENV::HOME/.rnd").append(LF);
-      sb.append("[ ca ]").append(LF);
-      sb.append("default_ca      = CA_default").append(LF);
-      
-      sb.append("[ CA_default ]").append(LF);
-      sb.append("dir             = " + rootDir.getAbsolutePath()).append(LF);
-      sb.append("new_certs_dir   = $dir/newcerts").append(LF);
-      sb.append("crl_dir         = $dir/crl").append(LF);
-      sb.append("database        = $dir/index").append(LF);
-      sb.append("certificate     = $dir/ca-cert.pem").append(LF);
-      sb.append("serial          = $dir/serial").append(LF);
-      sb.append("crl             = $dir/ca-crl.pem").append(LF);
-      sb.append("private_key     = $dir/private/ca-key.pem").append(LF);
-      sb.append("RANDFILE        = $dir/private/.rand").append(LF);
-      sb.append("unique_subject  = no").append(LF);
-      
-      sb.append("x509_extensions = usr_cert").append(LF);
-      sb.append("default_crl_days= 30").append(LF);
-      sb.append("default_days    = 1825").append(LF);
-      sb.append("default_md      = sha1").append(LF);
-      sb.append("preserve        = no").append(LF);
-      
-      sb.append("policy = policy_anything").append(LF);
-      
-      sb.append("[ policy_anything ]").append(LF);
-      sb.append("countryName             = optional").append(LF);
-      sb.append("stateOrProvinceName     = optional").append(LF);
-      sb.append("localityName            = optional").append(LF);
-      sb.append("organizationName        = optional").append(LF);
-      sb.append("organizationalUnitName  = optional").append(LF);
-      sb.append("commonName              = supplied").append(LF);
-      sb.append("emailAddress            = optional").append(LF);
-      
-      sb.append("[ req ]").append(LF);
-      sb.append("default_bits            = 2048").append(LF);
-      sb.append("default_keyfile         = ./private/ca-key.pem").append(LF);
-      sb.append("default_md              = sha1").append(LF);
-      
-      sb.append("prompt                  = no").append(LF);
-      sb.append("distinguished_name      = root_ca_distinguished_name").append(LF);
-      
-      sb.append("x509_extensions = v3_ca").append(LF);
-      sb.append("string_mask = nombstr").append(LF);
-      
-      sb.append("[ root_ca_distinguished_name ]").append(LF);
-      sb.append("commonName = " + commonName).append(LF);
-      sb.append("countryName = " + country).append(LF);
-      sb.append("stateOrProvinceName = " + state).append(LF);
-      sb.append("localityName = " + city).append(LF);
-      sb.append("0.organizationName = " + organization).append(LF);
-      sb.append("emailAddress = " + email).append(LF);
-      
-      sb.append("[ usr_cert ]").append(LF);
-      sb.append("basicConstraints=CA:FALSE").append(LF);
-      sb.append("subjectKeyIdentifier=hash").append(LF);
-      sb.append("authorityKeyIdentifier=keyid,issuer:always").append(LF);
-      
-      sb.append("[ v3_req ]").append(LF);
-      sb.append("basicConstraints = CA:FALSE").append(LF);
-      sb.append("keyUsage = nonRepudiation, digitalSignature, keyEncipherment").append(LF);
-      
-      sb.append("[ v3_ca ]").append(LF);
-      sb.append("subjectKeyIdentifier=hash").append(LF);
-      sb.append("authorityKeyIdentifier=keyid:always,issuer:always").append(LF);
-      sb.append("basicConstraints = CA:true").append(LF);
-      
-      sb.append("[ crl_ext ]").append(LF);
-      sb.append("authorityKeyIdentifier=keyid:always,issuer:always").append(LF);
 
-      return sb.toString();
+    sb.append("HOME                    = .").append(LF);
+    sb.append("RANDFILE                = $ENV::HOME/.rnd").append(LF);
+    sb.append("[ ca ]").append(LF);
+    sb.append("default_ca      = CA_default").append(LF);
+
+    sb.append("[ CA_default ]").append(LF);
+    sb.append("dir             = " + rootDir.getAbsolutePath()).append(LF);
+    sb.append("new_certs_dir   = $dir/newcerts").append(LF);
+    sb.append("crl_dir         = $dir/crl").append(LF);
+    sb.append("database        = $dir/index").append(LF);
+    sb.append("certificate     = $dir/ca-cert.pem").append(LF);
+    sb.append("serial          = $dir/serial").append(LF);
+    sb.append("crl             = $dir/ca-crl.pem").append(LF);
+    sb.append("private_key     = $dir/private/ca-key.pem").append(LF);
+    sb.append("RANDFILE        = $dir/private/.rand").append(LF);
+    sb.append("unique_subject  = no").append(LF);
+
+    sb.append("x509_extensions = usr_cert").append(LF);
+    sb.append("default_crl_days= 30").append(LF);
+    sb.append("default_days    = 1825").append(LF);
+    sb.append("default_md      = sha1").append(LF);
+    sb.append("preserve        = no").append(LF);
+
+    sb.append("policy = policy_anything").append(LF);
+
+    sb.append("[ policy_anything ]").append(LF);
+    sb.append("countryName             = optional").append(LF);
+    sb.append("stateOrProvinceName     = optional").append(LF);
+    sb.append("localityName            = optional").append(LF);
+    sb.append("organizationName        = optional").append(LF);
+    sb.append("organizationalUnitName  = optional").append(LF);
+    sb.append("commonName              = supplied").append(LF);
+    sb.append("emailAddress            = optional").append(LF);
+
+    sb.append("[ req ]").append(LF);
+    sb.append("default_bits            = 2048").append(LF);
+    sb.append("default_keyfile         = ./private/ca-key.pem").append(LF);
+    sb.append("default_md              = sha1").append(LF);
+
+    sb.append("prompt                  = no").append(LF);
+    sb.append("distinguished_name      = root_ca_distinguished_name").append(LF);
+
+    sb.append("x509_extensions = v3_ca").append(LF);
+    sb.append("string_mask = nombstr").append(LF);
+
+    sb.append("[ root_ca_distinguished_name ]").append(LF);
+    sb.append("commonName = " + commonName).append(LF);
+    sb.append("countryName = " + country).append(LF);
+    sb.append("stateOrProvinceName = " + state).append(LF);
+    sb.append("localityName = " + city).append(LF);
+    sb.append("0.organizationName = " + organization).append(LF);
+    sb.append("emailAddress = " + email).append(LF);
+
+    sb.append("[ usr_cert ]").append(LF);
+    sb.append("basicConstraints=CA:FALSE").append(LF);
+    sb.append("subjectKeyIdentifier=hash").append(LF);
+    sb.append("authorityKeyIdentifier=keyid,issuer:always").append(LF);
+
+    sb.append("[ v3_req ]").append(LF);
+    sb.append("basicConstraints = CA:FALSE").append(LF);
+    sb.append("keyUsage = nonRepudiation, digitalSignature, keyEncipherment").append(LF);
+
+    sb.append("[ v3_ca ]").append(LF);
+    sb.append("subjectKeyIdentifier=hash").append(LF);
+    sb.append("authorityKeyIdentifier=keyid:always,issuer:always").append(LF);
+    sb.append("basicConstraints = CA:true").append(LF);
+
+    sb.append("[ crl_ext ]").append(LF);
+    sb.append("authorityKeyIdentifier=keyid:always,issuer:always").append(LF);
+
+    return sb.toString();
       
-    }
+  }
 
   
-/*
+
   public static void main(String[] args) throws Exception {
 
-    OpenSSLCAWrapper.create(new File("myNewCA"), false);
+    OpenSSLCAWrapper wrapper = OpenSSLCAWrapper.create(new File("myNewCA"), false);
+
+    doIt(wrapper, "foo", "foo1");
+    doIt(wrapper, "foo", "foo2");
+    doIt(wrapper, "boo", "boo1");
+    doIt(wrapper, "boo", "boo2");
   
-  }    
-*/  
+  }
+
+  private static void doIt(OpenSSLCAWrapper wrapper, String cn, String name)
+    throws Exception {
+    byte[] pK1Bytes = OpenSSLWrapper.genKey();
+    File pK1File = new File(name + ".pri");
+    IOUtil.bytesToFile(pK1Bytes, pK1File);
+    
+    byte[] cRSBytes = OpenSSLWrapper.createCSR(cn + ".com",
+      name,
+      "US",
+      "Cali",
+      "San Mateo",
+      pK1File);
+    File cSRFile = new File(name + ".csr");
+    IOUtil.bytesToFile(cRSBytes, cSRFile);
+    
+    byte[] certBytes = wrapper.signCSR(cSRFile);
+    File certFile = new File(name + ".crt");
+    IOUtil.bytesToFile(certBytes, certFile);
+  }
+
     
 }
 

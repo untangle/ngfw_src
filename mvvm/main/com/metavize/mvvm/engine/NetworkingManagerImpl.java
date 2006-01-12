@@ -491,9 +491,13 @@ class NetworkingManagerImpl implements NetworkingManager
 
     private void saveHttpsPort() throws Exception
     {
+
         /* rebind the https port */
-        ((MvvmContextImpl)MvvmContextFactory.context()).getMain().
-            rebindExternalHttpsPort( configuration.httpsPort());
+        MvvmContextFactory.context().appServerManager().rebindExternalHttpsPort(
+          configuration.httpsPort());
+
+//        ((MvvmContextImpl)MvvmContextFactory.context()).getMain().
+//            rebindExternalHttpsPort( configuration.httpsPort());
 
         Properties properties = new Properties();
         // if ( configuration.httpsPort() != NetworkingConfiguration.DEF_HTTPS_PORT ) {

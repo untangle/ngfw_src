@@ -20,38 +20,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
-import org.apache.catalina.Connector;
-import org.apache.catalina.Container;
-import org.apache.catalina.Context;
-import org.apache.catalina.Engine;
-import org.apache.catalina.Host;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.core.StandardDefaultContext;
-import org.apache.catalina.core.StandardHost;
-import org.apache.catalina.logger.FileLogger;
-import org.apache.catalina.session.StandardManager;
-import org.apache.catalina.startup.Embedded;
-import org.apache.coyote.tomcat5.CoyoteConnector;
 import org.apache.log4j.Logger;
+
 
 public class Main
 {
-    public static final int DEF_HTTPS_PORT = 443;
-
-    public static int HTTP_PORT = 80;
-    public static int HTTPS_PORT = DEF_HTTPS_PORT;
-    public static int EXTERNAL_HTTPS_PORT = DEF_HTTPS_PORT;
-
-    public static long TOMCAT_SLEEP_TIME = 20 * 1000; // 20 seconds
-    public static int NUM_TOMCAT_RETRIES = 15;        //  5 minutes total
-
-    private static final long REBIND_SLEEP_TIME = 1 * 1000; // 1 second
-    public static int NUM_REBIND_RETRIES = 5;        //  10 seconds
-
-    /* Give the thread a second to join */
-    private static final int START_JOIN_TIME_MSEC = 1000;
-
     private static String MVVM_LOCAL_CONTEXT_CLASSNAME
         = "com.metavize.mvvm.engine.MvvmContextImpl";
 
@@ -133,7 +106,9 @@ public class Main
         logger.info("starting mvvm");
         //Create the tomcat manager *before* the MVVM, so we can "register"
         //webapps to be started before Tomcat exists.
-        tomcatManager = new TomcatManager();
+        tomcatManager = new TomcatManager(bunniculaHome,
+          bunniculaWeb,
+          bunniculaLog);
         try {
             startMvvm();
         } catch (Throwable exn) {
@@ -142,8 +117,6 @@ public class Main
         System.out.println("MVVM startup complete: \"Today vegetables...tomorrow the world!\"");
         logger.info("restarting transforms and socket invoker");
         restartTransfoms();
-        logger.info("starting tomcat");
-        tomcatManager.startTomcat();
         System.out.println("MVVM postInit complete");
     }
 
@@ -205,24 +178,6 @@ public class Main
             logger.info("Loading " + f);
             networkingProperties.load(new FileInputStream(f));
         } /* This file may not exist */
-
-        /* Retrieve the outside HTTPS port from the properties */
-        try {
-            String temp;
-            if (( temp = networkingProperties.getProperty("mvvm.https.port")) != null ) {
-                EXTERNAL_HTTPS_PORT = Integer.parseInt( temp );
-            } else {
-                EXTERNAL_HTTPS_PORT = DEF_HTTPS_PORT;
-            }
-        } catch ( NumberFormatException e ) {
-            logger.warn( "Invalid https port string. using default: " + DEF_HTTPS_PORT );
-            EXTERNAL_HTTPS_PORT = DEF_HTTPS_PORT;
-        }
-        
-        /* Illegal range */
-        if ( EXTERNAL_HTTPS_PORT <= 0 || EXTERNAL_HTTPS_PORT >= 0xFFFF || EXTERNAL_HTTPS_PORT == 80 ) {
-            EXTERNAL_HTTPS_PORT = DEF_HTTPS_PORT;
-        }
     }
 
     // private methods --------------------------------------------------------
@@ -269,331 +224,10 @@ public class Main
         }
     }
 
-    //Callback from the MvvmContext to load
-    //a web app
-    public boolean loadWebApp(String urlBase,
-                              String rootDir) {
-        return tomcatManager.loadWebApp(urlBase, rootDir);
+    public TomcatManager getTomcatManager() {
+      return tomcatManager;
     }
 
-    //Callback from the MvvmContext to unload
-    //a web app
-    public boolean unloadWebApp(String contextRoot) {
-        return tomcatManager.unloadWebApp(contextRoot);
-    }
-
-    /* A function to rebind the outside HTTPs server */
-    public void rebindExternalHttpsPort( int port ) throws Exception
-    {
-        tomcatManager.rebindExternalHttpsPort(port);
-    }
-    
-    /**
-     * Little class used to describe a web app to be deployed.
-     */
-    class WebAppDescriptor {
-        final String urlBase;
-        final String relativeRoot;
-
-        WebAppDescriptor(String base, String rr) {
-            this.urlBase = base;
-            this.relativeRoot = rr;
-        }
-    }
-
-    /**
-     * Tomcat stuff broken into its own class, to simplify some synchronization
-     * issues.
-     */
-    class TomcatManager {
-
-        private Embedded emb = null;
-        private StandardHost baseHost;
-        private List<WebAppDescriptor> descriptors;
-        private CoyoteConnector externalConnector = null;
-        private Object modifyExternalSynch = new Object();
-
-        TomcatManager() {
-            //Create the list of web-apps we know we're going to deploy
-            //*before* we actualy create out Tomcat
-            descriptors = new ArrayList<WebAppDescriptor>();
-            descriptors.add(new WebAppDescriptor("/session-dumper", "session-dumper"));
-            descriptors.add(new WebAppDescriptor("/webstart", "webstart"));
-            descriptors.add(new WebAppDescriptor("/reports", "reports"));
-        }
-
-        synchronized boolean loadWebApp(String urlBase,
-                                        String rootDir) {
-            if(emb == null) {
-                //Haven't started yet
-                descriptors.add(new WebAppDescriptor(urlBase, rootDir));
-                return true;
-            }
-            else {
-                return loadWebAppImpl(urlBase, rootDir);
-            }
-        }
+}    
 
 
-        private boolean loadWebAppImpl(String urlBase,
-                                       String rootDir) {
-
-
-            String fqRoot = bunniculaWeb + "/" + rootDir;
-
-            try {
-                Context ctx = emb.createContext(urlBase, fqRoot);
-                StandardManager mgr = new StandardManager();
-                mgr.setPathname(null); /* disable session persistence */
-                ctx.setManager(mgr);
-                baseHost.addChild(ctx);
-                return true;
-            }
-            catch(Exception ex) {
-                logger.error("Unable to deploy webapp \"" +
-                             urlBase + "\" from directory \"" +
-                             fqRoot + "\"", ex);
-                return false;
-            }
-        }
-
-
-        boolean unloadWebApp(String contextRoot) {
-            try {
-                Container c = baseHost.findChild(contextRoot);
-                if(c != null) {
-                    baseHost.removeChild(c);
-                    return true;
-                }
-            }
-            catch(Exception ex) {
-                logger.error("Unable to unload web app \"" +
-                             contextRoot + "\"", ex);
-            }
-            return false;
-        }
-
-        void rebindExternalHttpsPort(int port) throws Exception
-        {
-            /* Synchronize on the external thread */
-            synchronized(this.modifyExternalSynch) {
-                doRebindExternalHttpsPort( port );
-            }
-        }
-
-        private void doRebindExternalHttpsPort(int port) throws Exception
-        {
-            logger.debug( "Rebinding the HTTPS port" );
-
-            if ( port == 80 || port == 0 || port > 0xFFFF ) {
-                throw new Exception( "Cannot bind external to port 80" );
-            }
-
-            /* If there was a failed attempt, retry, startExternal will only be null */
-            if (EXTERNAL_HTTPS_PORT == port) {
-                logger.info( "External is already bound to port: " + port );
-                return;
-            }
-            
-            /* Need to change the port */
-            if ( externalConnector != null ) {
-                logger.info( "Removing connector on port " + externalConnector.getPort());
-                emb.removeConnector( externalConnector );
-                try { 
-                    externalConnector.stop();
-                } catch ( Exception e ) { 
-                    logger.error( "Unable to stop externalConnector", e );
-                }
-            }
-            
-            externalConnector = null;
-            
-            /* If it is not the default port, then rebind it */
-            if ( port != HTTPS_PORT ) {
-                logger.info( "Rebinding external server to " + port );
-                externalConnector = (CoyoteConnector)emb.createConnector((InetAddress)null, port, true);
-                externalConnector.setKeystoreFile("conf/keystore");
-                emb.addConnector(externalConnector);
-                for (int i = 0; i < NUM_REBIND_RETRIES; i++) {
-                    try { 
-                        externalConnector.start(); 
-                        /* Sucess */
-                        break;
-                    } catch (LifecycleException exn) {
-                        if (i == NUM_REBIND_RETRIES) throw exn;
-                    } catch (Exception exn) {
-                        logger.error("Exception rebinding external connector.", exn);
-                        throw exn;
-                    }
-                    
-                    try { 
-                        Thread.sleep(REBIND_SLEEP_TIME);
-                    } catch (InterruptedException exn) {
-                        /* ??? */
-                        logger.warn("Interrupted, breaking");
-                        return;
-                    }
-                }
-            }
-            
-            EXTERNAL_HTTPS_PORT = port;
-        }
-
-        /**
-         * Gives no exceptions, even if Tomcat was never started.
-         */
-        private void stopTomcat() {
-            try {
-                if (emb != null) {
-                    emb.stop();
-                }
-            } catch (LifecycleException exn) {
-                logger.debug(exn);
-            }
-        }
-
-        // XXX exception handling
-        private synchronized void startTomcat() throws Exception
-        {
-            // jdi 8/30/04 -- canonical host name depends on ordering of /etc/hosts
-            String hostname = "localhost";
-
-            // set default logger and realm
-            FileLogger fileLog = new FileLogger();
-            fileLog.setDirectory(bunniculaLog);
-            fileLog.setPrefix("tomcat");
-            fileLog.setSuffix(".log");
-            fileLog.setTimestamp(true);
-            // fileLog.setVerbosityLevel("DEBUG");
-            
-            emb = new Embedded(fileLog, new MvvmRealm());
-            emb.setCatalinaHome(bunniculaHome);
-
-            // create an Engine
-            Engine baseEngine = emb.createEngine();
-
-            // set Engine properties
-            baseEngine.setName("tomcat");
-            baseEngine.setDefaultHost(hostname);
-
-            // Set up the Default Context
-            StandardDefaultContext sdc = new StandardDefaultContext();
-            sdc.setAllowLinking(true);
-            baseEngine.addDefaultContext(sdc);
-
-            // create Host
-            baseHost = (StandardHost)emb
-                .createHost(hostname, bunniculaWeb);
-            baseHost.setUnpackWARs(true);
-            baseHost.setDeployOnStartup(true);
-            baseHost.setAutoDeploy(true);
-
-            // add host to Engine
-            baseEngine.addChild(baseHost);
-
-            // create root Context
-            Context ctx = emb.createContext("", bunniculaWeb + "/ROOT");
-            StandardManager mgr = new StandardManager();
-            mgr.setPathname(null); /* disable session persistence */
-            ctx.setManager(mgr);
-            ctx.setManager(new StandardManager());
-
-            // add context to host
-            baseHost.addChild(ctx);
-
-            // create application Context
-            ctx = emb.createContext("/http-invoker", "http-invoker");
-            ctx.setPrivileged(true);
-            baseHost.addChild(ctx);
-            ctx.getServletContext()
-                .setAttribute("invoker", mvvmContext.getInvokerBase());
-            mgr = new StandardManager();
-            mgr.setPathname(null); /* disable session persistence */
-            ctx.setManager(mgr);
-
-            //Load the webapps which were requested before the
-            //system started-up.
-            for(WebAppDescriptor desc : descriptors) {
-                loadWebAppImpl(desc.urlBase, desc.relativeRoot);
-            }
-
-            // add new Engine to set of
-            // Engine for embedded server
-            emb.addEngine(baseEngine);
-
-            // create Connector
-            CoyoteConnector con = (CoyoteConnector)emb.createConnector((InetAddress)null, HTTP_PORT, false);
-            emb.addConnector(con);
-            con = (CoyoteConnector)emb.createConnector((InetAddress)null, HTTPS_PORT, true);
-            con.setKeystoreFile("conf/keystore");
-            emb.addConnector(con);
-
-            /* Start the outside https server */
-            if ( EXTERNAL_HTTPS_PORT != HTTPS_PORT ) {
-                externalConnector = (CoyoteConnector)emb.createConnector((InetAddress)null, 
-                                                                         EXTERNAL_HTTPS_PORT, true);
-                externalConnector.setKeystoreFile("conf/keystore");
-                emb.addConnector(externalConnector);
-            }
-
-            // start operation
-            try {
-                emb.start();
-            } catch (LifecycleException exn) {
-                Throwable wrapped = exn.getThrowable();
-                // Note -- right now wrapped is always null!  Thus the
-                // following horror:
-                boolean isAddressInUse = isAIUExn(exn);
-                if (isAddressInUse) {
-                    Runnable tryAgain = new Runnable() {
-                            public void run() {
-                                int i;
-                                for (i = 0; i < NUM_TOMCAT_RETRIES; i++) {
-                                    try {
-                                        logger.warn("could not start Tomcat (address in use), sleeping 20 and trying again");
-                                        Thread.sleep(TOMCAT_SLEEP_TIME);
-                                        try {
-                                            emb.stop();
-                                        } catch (LifecycleException exn) {
-                                            logger.warn(exn, exn);
-                                        }
-                                        emb.start();
-                                        logger.info("Tomcat successfully started");
-                                        break;
-                                    } catch (InterruptedException x) {
-                                        return;
-                                    } catch (LifecycleException x) {
-                                        boolean isAddressInUse = isAIUExn(x);
-                                        if (!isAddressInUse) {
-                                            fatalError("Starting Tomcat", x);
-                                            return;
-                                        }
-                                    }
-                                }
-                                if (i == NUM_TOMCAT_RETRIES)
-                                    fatalError("Unable to start Tomcat after " +
-                                               NUM_TOMCAT_RETRIES
-                                               + " tries, giving up",
-                                               null);
-                            }
-                        };
-                    new Thread(tryAgain, "Tomcat starter").start();
-                } else {
-                    // Something else, just die die die.
-                    throw exn;
-                }
-            }
-        }
-
-        private boolean isAIUExn(LifecycleException exn) {
-            Throwable wrapped = exn.getThrowable();
-            String msg = exn.getMessage();
-            if (wrapped != null && wrapped instanceof java.net.BindException)
-                // Never happens right now. XXX
-                return true;
-            if (msg.contains("ddress already in use"))
-                return true;
-            return false;
-        }
-    }
-}

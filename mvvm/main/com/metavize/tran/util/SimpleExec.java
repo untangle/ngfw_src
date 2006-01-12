@@ -11,7 +11,6 @@
  
 package com.metavize.tran.util;
 
-import java.util.concurrent.TimeoutException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ByteArrayOutputStream;
@@ -133,7 +132,7 @@ public final class SimpleExec {
     File rootDir,
     boolean bufferStdOut,
     boolean bufferStdErr,
-    boolean useMVVMThread) throws IOException, TimeoutException {
+    boolean useMVVMThread) throws IOException {
 
     //Assemble full command
     args = args==null?EMPTY_ARRAY:args;
@@ -162,7 +161,10 @@ public final class SimpleExec {
       done();
       closeStreams();
       if(m_wasTimeout) {
-        throw new TimeoutException();
+        String stdOutStr = bufferStdOut?new String(m_stdOutBuf.toByteArray()):"";
+        String stdErrStr = bufferStdErr?new String(m_stdErrBuf.toByteArray()):"";
+        throw new IOException("Captured stdout \"" + stdOutStr +
+          "\", stderr \"" + stdErrStr + "\"");
       }
       int retCode = m_process.exitValue();
 
@@ -175,7 +177,10 @@ public final class SimpleExec {
       closeStreams();
       destroyProcess();
       if(m_wasTimeout) {
-        throw new TimeoutException();
+        String stdOutStr = bufferStdOut?new String(m_stdOutBuf.toByteArray()):"";
+        String stdErrStr = bufferStdErr?new String(m_stdErrBuf.toByteArray()):"";
+        throw new IOException("Captured stdout \"" + stdOutStr +
+          "\", stderr \"" + stdErrStr + "\"");
       }
       else {
         throw new IOException("Interrupted");
@@ -204,6 +209,36 @@ public final class SimpleExec {
     return useMVVMThread?MvvmContextFactory.context().newThread(r):new Thread(r);
   }
 
+  /**
+   * Execute the given command.
+   *
+   * @param cmd the command (e.g. "ls")
+   * @param args arguments (e.g. "-al").  May be null
+   * @param env the environment (in "name=value" form).  May be null
+   * @param rootDir the directory to run-in.  If null, the $PWD is used
+   * @param bufferStdOut If true, stdout of the process will be buffered
+   *        and available on the returned {@link #SimpleExecResult}
+   * @param bufferStdErr If true, stderr of the process will be buffered
+   *        and available on the returned {@link #SimpleExecResult}
+   * @param maxTime the max time the process should run before it is killed
+   */
+  public static SimpleExecResult exec(String cmd,
+    String[] args,
+    String[] env,
+    File rootDir,
+    boolean bufferStdOut,
+    boolean bufferStdErr,
+    long maxTime) throws IOException {
+    return exec(cmd,
+      args,
+      env,
+      rootDir,
+      bufferStdOut,
+      bufferStdErr,
+      maxTime,
+      null,
+      false);
+  }
 
   /**
    * Execute the given command.
@@ -229,62 +264,11 @@ public final class SimpleExec {
     boolean bufferStdErr,
     long maxTime,
     Logger logAs,
-    boolean useMVVMThread) throws TimeoutException, IOException {
+    boolean useMVVMThread) throws IOException {
 
     SimpleExec se = new SimpleExec(maxTime, logAs);
 
     return se.doIt(cmd, args, env, rootDir, bufferStdOut, bufferStdErr, useMVVMThread);
   }
-
-/*
-  public static void main(String[] args) throws Exception {
-    SimpleExecResult result = SimpleExec.exec(
-      "openssl",
-      new String[] {
-        "req",
-        "-x509",
-        "-nodes",
-        "-days",
-        "365",
-        "-subj",
-        "/C=US/ST=CA/L=San Mateo/CN=gobbles.metavize.com",
-        "-newkey",
-        "rsa:1024"
-      },
-      null,
-      null,
-      true,
-      true,
-      5000,
-      null,
-      false);
-
-    System.out.println("*****************");
-    System.out.println(result.exitCode);
-    System.out.println("*****************");
-    System.out.println(new String(result.stdOut));
-    System.out.println("*****************");
-    System.out.println(new String(result.stdErr));
-
-    result = SimpleExec.exec(
-      "ls",
-      new String[] {"-al"},
-      null,
-      null,
-      true,
-      true,
-      5000,
-      null,
-      false);
-
-    System.out.println("*****************");
-    System.out.println(result.exitCode);
-    System.out.println("*****************");
-    System.out.println(new String(result.stdOut));
-    System.out.println("*****************");
-    System.out.println(new String(result.stdErr));    
-    
-  }
-*/
 }
 

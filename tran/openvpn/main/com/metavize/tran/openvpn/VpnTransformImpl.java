@@ -376,7 +376,7 @@ public class VpnTransformImpl extends AbstractTransform
     private synchronized void deployWebApp()
     {
         if ( !isWebAppDeployed ) {
-            if ( MvvmContextFactory.context().loadWebApp( WEB_APP_PATH, WEB_APP )) {
+            if ( MvvmContextFactory.context().appServerManager().loadWebApp( WEB_APP_PATH, WEB_APP )) {
                 logger.debug( "Deployed openvpn web app" );
             }
             else logger.warn( "Unable to deploy openvpn web app" );
@@ -387,7 +387,7 @@ public class VpnTransformImpl extends AbstractTransform
     private synchronized void unDeployWebApp()
     {
         if ( isWebAppDeployed ) {
-            if( MvvmContextFactory.context().unloadWebApp(WEB_APP_PATH )) {
+            if( MvvmContextFactory.context().appServerManager().unloadWebApp(WEB_APP_PATH )) {
                 logger.debug( "Unloaded openvpn web app" );
             } else logger.warn( "Unable to unload openvpn web app" );
         }

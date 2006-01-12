@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+import com.metavize.mvvm.AppServerManager;
 import com.metavize.mvvm.CronJob;
 import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.Period;
@@ -71,6 +72,7 @@ public class MvvmContextImpl extends MvvmContextBase
     private TransformManagerImpl transformManager;
     private MvvmRemoteContext remoteContext;
     private CronManager cronManager;
+    private AppServerManagerImpl appServerManager;
 
     // constructor ------------------------------------------------------------
 
@@ -101,6 +103,12 @@ public class MvvmContextImpl extends MvvmContextBase
 
     // singletons -------------------------------------------------------------
 
+
+    public AppServerManagerImpl appServerManager()
+    {
+        return appServerManager;
+    }
+        
     public ToolboxManagerImpl toolboxManager()
     {
         return toolboxManager;
@@ -183,25 +191,6 @@ public class MvvmContextImpl extends MvvmContextBase
             }
         }
     }
-
-    //Aaron/John - I wasn't ready to
-    // (a) expose "main" to the transforms or
-    // (b) create a "WebServerManagerImpl" class
-    //
-    //So for now, I've stuck these two methods directly
-    //on "MvvmLocalContext".  Use of them is so
-    //limiited right now that refactoring shouldn't
-    //be an issue
-
-
-    public boolean loadWebApp(String urlBase,
-      String rootDir) {
-      return getMain().loadWebApp(urlBase, rootDir);
-    }
-    public boolean unloadWebApp(String contextRoot) {
-      return getMain().unloadWebApp(contextRoot);
-    }
-
 
     // service methods --------------------------------------------------------
 
@@ -372,6 +361,8 @@ public class MvvmContextImpl extends MvvmContextBase
         // Retrieve the argon manager
         argonManager = ArgonManagerImpl.getInstance();
 
+        appServerManager = AppServerManagerImpl.getInstance();
+
         // start vectoring:
         String argonFake = System.getProperty(ARGON_FAKE_KEY);
         if (null == argonFake || !argonFake.equalsIgnoreCase("yes")) {
@@ -404,6 +395,11 @@ public class MvvmContextImpl extends MvvmContextBase
             state = MvvmState.RUNNING;
             startupWaitLock.notifyAll();
         }
+
+        //Inform the AppServer manager that everything
+        //else is started.
+        appServerManager.postInit(this, getMain().getTomcatManager());
+
     }
 
     @Override
