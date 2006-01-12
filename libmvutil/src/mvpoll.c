@@ -405,6 +405,8 @@ static int _mvpoll_collect_events ( mvpoll_t* mvp, mvpoll_event_t* event, int ma
         mvpoll_event_t* ev;
         list_node_t* node_step;
         
+        if ( pthread_mutex_lock( &mvp->mutex ) < 0 ) perrlog( "pthread_mutex_lock\n" );
+
         for ( node_step = list_head(&mvp->rdy) ; node_step ; node_step = list_node_next(node_step)) {
             if (!(ev = list_node_val(node_step)))
                 errlogcons();
@@ -414,6 +416,9 @@ static int _mvpoll_collect_events ( mvpoll_t* mvp, mvpoll_event_t* event, int ma
                 evstep++;
             }
         }
+
+        if ( pthread_mutex_unlock( &mvp->mutex ) < 0 ) perrlog( "pthread_mutex_unlock\n" );
+
     }
 
     return evstep;
@@ -508,6 +513,8 @@ static int _mvpoll_update_status (mvpoll_t* mvp, mvpoll_keystate_t* keystate, in
         else {
             keystate->event.events = ev;
         }
+
+        return 0;
     }
     
     int ret = 0;
@@ -515,7 +522,6 @@ static int _mvpoll_update_status (mvpoll_t* mvp, mvpoll_keystate_t* keystate, in
     if ( pthread_mutex_lock( &mvp->mutex ) < 0 ) return perrlog( "pthread_mutex_lock\n" );
     ret = _critical_section();
     if ( pthread_mutex_unlock( &mvp->mutex ) < 0 ) return perrlog( "pthread_mutex_unlock\n" );
-    
 
     return ret;
 }
