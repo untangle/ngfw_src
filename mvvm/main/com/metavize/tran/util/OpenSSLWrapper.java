@@ -467,7 +467,8 @@ public class OpenSSLWrapper {
    */
   private static HashMap<String, String> parseDN(String dnStr)
     throws IOException {
-    
+
+    //TODO Replace with "RFC2253Name" class
     dnStr = dnStr.trim();
     try {
       HashMap<String, String> ret = new HashMap<String, String>();
