@@ -201,7 +201,7 @@ public class MLogger extends javax.swing.JFrame implements FilenameFilter {
 			    margin.right = 10;
 			    logJTextAreas[i].setMargin(margin);
 			    logJScrollPanes[i] = new JScrollPane(logJTextAreas[i]);
-			    outputJTabbedPane.addTab(logFiles[i].getName(), logJScrollPanes[i] );
+			    outputJTabbedPane.addTab(logFiles[i].getName(), logJScrollPanes[i]);
 			}
 		    }});
 		    // SHOW UPDATES
