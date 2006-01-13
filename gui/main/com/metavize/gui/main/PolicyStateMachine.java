@@ -260,23 +260,6 @@ public class PolicyStateMachine implements ActionListener {
 	selectedRackJPanel = newPolicyRackJPanel;
 	selectedPolicy = newPolicy;
     }
-    /*
-    private void handlePolicyManagerJButton() {
-	try{
-	    policyManagerJButton.setEnabled(false);
-	    PolicyJDialog policyJDialog = new PolicyJDialog();
-	    policyJDialog.setVisible(true);
-	    updatePolicyRacks();
-	}
-	catch(Exception e){
-	    try{ Util.handleExceptionWithRestart("Error handling policy manager action", e); }
-	    catch(Exception f){ Util.handleExceptionNoRestart("Error handling policy manager action", f); }
-	}
-	finally{
-	    policyManagerJButton.setEnabled(true);
-	}
-    }
-    */
     ///////////////////////////////////////////////////////
     // HANDLERS ///////////////////////////////////////////
 
@@ -348,15 +331,16 @@ public class PolicyStateMachine implements ActionListener {
     private void removedPolicyRacks(final List<Policy> policies){
 	for( Policy policy : policies ){
 	    // SHUTDOWN ALL APPLIANCES
-	    for( MTransformJPanel mTransformJPanel : policyRackMap.get(policy).values() ){
-		mTransformJPanel.doShutdown();
-	    }		
+	    /* We dont need to do this anymore since non-empty policies cannot be deleted */
+	    //for( MTransformJPanel mTransformJPanel : policyRackMap.get(policy).values() ){
+	    //mTransformJPanel.doShutdown();
+	    //}		
 	    // REMOVE FROM GUI DATA MODEL
 	    policyRackMap.get(policy).clear();
 	    policyRackMap.remove(policy);
 	    // REMOVE FROM GUI VIEW MODEL
 	    policyRackJPanelMap.get(policy).removeAll();
-	    policyRackJPanelMap.remove(policy);
+	    policyRackJPanelMap.remove(policy);	    
 	    // REMOVE FROM SCROLL POSITION
 	    lastRackScrollPosition.remove(policy);
 	}
