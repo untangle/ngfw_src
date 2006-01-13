@@ -10,7 +10,7 @@ function showDir(dir)
 {
   var dirElem = $(dir);
 
-  if (0 == dirElem.childNodes.length) {
+  if (isFetchable(dirElem)) {
     new Ajax.Request("ls",
                      { method: "get",
                        parameters: "url=" + dir,
@@ -18,12 +18,20 @@ function showDir(dir)
                                    {
                                      var resp = parseDomFromString(req.responseText);
                                      var root = resp.getElementsByTagName('root')[0];
-                                     addChildDirectories(dirElem, root);
+                                     if (isFetchable(dirElem)) {
+                                       addChildDirectories(dirElem, root);
+                                     }
                                    }
                      });
   } else {
     toggleTree(dir);
   }
+}
+
+function isFetchable(target)
+{
+    // XXX add leaf node checking
+    return 0 == target.childNodes.length;
 }
 
 function addChildDirectories(target, dom)
