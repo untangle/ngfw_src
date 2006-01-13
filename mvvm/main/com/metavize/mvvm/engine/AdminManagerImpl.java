@@ -207,6 +207,11 @@ class AdminManagerImpl implements AdminManager
         }
     }
 
+    public RegistrationInfo getRegistrationInfo() {
+      //TODO bscott fixme
+      return new RegistrationInfo("MyCompany", "John", "Doe", "admin@localhost", 1);
+    }
+
     public SnmpManager getSnmpManager() {
       return snmpManager;
     }

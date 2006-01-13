@@ -62,6 +62,14 @@ public interface AdminManager
         throws TransactionRolledbackException;
 
     /**
+     * Returns the registration info previously set, or null if
+     * {@link #setRegistrationInfo setRegistrationInfo} has never been set
+     *
+     * @return the reg info
+     */
+    RegistrationInfo getRegistrationInfo();
+
+    /**
      * Access the singleton responsible for
      * managing SNMP in this instance
      */

@@ -16,6 +16,7 @@ import com.metavize.mvvm.MvvmContextFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
+import java.net.InetAddress;
 import org.apache.log4j.Logger;
 
 //name_
@@ -126,15 +127,6 @@ public class AppServerManagerImpl
     m_tomcatManager.rebindExternalHttpsPort(port);
   }
 
-  //Aaron/John - I wasn't ready to
-  // (a) expose "main" to the transforms or
-  // (b) create a "WebServerManagerImpl" class
-  //
-  //So for now, I've stuck these two methods directly
-  //on "MvvmLocalContext".  Use of them is so
-  //limiited right now that refactoring shouldn't
-  //be an issue
-
   //===================================================
   // See Doc from interface
   //===================================================
@@ -148,6 +140,25 @@ public class AppServerManagerImpl
   //===================================================  
   public boolean unloadWebApp(String contextRoot) {
     return m_tomcatManager.unloadWebApp(contextRoot);
+  }
+
+
+  private String getFQDN() {
+    try {
+      InetAddress[] allLocals = InetAddress.getAllByName("127.0.0.1");
+      for(InetAddress addr : allLocals) {
+        if(addr.getHostName().equalsIgnoreCase("localhost")) {
+          continue;
+        }
+        return addr.getHostName();
+      }
+      m_logger.error("Unable to find local host name");
+      return "mv-edgeguard";
+    }
+    catch(java.net.UnknownHostException ex) {
+      m_logger.error("Unable to find local host name", ex);
+      return "mv-edgeguard";
+    }
   }
   
 }

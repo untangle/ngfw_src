@@ -289,7 +289,26 @@ public class MVKeyStore {
     return result.stdOut;   
   }
 
-  
+
+  /**
+   * Generate a new PrivateKey in the store.
+   * Really, it generates a self-signed cert good
+   * for 5 years.
+   *
+   * Note that the key is not returned, as it isn't
+   * "needed".
+   *
+   * <b>Warning - this will overwrite an existing
+   * key, so check via {@link #containsAlias containsAlias}</b>
+   *
+   * @param alias the alias
+   * @param dname the distinguished name
+   */
+  public void generateKey(String alias,
+    RFC2253Name dname)
+    throws IOException {
+    generateKey(alias, dname, 365*5);
+  }
 
   /**
    * Generate a new PrivateKey in the store.
@@ -303,8 +322,11 @@ public class MVKeyStore {
    *
    * @param alias the alias
    * @param dname the distinguished name
+   * @param durationInDays the duration in days of the key
    */
-  public void generateKey(String alias, RFC2253Name dname)
+  public void generateKey(String alias,
+    RFC2253Name dname,
+    int durationInDays)
     throws IOException {
 
 
@@ -329,6 +351,8 @@ public class MVKeyStore {
         "RSA",   
         "-alias",
         alias,
+        "-validity",
+        Integer.toString(durationInDays),
         "-dname",
         dname.toRFC2253String()
       },
