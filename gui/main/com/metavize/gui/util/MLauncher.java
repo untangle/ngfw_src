@@ -25,9 +25,15 @@ public class MLauncher {
 
         // set the proper look and feel, and dynamic resizing
         try {
+	    /*
+	    com.incors.plaf.alloy.AlloyLookAndFeel.setProperty("alloy.licenseCode", "2006/02/11#imnieves@gmail.com#ay1m62#13knm1");
+	    javax.swing.LookAndFeel alloyLnF = new com.incors.plaf.alloy.AlloyLookAndFeel();
+	    javax.swing.UIManager.setLookAndFeel(alloyLnF);
+	    */
             com.incors.plaf.kunststoff.KunststoffLookAndFeel kunststoffLaf = new com.incors.plaf.kunststoff.KunststoffLookAndFeel();
             kunststoffLaf.setCurrentTheme(new com.incors.plaf.kunststoff.KunststoffTheme());
             javax.swing.UIManager.setLookAndFeel(kunststoffLaf);
+
             java.awt.Toolkit.getDefaultToolkit().setDynamicLayout(true);
         }
         catch (Exception e) {
