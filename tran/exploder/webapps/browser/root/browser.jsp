@@ -1,5 +1,4 @@
 <%@ page language="java" import="jcifs.smb.*" %>
-
 <%@ taglib prefix="browser" uri="WEB-INF/browser.tld" %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -15,7 +14,14 @@
 
 <body>
 
+<div id="tree">
 <browser:dirtree url="smb://metaloft.com/"/>
+</div>
+
+<div id="content">
+<h2>Page Content Here</h2>
+</div>
+
 
 </body>
 </html>

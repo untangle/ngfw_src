@@ -1,23 +1,44 @@
+/* Copyright (c) 2006 Metavize Inc. */
+/* All rights reserved.             */
+
 body {
-    font: 8pt Verdana,sans-serif;
-    color: navy;
+  font: 8pt Verdana,sans-serif;
+  color: navy;
 }
 
 .trigger {
-    cursor: pointer;
-    cursor: hand;
-    display: block;
+  white-space: nowrap;
+  cursor: pointer;
+  cursor: hand;
+  display: block;
 }
 
 .dir {
-    display: none;
-    margin-left: 16px;
+  display: none;
+  margin-left: 16px;
 }
 
 a {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
+}
+
+#tree {
+  width: 150px;
+  height: 100%;
+  overflow: auto;
+  border-right: 1px solid #666666;
+  padding-left: 3px;
+  padding-top: 3px;
+}
+
+#content {
+  position: absolute;
+  top: 0;
+  left: 160;
+  font-family: sans-serif;
+  color: navy;
 }
