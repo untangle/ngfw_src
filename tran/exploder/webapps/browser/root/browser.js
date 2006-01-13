@@ -52,7 +52,7 @@ function addChildDirectory(target, name, childPath)
   img.setAttribute("id", "I" + childPath);
   trig.appendChild(img);
 
-  var text = document.createTextNode(name);
+  var text = document.createTextNode(name.substring(0, name.length - 1));
   trig.appendChild(text);
 
   var br = document.createElement("br");

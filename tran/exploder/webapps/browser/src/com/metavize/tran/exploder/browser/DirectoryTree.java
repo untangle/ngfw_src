@@ -41,7 +41,8 @@ public class DirectoryTree extends TagSupport
             out.println("<span class='trigger' onClick='showDir(\"" + url + "\");'>");
 
             out.println("<img src='closed.gif' id='I" + url + "'/>");
-            out.println(url);
+
+            out.println(Util.stripSlash(url));
 
             out.println("<br/>");
             out.println("</span>");

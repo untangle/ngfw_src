@@ -107,42 +107,12 @@ public class FileLister extends HttpServlet
 
         try {
             for (SmbFile d : f.listFiles(DIR_FILTER)) {
-                os.println("  <dir name='" + escapeXml(d.getName()) + "'/>");
+                os.println("  <dir name='" + Util.escapeXml(d.getName()) + "'/>");
              }
         } catch (SmbException exn) {
             throw new ServletException("could not list directory", exn);
         }
 
         os.println("</root>");
-    }
-
-    private String escapeXml(String in)
-    {
-        StringBuilder sb = new StringBuilder(in.length() + 32);
-        for (int i = 0; i < in.length(); i++) {
-            char c = in.charAt(i);
-            switch (c) {
-            case '<':
-                sb.append("&lt;");
-                break;
-            case '>':
-                sb.append("&gt;");
-                break;
-            case '\'':
-                sb.append("&apos;");
-                break;
-            case '&':
-                sb.append("&amp;");
-                break;
-            case '"':
-                sb.append("&quot;");
-                break;
-            default:
-                sb.append(c);
-                break;
-            }
-        }
-
-        return sb.toString();
     }
 }
