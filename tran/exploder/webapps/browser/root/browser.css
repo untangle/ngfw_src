@@ -13,6 +13,13 @@ body {
   display: block;
 }
 
+.list-trigger {
+  white-space: nowrap;
+  cursor: pointer;
+  cursor: hand;
+  display: inline;
+}
+
 .dir {
   display: none;
   margin-left: 16px;

@@ -6,7 +6,7 @@ openImg.src = "open.gif";
 var closedImg = new Image();
 closedImg.src = "closed.gif";
 
-function showDir(dir)
+function expandDir(dir)
 {
   var dirElem = $(dir);
 
@@ -53,15 +53,21 @@ function addChildDirectory(target, name, childPath)
 {
   var trig = document.createElement("span");
   Element.addClassName(trig, "trigger");
-  trig.onclick = function() { showDir(childPath); };
 
   var img = document.createElement("img");
   img.setAttribute("src", "closed.gif");
   img.setAttribute("id", "I" + childPath);
+  img.onclick = function() { expandDir(childPath); };
   trig.appendChild(img);
 
+  var listTrigger = document.createElement("span");
+  Element.addClassName(listTrigger, "list-trigger");
+  listTrigger.onclick = function() { alert("LIST TRIGGER"); };
+
   var text = document.createTextNode(name.substring(0, name.length - 1));
-  trig.appendChild(text);
+  listTrigger.appendChild(text);
+
+  trig.appendChild(listTrigger);
 
   var br = document.createElement("br");
   trig.appendChild(br);

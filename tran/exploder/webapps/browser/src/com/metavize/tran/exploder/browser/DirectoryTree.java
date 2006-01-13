@@ -38,11 +38,15 @@ public class DirectoryTree extends TagSupport
         try {
             JspWriter out = pageContext.getOut();
 
-            out.println("<span class='trigger' onClick='showDir(\"" + url + "\");'>");
+            out.println("<span class='trigger'>");
 
-            out.println("<img src='closed.gif' id='I" + url + "'/>");
+            out.println("<img src='closed.gif' id='I" + url + "' "
+                        + "onClick='expandDir(\"" + url + "\");'>");
 
-            out.println(Util.stripSlash(url));
+            out.print("<span class='list-trigger' "
+                        + "onclick='alert(\"LIST-TRIGGER\");'>");
+            out.print(Util.stripSlash(url));
+            out.print("</span>");
 
             out.println("<br/>");
             out.println("</span>");
