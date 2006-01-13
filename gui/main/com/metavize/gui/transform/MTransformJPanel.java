@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2004, 2005 Metavize Inc.
  * All rights reserved.
@@ -13,8 +12,7 @@
 package com.metavize.gui.transform;
 
 import com.metavize.gui.util.*;
-import com.metavize.gui.util.*;
-import com.metavize.gui.util.*;
+import com.metavize.gui.widgets.*;
 
 import com.metavize.mvvm.policy.*;
 import com.metavize.mvvm.security.*;
@@ -46,11 +44,13 @@ public class MTransformJPanel extends javax.swing.JPanel {
 
     // GUI DATA MODEL
     protected MStateMachine mStateMachine;
-    protected javax.swing.Timer powerOnTimer;
+    CycleJLabel powerOnHintJLabel;
+    private static ImageIcon[] powerOnImageIcons;
+    private DropdownTask controlsDropdownTask;
 
     // GUI CONSTANTS
     private static Dimension maxDimension, minDimension;
-    private static final int HELPER_POWER_ON_BLINK = 1000;
+    private static final int HELPER_POWER_ON_BLINK = 200;
 
     public static MTransformJPanel instantiate(TransformContext transformContext) throws Exception {
 	TransformDesc transformDesc = transformContext.getTransformDesc();
@@ -65,22 +65,26 @@ public class MTransformJPanel extends javax.swing.JPanel {
 	this.mackageDesc = transformContext.getMackageDesc();
 	this.tid = transformContext.getTid();
 	this.policy = tid.getPolicy();
+
+	// VISUAL HELPER
+	synchronized( this ){
+	    if( powerOnImageIcons == null ){
+		String[] powerOnImagePaths = { "com/metavize/gui/transform/IconPowerOnHint30.png",
+					       "com/metavize/gui/transform/IconPowerOnHint40.png",
+					       "com/metavize/gui/transform/IconPowerOnHint50.png",
+					       "com/metavize/gui/transform/IconPowerOnHint60.png",
+					       "com/metavize/gui/transform/IconPowerOnHint70.png",
+					       "com/metavize/gui/transform/IconPowerOnHint80.png",
+					       "com/metavize/gui/transform/IconPowerOnHint90.png",
+					       "com/metavize/gui/transform/IconPowerOnHint100.png" };
+		powerOnImageIcons = Util.getImageIcons( powerOnImagePaths );
+	    }
+	}
+	powerOnHintJLabel = new CycleJLabel(powerOnImageIcons, HELPER_POWER_ON_BLINK, true, true);
 	
         // INIT GUI
         initComponents();
 
-	// VISUAL HELPER
-	powerOnHintJLabel.setVisible(false);
-	ActionListener blinkPerformer = new ActionListener(){
-		public void actionPerformed(ActionEvent evt){
-		    if( powerOnHintJLabel.isVisible() )
-			powerOnHintJLabel.setVisible(false);
-		    else
-			powerOnHintJLabel.setVisible(true);
-		}
-	    };
-	powerOnTimer = new javax.swing.Timer(HELPER_POWER_ON_BLINK, blinkPerformer);
-	
         // DYNAMICALLY LOAD DISPLAY
         try{
             Class mTransformDisplayJPanelClass = Class.forName(this.getClass().getPackage().getName()  +  ".MTransformDisplayJPanel",
@@ -142,11 +146,16 @@ public class MTransformJPanel extends javax.swing.JPanel {
         setMaximumSize(minDimension);
 	
         // ADD CONFIG PANEL
-        add(mTransformControlsJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(46, 100, 596, 380), 0);
+        add(mTransformControlsJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(46, 100, 596, 380));
         setMinimumSize(minDimension);
         setMaximumSize(maxDimension);
         //mTransformControlsJPanel.setVisible(false);
         setPreferredSize(minDimension);
+
+	// CONFIG PANEL DROPDOWN TASK /////////
+	controlsDropdownTask = new DropdownTask(this, mTransformControlsJPanel, controlsJToggleButton,
+						minDimension, maxDimension,
+						596, 380, 46, -280, 100);
         
         // SETUP COLORS and name
         descriptionTextJLabel.setText( getMackageDesc().getDisplayName() );
@@ -166,12 +175,9 @@ public class MTransformJPanel extends javax.swing.JPanel {
 
     public void setPowerOnHintVisible(boolean isVisible){
 	if( isVisible )
-	    powerOnTimer.start();
+	    powerOnHintJLabel.start();
 	else{
-	    powerOnTimer.stop();
-	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		powerOnHintJLabel.setVisible(false);
-	    }});
+	    powerOnHintJLabel.stop();
 	}
     }
     
@@ -194,7 +200,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
         private void initComponents() {//GEN-BEGIN:initComponents
                 onOffbuttonGroup = new javax.swing.ButtonGroup();
                 descriptionTextJLabel = new javax.swing.JLabel();
-                powerOnHintJLabel = new javax.swing.JLabel();
+                nbPowerOnHintJLabel = powerOnHintJLabel;
                 stateJLabel = (JLabel) new com.metavize.gui.transform.BlinkJLabel();
                 controlsJToggleButton = new javax.swing.JToggleButton();
                 descriptionIconJLabel = new javax.swing.JLabel();
@@ -219,15 +225,14 @@ public class MTransformJPanel extends javax.swing.JPanel {
                 descriptionTextJLabel.setIconTextGap(0);
                 add(descriptionTextJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(106, 16, -1, 20));
 
-                powerOnHintJLabel.setFont(new java.awt.Font("Arial", 0, 18));
-                powerOnHintJLabel.setForeground(new java.awt.Color(255, 0, 0));
-                powerOnHintJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-                powerOnHintJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconPowerOnHint.png")));
-                powerOnHintJLabel.setDoubleBuffered(true);
-                powerOnHintJLabel.setFocusable(false);
-                powerOnHintJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                powerOnHintJLabel.setIconTextGap(0);
-                add(powerOnHintJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 80, -1, -1));
+                nbPowerOnHintJLabel.setFont(new java.awt.Font("Arial", 0, 18));
+                nbPowerOnHintJLabel.setForeground(new java.awt.Color(255, 0, 0));
+                nbPowerOnHintJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+                nbPowerOnHintJLabel.setDoubleBuffered(true);
+                nbPowerOnHintJLabel.setFocusable(false);
+                nbPowerOnHintJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+                nbPowerOnHintJLabel.setIconTextGap(0);
+                add(nbPowerOnHintJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 80, -1, -1));
 
                 stateJLabel.setToolTipText("<HTML> The <B>Status Indicator</B> shows the current operating condition of a particular software appliance.<BR>\n<font color=\"00FF00\"><b>Green</b></font> indicates that the appliance is \"on\" and operating normally.<BR>\n<font color=\"FF0000\"><b>Red</b></font> indicates that the appliance is \"on\", but that an abnormal condition has occurred.<BR>\n<font color=\"FFFF00\"><b>Yellow</b></font> indicates that the appliance is saving or refreshing settings.<BR>\n<b>Clear</b> indicates that the appliance is \"off\", and may be turned \"on\" by the user.\n</HTML>");
                 add(stateJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(606, 20, 28, 28));
@@ -300,24 +305,15 @@ public class MTransformJPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_controlsJToggleButtonActionPerformed
 
 
-
-    public void setControlsShowing(boolean showingBoolean){ handleControlsJButton(showingBoolean); }
+    // SHOW/HIDE CONTROLS ////////////
+    public void setControlsShowing(boolean showingBoolean){
+	handleControlsJButton(showingBoolean);
+    }
     public boolean getControlsShowing(){ return controlsJToggleButton.isSelected(); }
     public JToggleButton getControlsJToggleButton(){ return controlsJToggleButton; };
 
-    private void handleControlsJButton(boolean isShowing){
-        
-        if(isShowing){
-            setPreferredSize(maxDimension);
-            controlsJToggleButton.setText("Hide Settings");
-        }
-        else{
-            setPreferredSize(minDimension);
-            controlsJToggleButton.setText("Show Settings");
-        }
-        //mTransformControlsJPanel.setVisible(isShowing);
-	//        focus();  people no longer want this shizzle
-
+    private void handleControlsJButton(boolean showSettings){
+	controlsDropdownTask.start(showSettings);
     }
 
     public void focus(){
@@ -326,7 +322,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
         newBounds.height = this.getPreferredSize().height;
         //Util.getMPipelineJPanel().focusMTransformJPanel(newBounds);
     }
-
+    //////////////////////////////
 
 
 
@@ -336,10 +332,10 @@ public class MTransformJPanel extends javax.swing.JPanel {
         protected javax.swing.JLabel descriptionIconJLabel;
         protected javax.swing.JLabel descriptionTextJLabel;
         private javax.swing.JPanel effectsJPanel;
+        protected javax.swing.JLabel nbPowerOnHintJLabel;
         private javax.swing.ButtonGroup onOffbuttonGroup;
         protected javax.swing.JLabel organizationIconJLabel;
         protected javax.swing.JToggleButton powerJToggleButton;
-        protected javax.swing.JLabel powerOnHintJLabel;
         private javax.swing.JLabel stateJLabel;
         // End of variables declaration//GEN-END:variables
 

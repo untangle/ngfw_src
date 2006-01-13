@@ -47,6 +47,15 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
 	lastInsets = newInsets;
     }
 
+    // SETTINGS CHANGE NOTIFICATION /////////
+    private SettingsChangedListener settingsChangedListener;
+    public void setSettingsChangedListener(SettingsChangedListener settingsChangedListener){
+	this.settingsChangedListener = settingsChangedListener;
+	if( getTableModel() != null)
+	    getTableModel().setSettingsChangedListener(settingsChangedListener);
+    }
+    ///////////////////////////////////////////
+
     // SAVE/REFRESH ///////////
     public void doRefresh(Object settings){ getTableModel().doRefresh(settings); }
     public void doSave(Object settings, boolean validateOnly) throws Exception { getTableModel().doSave(settings, validateOnly); }
@@ -151,6 +160,7 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
         mSortedTableModel.hideColumns( mColoredJTable );
         mColoredJTable.getSelectionModel().addListSelectionListener(this);
         mColoredJTable.getModel().addTableModelListener(this);
+	mSortedTableModel.setSettingsChangedListener(settingsChangedListener);
     }
     
     public MSortedTableModel getTableModel(){

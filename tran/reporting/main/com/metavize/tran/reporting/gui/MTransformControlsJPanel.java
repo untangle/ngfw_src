@@ -34,23 +34,21 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     }
 
     protected void generateGui(){
-
 	// LAUNCH BUTTON /////
 	BrowserLaunchJPanel browserLaunchJPanel = new BrowserLaunchJPanel();
-	mTabbedPane.add(NAME_VIEW, browserLaunchJPanel);
+	addTab(NAME_VIEW, null, browserLaunchJPanel);
 
 	// REPORTS EMAILING RECIPIENTS LIST /////
 	EmailConfigJPanel emailConfigJPanel = new EmailConfigJPanel();
-	mTabbedPane.add(NAME_EMAIL_RECIPIENTS, emailConfigJPanel);
-	super.savableMap.put(NAME_EMAIL_RECIPIENTS, emailConfigJPanel);
-	super.refreshableMap.put(NAME_EMAIL_RECIPIENTS, emailConfigJPanel);
+	addTab(NAME_EMAIL_RECIPIENTS, null, emailConfigJPanel);
+	addSavable(NAME_EMAIL_RECIPIENTS, emailConfigJPanel);
+	addRefreshable(NAME_EMAIL_RECIPIENTS, emailConfigJPanel);
 	
 	// DIRECTORY ///////
 	DirectoryConfigJPanel directoryConfigJPanel = new DirectoryConfigJPanel();
-	mTabbedPane.add(NAME_DIRECTORY, directoryConfigJPanel);
-	super.savableMap.put(NAME_DIRECTORY, directoryConfigJPanel);
-	super.refreshableMap.put(NAME_DIRECTORY, directoryConfigJPanel);
-        
+	addTab(NAME_DIRECTORY, null, directoryConfigJPanel);
+	addSavable(NAME_DIRECTORY, directoryConfigJPanel);
+	addRefreshable(NAME_DIRECTORY, directoryConfigJPanel);        
     }
     
 }

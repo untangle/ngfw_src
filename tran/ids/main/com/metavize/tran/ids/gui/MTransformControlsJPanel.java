@@ -37,20 +37,22 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     protected void generateGui(){
 	// RULE LIST /////
 	IDSConfigJPanel idsConfigJPanel = new IDSConfigJPanel();
-        super.mTabbedPane.addTab(NAME_RULE_LIST, null, idsConfigJPanel);
-	super.savableMap.put(NAME_RULE_LIST, idsConfigJPanel);
-	super.refreshableMap.put(NAME_RULE_LIST, idsConfigJPanel);
+        addTab(NAME_RULE_LIST, null, idsConfigJPanel);
+	addSavable(NAME_RULE_LIST, idsConfigJPanel);
+	addRefreshable(NAME_RULE_LIST, idsConfigJPanel);
+	idsConfigJPanel.setSettingsChangedListener(this);
 
 	// VARIABLE LIST /////
 	IDSVariableJPanel idsVariableJPanel = new IDSVariableJPanel();
-        super.mTabbedPane.addTab(NAME_VARIABLE_LIST, null, idsVariableJPanel);
-	super.savableMap.put(NAME_VARIABLE_LIST, idsVariableJPanel);
-	super.refreshableMap.put(NAME_VARIABLE_LIST, idsVariableJPanel);
+        addTab(NAME_VARIABLE_LIST, null, idsVariableJPanel);
+	addSavable(NAME_VARIABLE_LIST, idsVariableJPanel);
+	addRefreshable(NAME_VARIABLE_LIST, idsVariableJPanel);
+	idsVariableJPanel.setSettingsChangedListener(this);
 
         // EVENT LOG ///////
         LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
-        super.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
-	super.shutdownableMap.put(NAME_LOG, logJPanel);
+        addTab(NAME_LOG, null, logJPanel);
+	addShutdownable(NAME_LOG, logJPanel);
     }
     
 }

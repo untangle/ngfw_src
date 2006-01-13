@@ -40,7 +40,6 @@ public class BlockJPanel extends MEditTableJPanel{
         // create actual table model
         BlockTableModel blockTableModel = new BlockTableModel();
         this.setTableModel( blockTableModel );
-
     }
     
 

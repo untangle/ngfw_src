@@ -29,6 +29,12 @@ public class NatJPanel extends javax.swing.JPanel implements Savable, Refreshabl
         initComponents();
     }
         
+    // SETTINGS CHANGE NOTIFICATION /////////
+    private SettingsChangedListener settingsChangedListener;
+    public void setSettingsChangedListener(SettingsChangedListener settingsChangedListener){
+	this.settingsChangedListener = settingsChangedListener;
+    }
+    ///////////////////////////////////////////
     
     public void doSave(Object settings, boolean validateOnly) throws Exception {
         
@@ -73,45 +79,45 @@ public class NatJPanel extends javax.swing.JPanel implements Savable, Refreshabl
         
     }
     
+    boolean natEnabledCurrent;
+    String natInternalAddressCurrent;
+    String natInternalSubnetCurrent;
+    String natInternalNetworkCurrent;
+    String natExternalAddressCurrent;
+    boolean isDhcpEnabledCurrent;
 
     public void doRefresh(Object settings) {
         NatSettings natSettings = (NatSettings) settings;        
         
         // ENABLED ///////////
-        boolean natEnabled;
-	natEnabled = natSettings.getNatEnabled();
-	this.setNatEnabledDependency(natEnabled);
-	if( natEnabled )
+	natEnabledCurrent = natSettings.getNatEnabled();
+	this.setNatEnabledDependency(natEnabledCurrent);
+	if( natEnabledCurrent )
 	    natEnabledJRadioButton.setSelected(true);
 	else
 	    natDisabledJRadioButton.setSelected(true);
         
         // INTERNAL ADDRESS //////
-        String natInternalAddress;
-	natInternalAddress = natSettings.getNatInternalAddress().toString();
-	internalAddressIPaddrJTextField.setText( natInternalAddress );
+	natInternalAddressCurrent = natSettings.getNatInternalAddress().toString();
+	internalAddressIPaddrJTextField.setText( natInternalAddressCurrent );
 	internalAddressIPaddrJTextField.setBackground( Color.WHITE );
         
         // INTERNAL SUBNET ///////
-        String natInternalSubnet;
-	natInternalSubnet  = natSettings.getNatInternalSubnet().toString();
-	internalSubnetIPaddrJTextField.setText( natInternalSubnet );
+	natInternalSubnetCurrent  = natSettings.getNatInternalSubnet().toString();
+	internalSubnetIPaddrJTextField.setText( natInternalSubnetCurrent );
 	internalSubnetIPaddrJTextField.setBackground( Color.WHITE );
         
         // INTERNAL NETWORK ///////
-        String natInternalNetwork;
-	natInternalNetwork = IPaddr.and(natSettings.getNatInternalAddress(), natSettings.getNatInternalSubnet()).toString();
-	internalNetworkJLabel.setText( natInternalNetwork );
+	natInternalNetworkCurrent = IPaddr.and(natSettings.getNatInternalAddress(), natSettings.getNatInternalSubnet()).toString();
+	internalNetworkJLabel.setText( natInternalNetworkCurrent );
         
         // EXTERNAL ADDRESS ///////
-        String natExternalAddress;
-	natExternalAddress = Util.getMvvmContext().networkingManager().get().host().toString();
-	externalAddressJLabel.setText( natExternalAddress );
+	natExternalAddressCurrent = Util.getMvvmContext().networkingManager().get().host().toString();
+	externalAddressJLabel.setText( natExternalAddressCurrent );
         
         // DHCP ///////
-        boolean isDhcpEnabled;
-	isDhcpEnabled = Util.getMvvmContext().networkingManager().get().isDhcpEnabled();
-	if( isDhcpEnabled )
+	isDhcpEnabledCurrent = Util.getMvvmContext().networkingManager().get().isDhcpEnabled();
+	if( isDhcpEnabledCurrent )
 	    externalMethodJLabel.setText("Dynamic via DHCP");
 	else
 	    externalMethodJLabel.setText("Manually specified");
@@ -122,278 +128,305 @@ public class NatJPanel extends javax.swing.JPanel implements Savable, Refreshabl
     
 
     
-    private void initComponents() {//GEN-BEGIN:initComponents
-        java.awt.GridBagConstraints gridBagConstraints;
+        private void initComponents() {//GEN-BEGIN:initComponents
+                java.awt.GridBagConstraints gridBagConstraints;
 
-        enabledButtonGroup = new javax.swing.ButtonGroup();
-        explanationJPanel = new javax.swing.JPanel();
-        jTextArea2 = new javax.swing.JTextArea();
-        jPanel1 = new javax.swing.JPanel();
-        natEnabledJRadioButton = new javax.swing.JRadioButton();
-        natDisabledJRadioButton = new javax.swing.JRadioButton();
-        jLabel1 = new javax.swing.JLabel();
-        externalRemoteJPanel = new javax.swing.JPanel();
-        jTextArea3 = new javax.swing.JTextArea();
-        restrictIPJPanel = new javax.swing.JPanel();
-        jLabel5 = new javax.swing.JLabel();
-        internalAddressIPaddrJTextField = new javax.swing.JTextField();
-        jLabel8 = new javax.swing.JLabel();
-        internalSubnetIPaddrJTextField = new javax.swing.JTextField();
-        jLabel9 = new javax.swing.JLabel();
-        internalNetworkJLabel = new javax.swing.JLabel();
-        internalRemoteJPanel = new javax.swing.JPanel();
-        jTextArea1 = new javax.swing.JTextArea();
-        restrictIPJPanel1 = new javax.swing.JPanel();
-        jLabel6 = new javax.swing.JLabel();
-        externalAddressJLabel = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
-        externalMethodJLabel = new javax.swing.JLabel();
+                enabledButtonGroup = new javax.swing.ButtonGroup();
+                explanationJPanel = new javax.swing.JPanel();
+                jTextArea2 = new javax.swing.JTextArea();
+                jPanel1 = new javax.swing.JPanel();
+                natEnabledJRadioButton = new javax.swing.JRadioButton();
+                natDisabledJRadioButton = new javax.swing.JRadioButton();
+                jLabel1 = new javax.swing.JLabel();
+                externalRemoteJPanel = new javax.swing.JPanel();
+                jTextArea3 = new javax.swing.JTextArea();
+                restrictIPJPanel = new javax.swing.JPanel();
+                jLabel5 = new javax.swing.JLabel();
+                internalAddressIPaddrJTextField = new javax.swing.JTextField();
+                jLabel8 = new javax.swing.JLabel();
+                internalSubnetIPaddrJTextField = new javax.swing.JTextField();
+                jLabel9 = new javax.swing.JLabel();
+                internalNetworkJLabel = new javax.swing.JLabel();
+                internalRemoteJPanel = new javax.swing.JPanel();
+                jTextArea1 = new javax.swing.JTextArea();
+                restrictIPJPanel1 = new javax.swing.JPanel();
+                jLabel6 = new javax.swing.JLabel();
+                externalAddressJLabel = new javax.swing.JLabel();
+                jLabel10 = new javax.swing.JLabel();
+                externalMethodJLabel = new javax.swing.JLabel();
 
-        setLayout(new java.awt.GridBagLayout());
+                setLayout(new java.awt.GridBagLayout());
 
-        setMinimumSize(new java.awt.Dimension(530, 445));
-        setPreferredSize(new java.awt.Dimension(530, 445));
-        explanationJPanel.setLayout(new java.awt.GridBagLayout());
+                setMinimumSize(new java.awt.Dimension(530, 445));
+                setPreferredSize(new java.awt.Dimension(530, 445));
+                explanationJPanel.setLayout(new java.awt.GridBagLayout());
 
-        explanationJPanel.setBorder(new javax.swing.border.TitledBorder(null, "NAT (Network Address Translation)", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
-        jTextArea2.setEditable(false);
-        jTextArea2.setLineWrap(true);
-        jTextArea2.setText("NAT allows multiple computers in the internal network to share internet access through a single shared public IP address.");
-        jTextArea2.setWrapStyleWord(true);
-        jTextArea2.setOpaque(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 15);
-        explanationJPanel.add(jTextArea2, gridBagConstraints);
+                explanationJPanel.setBorder(new javax.swing.border.TitledBorder(null, "NAT (Network Address Translation)", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+                jTextArea2.setEditable(false);
+                jTextArea2.setLineWrap(true);
+                jTextArea2.setText("NAT allows multiple computers in the internal network to share internet access through a single shared public IP address.");
+                jTextArea2.setWrapStyleWord(true);
+                jTextArea2.setOpaque(false);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 15);
+                explanationJPanel.add(jTextArea2, gridBagConstraints);
 
-        jPanel1.setLayout(new java.awt.GridBagLayout());
+                jPanel1.setLayout(new java.awt.GridBagLayout());
 
-        enabledButtonGroup.add(natEnabledJRadioButton);
-        natEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        natEnabledJRadioButton.setText("Enabled");
-        natEnabledJRadioButton.setFocusPainted(false);
-        natEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                natEnabledJRadioButtonActionPerformed(evt);
-            }
-        });
+                enabledButtonGroup.add(natEnabledJRadioButton);
+                natEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                natEnabledJRadioButton.setText("Enabled");
+                natEnabledJRadioButton.setFocusPainted(false);
+                natEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                natEnabledJRadioButtonActionPerformed(evt);
+                        }
+                });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        jPanel1.add(natEnabledJRadioButton, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                jPanel1.add(natEnabledJRadioButton, gridBagConstraints);
 
-        enabledButtonGroup.add(natDisabledJRadioButton);
-        natDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        natDisabledJRadioButton.setText("Disabled");
-        natDisabledJRadioButton.setFocusPainted(false);
-        natDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                natDisabledJRadioButtonActionPerformed(evt);
-            }
-        });
+                enabledButtonGroup.add(natDisabledJRadioButton);
+                natDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                natDisabledJRadioButton.setText("Disabled");
+                natDisabledJRadioButton.setFocusPainted(false);
+                natDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                natDisabledJRadioButtonActionPerformed(evt);
+                        }
+                });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        jPanel1.add(natDisabledJRadioButton, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 2;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                jPanel1.add(natDisabledJRadioButton, gridBagConstraints);
 
-        jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel1.setText("NAT ");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridheight = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        jPanel1.add(jLabel1, gridBagConstraints);
+                jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel1.setText("NAT ");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.gridheight = 2;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                jPanel1.add(jLabel1, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
-        explanationJPanel.add(jPanel1, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
+                explanationJPanel.add(jPanel1, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
-        add(explanationJPanel, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
+                add(explanationJPanel, gridBagConstraints);
 
-        externalRemoteJPanel.setLayout(new java.awt.GridBagLayout());
+                externalRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
-        externalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Internal Address (Gateway)", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
-        jTextArea3.setEditable(false);
-        jTextArea3.setLineWrap(true);
-        jTextArea3.setText("The internal address is EdgeGuard's address on the internal network, which computers will use as their gateway.  This address is also used to contact EdgeGuard for configuration.");
-        jTextArea3.setWrapStyleWord(true);
-        jTextArea3.setOpaque(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 15);
-        externalRemoteJPanel.add(jTextArea3, gridBagConstraints);
+                externalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Internal Address (Gateway)", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+                jTextArea3.setEditable(false);
+                jTextArea3.setLineWrap(true);
+                jTextArea3.setText("The internal address is EdgeGuard's address on the internal network, which computers will use as their gateway.  This address is also used to contact EdgeGuard for configuration.");
+                jTextArea3.setWrapStyleWord(true);
+                jTextArea3.setOpaque(false);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 15);
+                externalRemoteJPanel.add(jTextArea3, gridBagConstraints);
 
-        restrictIPJPanel.setLayout(new java.awt.GridBagLayout());
+                restrictIPJPanel.setLayout(new java.awt.GridBagLayout());
 
-        jLabel5.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel5.setText("Internal IP Address: ");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        restrictIPJPanel.add(jLabel5, gridBagConstraints);
+                jLabel5.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel5.setText("Internal IP Address: ");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                restrictIPJPanel.add(jLabel5, gridBagConstraints);
 
-        internalAddressIPaddrJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
-        internalAddressIPaddrJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
-        internalAddressIPaddrJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
-        restrictIPJPanel.add(internalAddressIPaddrJTextField, gridBagConstraints);
+                internalAddressIPaddrJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
+                internalAddressIPaddrJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
+                internalAddressIPaddrJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
+                internalAddressIPaddrJTextField.addCaretListener(new javax.swing.event.CaretListener() {
+                        public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                                internalAddressIPaddrJTextFieldCaretUpdate(evt);
+                        }
+                });
 
-        jLabel8.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel8.setText("Internal Subnet: ");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        restrictIPJPanel.add(jLabel8, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
+                restrictIPJPanel.add(internalAddressIPaddrJTextField, gridBagConstraints);
 
-        internalSubnetIPaddrJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
-        internalSubnetIPaddrJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
-        internalSubnetIPaddrJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
-        restrictIPJPanel.add(internalSubnetIPaddrJTextField, gridBagConstraints);
+                jLabel8.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel8.setText("Internal Subnet: ");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                restrictIPJPanel.add(jLabel8, gridBagConstraints);
 
-        jLabel9.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel9.setText("Network Address: ");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(15, 0, 2, 0);
-        restrictIPJPanel.add(jLabel9, gridBagConstraints);
+                internalSubnetIPaddrJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
+                internalSubnetIPaddrJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
+                internalSubnetIPaddrJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
+                internalSubnetIPaddrJTextField.addCaretListener(new javax.swing.event.CaretListener() {
+                        public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                                internalSubnetIPaddrJTextFieldCaretUpdate(evt);
+                        }
+                });
 
-        internalNetworkJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        internalNetworkJLabel.setText("012.345.678.999");
-        internalNetworkJLabel.setMinimumSize(null);
-        internalNetworkJLabel.setPreferredSize(null);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(15, 0, 2, 0);
-        restrictIPJPanel.add(internalNetworkJLabel, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
+                restrictIPJPanel.add(internalSubnetIPaddrJTextField, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.ipadx = 25;
-        gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
-        externalRemoteJPanel.add(restrictIPJPanel, gridBagConstraints);
+                jLabel9.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel9.setText("Network Address: ");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 2;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                gridBagConstraints.insets = new java.awt.Insets(15, 0, 2, 0);
+                restrictIPJPanel.add(jLabel9, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
-        add(externalRemoteJPanel, gridBagConstraints);
+                internalNetworkJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                internalNetworkJLabel.setText("012.345.678.999");
+                internalNetworkJLabel.setMinimumSize(null);
+                internalNetworkJLabel.setPreferredSize(null);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 2;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.insets = new java.awt.Insets(15, 0, 2, 0);
+                restrictIPJPanel.add(internalNetworkJLabel, gridBagConstraints);
 
-        internalRemoteJPanel.setLayout(new java.awt.GridBagLayout());
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.ipadx = 25;
+                gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
+                externalRemoteJPanel.add(restrictIPJPanel, gridBagConstraints);
 
-        internalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "External Address (Public Address)", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
-        jTextArea1.setEditable(false);
-        jTextArea1.setLineWrap(true);
-        jTextArea1.setText("The external address is EdgeGuard's address on the external network.  This is specified through the \"Network Settings\" Config Panel.");
-        jTextArea1.setWrapStyleWord(true);
-        jTextArea1.setOpaque(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 15);
-        internalRemoteJPanel.add(jTextArea1, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
+                add(externalRemoteJPanel, gridBagConstraints);
 
-        restrictIPJPanel1.setLayout(new java.awt.GridBagLayout());
+                internalRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
-        jLabel6.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel6.setText("External IP Address: ");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        restrictIPJPanel1.add(jLabel6, gridBagConstraints);
+                internalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "External Address (Public Address)", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+                jTextArea1.setEditable(false);
+                jTextArea1.setLineWrap(true);
+                jTextArea1.setText("The external address is EdgeGuard's address on the external network.  This is specified through the \"Network Settings\" Config Panel.");
+                jTextArea1.setWrapStyleWord(true);
+                jTextArea1.setOpaque(false);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 15);
+                internalRemoteJPanel.add(jTextArea1, gridBagConstraints);
 
-        externalAddressJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        externalAddressJLabel.setText("012.345.678.999");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
-        restrictIPJPanel1.add(externalAddressJLabel, gridBagConstraints);
+                restrictIPJPanel1.setLayout(new java.awt.GridBagLayout());
 
-        jLabel10.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel10.setText("Configuration Method: ");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        restrictIPJPanel1.add(jLabel10, gridBagConstraints);
+                jLabel6.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel6.setText("External IP Address: ");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                restrictIPJPanel1.add(jLabel6, gridBagConstraints);
 
-        externalMethodJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        externalMethodJLabel.setText("via XYZ");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
-        restrictIPJPanel1.add(externalMethodJLabel, gridBagConstraints);
+                externalAddressJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                externalAddressJLabel.setText("012.345.678.999");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
+                restrictIPJPanel1.add(externalAddressJLabel, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.ipadx = 25;
-        gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
-        internalRemoteJPanel.add(restrictIPJPanel1, gridBagConstraints);
+                jLabel10.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel10.setText("Configuration Method: ");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                restrictIPJPanel1.add(jLabel10, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        add(internalRemoteJPanel, gridBagConstraints);
+                externalMethodJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                externalMethodJLabel.setText("via XYZ");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
+                restrictIPJPanel1.add(externalMethodJLabel, gridBagConstraints);
 
-    }//GEN-END:initComponents
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.ipadx = 25;
+                gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
+                internalRemoteJPanel.add(restrictIPJPanel1, gridBagConstraints);
 
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+                add(internalRemoteJPanel, gridBagConstraints);
+
+        }//GEN-END:initComponents
+
+
+    private void internalSubnetIPaddrJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_internalSubnetIPaddrJTextFieldCaretUpdate
+	if( !internalSubnetIPaddrJTextField.getText().trim().equals(natInternalSubnetCurrent) && (settingsChangedListener != null) )
+	    settingsChangedListener.settingsChanged(this);
+    }//GEN-LAST:event_internalSubnetIPaddrJTextFieldCaretUpdate
+    
+    private void internalAddressIPaddrJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_internalAddressIPaddrJTextFieldCaretUpdate
+	if( !internalAddressIPaddrJTextField.getText().trim().equals(natInternalAddressCurrent) && (settingsChangedListener != null) )
+	    settingsChangedListener.settingsChanged(this);
+    }//GEN-LAST:event_internalAddressIPaddrJTextFieldCaretUpdate
+    
     private void natDisabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_natDisabledJRadioButtonActionPerformed
         this.setNatEnabledDependency(false);
+	if( natEnabledCurrent && (settingsChangedListener != null) )
+	    settingsChangedListener.settingsChanged(this);
     }//GEN-LAST:event_natDisabledJRadioButtonActionPerformed
 
     private void natEnabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_natEnabledJRadioButtonActionPerformed
         this.setNatEnabledDependency(true);
+	if( !natEnabledCurrent && (settingsChangedListener != null) )
+	    settingsChangedListener.settingsChanged(this);
     }//GEN-LAST:event_natEnabledJRadioButtonActionPerformed
     
     private void setNatEnabledDependency(boolean enabled){
@@ -401,30 +434,30 @@ public class NatJPanel extends javax.swing.JPanel implements Savable, Refreshabl
         internalSubnetIPaddrJTextField.setEnabled( enabled );
     }
     
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.ButtonGroup enabledButtonGroup;
-    private javax.swing.JPanel explanationJPanel;
-    private javax.swing.JLabel externalAddressJLabel;
-    private javax.swing.JLabel externalMethodJLabel;
-    private javax.swing.JPanel externalRemoteJPanel;
-    public javax.swing.JTextField internalAddressIPaddrJTextField;
-    private javax.swing.JLabel internalNetworkJLabel;
-    private javax.swing.JPanel internalRemoteJPanel;
-    public javax.swing.JTextField internalSubnetIPaddrJTextField;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextArea jTextArea2;
-    private javax.swing.JTextArea jTextArea3;
-    public javax.swing.JRadioButton natDisabledJRadioButton;
-    public javax.swing.JRadioButton natEnabledJRadioButton;
-    private javax.swing.JPanel restrictIPJPanel;
-    private javax.swing.JPanel restrictIPJPanel1;
-    // End of variables declaration//GEN-END:variables
+        // Variables declaration - do not modify//GEN-BEGIN:variables
+        private javax.swing.ButtonGroup enabledButtonGroup;
+        private javax.swing.JPanel explanationJPanel;
+        private javax.swing.JLabel externalAddressJLabel;
+        private javax.swing.JLabel externalMethodJLabel;
+        private javax.swing.JPanel externalRemoteJPanel;
+        public javax.swing.JTextField internalAddressIPaddrJTextField;
+        private javax.swing.JLabel internalNetworkJLabel;
+        private javax.swing.JPanel internalRemoteJPanel;
+        public javax.swing.JTextField internalSubnetIPaddrJTextField;
+        private javax.swing.JLabel jLabel1;
+        private javax.swing.JLabel jLabel10;
+        private javax.swing.JLabel jLabel5;
+        private javax.swing.JLabel jLabel6;
+        private javax.swing.JLabel jLabel8;
+        private javax.swing.JLabel jLabel9;
+        private javax.swing.JPanel jPanel1;
+        private javax.swing.JTextArea jTextArea1;
+        private javax.swing.JTextArea jTextArea2;
+        private javax.swing.JTextArea jTextArea3;
+        public javax.swing.JRadioButton natDisabledJRadioButton;
+        public javax.swing.JRadioButton natEnabledJRadioButton;
+        private javax.swing.JPanel restrictIPJPanel;
+        private javax.swing.JPanel restrictIPJPanel1;
+        // End of variables declaration//GEN-END:variables
     
 }

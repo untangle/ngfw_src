@@ -33,14 +33,15 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     protected void generateGui() {
         // SHIELD CONFIGURATION SETTINGS /////
         ShieldNodeConfigurationJPanel shieldJPanel = new ShieldNodeConfigurationJPanel();
-        super.mTabbedPane.addTab(NAME_SHIELD_PANEL, null, shieldJPanel );
-	super.savableMap.put(NAME_SHIELD_PANEL, shieldJPanel );
-	super.refreshableMap.put(NAME_SHIELD_PANEL, shieldJPanel );
+        addTab(NAME_SHIELD_PANEL, null, shieldJPanel );
+	addSavable(NAME_SHIELD_PANEL, shieldJPanel );
+	addRefreshable(NAME_SHIELD_PANEL, shieldJPanel );
+	shieldJPanel.setSettingsChangedListener(this);
 
 	// EVENT LOG //////////
 	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
-	super.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
-	super.shutdownableMap.put(NAME_LOG, logJPanel);
+	addTab(NAME_LOG, null, logJPanel);
+	addShutdownable(NAME_LOG, logJPanel);
     }
      
     

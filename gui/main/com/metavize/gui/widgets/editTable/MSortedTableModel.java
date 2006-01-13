@@ -117,7 +117,13 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
     public static final int NOT_SORTED = 0;
     public static final int ASCENDING = 1;
 
-	// PROTECTEDS ///////////////
+    // SETTINGS CHANGE NOTIFICATION /////////
+    private SettingsChangedListener settingsChangedListener;
+    public void setSettingsChangedListener(SettingsChangedListener settingsChangedListener){
+	this.settingsChangedListener = settingsChangedListener;
+    }
+
+    // PROTECTEDS ///////////////
     protected boolean getSortable(){ return true; }
 	public void handleDependencies(int modelCol, int modelRow){ fireTableRowsUpdated(modelRow, modelRow); }
 
@@ -499,6 +505,8 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
 	}
         dataVector.insertElementAt(generateNewRow(modelRow+1), modelRow);
         fireTableRowsInserted(modelRow, modelRow);
+	if( settingsChangedListener != null )
+	    settingsChangedListener.settingsChanged(this);
     }
     public void clearAllRows(){
 	this.getTableHeader().getTable().getCellEditor().stopCellEditing();
@@ -533,6 +541,8 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
 	    }
 	    fireTableRowsUpdated(modelRows[0], modelRows[modelRows.length-1]);
         }
+	if( settingsChangedListener != null )
+	    settingsChangedListener.settingsChanged(this);
     }
     public String getRowState(int modelRow){
     	return (String) super.getValueAt(modelRow, stateModelIndex);
@@ -543,7 +553,7 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
 	row.setElementAt(state, stateModelIndex);
 	fireTableRowsUpdated(modelRow, modelRow);
     }
-    public void setRowChanged(int modelRow){
+    public void setRowChanged(int modelRow, boolean isFinalChange){
 	Vector<Vector> dataVector = getDataVector();
 	Vector changedRow = dataVector.elementAt(modelRow);
 	String state = (String) changedRow.elementAt(stateModelIndex);
@@ -551,6 +561,8 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
             changedRow.setElementAt(ROW_CHANGED, stateModelIndex);
 	    fireTableRowsUpdated(modelRow, modelRow);
 	}
+	if( isFinalChange && (settingsChangedListener != null) )
+	    settingsChangedListener.settingsChanged(this);
     }
     ///////////////////////////////////
 

@@ -14,6 +14,7 @@ package com.metavize.gui.transform;
 
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.widgets.dialogs.*;
+import com.metavize.gui.widgets.*;
 import com.metavize.gui.util.*;
 
 import com.metavize.mvvm.*;
@@ -29,12 +30,15 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.table.*;
 
-public class MTransformControlsJPanel extends javax.swing.JPanel {
+public class MTransformControlsJPanel extends javax.swing.JPanel implements SettingsChangedListener{
 
     // SAVING/REFRESHING/SHUTDOWN //////////
-    protected Map<String, Refreshable> refreshableMap = new LinkedHashMap(5);
-    protected Map<String, Savable> savableMap = new LinkedHashMap(5);
-    protected Map<String, Shutdownable> shutdownableMap = new LinkedHashMap(1);
+    private Map<String, Refreshable> refreshableMap = new LinkedHashMap(5);
+    protected void addRefreshable(String name, Refreshable refreshable){ refreshableMap.put(name, refreshable); }
+    private Map<String, Savable> savableMap = new LinkedHashMap(5);
+    protected void addSavable(String name, Savable savable){ savableMap.put(name, savable); }
+    private Map<String, Shutdownable> shutdownableMap = new LinkedHashMap(1);
+    protected void addShutdownable(String name, Shutdownable shutdownable){ shutdownableMap.put(name, shutdownable); }
     protected Object settings;
     ///////////////////////////////
     
@@ -52,29 +56,35 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
     //////////////////////////////
 
     // HELPER ////////
-    private static final int HELPER_SAVE_SETTINGS_BLINK = 1000;
-    protected javax.swing.Timer saveSettingsTimer;
+    private static final int HELPER_SAVE_SETTINGS_BLINK = 200;
+    private static ImageIcon[] saveSettingsImageIcons;
+    CycleJLabel saveSettingsHintJLabel;
 
     protected MTransformJPanel mTransformJPanel;
     
 
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
         this.mTransformJPanel = mTransformJPanel;
+
+	// HELPER //
+	synchronized( this ){
+	    if( saveSettingsImageIcons == null ){
+		String[] saveSettingsImagePaths = { "com/metavize/gui/transform/IconSaveSettingsHint30.png",
+						    "com/metavize/gui/transform/IconSaveSettingsHint40.png",
+						    "com/metavize/gui/transform/IconSaveSettingsHint50.png",
+						    "com/metavize/gui/transform/IconSaveSettingsHint60.png",
+						    "com/metavize/gui/transform/IconSaveSettingsHint70.png",
+						    "com/metavize/gui/transform/IconSaveSettingsHint80.png",
+						    "com/metavize/gui/transform/IconSaveSettingsHint90.png",
+						    "com/metavize/gui/transform/IconSaveSettingsHint100.png" };
+		saveSettingsImageIcons = Util.getImageIcons(saveSettingsImagePaths);
+	    }
+	}
+	saveSettingsHintJLabel = new CycleJLabel(saveSettingsImageIcons, HELPER_SAVE_SETTINGS_BLINK, true, true);
+
         // INITIALIZE GUI
         initComponents();
 	mTabbedPane.setFont( new java.awt.Font("Arial", 0, 14) );
-
-	// HELPER //
-	saveSettingsHintJLabel.setVisible(false);
-	ActionListener blinkPerformer = new ActionListener(){
-		public void actionPerformed(ActionEvent evt){
-		    if( saveSettingsHintJLabel.isVisible() )
-			saveSettingsHintJLabel.setVisible(false);
-		    else
-			saveSettingsHintJLabel.setVisible(true);
-		}
-	    };
-	saveSettingsTimer = new javax.swing.Timer(HELPER_SAVE_SETTINGS_BLINK, blinkPerformer);
 
 
         // SETUP EXPAND DIALOG
@@ -93,6 +103,9 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
 
 	generateGui();
 	refreshAll();
+    }
+
+    public void settingsChanged(Object source){
 	setSaveSettingsHintVisible(true);
     }
 
@@ -117,13 +130,19 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
     }
 
     public void setSaveSettingsHintVisible(boolean isVisible){
-	if( isVisible )
-	    saveSettingsTimer.start();
+	if( isVisible ){
+	    if( !saveSettingsHintJLabel.isRunning() )
+		saveSettingsHintJLabel.start();
+	}
 	else
-	    saveSettingsTimer.stop();
+	    saveSettingsHintJLabel.stop();
     }
 
+    // TABBED PANE ////////
     public JTabbedPane getMTabbedPane(){ return mTabbedPane; }
+    protected void addTab(String title, Icon icon, Component component){ mTabbedPane.addTab(title, icon, component); }
+    protected void removeAllTabs(){ mTabbedPane.removeAll(); }
+    /////////////////////////
 
     public JToggleButton getControlsJToggleButton(){ return mTransformJPanel.getControlsJToggleButton(); }
     
@@ -190,6 +209,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         try {
 	    mTransformJPanel.getTransformContext().transform().setSettings( settings );
             mTransformJPanel.getTransformContext().transform().reconfigure();
+	    setSaveSettingsHintVisible(false);
         }
         catch ( Exception e ) {
             try{
@@ -244,6 +264,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
 		else
 		    message.append("\n  " + componentName);
 	    }
+	    setSaveSettingsHintVisible(false);
 	}
 	catch(Exception e){
 	    try{
@@ -271,7 +292,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
                 socketJPanel = new javax.swing.JPanel();
                 contentJPanel = new javax.swing.JPanel();
                 mTabbedPane = new javax.swing.JTabbedPane();
-                saveSettingsHintJLabel = new javax.swing.JLabel();
+                nbSaveSettingsHintJLabel = saveSettingsHintJLabel;
                 removeJButton = new javax.swing.JButton();
                 expandJButton = new javax.swing.JButton();
                 reloadJButton = new javax.swing.JButton();
@@ -303,21 +324,20 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
                 gridBagConstraints.insets = new java.awt.Insets(0, 0, 15, 0);
                 contentJPanel.add(mTabbedPane, gridBagConstraints);
 
-                saveSettingsHintJLabel.setFont(new java.awt.Font("Arial", 0, 18));
-                saveSettingsHintJLabel.setForeground(new java.awt.Color(255, 0, 0));
-                saveSettingsHintJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-                saveSettingsHintJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconSaveSettingsHint.png")));
-                saveSettingsHintJLabel.setDoubleBuffered(true);
-                saveSettingsHintJLabel.setFocusable(false);
-                saveSettingsHintJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                saveSettingsHintJLabel.setIconTextGap(0);
+                nbSaveSettingsHintJLabel.setFont(new java.awt.Font("Arial", 0, 18));
+                nbSaveSettingsHintJLabel.setForeground(new java.awt.Color(255, 0, 0));
+                nbSaveSettingsHintJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+                nbSaveSettingsHintJLabel.setDoubleBuffered(true);
+                nbSaveSettingsHintJLabel.setFocusable(false);
+                nbSaveSettingsHintJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+                nbSaveSettingsHintJLabel.setIconTextGap(0);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
                 gridBagConstraints.gridheight = 2;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
                 gridBagConstraints.insets = new java.awt.Insets(0, 0, 21, 55);
-                contentJPanel.add(saveSettingsHintJLabel, gridBagConstraints);
+                contentJPanel.add(nbSaveSettingsHintJLabel, gridBagConstraints);
 
                 removeJButton.setFont(new java.awt.Font("Arial", 0, 12));
                 removeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/Button_Remove_Appliance_106x17.png")));
@@ -461,11 +481,11 @@ public class MTransformControlsJPanel extends javax.swing.JPanel {
         protected javax.swing.JPanel contentJPanel;
         protected javax.swing.JButton expandJButton;
         protected javax.swing.JTabbedPane mTabbedPane;
+        protected javax.swing.JLabel nbSaveSettingsHintJLabel;
         protected javax.swing.JLabel readoutJLabel;
         protected javax.swing.JButton reloadJButton;
         protected javax.swing.JButton removeJButton;
         protected javax.swing.JButton saveJButton;
-        protected javax.swing.JLabel saveSettingsHintJLabel;
         protected javax.swing.JPanel socketJPanel;
         private javax.swing.ButtonGroup stateButtonGroup;
         // End of variables declaration//GEN-END:variables

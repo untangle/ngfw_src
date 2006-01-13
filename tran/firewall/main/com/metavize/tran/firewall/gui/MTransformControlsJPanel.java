@@ -41,26 +41,27 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     }
     
     protected void generateGui(){
-
         // SETUP FIREWALL
         BlockJPanel blockJPanel = new BlockJPanel();
-        super.mTabbedPane.addTab(NAME_BLOCK_LIST, null, blockJPanel );
-	super.savableMap.put(NAME_BLOCK_LIST, blockJPanel);
-	super.refreshableMap.put(NAME_BLOCK_LIST, blockJPanel);
+	addTab(NAME_BLOCK_LIST, null, blockJPanel);
+	addSavable(NAME_BLOCK_LIST, blockJPanel);
+	addRefreshable(NAME_BLOCK_LIST, blockJPanel);
+	blockJPanel.setSettingsChangedListener(this);
         
         // SETUP GENERAL SETTINGS
         SettingsJPanel settingsJPanel = new SettingsJPanel();
         JScrollPane settingsJScrollPane = new JScrollPane( settingsJPanel );
         settingsJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
         settingsJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-        super.mTabbedPane.addTab(NAME_GENERAL_SETTINGS, null, settingsJScrollPane );
-        super.savableMap.put(NAME_GENERAL_SETTINGS, settingsJPanel);
-	super.refreshableMap.put(NAME_GENERAL_SETTINGS, settingsJPanel);
+        addTab(NAME_GENERAL_SETTINGS, null, settingsJScrollPane );
+	addSavable(NAME_GENERAL_SETTINGS, settingsJPanel);
+	addRefreshable(NAME_GENERAL_SETTINGS, settingsJPanel);
+	settingsJPanel.setSettingsChangedListener(this);
 
 	// EVENT LOG
 	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
-	super.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
-	super.shutdownableMap.put(NAME_LOG, logJPanel);
+	addTab(NAME_LOG, null, logJPanel);
+	addShutdownable(NAME_LOG, logJPanel);
     }
 
 }

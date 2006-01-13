@@ -46,55 +46,60 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     }
 
     protected void generateGui(){
-
 	// BLOCK LISTS ///////////
         JTabbedPane blockJTabbedPane = new JTabbedPane();
         blockJTabbedPane.setBorder(new EmptyBorder(7, 13, 13, 13));
         blockJTabbedPane.setFocusable(false);
         blockJTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
         blockJTabbedPane.setRequestFocusEnabled(false);
-        super.mTabbedPane.addTab(NAME_BLOCK, null, blockJTabbedPane);
+        addTab(NAME_BLOCK, null, blockJTabbedPane);
 
 	// COOKIES //////////////
 	CookieConfigJPanel cookieConfigJPanel = new CookieConfigJPanel();
         blockJTabbedPane.addTab(NAME_BLOCK_COOKIE, null, cookieConfigJPanel);
-	super.savableMap.put(NAME_BLOCK + " " + NAME_BLOCK_COOKIE, cookieConfigJPanel);
-	super.refreshableMap.put(NAME_BLOCK + " " + NAME_BLOCK_COOKIE, cookieConfigJPanel);
+	addSavable(NAME_BLOCK + " " + NAME_BLOCK_COOKIE, cookieConfigJPanel);
+	addRefreshable(NAME_BLOCK + " " + NAME_BLOCK_COOKIE, cookieConfigJPanel);
+	cookieConfigJPanel.setSettingsChangedListener(this);
 
 	// SUBNETS ///////////////
 	SubnetConfigJPanel subnetConfigJPanel = new SubnetConfigJPanel();
         blockJTabbedPane.addTab(NAME_BLOCK_SUBNET, null, subnetConfigJPanel);
-	super.savableMap.put(NAME_BLOCK + " " + NAME_BLOCK_SUBNET, subnetConfigJPanel);
-	super.refreshableMap.put(NAME_BLOCK + " " + NAME_BLOCK_SUBNET, subnetConfigJPanel);
+	addSavable(NAME_BLOCK + " " + NAME_BLOCK_SUBNET, subnetConfigJPanel);
+	addRefreshable(NAME_BLOCK + " " + NAME_BLOCK_SUBNET, subnetConfigJPanel);
+	subnetConfigJPanel.setSettingsChangedListener(this);
 
 	// ACTIVEX ///////////////
 	ActiveXConfigJPanel activeXConfigJPanel = new ActiveXConfigJPanel();
         blockJTabbedPane.addTab(NAME_BLOCK_ACTIVEX, null, activeXConfigJPanel);
-	super.savableMap.put(NAME_BLOCK + " " + NAME_BLOCK_ACTIVEX, activeXConfigJPanel);
-	super.refreshableMap.put(NAME_BLOCK + " " + NAME_BLOCK_ACTIVEX, activeXConfigJPanel);
+	addSavable(NAME_BLOCK + " " + NAME_BLOCK_ACTIVEX, activeXConfigJPanel);
+	addRefreshable(NAME_BLOCK + " " + NAME_BLOCK_ACTIVEX, activeXConfigJPanel);
+	activeXConfigJPanel.setSettingsChangedListener(this);
         
         // URL ///////////////
 	UrlConfigJPanel urlConfigJPanel = new UrlConfigJPanel();
         blockJTabbedPane.addTab(NAME_BLOCK_URL, null, urlConfigJPanel);
-	super.savableMap.put(NAME_BLOCK + " " + NAME_BLOCK_URL, urlConfigJPanel);
-	super.refreshableMap.put(NAME_BLOCK + " " + NAME_BLOCK_URL, urlConfigJPanel);
+	addSavable(NAME_BLOCK + " " + NAME_BLOCK_URL, urlConfigJPanel);
+	addRefreshable(NAME_BLOCK + " " + NAME_BLOCK_URL, urlConfigJPanel);
+	urlConfigJPanel.setSettingsChangedListener(this);
 
 	// PASS DOMAIN //////////////
 	PassDomainConfigJPanel passDomainConfigJPanel = new PassDomainConfigJPanel();
-        super.mTabbedPane.addTab(NAME_PASS_DOMAIN, null, passDomainConfigJPanel);
-	super.savableMap.put(NAME_PASS_DOMAIN, passDomainConfigJPanel);
-	super.refreshableMap.put(NAME_PASS_DOMAIN, passDomainConfigJPanel);
+        addTab(NAME_PASS_DOMAIN, null, passDomainConfigJPanel);
+	addSavable(NAME_PASS_DOMAIN, passDomainConfigJPanel);
+	addRefreshable(NAME_PASS_DOMAIN, passDomainConfigJPanel);
+	passDomainConfigJPanel.setSettingsChangedListener(this);
 
         // GENERAL SETTINGS ////////
 	GeneralConfigJPanel generalConfigJPanel = new GeneralConfigJPanel();
-        super.mTabbedPane.addTab(NAME_SETTINGS, null, generalConfigJPanel);
-	super.savableMap.put(NAME_SETTINGS, generalConfigJPanel);
-	super.refreshableMap.put(NAME_SETTINGS, generalConfigJPanel);
+        addTab(NAME_SETTINGS, null, generalConfigJPanel);
+	addSavable(NAME_SETTINGS, generalConfigJPanel);
+	addRefreshable(NAME_SETTINGS, generalConfigJPanel);
+	generalConfigJPanel.setSettingsChangedListener(this);
 
  	// EVENT LOG ///////
 	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
-        super.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
-        super.shutdownableMap.put(NAME_LOG, logJPanel);
+        addTab(NAME_LOG, null, logJPanel);
+        addShutdownable(NAME_LOG, logJPanel);
     }
 }
 

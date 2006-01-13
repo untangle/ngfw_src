@@ -133,6 +133,15 @@ public class Util {
 
 
     // BUTTON DECALS /////////////////
+
+    public static ImageIcon[] getImageIcons(String[] imagePaths){
+	ImageIcon[] imageIcons = new ImageIcon[imagePaths.length];
+	for( int i=0; i<imagePaths.length; i++){
+	    imageIcons[i] = new javax.swing.ImageIcon( Util.getClassLoader().getResource(imagePaths[i]) );
+	}
+	return imageIcons;
+    }
+
     private static ImageIcon iconOnState;
     private static ImageIcon iconOffState;
     private static ImageIcon iconStoppedState;

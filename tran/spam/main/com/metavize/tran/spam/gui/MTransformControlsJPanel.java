@@ -31,29 +31,31 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     }
 
     protected void generateGui(){
-
 	// SMTP ////////
 	SmtpConfigJPanel smtpConfigJPanel = new SmtpConfigJPanel();
-	super.mTabbedPane.addTab(NAME_SPAM_SMTP, null, smtpConfigJPanel);
-	super.savableMap.put(NAME_SPAM_SMTP, smtpConfigJPanel);
-	super.refreshableMap.put(NAME_SPAM_SMTP, smtpConfigJPanel);
+	addTab(NAME_SPAM_SMTP, null, smtpConfigJPanel);
+	addSavable(NAME_SPAM_SMTP, smtpConfigJPanel);
+	addRefreshable(NAME_SPAM_SMTP, smtpConfigJPanel);
+	smtpConfigJPanel.setSettingsChangedListener(this);
 
 	// POP ////////
 	PopConfigJPanel popConfigJPanel = new PopConfigJPanel();
-	super.mTabbedPane.addTab(NAME_SPAM_POP, null, popConfigJPanel);
-	super.savableMap.put(NAME_SPAM_POP, popConfigJPanel);
-	super.refreshableMap.put(NAME_SPAM_POP, popConfigJPanel);
+	addTab(NAME_SPAM_POP, null, popConfigJPanel);
+	addSavable(NAME_SPAM_POP, popConfigJPanel);
+	addRefreshable(NAME_SPAM_POP, popConfigJPanel);
+	popConfigJPanel.setSettingsChangedListener(this);
 
 	// IMAP ////////
 	ImapConfigJPanel imapConfigJPanel = new ImapConfigJPanel();
-	super.mTabbedPane.addTab(NAME_SPAM_IMAP, null, imapConfigJPanel);
-	super.savableMap.put(NAME_SPAM_IMAP, imapConfigJPanel);
-	super.refreshableMap.put(NAME_SPAM_IMAP, imapConfigJPanel);
+	addTab(NAME_SPAM_IMAP, null, imapConfigJPanel);
+	addSavable(NAME_SPAM_IMAP, imapConfigJPanel);
+	addRefreshable(NAME_SPAM_IMAP, imapConfigJPanel);
+	imapConfigJPanel.setSettingsChangedListener(this);
 
 	// EVENT LOG /////
 	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
-	super.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
-	super.shutdownableMap.put(NAME_LOG, logJPanel);
+	addTab(NAME_LOG, null, logJPanel);
+	addShutdownable(NAME_LOG, logJPanel);
     }
     
 }

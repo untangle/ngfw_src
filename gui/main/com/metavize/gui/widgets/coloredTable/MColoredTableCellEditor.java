@@ -276,7 +276,7 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	}
     }
     
-    private void showStatusChange(){
+    private void showStatusChange(boolean isFinalChange){
 	if( selectedValue.equals(newValue) ){
 	    //System.err.println("row UNCHANGED: " + newValue.toString() );
 	    mSortedTableModel.setRowState(selectedState, selectedModelRow);
@@ -286,49 +286,49 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	    //System.err.println("row CHANGED from: " + selectedValue.toString() + " to: " + newValue.toString());		
 	    if(editedComponent instanceof MPasswordField){
 		if( ((MPasswordField)editedComponent).getGeneratesChangeEvent() ){
-		    mSortedTableModel.setRowChanged(selectedModelRow);
+		    mSortedTableModel.setRowChanged(selectedModelRow, isFinalChange);
 		}
 	    }
 	    else{
-		mSortedTableModel.setRowChanged(selectedModelRow);
+		mSortedTableModel.setRowChanged(selectedModelRow, isFinalChange);
 	    }
-		
+	    
 	}
 	mSortedTableModel.handleDependencies(selectedModelCol, selectedModelRow);
     }
 
     public Object getCellEditorValue(){
 	updateValues();
-	showStatusChange();
+	showStatusChange(true);
 
 	return returnValue;
     }
     
-    private void update(){
+    private void update(boolean isFinal){
 	updateValues();
-	showStatusChange();
+	showStatusChange(isFinal);
     }
 
     // for check boxes, and combo boxes
     public void actionPerformed(java.awt.event.ActionEvent actionEvent) {
-	update();	
+	update(true);	
     }        
     
     // for the sliders, spinners
     public void stateChanged(javax.swing.event.ChangeEvent changeEvent) {
-	update();
+	update(false);
     }
 
     // for spinner
     public void keyPressed(KeyEvent e){}
     public void keyReleased(KeyEvent e){}
     public void keyTyped(KeyEvent e){
-	update();
+	update(false);
     }
     
     // for text fields and password fields        
     public void caretUpdate(javax.swing.event.CaretEvent caretEvent) {
-	update();
+	update(false);
     }
     
 }

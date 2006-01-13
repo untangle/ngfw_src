@@ -16,7 +16,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-public class FadeTask implements ActionListener{
+public class FadeTask implements ActionListener {
     
     // FADED BACKGROUND /////////////
     private static final int FADE_DELAY_MILLIS = 100;

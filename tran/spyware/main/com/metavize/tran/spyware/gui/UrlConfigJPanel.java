@@ -31,6 +31,13 @@ public class UrlConfigJPanel extends javax.swing.JPanel implements Savable, Refr
         initComponents();
     }
 
+    // SETTINGS CHANGE NOTIFICATION /////////
+    private SettingsChangedListener settingsChangedListener;
+    public void setSettingsChangedListener(SettingsChangedListener settingsChangedListener){
+	this.settingsChangedListener = settingsChangedListener;
+    }
+    ///////////////////////////////////////////
+
     public void doSave(Object settings, boolean validateOnly) throws Exception {
 
         // URL ENABLED ///////////
@@ -44,73 +51,97 @@ public class UrlConfigJPanel extends javax.swing.JPanel implements Savable, Refr
 
     }
 
+    boolean isUrlEnabledCurrent;
+
     public void doRefresh(Object settings){
         
         // URL ENABLED /////////
         SpywareSettings spywareSettings = (SpywareSettings) settings;
-        boolean isUrlEnabled = spywareSettings.getUrlBlacklistEnabled();
-        if( isUrlEnabled )
+        isUrlEnabledCurrent = spywareSettings.getUrlBlacklistEnabled();
+        if( isUrlEnabledCurrent )
             urlEnabledRadioButton.setSelected(true);
         else
             urlDisabledRadioButton.setSelected(true); 
     }
     
     
-    private void initComponents() {//GEN-BEGIN:initComponents
-        java.awt.GridBagConstraints gridBagConstraints;
+        private void initComponents() {//GEN-BEGIN:initComponents
+                java.awt.GridBagConstraints gridBagConstraints;
 
-        ftpButtonGroup = new javax.swing.ButtonGroup();
-        contentJPanel = new javax.swing.JPanel();
-        urlEnabledRadioButton = new javax.swing.JRadioButton();
-        urlDisabledRadioButton = new javax.swing.JRadioButton();
+                ftpButtonGroup = new javax.swing.ButtonGroup();
+                contentJPanel = new javax.swing.JPanel();
+                urlEnabledRadioButton = new javax.swing.JRadioButton();
+                urlDisabledRadioButton = new javax.swing.JRadioButton();
 
-        setLayout(new java.awt.GridBagLayout());
+                setLayout(new java.awt.GridBagLayout());
 
-        setMaximumSize(new java.awt.Dimension(563, 120));
-        setMinimumSize(new java.awt.Dimension(563, 120));
-        setPreferredSize(new java.awt.Dimension(563, 120));
-        contentJPanel.setLayout(new java.awt.GridBagLayout());
+                setMaximumSize(new java.awt.Dimension(563, 120));
+                setMinimumSize(new java.awt.Dimension(563, 120));
+                setPreferredSize(new java.awt.Dimension(563, 120));
+                contentJPanel.setLayout(new java.awt.GridBagLayout());
 
-        contentJPanel.setBorder(new javax.swing.border.EtchedBorder());
-        ftpButtonGroup.add(urlEnabledRadioButton);
-        urlEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        urlEnabledRadioButton.setText("<html><b>Enable</b> spyware and ad URL blocking</html>");
-        urlEnabledRadioButton.setFocusPainted(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 6);
-        contentJPanel.add(urlEnabledRadioButton, gridBagConstraints);
+                contentJPanel.setBorder(new javax.swing.border.EtchedBorder());
+                ftpButtonGroup.add(urlEnabledRadioButton);
+                urlEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                urlEnabledRadioButton.setText("<html><b>Enable</b> spyware and ad URL blocking</html>");
+                urlEnabledRadioButton.setFocusPainted(false);
+                urlEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                urlEnabledRadioButtonActionPerformed(evt);
+                        }
+                });
 
-        ftpButtonGroup.add(urlDisabledRadioButton);
-        urlDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        urlDisabledRadioButton.setText("<html><b>Disable</b> spyware and ad URL blocking</html>");
-        urlDisabledRadioButton.setFocusPainted(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
-        contentJPanel.add(urlDisabledRadioButton, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 6);
+                contentJPanel.add(urlEnabledRadioButton, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
-        add(contentJPanel, gridBagConstraints);
+                ftpButtonGroup.add(urlDisabledRadioButton);
+                urlDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                urlDisabledRadioButton.setText("<html><b>Disable</b> spyware and ad URL blocking</html>");
+                urlDisabledRadioButton.setFocusPainted(false);
+                urlDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                urlDisabledRadioButtonActionPerformed(evt);
+                        }
+                });
 
-    }//GEN-END:initComponents
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+                contentJPanel.add(urlDisabledRadioButton, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
+                add(contentJPanel, gridBagConstraints);
+
+        }//GEN-END:initComponents
+    
+    private void urlDisabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_urlDisabledRadioButtonActionPerformed
+	if( isUrlEnabledCurrent && (settingsChangedListener != null) )
+	    settingsChangedListener.settingsChanged(this);
+    }//GEN-LAST:event_urlDisabledRadioButtonActionPerformed
+    
+    private void urlEnabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_urlEnabledRadioButtonActionPerformed
+	if( !isUrlEnabledCurrent && (settingsChangedListener != null) )
+	    settingsChangedListener.settingsChanged(this);
+    }//GEN-LAST:event_urlEnabledRadioButtonActionPerformed
     
 
     
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel contentJPanel;
-    private javax.swing.ButtonGroup ftpButtonGroup;
-    public javax.swing.JRadioButton urlDisabledRadioButton;
-    public javax.swing.JRadioButton urlEnabledRadioButton;
-    // End of variables declaration//GEN-END:variables
+        // Variables declaration - do not modify//GEN-BEGIN:variables
+        private javax.swing.JPanel contentJPanel;
+        private javax.swing.ButtonGroup ftpButtonGroup;
+        public javax.swing.JRadioButton urlDisabledRadioButton;
+        public javax.swing.JRadioButton urlEnabledRadioButton;
+        // End of variables declaration//GEN-END:variables
     
 
 }
