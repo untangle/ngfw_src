@@ -13,7 +13,7 @@ function expandDir(dir)
   if (isFetchable(dirElem)) {
     new Ajax.Request("ls",
                      { method: "get",
-                       parameters: "url=" + dir,
+                       parameters: "url=" + dir + "&type=dir",
                        onComplete: function(req)
                                    {
                                      var resp = parseDomFromString(req.responseText);
@@ -26,6 +26,11 @@ function expandDir(dir)
   } else {
     toggleTree(dir);
   }
+}
+
+function showFileListing(dir)
+{
+  alert("showFileListing: " + dir);
 }
 
 function isFetchable(target)
@@ -49,20 +54,20 @@ function addChildDirectories(target, dom)
   toggleTree(path);
 }
 
-function addChildDirectory(target, name, childPath)
+function addChildDirectory(target, name, path)
 {
   var trig = document.createElement("span");
   Element.addClassName(trig, "trigger");
 
   var img = document.createElement("img");
   img.setAttribute("src", "closed.gif");
-  img.setAttribute("id", "I" + childPath);
-  img.onclick = function() { expandDir(childPath); };
+  img.setAttribute("id", "I" + path);
+  img.onclick = function() { expandDir(path); };
   trig.appendChild(img);
 
   var listTrigger = document.createElement("span");
   Element.addClassName(listTrigger, "list-trigger");
-  listTrigger.onclick = function() { alert("LIST TRIGGER"); };
+  listTrigger.onclick = function() { showFileListing(path); };
 
   var text = document.createTextNode(name.substring(0, name.length - 1));
   listTrigger.appendChild(text);
@@ -74,7 +79,7 @@ function addChildDirectory(target, name, childPath)
 
   var dir = document.createElement("span");
   Element.addClassName(dir, "dir");
-  dir.setAttribute("id", childPath);
+  dir.setAttribute("id", path);
 
   target.appendChild(trig);
   target.appendChild(dir);

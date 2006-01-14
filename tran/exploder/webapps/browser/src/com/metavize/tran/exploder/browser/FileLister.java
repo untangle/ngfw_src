@@ -41,6 +41,15 @@ public class FileLister extends HttpServlet
             }
         };
 
+    private static final SmbFileFilter FULL_FILTER = new SmbFileFilter()
+        {
+            public boolean accept(SmbFile f)
+                throws SmbException
+            {
+                return true;
+            }
+        };
+
     private final Logger logger = Logger.getLogger(getClass());
 
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -68,8 +77,20 @@ public class FileLister extends HttpServlet
         if (null == ss) {
             throw new ServletException("need url");
         }
-
         String url = ss[0];
+
+        SmbFileFilter filter = DIR_FILTER;
+        ss = params.get("type");
+        if (null != ss && 0 < ss.length) {
+            String t = ss[0];
+            if (t.equalsIgnoreCase("full")) {
+                filter = FULL_FILTER;
+            } else if (t.equalsIgnoreCase("dir")) {
+                filter = DIR_FILTER;
+            } else {
+                logger.warn("unknown listing type: " + t);
+            }
+        }
 
         SmbFile f = null;
 
@@ -84,9 +105,9 @@ public class FileLister extends HttpServlet
             os = resp.getWriter();
 
             if (f.isDirectory()) {
-                listDirectory(f, os);
+                listDirectory(f, filter, os);
             } else {
-                // XXX
+                // XXX send back file data? from this servlet? in xml???
                 os.println("A FILE");
             }
         } catch (IOException exn) {
@@ -98,16 +119,33 @@ public class FileLister extends HttpServlet
         }
     }
 
-    private void listDirectory(SmbFile f, PrintWriter os)
+    private void listDirectory(SmbFile dir, SmbFileFilter filter,
+                               PrintWriter os)
         throws IOException, ServletException
     {
         os.println("<?xml version=\"1.0\" ?>");
 
-        os.println("<root path='" + f.getPath() + "'>");
+        os.println("<root path='" + dir.getPath() + "'>");
 
         try {
-            for (SmbFile d : f.listFiles(DIR_FILTER)) {
-                os.println("  <dir name='" + Util.escapeXml(d.getName()) + "'/>");
+            for (SmbFile f : dir.listFiles(filter)) {
+                String tag = f.isDirectory() ? "dir" : "file";
+                String name = Util.escapeXml(f.getName());
+                long createTime = f.createTime();
+                long lastModified = f.lastModified();
+                long length = f.length();
+                boolean readable = f.canRead();
+                boolean writable = f.canWrite();
+                boolean hidden = f.isHidden();
+
+                os.println("  <" + tag + " "
+                           + "name='" + name + "' "
+                           + "create-time='" + createTime + "' "
+                           + "last-modified='" + lastModified + "' "
+                           + "size='" + length + "' "
+                           + "readable='" + readable + "' "
+                           + "writable='" + writable + "' "
+                           + "hidden='" + hidden + "'/>");
              }
         } catch (SmbException exn) {
             throw new ServletException("could not list directory", exn);

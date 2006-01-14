@@ -44,7 +44,7 @@ public class DirectoryTree extends TagSupport
                         + "onClick='expandDir(\"" + url + "\");'>");
 
             out.print("<span class='list-trigger' "
-                        + "onclick='alert(\"LIST-TRIGGER\");'>");
+                        + "onclick='showFileListing(\"" + url + "\");'>");
             out.print(Util.stripSlash(url));
             out.print("</span>");
 
