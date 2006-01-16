@@ -132,6 +132,12 @@ class DigestGenerator {
       IOUtil.close(in);    
       m_logger.debug("Created template files in \"" +
         templatedDirName + "\"");
+
+      //RE Bug 1247.  Create a blank "VM_global_library.vm"
+      //file to supress lame warning from Velocity.
+      fOut = new FileOutputStream(new File(templateRoot, "VM_global_library.vm"));
+      fOut.write("\n".getBytes());
+      IOUtil.close(fOut);
     }
     catch(Exception ex) {
       IOUtil.close(fOut);
