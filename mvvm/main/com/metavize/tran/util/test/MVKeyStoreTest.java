@@ -12,6 +12,7 @@
 package com.metavize.tran.util.test;
 import java.io.File;
 import com.metavize.tran.util.*;
+import com.metavize.mvvm.security.RFC2253Name;
 
 
 /**

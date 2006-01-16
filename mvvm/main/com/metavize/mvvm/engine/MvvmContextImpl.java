@@ -398,7 +398,7 @@ public class MvvmContextImpl extends MvvmContextBase
 
         //Inform the AppServer manager that everything
         //else is started.
-        appServerManager.postInit(this, getMain().getTomcatManager());
+        appServerManager.postInit(this);
 
     }
 

@@ -18,8 +18,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.text.SimpleDateFormat;
-import javax.naming.ldap.LdapName;
-import javax.naming.ldap.Rdn;
+import javax.naming.InvalidNameException;
+import com.metavize.mvvm.security.CertInfo;
+import com.metavize.mvvm.security.RFC2253Name;
 
 
 /**
@@ -35,94 +36,7 @@ public class OpenSSLWrapper {
   private static final String CERT_DATE_FORMAT =
     "MMM d HH:mm:ss yyy z";
 
-  /** 
-   * Little class to hold interesting parsed information
-   * from a cert.  Java has native classes for doing this,
-   * but if you want to start using the "X500" and "ldap"
-   * classes you're a champ.  This is much easier.
-   *
-   * The subjectDN and issuerDN members are hashmaps,
-   * where the key is the RDN type and the value the
-   * value.  For example, the subject String
-   * <code>CN=gobbles.metavize.com,L=San Mateo,ST=CA,C=US</code>
-   * when parsed can have its common name accessed via
-   * <code>myCertInfo.subjectDN.get("CN")</code>
-   */
-  public static class CertInfo {
-    /**
-     * Date when cert becomes valid
-     */
-    public final Date notBefore;
-    /**
-     * Date when cert becomes invalid
-     */
-    public final Date notAfter;
-    /**
-     * The Distinguished name broken into a Map.  Note that
-     * the most insteresting key is "CN" which will be
-     * the DNS entry for a web server
-     */
-    public final Map<String, String> subjectDN;
-    /**
-     * The Distinguished name broken into a Map.
-     */
-    public final Map<String, String> issuerDN;
-    /**
-     * True if the cert is issued as a CA cert.
-     */ 
-    public final boolean isCA;
 
-    private CertInfo(Date notBefore,
-      Date notAfter,
-      Map<String, String> subjectDN,
-      Map<String, String> issuerDN,
-      boolean isCA) {
-      this.notBefore = notBefore;
-      this.notAfter = notAfter;
-      this.subjectDN = subjectDN;
-      this.issuerDN = issuerDN;
-      this.isCA = isCA;
-    }
-
-    /**
-     * Convienence method to obtain the <b>C</b>ommon<b>N</b>ame (i.e. the hostname
-     * for a web server).
-     *
-     * @return the CN of the cert's subject (or null if not found).
-     */
-    public String getSubjectCN() {
-      //TODO is this stuff case sensitive?
-      if(subjectDN == null) {
-        return null;
-      }
-      String ret = subjectDN.get("CN");
-      if(ret==null) {
-        ret = subjectDN.get("cn");
-      }
-      return ret;
-    }
-     
-    /**
-     * Convience method which prints out debug info.
-     */
-    public String toString() {
-      StringBuilder sb = new StringBuilder();
-      String newLine = System.getProperty("line.separator", "\n");
-      sb.append("notBefore: ").append(notBefore).append(newLine);
-      sb.append("notAfter: ").append(notAfter).append(newLine);
-      sb.append("isCA: ").append(isCA?"true":"false").append(newLine);
-      sb.append("subjectDN").append(newLine);
-      for(String key : subjectDN.keySet()) {
-        sb.append("  ").append(key).append(":").append(subjectDN.get(key)).append(newLine);
-      }
-      sb.append("issuerDN").append(newLine);
-      for(String key : issuerDN.keySet()) {
-        sb.append("  ").append(key).append(":").append(issuerDN.get(key)).append(newLine);
-      }
-      return sb.toString();
-    }
-    
-  }
 
   /**
    * "Pretty" is a relative term, but prints the human-readable
@@ -199,7 +113,7 @@ public class OpenSSLWrapper {
    * @return the info
    */
   public static CertInfo getCertInfo(File certFile)
-    throws IOException {
+    throws IOException, InvalidNameException {
 
     //=================================================
     // Tested command as follows:
@@ -238,8 +152,8 @@ public class OpenSSLWrapper {
     if(result.exitCode==0) {
       Date notBefore = null;
       Date notAfter = null;
-      HashMap<String, String> subjectMap = null;
-      HashMap<String, String> issuerMap = null;
+      RFC2253Name subjectDN = null;
+      RFC2253Name issuerDN = null;
       //Time to parse the output (I hate this in Java)
       String[] theLines = new String(result.stdOut).split("(?m)$");//The "(?m") crap is so Java's
                                                                   //Regex treats embedded new
@@ -253,10 +167,10 @@ public class OpenSSLWrapper {
           notAfter = parseCertDate(theLines[i].substring("notAfter=".length()));
         }
         if(theLines[i].startsWith("subject=")) {
-          subjectMap = parseDN(theLines[i].substring("subject=".length()));
+          subjectDN = RFC2253Name.parse(theLines[i].substring("subject=".length()));
         }
         if(theLines[i].startsWith("issuer=")) {
-          issuerMap = parseDN(theLines[i].substring("issuer=".length()));
+          issuerDN = RFC2253Name.parse(theLines[i].substring("issuer=".length()));
         }        
       }
 
@@ -274,7 +188,12 @@ public class OpenSSLWrapper {
         null,//logas
         false);//TODO More thread junk.  This is getting to be a real pain...
         
-      return new CertInfo(notBefore, notAfter, subjectMap, issuerMap, result.exitCode == 0);
+      return new CertInfo(notBefore,
+        notAfter,
+        subjectDN,
+        issuerDN,
+        result.exitCode == 0,
+        prettyPrint(certFile));
     }
     
     throw new IOException("openssl exited with value " + result.exitCode);
@@ -297,7 +216,7 @@ public class OpenSSLWrapper {
    * @return the info
    */
   public static CertInfo getCertInfo(byte[] certBytes)
-    throws IOException {    
+    throws IOException, InvalidNameException {    
 
     File temp = File.createTempFile("gci", ".tmp");
     try {
@@ -310,6 +229,10 @@ public class OpenSSLWrapper {
       IOUtil.delete(temp);
       throw ex;
     }
+    catch(InvalidNameException ex) {
+      IOUtil.delete(temp);
+      throw ex;
+    }    
   }
 
 
@@ -465,6 +388,7 @@ public class OpenSSLWrapper {
    * Parse an RFC2253 DN.  I hope the JavaSoft folks got the parsing
    * right, because I sure as hell didn't want to write the parser.
    */
+/*   
   private static HashMap<String, String> parseDN(String dnStr)
     throws IOException {
 
@@ -488,7 +412,7 @@ public class OpenSSLWrapper {
         ex.toString());
     }
   }   
-
+*/
 //============
 // Testing
 //============  

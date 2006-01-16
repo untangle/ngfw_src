@@ -22,7 +22,7 @@ package com.metavize.tran.util;
  * myList.put(new Pair&lt;String, InetAddress>("localhost", InetAddress.getByName("localhost"));
  * </code>
  */
-public class Pair<A,B> {
+public class Pair<A,B> implements java.io.Serializable {
 
   public final A a;
   public final B b;

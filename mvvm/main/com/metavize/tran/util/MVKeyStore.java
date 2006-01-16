@@ -22,6 +22,7 @@ import java.security.KeyStore;
 import java.security.GeneralSecurityException;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
+import com.metavize.mvvm.security.RFC2253Name;
 
 //TODO backup keystore on all operations
 
@@ -44,7 +45,7 @@ public class MVKeyStore {
   /**
    * Enum of the different entries within the key store
    */
-  private static enum MVKSEntryType {
+  public static enum MVKSEntryType {
     PrivKey,
     SecKey,
     TrustedCert
@@ -124,7 +125,7 @@ public class MVKeyStore {
     
     KeyStore ks = openKeyJavaStore();
 
-    MVKSEntryType type = getEntryType(ks, oldAlias);
+    MVKSEntryType type = getEntryTypeImpl(ks, oldAlias);
     if(type == null) {
       return false;
     }
@@ -414,6 +415,10 @@ public class MVKeyStore {
     return (String[]) ret.toArray(new String[ret.size()]);
   }
 
+  public MVKSEntryType getEntryType(String alias)
+    throws IOException, GeneralSecurityException {
+    return getEntryTypeImpl(openKeyJavaStore(), alias);
+  }
 
   
   /**
@@ -517,7 +522,7 @@ public class MVKeyStore {
   /**
    * Returns null if not found
    */
-  private static MVKSEntryType getEntryType(KeyStore ks,
+  private static MVKSEntryType getEntryTypeImpl(KeyStore ks,
     String alias) throws GeneralSecurityException {
     if(ks.entryInstanceOf(alias, KeyStore.SecretKeyEntry.class)) {
       return MVKSEntryType.PrivKey;

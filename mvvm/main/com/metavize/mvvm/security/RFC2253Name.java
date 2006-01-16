@@ -9,7 +9,8 @@
  *  $Id$
  */
  
-package com.metavize.tran.util;
+package com.metavize.mvvm.security;
+import com.metavize.tran.util.Pair;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 import javax.naming.InvalidNameException;
@@ -35,12 +36,22 @@ import java.util.List;
  * <br>
  * Note that instances are not threadsafe.
  */
-public class RFC2253Name {
+public class RFC2253Name implements java.io.Serializable {
 
   private List<Pair<String, String>> m_members;
 
   private RFC2253Name(List<Pair<String, String>> members) {
     m_members = members;
+  }
+
+  /**
+   * Copy constructor
+   */
+  public RFC2253Name(RFC2253Name copy) {
+    m_members = new ArrayList<Pair<String, String>>();
+    for(Pair<String, String> pair : copy.m_members) {
+      m_members.add(new Pair<String, String>(pair.a, pair.b));
+    }
   }
 
   /**

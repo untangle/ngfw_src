@@ -1,7 +1,8 @@
 #!/bin/sh
 
-PATH=/sbin:/bin:/usr/sbin:/usr/bin
+
 JAVA_HOME=${JAVA_HOME:-/opt/java}
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:${JAVA_HOME}/bin
 
 ## Configure IPV4 parameters
 
