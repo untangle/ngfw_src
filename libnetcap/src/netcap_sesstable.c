@@ -144,7 +144,7 @@ netcap_session_t* netcap_sesstable_get_tuple ( int proto, in_addr_t src, in_addr
 netcap_session_t* netcap_nc_sesstable_get_tuple ( int if_lock, int proto, in_addr_t src, in_addr_t dst, 
                                                   u_short sport, u_short dport, u_int seq )
 {
-    session_tuple_t st = { .proto proto, .shost src, .dhost dst, .sport sport, .dport dport, .seq seq };
+    session_tuple_t st = { .proto = proto, .shost = src, .dhost = dst, .sport = sport, .dport = dport, .seq = seq };
     netcap_session_t* session;
 
     _verify_initialized_null();
@@ -438,7 +438,7 @@ static int _netcap_sesstable_merge_tuple( netcap_session_t* netcap_sess, int pro
     netcap_session_t* current_sess;
     session_tuple_t* st = NULL;
     netcap_pkt_t* pkt;
-    struct in_addr address = { .s_addr src };
+    struct in_addr address = { .s_addr = src };
     
     if ( netcap_sess == NULL || ( proto != IPPROTO_UDP && proto != IPPROTO_ICMP )) {
        return errlogargs();

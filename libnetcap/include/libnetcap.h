@@ -141,7 +141,7 @@ typedef struct netcap_pkt {
      * The actual data from the packet
      * this points to a different place for different type of pkts
      */
-    char* data;    
+    u_char* data;    
     int   data_len;
 
     /**
@@ -160,7 +160,7 @@ typedef struct netcap_pkt {
     /**
      * QUEUE specific stuff
      */
-    char* buffer; 
+    u_char* buffer; 
 
     ipq_id_t packet_id;
 

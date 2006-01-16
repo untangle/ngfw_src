@@ -113,8 +113,8 @@ static int  _netcap_tcp_setsockopt_srv ( int sock )
     int nine       = 9;
     
     struct ip_sendnfmark_opts nfmark = {
-        .on 1,
-        .mark MARK_NOTRACK
+        .on = 1,
+        .mark = MARK_NOTRACK
     };
     
     if (setsockopt(sock,SOL_IP,IP_NONLOCAL,&one,sizeof(one))<0) 

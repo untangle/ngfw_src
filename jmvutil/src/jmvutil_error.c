@@ -19,8 +19,8 @@ static struct {
     jclass illegal_arg;    /* An illegal argument exception */
     jclass illegal_stt;    /* An illegal state exception */
 } _jerror = {
-    .illegal_arg NULL,
-    .illegal_stt NULL,
+    .illegal_arg = NULL,
+    .illegal_stt = NULL,
 };
 
 static jerror_tls_t* _tls_get( void );

@@ -85,21 +85,21 @@ static struct {
     unsigned long delay_array[];
 } _jnetcap = 
 {
-    .scheduler _UNINITIALIZED, 
-    .netcap    _UNINITIALIZED, 
-    .mutex     PTHREAD_MUTEX_INITIALIZER,
-    .java { 
-        .hook_class     NULL,
-        .hook_method_id NULL,
-        .tcp_hook       NULL,
-        .udp_hook       NULL
+    .scheduler = _UNINITIALIZED, 
+    .netcap    = _UNINITIALIZED, 
+    .mutex     = PTHREAD_MUTEX_INITIALIZER,
+    .java = { 
+        .hook_class     = NULL,
+        .hook_method_id = NULL,
+        .tcp_hook       = NULL,
+        .udp_hook       = NULL
     },
 
-    .session_limit _SESSION_LIMIT_DEFAULT,
-    .session_count 0,
-    .session_mutex PTHREAD_MUTEX_INITIALIZER,
+    .session_limit = _SESSION_LIMIT_DEFAULT,
+    .session_count = 0,
+    .session_mutex = PTHREAD_MUTEX_INITIALIZER,
 
-    .delay_array  {
+    .delay_array  = {
         3000,
         6000,
         20000,
@@ -644,7 +644,7 @@ JNIEXPORT jbyte JNICALL Java_com_metavize_jnetcap_Netcap_cGetOutgoingInterface
   (JNIEnv* env, jobject _this, jlong j_address )
 {
     struct in_addr address = {
-        .s_addr   UINT_TO_JLONG(j_address)
+        .s_addr   = UINT_TO_JLONG(j_address)
     };
     netcap_intf_t netcap_intf;
     

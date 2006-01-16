@@ -39,7 +39,7 @@
 static struct {
     int send_sock;
 } _icmp = {
-    .send_sock -1
+    .send_sock = -1
 };
 
 typedef enum
@@ -61,7 +61,7 @@ typedef enum
 } _find_t;
 
 /* Duplicated functionality from netcap_udp.c */
-static int _cache_packet( char* full_pkt, int full_pkt_len, mailbox_t* icmp_mb );
+static int _cache_packet( u_char* full_pkt, int full_pkt_len, mailbox_t* icmp_mb );
 
 static int _restore_cached_msg( mailbox_t* mb, netcap_icmp_msg_t* msg );
 
@@ -308,13 +308,13 @@ static int  _netcap_icmp_send( char *data, int data_len, netcap_pkt_t* pkt, int 
 /* Move the data pointer so that it points to the correct location inside of the packet, 
  * rather than starting at the header of the packet
  */
-static int  _icmp_fix_packet( netcap_pkt_t* pkt, char** full_pkt, int* full_pkt_len );
+static int  _icmp_fix_packet( netcap_pkt_t* pkt, u_char** full_pkt, int* full_pkt_len );
 
 /**
  * Determine how a session should be handled.
  */
 static _find_t _icmp_find_session( netcap_pkt_t* pkt, netcap_session_t** netcap_sess, 
-                                   char* full_pkt, int full_pkt_len );
+                                   u_char* full_pkt, int full_pkt_len );
 
 static struct cmsghdr * my__cmsg_nxthdr(struct msghdr *msg, struct cmsghdr *cmsg, int size);
 
@@ -366,7 +366,7 @@ int  netcap_icmp_call_hook( netcap_pkt_t* pkt )
     debug( 10, "ICMP: Dropping packet (%#10x) and passing data\n", pkt->packet_id );
     
     do {
-        char* full_pkt;
+        u_char* full_pkt;
         int full_pkt_len;
 
         if ( netcap_set_verdict( pkt->packet_id, NF_DROP, NULL, 0 ) < 0 ) {
@@ -746,7 +746,7 @@ static int  _netcap_icmp_send( char *data, int data_len, netcap_pkt_t* pkt, int 
     return ret;
 }
 
-static int  _icmp_fix_packet( netcap_pkt_t* pkt, char** full_pkt, int* full_pkt_len )
+static int  _icmp_fix_packet( netcap_pkt_t* pkt, u_char** full_pkt, int* full_pkt_len )
 {
     int offset;
 
@@ -783,7 +783,7 @@ static int  _icmp_fix_packet( netcap_pkt_t* pkt, char** full_pkt, int* full_pkt_
 }
 
 static _find_t _icmp_find_session( netcap_pkt_t* pkt, netcap_session_t** netcap_sess, 
-                                   char* full_pkt, int full_pkt_len )
+                                   u_char* full_pkt, int full_pkt_len )
 {
     /* Lookup the session information */
     struct icmp *packet = (struct icmp*)pkt->data;
@@ -959,7 +959,7 @@ static int _restore_cached_msg( mailbox_t* mb, netcap_icmp_msg_t* msg )
     return 0;
 }
 
-static int _cache_packet( char* full_pkt, int full_pkt_len, mailbox_t* icmp_mb )
+static int _cache_packet( u_char* full_pkt, int full_pkt_len, mailbox_t* icmp_mb )
 {
     netcap_icmp_msg_t* msg;
     netcap_icmp_msg_t* old_msg;

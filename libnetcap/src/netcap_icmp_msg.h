@@ -35,9 +35,9 @@ netcap_icmp_msg_t* netcap_icmp_msg_malloc ( int data_len );
  * msg_size: Size of the msg in bytes, data is actually copied into msg, 
  *           and this value must be greater or equal to than 4 + data_len
  */
-int                netcap_icmp_msg_init   ( netcap_icmp_msg_t* msg, int msg_size, char* data, int data_len );
+int                netcap_icmp_msg_init   ( netcap_icmp_msg_t* msg, int msg_size, u_char* data, int data_len );
 
-netcap_icmp_msg_t* netcap_icmp_msg_create ( char* data, int data_len );
+netcap_icmp_msg_t* netcap_icmp_msg_create ( u_char* data, u_int data_len );
 
 int                netcap_icmp_msg_free    ( netcap_icmp_msg_t* msg );
 int                netcap_icmp_msg_destroy ( netcap_icmp_msg_t* msg );

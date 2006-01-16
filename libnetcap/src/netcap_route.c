@@ -43,18 +43,18 @@ static struct
     unsigned long delay_array[];
 } _netcap_arp = 
 {
-    .sock     -1,
-    .pkt_sock -1,
+    .sock     = -1,
+    .pkt_sock = -1,
 
-    .zero_mac
+    .zero_mac = 
     {
-        .ether_addr_octet 
+        .ether_addr_octet = 
         { 
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00
         }
     },
 
-    .delay_array
+    .delay_array = 
     {
         3000,
         6000,
@@ -163,13 +163,13 @@ int netcap_arp_configure_bridge( netcap_intf_db_t* db, netcap_intf_info_t* intf_
     int _critical_section() {
         struct ifreq ifr;
         struct sockaddr_ll broadcast = {
-            .sll_family   AF_PACKET,
-            .sll_protocol htons( ETH_P_ARP ),
-            .sll_ifindex  6, // SETME WITH SOMETHING
-            .sll_hatype   htons( ARPHRD_ETHER ),
-            .sll_pkttype  PACKET_BROADCAST, 
-            .sll_halen    ETH_ALEN,
-            .sll_addr {
+            .sll_family   = AF_PACKET,
+            .sll_protocol = htons( ETH_P_ARP ),
+            .sll_ifindex  = 6, // SETME WITH SOMETHING
+            .sll_hatype   = htons( ARPHRD_ETHER ),
+            .sll_pkttype  = PACKET_BROADCAST, 
+            .sll_halen    = ETH_ALEN,
+            .sll_addr = {
                 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
             }
         };
@@ -436,10 +436,10 @@ static int _arp_bridge_intf   ( netcap_intf_db_t* db, netcap_intf_t* out_intf,
         struct ether_addr* mac_address;
         void* unused;
     } args = {
-        .command     BRCTL_GET_DEVNAME,
-        .bridge      &buffer,
-        .mac_address mac_address,
-        .unused NULL
+        .command     = BRCTL_GET_DEVNAME,
+        .bridge      = &buffer,
+        .mac_address = mac_address,
+        .unused      = NULL
     };
 
 	strncpy( buffer.s, intf_info->name.s, sizeof( buffer ));
@@ -533,7 +533,7 @@ static int  _fake_connect      ( struct in_addr* src_ip, struct in_addr* dst_ip,
 
     int _critical_section( void ) {
         int one = 1;
-        int addr_len = sizeof( dst_addr );
+        u_int addr_len = sizeof( dst_addr );
         int name_len = strnlen( intf_info->name.s, sizeof( intf_info->name )) + 1;
 
         if ( setsockopt( fake_fd, SOL_SOCKET, SO_BINDTODEVICE, intf_info->name.s, name_len ) < 0 ) {

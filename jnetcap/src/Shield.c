@@ -38,11 +38,11 @@ static struct
     jmethodID call_listener_statistic_mid;
     jobject   object;
 } _shield = {
-    .call_hook 0,
-    .class     NULL,
-    .call_listener_rejection_mid NULL,
-    .call_listener_statistic_mid NULL,
-    .object NULL
+    .call_hook = 0,
+    .class     = NULL,
+    .call_listener_rejection_mid = NULL,
+    .call_listener_statistic_mid = NULL,
+    .object = NULL
 };
 
 static void _event_hook ( netcap_shield_event_data_t* data );
@@ -163,7 +163,7 @@ JNIEXPORT void JNICALL JF_Shield( status )
 JNIEXPORT void JNICALL JF_Shield( addChunk )
   (JNIEnv *env, jobject _this, jlong ip, jshort protocol, jint num_bytes )
 {
-    struct in_addr address = { .s_addr (in_addr_t)JLONG_TO_UINT( ip ) };
+    struct in_addr address = { .s_addr = (in_addr_t)JLONG_TO_UINT( ip ) };
     /* Could throw an error, but shield errors are currently ignored. */
     if ( netcap_shield_rep_add_chunk( &address, protocol, (u_short)num_bytes ) < 0 )
         errlog( ERR_WARNING, "netcap_shield_rep_add_chunk\n" );  
@@ -286,8 +286,8 @@ JNIEXPORT void JNICALL JF_Shield( setNodeSettings )
     netcap_shield_bless_t data[length];
     int c;
     netcap_shield_bless_array_t bless_array = {
-        .count length,
-        .d     data
+        .count = length,
+        .d     = data
     };
     
     for ( c = 0 ; c < length ; c++ ) {

@@ -90,7 +90,7 @@ int  netcap_queue_get_sock (void)
     return ipq_h->fd;
 }
 
-int  netcap_set_verdict (u_long packet_id, int verdict, char *buffer, int len)
+int  netcap_set_verdict (u_long packet_id, int verdict, u_char* buffer, int len)
 {
     int nf_verdict = -1;
 
@@ -114,11 +114,11 @@ int  netcap_set_verdict (u_long packet_id, int verdict, char *buffer, int len)
     return 0;
 }
 
-int  netcap_queue_read (char *buffer, int max, netcap_pkt_t* pkt)
+int  netcap_queue_read (u_char* buffer, int max, netcap_pkt_t* pkt)
 {
     int status;
     ipq_packet_msg_t* msg;
-    char* p;
+    u_char* p;
     struct iphdr* iph;
     struct tcphdr* tcph;
     struct udphdr* udph;
@@ -214,7 +214,7 @@ int  netcap_queue_read (char *buffer, int max, netcap_pkt_t* pkt)
     return msg->data_len;
 }
 
-int  netcap_raw_send (char* pkt, int len)
+int  netcap_raw_send (u_char* pkt, int len)
 {
     struct sockaddr_in to;
     struct iphdr* iph = (struct iphdr*)pkt;

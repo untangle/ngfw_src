@@ -47,8 +47,8 @@ static struct {
     int base_port;
     int redirect_socks[RDR_TCP_LOCALS_SOCKS];
 } _tcp = {
-    .syn_mode   1,
-    .base_port -1
+    .syn_mode  = 1,
+    .base_port = -1
 };
 
 /* Callback functions */
@@ -368,12 +368,12 @@ static int  _netcap_tcp_accept_hook ( int cli_sock, struct sockaddr_in client )
     in_addr_t cli_addr,srv_addr;
     u_short   cli_port,srv_port;
     struct sockaddr_in server;
-    int server_len = sizeof(server);
+    u_int server_len = sizeof(server);
     int   flags = 0;  /* XXX Ignored now that subscriptions are gone */
     int   new_sess_flag = 0;
     netcap_session_t* sess = NULL;
     int nfmark;
-    int nfmark_len = sizeof(nfmark);
+    u_int nfmark_len = sizeof(nfmark);
     /**
      * Get the mark
      * and convert it to and interface index
@@ -596,7 +596,7 @@ static netcap_session_t* _netcap_get_or_create_sess ( int* created_flag,
                                                       int flags, u_int seq )
 {
     netcap_session_t* sess;
-    struct in_addr address = { .s_addr cli_addr };
+    struct in_addr address = { .s_addr = cli_addr };
 
     if (!created_flag)
         return errlogargs_null();

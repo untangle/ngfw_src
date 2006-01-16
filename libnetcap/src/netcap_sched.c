@@ -104,8 +104,8 @@ typedef struct
 
 static _sched_t _sched =
 {
-    .initialized 0,
-    .mutex PTHREAD_MUTEX_INITIALIZER
+    .initialized = 0,
+    .mutex = PTHREAD_MUTEX_INITIALIZER
 };
 
 static int           _sched_mailbox_put ( _msg_type_t type, int usec, _sched_func_t func, void* arg );

@@ -67,7 +67,7 @@ int            netcap_trie_init       ( netcap_trie_t* trie, int flags, void* it
         return errlog(ERR_CRITICAL,"netcap_trie_level_init\n");
     }
             
-    struct in_addr null_addr = { .s_addr 0 };
+    struct in_addr null_addr = { .s_addr = 0 };
     if ( netcap_trie_init_data ( trie, &trie->root.base, item, &null_addr, 0 ) < 0 ) {
         return errlog(ERR_CRITICAL,"netcap_trie_copy_item");
     }

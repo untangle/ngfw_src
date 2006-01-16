@@ -32,11 +32,11 @@ static struct {
     JavaVM* jvm;
 } _jmvutil = 
 {
-    .mvutil    JMVUTIL_UNINITIALIZED,
-    .jmvutil   JMVUTIL_UNINITIALIZED,
-    .mutex     PTHREAD_MUTEX_INITIALIZER,
-    .jvm       NULL,
-    .tls_key   -1
+    .mvutil    = JMVUTIL_UNINITIALIZED,
+    .jmvutil   = JMVUTIL_UNINITIALIZED,
+    .mutex     = PTHREAD_MUTEX_INITIALIZER,
+    .jvm       = NULL,
+    .tls_key   = -1
 };
 
 static jmvutil_tls_t* _tls_get ( void );

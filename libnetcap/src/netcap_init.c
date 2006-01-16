@@ -46,8 +46,8 @@ static struct {
     pthread_mutex_t mutex;
     pthread_key_t   tls_key;
 } _init = {
-    .status STATUS_UNINITIALIZED,
-    .mutex PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
+    .status = STATUS_UNINITIALIZED,
+    .mutex  = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
 };
 
 static int _netcap_init( int shield_enable );

@@ -27,7 +27,7 @@
 static struct {
     pthread_key_t tls_key;
 } _unet = {
-    .tls_key -1
+    .tls_key = -1
 };
 
 typedef struct {

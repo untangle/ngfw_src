@@ -65,20 +65,20 @@ static struct
         int closed;
     } mode_ticks;
 } _shield_mode = {
-    .is_alive 0,
-    .cfg      NULL,
-    .root_rep NULL,
-    .mode     NULL,
-    .mode     NULL,
-    .fence    NULL,
+    .is_alive = 0,
+    .cfg      = NULL,
+    .root_rep = NULL,
+    .mode     = NULL,
+    .mode     = NULL,
+    .fence    = NULL,
     
-    .ticks    0,
+    .ticks    = 0,
 
-    .mode_ticks {
-        .relaxed 0,
-        .lax     0,
-        .tight   0,
-        .closed  0
+    .mode_ticks = {
+        .relaxed = 0,
+        .lax     = 0,
+        .tight   = 0,
+        .closed  = 0
     }    
 };
 

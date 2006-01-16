@@ -12,8 +12,7 @@ XB-Display-Name: File Transfer
 XB-Website: http://www.metavize.com
 XB-Is-Service: true
 Description: The Metavize File Transfer/FTP Decoder
- The FTP Decoder allows other software appliances to parse and analyze
- FTP traffic and documents.
+ The Metavize File Transfer/FTP Decoder Casing
 
 Package: http-casing
 Architecture: any
@@ -22,8 +21,7 @@ XB-Display-Name: Web
 XB-Website: http://www.metavize.com
 XB-Is-Service: true
 Description: The Metavize Web/HTTP Decoder
- The HTTP Decoder allows other software appliances to parse and analyze
- HTTP traffic and documents.
+ The Metavize Web/HTTP Decoder Casing 
 
 Package: mail-casing
 Architecture: any
@@ -35,171 +33,132 @@ XB-Display-Name: Email
 XB-Website: http://www.metavize.com
 XB-Is-Service: true
 Description: The Metavize Email Decoder
- The Email Decoder allows other software appliances to parse and analyze
- email (SMTP/IMAP/POP3) traffic and documents.
+ The Metavize Email Decoder Casing
 
 Package: airgap-transform
 Architecture: any
 Depends: mvvm
-XB-Price: 0
 XB-Display-Name: Attack Shield
 XB-Website: http://www.metavize.com/attackshield.html
 XB-Rack-Position: 1010
 XB-Is-Service: true
 Description: The Metavize Attack Shield
- The Attack Shield protects your network from denial-of-service
- attacks and malformed packet attacks.
+ The Metavize Attack Shield Transform
 
 Package: spyware-transform
 Architecture: any
 Depends: mvvm, http-casing
-XB-Price: 0
 XB-Display-Name: Spyware Blocker
 XB-Website: http://www.metavize.com/spyware.html
 XB-Rack-Position: 20
 Description: The Metavize Spyware Blocker
- The Spyware Blocker detects and prevents Spyware infections, with
- ActiveX and Cookie blacklist. It also can detect and block clients
- that phone home.
+ The Metavize Spyware Blocker Transform
 
 Package: httpblocker-transform
 Architecture: any
 Depends: mvvm, http-casing, urlblacklist.com-mv
-XB-Price: 0
 XB-Display-Name: Web Content Control
 XB-Website: http://www.metavize.com/webcontrol.html
 XB-Rack-Position: 30
 Description: The Metavize Web Content Control
- Web Content Control enforces your web browsing policy.  It can filter
- based on content type (category), web address, MIME type, file
- extension, etc.
+ The Metavize Web Content Control Transform
 
 Package: hauri-transform
 Architecture: any
 Depends: mvvm, virus-base, hauri-mv, http-casing, ftp-casing, mail-casing
-XB-Price: 399
 XB-Display-Name: Hauri AntiVirus Scanner
 XB-Website: http://www.metavize.com/hauri_antivirus.html
 XB-Rack-Position: 60
 Description: The Hauri AntiVirus Scanner
- The Hauri AntiVirus Scanner, based on Hauri's viRobot, is able to
- scan and block inbound and outbound viruses, on HTTP, FTP, and email.
- Updates are automatically installed hourly.
+ The Hauri AntiVirus Scanner Transform
 
 Package: kav-transform
 Architecture: any
 Depends: mvvm, virus-base, kav-mv, http-casing, ftp-casing, mail-casing
-XB-Price: 599
 XB-Display-Name: Kaspersky AntiVirus Scanner
 XB-Website: http://www.metavize.com/kaspersky_antivirus.html
 XB-Rack-Position: 50
 Description: The Kaspersky AntiVirus Scanner
- The Kaspersky AntiVirus Scanner, based on Kaspersky's award winning
- Anti-Virus, is able to scan and block inbound and outbound viruses,
- on HTTP, FTP, and email. Updates are automatically installed hourly.
+ The Kaspersky AntiVirus Scanner Transform
 
 Package: clam-transform
 Architecture: any
 Depends: mvvm, virus-base, clamav-mv, http-casing, ftp-casing, mail-casing
-XB-Price: 0
 XB-Display-Name: Clam AntiVirus Scanner
 XB-Website: http://www.metavize.com/clam_antivirus.html
 XB-Rack-Position: 70
 Description: The Clam AntiVirus Scanner
- The Clam AntiVirus Scanner, based on ClamAV, is able to scan and
- block inbound and outbound viruses, on HTTP, FTP, and email.
- Updates are automatically installed hourly.
+ The Clam AntiVirus Scanner Transform
 
 Package: protofilter-transform
 Architecture: any
 Depends: mvvm
 Conflicts: protoanalyzer-transform
-XB-Price: 0
 XB-Display-Name: Rogue Protocol Control
 XB-Website: http://www.metavize.com/protocolcontrol.html
 XB-Rack-Position: 80
 Description: The Metavize Rogue Protocol Control
- The Rogue Protocol Control is able to identify and selectively block
- various protocols running on any port. This enforces acceptable use
- policy by blocking Rogue applications, such as Peer-to-Peer and
- Instant Messaging.
+ The Metavize Rogue Protocol Control Transform
 
 Package: nat-transform
 Architecture: any
 Depends: mvvm, dnsmasq, ftp-casing
-XB-Price: 0
 XB-Display-Name: Network Sharing
 XB-Website: http://www.metavize.com/networksharing.html
 XB-Rack-Position: 1000
 XB-Is-Service: true
 Description: The Metavize Network Sharing Software Appliance
- The Network Sharing Software Appliance allows a single public IP
- address to be shared by an entire network of computers.
- Specifically, NAT, DHCP, and Redirect functionalities are provided.
+ The Metavize Network Sharing Software Appliance Transform
 
 Package: firewall-transform
 Architecture: any
 Depends: mvvm
-XB-Price: 0
 XB-Display-Name: Firewall
 XB-Website: http://www.metavize.com/firewall.html
 XB-Rack-Position: 90
 Description: The Metavize Firewall Software Appliance
- The Firewall Software Appliance allows network traffic to be blocked
- based on simple rules.
+ The Metavize Firewall Software Appliance Transform
 
 Package: spamassassin-transform
 Architecture: any
 Depends: mvvm, spam-base, spamc-mv, mail-casing
-XB-Price: 0
 XB-Display-Name: SpamGuard
 XB-Website: http://www.metavize.com/spam.html
 XB-Rack-Position: 1
 Description: The Metavize SpamGuard Software Appliance
- The SpamGuard Software Appliance controls Spam email.
- SMTP emails can be blocked, marked, or quarantined. IMAP and POP3
- email can be blocked or marked as spam.
+ The Metavize SpamGuard Software Appliance Transform
 
 Package: clamphish-transform
 Architecture: any
 Depends: mvvm, spam-base, clamav-mv, mail-casing
-XB-Price: 0
 XB-Display-Name: PhishNet
 XB-Website: http://www.metavize.com/phishnet.html
 XB-Rack-Position: 10
 Description: The Metavize PhishNet Software Appliance
- The PhishNet Software Appliance protects users from emails,
- commonly known as "phish," intended to steal identity, credit card
- information, and more.
+ The Metavize PhishNet Software Appliance Transform
 
 Package: test-transform
 Architecture: any
 Depends: mvvm
-XB-Price: 0
 XB-Display-Name: Test
 XB-Website: http://www.metavize.com
 XB-Rack-Position: 2002
 Description: The Metavize Test Software Appliance
- The Test Software Appliance is for internal Metavize testing.
+ The Metavize Test Software Appliance Transform
 
 Package: openvpn-transform
 Architecture: any
 Depends: mvvm, openvpn, nsis, nsis-mv, sysutils, zip
-XB-Price: 0
 XB-Display-Name: OpenVPN
 XB-Website: http://www.metavize.com/openvpn.html
 XB-Rack-Position: 990
 XB-Is-Service: true
 Description: The Metavize OpenVPN Software Appliance
- The OpenVPN Software Appliance allows for site-to-site VPN for branch
- offices or partners, and client-to-site VPN for home users or road warriors.
- OpenVPN is SSL-based; it offers powerful security and controls features
- while remaining easy to setup and use.
+ The Metavize OpenVPN Software Appliance Transform
 
 Package: exploder-transform
 Architecture: any
 Depends: mvvm
-XB-Price: 0
 XB-Display-Name: HippieSoft Exploder
 XB-Website: http://www.metavize.com/openvpn.html
 XB-Rack-Position: 990
@@ -210,46 +169,37 @@ Description: HippieSoft Exploder
 Package: ids-transform
 Architecture: any
 Depends: mvvm, http-casing, snort-rules-default
-XB-Price: 0
 XB-Display-Name: Intrusion Prevention
 XB-Website: http://www.metavize.com/ips.html
 XB-Rack-Position: 75
 Description: The Metavize Intrusion Prevention Appliance
- The Metavize Intrusion Prevention Appliance is an inline traffic
- scanner that detects exploits and intrusion attempts. It contains a
- library of over 1,800 built-in rules and can be easily expanded with
- custom rules.
+ The Metavize Intrusion Prevention Appliance Transform
 
 Package: reporting-transform
 Architecture: any
 Depends: mvvm
-XB-Price: 0
 XB-Display-Name: EdgeReport
 XB-Website: http://www.metavize.com/reports.html
 XB-Rack-Position: 1020
 XB-Is-Service: true
 Description: The Metavize Report Generator
- EdgeReport generates document reports about activities on your
- network.  EdgeReport will report general network activity, and
- information supplied by other Software Appliances.
+ The Metavize Report Generator Transform
 
 Package: virus-base
 Architecture: any
 Depends: mvvm
-XB-Price: 0
 XB-Display-Name: AntiVirus Base
 XB-Website: http://www.metavize.com
-Description: The Metavize Base Virus Transform
- The Metavize Base Virus Transform for antivirus transforms
+Description: The Metavize AntiVirus Base
+ The Metavize Base AntiVirus Transform 
 
 Package: spam-base
 Architecture: any
 Depends: mvvm
-XB-Price: 0
 XB-Display-Name: AntiSpam Base
 XB-Website: http://www.metavize.com
-Description: The Metavize Base Spam Transform
- The Metavize Base Spam Transform for antivirus transforms
+Description: The Metavize SpamGuard Base
+ The Metavize Base SpamGuard Transform
 
 Package: metavize-client
 Architecture: any
@@ -258,8 +208,7 @@ Conflicts: metavize-gui
 XB-Display-Name: Metavize Client
 XB-Website: http://www.metavize.com
 Description: The Metavize Client
- The Metavize Client is the User Interface for accessing and
- controlling EdgeGuard.
+ The Metavize Client GUI
 
 Package: libmvvm-thirdparty
 Architecture: any
@@ -269,7 +218,7 @@ Replaces: mvvm (<< 3.0.0-39)
 XB-Display-Name: Metavize Server Thirdparty Libraries
 XB-Website: http://www.metavize.com
 Description: The third party libraries needed for the MVVM
- The redistributable java libraries needed for the Metavize Virrual Machine
+ The third party libraries needed for the MVVM Transform
 
 Package: mvvm
 Architecture: any
@@ -279,6 +228,5 @@ Conflicts: xenon, xenon-dbg
 XB-Display-Name: Metavize Server
 XB-Website: http://www.metavize.com
 Description: The Metavize Virtual Machine (MVVM)
- The Metavize Virtual Machine for securing your network and enforcing
- network policy.
+ The Metavize Virtual Machine Container for your 
 

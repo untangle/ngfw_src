@@ -125,10 +125,10 @@ static struct
     pthread_mutex_t  mutex;
 } _interface = 
 {
-    .db              NULL,
-    .intf_count      0,
-    .sysfs_class_net NULL,
-    .mutex           PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
+    .db              = NULL,
+    .intf_count      = 0,
+    .sysfs_class_net = NULL,
+    .mutex           = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
 };
 
 typedef struct

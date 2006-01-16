@@ -92,13 +92,13 @@ static struct {
 
     netcap_shield_event_hook_t event_hook;
 } _shield = {
-    .root       NULL,
-    .mode       NC_SHIELD_MODE_RELAXED,
-    .enabled    0,
-    .event_hook _null_event_hook,
-    .mutex      PTHREAD_MUTEX_INITIALIZER,
+    .root       = NULL,
+    .mode       = NC_SHIELD_MODE_RELAXED,
+    .enabled    = 0,
+    .event_hook = _null_event_hook,
+    .mutex      = PTHREAD_MUTEX_INITIALIZER,
 #ifdef _TRIE_DEBUG_PRINT
-    .dbg_mutex  PTHREAD_MUTEX_INITIALIZER
+    .dbg_mutex  = PTHREAD_MUTEX_INITIALIZER
 #endif
 };
 
@@ -396,7 +396,7 @@ void                 netcap_shield_unregister_hook  ( void )
 
 int                  netcap_shield_rep_blame        ( struct in_addr* ip, int amount )
 {
-    _apply_func_t func = { .func _add_evil, .arg (void*)amount };
+    _apply_func_t func = { .func = _add_evil, .arg = (void*)amount };
 
     /* Do not create nodes, only update the nodes that exist */
     if ( _shield.enabled == NETCAP_SHIELD_ENABLE && _apply_close( ip, &func ) < 0 ) {
@@ -410,7 +410,7 @@ int                  netcap_shield_rep_blame        ( struct in_addr* ip, int am
  * If the ip is not on the list, automatically add it */
 int                  netcap_shield_rep_add_request  ( struct in_addr* ip )
 {
-    _apply_func_t func = { .func _add_request, .arg NULL };
+    _apply_func_t func = { .func = _add_request, .arg = NULL };
 
     /* Do not create nodes, only update the nodes that exist */
     if ( _shield.enabled == NETCAP_SHIELD_ENABLE && _apply_close( ip, &func ) < 0 ) {
@@ -424,7 +424,7 @@ int                  netcap_shield_rep_add_request  ( struct in_addr* ip )
  * If the ip is not on the list, automatically add it */ 
 int                  netcap_shield_rep_add_session  ( struct in_addr* ip )
 {
-    _apply_func_t func = { .func _add_session, .arg NULL };
+    _apply_func_t func = { .func = _add_session, .arg = NULL };
 
     if ( _shield.enabled == NETCAP_SHIELD_ENABLE && _apply( ip, &func ) < 0 ) {
         return errlog( ERR_CRITICAL, "_apply\n" );
@@ -435,7 +435,7 @@ int                  netcap_shield_rep_add_session  ( struct in_addr* ip )
 
 int                  netcap_shield_rep_end_session  ( struct in_addr* ip )
 {
-    _apply_func_t func = { .func _end_session, .arg NULL };
+    _apply_func_t func = { .func = _end_session, .arg = NULL };
     
     if ( _shield.enabled == NETCAP_SHIELD_ENABLE && _apply( ip, &func ) < 0 ) {
         return errlog( ERR_CRITICAL, "_apply\n" );
@@ -447,7 +447,7 @@ int                  netcap_shield_rep_end_session  ( struct in_addr* ip )
 /* Increment the number of server connections */
 int                  netcap_shield_rep_add_srv_conn ( struct in_addr* ip )
 {
-    _apply_func_t func = { .func _add_srv_conn, .arg NULL };
+    _apply_func_t func = { .func = _add_srv_conn, .arg = NULL };
 
     if ( _shield.enabled == NETCAP_SHIELD_ENABLE && _apply( ip, &func ) < 0 ) {
         return errlog( ERR_CRITICAL, "_apply\n" );
@@ -459,7 +459,7 @@ int                  netcap_shield_rep_add_srv_conn ( struct in_addr* ip )
 /* Increment the number of server connections failures */
 int                  netcap_shield_rep_add_srv_fail ( struct in_addr* ip )
 {
-    _apply_func_t func = { .func _add_srv_fail, .arg NULL };
+    _apply_func_t func = { .func = _add_srv_fail, .arg = NULL };
 
     if ( _shield.enabled == NETCAP_SHIELD_ENABLE && _apply( ip, &func ) < 0 ) {
         return errlog( ERR_CRITICAL, "_apply\n" );
@@ -470,8 +470,8 @@ int                  netcap_shield_rep_add_srv_fail ( struct in_addr* ip )
 
 int                  netcap_shield_rep_add_chunk ( struct in_addr* ip, int protocol, u_short size )
 {
-    _chk_t chk = { .size size, .if_rx 1, .protocol protocol };
-    _apply_func_t func = { .func _add_chunk, .arg (void*)&chk };
+    _chk_t chk = { .size = size, .if_rx = 1, .protocol = protocol };
+    _apply_func_t func = { .func = _add_chunk, .arg = (void*)&chk };
 
     if ( _shield.enabled == NETCAP_SHIELD_ENABLE && _apply_close( ip, &func ) < 0 ) {
         return errlog( ERR_CRITICAL, "_apply_close\n" );

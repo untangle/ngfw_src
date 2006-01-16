@@ -117,11 +117,11 @@ static struct {
     
     int udp_divert_sock;
 } _server = {
-    .tcp {
-        .sock_array NULL,
-        .count      -1
+    .tcp = {
+        .sock_array = NULL,
+        .count      = -1
     },
-    .udp_divert_sock -1
+    .udp_divert_sock = -1
 };
 
 int  netcap_server_init (void)
@@ -371,7 +371,7 @@ static int  _handle_message (epoll_info_t* info, int revents)
 static int  _handle_tcp_incoming (epoll_info_t* info, int revents, int fd )
 {
     struct sockaddr_in cli_addr;
-    int cli_addrlen = sizeof(cli_addr);
+    u_int cli_addrlen = sizeof(cli_addr);
     int cli_sock;
 
     if ( !info ) {
@@ -438,7 +438,7 @@ static int  _handle_tcp_incoming (epoll_info_t* info, int revents, int fd )
 static int  _handle_completion (epoll_info_t* info, int revents)
 {
     int            result      = -1;
-    int            result_size = sizeof(result);
+    u_int          result_size = sizeof(result);
     int            flags;
     netcap_session_t*  netcap_sess;
 
@@ -528,7 +528,7 @@ static int  _handle_udp (epoll_info_t* info, int revents, int sock )
 {
     netcap_pkt_t* pkt;
     int              len;
-    char*            buf;
+    u_char*            buf;
 
     /**
      * Sanity checks
@@ -587,7 +587,7 @@ static int  _handle_udp (epoll_info_t* info, int revents, int sock )
 static int  _handle_queue (epoll_info_t* info, int revents)
 {
     netcap_pkt_t* pkt;
-    char*         buf;
+    u_char*       buf;
     int           len;
 
     /**

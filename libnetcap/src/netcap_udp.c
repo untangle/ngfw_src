@@ -37,9 +37,9 @@ static struct {
     int divert_port;
     int divert_sock;
 } _udp = {
-    .send_sock   -1,
-    .divert_port -1,
-    .divert_sock -1
+    .send_sock   = -1,
+    .divert_port = -1,
+    .divert_sock = -1
 };
 
 static int _divert_port_open( void );
@@ -51,7 +51,7 @@ static int _netcap_udp_sendto(int sock, void* buf, size_t len, int flags, netcap
  * this function advances the data pointer and ajusts the data length
  * so the data pointer is in the correct place 
  */
-static int _process_queue_pkt( netcap_pkt_t* pkt, char** full_pkt, int* full_pkt_len );
+static int _process_queue_pkt( netcap_pkt_t* pkt, u_char** full_pkt, int* full_pkt_len );
 
 /**
  * Parse an UDP/IP header and set the received port.
@@ -61,7 +61,7 @@ static int _parse_udp_ip_header( netcap_pkt_t* pkt, char* header, int header_len
 /**
  * Cache a packet inside of a ICMP mailbox, this is used to respond to ICMP error messages
  */
-static int _cache_packet( char* full_pkt, int full_pkt_len, mailbox_t* icmp_mb );
+static int _cache_packet( u_char* full_pkt, int full_pkt_len, mailbox_t* icmp_mb );
 
 static struct cmsghdr * my__cmsg_nxthdr(struct msghdr *msg, struct cmsghdr *cmsg, int size);
 
@@ -226,7 +226,7 @@ int  netcap_udp_recvfrom (int sock, void* buf, size_t len, int flags, netcap_pkt
 int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
 {
     netcap_session_t* session;
-    char* full_pkt = NULL;
+    u_char* full_pkt = NULL;
     int full_pkt_len;
     mailbox_t* mb = NULL;
     mailbox_t* icmp_mb = NULL;
@@ -639,7 +639,7 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     return ret;
 }
 
-static int _process_queue_pkt( netcap_pkt_t* pkt, char** full_pkt, int* full_pkt_len )
+static int _process_queue_pkt( netcap_pkt_t* pkt, u_char** full_pkt, int* full_pkt_len )
 {
     int packet_id;
     int offset;
@@ -693,7 +693,7 @@ static int _process_queue_pkt( netcap_pkt_t* pkt, char** full_pkt, int* full_pkt
     return 0;
 }
 
-static int _cache_packet( char* full_pkt, int full_pkt_len, mailbox_t* icmp_mb )
+static int _cache_packet( u_char* full_pkt, int full_pkt_len, mailbox_t* icmp_mb )
 {
     netcap_icmp_msg_t* msg;
     netcap_icmp_msg_t* old_msg;

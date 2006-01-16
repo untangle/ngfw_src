@@ -32,7 +32,7 @@ netcap_icmp_msg_t* netcap_icmp_msg_malloc ( int data_len )
     return msg;
 }
 
-int                netcap_icmp_msg_init   ( netcap_icmp_msg_t* msg, int msg_size, char* data, int data_len )
+int                netcap_icmp_msg_init   ( netcap_icmp_msg_t* msg, int msg_size, u_char* data, int data_len )
 {
     if ( msg == NULL || data == NULL || data_len < 0 )
         return errlogargs();
@@ -48,7 +48,7 @@ int                netcap_icmp_msg_init   ( netcap_icmp_msg_t* msg, int msg_size
     return 0;
 }
 
-netcap_icmp_msg_t* netcap_icmp_msg_create ( char* data, int data_len )
+netcap_icmp_msg_t* netcap_icmp_msg_create ( u_char* data, u_int data_len )
 {
     netcap_icmp_msg_t* msg;
 

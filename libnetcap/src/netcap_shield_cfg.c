@@ -112,58 +112,58 @@ static int _fence_get ( const char* name, nc_shield_fence_t* fence, char** buf, 
 int nc_shield_cfg_def  ( nc_shield_cfg_t* cfg )
 {
     static nc_shield_cfg_t default_cfg = { /* Shield default configuration */
-        .limit {
-            .cpu_load      { _CPU_LOAD_LIMITS }, 
-            .sessions      { _ACTIVE_SESSION_LIMITS }, 
-            .request_load  { _REQUEST_LOAD_LIMITS }, 
-            .session_load  { _SESSION_LOAD_LIMITS }, 
-            .tcp_chk_load  { _TCP_CHK_LOAD_LIMITS }, 
-            .udp_chk_load  { _UDP_CHK_LOAD_LIMITS }, 
-            .icmp_chk_load { _ICMP_CHK_LOAD_LIMITS }, 
-            .evil_load     { _EVIL_LOAD_LIMITS }
+        .limit = {
+            .cpu_load      = { _CPU_LOAD_LIMITS }, 
+            .sessions      = { _ACTIVE_SESSION_LIMITS }, 
+            .request_load  = { _REQUEST_LOAD_LIMITS }, 
+            .session_load  = { _SESSION_LOAD_LIMITS }, 
+            .tcp_chk_load  = { _TCP_CHK_LOAD_LIMITS }, 
+            .udp_chk_load  = { _UDP_CHK_LOAD_LIMITS }, 
+            .icmp_chk_load = { _ICMP_CHK_LOAD_LIMITS }, 
+            .evil_load     = { _EVIL_LOAD_LIMITS }
         },
-        .mult {
-            .request_load  _REQUEST_LOAD_MULT,
-            .session_load  _SESSION_LOAD_MULT,
-            .tcp_chk_load  _TCP_CHK_LOAD_MULT,
-            .udp_chk_load  _UDP_CHK_LOAD_MULT,
-            .icmp_chk_load _ICMP_CHK_LOAD_MULT,
-            .evil_load     _EVIL_LOAD_MULT,
-            .active_sess   _ACT_SESSION_MULT
+        .mult = {
+            .request_load  = _REQUEST_LOAD_MULT,
+            .session_load  = _SESSION_LOAD_MULT,
+            .tcp_chk_load  = _TCP_CHK_LOAD_MULT,
+            .udp_chk_load  = _UDP_CHK_LOAD_MULT,
+            .icmp_chk_load = _ICMP_CHK_LOAD_MULT,
+            .evil_load     = _EVIL_LOAD_MULT,
+            .active_sess   = _ACT_SESSION_MULT
         },
-        .lru {
-            .low_water    512,
-            .high_water   1024,
-            .sieve_size   8,
-            .ip_rate      .016, /* 1/60  */
+        .lru = {
+            .low_water    = 512,
+            .high_water   = 1024,
+            .sieve_size   = 8,
+            .ip_rate      = .016, /* 1/60  */
         },
-        .fence {
-            .relaxed {
-                .inheritance .1,
-                .limited { .prob 0.70, .post _SHIELD_REP_MAX * 0.65 },
-                .closed  { .prob 0.85, .post _SHIELD_REP_MAX * 0.90 },
-                .error   { .prob 0.95, .post _SHIELD_REP_MAX * 1.00 }
+        .fence = {
+            .relaxed = {
+                .inheritance = .1,
+                .limited = { .prob = 0.70, .post = _SHIELD_REP_MAX * 0.65 },
+                .closed  = { .prob = 0.85, .post = _SHIELD_REP_MAX * 0.90 },
+                .error   = { .prob = 0.95, .post = _SHIELD_REP_MAX * 1.00 }
             },
-            .lax {
-                .inheritance .4,
-                .limited { .prob 0.75, .post _SHIELD_REP_MAX * 0.50 },
-                .closed  { .prob 0.80, .post _SHIELD_REP_MAX * 0.80 },
-                .error   { .prob 0.95, .post _SHIELD_REP_MAX * 1.00 }
+            .lax = {
+                .inheritance = .4,
+                .limited = { .prob = 0.75, .post = _SHIELD_REP_MAX * 0.50 },
+                .closed  = { .prob = 0.80, .post = _SHIELD_REP_MAX * 0.80 },
+                .error   = { .prob = 0.95, .post = _SHIELD_REP_MAX * 1.00 }
             },
-            .tight {
-                .inheritance .6,
-                .limited { .prob 0.70, .post _SHIELD_REP_MAX * 0.15 },
-                .closed  { .prob 0.90, .post _SHIELD_REP_MAX * 0.60 },
-                .error   { .prob 0.95, .post _SHIELD_REP_MAX * 0.70 }
+            .tight = {
+                .inheritance = .6,
+                .limited = { .prob = 0.70, .post = _SHIELD_REP_MAX * 0.15 },
+                .closed  = { .prob = 0.90, .post = _SHIELD_REP_MAX * 0.60 },
+                .error   = { .prob = 0.95, .post = _SHIELD_REP_MAX * 0.70 }
             }, 
-            .closed {
-                .inheritance .9,
-                .limited { .prob 0.90, .post _SHIELD_REP_MAX * 0.05 },
-                .closed  { .prob 0.95, .post _SHIELD_REP_MAX * 0.20 },
-                .error   { .prob 0.95, .post _SHIELD_REP_MAX * 0.40 }
+            .closed = {
+                .inheritance = .9,
+                .limited = { .prob = 0.90, .post = _SHIELD_REP_MAX * 0.05 },
+                .closed  = { .prob = 0.95, .post = _SHIELD_REP_MAX * 0.20 },
+                .error   = { .prob = 0.95, .post = _SHIELD_REP_MAX * 0.40 }
             }
         },
-        .print_rate   0.25
+        .print_rate   = 0.25
     };
     
     if ( cfg == NULL ) return errlogargs();
@@ -225,7 +225,7 @@ int nc_shield_cfg_load ( nc_shield_cfg_t* cfg, char* buf, int buf_len )
 int nc_shield_cfg_get ( nc_shield_cfg_t* cfg, char* buf, int buf_len )
 {
     int count;
-    int buf_rem = buf_len;
+    size_t buf_rem = buf_len;
 
     if ( buf == NULL || buf_len < 0 ) return errlogargs();
     
@@ -457,7 +457,7 @@ static int _parseAttributeDouble ( double* val, xmlDoc* doc, xmlNode* node, char
         return 0;
     }
     
-    *val = strtod ( xret, &endptr );
+    *val = strtod ( (char*) xret, &endptr );
     
     if ( endptr == NULL || endptr[0] != '\0' ) {
         ret = errlog ( ERR_WARNING, "Shield: Unable to parse attribute: '%s', value '%s'\n", name, xret );
@@ -498,7 +498,7 @@ static int _parseAttributeInt    ( int* val, xmlDoc* doc, xmlNode* node, char* n
         return 0;
     }
     
-    *val = (int)strtol ( xret, &endptr, 10 );
+    *val = (int)strtol ( (char*) xret, &endptr, 10 );
     
     if ( endptr == NULL || endptr[0] != '\0' ) {
         ret = errlog ( ERR_WARNING, "Shield: Unable to parse attribute: '%s', value '%s'\n", name, xret );
