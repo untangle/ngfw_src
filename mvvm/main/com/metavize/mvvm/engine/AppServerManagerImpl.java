@@ -211,6 +211,9 @@ public class AppServerManagerImpl
       else {
         dn.remove(index);
       }
+
+      dn.add("CN", effectiveHostname);
+      
       m_keyStore.generateKey(effectiveHostname, dn, durationInDays);
 
       m_tomcatManager.setSecurityInfo("conf/keystore", KS_STORE_PASS, effectiveHostname);
