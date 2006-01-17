@@ -1,14 +1,15 @@
--- XXX for  now, we have to  tie this to  spam because we do not have
--- timestamps here
-
 DELETE FROM tr_mail_message_info
   WHERE time_stamp < (:cutoff)::timestamp;
 
 DELETE FROM tr_mail_message_info_addr
-  WHERE msg_id NOT IN (SELECT id FROM tr_mail_message_info);
+  WHERE NOT EXISTS
+      (SELECT 1 FROM tr_mail_message_info
+          WHERE tr_mail_message_info_addr.msg_id = id);
 
 DELETE FROM tr_mail_message_stats
-  WHERE msg_id NOT IN (SELECT id FROM tr_mail_message_info);
+  WHERE NOT EXISTS
+      (SELECT 1 FROM tr_mail_message_info
+          WHERE tr_mail_message_stats.msg_id = id);
 
 --due to hibernate mapping/cascade issue,
 --we must manually delete orphaned child data
