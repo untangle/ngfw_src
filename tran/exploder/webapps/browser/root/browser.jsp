@@ -18,10 +18,7 @@
 <browser:dirtree url="smb://metaloft.com/"/>
 </div>
 
-<div id="content">
-<h2>Page Content Here</h2>
-</div>
-
+<div id="detail"/>
 
 </body>
 </html>

@@ -1,51 +1,50 @@
 /* Copyright (c) 2006 Metavize Inc. */
 /* All rights reserved.             */
 
-body {
-  font: 8pt Verdana,sans-serif;
-  color: navy;
-}
+body { font: 8pt Verdana,sans-serif;
+       color: navy; }
 
-.trigger {
-  white-space: nowrap;
-  cursor: pointer;
-  cursor: hand;
-  display: block;
-}
+/* Tree */
 
-.list-trigger {
-  white-space: nowrap;
-  cursor: pointer;
-  cursor: hand;
-  display: inline;
-}
+.trigger { white-space: nowrap;
+           cursor: pointer;
+           cursor: hand;
+           display: block;
+           }
 
-.dir {
-  display: none;
-  margin-left: 16px;
-}
+.list-trigger { white-space: nowrap;
+                cursor: pointer;
+                cursor: hand;
+                display: inline;
+                }
 
-a {
-  text-decoration: none;
-}
+.dir { display: none;
+       margin-left: 16px;
+       }
 
-a:hover {
-  text-decoration: underline;
-}
+a { text-decoration: none; }
 
-#tree {
-  width: 150px;
-  height: 100%;
-  overflow: auto;
-  border-right: 1px solid #666666;
-  padding-left: 3px;
-  padding-top: 3px;
-}
+a:hover { text-decoration: underline; }
 
-#content {
-  position: absolute;
-  top: 0;
-  left: 160;
-  font-family: sans-serif;
-  color: navy;
-}
+/* Detail Pane */
+
+.detail-table {  }
+
+
+/* Panes */
+
+#tree { width: 25%;
+        height: 100%;
+        overflow: auto;
+        border-right: 1px solid #666666;
+        padding-left: 3px;
+        padding-top: 3px
+        }
+
+#detail { position: absolute;
+          top: 0;
+          left: 25%;
+          width: 75%;
+          font-family: sans-serif;
+          color: navy
+          }

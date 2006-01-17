@@ -37,6 +37,7 @@ public class FileLister extends HttpServlet
             public boolean accept(SmbFile f)
                 throws SmbException
             {
+                // XXX workgroups, servers?
                 return f.isDirectory();
             }
         };
@@ -46,6 +47,7 @@ public class FileLister extends HttpServlet
             public boolean accept(SmbFile f)
                 throws SmbException
             {
+                // XXX non filesystem files?
                 return true;
             }
         };
@@ -131,8 +133,8 @@ public class FileLister extends HttpServlet
             for (SmbFile f : dir.listFiles(filter)) {
                 String tag = f.isDirectory() ? "dir" : "file";
                 String name = Util.escapeXml(f.getName());
-                long createTime = f.createTime();
-                long lastModified = f.lastModified();
+                long ctime = f.createTime();
+                long mtime = f.lastModified();
                 long length = f.length();
                 boolean readable = f.canRead();
                 boolean writable = f.canWrite();
@@ -140,8 +142,8 @@ public class FileLister extends HttpServlet
 
                 os.println("  <" + tag + " "
                            + "name='" + name + "' "
-                           + "create-time='" + createTime + "' "
-                           + "last-modified='" + lastModified + "' "
+                           + "ctime='" + ctime + "' "
+                           + "mtime='" + mtime + "' "
                            + "size='" + length + "' "
                            + "readable='" + readable + "' "
                            + "writable='" + writable + "' "

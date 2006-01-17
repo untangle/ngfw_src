@@ -30,13 +30,57 @@ function expandDir(dir)
 
 function showFileListing(dir)
 {
-  alert("showFileListing: " + dir);
+  new Ajax.Request("ls",
+                   { method: "get",
+                     parameters: "url=" + dir + "&type=full",
+                     onComplete: function(req)
+                                 {
+                                   var resp = parseDomFromString(req.responseText);
+                                   var root = resp.getElementsByTagName('root')[0];
+                                   // XXX check if we are the last outstanding request
+                                   displayDetail(root);
+                                 }
+                   });
 }
 
-function isFetchable(target)
+function displayDetail(root)
 {
-    // XXX add leaf node checking
-    return 0 == target.childNodes.length;
+  var detail = $("detail");
+  removeChildren(detail);
+
+  var table = document.createElement("table");
+  Element.addClassName(table, "detail-table")
+  var tbody = table.appendChild(document.createElement("tbody"));
+
+  var children = root.childNodes;
+
+  for (var i = 0; i < children.length; i++) {
+    var child = root.childNodes[i];
+    var tagName = child.tagName;
+    if ("dir" == tagName || "file" == tagName) {
+      addDetail(child, tbody);
+    }
+  }
+
+  detail.appendChild(table);
+}
+
+function addDetail(fileInfo, tbody)
+{
+  var row = tbody.appendChild(document.createElement("tr"));
+
+  appendTextTd(row, fileInfo.getAttribute("name"), "detail-name");
+  appendTextTd(row, fileInfo.getAttribute("size"), "detail-size");
+  appendTextTd(row, fileInfo.getAttribute("mtime"), "detail-mtime");
+  appendTextTd(row, fileInfo.getAttribute("ctime"), "detail-ctime");
+}
+
+function appendTextTd(row, text, clazz)
+{
+  var td = document.createElement("td");
+  Element.addClassName(td, clazz);
+  td.appendChild(document.createTextNode(text));
+  row.appendChild(td);
 }
 
 function addChildDirectories(target, dom)
@@ -100,6 +144,12 @@ function toggleTree(dir)
   }
 }
 
+function isFetchable(target)
+{
+  // XXX add leaf node checking
+  return 0 == target.childNodes.length;
+}
+
 function parseDomFromString(text)
 {
   return Try.these(function()
@@ -113,4 +163,12 @@ function parseDomFromString(text)
                      xmlDom.loadXML(text)
                      return xmlDom;
                    });
+}
+
+// function removeChildren(node)
+function removeChildren(node)
+{
+  while (null != node.firstChild) {
+    node.removeChild(node.firstChild);
+  }
 }
