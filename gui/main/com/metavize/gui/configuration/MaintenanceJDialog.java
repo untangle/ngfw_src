@@ -42,10 +42,10 @@ public class MaintenanceJDialog extends MConfigJDialog {
         this.setTitle(NAME_MAINTENANCE_CONFIG);
         
         // GENERAL SETTINGS //////
-        MaintenanceJPanel maintenanceJPanel = new MaintenanceJPanel();
-	addScrollableTab(null, NAME_REMOTE_SETTINGS, null, maintenanceJPanel, false, true);
-	addSavable(NAME_REMOTE_SETTINGS, maintenanceJPanel);
-	addRefreshable(NAME_REMOTE_SETTINGS, maintenanceJPanel);
+        MaintenanceAccessJPanel maintenanceAccessJPanel = new MaintenanceAccessJPanel();
+	addScrollableTab(null, NAME_REMOTE_SETTINGS, null, maintenanceAccessJPanel, false, true);
+	addSavable(NAME_REMOTE_SETTINGS, maintenanceAccessJPanel);
+	addRefreshable(NAME_REMOTE_SETTINGS, maintenanceAccessJPanel);
 
         // ADD ALL CASINGS TO THE PANEL //
         MCasingJPanel[] mCasingJPanels = Util.getPolicyStateMachine().loadAllCasings(true);
