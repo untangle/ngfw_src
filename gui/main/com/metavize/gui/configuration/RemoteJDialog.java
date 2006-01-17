@@ -23,47 +23,50 @@ import com.metavize.mvvm.NetworkingConfiguration;
 
 public class RemoteJDialog extends MConfigJDialog {
 
-    private static final String NAME_ADMINISTRATION_SETTINGS = "Remote Administration";
-    private static final String NAME_SNMP_SETTINGS = "SNMP Monitoring";
-    private static final String NAME_SYSLOG_SETTINGS = "Syslog Monitoring";
+    private static final String NAME_ADMINISTRATION_CONFIG = "Remote Admin Config";
+    private static final String NAME_ADMIN_ACCOUNTS = "Admin Accounts";
+    private static final String NAME_ADMIN_RESTRICTIONS = "Restrictions";
+    private static final String NAME_MONITORING_SETTINGS = "Monitoring";
+    private static final String NAME_SNMP_SETTINGS = "SNMP";
+    private static final String NAME_SYSLOG_SETTINGS = "Syslog";
     private static final String NAME_MANUAL_REBOOT = "Manual Reboot";
 
     public RemoteJDialog( ) {
     }
 
     protected void generateGui(){
-        this.setTitle(NAME_ADMINISTRATION_SETTINGS);
+        this.setTitle(NAME_ADMINISTRATION_CONFIG);
 
-        // REMOTE ADMINISTRATION //////
-        RemoteAdministrationJPanel remoteAdministrationJPanel = new RemoteAdministrationJPanel();
-        JScrollPane remoteAdministrationJScrollPane = new JScrollPane( remoteAdministrationJPanel );
-        remoteAdministrationJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
-        remoteAdministrationJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-        this.contentJTabbedPane.addTab(NAME_ADMINISTRATION_SETTINGS, null, remoteAdministrationJScrollPane);
-        super.savableMap.put(NAME_ADMINISTRATION_SETTINGS, remoteAdministrationJPanel);
-        super.refreshableMap.put(NAME_ADMINISTRATION_SETTINGS, remoteAdministrationJPanel);
+	// ADMIN ACCOUNTS ////////
+	RemoteAdminJPanel remoteAdminJPanel = new RemoteAdminJPanel();
+	addTab(NAME_ADMIN_ACCOUNTS, null, remoteAdminJPanel);
+	addSavable(NAME_ADMIN_ACCOUNTS, remoteAdminJPanel);
+	addRefreshable(NAME_ADMIN_ACCOUNTS, remoteAdminJPanel);
+
+        // REMOTE RESTRICTION //////
+        RemoteRestrictionJPanel remoteRestrictionJPanel = new RemoteRestrictionJPanel();
+	addScrollableTab(null, NAME_ADMIN_RESTRICTIONS, null, remoteRestrictionJPanel, false, true);
+        addSavable(NAME_ADMIN_RESTRICTIONS, remoteRestrictionJPanel);
+        addRefreshable(NAME_ADMIN_RESTRICTIONS, remoteRestrictionJPanel);
+
+        // MONITORING /////////////
+        JTabbedPane monitoringJTabbedPane = addTabbedPane(NAME_MONITORING_SETTINGS, null);
 
         // SNMP MONITORING //////
         RemoteSnmpJPanel remoteSnmpJPanel = new RemoteSnmpJPanel();
-        JScrollPane remoteSnmpJScrollPane = new JScrollPane( remoteSnmpJPanel );
-        remoteSnmpJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
-        remoteSnmpJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-        this.contentJTabbedPane.addTab(NAME_SNMP_SETTINGS, null, remoteSnmpJScrollPane);
-        super.savableMap.put(NAME_SNMP_SETTINGS, remoteSnmpJPanel);
-        super.refreshableMap.put(NAME_SNMP_SETTINGS, remoteSnmpJPanel);
+	addScrollableTab(monitoringJTabbedPane, NAME_SNMP_SETTINGS, null, remoteSnmpJPanel, false, true);
+        addSavable(NAME_SNMP_SETTINGS, remoteSnmpJPanel);
+        addRefreshable(NAME_SNMP_SETTINGS, remoteSnmpJPanel);
 
         // SYSLOG MONITORING //////
         RemoteSyslogJPanel remoteSyslogJPanel = new RemoteSyslogJPanel();
-        JScrollPane remoteSyslogJScrollPane = new JScrollPane( remoteSyslogJPanel );
-        remoteSyslogJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
-        remoteSyslogJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-        this.contentJTabbedPane.addTab(NAME_SYSLOG_SETTINGS, null, remoteSyslogJScrollPane);
-        super.savableMap.put(NAME_SYSLOG_SETTINGS, remoteSyslogJPanel);
-        super.refreshableMap.put(NAME_SYSLOG_SETTINGS, remoteSyslogJPanel);
+	addScrollableTab(monitoringJTabbedPane, NAME_SYSLOG_SETTINGS, null, remoteSyslogJPanel, false, true);
+        addSavable(NAME_SYSLOG_SETTINGS, remoteSyslogJPanel);
+        addRefreshable(NAME_SYSLOG_SETTINGS, remoteSyslogJPanel);
 
         // MANUAL REBOOT //////
         RemoteRebootJPanel remoteRebootJPanel = new RemoteRebootJPanel();
-        this.contentJTabbedPane.addTab(NAME_MANUAL_REBOOT, null, remoteRebootJPanel);
+        addTab(NAME_MANUAL_REBOOT, null, remoteRebootJPanel);
     }
 
     protected void sendSettings(Object settings) throws Exception {

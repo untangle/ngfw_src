@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MaintenanceJPanel.java 194 2005-04-06 19:13:55Z inieves $
+ * $Id: MaintenanceAccessJPanel.java 194 2005-04-06 19:13:55Z inieves $
  */
 
 package com.metavize.gui.configuration;
@@ -19,10 +19,10 @@ import com.metavize.mvvm.*;
 import com.metavize.mvvm.tran.*;
 import java.awt.*;
 
-public class MaintenanceJPanel extends javax.swing.JPanel implements Savable, Refreshable {
+public class MaintenanceAccessJPanel extends javax.swing.JPanel implements Savable, Refreshable {
 
     
-    public MaintenanceJPanel() {
+    public MaintenanceAccessJPanel() {
         initComponents();
     }
 

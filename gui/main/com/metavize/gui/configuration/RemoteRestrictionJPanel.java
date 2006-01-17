@@ -22,15 +22,15 @@ import javax.swing.SpinnerNumberModel;
 import java.awt.*;
 
 
-public class RemoteAdministrationJPanel extends javax.swing.JPanel implements Savable, Refreshable {
+public class RemoteRestrictionJPanel extends javax.swing.JPanel implements Savable, Refreshable {
 
     private static final String EXCEPTION_OUTSIDE_ACCESS_NETWORK = "Invalid External Remote Administration \"IP Address\" specified.";
     private static final String EXCEPTION_OUTSIDE_ACCESS_NETMASK = "Invalid External Remote Administration \"Netmask\" specified.";
 
     
-    public RemoteAdministrationJPanel() {
+    public RemoteRestrictionJPanel() {
         initComponents();
-		externalAdminPortJSpinner.setModel(new SpinnerNumberModel(0,0,65535,1));
+	externalAdminPortJSpinner.setModel(new SpinnerNumberModel(0,0,65535,1));
     }
 
     public void doSave(Object settings, boolean validateOnly) throws Exception {

@@ -37,11 +37,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 
     protected void generateGui(){
 	// BLOCK LISTS ///////////
-        JTabbedPane blockJTabbedPane = new JTabbedPane();
-        blockJTabbedPane.setBorder(new EmptyBorder(7, 13, 13, 13));
-        blockJTabbedPane.setFocusable(false);
-        blockJTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
-        blockJTabbedPane.setRequestFocusEnabled(false);
+        JTabbedPane blockJTabbedPane = addTabbedPane(NAME_BLOCK, null);
         addTab(NAME_BLOCK, null, blockJTabbedPane);
 
 	// BLOCKED CATEGORIES /////////
@@ -73,11 +69,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	blockedExtensionsConfigJPanel.setSettingsChangedListener(this);
 
 	// PASS LISTS /////
-        JTabbedPane passJTabbedPane = new JTabbedPane();
-        passJTabbedPane.setBorder(new EmptyBorder(7, 13, 13, 13));
-        passJTabbedPane.setFocusable(false);
-        passJTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
-        passJTabbedPane.setRequestFocusEnabled(false);
+        JTabbedPane passJTabbedPane = addTabbedPane(NAME_PASS, null);
         addTab(NAME_PASS, null, passJTabbedPane);
 
 	// PASSED URLS /////////

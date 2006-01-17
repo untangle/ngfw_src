@@ -27,46 +27,27 @@ import com.metavize.mvvm.*;
 import com.metavize.gui.util.StringConstants;
 
 
+public class RemoteAdminJPanel extends MEditTableJPanel{
 
-public class AdminConfigJDialog extends MConfigJDialog {
-    
-    private static final String NAME_ADMIN_ACCOUNTS = "Accounts";
-
-    public AdminConfigJDialog( ) {
-    }
-
-    protected void generateGui(){
-        this.setTitle(NAME_ADMIN_ACCOUNTS);
-        
-        // create graphical context
-        MEditTableJPanel mEditTableJPanel = new MEditTableJPanel(true, false);
-        mEditTableJPanel.setInsets(new Insets(4, 4, 2, 2));
-        mEditTableJPanel.setTableTitle(NAME_ADMIN_ACCOUNTS);
-        mEditTableJPanel.setDetailsTitle("rule notes");
-        mEditTableJPanel.setAddRemoveEnabled(true);
+    public RemoteAdminJPanel() {
+        super(true, true);
+        super.setFillJButtonEnabled( true );
+        super.setInsets(new Insets(4, 4, 2, 2));
+        super.setTableTitle("");
+        super.setDetailsTitle("");
+        super.setAddRemoveEnabled(true);       
 
         // create actual table model
-        AdminConfigTableModel configTableModel = new AdminConfigTableModel();
-	super.savableMap.put(NAME_ADMIN_ACCOUNTS, configTableModel);
-	super.refreshableMap.put(NAME_ADMIN_ACCOUNTS, configTableModel);
-
-        mEditTableJPanel.setTableModel( configTableModel );
-        this.contentJTabbedPane.addTab(NAME_ADMIN_ACCOUNTS, null, mEditTableJPanel);
+        RemoteAdminTableModel remoteAdminTableModel = new RemoteAdminTableModel();
+        this.setTableModel( remoteAdminTableModel );
     }
     
-    public void sendSettings(Object settings) throws Exception {
-	Util.getAdminManager().setAdminSettings( (AdminSettings) settings );
-    }
-    public void refreshSettings(){
-	super.settings = Util.getAdminManager().getAdminSettings();
-    }
-
 }
 
 
 
     
-class AdminConfigTableModel extends MSortedTableModel {
+class RemoteAdminTableModel extends MSortedTableModel {
 
     private static final int MIN_PASSWD_LENGTH = 3;
     private Hashtable loginHashtable = new Hashtable();
@@ -190,14 +171,15 @@ class AdminConfigTableModel extends MSortedTableModel {
         
 	// SAVE SETTINGS /////////////
 	if( !validateOnly ){
-	    AdminSettings adminSettings = (AdminSettings) settings;
+	    AdminSettings adminSettings = Util.getAdminManager().getAdminSettings();
 	    adminSettings.setUsers(allRows);
+	    Util.getAdminManager().setAdminSettings( adminSettings );
 	}
 
     }
 
     public Vector<Vector> generateRows(Object settings) {
-	AdminSettings adminSettings = (AdminSettings) settings;
+	AdminSettings adminSettings = Util.getAdminManager().getAdminSettings();
 	Set<User> users = (Set<User>) adminSettings.getUsers(); 
         Vector<Vector> allRows = new Vector<Vector>(users.size());
 	Vector tempRow = null;

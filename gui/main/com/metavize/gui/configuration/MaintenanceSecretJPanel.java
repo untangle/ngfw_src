@@ -21,10 +21,10 @@ import com.metavize.mvvm.tran.*;
 import java.awt.*;
 import javax.swing.*;
 
-public class NetworkSecretJPanel extends javax.swing.JPanel implements Savable, Refreshable {
+public class MaintenanceSecretJPanel extends javax.swing.JPanel implements Savable, Refreshable {
 
     
-    public NetworkSecretJPanel() {
+    public MaintenanceSecretJPanel() {
         initComponents();
     }
 

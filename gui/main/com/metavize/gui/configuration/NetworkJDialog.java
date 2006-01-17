@@ -26,14 +26,10 @@ import javax.swing.*;
 
 public class NetworkJDialog extends MConfigJDialog {
     
-    private static final String NAME_NETWORK_SETTINGS = "Network Settings";
-    private static final String NAME_EMAIL_SETTINGS = "Email Settings";
+    private static final String NAME_NETWORKING_CONFIG = "Networking Config";
+    private static final String NAME_NETWORK_SETTINGS = "External Address";
+    private static final String NAME_ALIAS_PANEL      = "External Address Aliases";
     private static final String NAME_TIMEZONE_PANEL      = "Timezone";
-    private static final String NAME_ALIAS_PANEL      = "Network Aliases";
-    private static final String NAME_SECRET_PANEL      = "Advanced Support";
-
-    private static boolean showHiddenPanel;
-    public static void setShowHiddenPanel(boolean showHiddenPanelX){ showHiddenPanel = showHiddenPanelX; }
 
     public NetworkJDialog( ) {
     }
@@ -43,48 +39,25 @@ public class NetworkJDialog extends MConfigJDialog {
     }
     
     protected void generateGui(){
-        this.setTitle(NAME_NETWORK_SETTINGS);
+        this.setTitle(NAME_NETWORKING_CONFIG);
         
         // NETWORK SETTINGS //////
         NetworkIPJPanel ipJPanel = new NetworkIPJPanel();
-        JScrollPane ipJScrollPane = new JScrollPane( ipJPanel );
-        ipJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
-        ipJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-        this.contentJTabbedPane.addTab(NAME_NETWORK_SETTINGS, null, ipJScrollPane);
-	super.savableMap.put(NAME_NETWORK_SETTINGS, ipJPanel);
-	super.refreshableMap.put(NAME_NETWORK_SETTINGS, ipJPanel);
-
-        // EMAIL SETTINGS /////
-        NetworkEmailJPanel emailJPanel = new NetworkEmailJPanel();
-        JScrollPane emailJScrollPane = new JScrollPane( emailJPanel );
-        emailJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
-        emailJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-        super.contentJTabbedPane.addTab(NAME_EMAIL_SETTINGS, null, emailJPanel );
-	super.savableMap.put(NAME_EMAIL_SETTINGS, emailJPanel );
-	super.refreshableMap.put(NAME_EMAIL_SETTINGS, emailJPanel );
-        
-	// NETWORK SETTINGS //////
-        NetworkTimezoneJPanel timezoneJPanel = new NetworkTimezoneJPanel();
-        JScrollPane timezoneJScrollPane = new JScrollPane( timezoneJPanel );
-        timezoneJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
-        timezoneJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-        this.contentJTabbedPane.addTab(NAME_TIMEZONE_PANEL, null, timezoneJScrollPane);
-	super.savableMap.put(NAME_TIMEZONE_PANEL, timezoneJPanel);
-	super.refreshableMap.put(NAME_TIMEZONE_PANEL, timezoneJPanel);
-	
+	addScrollableTab(null, NAME_NETWORK_SETTINGS, null, ipJPanel, false, true);
+	addSavable(NAME_NETWORK_SETTINGS, ipJPanel);
+	addRefreshable(NAME_NETWORK_SETTINGS, ipJPanel);
+        	
         // ALIASES /////
         NetworkAliasJPanel aliasJPanel = new NetworkAliasJPanel();
-        super.contentJTabbedPane.addTab(NAME_ALIAS_PANEL, null, aliasJPanel );
-	super.savableMap.put(NAME_ALIAS_PANEL, aliasJPanel );
-	super.refreshableMap.put(NAME_ALIAS_PANEL, aliasJPanel );
+	addTab(NAME_ALIAS_PANEL, null, aliasJPanel );
+	addSavable(NAME_ALIAS_PANEL, aliasJPanel );
+	addRefreshable(NAME_ALIAS_PANEL, aliasJPanel );
 
-	// SECRET HIDDEN PANEL //////
-	if( showHiddenPanel ){
-	    NetworkSecretJPanel secretJPanel = new NetworkSecretJPanel();
-	    super.contentJTabbedPane.addTab(NAME_SECRET_PANEL, null, secretJPanel);
-	    super.savableMap.put(NAME_SECRET_PANEL, secretJPanel);
-	    super.refreshableMap.put(NAME_SECRET_PANEL, secretJPanel);
-	}
+	// NETWORK SETTINGS //////
+        NetworkTimezoneJPanel timezoneJPanel = new NetworkTimezoneJPanel();
+	addScrollableTab(null, NAME_TIMEZONE_PANEL, null, timezoneJPanel, false, true);
+	addSavable(NAME_TIMEZONE_PANEL, timezoneJPanel);
+	addRefreshable(NAME_TIMEZONE_PANEL, timezoneJPanel);
     }
     
     protected void sendSettings(Object settings) throws Exception {

@@ -141,6 +141,25 @@ public class MTransformControlsJPanel extends javax.swing.JPanel implements Sett
     // TABBED PANE ////////
     public JTabbedPane getMTabbedPane(){ return mTabbedPane; }
     protected void addTab(String title, Icon icon, Component component){ mTabbedPane.addTab(title, icon, component); }
+    protected JTabbedPane addTabbedPane(String name, Icon icon){
+        JTabbedPane newJTabbedPane = new JTabbedPane();
+        newJTabbedPane.setBorder(new EmptyBorder(7, 13, 13, 13));
+        newJTabbedPane.setFocusable(false);
+        newJTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
+	newJTabbedPane.setRequestFocusEnabled(false);
+	addTab(name, icon, newJTabbedPane);
+	return newJTabbedPane;
+    }
+    protected JScrollPane addScrollableTab(JTabbedPane parentJTabbedPane, String name, Icon icon, Component childComponent, boolean scrollH, boolean scrollV){
+	JScrollPane newJScrollPane = new JScrollPane(childComponent);
+	newJScrollPane.setHorizontalScrollBarPolicy( scrollH ? JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS : JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
+	newJScrollPane.setVerticalScrollBarPolicy( scrollV ? JScrollPane.VERTICAL_SCROLLBAR_ALWAYS : JScrollPane.VERTICAL_SCROLLBAR_NEVER );
+	if( parentJTabbedPane != null )
+	    parentJTabbedPane.addTab(name, icon, newJScrollPane);
+	else
+	    addTab(name, icon, newJScrollPane);
+	return newJScrollPane;
+    }
     protected void removeAllTabs(){ mTabbedPane.removeAll(); }
     /////////////////////////
 

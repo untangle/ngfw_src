@@ -43,12 +43,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     protected void generateGui(){
         
 	// WEB ////////////////////
-        JTabbedPane httpJTabbedPane = new JTabbedPane();
-        httpJTabbedPane.setBorder(new EmptyBorder(7, 13, 13, 13));
-        httpJTabbedPane.setFocusable(false);
-        httpJTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
-        httpJTabbedPane.setRequestFocusEnabled(false);
-        addTab(NAME_WEB, null, httpJTabbedPane);
+        JTabbedPane httpJTabbedPane = addTabbedPane(NAME_WEB, null);
         
 	// WEB SOURCES ////////
 	HTTPConfigJPanel httpConfigJPanel = new HTTPConfigJPanel();
@@ -72,12 +67,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	extensionsConfigJPanel.setSettingsChangedListener(this);
 
 	// EMAIL //////////////////
-	JTabbedPane emailJTabbedPane = new JTabbedPane();
-        emailJTabbedPane.setBorder(new EmptyBorder(7, 13, 13, 13));
-        emailJTabbedPane.setFocusable(false);
-        emailJTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
-        emailJTabbedPane.setRequestFocusEnabled(false);
-        addTab(NAME_EMAIL, null, emailJTabbedPane);
+	JTabbedPane emailJTabbedPane = addTabbedPane(NAME_EMAIL, null);
 
 	// EMAIL SMTP /////////
 	SmtpConfigJPanel smtpConfigJPanel = new SmtpConfigJPanel();
@@ -101,12 +91,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	imapConfigJPanel.setSettingsChangedListener(this);
 
 	// FTP /////////////////////
-        JTabbedPane ftpJTabbedPane = new JTabbedPane();
-        ftpJTabbedPane.setBorder(new EmptyBorder(7, 13, 13, 13));
-        ftpJTabbedPane.setFocusable(false);
-        ftpJTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
-        ftpJTabbedPane.setRequestFocusEnabled(false);
-        addTab(NAME_FTP, null, ftpJTabbedPane);
+        JTabbedPane ftpJTabbedPane = addTabbedPane(NAME_FTP, null);
 
 	// FTP SOURCES /////////
 	FTPConfigJPanel ftpConfigJPanel = new FTPConfigJPanel();

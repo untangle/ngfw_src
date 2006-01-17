@@ -21,7 +21,7 @@ import com.metavize.mvvm.tran.*;
 import java.awt.*;
 import javax.swing.*;
 
-public class NetworkEmailJPanel extends javax.swing.JPanel implements Savable, Refreshable {
+public class EmailOutgoingJPanel extends javax.swing.JPanel implements Savable, Refreshable {
 
     private static final String EXCEPTION_PASSWORD_MISSING = "A \"Password\" must be specified if a \"Login\" is specified.";
     private static final String EXCEPTION_LOGIN_MISSING = "A \"Login\" must be specified if a \"Password\" is specified.";
@@ -29,7 +29,7 @@ public class NetworkEmailJPanel extends javax.swing.JPanel implements Savable, R
     private static final String EXCEPTION_ADDRESS_MISSING = "A \"From Address\" must be specified.";
 
     
-    public NetworkEmailJPanel() {
+    public EmailOutgoingJPanel() {
         initComponents();
 	portJSpinner.setModel(new SpinnerNumberModel(0,0,65535,1));
     }

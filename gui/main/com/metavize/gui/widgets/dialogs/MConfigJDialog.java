@@ -22,6 +22,7 @@ import com.metavize.mvvm.*;
 import com.metavize.mvvm.tran.*;
 
 import javax.swing.*;
+import javax.swing.border.*;
 import javax.swing.text.*;
 import javax.swing.table.*;
 import javax.swing.event.*;
@@ -34,8 +35,12 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 
     
     // SAVING/REFRESHING ///////////
-    protected Map<String, Refreshable> refreshableMap = new LinkedHashMap(5);
-    protected Map<String, Savable> savableMap = new LinkedHashMap(5);
+    private Map<String, Refreshable> refreshableMap = new LinkedHashMap(5);
+    protected void addRefreshable(String name, Refreshable refreshable){ refreshableMap.put(name, refreshable); }
+    private Map<String, Savable> savableMap = new LinkedHashMap(5);
+    protected void addSavable(String name, Savable savable){ savableMap.put(name, savable); }
+    private Map<String, Shutdownable> shutdownableMap = new LinkedHashMap(1);
+    protected void addShutdownable(String name, Shutdownable shutdownable){ shutdownableMap.put(name, shutdownable); }
     protected Object settings;
     ///////////////////////////////
 
@@ -63,6 +68,31 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 	generateGui();
 	new RefreshAllThread();
     }
+
+    // TABS AND TABBED PANES //////////////
+    public void addTab(String name, Icon icon, Component component){ contentJTabbedPane.addTab(name, icon, component); }
+    public JTabbedPane addTabbedPane(String name, Icon icon){
+        JTabbedPane newJTabbedPane = new JTabbedPane();
+        newJTabbedPane.setBorder(new EmptyBorder(7, 13, 13, 13));
+        newJTabbedPane.setFocusable(false);
+        newJTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
+	newJTabbedPane.setRequestFocusEnabled(false);
+	addTab(name, icon, newJTabbedPane);
+	return newJTabbedPane;
+    }
+    public JScrollPane addScrollableTab(JTabbedPane parentJTabbedPane, String name, Icon icon, Component childComponent, boolean scrollH, boolean scrollV){
+	JScrollPane newJScrollPane = new JScrollPane(childComponent);
+	newJScrollPane.setHorizontalScrollBarPolicy( scrollH ? JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS : JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
+	newJScrollPane.setVerticalScrollBarPolicy( scrollV ? JScrollPane.VERTICAL_SCROLLBAR_ALWAYS : JScrollPane.VERTICAL_SCROLLBAR_NEVER );
+	if( parentJTabbedPane != null )
+	    parentJTabbedPane.addTab(name, icon, newJScrollPane);
+	else
+	    addTab(name, icon, newJScrollPane);
+	return newJScrollPane;
+    }
+    //////////////////////////////////////
+
+
 
     // BUTTON STRINGS //////////////////////////////////
     protected String RELOAD_INIT_STRING;

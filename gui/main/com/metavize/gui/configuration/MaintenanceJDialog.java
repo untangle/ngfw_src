@@ -11,6 +11,7 @@
 
 package com.metavize.gui.configuration;
 
+import com.metavize.gui.transform.*;
 import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.util.*;
@@ -26,22 +27,54 @@ import javax.swing.*;
 
 public class MaintenanceJDialog extends MConfigJDialog {
 
-    private static final String NAME_REMOTE_SETTINGS = "Support";
+    private static final String NAME_MAINTENANCE_CONFIG = "Support Config";
+    private static final String NAME_REMOTE_SETTINGS = "Access Restrictions";
+    private static final String NAME_PROTOCOL_OVERRIDE = "Manual Protocol Override";
+    private static final String NAME_SECRET_PANEL = "Advanced Support";
+
+    private static boolean showHiddenPanel;
+    public static void setShowHiddenPanel(boolean showHiddenPanelX){ showHiddenPanel = showHiddenPanelX; }
 
     public MaintenanceJDialog( ) {
     }
 
     protected void generateGui(){
-        this.setTitle(NAME_REMOTE_SETTINGS);
+        this.setTitle(NAME_MAINTENANCE_CONFIG);
         
         // GENERAL SETTINGS //////
         MaintenanceJPanel maintenanceJPanel = new MaintenanceJPanel();
-        JScrollPane contentJScrollPane = new JScrollPane( maintenanceJPanel );
-        contentJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
-        contentJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-        this.contentJTabbedPane.addTab(NAME_REMOTE_SETTINGS, null, contentJScrollPane);
-	super.savableMap.put(NAME_REMOTE_SETTINGS, maintenanceJPanel);
-	super.refreshableMap.put(NAME_REMOTE_SETTINGS, maintenanceJPanel);
+	addScrollableTab(null, NAME_REMOTE_SETTINGS, null, maintenanceJPanel, false, true);
+	addSavable(NAME_REMOTE_SETTINGS, maintenanceJPanel);
+	addRefreshable(NAME_REMOTE_SETTINGS, maintenanceJPanel);
+
+        // ADD ALL CASINGS TO THE PANEL //
+        MCasingJPanel[] mCasingJPanels = Util.getPolicyStateMachine().loadAllCasings(true);
+	if( mCasingJPanels.length > 0 ){
+	    JTabbedPane overrideJTabbedPane = addTabbedPane(NAME_PROTOCOL_OVERRIDE, null);
+	    for(MCasingJPanel mCasingJPanel : mCasingJPanels){
+		String casingDisplayName = mCasingJPanel.getMackageDesc().getDisplayName();
+		addScrollableTab(overrideJTabbedPane, casingDisplayName, null, mCasingJPanel, false, true);
+		addSavable(casingDisplayName, mCasingJPanel);
+		addRefreshable(casingDisplayName, mCasingJPanel);
+	    }
+	}
+	else{
+            JPanel messageJPanel = new JPanel();
+            messageJPanel.setLayout(new BorderLayout());
+            JLabel messageJLabel = new JLabel("There are currently no protocols being used by the rack.");
+            messageJLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+            messageJPanel.add(messageJLabel);
+            addTab(NAME_PROTOCOL_OVERRIDE, null, messageJPanel);
+        }
+
+	// SECRET HIDDEN PANEL //////
+	if( showHiddenPanel ){
+	    MaintenanceSecretJPanel maintenanceSecretJPanel = new MaintenanceSecretJPanel();
+	    addTab(NAME_SECRET_PANEL, null, maintenanceSecretJPanel);
+	    addSavable(NAME_SECRET_PANEL, maintenanceSecretJPanel);
+	    addRefreshable(NAME_SECRET_PANEL, maintenanceSecretJPanel);
+	}
     }
     
     protected void sendSettings(Object settings) throws Exception {

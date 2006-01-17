@@ -47,12 +47,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 
     protected void generateGui(){
 	// BLOCK LISTS ///////////
-        JTabbedPane blockJTabbedPane = new JTabbedPane();
-        blockJTabbedPane.setBorder(new EmptyBorder(7, 13, 13, 13));
-        blockJTabbedPane.setFocusable(false);
-        blockJTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
-        blockJTabbedPane.setRequestFocusEnabled(false);
-        addTab(NAME_BLOCK, null, blockJTabbedPane);
+        JTabbedPane blockJTabbedPane = addTabbedPane(NAME_BLOCK, null);
 
 	// COOKIES //////////////
 	CookieConfigJPanel cookieConfigJPanel = new CookieConfigJPanel();

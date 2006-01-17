@@ -44,21 +44,21 @@ public class PolicyJDialog extends MConfigJDialog {
         
         // SYSTEM POLICIES //////
         DefaultPolicyJPanel defaultPolicyJPanel = new DefaultPolicyJPanel();
-        this.contentJTabbedPane.addTab(NAME_SYSTEM_POLICIES, null, defaultPolicyJPanel);
-	super.savableMap.put(NAME_SYSTEM_POLICIES, defaultPolicyJPanel);
-	super.refreshableMap.put(NAME_SYSTEM_POLICIES, defaultPolicyJPanel);
+        addTab(NAME_SYSTEM_POLICIES, null, defaultPolicyJPanel);
+	addSavable(NAME_SYSTEM_POLICIES, defaultPolicyJPanel);
+	addRefreshable(NAME_SYSTEM_POLICIES, defaultPolicyJPanel);
 
         // USER POLICIES //////
         CustomPolicyJPanel customPolicyJPanel = new CustomPolicyJPanel();
-        this.contentJTabbedPane.addTab(NAME_USER_POLICIES, null, customPolicyJPanel);
-	super.savableMap.put(NAME_USER_POLICIES, customPolicyJPanel);
-	super.refreshableMap.put(NAME_USER_POLICIES, customPolicyJPanel);
+        addTab(NAME_USER_POLICIES, null, customPolicyJPanel);
+	addSavable(NAME_USER_POLICIES, customPolicyJPanel);
+	addRefreshable(NAME_USER_POLICIES, customPolicyJPanel);
 
         // AVAILABLE RACKS ////// (THIS MUST BE LAST BECAUSE IT VALIDATES SETTINGS)
         AvailablePolicyJPanel availablePolicyJPanel = new AvailablePolicyJPanel();
-        this.contentJTabbedPane.addTab(NAME_AVAILABLE_POLICIES, null, availablePolicyJPanel);
-	super.savableMap.put(NAME_AVAILABLE_POLICIES, availablePolicyJPanel);
-	super.refreshableMap.put(NAME_AVAILABLE_POLICIES, availablePolicyJPanel);
+        addTab(NAME_AVAILABLE_POLICIES, null, availablePolicyJPanel);
+	addSavable(NAME_AVAILABLE_POLICIES, availablePolicyJPanel);
+	addRefreshable(NAME_AVAILABLE_POLICIES, availablePolicyJPanel);
     }
     
     protected void sendSettings(Object settings) throws Exception {

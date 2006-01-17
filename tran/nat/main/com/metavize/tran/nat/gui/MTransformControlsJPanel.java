@@ -50,28 +50,17 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     protected void generateGui(){
         // NAT ///////////////
         NatJPanel natJPanel = new NatJPanel();
-        JScrollPane natJScrollPane = new JScrollPane( natJPanel );
-        natJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
-        natJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-        addTab(NAME_NAT, null, natJScrollPane );
+        addScrollableTab(null, NAME_NAT, null, natJPanel, false, true);
 	addSavable(NAME_NAT, natJPanel);
 	addRefreshable(NAME_NAT, natJPanel);
 	natJPanel.setSettingsChangedListener(this);
         
         // DHCP /////////////
-        JTabbedPane dhcpJTabbedPane = new JTabbedPane();
-        dhcpJTabbedPane.setBorder(new EmptyBorder(7, 13, 13, 13));
-        dhcpJTabbedPane.setFocusable(false);
-        dhcpJTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
-        dhcpJTabbedPane.setRequestFocusEnabled(false);
-	addTab(NAME_DHCP, null, dhcpJTabbedPane );
+        JTabbedPane dhcpJTabbedPane = addTabbedPane(NAME_DHCP, null);
 
 	// DHCP SETTINGS /////
         DhcpJPanel dhcpJPanel = new DhcpJPanel();
-        JScrollPane dhcpJScrollPane = new JScrollPane( dhcpJPanel );
-        dhcpJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
-        dhcpJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-        dhcpJTabbedPane.addTab(NAME_DHCP_SETTINGS, null, dhcpJScrollPane );
+	addScrollableTab(dhcpJTabbedPane, NAME_DHCP + " " + NAME_DHCP_SETTINGS, null, dhcpJPanel, false, true);
         addSavable(NAME_DHCP + " " + NAME_DHCP_SETTINGS, dhcpJPanel);
         addRefreshable(NAME_DHCP + " " + NAME_DHCP_SETTINGS, dhcpJPanel);
 	dhcpJPanel.setSettingsChangedListener(this);
@@ -92,28 +81,17 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 
         // DMZ ////////////////
         DmzJPanel dmzJPanel = new DmzJPanel();
-        JScrollPane dmzJScrollPane = new JScrollPane( dmzJPanel );
-        dmzJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
-        dmzJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-        addTab(NAME_DMZ, null, dmzJScrollPane );
+	addScrollableTab(null, NAME_DMZ, null, dmzJPanel, false, true);
 	addSavable(NAME_DMZ, dmzJPanel);
 	addRefreshable(NAME_DMZ, dmzJPanel);
 	dmzJPanel.setSettingsChangedListener(this);
 
         // DNS /////////////
-        JTabbedPane dnsJTabbedPane = new JTabbedPane();
-        dnsJTabbedPane.setBorder(new EmptyBorder(7, 13, 13, 13));
-        dnsJTabbedPane.setFocusable(false);
-        dnsJTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
-        dnsJTabbedPane.setRequestFocusEnabled(false);
-	addTab(NAME_DNS, null, dnsJTabbedPane );	
+        JTabbedPane dnsJTabbedPane = addTabbedPane(NAME_DNS, null);
 
         // DNS SETTINGS /////////////
         DnsJPanel dnsJPanel = new DnsJPanel();
-        JScrollPane dnsJScrollPane = new JScrollPane( dnsJPanel );
-        dnsJScrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
-        dnsJScrollPane.setVerticalScrollBarPolicy( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-        dnsJTabbedPane.addTab(NAME_DNS_FORWARDING, null, dnsJScrollPane);
+	addScrollableTab(dnsJTabbedPane, NAME_DNS + " " + NAME_DNS_FORWARDING, null, dnsJPanel, false, true);
 	addSavable(NAME_DNS + " " + NAME_DNS_FORWARDING, dnsJPanel);
 	addRefreshable(NAME_DNS + " " + NAME_DNS_FORWARDING, dnsJPanel);
 	dnsJPanel.setSettingsChangedListener(this);

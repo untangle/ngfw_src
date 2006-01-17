@@ -121,12 +121,10 @@ public class MMainJFrame extends javax.swing.JFrame {
                 configurationJPanel = new javax.swing.JPanel();
                 configurationJScrollPane = new javax.swing.JScrollPane();
                 jPanel8 = new javax.swing.JPanel();
-                adminJButton = new javax.swing.JButton();
                 networkJButton = new javax.swing.JButton();
                 remoteJButton = new javax.swing.JButton();
+                emailJButton = new javax.swing.JButton();
                 backupJButton = new javax.swing.JButton();
-                protocolJButton = new javax.swing.JButton();
-                quarantineJButton = new javax.swing.JButton();
                 maintenanceJButton = new javax.swing.JButton();
                 aboutJButton = new javax.swing.JButton();
                 configurationSpacerJPanel1 = new javax.swing.JPanel();
@@ -308,32 +306,9 @@ public class MMainJFrame extends javax.swing.JFrame {
                 jPanel8.setLayout(new java.awt.GridBagLayout());
 
                 jPanel8.setFocusable(false);
-                adminJButton.setFont(new java.awt.Font("Arial", 0, 12));
-                adminJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
-                adminJButton.setText("<html>Accounts</html>");
-                adminJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
-                adminJButton.setDoubleBuffered(true);
-                adminJButton.setFocusPainted(false);
-                adminJButton.setFocusable(false);
-                adminJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-                adminJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
-                adminJButton.setMaximumSize(new java.awt.Dimension(810, 370));
-                adminJButton.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                adminJButtonActionPerformed(evt);
-                        }
-                });
-
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
-                jPanel8.add(adminJButton, gridBagConstraints);
-
                 networkJButton.setFont(new java.awt.Font("Arial", 0, 12));
                 networkJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
-                networkJButton.setText("<html>Network<br>Settings</html>");
+                networkJButton.setText("<html>Networking</html>");
                 networkJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
                 networkJButton.setDoubleBuffered(true);
                 networkJButton.setFocusPainted(false);
@@ -356,7 +331,7 @@ public class MMainJFrame extends javax.swing.JFrame {
 
                 remoteJButton.setFont(new java.awt.Font("Arial", 0, 12));
                 remoteJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
-                remoteJButton.setText("<html>Remote<br>Administration</html>");
+                remoteJButton.setText("<html>Remote Admin</html>");
                 remoteJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
                 remoteJButton.setDoubleBuffered(true);
                 remoteJButton.setFocusPainted(false);
@@ -377,9 +352,32 @@ public class MMainJFrame extends javax.swing.JFrame {
                 gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
                 jPanel8.add(remoteJButton, gridBagConstraints);
 
+                emailJButton.setFont(new java.awt.Font("Arial", 0, 12));
+                emailJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
+                emailJButton.setText("<html>Email</html>");
+                emailJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
+                emailJButton.setDoubleBuffered(true);
+                emailJButton.setFocusPainted(false);
+                emailJButton.setFocusable(false);
+                emailJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+                emailJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
+                emailJButton.setMaximumSize(new java.awt.Dimension(810, 370));
+                emailJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                emailJButtonActionPerformed(evt);
+                        }
+                });
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
+                jPanel8.add(emailJButton, gridBagConstraints);
+
                 backupJButton.setFont(new java.awt.Font("Arial", 0, 12));
                 backupJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
-                backupJButton.setText("<html>Backup &amp;<br>Restore</html>");
+                backupJButton.setText("<html>Backup/Restore</html>");
                 backupJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
                 backupJButton.setDoubleBuffered(true);
                 backupJButton.setFocusPainted(false);
@@ -399,52 +397,6 @@ public class MMainJFrame extends javax.swing.JFrame {
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
                 jPanel8.add(backupJButton, gridBagConstraints);
-
-                protocolJButton.setFont(new java.awt.Font("Arial", 0, 12));
-                protocolJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
-                protocolJButton.setText("<html>Protocol<br>Settings</html>");
-                protocolJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
-                protocolJButton.setDoubleBuffered(true);
-                protocolJButton.setFocusPainted(false);
-                protocolJButton.setFocusable(false);
-                protocolJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-                protocolJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
-                protocolJButton.setMaximumSize(new java.awt.Dimension(810, 370));
-                protocolJButton.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                protocolJButtonActionPerformed(evt);
-                        }
-                });
-
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
-                jPanel8.add(protocolJButton, gridBagConstraints);
-
-                quarantineJButton.setFont(new java.awt.Font("Arial", 0, 12));
-                quarantineJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
-                quarantineJButton.setText("<html>Quarantine</html>");
-                quarantineJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
-                quarantineJButton.setDoubleBuffered(true);
-                quarantineJButton.setFocusPainted(false);
-                quarantineJButton.setFocusable(false);
-                quarantineJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-                quarantineJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
-                quarantineJButton.setMaximumSize(new java.awt.Dimension(810, 370));
-                quarantineJButton.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                quarantineJButtonActionPerformed(evt);
-                        }
-                });
-
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
-                jPanel8.add(quarantineJButton, gridBagConstraints);
 
                 maintenanceJButton.setFont(new java.awt.Font("Arial", 0, 12));
                 maintenanceJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
@@ -471,7 +423,7 @@ public class MMainJFrame extends javax.swing.JFrame {
 
                 aboutJButton.setFont(new java.awt.Font("Arial", 0, 12));
                 aboutJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
-                aboutJButton.setText("<html>About<br>EdgeGuard</html>");
+                aboutJButton.setText("<html>EdgeGuard Info</html>");
                 aboutJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
                 aboutJButton.setDoubleBuffered(true);
                 aboutJButton.setFocusPainted(false);
@@ -644,20 +596,20 @@ public class MMainJFrame extends javax.swing.JFrame {
 	}
 		}//GEN-LAST:event_upgradeJButton1ActionPerformed
 
-    private void quarantineJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_quarantineJButtonActionPerformed
+		private void emailJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_emailJButtonActionPerformed
         try{
-	    quarantineJButton.setEnabled(false);
-	    QuarantineJDialog quarantineJDialog = new QuarantineJDialog();
-	    quarantineJDialog.setVisible(true);
+	    emailJButton.setEnabled(false);
+	    EmailJDialog emailJDialog = new EmailJDialog();
+	    emailJDialog.setVisible(true);
 	}
 	catch(Exception e){
-	    try{ Util.handleExceptionWithRestart("Error showing quarantine", e); }
-	    catch(Exception f){ Util.handleExceptionNoRestart("Error showing quarantine", f); }
+	    try{ Util.handleExceptionWithRestart("Error showing email", e); }
+	    catch(Exception f){ Util.handleExceptionNoRestart("Error showing email", f); }
 	}
 	finally{
-	    quarantineJButton.setEnabled(true);
+	    emailJButton.setEnabled(true);
 	}
-    }//GEN-LAST:event_quarantineJButtonActionPerformed
+		}//GEN-LAST:event_emailJButtonActionPerformed
 
     private void rackJComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rackJComboBoxActionPerformed
         //System.err.println("action performed");
@@ -667,25 +619,13 @@ public class MMainJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_metavizeJButtonActionPerformed
     
 
-
-    private void protocolJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_protocolJButtonActionPerformed
-        try{
-	    protocolJButton.setEnabled(false);
-	    ProtocolJDialog protocolJDialog = new ProtocolJDialog();
-	    protocolJDialog.setVisible(true);
-	}
-	catch(Exception e){
-	    try{ Util.handleExceptionWithRestart("Error showing protocol settings", e); }
-	    catch(Exception f){ Util.handleExceptionNoRestart("Error showing protocol settings", f); }
-	}
-	finally{
-	    protocolJButton.setEnabled(true);
-	}
-    }//GEN-LAST:event_protocolJButtonActionPerformed
     
     private void maintenanceJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_maintenanceJButtonActionPerformed
         try{
 	    maintenanceJButton.setEnabled(false);
+	    int modifiers = evt.getModifiers();
+	    boolean showHiddenPanel = ((modifiers & evt.SHIFT_MASK) > 0) && ((modifiers & evt.CTRL_MASK) > 0);
+	    MaintenanceJDialog.setShowHiddenPanel( showHiddenPanel );
 	    MaintenanceJDialog maintenanceJDialog = new MaintenanceJDialog();
 	    maintenanceJDialog.setVisible(true);
 	}
@@ -731,9 +671,6 @@ public class MMainJFrame extends javax.swing.JFrame {
     private void networkJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_networkJButtonActionPerformed
 	try{
 	    networkJButton.setEnabled(false);
-	    int modifiers = evt.getModifiers();
-	    boolean showHiddenPanel = ((modifiers & evt.SHIFT_MASK) > 0) && ((modifiers & evt.CTRL_MASK) > 0);
-	    NetworkJDialog.setShowHiddenPanel( showHiddenPanel );
 	    NetworkJDialog networkJDialog = new NetworkJDialog( );
 	    networkJDialog.setVisible(true);
 	}
@@ -779,22 +716,7 @@ public class MMainJFrame extends javax.swing.JFrame {
 	    upgradeJButton.setEnabled(true);
 	}
     }//GEN-LAST:event_upgradeJButtonActionPerformed
-    
-    private void adminJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adminJButtonActionPerformed
-	try{
-	    adminJButton.setEnabled(false);
-	    AdminConfigJDialog adminConfigJDialog = new AdminConfigJDialog();
-	    adminConfigJDialog.setVisible(true);
-	}
-	catch(Exception e){
-	    try{ Util.handleExceptionWithRestart("Error changing admins", e); }
-	    catch(Exception f){ Util.handleExceptionNoRestart("Error changing admins", f); }
-	}
-	finally{
-	    adminJButton.setEnabled(true);
-	}
-    }//GEN-LAST:event_adminJButtonActionPerformed
-    
+        
     private void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
         Util.exit(0);
     }//GEN-LAST:event_exitForm
@@ -803,13 +725,13 @@ public class MMainJFrame extends javax.swing.JFrame {
     
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JButton aboutJButton;
-        private javax.swing.JButton adminJButton;
         private javax.swing.JLabel backgroundJLabel;
         private javax.swing.JButton backupJButton;
         private javax.swing.JPanel configurationJPanel;
         private javax.swing.JScrollPane configurationJScrollPane;
         private javax.swing.JPanel configurationSpacerJPanel1;
         private javax.swing.JPanel controlsJPanel;
+        private javax.swing.JButton emailJButton;
         private javax.swing.JLabel jLabel1;
         private javax.swing.JPanel jPanel8;
         private javax.swing.JPanel mPipelineJPanel;
@@ -818,8 +740,6 @@ public class MMainJFrame extends javax.swing.JFrame {
         private javax.swing.JButton metavizeJButton;
         private javax.swing.JButton networkJButton;
         private javax.swing.JPanel policyToolboxJPanel;
-        private javax.swing.JButton protocolJButton;
-        private javax.swing.JButton quarantineJButton;
         private javax.swing.JComboBox rackJComboBox;
         private javax.swing.JButton remoteJButton;
         private javax.swing.JPanel serviceToolboxJPanel;
