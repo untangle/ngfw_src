@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Bug 1249
+killall update-reports rollup-logs
+
 if [ -x /usr/bin/mvvm-restart ]; then
     mvvm-restart restart
 fi
