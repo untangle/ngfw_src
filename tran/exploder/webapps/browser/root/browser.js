@@ -58,6 +58,7 @@ function displayDetail(root)
 
   var tbody = table.appendChild(document.createElement("tbody"));
 
+  var path = root.getAttribute("path");
   var children = root.childNodes;
 
   var odd = true;
@@ -65,7 +66,7 @@ function displayDetail(root)
     var child = root.childNodes[i];
     var tagName = child.tagName;
     if ("dir" == tagName || "file" == tagName) {
-      addDetail(child, tbody, odd);
+      addDetail(child, path, tbody, odd);
       odd = !odd;
     }
   }
@@ -74,15 +75,17 @@ function displayDetail(root)
   detail.appendChild(table);
 }
 
-function addDetail(fileInfo, tbody, odd)
+function addDetail(fileInfo, path, tbody, odd)
 {
   var row = tbody.appendChild(document.createElement("tr"));
-  row.onclick = function() { alert(fileInfo.getAttribute("name")); };
+
+  var name = fileInfo.getAttribute("name");
+  row.onclick = function() { showFileListing(path + name); };
 
   Element.addClassName(row, "detail-row");
   Element.addClassName(row, "detail-row-" + (odd ? "odd" : "even"));
 
-  appendTextElem(row, "td", fileInfo.getAttribute("name"), "detail-name");
+  appendTextElem(row, "td", name, "detail-name");
   appendTextElem(row, "td", fileInfo.getAttribute("size"), "detail-size");
   var date = new Date();
   date.setTime(parseInt(fileInfo.getAttribute("mtime")));
