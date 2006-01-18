@@ -43,6 +43,12 @@ function showFileListing(dir)
                    });
 }
 
+function showFile(filename)
+{
+  // XXX lets make this either inline or save, depending on mime-type
+  window.open("get/" + escape(filename), filename, null);
+}
+
 function displayDetail(root)
 {
   var detail = $("detail");
@@ -66,7 +72,7 @@ function displayDetail(root)
     var child = root.childNodes[i];
     var tagName = child.tagName;
     if ("dir" == tagName || "file" == tagName) {
-      addDetail(child, path, tbody, odd);
+      addDetail(child, "dir" == tagName, path, tbody, odd);
       odd = !odd;
     }
   }
@@ -75,12 +81,17 @@ function displayDetail(root)
   detail.appendChild(table);
 }
 
-function addDetail(fileInfo, path, tbody, odd)
+function addDetail(fileInfo, isDir, path, tbody, odd)
 {
   var row = tbody.appendChild(document.createElement("tr"));
 
   var name = fileInfo.getAttribute("name");
-  row.onclick = function() { showFileListing(path + name); };
+
+  if (isDir) {
+    row.onclick = function() { showFileListing(path + name); };
+  } else {
+    row.onclick = function() { showFile(path + name); };
+  }
 
   Element.addClassName(row, "detail-row");
   Element.addClassName(row, "detail-row-" + (odd ? "odd" : "even"));

@@ -31,6 +31,18 @@
     <url-pattern>/ls</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>FileGetter</servlet-name>
+    <servlet-class>
+      com.metavize.tran.exploder.browser.FileGetter
+    </servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>FileGetter</servlet-name>
+    <url-pattern>/get/*</url-pattern>
+  </servlet-mapping>
+
   @JSP_PRE_COMPILED_SERVLETS@
 
 </web-app>

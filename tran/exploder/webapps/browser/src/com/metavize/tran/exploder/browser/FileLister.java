@@ -17,6 +17,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
+import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -52,7 +53,12 @@ public class FileLister extends HttpServlet
             }
         };
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private static final String MIME_TYPES_PATH = "/etc/mime.types";
+
+    private MimetypesFileTypeMap mimeMap;
+    private Logger logger;
+
+    // HttpServlet methods ----------------------------------------------------
 
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException
@@ -110,6 +116,7 @@ public class FileLister extends HttpServlet
                 listDirectory(f, filter, os);
             } else {
                 // XXX send back file data? from this servlet? in xml???
+                System.out.println("CONTENT-TYPE: " + mimeMap.getContentType(f.getName()));
                 os.println("A FILE");
             }
         } catch (IOException exn) {
@@ -120,6 +127,20 @@ public class FileLister extends HttpServlet
             }
         }
     }
+
+    public void init() throws ServletException
+    {
+        logger = Logger.getLogger(getClass());
+
+        try {
+            mimeMap = new MimetypesFileTypeMap(MIME_TYPES_PATH);
+        } catch (IOException exn) {
+            logger.error("could not setup mimemap", exn);
+            mimeMap = new MimetypesFileTypeMap();
+        }
+    }
+
+    // private methods --------------------------------------------------------
 
     private void listDirectory(SmbFile dir, SmbFileFilter filter,
                                PrintWriter os)
