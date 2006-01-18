@@ -213,6 +213,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <include name="com/metavize/mvvm/logging/SyslogFacility.java"/>
       <include name="com/metavize/mvvm/policy/*.java"/>
       <include name="com/metavize/mvvm/security/*.java"/>
+      <include name="com/metavize/mvvm/addrbook/*.java"/>
       <include name="com/metavize/mvvm/shield/ShieldNodeSettings.java"/>
       <include name="com/metavize/mvvm/snmp/SnmpManager.java"/>
       <include name="com/metavize/mvvm/snmp/SnmpSettings.java"/>
