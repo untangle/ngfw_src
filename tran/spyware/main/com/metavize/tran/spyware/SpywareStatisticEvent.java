@@ -28,7 +28,7 @@ public class SpywareStatisticEvent extends StatisticEvent {
     private int cookie = 0; // block cookie
     private int activeX = 0; // block activeX
     private int url = 0; // block URL
-    private int subnetAccess = 0; // pass subnet access
+    private int subnetAccess = 0; // log subnet access
 
     // Constructors
     /**
@@ -90,7 +90,7 @@ public class SpywareStatisticEvent extends StatisticEvent {
     public void incrURL() { url++; }
 
     /**
-     * Number of logged (pass) subnet accesses
+     * Number of logged subnet accesses
      *
      * @return Number of logged subnet accesses
      * @hibernate.property

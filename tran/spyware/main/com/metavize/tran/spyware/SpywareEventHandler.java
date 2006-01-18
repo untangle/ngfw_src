@@ -87,8 +87,10 @@ public class SpywareEventHandler extends AbstractEventHandler
         Session s = event.session();
         SpywareAccessEvent spe = (SpywareAccessEvent)s.attachment();
         if (null != spe) {
-            transform.statisticManager.incrSubnetAccess();
+            transform.statisticManager.incrSubnetAccess(); // logged subnet access
             transform.log(spe);
+        } else {
+            transform.statisticManager.incrPass(); // pass subnet access
         }
     }
 
@@ -99,22 +101,21 @@ public class SpywareEventHandler extends AbstractEventHandler
         Session s = event.session();
         SpywareAccessEvent spe = (SpywareAccessEvent)s.attachment();
         if (null != spe) {
-            transform.statisticManager.incrSubnetAccess();
+            transform.statisticManager.incrSubnetAccess(); // logged subnet access
             transform.log(spe);
+        } else {
+            transform.statisticManager.incrPass(); // pass subnet access
         }
     }
 
     void detectSpyware(IPNewSessionRequest ipr, boolean release)
     {
-        // subnet accesses are logged but are no longer blocked
-        // so pass counts also include subnet access counts
-        transform.statisticManager.incrPass(); // pass subnet access
-
         IPMaddr ipm = new IPMaddr(ipr.serverAddr().getHostAddress());
 
         IPMaddrRule ir = (IPMaddrRule)this.subnetSet.getMostSpecific(ipm);
 
         if (ir == null) {
+            transform.statisticManager.incrPass(); // pass subnet access
             if (logger.isDebugEnabled()) {
                 logger.debug("Subnet scan: " + ipm.toString() + " -> clean.");
             }
@@ -144,7 +145,7 @@ public class SpywareEventHandler extends AbstractEventHandler
         if (release)
             ipr.attach(new SpywareAccessEvent(ipr.pipelineEndpoints(), ir.getName(), ir.getIpMaddr(), ir.isLive()));
         else {
-            transform.statisticManager.incrSubnetAccess();
+            transform.statisticManager.incrSubnetAccess(); // logged subnet access
             transform.log(new SpywareAccessEvent(ipr.pipelineEndpoints(), ir.getName(), ir.getIpMaddr(), ir.isLive()));
         }
 
