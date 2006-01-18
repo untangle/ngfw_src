@@ -90,7 +90,8 @@ fi
 if [ -z $prefix ] ; then
     # invoked in real environment
     if [ "$1" = "installed" ] ; then
-        (my_dpkg_query '*-transform'
+        (my_dpkg_query '*-storeitem'
+            my_dpkg_query '*-transform'
             my_dpkg_query '*-casing' ;
             my_dpkg_query 'metavize-client';
             my_dpkg_query 'virus-base';
@@ -99,7 +100,7 @@ if [ -z $prefix ] ; then
                 | awk '{ if ($2) printf("%s %s\n",$1,$2) }'
         #RET=$? return code ignored
     elif [ "$1" = "available" ] ; then
-        pkgs=$(apt-cache search '.-transform$|.-casing$|^virus-base$|^spam-base$|^mvvm$|^metavize-client$'\
+        pkgs=$(apt-cache search '.-storeitem$|.-transform$|.-casing$|^virus-base$|^spam-base$|^mvvm$|^metavize-client$'\
             | cut -d ' ' -f 1)
         for pkg in $pkgs; do
             apt-cache show --no-all-versions $pkg
@@ -136,15 +137,8 @@ if [ -z $prefix ] ; then
             | awk " /^'http:\\/\\// { print \$0 } " >$aptlist
         download $aptlist
 
-        t0=$(stat -L -c %Y /vmlinuz)
         apt-get dist-upgrade $UPGD_OPTS >>$APT_LOG 2>&1
         RET=$?
-        t1=$(stat -L -c %Y /vmlinuz)
-
-        if [ $t0 -ne $t1 ]; then
-            aptlog "new kernel, rebooting"
-            reboot
-        fi
 
         aptlog "done $stamp"
     elif [ "$1" = "remove" ] ; then
