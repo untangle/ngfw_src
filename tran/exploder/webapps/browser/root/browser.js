@@ -87,12 +87,10 @@ function addDetail(fileInfo, path, tbody, odd)
 
   appendTextElem(row, "td", name, "detail-name");
   appendTextElem(row, "td", fileInfo.getAttribute("size"), "detail-size");
-  var date = new Date();
-  date.setTime(parseInt(fileInfo.getAttribute("mtime")));
-  appendTextElem(row, "td", date.toLocaleString(), "detail-mtime");
-  date = new Date();
-  date.setTime(parseInt(fileInfo.getAttribute("ctime")));
-  appendTextElem(row, "td", date.toLocaleString(), "detail-ctime");
+  var date = formatDate(parseInt(fileInfo.getAttribute("mtime")));
+  appendTextElem(row, "td", date, "detail-mtime");
+  date = formatDate(parseInt(fileInfo.getAttribute("ctime")));
+  appendTextElem(row, "td", date, "detail-ctime");
 }
 
 function appendTextElem(parent, type, text, clazz)
@@ -187,6 +185,30 @@ function parseDomFromString(text)
                      xmlDom.loadXML(text)
                      return xmlDom;
                    });
+}
+
+function formatDate(unixTime)
+{
+  date = new Date();
+  date.setTime(unixTime);
+  var year = date.getYear();
+  if (1000 > year) {
+    year = year + 1900;
+  }
+
+  return zeroPad(date.getMonth(), 2) + "/" + zeroPad(date.getDay(), 2)
+         + "/" + year + " " + zeroPad(date.getHours(), 2) + ":"
+         + zeroPad(date.getMinutes(), 2);
+}
+
+function zeroPad(num, width)
+{
+  var num = "" + num;
+  while (num.length < width) {
+    num = "0" + num;
+  }
+
+  return num;
 }
 
 // function removeChildren(node)
