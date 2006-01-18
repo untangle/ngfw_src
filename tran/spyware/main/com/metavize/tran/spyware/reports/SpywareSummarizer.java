@@ -29,13 +29,14 @@ public class SpywareSummarizer extends BaseSummarizer {
         long activeXBlockCount = 0l;
         long urlBlockCount = 0l;
         long subnetLogCount = 0l; // # of logged subnet access events
+	long passCount = 0l;
 
         try {
 	    String sql;
 	    PreparedStatement ps;
 	    ResultSet rs;
 
-            sql = "SELECT COUNT(*) FROM tr_spyware_evt_cookie WHERE time_stamp >= ? AND time_stamp < ?";
+	    sql = "SELECT SUM(cookie) FROM tr_spyware_statistic_evt WHERE time_stamp >= ? and time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -45,7 +46,7 @@ public class SpywareSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "SELECT COUNT(*) FROM tr_spyware_evt_activex WHERE time_stamp >= ? AND time_stamp < ?";
+	    sql = "SELECT SUM(activeX) FROM tr_spyware_statistic_evt WHERE time_stamp >= ? and time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -55,7 +56,7 @@ public class SpywareSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "SELECT COUNT(*) FROM tr_spyware_evt_blacklist WHERE time_stamp >= ? AND time_stamp < ?";
+	    sql = "SELECT SUM(url) FROM tr_spyware_statistic_evt WHERE time_stamp >= ? and time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -65,13 +66,23 @@ public class SpywareSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "SELECT COUNT(*) FROM tr_spyware_evt_access WHERE time_stamp >= ? AND time_stamp < ?";
+	    sql = "SELECT SUM(subnet_access) FROM tr_spyware_statistic_evt WHERE time_stamp >= ? and time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
             rs = ps.executeQuery();
             rs.first();
             subnetLogCount = rs.getLong(1);
+            rs.close();
+            ps.close();
+
+	    sql = "SELECT SUM(pass) FROM tr_spyware_statistic_evt WHERE time_stamp >= ? and time_stamp < ?";
+            ps = conn.prepareStatement(sql);
+            ps.setTimestamp(1, startDate);
+            ps.setTimestamp(2, endDate);
+            rs = ps.executeQuery();
+            rs.first();
+            passCount = rs.getLong(1);
             rs.close();
             ps.close();
 
@@ -86,7 +97,8 @@ public class SpywareSummarizer extends BaseSummarizer {
         addEntry("&nbsp;&nbsp;&nbsp;Blocked activeX", Util.trimNumber("",activeXBlockCount), Util.percentNumber(activeXBlockCount,totalCount));
         addEntry("&nbsp;&nbsp;&nbsp;Blocked URLs", Util.trimNumber("",urlBlockCount), Util.percentNumber(urlBlockCount,totalCount));
         addEntry("&nbsp;&nbsp;&nbsp;Logged subnet accesses", Util.trimNumber("",subnetLogCount), Util.percentNumber(subnetLogCount,totalCount));
-
+        addEntry("&nbsp;", "&nbsp;");
+        addEntry("Clean communications detected", Util.trimNumber("",passCount));
         // XXXX
         String tranName = "Spyware Blocker";
 

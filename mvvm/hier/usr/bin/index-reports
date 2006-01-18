@@ -204,7 +204,7 @@ h4 {
               <td width="96" valign="middle">
                 <img src="$web_base/images/logo_no_text_shiny_96x96.gif" alt="Metavize logo" width="96" height="96"/>
               </td>
-              <td style="padding: 0px 0px 0px 10px" class="page_header_title" align="left" valign="middle">Metavize EdgeReport</td>
+              <td style="padding: 0px 0px 0px 10px" class="page_header_title" align="left" valign="middle">Metavize<br/>EdgeReport</td>
               <td align="right">
               <table width="100%">
                 <tr><td class="page_header_alternate" align="right">

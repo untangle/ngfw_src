@@ -11,14 +11,15 @@
 
 package com.metavize.tran.spyware.reports;
 
+import java.awt.*;
 import java.sql.*;
 import java.util.*;
 
 import com.metavize.mvvm.reporting.*;
 import net.sf.jasperreports.engine.JRDefaultScriptlet;
 import net.sf.jasperreports.engine.JRScriptletException;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.JFreeChart;
+import org.jfree.chart.*;
+import org.jfree.chart.plot.*;
 import org.jfree.data.time.Minute;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -36,7 +37,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 
     public SummaryGraph() {          // out, in, total
         // Total counts (identified as "A") are not displayed
-        this("Traffic", true, true, "Total", "Blocked", "Passed/Logged", "Web Requests/min.");
+        this("Traffic", true, true, "Detected/Blocked", "Detected/Logged", "Clean", "Web Requests/min.");
     }
 
     // Produces a single line graph of one series
@@ -63,7 +64,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 
     protected JFreeChart doChart(Connection con) throws JRScriptletException, SQLException
     {
-        //TimeSeries datasetA = new TimeSeries(seriesATitle, Minute.class);
+        TimeSeries datasetA = new TimeSeries(seriesATitle, Minute.class);
         TimeSeries datasetB = new TimeSeries(seriesBTitle, Minute.class);
         TimeSeries datasetC = new TimeSeries(seriesCTitle, Minute.class);
 
@@ -88,7 +89,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
             size = BUCKETS;
         else
             size = periodMinutes/(BUCKETS*MINUTES_PER_BUCKET) + (periodMinutes%(BUCKETS*MINUTES_PER_BUCKET)>0?1:0);
-        //double countsA[] = new double[ size ];
+        double countsA[] = new double[ size ];
         double countsB[] = new double[ size ];
         double countsC[] = new double[ size ];
 
@@ -104,10 +105,11 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         ResultSet rs;
 
         sql = "SELECT date_trunc('minute', time_stamp),"
+             + "      SUM(pass),"
              + "      SUM(cookie),"
              + "      SUM(activeX),"
              + "      SUM(url),"
-             + "      SUM(pass)"
+             + "      SUM(subnet_access)"
              + " FROM tr_spyware_statistic_evt"
              + " WHERE time_stamp <= ? AND time_stamp > ?"
              + " GROUP BY time_stamp"
@@ -126,9 +128,9 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         while (rs.next()) {
             // GET RESULTS
             Timestamp eventDate = rs.getTimestamp(1);
-            long countB = rs.getLong(2) + rs.getLong(3) + rs.getLong(4);
-            long countC = rs.getLong(5);
-            //long countA = countB + countC;
+            long countA = rs.getLong(3) + rs.getLong(4) + rs.getLong(5);
+            long countB = rs.getLong(6);
+	    long countC = rs.getLong(2);
 
             // ALLOCATE COUNT TO EACH MINUTE WE WERE ALIVE EQUALLY
             long eventStart = (eventDate.getTime() / MINUTE_INTERVAL) * MINUTE_INTERVAL;
@@ -136,20 +138,20 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
             int startInterval = (int)(realStart / MINUTE_INTERVAL)/MINUTES_PER_BUCKET;
 
             // COMPUTE COUNTS IN INTERVALS
-            //countsA[startInterval%BUCKETS] += countA;
+            countsA[startInterval%BUCKETS] += countA;
             countsB[startInterval%BUCKETS] += countB;
             countsC[startInterval%BUCKETS] += countC;
         }
         try { stmt.close(); } catch (SQLException x) { }
 
         // POST PROCESS: PRODUCE UNITS OF email/min, AVERAGED PER DAY, FROM emails PER BUCKET
-        //double averageACount;
+        double averageACount;
         double averageBCount;
         double averageCCount;
 
         for(int i = 0; i < size; i++) {
             // MOVING AVERAGE
-            //averageACount = 0;
+            averageACount = 0;
             averageBCount = 0;
             averageCCount = 0;
             int newIndex = 0;
@@ -162,17 +164,17 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
                 else
                     continue;
 
-                //averageACount += countsA[newIndex] / (double)queries;
+                averageACount += countsA[newIndex] / (double)queries;
                 averageBCount += countsB[newIndex] / (double)queries;
                 averageCCount += countsC[newIndex] / (double)queries;
             }
 
-            //averageACount /= denom;
+            averageACount /= denom;
             averageBCount /= denom;
             averageCCount /= denom;
 
             java.util.Date date = new java.util.Date(startMinuteInMillis + i * MINUTE_INTERVAL * MINUTES_PER_BUCKET);
-            //datasetA.addOrUpdate(new Minute(date), averageACount);
+            datasetA.addOrUpdate(new Minute(date), averageACount);
             datasetB.addOrUpdate(new Minute(date), averageBCount);
             datasetC.addOrUpdate(new Minute(date), averageCCount);
         }
@@ -188,13 +190,18 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         System.out.println("=====================");
 
         TimeSeriesCollection tsc = new TimeSeriesCollection();
-        //tsc.addSeries(datasetA);
+        tsc.addSeries(datasetA);
         tsc.addSeries(datasetB);
         tsc.addSeries(datasetC);
 
-        return ChartFactory.createTimeSeriesChart(chartTitle,
-                                                  timeAxisLabel, valueAxisLabel,
-                                                  tsc,
-                                                  true, true, false);
+	JFreeChart timeSeriesChart = ChartFactory.createTimeSeriesChart(chartTitle,
+									timeAxisLabel, valueAxisLabel,
+									tsc,
+									true, true, false);
+	XYPlot plot = timeSeriesChart.getXYPlot();
+	plot.getRenderer().setSeriesPaint(0, new Color(255, 0, 0));
+	plot.getRenderer().setSeriesPaint(1, new Color(255, 155, 0));
+	plot.getRenderer().setSeriesPaint(2, new Color(0, 255, 0));
+	return timeSeriesChart;
     }
 }

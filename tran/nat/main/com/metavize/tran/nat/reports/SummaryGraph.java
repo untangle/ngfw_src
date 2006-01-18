@@ -11,14 +11,15 @@
 
 package com.metavize.tran.nat.reports;
 
+import java.awt.*;
 import java.sql.*;
 import java.util.*;
 
 import com.metavize.mvvm.reporting.*;
 import net.sf.jasperreports.engine.JRDefaultScriptlet;
 import net.sf.jasperreports.engine.JRScriptletException;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.JFreeChart;
+import org.jfree.chart.*;
+import org.jfree.chart.plot.*;
 import org.jfree.data.time.Minute;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -178,12 +179,19 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 	tsc.addSeries(datasetB);
 	tsc.addSeries(datasetA);
 
-        return ChartFactory.createTimeSeriesChart(chartTitle,
-                                                  timeAxisLabel,
-                                                  valueAxisLabel,
-                                                  tsc,
-                                                  true,
-                                                  true,
-                                                  false);
+	JFreeChart timeSeriesChart = ChartFactory.createTimeSeriesChart(chartTitle,
+									timeAxisLabel,
+									valueAxisLabel,
+									tsc,
+									true,
+									true,
+									false);
+
+	XYPlot plot = timeSeriesChart.getXYPlot();
+	plot.getRenderer().setSeriesPaint(0, new Color(255, 255, 0));
+	plot.getRenderer().setSeriesPaint(1, new Color(0, 0, 255));
+	plot.getRenderer().setSeriesPaint(2, new Color(0, 255, 0));
+	return timeSeriesChart;
+
     }
 }
