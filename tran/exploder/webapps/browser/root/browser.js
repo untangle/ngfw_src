@@ -46,41 +46,62 @@ function showFileListing(dir)
 function displayDetail(root)
 {
   var detail = $("detail");
-  removeChildren(detail);
 
   var table = document.createElement("table");
-  Element.addClassName(table, "detail-table")
+  Element.addClassName(table, "detail-table");
+
+  var thead = table.appendChild(document.createElement("thead"));
+  appendTextElem(thead, "th", "name", null);
+  appendTextElem(thead, "th", "size", null);
+  appendTextElem(thead, "th", "last modified", null);
+  appendTextElem(thead, "th", "create date", null);
+
   var tbody = table.appendChild(document.createElement("tbody"));
 
   var children = root.childNodes;
 
+  var odd = true;
   for (var i = 0; i < children.length; i++) {
     var child = root.childNodes[i];
     var tagName = child.tagName;
     if ("dir" == tagName || "file" == tagName) {
-      addDetail(child, tbody);
+      addDetail(child, tbody, odd);
+      odd = !odd;
     }
   }
 
+  removeChildren(detail);
   detail.appendChild(table);
 }
 
-function addDetail(fileInfo, tbody)
+function addDetail(fileInfo, tbody, odd)
 {
   var row = tbody.appendChild(document.createElement("tr"));
+  row.onclick = function() { alert(fileInfo.getAttribute("name")); };
 
-  appendTextTd(row, fileInfo.getAttribute("name"), "detail-name");
-  appendTextTd(row, fileInfo.getAttribute("size"), "detail-size");
-  appendTextTd(row, fileInfo.getAttribute("mtime"), "detail-mtime");
-  appendTextTd(row, fileInfo.getAttribute("ctime"), "detail-ctime");
+  Element.addClassName(row, "detail-row");
+  Element.addClassName(row, "detail-row-" + (odd ? "odd" : "even"));
+
+  appendTextElem(row, "td", fileInfo.getAttribute("name"), "detail-name");
+  appendTextElem(row, "td", fileInfo.getAttribute("size"), "detail-size");
+  var date = new Date();
+  date.setTime(parseInt(fileInfo.getAttribute("mtime")));
+  appendTextElem(row, "td", date.toLocaleString(), "detail-mtime");
+  date = new Date();
+  date.setTime(parseInt(fileInfo.getAttribute("ctime")));
+  appendTextElem(row, "td", date.toLocaleString(), "detail-ctime");
 }
 
-function appendTextTd(row, text, clazz)
+function appendTextElem(parent, type, text, clazz)
 {
-  var td = document.createElement("td");
-  Element.addClassName(td, clazz);
+  var td = document.createElement(type);
+  if (null != clazz) {
+    Element.addClassName(td, clazz);
+  }
   td.appendChild(document.createTextNode(text));
-  row.appendChild(td);
+  parent.appendChild(td);
+
+  return td;
 }
 
 function addChildDirectories(target, dom)

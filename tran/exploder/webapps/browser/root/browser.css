@@ -28,7 +28,29 @@ a:hover { text-decoration: underline; }
 
 /* Detail Pane */
 
-.detail-table {  }
+.detail-table { font: 8pt Verdana,sans-serif }
+
+.detail-row { cursor: pointer;
+              cursor: hand;
+              }
+
+tr.detail-row:hover { background-color: #0000FF; }
+
+.detail-row-odd { }
+
+.detail-row-even { background-color: #00FF00; }
+
+.detail-name { width: 50%;
+               }
+
+.detail-size { width: 10%;
+               }
+
+.detail-mtime { width: 10%;
+                }
+
+.detail-ctime { width: 10%;
+                }
 
 
 /* Panes */
@@ -38,13 +60,15 @@ a:hover { text-decoration: underline; }
         overflow: auto;
         border-right: 1px solid #666666;
         padding-left: 3px;
-        padding-top: 3px
+        padding-top: 3px;
         }
 
 #detail { position: absolute;
           top: 0;
           left: 25%;
           width: 75%;
+          height: 100%;
+          overflow: auto;
           font-family: sans-serif;
-          color: navy
+          color: navy;
           }
