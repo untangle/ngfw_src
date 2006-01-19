@@ -55,20 +55,48 @@ tr.detail-row:hover { background-color: #0000FF; }
 
 /* Panes */
 
-#tree { width: 25%;
-        height: 100%;
+#toolbar { position: absolute;
+           top: 0;
+           left: 0;
+           height: 15px;
+           width: 100%;
+           border: 1px solid #00FF00;
+           font-family: sans-serif;
+           color: navy;
+           }
+
+#summary { position: absolute;
+           bottom: 0;
+           left: 0;
+           height: 15px;
+           width: 100%;
+           border: 1px solid #00FF00;
+           font-family: sans-serif;
+           color: navy;
+           }
+
+#tree { position: absolute;
+        top: 15px;
+        bottom: 15px;
+        width: 25%;
         overflow: auto;
-        border-right: 1px solid #666666;
-        padding-left: 3px;
-        padding-top: 3px;
+        border: 1px solid #FF0000;
         }
 
 #detail { position: absolute;
-          top: 0;
+          top: 15px;
+          bottom: 15px;
           left: 25%;
-          width: 75%;
-          height: 100%;
           overflow: auto;
-          font-family: sans-serif;
-          color: navy;
+          border: 1px solid #0000FF;
           }
+
+@media screen {
+  body>div#toolbar { position:fixed; }
+  body>div#summary { position:fixed; }
+  body>div#tree { position:fixed; }
+  body>div#detail { position:fixed; }
+}
+
+/* XXX is this needed? */
+* html body { overflow: hidden; }

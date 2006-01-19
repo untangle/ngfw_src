@@ -14,6 +14,14 @@
 
 <body>
 
+<div id="toolbar">
+<CENTER><B>TOOLBAR</B></CENTER>
+</div>
+
+<div id="summary">
+<CENTER><B>SUMMARY</B></CENTER>
+</div>
+
 <div id="tree">
 <browser:dirtree url="smb://metaloft.com/"/>
 </div>
