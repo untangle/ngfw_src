@@ -58,7 +58,7 @@ tr.detail-row:hover { background-color: #0000FF; }
 #toolbar { position: absolute;
            top: 0;
            left: 0;
-           height: 15px;
+           height: 25px;
            width: 100%;
            border: 1px solid #00FF00;
            font-family: sans-serif;
@@ -68,7 +68,7 @@ tr.detail-row:hover { background-color: #0000FF; }
 #summary { position: absolute;
            bottom: 0;
            left: 0;
-           height: 15px;
+           height: 25px;
            width: 100%;
            border: 1px solid #00FF00;
            font-family: sans-serif;
@@ -76,17 +76,18 @@ tr.detail-row:hover { background-color: #0000FF; }
            }
 
 #tree { position: absolute;
-        top: 15px;
-        bottom: 15px;
+        top: 30px;
+        bottom: 30px;
         width: 25%;
         overflow: auto;
         border: 1px solid #FF0000;
         }
 
 #detail { position: absolute;
-          top: 15px;
-          bottom: 15px;
-          left: 25%;
+          top: 30px;
+          bottom: 30px;
+          left: 30%;
+          right: 0;
           overflow: auto;
           border: 1px solid #0000FF;
           }
@@ -97,6 +98,3 @@ tr.detail-row:hover { background-color: #0000FF; }
   body>div#tree { position:fixed; }
   body>div#detail { position:fixed; }
 }
-
-/* XXX is this needed? */
-* html body { overflow: hidden; }
