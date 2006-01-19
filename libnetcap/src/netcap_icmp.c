@@ -362,6 +362,10 @@ int  netcap_icmp_call_hook( netcap_pkt_t* pkt )
     int ret = -1;
     netcap_session_t* netcap_sess = NULL;
 
+    if ( pkt == NULL ) return errlogargs();
+
+    if ( pkt->data == NULL ) return errlogargs();
+
     /* Drop the packet, but hold onto the data. */
     debug( 10, "ICMP: Dropping packet (%#10x) and passing data\n", pkt->packet_id );
     
@@ -857,15 +861,19 @@ static _find_t _icmp_find_session( netcap_pkt_t* pkt, netcap_session_t** netcap_
                 /* Indicate that a new session was not created */
                 *netcap_sess = NULL;
             }
+            
+            /* Must cache the packet before putting the packet into the mailbox,
+             * otherwise the session thread can pull the data from underneath the thread
+             */
 
+            if ( _cache_packet( full_pkt, full_pkt_len, icmp_mb ) < 0 ) {
+                ret = errlog( ERR_CRITICAL, "_cache_packet\n" );
+            }
+            
             /* Put the packet into the mailbox */
             if ( _icmp_put_mailbox( mb, pkt ) < 0 ) {
                 ret = errlog( ERR_CRITICAL, "_icmp_put_mailbox\n" );
                 break;
-            }
-
-            if ( _cache_packet( full_pkt, full_pkt_len, icmp_mb ) < 0 ) {
-                ret = errlog( ERR_CRITICAL, "_cache_packet\n" );
             }
             
             /* Set the return code */

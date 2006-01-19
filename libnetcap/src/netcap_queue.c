@@ -173,7 +173,8 @@ int  netcap_queue_read (u_char* buffer, int max, netcap_pkt_t* pkt)
     pkt->tos = iph->tos;
 
     /* XXX If nececssary, options should be copied out here */
-
+    /* XXX The flags should always be initialized to zero has to be cleared out */
+    // XXX pkt->th_flags = 0;
     if (iph->protocol == IPPROTO_TCP) {
         if (msg->data_len < (sizeof(struct iphdr)+sizeof(struct tcphdr))) return errlogcons();
             

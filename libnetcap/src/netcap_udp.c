@@ -325,6 +325,8 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
             full_pkt = NULL;
         }
         
+        /* Caching order is not significant since the other thread/session doesn't exist yet */
+        
         // Put a copy of the full packet into the mailbox
         if ( full_pkt != NULL && ( _cache_packet( full_pkt, full_pkt_len, &session->icmp_cli_mb ) < 0 )) {
             errlog( ERR_CRITICAL, "_cache_packet\n" );
@@ -407,17 +409,25 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
                    inet_ntoa(pkt->src.host),pkt->src.port);
             netcap_pkt_raze(pkt);
             full_pkt = NULL;
-        } else if (mailbox_put(mb,(void*)pkt)<0) {
-            netcap_pkt_raze(pkt);
-            perrlog("mailbox_put");
-            full_pkt = NULL;
+        } else {
+            /* The caching of the packet must occur before the packet is put into the mailbox,
+             * because if it isn't the data could be removed from the mailbox and then the
+             * memory would be invalid
+             * (to test, swap the order, and then add a sleep one in between the two
+             * once it is in there, run echospam through the box and then send a few
+             * UDP packets through, eventually a crash will occur.)
+             */
+            if (( full_pkt != NULL ) && _cache_packet( full_pkt, full_pkt_len, icmp_mb ) < 0 ) {
+                errlog( ERR_CRITICAL, "_cache_packet\n" );
+            }
+
+            if ( mailbox_put( mb, (void*)pkt ) < 0 ) {
+                netcap_pkt_raze(pkt);
+                perrlog("mailbox_put");
+                full_pkt = NULL;
+            }
         }
-        
-        /* Cache the packet for ICMP */
-        if (( full_pkt != NULL ) && _cache_packet( full_pkt, full_pkt_len, icmp_mb ) < 0 ) {
-            errlog( ERR_CRITICAL, "_cache_packet\n" );
-        }
-        
+                
         SESSTABLE_UNLOCK();
     }
 
