@@ -31,14 +31,14 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     protected void generateGui(){
 	// SOME LIST //
 	javax.swing.JPanel someJPanel = new javax.swing.JPanel();
-	super.mTabbedPane.addTab(NAME_SOME_LIST, null, someJPanel);
-	//super.savableMap.put(NAME_SOME_LIST, someJPanel);
-	//super.refreshableMap.put(NAME_SOME_LIST, someJPanel);
+	addTab(NAME_SOME_LIST, null, someJPanel);
+	//addSsavable(NAME_SOME_LIST, someJPanel);
+	//addRefreshable(NAME_SOME_LIST, someJPanel);
 
 	// EVENT LOG /////
 	//LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
-	//super.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
-	//super.shutdownableMap.put(NAME_LOG, logJPanel);
+	//addTab(NAME_LOG, null, logJPanel);
+	//addShutdownable(NAME_LOG, logJPanel);
     }
     
 }
