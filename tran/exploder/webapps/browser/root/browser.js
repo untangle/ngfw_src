@@ -43,10 +43,10 @@ function showFileListing(dir)
                    });
 }
 
-function showFile(filename)
+function showFile(filename, name)
 {
   // XXX lets make this either inline or save, depending on mime-type
-  window.open("get/" + escape(filename), filename, null);
+  window.open("get/" + filename);
 }
 
 function displayDetail(root)
@@ -90,7 +90,7 @@ function addDetail(fileInfo, isDir, path, tbody, odd)
   if (isDir) {
     row.onclick = function() { showFileListing(path + name); };
   } else {
-    row.onclick = function() { showFile(path + name); };
+    row.onclick = function() { showFile(path + name, name); };
   }
 
   Element.addClassName(row, "detail-row");

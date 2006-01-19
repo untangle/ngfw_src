@@ -80,7 +80,6 @@ public class FileGetter extends HttpServlet
                 throw new ServletException("not a file: " + f);
             } else {
                 String contentType = mimeMap.getContentType(f.getName());
-                System.out.println("mIME_TYPE: " + contentType);
                 resp.setContentType(contentType); // XXX
                 resp.setContentLength(f.getContentLength()); // XXX
                 resp.addHeader("Cache-Control", "no-cache"); // XXX
