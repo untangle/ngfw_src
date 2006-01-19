@@ -18,13 +18,7 @@ import javax.naming.ServiceUnavailableException;
 import javax.naming.NameAlreadyBoundException;
 import javax.naming.NameNotFoundException;
 
-import com.metavize.mvvm.addrbook.AddressBook;
-import com.metavize.mvvm.addrbook.AddressBookConfiguration;
-import com.metavize.mvvm.addrbook.AddressBookSettings;
-import com.metavize.mvvm.addrbook.NoSuchEmailException;
-import com.metavize.mvvm.addrbook.RepositorySettings;
-import com.metavize.mvvm.addrbook.RepositoryType;
-import com.metavize.mvvm.addrbook.UserEntry;
+import com.metavize.mvvm.addrbook.*;
 import com.metavize.mvvm.util.TransactionWork;
 import com.metavize.mvvm.MvvmContextFactory;
 

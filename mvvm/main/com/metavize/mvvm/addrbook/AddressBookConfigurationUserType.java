@@ -22,7 +22,7 @@ import java.io.Serializable;
 
 
 /**
- * Magic class for Hibernate
+ * Magic class for xibernate
  */
 public class AddressBookConfigurationUserType implements UserType
 {

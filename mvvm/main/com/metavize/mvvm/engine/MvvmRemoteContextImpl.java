@@ -24,6 +24,8 @@ import com.metavize.mvvm.logging.LoggingManager;
 import com.metavize.mvvm.policy.PolicyManager;
 import com.metavize.mvvm.security.AdminManager;
 import com.metavize.mvvm.tran.TransformManager;
+import com.metavize.mvvm.AppServerManager;
+import com.metavize.mvvm.addrbook.AddressBook;
 
 class MvvmRemoteContextImpl implements MvvmRemoteContext
 {
@@ -81,6 +83,16 @@ class MvvmRemoteContextImpl implements MvvmRemoteContext
     public ConnectivityTester getConnectivityTester()
     {
         return context.getConnectivityTester();
+    }
+    
+    public AppServerManager appServerManager()
+    {
+        return context.appServerManager();
+    }
+
+    public AddressBook appAddressBook()
+    {
+        return context.appAddressBook();
     }
 
     public void localBackup() throws IOException

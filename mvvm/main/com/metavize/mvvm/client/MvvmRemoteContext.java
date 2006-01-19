@@ -22,6 +22,8 @@ import com.metavize.mvvm.logging.LoggingManager;
 import com.metavize.mvvm.policy.PolicyManager;
 import com.metavize.mvvm.security.AdminManager;
 import com.metavize.mvvm.tran.TransformManager;
+import com.metavize.mvvm.AppServerManager;
+import com.metavize.mvvm.addrbook.AddressBook;
 
 /**
  * Provides an interface to get major MVVM components that are
@@ -94,6 +96,21 @@ public interface MvvmRemoteContext
      * @return the ConnectivityTester
      */
     ConnectivityTester getConnectivityTester();
+
+    /**
+     * Get the AppServerManager singleton for this instance
+     *
+     * @return the singleton
+     */
+    AppServerManager appServerManager();
+
+
+    /**
+     * Get the AddressBook singleton for this instance
+     *
+     * @return the singleton
+     */
+    AddressBook appAddressBook();    
 
     /**
      * Save settings to local hard drive.
