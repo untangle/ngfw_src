@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import com.metavize.mvvm.addrbook.RepositoryType;
-import com.metavize.mvvm.addrbook.AddressBookSettings;
+import com.metavize.mvvm.addrbook.RepositorySettings;
 import com.metavize.mvvm.addrbook.UserEntry;
 import com.metavize.mvvm.addrbook.NoSuchEmailException;
 
@@ -51,19 +51,19 @@ public class ActiveDirectoryLdapAdapter
   private final Logger m_logger =
     Logger.getLogger(ActiveDirectoryLdapAdapter.class);
 
-  private AddressBookSettings m_settings;
+  private RepositorySettings m_settings;
 
   /**
    * Construct a new AD adapter with the given settings
    *
    * @param settings the settings
    */
-  public ActiveDirectoryLdapAdapter(AddressBookSettings settings) {
+  public ActiveDirectoryLdapAdapter(RepositorySettings settings) {
     m_settings = settings;
   }
 
   @Override
-  protected final AddressBookSettings getSettings() {
+  protected final RepositorySettings getSettings() {
     return m_settings;
   }
 
@@ -216,7 +216,7 @@ public class ActiveDirectoryLdapAdapter
 
   public static void main(String[] args) throws Exception {
 
-    AddressBookSettings settings = new AddressBookSettings(
+    RepositorySettings settings = new RepositorySettings(
       "cn=Bill Test1,cn=users,DC=windows,DC=metavize,DC=com",
       "ABC123xyz",
       "user",

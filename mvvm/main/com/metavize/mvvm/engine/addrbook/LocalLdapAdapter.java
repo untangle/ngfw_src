@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import com.metavize.mvvm.addrbook.RepositoryType;
-import com.metavize.mvvm.addrbook.AddressBookSettings;
+import com.metavize.mvvm.addrbook.RepositorySettings;
 import com.metavize.mvvm.addrbook.UserEntry;
 
 
@@ -49,12 +49,12 @@ public class LocalLdapAdapter
   private final Logger m_logger =
     Logger.getLogger(LocalLdapAdapter.class);
 
-  private AddressBookSettings m_settings;
+  private RepositorySettings m_settings;
 
   /**
    * Create a Local adapter with custom settings
    */
-  public LocalLdapAdapter(AddressBookSettings settings) {
+  public LocalLdapAdapter(RepositorySettings settings) {
     m_settings = settings;
   }
 
@@ -62,7 +62,7 @@ public class LocalLdapAdapter
    * Create a local adapter with all defaults
    */
   public LocalLdapAdapter() {
-    this(new AddressBookSettings(
+    this(new RepositorySettings(
       "cn=admin,dc=mydomain",
       "passwd",
       "inetOrgPerson",
@@ -76,7 +76,7 @@ public class LocalLdapAdapter
   }  
 
   @Override
-  protected final AddressBookSettings getSettings() {
+  protected final RepositorySettings getSettings() {
     return m_settings;
   }
 

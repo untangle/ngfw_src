@@ -18,7 +18,7 @@ package com.metavize.mvvm.addrbook;
  *
  * TODO This will become a hibernate class
  */
-public class AddressBookSettings
+public class RepositorySettings
   implements java.io.Serializable {
   
   private static final long serialVersionUID = 1856246303246961114L;
@@ -34,10 +34,10 @@ public class AddressBookSettings
   private String m_ldapHost;
   private int m_ldapPort;
 
-  public AddressBookSettings() {
+  public RepositorySettings() {
   }
 
-  public AddressBookSettings(String superuserDN,
+  public RepositorySettings(String superuserDN,
     String superuserPass,
     String userClass,
     String mailAttributeAN,

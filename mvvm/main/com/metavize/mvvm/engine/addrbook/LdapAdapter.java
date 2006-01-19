@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 import com.metavize.mvvm.addrbook.RepositoryType;
-import com.metavize.mvvm.addrbook.AddressBookSettings;
+import com.metavize.mvvm.addrbook.RepositorySettings;
 import com.metavize.mvvm.addrbook.UserEntry;
 import com.metavize.mvvm.addrbook.NoSuchEmailException;
 
@@ -65,7 +65,7 @@ abstract class LdapAdapter {
    *
    * @return the settings
    */
-  protected abstract AddressBookSettings getSettings();
+  protected abstract RepositorySettings getSettings();
 
   /**
    * Authenticate the given uid/pwd combination.
@@ -252,7 +252,7 @@ abstract class LdapAdapter {
    */
   protected final DirContext checkoutSuperuserContext() {
   
-    AddressBookSettings settings = getSettings();
+    RepositorySettings settings = getSettings();
 
     try {
       return createSuperuserContext();
@@ -364,7 +364,7 @@ abstract class LdapAdapter {
    */
   protected final DirContext createSuperuserContext()
     throws CommunicationException, AuthenticationException, NamingException {
-    AddressBookSettings settings = getSettings();    
+    RepositorySettings settings = getSettings();
     return createContext(settings.getLDAPHost(),
       settings.getLDAPPort(),
       settings.getSuperuserDN(),
