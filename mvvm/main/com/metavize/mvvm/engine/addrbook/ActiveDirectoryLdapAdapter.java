@@ -72,6 +72,26 @@ public class ActiveDirectoryLdapAdapter
     return RepositoryType.MS_ACTIVE_DIRECTORY;
   }
 
+  @Override
+  protected String getUserClassType() {
+    return "user";
+  }
+
+  @Override
+  protected String getMailAttributeName() {
+    return "mail";
+  }
+
+  @Override
+  protected String getFullNameAttributeName() {
+    return "cn";
+  }
+
+  @Override
+  protected String getUIDAttributeName() {
+    return "sAMAccountName";//Dated, but seems to be what windows uses
+  }
+
 
   @Override
   public boolean authenticate(String uid, String pwd)
@@ -165,7 +185,7 @@ public class ActiveDirectoryLdapAdapter
     throws ServiceUnavailableException {
     
     try {
-      String searchStr = "(&(objectClass=" + getSettings().getUserClass() + ")(mail=" + email + "))";
+      String searchStr = "(&(objectClass=" + getUserClassType() + ")(mail=" + email + "))";
       List<Map<String, String[]>> result = queryAsSuperuser(
         getSettings().getSearchBase(),
         searchStr,
@@ -188,7 +208,7 @@ public class ActiveDirectoryLdapAdapter
     throws ServiceUnavailableException {
 
     try {
-      String searchStr = "(&(objectClass=" + getSettings().getUserClass() + ")(sAMAccountName=" + uid + "))";
+      String searchStr = "(&(objectClass=" + getUserClassType() + ")(sAMAccountName=" + uid + "))";
       List<Map<String, String[]>> result = queryAsSuperuser(
         getSettings().getSearchBase(),
         searchStr,
@@ -219,10 +239,6 @@ public class ActiveDirectoryLdapAdapter
     RepositorySettings settings = new RepositorySettings(
       "cn=Bill Test1,cn=users,DC=windows,DC=metavize,DC=com",
       "ABC123xyz",
-      "user",
-      "mail",
-      "cn",
-      "sAMAccountName",
       "cn=users,DC=windows,DC=metavize,DC=com",
       "mrslave",
       389);

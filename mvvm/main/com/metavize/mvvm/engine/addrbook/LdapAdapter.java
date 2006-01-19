@@ -67,6 +67,31 @@ abstract class LdapAdapter {
    */
   protected abstract RepositorySettings getSettings();
 
+
+  /**
+   * Get the type of object used to describe "people"
+   * in this directory (e.g. "user" or "inetOrgPerson").
+   */
+  protected abstract String getUserClassType();
+
+  /**
+   * Get the attribute used to hold the mail (e.g. "mail").
+   */
+  protected abstract String getMailAttributeName();
+
+  /**
+   * Get the name of the attribute used to hold
+   * the full name (i.e. "CN")
+   */
+  protected abstract String getFullNameAttributeName();
+
+
+  /**
+   * Get the name of the attribute describing the unique id
+   * (i.e. "uid" or "sAMAccountName").
+   */
+  protected abstract String getUIDAttributeName();
+
   /**
    * Authenticate the given uid/pwd combination.
    *
@@ -183,8 +208,8 @@ abstract class LdapAdapter {
 
     StringBuilder sb = new StringBuilder();
     sb.append("(&");
-    sb.append("(").append("objectClass=").append(getSettings().getUserClass()).append(")");
-    sb.append("(").append(getSettings().getMailAttributeAN()).append("=").append(email).append(")");
+    sb.append("(").append("objectClass=").append(getUserClassType()).append(")");
+    sb.append("(").append(getMailAttributeName()).append("=").append(email).append(")");
     sb.append(")");
 
     return getEntryWithSearchString(sb.toString());    
@@ -207,8 +232,8 @@ abstract class LdapAdapter {
     
     StringBuilder sb = new StringBuilder();
     sb.append("(&");
-    sb.append("(").append("objectClass=").append(getSettings().getUserClass()).append(")");
-    sb.append("(").append(getSettings().getUIDAN()).append("=").append(uid).append(")");
+    sb.append("(").append("objectClass=").append(getUserClassType()).append(")");
+    sb.append("(").append(getUIDAttributeName()).append("=").append(uid).append(")");
     sb.append(")");
 
     return getEntryWithSearchString(sb.toString());
@@ -376,7 +401,7 @@ abstract class LdapAdapter {
    */
   protected String getListAllUsersSearchString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("(").append("objectClass=").append(getSettings().getUserClass()).append(")");
+    sb.append("(").append("objectClass=").append(getUserClassType()).append(")");
     return sb.toString();
   }
 
@@ -575,13 +600,13 @@ abstract class LdapAdapter {
    */
   private UserEntry toUserEntry(Map<String, String[]> map) {
     Pair<String, String> parsedName =
-      parseFullName(getFirstEntryOrNull(map.get(getSettings().getFullNameAN())));
+      parseFullName(getFirstEntryOrNull(map.get(getFullNameAttributeName())));
 
     return new UserEntry(
-      getFirstEntryOrNull(map.get(getSettings().getUIDAN())),
+      getFirstEntryOrNull(map.get(getUIDAttributeName())),
       parsedName.a,
       parsedName.b,
-      getFirstEntryOrNull(map.get(getSettings().getMailAttributeAN())),
+      getFirstEntryOrNull(map.get(getMailAttributeName())),
       getRepositoryType());
   }   
 
@@ -600,9 +625,9 @@ abstract class LdapAdapter {
    */
   private SearchControls getUserEntrySearchControls() {
     return createSimpleSearchControls(
-      getSettings().getUIDAN(),
-      getSettings().getMailAttributeAN(),
-      getSettings().getFullNameAN());
+      getUIDAttributeName(),
+      getMailAttributeName(),
+      getFullNameAttributeName());
   }
 
 

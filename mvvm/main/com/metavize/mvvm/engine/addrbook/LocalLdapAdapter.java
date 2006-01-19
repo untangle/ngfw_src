@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import com.metavize.mvvm.addrbook.RepositoryType;
 import com.metavize.mvvm.addrbook.RepositorySettings;
 import com.metavize.mvvm.addrbook.UserEntry;
+import com.metavize.mvvm.addrbook.NoSuchEmailException;
 
 
 /**
@@ -65,10 +66,6 @@ public class LocalLdapAdapter
     this(new RepositorySettings(
       "cn=admin,dc=mydomain",
       "passwd",
-      "inetOrgPerson",
-      "mail",
-      "cn",
-      "uid",
       "DC=mydomain",
       "localhost",
       389)
@@ -85,6 +82,28 @@ public class LocalLdapAdapter
   protected final RepositoryType getRepositoryType() {
     return RepositoryType.LOCAL_DIRECTORY;
   }
+
+  @Override
+  protected String getUserClassType() {
+    return "inetOrgPerson";
+  }
+
+  @Override
+  protected String getMailAttributeName() {
+    return "mail";
+  }
+
+  @Override
+  protected String getFullNameAttributeName() {
+    return "cn";
+  }
+
+  @Override
+  protected String getUIDAttributeName() {
+    return "uid";
+  }  
+  
+  
 
 
   @Override
@@ -248,7 +267,7 @@ public class LocalLdapAdapter
     //Create the LDAP crap    
     BasicAttributes attrs = new BasicAttributes();
     BasicAttribute attr = new BasicAttribute("objectclass");
-    attr.add(getSettings().getUserClass());
+    attr.add(getUserClassType());
     attrs.put(attr);
 
     attrs.put(new BasicAttribute("uid", newEntry.getUID()));
@@ -449,6 +468,24 @@ public class LocalLdapAdapter
     System.out.println("===================================");
     System.out.println("Try to authenticate (bad password)");
     System.out.println(adapter.authenticate(uid, "passwd"));
+
+    System.out.println("===================================");
+    System.out.println("Authenticate by email (good)");
+    System.out.println(adapter.authenticateByEmail(ue.getEmail(), "newpassword"));
+
+    System.out.println("===================================");
+    System.out.println("Authenticate by email (bad password)");
+    System.out.println(adapter.authenticateByEmail(ue.getEmail(), "Sxneaker11"));
+
+    System.out.println("===================================");
+    System.out.println("Authenticate by email (bad email)");
+    try {
+      System.out.println(adapter.authenticateByEmail("xcng@windows.metavize.com", "Sneaker11"));
+    }
+    catch(NoSuchEmailException expected) {
+      System.out.println("Got exception (as expected)");
+    }
+    
 
     System.out.println("==================================");
     System.out.println("Delete \"" + uid + "\"");    
