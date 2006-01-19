@@ -15,39 +15,26 @@ import javax.naming.ServiceUnavailableException;
 import javax.naming.NameAlreadyBoundException;
 import javax.naming.NameNotFoundException;
 
-
+/**
+ * Interface for an "AddressBook", which acts as both
+ * an authentication service and a directory.
+ * <br>
+ * The AddressBook can be configured to use a local
+ * repository, as well as ActiveDirectory.  For query methods,
+ * the repository can optionaly be specified.
+ * <br>
+ * Note that the initial state of the AddressBook is
+ * {@link com.metavize.mvvm.addrbook.AddressBookConfiguration#NOT_CONFIGURED NOT_CONFIGURED}.
+ * <br>
+ * 
+ */
 public interface AddressBook {
 
-  /**
-   * Enum of the different configuration modes
-   * for this address book
-   *
-   * 
-   */
-  public static enum ABMode {
-    /**
-     * Only the local repository is configured
-     */
-    LOCAL_ONLY,
-
-    /**
-     * The local and active directory repositories
-     * are configured
-     */
-    AD_AND_LOCAL,
-
-    /**
-     * There are no configured policies.
-     */
-    NOT_CONFIGURED
-  };
-  
 
   /**
-   * Get the "mode" of this address book.  Modes
-   * are defined on this class.
+   * Get the AddressBookConfiguration of this address book.
    */
-  public AddressBook.ABMode getABMode();
+  public AddressBookConfiguration getAddressBookConfiguration();
 
   
 
