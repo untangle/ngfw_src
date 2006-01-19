@@ -18,24 +18,39 @@ import java.util.List;
  * in the Address Book service.
  *
  */
-public class UserEntry
+public final class UserEntry
   implements java.io.Serializable {
 
-  private String m_displayName;
+  private String m_firstName;
+  private String m_lastName;
   private String m_uid;
   private String m_email;
   private RepositoryType m_storedIn;
 
   public UserEntry() {
-    this(null, null, null, RepositoryType.NONE);
+    this(null, null, null, null, RepositoryType.NONE);
   }
 
   public UserEntry(String uid,
-    String displayName,
+    String firstName,
+    String lastName,
+    String email) {
+
+    m_firstName = firstName;
+    m_lastName = lastName;
+    m_uid = uid;
+    m_email = email;
+    m_storedIn = RepositoryType.NONE;
+  }  
+
+  public UserEntry(String uid,
+    String firstName,
+    String lastName,
     String email,
     RepositoryType storedIn) {
 
-    m_displayName = displayName;
+    m_firstName = firstName;
+    m_lastName = lastName;
     m_uid = uid;
     m_email = email;
     m_storedIn = storedIn;
@@ -56,17 +71,31 @@ public class UserEntry
   }
 
   /**
-   * Get a display name for the user (i.e. "Tom Jones").  This
+   * Get the firstname (i.e. "Emma").  This
    * may be null.
    *
-   * @return the display name.
+   * @return the first name.
    */  
-  public String getDisplayName() {
-    return m_displayName;
+  public String getFirstName() {
+    return m_firstName;
   }
 
-  public void setDisplayName(String name) {
-    m_displayName = name;
+  public void setFirstName(String name) {
+    m_firstName = name;
+  }  
+
+  /**
+   * Get the surname (i.e. "Wilson").  This
+   * may be null.
+   *
+   * @return the last name.
+   */  
+  public String getLastName() {
+    return m_lastName;
+  }
+
+  public void setLastName(String name) {
+    m_lastName = name;
   }
 
   /**
@@ -107,6 +136,22 @@ public class UserEntry
     UserEntry other = (UserEntry) obj;
     return makeNotNull(other.getUID()).equals(makeNotNull(m_uid)) &&
       makeNotNull(other.getStoredIn()).equals(makeNotNull(m_storedIn));
+  }
+
+  /**
+   * For debugging
+   */
+  public String toString() {
+    String newLine = System.getProperty("line.separator", "\n");
+    StringBuilder ret = new StringBuilder();
+
+    ret.append("UID:").append(getUID()).append(newLine);
+    ret.append("First:").append(getFirstName()).append(newLine);
+    ret.append("Last:").append(getLastName()).append(newLine);
+    ret.append("Email:").append(getEmail()).append(newLine);
+    ret.append("Repository:").append(getStoredIn()).append(newLine);
+
+    return ret.toString();
   }
 
   private Object makeNotNull(Object obj) {

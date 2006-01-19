@@ -292,6 +292,7 @@ public interface AddressBook {
    *
    *
    * @param newEntry the new entry
+   * @param password the password for the new user
    *
    * @exception ServiceUnavailableException the back-end directory
    *            is in a bad state.  There are no corrective actions
@@ -300,7 +301,7 @@ public interface AddressBook {
    * @exception NameAlreadyBoundException if a user with that uniqueID
    *            already exists
    */
-  public void createLocalEntry(UserEntry newEntry)
+  public void createLocalEntry(UserEntry newEntry, String password)
     throws NameAlreadyBoundException, ServiceUnavailableException;
 
 
