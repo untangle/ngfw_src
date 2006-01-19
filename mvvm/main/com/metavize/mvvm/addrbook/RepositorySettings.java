@@ -16,7 +16,8 @@ package com.metavize.mvvm.addrbook;
  * Settings for the AddressBook repository (really,
  * a bunch of LDAP settings).
  *
- * TODO This will become a hibernate class
+ * @hibernate.class
+ * table="AB_REPOSITORY_SETTINGS"
  */
 public class RepositorySettings
   implements java.io.Serializable {
@@ -47,6 +48,12 @@ public class RepositorySettings
 
   }
 
+  /**
+   * @hibernate.id
+   * column="SETTINGS_ID"
+   * generator-class="native"
+   * not-null="true"
+   */
   private Long getId() {
       return id;
   }
@@ -55,7 +62,10 @@ public class RepositorySettings
       this.id = id;
   }
 
-
+  /**
+   * @hibernate.property
+   * column="SUPERUSER_DN"
+   */
   public String getSuperuserDN() {
     return m_superuserDN;
   }
@@ -66,7 +76,10 @@ public class RepositorySettings
 
 
 
-  
+  /**
+   * @hibernate.property
+   * column="SUPERUSER_PASS"
+   */  
   public String getSuperuserPass() {
     return m_superuserPass;
   }
@@ -85,6 +98,10 @@ public class RepositorySettings
     m_searchBase = sb;
   }
 
+  /**
+   * @hibernate.property
+   * column="SEARCH_BASE"
+   */    
   public String getSearchBase() {
     return m_searchBase;
   }
@@ -95,6 +112,10 @@ public class RepositorySettings
     m_ldapHost = ldapHost;
   }
 
+  /**
+   * @hibernate.property
+   * column="LDAP_HOST"
+   */     
   public String getLDAPHost() {
     return m_ldapHost;
   }
@@ -104,6 +125,11 @@ public class RepositorySettings
   public void setLDAPPort(int port) {
     m_ldapPort = port;
   }
+
+  /**
+   * @hibernate.property
+   * column="PORT"
+   */
   public int getLDAPPort() {
     return m_ldapPort;
   }

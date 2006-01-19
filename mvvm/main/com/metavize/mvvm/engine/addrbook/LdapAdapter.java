@@ -261,6 +261,18 @@ abstract class LdapAdapter {
   }
 
 
+  /**
+   * Method telling the adapter that is is no longer required.  However,
+   * for threading reasons there may be a few more outstanding requests.
+   */
+  protected void close() {
+    //TODO When we create the pool, this will put the pool into
+    //a mode where each existing connection is shut-down, and any
+    //new connect requests require a new context.  Returning contexts
+    //always results in their being closed.
+  }
+
+
 
   
 //========================================

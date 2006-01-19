@@ -219,6 +219,26 @@ CREATE TABLE settings.snmp_settings (
     trap_port int4,
     PRIMARY KEY (snmp_settings_id));
 
+    
+-- com.metavize.mvvm.addrbook.RepositorySettings
+CREATE TABLE settings.ab_repository_settings (
+    settings_id int8 NOT NULL,
+    superuser_dn text,
+    superuser_pass text,
+    search_base text,
+    ldap_host text,
+    port int4,
+    PRIMARY KEY (settings_id));
+
+    
+-- com.metavize.mvvm.addrbook.AddressBookSettings
+CREATE TABLE settings.ab_settings (
+    settings_id int8 NOT NULL,
+    ad_repo_settings int8 NOT NULL,
+    ab_configuration char(1) NOT NULL,
+    PRIMARY KEY (settings_id));
+
+
 ----------------
 -- constraints |
 ----------------

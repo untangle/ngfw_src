@@ -20,6 +20,10 @@ import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
 import java.io.Serializable;
 
+
+/**
+ * Magic class for Hibernate
+ */
 public class AddressBookConfigurationUserType implements UserType
 {
     private static final int[] SQL_TYPES = { Types.CHAR };

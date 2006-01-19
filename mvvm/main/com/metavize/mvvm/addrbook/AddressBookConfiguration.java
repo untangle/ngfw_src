@@ -16,6 +16,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+
+/**
+ * Hibernate-friendly enum of the different types
+ * of AddressBook configurations.
+ */
 public class AddressBookConfiguration
   implements Serializable {
   
@@ -30,10 +35,23 @@ public class AddressBookConfiguration
   protected static final String local_s = "Local-Only";
   protected static final String both_s = "Local and Active Directory";
 
+  /**
+   * The no-configuration state for the address book
+   */
   public static final AddressBookConfiguration NOT_CONFIGURED =
     new AddressBookConfiguration(none_c, none_s);
+
+  /**
+   * The state when the AddressBook is configured to only
+   * use a local repository
+   */
   public static final AddressBookConfiguration LOCAL_ONLY =
     new AddressBookConfiguration(local_c, local_s);
+
+  /**
+   * The state when the AddressBook is using both a local repository
+   * as well as a remote Active Directory server.
+   */
   public static final AddressBookConfiguration AD_AND_LOCAL =
     new AddressBookConfiguration(both_c, both_s);
 

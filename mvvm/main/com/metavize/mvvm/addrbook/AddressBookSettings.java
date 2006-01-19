@@ -15,7 +15,8 @@ package com.metavize.mvvm.addrbook;
 /**
  * Settings for the AddressBook
  *
- * TODO This will become a hibernate class
+ * @hibernate.class
+ * table="AB_SETTINGS"
  */
 public class AddressBookSettings
   implements java.io.Serializable {
@@ -31,6 +32,12 @@ public class AddressBookSettings
   }
 
 
+  /**
+   * @hibernate.id
+   * column="SETTINGS_ID"
+   * generator-class="native"
+   * not-null="true"
+   */  
   private Long getId() {
       return id;
   }
@@ -39,7 +46,12 @@ public class AddressBookSettings
       this.id = id;
   }
 
-
+  /**
+    * @hibernate.many-to-one
+    * column="AD_REPO_SETTINGS"
+    * cascade="all"
+    * not-null="true"
+    */
   public RepositorySettings getADRepositorySettings() {
     return m_aDSettings;
   }
@@ -48,6 +60,12 @@ public class AddressBookSettings
     m_aDSettings = aDSettings;
   }
 
+  /**
+    * @hibernate.property
+    * column="AB_CONFIGURATION"
+    * type="com.metavize.mvvm.addrbook.AddressBookConfigurationUserType"
+    * not-null="true"
+    */
   public AddressBookConfiguration getAddressBookConfiguration() {
     return m_configuration;
   }

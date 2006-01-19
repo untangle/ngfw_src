@@ -25,6 +25,7 @@ import com.metavize.mvvm.tapi.MPipeManager;
 import com.metavize.mvvm.tapi.PipelineFoundry;
 import com.metavize.mvvm.tran.TransformManager;
 import com.metavize.mvvm.util.TransactionWork;
+import com.metavize.mvvm.addrbook.AddressBook;
 
 /**
  * Provides an interface to get all local MVVM components from an MVVM
@@ -149,6 +150,14 @@ public interface MvvmLocalContext
      * @return the singleton
      */
     AppServerManager appServerManager();
+
+
+    /**
+     * Get the AddressBook singleton for this instance
+     *
+     * @return the singleton
+     */
+    AddressBook appAddressBook();
 
     /**
      * Save settings to local hard drive.

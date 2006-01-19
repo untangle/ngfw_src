@@ -32,9 +32,21 @@ public interface AddressBook {
 
 
   /**
-   * Get the AddressBookConfiguration of this address book.
+   * Get the AddressBookSettings of this address book.
    */
-  public AddressBookConfiguration getAddressBookConfiguration();
+  public AddressBookSettings getAddressBookSettings();
+  
+  /**
+   * Set the AddressBookSettings of this address book.
+   *
+   * @exception IllegalArgumentException to cover obvious cases
+   *            of junk (null settings, settings for "AD" without
+   *            embedded RepositorySettings object, etc).  If the
+   *            settings are semanticaly valid but "don't work",
+   *            this exception is <b>not</b> thrown.
+   */
+  public void setAddressBookSettings(AddressBookSettings conf)
+    throws IllegalArgumentException;
 
   
 
@@ -167,7 +179,9 @@ public interface AddressBook {
 
     
   /**
-   * Get all USerEntries from all configured repositories
+   * Get all USerEntries from all configured repositories.  Note
+   * that a UserEntry is unique in its uid/repository key so there
+   * is a chance to see the same "uid" twice in the returned list
    *
    * @return the list of all entries (may be of zero length,
    *         but not null).

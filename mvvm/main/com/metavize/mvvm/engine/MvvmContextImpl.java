@@ -17,6 +17,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import com.metavize.mvvm.AppServerManager;
+import com.metavize.mvvm.engine.addrbook.AddressBookImpl;
 import com.metavize.mvvm.CronJob;
 import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.Period;
@@ -73,6 +74,7 @@ public class MvvmContextImpl extends MvvmContextBase
     private MvvmRemoteContext remoteContext;
     private CronManager cronManager;
     private AppServerManagerImpl appServerManager;
+    private AddressBookImpl addressBookImpl;
 
     // constructor ------------------------------------------------------------
 
@@ -104,6 +106,10 @@ public class MvvmContextImpl extends MvvmContextBase
     // singletons -------------------------------------------------------------
 
 
+    public AddressBookImpl appAddressBook() {
+      return addressBookImpl;
+    }
+    
     public AppServerManagerImpl appServerManager()
     {
         return appServerManager;
@@ -362,6 +368,9 @@ public class MvvmContextImpl extends MvvmContextBase
         argonManager = ArgonManagerImpl.getInstance();
 
         appServerManager = AppServerManagerImpl.getInstance();
+
+        //Start AddressBookImpl
+        addressBookImpl = AddressBookImpl.getInstance();
 
         // start vectoring:
         String argonFake = System.getProperty(ARGON_FAKE_KEY);
