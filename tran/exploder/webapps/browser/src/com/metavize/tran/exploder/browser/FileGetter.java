@@ -12,10 +12,13 @@
 package com.metavize.tran.exploder.browser;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URLDecoder;
 import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,6 +44,18 @@ public class FileGetter extends HttpServlet
     {
         HttpSession s = req.getSession();
 
+        int l = req.getContextPath().length() + req.getServletPath().length() + 1;
+
+        String url = null;
+
+        try {
+            url = URLDecoder.decode(req.getRequestURI(), "UTF-8");
+        } catch (UnsupportedEncodingException exn) {
+            throw new ServletException("could not decode UTF-8", exn);
+        }
+
+        url = url.substring(l, url.length());
+
         // XXX auth
         NtlmPasswordAuthentication auth = (NtlmPasswordAuthentication)s.getAttribute("ntlmPasswordAuthentication");
         if (null == auth) {
@@ -48,33 +63,38 @@ public class FileGetter extends HttpServlet
             s.setAttribute("ntlmPasswordAuthentication", auth);
         }
 
-        //SmbFile f = null;
+        SmbFile f;
 
-//         try {
-//             f = new SmbFile(url, auth);
-//         } catch (MalformedURLException exn) {
-//             throw new ServletException(exn);
-//         }
-
-        PrintWriter os = null;
         try {
-            os = resp.getWriter();
-            System.out.println("PATH: " + req.getPathInfo());
-            os.println("PATH: " + req.getPathInfo());
+            f = new SmbFile(url, auth);
+        } catch (MalformedURLException exn) {
+            throw new ServletException(exn);
+        }
 
-//             if (f.isDirectory()) {
-//                 // XXX
-//                 throw new ServletException("not a file: " + f);
-//             } else {
-//                 resp.setContentType("text/plain"); // XXX
-//                 resp.addHeader("Cache-Control", "no-cache");
-//                 os.println(f + " CONTENT-TYPE: " + mimeMap.getContentType(f.getName()));
-//             }
+        ServletOutputStream os = null;
+        try {
+            os = resp.getOutputStream();
+
+            if (f.isDirectory()) {
+                // XXX
+                throw new ServletException("not a file: " + f);
+            } else {
+                String contentType = mimeMap.getContentType(f.getName());
+                System.out.println("mIME_TYPE: " + contentType);
+                resp.setContentType(contentType); // XXX
+                resp.setContentLength(f.getContentLength()); // XXX
+                resp.addHeader("Cache-Control", "no-cache"); // XXX
+                dumpFile(f, os);
+            }
         } catch (IOException exn) {
             throw new ServletException("could not emit listing", exn);
         } finally {
             if (null != os) {
-                os.close();
+                try {
+                    os.close();
+                } catch (IOException exn) {
+                    logger.warn("couldn't close ServletOutputStream", exn);
+                }
             }
         }
     }
@@ -88,6 +108,22 @@ public class FileGetter extends HttpServlet
         } catch (IOException exn) {
             logger.error("could not setup mimemap", exn);
             mimeMap = new MimetypesFileTypeMap();
+        }
+    }
+
+    // private methods --------------------------------------------------------
+
+    private void dumpFile(SmbFile f, ServletOutputStream os)
+        throws IOException
+    {
+        InputStream is = f.getInputStream();
+
+        byte[] buf = new byte[4096];
+        int c;
+
+        while (0 <= (c = is.read(buf))) {
+            os.write(buf, 0, c);
+            os.flush();
         }
     }
 }
