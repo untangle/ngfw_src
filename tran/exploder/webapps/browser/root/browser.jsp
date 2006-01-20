@@ -16,6 +16,7 @@
 
 <div id="toolbar">
 <input type="button" value="delete" onclick="deleteSelection()"/>
+<input type="button" value="refresh" onclick="refreshDetails()"/>
 </div>
 
 <div id="summary">

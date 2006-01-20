@@ -6,6 +6,8 @@ openImg.src = "open.gif";
 var closedImg = new Image();
 closedImg.src = "closed.gif";
 
+var refreshDetails = function() { };
+
 function expandDir(dir)
 {
    var dirElem = $(dir);
@@ -39,6 +41,8 @@ function showFileListing(dir)
                           displayDetail(root);
                        }
                     });
+
+   refreshDetails = function() { showFileListing(dir); };
 }
 
 function deleteSelection()
@@ -54,11 +58,11 @@ function deleteSelection()
                     { method: "post",
                        parameters: params,
                        onComplete: function(req) {
-                          // XXX refresh detail pane
-                          alert("DID IT!!");
+                          refreshDetails();
                        }
                     });
 }
+
 
 function getSelectedFiles()
 {
