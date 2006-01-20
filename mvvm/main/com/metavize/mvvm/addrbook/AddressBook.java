@@ -10,6 +10,7 @@
  */
 
 package com.metavize.mvvm.addrbook;
+
 import java.util.List;
 import javax.naming.ServiceUnavailableException;
 import javax.naming.NameAlreadyBoundException;

@@ -268,6 +268,15 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
         <include name="com/metavize/mvvm/util/PortServiceNames*.class"/>
         <include name="com/metavize/mvvm/util/SessionUtil*.class"/>
         <include name="com/metavize/mvvm/util/TransactionWork.class"/>
+        <include name="com/metavize/mvvm/addrbook/AddressBookConfiguration.class"/>
+        <include name="com/metavize/mvvm/addrbook/AddressBook.class"/>
+        <include name="com/metavize/mvvm/addrbook/AddressBookSettings.class"/>
+        <include name="com/metavize/mvvm/addrbook/NoSuchEmailException.class"/>
+        <include name="com/metavize/mvvm/addrbook/RepositorySettings.class"/>
+        <include name="com/metavize/mvvm/addrbook/RepositoryType.class"/>
+        <include name="com/metavize/mvvm/addrbook/UserEntry.class"/>
+        
+        <include name="com/metavize/mvvm/addrbook/*.java"/>
       </fileset>
     </jar>
   </target>

@@ -358,7 +358,7 @@ public class AppServerManagerImpl
     try {
       InetAddress[] allLocals = InetAddress.getAllByName("127.0.0.1");
       for(InetAddress addr : allLocals) {
-        m_logger.error("***DEBUG*** Hostname: " + addr.getHostName());
+//        m_logger.error("***DEBUG*** Hostname: " + addr.getHostName());
         if(addr.getHostName().equalsIgnoreCase("localhost")) {
           continue;
         }
