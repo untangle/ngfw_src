@@ -11,6 +11,7 @@
 
 package com.metavize.tran.exploder.browser;
 
+import java.net.MalformedURLException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +19,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import jcifs.smb.NtlmPasswordAuthentication;
+import jcifs.smb.SmbException;
+import jcifs.smb.SmbFile;
 import org.apache.log4j.Logger;
 
 public class CommandRunner extends HttpServlet
@@ -39,16 +42,33 @@ public class CommandRunner extends HttpServlet
             s.setAttribute("ntlmPasswordAuthentication", auth);
         }
 
-        System.out.println("PARAM: " + req.getParameter("command"));
+        String cmd = req.getParameter("command");
 
-        String[] files = req.getParameterValues("file");
-        for (String f : files) {
-            System.out.println("FILE: " + f);
+        if (cmd.equals("delete")) {
+            delete(req, auth);
+        } else {
+            throw new ServletException("bad command: " + cmd);
         }
     }
 
     public void init() throws ServletException
     {
         logger = Logger.getLogger(getClass());
+    }
+
+    private void delete(HttpServletRequest req,
+                        NtlmPasswordAuthentication auth)
+    {
+        String[] files = req.getParameterValues("file");
+
+        for (String f : files) {
+            try {
+                new SmbFile(f, auth).delete();
+            } catch (SmbException exn) {
+                logger.warn("could not delete: " + f, exn);
+            } catch (MalformedURLException exn) {
+                logger.warn("bad url: " + f, exn);
+            }
+        }
     }
 }

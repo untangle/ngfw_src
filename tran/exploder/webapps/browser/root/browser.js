@@ -50,12 +50,11 @@ function deleteSelection()
       params += "&file=" + selected[i];
    }
 
-   alert("PARAMS: " + params);
-
    new Ajax.Request("exec",
                     { method: "post",
                        parameters: params,
                        onComplete: function(req) {
+                          // XXX refresh detail pane
                           alert("DID IT!!");
                        }
                     });
