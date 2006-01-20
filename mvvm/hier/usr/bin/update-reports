@@ -18,7 +18,7 @@ REPORT_DIR=@MVVM_WEB@/reports
 # roll up logs, deleting any more than 31 days old (and thus unreportable  on)
 @USR_BIN@/rollup-logs 31
 
-rm -f $REPORT_DIR/current
+rm -rf $REPORT_DIR/current
 # Just in case left over (we use a jsp now)
 rm -f $REPORT_DIR/index.html
 
@@ -28,21 +28,23 @@ if [ $is_reporting_enabled == 'true' ]; then
         -Dlog4j.configuration=file:@MVVM_HOME@/conf/log4j-reporter.xml \
         com.metavize.mvvm.reporting.Reporter -o $REPORT_DIR -d 32 "$@" $mars
 
-    cp -pr $REPORT_DIR/images $REPORT_DIR/current
+    if [ -h $REPORT_DIR/current ]; then
+        cp -pr $REPORT_DIR/images $REPORT_DIR/current
 
 # generate the web viewable page
-    @USR_BIN@/index-reports index.html daily false
-    @USR_BIN@/index-reports index_online_weekly.html weekly false
-    @USR_BIN@/index-reports index_online_monthly.html monthly false
+        @USR_BIN@/index-reports index.html daily false
+        @USR_BIN@/index-reports index_online_weekly.html weekly false
+        @USR_BIN@/index-reports index_online_monthly.html monthly false
 
 # generate the emailable page
-    @USR_BIN@/index-reports index_email_daily.html daily true
-    @USR_BIN@/index-reports index_email_weekly.html weekly true
-    @USR_BIN@/index-reports index_email_monthly.html monthly true
+        @USR_BIN@/index-reports index_email_daily.html daily true
+        @USR_BIN@/index-reports index_email_weekly.html weekly true
+        @USR_BIN@/index-reports index_email_monthly.html monthly true
 
 # email the reports to all recipients
-    cd $REPORT_DIR/current
-    cat @PREFIX@/tmp/mail_reports_arguments_daily.txt | xargs @USR_BIN@/mail-reports
-    cat @PREFIX@/tmp/mail_reports_arguments_weekly.txt | xargs @USR_BIN@/mail-reports
-    cat @PREFIX@/tmp/mail_reports_arguments_monthly.txt | xargs @USR_BIN@/mail-reports
+        cd $REPORT_DIR/current
+        cat @PREFIX@/tmp/mail_reports_arguments_daily.txt | xargs @USR_BIN@/mail-reports
+        cat @PREFIX@/tmp/mail_reports_arguments_weekly.txt | xargs @USR_BIN@/mail-reports
+        cat @PREFIX@/tmp/mail_reports_arguments_monthly.txt | xargs @USR_BIN@/mail-reports
+    fi
 fi
