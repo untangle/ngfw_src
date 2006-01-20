@@ -8,224 +8,235 @@ closedImg.src = "closed.gif";
 
 function expandDir(dir)
 {
-  var dirElem = $(dir);
+   var dirElem = $(dir);
 
-  if (isFetchable(dirElem)) {
-    new Ajax.Request("ls",
-                     { method: "get",
-                       parameters: "url=" + dir + "&type=dir",
-                       onComplete: function(req)
-                                   {
-                                     var resp = parseDomFromString(req.responseText);
-                                     var root = resp.getElementsByTagName('root')[0];
-                                     if (isFetchable(dirElem)) {
-                                       addChildDirectories(dirElem, root);
-                                     }
-                                   }
-                     });
-  } else {
-    toggleTree(dir);
-  }
+   if (isFetchable(dirElem)) {
+      new Ajax.Request("ls",
+                       { method: "get",
+                          parameters: "url=" + dir + "&type=dir",
+                          onComplete: function(req) {
+                             var resp = parseDomFromString(req.responseText);
+                             var root = resp.getElementsByTagName('root')[0];
+                             if (isFetchable(dirElem)) {
+                                addChildDirectories(dirElem, root);
+                             }
+                          }
+                       });
+   } else {
+      toggleTree(dir);
+   }
 }
 
 function showFileListing(dir)
 {
-  new Ajax.Request("ls",
-                   { method: "get",
-                     parameters: "url=" + dir + "&type=full",
-                     onComplete: function(req)
-                                 {
-                                   var resp = parseDomFromString(req.responseText);
-                                   var root = resp.getElementsByTagName('root')[0];
+   new Ajax.Request("ls",
+                    { method: "get",
+                       parameters: "url=" + dir + "&type=full",
+                       onComplete: function(req) {
+                          var resp = parseDomFromString(req.responseText);
+                          var root = resp.getElementsByTagName('root')[0];
                                    // XXX check if we are the last outstanding request
-                                   displayDetail(root);
-                                 }
-                   });
+                          displayDetail(root);
+                       }
+                    });
 }
 
 function showFile(filename, name)
 {
   // XXX lets make this either inline or save, depending on mime-type
-  window.open("get/" + filename);
+   window.open("get/" + filename);
 }
 
 function displayDetail(root)
 {
-  var detail = $("detail");
+   var detail = $("detail");
 
-  var table = document.createElement("table");
-  Element.addClassName(table, "detail-table");
+   var table = document.createElement("table");
+   Element.addClassName(table, "detail-table");
 
-  var thead = table.appendChild(document.createElement("thead"));
-  appendTextElem(thead, "th", "name", null);
-  appendTextElem(thead, "th", "size", null);
-  appendTextElem(thead, "th", "last modified", null);
-  appendTextElem(thead, "th", "create date", null);
+   var thead = table.appendChild(document.createElement("thead"));
+   Element.addClassName(thead, "detail-head");
+   appendTextElem(thead, "th", "", null);
+   appendTextElem(thead, "th", "name", null);
+   appendTextElem(thead, "th", "size", null);
+   appendTextElem(thead, "th", "last modified", null);
+   appendTextElem(thead, "th", "create date", null);
 
-  var tbody = table.appendChild(document.createElement("tbody"));
+   var tbody = table.appendChild(document.createElement("tbody"));
 
-  var path = root.getAttribute("path");
-  var children = root.childNodes;
+   var path = root.getAttribute("path");
+   var children = root.childNodes;
 
-  var odd = true;
-  for (var i = 0; i < children.length; i++) {
-    var child = root.childNodes[i];
-    var tagName = child.tagName;
-    if ("dir" == tagName || "file" == tagName) {
-      addDetail(child, "dir" == tagName, path, tbody, odd);
-      odd = !odd;
-    }
-  }
+   var odd = true;
+   for (var i = 0; i < children.length; i++) {
+      var child = root.childNodes[i];
+      var tagName = child.tagName;
+      if ("dir" == tagName || "file" == tagName) {
+         addDetail(child, "dir" == tagName, path, tbody, odd);
+         odd = !odd;
+      }
+   }
 
-  removeChildren(detail);
-  detail.appendChild(table);
+   removeChildren(detail);
+   detail.appendChild(table);
 }
 
 function addDetail(fileInfo, isDir, path, tbody, odd)
 {
-  var row = tbody.appendChild(document.createElement("tr"));
+   var name = fileInfo.getAttribute("name");
 
-  var name = fileInfo.getAttribute("name");
+   var row = tbody.appendChild(document.createElement("tr"));
 
-  if (isDir) {
-    row.onclick = function() { showFileListing(path + name); };
-  } else {
-    row.onclick = function() { showFile(path + name, name); };
-  }
+   Element.addClassName(row, "detail-row");
+   Element.addClassName(row, "detail-row-" + (odd ? "odd" : "even"));
 
-  Element.addClassName(row, "detail-row");
-  Element.addClassName(row, "detail-row-" + (odd ? "odd" : "even"));
+   var td = document.createElement("td");
+   Element.addClassName(td, "detail-checkbox");
+   var checkbox = document.createElement("input")
+   checkbox.setAttribute("type", "checkbox");
+   td.appendChild(checkbox);
+   row.appendChild(td);
+   row.onclick = function() { checkbox.checked = !checkbox.checked }
 
-  appendTextElem(row, "td", name, "detail-name");
-  appendTextElem(row, "td", fileInfo.getAttribute("size"), "detail-size");
-  var date = formatDate(parseInt(fileInfo.getAttribute("mtime")));
-  appendTextElem(row, "td", date, "detail-mtime");
-  date = formatDate(parseInt(fileInfo.getAttribute("ctime")));
-  appendTextElem(row, "td", date, "detail-ctime");
+   var nameRow = row.appendChild(document.createElement("td"));
+   Element.addClassName(nameRow, "detail-name");
+   var nameAnchor = appendTextElem(nameRow, "a", name, null);
+
+   if (isDir) {
+      nameAnchor.onclick = function() { showFileListing(path + name); };
+   } else {
+      nameAnchor.onclick = function() { showFile(path + name, name); };
+   }
+
+   appendTextElem(row, "td", fileInfo.getAttribute("size"), "detail-size");
+   var date = formatDate(parseInt(fileInfo.getAttribute("mtime")));
+   appendTextElem(row, "td", date, "detail-mtime");
+   date = formatDate(parseInt(fileInfo.getAttribute("ctime")));
+   appendTextElem(row, "td", date, "detail-ctime");
 }
 
 function appendTextElem(parent, type, text, clazz)
 {
-  var td = document.createElement(type);
-  if (null != clazz) {
-    Element.addClassName(td, clazz);
-  }
-  td.appendChild(document.createTextNode(text));
-  parent.appendChild(td);
+   var td = document.createElement(type);
+   if (null != clazz) {
+      Element.addClassName(td, clazz);
+   }
+   td.appendChild(document.createTextNode(text));
+   parent.appendChild(td);
 
-  return td;
+   return td;
 }
 
 function addChildDirectories(target, dom)
 {
-  var path = target.getAttribute("id");
+   var path = target.getAttribute("id");
 
-  for (var i = 0; i < dom.childNodes.length; i++) {
-    if ("dir" == dom.childNodes[i].tagName) {
-      var name = dom.childNodes[i].getAttribute("name");
-      var childPath = path + name;
-      addChildDirectory(target, name, childPath);
-    }
-  }
+   for (var i = 0; i < dom.childNodes.length; i++) {
+      if ("dir" == dom.childNodes[i].tagName) {
+         var name = dom.childNodes[i].getAttribute("name");
+         var childPath = path + name;
+         addChildDirectory(target, name, childPath);
+      }
+   }
 
-  toggleTree(path);
+   toggleTree(path);
 }
 
 function addChildDirectory(target, name, path)
 {
-  var trig = document.createElement("span");
-  Element.addClassName(trig, "trigger");
+   var trig = document.createElement("span");
+   Element.addClassName(trig, "trigger");
 
-  var img = document.createElement("img");
-  img.setAttribute("src", "closed.gif");
-  img.setAttribute("id", "I" + path);
-  img.onclick = function() { expandDir(path); };
-  trig.appendChild(img);
+   var img = document.createElement("img");
+   img.setAttribute("src", "closed.gif");
+   img.setAttribute("id", "I" + path);
+   img.onclick = function() { expandDir(path); };
+   trig.appendChild(img);
 
-  var listTrigger = document.createElement("span");
-  Element.addClassName(listTrigger, "list-trigger");
-  listTrigger.onclick = function() { showFileListing(path); };
+   var listTrigger = document.createElement("span");
+   Element.addClassName(listTrigger, "list-trigger");
+   listTrigger.onclick = function() { showFileListing(path); };
 
-  var text = document.createTextNode(name.substring(0, name.length - 1));
-  listTrigger.appendChild(text);
+   var text = document.createTextNode(name.substring(0, name.length - 1));
+   listTrigger.appendChild(text);
 
-  trig.appendChild(listTrigger);
+   trig.appendChild(listTrigger);
 
-  var br = document.createElement("br");
-  trig.appendChild(br);
+   var br = document.createElement("br");
+   trig.appendChild(br);
 
-  var dir = document.createElement("span");
-  Element.addClassName(dir, "dir");
-  dir.setAttribute("id", path);
+   var dir = document.createElement("span");
+   Element.addClassName(dir, "dir");
+   dir.setAttribute("id", path);
 
-  target.appendChild(trig);
-  target.appendChild(dir);
+   target.appendChild(trig);
+   target.appendChild(dir);
 }
 
 function toggleTree(dir)
 {
-  var dirElem = $(dir);
-  var dirStyle = dirElem.style;
-  var dirImg = $("I" + dir);
+   var dirElem = $(dir);
+   var dirStyle = dirElem.style;
+   var dirImg = $("I" + dir);
 
-  if (dirStyle.display == "block") {
-    dirStyle.display = "none";
-    dirImg.src = closedImg.src;
-  } else {
-    dirStyle.display = "block";
-    dirImg.src = openImg.src;
-  }
+   if (dirStyle.display == "block") {
+      dirStyle.display = "none";
+      dirImg.src = closedImg.src;
+   } else {
+      dirStyle.display = "block";
+      dirImg.src = openImg.src;
+   }
 }
 
 function isFetchable(target)
 {
   // XXX add leaf node checking
-  return 0 == target.childNodes.length;
+   return 0 == target.childNodes.length;
 }
 
 function parseDomFromString(text)
 {
-  return Try.these(function()
-                   {
-                     return new DOMParser().parseFromString(text, 'text/xml');
-                   },
-                   function()
-                   {
-                     var xmlDom = new ActiveXObject("Microsoft.XMLDOM")
-                     xmlDom.async = "false"
-                     xmlDom.loadXML(text)
-                     return xmlDom;
-                   });
+   return Try.these(function()
+                    {
+                       return new DOMParser().parseFromString(text, 'text/xml');
+                    },
+                    function()
+                    {
+                       var xmlDom = new ActiveXObject("Microsoft.XMLDOM")
+                       xmlDom.async = "false"
+                       xmlDom.loadXML(text)
+                       return xmlDom;
+                    });
 }
 
 function formatDate(unixTime)
 {
-  date = new Date();
-  date.setTime(unixTime);
-  var year = date.getYear();
-  if (1000 > year) {
-    year = year + 1900;
-  }
+   date = new Date();
+   date.setTime(unixTime);
+   var year = date.getYear();
+   if (1000 > year) {
+      year = year + 1900;
+   }
 
-  return zeroPad(date.getMonth(), 2) + "/" + zeroPad(date.getDay(), 2)
-         + "/" + year + " " + zeroPad(date.getHours(), 2) + ":"
-         + zeroPad(date.getMinutes(), 2);
+   return zeroPad(date.getMonth(), 2) + "/" + zeroPad(date.getDay(), 2)
+      + "/" + year + " " + zeroPad(date.getHours(), 2) + ":"
+      + zeroPad(date.getMinutes(), 2);
 }
 
 function zeroPad(num, width)
 {
-  var num = "" + num;
-  while (num.length < width) {
-    num = "0" + num;
-  }
+   var num = "" + num;
+   while (num.length < width) {
+      num = "0" + num;
+   }
 
-  return num;
+   return num;
 }
 
 // function removeChildren(node)
 function removeChildren(node)
 {
-  while (null != node.firstChild) {
-    node.removeChild(node.firstChild);
-  }
+   while (null != node.firstChild) {
+      node.removeChild(node.firstChild);
+   }
 }
