@@ -41,9 +41,41 @@ function showFileListing(dir)
                     });
 }
 
+function deleteSelection()
+{
+   var selected = getSelectedFiles();
+
+   var params = "command=delete";
+   for (var i = 0; i < selected.length; i++) {
+      params += "&file=" + selected[i];
+   }
+
+   alert("PARAMS: " + params);
+
+   new Ajax.Request("exec",
+                    { method: "post",
+                       parameters: params,
+                       onComplete: function(req) {
+                          alert("DID IT!!");
+                       }
+                    });
+}
+
+function getSelectedFiles()
+{
+   var selected = document.getElementsByClassName("detail-row-selected", $("detail"));
+   var elements = new Array();
+
+   for (var i = 0; i < selected.length; i++) {
+      elements.push(selected[i].path);
+   }
+
+   return elements;
+}
+
 function showFile(filename, name)
 {
-  // XXX lets make this either inline or save, depending on mime-type
+   // XXX lets make this either inline or save, depending on mime-type
    window.open("get/" + filename);
 }
 
@@ -86,6 +118,7 @@ function addDetail(fileInfo, isDir, path, tbody, odd)
    var name = fileInfo.getAttribute("name");
 
    var row = tbody.appendChild(document.createElement("tr"));
+   row.path = path + name;
 
    Element.addClassName(row, "detail-row");
    Element.addClassName(row, "detail-row-" + (odd ? "odd" : "even"));
@@ -110,9 +143,9 @@ function addDetail(fileInfo, isDir, path, tbody, odd)
    var nameAnchor = appendTextElem(nameRow, "a", name, null);
 
    if (isDir) {
-      nameAnchor.onclick = function() { showFileListing(path + name); };
+      nameAnchor.onclick = function() { showFileListing(row.path); };
    } else {
-      nameAnchor.onclick = function() { showFile(path + name, name); };
+      nameAnchor.onclick = function() { showFile(row.path, name); };
    }
 
    appendTextElem(row, "td", fileInfo.getAttribute("size"), "detail-size");

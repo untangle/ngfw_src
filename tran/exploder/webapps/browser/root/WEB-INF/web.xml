@@ -43,6 +43,18 @@
     <url-pattern>/get/*</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>CommandRunner</servlet-name>
+    <servlet-class>
+      com.metavize.tran.exploder.browser.CommandRunner
+    </servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>CommandRunner</servlet-name>
+    <url-pattern>/exec/*</url-pattern>
+  </servlet-mapping>
+
   @JSP_PRE_COMPILED_SERVLETS@
 
 </web-app>

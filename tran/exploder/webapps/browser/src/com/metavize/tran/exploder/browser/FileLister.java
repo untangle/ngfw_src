@@ -13,10 +13,7 @@ package com.metavize.tran.exploder.browser;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.util.HashMap;
-import java.util.Map;
 import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -28,7 +25,6 @@ import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFileFilter;
-import org.apache.catalina.util.RequestUtil;
 import org.apache.log4j.Logger;
 
 public class FileLister extends HttpServlet
@@ -67,36 +63,24 @@ public class FileLister extends HttpServlet
 
         NtlmPasswordAuthentication auth = (NtlmPasswordAuthentication)s.getAttribute("ntlmPasswordAuthentication");
         if (null == auth) {
-            auth = new NtlmPasswordAuthentication("metaloft.com", "dmorris", "chakas");
+            auth = new NtlmPasswordAuthentication("bebe", "kaka", "poopoo");
             s.setAttribute("ntlmPasswordAuthentication", auth);
         }
 
         resp.setContentType("text/xml");
         resp.addHeader("Cache-Control", "no-cache");
 
-        Map<String, String[]> params = new HashMap<String, String[]>();
-        try {
-            RequestUtil.parseParameters(params, req.getQueryString(), "UTF-8");
-        } catch (UnsupportedEncodingException exn) {
-            throw new ServletException("couldn't decode parameters", exn);
-        }
-
-        String[] ss = params.get("url");
-        if (null == ss) {
-            throw new ServletException("need url");
-        }
-        String url = ss[0];
+        String url = req.getParameter("url");
+        String type = req.getParameter("type");
 
         SmbFileFilter filter = DIR_FILTER;
-        ss = params.get("type");
-        if (null != ss && 0 < ss.length) {
-            String t = ss[0];
-            if (t.equalsIgnoreCase("full")) {
+        if (null != type) {
+            if (type.equalsIgnoreCase("full")) {
                 filter = FULL_FILTER;
-            } else if (t.equalsIgnoreCase("dir")) {
+            } else if (type.equalsIgnoreCase("dir")) {
                 filter = DIR_FILTER;
             } else {
-                logger.warn("unknown listing type: " + t);
+                logger.warn("unknown listing type: " + type);
             }
         }
 

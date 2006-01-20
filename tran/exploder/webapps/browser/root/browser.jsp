@@ -15,7 +15,7 @@
 <body>
 
 <div id="toolbar">
-<CENTER><B>TOOLBAR</B></CENTER>
+<input type="button" value="delete" onclick="deleteSelection()"/>
 </div>
 
 <div id="summary">
@@ -23,7 +23,7 @@
 </div>
 
 <div id="tree">
-<browser:dirtree url="smb://metaloft.com/"/>
+<browser:dirtree url="smb://bebe/"/>
 </div>
 
 <div id="detail"/>

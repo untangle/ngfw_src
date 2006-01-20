@@ -59,7 +59,7 @@ public class FileGetter extends HttpServlet
         // XXX auth
         NtlmPasswordAuthentication auth = (NtlmPasswordAuthentication)s.getAttribute("ntlmPasswordAuthentication");
         if (null == auth) {
-            auth = new NtlmPasswordAuthentication("metaloft.com", "dmorris", "chakas");
+            auth = new NtlmPasswordAuthentication("bebe", "kaka", "poopoo");
             s.setAttribute("ntlmPasswordAuthentication", auth);
         }
 
