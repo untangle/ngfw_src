@@ -96,7 +96,14 @@ function addDetail(fileInfo, isDir, path, tbody, odd)
    checkbox.setAttribute("type", "checkbox");
    td.appendChild(checkbox);
    row.appendChild(td);
-   row.onclick = function() { checkbox.checked = !checkbox.checked }
+   row.onclick = function() {
+      checkbox.checked = !checkbox.checked;
+      if (checkbox.checked) {
+         Element.addClassName(row, "detail-row-selected");
+      } else {
+         Element.removeClassName(row, "detail-row-selected");
+      }
+   };
 
    var nameRow = row.appendChild(document.createElement("td"));
    Element.addClassName(nameRow, "detail-name");

@@ -42,6 +42,8 @@ tr.detail-row:hover { background-color: #0000FF; }
 
 .detail-row-even { background-color: #00FF00; }
 
+.detail-row-selected { background-color: #FF00FF; color: yellow; }
+
 .detail-checkbox { width: 5%; }
 
 .detail-name { width: 45%; }
