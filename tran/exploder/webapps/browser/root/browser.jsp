@@ -17,6 +17,7 @@
 <div id="toolbar">
 <input type="button" value="delete" onclick="deleteSelection()"/>
 <input type="button" value="refresh" onclick="refreshDetails()"/>
+<input type="file" value="upload" onselect="uploadFile()"/>
 </div>
 
 <div id="summary">

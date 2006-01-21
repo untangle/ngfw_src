@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -10,12 +10,18 @@
  */
 package com.metavize.mvvm;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
+
+import org.apache.log4j.Logger;
+import sun.misc.BASE64Decoder;
 
 public class MackageDesc implements Serializable
 {
     private static final long serialVersionUID = 3662589795455307379L;
+
+    private static final Logger logger = Logger.getLogger(MackageDesc.class);
 
     public static final int UNKNOWN_POSITION = -1;
 
@@ -41,8 +47,7 @@ public class MackageDesc implements Serializable
     private final int rackPosition;
     private final boolean isService;
 
-    public MackageDesc(Map<String, String> m, String installedVersion,
-                       byte[] orgIcon, byte[] descIcon)
+    public MackageDesc(Map<String, String> m, String installedVersion)
     {
         // XXX hack, use Mackage field instead.
         name = m.get("package");
@@ -99,24 +104,26 @@ public class MackageDesc implements Serializable
             longDescription = "";
         }
 
+        // org icon
+        v = m.get("org-icon");
+        if (null != v) {
+            orgIcon = decode(v);
+        } else {
+            orgIcon = null; // XXX default
+        }
+
+        // desc icon
+        v = m.get("desc-icon");
+        if (null != v) {
+            descIcon = decode(v);
+        } else {
+            descIcon = null; // XXX default
+        }
+
         // website
         website = m.get("website");
 
         this.installedVersion = installedVersion;
-
-        if (null == orgIcon) {
-            this.orgIcon = null;
-        } else {
-            this.orgIcon = new byte[orgIcon.length];
-            System.arraycopy(orgIcon, 0, this.orgIcon, 0, orgIcon.length);
-        }
-
-        if (null == descIcon) {
-            this.descIcon = descIcon;
-        } else {
-            this.descIcon = new byte[descIcon.length];
-            System.arraycopy(descIcon, 0, this.descIcon, 0, descIcon.length);
-        }
     }
 
 
@@ -207,5 +214,22 @@ public class MackageDesc implements Serializable
     public boolean isService()
     {
         return isService;
+    }
+
+    // private methods --------------------------------------------------------
+
+    private byte[] decode(String v)
+    {
+        v = v.replaceAll("[ \t]", "");
+
+        byte[] icon = null;
+
+        try {
+            icon = new BASE64Decoder().decodeBuffer(v);
+        } catch (IOException exn) {
+            logger.warn("could not decode icon", exn);
+        }
+
+        return icon;
     }
 }

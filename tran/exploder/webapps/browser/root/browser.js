@@ -63,6 +63,11 @@ function deleteSelection()
                     });
 }
 
+function uploadFile()
+{
+   alert("UPLOAD");
+}
+
 
 function getSelectedFiles()
 {

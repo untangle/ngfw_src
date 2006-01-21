@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -358,89 +358,6 @@ class ToolboxManagerImpl implements ToolboxManager
         }
     }
 
-    // private methods --------------------------------------------------------
-
-    private byte[] orgIconForSys(String sysName)
-    {
-        return imageBytes("com/metavize/gui/system/" + sysName
-                          + "/IconOrg42x42.png");
-    }
-
-    private byte[] descIconForSys(String sysName)
-    {
-        return imageBytes("com/metavize/gui/system/" + sysName
-                          + "/IconDesc42x42.png");
-    }
-
-    private byte[] orgIconForTransform(String tranName)
-    {
-        int dashIndex = tranName.indexOf('-');
-        if(dashIndex == -1) {
-            return imageBytes("com/metavize/tran/" + tranName
-                              + "/gui/IconOrg42x42.png");
-        } else {
-            return imageBytes("com/metavize/tran/"
-                              + tranName.substring(0, dashIndex)
-                              + "/gui/IconOrg42x42.png");
-        }
-    }
-
-    private byte[] descIconForTransform(String tranName)
-    {
-        int dashIndex = tranName.indexOf('-');
-        if(dashIndex == -1) {
-            return imageBytes("com/metavize/tran/" + tranName
-                              + "/gui/IconDesc42x42.png");
-        } else {
-            return imageBytes("com/metavize/tran/"
-                              + tranName.substring(0, dashIndex)
-                              + "/gui/IconDesc42x42.png");
-        }
-    }
-
-    private byte[] imageBytes(String filename)
-    {
-        byte[] buffer = new byte[2048];
-
-        InputStream is = getClass().getClassLoader()
-            .getResourceAsStream(filename);
-
-        if (is == null) {
-            logger.warn("Resource not found: " + filename);
-            return null;
-        }
-
-        byte[] imageBytes = null;
-        for (int i = 0; ; i++) {
-            int c;
-            try {
-                c = is.read();
-            } catch (IOException exn) {
-                logger.warn("could not read icon", exn);
-                break;
-            }
-            if (-1 == c) {
-                imageBytes = new byte[i];
-                System.arraycopy(buffer, 0, imageBytes, 0, i);
-                break;
-            }
-            if (buffer.length <= i) {
-                byte[] newBuffer = new byte[buffer.length * 2];
-                System.arraycopy(buffer, 0, newBuffer, 0, i);
-                buffer = newBuffer;
-            }
-            buffer[i] = (byte)c;
-        }
-
-        try {
-            is.close();
-        } catch (IOException exn) {
-            logger.warn("could not close icon file", exn);
-        }
-
-        return imageBytes;
-    }
-
     // package list functions -------------------------------------------------
 
     private void refreshLists()
@@ -532,22 +449,11 @@ class ToolboxManagerImpl implements ToolboxManager
 
                 if (!m.containsKey("package")) { continue; }
 
-                // end of package
-                byte[] orgIcon, descIcon;
 
                 String name = (String)m.get("package");
                 boolean isTransform = name.endsWith("-transform");
 
-                if (isTransform) {
-                    orgIcon = orgIconForTransform(name);
-                    descIcon = descIconForTransform(name);
-                } else {
-                    orgIcon = orgIconForSys(name);
-                    descIcon = descIconForSys(name);
-                }
-
-                MackageDesc md = new MackageDesc(m, (String)instList.get(name),
-                                                 orgIcon, descIcon);
+                MackageDesc md = new MackageDesc(m, (String)instList.get(name));
 
                 logger.debug("Added available mackage: " + name);
                 pkgs.put(name, md);
@@ -561,7 +467,6 @@ class ToolboxManagerImpl implements ToolboxManager
                 }
             } else {
                 if (key.length() > 0) {
-                    String k = key.toString();
                     m.put(key.toString(), value.toString());
                     key.delete(0, key.length());
                     value.delete(0, value.length());
