@@ -1,3 +1,9 @@
+metavize-java (0.2.0-844) stable; urgency=low
+
+  * auto build
+
+ -- Ian Nieves <inieves@metavize.com>  Mon, 23 Jan 2006 15:11:41 -0800
+
 metavize-java (0.2.0-843) stable; urgency=low
 
   * auto build
