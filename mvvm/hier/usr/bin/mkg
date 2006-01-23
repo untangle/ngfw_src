@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2003, 2004, 2005 Metavize Inc.
+# Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
 # All rights reserved.
 #
 # This software is the confidential and proprietary information of
@@ -127,7 +127,7 @@ if [ -z $prefix ] ; then
     elif [ "$1" = "update" ] ; then
         aptlog "start $tstamp" "apt-get update $UPDT_OPTS"
         apt-get update $UPDT_OPTS >>$APT_LOG 2>&1
-        #RET=$? return code ignored
+        RET=$?
         aptlog "done $stamp"
     elif [ "$1" = "upgrade" ] ; then
         aptlog "start $stamp"  "apt-get upgrade $UPGD_OPTS"
