@@ -219,6 +219,12 @@ class ToolboxManagerImpl implements ToolboxManager
 
     public void update() throws MackageException
     {
+        update(120000);
+    }
+
+    public void update(long millis) throws MackageException
+    {
+        // XXX XXX implement timeout
         execMkg("update");
     }
 

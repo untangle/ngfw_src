@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -100,6 +100,8 @@ public interface ToolboxManager
      *    be uninstalled.
      */
     void uninstall(String name) throws MackageUninstallException;
+
+    void update(long millis) throws MackageException;
 
     void update() throws MackageException;
 
