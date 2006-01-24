@@ -24,6 +24,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.StringTokenizer;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import com.metavize.mvvm.CronJob;
 import com.metavize.mvvm.InstallProgress;
@@ -224,8 +229,34 @@ class ToolboxManagerImpl implements ToolboxManager
 
     public void update(long millis) throws MackageException
     {
-        // XXX XXX implement timeout
-        execMkg("update");
+        FutureTask f = new FutureTask(new Callable()
+            {
+                public Object call() throws Exception
+                {
+                    execMkg("update");
+
+                    return this;
+                }
+            });
+
+        new Thread(f).start();
+
+        TRY_AGAIN:
+        try {
+            f.get(millis, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException exn) {
+            break TRY_AGAIN;
+        } catch (ExecutionException exn) {
+            Throwable t = exn.getCause();
+            if (t instanceof MackageException) {
+                throw (MackageException)t;
+            } else {
+                throw new RuntimeException(t);
+            }
+        } catch (TimeoutException exn) {
+            f.cancel(true);
+            throw new MackageException("mkg timed out");
+        }
     }
 
     public long upgrade() throws MackageException
