@@ -26,6 +26,8 @@ import com.metavize.mvvm.Period;
 import com.metavize.tran.mail.impl.quarantine.store.InboxIndexImpl;
 import com.metavize.tran.mail.impl.quarantine.store.QuarantinePruningObserver;
 import com.metavize.tran.mail.impl.quarantine.store.QuarantineStore;
+import com.metavize.tran.mail.impl.GlobEmailAddressList;
+import com.metavize.tran.mail.impl.GlobEmailAddressMapper;
 import com.metavize.tran.mail.papi.quarantine.BadTokenException;
 import com.metavize.tran.mail.papi.quarantine.Inbox;
 import com.metavize.tran.mail.papi.quarantine.InboxIndex;
@@ -39,6 +41,7 @@ import com.metavize.tran.mail.papi.quarantine.QuarantineSettings;
 import com.metavize.tran.mail.papi.quarantine.QuarantineTransformView;
 import com.metavize.tran.mail.papi.quarantine.QuarantineUserActionFailedException;
 import com.metavize.tran.mail.papi.quarantine.QuarantineUserView;
+import com.metavize.tran.mail.papi.EmailAddressPair;
 import com.metavize.tran.mime.EmailAddress;
 import com.metavize.tran.mime.MIMEMessage;
 import com.metavize.tran.util.ByteBufferInputStream;
@@ -67,6 +70,8 @@ public class Quarantine
   private AuthTokenManager m_atm;
   private QuarantineSettings m_settings = new QuarantineSettings();
   private CronJob m_cronJob;
+  private GlobEmailAddressList m_quarantineForList;
+  private GlobEmailAddressMapper m_addressAliases;
 
 
   public Quarantine() {
@@ -75,6 +80,15 @@ public class Quarantine
       );
     m_digestGenerator = new DigestGenerator();
     m_atm = new AuthTokenManager();
+
+    //TODO tmp this is temp until we persist the
+    //list/map stuff
+    m_quarantineForList = new GlobEmailAddressList(
+      java.util.Arrays.asList(new String[] {""}));
+
+    m_addressAliases = new GlobEmailAddressMapper(new 
+      ArrayList<Pair<String, String>>());
+
   }
 
 
@@ -97,6 +111,20 @@ public class Quarantine
     }
 */
     m_atm.setKey(m_settings.getSecretKey());
+
+    //Update address mapping
+    ArrayList<Pair<String, String>> addressAliasPairList =
+      new ArrayList<Pair<String, String>>();
+
+    for(Object o : settings.getAddressRemaps()) {
+      EmailAddressPair pair = (EmailAddressPair) o;
+      addressAliasPairList.add(new
+        Pair<String, String>(pair.getAddress1(), pair.getAddress2()));
+    }
+    m_addressAliases = new GlobEmailAddressMapper(addressAliasPairList);    
+
+    
+          
 
     if (null != m_cronJob) {
         int h = m_settings.getDigestHourOfDay();
@@ -235,24 +263,55 @@ public class Quarantine
     if(getInternalIPAsString() == null) {
       //TODO bscott It would be nice to not repeat
       //     this warning msg
-      m_logger.warn("No inside interface, so no way for folks to release inbox.  Abort" +
+      m_logger.warn("No inside interface, so no way for folks to release inbox.  Abort " +
         "quarantining");
       return false;
     }
 
-    //TODO Check size of store vs. max size
+    //Test against our list of stuff we
+    //are permitted to quarantine for
+    for(EmailAddress eAddr : recipients) {
+      if(eAddr == null || eAddr.isNullAddress()) {
+        continue;
+      }
+      if(!m_quarantineForList.contains(eAddr.getAddress())) {
+        m_logger.debug("Not permitting mail to be quarantined as address \"" +
+          eAddr.getAddress() + "\" does not conform to patterns of addresses " +
+          "we will quarantine-for");
+        return false;
+      }
+    }
 
-    if(recipients.length == 1) {
+    //Perform any remapping
+    ArrayList<String> sRecipients = new ArrayList<String>();
+    for(EmailAddress eAddr : recipients) {
+      if(eAddr == null || eAddr.isNullAddress()) {
+        continue;
+      }
+      String addr = eAddr.getAddress().toLowerCase();
+      String remapped = m_addressAliases.getAddressMapping(addr);
+      if(remapped != null) {
+        m_logger.debug("Remapping \"" +
+          addr + "\" to \"" + remapped + "\"");
+        addr = remapped.toLowerCase();
+      }
+      if(sRecipients.contains(addr)) {
+        continue;
+      }
+      sRecipients.add(addr);
+    }
+
+
+    if(sRecipients.size() == 1) {
       return m_store.quarantineMail(file,
-            recipients[0].getAddress(),
+            sRecipients.get(0),
             summary,
             true).a != QuarantineStore.AdditionStatus.FAILURE;
     }
     else {
       ArrayList<Pair<String, String>> list = new ArrayList<Pair<String, String>>();
       boolean allSuccess = true;
-      for(EmailAddress eAddr : recipients) {
-        String addr = eAddr.getAddress();
+      for(String addr : sRecipients) {
         Pair<QuarantineStore.AdditionStatus, String> result =
           m_store.quarantineMail(file,
             addr,
@@ -480,3 +539,53 @@ public class Quarantine
   }
 
 }
+
+/*
+
+        new Thread(new Runnable() {
+          public void run() {
+            try {
+              System.out.println("********* Sleep for 2 minutes");
+              Thread.currentThread().sleep(1000*60*2);
+              System.out.println("********* Woke up");
+              com.metavize.tran.mail.papi.EmailAddressWrapper wrapper1 =
+                new com.metavize.tran.mail.papi.EmailAddressWrapper("*1@shoop.com");
+              com.metavize.tran.mail.papi.EmailAddressWrapper wrapper2 =
+                new com.metavize.tran.mail.papi.EmailAddressWrapper("billtest3@shoop.com");
+              MailTransformSettings settings = getMailTransformSettings();
+              com.metavize.tran.mail.papi.quarantine.QuarantineSettings qs =
+                settings.getQuarantineSettings();
+              java.util.ArrayList list = new java.util.ArrayList();
+              list.add(wrapper1);
+              list.add(wrapper2);
+
+              qs.setAllowedAddressPatterns(list);
+              setMailTransformSettings(settings);                  
+                
+
+//              MailTransformSettings settings = getMailTransformSettings();
+//              com.metavize.tran.mail.papi.quarantine.QuarantineSettings qs =
+//                settings.getQuarantineSettings();
+//              com.metavize.tran.mail.papi.EmailAddressPair p1 =
+//                new com.metavize.tran.mail.papi.EmailAddressPair("billtest1@shoop.com",
+//                  "billtest2@shoop.com");
+//              com.metavize.tran.mail.papi.EmailAddressPair p2 =
+//                new com.metavize.tran.mail.papi.EmailAddressPair("billtest3@shoop.com",
+//                  "foo@billsco.com");
+//              java.util.ArrayList list = new java.util.ArrayList();
+//              list.add(p1);
+//              list.add(p2);
+
+//              qs.setAddressRemaps(list);
+//              setMailTransformSettings(settings);
+              System.out.println("********* Done.");
+                
+              
+            }
+            catch(Exception ex) {
+              ex.printStackTrace();
+            }
+          }
+        }).start();        
+        
+*/

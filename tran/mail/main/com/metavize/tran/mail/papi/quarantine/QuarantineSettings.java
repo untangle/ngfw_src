@@ -11,6 +11,8 @@
 
 package com.metavize.tran.mail.papi.quarantine;
 
+import java.util.List;
+
 /**
  * Settings for the quarantine stuff
  *
@@ -34,6 +36,8 @@ public class QuarantineSettings
   private int m_digestHOD;//Hour Of Day
   private int m_digestMOD;//Minute Of Day
   private long m_maxQuarantineSz;
+  private List m_addressRemaps;
+  private List m_allowedAddressPatterns;
 
   /**
     * @hibernate.id
@@ -47,6 +51,93 @@ public class QuarantineSettings
   private void setId(Long id) {
     m_id = id;
   }
+
+  /**
+   * Get the list of {@link com.metavize.tran.mail.papi.EmailAddressWrapper EmailAddressWrapper}
+   * objects, defining the address patterns for-which this server will quarantine emails.
+   * The patterns are based on email address syntax ("local@domain").  However, a limited
+   * glob syntax is also supported ("*@domain").  The glob matches any characters (0 or more).
+   * This should not be confused with "real" regex which is not supported.  Only glob.
+   * <br>
+   * @return a List of com.metavize.tran.mail.papi.EmailAddressWrapper
+   *         objects (can't use 1.5 template syntax for hibernate reasons).
+   *
+   * @hibernate.list
+   * cascade="all-delete-orphan"
+   * @hibernate.collection-key
+   * column="SETTINGS_ID"
+   * @hibernate.collection-index
+   * column="POSITION"
+   * @hibernate.collection-one-to-many
+   * class="com.metavize.tran.mail.papi.EmailAddressWrapper"
+   */  
+  public List getAllowedAddressPatterns() {
+    if(m_allowedAddressPatterns == null) {
+      setAllowedAddressPatterns(null);
+    }
+    return m_allowedAddressPatterns;  
+  }
+
+  public void setAllowedAddressPatterns(List patterns) {
+    if(patterns == null) {
+      patterns = new java.util.ArrayList();
+    }
+    m_allowedAddressPatterns = patterns;
+  }  
+
+  /**
+   * Set a List of {@link com.metavize.tran.mail.papi.EmailAddressPair EmailAddressPair}
+   * objects, defining the "remappings" supported by this server.  Remappings
+   * associate a pattern with an address.  For example, to cause all emails for
+   * "sales@foo.com" to be quarantined in the inbox of "joe.salesguy@foo.com"
+   * "sales@foo.com" is the pattern and "joe.salesguy@foo.com" is the mapped
+   * address.  Since the "EmailAddressPair" class is generic (doesn't have
+   * "pattern" and "address" members, the "address1" member is the pattern and
+   * "address2" is the remap.
+   * <br>
+   * The pattern also suports limited wildcards, based on glob ("*") syntax.  The
+   * glob matches any characters.  For example, to cause all mails for "foo.com"
+   * to be quarantined within "fred@moo.com"'s inbox, the pattern would be
+   * "*@foo.com" and the remapping would be "fred@moo.com".
+   *
+   *
+   * @return a List of com.metavize.tran.mail.papi.EmailAddressPair
+   *         objects (can't use 1.5 template syntax for hibernate reasons).
+   *
+   * @hibernate.list
+   * cascade="all-delete-orphan"
+   * @hibernate.collection-key
+   * column="SETTINGS_ID"
+   * @hibernate.collection-index
+   * column="POSITION"
+   * @hibernate.collection-one-to-many
+   * class="com.metavize.tran.mail.papi.EmailAddressPair"
+   */
+  public List getAddressRemaps() {
+    if(m_addressRemaps == null) {
+      setAddressRemaps(null);
+    }
+    return m_addressRemaps;
+  }
+
+  /**
+   * Set the list of addresses to be remapped.  The argument
+   * is a list of {@link com.metavize.tran.mail.papi.EmailAddressPair EmailAddressPairs}
+   * (cannot use templating because of hibernate).  These represent
+   * the <b>ordered</b> collection of pairs to be remapped.  Note also
+   * that the <code>addr1</code> property of the pair is the
+   * "map from" (i.e. <code>addr1</code> of "*@foo.com" and
+   * <code>addr2</code> of "trash@foo.com").
+   *
+   * @param remaps the list of remapped addresses.
+   */
+  public void setAddressRemaps(List remaps) {
+    if(remaps == null) {
+      remaps = new java.util.ArrayList();
+    }
+    m_addressRemaps = remaps;
+  }
+  
 
   /**
    *
