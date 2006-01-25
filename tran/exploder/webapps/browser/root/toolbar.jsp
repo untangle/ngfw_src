@@ -1,4 +1,4 @@
-<%@ page language="java" import="jcifs.smb.*" %>
+<%@ page language="java" %>
 <%@ taglib prefix="browser" uri="WEB-INF/browser.tld" %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -14,19 +14,13 @@
 
 <body>
 
-<iframe id="toolbar" src="toolbar.jsp">
-iframe support required.
-</iframe>
-
-<div id="summary">
-<CENTER><B>SUMMARY</B></CENTER>
-</div>
-
-<div id="tree">
-<browser:dirtree url="smb://bebe/"/>
-</div>
-
-<div id="detail"></div>
+<form action="toolbar.jsp" method="post" enctype="multipart/form-data">
+<input type="button" value="delete" onclick="deleteSelection()"/>
+<input type="button" value="refresh" onclick="refreshDetails()"/>
+<input type="file" name="file"/>
+<input type="submit" value="upload"/>
+<browser:save-upload/>
+</form>
 
 </body>
 </html>

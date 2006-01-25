@@ -63,12 +63,6 @@ function deleteSelection()
                     });
 }
 
-function uploadFile()
-{
-   alert("UPLOAD");
-}
-
-
 function getSelectedFiles()
 {
    var selected = document.getElementsByClassName("detail-row-selected", $("detail"));

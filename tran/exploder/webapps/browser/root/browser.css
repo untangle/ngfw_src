@@ -54,13 +54,12 @@ tr.detail-row:hover { background-color: #0000FF; }
 
 .detail-ctime { width: 10%; }
 
-
 /* Panes */
 
 #toolbar { position: absolute;
            top: 0;
            left: 0;
-           height: 25px;
+           height: 35px;
            width: 100%;
            border: 1px solid #00FF00;
            font-family: sans-serif;
@@ -78,7 +77,7 @@ tr.detail-row:hover { background-color: #0000FF; }
            }
 
 #tree { position: absolute;
-        top: 30px;
+        top: 40px;
         bottom: 30px;
         width: 25%;
         overflow: auto;
@@ -86,7 +85,7 @@ tr.detail-row:hover { background-color: #0000FF; }
         }
 
 #detail { position: absolute;
-          top: 30px;
+          top: 40px;
           bottom: 30px;
           left: 30%;
           right: 0;
@@ -95,7 +94,7 @@ tr.detail-row:hover { background-color: #0000FF; }
           }
 
 @media screen {
-  body>div#toolbar { position:fixed; }
+  body>iframe#toolbar { position:fixed; }
   body>div#summary { position:fixed; }
   body>div#tree { position:fixed; }
   body>div#detail { position:fixed; }

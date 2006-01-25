@@ -326,6 +326,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <classpath refid="jasperreports.classpath"/>
       <classpath refid="javamail.classpath"/>
       <classpath refid="jcifs.classpath"/>
+      <classpath refid="fileupload.classpath"/>
       <classpath refid="jfreechart.classpath"/>
       <classpath refid="jnlp.classpath"/>
       <classpath refid="log4j.classpath"/>
@@ -460,6 +461,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <fileset refid="log4j.jarset"/>
       <fileset refid="mvvm-client.jarset"/>
       <fileset refid="jcifs.jarset"/>
+      <fileset refid="fileupload.jarset"/>
     </copy>
   </target>
 

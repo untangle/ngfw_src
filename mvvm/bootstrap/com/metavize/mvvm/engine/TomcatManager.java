@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -15,7 +15,6 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.catalina.Connector;
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
@@ -41,14 +40,14 @@ public class TomcatManager {
     public static int NUM_TOMCAT_RETRIES = 15;        //  5 minutes total
     public static long TOMCAT_SLEEP_TIME = 20 * 1000; // 20 seconds
     private static final long REBIND_SLEEP_TIME = 1 * 1000; // 1 second
-    public static int NUM_REBIND_RETRIES = 5;        //  10 seconds    
+    public static int NUM_REBIND_RETRIES = 5;        //  10 seconds
 
     private Embedded emb = null;
     private StandardHost baseHost;
     private List<WebAppDescriptor> descriptors;
     private Object modifyExternalSynch = new Object();
     private static final Logger logger = Logger.getLogger(TomcatManager.class);
-    
+
     private final String webAppRoot;
     private final String catalinaHome;
     private final String logDir;
@@ -61,7 +60,7 @@ public class TomcatManager {
     private CoyoteConnector defaultHTTPSConnector;
     private CoyoteConnector externalHTTPSConnector;
 
-    
+
     /**
      * Little class used to describe a web app to be deployed.
      */
@@ -73,7 +72,7 @@ public class TomcatManager {
             this.urlBase = base;
             this.relativeRoot = rr;
         }
-    }    
+    }
 
     TomcatManager(String catalinaHome,
         String webAppRoot,
@@ -112,11 +111,11 @@ public class TomcatManager {
      */
     public void setSecurityInfo(String ksFile, String ksPass, String ksAlias)
       throws Exception {
-    
+
       this.keystoreFile = ksFile;
       this.keystorePass = ksPass;
       this.keyAlias = ksAlias;
-      
+
       if(emb != null) {
         //TODO Some validation of the new Keystore data, so we don't
         //     hose ourselves
@@ -132,12 +131,12 @@ public class TomcatManager {
           destroyConnector(defaultHTTPSConnector, "Default HTTPS");
           defaultHTTPSConnector = createConnector(port, true);
           startConnector(defaultHTTPSConnector, "Default HTTPS");
-        }          
+        }
       }
-    }     
+    }
 
     public synchronized boolean loadWebApp(String urlBase,
-                                    String rootDir) {
+                                           String rootDir) {
         if(emb == null) {
             //Haven't started yet
             descriptors.add(new WebAppDescriptor(urlBase, rootDir));
