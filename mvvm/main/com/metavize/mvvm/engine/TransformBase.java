@@ -32,6 +32,7 @@ import com.metavize.mvvm.tran.TransformStats;
 import com.metavize.mvvm.tran.TransformStopException;
 import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
+import org.hibernate.Query;
 import org.hibernate.Session;
 
 /**
@@ -83,7 +84,27 @@ public abstract class TransformBase implements Transform
         if (TransformState.RUNNING == runState) {
             return false;
         } else {
-            return true; // XXX XXX XXX
+            TransactionWork<Integer> tw = new TransactionWork<Integer>()
+                {
+                    Integer result;
+
+                    public boolean doWork(Session s)
+                    {
+                        Query q = s.createQuery("SELECT count(sc) FROM TransformStateChange sc WHERE sc.tid = :tid AND sc.state = 'running'");
+                        q.setParameter("tid", tid);
+                        result = (Integer)q.uniqueResult();
+
+                        return true;
+                    }
+
+                    public Integer getResult()
+                    {
+                        return result;
+                    }
+                };
+            MvvmContextFactory.context().runTransaction(tw);
+
+            return 0 == tw.getResult();
         }
     }
 

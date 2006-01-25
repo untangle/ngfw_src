@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -142,6 +142,8 @@ public class RemoteClient
             destroy(args[1]);
         } else if (args[0].equalsIgnoreCase("reconfig")) {
             reconfig(args[1]);
+        } else if (args[0].equalsIgnoreCase("neverStarted")) {
+            neverStarted(args[1]);
         } else if (args[0].equalsIgnoreCase("instances")) {
             instances();
         } else if (args[0].equalsIgnoreCase("sessions")) {
@@ -422,6 +424,24 @@ public class RemoteClient
         }
 
         tran.reconfigure();
+        return;
+    }
+
+    private static void neverStarted(String tidStr)
+    {
+        Tid tid = new Tid(Long.parseLong(tidStr));
+        TransformContext tctx = tm.transformContext(tid);
+        if (tctx == null) {
+            System.err.println("NULL Transform Context (tid:" + tid + ")");
+            return;
+        }
+        Transform tran = tctx.transform();
+        if (tran == null) {
+            System.err.println("NULL Transform Context (tid:" + tid + ")");
+            return;
+        }
+
+        System.out.println(tran.neverStarted());
         return;
     }
 
@@ -718,6 +738,7 @@ public class RemoteClient
         System.out.println("    mcli stop TID");
         System.out.println("    mcli destroy TID");
         System.out.println("    mcli reconfig TID");
+        System.out.println("    mcli neverStarted");
         System.out.println("  transform manager lists:");
         System.out.println("    mcli instances");
         System.out.println("  transform live sessions:");
