@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!--
-Copyright (c) 2004, 2005 Metavize Inc.
+Copyright (c) 2004, 2005, 2006 Metavize Inc.
 All rights reserved.
 
 This software is the confidential and proprietary information of
@@ -257,6 +257,14 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
     <fileset refid="jcifs.jarset"/>
   </path>
 
+  <fileset id="fileupload.jarset" dir="${FILEUPLOAD_HOME}">
+    <include name="commons-fileupload-1.1.jar"/>
+  </fileset>
+
+  <path id="fileupload.classpath">
+    <fileset refid="fileupload.jarset"/>
+  </path>
+
   <fileset id="bcel.jarset" dir="${BCEL_HOME}">
     <include name="bcel-5.1.jar"/>
   </fileset>
@@ -291,6 +299,7 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
     <path refid="jasperreports.classpath"/>
     <path refid="javamail.classpath"/>
     <path refid="jcifs.classpath"/>
+    <path refid="fileupload.classpath"/>
     <path refid="jnlp-servlet.classpath"/>
     <path refid="junit.classpath"/>
     <path refid="log4j.classpath"/>
