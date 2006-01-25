@@ -120,6 +120,9 @@
               </Constraints>
             </Component>
             <Component class="javax.swing.JTextField" name="dhcpIPaddrJTextField">
+              <Events>
+                <EventHandler event="caretUpdate" listener="javax.swing.event.CaretListener" parameters="javax.swing.event.CaretEvent" handler="dhcpIPaddrJTextFieldCaretUpdate"/>
+              </Events>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
               </AuxValues>
@@ -143,6 +146,9 @@
               </Constraints>
             </Component>
             <Component class="javax.swing.JTextField" name="dhcpNetmaskJTextField">
+              <Events>
+                <EventHandler event="caretUpdate" listener="javax.swing.event.CaretListener" parameters="javax.swing.event.CaretEvent" handler="dhcpNetmaskJTextFieldCaretUpdate"/>
+              </Events>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
               </AuxValues>
@@ -166,6 +172,9 @@
               </Constraints>
             </Component>
             <Component class="javax.swing.JTextField" name="dhcpRouteJTextField">
+              <Events>
+                <EventHandler event="caretUpdate" listener="javax.swing.event.CaretListener" parameters="javax.swing.event.CaretEvent" handler="dhcpRouteJTextFieldCaretUpdate"/>
+              </Events>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
               </AuxValues>
@@ -189,6 +198,9 @@
               </Constraints>
             </Component>
             <Component class="javax.swing.JTextField" name="dnsPrimaryJTextField">
+              <Events>
+                <EventHandler event="caretUpdate" listener="javax.swing.event.CaretListener" parameters="javax.swing.event.CaretEvent" handler="dnsPrimaryJTextFieldCaretUpdate"/>
+              </Events>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
               </AuxValues>
@@ -212,6 +224,9 @@
               </Constraints>
             </Component>
             <Component class="javax.swing.JTextField" name="dnsSecondaryJTextField">
+              <Events>
+                <EventHandler event="caretUpdate" listener="javax.swing.event.CaretListener" parameters="javax.swing.event.CaretEvent" handler="dnsSecondaryJTextFieldCaretUpdate"/>
+              </Events>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
               </AuxValues>
@@ -271,6 +286,9 @@
               </Constraints>
             </Component>
             <Component class="javax.swing.JTextField" name="hostnameJTextField">
+              <Events>
+                <EventHandler event="caretUpdate" listener="javax.swing.event.CaretListener" parameters="javax.swing.event.CaretEvent" handler="hostnameJTextFieldCaretUpdate"/>
+              </Events>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
               </AuxValues>

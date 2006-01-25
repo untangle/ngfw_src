@@ -28,7 +28,7 @@ public class NetworkIPJPanel extends javax.swing.JPanel implements Savable, Refr
     private static final String EXCEPTION_DHCP_GATEWAY = "Invalid \"Default Route\" manually specified.";
     private static final String EXCEPTION_DHCP_DNS_1 = "Invalid \"Primary DNS\" maually specified.";
     private static final String EXCEPTION_DHCP_DNS_2 = "Invalid \"Secondary DNS\" manually specified.";
-	private static final String EXCEPTION_HOSTNAME = "Invalid \"Hostname\" specified.";
+    private static final String EXCEPTION_HOSTNAME = "Invalid \"Hostname\" specified.";
     private static final String EMPTY_DNS2 = "";
 
     
@@ -150,49 +150,64 @@ public class NetworkIPJPanel extends javax.swing.JPanel implements Savable, Refr
 
     }
 
+
+    boolean isDhcpEnabledCurrent;
+    String dhcpIPaddrCurrent;
+    String dhcpNetmaskCurrent;
+    String dhcpRouteCurrent;
+    String dnsPrimaryCurrent;
+    String dnsSecondaryCurrent;
+    String hostnameCurrent;
+
     public void doRefresh(Object settings){
         NetworkingConfiguration networkingConfiguration = (NetworkingConfiguration) settings;
         
 	// DHCP ENABLED /////
-	boolean isDhcpEnabled = networkingConfiguration.isDhcpEnabled();
-	setDhcpEnabledDependency( isDhcpEnabled );
-        renewDhcpLeaseJButton.setEnabled( isDhcpEnabled );
-	if( isDhcpEnabled )
+	isDhcpEnabledCurrent = networkingConfiguration.isDhcpEnabled();
+	setDhcpEnabledDependency( isDhcpEnabledCurrent );
+        renewDhcpLeaseJButton.setEnabled( isDhcpEnabledCurrent );
+	if( isDhcpEnabledCurrent )
             dhcpEnabledRadioButton.setSelected(true);
         else
             dhcpDisabledRadioButton.setSelected(true);
         
 	// DHCP HOST ////
-	dhcpIPaddrJTextField.setText( networkingConfiguration.host().toString() );
+	dhcpIPaddrCurrent = networkingConfiguration.host().toString();
+	dhcpIPaddrJTextField.setText( dhcpIPaddrCurrent );
 	dhcpIPaddrJTextField.setBackground( Color.WHITE );
 	
 	// DHCP NETMASK /////
-        dhcpNetmaskJTextField.setText( networkingConfiguration.netmask().toString() );
+	dhcpNetmaskCurrent = networkingConfiguration.netmask().toString();
+        dhcpNetmaskJTextField.setText( dhcpNetmaskCurrent );
 	dhcpNetmaskJTextField.setBackground( Color.WHITE );
 
 	// DHCP DEFAULT ROUTE ////////
-        dhcpRouteJTextField.setText( networkingConfiguration.gateway().toString() );
+	dhcpRouteCurrent = networkingConfiguration.gateway().toString();
+        dhcpRouteJTextField.setText( dhcpRouteCurrent );
 	dhcpRouteJTextField.setBackground( Color.WHITE );
 
 	// DNS1 ///////////
-        dnsPrimaryJTextField.setText( networkingConfiguration.dns1().toString() );
+	dnsPrimaryCurrent = networkingConfiguration.dns1().toString();
+        dnsPrimaryJTextField.setText( dnsPrimaryCurrent );
 	dnsPrimaryJTextField.setBackground( Color.WHITE );
 
 	// DNS2 //////////
         if ( networkingConfiguration.hasDns2()) {
-            dnsSecondaryJTextField.setText( networkingConfiguration.dns2().toString() );
+	    dnsSecondaryCurrent = networkingConfiguration.dns2().toString();
+            dnsSecondaryJTextField.setText( dnsSecondaryCurrent );
         } else {
+	    dnsSecondaryCurrent = "";
             dnsSecondaryJTextField.setText( EMPTY_DNS2 );
         }
 	dnsSecondaryJTextField.setBackground( Color.WHITE );
 
 	// HOSTNAME /////////
-	hostnameJTextField.setText( networkingConfiguration.hostname() );
+	hostnameCurrent = networkingConfiguration.hostname();
+	hostnameJTextField.setText( hostnameCurrent );
 	hostnameJTextField.setBackground( Color.WHITE );
 
 	// ENABLE BUTTONS
-	connectivityTestJButton.setEnabled(true); // dhcp lease is take care of above
-
+	connectivityTestJButton.setEnabled(true); // dhcp lease is take care of above	
     }
     
     
@@ -282,6 +297,12 @@ public class NetworkIPJPanel extends javax.swing.JPanel implements Savable, Refr
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 staticIPJPanel.add(dhcpIPaddrJLabel, gridBagConstraints);
 
+                dhcpIPaddrJTextField.addCaretListener(new javax.swing.event.CaretListener() {
+                        public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                                dhcpIPaddrJTextFieldCaretUpdate(evt);
+                        }
+                });
+
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
                 gridBagConstraints.gridy = 0;
@@ -297,6 +318,12 @@ public class NetworkIPJPanel extends javax.swing.JPanel implements Savable, Refr
                 gridBagConstraints.gridy = 1;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 staticIPJPanel.add(dhcpNetmaskJLabel, gridBagConstraints);
+
+                dhcpNetmaskJTextField.addCaretListener(new javax.swing.event.CaretListener() {
+                        public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                                dhcpNetmaskJTextFieldCaretUpdate(evt);
+                        }
+                });
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
@@ -314,6 +341,12 @@ public class NetworkIPJPanel extends javax.swing.JPanel implements Savable, Refr
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 staticIPJPanel.add(dhcpRouteJLabel, gridBagConstraints);
 
+                dhcpRouteJTextField.addCaretListener(new javax.swing.event.CaretListener() {
+                        public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                                dhcpRouteJTextFieldCaretUpdate(evt);
+                        }
+                });
+
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
                 gridBagConstraints.gridy = 2;
@@ -330,6 +363,12 @@ public class NetworkIPJPanel extends javax.swing.JPanel implements Savable, Refr
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 staticIPJPanel.add(dnsPrimaryJLabel, gridBagConstraints);
 
+                dnsPrimaryJTextField.addCaretListener(new javax.swing.event.CaretListener() {
+                        public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                                dnsPrimaryJTextFieldCaretUpdate(evt);
+                        }
+                });
+
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
                 gridBagConstraints.gridy = 3;
@@ -345,6 +384,12 @@ public class NetworkIPJPanel extends javax.swing.JPanel implements Savable, Refr
                 gridBagConstraints.gridy = 4;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 staticIPJPanel.add(dnsSecondaryJLabel, gridBagConstraints);
+
+                dnsSecondaryJTextField.addCaretListener(new javax.swing.event.CaretListener() {
+                        public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                                dnsSecondaryJTextFieldCaretUpdate(evt);
+                        }
+                });
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
@@ -383,6 +428,12 @@ public class NetworkIPJPanel extends javax.swing.JPanel implements Savable, Refr
                 gridBagConstraints.gridy = 0;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 hostnameJPanel.add(hostnameJLabel, gridBagConstraints);
+
+                hostnameJTextField.addCaretListener(new javax.swing.event.CaretListener() {
+                        public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                                hostnameJTextFieldCaretUpdate(evt);
+                        }
+                });
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
@@ -467,6 +518,36 @@ public class NetworkIPJPanel extends javax.swing.JPanel implements Savable, Refr
 
         }//GEN-END:initComponents
 
+    private void hostnameJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_hostnameJTextFieldCaretUpdate
+	if( !hostnameJTextField.getText().trim().equals(hostnameCurrent) )
+	    connectivityTestJButton.setEnabled(false);
+    }//GEN-LAST:event_hostnameJTextFieldCaretUpdate
+    
+    private void dnsSecondaryJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_dnsSecondaryJTextFieldCaretUpdate
+	if( !dnsSecondaryJTextField.getText().trim().equals(dnsSecondaryCurrent) )
+	    connectivityTestJButton.setEnabled(false);
+    }//GEN-LAST:event_dnsSecondaryJTextFieldCaretUpdate
+    
+    private void dnsPrimaryJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_dnsPrimaryJTextFieldCaretUpdate
+	if( !dnsPrimaryJTextField.getText().trim().equals(dnsPrimaryCurrent) )
+	    connectivityTestJButton.setEnabled(false);
+    }//GEN-LAST:event_dnsPrimaryJTextFieldCaretUpdate
+    
+    private void dhcpRouteJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_dhcpRouteJTextFieldCaretUpdate
+	if( !dhcpRouteJTextField.getText().trim().equals(dhcpRouteCurrent) )
+	    connectivityTestJButton.setEnabled(false);
+    }//GEN-LAST:event_dhcpRouteJTextFieldCaretUpdate
+    
+    private void dhcpNetmaskJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_dhcpNetmaskJTextFieldCaretUpdate
+	if( !dhcpNetmaskJTextField.getText().trim().equals(dhcpNetmaskCurrent) )
+	    connectivityTestJButton.setEnabled(false);
+    }//GEN-LAST:event_dhcpNetmaskJTextFieldCaretUpdate
+    
+    private void dhcpIPaddrJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_dhcpIPaddrJTextFieldCaretUpdate
+	if( !dhcpIPaddrJTextField.getText().trim().equals(dhcpIPaddrCurrent) )
+	    connectivityTestJButton.setEnabled(false);
+    }//GEN-LAST:event_dhcpIPaddrJTextFieldCaretUpdate
+    
     private void connectivityTestJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectivityTestJButtonActionPerformed
         try{
 	    NetworkConnectivityTestJDialog connectivityJDialog = new NetworkConnectivityTestJDialog();
@@ -489,10 +570,12 @@ public class NetworkIPJPanel extends javax.swing.JPanel implements Savable, Refr
 
     private void dhcpDisabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dhcpDisabledRadioButtonActionPerformed
         setDhcpEnabledDependency( false );
+	connectivityTestJButton.setEnabled(false);
     }//GEN-LAST:event_dhcpDisabledRadioButtonActionPerformed
-
+    
     private void dhcpEnabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dhcpEnabledRadioButtonActionPerformed
         setDhcpEnabledDependency( true );
+	connectivityTestJButton.setEnabled(false);
     }//GEN-LAST:event_dhcpEnabledRadioButtonActionPerformed
     
     private void setDhcpEnabledDependency(boolean enabled){
