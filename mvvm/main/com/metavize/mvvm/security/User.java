@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -32,6 +32,7 @@ public class User implements Serializable
     private String email = "[no email]";
     private String notes = "[no description]";
     private boolean sendAlerts = false;
+    private boolean readOnly = false;
 
     public User() { }
 
@@ -42,11 +43,12 @@ public class User implements Serializable
      * @param password in cleartext.
      * @param name human name.
      */
-    public User(String login, String password, String name)
+    public User(String login, String password, String name, boolean readOnly)
     {
         this.login = login;
         this.password = PasswordUtil.encrypt(password);
         this.name = name;
+        this.readOnly = readOnly;
     }
 
     /**
@@ -56,11 +58,12 @@ public class User implements Serializable
      * @param password hashed.
      * @param name human name.
      */
-    public User(String login, byte[] password, String name)
+    public User(String login, byte[] password, String name, boolean readOnly)
     {
         this.login = login;
         this.password = password;
         this.name = name;
+        this.readOnly = readOnly;
     }
 
     /**
@@ -73,11 +76,12 @@ public class User implements Serializable
      * @param notes notes about user.
      * @param sendAlerts true if user should get alerts.
      */
-    public User(String login, String password, String name, String email,
-                String notes, boolean sendAlerts)
+    public User(String login, String password, String name, boolean readOnly,
+                String email, String notes, boolean sendAlerts)
     {
         this.login = login;
         this.name = name;
+        this.readOnly = readOnly;
         this.password = PasswordUtil.encrypt(password);
         this.email = email;
         this.notes = notes;
@@ -140,7 +144,7 @@ public class User implements Serializable
     }
 
     /**
-     * Earthling's human name.
+     * Name.
      *
      * @return username.
      * @hibernate.property
@@ -156,6 +160,24 @@ public class User implements Serializable
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    /**
+     * Read only accounts can't change settings.
+     *
+     * @return true if this is a read only.
+     * @hibernate.property
+     * column="READ_ONLY"
+     * not-null="true"
+     */
+    public boolean isReadOnly()
+    {
+        return readOnly;
+    }
+
+    public void setReadOnly(boolean readOnly)
+    {
+        this.readOnly = readOnly;
     }
 
     /**

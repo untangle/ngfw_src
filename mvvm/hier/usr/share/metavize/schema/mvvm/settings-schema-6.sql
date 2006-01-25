@@ -18,6 +18,7 @@ CREATE TABLE settings.mvvm_user (
     login text NOT NULL,
     password bytea NOT NULL,
     name text NOT NULL,
+    read_only bool NOT NULL,
     notes text,
     send_alerts bool,
     admin_setting_id int8,
@@ -219,7 +220,7 @@ CREATE TABLE settings.snmp_settings (
     trap_port int4,
     PRIMARY KEY (snmp_settings_id));
 
-    
+
 -- com.metavize.mvvm.addrbook.RepositorySettings
 CREATE TABLE settings.ab_repository_settings (
     settings_id int8 NOT NULL,
@@ -230,7 +231,7 @@ CREATE TABLE settings.ab_repository_settings (
     port int4,
     PRIMARY KEY (settings_id));
 
-    
+
 -- com.metavize.mvvm.addrbook.AddressBookSettings
 CREATE TABLE settings.ab_settings (
     settings_id int8 NOT NULL,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -132,6 +132,7 @@ public class StatsCache
 
         public Tid getTid() { throw new Error("Unsupported"); }
         public TransformState getRunState() { throw new Error("Unsupported"); }
+        public boolean neverStarted() { return false; }
         public void start() { throw new Error("Unsupported"); }
         public void disable() { throw new Error("Unsupported"); }
         public void stop() { throw new Error("Unsupported"); }

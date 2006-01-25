@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,23 +11,24 @@
 
 package com.metavize.mvvm.engine;
 
-import com.metavize.mvvm.MailSender;
-import com.metavize.mvvm.MailSettings;
-import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.security.*;
-import com.metavize.mvvm.util.TransactionWork;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import java.util.TimeZone;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.TimeZone;
 import javax.transaction.TransactionRolledbackException;
+
+import com.metavize.mvvm.MailSender;
+import com.metavize.mvvm.MailSettings;
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.security.*;
 import com.metavize.mvvm.snmp.SnmpManager;
 import com.metavize.mvvm.snmp.SnmpManagerImpl;
+import com.metavize.mvvm.util.TransactionWork;
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 class AdminManagerImpl implements AdminManager
 {
@@ -64,7 +65,8 @@ class AdminManagerImpl implements AdminManager
                         adminSettings = new AdminSettings();
                         adminSettings.addUser(new User(INITIAL_USER_LOGIN,
                                                        INITIAL_USER_PASSWORD,
-                                                       INITIAL_USER_NAME));
+                                                       INITIAL_USER_NAME,
+                                                       false));
                         s.save(adminSettings);
 
                     }
@@ -85,7 +87,7 @@ class AdminManagerImpl implements AdminManager
             } catch (Exception x) {
                 // Already logged.
             }
-        
+
         logger.info("Initialized AdminManager");
     }
 

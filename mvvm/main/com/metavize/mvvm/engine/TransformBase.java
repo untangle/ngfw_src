@@ -56,6 +56,7 @@ public abstract class TransformBase implements Transform
     private final Object stateChangeLock = new Object();
 
     private TransformState runState;
+    private boolean wasStarted = false;
     private TransformStats stats = new TransformStats();
 
     protected TransformBase()
@@ -81,7 +82,7 @@ public abstract class TransformBase implements Transform
 
     public final boolean neverStarted()
     {
-        if (TransformState.RUNNING == runState) {
+        if (wasStarted || TransformState.RUNNING == runState) {
             return false;
         } else {
             TransactionWork<Integer> tw = new TransactionWork<Integer>()
@@ -297,6 +298,10 @@ public abstract class TransformBase implements Transform
         runState = ts;
 
         if (syncState) {
+            if (TransformState.RUNNING == ts) {
+                wasStarted = true;
+            }
+
             TransactionWork tw = new TransactionWork()
                 {
                     public boolean doWork(Session s)
