@@ -119,10 +119,10 @@ class TransformManagerImpl implements TransformManager
             public int compare(Tid t1, Tid t2) {
                 TransformContextImpl tci1 = tids.get(t1);
                 TransformContextImpl tci2 = tids.get(t2);
-                int rpi1 = tci1.getMackageDesc().getRackPosition();
-                int rpi2 = tci2.getMackageDesc().getRackPosition();
+                int rpi1 = tci1.getMackageDesc().getViewPosition();
+                int rpi2 = tci2.getMackageDesc().getViewPosition();
                 if (rpi1 == rpi2)
-                    return 0;
+                    return tci1.getMackageDesc().getName().compareToIgnoreCase(tci2.getMackageDesc().getName());
                 else if (rpi1 < rpi2)
                     return -1;
                 else

@@ -11,10 +11,10 @@
 
 package com.metavize.gui.util;
 
+import com.metavize.gui.transform.MTransformJButton;
 import javax.swing.*;
 
 import com.metavize.mvvm.*;
-
 
 public class Visitor implements ProgressVisitor{
     private boolean isDone = false;
@@ -24,11 +24,20 @@ public class Visitor implements ProgressVisitor{
     private int currentFileIndex = 0;
     private int currentByteIndex = 0;
     private int currentByteIncrement = 0;
+    private Object visualizer;
     private JProgressBar progressBar;
+    private MTransformJButton mTransformJButton;
+    private boolean isProgressBar;
     // public methods ----------------------------------------------------
 
     public Visitor(JProgressBar progressBar){
-	this.progressBar = progressBar;
+	visualizer = progressBar;
+	isProgressBar = true;
+    }
+
+    public Visitor(MTransformJButton mTransformJButton){
+	visualizer = mTransformJButton;
+	isProgressBar = false;
     }
     
     public boolean isDone(){
@@ -49,11 +58,19 @@ public class Visitor implements ProgressVisitor{
     public void visitDownloadProgress(final DownloadProgress dp){
 	SwingUtilities.invokeLater( new Runnable(){ public void run(){
 	    currentByteIncrement = dp.getSize();
-	    String progressString = "Downloading file " + (currentFileIndex+1) + " of " + fileCountTotal
-		+ " (" + byteCountTotal/1000 + "KBytes " + "@ "  + dp.getSpeed() + ")";
-	    progressBar.setString( progressString );
+	    String progressString;
 	    float currentPercentComplete = ((float)(currentByteIndex + dp.getBytesDownloaded())) / ((float)byteCountTotal);
-	    progressBar.setValue( (int) (90f*currentPercentComplete) );
+	    int progressIndex = (int) (90f*currentPercentComplete);
+	    if(isProgressBar){
+		progressString = "Downloading file " + (currentFileIndex+1) + " of " + fileCountTotal
+		+ " (" + byteCountTotal/1000 + "KBytes " + "@ "  + dp.getSpeed() + ")";
+		((JProgressBar)visualizer).setString( progressString );
+		((JProgressBar)visualizer).setValue( progressIndex );
+	    }
+	    else{
+		progressString = "Dload "  + dp.getSpeed();
+		((MTransformJButton)visualizer).setProgress(progressString, progressIndex);
+	    }
 	}});
     }    
     
@@ -64,8 +81,13 @@ public class Visitor implements ProgressVisitor{
 	    currentByteIndex += currentByteIncrement;
 	    currentFileIndex++;
 	    if(!dc.getSuccess()){
-		progressBar.setString( "Download failed.  Please try again." );
-		progressBar.setValue( 100 );
+		if(isProgressBar){
+		    ((JProgressBar)visualizer).setString( "Download failed.  Please try again." );
+		    ((JProgressBar)visualizer).setValue(100);
+		}
+		else{
+		    ((MTransformJButton)visualizer).setProgress("Failed", 100);
+		}
 	    }
 	}});
     }
@@ -74,11 +96,24 @@ public class Visitor implements ProgressVisitor{
 	isSuccessful = ic.getSuccess();
 	isDone = true;
 	SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    if(ic.getSuccess())
-		progressBar.setString( "Download successful." );
-	    else
-		progressBar.setString( "Download failed.  Please try again." );
-	    progressBar.setValue( 100 );
+	    if(ic.getSuccess()){
+		if(isProgressBar){
+		    ((JProgressBar)visualizer).setString( "Download successful." );
+		    ((JProgressBar)visualizer).setValue(100);
+		}
+		else{
+		    ((MTransformJButton)visualizer).setProgress("Download complete", 100);
+		}
+	    }
+	    else{
+		if(isProgressBar){
+		    ((JProgressBar)visualizer).setString( "Download failed.  Please try again." );
+		    ((JProgressBar)visualizer).setValue(100);
+		}
+		else{
+		    ((MTransformJButton)visualizer).setProgress("Failed", 100);
+		}
+	    }
 	}});
     }
 
@@ -86,8 +121,13 @@ public class Visitor implements ProgressVisitor{
 	isSuccessful = false;
 	isDone = true;
 	SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    progressBar.setString( "Download timed out.  Please try again." );
-	    progressBar.setValue( 100 );
+	    if(isProgressBar){
+		((JProgressBar)visualizer).setString( "Download timed out.  Please try again." );
+		((JProgressBar)visualizer).setValue(100);
+	    }
+	    else{
+		((MTransformJButton)visualizer).setProgress("Failed", 100);
+	    }
 	}});
     }
 }

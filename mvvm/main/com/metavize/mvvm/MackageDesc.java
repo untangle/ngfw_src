@@ -44,7 +44,7 @@ public class MackageDesc implements Serializable
     private final String price;
     private final byte[] orgIcon;
     private final byte[] descIcon;
-    private final int rackPosition;
+    private final int viewPosition;
     private final boolean isService;
 
     public MackageDesc(Map<String, String> m, String installedVersion)
@@ -75,9 +75,9 @@ public class MackageDesc implements Serializable
         // price
         price = m.get("price");
 
-        // rack position
-        String v = m.get("rack-position");
-        rackPosition = null == v ? UNKNOWN_POSITION : Integer.parseInt(v);
+        // view position (used for store and toolbox)
+        String v = m.get("view-position");
+        viewPosition = null == v ? UNKNOWN_POSITION : Integer.parseInt(v);
 
         // service or not
         if (isCasing) {
@@ -206,9 +206,9 @@ public class MackageDesc implements Serializable
         return retVal;
     }
 
-    public int getRackPosition()
+    public int getViewPosition()
     {
-        return rackPosition;
+        return viewPosition;
     }
 
     public boolean isService()

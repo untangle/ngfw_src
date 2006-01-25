@@ -40,7 +40,7 @@ Architecture: any
 Depends: mvvm
 XB-Display-Name: Attack Shield
 XB-Website: http://www.metavize.com/attackshield.html
-XB-Rack-Position: 1010
+XB-View-Position: 1010
 XB-Is-Service: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVHja5Fh7bBzFGZ+ZnX3d
@@ -151,7 +151,7 @@ Architecture: any
 Depends: mvvm, http-casing
 XB-Display-Name: Spyware Blocker
 XB-Website: http://www.metavize.com/spyware.html
-XB-Rack-Position: 20
+XB-View-Position: 20
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVHja5Fh7bBzFGZ+ZnX3d
  03e2c04cxwjjxI4fCSQhxKA0oYUUCRKpqgh/gPoHsahUqVKroioghT7U/lkJBbWi/1R9pA/1
@@ -237,7 +237,7 @@ Architecture: any
 Depends: mvvm, http-casing, urlblacklist.com-mv
 XB-Display-Name: Web Content Control
 XB-Website: http://www.metavize.com/webcontrol.html
-XB-Rack-Position: 30
+XB-View-Position: 30
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0RVh0
  U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVHja5Fh7bBzFGZ+ZnX3d03e2c04c
  xwjjxI4fCSQhxKA0oYUUCRKpqgh/gPoHsahUqVKroioghT7U/lkJBbWi/1R9pA/1JUGlVEALFdSh
@@ -334,7 +334,7 @@ Architecture: any
 Depends: mvvm, virus-base, hauri-mv, http-casing, ftp-casing, mail-casing
 XB-Display-Name: Hauri AntiVirus Scanner
 XB-Website: http://www.metavize.com/hauri_antivirus.html
-XB-Rack-Position: 60
+XB-View-Position: 60
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
  AAAKTWlDQ1BQaG90b3Nob3AgSUNDIHByb2ZpbGUAAHjanVN3WJP3Fj7f92UPVkLY8LGXbIEA
  IiOsCMgQWaIQkgBhhBASQMWFiApWFBURnEhVxILVCkidiOKgKLhnQYqIWotVXDjuH9yntX16
@@ -447,7 +447,7 @@ Architecture: any
 Depends: mvvm, virus-base, kav-mv, http-casing, ftp-casing, mail-casing
 XB-Display-Name: Kaspersky AntiVirus Scanner
 XB-Website: http://www.metavize.com/kaspersky_antivirus.html
-XB-Rack-Position: 50
+XB-View-Position: 50
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
  AAAABGdBTUEAALGOfPtRkwAAACBjSFJNAAB6JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAA
  F2+SX8VGAAAJBUlEQVR42tSZe0xcVR7HP+feOzN0QmeGGahApa9oisGisVV0XZt0k9pW7eOP
@@ -527,7 +527,7 @@ Architecture: any
 Depends: mvvm, virus-base, clamav-mv, http-casing, ftp-casing, mail-casing
 XB-Display-Name: Clam AntiVirus Scanner
 XB-Website: http://www.metavize.com/clam_antivirus.html
-XB-Rack-Position: 70
+XB-View-Position: 70
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
  AAAABGdBTUEAANjr9RwUqgAAACBjSFJNAABtmAAAc44AAPJxAACDbAAAg7sAANTIAAAx7AAA
  GbyeiMU/AAAOWElEQVR42syZeWxd1Z3HP+fub19tPxs7dmycGCcBTEgCARJoIYGulKqb2qmQ
@@ -633,7 +633,7 @@ Depends: mvvm
 Conflicts: protoanalyzer-transform
 XB-Display-Name: Rogue Protocol Control
 XB-Website: http://www.metavize.com/protocolcontrol.html
-XB-Rack-Position: 80
+XB-View-Position: 80
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVHja5Fh7bBzFGZ+ZnX3d
  03e2c04cxwjjxI4fCSQhxKA0oYUUCRKpqgh/gPoHsahUqVKroioghT7U/lkJBbWi/1R9pA/1
@@ -753,7 +753,7 @@ Architecture: any
 Depends: mvvm, dnsmasq, ftp-casing
 XB-Display-Name: Network Sharing
 XB-Website: http://www.metavize.com/networksharing.html
-XB-Rack-Position: 1000
+XB-View-Position: 1000
 XB-Is-Service: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVHja5Fh7bBzFGZ+ZnX3d
@@ -847,7 +847,7 @@ Architecture: any
 Depends: mvvm
 XB-Display-Name: Firewall
 XB-Website: http://www.metavize.com/firewall.html
-XB-Rack-Position: 90
+XB-View-Position: 90
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVHja5Fh7bBzFGZ+ZnX3d
  03e2c04cxwjjxI4fCSQhxKA0oYUUCRKpqgh/gPoHsahUqVKroioghT7U/lkJBbWi/1R9pA/1
@@ -933,7 +933,7 @@ Architecture: any
 Depends: mvvm, spam-base, spamc-mv, mail-casing
 XB-Display-Name: SpamGuard
 XB-Website: http://www.metavize.com/spam.html
-XB-Rack-Position: 1
+XB-View-Position: 1
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVHja5Fh7bBzFGZ+ZnX3d
  03e2c04cxwjjxI4fCSQhxKA0oYUUCRKpqgh/gPoHsahUqVKroioghT7U/lkJBbWi/1R9pA/1
@@ -1047,7 +1047,7 @@ Architecture: any
 Depends: mvvm, spam-base, clamav-mv, mail-casing
 XB-Display-Name: PhishNet
 XB-Website: http://www.metavize.com/phishnet.html
-XB-Rack-Position: 10
+XB-View-Position: 10
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVHja5Fh7bBzFGZ+ZnX3d
  03e2c04cxwjjxI4fCSQhxKA0oYUUCRKpqgh/gPoHsahUqVKroioghT7U/lkJBbWi/1R9pA/1
@@ -1175,7 +1175,7 @@ Architecture: any
 Depends: mvvm
 XB-Display-Name: Test
 XB-Website: http://www.metavize.com
-XB-Rack-Position: 2002
+XB-View-Position: 2002
 XB-Org-Icon:  iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVHja5Fh7bBzFGZ+ZnX3d
  03e2c04cxwjjxI4fCSQhxKA0oYUUCRKpqgh/gPoHsahUqVKroioghT7U/lkJBbWi/1R9pA/1
@@ -1316,7 +1316,7 @@ Architecture: any
 Depends: mvvm, openvpn, nsis, nsis-mv, sysutils, zip
 XB-Display-Name: OpenVPN
 XB-Website: http://www.metavize.com/openvpn.html
-XB-Rack-Position: 990
+XB-View-Position: 990
 XB-Is-Service: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVHja5Fh7bBzFGZ+ZnX3d
@@ -1420,7 +1420,7 @@ Architecture: any
 Depends: mvvm
 XB-Display-Name: HippieSoft Exploder
 XB-Website: http://www.metavize.com/openvpn.html
-XB-Rack-Position: 990
+XB-View-Position: 990
 XB-Is-Service: true
 Description: HippieSoft Exploder
  The HippieSoft exploder.
@@ -1430,7 +1430,7 @@ Architecture: any
 Depends: mvvm, http-casing, snort-rules-default
 XB-Display-Name: Intrusion Prevention
 XB-Website: http://www.metavize.com/ips.html
-XB-Rack-Position: 75
+XB-View-Position: 75
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVHja5Fh7bBzFGZ+ZnX3d
  03e2c04cxwjjxI4fCSQhxKA0oYUUCRKpqgh/gPoHsahUqVKroioghT7U/lkJBbWi/1R9pA/1
@@ -1535,7 +1535,7 @@ Architecture: any
 Depends: mvvm
 XB-Display-Name: EdgeReport
 XB-Website: http://www.metavize.com/reports.html
-XB-Rack-Position: 1020
+XB-View-Position: 1020
 XB-Is-Service: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVHja5Fh7bBzFGZ+ZnX3d
@@ -1779,4 +1779,4 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMg
  qeI2NTVV5rnD3YvTGFJGFIie2kybsf7rTv7Gs/NrHv4jv4mJCcoq9ceyNmt2bXSr+sK1/2fC
  8fFxQUGBTa+YTKarqyt2YDQa1b8XvsYI+rvZxM+Vb07/kf0SvX2q/d/bXwIMAJ+e3tKQEpgP
 Description: The Metavize Virtual Machine (MVVM)
- The Metavize Virtual Machine Container for your
+ The Metavize Virtual Machine Container for your EdgeGuard

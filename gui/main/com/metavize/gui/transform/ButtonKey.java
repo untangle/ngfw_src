@@ -17,11 +17,11 @@ import com.metavize.mvvm.*;
 public class ButtonKey implements Comparable<ButtonKey> {
 
     private String applianceName;
-    private int rackPosition;
+    private int viewPosition;
     private boolean isService;
 
     public ButtonKey(MTransformJButton mTransformJButton){
-        init(mTransformJButton.getName(), mTransformJButton.getRackPosition(), mTransformJButton.getMackageDesc().isService());
+        init(mTransformJButton.getName(), mTransformJButton.getViewPosition(), mTransformJButton.getMackageDesc().isService());
     }
     
     public ButtonKey(MTransformJPanel mTransformJPanel){
@@ -29,29 +29,28 @@ public class ButtonKey implements Comparable<ButtonKey> {
     }
     
     public ButtonKey(MackageDesc mackageDesc){
-        init(mackageDesc.getName(), mackageDesc.getRackPosition(), mackageDesc.isService());
+        init(mackageDesc.getName(), mackageDesc.getViewPosition(), mackageDesc.isService());
     }
 
-    public ButtonKey(String applianceName, int rackPosition, boolean isService){
-        init(applianceName, rackPosition, isService);
+    public ButtonKey(String applianceName, int viewPosition, boolean isService){
+        init(applianceName, viewPosition, isService);
     }
-
         
-    private void init(String applianceName, int rackPosition, boolean isService){
+    private void init(String applianceName, int viewPosition, boolean isService){
         this.applianceName = applianceName;
-        this.rackPosition = rackPosition;
+        this.viewPosition = viewPosition;
 	this.isService = isService;
     }
     
-    public int getRackPosition(){ return rackPosition; }
+    public int getViewPosition(){ return viewPosition; }
     public String getApplianceName(){ return applianceName; }
     public boolean isService(){ return isService; }
     
     public int compareTo(ButtonKey b){
 	if( this.isService() == b.isService() ){
-	    if( this.getRackPosition() < b.getRackPosition() )
+	    if( this.getViewPosition() < b.getViewPosition() )
 		return -1;
-	    else if ( this.getRackPosition() > b.getRackPosition() )
+	    else if ( this.getViewPosition() > b.getViewPosition() )
 		return 1;
 	    else
 		return this.getApplianceName().compareToIgnoreCase( b.getApplianceName() );

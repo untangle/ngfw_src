@@ -233,9 +233,9 @@ public class NetworkIPJPanel extends javax.swing.JPanel implements Savable, Refr
 
                 setLayout(new java.awt.GridBagLayout());
 
-                setMaximumSize(new java.awt.Dimension(563, 454));
-                setMinimumSize(new java.awt.Dimension(563, 454));
-                setPreferredSize(new java.awt.Dimension(563, 454));
+                setMaximumSize(new java.awt.Dimension(563, 482));
+                setMinimumSize(new java.awt.Dimension(563, 482));
+                setPreferredSize(new java.awt.Dimension(563, 482));
                 dhcpJPanel.setLayout(new java.awt.GridBagLayout());
 
                 dhcpJPanel.setBorder(new javax.swing.border.TitledBorder(null, "External IP Settings", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
@@ -405,7 +405,7 @@ public class NetworkIPJPanel extends javax.swing.JPanel implements Savable, Refr
                 dhcpJPanel.add(jSeparator4, gridBagConstraints);
 
                 jLabel9.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel9.setText("<html><b>Renew DHCP Lease</b> tells EdgeGuard to request new IP settings from the DHCP server.  This button is enabled only if DHCP is currently being used.</html>");
+                jLabel9.setText("<html><b>Renew DHCP Lease</b> tells EdgeGuard to request new IP settings from the DHCP server.  This button is enabled only if your saved settings specify that External IP Settings are being Automatically Set from the network's DHCP server.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -434,7 +434,7 @@ public class NetworkIPJPanel extends javax.swing.JPanel implements Savable, Refr
                 dhcpJPanel.add(jSeparator3, gridBagConstraints);
 
                 jLabel10.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel10.setText("<html><b>Connectivity Test</b> tells you if EdgeGuard can contact DNS and the internet with the settings you have just saved.</html>");
+                jLabel10.setText("<html><b>Connectivity Test</b> tells you if EdgeGuard can contact DNS and the internet, using your currently saved settings.  If you have made changes to the above settings, you must save them before this button will be enabled.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;

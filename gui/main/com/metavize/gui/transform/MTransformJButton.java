@@ -37,7 +37,6 @@ public class MTransformJButton extends JButton {
     private MackageDesc mackageDesc;
     private GridBagConstraints gridBagConstraints;
     private JProgressBar statusJProgressBar;
-    private JLabel statusJLabel;
     private JLabel nameJLabel;
     private JLabel organizationIconJLabel;
     private JLabel descriptionIconJLabel;
@@ -107,35 +106,23 @@ public class MTransformJButton extends JButton {
 
         //status progressbar
         statusJProgressBar = new JProgressBar();
-        statusJProgressBar.setBorderPainted(false);
+        statusJProgressBar.setBorderPainted(true);
         //statusJProgressBar.setVisible(true);
         statusJProgressBar.setVisible(false);
-        statusJProgressBar.setStringPainted(false);
-        statusJProgressBar.setOpaque(false);
+        statusJProgressBar.setStringPainted(true);
+        statusJProgressBar.setOpaque(true);
         statusJProgressBar.setIndeterminate(false);
         statusJProgressBar.setValue(0);
         statusJProgressBar.setForeground(new java.awt.Color(68, 91, 255));
         statusJProgressBar.setFont(new java.awt.Font("Dialog", 0, 12));
         statusJProgressBar.setPreferredSize(new java.awt.Dimension(130, 16));
         statusJProgressBar.setMaximumSize(new java.awt.Dimension(130, 16));
-        statusJProgressBar.setMinimumSize(new java.awt.Dimension(50, 16));
-        //status label
-        statusJLabel = new JLabel();
-        statusJLabel.setHorizontalAlignment(JLabel.CENTER);
-        statusJLabel.setOpaque(false);
-        statusJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        statusJLabel.setPreferredSize(new java.awt.Dimension(130, 16));
-        statusJLabel.setMaximumSize(new java.awt.Dimension(130, 16));
-        statusJLabel.setMinimumSize(new java.awt.Dimension(50, 16));
+        statusJProgressBar.setMinimumSize(new java.awt.Dimension(130, 16));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 0.0;
-        gridBagConstraints.weighty = 0.0;
-        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-        add(statusJLabel, gridBagConstraints);
+	gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         add(statusJProgressBar, gridBagConstraints);
 
         // TOOLTIP
@@ -149,7 +136,12 @@ public class MTransformJButton extends JButton {
     }
 
     public MTransformJButton duplicate(){
-        return new  MTransformJButton( mackageDesc );
+	MTransformJButton newMTransformJButton = new MTransformJButton( mackageDesc );
+	Dimension currentDimension = getSize();
+	newMTransformJButton.setMinimumSize(currentDimension);
+	newMTransformJButton.setMaximumSize(currentDimension);
+	newMTransformJButton.setPreferredSize(currentDimension);
+	return newMTransformJButton;
     }
 
 
@@ -159,7 +151,7 @@ public class MTransformJButton extends JButton {
     public String getShortDescription(){ return new String( mackageDesc.getShortDescription() ); }
     public String getName(){ return mackageDesc.getName(); }
     public String getDisplayName(){ return mackageDesc.getDisplayName(); }
-    public int    getRackPosition(){ return mackageDesc.getRackPosition(); }
+    public int    getViewPosition(){ return mackageDesc.getViewPosition(); }
     public String getPrice(){ return mackageDesc.getPrice(); }
     public String getWebpage(){ return mackageDesc.getWebsite(); }
     ////////////////////////////////////////////
@@ -170,55 +162,59 @@ public class MTransformJButton extends JButton {
 
 
     // VIEW UPDATING ///////////
-    private void updateView(final String message, final String toolTip, final boolean isEnabled, boolean doNow){
+    private void updateView(final String message, final int progress, final String toolTip, final boolean isEnabled, boolean doNow){
 	if(doNow){
-	    MTransformJButton.this.setMessage(message);
+	    MTransformJButton.this.setProgress(message, progress);
 	    MTransformJButton.this.setTT(toolTip);
 	    MTransformJButton.this.setEnabled(isEnabled);
 	}
 	else{
 	    SwingUtilities.invokeLater( new Runnable() { public void run() {
-		MTransformJButton.this.setMessage(message);
+		MTransformJButton.this.setProgress(message, progress);
 		MTransformJButton.this.setTT(toolTip);
 		MTransformJButton.this.setEnabled(isEnabled);
 	    } } );
 	}
     }
 
-    public void setDeployableView(){ updateView(null, "Ready to be installed into the rack.", true, false); }
-    public void setProcurableView(){ updateView(null, "Ready to be purchased from the store.", true, false); }
-    public void setDeployedView(){ updateView(null, "Installed into rack.", false, false); }
+    public void setDeployableView(){ updateView(null, -1, "Ready to be installed into the rack.", true, false); }
+    public void setProcurableView(){ updateView(null, -1, "Ready to be purchased from the store.", true, false); }
+    public void setDeployedView(){ updateView(null, -1, "Installed into rack.", false, false); }
 
-    public void setDeployingView(){ updateView("Installing", "Installing.", false, true); }
-    public void setProcuringView(){ updateView("Purchasing", "Purchasing.", false, true); }
-    public void setRemovingFromToolboxView(){ updateView("Removing", "Removing from the toolbox.", false, true); }
-    public void setRemovingFromRackView(){ updateView("Removing", "Removing from the rack.", false, false); }
+    public void setDeployingView(){ updateView("Installing", 101, "Installing.", false, true); }
+    public void setProcuringView(){ updateView("Waiting", 101, "Purchasing.", false, true); }
+    public void setRemovingFromToolboxView(){ updateView("Removing", 101, "Removing from the toolbox.", false, true); }
+    public void setRemovingFromRackView(){ updateView("Removing", 101, "Removing from the rack.", false, false); }
 
-    public void setFailedInitView(){ updateView(null, "Failed graphical initialization.", false, false); }
-    public void setFailedProcureView(){ updateView(null, "Failed purchase.", true, false); }
-    public void setFailedDeployView(){ updateView(null, "Failed installation.", true, false); }
-    public void setFailedRemoveFromToolboxView(){ updateView(null, "Failed removal from toolbox.", true, false); }
-    public void setFailedRemoveFromRackView(){ updateView(null, "Failed removal from rack.", false, false); }
+    public void setFailedInitView(){ updateView(null, -1, "Failed graphical initialization.", false, false); }
+    public void setFailedProcureView(){ updateView(null, -1, "Failed purchase.", true, false); }
+    public void setFailedDeployView(){ updateView(null, -1, "Failed installation.", true, false); }
+    public void setFailedRemoveFromToolboxView(){ updateView(null, -1, "Failed removal from toolbox.", true, false); }
+    public void setFailedRemoveFromRackView(){ updateView(null, -1, "Failed removal from rack.", false, false); }
     /////////////////////////////
 
 
     // VIEW UPDATE HELPERS //////////////////
+
     public void setTT(String status){
 	this.setToolTipText( "<html>" + "<b>Description:</b><br>" + toolTipString + "<br><br>" + "<b>Status:</b><br>" + status + "</html>");
     }
 
-    public void setMessage(String message){
-        if(message == null){
-            statusJLabel.setVisible(false);
+    public void setProgress(String message, int progress){
+	statusJProgressBar.setString(message);
+        if(progress < 0){
 	    statusJProgressBar.setIndeterminate(false);
 	    statusJProgressBar.setVisible(false);
         }
-        else{
-            statusJLabel.setText(message);
-            statusJLabel.setVisible(true);
-	    statusJProgressBar.setIndeterminate(true);
+        else if(progress <= 100){
+	    statusJProgressBar.setIndeterminate(false);
+	    statusJProgressBar.setValue(progress);
 	    statusJProgressBar.setVisible(true);
         }
+	else{
+	    statusJProgressBar.setIndeterminate(true);
+	    statusJProgressBar.setVisible(true);
+	}
     }
 
     public void setEnabled(boolean enabled){

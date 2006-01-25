@@ -49,7 +49,6 @@ import com.metavize.mvvm.policy.*;
 public class PolicyStateMachine implements ActionListener {
 
     // MVVM DATA MODELS (USED ONLY DURING INIT) //////
-    private Map<String,MackageDesc> purchasableMackageMap;
     private Map<String,MackageDesc> installedMackageMap;
     private Map<Policy,List<Tid>> policyTidMap;
     private Map<Policy,Map<String,Object>> policyNameMap;
@@ -82,8 +81,13 @@ public class PolicyStateMachine implements ActionListener {
     private int lastToolboxScrollPosition = -1;
     private Map<Policy,Integer> lastRackScrollPosition;
     private volatile static int applianceLoadProgress;
+    // THREAD QUEUES & THREADS /////////
+    BlockingQueue<MTransformJButton> purchaseBlockingQueue;
+    StoreModelThread storeModelThread;
     // CONSTANTS /////////////
     private GridBagConstraints buttonGridBagConstraints;
+    private GridBagConstraints storeProgressGridBagConstraints;
+    private GridBagConstraints storeSpacerGridBagConstraints;
     private GridBagConstraints applianceGridBagConstraints;
     private GridBagConstraints rackGridBagConstraints;
     private GridBagConstraints rackSeparatorGridBagConstraints;
@@ -95,19 +99,20 @@ public class PolicyStateMachine implements ActionListener {
     private static final String POLICY_MANAGER_OPTION = "Show Policy Manager";
     private static final int CONCURRENT_LOAD_MAX = 2;
     private static Semaphore loadSemaphore;
-    // DOWNLOAD DELAYS //////////////
-    //private static final int DOWNLOAD_INITIAL_SLEEP_MILLIS = 3000;
-    private static final int DOWNLOAD_SLEEP_MILLIS = 500;
+    // STORE DELAYS //////////////////
+    private static final long STORE_UPDATE_CHECK_SLEEP = 24l*60l*60l*1000l;
+    // DOWNLOAD DELAYS ///////////////
+    private static final int DOWNLOAD_CHECK_SLEEP_MILLIS = 500;
     private static final int DOWNLOAD_FINAL_PAUSE_MILLIS = 1000;
     // INSTALL DELAYS ////////////////
-    private static final int INSTALL_CHECK_TIMEOUT_MILLIS = 3 * 60 * 1000;
-    private static final int INSTALL_SLEEP_MILLIS = 5 * 1000;
+    private static final int INSTALL_CHECK_SLEEP_MILLIS = 500;
+    private static final int INSTALL_FINAL_PAUSE_MILLIS = 1000;
+    private static final int INSTALL_CHECK_TIMEOUT_MILLIS = 3*60*1000; // (3 minutes)
 
     public PolicyStateMachine(JTabbedPane actionJTabbedPane, JComboBox viewSelector, JPanel rackViewJPanel,
 			      JScrollPane toolboxJScrollPane, JPanel policyToolboxSocketJPanel, JPanel serviceToolboxSocketJPanel,
 			      JPanel storeJPanel, JButton policyManagerJButton, JScrollPane rackJScrollPane) {
 	// MVVM DATA MODELS
-	purchasableMackageMap = new HashMap<String,MackageDesc>();
 	installedMackageMap = new HashMap<String,MackageDesc>();
 	policyTidMap = new LinkedHashMap<Policy,List<Tid>>(); // Linked so view selector order is consistent (initially)
 	policyNameMap = new HashMap<Policy,Map<String,Object>>();
@@ -139,10 +144,20 @@ public class PolicyStateMachine implements ActionListener {
 	this.actionJTabbedPane = actionJTabbedPane;
 	this.viewSelector = viewSelector;
 	lastRackScrollPosition = new HashMap<Policy,Integer>();
+	// THREAD QUEUES & THREADS /////////
+	purchaseBlockingQueue = new ArrayBlockingQueue<MTransformJButton>(1000);
+	new MoveFromStoreToToolboxThread();
+	storeModelThread = new StoreModelThread();
 	// CONSTANTS
         buttonGridBagConstraints = new GridBagConstraints(0, GridBagConstraints.RELATIVE, 1, 1, 1d, 0d,
 							  GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
 							  new Insets(0,1,3,3), 0, 0);
+        storeProgressGridBagConstraints = new GridBagConstraints(0, 0, 1, 1, 1d, 0d,
+							  GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+							  new Insets(0,4,0,4), 0, 0);
+        storeSpacerGridBagConstraints = new GridBagConstraints(0, GridBagConstraints.RELATIVE, 1, 1, 0d, 1d,
+							       GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+							       new Insets(0,0,0,0), 0, 0);
         applianceGridBagConstraints = new GridBagConstraints(0, GridBagConstraints.RELATIVE, 1, 1, 0d, 0d,
 							     GridBagConstraints.CENTER, GridBagConstraints.NONE,
 							     new Insets(1,0,0,0), 0, 0);
@@ -169,7 +184,6 @@ public class PolicyStateMachine implements ActionListener {
 	    // the order of the following three is based on their output to the progress bar, thats all
 	    initRackModel(Util.getStatusJProgressBar());
 	    initToolboxModel(Util.getStatusJProgressBar());
-	    initStoreModel(Util.getStatusJProgressBar());
 	    initViewSelector();	    
 	    // CACHING OF CASING CLASSES SO THE PROTOCOL SETTINGS DIALOG LOADS FASTER
 	    loadAllCasings(false);
@@ -445,6 +459,7 @@ public class PolicyStateMachine implements ActionListener {
 	    focusInToolbox(targetMTransformJButton, true);
 	}
     }
+    /*
     private class MoveFromToolboxToStoreThread extends Thread{
 	private MTransformJButton mTransformJButton;
 	private Vector<MTransformJButton> buttonVector;
@@ -502,32 +517,54 @@ public class PolicyStateMachine implements ActionListener {
 	    }
 	}
     }
-    public Thread moveFromStoreToToolbox(final MTransformJButton mTransformJButton, final JProgressBar progressBar, final JDialog dialog){
-	return new MoveFromStoreToToolboxThread(mTransformJButton, progressBar, dialog);
+    */
+    public void moveFromStoreToToolbox(final MTransformJButton mTransformJButton){
+	mTransformJButton.setProcuringView();
+	try{
+	    purchaseBlockingQueue.put(mTransformJButton);
+	}
+	catch(Exception e){
+	    Util.handleExceptionNoRestart("Interrupted while waiting to purchase", e);
+	    mTransformJButton.setFailedProcureView();
+	}
     }
     private class MoveFromStoreToToolboxThread extends Thread{
-	private MTransformJButton mTransformJButton;
-	private JProgressBar progressBar;
-	private JDialog dialog;
-	public MoveFromStoreToToolboxThread(final MTransformJButton mTransformJButton, final JProgressBar progressBar, final JDialog dialog){
-	    this.mTransformJButton = mTransformJButton;
-	    this.progressBar = progressBar;
-	    this.dialog = dialog;
-	    ButtonKey buttonKey = new ButtonKey(mTransformJButton);
+	public MoveFromStoreToToolboxThread(){
 	    setContextClassLoader( Util.getClassLoader() );
-	    setName("MVCLIENT-MoveFromStoreToToolboxThread: " + mTransformJButton.getDisplayName() );
-	    mTransformJButton.setProcuringView();
+	    setName("MVCLIENT-MoveFromStoreToToolboxThread");
 	    start();
 	}
 	public void run(){
+	    while(true){
+		MTransformJButton purchasedMTransformJButton;
+		try{
+		    purchasedMTransformJButton = purchaseBlockingQueue.take();
+		    purchase(purchasedMTransformJButton);
+		}
+		catch(Exception e){
+		    Util.handleExceptionNoRestart("Interrupted while waiting to purchase", e);
+		}
+	    }
+	}
+	private void purchase(final MTransformJButton mTransformJButton){
 	    try{
 		// DO THE DOWNLOAD
-		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-		    progressBar.setValue(0);
-		    progressBar.setIndeterminate(false);
-		}});
+		MackageDesc[] originalUninstalledMackages = Util.getToolboxManager().uninstalled();
+		MackageDesc[] currentUninstalledMackages = null;
+		//// MAKE SURE WE HAVENT ALREADY IMPLICITLY DOWNLOADED THIS PACKAGE AS PART OF A PREVIOUS BUNDLE
+		boolean found = false;
+		for( MackageDesc mackageDesc : originalUninstalledMackages ){
+		    if(mTransformJButton.getName().equals(mackageDesc.getName())){
+			found = true;
+			break;
+		    }
+		}
+		if( !found )
+		    return; // BECAUSE THE PACKAGE WAS ALREADY PURCHASED
+		MackageDesc[] originalInstalledMackages = Util.getToolboxManager().installed();
+		MackageDesc[] currentInstalledMackages = null;
                 long key = Util.getToolboxManager().install(mTransformJButton.getName());
-		com.metavize.gui.util.Visitor visitor = new com.metavize.gui.util.Visitor(progressBar);
+		com.metavize.gui.util.Visitor visitor = new com.metavize.gui.util.Visitor(mTransformJButton);
 		while (true) {
 		    java.util.List<InstallProgress> lip = Util.getToolboxManager().getProgress(key);
 		    for (InstallProgress ip : lip) {
@@ -538,74 +575,86 @@ public class PolicyStateMachine implements ActionListener {
 		    if( visitor.isDone() )
 			break;
 		    if (0 == lip.size()) {
-			Thread.currentThread().sleep(DOWNLOAD_SLEEP_MILLIS);
+			Thread.currentThread().sleep(DOWNLOAD_CHECK_SLEEP_MILLIS);
 		    }
 		}
 		if( !visitor.isSuccessful() )
 		    throw new Exception();
+		Thread.currentThread().sleep(DOWNLOAD_FINAL_PAUSE_MILLIS);
+
 		// DO THE INSTALL
+		long installStartTime = System.currentTimeMillis();
 		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-		    progressBar.setValue(0);
-		    progressBar.setString("Installing...");
-		    progressBar.setIndeterminate(true);
+		    mTransformJButton.setProgress("Installing...", 101);
 		}});
-		long installationFirstCheckTime = System.currentTimeMillis();
 		boolean mackageInstalled = false;
-		while( !mackageInstalled && ((System.currentTimeMillis() - installationFirstCheckTime) < INSTALL_CHECK_TIMEOUT_MILLIS) ){
-		    MackageDesc[] installedMackages = Util.getToolboxManager().installed();
-		    for( MackageDesc mackageDesc : installedMackages ){
+		while( !mackageInstalled && ((System.currentTimeMillis() - installStartTime) < INSTALL_CHECK_TIMEOUT_MILLIS) ){
+		    currentInstalledMackages = Util.getToolboxManager().installed();
+		    for( MackageDesc mackageDesc : currentInstalledMackages ){
 			if(mackageDesc.getName().equals(mTransformJButton.getName())){
 			    mackageInstalled = true;
 			    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-				progressBar.setValue(100);
-				progressBar.setString("Installation successful.");
-				progressBar.setIndeterminate(false);
+				mTransformJButton.setProgress("Success", 100);
 			    }});			    
 			    break;
 			}
 		    }
 		    if( !mackageInstalled )
-			Thread.currentThread().sleep(INSTALL_SLEEP_MILLIS);
+			Thread.currentThread().sleep(INSTALL_CHECK_SLEEP_MILLIS);
 		}
-		Thread.currentThread().sleep(DOWNLOAD_FINAL_PAUSE_MILLIS);
 		if( !mackageInstalled )
 		    throw new Exception();
-		// REMOVE DIALOG
-		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-		    dialog.setVisible(false);
-		}});
-		// REMOVE FROM STORE AND ADD TO ALL TOOLBOXES
-		removeFromStore(mTransformJButton.getMackageDesc());
-		if( mTransformJButton.getMackageDesc().isService() ){
-		    addToToolbox(null,mTransformJButton.getMackageDesc(),false);
+		Thread.currentThread().sleep(INSTALL_FINAL_PAUSE_MILLIS);
+
+		// REMOVE FROM STORE
+		currentUninstalledMackages = Util.getToolboxManager().uninstalled();
+		List<MackageDesc> purchasedMackageDescs = computeNewMackageDescs(currentUninstalledMackages, originalUninstalledMackages);
+		for( MackageDesc purchasedMackageDesc : purchasedMackageDescs ){
+		    System.err.println("PURCHASED: " + purchasedMackageDesc.getName());
+		    removeFromStore(purchasedMackageDesc);
 		}
-		else{
-		    for( Policy policy : policyToolboxMap.keySet() )
-			addToToolbox(policy,mTransformJButton.getMackageDesc(),false);
+		// ADD TO TOOLBOX
+		List<MackageDesc> newMackageDescs = computeNewMackageDescs(originalInstalledMackages, currentInstalledMackages);
+		for( MackageDesc newMackageDesc : newMackageDescs ){
+		    System.err.println("INSTALLED: " + newMackageDesc.getName());
+		    MTransformJButton newMTransformJButton = new MTransformJButton(newMackageDesc);
+		    if( newMTransformJButton.getMackageDesc().isService() ){
+			addToToolbox(null,newMTransformJButton.getMackageDesc(),false);
+		    }
+		    else{
+			for( Policy policy : policyToolboxMap.keySet() )
+			    addToToolbox(policy,newMTransformJButton.getMackageDesc(),false);
+		    }
+		    // FOCUS AND HIGHLIGHT IN CURRENT TOOLBOX
+		    focusInToolbox(newMTransformJButton, true);		
 		}
-		// FOCUS AND HIGHLIGHT IN CURRENT TOOLBOX
-		focusInToolbox(mTransformJButton, true);		
 	    }
 	    catch(Exception e){
 		try{
-		    Util.handleExceptionWithRestart("error purchasing transform: " +  mTransformJButton.getName(),  e);
+		    Util.handleExceptionWithRestart("error purchasing: " +  mTransformJButton.getName(),  e);
 		}
 		catch(Exception f){
-		    Util.handleExceptionNoRestart("Error purchasing transform:", f);
+		    Util.handleExceptionNoRestart("Error purchasing:", f);
 		    mTransformJButton.setFailedProcureView();
                     SwingUtilities.invokeLater( new Runnable(){ public void run(){
-			((StoreJDialog)dialog).resetButtons();
-                        progressBar.setString("Purchase problem occurred...");
-                        progressBar.setValue(0);
-                        dialog.setVisible(false);
                         new MOneButtonJDialog(mTransformJButton.getDisplayName(),
 					      "A problem occurred while purchasing:<br>"
 					      + mTransformJButton.getDisplayName()
-					      + "<br>Please contact Metavize for assistance.");
+					      + "<br>Please try again or contact Metavize for assistance.");
                     }});		    
 		}
 	    }	    	    
 	}
+    }
+    private List<MackageDesc> computeNewMackageDescs(MackageDesc[] originalInstalledMackages, MackageDesc[] currentInstalledMackages){
+	Vector<MackageDesc> newlyInstalledMackages = new Vector<MackageDesc>();
+	Hashtable<String,String> originalInstalledMackagesHashtable = new Hashtable<String,String>();
+	for( MackageDesc mackageDesc : originalInstalledMackages )
+	    originalInstalledMackagesHashtable.put(mackageDesc.getName(), mackageDesc.getName());
+	for( MackageDesc mackageDesc : currentInstalledMackages )
+	    if( !originalInstalledMackagesHashtable.containsKey(mackageDesc.getName()) )
+		newlyInstalledMackages.add(mackageDesc);
+	return newlyInstalledMackages;
     }
     ///////////////////////////////////////////////////////
     // TOOLBOX / STORE OPERATIONS /////////////////////////
@@ -614,8 +663,6 @@ public class PolicyStateMachine implements ActionListener {
     // INIT API ////////////////////////////////////////////
     ////////////////////////////////////////////////////////
     private void initMvvmModel() throws Exception {
-	for( MackageDesc mackageDesc : Util.getToolboxManager().uninstalled() )
-	    purchasableMackageMap.put(mackageDesc.getName(),mackageDesc);
 	for( MackageDesc mackageDesc : Util.getToolboxManager().installed() )
 	    installedMackageMap.put(mackageDesc.getName(),mackageDesc);
 	for( Policy policy : Util.getPolicyManager().getPolicies() )
@@ -632,26 +679,111 @@ public class PolicyStateMachine implements ActionListener {
 	for( Tid tid : serviceTidList )
 	    serviceNameMap.put(tid.getTransformName(),null);
     }
-    private void initStoreModel(final JProgressBar progressBar){
-	SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    progressBar.setValue(80);
-	    progressBar.setString("Populating Store...");
-	}});
-	int progress = 0;
-	for( MackageDesc mackageDesc : purchasableMackageMap.values() ){
-	    addToStore(mackageDesc);
-	    progress++;
-	    final float progressFinal = (float) progress;
-	    final float overallFinal = (float) purchasableMackageMap.size();
-	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		progressBar.setValue(80 + (int) (16f*progressFinal/overallFinal) );
-	    }});
+
+    public void updateStoreModel(){ storeModelThread.updateStoreModel(); }
+    private class StoreModelThread extends Thread {
+	private JProgressBar storeProgressBar;
+	private volatile boolean doUpdate = false;
+	public StoreModelThread(){
+	    setDaemon(true);
+	    storeProgressBar = new JProgressBar();
+	    storeProgressBar.setStringPainted(true);
+	    storeProgressBar.setForeground(new java.awt.Color(68, 91, 255));
+	    storeProgressBar.setFont(new java.awt.Font("Dialog", 0, 12));
+	    storeProgressBar.setPreferredSize(new java.awt.Dimension(130, 16));
+	    storeProgressBar.setMaximumSize(new java.awt.Dimension(130, 16));
+	    storeProgressBar.setMinimumSize(new java.awt.Dimension(130, 16));
+	    start();
 	}
-	SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    progressBar.setValue(96);
-	}});
+	public synchronized void updateStoreModel(){
+	    doUpdate = true;
+	    notify();
+	}
+	public void run(){
+	    while(true){
+		try{
+		    initStoreModel();
+		    synchronized(this){
+			if( doUpdate )
+			    doUpdate = false;
+			else
+			    wait(STORE_UPDATE_CHECK_SLEEP);			
+		    }
+		}
+		catch(Exception e){
+		    Util.handleExceptionNoRestart("Error sleeping store check thread", e);
+		}
+	    }
+	}
+	private void initStoreModel(){	
+	    // SHOW THE USER WHATS GOING ON
+	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		// CLEAR OUT THE STORE
+		storeMap.clear();
+		storeJPanel.removeAll();
+		// CREATE PROGRESS BAR AND ADD IT
+		storeProgressBar.setValue(0);
+		storeProgressBar.setIndeterminate(true);
+		storeProgressBar.setString("Connecting...");
+		storeJPanel.add(storeProgressBar, storeProgressGridBagConstraints);
+		storeJPanel.revalidate();
+	    }});
+	    // CHECK FOR STORE CONNECTIVITY AND AVAILABLE ITEMS
+	    boolean connectedToStore = false;
+	    MackageDesc[] storeItemsAvailable = null;
+	    try{
+		Util.getToolboxManager().update();
+		storeItemsAvailable = Util.getToolboxManager().uninstalled();
+		connectedToStore = true;
+	    }
+	    catch(Exception e){
+		Util.handleExceptionNoRestart("Error: unable to connect to store",e);
+	    }
+	    // SHOW RESULTS
+	    if( !connectedToStore ){
+		// NO CONNECTION
+		SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		    storeProgressBar.setValue(0);
+		    storeProgressBar.setIndeterminate(false);
+		    storeProgressBar.setString("No Connection");
+		}});
+	    }
+	    else{
+		if( storeItemsAvailable.length == 0 ){
+		    // CONNECTION, BUT NO ITEMS AVAILABLE
+		    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+			storeProgressBar.setValue(0);
+			storeProgressBar.setIndeterminate(false);
+			storeProgressBar.setString("No New Items");
+		    }});
+		}
+		else{
+		    // CONNECTION, ITEMS AVAILABLE
+		    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+			storeJPanel.remove(storeProgressBar);
+			JPanel storeSpacerJPanel = new JPanel();
+			storeSpacerJPanel.setOpaque(false);
+			storeJPanel.add(storeSpacerJPanel, storeSpacerGridBagConstraints, 0);
+			storeJPanel.revalidate();
+			storeJPanel.repaint();
+		    }});
+		    for( MackageDesc mackageDesc : storeItemsAvailable ){
+			addToStore(mackageDesc);
+		    }
+		}
+	    }
+	}
+
+
+
+
+
     }
     private void initToolboxModel(final JProgressBar progressBar){
+	// BUILD THE MODEL
+	Map<String,MackageDesc> installedMackageMap = new HashMap<String,MackageDesc>();
+	for( MackageDesc mackageDesc : Util.getToolboxManager().installed() )
+	    installedMackageMap.put(mackageDesc.getName(),mackageDesc);
 	SwingUtilities.invokeLater( new Runnable(){ public void run(){
 	    progressBar.setValue(64);
 	    progressBar.setString("Populating Toolbox...");
@@ -674,7 +806,7 @@ public class PolicyStateMachine implements ActionListener {
 	    }
 	    final float progressFinal = (float) progress;
 	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		progressBar.setValue(64 + (int) (16f*progressFinal/overallFinal) );
+		progressBar.setValue(64 + (int) (32f*progressFinal/overallFinal) );
 	    }});
 	}
 	// SERVICES
@@ -686,11 +818,11 @@ public class PolicyStateMachine implements ActionListener {
 	    progress++;
 	    final float progressFinal = (float) progress;
 	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		progressBar.setValue(64 + (int) (16f*progressFinal/overallFinal) );
+		progressBar.setValue(64 + (int) (32f*progressFinal/overallFinal) );
 	    }});	    
 	}	
 	SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    progressBar.setValue(80);
+	    progressBar.setValue(96);
 	}});
     }
     private void initRackModel(final JProgressBar progressBar){
@@ -761,7 +893,7 @@ public class PolicyStateMachine implements ActionListener {
 		}
 		catch(Exception e){
 		    try{ Util.handleExceptionWithRestart("Error instantiating appliance", e); }
-		    catch(Exception f){ Util.handleExceptionNoRestart("Error instantiating appliance", f); }		    
+		    catch(Exception f){ Util.handleExceptionNoRestart("Error instantiating appliance: " + mackageDesc.getName(), f); }		    
 		}
 	    }
 	    final float overallFinal = (float) overallProgress;
@@ -859,8 +991,9 @@ public class PolicyStateMachine implements ActionListener {
     // ADD API ////////////////////////////
     ///////////////////////////////////////
     private void addToStore(final MackageDesc mackageDesc){
-	// ONLY UPDATE GUI MODELS IF THIS IS VISIBLE
 	if( !isMackageVisible(mackageDesc) )
+	    return;
+	else if( !isMackageStoreItem(mackageDesc) )
 	    return;
 	final ButtonKey buttonKey = new ButtonKey(mackageDesc);
 	final MTransformJButton mTransformJButton = new MTransformJButton(mackageDesc);
@@ -879,6 +1012,8 @@ public class PolicyStateMachine implements ActionListener {
     private void addToToolbox(final Policy policy, final MackageDesc mackageDesc, final boolean isDeployed){
 	// ONLY UPDATE GUI MODELS IF THIS IS VISIBLE
 	if( !isMackageVisible(mackageDesc) )
+	    return;
+	else if( isMackageStoreItem(mackageDesc) )
 	    return;
 	final ButtonKey buttonKey = new ButtonKey(mackageDesc);
 	final MTransformJButton mTransformJButton = new MTransformJButton(mackageDesc);
@@ -976,12 +1111,16 @@ public class PolicyStateMachine implements ActionListener {
 	return mCasingJPanels.toArray( new MCasingJPanel[0] );
     }
     private boolean isMackageVisible(MackageDesc mackageDesc){
-	if( mackageDesc.getType() != MackageDesc.TRANSFORM_TYPE )
-	    return false;
-	else if( mackageDesc.getRackPosition() < 0 )
+	if( mackageDesc.getViewPosition() < 0 )
 	    return false;
 	else
 	    return true;
+    }
+    private boolean isMackageStoreItem(MackageDesc mackageDesc){
+	if( mackageDesc.getName().endsWith("-storeitem") )
+	    return true;
+	else
+	    return false;
     }
     private class PolicyRenderer implements ListCellRenderer{
 	private ListCellRenderer listCellRenderer;
@@ -1015,10 +1154,14 @@ public class PolicyStateMachine implements ActionListener {
 	    this.mTransformJButton = mTransformJButton;
 	}
 	public void actionPerformed(java.awt.event.ActionEvent evt){
-	    if( (evt.getModifiers() & ActionEvent.SHIFT_MASK) > 0)
-		new MoveFromToolboxToStoreThread(mTransformJButton);
-	    else
+	    if( Util.getIsDemo() )
+		return;
+	    if( (evt.getModifiers() & ActionEvent.SHIFT_MASK) > 0){
+		// temporarily disabled new MoveFromToolboxToStoreThread(mTransformJButton);
+	    }
+	    else{
 		new MoveFromToolboxToRackThread(policy,mTransformJButton);
+	    }
 	}
     }
 
