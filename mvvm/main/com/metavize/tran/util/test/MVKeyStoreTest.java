@@ -13,6 +13,8 @@ package com.metavize.tran.util.test;
 import java.io.File;
 import com.metavize.tran.util.*;
 import com.metavize.mvvm.security.RFC2253Name;
+import com.metavize.mvvm.security.CertInfo;
+
 
 
 /**
@@ -67,6 +69,22 @@ public class MVKeyStoreTest {
       dn.add("L", "San Mateo");
       kt.generateKey("foo", dn);
       debug("Generated key for foo");
+
+      //--------------------------------------------------
+      stepSep();
+      debug("Get cert info");
+      byte[] tempSelfSignedCert = kt.exportEntry("foo");
+      if(tempSelfSignedCert == null) {
+        debug("Self signed cert is null!?!");
+      }
+      CertInfo ci = OpenSSLWrapper.getCertInfo(tempSelfSignedCert);
+      debug(ci.toString());
+
+      
+      //--------------------------------------------------
+      stepSep();
+      debug("Check if it is self-signed");
+      debug("Self signed? " + ci.appearsSelfSigned());
   
       //--------------------------------------------------
       stepSep();
@@ -82,6 +100,13 @@ public class MVKeyStoreTest {
       byte[] signedCertBytes = ca.signCSR(csrFile);
       File signedCertFile = new File("foo.crt");
       IOUtil.bytesToFile(signedCertBytes, signedCertFile);
+
+      
+      //--------------------------------------------------
+      stepSep();
+      debug("Print cert info");
+      ci = OpenSSLWrapper.getCertInfo(signedCertBytes);
+      debug(ci.toString());      
   
       
       //--------------------------------------------------

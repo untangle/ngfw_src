@@ -155,6 +155,20 @@ public class RFC2253Name implements java.io.Serializable {
     }
   }
 
+
+  /**
+   * Enumerate all types (e.g. "OU") in the DN
+   *
+   * @return all types.
+   */
+  public List<String> listTypes() {
+    ArrayList<String> ret = new ArrayList<String>();
+    for(Pair<String, String> entry : m_members) {
+      ret.add(entry.a);
+    }
+    return ret;
+  }
+
   @Override
   public String toString() {
     return toRFC2253String();
@@ -183,6 +197,7 @@ public class RFC2253Name implements java.io.Serializable {
     }
     return new RFC2253Name(ret);
   }
+
 
   /**
    * Create a new (empty) RFC2253 name)

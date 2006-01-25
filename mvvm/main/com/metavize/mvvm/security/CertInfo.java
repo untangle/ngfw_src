@@ -10,6 +10,7 @@
  */
 package com.metavize.mvvm.security;
 import java.util.Date;
+import java.util.List;
  
 /**
 * Little class to hold interesting parsed information
@@ -77,6 +78,32 @@ public class CertInfo implements java.io.Serializable {
       return null;
     }
     return subjectDN.getValue("CN");
+  }
+
+  /**
+   * Method to test if a vert seems self-signed.  Note that
+   * {@link #isCA CA} certs will be self-signed, as well
+   * as any localy-generated certs.
+   *
+   * @return true if the subjectDN is the same as the issuerDN
+   */
+  public boolean appearsSelfSigned() {
+    if(subjectDN == null ||
+      issuerDN == null) {
+      return issuerDN==null && subjectDN==null;
+    }
+
+    List<String> subjectTypes = subjectDN.listTypes();
+    for(String type : subjectTypes) {
+      String issuerValue = issuerDN.getValue(type);
+      if(issuerValue == null) {
+        return false;
+      }
+      if(!(issuerValue.equals(subjectDN.getValue(type)))) {
+        return false;
+      }
+    }
+    return true;
   }
 
   /**

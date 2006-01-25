@@ -80,6 +80,7 @@ public class MVKeyStore {
       "keytool",
       new String[] {
         "-export",
+        "-rfc",
         "-keystore",
         m_ktFile.getAbsolutePath(),
         "-storepass",
