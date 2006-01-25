@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -157,7 +157,7 @@ public class LoginEvent extends LogEvent
         sb.addField("login", login);
         sb.addField("local", local);
         sb.addField("succeeded", succeeded);
-        sb.addField("reason", reason.toString());
+        sb.addField("reason", null == reason ? "none" : reason.toString());
     }
 
     public SyslogPriority getSyslogPrioritiy()

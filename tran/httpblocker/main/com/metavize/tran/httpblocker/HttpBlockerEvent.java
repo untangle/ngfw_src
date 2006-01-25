@@ -154,9 +154,7 @@ public class HttpBlockerEvent extends LogEvent
 
         sb.startSection("info");
         sb.addField("url", requestLine.getUrl().toString());
-        if (null != action) {
-            sb.addField("action", action.toString());
-        }
+        sb.addField("action", null == action ? "none" : action.toString());
         sb.addField("reason", reason.toString());
         sb.addField("category", category);
     }
