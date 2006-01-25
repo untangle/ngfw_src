@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -154,7 +154,9 @@ public class HttpBlockerEvent extends LogEvent
 
         sb.startSection("info");
         sb.addField("url", requestLine.getUrl().toString());
-        sb.addField("action", action.toString());
+        if (null != action) {
+            sb.addField("action", action.toString());
+        }
         sb.addField("reason", reason.toString());
         sb.addField("category", category);
     }
