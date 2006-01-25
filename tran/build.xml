@@ -32,7 +32,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <property name="bases"
             value="virus,spam"/>
   <property name="transforms"
-            value="openvpn,exploder,nat,firewall,airgap,reporting,protofilter,test,sigma,hauri,clam,kav,spyware,httpblocker,spamassassin,clamphish,ids"/>
+            value="openvpn,exploder,nat,firewall,airgap,reporting,protofilter,boxbackup,test,sigma,hauri,clam,kav,spyware,httpblocker,spamassassin,clamphish,ids"/>
 
   <!--              -->
   <!-- main targets -->
@@ -441,6 +441,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <!--              -->
 
   <target name="install.test"/>
+  <target name="install.boxbackup"/>
   <target name="install.ids"/>
   <target name="install.nat"/>
 
@@ -530,6 +531,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <!--              -->
 
   <target name="jar.test"/>
+  <target name="jar.boxbackup"/>
   <target name="jar.ids"/>
   <target name="jar.nat"/>
 
@@ -780,6 +782,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   </target>
 
   <target name="compile.test"/>
+  <target name="compile.boxbackup"/>
   <target name="compile.ids"/>
   <target name="compile.nat"/>
 
