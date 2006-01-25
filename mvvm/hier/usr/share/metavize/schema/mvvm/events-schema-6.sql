@@ -15,6 +15,13 @@ CREATE TABLE events.mvvm_login_evt (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
+-- com.metavize.mvvm.engine.TransformStateChange
+CREATE TABLE events.transform_state_change (
+    event_id int8 NOT NULL,
+    time_stamp timestamp,
+    state text NOT NULL,
+    PRIMARY KEY (event_id));
+
 -- com.metavize.mvvm.tran.PipelineEndpoints
 CREATE TABLE events.pl_endp (
     event_id int8 NOT NULL,

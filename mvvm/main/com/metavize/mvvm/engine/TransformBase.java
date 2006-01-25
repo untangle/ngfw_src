@@ -1,5 +1,5 @@
  /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -18,6 +18,7 @@ import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.argon.SessionMatcher;
 import com.metavize.mvvm.argon.SessionMatcherFactory;
 import com.metavize.mvvm.argon.VectronTable;
+import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.policy.Policy;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tapi.MPipe;
@@ -41,7 +42,9 @@ import org.hibernate.Session;
  */
 public abstract class TransformBase implements Transform
 {
-    private Logger logger = Logger.getLogger(TransformBase.class);
+    private final Logger logger = Logger.getLogger(TransformBase.class);
+    private final EventLogger eventLogger = MvvmContextFactory.context()
+        .eventLogger();
 
     private final TransformContextImpl transformContext;
     private final Tid tid;
@@ -278,6 +281,8 @@ public abstract class TransformBase implements Transform
                     public Object getResult() { return null; }
                 };
             MvvmContextFactory.context().runTransaction(tw);
+
+            eventLogger.log(new TransformStateChange(ts));
         }
     }
 
