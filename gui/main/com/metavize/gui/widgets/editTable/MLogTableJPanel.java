@@ -74,6 +74,7 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
         entryJTable.setColumnModel( mSortedTableModel.getTableColumnModel() );
         mSortedTableModel.setTableHeader( entryJTable.getTableHeader() );
         mSortedTableModel.hideColumns( entryJTable );
+	mSortedTableModel.setAlwaysSelectable(true);
     }
 
     public MSortedTableModel getTableModel(){

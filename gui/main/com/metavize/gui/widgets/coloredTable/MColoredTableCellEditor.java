@@ -157,7 +157,8 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	mSortedTableModel = ((MSortedTableModel)mColoredJTable.getModel());
 	selectedModelRow = mSortedTableModel.getRowViewToModelIndex( selectedViewRow );
 	selectedModelCol = selectedViewCol;
-	selectedState = mSortedTableModel.getRowState( selectedModelRow );
+	if( !mSortedTableModel.getAlwaysSelectable() )
+	    selectedState = mSortedTableModel.getRowState( selectedModelRow );
 	
 	if( value instanceof ButtonRunnable ){
 	    selectedValue = jButton;
@@ -209,6 +210,11 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	    editedComponent = jTextField;
 	    ((JTextField)editedComponent).setText((String) value );
 	}
+	else if(value instanceof Date){
+	    selectedValue = ((Date)value).toString().trim();
+	    editedComponent = jTextField;
+	    ((JTextField)editedComponent).setText(((Date) value).toString() );
+	}	
 	else if(value instanceof MPasswordField){
 	    editedComponent = mPasswordField;
 	    ((MPasswordField)editedComponent).setGeneratesChangeEvent( ((MPasswordField)value).getGeneratesChangeEvent() );
@@ -277,6 +283,8 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
     }
     
     private void showStatusChange(boolean isFinalChange){
+	if( mSortedTableModel.getAlwaysSelectable() )
+	    return;
 	if( selectedValue.equals(newValue) ){
 	    //System.err.println("row UNCHANGED: " + newValue.toString() );
 	    mSortedTableModel.setRowState(selectedState, selectedModelRow);
@@ -301,7 +309,10 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	updateValues();
 	showStatusChange(true);
 
-	return returnValue;
+	if( mSortedTableModel.getAlwaysSelectable() )
+	    return selectedValue;
+	else
+	    return returnValue;
     }
     
     private void update(boolean isFinal){

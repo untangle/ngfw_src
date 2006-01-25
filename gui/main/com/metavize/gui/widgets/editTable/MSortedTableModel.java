@@ -96,6 +96,7 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
 	
     // MODES ///////////////////////
     private boolean doInstantRemove = false;
+    private boolean alwaysSelectable = false;
     ////////////////////////////////
 	
     // COLUMN SETUP ////////////////
@@ -444,6 +445,12 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
     public void setInstantRemove(boolean enabled){
 	doInstantRemove = enabled;
     }
+    public void setAlwaysSelectable(boolean enabled){
+	alwaysSelectable = enabled;
+    }
+    public boolean getAlwaysSelectable(){
+	return alwaysSelectable;
+    }
     public void moveRow(final int fromModelRow, final int toModelRow){
 	if( fromModelRow != toModelRow ){
 	    // CREATE THE NEW INDEXES
@@ -574,6 +581,8 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
     // getColumnClass(...) and isCellEditable(...) are my bitches though, and they shall be
     // in model space.
     public void setValueAt(Object value, int viewRow, int viewCol){
+	if( getAlwaysSelectable() )
+	    return;
 	super.setValueAt(value, getRowViewToModelIndex(viewRow), viewCol);
 	if( (getOrderModelIndex() != -1) && ( viewCol == getColModelToViewIndex(getOrderModelIndex())) ){
 	    // deal with row order changing
@@ -591,7 +600,10 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
 	return (Class) classTypeVector.elementAt(modelCol);
     }
     public boolean isCellEditable(int modelRow, int modelCol) {
-        return ((Boolean)editableVector.elementAt(modelCol)).booleanValue();
+	if( alwaysSelectable )
+	    return true;
+	else
+	    return ((Boolean)editableVector.elementAt(modelCol)).booleanValue();
     }
     ///////////////////////////////////////////////////
             
