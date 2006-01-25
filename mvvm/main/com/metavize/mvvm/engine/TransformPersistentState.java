@@ -73,6 +73,7 @@ class TransformPersistentState
      * @hibernate.many-to-one
      * cascade="none"
      * column="TID"
+     * not-null="true"
      */
     Tid getTid()
     {

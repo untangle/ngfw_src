@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -48,6 +48,13 @@ public interface Transform
      * @see TransformState
      */
     TransformState getRunState();
+
+    /**
+     * Tests if the transform has ever been started.
+     *
+     * @return true when the transform has never been started.
+     */
+    boolean neverStarted();
 
     /**
      * Connects to MetaPipe and starts. The transform instance reads its

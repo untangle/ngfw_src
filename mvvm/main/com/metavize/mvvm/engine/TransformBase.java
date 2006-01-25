@@ -78,6 +78,15 @@ public abstract class TransformBase implements Transform
         return runState;
     }
 
+    public final boolean neverStarted()
+    {
+        if (TransformState.RUNNING == runState) {
+            return false;
+        } else {
+            return true; // XXX XXX XXX
+        }
+    }
+
     public final void start()
         throws TransformStartException, IllegalStateException
     {
@@ -282,7 +291,7 @@ public abstract class TransformBase implements Transform
                 };
             MvvmContextFactory.context().runTransaction(tw);
 
-            eventLogger.log(new TransformStateChange(ts));
+            eventLogger.log(new TransformStateChange(tid, ts));
         }
     }
 
