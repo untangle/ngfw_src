@@ -22,7 +22,7 @@ import com.metavize.mvvm.tran.Transform;
 public class IDSDetectionEngine {
 
     // Any chunk that takes this long gets an error
-    public static final long ERROR_ELAPSED = 200;
+    public static final long ERROR_ELAPSED = 2000;
     // Any chunk that takes this long gets a warning
     public static final long WARN_ELAPSED = 20;
 
