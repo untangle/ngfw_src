@@ -14,17 +14,15 @@ package com.metavize.mvvm.engine;
 import java.io.*;
 import java.nio.channels.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
-import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
-import EDU.oswego.cs.dl.util.concurrent.LinkedQueue;
-import EDU.oswego.cs.dl.util.concurrent.PooledExecutor;
+import gnu.trove.TIntArrayList;
+import org.apache.log4j.*;
 import com.metavize.mvvm.argon.ArgonAgent;
 import com.metavize.mvvm.tapi.*;
 import com.metavize.mvvm.tapi.event.*;
 import com.metavize.mvvm.tran.*;
 import com.metavize.mvvm.util.*;
-import gnu.trove.TIntArrayList;
-import org.apache.log4j.*;
 
 
 /**

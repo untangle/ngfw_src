@@ -1,8 +1,13 @@
 #!/bin/sh
 
+if [ $* = 0 ]; then
+    echo "Usage: rollup-logs #days"
+    exit 1
+fi
+
 cutoff="now() - interval '$1 days'";
 
-echo "$cutoff"
+echo "Purging all events older than $cutoff"
 
 for c in @MVVM_SCHEMA@/*/rollup.sql; do
     psql -U metavize -v cutoff="$cutoff" -f $c mvvm

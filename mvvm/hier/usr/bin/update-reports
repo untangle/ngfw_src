@@ -2,16 +2,17 @@
 
 JAVA_HOME=${JAVA_HOME:-/opt/java}
 
-CLASSPATH="@MVVM_HOME@/lib/bootstrap.jar:@MVVM_HOME@/lib/mvvm.jar"
-
-is_reporting_enabled=$(@USR_BIN@/mcli isReportingEnabled)
-mars=$(@USR_BIN@/mcli instances | grep running | awk '{print $2}' | uniq | sed 's|^\(.*\)$|@MVVM_TOOLBOX@/\1.mar|')
-
-for f in @THIRDPARTY_LIB@/*jar ; do
+# Need bootstrap for logging stuff...  XXX
+CLASSPATH="@MVVM_HOME@/lib/bootstrap.jar:@MVVM_HOME@/lib/mvvm-reports.jar"
+for f in @THIRDPARTY_REPORTS_LIB@/*jar ; do
     CLASSPATH="$CLASSPATH:$f"
 done
 
-export JAVA_HOME CLASSPATH
+# Use 64Meg of memory for sorting, 32Meg for vacuuming, assume 300Meg of linux caching
+# (tilts optimizer towards use of indices)
+PGOPTIONS="-c sort_mem=65536 -c vacuum_mem=32768 -c effective_cache_size=40000"
+
+export JAVA_HOME CLASSPATH PGOPTIONS
 
 REPORT_DIR=@MVVM_WEB@/reports
 
@@ -22,8 +23,18 @@ rm -rf $REPORT_DIR/current
 # Just in case left over (we use a jsp now)
 rm -f $REPORT_DIR/index.html
 
+is_reporting_enabled=$(@USR_BIN@/mcli isReportingEnabled)
+
 # Only generate today's reports if the reporting transform is running
 if [ $is_reporting_enabled == 'true' ]; then
+    mars=$(@USR_BIN@/mcli instances | grep running | awk '{print $2}' | uniq | sed 's|^\(.*\)$|@MVVM_TOOLBOX@/\1.mar|')
+
+    # Build pre-joined reports tables
+    for c in @MVVM_SCHEMA@/*/start-reports.sql; do
+        psql -U metavize -f $c mvvm
+    done
+    echo "ANALYZE;" | psql -U metavize mvvm
+
     $JAVA_HOME/bin/java -Xmx512m \
         -Dlog4j.configuration=file:@MVVM_HOME@/conf/log4j-reporter.xml \
         com.metavize.mvvm.reporting.Reporter -o $REPORT_DIR -d 32 "$@" $mars
@@ -47,4 +58,8 @@ if [ $is_reporting_enabled == 'true' ]; then
         cat @PREFIX@/tmp/mail_reports_arguments_weekly.txt | xargs @USR_BIN@/mail-reports
         cat @PREFIX@/tmp/mail_reports_arguments_monthly.txt | xargs @USR_BIN@/mail-reports
     fi
+
+    for c in @MVVM_SCHEMA@/*/finish-reports.sql; do
+        psql -U metavize -f $c mvvm
+    done
 fi

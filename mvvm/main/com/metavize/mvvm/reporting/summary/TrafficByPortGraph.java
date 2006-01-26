@@ -11,7 +11,6 @@
 
 package com.metavize.mvvm.reporting.summary;
 
-import java.awt.Insets;
 import java.sql.*;
 import java.util.*;
 
@@ -19,9 +18,11 @@ import com.metavize.mvvm.reporting.*;
 import com.metavize.mvvm.util.PortServiceNames;
 import net.sf.jasperreports.engine.JRScriptletException;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.labels.StandardPieItemLabelGenerator;
+import org.jfree.chart.labels.StandardPieToolTipGenerator;
+import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import org.jfree.chart.plot.PiePlot3D;
 import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.ui.RectangleInsets;
 import org.jfree.util.Rotation;
 
 
@@ -155,9 +156,9 @@ public class TrafficByPortGraph extends TopTenPieGraph
         plot.setDirection(Rotation.CLOCKWISE);
         plot.setForegroundAlpha(0.5f);
         plot.setNoDataMessage("No data to display");
-        plot.setInsets(new Insets(0, 5, 5, 5));
-        plot.setToolTipGenerator(new StandardPieItemLabelGenerator());
-        plot.setLabelGenerator(new StandardPieItemLabelGenerator("{0} ({2})"));
+        plot.setInsets(new RectangleInsets(0, 5, 5, 5));
+        plot.setToolTipGenerator(new StandardPieToolTipGenerator());
+        plot.setLabelGenerator(new StandardPieSectionLabelGenerator("{0} ({2})"));
         JFreeChart chart =
             new JFreeChart(chartTitle, TITLE_FONT, plot, true);
         return chart;

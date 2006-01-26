@@ -76,7 +76,7 @@ if [ "x" != "x@PREFIX@" ] ; then
     PATH=@PREFIX@/usr/bin:$PATH
 fi
 
-for f in @THIRDPARTY_LIB@/*jar ; do
+for f in @THIRDPARTY_MVVM_LIB@/*jar ; do
     CLASSPATH="$CLASSPATH:$f"
 done
 

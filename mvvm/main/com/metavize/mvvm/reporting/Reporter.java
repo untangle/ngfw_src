@@ -79,6 +79,7 @@ public class Reporter
             Class.forName("org.postgresql.Driver");
             conn = DriverManager.getConnection("jdbc:postgresql://localhost/mvvm",
                                                "metavize", "foo");
+            setConnectionProperties(conn);
 
             String outputBaseDirName = "/tmp";
             int daysToKeep = 90;
@@ -182,4 +183,12 @@ public class Reporter
         }
     }
 
+    // Optimize postgres settings for this connection to do report generation.
+    private static void setConnectionProperties(Connection conn)
+        throws SQLException
+    {
+        Statement stmt = conn.createStatement();
+        stmt.executeUpdate("set sort_mem=65536");
+        stmt.executeUpdate("set effective_cache_size=40000");
+    }
 }
