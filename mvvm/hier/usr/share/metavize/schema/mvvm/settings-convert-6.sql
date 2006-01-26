@@ -29,7 +29,6 @@ UPDATE tid SET policy_id = NULL WHERE id IN
 DELETE FROM user_policy_rule WHERE set_id IS NULL;
 
 -- Add read_only column to mvvm_user
-
 ALTER TABLE settings.mvvm_user ADD COLUMN read_only bool;
 UPDATE settings.mvvm_user SET read_only = false;
 ALTER TABLE settings.mvvm_user ALTER COLUMN read_only SET NOT NULL;

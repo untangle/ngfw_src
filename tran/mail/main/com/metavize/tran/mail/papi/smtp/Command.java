@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -58,7 +58,7 @@ public class Command
   // Warning - if you add to the list above,
   // you must also modify the
   // "stringToCommandType" method
-  //==========================================  
+  //==========================================
 
   private final CommandType m_type;
   private final String m_cmdStr;
@@ -121,14 +121,14 @@ public class Command
     }
 
     String argStr = getArgString();
-    
+
     ByteBuffer buf = ByteBuffer.allocate(
       cmdStr.length()/*always 4?*/ +
       (argStr == null?(0):(argStr.length() + 1)) +
       3);
 
     buf.put(cmdStr.getBytes());
-    
+
     if(argStr != null) {
       argStr = argStr.trim();
       if(!"".equals(argStr)) {
@@ -160,7 +160,7 @@ public class Command
   public static CommandType stringToCommandType(String cmdStr) {
 
     //Commands, aligned with their enum type.
-  
+
     if(cmdStr.equalsIgnoreCase("HELO")) {
       return CommandType.HELO;
     }
@@ -214,7 +214,22 @@ public class Command
     }
     if(cmdStr.equalsIgnoreCase("AUTH")) {
       return CommandType.AUTH;
-    }       
-    return CommandType.UNKNOWN;                                                       
+    }
+    return CommandType.UNKNOWN;
   }
+
+    public int getEstimatedSize()
+    {
+    String cmdStr = m_type.toString();
+    if(getType() == CommandType.UNKNOWN) {
+      cmdStr = m_cmdStr;
+    }
+
+    String argStr = getArgString();
+
+
+    return cmdStr.length()
+        + (argStr == null?(0):(argStr.length() + 1))
+        + 3;
+    }
 }

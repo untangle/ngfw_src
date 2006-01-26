@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -111,5 +111,10 @@ public class FtpReply implements Token
     public String toString()
     {
         return AsciiCharBuffer.wrap(getBytes()).toString();
+    }
+
+    public int getEstimatedSize()
+    {
+        return 3 + message.length();
     }
 }

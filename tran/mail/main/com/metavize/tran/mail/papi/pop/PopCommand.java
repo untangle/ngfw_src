@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -19,8 +19,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.metavize.tran.token.ParseException;
-import com.metavize.tran.util.AsciiCharBuffer;
 import com.metavize.tran.token.Token;
+import com.metavize.tran.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;
 
 /* We handle USER, APOP, and AUTH LOGIN but no other AUTH types.
@@ -313,5 +313,10 @@ public class PopCommand implements Token
         //logger.debug("user name is: " + zUser);
         //return zUser;
         return (String) zCmd.subSequence(iStart, zMatcher.start());
+    }
+
+    public int getEstimatedSize()
+    {
+        return command.length() + (null == argument ? 0 : argument.length() + 1) + 2;
     }
 }

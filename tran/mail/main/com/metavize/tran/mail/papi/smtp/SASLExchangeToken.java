@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,8 +11,9 @@
 
 package com.metavize.tran.mail.papi.smtp;
 
-import com.metavize.tran.token.Token;
 import java.nio.ByteBuffer;
+
+import com.metavize.tran.token.Token;
 
 /**
  * Opaque chunk of data, used to pass SASL information
@@ -20,7 +21,7 @@ import java.nio.ByteBuffer;
  */
 public class SASLExchangeToken
   implements Token {
-  
+
   private final ByteBuffer m_buf;
 
   public SASLExchangeToken(ByteBuffer data) {
@@ -35,4 +36,9 @@ public class SASLExchangeToken
   public ByteBuffer getBytes() {
     return m_buf.slice();
   }
+
+    public int getEstimatedSize()
+    {
+        return m_buf.remaining();
+    }
 }

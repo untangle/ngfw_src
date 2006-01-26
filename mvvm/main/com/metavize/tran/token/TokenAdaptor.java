@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -10,6 +10,8 @@
  */
 
 package com.metavize.tran.token;
+
+import static com.metavize.tran.token.CasingAdaptor.TOKEN_SIZE;
 
 import java.nio.ByteBuffer;
 import java.util.Map;
@@ -33,13 +35,12 @@ import com.metavize.mvvm.tapi.event.TCPStreamer;
 import com.metavize.mvvm.tapi.event.UDPNewSessionRequestEvent;
 import com.metavize.mvvm.tapi.event.UDPPacketEvent;
 import com.metavize.mvvm.tapi.event.UDPSessionEvent;
-import org.apache.log4j.Logger;
+import com.metavize.mvvm.tran.MutateTStats;
 import com.metavize.mvvm.tran.Transform;
+import org.apache.log4j.Logger;
 
 public class TokenAdaptor extends AbstractEventHandler
 {
-    private static final int TOKEN_SIZE = 8; /* XXX + magic */
-
     private static final ByteBuffer[] BYTE_BUFFER_PROTO = new ByteBuffer[0];
 
     private final TokenHandlerFactory handlerFactory;
@@ -267,10 +268,19 @@ public class TokenAdaptor extends AbstractEventHandler
         Long key = new Long(b.getLong());
 
         Token token = (Token)pipeline.detach(key);
-        if (logger.isDebugEnabled()) 
+        if (logger.isDebugEnabled())
             logger.debug("RETRIEVED object " + token + " with key: " + key);
 
         TCPSession session = e.session();
+
+        int d = s2c ? MutateTStats.SERVER_TO_CLIENT
+            : MutateTStats.CLIENT_TO_SERVER;
+        try {
+            MutateTStats.rereadData(d, session,
+                                    token.getEstimatedSize() - TOKEN_SIZE);
+        } catch (Exception exn) {
+            logger.warn("could not get estimated size", exn);
+        }
 
         TokenResult tr;
         try {
@@ -287,21 +297,29 @@ public class TokenAdaptor extends AbstractEventHandler
             if (tr.s2cStreamer() != null) {
                 logger.debug("beginning client stream");
                 TokenStreamer tokSt = tr.s2cStreamer();
-                TCPStreamer ts = new TokenStreamerAdaptor(pipeline, tokSt);
+                TokenStreamerWrapper wrapper
+                    = new TokenStreamerWrapper(tokSt, session,
+                                               MutateTStats.SERVER_TO_CLIENT);
+                TCPStreamer ts = new TokenStreamerAdaptor(pipeline, wrapper);
                 session.beginClientStream(ts);
             } else {
                 logger.debug("beginning server stream");
                 TokenStreamer tokSt = tr.c2sStreamer();
-                TCPStreamer ts = new TokenStreamerAdaptor(pipeline, tokSt);
+                TokenStreamerWrapper wrapper
+                    = new TokenStreamerWrapper(tokSt, session,
+                                               MutateTStats.CLIENT_TO_SERVER);
+                TCPStreamer ts = new TokenStreamerAdaptor(pipeline, wrapper);
                 session.beginServerStream(ts);
             }
             // just means nothing extra to send before beginning stream.
             return IPDataResult.SEND_NOTHING;
         } else {
             logger.debug("processing s2c tokens");
-            ByteBuffer[] cr = processResults(tr.s2cTokens(), pipeline);
+            ByteBuffer[] cr = processResults(tr.s2cTokens(), pipeline, session,
+                                             true);
             logger.debug("processing c2s");
-            ByteBuffer[] sr = processResults(tr.c2sTokens(), pipeline);
+            ByteBuffer[] sr = processResults(tr.c2sTokens(), pipeline, session,
+                                             false);
 
             if (logger.isDebugEnabled()) {
                 logger.debug("returning results: ");
@@ -332,7 +350,6 @@ public class TokenAdaptor extends AbstractEventHandler
             if (utr.isStreamer()) {
                 if (s2c) {
                     TokenStreamer cStm = utr.c2sStreamer();
-
                     TokenStreamer sStm = new ReleaseTokenStreamer
                         (utr.s2cStreamer(), release);
 
@@ -372,17 +389,27 @@ public class TokenAdaptor extends AbstractEventHandler
         }
     }
 
-    private ByteBuffer[] processResults(Token[] results, Pipeline pipeline)
+    private ByteBuffer[] processResults(Token[] results, Pipeline pipeline,
+                                        Session session, boolean s2c)
     {
         // XXX factor out token writing
         ByteBuffer bb = ByteBuffer.allocate(TOKEN_SIZE * results.length);
 
-        for (int i = 0; i < results.length; i++) {
-            if (null == results[i]) { continue; }
+        for (Token tok : results) {
+            if (null == tok) { continue; }
 
-            Long key = pipeline.attach(results[i]);
+            int d = s2c ? MutateTStats.SERVER_TO_CLIENT
+                : MutateTStats.CLIENT_TO_SERVER;
+            try {
+                MutateTStats.rewroteData(d, session,
+                                         tok.getEstimatedSize() - TOKEN_SIZE);
+            } catch (Exception exn) {
+                logger.warn("could not estimate size", exn);
+            }
+
+            Long key = pipeline.attach(tok);
             if (logger.isDebugEnabled())
-                logger.debug("SAVED object " + results[i] + " with key: " + key);
+                logger.debug("SAVED object " + tok + " with key: " + key);
 
             bb.putLong(key);
         }

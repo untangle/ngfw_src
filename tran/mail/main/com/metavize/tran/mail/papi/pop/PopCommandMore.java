@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,13 +11,13 @@
 
 package com.metavize.tran.mail.papi.pop;
 
-import java.nio.ByteBuffer;
 import java.io.IOException;
-import sun.misc.BASE64Decoder;
+import java.nio.ByteBuffer;
 
 import com.metavize.tran.token.Token;
 import com.metavize.tran.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;
+import sun.misc.BASE64Decoder;
 
 public class PopCommandMore implements Token
 {
@@ -86,5 +86,10 @@ public class PopCommandMore implements Token
     public ByteBuffer getBytes()
     {
         return zBuf.duplicate();
+    }
+
+    public int getEstimatedSize()
+    {
+        return zBuf.remaining();
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -69,7 +69,7 @@ class HttpCasing extends AbstractCasing
             return requests.remove(0);
         } else {
             if (4 != statusCode / 100) {
-                logger.error("requests is empty");
+                logger.error("requests is empty: " + statusCode);
             }
             return null;
         }

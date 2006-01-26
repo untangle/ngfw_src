@@ -29,11 +29,14 @@ import com.metavize.mvvm.tapi.event.TCPChunkEvent;
 import com.metavize.mvvm.tapi.event.TCPChunkResult;
 import com.metavize.mvvm.tapi.event.TCPSessionEvent;
 import com.metavize.mvvm.tapi.event.TCPStreamer;
+import com.metavize.mvvm.tran.MutateTStats;
 import com.metavize.mvvm.tran.Transform;
 import org.apache.log4j.Logger;
 
 public class CasingAdaptor extends AbstractEventHandler
 {
+    static final int TOKEN_SIZE = 8;
+
     private final CasingFactory casingFactory;
     private final boolean clientSide;
 
@@ -87,9 +90,9 @@ public class CasingAdaptor extends AbstractEventHandler
         Unparser unparser = casing.unparser();
 
         if (clientSide) {
-            session.serverReadLimit(8);
+            session.serverReadLimit(TOKEN_SIZE);
         } else {
-            session.clientReadLimit(8);
+            session.clientReadLimit(TOKEN_SIZE);
         }
     }
 
@@ -285,12 +288,12 @@ public class CasingAdaptor extends AbstractEventHandler
     {
         ByteBuffer b = e.chunk();
 
-        assert b.remaining() <= 8;
+        assert b.remaining() <= TOKEN_SIZE;
 
-        if (b.remaining() < 8) {
+        if (b.remaining() < TOKEN_SIZE) {
             // read limit 2
             b.compact();
-            b.limit(8);
+            b.limit(TOKEN_SIZE);
             if (logger.isDebugEnabled()) {
                 logger.debug("unparse returning buffer, for more: " + b);
             }
@@ -304,12 +307,21 @@ public class CasingAdaptor extends AbstractEventHandler
 
         Long key = new Long(b.getLong());
         Token tok = (Token)pipeline.detach(key);
+
+        int d = s2c ? MutateTStats.SERVER_TO_CLIENT
+            : MutateTStats.CLIENT_TO_SERVER;
+        try {
+            MutateTStats.rereadData(d, s, tok.getEstimatedSize() - TOKEN_SIZE);
+        } catch (Exception exn) {
+            logger.warn("could not estimated size", exn);
+        }
+
         if (logger.isDebugEnabled()) {
             logger.debug("RETRIEVED object: " + tok + " with key: " + key
                          + " on pipeline: " + pipeline);
         }
 
-        b.limit(8);
+        b.limit(TOKEN_SIZE);
 
         assert !b.hasRemaining();
 
@@ -429,8 +441,13 @@ public class CasingAdaptor extends AbstractEventHandler
             }
         }
 
+        int direction = s2c ? MutateTStats.SERVER_TO_CLIENT
+            : MutateTStats.CLIENT_TO_SERVER;
+
         if (pr.isStreamer()) {
-            TokenStreamer tokSt = pr.getTokenStreamer();
+            TokenStreamer tokSt
+                = new TokenStreamerWrapper(pr.getTokenStreamer(), s,
+                                           direction);
             TCPStreamer ts = new TokenStreamerAdaptor(pipeline, tokSt);
             if (s2c) {
                 s.beginClientStream(ts);
@@ -442,10 +459,17 @@ public class CasingAdaptor extends AbstractEventHandler
             List<Token> results = pr.getResults();
 
             // XXX add magic:
-            ByteBuffer bb = ByteBuffer.allocate(8 * results.size());
+            ByteBuffer bb = ByteBuffer.allocate(TOKEN_SIZE * results.size());
 
             // XXX add magic:
             for (Token t : results) {
+                try {
+                    MutateTStats.rewroteData(direction, s,
+                                             t.getEstimatedSize() - TOKEN_SIZE);
+                } catch (Exception exn) {
+                    logger.error("could not estimate size", exn);
+                }
+
                 Long key = pipeline.attach(t);
                 if (logger.isDebugEnabled()) {
                     logger.debug("SAVED object: " + t + " with key: " + key

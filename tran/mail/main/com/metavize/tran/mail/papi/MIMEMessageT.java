@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -18,12 +18,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import com.metavize.tran.token.ParseException;
-import com.metavize.tran.token.Token;
 import com.metavize.tran.mime.FileMIMESource;
 import com.metavize.tran.mime.MIMEMessage;
 import com.metavize.tran.mime.MIMEMessageHeaders;
 import com.metavize.tran.mime.MIMEParsingInputStream;
+import com.metavize.tran.token.Token;
 
 public class MIMEMessageT implements Token
 {
@@ -106,5 +105,10 @@ public class MIMEMessageT implements Token
     public ByteBuffer getBytes()
     {
         return null;
+    }
+
+    public int getEstimatedSize()
+    {
+        return 0;
     }
 }

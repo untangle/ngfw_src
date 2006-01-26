@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -25,8 +25,8 @@ import com.metavize.mvvm.util.MetaEnv;
 public final class MutateTStats {
 
     // Duplicates IPSessionState. XX
-    protected static final int CLIENT_TO_SERVER = 1;
-    protected static final int SERVER_TO_CLIENT = 2;
+    public static final int CLIENT_TO_SERVER = 1;
+    public static final int SERVER_TO_CLIENT = 2;
 
     private static TransformStats safeStats(Session sess) {
         try {
@@ -62,6 +62,20 @@ public final class MutateTStats {
         }
     }
 
+    public static void rereadData(int direction, Session sess, long bytes) {
+        TransformStats stats = safeStats(sess);
+        if (stats == null)
+            return;
+        synchronized(stats) {
+            if (direction == CLIENT_TO_SERVER) {
+                stats.c2tBytes += bytes;
+            } else {
+                stats.s2tBytes += bytes;
+            }
+            stats.lastActivityDate.setTime(MetaEnv.currentTimeMillis());
+        }
+    }
+
     public static void wroteData(int direction, Session sess, long bytes) {
         TransformStats stats = safeStats(sess);
         if (stats == null)
@@ -72,6 +86,21 @@ public final class MutateTStats {
                 stats.t2sBytes += bytes;
             } else {
                 stats.t2cChunks++;
+                stats.t2cBytes += bytes;
+            }
+            stats.lastActivityDate.setTime(MetaEnv.currentTimeMillis());
+        }
+    }
+
+    public static void rewroteData(int direction, Session sess, long bytes)
+    {
+        TransformStats stats = safeStats(sess);
+        if (stats == null)
+            return;
+        synchronized(stats) {
+            if (direction == CLIENT_TO_SERVER) {
+                stats.t2sBytes += bytes;
+            } else {
                 stats.t2cBytes += bytes;
             }
             stats.lastActivityDate.setTime(MetaEnv.currentTimeMillis());

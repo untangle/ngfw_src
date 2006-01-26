@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,8 +11,9 @@
 
 package com.metavize.tran.mail.papi;
 
-import com.metavize.tran.token.Token;
 import java.nio.ByteBuffer;
+
+import com.metavize.tran.token.Token;
 
 
 /**
@@ -53,12 +54,12 @@ public final class ContinuedMIMEToken
    * @return true if this token should be
    *         unparsed (its <code>getBytes()</code>
    *         method can then be used to get the unparsed
-   *         bytes).  
+   *         bytes).
    */
   public boolean shouldUnparse() {
     return m_chunk.shouldUnparse();
   }
-  
+
   /**
    * Convienence method.  Equivilant to
    * <code>getMIMEChunk().isLast()</code>.
@@ -68,7 +69,7 @@ public final class ContinuedMIMEToken
    */
   public boolean isLast() {
     return m_chunk.isLast();
-  }  
+  }
 
   /**
    * Get the bytes for this chunk (unparse).  WARNING - this
@@ -88,5 +89,9 @@ public final class ContinuedMIMEToken
   public int length() {
     return m_chunk==null?0:m_chunk.length();
   }
-  
+
+    public int getEstimatedSize()
+    {
+        return m_chunk.hasData()?m_chunk.getData().remaining():0;
+    }
 }
