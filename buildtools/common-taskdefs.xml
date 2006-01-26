@@ -29,12 +29,11 @@ $Id: common-taskdefs.xml,v 1.5 2005/02/05 04:29:30 amread Exp $
   </typedef>
 
   <taskdef name="jrc" classname="net.sf.jasperreports.ant.JRAntCompileTask">
-    <classpath refid="mvvm.thirdparty.classpath"/>
-    <classpath refid="jasperreports.classpath"/>
+    <classpath refid="reports.thirdparty.classpath"/>
   </taskdef>
 
   <taskdef classname="org.apache.jasper.JspC" name="jasper2" >
-    <classpath refid="mvvm.thirdparty.classpath"/>
+    <classpath refid="tomcat.thirdparty.classpath"/>
     <classpath path="${java.home}/../lib/tools.jar"/>
   </taskdef>
 </project>

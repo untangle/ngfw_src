@@ -20,7 +20,7 @@ $Id: common-properties.xml,v 1.25 2005/03/23 04:52:36 amread Exp $
   <!-- We use ant-contrib extension to get 'if' and 'foreach' -->
   <taskdef resource="net/sf/antcontrib/antcontrib.properties">
     <classpath>
-      <pathelement location="${ANTCONTRIB_HOME}/lib/ant-contrib-0.6.jar"/>
+      <pathelement location="${ANTCONTRIB_HOME}/lib/ant-contrib.jar"/>
     </classpath>
   </taskdef>
 
@@ -40,7 +40,6 @@ $Id: common-properties.xml,v 1.25 2005/03/23 04:52:36 amread Exp $
   <property name="src.main" value="main"/>
   <property name="src.hier" value="hier"/>
   <property name="src.resources" value="resources"/>
-  <property name="src.thirdparty" value="thirdparty"/>
   <property name="src.webapps" value="webapps"/>
 
   <!-- standard build places -->
@@ -84,7 +83,9 @@ $Id: common-properties.xml,v 1.25 2005/03/23 04:52:36 amread Exp $
   <property name="suffix.log" value="var/log/mvvm"/>
   <property name="suffix.data" value="var/lib"/>
 
-  <property name="suffix.thirdparty.lib" value="usr/share/java/mvvm"/>
+  <property name="suffix.thirdparty-mvvm.lib" value="usr/share/java/mvvm"/>
+  <property name="suffix.thirdparty-tomcat.lib" value="usr/share/java/tomcat"/>
+  <property name="suffix.thirdparty-reports.lib" value="usr/share/java/reports"/>
   <property name="suffix.endorsed.lib" value="usr/share/java/endorsed"/>
 
   <property name="suffix.mvvm.home" value="usr/share/metavize"/>
@@ -113,7 +114,9 @@ $Id: common-properties.xml,v 1.25 2005/03/23 04:52:36 amread Exp $
   <property name="dist.var.tmp" value="${build.dist}/${suffix.var.tmp}"/>
   <property name="dist.var.run" value="${build.dist}/${suffix.var.run}"/>
 
-  <property name="dist.thirdparty.lib" value="${build.dist}/${suffix.thirdparty.lib}"/>
+  <property name="dist.thirdparty-mvvm.lib" value="${build.dist}/${suffix.thirdparty-mvvm.lib}"/>
+  <property name="dist.thirdparty-tomcat.lib" value="${build.dist}/${suffix.thirdparty-tomcat.lib}"/>
+  <property name="dist.thirdparty-reports.lib" value="${build.dist}/${suffix.thirdparty-reports.lib}"/>
   <property name="dist.endorsed.lib" value="${build.dist}/${suffix.endorsed.lib}"/>
 
   <property name="dist.mvvm.home" value="${build.dist}/${suffix.mvvm.home}"/>
@@ -145,7 +148,9 @@ $Id: common-properties.xml,v 1.25 2005/03/23 04:52:36 amread Exp $
   <filter token="MVVM_WEB" value="${build.prefix}/${suffix.mvvm.web}"/>
   <filter token="MVVM_WEBSTART" value="${build.prefix}/${suffix.mvvm.webstart}"/>
   <filter token="MVVM_REPORTS" value="${build.prefix}/${suffix.mvvm.reports}"/>
-  <filter token="THIRDPARTY_LIB" value="${build.prefix}/${suffix.thirdparty.lib}"/>
+  <filter token="THIRDPARTY_MVVM_LIB" value="${build.prefix}/${suffix.thirdparty-mvvm.lib}"/>
+  <filter token="THIRDPARTY_TOMCAT_LIB" value="${build.prefix}/${suffix.thirdparty-tomcat.lib}"/>
+  <filter token="THIRDPARTY_REPORTS_LIB" value="${build.prefix}/${suffix.thirdparty-reports.lib}"/>
   <filter token="ENDORSED_LIB" value="${build.prefix}/${suffix.endorsed.lib}"/>
 
   <filter token="FAKE_PKG_LIST" value="${build.prefix}/${suffix.pkg-list}" />
