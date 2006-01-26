@@ -224,7 +224,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <include name="com/metavize/mvvm/util/PortServiceNames.java"/>
       <include name="com/metavize/mvvm/util/SessionUtil.java"/>
       <include name="com/metavize/mvvm/util/TransactionWork.java"/>
-      <include name="com/metavize/mvvm/util/Pair.java"/>
+      <include name="com/metavize/tran/util/Pair.java"/>
     </javac>
   </target>
 
@@ -268,7 +268,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
         <include name="com/metavize/mvvm/util/PortServiceNames*.class"/>
         <include name="com/metavize/mvvm/util/SessionUtil*.class"/>
         <include name="com/metavize/mvvm/util/TransactionWork.class"/>
-        <include name="com/metavize/mvvm/util/Pair.class"/>
+        <include name="com/metavize/tran/util/Pair.class"/>
         <include name="com/metavize/mvvm/addrbook/AddressBookConfiguration.class"/>
         <include name="com/metavize/mvvm/addrbook/AddressBook.class"/>
         <include name="com/metavize/mvvm/addrbook/AddressBookSettings.class"/>
@@ -653,7 +653,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
                gzipoutput="true"/>
       </then></if>
 
-    <copy tofile="${build.dist}/tmp/pkg-list" filtering="true">
+      <copy tofile="${build.dist}/tmp/pkg-list" filtering="true">
       <fileset file="../debian/control"/>
     </copy>
 
