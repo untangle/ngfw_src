@@ -71,7 +71,7 @@ public class ScriptWriter
         this.sb.append( text + "\n" );
     }
 
-    public void appendLines( String text[] )
+    public void appendLines( String ... text )
     {
         for ( String line : text ) appendLine( line );
     }

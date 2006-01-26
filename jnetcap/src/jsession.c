@@ -234,7 +234,7 @@ JNIEXPORT jstring JNICALL JF_Session( toString )
  * Method:    updateServerIntf
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_com_metavize_jnetcap_NetcapSession_updateServerIntf
+JNIEXPORT void JNICALL JF_Session( updateServerIntf )
 (JNIEnv *env, jobject _this, jlong session_ptr )
 {
     netcap_session_t* session;

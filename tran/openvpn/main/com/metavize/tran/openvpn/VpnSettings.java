@@ -41,7 +41,7 @@ public class VpnSettings implements Serializable, Validatable
             2048
         };
 
-     static private final int KEY_SIZE_DEFAULT       = KEY_SIZE_ENUMERATION[4];
+    static private final int KEY_SIZE_DEFAULT       = KEY_SIZE_ENUMERATION[4];
     
     private Long id;
     private Tid tid;

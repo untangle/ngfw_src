@@ -21,15 +21,15 @@ import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
 
 // NOTE: for mutable objects, please at least override the deepCopy
-public abstract class StringBasedUserType implements UserType, Serializable
+public abstract class IntBasedUserType implements UserType, Serializable
 {
-    private static final int[] SQL_TYPES = { Types.VARCHAR };
+    private static final int[] SQL_TYPES = { Types.INTEGER };
 
     // abstract methods -------------------------------------------------------
     public abstract Class returnedClass();
 
-    protected abstract String userTypeToString(Object v);
-    protected abstract Object createUserType(String val) throws Exception;
+    protected abstract int userTypeToInt(Object v);
+    protected abstract Object createUserType(int val) throws Exception;
 
     // UserType methods -------------------------------------------------------
 
@@ -57,7 +57,7 @@ public abstract class StringBasedUserType implements UserType, Serializable
     public Object nullSafeGet(ResultSet rs, String[] names, Object owner)
         throws HibernateException, SQLException
     {
-        String name = rs.getString(names[0]);
+        int name = rs.getInt(names[0]);
         Object val;
 
         try {
@@ -73,9 +73,9 @@ public abstract class StringBasedUserType implements UserType, Serializable
         throws HibernateException, SQLException
     {
         if (null == v) {
-            ps.setNull(i, Types.VARCHAR);
+            ps.setNull(i, Types.INTEGER);
         } else {
-            ps.setString(i, userTypeToString(v));
+            ps.setInt(i, userTypeToInt(v));
         }
     }
 
@@ -96,10 +96,6 @@ public abstract class StringBasedUserType implements UserType, Serializable
 
     public int hashCode(Object x)
     {
-        /* Use the hash code of the string because two objects that    *
-         * translate to the same string should be equivalent, if it    *
-         * doesn't then, 'createUserType( userTypeToString( x )) == x' *
-         * wouldn't always work, and that would lead to problems.      */
-        return userTypeToString(x).hashCode();
+        return ( 17 + ( 37 * userTypeToInt(x)));
     }
 }
