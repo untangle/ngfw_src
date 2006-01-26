@@ -49,8 +49,7 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
       <arg value="index.jsp"/>
       <arg value="gui.jnlp"/>
       <arg value="gui-local.jnlp"/>
-      <classpath refid="mvvm.thirdparty.classpath"/>
-      <classpath refid="tomcat.classpath"/>
+      <classpath refid="tomcat.thirdparty.classpath"/>
     </java>
     <echo message="Adding JSP servlet mappings to web.xml"/>
     <loadfile property="generated-web.xml" srcFile="${build.gensrc}/web-fragment.xml"/>

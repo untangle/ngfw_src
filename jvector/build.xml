@@ -47,7 +47,7 @@ $Id: build.xml,v 1.5 2005/03/22 01:27:49 inieves Exp $
       <src path="${src.jvector}"/>
       
       <classpath refid="jnetcap.classpath"/>
-      <classpath refid="mvvm.thirdparty.classpath"/>
+      <classpath refid="log4j.classpath"/>
 
       <include name="com/metavize/jvector/*.java"/>
     </javac>

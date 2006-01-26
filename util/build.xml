@@ -41,7 +41,8 @@ $Id$
            includeAntRuntime="false">
 
       <src path="${src.util}"/>
-      <classpath refid="mvvm.thirdparty.classpath"/>
+      <classpath refid="ant.classpath"/>
+      <classpath refid="bcel.classpath"/>
       <include name="*.java"/>
     </javac>
   </target>

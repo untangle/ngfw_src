@@ -22,14 +22,14 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
   <!-- main targets -->
   <target name="pkg.gensrc"  depends="gensrc.servlets, gensrc.version"/>
   <target name="pkg.compile"
-          depends="compile.bootstrap, compile.mvvm-client,
+          depends="compile.bootstrap, compile.mvvm-client, compile.mvvm-reports,
                    compile.mvvm, compile.servlets"/>
   <target name="pkg.jar"
-          depends="jar.bootstrap, jar.mvvm-client, jar.mvvm,
+          depends="jar.bootstrap, jar.mvvm-client, jar.mvvm-reports, jar.mvvm,
                    jar.servlets"/>
   <target name="pkg.install"
           depends="install.hier, install.bootstrap,
-                   install.mvvm-client, install.mvvm, install.servlets,
+                   install.mvvm-client, install.mvvm-reports, install.mvvm, install.servlets,
                    install.thirdparty, install.reports"/>
   <target name="pkg.clean" depends="clean.nuke"/>
 
@@ -44,8 +44,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <arg line="-p com.metavize.jsp"/>
       <arg line="-webinc ${build.gensrc}/web-fragment.xml"/>
       <arg line="-uriroot ${src.hier}/${suffix.mvvm.web}/session-dumper/"/>
-      <classpath refid="mvvm.thirdparty.classpath"/>
-      <classpath refid="tomcat.classpath"/>
+      <classpath refid="tomcat.thirdparty.classpath"/>
     </java>
     <echo message="Adding JSP servlet mappings to web.xml"/>
     <loadfile property="sd-generated-web.xml" srcFile="${build.gensrc}/web-fragment.xml"/>
@@ -62,8 +61,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <arg line="-p com.metavize.jsp"/>
       <arg line="-webinc ${build.gensrc}/web-fragment.xml"/>
       <arg line="-uriroot ${src.hier}/${suffix.mvvm.web}/reports/"/>
-      <classpath refid="mvvm.thirdparty.classpath"/>
-      <classpath refid="tomcat.classpath"/>
+      <classpath refid="tomcat.thirdparty.classpath"/>
     </java>
     <echo message="Adding JSP servlet mappings to web.xml"/>
     <loadfile property="rp-generated-web.xml" srcFile="${build.gensrc}/web-fragment.xml"/>
@@ -137,6 +135,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
            debug="true"
            includeAntRuntime="false">
 
+      <classpath refid="tomcat.thirdparty.classpath"/>
       <classpath refid="mvvm.thirdparty.classpath"/>
 
       <src path="${src.bootstrap}"/>
@@ -285,6 +284,55 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
     <copy file="${build.jar}/mvvm-client.jar" todir="${dist.mvvm.lib}"/>
   </target>
 
+  <!-- mvvm-reports.jar -->
+  <property name="build.mvvm-reports" value="${build.root}/mvvm-reports"/>
+
+  <target name="compile.mvvm-reports">
+    <mkdir dir="${build.mvvm-reports}"/>
+
+    <exec executable="${buildtool.base}/dependset.sh">
+      <arg value="${build.mvvm-reports}"/>
+      <arg value="${build.depcache}/mvvm-reports.patternset"/>
+    </exec>
+
+    <depend srcdir="${src.main}" destdir="${build.mvvm-reports}"
+            cache="${build.depcache}/mvvm-reports" closure="yes">
+      <patternset includesfile="${build.depcache}/mvvm-reports.patternset"/>
+    </depend>
+
+    <javac destdir="${build.mvvm-reports}"
+           debug="on"
+           optimize="false"
+           deprecation="on"
+           source="1.5"
+           target="1.5"
+           includeAntRuntime="false">
+
+      <classpath refid="reports.thirdparty.classpath"/>
+
+      <src path="${src.main}"/>
+
+      <include name="com/metavize/mvvm/reporting/**/*.java"/>
+    </javac>
+  </target>
+
+  <target name="jar.mvvm-reports" depends="compile.mvvm-reports">
+    <jar destfile="${build.jar}/mvvm-reports.jar" index="yes">
+      <fileset dir="${build.mvvm-reports}"/>
+
+      <!-- XXX dirty hack for reporting icons -->
+      <fileset dir="../gui/main">
+        <include name="com/metavize/gui/icons/LogoNoText96x96.gif"/>
+        <include name="com/metavize/gui/icons/LogoNoText64x64.gif"/>
+      </fileset>
+    </jar>
+
+  </target>
+
+  <target name="install.mvvm-reports" depends="jar.mvvm-reports">
+    <copy file="${build.jar}/mvvm-reports.jar" todir="${dist.mvvm.lib}"/>
+  </target>
+
   <!-- mvvm.jar -->
 
   <property name="build.mvvm" value="${build.root}/mvvm"/>
@@ -313,7 +361,6 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
 
       <classpath refid="jnetcap.classpath"/>
       <classpath refid="jvector.classpath"/>
-      <classpath refid="jfreechart.classpath"/>
       <classpath refid="mvvm.thirdparty.classpath"/>
       <classpath path="${build.jar}/bootstrap.jar"/>
 
@@ -335,8 +382,6 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <include name="com/metavize/tran/util/**"/>
       <include name="com/metavize/tran/mime/**"/>
       <include name="com/metavize/tran/sasl/**"/>
-      <include name="com/metavize/mvvm/reporting/**"/>
-      <include name="com/metavize/mvvm/reporting/Util.java"/>
       <include name="com/metavize/mvvm/addrbook/AddressBookConfigurationUserType.java"/>
     </javac>
   </target>
@@ -347,12 +392,6 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
         <include name="**/*.hbm.xml"/>
       </fileset>
       <fileset dir="${build.mvvm}"/>
-
-      <!-- XXX dirty hack for reporting icons -->
-      <fileset dir="../gui/main">
-        <include name="com/metavize/gui/icons/LogoNoText96x96.gif"/>
-        <include name="com/metavize/gui/icons/LogoNoText64x64.gif"/>
-      </fileset>
 
       <!-- XXXX really dirty hack for store icons -->
       <fileset dir="../gui/main">
@@ -458,7 +497,8 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
            target="1.5"
            includeAntRuntime="false">
 
-      <classpath refid="mvvm.thirdparty.classpath"/>
+      <classpath refid="tomcat.thirdparty.classpath"/>
+      <classpath refid="log4j.classpath"/>
       <classpath path="${build.jar}/bootstrap.jar"/>
       <classpath path="${build.jar}/mvvm-client.jar"/>
 
@@ -503,26 +543,37 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
   <!-- thirdparty -->
 
   <target name="install.thirdparty" depends="install.hier">
-    <mkdir dir="${dist.thirdparty.lib}"/>
+    <mkdir dir="${dist.thirdparty-mvvm.lib}"/>
+    <mkdir dir="${dist.thirdparty-tomcat.lib}"/>
+    <mkdir dir="${dist.thirdparty-reports.lib}"/>
 
     <!-- XXX move to own package(s) -->
-    <copy todir="${dist.thirdparty.lib}" flatten="yes">
+    <copy todir="${dist.thirdparty-mvvm.lib}" flatten="yes">
       <fileset refid="activation.jarset"/>
       <fileset refid="c3p0.jarset"/>
-      <fileset refid="concurrent.jarset"/>
       <fileset refid="hibernate.jarset"/>
-      <fileset refid="itext.jarset"/>
-      <fileset refid="jasperreports.jarset"/>
       <fileset refid="javamail.jarset"/>
-      <fileset refid="jfreechart.jarset"/>
       <fileset refid="junit.jarset"/>
       <fileset refid="log4j.jarset"/>
       <fileset refid="postgresql.jarset"/>
       <fileset refid="tomcat.jarset"/>
       <fileset refid="trove.jarset"/>
-      <fileset refid="yjp.jarset"/>
       <fileset refid="velocity.jarset"/>
+      <fileset refid="yjp.jarset"/>
     </copy>
+
+    <copy todir="${dist.thirdparty-reports.lib}" flatten="yes">
+      <fileset refid="ant.jarset"/>
+      <fileset refid="commons-beanutils.jarset"/>
+      <fileset refid="commons-digester.jarset"/>
+      <fileset refid="itext.jarset"/>
+      <fileset refid="jasperreports.jarset"/>
+      <fileset refid="jasperreports.old-commons.jarset"/>
+      <fileset refid="jfreechart.jarset"/>
+      <fileset refid="log4j.jarset"/>
+      <fileset refid="postgresql.jarset"/>
+    </copy>
+
 
     <!-- java endorsed directory -->
 

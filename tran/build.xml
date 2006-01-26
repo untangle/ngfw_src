@@ -124,7 +124,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <arg line="-t mvvm/resources/reports"/>
       <arg line="-o ${build.gensrc}/${tran.name}/reports"/>
       <arg line="${rpd}"/>
-      <classpath refid="mvvm.thirdparty.classpath"/>
+      <classpath refid="reports.thirdparty.classpath"/>
       <classpath path="../util/output/util"/>
     </java>
   </target>
@@ -148,15 +148,13 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
     <jrc srcdir="${build.gensrc}/${tran.name}" destdir="${build.root}/${tran.name}" tempdir="${build.tmp}"
          keepjava="true" xmlvalidation="true">
-      <classpath refid="mvvm.thirdparty.classpath"/>
-      <classpath refid="jasperreports.classpath"/>
+      <classpath refid="reports.thirdparty.classpath"/>
       <classpath refid="mvvm-client.classpath"/>
       <include name="**/*jrxml"/>
     </jrc>
     <jrc srcdir="${tran.name}/${src.main}" destdir="${build.root}/${tran.name}" tempdir="${build.tmp}"
          keepjava="true" xmlvalidation="true">
-      <classpath refid="mvvm.thirdparty.classpath"/>
-      <classpath refid="jasperreports.classpath"/>
+      <classpath refid="reports.thirdparty.classpath"/>
       <classpath refid="mvvm-client.classpath"/>
       <include name="**/*jrxml"/>
     </jrc>
@@ -329,8 +327,10 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <classpath refid="fileupload.classpath"/>
       <classpath refid="jfreechart.classpath"/>
       <classpath refid="jnlp.classpath"/>
+      <classpath refid="junit.classpath"/>
       <classpath refid="log4j.classpath"/>
       <classpath refid="mvvm-client.classpath"/>
+      <classpath refid="mvvm-reports.classpath"/>
       <classpath refid="mvvm.classpath"/>
       <classpath refid="tomcat.classpath"/>
       <classpath refid="velocity.classpath"/>
@@ -656,8 +656,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <arg line="-p com.metavize.tran.mail.web.jsp"/>
       <arg line="-webinc ${build.webapps}/quarantine/WEB-INF/web-fragment.xml"/>
       <arg line="-uriroot mail/${src.webapps}/quarantine/root/"/>
-      <classpath refid="mvvm.thirdparty.classpath"/>
-      <classpath refid="tomcat.classpath"/>
+      <classpath refid="tomcat.thirdparty.classpath"/>
       <classpath path="${build.webapps}/quarantine/WEB-INF/classes"/>
       <classpath path="${build.jar}/mail-export.jar"/>
     </java>
@@ -798,8 +797,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <arg line="-p com.metavize.tran.${tran.name}.servlet"/>
       <arg line="-webinc ${build.gensrc}/${tran.name}/web-fragment.xml"/>
       <arg line="-uriroot ${tran.name}/${src.hier}/${suffix.mvvm.web}/${tran.name}/"/>
-      <classpath refid="tomcat.classpath"/>
-      <classpath refid="mvvm.thirdparty.classpath"/>
+      <classpath refid="tomcat.thirdparty.classpath"/>
     </java>
 
     <echo message="Adding JSP servlet mappings to web.xml"/>
@@ -832,7 +830,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <src path="${tran.name}/webapps/browser/src"/>
 
       <classpath refid="mvvm.thirdparty.classpath"/>
-      <classpath refid="tomcat.classpath"/>
+      <classpath refid="tomcat.thirdparty.classpath"/>
     </javac>
 
     <mkdir dir="${build.gensrc}/browser/"/>
@@ -849,7 +847,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <arg line="-webinc ${build.gensrc}/browser/web-fragment.xml"/>
       <arg line="-uriroot ${dist.mvvm.web}/browser"/>
       <classpath path="${java.home}/../lib/tools.jar"/>
-      <classpath refid="tomcat.classpath"/>
+      <classpath refid="tomcat.thirdparty.classpath"/>
       <classpath refid="mvvm.thirdparty.classpath"/>
     </java>
 
