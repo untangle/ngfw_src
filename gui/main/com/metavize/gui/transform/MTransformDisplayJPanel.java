@@ -32,6 +32,7 @@ import org.jfree.data.time.DynamicTimeSeriesCollection;
 import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.Second;
 import org.jfree.data.xy.TableXYDataset;
+import org.jfree.ui.RectangleInsets;
 
 public class MTransformDisplayJPanel extends javax.swing.JPanel {
 
@@ -114,7 +115,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         plot.setOutlinePaint(null);
         plot.getRenderer().setSeriesPaint(0, new Color(.4f, .4f, 1f, .5f));
         plot.getRenderer().setSeriesOutlinePaint(0, new Color(.4f, .4f, 1f, 1f));
-        plot.setInsets(new java.awt.Insets(0,0,0,2), false);
+        plot.setInsets(new RectangleInsets(0,0,0,2), false);
         plot.setRangeAxisLocation(AxisLocation.BOTTOM_OR_LEFT);
         plot.setDomainGridlinesVisible(false);
         plot.setDomainGridlinePaint(null);
@@ -163,7 +164,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         plot.getRenderer().setSeriesPaint(1, new Color(.5f, .25f, .5f));
 
 
-        plot.setInsets(new java.awt.Insets(4,0,6,2), false);
+        plot.setInsets(new RectangleInsets(4,0,6,2), false);
         plot.setDomainCrosshairVisible(false);
         plot.setDomainGridlinesVisible(false);
         plot.setRangeCrosshairVisible(false);
