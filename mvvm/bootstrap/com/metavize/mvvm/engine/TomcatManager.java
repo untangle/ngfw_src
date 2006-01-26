@@ -173,10 +173,12 @@ public class TomcatManager {
 
     public boolean unloadWebApp(String contextRoot) {
         try {
-            Container c = baseHost.findChild(contextRoot);
-            if(c != null) {
-                baseHost.removeChild(c);
-                return true;
+            if (baseHost != null) {
+                Container c = baseHost.findChild(contextRoot);
+                if(c != null) {
+                    baseHost.removeChild(c);
+                    return true;
+                }
             }
         }
         catch(Exception ex) {
