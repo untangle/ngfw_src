@@ -502,7 +502,7 @@ public class MvvmContextImpl extends MvvmContextBase
         return remoteContext;
     }
 
-    String getActivationKey()
+    public String getActivationKey()
     {
         try {
             File keyFile = new File(ACTIVATION_KEY_FILE);

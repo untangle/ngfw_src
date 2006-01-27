@@ -229,4 +229,11 @@ public interface MvvmLocalContext
     void waitForStartup();
 
     CronJob makeCronJob(Period p, Runnable r);
+
+    /**
+     * Get the activation key.  <b>Don't be naughty and use this</b>
+     *
+     * @return the activation key.
+     */
+    String getActivationKey();
 }

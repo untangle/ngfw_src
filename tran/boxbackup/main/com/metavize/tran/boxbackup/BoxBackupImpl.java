@@ -10,6 +10,8 @@
  */
 package com.metavize.tran.boxbackup;
 
+import com.metavize.mvvm.CronJob;
+import com.metavize.mvvm.Period;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
@@ -22,9 +24,12 @@ import com.metavize.mvvm.util.TransactionWork;
 import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.EventManager;
+import com.metavize.mvvm.engine.MvvmContextImpl;
+import com.metavize.mvvm.MvvmContextFactory;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import com.metavize.tran.util.SimpleExec;
 
 public class BoxBackupImpl extends AbstractTransform implements BoxBackup
 {
@@ -34,6 +39,7 @@ public class BoxBackupImpl extends AbstractTransform implements BoxBackup
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { };
     private final Logger logger = Logger.getLogger(BoxBackupImpl.class);
     private EventLogger<BoxBackupEvent> eventLogger;
+    private CronJob cronJob;
 
     private BoxBackupSettings settings = null;
 
@@ -76,6 +82,12 @@ public class BoxBackupImpl extends AbstractTransform implements BoxBackup
         catch (TransformException exn) {
             logger.error("Could not save BoxBackup settings", exn);
         }
+        if (null != cronJob) {
+            int h = settings.getHourInDay();
+            int m = settings.getMinuteInHour();
+            Period p = new Period(h, m, true);
+            cronJob.reschedule(p);
+        }        
     }
 
     @Override
@@ -115,6 +127,7 @@ public class BoxBackupImpl extends AbstractTransform implements BoxBackup
                 public Object getResult() { return null; }
             };
         getTransformContext().runTransaction(tw);
+        
     }
 
     protected void preStart() throws TransformStartException
@@ -127,6 +140,109 @@ public class BoxBackupImpl extends AbstractTransform implements BoxBackup
             throw new TransformStartException(e);
         }
     }
+
+    /**
+     * Implemented to start the cron job
+     */
+    protected void postStart() {
+      Period p;
+      if (null == settings) {
+        p = new Period(6, 0, true);
+      } else {
+        int h = settings.getHourInDay();
+        int m = settings.getMinuteInHour();
+        p = new Period(h, m, true);
+      }
+
+      Runnable r = new Runnable()
+          {
+              public void run()
+              {
+                  doBackup();
+              }
+          };
+      cronJob = MvvmContextFactory.context().makeCronJob(p, r);
+      logger.info("Created (java)cron job for 24 hour box backup");
+    }
+
+    protected void preStop() {
+      if(cronJob != null) {
+        logger.info("Canceling box backup (java)cron job");
+        cronJob.cancel();
+        cronJob = null;
+      }
+    }
+
+
+    /**
+     * Callback from the cron job that it is time
+     * to try a backup.
+     */
+    private void doBackup() {
+      logger.debug("doBackup invoked");
+
+      BoxBackupEvent event = null;
+      
+      try {
+        SimpleExec.SimpleExecResult result = SimpleExec.exec(
+          "mv-remotebackup.sh",
+          new String[] {
+            "-u",
+            settings.getBackupURL(),
+            "-v",
+            "-k",
+            MvvmContextFactory.context().getActivationKey(),
+            "-t",
+            Integer.toString(60*3)//Units in seconds - 3 minutes
+          },
+          null,
+          null,
+          true,
+          true,
+          (1000*60*4), //3 minutes plus some slop for tar operations
+          logger,
+          true);
+
+
+        if(result.exitCode != 0) {
+          logger.error("Backup returned non-zero error code (" +
+            result.exitCode + ").  Stdout \"" +
+            new String(result.stdOut) + "\".  Stderr \"" +
+            new String(result.stdErr));
+          String reason = "";
+          switch(result.exitCode) {
+            case 1:
+              reason = "Error in arguments";
+              break;
+            case 2:
+              reason = "Error from remote server " + settings.getBackupURL();
+              break;
+            case 3:
+              reason = "Permission problem with remote server " + settings.getBackupURL();
+              break;
+            case 4:
+              reason = "Unable to contact " + settings.getBackupURL();
+              break;
+            case 5:
+              reason = "Timeout contacting " + settings.getBackupURL();
+            default:
+              reason = "Unknown error";
+          }
+          event = new BoxBackupEvent(false, reason);
+        }
+        else {
+          event = new BoxBackupEvent(true, "Posted to " + settings.getBackupURL());
+        }
+      }
+      catch(java.io.IOException ex) {
+        logger.error("Exception attempting to perform backup", ex);
+        event = new BoxBackupEvent(false, "Local error in processing");
+      }
+      eventLogger.log(event);
+    }
+
+
+    
 
     public void reconfigure() throws TransformException
     {

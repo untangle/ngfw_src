@@ -29,6 +29,17 @@
 # 
 #==============================================================
 
+#================================================================
+#
+# **************************************************
+# ******************** WARNING  ********************
+# **************************************************
+#
+# As this file is maintained, note that its behavior is bound
+# to com.metavize.tran.boxbackup.BoxBackupImpl.  Any changes
+# this this script should be reflected in that Java code
+#================================================================
+
 # Example:
 #./mv-remotebackup.sh -u http://localhost/boxtrack/boxbackup/backup.php -k xyz678
 
