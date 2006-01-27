@@ -13,6 +13,8 @@ package com.metavize.mvvm.security;
 
 import java.io.Serializable;
 import java.net.URLEncoder;
+import java.util.Hashtable;
+import java.util.StringTokenizer;
 
 /**
  * The registration info for the EdgeGuard customer
@@ -54,6 +56,60 @@ public class RegistrationInfo implements Serializable
         this.lastName = lastName;
         this.emailAddr = emailAddr;
         this.numSeats = numSeats;
+    }
+
+    /**
+     * Creates a new <code>RegistrationInfo</code> from a table of parsed form data
+     *
+     * @param entries a <code>Hashtable</code> of form data
+     */
+    public RegistrationInfo(Hashtable entries)
+    {
+        String[] sa;
+        
+        sa = (String[]) entries.get("companyName");
+        if (sa != null && sa.length > 0 && sa[0].length() > 0)
+            companyName = sa[0];
+        sa = (String[]) entries.get("firstName");        
+        if (sa != null && sa.length > 0 && sa[0].length() > 0)
+            firstName = sa[0];
+        sa = (String[]) entries.get("lastName");
+        if (sa != null && sa.length > 0 && sa[0].length() > 0)
+            lastName = sa[0];
+        sa = (String[]) entries.get("address1");
+        if (sa != null && sa.length > 0 && sa[0].length() > 0)
+            address1 = sa[0];
+        sa = (String[]) entries.get("address2");
+        if (sa != null && sa.length > 0 && sa[0].length() > 0)
+            address2 = sa[0];
+        sa = (String[]) entries.get("city");
+        if (sa != null && sa.length > 0 && sa[0].length() > 0)
+            city = sa[0];
+        sa = (String[]) entries.get("state");
+        if (sa != null && sa.length > 0 && sa[0].length() > 0)
+            state = sa[0];
+        sa = (String[]) entries.get("zipcode");
+        if (sa != null && sa.length > 0 && sa[0].length() > 0)
+            zipcode = sa[0];
+        sa = (String[]) entries.get("emailAddr");
+        if (sa != null && sa.length > 0 && sa[0].length() > 0)
+            emailAddr = sa[0];
+        sa = (String[]) entries.get("phone");
+        if (sa != null && sa.length > 0 && sa[0].length() > 0)
+            phone = sa[0];
+        sa = (String[]) entries.get("state");
+        if (sa != null && sa.length > 0 && sa[0].length() > 0)
+            state = sa[0];
+
+        numSeats = -1;
+        sa = (String[]) entries.get("numSeats");
+        if (sa != null && sa.length > 0 && sa[0].length() > 0) {
+            try {
+                numSeats = Integer.parseInt(sa[0]);
+            } catch (NumberFormatException x) {
+                throw new IllegalArgumentException("Bad number of seats: " + sa[0]);
+            }
+        }
     }
 
     /**
@@ -265,8 +321,25 @@ public class RegistrationInfo implements Serializable
 
     public String toString()
     {
-        return "RegistrationInfo [ company = " + companyName + " first = " + firstName
-            + " last = " + lastName + " email = " + emailAddr
-            + " seats = " + numSeats + " ]";
+        StringBuilder r = new StringBuilder("RegistrationInfo [ company = ");
+        r.append(companyName);
+        r.append(", first = ").append(firstName);
+        r.append(", last = ").append(lastName);
+        r.append(", email = ").append(emailAddr);
+        r.append(", seats = ").append(numSeats);
+        if (address1 != null)
+            r.append(", address1 = ").append(address1);
+        if (address2 != null)
+            r.append(", address2 = ").append(address2);
+        if (city != null)
+            r.append(", city = ").append(city);
+        if (state != null)
+            r.append(", state = ").append(state);
+        if (zipcode != null)
+            r.append(", zipcode = ").append(state);
+        if (phone != null)
+            r.append(", phone = ").append(state);
+        r.append(" ]");
+        return r.toString();
     }
 }

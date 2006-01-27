@@ -27,6 +27,7 @@ import com.metavize.mvvm.policy.Policy;
 import com.metavize.mvvm.policy.PolicyException;
 import com.metavize.mvvm.security.LoginSession;
 import com.metavize.mvvm.security.MvvmPrincipal;
+import com.metavize.mvvm.security.RegistrationInfo;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tapi.IPSessionDesc;
 import com.metavize.mvvm.tapi.SessionDesc;
@@ -154,6 +155,8 @@ public class RemoteClient
             }
         } else if (args[0].equalsIgnoreCase("who")) {
             who();
+        } else if (args[0].equalsIgnoreCase("getRegInfo")) {
+            getRegInfo();
         } else if (args[0].equalsIgnoreCase("dumpSessions")) {
             dumpSessions();
         } else if (args[0].equalsIgnoreCase("register")) {
@@ -577,6 +580,16 @@ public class RemoteClient
         }
     }
 
+    private static void getRegInfo()
+    {
+        RegistrationInfo regInfo = mc.adminManager().getRegistrationInfo();
+        if (regInfo == null) {
+            System.out.println("No registration info found!");
+        } else {
+            System.out.println(regInfo.toString());
+        }
+    }
+
     private static void register(String name)
         throws Exception
     {
@@ -745,6 +758,7 @@ public class RemoteClient
         System.out.println("    mcli sessions [ TID ]");
         System.out.println("  admin manager:");
         System.out.println("    mcli who");
+        System.out.println("    mcli getRegInfo");
         System.out.println("  mvvm commands:");
         System.out.println("    mcli shutdown");
         System.out.println("    mcli serverStats");
