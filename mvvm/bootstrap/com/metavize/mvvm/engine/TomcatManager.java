@@ -87,6 +87,7 @@ public class TomcatManager {
         descriptors = new ArrayList<WebAppDescriptor>();
         descriptors.add(new WebAppDescriptor("/session-dumper", "session-dumper"));
         descriptors.add(new WebAppDescriptor("/webstart", "webstart"));
+        descriptors.add(new WebAppDescriptor("/store", "store"));
         descriptors.add(new WebAppDescriptor("/reports", "reports"));
     }
 

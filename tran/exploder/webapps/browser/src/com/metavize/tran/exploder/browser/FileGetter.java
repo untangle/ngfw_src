@@ -39,6 +39,7 @@ public class FileGetter extends HttpServlet
 
     // HttpServlet methods ----------------------------------------------------
 
+    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException
     {
@@ -98,6 +99,7 @@ public class FileGetter extends HttpServlet
         }
     }
 
+    @Override
     public void init() throws ServletException
     {
         logger = Logger.getLogger(getClass());

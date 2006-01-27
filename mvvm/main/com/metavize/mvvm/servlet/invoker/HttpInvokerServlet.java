@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004 Metavize Inc.
+ * Copyright (c) 2004, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -25,6 +25,7 @@ import com.metavize.mvvm.engine.InvokerBase;
 
 public class HttpInvokerServlet extends HttpServlet
 {
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException
     {
@@ -45,6 +46,7 @@ public class HttpInvokerServlet extends HttpServlet
         ib.handle(is, os, req.getLocalAddr().equals("127.0.0.1"), clientAddr);
     }
 
+    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException
     {

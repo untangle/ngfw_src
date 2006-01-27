@@ -16,6 +16,7 @@
  '(jde-sourcepath
    (append
     '("./mvvm/main" "./mvvm/bootstrap" "./util"
+      "./mvvm/webapps/store/src"
       "./tran/exploder/webapps/browser/src")
     (mapcar (lambda (a) (concat "./tran/" a "/main")) transforms)
     (mapcar (lambda (a) (concat "./tran/" a "/main")) casings)
