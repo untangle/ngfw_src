@@ -3,28 +3,35 @@
 set -e
 
 if [ $# -eq 0 ]; then
-    echo "usage; $0 [ usb | local ]"
+    echo "usage; $0 [ usb | local ] (out dir)"
     exit 1
 fi
 
 method=$1
 
-mkdir -p @MVVM_DUMP@
+outdir=@MVVM_DUMP@
+if [ $# -eq 2 ]; then
+  outdir=$2
+fi
+
+mkdir -p $outdir
 
 case $method in
     usb)
         mount /dev/sda1 /mnt
         outdir=/mnt
         ;;
-    local)
-        outdir=@MVVM_DUMP@
-        ;;
+#    local)
+#        outdir=@MVVM_DUMP@
+#        ;;
 esac
 
 datestamp=$(date '+%Y%m%d%H%M')
 
 (pg_dump -U postgres -n settings mvvm; pg_dump -U postgres -n events -s mvvm) \
     | gzip > $outdir/mvvmdb-$datestamp.gz
+
+[ $? -eq 0 ] || exit 1
 
 tar zcf $outdir/files-$datestamp.tar.gz --ignore-failed-read -C @PREFIX@/ \
     etc/network/interfaces \
@@ -33,7 +40,11 @@ tar zcf $outdir/files-$datestamp.tar.gz --ignore-failed-read -C @PREFIX@/ \
     usr/share/metavize/conf/keystore \
     usr/share/metavize/conf/shield.cfg
 
+[ $? -eq 0 ] || exit 1    
+
 mkg installed > $outdir/installed-$datestamp
+
+[ $? -eq 0 ] || exit 1
 
 if [ $method = "usb" ]; then
     umount /mnt

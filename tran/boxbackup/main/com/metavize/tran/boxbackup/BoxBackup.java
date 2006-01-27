@@ -11,9 +11,11 @@
 package com.metavize.tran.boxbackup;
 
 import com.metavize.mvvm.tran.Transform;
+import com.metavize.mvvm.logging.EventManager;
 
 public interface BoxBackup extends Transform
 {
     BoxBackupSettings getBoxBackupSettings();
     void setBoxBackupSettings(BoxBackupSettings settings);
+    EventManager<BoxBackupEvent> getEventManager();
 }

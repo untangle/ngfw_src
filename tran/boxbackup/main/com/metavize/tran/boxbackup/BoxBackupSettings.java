@@ -19,17 +19,19 @@ import com.metavize.mvvm.security.Tid;
 /**
  * Settings for the BoxBackup transform.
  *
- * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
- * @version 1.0
  * @hibernate.class
- * table="TR_PROTOFILTER_SETTINGS"
+ * table="TR_BOXBACKUP_SETTINGS"
  */
 public class BoxBackupSettings implements java.io.Serializable
 {
-    private static final long serialVersionUID = 266434887860496780L;
+    private static final long serialVersionUID = 6441984722150846433L;
 
     private Long id;
     private Tid tid;
+    private int hourInDay;
+    private int minuteInHour;
+    private String backupURL;
+
 
     /**
      * Hibernate constructor.
@@ -62,4 +64,32 @@ public class BoxBackupSettings implements java.io.Serializable
      */
     public Tid getTid() {return tid;}
     public void setTid(Tid tid) {this.tid = tid;}
+
+    /**
+     *
+     * @return the Hour of the day
+     * @hibernate.property
+     * column="HOUR_IN_DAY"
+     */ 
+    public int getHourInDay() {return hourInDay;}
+    public void setHourInDay(int hour) {this.hourInDay = hour;}
+
+  /**
+    *
+    * @return the Minute of the day when digest emails should be sent.
+    * @hibernate.property
+    * column="MINUTE_IN_DAY"
+    */
+    public int getMinuteInHour() { return minuteInHour; }
+    public void setMinuteInHour(int mih) {this.minuteInHour = mih;}
+
+  /**
+    *
+    * @return email address.
+    * @hibernate.property
+    * column="BACKUP_URL"
+    */
+  public String getBackupURL() { return backupURL; }
+  public void setBackupURL(String url) { this.backupURL = url; }
+    
 }

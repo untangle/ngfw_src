@@ -13,7 +13,7 @@ $Id$
 
 <mvvm-transform>
   <transform-desc name="boxbackup-transform"
-                  display-name="24-Hour Box Replacement"
+                  display-name="x24-Hour Box Replacement"
                   classname="com.metavize.tran.boxbackup.BoxBackupImpl"
                   gui-classname="com.metavize.tran.boxbackup.gui.MTransformJPanel"/>
 </mvvm-transform>

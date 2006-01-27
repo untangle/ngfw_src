@@ -1618,11 +1618,11 @@ Description: The Metavize Report Generator
 
 Package: boxbackup-transform
 Architecture: any
-Depends: mvvm
-XB-Display-Name: 24-Hour Box Replacement
+Depends: mvvm, curl
+XB-Display-Name: X24-Hour Box Replacement
 XB-Website: http://www.metavize.com/boxbackup.html
-XB-Rack-Position: 1021
 XB-Is-Service: true
+B-View-Position: 990
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVHja5Fh7bBzFGZ+ZnX3d
  03e2c04cxwjjxI4fCSQhxKA0oYUUCRKpqgh/gPoHsahUqVKroioghT7U/lkJBbWi/1R9pA/1
