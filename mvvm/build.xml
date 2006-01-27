@@ -225,6 +225,16 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <include name="com/metavize/mvvm/util/SessionUtil.java"/>
       <include name="com/metavize/mvvm/util/TransactionWork.java"/>
       <include name="com/metavize/tran/util/Pair.java"/>
+
+      <!-- Networking classes -->
+      <include name="com/metavize/mvvm/networking/NetworkSettings.java"/>
+      <include name="com/metavize/mvvm/networking/BasicNetworkSettings.java"/>
+      <include name="com/metavize/mvvm/networking/NetworkSpace.java"/>
+      <include name="com/metavize/mvvm/networking/NetworkUtil.java"/>
+      <include name="com/metavize/mvvm/networking/Route.java"/>
+      <include name="com/metavize/mvvm/networking/Interface.java"/>
+      <include name="com/metavize/mvvm/networking/IPNetwork.java"/>
+      <include name="com/metavize/mvvm/networking/IPNetworkRule.java"/>
     </javac>
   </target>
 
@@ -277,7 +287,15 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
         <include name="com/metavize/mvvm/addrbook/RepositoryType.class"/>
         <include name="com/metavize/mvvm/addrbook/UserEntry.class"/>
 
-        <include name="com/metavize/mvvm/addrbook/*.java"/>
+        <!-- Networking classes -->
+        <include name="com/metavize/mvvm/networking/NetworkSettings.class"/>
+        <include name="com/metavize/mvvm/networking/BasicNetworkSettings.class"/>
+        <include name="com/metavize/mvvm/networking/NetworkSpace.class"/>
+        <include name="com/metavize/mvvm/networking/NetworkUtil.class"/>
+        <include name="com/metavize/mvvm/networking/Route.class"/>
+        <include name="com/metavize/mvvm/networking/Interface.class"/>
+        <include name="com/metavize/mvvm/networking/IPNetwork.class"/>
+        <include name="com/metavize/mvvm/networking/IPNetworkRule.class"/>
       </fileset>
     </jar>
   </target>
