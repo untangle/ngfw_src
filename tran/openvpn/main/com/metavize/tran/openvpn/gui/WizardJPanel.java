@@ -33,7 +33,7 @@ public class WizardJPanel extends javax.swing.JPanel {
 	    statusJLabel.setText("VPN Client: Connected to " + vpnTransform.getVpnServerAddress().toString());
 	}
 	else if( VpnTransform.ConfigState.SERVER_ROUTE == configState ){
-	    statusJLabel.setText("VPN Routing Server");
+	    statusJLabel.setText("VPN Server");
 	}
 	else if( VpnTransform.ConfigState.SERVER_BRIDGE == configState ){
 	    // we dont support this yet
@@ -149,7 +149,7 @@ public class WizardJPanel extends javax.swing.JPanel {
                 serverRoutingJPanel.setMaximumSize(new java.awt.Dimension(1061, 64));
                 serverRoutingJPanel.setMinimumSize(new java.awt.Dimension(1061, 64));
                 serverRoutingJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                serverRoutingJButton.setText("<html><center>Configure as<br><b>VPN Routing Server</b></center></html>");
+                serverRoutingJButton.setText("<html><center>Configure as<br><b>VPN Server</b></center></html>");
                 serverRoutingJButton.setFocusPainted(false);
                 serverRoutingJButton.setFocusable(false);
                 serverRoutingJButton.setMaximumSize(new java.awt.Dimension(175, 50));

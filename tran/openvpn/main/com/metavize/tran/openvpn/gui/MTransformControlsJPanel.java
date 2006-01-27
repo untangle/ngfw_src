@@ -19,16 +19,17 @@ import com.metavize.gui.pipeline.MPipelineJPanel;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.tran.openvpn.*;
 
+import javax.swing.*;
+
 public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransformControlsJPanel{
     
-    private static final String WIZARD_NAME = "Setup Wizard & Status";
+    private static final String WIZARD_NAME = "Status & Wizard";
     private static final String EXPORTS_NAME = "Exported Hosts & Networks";
-    private static final String CLIENTS_NAME = "Client & Site Address Pools";
+    private static final String CLIENTS_AND_SITES_NAME = "VPN Clients & Sites";
+    private static final String POOLS_NAME = "Address Pools";
     private static final String CLIENT_TO_SITE_NAME = "VPN Clients";
     private static final String SITE_TO_SITE_NAME = "VPN Sites";
     private static final String NAME_LOG = "Event Log";
-
-    private static final String WIZARD_SIMUL_NAME = "Wizard Simulation";
     
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
         super(mTransformJPanel);
@@ -100,16 +101,17 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	    
 	    // ADDRESS GROUPS (THIS SHOULD BE AFTER CTS AND STS FOR PREVALIDATION REASONS)
 	    ConfigAddressGroupsJPanel configAddressGroupsJPanel = new ConfigAddressGroupsJPanel();
-	    addSavable( CLIENTS_NAME, configAddressGroupsJPanel );
-	    addRefreshable( CLIENTS_NAME, configAddressGroupsJPanel );
+	    addSavable( POOLS_NAME, configAddressGroupsJPanel );
+	    addRefreshable( POOLS_NAME, configAddressGroupsJPanel );
 	    configAddressGroupsJPanel.setSettingsChangedListener(this);
 
             // DONE TO REARRANGE THE DISPLAY ORDER indepently of the SAVE ORDER
 	    addTab( WIZARD_NAME, null, wizardJPanel );
 	    addTab( EXPORTS_NAME, null, configExportsJPanel );
-	    addTab( CLIENTS_NAME, null, configAddressGroupsJPanel );
-	    addTab( CLIENT_TO_SITE_NAME, null, configClientToSiteJPanel );
-	    addTab( SITE_TO_SITE_NAME, null, configSiteToSiteJPanel );
+	    JTabbedPane clientsAndSitesJTabbedPane = addTabbedPane(CLIENTS_AND_SITES_NAME, null);
+	    clientsAndSitesJTabbedPane.addTab( POOLS_NAME, null, configAddressGroupsJPanel );
+	    clientsAndSitesJTabbedPane.addTab( CLIENT_TO_SITE_NAME, null, configClientToSiteJPanel );
+	    clientsAndSitesJTabbedPane.addTab( SITE_TO_SITE_NAME, null, configSiteToSiteJPanel );
 
 	    // EVENT LOG ///////
 	    //LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
