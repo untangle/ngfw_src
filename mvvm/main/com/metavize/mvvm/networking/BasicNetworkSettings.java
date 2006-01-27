@@ -62,19 +62,19 @@ public class BasicNetworkSettings
         this.completeConfiguration.setHostname( hostname );
     }
 
-    public String getPublicUrl()
+    public String getPublicAddress()
     {
-        return this.completeConfiguration.getPublicUrl();
+        return this.completeConfiguration.getPublicAddress();
     }
 
-    public void setPublicUrl( String publicUrl )
+    public void setPublicAddress( String publicAddress )
     {
-        this.completeConfiguration.setPublicUrl( publicUrl );
+        this.completeConfiguration.setPublicAddress( publicAddress );
     }
 
-    public boolean hasPublicUrl()
+    public boolean hasPublicAddress()
     {
-        return this.completeConfiguration.hasPublicUrl();
+        return this.completeConfiguration.hasPublicAddress();
     }
 
     /* Going back and forth is only allowed inside this package */

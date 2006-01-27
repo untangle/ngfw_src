@@ -63,6 +63,8 @@ public class NetworkUtil
         /* XXX Check the reverse, make sure each interface is in one of the network spaces
          * in the list */
         // throw new ValidateException( "Implement me" );
+
+        /* XXX !!!!!!!!!!! Check to see if the serviceSpace has a primary address */
     }
 
     public void validate( NetworkSpace space ) throws ValidateException
@@ -73,6 +75,16 @@ public class NetworkUtil
         if ( !isDhcpEnabled && (( networkList == null ) || ( networkList.size() < 1 ))) {
             throw new ValidateException( "A network space should either have at least one address,"+
                                          " or use DHCP." );
+        }
+
+        if ( space.getIsNatEnabled() && !space.hasPrimaryAddress()) {
+            throw new ValidateException( "If NAT is enabled, A network space should have at " +
+                                         "least one unicast address " );
+        }
+
+        IPaddr dmzHost = space.getDmzHost();
+        if ( space.getIsDmzHostEnabled() && (( dmzHost == null ) || dmzHost.isEmpty())) {
+            throw new ValidateException( "If DMZ is enabled, the DMZ host should also be set" );
         }
     }
 

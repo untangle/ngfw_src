@@ -31,6 +31,9 @@ import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformManager;
 import com.metavize.mvvm.util.TransactionRunner;
 import com.metavize.mvvm.util.TransactionWork;
+import com.metavize.mvvm.networking.NetworkManagerImpl;
+import com.metavize.mvvm.NetworkManager;
+
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
@@ -66,6 +69,7 @@ public class MvvmContextImpl extends MvvmContextBase
     private MPipeManagerImpl mPipeManager;
     private MailSenderImpl mailSender;
     private NetworkingManagerImpl networkingManager;
+    private NetworkManager networkManager;
     private ReportingManagerImpl reportingManager;
     private ConnectivityTesterImpl connectivityTester;
     private PipelineFoundryImpl pipelineFoundry;
@@ -154,6 +158,11 @@ public class MvvmContextImpl extends MvvmContextBase
     {
         return networkingManager;
     }
+
+    public NetworkManager networkManager()
+    {
+        return networkManager;
+    }    
 
     public ReportingManagerImpl reportingManager()
     {
@@ -356,7 +365,11 @@ public class MvvmContextImpl extends MvvmContextBase
         transformManager = TransformManagerImpl.manager();
 
         // Retrieve the networking configuration manager
+        // XXXXXXXXXXXXXXXX This is deprecated
         networkingManager = NetworkingManagerImpl.getInstance();
+        
+        // Retrieve the network settings manager
+        networkManager = NetworkManagerImpl.getInstance();
 
         // Retrieve the reporting configuration manager
         reportingManager = ReportingManagerImpl.reportingManager();

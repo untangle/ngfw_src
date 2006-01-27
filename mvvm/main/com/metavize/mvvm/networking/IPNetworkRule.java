@@ -14,7 +14,9 @@ package com.metavize.mvvm.networking;
 import com.metavize.mvvm.tran.Rule;
 
 /**
- * An IPNetwork that is to go into a list.
+ * An IPNetwork that is to go into a list, this is only to 
+ * allow lists of IPNetworks to be saved.  Normally, an IPNetwork is
+ * just stored using the IPNetworkUserType.
  *
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0

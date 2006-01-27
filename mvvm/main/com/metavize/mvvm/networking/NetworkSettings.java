@@ -31,7 +31,7 @@ import com.metavize.mvvm.tran.IPaddr;
 public class NetworkSettings
 {
     public static final String  DEF_HOSTNAME   = "edgeguard";
-    public static final String  DEF_PUBLIC_URL = "";
+    public static final String  DEF_PUBLIC_ADDRESS = "";
 
     private Long id;
     
@@ -44,7 +44,7 @@ public class NetworkSettings
     private IPaddr defaultRoute = NetworkUtil.EMPTY_IPADDR;
     
     private String hostname = DEF_HOSTNAME;
-    private String publicUrl = DEF_PUBLIC_URL;
+    private String publicAddress = DEF_PUBLIC_ADDRESS;
 
     public NetworkSettings()
     {
@@ -233,24 +233,24 @@ public class NetworkSettings
      * where the the box is reachable from the outside.
      *
      * @hibernate.property
-     * column="public_url"
+     * column="public_address"
      */
-    public String getPublicUrl()
+    public String getPublicAddress()
     {
-        return this.publicUrl;
+        return this.publicAddress;
     }
 
-    public void setPublicUrl( String publicUrl )
+    public void setPublicAddress( String publicAddress )
     {
-        if ( publicUrl == null ) publicUrl = DEF_PUBLIC_URL;
-        this.publicUrl = publicUrl;
+        if ( publicAddress == null ) publicAddress = DEF_PUBLIC_ADDRESS;
+        this.publicAddress = publicAddress;
     }
 
     /****************** Non-hibernate utility functions */
-    public boolean hasPublicUrl()
+    public boolean hasPublicAddress()
     {
         /* ??? */
-        return (( this.publicUrl != null ) && ( this.publicUrl.length() > 0 ));
+        return (( this.publicAddress != null ) && ( this.publicAddress.length() > 0 ));
     }
 
     public boolean hasDns2() 

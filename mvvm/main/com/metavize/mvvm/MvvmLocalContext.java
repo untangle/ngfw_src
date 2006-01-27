@@ -138,6 +138,8 @@ public interface MvvmLocalContext
 
     NetworkingManager networkingManager();
 
+    NetworkManager networkManager();
+
     ReportingManager reportingManager();
 
     ConnectivityTester getConnectivityTester();

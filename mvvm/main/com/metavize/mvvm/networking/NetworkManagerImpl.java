@@ -13,19 +13,23 @@ package com.metavize.mvvm.networking;
 
 import org.apache.log4j.Logger;
 
-import com.metavize.mvvm.argon.ArgonException;
-import com.metavize.mvvm.tran.ValidateException;
+import com.metavize.mvvm.NetworkManager;
+import com.metavize.mvvm.IntfEnum;
 
+import com.metavize.mvvm.argon.ArgonException;
+
+import com.metavize.mvvm.tran.ValidateException;
 import com.metavize.mvvm.tran.script.ScriptWriter;
 
-class NetworkManagerImpl
+/* XXX This shouldn't be public */
+public class NetworkManagerImpl implements NetworkManager
 {
+    private static NetworkManager INSTANCE = new NetworkManagerImpl();
+
     // private static final String ETC_INTERFACES_FILE = "/etc/network/interfaces";
     private static final String ETC_INTERFACES_FILE = "/localhome/rbscott/playground/networking/test-";
     
     private static final Logger logger = Logger.getLogger( NetworkManagerImpl.class );
-
-    private static NetworkManagerImpl INSTANCE = new NetworkManagerImpl();
 
     private NetworkSettings configuration = new NetworkSettings();
 
@@ -44,7 +48,7 @@ class NetworkManagerImpl
     }
 
     public void setNetworkSettings( BasicNetworkSettings configuration )
-        throws NetworkException, ArgonException
+        throws NetworkException, ValidateException
     {
         this.configuration = configuration.getNetworkSettings();
         saveConfiguration();
@@ -57,13 +61,44 @@ class NetworkManagerImpl
     }
 
     public void setNetworkSettings( NetworkSettings configuration )
-        throws NetworkException, ArgonException, ValidateException
+        throws NetworkException, ValidateException
     {
         NetworkUtil.getInstance().validate( configuration );
 
         this.configuration = configuration;
         saveConfiguration();
     }
+
+    /* Get the external HTTPS port */
+    public int getExternalHttpsPort()
+    {
+        /* !!!!!!!!!!!!! */
+        return 443;
+    }
+    
+    /* Renew the DHCP address and return a new network settings with the updated address */
+    public NetworkSettings renewDhcpLease() throws Exception
+    {
+        /* XXXXXX!!!!!!!!!!!!!! renew the leases */
+        return this.configuration;
+    }
+
+    /* Retrieve the enumeration of all of the active interfaces */
+    public IntfEnum getIntfEnum()
+    {
+        return null;
+    }
+
+    public String getHostname()
+    {
+        return this.configuration.getHostname();
+    }
+
+    public String getPublicAddress()
+    {
+        return this.configuration.getPublicAddress();
+    }
+
 
     public void refresh()
     {
@@ -75,13 +110,17 @@ class NetworkManagerImpl
         
     }
     
-    private void saveConfiguration() throws NetworkException, ArgonException
+    private void saveConfiguration() throws NetworkException
     {
-        NetworkUtilPriv.getPrivInstance().complete( this.configuration );
+        try {
+            NetworkUtilPriv.getPrivInstance().complete( this.configuration );
 
-        saveEtcFiles();
-        saveBridgeConfiguration();
-        saveIpTablesConfiguration();
+            saveEtcFiles();
+            saveBridgeConfiguration();
+            saveIpTablesConfiguration();
+        } catch ( ArgonException e ) {
+            logger.error( "Unable to save network settings" );
+        }
         
         testIteration++;
     }
@@ -115,7 +154,8 @@ class NetworkManagerImpl
         
     }
 
-    static NetworkManagerImpl getInstance()
+    /* XXXXXX Check permission */
+    public static NetworkManager getInstance()
     {
         return INSTANCE;
     }

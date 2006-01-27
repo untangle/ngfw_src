@@ -280,7 +280,7 @@ public class NetworkSpace extends Rule
         this.index = index;
     }
 
-    String getDeviceName()
+    public String getDeviceName()
     {
         return this.deviceName;
     }
@@ -290,8 +290,9 @@ public class NetworkSpace extends Rule
         this.deviceName = deviceName;
     }
 
-    /* A package level function used to get the list of interfaces belonging to this network space */
-    List getInterfaceList()
+    /* ??? Should this be able to return null
+     * only be used by networking and nat */
+    public List getInterfaceList()
     {
         return this.interfaceList;
     }
