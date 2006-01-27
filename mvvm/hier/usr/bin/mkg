@@ -14,7 +14,6 @@ exec 2>&1
 
 prefix=@PREFIX@
 pkglist=@FAKE_PKG_LIST@
-instlist=@FAKE_INST_LIST@
 APT_LOG=@PREFIX@/var/log/mvvm/apt.log
 
 INST_OPTS=" -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken "

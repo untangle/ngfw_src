@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!--
-Copyright (c) 2004, 2005 Metavize Inc.
+Copyright (c) 2004, 2005, 2006 Metavize Inc.
 All rights reserved.
 
 This software is the confidential and proprietary information of
@@ -102,7 +102,6 @@ $Id: common-properties.xml,v 1.25 2005/03/23 04:52:36 amread Exp $
   <property name="suffix.mvvm.reports" value="${suffix.mvvm.web}/reports"/>
 
   <property name="suffix.pkg-list" value="tmp/pkg-list"/>
-  <property name="suffix.inst-list" value="tmp/inst-list"/>
   <property name="suffix.libalpine" value="usr/lib/mvvm"/>
 
   <!-- standard dist places -->
@@ -154,7 +153,6 @@ $Id: common-properties.xml,v 1.25 2005/03/23 04:52:36 amread Exp $
   <filter token="ENDORSED_LIB" value="${build.prefix}/${suffix.endorsed.lib}"/>
 
   <filter token="FAKE_PKG_LIST" value="${build.prefix}/${suffix.pkg-list}" />
-  <filter token="FAKE_INST_LIST" value="${build.prefix}/${suffix.inst-list}" />
   <filter token="ALPINE_LIB" value="${build.prefix}/${suffix.libalpine}"/>
 
 </project>
