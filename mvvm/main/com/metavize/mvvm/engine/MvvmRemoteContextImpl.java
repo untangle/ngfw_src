@@ -17,6 +17,7 @@ import com.metavize.mvvm.ArgonManager;
 import com.metavize.mvvm.ConnectivityTester;
 import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.NetworkingManager;
+import com.metavize.mvvm.NetworkManager;
 import com.metavize.mvvm.ReportingManager;
 import com.metavize.mvvm.ToolboxManager;
 import com.metavize.mvvm.client.MvvmRemoteContext;
@@ -73,6 +74,11 @@ class MvvmRemoteContextImpl implements MvvmRemoteContext
     public NetworkingManager networkingManager()
     {
         return context.networkingManager();
+    }
+
+    public NetworkManager networkManager()
+    {
+        return context.networkManager();
     }
 
     public ReportingManager reportingManager()
