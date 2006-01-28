@@ -19,6 +19,18 @@
 
   <display-name>Store</display-name>
 
+  <servlet>
+    <servlet-name>Proxy</servlet-name>
+    <servlet-class>
+      com.metavize.mvvm.servlet.store.ProxyServlet
+    </servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>Proxy</servlet-name>
+    <url-pattern>/site/*</url-pattern>
+  </servlet-mapping>
+
   @JSP_PRE_COMPILED_SERVLETS@
 
 </web-app>

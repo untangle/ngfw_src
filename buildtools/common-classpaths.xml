@@ -262,6 +262,14 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
     <fileset refid="fileupload.jarset"/>
   </path>
 
+  <fileset id="httpclient.jarset" dir="${HTTPCLIENT_HOME}">
+    <include name="commons-httpclient-3.0.jar"/>
+  </fileset>
+
+  <path id="httpclient.classpath">
+    <fileset refid="httpclient.jarset"/>
+  </path>
+
   <fileset id="bcel.jarset" dir="${BCEL_HOME}">
     <include name="bcel-5.1.jar"/>
   </fileset>

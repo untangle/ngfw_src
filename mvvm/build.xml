@@ -572,8 +572,8 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <fileset dir="${build.jar}">
         <include name="mvvm-client.jar"/>
       </fileset>
+      <fileset refid="httpclient.jarset"/>
     </copy>
-
 
     <mkdir dir="${dist.mvvm.web}/store/WEB-INF/classes"/>
 
@@ -589,6 +589,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <classpath refid="mvvm-client.classpath"/>
       <classpath refid="mvvm.thirdparty.classpath"/>
       <classpath refid="tomcat.thirdparty.classpath"/>
+      <classpath refid="httpclient.classpath"/>
     </javac>
 
     <mkdir dir="${build.gensrc}/store/"/>
