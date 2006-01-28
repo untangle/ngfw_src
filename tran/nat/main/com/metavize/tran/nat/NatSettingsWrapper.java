@@ -210,20 +210,20 @@ public class NatSettingsWrapper
         network.setHostname( hostname );
     }
 
-    public String getPublicUrl()
+    public String getPublicAddress()
     {
-        return network.getPublicUrl();
+        return network.getPublicAddress();
     }
 
-    public void setPublicUrl( String publicUrl )
+    public void setPublicAddress( String publicAddress )
     {
-        network.setPublicUrl( publicUrl );
+        network.setPublicAddress( publicAddress );
     }
     
     /****************** Non-hibernate utility functions */
-    public boolean hasPublicUrl()
+    public boolean hasPublicAddress()
     {
-        return network.hasPublicUrl();
+        return network.hasPublicAddress();
     }
 
     public boolean hasDns2() 
