@@ -28,7 +28,7 @@
 
   <servlet-mapping>
     <servlet-name>Proxy</servlet-name>
-    <url-pattern>/site/*</url-pattern>
+    <url-pattern>/*</url-pattern>
   </servlet-mapping>
 
   @JSP_PRE_COMPILED_SERVLETS@
