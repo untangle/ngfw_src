@@ -94,8 +94,10 @@ public class Util {
     private static AdminManager adminManager;
     private static StatsCache statsCache;
     private static NetworkingManager networkingManager;
+    private static NetworkManager networkManager;
     private static PolicyManager policyManager;
     private static LoggingManager loggingManager;
+    private static AppServerManager appServerManager;
 
     public static void setMvvmContext(MvvmRemoteContext mvvmContextX){
         mvvmContext = mvvmContextX;
@@ -104,16 +106,20 @@ public class Util {
             transformManager = mvvmContext.transformManager();
             adminManager = mvvmContext.adminManager();
             networkingManager = mvvmContext.networkingManager();
+            networkManager = mvvmContext.networkManager();
             policyManager = mvvmContext.policyManager();
-        loggingManager = mvvmContext.loggingManager();
+	    loggingManager = mvvmContext.loggingManager();
+	    appServerManager = mvvmContext.appServerManager();
         }
         else{
             toolboxManager = null;
             transformManager = null;
             adminManager = null;
             networkingManager = null;
+	    networkManager = null;
             policyManager = null;
-        loggingManager = null;
+	    loggingManager = null;
+	    appServerManager = null;
         }
     }
 
@@ -127,8 +133,10 @@ public class Util {
         return statsCache;
     }
     public static NetworkingManager getNetworkingManager(){ return networkingManager; }
+    public static NetworkManager getNetworkManager(){ return networkManager; }
     public static PolicyManager getPolicyManager(){ return policyManager; }
     public static LoggingManager getLoggingManager(){ return loggingManager; }
+    public static AppServerManager getAppServerManager(){ return appServerManager; }
     ///////////////////////////////////
 
 

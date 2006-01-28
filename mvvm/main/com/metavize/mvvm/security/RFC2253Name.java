@@ -54,6 +54,30 @@ public class RFC2253Name implements java.io.Serializable {
     }
   }
 
+
+  /**
+   * Generate a name given the ordered strings, as a convenience for GUI
+   *
+   * @param org the organization
+   * @param orgUnit the organization unit
+   * @param city the city
+   * @param state the state
+   * @param coutry the country
+   *
+   * @return the generated RFC2253Name
+   *
+   * @exception InvalidNameException if the type or value
+   *            are in an unparsable format.
+   */
+    public RFC2253Name(String org, String orgUnit, String city, String state, String country) throws InvalidNameException {
+	m_members = new ArrayList<Pair<String, String>>();
+	add("O", org);    
+	add("OU", orgUnit);    
+	add("L", city);
+	add("ST", state);
+	add("C", country);
+    }
+
   /**
    * Get the value for the given type
    *
