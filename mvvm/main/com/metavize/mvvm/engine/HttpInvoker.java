@@ -281,6 +281,12 @@ class HttpInvoker extends InvokerBase
         return logins.keySet().toArray(new LoginSession[0]);
     }
 
+    // Note -- thread local value returned.
+    LoginSession getActiveLogin()
+    {
+        return activeLogin.get();
+    }
+
     // private classes --------------------------------------------------------
 
     private static class NewLoginDesc
