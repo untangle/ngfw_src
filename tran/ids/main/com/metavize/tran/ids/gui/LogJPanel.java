@@ -65,10 +65,11 @@ public class LogJPanel extends MLogTableJPanel {
             //                                 #   min  rsz    edit   remv   desc   typ               def
             addTableColumn( tableColumnModel,  0,  150, true,  false, false, false, String.class, null, "timestamp" );
             addTableColumn( tableColumnModel,  1,  55,  true,  false, false, false, String.class, null, "action" );
-            addTableColumn( tableColumnModel,  2,  165, true,  false, false, false, String.class, null, sc.html("client") );
-            addTableColumn( tableColumnModel,  3,  150, true,  false, false, false, String.class, null, sc.html("reason for<br>action") );
-            addTableColumn( tableColumnModel,  4,  100, true,  false, false, false, String.class, null, sc.html("direction") );
-            addTableColumn( tableColumnModel,  5,  165, true,  false, false, false, String.class, null, "server" );
+            addTableColumn( tableColumnModel,  2,  165, true,  false, false, false, String.class, null, "class" );
+            addTableColumn( tableColumnModel,  3,  165, true,  false, false, false, String.class, null, sc.html("client") );
+            addTableColumn( tableColumnModel,  4,  150, true,  false, false, false, String.class, null, sc.html("reason for<br>action") );
+            addTableColumn( tableColumnModel,  5,  100, true,  false, false, false, String.class, null, sc.html("direction") );
+            addTableColumn( tableColumnModel,  6,  165, true,  false, false, false, String.class, null, "server" );
             return tableColumnModel;
         }
 
@@ -86,6 +87,7 @@ public class LogJPanel extends MLogTableJPanel {
                 event = new Vector(6);
                 event.add( Util.getLogDateFormat().format( log.getTimeStamp() ));
                 event.add( log.isBlocked() ? "block" : "pass" );
+		event.add( log.getClassification() );
                 event.add( null == pe ? "" : (pe.getCClientAddr().getHostAddress() + ":" + Integer.toString(pe.getCClientPort())));
                 event.add( "#" + log.getRuleSid() + ": " + log.getMessage() );
                 event.add( null == pe ? "" : pe.getDirectionName() );

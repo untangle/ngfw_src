@@ -53,8 +53,10 @@ class IDSTableModel extends MSortedTableModel{
     private static final int C2_MW = 55;  /* on */
     private static final int C3_MW = 55;  /* log */
     private static final int C4_MW = 120; /* category */
-    private static final int C5_MW = 180; /* description */
-    private static final int C6_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW), 120); /* signature */
+    private static final int C5_MW = 120; /* class */
+    private static final int C6_MW = 180; /* description */
+    private static final int C7_MW = 120; /* info url */
+    private static final int C8_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW), 120); /* signature */
 
     
     public TableColumnModel getTableColumnModel(){
@@ -66,9 +68,11 @@ class IDSTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  2, C2_MW, false, true,  false, false, Boolean.class, "false", sc.bold("block"));
         addTableColumn( tableColumnModel,  3, C3_MW, false, true,  false, false, Boolean.class, "false", sc.bold("log"));
         addTableColumn( tableColumnModel,  4, C4_MW, true,  true,  false, false, String.class,  sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY );
-        addTableColumn( tableColumnModel,  5, C5_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
-        addTableColumn( tableColumnModel,  6, C6_MW, true,  true,  false, false, String.class,  sc.empty("no signature"), "signature");
-        addTableColumn( tableColumnModel,  7, 10,    false, false, true,  false, IDSRule.class, null, "");
+        addTableColumn( tableColumnModel,  5, C5_MW, true,  true,  false, false, String.class,  "unclassified", "class");
+        addTableColumn( tableColumnModel,  6, C7_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
+        addTableColumn( tableColumnModel,  7, C6_MW, true,  true,  false, false, String.class,  "http://", "info url");
+        addTableColumn( tableColumnModel,  8, C8_MW, true,  true,  false, false, String.class,  sc.empty("no signature"), "signature");
+        addTableColumn( tableColumnModel,  9, 10,    false, false, true,  false, IDSRule.class, null, "");
         return tableColumnModel;
     }
     
@@ -78,12 +82,14 @@ class IDSTableModel extends MSortedTableModel{
 	IDSRule newElem = null;
 
 	for( Vector rowVector : tableVector ){            
-	    newElem = (IDSRule) rowVector.elementAt(7);
+	    newElem = (IDSRule) rowVector.elementAt(9);
             newElem.setLive( (Boolean) rowVector.elementAt(2) );
             newElem.setLog( (Boolean) rowVector.elementAt(3) );
             newElem.setCategory( (String) rowVector.elementAt(4) );
-            newElem.setDescription( (String) rowVector.elementAt(5) );
-            newElem.setText( (String) rowVector.elementAt(6) );
+	    newElem.setClassification( (String) rowVector.elementAt(5) );
+            newElem.setDescription( (String) rowVector.elementAt(6) );
+            newElem.setURL( (String) rowVector.elementAt(7) );
+            newElem.setText( (String) rowVector.elementAt(8) );
 
 	    // an optimization so that the transform knows which rows are changed
 	    String ruleState = (String) rowVector.elementAt(0);
@@ -121,7 +127,9 @@ class IDSTableModel extends MSortedTableModel{
             tempRow.add( newElem.isLive() );
             tempRow.add( newElem.getLog() );
             tempRow.add( newElem.getCategory() );
+            tempRow.add( newElem.getClassification() );
             tempRow.add( newElem.getDescription() );
+            tempRow.add( newElem.getURL() );
             tempRow.add( newElem.getText() );
 	    tempRow.add( newElem );
             allRows.add( tempRow );
