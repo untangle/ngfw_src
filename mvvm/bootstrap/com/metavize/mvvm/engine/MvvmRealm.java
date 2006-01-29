@@ -11,6 +11,7 @@
 
 package com.metavize.mvvm.engine;
 
+import java.net.InetAddress;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
@@ -18,8 +19,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import sun.misc.BASE64Encoder;
 
 import org.apache.catalina.realm.GenericPrincipal;
 import org.apache.catalina.realm.RealmBase;
@@ -36,7 +39,9 @@ class MvvmRealm extends RealmBase
     private static final String roleQuery
         = "SELECT role_name FROM mvvm_role WHERE login = ?";
 
-
+    // XXX Very small memory leak here if the nonce is never used (quite rare)
+    private HashMap<String, Principal> nonces = new HashMap<String, Principal>();
+    
     public Principal authenticate(String username, String credentials)
     {
         DataSourceFactory dsf = DataSourceFactory.factory();
@@ -77,6 +82,39 @@ class MvvmRealm extends RealmBase
         roles.add("user");
 
         return new GenericPrincipal(this, username, credentials, roles);
+    }
+
+    // Used by servlets (reports, store)
+    public String generateAuthNonce(InetAddress clientAddr, Principal user) {
+        // We have to turn the MvvmPrincipal into a GenericPrincipal
+        List roles = new LinkedList();
+        roles.add("user");
+        user = new GenericPrincipal(this, user.getName(), null, roles);
+
+        MessageDigest d = null;
+        try {
+            d = MessageDigest.getInstance(PASSWORD_HASH_ALGORITHM);
+        } catch (NoSuchAlgorithmException x) {
+            throw new Error("Algorithm " + PASSWORD_HASH_ALGORITHM
+                            + " not available in Java VM");
+        }
+        long currentTime = System.currentTimeMillis();
+        String nonceValue = clientAddr + ":" +
+            currentTime + ":MetavizeMvvm94114";
+        byte[] buffer = d.digest(nonceValue.getBytes());
+        String nonce = new BASE64Encoder().encode(buffer);
+        nonces.put(nonce, user);
+
+        return MvvmAuthenticator.AUTH_NONCE_FIELD_NAME + "=" + nonce;
+   }
+
+    // Used by servlets (reports, store)
+    public Principal authenticateWithNonce(String nonce)
+    {
+        Principal user = nonces.remove(nonce);
+        if (logger.isDebugEnabled())
+            logger.debug("Attempting to authenticate with nonce " + nonce + ", got user: " + user);
+        return user;
     }
 
     public Principal authenticate(String username, byte[] credentials)
