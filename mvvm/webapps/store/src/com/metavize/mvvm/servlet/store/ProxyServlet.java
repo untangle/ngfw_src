@@ -31,6 +31,8 @@ import org.apache.log4j.Logger;
 
 public class ProxyServlet extends HttpServlet
 {
+    private static final String URI_BASE = "/joomla";
+
     private final Logger logger = Logger.getLogger(getClass());
 
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -52,7 +54,7 @@ public class ProxyServlet extends HttpServlet
             String pi = req.getPathInfo();
             String qs = req.getQueryString();
 
-            String uri = (null == pi ? "/" : pi) + "?" + (null == qs ? "" : qs);
+            String uri = URI_BASE + (null == pi ? "/" : pi) + "?" + (null == qs ? "" : qs);
 
             sb.append("GET " + uri + " HTTP/1.0\r\n");
             sb.append("Host: butters\r\n");
