@@ -31,6 +31,18 @@
     <url-pattern>/*</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>InstallRequest</servlet-name>
+    <servlet-class>
+      com.metavize.mvvm.servlet.store.InstallRequestServlet
+    </servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>InstallRequest</servlet-name>
+    <url-pattern>/instreq</url-pattern>
+  </servlet-mapping>
+
   @JSP_PRE_COMPILED_SERVLETS@
 
 </web-app>
