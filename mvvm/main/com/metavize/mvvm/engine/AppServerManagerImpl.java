@@ -202,7 +202,9 @@ public class AppServerManagerImpl
     int durationInDays) {
 
     String effectiveHostname = getFQDN();
-    
+    String newName = "key" + Thread.currentThread().hashCode() +
+      "_" + System.currentTimeMillis() + "_" + new java.util.Random().nextInt();
+
     try {
       int index = dn.indexOf("CN");
       if(index == -1) {
@@ -214,7 +216,8 @@ public class AppServerManagerImpl
 
       dn.add("CN", effectiveHostname);
       
-      m_keyStore.generateKey(effectiveHostname, dn, durationInDays);
+      m_keyStore.generateKey(newName, dn, durationInDays);
+      m_keyStore.renameEntry(newName, effectiveHostname);
 
       m_tomcatManager.setSecurityInfo("conf/keystore", KS_STORE_PASS, effectiveHostname);
       return true;
