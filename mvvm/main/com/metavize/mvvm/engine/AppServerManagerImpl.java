@@ -358,22 +358,7 @@ public class AppServerManagerImpl
 
 
   private String getFQDN() {
-    try {
-      InetAddress[] allLocals = InetAddress.getAllByName("127.0.0.1");
-      for(InetAddress addr : allLocals) {
-//        m_logger.error("***DEBUG*** Hostname: " + addr.getHostName());
-        if(addr.getHostName().equalsIgnoreCase("localhost")) {
-          continue;
-        }
-        return addr.getHostName();
-      }
-      m_logger.error("Unable to find local host name");
-      return "mv-edgeguard";
-    }
-    catch(java.net.UnknownHostException ex) {
-      m_logger.error("Unable to find local host name", ex);
-      return "mv-edgeguard";
-    }
+    return MvvmContextFactory.context().networkManager().getHostname();
   }
   
 }
