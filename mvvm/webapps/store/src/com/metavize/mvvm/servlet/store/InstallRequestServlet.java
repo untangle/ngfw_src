@@ -27,10 +27,10 @@ public class InstallRequestServlet extends HttpServlet
 {
     private final Logger logger = Logger.getLogger(getClass());
 
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException
     {
-        String mackageName = req.getParameter("mackage-name");
+        String mackageName = req.getParameter("mackage");
 
         if (null != mackageName) {
             MvvmRemoteContextFactory factory = null;
