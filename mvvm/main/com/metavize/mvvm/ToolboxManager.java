@@ -107,6 +107,10 @@ public interface ToolboxManager
 
     long upgrade() throws MackageException;
 
+    void requestInstall(String mackageName);
+
+    MessageQueue<ToolboxMessage> subscribe();
+
     /**
      * Register the deployment of a Mackage at a particular URL.
      *

@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.StringTokenizer;
+import java.util.WeakHashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
@@ -35,11 +36,15 @@ import com.metavize.mvvm.InstallProgress;
 import com.metavize.mvvm.MackageDesc;
 import com.metavize.mvvm.MackageException;
 import com.metavize.mvvm.MackageInstallException;
+import com.metavize.mvvm.MackageInstallRequest;
 import com.metavize.mvvm.MackageUninstallException;
+import com.metavize.mvvm.MessageQueue;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.Period;
 import com.metavize.mvvm.ToolboxManager;
+import com.metavize.mvvm.ToolboxMessage;
 import com.metavize.mvvm.UpgradeSettings;
+import com.metavize.mvvm.security.LoginSession;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
@@ -75,6 +80,8 @@ class ToolboxManagerImpl implements ToolboxManager
     private final UpdateTask updateTask = new UpdateTask();
     private final Map<Long, AptLogTail> tails
         = new HashMap<Long, AptLogTail>();
+    private final Map<LoginSession, MessageQueueImpl<ToolboxMessage>> messageQueues
+        = new WeakHashMap<LoginSession, MessageQueueImpl<ToolboxMessage>>();
 
     private volatile Map packageMap;
     private volatile MackageDesc[] available;
@@ -283,6 +290,32 @@ class ToolboxManagerImpl implements ToolboxManager
             }).start();
 
         return alt.getKey();
+    }
+
+    public void requestInstall(String mackageName)
+    {
+        synchronized (messageQueues) {
+            MackageInstallRequest mir = new MackageInstallRequest(mackageName);
+            for (MessageQueueImpl<ToolboxMessage> mq : messageQueues.values()) {
+                mq.enqueue(mir);
+            }
+        }
+    }
+
+    public MessageQueue<ToolboxMessage> subscribe()
+    {
+        LoginSession s = HttpInvoker.invoker().getActiveLogin();
+
+        MessageQueueImpl mq;
+         synchronized (messageQueues) {
+             mq = messageQueues.get(s);
+             if (null == mq) {
+                 mq = new MessageQueueImpl<ToolboxMessage>();
+                 messageQueues.put(s, mq);
+             }
+         }
+
+         return mq;
     }
 
     // ToolboxManagerPriv implementation --------------------------------------
