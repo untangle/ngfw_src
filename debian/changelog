@@ -1,3 +1,9 @@
+metavize-java (0.2.0-850) stable; urgency=low
+
+  * auto build
+
+ -- M. Srikant <srikant@metavize.com>  Mon, 30 Jan 2006 02:12:33 -0800
+
 metavize-java (0.2.0-849) stable; urgency=low
 
   * auto build
