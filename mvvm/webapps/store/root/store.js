@@ -14,6 +14,19 @@ function isInstalled(pkg)
    return null != installed[pkg];
 }
 
+function installButton(pkg)
+{
+   var div = $(pkg);
+
+   if (isInstalled(pkg)) {
+      div.appendChild(document.createTextNode("installed"));
+   } else {
+      var a = div.appendChild(document.createElement("a"));
+      a.appendChild(document.createTextNode("install"));
+      a.onclick = function() { requestInstall(pkg) };
+   }
+}
+
 function requestInstall(pkg)
 {
       new Ajax.Request("instreq",
