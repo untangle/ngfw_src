@@ -32,8 +32,11 @@ import com.metavize.mvvm.toolbox.InstallComplete;
 import com.metavize.mvvm.toolbox.InstallProgress;
 import com.metavize.mvvm.toolbox.InstallTimeout;
 import com.metavize.mvvm.toolbox.MackageDesc;
+import com.metavize.mvvm.toolbox.MackageInstallException;
+import com.metavize.mvvm.toolbox.MackageInstallRequest;
 import com.metavize.mvvm.toolbox.ProgressVisitor;
 import com.metavize.mvvm.toolbox.ToolboxManager;
+import com.metavize.mvvm.toolbox.ToolboxMessageVisitor;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformDesc;
@@ -113,6 +116,8 @@ public class RemoteClient
             update();
         } else if (args[0].equalsIgnoreCase("upgrade")) {
             upgrade();
+        } else if (args[0].equalsIgnoreCase("requestInstall")) {
+            requestInstall(args[1]);
         } else if (args[0].equalsIgnoreCase("available")) {
             available();
         } else if (args[0].equalsIgnoreCase("installed")) {
@@ -179,6 +184,8 @@ public class RemoteClient
             updateAddress();
         } else if (args[0].equalsIgnoreCase("gc")) {
             doFullGC();
+        } else if (args[0].equalsIgnoreCase("messageQueue")) {
+            messageQueue();
         } else if (args[0].equalsIgnoreCase("addPolicy")) {
             addPolicy(args[1], 3 > args.length ? null : args[2]);
         } else if (args[0].equalsIgnoreCase("listPolicies")) {
@@ -197,6 +204,23 @@ public class RemoteClient
         }
 
         factory.logout();
+    }
+
+    private static class McliToolboxMessageVisitor
+        implements ToolboxMessageVisitor
+    {
+        public void visitMackageInstallRequest(MackageInstallRequest req)
+        {
+            String mackageName = req.getMackageName();
+            System.out.println("Installing: " + mackageName);
+            try {
+                tool.install(mackageName);
+                System.out.println("booyakasha");
+            } catch (MackageInstallException exn) {
+                System.out.println("could not install: " + mackageName);
+                exn.printStackTrace();
+            }
+        }
     }
 
     private static class Visitor implements ProgressVisitor
@@ -277,6 +301,11 @@ public class RemoteClient
         long key = tool.upgrade();
 
         doAptTail(key);
+    }
+
+    private static void requestInstall(String mackage)
+    {
+        tool.requestInstall(mackage);
     }
 
     private static void available()
@@ -635,6 +664,23 @@ public class RemoteClient
         mc.doFullGC();
     }
 
+    private static void messageQueue()
+    {
+        MessageClient msgClient = new MessageClient(mc);
+        msgClient.setToolboxMessageVisitor(new McliToolboxMessageVisitor());
+        msgClient.start();
+
+        // msgClient uses a daemon thread (only needed for mcli)
+        while (true) {
+            try {
+                Thread.sleep(600000);
+            } catch (InterruptedException exn) {
+                System.out.println("interrupted");
+                break;
+            }
+        }
+    }
+
     private static void addPolicy(String policy, String notes)
         throws PolicyException
     {
@@ -739,6 +785,7 @@ public class RemoteClient
         System.out.println("    mcli uninstall mackage-name");
         System.out.println("    mcli update");
         System.out.println("    mcli upgrade");
+        System.out.println("    mcli requestInstall mackage-name");
         System.out.println("  toolbox lists:");
         System.out.println("    mcli available");
         System.out.println("    mcli installed");
@@ -763,6 +810,7 @@ public class RemoteClient
         System.out.println("    mcli shutdown");
         System.out.println("    mcli serverStats");
         System.out.println("    mcli gc");
+        System.out.println("    mcli messageQueue");
         System.out.println("  policy manager:");
         System.out.println("    mcli addPolicy name [notes]");
         System.out.println("    mcli listPolicies");

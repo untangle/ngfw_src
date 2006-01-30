@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.metavize.mvvm.MessageQueue;
+import java.util.Collections;
 
 class MessageQueueImpl<M> implements MessageQueue
 {
@@ -22,10 +23,17 @@ class MessageQueueImpl<M> implements MessageQueue
 
     public List<M> getMessages()
     {
-        List l = new LinkedList<M>();
+        System.out.println("GET MESSAGES");
+
+        List<M> l;
         synchronized (q) {
-            l.addAll(q);
-            q.clear();
+            if (0 == q.size()) {
+                l = Collections.emptyList();
+            } else {
+                l = new LinkedList<M>();
+                l.addAll(q);
+                q.clear();
+            }
         }
 
         return l;
