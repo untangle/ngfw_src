@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -9,9 +9,11 @@
  * $Id$
  */
 
-package com.metavize.mvvm;
+package com.metavize.mvvm.toolbox;
 
 import java.io.Serializable;
+
+import com.metavize.mvvm.Period;
 
 /**
  * Describes the upgrade preferences.

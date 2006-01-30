@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,34 +11,32 @@
 
 package com.metavize.gui.widgets.dialogs;
 
-import com.metavize.gui.util.Util;
-import com.metavize.mvvm.ToolboxManager;
-
-import java.awt.Frame;
 import java.awt.Dialog;
+import java.awt.Frame;
 import java.awt.Window;
 
+import com.metavize.gui.util.Util;
+
 public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
-    
-    
+
     public MOneButtonJDialog() {
-	super( (Util.getMMainJFrame()!=null?Util.getMMainJFrame():Util.getMLoginJFrame() ),
-	       (Util.getMMainJFrame()!=null?true:false) );
-	init(null);
+        super( (Util.getMMainJFrame()!=null?Util.getMMainJFrame():Util.getMLoginJFrame() ),
+               (Util.getMMainJFrame()!=null?true:false) );
+        init(null);
     }
 
     public static MOneButtonJDialog factory(Window topLevelWindow, String applianceName, String warning, String title, String subtitle){
-	if( topLevelWindow instanceof Dialog )
-	    return new MOneButtonJDialog((Dialog)topLevelWindow, applianceName, warning, title, subtitle);
-	else if( topLevelWindow instanceof Frame )
-	    return new MOneButtonJDialog((Frame)topLevelWindow, applianceName, warning, title, subtitle);
-	else
-	    return new MOneButtonJDialog((Frame)null, applianceName, warning, title, subtitle);
+        if( topLevelWindow instanceof Dialog )
+            return new MOneButtonJDialog((Dialog)topLevelWindow, applianceName, warning, title, subtitle);
+        else if( topLevelWindow instanceof Frame )
+            return new MOneButtonJDialog((Frame)topLevelWindow, applianceName, warning, title, subtitle);
+        else
+            return new MOneButtonJDialog((Frame)null, applianceName, warning, title, subtitle);
     }
 
     public MOneButtonJDialog(Dialog topLevelDialog, String applianceName, String warning, String title, String subtitle){
-	super(topLevelDialog, true);
-	init(topLevelDialog);
+        super(topLevelDialog, true);
+        init(topLevelDialog);
         this.setTitle(title);
         this.labelJLabel.setText(subtitle);
         messageJLabel.setText("<html><center>" + warning + "</center></html>");
@@ -46,8 +44,8 @@ public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.e
     }
 
     public MOneButtonJDialog(Frame topLevelFrame, String applianceName, String warning, String title, String subtitle){
-	super(topLevelFrame, true);
-	init(topLevelFrame);
+        super(topLevelFrame, true);
+        init(topLevelFrame);
         this.setTitle(title);
         this.labelJLabel.setText(subtitle);
         messageJLabel.setText("<html><center>" + warning + "</center></html>");
@@ -55,17 +53,17 @@ public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.e
     }
 
     public MOneButtonJDialog(Dialog topLevelDialog, String applianceName, String warning){
-	super(topLevelDialog, true);
-	init(topLevelDialog);
+        super(topLevelDialog, true);
+        init(topLevelDialog);
         this.setTitle(applianceName + " Warning");
         messageJLabel.setText("<html><center>" + warning + "</center></html>");
         this.setVisible(true);
     }
-    
+
     public MOneButtonJDialog(String applianceName, String warning) {
-	super( (Util.getMMainJFrame()!=null?Util.getMMainJFrame():Util.getMLoginJFrame() ),
-	       (Util.getMMainJFrame()!=null?true:false) );
-	init(null);
+        super( (Util.getMMainJFrame()!=null?Util.getMMainJFrame():Util.getMLoginJFrame() ),
+               (Util.getMMainJFrame()!=null?true:false) );
+        init(null);
         this.setTitle(applianceName + " Warning");
         messageJLabel.setText("<html><center>" + warning + "</center></html>");
         this.setVisible(true);
@@ -74,10 +72,10 @@ public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.e
     private void init(Window window){
         initComponents();
         this.addWindowListener(this);
-	if( window == null)
-	    this.setBounds( Util.generateCenteredBounds((Util.getMMainJFrame()!=null?Util.getMMainJFrame().getBounds():Util.getMLoginJFrame().getBounds() ), this.getWidth(), this.getHeight()) );
-	else
-	    this.setBounds( Util.generateCenteredBounds(window, this.getWidth(), this.getHeight()) );
+        if( window == null)
+            this.setBounds( Util.generateCenteredBounds((Util.getMMainJFrame()!=null?Util.getMMainJFrame().getBounds():Util.getMLoginJFrame().getBounds() ), this.getWidth(), this.getHeight()) );
+        else
+            this.setBounds( Util.generateCenteredBounds(window, this.getWidth(), this.getHeight()) );
     }
 
     private void initComponents() {//GEN-BEGIN:initComponents
@@ -105,10 +103,10 @@ public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.e
         proceedJButton.setMinimumSize(new java.awt.Dimension(125, 25));
         proceedJButton.setPreferredSize(new java.awt.Dimension(125, 25));
         proceedJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                proceedJButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    proceedJButtonActionPerformed(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -163,27 +161,27 @@ public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.e
     private void proceedJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proceedJButtonActionPerformed
         windowClosing(null);
     }//GEN-LAST:event_proceedJButtonActionPerformed
-    
-    
+
+
     public void windowClosing(java.awt.event.WindowEvent windowEvent) {
         this.setVisible(false);
         dispose();
-    }    
-    
-    
-    public void windowActivated(java.awt.event.WindowEvent windowEvent) {}    
-    public void windowClosed(java.awt.event.WindowEvent windowEvent) {}    
+    }
+
+
+    public void windowActivated(java.awt.event.WindowEvent windowEvent) {}
+    public void windowClosed(java.awt.event.WindowEvent windowEvent) {}
     public void windowDeactivated(java.awt.event.WindowEvent windowEvent) {}
     public void windowDeiconified(java.awt.event.WindowEvent windowEvent) {}
     public void windowIconified(java.awt.event.WindowEvent windowEvent) {}
     public void windowOpened(java.awt.event.WindowEvent windowEvent) {}
-    
-    
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel backgroundJLabel;
     private javax.swing.JLabel labelJLabel;
     protected javax.swing.JLabel messageJLabel;
     private javax.swing.JButton proceedJButton;
     // End of variables declaration//GEN-END:variables
-    
+
 }

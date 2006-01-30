@@ -21,7 +21,7 @@ import com.metavize.mvvm.engine.addrbook.AddressBookImpl;
 import com.metavize.mvvm.CronJob;
 import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.Period;
-import com.metavize.mvvm.ToolboxManager;
+import com.metavize.mvvm.toolbox.ToolboxManager;
 import com.metavize.mvvm.argon.Argon;
 import com.metavize.mvvm.argon.ArgonManagerImpl;
 import com.metavize.mvvm.client.MvvmRemoteContext;

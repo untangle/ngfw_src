@@ -20,7 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.metavize.mvvm.MackageDesc;
+import com.metavize.mvvm.toolbox.MackageDesc;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.policy.Policy;

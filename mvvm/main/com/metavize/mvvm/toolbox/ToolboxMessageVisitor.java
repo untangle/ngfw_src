@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.metavize.mvvm;
+package com.metavize.mvvm.toolbox;
 
-public interface InstallProgress
+public interface ToolboxMessageVisitor
 {
-    void accept(ProgressVisitor pv);
+    void visitMackageInstallRequest(MackageInstallRequest req);
 }

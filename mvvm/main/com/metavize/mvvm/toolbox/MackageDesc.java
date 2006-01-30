@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.metavize.mvvm;
+package com.metavize.mvvm.toolbox;
 
 import java.io.IOException;
 import java.io.Serializable;

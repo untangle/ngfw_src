@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,22 +11,23 @@
 
 package com.metavize.gui.store;
 
-import com.metavize.gui.util.Util;
-import com.metavize.mvvm.*;
-
 import javax.swing.*;
 
+import com.metavize.gui.util.Util;
+import com.metavize.mvvm.*;
+import com.metavize.mvvm.toolbox.MackageDesc;
+
 public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
-    
+
     /** Creates new form ProceedJDialog */
     public StoreCheckJDialog() {
         super(Util.getMMainJFrame(), true);
         initComponents();
         this.addWindowListener(this);
 
-	this.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), this.getWidth(), this.getHeight()) );
+        this.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), this.getWidth(), this.getHeight()) );
     }
-    
+
     public void setVisible(boolean isVisible){
         if(isVisible){
             new UpgradeCheckThread();
@@ -34,10 +35,10 @@ public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.e
         }
         else{
             super.setVisible(false);
-	    dispose();
-	}
+            dispose();
+        }
     }
-    
+
     private void initComponents() {//GEN-BEGIN:initComponents
         java.awt.GridBagConstraints gridBagConstraints;
 
@@ -98,10 +99,10 @@ public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.e
         proceedJButton.setFocusPainted(false);
         proceedJButton.setFocusable(false);
         proceedJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                proceedJButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    proceedJButtonActionPerformed(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -132,21 +133,21 @@ public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.e
     private void proceedJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proceedJButtonActionPerformed
         setVisible(false);
     }//GEN-LAST:event_proceedJButtonActionPerformed
-    
-    
+
+
     public void windowClosing(java.awt.event.WindowEvent windowEvent) {
         this.setVisible(false);
-    }    
-    
-    
-    public void windowActivated(java.awt.event.WindowEvent windowEvent) {}    
-    public void windowClosed(java.awt.event.WindowEvent windowEvent) {}    
+    }
+
+
+    public void windowActivated(java.awt.event.WindowEvent windowEvent) {}
+    public void windowClosed(java.awt.event.WindowEvent windowEvent) {}
     public void windowDeactivated(java.awt.event.WindowEvent windowEvent) {}
     public void windowDeiconified(java.awt.event.WindowEvent windowEvent) {}
     public void windowIconified(java.awt.event.WindowEvent windowEvent) {}
     public void windowOpened(java.awt.event.WindowEvent windowEvent) {}
-    
-    
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel backgroundJLabel;
     private javax.swing.JProgressBar jProgressBar;
@@ -154,12 +155,12 @@ public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.e
     private javax.swing.JLabel messageJLabel;
     private javax.swing.JButton proceedJButton;
     // End of variables declaration//GEN-END:variables
-    
+
     private class UpgradeCheckThread extends Thread {
         public UpgradeCheckThread(){
-	    super("MVCLIENT-UpgradeCheckThread");
+            super("MVCLIENT-UpgradeCheckThread");
             this.setDaemon(true);
-	    this.setContextClassLoader(Util.getClassLoader());
+            this.setContextClassLoader(Util.getClassLoader());
             this.start();
         }
         public void run() {
@@ -168,9 +169,9 @@ public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.e
                     StoreCheckJDialog.this.jProgressBar.setIndeterminate(true);
                     StoreCheckJDialog.this.jProgressBar.setString("Checking for upgrades...");
                 }});
-            
+
                 Thread.sleep(2000l);
-                
+
                 Util.getToolboxManager().update();
                 MackageDesc[] mackageDescs = Util.getToolboxManager().upgradable();
                 if( Util.isArrayEmpty(mackageDescs) ){
@@ -199,9 +200,9 @@ public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.e
                     StoreCheckJDialog.this.jProgressBar.setString("Upgrades check problem.  Please try again later.");
                 }});
             }
-	    
+
         }
     }
-    
+
 }
 

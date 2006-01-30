@@ -14,7 +14,7 @@ package com.metavize.tran.openvpn.gui;
 import com.metavize.tran.openvpn.*;
 
 import com.metavize.gui.util.Util;
-import com.metavize.mvvm.ToolboxManager;
+import com.metavize.mvvm.toolbox.ToolboxManager;
 import com.metavize.gui.widgets.dialogs.*;
 import java.awt.Container;
 import java.awt.Frame;

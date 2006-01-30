@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,47 +11,45 @@
 
 package com.metavize.gui.configuration;
 
-import com.metavize.mvvm.ToolboxManager;
-import com.metavize.mvvm.security.RFC2253Name;
-import com.metavize.gui.util.Util;
-import com.metavize.gui.widgets.dialogs.*;
-import java.awt.Container;
-import java.awt.Frame;
-import java.awt.Dialog;
-import java.awt.Window;
 import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dialog;
+import java.awt.Frame;
+import java.awt.Window;
 import javax.swing.*;
 
+import com.metavize.gui.util.Util;
+import com.metavize.gui.widgets.dialogs.*;
+import com.metavize.mvvm.security.RFC2253Name;
+
 public class RemoteCertGenSelfSignedJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
-    
-    
     public static RemoteCertGenSelfSignedJDialog factory(Container topLevelContainer){
-	RemoteCertGenSelfSignedJDialog remoteCertGenSelfSignedJDialog;
-	if(topLevelContainer instanceof Frame)
-	    remoteCertGenSelfSignedJDialog = new RemoteCertGenSelfSignedJDialog((Frame)topLevelContainer);
-	else
-	    remoteCertGenSelfSignedJDialog = new RemoteCertGenSelfSignedJDialog((Dialog)topLevelContainer);
-	return remoteCertGenSelfSignedJDialog;
+    RemoteCertGenSelfSignedJDialog remoteCertGenSelfSignedJDialog;
+    if(topLevelContainer instanceof Frame)
+        remoteCertGenSelfSignedJDialog = new RemoteCertGenSelfSignedJDialog((Frame)topLevelContainer);
+    else
+        remoteCertGenSelfSignedJDialog = new RemoteCertGenSelfSignedJDialog((Dialog)topLevelContainer);
+    return remoteCertGenSelfSignedJDialog;
     }
-    
+
     public RemoteCertGenSelfSignedJDialog(Dialog topLevelDialog) {
         super( topLevelDialog, true);
-	init( topLevelDialog);
-	
+    init( topLevelDialog);
+
     }
-    
+
     public RemoteCertGenSelfSignedJDialog(Frame topLevelFrame) {
         super( topLevelFrame, true);
-	init( topLevelFrame);
+    init( topLevelFrame);
     }
-    
+
     private void init(Window topLevelWindow) {
         initComponents();
         this.addWindowListener(this);
         this.setBounds( Util.generateCenteredBounds(topLevelWindow.getBounds(), this.getWidth(), this.getHeight()) );
-		new RefreshThread();
+        new RefreshThread();
     }
-    
+
         private void initComponents() {//GEN-BEGIN:initComponents
                 buttonGroup1 = new javax.swing.ButtonGroup();
                 cancelJButton = new javax.swing.JButton();
@@ -192,153 +190,153 @@ public class RemoteCertGenSelfSignedJDialog extends javax.swing.JDialog implemen
                 setBounds((screenSize.width-456)/2, (screenSize.height-404)/2, 456, 404);
         }//GEN-END:initComponents
 
-		String organization;
-		String organizationUnit;
-		String city;
-		String state;
-		String country;
-		
+        String organization;
+        String organizationUnit;
+        String city;
+        String state;
+        String country;
+
     private void proceedJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proceedJButtonActionPerformed
         // ORGANIZATION
-		organization = organizationJTextField.getText().trim();
-		if( organization.length() == 0) {
-				organizationJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
-				MOneButtonJDialog.factory(this, "Certificate Generation", "You must specify an organization.", "Certificate Generation Warning", "Warning");
-				return;
-		}
-		else{
-				organizationJTextField.setBackground( Color.WHITE );
-		}
-		
-		// ORGANIZATION UNIT
-		organizationUnit = organizationUnitJTextField.getText().trim();
-		if( organizationUnit.length() == 0) {
-				organizationUnitJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
-				MOneButtonJDialog.factory(this, "Certificate Generation", "You must specify an organization unit.", "Certificate Generation Warning", "Warning");
-				return;
-		}
-		else{
-				organizationUnitJTextField.setBackground( Color.WHITE );
-		}
-		
-		// CITY
-		city = cityJTextField.getText().trim();
-		if( city.length() == 0) {
-				cityJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
-				MOneButtonJDialog.factory(this, "Certificate Generation", "You must specify a city.", "Certificate Generation Warning", "Warning");
-				return;
-		}
-		else{
-				cityJTextField.setBackground( Color.WHITE );
-		}
-		
-		// STATE
-		state = stateJTextField.getText().trim();
-		if( state.length() == 0) {
-				stateJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
-				MOneButtonJDialog.factory(this, "Certificate Generation", "You must specify a state.", "Certificate Generation Warning", "Warning");
-				return;
-		}
-		else{
-				stateJTextField.setBackground( Color.WHITE );
-		}
-		
-		// COUNTRY
-		country = countryJTextField.getText().trim();
-		if( country.length() == 0) {
-				countryJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
-				MOneButtonJDialog.factory(this, "Certificate Generation", "You must specify a country.", "Certificate Generation Warning", "Warning");
-				return;
-		}
-		else{
-				countryJTextField.setBackground( Color.WHITE );
-		}
-		
-		
-		new CertGenerateThread();
+        organization = organizationJTextField.getText().trim();
+        if( organization.length() == 0) {
+                organizationJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+                MOneButtonJDialog.factory(this, "Certificate Generation", "You must specify an organization.", "Certificate Generation Warning", "Warning");
+                return;
+        }
+        else{
+                organizationJTextField.setBackground( Color.WHITE );
+        }
+
+        // ORGANIZATION UNIT
+        organizationUnit = organizationUnitJTextField.getText().trim();
+        if( organizationUnit.length() == 0) {
+                organizationUnitJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+                MOneButtonJDialog.factory(this, "Certificate Generation", "You must specify an organization unit.", "Certificate Generation Warning", "Warning");
+                return;
+        }
+        else{
+                organizationUnitJTextField.setBackground( Color.WHITE );
+        }
+
+        // CITY
+        city = cityJTextField.getText().trim();
+        if( city.length() == 0) {
+                cityJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+                MOneButtonJDialog.factory(this, "Certificate Generation", "You must specify a city.", "Certificate Generation Warning", "Warning");
+                return;
+        }
+        else{
+                cityJTextField.setBackground( Color.WHITE );
+        }
+
+        // STATE
+        state = stateJTextField.getText().trim();
+        if( state.length() == 0) {
+                stateJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+                MOneButtonJDialog.factory(this, "Certificate Generation", "You must specify a state.", "Certificate Generation Warning", "Warning");
+                return;
+        }
+        else{
+                stateJTextField.setBackground( Color.WHITE );
+        }
+
+        // COUNTRY
+        country = countryJTextField.getText().trim();
+        if( country.length() == 0) {
+                countryJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+                MOneButtonJDialog.factory(this, "Certificate Generation", "You must specify a country.", "Certificate Generation Warning", "Warning");
+                return;
+        }
+        else{
+                countryJTextField.setBackground( Color.WHITE );
+        }
+
+
+        new CertGenerateThread();
     }//GEN-LAST:event_proceedJButtonActionPerformed
 
     private class CertGenerateThread extends Thread {
-	public CertGenerateThread(){
-	    setDaemon(true);
-	    jProgressBar.setIndeterminate(true);
-	    jProgressBar.setString("Generating Certificate");
-	    jProgressBar.setValue(0);
-	    proceedJButton.setEnabled(false);
-	    cancelJButton.setEnabled(false);
-	    start();
-	}
-	public void run(){
-	    try{
-		RFC2253Name distinguishedName = new RFC2253Name(organization, organizationUnit, city, state, country);
-		boolean result = Util.getAppServerManager().regenCert(distinguishedName, 5*365);
-		if(!result)
-		    throw new Exception();
-		Thread.sleep(1000);
-
-		SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		    jProgressBar.setIndeterminate(false);
-		    jProgressBar.setValue(100);
-		    jProgressBar.setString("Certificate Successfully Generated");
-		}});
-		Thread.sleep(1500);
-	    }
-	    catch(Exception e){
-		SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		    jProgressBar.setIndeterminate(false);
-		    jProgressBar.setValue(100);
-		    jProgressBar.setString("Error. Please try again.");
-		    proceedJButton.setEnabled(true);
-		    cancelJButton.setEnabled(true);
-		}});
-		Util.handleExceptionNoRestart("Error generating self-signed certificate", e);
-	    }
-
-	}
-	
+    public CertGenerateThread(){
+        setDaemon(true);
+        jProgressBar.setIndeterminate(true);
+        jProgressBar.setString("Generating Certificate");
+        jProgressBar.setValue(0);
+        proceedJButton.setEnabled(false);
+        cancelJButton.setEnabled(false);
+        start();
     }
-    
-	
+    public void run(){
+        try{
+        RFC2253Name distinguishedName = new RFC2253Name(organization, organizationUnit, city, state, country);
+        boolean result = Util.getAppServerManager().regenCert(distinguishedName, 5*365);
+        if(!result)
+            throw new Exception();
+        Thread.sleep(1000);
+
+        SwingUtilities.invokeLater( new Runnable(){ public void run(){
+            jProgressBar.setIndeterminate(false);
+            jProgressBar.setValue(100);
+            jProgressBar.setString("Certificate Successfully Generated");
+        }});
+        Thread.sleep(1500);
+        }
+        catch(Exception e){
+        SwingUtilities.invokeLater( new Runnable(){ public void run(){
+            jProgressBar.setIndeterminate(false);
+            jProgressBar.setValue(100);
+            jProgressBar.setString("Error. Please try again.");
+            proceedJButton.setEnabled(true);
+            cancelJButton.setEnabled(true);
+        }});
+        Util.handleExceptionNoRestart("Error generating self-signed certificate", e);
+        }
+
+    }
+
+    }
+
+
     private class RefreshThread extends Thread {
-	public RefreshThread(){
-	    setDaemon(true);
-	    start();
-	}
-	public void run(){
-	    try{
-		final String hostname = Util.getNetworkManager().getHostname();
-		hostnameJTextField.setText(hostname);
-		SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		    hostnameJTextField.setText(hostname);
-		}});
-	    }
-	    catch(Exception e){
-		Util.handleExceptionNoRestart("Error querying hostname", e);
-	    }
-	}
-	
+    public RefreshThread(){
+        setDaemon(true);
+        start();
     }
-    
+    public void run(){
+        try{
+        final String hostname = Util.getNetworkManager().getHostname();
+        hostnameJTextField.setText(hostname);
+        SwingUtilities.invokeLater( new Runnable(){ public void run(){
+            hostnameJTextField.setText(hostname);
+        }});
+        }
+        catch(Exception e){
+        Util.handleExceptionNoRestart("Error querying hostname", e);
+        }
+    }
+
+    }
+
     private void cancelJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelJButtonActionPerformed
         windowClosing(null);
     }//GEN-LAST:event_cancelJButtonActionPerformed
-    
-    
+
+
     public void windowClosing(java.awt.event.WindowEvent windowEvent) {
         this.setVisible(false);
         dispose();
-    }    
-    
-    
-    public void windowActivated(java.awt.event.WindowEvent windowEvent) {}    
-    public void windowClosed(java.awt.event.WindowEvent windowEvent) {}    
+    }
+
+
+    public void windowActivated(java.awt.event.WindowEvent windowEvent) {}
+    public void windowClosed(java.awt.event.WindowEvent windowEvent) {}
     public void windowDeactivated(java.awt.event.WindowEvent windowEvent) {}
     public void windowDeiconified(java.awt.event.WindowEvent windowEvent) {}
     public void windowIconified(java.awt.event.WindowEvent windowEvent) {}
     public void windowOpened(java.awt.event.WindowEvent windowEvent) {}
-    
-	
-    
+
+
+
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JLabel backgroundJLabel;
         private javax.swing.ButtonGroup buttonGroup1;
@@ -360,5 +358,5 @@ public class RemoteCertGenSelfSignedJDialog extends javax.swing.JDialog implemen
         private javax.swing.JLabel stateJLabel;
         public javax.swing.JTextField stateJTextField;
         // End of variables declaration//GEN-END:variables
-    
+
 }

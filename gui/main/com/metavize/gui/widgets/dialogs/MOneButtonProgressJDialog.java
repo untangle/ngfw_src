@@ -12,12 +12,10 @@
 package com.metavize.gui.widgets.dialogs;
 
 import com.metavize.gui.util.Util;
-import com.metavize.mvvm.ToolboxManager;
-
 
 public class MOneButtonProgressJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
-    
-    
+
+
     public MOneButtonProgressJDialog() {
         super(Util.getMMainJFrame(), true);
         initComponents();
@@ -25,7 +23,7 @@ public class MOneButtonProgressJDialog extends javax.swing.JDialog implements ja
         this.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), this.getWidth(), this.getHeight()) );
 
     }
-    
+
     private void initComponents() {//GEN-BEGIN:initComponents
         java.awt.GridBagConstraints gridBagConstraints;
 
@@ -76,10 +74,10 @@ public class MOneButtonProgressJDialog extends javax.swing.JDialog implements ja
         proceedJButton.setMinimumSize(new java.awt.Dimension(125, 25));
         proceedJButton.setPreferredSize(new java.awt.Dimension(125, 25));
         proceedJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                proceedJButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    proceedJButtonActionPerformed(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -124,22 +122,22 @@ public class MOneButtonProgressJDialog extends javax.swing.JDialog implements ja
     private void proceedJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proceedJButtonActionPerformed
         windowClosing(null);
     }//GEN-LAST:event_proceedJButtonActionPerformed
-    
-    
+
+
     public void windowClosing(java.awt.event.WindowEvent windowEvent) {
         setVisible(false);
         dispose();
-    }    
-    
-    
-    public void windowActivated(java.awt.event.WindowEvent windowEvent) {}    
-    public void windowClosed(java.awt.event.WindowEvent windowEvent) {}    
+    }
+
+
+    public void windowActivated(java.awt.event.WindowEvent windowEvent) {}
+    public void windowClosed(java.awt.event.WindowEvent windowEvent) {}
     public void windowDeactivated(java.awt.event.WindowEvent windowEvent) {}
     public void windowDeiconified(java.awt.event.WindowEvent windowEvent) {}
     public void windowIconified(java.awt.event.WindowEvent windowEvent) {}
     public void windowOpened(java.awt.event.WindowEvent windowEvent) {}
-    
-    
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel backgroundJLabel;
     protected javax.swing.JProgressBar jProgressBar;
@@ -147,5 +145,5 @@ public class MOneButtonProgressJDialog extends javax.swing.JDialog implements ja
     protected javax.swing.JLabel messageJLabel;
     protected javax.swing.JButton proceedJButton;
     // End of variables declaration//GEN-END:variables
-    
+
 }

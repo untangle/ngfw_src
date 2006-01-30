@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,7 +12,7 @@
 package com.metavize.gui.transform;
 
 import com.metavize.mvvm.*;
-
+import com.metavize.mvvm.toolbox.MackageDesc;
 
 public class ButtonKey implements Comparable<ButtonKey> {
 
@@ -23,11 +23,11 @@ public class ButtonKey implements Comparable<ButtonKey> {
     public ButtonKey(MTransformJButton mTransformJButton){
         init(mTransformJButton.getName(), mTransformJButton.getViewPosition(), mTransformJButton.getMackageDesc().isService());
     }
-    
+
     public ButtonKey(MTransformJPanel mTransformJPanel){
         this(mTransformJPanel.getMackageDesc());
     }
-    
+
     public ButtonKey(MackageDesc mackageDesc){
         init(mackageDesc.getName(), mackageDesc.getViewPosition(), mackageDesc.isService());
     }
@@ -35,32 +35,32 @@ public class ButtonKey implements Comparable<ButtonKey> {
     public ButtonKey(String applianceName, int viewPosition, boolean isService){
         init(applianceName, viewPosition, isService);
     }
-        
+
     private void init(String applianceName, int viewPosition, boolean isService){
         this.applianceName = applianceName;
         this.viewPosition = viewPosition;
-	this.isService = isService;
+        this.isService = isService;
     }
-    
+
     public int getViewPosition(){ return viewPosition; }
     public String getApplianceName(){ return applianceName; }
     public boolean isService(){ return isService; }
-    
+
     public int compareTo(ButtonKey b){
-	if( this.isService() == b.isService() ){
-	    if( this.getViewPosition() < b.getViewPosition() )
-		return -1;
-	    else if ( this.getViewPosition() > b.getViewPosition() )
-		return 1;
-	    else
-		return this.getApplianceName().compareToIgnoreCase( b.getApplianceName() );
-	}
-	else if( this.isService() )
-	    return 1;
-	else
-	    return -1;
-        
+        if( this.isService() == b.isService() ){
+            if( this.getViewPosition() < b.getViewPosition() )
+                return -1;
+            else if ( this.getViewPosition() > b.getViewPosition() )
+                return 1;
+            else
+                return this.getApplianceName().compareToIgnoreCase( b.getApplianceName() );
+        }
+        else if( this.isService() )
+            return 1;
+        else
+            return -1;
+
     }
 
-     
+
 }

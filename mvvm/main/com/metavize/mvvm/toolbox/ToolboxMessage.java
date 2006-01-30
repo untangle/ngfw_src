@@ -9,9 +9,11 @@
  * $Id$
  */
 
-package com.metavize.mvvm;
+package com.metavize.mvvm.toolbox;
 
-public interface ToolboxMessageVisitor
+import com.metavize.mvvm.Message;
+
+public abstract class ToolboxMessage extends Message
 {
-    void visitMackageInstallRequest(MackageInstallRequest req);
+    public abstract void accept(ToolboxMessageVisitor v);
 }

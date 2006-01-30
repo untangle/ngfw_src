@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004 Metavize Inc.
+ * Copyright (c) 2004, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.mvvm;
+package com.metavize.mvvm.toolbox;
 
 public class MackageUninstallException extends MackageException
 {

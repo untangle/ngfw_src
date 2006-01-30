@@ -21,12 +21,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.metavize.mvvm.DownloadComplete;
-import com.metavize.mvvm.DownloadProgress;
-import com.metavize.mvvm.DownloadSummary;
-import com.metavize.mvvm.InstallComplete;
-import com.metavize.mvvm.InstallProgress;
-import com.metavize.mvvm.InstallTimeout;
+import com.metavize.mvvm.toolbox.DownloadComplete;
+import com.metavize.mvvm.toolbox.DownloadProgress;
+import com.metavize.mvvm.toolbox.DownloadSummary;
+import com.metavize.mvvm.toolbox.InstallComplete;
+import com.metavize.mvvm.toolbox.InstallProgress;
+import com.metavize.mvvm.toolbox.InstallTimeout;
 import org.apache.log4j.Logger;
 
 class AptLogTail implements Runnable

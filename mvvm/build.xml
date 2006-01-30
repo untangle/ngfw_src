@@ -189,6 +189,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <exclude name="com/metavize/mvvm/tran/MutateTStats.java"/>
 
       <include name="com/metavize/mvvm/*.java"/>
+      <include name="com/metavize/mvvm/addrbook/*.java"/>
       <include name="com/metavize/mvvm/argon/ArgonException.java"/>
       <include name="com/metavize/mvvm/argon/IPSessionDesc.java"/>
       <include name="com/metavize/mvvm/argon/SessionDesc.java"/>
@@ -208,11 +209,10 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <include name="com/metavize/mvvm/logging/RepositoryDesc.java"/>
       <include name="com/metavize/mvvm/logging/StatisticEvent.java"/>
       <include name="com/metavize/mvvm/logging/SyslogBuilder.java"/>
-      <include name="com/metavize/mvvm/logging/SyslogPriority.java"/>
       <include name="com/metavize/mvvm/logging/SyslogFacility.java"/>
+      <include name="com/metavize/mvvm/logging/SyslogPriority.java"/>
       <include name="com/metavize/mvvm/policy/*.java"/>
       <include name="com/metavize/mvvm/security/*.java"/>
-      <include name="com/metavize/mvvm/addrbook/*.java"/>
       <include name="com/metavize/mvvm/shield/ShieldNodeSettings.java"/>
       <include name="com/metavize/mvvm/snmp/SnmpManager.java"/>
       <include name="com/metavize/mvvm/snmp/SnmpSettings.java"/>
@@ -220,6 +220,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <include name="com/metavize/mvvm/tapi/Protocol.java"/>
       <include name="com/metavize/mvvm/tapi/SessionStats.java"/>
       <include name="com/metavize/mvvm/tapi/client/*.java"/>
+      <include name="com/metavize/mvvm/toolbox/**/*.java"/>
       <include name="com/metavize/mvvm/tran/**/*.java"/>
       <include name="com/metavize/mvvm/util/PortServiceNames.java"/>
       <include name="com/metavize/mvvm/util/SessionUtil.java"/>
@@ -227,15 +228,15 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <include name="com/metavize/tran/util/Pair.java"/>
 
       <!-- Networking classes -->
-      <include name="com/metavize/mvvm/networking/NetworkSettings.java"/>
       <include name="com/metavize/mvvm/networking/BasicNetworkSettings.java"/>
+      <include name="com/metavize/mvvm/networking/IPNetwork.java"/>
+      <include name="com/metavize/mvvm/networking/IPNetworkRule.java"/>
+      <include name="com/metavize/mvvm/networking/Interface.java"/>
+      <include name="com/metavize/mvvm/networking/NetworkException.java"/>
+      <include name="com/metavize/mvvm/networking/NetworkSettings.java"/>
       <include name="com/metavize/mvvm/networking/NetworkSpace.java"/>
       <include name="com/metavize/mvvm/networking/NetworkUtil.java"/>
       <include name="com/metavize/mvvm/networking/Route.java"/>
-      <include name="com/metavize/mvvm/networking/Interface.java"/>
-      <include name="com/metavize/mvvm/networking/IPNetwork.java"/>
-      <include name="com/metavize/mvvm/networking/IPNetworkRule.java"/>
-      <include name="com/metavize/mvvm/networking/NetworkException.java"/>
     </javac>
   </target>
 
@@ -245,6 +246,13 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
         <exclude name="com/metavize/mvvm/tran/MutateTStats*.class"/>
 
         <include name="com/metavize/mvvm/*.class"/>
+        <include name="com/metavize/mvvm/addrbook/AddressBook.class"/>
+        <include name="com/metavize/mvvm/addrbook/AddressBookConfiguration.class"/>
+        <include name="com/metavize/mvvm/addrbook/AddressBookSettings.class"/>
+        <include name="com/metavize/mvvm/addrbook/NoSuchEmailException.class"/>
+        <include name="com/metavize/mvvm/addrbook/RepositorySettings.class"/>
+        <include name="com/metavize/mvvm/addrbook/RepositoryType.class"/>
+        <include name="com/metavize/mvvm/addrbook/UserEntry.class"/>
         <include name="com/metavize/mvvm/argon/ArgonException.class"/>
         <include name="com/metavize/mvvm/argon/IPSessionDesc.class"/>
         <include name="com/metavize/mvvm/argon/SessionDesc.class"/>
@@ -264,8 +272,8 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
         <include name="com/metavize/mvvm/logging/RepositoryDesc*.class"/>
         <include name="com/metavize/mvvm/logging/StatisticEvent*.class"/>
         <include name="com/metavize/mvvm/logging/SyslogBuilder*.class"/>
-        <include name="com/metavize/mvvm/logging/SyslogPriority*.class"/>
         <include name="com/metavize/mvvm/logging/SyslogFacility*.class"/>
+        <include name="com/metavize/mvvm/logging/SyslogPriority*.class"/>
         <include name="com/metavize/mvvm/policy/*.class"/>
         <include name="com/metavize/mvvm/security/*.class"/>
         <include name="com/metavize/mvvm/shield/ShieldNodeSettings.class"/>
@@ -275,29 +283,23 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
         <include name="com/metavize/mvvm/tapi/Protocol*.class"/>
         <include name="com/metavize/mvvm/tapi/SessionStats*.class"/>
         <include name="com/metavize/mvvm/tapi/client/*.class"/>
+        <include name="com/metavize/mvvm/toolbox/**/*.class"/>
         <include name="com/metavize/mvvm/tran/**/*.class"/>
         <include name="com/metavize/mvvm/util/PortServiceNames*.class"/>
         <include name="com/metavize/mvvm/util/SessionUtil*.class"/>
         <include name="com/metavize/mvvm/util/TransactionWork.class"/>
         <include name="com/metavize/tran/util/Pair.class"/>
-        <include name="com/metavize/mvvm/addrbook/AddressBookConfiguration.class"/>
-        <include name="com/metavize/mvvm/addrbook/AddressBook.class"/>
-        <include name="com/metavize/mvvm/addrbook/AddressBookSettings.class"/>
-        <include name="com/metavize/mvvm/addrbook/NoSuchEmailException.class"/>
-        <include name="com/metavize/mvvm/addrbook/RepositorySettings.class"/>
-        <include name="com/metavize/mvvm/addrbook/RepositoryType.class"/>
-        <include name="com/metavize/mvvm/addrbook/UserEntry.class"/>
 
         <!-- Networking classes -->
-        <include name="com/metavize/mvvm/networking/NetworkSettings.class"/>
         <include name="com/metavize/mvvm/networking/BasicNetworkSettings.class"/>
+        <include name="com/metavize/mvvm/networking/IPNetwork.class"/>
+        <include name="com/metavize/mvvm/networking/IPNetworkRule.class"/>
+        <include name="com/metavize/mvvm/networking/Interface.class"/>
+        <include name="com/metavize/mvvm/networking/NetworkException.class"/>
+        <include name="com/metavize/mvvm/networking/NetworkSettings.class"/>
         <include name="com/metavize/mvvm/networking/NetworkSpace.class"/>
         <include name="com/metavize/mvvm/networking/NetworkUtil.class"/>
         <include name="com/metavize/mvvm/networking/Route.class"/>
-        <include name="com/metavize/mvvm/networking/Interface.class"/>
-        <include name="com/metavize/mvvm/networking/IPNetwork.class"/>
-        <include name="com/metavize/mvvm/networking/IPNetworkRule.class"/>
-        <include name="com/metavize/mvvm/networking/NetworkException.class"/>
       </fileset>
     </jar>
   </target>

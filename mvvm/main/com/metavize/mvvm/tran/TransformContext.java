@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,9 +11,9 @@
 
 package com.metavize.mvvm.tran;
 
-import com.metavize.mvvm.MackageDesc;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tapi.IPSessionDesc;
+import com.metavize.mvvm.toolbox.MackageDesc;
 import com.metavize.mvvm.util.TransactionWork;
 
 /**

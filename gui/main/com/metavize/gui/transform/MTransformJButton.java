@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,17 +11,6 @@
 
 package com.metavize.gui.transform;
 
-import com.metavize.mvvm.policy.Policy;
-import com.metavize.gui.main.*;
-import com.metavize.gui.pipeline.*;
-import com.metavize.gui.util.*;
-import com.metavize.gui.widgets.dialogs.*;
-import com.metavize.gui.widgets.MMultilineToolTip;
-import com.metavize.gui.store.StoreJDialog;
-
-
-import com.metavize.mvvm.*;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.font.*;
@@ -30,9 +19,14 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.border.*;
 
+import com.metavize.gui.main.*;
+import com.metavize.gui.pipeline.*;
+import com.metavize.gui.util.*;
+import com.metavize.gui.widgets.dialogs.*;
+import com.metavize.mvvm.*;
+import com.metavize.mvvm.toolbox.MackageDesc;
 
 public class MTransformJButton extends JButton {
-
 
     private MackageDesc mackageDesc;
     private GridBagConstraints gridBagConstraints;
@@ -55,8 +49,8 @@ public class MTransformJButton extends JButton {
         organizationIconJLabel = new JLabel();
         if( mackageDesc.getOrgIcon() != null )
             organizationIconJLabel.setIcon( new javax.swing.ImageIcon(mackageDesc.getOrgIcon()) );
-	else
-	    organizationIconJLabel.setIcon( new ImageIcon(getClass().getResource("/com/metavize/gui/transform/IconOrgUnknown42x42.png")) );
+        else
+            organizationIconJLabel.setIcon( new ImageIcon(getClass().getResource("/com/metavize/gui/transform/IconOrgUnknown42x42.png")) );
         //organizationIconJLabel.setDisabledIcon(this.orgIcon);
         organizationIconJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         organizationIconJLabel.setFocusable(false);
@@ -74,8 +68,8 @@ public class MTransformJButton extends JButton {
         descriptionIconJLabel = new JLabel();
         if( mackageDesc.getDescIcon() != null )
             descriptionIconJLabel.setIcon( new javax.swing.ImageIcon(mackageDesc.getDescIcon()) );
-	else
-	    descriptionIconJLabel.setIcon( new ImageIcon(getClass().getResource("/com/metavize/gui/transform/IconDescUnknown42x42.png")) );
+        else
+            descriptionIconJLabel.setIcon( new ImageIcon(getClass().getResource("/com/metavize/gui/transform/IconDescUnknown42x42.png")) );
         //descriptionIconJLabel.setDisabledIcon(this.descIcon);
         descriptionIconJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         descriptionIconJLabel.setFocusable(false);
@@ -122,7 +116,7 @@ public class MTransformJButton extends JButton {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.gridwidth = 2;
-	gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         add(statusJProgressBar, gridBagConstraints);
 
         // TOOLTIP
@@ -136,12 +130,12 @@ public class MTransformJButton extends JButton {
     }
 
     public MTransformJButton duplicate(){
-	MTransformJButton newMTransformJButton = new MTransformJButton( mackageDesc );
-	Dimension currentDimension = getSize();
-	newMTransformJButton.setMinimumSize(currentDimension);
-	newMTransformJButton.setMaximumSize(currentDimension);
-	newMTransformJButton.setPreferredSize(currentDimension);
-	return newMTransformJButton;
+        MTransformJButton newMTransformJButton = new MTransformJButton( mackageDesc );
+        Dimension currentDimension = getSize();
+        newMTransformJButton.setMinimumSize(currentDimension);
+        newMTransformJButton.setMaximumSize(currentDimension);
+        newMTransformJButton.setPreferredSize(currentDimension);
+        return newMTransformJButton;
     }
 
 
@@ -157,24 +151,24 @@ public class MTransformJButton extends JButton {
     ////////////////////////////////////////////
 
     public void highlight(){
-	new FadeTask(this,false);
+        new FadeTask(this,false);
     }
 
 
     // VIEW UPDATING ///////////
     private void updateView(final String message, final int progress, final String toolTip, final boolean isEnabled, boolean doNow){
-	if(doNow){
-	    MTransformJButton.this.setProgress(message, progress);
-	    MTransformJButton.this.setTT(toolTip);
-	    MTransformJButton.this.setEnabled(isEnabled);
-	}
-	else{
-	    SwingUtilities.invokeLater( new Runnable() { public void run() {
-		MTransformJButton.this.setProgress(message, progress);
-		MTransformJButton.this.setTT(toolTip);
-		MTransformJButton.this.setEnabled(isEnabled);
-	    } } );
-	}
+        if(doNow){
+            MTransformJButton.this.setProgress(message, progress);
+            MTransformJButton.this.setTT(toolTip);
+            MTransformJButton.this.setEnabled(isEnabled);
+        }
+        else{
+            SwingUtilities.invokeLater( new Runnable() { public void run() {
+                MTransformJButton.this.setProgress(message, progress);
+                MTransformJButton.this.setTT(toolTip);
+                MTransformJButton.this.setEnabled(isEnabled);
+            } } );
+        }
     }
 
     public void setDeployableView(){ updateView(null, -1, "Ready to be installed into the rack.", true, false); }
@@ -197,24 +191,24 @@ public class MTransformJButton extends JButton {
     // VIEW UPDATE HELPERS //////////////////
 
     public void setTT(String status){
-	this.setToolTipText( "<html>" + "<b>Description:</b><br>" + toolTipString + "<br><br>" + "<b>Status:</b><br>" + status + "</html>");
+        this.setToolTipText( "<html>" + "<b>Description:</b><br>" + toolTipString + "<br><br>" + "<b>Status:</b><br>" + status + "</html>");
     }
 
     public void setProgress(String message, int progress){
-	statusJProgressBar.setString(message);
+        statusJProgressBar.setString(message);
         if(progress < 0){
-	    statusJProgressBar.setIndeterminate(false);
-	    statusJProgressBar.setVisible(false);
+            statusJProgressBar.setIndeterminate(false);
+            statusJProgressBar.setVisible(false);
         }
         else if(progress <= 100){
-	    statusJProgressBar.setIndeterminate(false);
-	    statusJProgressBar.setValue(progress);
-	    statusJProgressBar.setVisible(true);
+            statusJProgressBar.setIndeterminate(false);
+            statusJProgressBar.setValue(progress);
+            statusJProgressBar.setVisible(true);
         }
-	else{
-	    statusJProgressBar.setIndeterminate(true);
-	    statusJProgressBar.setVisible(true);
-	}
+        else{
+            statusJProgressBar.setIndeterminate(true);
+            statusJProgressBar.setVisible(true);
+        }
     }
 
     public void setEnabled(boolean enabled){

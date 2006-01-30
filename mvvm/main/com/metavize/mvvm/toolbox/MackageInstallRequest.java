@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.mvvm;
+package com.metavize.mvvm.toolbox;
 
 public class MackageInstallRequest extends ToolboxMessage
 {

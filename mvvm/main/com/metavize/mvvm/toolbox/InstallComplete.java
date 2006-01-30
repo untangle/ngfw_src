@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -9,17 +9,17 @@
  * $Id$
  */
 
-package com.metavize.mvvm;
+package com.metavize.mvvm.toolbox;
 
 import java.io.Serializable;
 
-public class DownloadComplete implements InstallProgress, Serializable
+public class InstallComplete implements InstallProgress, Serializable
 {
     // XXX serial UID
 
     private final boolean success;
 
-    public DownloadComplete(boolean success)
+    public InstallComplete(boolean success)
     {
         this.success = success;
     }
@@ -35,6 +35,6 @@ public class DownloadComplete implements InstallProgress, Serializable
 
     public void accept(ProgressVisitor visitor)
     {
-        visitor.visitDownloadComplete(this);
+        visitor.visitInstallComplete(this);
     }
 }

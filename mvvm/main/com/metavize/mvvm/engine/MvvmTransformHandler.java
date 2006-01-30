@@ -14,7 +14,7 @@ package com.metavize.mvvm.engine;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.metavize.mvvm.MackageDesc;
+import com.metavize.mvvm.toolbox.MackageDesc;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.TransformDesc;
 import org.apache.log4j.Logger;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,13 +12,11 @@
 package com.metavize.gui.configuration;
 
 import com.metavize.gui.util.Util;
-import com.metavize.mvvm.ToolboxManager;
-
 
 final public class SaveSettingsProceedJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
-    
+
     private boolean isProceeding = false;
-    
+
 
     public SaveSettingsProceedJDialog() {
         super(Util.getMMainJFrame(), true);
@@ -27,7 +25,7 @@ final public class SaveSettingsProceedJDialog extends javax.swing.JDialog implem
         this.setBounds( Util.generateCenteredBounds( Util.getMMainJFrame().getBounds(), this.getWidth(), this.getHeight()) );
         this.setVisible(true);
     }
-    
+
     private void initComponents() {//GEN-BEGIN:initComponents
         java.awt.GridBagConstraints gridBagConstraints;
 
@@ -53,10 +51,10 @@ final public class SaveSettingsProceedJDialog extends javax.swing.JDialog implem
         cancelJButton.setMinimumSize(new java.awt.Dimension(130, 25));
         cancelJButton.setPreferredSize(new java.awt.Dimension(130, 25));
         cancelJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cancelJButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    cancelJButtonActionPerformed(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -76,10 +74,10 @@ final public class SaveSettingsProceedJDialog extends javax.swing.JDialog implem
         proceedJButton.setMinimumSize(new java.awt.Dimension(130, 25));
         proceedJButton.setPreferredSize(new java.awt.Dimension(130, 25));
         proceedJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                proceedJButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    proceedJButtonActionPerformed(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -139,25 +137,25 @@ final public class SaveSettingsProceedJDialog extends javax.swing.JDialog implem
     private void cancelJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelJButtonActionPerformed
         windowClosing(null);
     }//GEN-LAST:event_cancelJButtonActionPerformed
-    
-    
+
+
     public void windowClosing(java.awt.event.WindowEvent windowEvent) {
         this.setVisible(false);
-	dispose();
-    }    
-    
-    
-    public void windowActivated(java.awt.event.WindowEvent windowEvent) {}    
-    public void windowClosed(java.awt.event.WindowEvent windowEvent) {}    
+        dispose();
+    }
+
+
+    public void windowActivated(java.awt.event.WindowEvent windowEvent) {}
+    public void windowClosed(java.awt.event.WindowEvent windowEvent) {}
     public void windowDeactivated(java.awt.event.WindowEvent windowEvent) {}
     public void windowDeiconified(java.awt.event.WindowEvent windowEvent) {}
     public void windowIconified(java.awt.event.WindowEvent windowEvent) {}
     public void windowOpened(java.awt.event.WindowEvent windowEvent) {}
-    
+
     public boolean isProceeding(){
         return isProceeding;
     }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel backgroundJLabel;
     private javax.swing.JButton cancelJButton;
@@ -165,5 +163,5 @@ final public class SaveSettingsProceedJDialog extends javax.swing.JDialog implem
     private javax.swing.JLabel messageJLabel;
     private javax.swing.JButton proceedJButton;
     // End of variables declaration//GEN-END:variables
-    
+
 }

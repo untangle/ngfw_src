@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -40,6 +40,7 @@ import com.metavize.mvvm.client.*;
 import com.metavize.mvvm.logging.*;
 import com.metavize.mvvm.policy.*;
 import com.metavize.mvvm.security.*;
+import com.metavize.mvvm.toolbox.ToolboxManager;
 import com.metavize.mvvm.tran.*;
 
 public class Util {
@@ -108,18 +109,18 @@ public class Util {
             networkingManager = mvvmContext.networkingManager();
             networkManager = mvvmContext.networkManager();
             policyManager = mvvmContext.policyManager();
-	    loggingManager = mvvmContext.loggingManager();
-	    appServerManager = mvvmContext.appServerManager();
+            loggingManager = mvvmContext.loggingManager();
+            appServerManager = mvvmContext.appServerManager();
         }
         else{
             toolboxManager = null;
             transformManager = null;
             adminManager = null;
             networkingManager = null;
-	    networkManager = null;
+            networkManager = null;
             policyManager = null;
-	    loggingManager = null;
-	    appServerManager = null;
+            loggingManager = null;
+            appServerManager = null;
         }
     }
 
@@ -143,11 +144,11 @@ public class Util {
     // BUTTON DECALS /////////////////
 
     public static ImageIcon[] getImageIcons(String[] imagePaths){
-	ImageIcon[] imageIcons = new ImageIcon[imagePaths.length];
-	for( int i=0; i<imagePaths.length; i++){
-	    imageIcons[i] = new javax.swing.ImageIcon( Util.getClassLoader().getResource(imagePaths[i]) );
-	}
-	return imageIcons;
+        ImageIcon[] imageIcons = new ImageIcon[imagePaths.length];
+        for( int i=0; i<imagePaths.length; i++){
+            imageIcons[i] = new javax.swing.ImageIcon( Util.getClassLoader().getResource(imagePaths[i]) );
+        }
+        return imageIcons;
     }
 
     private static ImageIcon iconOnState;
@@ -237,7 +238,7 @@ public class Util {
             }
             catch(Exception e){
                 Util.handleExceptionNoRestart("Error (setting code base to http://127.0.0.1/webstart):", e);
-        serverCodeBase = new URL("http://127.0.0.1/webstart");
+                serverCodeBase = new URL("http://127.0.0.1/webstart");
             }
             finally{
                 return serverCodeBase;
@@ -357,10 +358,10 @@ public class Util {
     }
 
     public static Rectangle generateCenteredBounds(Window window, int childWidth, int childHeight){
-    if( window != null )
-        return generateCenteredBounds(window.getBounds(), childWidth, childHeight);
-    else
-        return generateCenteredBounds((Rectangle)null, childWidth, childHeight);
+        if( window != null )
+            return generateCenteredBounds(window.getBounds(), childWidth, childHeight);
+        else
+            return generateCenteredBounds((Rectangle)null, childWidth, childHeight);
 
     }
 

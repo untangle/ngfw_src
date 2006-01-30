@@ -9,11 +9,12 @@
  * $Id$
  */
 
-package com.metavize.mvvm;
+package com.metavize.mvvm.toolbox;
 
 import java.net.URL;
 import java.util.List;
 
+import com.metavize.mvvm.MessageQueue;
 import com.metavize.mvvm.tran.DeployException;
 
 /**

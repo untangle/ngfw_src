@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.metavize.mvvm.MackageDesc;
+import com.metavize.mvvm.toolbox.MackageDesc;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.logging.LogMailer;
 import com.metavize.mvvm.policy.Policy;

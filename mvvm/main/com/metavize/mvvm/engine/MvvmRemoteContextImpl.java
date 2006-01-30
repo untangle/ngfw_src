@@ -19,7 +19,7 @@ import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.NetworkingManager;
 import com.metavize.mvvm.NetworkManager;
 import com.metavize.mvvm.ReportingManager;
-import com.metavize.mvvm.ToolboxManager;
+import com.metavize.mvvm.toolbox.ToolboxManager;
 import com.metavize.mvvm.client.MvvmRemoteContext;
 import com.metavize.mvvm.logging.LoggingManager;
 import com.metavize.mvvm.policy.PolicyManager;
