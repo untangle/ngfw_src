@@ -30,7 +30,7 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.table.*;
 
-public class MTransformControlsJPanel extends javax.swing.JPanel implements SettingsChangedListener{
+public abstract class MTransformControlsJPanel extends javax.swing.JPanel implements SettingsChangedListener{
 
     // SAVING/REFRESHING/SHUTDOWN //////////
     private Map<String, Refreshable> refreshableMap = new LinkedHashMap(5);
@@ -100,9 +100,9 @@ public class MTransformControlsJPanel extends javax.swing.JPanel implements Sett
         expandJDialog.getContentPane().setLayout(new GridBagLayout());
 	expandJDialog.getContentPane().add(new com.metavize.gui.widgets.MTiledIconLabel("",greyBackgroundImageIcon,JLabel.CENTER), greyBackgroundConstraints);
     
-
-	generateGui();
-	refreshAll();
+	// these are now done only on demand
+	//generateGui();
+	//refreshAll();
     }
 
     public void settingsChanged(Object source){
@@ -188,10 +188,10 @@ public class MTransformControlsJPanel extends javax.swing.JPanel implements Sett
         }
     }
     
-    protected void generateGui(){};
+    public abstract void generateGui();
 
     private Exception saveException;
-    protected void saveAll(){
+    void saveAll(){
 
 	// GENERATE AND VALIDATE ALL SETTINGS
 	String transformName = mTransformJPanel.getMackageDesc().getDisplayName();
@@ -247,7 +247,7 @@ public class MTransformControlsJPanel extends javax.swing.JPanel implements Sett
     }
 
     private Exception refreshException;
-    protected void refreshAll(){
+    void refreshAll(){
 	String transformName = mTransformJPanel.getMackageDesc().getDisplayName();
 	StringBuilder message = new StringBuilder();
 	// GET SETTINGS OBJECT FROM MVVM

@@ -46,13 +46,13 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         super(mTransformJPanel);        
     }
 
-    protected void generateGui(){
+    public void generateGui(){
 	// SOME LIST //
 	javax.swing.JPanel someJPanel = new javax.swing.JPanel();
-  addTab(NAME_SOME_LIST, null, someJPanel);
-
-  addTab("Address Book Test", null, new AddressBookTestPanel());
-
+	addTab(NAME_SOME_LIST, null, someJPanel);
+	
+	addTab("Address Book Test", null, new AddressBookTestPanel());
+	
 	//super.savableMap.put(NAME_SOME_LIST, someJPanel);
 	//super.refreshableMap.put(NAME_SOME_LIST, someJPanel);
 

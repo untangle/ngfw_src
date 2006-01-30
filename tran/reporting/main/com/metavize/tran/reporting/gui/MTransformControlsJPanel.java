@@ -33,7 +33,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         super(mTransformJPanel);
     }
 
-    protected void generateGui(){
+    public void generateGui(){
 	// LAUNCH BUTTON /////
 	BrowserLaunchJPanel browserLaunchJPanel = new BrowserLaunchJPanel();
 	addTab(NAME_VIEW, null, browserLaunchJPanel);

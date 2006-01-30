@@ -45,7 +45,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         super(mTransformJPanel);
     }
 
-    protected void generateGui(){
+    public void generateGui(){
 	// BLOCK LISTS ///////////
         JTabbedPane blockJTabbedPane = addTabbedPane(NAME_BLOCK, null);
 

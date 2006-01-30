@@ -40,7 +40,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         super(mTransformJPanel);
     }
 
-    protected void generateGui(){
+    public void generateGui(){
         
 	// WEB ////////////////////
         JTabbedPane httpJTabbedPane = addTabbedPane(NAME_WEB, null);

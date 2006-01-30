@@ -39,7 +39,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	reloadJButton.doClick();
     }
     
-    protected void generateGui(){
+    public void generateGui(){
 
 	TransformContext transformContext = mTransformJPanel.getTransformContext();
 	VpnTransform vpnTransform = (VpnTransform) transformContext.transform();

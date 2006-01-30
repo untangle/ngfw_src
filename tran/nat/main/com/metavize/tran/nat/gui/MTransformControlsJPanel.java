@@ -47,7 +47,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         super(mTransformJPanel);
     }
 
-    protected void generateGui(){
+    public void generateGui(){
         // NAT ///////////////
         NatJPanel natJPanel = new NatJPanel();
         addScrollableTab(null, NAME_NAT, null, natJPanel, false, true);

@@ -30,7 +30,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         super(mTransformJPanel);
     }
 
-    protected void generateGui(){
+    public void generateGui(){
 	// SMTP ////////
 	SmtpConfigJPanel smtpConfigJPanel = new SmtpConfigJPanel();
 	addTab(NAME_SPAM_SMTP, null, smtpConfigJPanel);

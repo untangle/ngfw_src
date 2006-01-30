@@ -47,6 +47,9 @@ public class MTransformJPanel extends javax.swing.JPanel {
     CycleJLabel powerOnHintJLabel;
     private static ImageIcon[] powerOnImageIcons;
     private DropdownTask controlsDropdownTask;
+    private volatile boolean controlsLoaded;
+    private volatile boolean showingSettings;
+    private ShowControlsThread showControlsThread;
 
     // GUI CONSTANTS
     private static Dimension maxDimension, minDimension;
@@ -65,6 +68,8 @@ public class MTransformJPanel extends javax.swing.JPanel {
 	this.mackageDesc = transformContext.getMackageDesc();
 	this.tid = transformContext.getTid();
 	this.policy = tid.getPolicy();
+	controlsLoaded = false;
+	showControlsThread = new ShowControlsThread();
 
 	// VISUAL HELPER
 	synchronized( this ){
@@ -85,6 +90,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
 	
         // INIT GUI
         initComponents();
+	jProgressBar.setVisible(false);
 
         // DYNAMICALLY LOAD DISPLAY
         try{
@@ -108,7 +114,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
         }
         catch(Exception e){
 	    // SHOW A LITTLE MESSAGE TELLING THEM TO RESTART
-            mTransformControlsJPanel = new MTransformControlsJPanel(this);
+            mTransformControlsJPanel = new MTransformControlsJPanel(this){public void generateGui(){}};
 	    JPanel warningJPanel = new JPanel(new BorderLayout());
 	    JLabel warningJLabel = new JLabel("<html><center><b>Warning:</b> Settings could not be loaded properly." +
 					      "<br>Please restart the EdgeGuard Client to load settings properly.</center></html>");
@@ -157,6 +163,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
 	controlsDropdownTask = new DropdownTask(this, mTransformControlsJPanel, controlsJToggleButton,
 						minDimension, maxDimension,
 						596, 380, 46, -280, 100);
+	
         
         // SETUP COLORS and name
         descriptionTextJLabel.setText( getMackageDesc().getDisplayName() );
@@ -206,6 +213,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
                 controlsJToggleButton = new javax.swing.JToggleButton();
                 descriptionIconJLabel = new javax.swing.JLabel();
                 organizationIconJLabel = new javax.swing.JLabel();
+                jProgressBar = new javax.swing.JProgressBar();
                 powerJToggleButton = new javax.swing.JToggleButton();
                 effectsJPanel = new javax.swing.JPanel();
                 backgroundJLabel = new javax.swing.JLabel();
@@ -272,6 +280,15 @@ public class MTransformJPanel extends javax.swing.JPanel {
                 organizationIconJLabel.setIconTextGap(0);
                 add(organizationIconJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(52, 51, 42, 42));
 
+                jProgressBar.setFont(new java.awt.Font("Dialog", 0, 12));
+                jProgressBar.setForeground(new java.awt.Color(68, 91, 255));
+                jProgressBar.setMaximumSize(new java.awt.Dimension(232, 14));
+                jProgressBar.setMinimumSize(new java.awt.Dimension(232, 14));
+                jProgressBar.setPreferredSize(new java.awt.Dimension(232, 14));
+                jProgressBar.setString("");
+                jProgressBar.setStringPainted(true);
+                add(jProgressBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(106, 40, -1, -1));
+
                 powerJToggleButton.setFont(new java.awt.Font("Default", 0, 12));
                 powerJToggleButton.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconPowerOffState28x28.png")));
                 powerJToggleButton.setToolTipText("<HTML>\nThe <B>Power Button</B> allows you to turn a Software Appliance \"on\" and \"off\".<br>\n\n</HTML>");
@@ -314,7 +331,48 @@ public class MTransformJPanel extends javax.swing.JPanel {
     public JToggleButton getControlsJToggleButton(){ return controlsJToggleButton; };
 
     private void handleControlsJButton(boolean showSettings){
-	controlsDropdownTask.start(showSettings);
+	showingSettings = showSettings;
+	controlsJToggleButton.setEnabled(false);
+	synchronized(showControlsThread){
+	    showControlsThread.notify();
+	}
+    }
+
+    private class ShowControlsThread extends Thread {
+	public ShowControlsThread(){
+	    setDaemon(true);
+	    start();
+	}
+	public void run(){
+	    try{
+		while(true){
+		    synchronized(this){
+			wait();
+			if(MTransformJPanel.this.showingSettings && !MTransformJPanel.this.controlsLoaded){
+			    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+				jProgressBar.setVisible(true);
+				jProgressBar.setIndeterminate(true);
+				jProgressBar.setString("Loading Settings...");
+			    }});
+			    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+				mTransformControlsJPanel.generateGui();
+			    }});
+			    mTransformControlsJPanel.refreshAll();
+			    MTransformJPanel.this.controlsLoaded = true;
+			    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+				jProgressBar.setVisible(false);
+			    }});
+			}
+			SwingUtilities.invokeLater( new Runnable(){ public void run(){
+			    MTransformJPanel.this.controlsDropdownTask.start(MTransformJPanel.this.showingSettings);
+			}});
+		    }
+		}
+	    }
+	    catch(Exception e){
+		Util.handleExceptionNoRestart("Error waiting", e);
+	    }
+	}
     }
 
     public void focus(){
@@ -333,6 +391,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
         protected javax.swing.JLabel descriptionIconJLabel;
         protected javax.swing.JLabel descriptionTextJLabel;
         private javax.swing.JPanel effectsJPanel;
+        private javax.swing.JProgressBar jProgressBar;
         protected javax.swing.JLabel nbPowerOnHintJLabel;
         private javax.swing.ButtonGroup onOffbuttonGroup;
         protected javax.swing.JLabel organizationIconJLabel;

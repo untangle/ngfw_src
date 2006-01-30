@@ -34,7 +34,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         super(mTransformJPanel);
     }
 
-    protected void generateGui(){
+    public void generateGui(){
 	// RULE LIST /////
 	IDSConfigJPanel idsConfigJPanel = new IDSConfigJPanel();
         addTab(NAME_RULE_LIST, null, idsConfigJPanel);

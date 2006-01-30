@@ -27,5 +27,6 @@ public class MTransformControlsJPanel extends com.metavize.tran.spam.gui.MTransf
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
         super(mTransformJPanel);
     }
-    
+
+    public void generateGui(){}
 }

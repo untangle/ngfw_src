@@ -42,24 +42,20 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
     public MLogTableJPanel(Transform logTransform, MTransformControlsJPanel mTransformControlsJPanel) {
         this.logTransform = logTransform;
         this.mTransformControlsJPanel = mTransformControlsJPanel;
-        try{
-            SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-                // INIT GUI & CUSTOM INIT
-                initComponents();
-                entryJScrollPane.getViewport().setOpaque(true);
-                entryJScrollPane.getViewport().setBackground(TABLE_BACKGROUND_COLOR);
-                entryJScrollPane.setViewportBorder(new MatteBorder(2, 2, 2, 1, TABLE_BACKGROUND_COLOR));
-                addComponentListener(MLogTableJPanel.this);
-                Dictionary dictionary = depthJSlider.getLabelTable();
-                Enumeration enumeration = dictionary.elements();
-                while(enumeration.hasMoreElements()){
-                    Object object = enumeration.nextElement();
-                    if(object instanceof JComponent) ((JComponent)object).setFont(new Font("Dialog", 0, 9));
-                }
-                depthJSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
-            }});
-        }
-        catch(Exception e){ Util.handleExceptionNoRestart("Error building Log Table", e); }
+
+	// INIT GUI & CUSTOM INIT
+	initComponents();
+	entryJScrollPane.getViewport().setOpaque(true);
+	entryJScrollPane.getViewport().setBackground(TABLE_BACKGROUND_COLOR);
+	entryJScrollPane.setViewportBorder(new MatteBorder(2, 2, 2, 1, TABLE_BACKGROUND_COLOR));
+	addComponentListener(MLogTableJPanel.this);
+	Dictionary dictionary = depthJSlider.getLabelTable();
+	Enumeration enumeration = dictionary.elements();
+	while(enumeration.hasMoreElements()){
+	    Object object = enumeration.nextElement();
+	    if(object instanceof JComponent) ((JComponent)object).setFont(new Font("Dialog", 0, 9));
+	}
+	depthJSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     }
 
     public void doShutdown(){

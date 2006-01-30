@@ -34,7 +34,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         super(mTransformJPanel);
     }
 
-    protected void generateGui(){
+    public void generateGui(){
 	// BLOCK LIST /////
 	ProtoConfigJPanel protoConfigJPanel = new ProtoConfigJPanel();
         addTab(NAME_BLOCK_LIST, null, protoConfigJPanel);

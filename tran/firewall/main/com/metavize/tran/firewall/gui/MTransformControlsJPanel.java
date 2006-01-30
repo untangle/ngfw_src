@@ -40,7 +40,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         super(mTransformJPanel);        
     }
     
-    protected void generateGui(){
+    public void generateGui(){
         // SETUP FIREWALL
         BlockJPanel blockJPanel = new BlockJPanel();
 	addTab(NAME_BLOCK_LIST, null, blockJPanel);

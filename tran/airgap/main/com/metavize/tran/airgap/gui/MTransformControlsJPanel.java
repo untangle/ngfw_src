@@ -30,7 +30,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         super(mTransformJPanel);
     }
     
-    protected void generateGui() {
+    public void generateGui() {
         // SHIELD CONFIGURATION SETTINGS /////
         ShieldNodeConfigurationJPanel shieldJPanel = new ShieldNodeConfigurationJPanel();
         addTab(NAME_SHIELD_PANEL, null, shieldJPanel );
