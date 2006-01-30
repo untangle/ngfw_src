@@ -151,13 +151,16 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
 	return newJTabbedPane;
     }
     protected JScrollPane addScrollableTab(JTabbedPane parentJTabbedPane, String name, Icon icon, Component childComponent, boolean scrollH, boolean scrollV){
-	JScrollPane newJScrollPane = new JScrollPane(childComponent);
+	final JScrollPane newJScrollPane = new JScrollPane(childComponent);
 	newJScrollPane.setHorizontalScrollBarPolicy( scrollH ? JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS : JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
 	newJScrollPane.setVerticalScrollBarPolicy( scrollV ? JScrollPane.VERTICAL_SCROLLBAR_ALWAYS : JScrollPane.VERTICAL_SCROLLBAR_NEVER );
 	if( parentJTabbedPane != null )
 	    parentJTabbedPane.addTab(name, icon, newJScrollPane);
 	else
 	    addTab(name, icon, newJScrollPane);
+	SwingUtilities.invokeLater( new Runnable(){ public void run(){
+	    newJScrollPane.getVerticalScrollBar().setValue(0);
+	}});
 	return newJScrollPane;
     }
     protected void removeAllTabs(){ mTabbedPane.removeAll(); }

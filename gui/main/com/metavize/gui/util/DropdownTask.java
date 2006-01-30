@@ -32,6 +32,7 @@ public class DropdownTask implements ActionListener {
     private boolean goingDown;
     private int currentStep;
     private int currentY;
+    private JProgressBar jProgressBar;
 
     public DropdownTask(JComponent parentContainer, JComponent childComponent, JToggleButton controlsJToggleButton,
 			Dimension minDimension, Dimension maxDimension,
@@ -49,8 +50,9 @@ public class DropdownTask implements ActionListener {
 	dropdownTask = new Timer(STEP_DELAY, this);
     }
 
-    public void start(boolean goingDown){
+    public void start(boolean goingDown, JProgressBar jProgressBar){
 	this.goingDown = goingDown;
+	this.jProgressBar = jProgressBar;
 	controlsJToggleButton.setEnabled(false);
         if(goingDown){
 	    currentStep = 0;
@@ -76,6 +78,8 @@ public class DropdownTask implements ActionListener {
 	    if( currentStep == STEPS-1 ){
 		controlsJToggleButton.setEnabled(true);
 		dropdownTask.stop();
+		if(jProgressBar.isVisible())
+		    jProgressBar.setVisible(false);
 		return;
 	    }
 	    currentStep++;

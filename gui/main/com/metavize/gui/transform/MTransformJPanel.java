@@ -360,11 +360,13 @@ public class MTransformJPanel extends javax.swing.JPanel {
 			    mTransformControlsJPanel.refreshAll();
 			    MTransformJPanel.this.controlsLoaded = true;
 			    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-				jProgressBar.setVisible(false);
+				jProgressBar.setIndeterminate(false);
+				jProgressBar.setString("Settings Loaded");
+				jProgressBar.setValue(100);
 			    }});
 			}
 			SwingUtilities.invokeLater( new Runnable(){ public void run(){
-			    MTransformJPanel.this.controlsDropdownTask.start(MTransformJPanel.this.showingSettings);
+			    MTransformJPanel.this.controlsDropdownTask.start(MTransformJPanel.this.showingSettings, jProgressBar);
 			}});
 		    }
 		}
