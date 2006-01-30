@@ -286,6 +286,10 @@ public class MvvmContextImpl extends MvvmContextBase
       return backupManager.createBackup();
     }
 
+    public void restoreBackup(byte[] backupBytes) throws IOException, IllegalArgumentException {
+      backupManager.restoreBackup(backupBytes);
+    }    
+
     public boolean isActivated() {
         // This is ez since we aren't concerned about local box security -- the key is ultimately
         // checked on the release webserver, which is what matters.

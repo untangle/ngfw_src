@@ -252,4 +252,19 @@ public interface MvvmLocalContext
      *            but it is nothing the user did to cause this).
      */
     byte[] createBackup() throws IOException;
+
+
+    /**
+     * Restore from a previous {@link #createBackup backup}.
+     *
+     *
+     * @exception IOException something went wrong to prevent the
+     *            restore (not the user's fault).
+     *
+     * @exception IllegalArgumentException if the provided bytes do not seem
+     *            to have come from a valid backup (is the user's fault).
+     */
+    void restoreBackup(byte[] backupFileBytes)
+      throws IOException, IllegalArgumentException;     
+
 }

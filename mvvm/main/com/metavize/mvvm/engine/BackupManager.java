@@ -23,18 +23,26 @@ import java.io.File;
  */
 class BackupManager {
 
+  private static final String OLD_BACKUP_SCRIPT;
   private static final String BACKUP_SCRIPT;
-  private static final String LOCAL_ARG;
-  private static final String USB_ARG;
+  private static final String RESTORE_SCRIPT;
+  private static final String LOCAL_ARG = "local";
+  private static final String USB_ARG = "usb";
+  
+
+
+  
 
   private final Logger m_logger =
-    Logger.getLogger(MvvmContextImpl.class);  
+    Logger.getLogger(BackupManager.class);  
 
   static {
+    OLD_BACKUP_SCRIPT = System.getProperty("bunnicula.home")
+        + "/../../bin/mvvmdb-backup";  
     BACKUP_SCRIPT = System.getProperty("bunnicula.home")
-        + "/../../bin/mvvmdb-backup";
-    LOCAL_ARG = "local";
-    USB_ARG = "usb";
+        + "/../../bin/mvv-backup-bundled.sh";
+    RESTORE_SCRIPT = System.getProperty("bunnicula.home")
+        + "/../../bin/mvv-restore-bundled.sh";
   }
 
 
@@ -48,71 +56,74 @@ class BackupManager {
     backup(false);
   }
 
+  /**
+   * Restore from a previous {@link #createBackup backup}.
+   *
+   *
+   * @exception IOException something went wrong to prevent the
+   *            restore (not the user's fault).
+   *
+   * @exception IllegalArgumentException if the provided bytes do not seem
+   *            to have come from a valid backup (is the user's fault).
+   */
   void restoreBackup(byte[] backupFileBytes)
-    throws IOException {
+    throws IOException, IllegalArgumentException {
 
 
     File tempFile = File.createTempFile("restore_", ".tar.gz");
-/*    
+    SimpleExec.SimpleExecResult result = null;
+   
     try {
       //Copy the bytes to a temp file
       IOUtil.bytesToFile(backupFileBytes, tempFile);
   
       //unzip file
-      SimpleExec.SimpleExecResult result =
-        SimpleExec.exec("gunzip",//cmd
+      result = SimpleExec.exec(RESTORE_SCRIPT,//cmd
           new String[] {//args
             tempFile.getAbsolutePath()
           },
           null,//env
-          tempFile.getParentFile(),//dir
+          null,//dir
           true,//stdout
           true,//stderr
-          1000*3,//timeout
+          1000*60,//timeout
           m_logger,//log-into
           true);//use MVVM threads
-
-      if(result.exitCode != 0) {
-        throw new BadFileException("Unable to unzip file.  Process details " + result);
-      }
-
-
+          
+      IOUtil.delete(tempFile);
       
-  
-      //create a temp dir
-  
-      //untar the file into temp dir
-  
-      //delete temp file
-  
-      //validate the contents of temp dir
-  
-      //Make log entry now, as executing this script is suicide for
-      //this process.
-      
-      //execute restore script
     }
     catch(IOException ex) {
-      
+      //Delete our temp file
+      IOUtil.delete(tempFile);
+      m_logger.error("Exception performing restore", ex);
+      throw ex; 
     }
-*/          
+
+    if(result.exitCode != 0) {
+      switch(result.exitCode) {
+        case 1:
+        case 2:
+        case 3:
+          throw new IllegalArgumentException("File does not seem to be valid metavize backup");
+        case 4:
+          throw new IOException("Error in processing restore itself (yet file seems valid)");
+        default:
+          throw new IOException("Unknown error in local processing");
+      }
+    }
   }
 
   byte[] createBackup() throws IOException {
 
-    //Create the temp dir for TARing-to
-    File tempDir = IOUtil.mktempDir();
-    m_logger.debug("Going to use " + tempDir.getAbsolutePath() + " to hold backup dump");
-
     //Create the temp file which will be the tar
-    File tempFile = File.createTempFile("localdump", ".tar.tmp");
+    File tempFile = File.createTempFile("localdump", ".tar.gz.tmp");
 
     try {
       SimpleExec.SimpleExecResult result =
         SimpleExec.exec(BACKUP_SCRIPT,//cmd
           new String[] {//args
-            LOCAL_ARG,
-            tempDir.getAbsolutePath()
+            tempFile.getAbsolutePath()
           },
           null,//env
           null,//dir
@@ -124,56 +135,18 @@ class BackupManager {
 
       if(result.exitCode != 0) {
         throw new IOException("Unable to create local backup to \"" +
-          tempDir + "\".  Process details " + result);
+          tempFile.getAbsolutePath() + "\".  Process details " + result);
       }
 
-      //Now, we have the three files in a single directory.  Time to tar them up
-      result = SimpleExec.exec("tar",
-          new String[] {
-            "-cf",
-            tempFile.getAbsolutePath(),
-            "."
-          },
-          null,
-          tempDir,
-          true,
-          true,
-          1000*10,
-          m_logger,
-          true);
-
-      if(result.exitCode != 0) {
-        throw new IOException("Unable to tar backup in \"" +
-          tempDir + "\".  Process details " + result);
-      }
-
-      //GZIP the stuff
-      result = SimpleExec.exec("gzip",
-          new String[] {
-            "-c",
-            tempFile.getAbsolutePath()
-          },
-          null,
-          null,
-          true,
-          true,
-          1000*10,
-          m_logger,
-          true);
-
-      if(result.exitCode != 0) {
-        throw new IOException("Unable to gzip backup \"" +
-          tempFile + "\".  Process details " + result);
-      }
+      //Read contents into a byte[]
+      byte[] ret = IOUtil.fileToBytes(tempFile);
 
       //Delete our temp files
-      IOUtil.rmDir(tempDir);
       IOUtil.delete(tempFile);
-      return result.stdOut;
+      return ret;
     }
     catch(IOException ex) {
-      //Don't forget to delete the temp dir
-      IOUtil.rmDir(tempDir);
+      //Don't forget to delete the temp file
       IOUtil.delete(tempFile);
       m_logger.error("Exception creating backup for transfer to client", ex);
       throw new IOException("Unable to create backup file");//Generic, in case it ever gets shown in the UI
@@ -187,7 +160,7 @@ class BackupManager {
   private void backup(boolean local) throws IOException {
   
     Process p = Runtime.getRuntime().exec(new String[]
-        { BACKUP_SCRIPT, local ? LOCAL_ARG : USB_ARG });
+        { OLD_BACKUP_SCRIPT, local ? LOCAL_ARG : USB_ARG });
     for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
 
     while (true) {
