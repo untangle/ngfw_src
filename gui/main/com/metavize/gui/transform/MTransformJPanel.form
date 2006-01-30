@@ -168,20 +168,20 @@
           <Color blue="ff" green="5b" red="44" type="rgb"/>
         </Property>
         <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[232, 14]"/>
+          <Dimension value="[232, 16]"/>
         </Property>
         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[232, 14]"/>
+          <Dimension value="[232, 16]"/>
         </Property>
         <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[232, 14]"/>
+          <Dimension value="[232, 16]"/>
         </Property>
         <Property name="string" type="java.lang.String" value=""/>
         <Property name="stringPainted" type="boolean" value="true"/>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="106" y="40" width="-1" height="-1"/>
+          <AbsoluteConstraints x="106" y="39" width="-1" height="-1"/>
         </Constraint>
       </Constraints>
     </Component>

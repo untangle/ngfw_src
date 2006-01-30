@@ -63,6 +63,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
 
 
     public MTransformDisplayJPanel(MTransformJPanel mTransformJPanel) {
+	setDoubleBuffered(true);
         this.mTransformJPanel = mTransformJPanel;
 
         throughputDynamicTimeSeriesCollection = new AreaDynamicTimeSeriesCollection(1, 60, new Second());

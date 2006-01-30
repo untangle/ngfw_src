@@ -64,6 +64,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
     
 
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
+	setDoubleBuffered(true);
         this.mTransformJPanel = mTransformJPanel;
 
 	// HELPER //

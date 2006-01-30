@@ -42,6 +42,7 @@ public class MRackJPanel extends JPanel {
 
 
     public MRackJPanel() {
+	setDoubleBuffered(true);
 	/*
         glueConstraints = new GridBagConstraints(0, GridBagConstraints.REMAINDER, 1, 1, 0d, 1d,
 						 GridBagConstraints.CENTER, GridBagConstraints.BOTH,

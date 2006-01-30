@@ -64,6 +64,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
     }
     
     public MTransformJPanel(TransformContext transformContext) {
+	setDoubleBuffered(true);
         this.transformContext = transformContext;
 	this.mackageDesc = transformContext.getMackageDesc();
 	this.tid = transformContext.getTid();
@@ -282,12 +283,12 @@ public class MTransformJPanel extends javax.swing.JPanel {
 
                 jProgressBar.setFont(new java.awt.Font("Dialog", 0, 12));
                 jProgressBar.setForeground(new java.awt.Color(68, 91, 255));
-                jProgressBar.setMaximumSize(new java.awt.Dimension(232, 14));
-                jProgressBar.setMinimumSize(new java.awt.Dimension(232, 14));
-                jProgressBar.setPreferredSize(new java.awt.Dimension(232, 14));
+                jProgressBar.setMaximumSize(new java.awt.Dimension(232, 16));
+                jProgressBar.setMinimumSize(new java.awt.Dimension(232, 16));
+                jProgressBar.setPreferredSize(new java.awt.Dimension(232, 16));
                 jProgressBar.setString("");
                 jProgressBar.setStringPainted(true);
-                add(jProgressBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(106, 40, -1, -1));
+                add(jProgressBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(106, 39, -1, -1));
 
                 powerJToggleButton.setFont(new java.awt.Font("Default", 0, 12));
                 powerJToggleButton.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconPowerOffState28x28.png")));
