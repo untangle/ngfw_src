@@ -238,4 +238,17 @@ public interface MvvmLocalContext
      * @return the activation key.
      */
     String getActivationKey();
+
+    /**
+     * Create a backup which the client can save to a local
+     * disk.  The returned bytes are for a .tar.gz file, so it is a good
+     * idea to either use a ".tar.gz" extension or ".metavizebk" extension
+     * so basic validation can be performed for {@link #restore restore).
+     *
+     * @return the byte[] contents of the backup.
+     *
+     * @exception IOException if something goes wrong (a lot can go wrong,
+     *            but it is nothing the user did to cause this).
+     */
+    byte[] createBackup() throws IOException;    
 }

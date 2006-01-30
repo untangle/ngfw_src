@@ -128,6 +128,35 @@ public class IOUtil {
   }
 
   /**
+   * Create a temp directory.
+   *
+   * <b>Warning - this will only work on Unix machines</b>
+   *
+   * @return the temp dir
+   */
+  public static File mktempDir() throws IOException {
+    //For now, the safest way to implement this is via the
+    //"mktemp" command
+    SimpleExec.SimpleExecResult result =
+      SimpleExec.exec("mktemp",//cmd
+        new String[] {//args
+          "-d",
+        },
+        null,//env
+        null,//dir
+        true,//stdout
+        true,//stderr
+        1000,//timeout
+        null,//log-into
+        System.getProperty("bunnicula.home") != null);//use MVVM threads
+
+    if(result.exitCode != 0) {
+      throw new IOException("Unable to create temp file.  Process details " + result);
+    }
+    return new File(new String(result.stdOut));
+  }
+
+  /**
    * Remove a directory and any children.
    * <br><br>
    * <b>Warning - This is the same as "rm -rf"</b>.  Make

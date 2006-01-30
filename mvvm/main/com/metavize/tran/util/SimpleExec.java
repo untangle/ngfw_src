@@ -52,6 +52,29 @@ public final class SimpleExec {
       this.stdOut = out;
       this.stdErr = err;
     }
+
+    public String toString() {
+      String newLine = System.getProperty("line.separator");
+      StringBuilder sb = new StringBuilder();
+      sb.append("Return Code: " + exitCode).append(newLine);
+      if(stdOut == null) {
+        sb.append("(no stdout)").append(newLine);
+      }
+      else {
+        sb.append("----------- BEGIN stdout -----------").append(newLine);
+        sb.append(new String(stdOut)).append(newLine);
+        sb.append("----------- BEGIN stdout -----------").append(newLine);
+      }
+      if(stdErr == null) {
+        sb.append("(no stderr)").append(newLine);
+      }
+      else {
+        sb.append("----------- BEGIN stderr -----------").append(newLine);
+        sb.append(new String(stdErr)).append(newLine);
+        sb.append("----------- BEGIN stderr -----------").append(newLine);
+      }      
+      return sb.toString();
+    }
     
   }
 

@@ -130,4 +130,9 @@ class MvvmRemoteContextImpl implements MvvmRemoteContext
     {
         return context.version();
     }
+
+    public byte[] createBackup() throws IOException
+    {
+        return context.createBackup();
+    }
 }

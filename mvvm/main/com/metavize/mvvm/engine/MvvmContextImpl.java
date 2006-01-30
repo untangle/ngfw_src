@@ -31,9 +31,9 @@ import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformManager;
 import com.metavize.mvvm.util.TransactionRunner;
 import com.metavize.mvvm.util.TransactionWork;
+import com.metavize.tran.util.IOUtil;
 import com.metavize.mvvm.networking.NetworkManagerImpl;
 import com.metavize.mvvm.NetworkManager;
-
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
@@ -46,17 +46,15 @@ public class MvvmContextImpl extends MvvmContextBase
 
     private static final String REBOOT_SCRIPT = "/sbin/reboot";
 
-    private static final String BACKUP_SCRIPT;
     private static final String ACTIVATE_SCRIPT;
     private static final String ACTIVATION_KEY_FILE;
-    private static final String LOCAL_ARG;
-    private static final String USB_ARG;
     private static final String ARGON_FAKE_KEY;
 
     private final SessionFactory sessionFactory;
     private final TransactionRunner transactionRunner;
     private final Object startupWaitLock = new Object();
     private final Logger logger = Logger.getLogger(MvvmContextImpl.class);
+    private final BackupManager backupManager;
 
     private MvvmState state;
     private AdminManagerImpl adminManager;
@@ -88,6 +86,7 @@ public class MvvmContextImpl extends MvvmContextBase
         sessionFactory = Util.makeSessionFactory(getClass().getClassLoader());
         transactionRunner = new TransactionRunner(sessionFactory);
         state = MvvmState.LOADED;
+        backupManager = new BackupManager();
     }
 
     // static factory ---------------------------------------------------------
@@ -275,12 +274,16 @@ public class MvvmContextImpl extends MvvmContextBase
 
     public void localBackup() throws IOException
     {
-        backup(true);
+        backupManager.localBackup();
     }
 
     public void usbBackup() throws IOException
     {
-        backup(false);
+        backupManager.usbBackup();
+    }
+
+    public byte[] createBackup() throws IOException {
+      return backupManager.createBackup();
     }
 
     public boolean isActivated() {
@@ -531,36 +534,13 @@ public class MvvmContextImpl extends MvvmContextBase
 
     // private methods --------------------------------------------------------
 
-    private void backup(boolean local) throws IOException
-    {
-        Process p = Runtime.getRuntime().exec(new String[]
-            { BACKUP_SCRIPT, local ? LOCAL_ARG : USB_ARG });
-        for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
-
-
-        while (true) {
-            try {
-                int exitValue = p.waitFor();
-                if (0 != exitValue) {
-                    throw new IOException("dump not successful");
-                } else {
-                    return;
-                }
-            } catch (InterruptedException exn) { }
-        }
-    }
-
     // static initializer -----------------------------------------------------
 
     static {
-        BACKUP_SCRIPT = System.getProperty("bunnicula.home")
-            + "/../../bin/mvvmdb-backup";
         ACTIVATE_SCRIPT = System.getProperty("bunnicula.home")
             + "/../../bin/mvactivate";
         ACTIVATION_KEY_FILE = System.getProperty("bunnicula.home")
             + "/activation.key";
-        LOCAL_ARG = "local";
-        USB_ARG = "usb";
         ARGON_FAKE_KEY = "argon.fake";
     }
 }
