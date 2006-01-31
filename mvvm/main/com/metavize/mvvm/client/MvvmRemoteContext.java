@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -13,18 +13,18 @@ package com.metavize.mvvm.client;
 
 import java.io.IOException;
 
+import com.metavize.mvvm.AppServerManager;
 import com.metavize.mvvm.ArgonManager;
-import com.metavize.mvvm.NetworkingManager;
-import com.metavize.mvvm.NetworkManager;
-import com.metavize.mvvm.ReportingManager;
 import com.metavize.mvvm.ConnectivityTester;
-import com.metavize.mvvm.toolbox.ToolboxManager;
+import com.metavize.mvvm.NetworkManager;
+import com.metavize.mvvm.NetworkingManager;
+import com.metavize.mvvm.ReportingManager;
+import com.metavize.mvvm.addrbook.AddressBook;
 import com.metavize.mvvm.logging.LoggingManager;
 import com.metavize.mvvm.policy.PolicyManager;
 import com.metavize.mvvm.security.AdminManager;
+import com.metavize.mvvm.toolbox.ToolboxManager;
 import com.metavize.mvvm.tran.TransformManager;
-import com.metavize.mvvm.AppServerManager;
-import com.metavize.mvvm.addrbook.AddressBook;
 
 /**
  * Provides an interface to get major MVVM components that are
@@ -118,7 +118,7 @@ public interface MvvmRemoteContext
      *
      * @return the singleton
      */
-    AddressBook appAddressBook();    
+    AddressBook appAddressBook();
 
     /**
      * Save settings to local hard drive.
@@ -137,9 +137,10 @@ public interface MvvmRemoteContext
     void shutdown();
 
     /**
-     * Reboots the EdgeGuard box as if the right button menu was used and confirmed.
-     * Note that this currently will not reboot a non-production (dev) box; this
-     * behavior may change in the future.  XXX
+     * Reboots the EdgeGuard box as if the right button menu was used
+     * and confirmed.  Note that this currently will not reboot a
+     * non-production (dev) box; this behavior may change in the
+     * future.  XXX
      *
      */
     void rebootBox();
@@ -151,10 +152,11 @@ public interface MvvmRemoteContext
     String version();
 
     /**
-     * Create a backup which the client can save to a local
-     * disk.  The returned bytes are for a .tar.gz file, so it is a good
-     * idea to either use a ".tar.gz" extension or ".metavizebk" extension
-     * so basic validation can be performed for {@link #restoreBackup restoreBackup).
+     * Create a backup which the client can save to a local disk.  The
+     * returned bytes are for a .tar.gz file, so it is a good idea to
+     * either use a ".tar.gz" extension or ".metavizebk" extension so
+     * basic validation can be performed for {@link #restoreBackup
+     * restoreBackup).
      *
      * @return the byte[] contents of the backup.
      *
