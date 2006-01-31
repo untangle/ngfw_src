@@ -22,7 +22,7 @@ public class MessageClient
     private final PollWorker pollWorker = new PollWorker();
     private final Logger logger = Logger.getLogger(getClass());
 
-    private ToolboxMessageVisitor toolboxMessageVisitor;
+    private volatile ToolboxMessageVisitor toolboxMessageVisitor;
 
     // constructors -----------------------------------------------------------
 
@@ -64,8 +64,12 @@ public class MessageClient
                 .subscribe();
 
             while (thread == t) {
-                for (ToolboxMessage msg : toolQ.getMessages()) {
-                    msg.accept(toolboxMessageVisitor);
+                ToolboxMessageVisitor tmv = toolboxMessageVisitor;
+
+                if (null != tmv) {
+                    for (ToolboxMessage msg : toolQ.getMessages()) {
+                        msg.accept(toolboxMessageVisitor);
+                    }
                 }
 
                 try {
