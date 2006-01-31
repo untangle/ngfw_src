@@ -37,6 +37,8 @@ public interface AdminManager
 
     LoginSession[] loggedInUsers();
 
+    LoginSession whoAmI();
+
     /**
      * Returns the time zone that the MVVM is currently set to
      *

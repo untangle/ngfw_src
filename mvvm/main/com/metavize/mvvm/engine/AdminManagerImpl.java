@@ -136,6 +136,11 @@ class AdminManagerImpl implements AdminManager
         return HttpInvoker.invoker().getLoginSessions();
     }
 
+    public LoginSession whoAmI()
+    {
+        return HttpInvoker.invoker().getActiveLogin();
+    }
+
     public TimeZone getTimeZone()
     {
         try {
@@ -240,13 +245,13 @@ class AdminManagerImpl implements AdminManager
     static class FormUtil {
 
         static Hashtable emptyHashtable = new Hashtable();
-    
+
         private FormUtil() {}
-    
+
         static Hashtable parseQueryString(String s) {
 
             String valArray[] = null;
-	
+
             if (s == null) {
                 throw new IllegalArgumentException();
             }
@@ -266,7 +271,7 @@ class AdminManagerImpl implements AdminManager
                 if (ht.containsKey(key)) {
                     String oldVals[] = (String []) ht.get(key);
                     valArray = new String[oldVals.length + 1];
-                    for (int i = 0; i < oldVals.length; i++) 
+                    for (int i = 0; i < oldVals.length; i++)
                         valArray[i] = oldVals[i];
                     valArray[oldVals.length] = val;
                 } else {
@@ -279,7 +284,7 @@ class AdminManagerImpl implements AdminManager
         }
 
         static Hashtable parsePostData(File file)
-        {   
+        {
             try {
                 InputStream in = new FileInputStream(file);
                 int len = (int) file.length();
@@ -290,14 +295,14 @@ class AdminManagerImpl implements AdminManager
 
                 // XXX
                 // should a length of 0 be an IllegalArgumentException
-	
+
                 if (len <=0)
                     return new Hashtable(); // cheap hack to return an empty hash
 
                 if (in == null) {
                     throw new IllegalArgumentException();
                 }
-	
+
                 //
                 // Make sure we read the entire POSTed body.
                 //
@@ -315,10 +320,10 @@ class AdminManagerImpl implements AdminManager
                 // XXX we shouldn't assume that the only kind of POST body
                 // is FORM data encoded using ASCII or ISO Latin/1 ... or
                 // that the body should always be treated as FORM data.
-                
+
                 postedBody = new String(postedBytes, 0, len);
-	
-                return parseQueryString(postedBody); 
+
+                return parseQueryString(postedBody);
             } catch (IOException e) {
                 return emptyHashtable;
             }
@@ -328,14 +333,14 @@ class AdminManagerImpl implements AdminManager
         static private String parseName(String s, StringBuffer sb) {
             sb.setLength(0);
             for (int i = 0; i < s.length(); i++) {
-                char c = s.charAt(i); 
+                char c = s.charAt(i);
                 switch (c) {
                 case '+':
                     sb.append(' ');
                     break;
                 case '%':
                     try {
-                        sb.append((char) Integer.parseInt(s.substring(i+1, i+3), 
+                        sb.append((char) Integer.parseInt(s.substring(i+1, i+3),
                                                           16));
                         i += 2;
                     } catch (NumberFormatException e) {
@@ -348,7 +353,7 @@ class AdminManagerImpl implements AdminManager
                         if (rest.length()==2)
                             i++;
                     }
-		
+
                     break;
                 default:
                     sb.append(c);
