@@ -353,7 +353,7 @@ h4 {
 
 /* the following pertain to the main content (i.e. the main 'metal-brushed') table */
 #table_main_center {
-    background: url(../images/background_table_main_center.gif) repeat-y;
+    background: url(../images/background_table_main_center.gif) repeat;
 }
 
 #table_main_top {
