@@ -32,7 +32,8 @@ public class AboutJDialog extends MConfigJDialog {
     private static final String NAME_ABOUT_CONFIG = "EdgeGuard Info";
     private static final String NAME_VERSION_INFO = "Version/Revision";
     private static final String NAME_LISCENSE_INFO = "Liscense Agreement";
-    
+    private static final String NAME_REGISTRATION_INFO = "Registration";
+
     private static final String aboutString = "<br><br><b>Readme:</b> http://www.metavize.com/egquickstart<br><br><b>Website: </b>http://www.metavize.com</html>";
 
     public AboutJDialog( ) {
@@ -40,7 +41,6 @@ public class AboutJDialog extends MConfigJDialog {
 
     public void generateGui(){
         this.setTitle(NAME_ABOUT_CONFIG);
-        this.removeActionButtons();
         
         // ABOUT /////////////
 	String buildString = null;
@@ -68,6 +68,11 @@ public class AboutJDialog extends MConfigJDialog {
 	JScrollPane contentJScrollPane = addScrollableTab(null, NAME_LISCENSE_INFO, null, contentJEditorPane, false, true);
 	contentJScrollPane.getVerticalScrollBar().setValue(0);
       
+	// REGISTRATION //////////
+	AboutRegistrationJPanel aboutRegistrationJPanel = new AboutRegistrationJPanel();
+	addScrollableTab(null, NAME_REGISTRATION_INFO, null, aboutRegistrationJPanel, false, true);
+	addSavable(NAME_REGISTRATION_INFO, aboutRegistrationJPanel);
+	addRefreshable(NAME_REGISTRATION_INFO, aboutRegistrationJPanel);
     }
     
     public void sendSettings(Object settings){}

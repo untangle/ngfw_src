@@ -67,8 +67,9 @@ class RemoteAdminTableModel extends MSortedTableModel {
         addTableColumn( tableColumnModel,  5, 260, true,  true,  false, false, MPasswordField.class, "",     sc.html("set new password<br>(for new accounts or to change password)"));
         addTableColumn( tableColumnModel,  6, 260, true,  true,  false, false, MPasswordField.class, "",     sc.html("confirm new password<br>(for new accounts or to change password)"));
         addTableColumn( tableColumnModel,  7, 250, true,  true,  false, false, MPasswordField.class, "12345678",     sc.html("<b>original user's password</b><br>(required to change or remove account)"));
-        addTableColumn( tableColumnModel,  8,  85, true,  true,  false, false, String.class,     "[no email]", sc.html("email<br>address"));
-        addTableColumn( tableColumnModel,  9,  10, false, false, true,  false, User.class,    null, "");
+        addTableColumn( tableColumnModel,  8,  85, false, true,  false, false, Boolean.class,     "false", sc.html("read-only<br>access"));
+        addTableColumn( tableColumnModel,  9,  85, true,  true,  false, false, String.class,     "[no email]", sc.html("email<br>address"));
+        addTableColumn( tableColumnModel, 10,  10, false, false, true,  false, User.class,    null, "");
         return tableColumnModel;
     }
 
@@ -132,8 +133,6 @@ class RemoteAdminTableModel extends MSortedTableModel {
 		throw new Exception("The \"new\" password has not been set for: \"" + loginName + "\" in row: " + rowIndex + ".");
             }
 
-
-
         }
 
         // verify that there is at least one valid entry after all operations
@@ -151,7 +150,7 @@ class RemoteAdminTableModel extends MSortedTableModel {
 	int rowIndex = 0;
         for( Vector rowVector : tableVector ){
 	    rowIndex++;
-            newElem = (User) rowVector.elementAt(9);
+            newElem = (User) rowVector.elementAt(10);
             byte[] origPasswd = ((MPasswordField)rowVector.elementAt(4)).getByteArray();
             char[] newPasswd = ((MPasswordField)rowVector.elementAt(5)).getPassword();            
 
@@ -165,7 +164,8 @@ class RemoteAdminTableModel extends MSortedTableModel {
 		if( newPasswd.length > 0 )
 		    newElem.setClearPassword( new String(newPasswd) );
             }
-            newElem.setEmail( (String) rowVector.elementAt(8) );
+	    newElem.setReadOnly( (Boolean) rowVector.elementAt(8) );
+            newElem.setEmail( (String) rowVector.elementAt(9) );
             allRows.add(newElem);
         }
         
@@ -199,6 +199,7 @@ class RemoteAdminTableModel extends MSortedTableModel {
 	    MPasswordField originalMPasswordField = new MPasswordField();
 	    originalMPasswordField.setGeneratesChangeEvent(false);
             tempRow.add( originalMPasswordField );
+            tempRow.add( user.isReadOnly() );
             tempRow.add( user.getEmail() );
             tempRow.add( user );
             allRows.add( tempRow );
