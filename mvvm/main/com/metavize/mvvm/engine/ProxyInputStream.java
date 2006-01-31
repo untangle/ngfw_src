@@ -45,7 +45,7 @@ class ProxyInputStream extends ObjectInputStream
     {
         return null == targetCl
             ? super.resolveClass(desc)
-            : targetCl.loadClass(desc.getName());
+            : Class.forName(desc.getName(), false, targetCl);
     }
 
     final protected Class resolveProxyClass(String[] interfaces)

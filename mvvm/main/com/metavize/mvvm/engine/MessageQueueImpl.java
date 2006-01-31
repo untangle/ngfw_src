@@ -11,11 +11,11 @@
 
 package com.metavize.mvvm.engine;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import com.metavize.mvvm.MessageQueue;
-import java.util.Collections;
 
 class MessageQueueImpl<M> implements MessageQueue
 {
@@ -23,8 +23,6 @@ class MessageQueueImpl<M> implements MessageQueue
 
     public List<M> getMessages()
     {
-        System.out.println("GET MESSAGES");
-
         List<M> l;
         synchronized (q) {
             if (0 == q.size()) {
