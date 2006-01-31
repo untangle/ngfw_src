@@ -19,15 +19,22 @@ public final class MvvmPrincipal implements Principal, Serializable
     private static final long serialVersionUID = -3343175380349082197L;
 
     private String loginName;
+    private boolean readOnly;
 
-    public MvvmPrincipal(String loginName)
+    public MvvmPrincipal(String loginName, boolean readOnly)
     {
         this.loginName = loginName;
+        this.readOnly = readOnly;
     }
 
     public String getName()
     {
         return loginName;
+    }
+
+    public boolean isReadOnly()
+    {
+        return readOnly;
     }
 
     public int hashCode()

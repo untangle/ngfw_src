@@ -76,10 +76,9 @@ class MvvmLoginImpl implements MvvmLogin
 
         HttpInvoker invoker = HttpInvoker.invoker();
         InetAddress clientAddr = invoker.getClientAddr();
-        return login(ACTIVATION_USER, clientAddr, LoginSession.LoginType.INTERACTIVE,
-                     true);
+        return login(ACTIVATION_USER, true, clientAddr,
+                     LoginSession.LoginType.INTERACTIVE, true);
     }
-
 
     // MvvmLogin methods ------------------------------------------------------
 
@@ -137,8 +136,8 @@ class MvvmLoginImpl implements MvvmLogin
             logger.debug("password check succeeded");
             eventLogger.log(new LoginEvent(clientAddr, login, false, true));
 
-            return login(login, clientAddr, LoginSession.LoginType.INTERACTIVE,
-                         force);
+            return login(login, user.isReadOnly(), clientAddr,
+                         LoginSession.LoginType.INTERACTIVE, force);
         }
 
     }
@@ -174,18 +173,19 @@ class MvvmLoginImpl implements MvvmLogin
             logger.debug("local login succeeded");
             eventLogger.log(new LoginEvent(clientAddr, username, true, true));
 
-            return login(username, clientAddr, LoginSession.LoginType.SYSTEM,
-                         false);
+            return login(username, false, clientAddr,
+                         LoginSession.LoginType.SYSTEM, false);
         }
     }
 
-    private MvvmRemoteContext login(String username, InetAddress clientAddr,
+    private MvvmRemoteContext login(String username, boolean readOnly,
+                                    InetAddress clientAddr,
                                     LoginSession.LoginType loginType,
                                     boolean force)
     {
         HttpInvoker invoker = HttpInvoker.invoker();
 
-        MvvmPrincipal mp = new MvvmPrincipal(username);
+        MvvmPrincipal mp = new MvvmPrincipal(username, readOnly);
 
         LoginSession loginSession = new LoginSession(mp, nextLoginId(),
                                                      clientAddr, loginType);
