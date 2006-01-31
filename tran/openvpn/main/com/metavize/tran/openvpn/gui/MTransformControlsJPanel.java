@@ -34,11 +34,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
         super(mTransformJPanel);
     }
-    
-    void refreshGui(){
-	reloadJButton.doClick();
-    }
-    
+        
     public void generateGui(){
 
 	TransformContext transformContext = mTransformJPanel.getTransformContext();

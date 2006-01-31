@@ -11,6 +11,11 @@
 
 package com.metavize.gui.configuration;
 
+
+import com.metavize.mvvm.security.RFC2253Name;
+import com.metavize.gui.widgets.dialogs.MConfigJDialog;
+import com.metavize.gui.util.Util;
+import com.metavize.gui.widgets.dialogs.*;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dialog;
@@ -23,31 +28,35 @@ import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.mvvm.security.RFC2253Name;
 
 public class RemoteCertGenSelfSignedJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
-    public static RemoteCertGenSelfSignedJDialog factory(Container topLevelContainer){
-    RemoteCertGenSelfSignedJDialog remoteCertGenSelfSignedJDialog;
-    if(topLevelContainer instanceof Frame)
-        remoteCertGenSelfSignedJDialog = new RemoteCertGenSelfSignedJDialog((Frame)topLevelContainer);
-    else
-        remoteCertGenSelfSignedJDialog = new RemoteCertGenSelfSignedJDialog((Dialog)topLevelContainer);
-    return remoteCertGenSelfSignedJDialog;
+    
+    private MConfigJDialog mConfigJDialog;
+    
+
+    public static RemoteCertGenSelfSignedJDialog factory(Container topLevelContainer, MConfigJDialog mConfigJDialog){       
+	RemoteCertGenSelfSignedJDialog remoteCertGenSelfSignedJDialog;
+	if(topLevelContainer instanceof Frame)
+	    remoteCertGenSelfSignedJDialog = new RemoteCertGenSelfSignedJDialog((Frame)topLevelContainer, mConfigJDialog);
+	else
+	    remoteCertGenSelfSignedJDialog = new RemoteCertGenSelfSignedJDialog((Dialog)topLevelContainer, mConfigJDialog);
+	return remoteCertGenSelfSignedJDialog;
     }
 
-    public RemoteCertGenSelfSignedJDialog(Dialog topLevelDialog) {
+    public RemoteCertGenSelfSignedJDialog(Dialog topLevelDialog, MConfigJDialog mConfigJDialog) {
         super( topLevelDialog, true);
-    init( topLevelDialog);
-
+	init(topLevelDialog, mConfigJDialog);	
     }
 
-    public RemoteCertGenSelfSignedJDialog(Frame topLevelFrame) {
+    public RemoteCertGenSelfSignedJDialog(Frame topLevelFrame, MConfigJDialog mConfigJDialog) {
         super( topLevelFrame, true);
-    init( topLevelFrame);
+	init(topLevelFrame, mConfigJDialog);
     }
 
-    private void init(Window topLevelWindow) {
+    private void init(Window topLevelWindow, MConfigJDialog mConfigJDialog) {
+	this.mConfigJDialog = mConfigJDialog;
         initComponents();
         this.addWindowListener(this);
         this.setBounds( Util.generateCenteredBounds(topLevelWindow.getBounds(), this.getWidth(), this.getHeight()) );
-        new RefreshThread();
+	new RefreshThread();
     }
 
         private void initComponents() {//GEN-BEGIN:initComponents
@@ -74,7 +83,7 @@ public class RemoteCertGenSelfSignedJDialog extends javax.swing.JDialog implemen
                 getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
                 setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-                setTitle("OpenVPN Question...");
+                setTitle("Certificate Generation");
                 setModal(true);
                 setResizable(false);
                 cancelJButton.setFont(new java.awt.Font("Default", 0, 12));
@@ -120,7 +129,7 @@ public class RemoteCertGenSelfSignedJDialog extends javax.swing.JDialog implemen
 
                 labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
                 labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                labelJLabel.setText("Info:");
+                labelJLabel.setText("Generate Self-Signed Certificate");
                 labelJLabel.setDoubleBuffered(true);
                 getContentPane().add(labelJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 456, -1));
 
@@ -274,28 +283,32 @@ public class RemoteCertGenSelfSignedJDialog extends javax.swing.JDialog implemen
             throw new Exception();
         Thread.sleep(1000);
 
-        SwingUtilities.invokeLater( new Runnable(){ public void run(){
-            jProgressBar.setIndeterminate(false);
-            jProgressBar.setValue(100);
-            jProgressBar.setString("Certificate Successfully Generated");
-        }});
-        Thread.sleep(1500);
-        }
-        catch(Exception e){
-        SwingUtilities.invokeLater( new Runnable(){ public void run(){
-            jProgressBar.setIndeterminate(false);
-            jProgressBar.setValue(100);
-            jProgressBar.setString("Error. Please try again.");
-            proceedJButton.setEnabled(true);
-            cancelJButton.setEnabled(true);
-        }});
-        Util.handleExceptionNoRestart("Error generating self-signed certificate", e);
-        }
-
+	SwingUtilities.invokeLater( new Runnable(){ public void run(){
+	    jProgressBar.setIndeterminate(false);
+	    jProgressBar.setValue(100);
+	    jProgressBar.setString("Certificate Successfully Generated");
+	}});
+	Thread.sleep(1500);
+	SwingUtilities.invokeLater( new Runnable(){ public void run(){
+	    RemoteCertGenSelfSignedJDialog.this.setVisible(false);
+	}});
+	mConfigJDialog.refreshGui();
+	}
+	catch(Exception e){
+	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		jProgressBar.setIndeterminate(false);
+		jProgressBar.setValue(100);
+		jProgressBar.setString("Error. Please try again.");
+		proceedJButton.setEnabled(true);
+		cancelJButton.setEnabled(true);
+	    }});
+	    Util.handleExceptionNoRestart("Error generating self-signed certificate", e);
+	}
+	
     }
-
+	
     }
-
+    
 
     private class RefreshThread extends Thread {
     public RefreshThread(){

@@ -250,6 +250,10 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
 
     }
 
+    public void refreshGui(){
+	reloadJButton.doClick();
+    }
+
     private Exception refreshException;
     void refreshAll(){
 	String transformName = mTransformJPanel.getMackageDesc().getDisplayName();

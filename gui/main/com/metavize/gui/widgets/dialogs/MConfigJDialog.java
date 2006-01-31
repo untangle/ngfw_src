@@ -395,6 +395,11 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         }
     }
     
+    public void refreshGui(){
+	SwingUtilities.invokeLater( new Runnable(){ public void run(){
+	    reloadJButton.doClick();
+	}});
+    }
     
     private class RefreshAllThread extends Thread{
         public RefreshAllThread(){

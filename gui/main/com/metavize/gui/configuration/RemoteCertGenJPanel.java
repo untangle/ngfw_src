@@ -11,14 +11,18 @@
 
 package com.metavize.gui.configuration;
 
-import java.awt.Window;
+import com.metavize.gui.widgets.dialogs.MConfigJDialog;
 
+import java.awt.Window;
 
 public class RemoteCertGenJPanel extends javax.swing.JPanel {
     
-		public RemoteCertGenJPanel(){
-				initComponents();
-		}
+    private MConfigJDialog mConfigJDialog;
+
+    public RemoteCertGenJPanel(MConfigJDialog mConfigJDialog){
+	this.mConfigJDialog = mConfigJDialog;
+	initComponents();
+    }
 
         private void initComponents() {//GEN-BEGIN:initComponents
                 java.awt.GridBagConstraints gridBagConstraints;
@@ -163,19 +167,19 @@ public class RemoteCertGenJPanel extends javax.swing.JPanel {
 
     private void importCSRJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importCSRJButtonActionPerformed
 	importCSRJButton.setEnabled(false);
-	//RemoteCertTrustedSignedJDialog.factory((Window)this.getTopLevelAncestor(), true).setVisible(true);
+	RemoteCertImportTrustedJDialog.factory((Window)this.getTopLevelAncestor(), mConfigJDialog).setVisible(true);
 	importCSRJButton.setEnabled(true);
     }//GEN-LAST:event_importCSRJButtonActionPerformed
     
     private void selfSignedJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selfSignedJButtonActionPerformed
 	selfSignedJButton.setEnabled(false);
-	RemoteCertGenSelfSignedJDialog.factory((Window)this.getTopLevelAncestor()).setVisible(true);
+	RemoteCertGenSelfSignedJDialog.factory((Window)this.getTopLevelAncestor(),mConfigJDialog).setVisible(true);
 	selfSignedJButton.setEnabled(true);
     }//GEN-LAST:event_selfSignedJButtonActionPerformed
     
     private void generateCSRJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generateCSRJButtonActionPerformed
 	generateCSRJButton.setEnabled(false);
-	//RemoteCertTrustedSignedJDialog.factory((Window)this.getTopLevelAncestor(), false).setVisible(true);
+	RemoteCertGenTrustedJDialog.factory((Window)this.getTopLevelAncestor()).setVisible(true);
 	generateCSRJButton.setEnabled(true);
     }//GEN-LAST:event_generateCSRJButtonActionPerformed
     

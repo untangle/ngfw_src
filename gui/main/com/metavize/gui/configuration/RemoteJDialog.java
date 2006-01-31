@@ -61,7 +61,7 @@ public class RemoteJDialog extends MConfigJDialog {
         addRefreshable(NAME_CERTIFICATE_STATUS, remoteCertStatusJPanel);
 
 	// CERTIFICATE GENERATION /////
-	RemoteCertGenJPanel remoteCertGenJPanel = new RemoteCertGenJPanel();
+	RemoteCertGenJPanel remoteCertGenJPanel = new RemoteCertGenJPanel(this);
 	addScrollableTab(certificateJTabbedPane, NAME_CERTIFICATE_GENERATION, null, remoteCertGenJPanel, false, true);
 
         // MONITORING /////////////
