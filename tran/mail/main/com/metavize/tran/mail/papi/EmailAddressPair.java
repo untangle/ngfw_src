@@ -18,7 +18,9 @@ package com.metavize.tran.mail.papi;
  * @hibernate.class
  * table="EMAIL_ADDRESS_PAIR"
  */
-public class EmailAddressPair {
+public class EmailAddressPair implements java.io.Serializable {
+
+  private static final long serialVersionUID = 4188555156332337464L;
 
 
   private String m_addr1;

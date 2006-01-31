@@ -19,7 +19,9 @@ package com.metavize.tran.mail.papi;
  * @hibernate.class
  * table="EMAIL_ADDRESS_WRAPPER"
  */
-public class EmailAddressWrapper {
+public class EmailAddressWrapper implements java.io.Serializable {
+
+  private static final long serialVersionUID = 7226453350424547957L;
 
 
   private String m_addr;

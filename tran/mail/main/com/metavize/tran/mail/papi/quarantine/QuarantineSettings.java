@@ -11,6 +11,9 @@
 
 package com.metavize.tran.mail.papi.quarantine;
 
+import com.metavize.tran.mail.papi.EmailAddressWrapper;
+import com.metavize.tran.mail.papi.EmailAddressPair;
+
 import java.util.List;
 
 /**
@@ -38,7 +41,19 @@ public class QuarantineSettings
   private long m_maxQuarantineSz;
   private List m_addressRemaps;
   private List m_allowedAddressPatterns;
+/*
+  private EmailAddressPair workaround1 = new EmailAddressPair("x", "X");
+  private EmailAddressWrapper workaround2 = new EmailAddressWrapper("x");
 
+
+  public void workaround(EmailAddressWrapper w,
+    EmailAddressPair p) {
+    if(p != null) {
+      p.getAddress1();
+    }
+  }
+*/  
+  
   /**
     * @hibernate.id
     * column="SETTINGS_ID"

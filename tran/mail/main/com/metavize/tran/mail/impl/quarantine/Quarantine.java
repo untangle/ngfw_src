@@ -42,6 +42,7 @@ import com.metavize.tran.mail.papi.quarantine.QuarantineTransformView;
 import com.metavize.tran.mail.papi.quarantine.QuarantineUserActionFailedException;
 import com.metavize.tran.mail.papi.quarantine.QuarantineUserView;
 import com.metavize.tran.mail.papi.EmailAddressPair;
+import com.metavize.tran.mail.papi.EmailAddressWrapper;
 import com.metavize.tran.mime.EmailAddress;
 import com.metavize.tran.mime.MIMEMessage;
 import com.metavize.tran.util.ByteBufferInputStream;
@@ -81,10 +82,8 @@ public class Quarantine
     m_digestGenerator = new DigestGenerator();
     m_atm = new AuthTokenManager();
 
-    //TODO tmp this is temp until we persist the
-    //list/map stuff
     m_quarantineForList = new GlobEmailAddressList(
-      java.util.Arrays.asList(new String[] {""}));
+      java.util.Arrays.asList(new String[] {"*"}));
 
     m_addressAliases = new GlobEmailAddressMapper(new 
       ArrayList<Pair<String, String>>());
@@ -99,18 +98,19 @@ public class Quarantine
    */
   public void setSettings(QuarantineSettings settings) {
     m_settings = settings;
-/*
-    //We currently have the silly hack
-    //of using a LONG for the key, so it must
-    //be converted to a byte[]
-    byte[] bytes = new byte[8];
-    long key = m_settings.getSecretKey();
 
-    for(int i = 0; i<8; i++) {
-      bytes[i] = (byte) (key >>> ((7-i) * 8));
-    }
-*/
     m_atm.setKey(m_settings.getSecretKey());
+
+    //Handle nulls (defaults)
+    if(settings.getAllowedAddressPatterns() == null ||
+      settings.getAllowedAddressPatterns().size() == 0) {
+      settings.setAllowedAddressPatterns(
+        java.util.Arrays.asList(
+          new EmailAddressWrapper[] {new EmailAddressWrapper("*")}));
+    }
+    if(settings.getAddressRemaps() == null) {
+      settings.setAddressRemaps(new ArrayList());
+    }
 
     //Update address mapping
     ArrayList<Pair<String, String>> addressAliasPairList =
@@ -121,7 +121,17 @@ public class Quarantine
       addressAliasPairList.add(new
         Pair<String, String>(pair.getAddress1(), pair.getAddress2()));
     }
-    m_addressAliases = new GlobEmailAddressMapper(addressAliasPairList);    
+    m_addressAliases = new GlobEmailAddressMapper(addressAliasPairList);
+
+    //Update the quarantine-for stuff
+    ArrayList<String> quarantineForList =
+      new ArrayList<String>();
+
+    for(Object o : settings.getAllowedAddressPatterns()) {
+      EmailAddressWrapper wrapper = (EmailAddressWrapper) o;
+      quarantineForList.add(wrapper.getAddress()); 
+    }
+    m_quarantineForList = new GlobEmailAddressList(quarantineForList);
 
     
           
