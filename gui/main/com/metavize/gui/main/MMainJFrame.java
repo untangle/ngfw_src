@@ -95,476 +95,475 @@ public class MMainJFrame extends javax.swing.JFrame {
     public Dimension getMinimumSize(){ return MIN_SIZE; } // used for form resizing
 
 
-    private void initComponents() {//GEN-BEGIN:initComponents
-        java.awt.GridBagConstraints gridBagConstraints;
+        private void initComponents() {//GEN-BEGIN:initComponents
+                java.awt.GridBagConstraints gridBagConstraints;
 
-        controlsJPanel = new javax.swing.JPanel();
-        metavizeJButton = new javax.swing.JButton();
-        mTabbedPane = new javax.swing.JTabbedPane();
-        storeJPanel = new javax.swing.JPanel();
-        storeJScrollPane = new javax.swing.JScrollPane();
-        storeScrollJPanel = new javax.swing.JPanel();
-        storeSpacerJPanel = new javax.swing.JPanel();
-        toolboxJPanel = new javax.swing.JPanel();
-        toolboxJScrollPane = new javax.swing.JScrollPane();
-        toolboxScrollJPanel = new javax.swing.JPanel();
-        policyToolboxJPanel = new javax.swing.JPanel();
-        serviceToolboxJPanel = new javax.swing.JPanel();
-        toolboxSpacerJPanel = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        configurationJPanel = new javax.swing.JPanel();
-        configurationJScrollPane = new javax.swing.JScrollPane();
-        jPanel8 = new javax.swing.JPanel();
-        networkJButton = new javax.swing.JButton();
-        remoteJButton = new javax.swing.JButton();
-        emailJButton = new javax.swing.JButton();
-        backupJButton = new javax.swing.JButton();
-        maintenanceJButton = new javax.swing.JButton();
-        aboutJButton = new javax.swing.JButton();
-        configurationSpacerJPanel1 = new javax.swing.JPanel();
-        rackJComboBox = new javax.swing.JComboBox();
-        upgradeJButton = new javax.swing.JButton();
-        upgradeJButton1 = new javax.swing.JButton();
-        mPipelineJPanel = new com.metavize.gui.pipeline.MPipelineJPanel();
-        backgroundJLabel = new com.metavize.gui.widgets.MTiledIconLabel();
+                controlsJPanel = new javax.swing.JPanel();
+                metavizeJButton = new javax.swing.JButton();
+                mTabbedPane = new javax.swing.JTabbedPane();
+                storeJPanel = new javax.swing.JPanel();
+                storeJScrollPane = new javax.swing.JScrollPane();
+                storeScrollJPanel = new javax.swing.JPanel();
+                storeSpacerJPanel = new javax.swing.JPanel();
+                toolboxJPanel = new javax.swing.JPanel();
+                toolboxJScrollPane = new javax.swing.JScrollPane();
+                toolboxScrollJPanel = new javax.swing.JPanel();
+                policyToolboxJPanel = new javax.swing.JPanel();
+                serviceToolboxJPanel = new javax.swing.JPanel();
+                toolboxSpacerJPanel = new javax.swing.JPanel();
+                jLabel1 = new javax.swing.JLabel();
+                configurationJPanel = new javax.swing.JPanel();
+                configurationJScrollPane = new javax.swing.JScrollPane();
+                jPanel8 = new javax.swing.JPanel();
+                networkJButton = new javax.swing.JButton();
+                remoteJButton = new javax.swing.JButton();
+                emailJButton = new javax.swing.JButton();
+                backupJButton = new javax.swing.JButton();
+                maintenanceJButton = new javax.swing.JButton();
+                aboutJButton = new javax.swing.JButton();
+                configurationSpacerJPanel1 = new javax.swing.JPanel();
+                rackJComboBox = new javax.swing.JComboBox();
+                upgradeJButton = new javax.swing.JButton();
+                upgradeJButton1 = new javax.swing.JButton();
+                mPipelineJPanel = new com.metavize.gui.pipeline.MPipelineJPanel();
+                backgroundJLabel = new com.metavize.gui.widgets.MTiledIconLabel();
 
-        getContentPane().setLayout(new java.awt.GridBagLayout());
+                getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("Metavize EdgeGuard Client");
-        setFocusCycleRoot(false);
-        setIconImage((new javax.swing.ImageIcon( this.getClass().getResource("/com/metavize/gui/icons/LogoNoText16x16.gif"))).getImage());
-        addComponentListener(new java.awt.event.ComponentAdapter() {
-                public void componentResized(java.awt.event.ComponentEvent evt) {
-                    formComponentResized(evt);
-                }
-            });
-        addWindowListener(new java.awt.event.WindowAdapter() {
-                public void windowClosing(java.awt.event.WindowEvent evt) {
-                    exitForm(evt);
-                }
-            });
+                setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+                setTitle("Metavize EdgeGuard Client");
+                setFocusCycleRoot(false);
+                setIconImage((new javax.swing.ImageIcon( this.getClass().getResource("/com/metavize/gui/icons/LogoNoText16x16.gif"))).getImage());
+                addComponentListener(new java.awt.event.ComponentAdapter() {
+                        public void componentResized(java.awt.event.ComponentEvent evt) {
+                                formComponentResized(evt);
+                        }
+                });
+                addWindowListener(new java.awt.event.WindowAdapter() {
+                        public void windowClosing(java.awt.event.WindowEvent evt) {
+                                exitForm(evt);
+                        }
+                });
 
-        controlsJPanel.setLayout(new java.awt.GridBagLayout());
+                controlsJPanel.setLayout(new java.awt.GridBagLayout());
 
-        controlsJPanel.setFocusable(false);
-        controlsJPanel.setMinimumSize(new java.awt.Dimension(200, 427));
-        controlsJPanel.setOpaque(false);
-        controlsJPanel.setPreferredSize(new java.awt.Dimension(200, 410));
-        metavizeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/main/LogoNoText96x96.png")));
-        metavizeJButton.setBorderPainted(false);
-        metavizeJButton.setContentAreaFilled(false);
-        metavizeJButton.setDoubleBuffered(true);
-        metavizeJButton.setFocusPainted(false);
-        metavizeJButton.setFocusable(false);
-        metavizeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        metavizeJButton.setMargin(new java.awt.Insets(1, 3, 3, 3));
-        metavizeJButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    metavizeJButtonActionPerformed(evt);
-                }
-            });
+                controlsJPanel.setFocusable(false);
+                controlsJPanel.setMinimumSize(new java.awt.Dimension(200, 427));
+                controlsJPanel.setOpaque(false);
+                controlsJPanel.setPreferredSize(new java.awt.Dimension(200, 410));
+                metavizeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/main/LogoNoText96x96.png")));
+                metavizeJButton.setBorderPainted(false);
+                metavizeJButton.setContentAreaFilled(false);
+                metavizeJButton.setDoubleBuffered(true);
+                metavizeJButton.setFocusPainted(false);
+                metavizeJButton.setFocusable(false);
+                metavizeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+                metavizeJButton.setMargin(new java.awt.Insets(1, 3, 3, 3));
+                metavizeJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                metavizeJButtonActionPerformed(evt);
+                        }
+                });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(45, 45, 45, 45);
-        controlsJPanel.add(metavizeJButton, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+                gridBagConstraints.insets = new java.awt.Insets(45, 45, 45, 45);
+                controlsJPanel.add(metavizeJButton, gridBagConstraints);
 
-        mTabbedPane.setDoubleBuffered(true);
-        mTabbedPane.setFocusable(false);
-        mTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
-        mTabbedPane.setMinimumSize(new java.awt.Dimension(177, 177));
-        mTabbedPane.setPreferredSize(new java.awt.Dimension(200, 160));
-        storeJPanel.setLayout(new java.awt.GridBagLayout());
+                mTabbedPane.setDoubleBuffered(true);
+                mTabbedPane.setFocusable(false);
+                mTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
+                mTabbedPane.setMinimumSize(new java.awt.Dimension(177, 177));
+                mTabbedPane.setPreferredSize(new java.awt.Dimension(200, 160));
+                storeJPanel.setLayout(new java.awt.GridBagLayout());
 
-        storeJPanel.setBorder(new javax.swing.border.TitledBorder(null, " Click to Purchase ", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 11)));
-        storeJPanel.setFocusable(false);
-        storeJPanel.setFont(new java.awt.Font("Arial", 0, 11));
-        storeJPanel.setMaximumSize(new java.awt.Dimension(189, 32767));
-        storeJPanel.setMinimumSize(new java.awt.Dimension(189, 134));
-        storeJPanel.setOpaque(false);
-        storeJScrollPane.setBorder(null);
-        storeJScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        storeJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        storeJScrollPane.setDoubleBuffered(true);
-        storeJScrollPane.setFocusable(false);
-        storeJScrollPane.setFont(new java.awt.Font("Arial", 0, 12));
-        storeJScrollPane.setOpaque(false);
-        storeJScrollPane.getViewport().setOpaque(false);
-        storeScrollJPanel.setLayout(new java.awt.GridBagLayout());
+                storeJPanel.setBorder(new javax.swing.border.TitledBorder(null, " Click to Purchase ", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 11)));
+                storeJPanel.setFocusable(false);
+                storeJPanel.setFont(new java.awt.Font("Arial", 0, 11));
+                storeJPanel.setMaximumSize(new java.awt.Dimension(189, 32767));
+                storeJPanel.setMinimumSize(new java.awt.Dimension(189, 134));
+                storeJPanel.setOpaque(false);
+                storeJScrollPane.setBorder(null);
+                storeJScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                storeJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+                storeJScrollPane.setDoubleBuffered(true);
+                storeJScrollPane.setFocusable(false);
+                storeJScrollPane.setFont(new java.awt.Font("Arial", 0, 12));
+                storeJScrollPane.setOpaque(false);
+                storeJScrollPane.getViewport().setOpaque(false);
+                storeScrollJPanel.setLayout(new java.awt.GridBagLayout());
 
-        storeScrollJPanel.setFocusable(false);
-        storeScrollJPanel.setOpaque(false);
-        storeSpacerJPanel.setFocusable(false);
-        storeSpacerJPanel.setOpaque(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weighty = 1.0;
-        storeScrollJPanel.add(storeSpacerJPanel, gridBagConstraints);
+                storeScrollJPanel.setFocusable(false);
+                storeScrollJPanel.setOpaque(false);
+                storeSpacerJPanel.setFocusable(false);
+                storeSpacerJPanel.setOpaque(false);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weighty = 1.0;
+                storeScrollJPanel.add(storeSpacerJPanel, gridBagConstraints);
 
-        storeJScrollPane.setViewportView(storeScrollJPanel);
+                storeJScrollPane.setViewportView(storeScrollJPanel);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        storeJPanel.add(storeJScrollPane, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                storeJPanel.add(storeJScrollPane, gridBagConstraints);
 
-        mTabbedPane.addTab("Store", storeJPanel);
+                mTabbedPane.addTab("Store", storeJPanel);
 
-        toolboxJPanel.setLayout(new java.awt.GridBagLayout());
+                toolboxJPanel.setLayout(new java.awt.GridBagLayout());
 
-        toolboxJPanel.setBorder(new javax.swing.border.TitledBorder(null, " Click to Install into Rack", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 11)));
-        toolboxJPanel.setFocusable(false);
-        toolboxJPanel.setMaximumSize(new java.awt.Dimension(189, 32767));
-        toolboxJPanel.setMinimumSize(new java.awt.Dimension(189, 134));
-        toolboxJPanel.setOpaque(false);
-        toolboxJScrollPane.setBorder(null);
-        toolboxJScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        toolboxJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        toolboxJScrollPane.setDoubleBuffered(true);
-        toolboxJScrollPane.setFocusable(false);
-        toolboxJScrollPane.setOpaque(false);
-        toolboxJScrollPane.getViewport().setOpaque(false);
-        toolboxScrollJPanel.setLayout(new java.awt.GridBagLayout());
+                toolboxJPanel.setBorder(new javax.swing.border.TitledBorder(null, " Click to Install into Rack", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 11)));
+                toolboxJPanel.setFocusable(false);
+                toolboxJPanel.setMaximumSize(new java.awt.Dimension(189, 32767));
+                toolboxJPanel.setMinimumSize(new java.awt.Dimension(189, 134));
+                toolboxJPanel.setOpaque(false);
+                toolboxJScrollPane.setBorder(null);
+                toolboxJScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                toolboxJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+                toolboxJScrollPane.setDoubleBuffered(true);
+                toolboxJScrollPane.setFocusable(false);
+                toolboxJScrollPane.setOpaque(false);
+                toolboxJScrollPane.getViewport().setOpaque(false);
+                toolboxScrollJPanel.setLayout(new java.awt.GridBagLayout());
 
-        toolboxScrollJPanel.setFocusable(false);
-        toolboxScrollJPanel.setOpaque(false);
-        policyToolboxJPanel.setLayout(new javax.swing.BoxLayout(policyToolboxJPanel, javax.swing.BoxLayout.Y_AXIS));
+                toolboxScrollJPanel.setFocusable(false);
+                toolboxScrollJPanel.setOpaque(false);
+                policyToolboxJPanel.setLayout(new javax.swing.BoxLayout(policyToolboxJPanel, javax.swing.BoxLayout.Y_AXIS));
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        toolboxScrollJPanel.add(policyToolboxJPanel, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                toolboxScrollJPanel.add(policyToolboxJPanel, gridBagConstraints);
 
-        serviceToolboxJPanel.setLayout(new java.awt.GridLayout(1, 1));
+                serviceToolboxJPanel.setLayout(new java.awt.GridLayout(1, 1));
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        toolboxScrollJPanel.add(serviceToolboxJPanel, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                toolboxScrollJPanel.add(serviceToolboxJPanel, gridBagConstraints);
 
-        toolboxSpacerJPanel.setFocusable(false);
-        toolboxSpacerJPanel.setMinimumSize(new java.awt.Dimension(0, 0));
-        toolboxSpacerJPanel.setOpaque(false);
-        toolboxSpacerJPanel.setPreferredSize(new java.awt.Dimension(0, 0));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weighty = 1.0;
-        toolboxScrollJPanel.add(toolboxSpacerJPanel, gridBagConstraints);
+                toolboxSpacerJPanel.setFocusable(false);
+                toolboxSpacerJPanel.setMinimumSize(new java.awt.Dimension(0, 0));
+                toolboxSpacerJPanel.setOpaque(false);
+                toolboxSpacerJPanel.setPreferredSize(new java.awt.Dimension(0, 0));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weighty = 1.0;
+                toolboxScrollJPanel.add(toolboxSpacerJPanel, gridBagConstraints);
 
-        toolboxJScrollPane.setViewportView(toolboxScrollJPanel);
+                toolboxJScrollPane.setViewportView(toolboxScrollJPanel);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        toolboxJPanel.add(toolboxJScrollPane, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                toolboxJPanel.add(toolboxJScrollPane, gridBagConstraints);
 
-        jLabel1.setFont(new java.awt.Font("Dialog", 0, 10));
-        jLabel1.setText("shift-click to remove...");
-        jLabel1.setFocusable(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 0);
-        toolboxJPanel.add(jLabel1, gridBagConstraints);
+                jLabel1.setFont(new java.awt.Font("Dialog", 0, 10));
+                jLabel1.setFocusable(false);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 2;
+                gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 0);
+                toolboxJPanel.add(jLabel1, gridBagConstraints);
 
-        mTabbedPane.addTab("Toolbox", toolboxJPanel);
+                mTabbedPane.addTab("Toolbox", toolboxJPanel);
 
-        configurationJPanel.setLayout(new java.awt.GridBagLayout());
+                configurationJPanel.setLayout(new java.awt.GridBagLayout());
 
-        configurationJPanel.setBorder(new javax.swing.border.TitledBorder(null, " Click to Configure", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 11)));
-        configurationJPanel.setFocusable(false);
-        configurationJPanel.setMaximumSize(new java.awt.Dimension(189, 134));
-        configurationJPanel.setMinimumSize(new java.awt.Dimension(189, 134));
-        configurationJPanel.setOpaque(false);
-        configurationJPanel.setPreferredSize(new java.awt.Dimension(189, 134));
-        configurationJScrollPane.setBorder(null);
-        configurationJScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        configurationJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        configurationJScrollPane.setDoubleBuffered(true);
-        configurationJScrollPane.setFocusable(false);
-        jPanel8.setLayout(new java.awt.GridBagLayout());
+                configurationJPanel.setBorder(new javax.swing.border.TitledBorder(null, " Click to Configure", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 11)));
+                configurationJPanel.setFocusable(false);
+                configurationJPanel.setMaximumSize(new java.awt.Dimension(189, 134));
+                configurationJPanel.setMinimumSize(new java.awt.Dimension(189, 134));
+                configurationJPanel.setOpaque(false);
+                configurationJPanel.setPreferredSize(new java.awt.Dimension(189, 134));
+                configurationJScrollPane.setBorder(null);
+                configurationJScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                configurationJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+                configurationJScrollPane.setDoubleBuffered(true);
+                configurationJScrollPane.setFocusable(false);
+                jPanel8.setLayout(new java.awt.GridBagLayout());
 
-        jPanel8.setFocusable(false);
-        networkJButton.setFont(new java.awt.Font("Arial", 0, 12));
-        networkJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
-        networkJButton.setText("<html>Networking</html>");
-        networkJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
-        networkJButton.setDoubleBuffered(true);
-        networkJButton.setFocusPainted(false);
-        networkJButton.setFocusable(false);
-        networkJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        networkJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
-        networkJButton.setMaximumSize(new java.awt.Dimension(810, 370));
-        networkJButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    networkJButtonActionPerformed(evt);
-                }
-            });
+                jPanel8.setFocusable(false);
+                networkJButton.setFont(new java.awt.Font("Arial", 0, 12));
+                networkJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
+                networkJButton.setText("<html>Networking</html>");
+                networkJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
+                networkJButton.setDoubleBuffered(true);
+                networkJButton.setFocusPainted(false);
+                networkJButton.setFocusable(false);
+                networkJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+                networkJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
+                networkJButton.setMaximumSize(new java.awt.Dimension(810, 370));
+                networkJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                networkJButtonActionPerformed(evt);
+                        }
+                });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
-        jPanel8.add(networkJButton, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
+                jPanel8.add(networkJButton, gridBagConstraints);
 
-        remoteJButton.setFont(new java.awt.Font("Arial", 0, 12));
-        remoteJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
-        remoteJButton.setText("<html>Remote Admin</html>");
-        remoteJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
-        remoteJButton.setDoubleBuffered(true);
-        remoteJButton.setFocusPainted(false);
-        remoteJButton.setFocusable(false);
-        remoteJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        remoteJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
-        remoteJButton.setMaximumSize(new java.awt.Dimension(810, 370));
-        remoteJButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    remoteJButtonActionPerformed(evt);
-                }
-            });
+                remoteJButton.setFont(new java.awt.Font("Arial", 0, 12));
+                remoteJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
+                remoteJButton.setText("<html>Remote Admin</html>");
+                remoteJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
+                remoteJButton.setDoubleBuffered(true);
+                remoteJButton.setFocusPainted(false);
+                remoteJButton.setFocusable(false);
+                remoteJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+                remoteJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
+                remoteJButton.setMaximumSize(new java.awt.Dimension(810, 370));
+                remoteJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                remoteJButtonActionPerformed(evt);
+                        }
+                });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
-        jPanel8.add(remoteJButton, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
+                jPanel8.add(remoteJButton, gridBagConstraints);
 
-        emailJButton.setFont(new java.awt.Font("Arial", 0, 12));
-        emailJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
-        emailJButton.setText("<html>Email</html>");
-        emailJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
-        emailJButton.setDoubleBuffered(true);
-        emailJButton.setFocusPainted(false);
-        emailJButton.setFocusable(false);
-        emailJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        emailJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
-        emailJButton.setMaximumSize(new java.awt.Dimension(810, 370));
-        emailJButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    emailJButtonActionPerformed(evt);
-                }
-            });
+                emailJButton.setFont(new java.awt.Font("Arial", 0, 12));
+                emailJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
+                emailJButton.setText("<html>Email</html>");
+                emailJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
+                emailJButton.setDoubleBuffered(true);
+                emailJButton.setFocusPainted(false);
+                emailJButton.setFocusable(false);
+                emailJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+                emailJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
+                emailJButton.setMaximumSize(new java.awt.Dimension(810, 370));
+                emailJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                emailJButtonActionPerformed(evt);
+                        }
+                });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
-        jPanel8.add(emailJButton, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
+                jPanel8.add(emailJButton, gridBagConstraints);
 
-        backupJButton.setFont(new java.awt.Font("Arial", 0, 12));
-        backupJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
-        backupJButton.setText("<html>Backup/Restore</html>");
-        backupJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
-        backupJButton.setDoubleBuffered(true);
-        backupJButton.setFocusPainted(false);
-        backupJButton.setFocusable(false);
-        backupJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        backupJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
-        backupJButton.setMaximumSize(new java.awt.Dimension(810, 370));
-        backupJButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    backupJButtonActionPerformed(evt);
-                }
-            });
+                backupJButton.setFont(new java.awt.Font("Arial", 0, 12));
+                backupJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
+                backupJButton.setText("<html>Backup/Restore</html>");
+                backupJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
+                backupJButton.setDoubleBuffered(true);
+                backupJButton.setFocusPainted(false);
+                backupJButton.setFocusable(false);
+                backupJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+                backupJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
+                backupJButton.setMaximumSize(new java.awt.Dimension(810, 370));
+                backupJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                backupJButtonActionPerformed(evt);
+                        }
+                });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
-        jPanel8.add(backupJButton, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
+                jPanel8.add(backupJButton, gridBagConstraints);
 
-        maintenanceJButton.setFont(new java.awt.Font("Arial", 0, 12));
-        maintenanceJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
-        maintenanceJButton.setText("<html>Support</html>");
-        maintenanceJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
-        maintenanceJButton.setDoubleBuffered(true);
-        maintenanceJButton.setFocusPainted(false);
-        maintenanceJButton.setFocusable(false);
-        maintenanceJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        maintenanceJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
-        maintenanceJButton.setMaximumSize(new java.awt.Dimension(810, 370));
-        maintenanceJButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    maintenanceJButtonActionPerformed(evt);
-                }
-            });
+                maintenanceJButton.setFont(new java.awt.Font("Arial", 0, 12));
+                maintenanceJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
+                maintenanceJButton.setText("<html>Support</html>");
+                maintenanceJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
+                maintenanceJButton.setDoubleBuffered(true);
+                maintenanceJButton.setFocusPainted(false);
+                maintenanceJButton.setFocusable(false);
+                maintenanceJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+                maintenanceJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
+                maintenanceJButton.setMaximumSize(new java.awt.Dimension(810, 370));
+                maintenanceJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                maintenanceJButtonActionPerformed(evt);
+                        }
+                });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
-        jPanel8.add(maintenanceJButton, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
+                jPanel8.add(maintenanceJButton, gridBagConstraints);
 
-        aboutJButton.setFont(new java.awt.Font("Arial", 0, 12));
-        aboutJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
-        aboutJButton.setText("<html>EdgeGuard Info</html>");
-        aboutJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
-        aboutJButton.setDoubleBuffered(true);
-        aboutJButton.setFocusPainted(false);
-        aboutJButton.setFocusable(false);
-        aboutJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        aboutJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
-        aboutJButton.setMaximumSize(new java.awt.Dimension(810, 370));
-        aboutJButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    aboutJButtonActionPerformed(evt);
-                }
-            });
+                aboutJButton.setFont(new java.awt.Font("Arial", 0, 12));
+                aboutJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
+                aboutJButton.setText("<html>EdgeGuard Info</html>");
+                aboutJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
+                aboutJButton.setDoubleBuffered(true);
+                aboutJButton.setFocusPainted(false);
+                aboutJButton.setFocusable(false);
+                aboutJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+                aboutJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
+                aboutJButton.setMaximumSize(new java.awt.Dimension(810, 370));
+                aboutJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                aboutJButtonActionPerformed(evt);
+                        }
+                });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 1, 3, 3);
-        jPanel8.add(aboutJButton, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(10, 1, 3, 3);
+                jPanel8.add(aboutJButton, gridBagConstraints);
 
-        configurationSpacerJPanel1.setFocusable(false);
-        configurationSpacerJPanel1.setOpaque(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weighty = 1.0;
-        jPanel8.add(configurationSpacerJPanel1, gridBagConstraints);
+                configurationSpacerJPanel1.setFocusable(false);
+                configurationSpacerJPanel1.setOpaque(false);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weighty = 1.0;
+                jPanel8.add(configurationSpacerJPanel1, gridBagConstraints);
 
-        configurationJScrollPane.setViewportView(jPanel8);
+                configurationJScrollPane.setViewportView(jPanel8);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        configurationJPanel.add(configurationJScrollPane, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                configurationJPanel.add(configurationJScrollPane, gridBagConstraints);
 
-        mTabbedPane.addTab("Config", configurationJPanel);
+                mTabbedPane.addTab("Config", configurationJPanel);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 10);
-        controlsJPanel.add(mTabbedPane, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 10);
+                controlsJPanel.add(mTabbedPane, gridBagConstraints);
 
-        rackJComboBox.setFont(new java.awt.Font("Dialog", 0, 12));
-        rackJComboBox.setMaximumRowCount(17);
-        rackJComboBox.setFocusable(false);
-        rackJComboBox.setMinimumSize(new java.awt.Dimension(160, 24));
-        rackJComboBox.setPreferredSize(new java.awt.Dimension(160, 24));
-        rackJComboBox.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    rackJComboBoxActionPerformed(evt);
-                }
-            });
+                rackJComboBox.setFont(new java.awt.Font("Dialog", 0, 12));
+                rackJComboBox.setMaximumRowCount(17);
+                rackJComboBox.setFocusable(false);
+                rackJComboBox.setMinimumSize(new java.awt.Dimension(160, 24));
+                rackJComboBox.setPreferredSize(new java.awt.Dimension(160, 24));
+                rackJComboBox.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                rackJComboBoxActionPerformed(evt);
+                        }
+                });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
-        controlsJPanel.add(rackJComboBox, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 2;
+                gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
+                controlsJPanel.add(rackJComboBox, gridBagConstraints);
 
-        upgradeJButton.setFont(new java.awt.Font("Default", 0, 12));
-        upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/upgrade/IconAvailable32x32.png")));
-        upgradeJButton.setText("<html><center>Upgrade<br>(1)</center></html>");
-        upgradeJButton.setDoubleBuffered(true);
-        upgradeJButton.setFocusPainted(false);
-        upgradeJButton.setFocusable(false);
-        upgradeJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        upgradeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
-        upgradeJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
-        upgradeJButton.setMaximumSize(new java.awt.Dimension(114, 42));
-        upgradeJButton.setMinimumSize(new java.awt.Dimension(114, 42));
-        upgradeJButton.setPreferredSize(new java.awt.Dimension(114, 42));
-        upgradeJButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    upgradeJButtonActionPerformed(evt);
-                }
-            });
+                upgradeJButton.setFont(new java.awt.Font("Default", 0, 12));
+                upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/upgrade/IconAvailable32x32.png")));
+                upgradeJButton.setText("<html><center>Upgrade<br>(1)</center></html>");
+                upgradeJButton.setDoubleBuffered(true);
+                upgradeJButton.setFocusPainted(false);
+                upgradeJButton.setFocusable(false);
+                upgradeJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+                upgradeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+                upgradeJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+                upgradeJButton.setMaximumSize(new java.awt.Dimension(114, 42));
+                upgradeJButton.setMinimumSize(new java.awt.Dimension(114, 42));
+                upgradeJButton.setPreferredSize(new java.awt.Dimension(114, 42));
+                upgradeJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                upgradeJButtonActionPerformed(evt);
+                        }
+                });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 20, 10, 20);
-        controlsJPanel.add(upgradeJButton, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 4;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.insets = new java.awt.Insets(10, 20, 10, 20);
+                controlsJPanel.add(upgradeJButton, gridBagConstraints);
 
-        upgradeJButton1.setFont(new java.awt.Font("Default", 0, 12));
-        upgradeJButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/main/IconHelp32x32.png")));
-        upgradeJButton1.setText("<html>Upgrade<br></html>");
-        upgradeJButton1.setDoubleBuffered(true);
-        upgradeJButton1.setFocusPainted(false);
-        upgradeJButton1.setFocusable(false);
-        upgradeJButton1.setMargin(new java.awt.Insets(2, 2, 2, 2));
-        upgradeJButton1.setMaximumSize(new java.awt.Dimension(36, 42));
-        upgradeJButton1.setMinimumSize(new java.awt.Dimension(36, 42));
-        upgradeJButton1.setPreferredSize(new java.awt.Dimension(36, 42));
-        upgradeJButton1.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    upgradeJButton1ActionPerformed(evt);
-                }
-            });
+                upgradeJButton1.setFont(new java.awt.Font("Default", 0, 12));
+                upgradeJButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/main/IconHelp32x32.png")));
+                upgradeJButton1.setText("<html>Upgrade<br></html>");
+                upgradeJButton1.setDoubleBuffered(true);
+                upgradeJButton1.setFocusPainted(false);
+                upgradeJButton1.setFocusable(false);
+                upgradeJButton1.setMargin(new java.awt.Insets(2, 2, 2, 2));
+                upgradeJButton1.setMaximumSize(new java.awt.Dimension(36, 42));
+                upgradeJButton1.setMinimumSize(new java.awt.Dimension(36, 42));
+                upgradeJButton1.setPreferredSize(new java.awt.Dimension(36, 42));
+                upgradeJButton1.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                upgradeJButton1ActionPerformed(evt);
+                        }
+                });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 20, 10, 20);
-        controlsJPanel.add(upgradeJButton1, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 4;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                gridBagConstraints.insets = new java.awt.Insets(10, 20, 10, 20);
+                controlsJPanel.add(upgradeJButton1, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        getContentPane().add(controlsJPanel, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                getContentPane().add(controlsJPanel, gridBagConstraints);
 
-        mPipelineJPanel.setOpaque(false);
-        //((com.metavize.gui.pipeline.MPipelineJPanel)mPipelineJPanel).setMFilterJPanel((com.metavize.gui.filter.MFilterJPanel)mFilterJPanel);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        getContentPane().add(mPipelineJPanel, gridBagConstraints);
+                mPipelineJPanel.setOpaque(false);
+                //((com.metavize.gui.pipeline.MPipelineJPanel)mPipelineJPanel).setMFilterJPanel((com.metavize.gui.filter.MFilterJPanel)mFilterJPanel);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                getContentPane().add(mPipelineJPanel, gridBagConstraints);
 
-        backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/main/MainBackground1600x100.png")));
-        backgroundJLabel.setDoubleBuffered(true);
-        backgroundJLabel.setFocusable(false);
-        backgroundJLabel.setOpaque(true);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        getContentPane().add(backgroundJLabel, gridBagConstraints);
+                backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/main/MainBackground1600x100.png")));
+                backgroundJLabel.setDoubleBuffered(true);
+                backgroundJLabel.setFocusable(false);
+                backgroundJLabel.setOpaque(true);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.gridwidth = 2;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                getContentPane().add(backgroundJLabel, gridBagConstraints);
 
-        java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds((screenSize.width-1024)/2, (screenSize.height-768)/2, 1024, 768);
-    }//GEN-END:initComponents
+                java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+                setBounds((screenSize.width-1024)/2, (screenSize.height-768)/2, 1024, 768);
+        }//GEN-END:initComponents
 
     private void upgradeJButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeJButton1ActionPerformed
         if( Util.isLocal() ){
@@ -717,37 +716,37 @@ public class MMainJFrame extends javax.swing.JFrame {
 
 
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton aboutJButton;
-    private javax.swing.JLabel backgroundJLabel;
-    private javax.swing.JButton backupJButton;
-    private javax.swing.JPanel configurationJPanel;
-    private javax.swing.JScrollPane configurationJScrollPane;
-    private javax.swing.JPanel configurationSpacerJPanel1;
-    private javax.swing.JPanel controlsJPanel;
-    private javax.swing.JButton emailJButton;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JPanel jPanel8;
-    private javax.swing.JPanel mPipelineJPanel;
-    private javax.swing.JTabbedPane mTabbedPane;
-    private javax.swing.JButton maintenanceJButton;
-    private javax.swing.JButton metavizeJButton;
-    private javax.swing.JButton networkJButton;
-    private javax.swing.JPanel policyToolboxJPanel;
-    private javax.swing.JComboBox rackJComboBox;
-    private javax.swing.JButton remoteJButton;
-    private javax.swing.JPanel serviceToolboxJPanel;
-    private javax.swing.JPanel storeJPanel;
-    private javax.swing.JScrollPane storeJScrollPane;
-    private javax.swing.JPanel storeScrollJPanel;
-    private javax.swing.JPanel storeSpacerJPanel;
-    private javax.swing.JPanel toolboxJPanel;
-    private javax.swing.JScrollPane toolboxJScrollPane;
-    private javax.swing.JPanel toolboxScrollJPanel;
-    private javax.swing.JPanel toolboxSpacerJPanel;
-    private javax.swing.JButton upgradeJButton;
-    private javax.swing.JButton upgradeJButton1;
-    // End of variables declaration//GEN-END:variables
+        // Variables declaration - do not modify//GEN-BEGIN:variables
+        private javax.swing.JButton aboutJButton;
+        private javax.swing.JLabel backgroundJLabel;
+        private javax.swing.JButton backupJButton;
+        private javax.swing.JPanel configurationJPanel;
+        private javax.swing.JScrollPane configurationJScrollPane;
+        private javax.swing.JPanel configurationSpacerJPanel1;
+        private javax.swing.JPanel controlsJPanel;
+        private javax.swing.JButton emailJButton;
+        private javax.swing.JLabel jLabel1;
+        private javax.swing.JPanel jPanel8;
+        private javax.swing.JPanel mPipelineJPanel;
+        private javax.swing.JTabbedPane mTabbedPane;
+        private javax.swing.JButton maintenanceJButton;
+        private javax.swing.JButton metavizeJButton;
+        private javax.swing.JButton networkJButton;
+        private javax.swing.JPanel policyToolboxJPanel;
+        private javax.swing.JComboBox rackJComboBox;
+        private javax.swing.JButton remoteJButton;
+        private javax.swing.JPanel serviceToolboxJPanel;
+        private javax.swing.JPanel storeJPanel;
+        private javax.swing.JScrollPane storeJScrollPane;
+        private javax.swing.JPanel storeScrollJPanel;
+        private javax.swing.JPanel storeSpacerJPanel;
+        private javax.swing.JPanel toolboxJPanel;
+        private javax.swing.JScrollPane toolboxJScrollPane;
+        private javax.swing.JPanel toolboxScrollJPanel;
+        private javax.swing.JPanel toolboxSpacerJPanel;
+        private javax.swing.JButton upgradeJButton;
+        private javax.swing.JButton upgradeJButton1;
+        // End of variables declaration//GEN-END:variables
 
 
 
