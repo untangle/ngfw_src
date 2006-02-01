@@ -93,7 +93,7 @@ public class RemoteJDialog extends MConfigJDialog {
 
     protected void saveAll(){
         // ASK THE USER IF HE REALLY WANTS TO SAVE SETTINGS ////////
-        SaveSettingsProceedJDialog saveSettingsProceedJDialog = new SaveSettingsProceedJDialog();
+        NetworkSaveSettingsProceedJDialog saveSettingsProceedJDialog = new NetworkSaveSettingsProceedJDialog();
         boolean isProceeding = saveSettingsProceedJDialog.isProceeding();
         if( isProceeding ){
             super.saveAll();

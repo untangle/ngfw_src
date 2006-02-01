@@ -649,7 +649,7 @@ public class MMainJFrame extends javax.swing.JFrame {
     private void backupJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backupJButtonActionPerformed
         try{
             backupJButton.setEnabled(false);
-            BackupRestoreJDialog backupRestoreJDialog = new BackupRestoreJDialog();
+            BackupJDialog backupRestoreJDialog = new BackupJDialog();
             backupRestoreJDialog.setVisible(true);
         }
         catch(Exception e){

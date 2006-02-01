@@ -70,8 +70,8 @@ public class NetworkJDialog extends MConfigJDialog {
 
     protected void saveAll(){
 	// ASK THE USER IF HE REALLY WANTS TO SAVE SETTINGS ////////
-        SaveSettingsProceedJDialog saveSettingsProceedJDialog = new SaveSettingsProceedJDialog();
-        boolean isProceeding = saveSettingsProceedJDialog.isProceeding();
+        NetworkSaveSettingsProceedJDialog networkSaveSettingsProceedJDialog = new NetworkSaveSettingsProceedJDialog();
+        boolean isProceeding = networkSaveSettingsProceedJDialog.isProceeding();
         if( isProceeding ){ 
             super.saveAll();
 	    // UPDATE STORE
