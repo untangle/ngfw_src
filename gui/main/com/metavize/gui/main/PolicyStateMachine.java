@@ -1221,7 +1221,7 @@ public class PolicyStateMachine implements ActionListener {
 	    // THE NEW SHITE
 	    else{
 		try{
-		    URL newURL = new URL( mTransformJButton.getWebpage() );
+		    URL newURL = new URL( Util.getServerCodeBase(), "../store/storeitem?name=" + mTransformJButton.getName());
 		    ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
 		}
 		catch(Exception f){
