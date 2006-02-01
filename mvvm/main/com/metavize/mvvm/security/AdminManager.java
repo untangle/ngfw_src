@@ -89,5 +89,4 @@ public interface AdminManager
      * @return the nonce to be added to the query string
      */
     String generateAuthNonce();
-
 }

@@ -16,11 +16,11 @@ function isInstalled(pkg)
 
 function installButton(pkg)
 {
-   var div = $(pkg);
-
    if (isInstalled(pkg)) {
-      div.appendChild(document.createTextNode("installed"));
+      setInstallStatus(pkg, "installed");
    } else {
+      var div = $(pkg);
+
       var a = div.appendChild(document.createElement("a"));
       a.appendChild(document.createTextNode("install"));
       a.onclick = function() { requestInstall(pkg) };
@@ -33,6 +33,22 @@ function requestInstall(pkg)
                        { method: "get",
                           parameters: "mackage=" + pkg
                        });
+   setInstallStatus(pkg, "installing");
+}
+
+function setInstallStatus(pkg, status)
+{
+   var div = $(pkg);
+   removeChildren(div);
+   div.appendChild(document.createTextNode(status));
+}
+
+// function removeChildren(node)
+function removeChildren(node)
+{
+   while (null != node.firstChild) {
+      node.removeChild(node.firstChild);
+   }
 }
 
 /* XXX break this out? */
@@ -196,7 +212,7 @@ String.prototype.extend({
     var text = document.createTextNode(this);
     div.appendChild(text);
     return div.innerHTML;
-  },
+n  },
 
   unescapeHTML: function() {
     var div = document.createElement('div');
