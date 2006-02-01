@@ -11,9 +11,13 @@
 
 package com.metavize.mvvm.servlet.store;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -31,7 +35,9 @@ import org.apache.log4j.Logger;
 
 public class ProxyServlet extends HttpServlet
 {
-    private static final String URI_BASE = "/joomla";
+    private static final String STORE_HOST = "butters";
+    private static final String URI_BASE = "/joomla/";
+    private static final String BASE_URL = "http://" + STORE_HOST + URI_BASE;
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -43,9 +49,8 @@ public class ProxyServlet extends HttpServlet
 
         try {
             Socket s = new Socket();
-            InetAddress addr = InetAddress.getByName("butters");
+            InetAddress addr = InetAddress.getByName(STORE_HOST);
             s.connect(new InetSocketAddress(addr, 80));
-
             sis = s.getInputStream();
             sos = s.getOutputStream();
 
@@ -54,21 +59,33 @@ public class ProxyServlet extends HttpServlet
             String pi = req.getPathInfo();
             String qs = req.getQueryString();
 
-            String uri = URI_BASE + (null == pi ? "/" : pi) + "?" + (null == qs ? "" : qs);
+            String uri = URI_BASE + (null == pi ? "" : pi) + "?" + (null == qs ? "" : qs);
 
             sb.append("GET " + uri + " HTTP/1.0\r\n");
-            sb.append("Host: butters\r\n");
+            sb.append("Host: ").append(STORE_HOST).append("\r\n");
             sb.append("\r\n");
             sos.write(sb.toString().getBytes());
             copyStream(req.getInputStream(), sos);
 
 
             StatusLine sl = readStatusLine(sis);
+
+            boolean rewriteStream = false;
             for (Header h : readHeader(sis)) {
+                if (h.getName().equalsIgnoreCase("content-type")) {
+                    String v = h.getValue().toLowerCase();
+                    if (v.startsWith("text/html")) {
+                        rewriteStream = true;
+                    }
+                }
                 resp.addHeader(h.getName(), h.getValue());
             }
 
-            copyStream(sis, resp.getOutputStream());
+            if (rewriteStream) {
+                rewriteStream(sis, resp.getOutputStream());
+            } else {
+                copyStream(sis, resp.getOutputStream());
+            }
         } catch (UnknownHostException exn) {
             // XXX show page about this instead
             throw new ServletException("unknown host", exn);
@@ -111,6 +128,62 @@ public class ProxyServlet extends HttpServlet
         }
 
         os.flush();
+    }
+
+    private void rewriteStream(InputStream is, OutputStream os)
+        throws IOException
+    {
+        // XXX charset!
+        BufferedReader r = new BufferedReader(new InputStreamReader(is));
+        BufferedWriter w = new BufferedWriter(new OutputStreamWriter(os));
+
+        int[] buf = new int[BASE_URL.length()];
+        resetBuffer(buf);
+
+        int i = 0;
+        while (0 <= (buf[i] = r.read())) {
+            i = (i + 1) % BASE_URL.length();
+            if (matches(BASE_URL, buf, i)) {
+                resetBuffer(buf);
+                i = 0;
+                w.append("./"); // XXX not correct, in general
+            } else {
+                if (0 <= buf[i]) {
+                    w.append((char)buf[i]);
+                }
+            }
+        }
+
+        i = (i + 1) % BASE_URL.length();
+        while (0 <= buf[i]) {
+            w.append((char)buf[i]);
+            i = (i + 1) % BASE_URL.length();
+        }
+
+        w.flush();
+    }
+
+    private void resetBuffer(int[] buf)
+    {
+        for (int i = 0; i < buf.length; i++) {
+            buf[i] = -1;
+        }
+    }
+
+    // matches a circular buffer
+    private boolean matches(String str, int[] buf, int start)
+    {
+        if (str.length() != buf.length) {
+            return false;
+        }
+
+        for (int i = 0; i < str.length(); i++) {
+            if (str.charAt(i) != (char)buf[(start + i) % buf.length]) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private StatusLine readStatusLine(InputStream is)

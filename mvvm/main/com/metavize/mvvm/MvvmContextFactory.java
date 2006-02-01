@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -21,7 +21,8 @@ import com.metavize.mvvm.engine.MvvmContextImpl;
  */
 public class MvvmContextFactory
 {
-    private static MvvmLocalContext MVVM_CONTEXT = null;
+    private static final MvvmLocalContext MVVM_CONTEXT
+        = MvvmContextImpl.context();
 
     /**
      * Gets the current state of the MVVM.  This provides a way to get
@@ -47,13 +48,6 @@ public class MvvmContextFactory
      */
     public static MvvmLocalContext context()
     {
-        if (MVVM_CONTEXT == null) {
-            synchronized(MvvmContextFactory.class) {
-                if (MVVM_CONTEXT == null) {
-                    MVVM_CONTEXT = MvvmContextImpl.context();
-                }
-            }
-        }
         return MVVM_CONTEXT;
     }
 }

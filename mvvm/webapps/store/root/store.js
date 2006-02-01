@@ -31,7 +31,8 @@ function requestInstall(pkg)
 {
       new Ajax.Request("instreq",
                        { method: "get",
-                          parameters: "mackage=" + pkg
+                          parameters: "mackage=" + pkg,
+                          onComplete: function() { window.close(); }
                        });
    setInstallStatus(pkg, "installing");
 }

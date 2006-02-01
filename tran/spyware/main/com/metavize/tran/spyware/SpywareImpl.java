@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005, 2006 Metavize Inc.
+ * copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -7,40 +7,6 @@
  * not disclose such Confidential Information.
  *
  * $Id$
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
-
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
-4037 2005-12-23 01:48:47Z cng $
  */
 
 package com.metavize.tran.spyware;
@@ -63,9 +29,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.EventManager;
+import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
