@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -27,14 +27,16 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.metavize.mvvm.toolbox.MackageDesc;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.logging.LogMailer;
 import com.metavize.mvvm.policy.Policy;
 import com.metavize.mvvm.security.Tid;
+import com.metavize.mvvm.toolbox.MackageDesc;
 import com.metavize.mvvm.tran.DeployException;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformDesc;
@@ -381,7 +383,7 @@ class TransformManagerImpl implements TransformManager
             .context().toolboxManager();
 
         List<TransformPersistentState> unloaded = getUnloaded();
-        Map<Tid, TransformDesc> tDescs = new HashMap<Tid, TransformDesc>();
+        final Map<Tid, TransformDesc> tDescs = new HashMap<Tid, TransformDesc>();
 
         for (Iterator<TransformPersistentState> i = unloaded.iterator();
              i.hasNext(); ) {
@@ -402,8 +404,31 @@ class TransformManagerImpl implements TransformManager
             }
         }
 
+        Comparator<TransformPersistentState> c
+            = new Comparator<TransformPersistentState>() {
+                public int compare(TransformPersistentState o1,
+                                   TransformPersistentState o2)
+                {
+                    TransformDesc td1 = tDescs.get(o1.getTid());
+                    MackageDesc md1 = td1.getMackageDesc();
+                    TransformDesc td2 = tDescs.get(o2.getTid());
+                    MackageDesc md2 = td2.getMackageDesc();
+
+                    if (md1.isService() != md2.isService()) {
+                        return md1.isService() ? -1 : 1;
+                    } else {
+                        // XXX we should use the parents here and
+                        // elminate the outer loop below
+                        return md1.getViewPosition() < md2.getViewPosition() ? -1 : 1;
+                    }
+                }
+            };
+
+        Queue<TransformPersistentState> q = new PriorityQueue<TransformPersistentState>(Math.max(unloaded.size(), 1), c);
+        q.addAll(unloaded);
+
         boolean removed = true;
-        while (0 < unloaded.size()) {
+        while (0 < q.size()) {
             if (removed) {
                 removed = false;
             } else {
@@ -411,7 +436,7 @@ class TransformManagerImpl implements TransformManager
                 break;
             }
 
-            for (Iterator<TransformPersistentState> i = unloaded.iterator();
+            for (Iterator<TransformPersistentState> i = q.iterator();
                  i.hasNext(); ) {
                 TransformPersistentState tps = i.next();
                 Tid tid = tps.getTid();
@@ -424,7 +449,7 @@ class TransformManagerImpl implements TransformManager
                 List<String> parents = tDesc.getParents();
                 boolean parentsLoaded = true;
                 for (String parent : parents) {
-                    for (TransformPersistentState utps : unloaded) {
+                    for (TransformPersistentState utps : q) {
                         if (parent.equals(utps.getName())) {
                             parentsLoaded = false;
                         }
