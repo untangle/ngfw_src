@@ -453,7 +453,7 @@ h4 {
 
 /* the following pertain to the main content (i.e. the main 'metal-brushed') table */
 #table_main_center {
-    background: url($image_root/background_table_main_center.gif) repeat-y;
+    background: url($image_root/background_table_main_center.gif) repeat;
 }
 
 #table_main_top {
@@ -560,7 +560,10 @@ hr {
 		  To release a specific email from the quarantine and deliver the email to your inbox,
 		  click <code>Release</code>.
 		  To delete a specific email from the quarantine,
-		  click <code>Delete</code>.<br><br>
+		  click <code>Delete</code>.
+      <br><br>
+      You may also choose to <a href="$linkgenerator.generateInboxLink()">visit your Inbox</a> online now where you can also release or delete all messages.
+      <br><br>
 
 		<!-- MAIN MESSAGE -->
           #if ($hasRecords)
