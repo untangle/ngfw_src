@@ -503,8 +503,12 @@ public class MLoginJFrame extends javax.swing.JFrame {
                     // EGDEMO ////////////////
                     if( loginJTextField.getText().equals("egdemo") )
                         Util.setIsDemo(true);
-                    else
+                    else			
                         Util.setIsDemo(false);
+
+		    // READ-ONLY //
+		    if( Util.getAdminManager().whoAmI().getMvvmPrincipal().isReadOnly() )
+			Util.setIsDemo(true);
 
                     // READOUT SUCCESS /////////////////
                     SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
@@ -601,8 +605,12 @@ public class MLoginJFrame extends javax.swing.JFrame {
                                               Version.getVersion() + "  |  Login: " +
                                               loginJTextField.getText() + "  |  Server: " +
                                               Util.getServerCodeBase().getHost() + securedString );
-                        if(Util.getIsDemo())
-                            mMainJFrame.setTitle( mMainJFrame.getTitle() + "  [DEMO MODE]" );
+                        if(Util.getIsDemo()){
+			    if( loginJTextField.getText().equals("egdemo") )
+				mMainJFrame.setTitle( mMainJFrame.getTitle() + "  [DEMO MODE]" );
+			    else
+				mMainJFrame.setTitle( mMainJFrame.getTitle() + "  [READ-ONLY MODE]" );
+			}
                         mMainJFrame.setExtendedState(Frame.MAXIMIZED_BOTH);
                         MLoginJFrame.this.setVisible(false);
                         MLoginJFrame.this.dispose();

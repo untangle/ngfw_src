@@ -1207,6 +1207,8 @@ public class PolicyStateMachine implements ActionListener {
             this.mTransformJButton = mTransformJButton;
         }
         public void actionPerformed(java.awt.event.ActionEvent evt){
+            if( Util.getIsDemo() )
+                return;
             // THE OLD SCHOOL WAY OF PURCHASING
             if( (evt.getModifiers() & ActionEvent.SHIFT_MASK) > 0){
 		mTransformJButton.setEnabled(false);
