@@ -224,27 +224,25 @@ public final class InboxRecordComparator {
       }
       catch(Exception ignore) {d2IsNum = false;}
 
-      //I could be a sadist and put this all in a bunch of nested
-      //terniary operators, but that would really suck to read.
-      if(d1IsNum) {//BEGIN D1 A a number
-        if(d2IsNum) {//BEGIN D2 a number
-          return d1AsNum>d2AsNum?
-            1:(d1AsNum<d2AsNum?-1:0);
-        }//ENDOF D2 a number
-        else {//BEGIN D2 not a number
-          return 1;
-        }//ENDOF D2 not a number
-      }//ENDOF D1 A a number
-      else {//BEGIN D1 not a number
-        if(d2IsNum) {//BEGIN D2 a number
-          return -1;
-        }//ENDOF D2 a number
-        else {//BEGIN D2 not a number
-          return d1.compareTo(d2);
-        }//ENDOF D2 not a number
-      }//ENDOF D1 not a number
-    
+      return d1IsNum?
+        (//D1 is a number
+          d2IsNum?
+            (//D2 is number
+              d1AsNum>d2AsNum?
+                1:
+                (
+                  d1AsNum<d2AsNum?-1:0
+                )
+            ):
+            (1)//D2 not a number
+        ):
+        (//D1 is not a number
+          d2IsNum?
+            -1://D2 a number
+            d1.compareTo(d2)//Neither is a number
+        );
     }
+
   }     
 
 
