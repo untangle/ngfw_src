@@ -32,8 +32,8 @@ public class IDSDetectionEngine {
     private IDSSettings 	settings 	= null;
     private Map<String,RuleClassification> classifications = null;
 
-    private IDSRuleManager 	rules;
-    private IDSTransformImpl 	transform;
+    private IDSRuleManager   manager;
+    private IDSTransformImpl transform;
 
     // We can't just attach the session info to a session, we have to attach it to the 'pipeline', since
     // we have to access it from multiple pipes (octet & http).  So we keep the registry here.
@@ -53,15 +53,15 @@ public class IDSDetectionEngine {
 
     public IDSDetectionEngine(IDSTransformImpl transform) {
         this.transform = transform;
-        rules = new IDSRuleManager(this);
+        manager = new IDSRuleManager(this);
         //The Goggles! They do nothing!
         /*String test = "alert tcp 10.0.0.40-10.0.0.101 any -> 66.35.250.0/24 80 (content:\"slashdot\"; msg:\"OMG teH SLASHd0t\";)";
           String tesT = "alert tcp 10.0.0.1/24 any -> any any (content: \"spOOns|FF FF FF FF|spoons\"; msg:\"Matched binary FF FF FF and spoons\"; nocase;)";
           String TesT = "alert tcp 10.0.0.1/24 any -> any any (uricontent:\"slashdot\"; nocase; msg:\"Uricontent matched\";)";
           try {
-          rules.addRule(test);
-          rules.addRule(tesT);
-          rules.addRule(TesT);
+          manager.addRule(test);
+          manager.addRule(tesT);
+          manager.addRule(TesT);
           } catch (ParseException e) {
           log.warn("Could not parse rule; " + e.getMessage());
           }*/
@@ -102,7 +102,7 @@ public class IDSDetectionEngine {
         portC2SMap = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
         portS2CMap = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
 		
-        rules.onReconfigure();
+        manager.onReconfigure();
         log.debug("Done with reconfigure");
     }
 
@@ -114,7 +114,7 @@ public class IDSDetectionEngine {
 
     public void updateRule(IDSRule rule) {
         try {
-            rules.updateRule(rule);
+            manager.updateRule(rule);
         } catch (ParseException e) {
             log.warn("Could not parse rule: ", e);
         } catch (Exception e) {
@@ -126,7 +126,7 @@ public class IDSDetectionEngine {
     //Deprecating?
     public boolean addRule(IDSRule rule) {
         try {
-            return (rules.addRule(rule));
+            return (manager.addRule(rule));
         } catch (ParseException e) { 
             log.warn("Could not parse rule: ", e); 
         } catch (Exception e) {
@@ -143,7 +143,7 @@ public class IDSDetectionEngine {
         List<IDSRuleHeader> s2cList = portS2CMap.get(request.serverPort());
 		
         if(c2sList == null) {
-            c2sList = rules.matchingPortsList(request.serverPort(), IDSRuleManager.TO_SERVER);
+            c2sList = manager.matchingPortsList(request.serverPort(), IDSRuleManager.TO_SERVER);
             portC2SMap.put(request.serverPort(),c2sList);
 
             if (log.isDebugEnabled())
@@ -151,7 +151,7 @@ public class IDSDetectionEngine {
         }
 		
         if(s2cList == null) {
-            s2cList = rules.matchingPortsList(request.serverPort(), IDSRuleManager.TO_CLIENT);
+            s2cList = manager.matchingPortsList(request.serverPort(), IDSRuleManager.TO_CLIENT);
             portS2CMap.put(request.serverPort(),s2cList);
 			
             if (log.isDebugEnabled())
@@ -159,9 +159,9 @@ public class IDSDetectionEngine {
         }
 		
         //Check matches
-        List<IDSRuleSignature> c2sSignatures = rules.matchesHeader(request, request.isInbound(), IDSRuleManager.TO_SERVER, c2sList);
+        List<IDSRuleSignature> c2sSignatures = manager.matchesHeader(request, request.isInbound(), IDSRuleManager.TO_SERVER, c2sList);
 
-        List<IDSRuleSignature> s2cSignatures = rules.matchesHeader(request, request.isInbound(), IDSRuleManager.TO_CLIENT, s2cList);
+        List<IDSRuleSignature> s2cSignatures = manager.matchesHeader(request, request.isInbound(), IDSRuleManager.TO_CLIENT, s2cList);
 			
         if (log.isDebugEnabled())
             log.debug("s2cSignature list size: " + s2cSignatures.size() + ", c2sSignature list size: " +
@@ -196,12 +196,12 @@ public class IDSDetectionEngine {
     }
 
     public IDSRuleManager getRulesForTesting() {
-        return rules;
+        return manager;
     }
 	
     public void dumpRules()
     {
-        rules.dumpRules();
+        manager.dumpRules();
     }
 
     //In process of fixing this

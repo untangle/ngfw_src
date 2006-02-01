@@ -23,7 +23,6 @@ public class IDSRuleManager {
     public static final boolean TO_SERVER = true;
     public static final boolean TO_CLIENT = false;
 
-
     public static List<IDSVariable> immutableVariables = new ArrayList<IDSVariable>(); 
     static {
         immutableVariables.add(new IDSVariable("$EXTERNAL_NET",IDSStringParser.EXTERNAL_IP,"Magic EXTERNAL_NET token"));
@@ -80,10 +79,8 @@ public class IDSRuleManager {
                 logger.debug("Adding modified rule");
                 addRule(rule);
             }
-        }
-
-        else {
-            logger.debug("Does not contain - adding");
+        } else {
+            logger.debug("Adding new rule");
             addRule(rule);
         }
         //remove all rules with remove == true
@@ -106,8 +103,8 @@ public class IDSRuleManager {
         IDSRuleHeader header = IDSStringParser.parseHeader(ruleParts[0], rule.getAction());
         if (header == null)
             throw new ParseException("Unable to parse header of rule " + ruleParts[0]);
-        IDSRuleSignature signature = IDSStringParser.parseSignature(ruleParts[1], rule.getAction(), rule, false);
 
+        IDSRuleSignature signature = IDSStringParser.parseSignature(ruleParts[1], rule.getAction(), rule, false);
         signature.setToString(ruleParts[1]);
 
         if(!signature.remove() && !rule.disabled()) {
@@ -136,7 +133,14 @@ public class IDSRuleManager {
             knownRules.put(rule.getKeyValue(),rule);
             return true;
         }
+
+        // even though rule is removed or disabled,
+        // set some rule stuff for gui to display
+        // (but don't add this rule to knownRules)
         //rule.setSignature(signature); //Update UI description
+        rule.setClassification(signature.getClassification());
+        rule.setURL(signature.getURL());
+        //logger.debug("skipping rule, rc: " + rule.getClassification() + ", rurl: " + rule.getURL());
         return false;
     }
 
@@ -159,8 +163,8 @@ public class IDSRuleManager {
 
         text = substituteVariables(text);
         try {
-            String ruleParts[]          = IDSStringParser.parseRuleSplit(text);
-            IDSRuleHeader header        = IDSStringParser.parseHeader(ruleParts[0], rule.getAction());
+            String ruleParts[]   = IDSStringParser.parseRuleSplit(text);
+            IDSRuleHeader header = IDSStringParser.parseHeader(ruleParts[0], rule.getAction());
             if (header == null) {
                 logger.debug("Ignoring rule with bad header: " + text);
                 return null;
@@ -184,8 +188,7 @@ public class IDSRuleManager {
             rule.setClassification(signature.getClassification());
             rule.setURL(signature.getURL());
             //logger.debug("create rule, rc: " + rule.getClassification() + ", rurl: " + rule.getURL());
-        }
-        catch(ParseException e) { 
+        } catch(ParseException e) { 
             logger.error("Parsing exception for rule: " + text, e);
             return null;
         }

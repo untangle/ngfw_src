@@ -41,12 +41,13 @@ public class IDSRule extends Rule implements Serializable {
 
     // Used from UI to let us know it's changed.
     private boolean modified;
-	
+
+    private String classification;
+    private String url;
+
     //Variables set at run time
     private transient IDSRuleHeader header;
     private transient IDSRuleSignature signature;
-    private transient String classification;
-    private transient String url;
     private transient boolean remove; //Should no longer be in the list
 
     /**
