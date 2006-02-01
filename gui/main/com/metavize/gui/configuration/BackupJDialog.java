@@ -461,6 +461,9 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
 		    int retVal = chooser.showSaveDialog(BackupJDialog.this);
 		    if(retVal == JFileChooser.APPROVE_OPTION){
 			File file = chooser.getSelectedFile();
+			if(!file.getName().endsWith(BACKUP_EXTENSION))
+			    file = new File(file.getPath() + BACKUP_EXTENSION);
+			System.err.println("Saving to file: " + file.toString());
 			if(file.exists()){
 			    // ASK IF YOU WANT TO REALLY OVER-WRITE!!
 			    BackupSaveFileJDialog backupSaveFileJDialog = new BackupSaveFileJDialog();
@@ -475,19 +478,18 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
 				return;
 			    }
 			    
-			    if(!file.createNewFile()){
-				// TELL HIM HE CANT WRITE HERE
-				new MOneButtonJDialog("Save File", "The file cannot be written in that location.");
-				throw new Exception();
-			    }
-			}
-			else{
-			    file.createNewFile();
 			}
 
+			// GENERATE THE BACKUP DATA
+			byte[] backup = Util.getMvvmContext().createBackup();
+
+			if(!file.createNewFile()){
+			    // TELL HIM HE CANT WRITE HERE
+			    new MOneButtonJDialog("Save File", "The file cannot be written in that location.");
+			    throw new Exception();
+			}
 
 			// WRITE THE SUCKER OUT
-			byte[] backup = Util.getMvvmContext().createBackup();
 			FileOutputStream fileOutputStream = new FileOutputStream(file);
 			fileOutputStream.write(backup);
 			fileOutputStream.close();
