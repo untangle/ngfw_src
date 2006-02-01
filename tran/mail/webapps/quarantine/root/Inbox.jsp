@@ -36,10 +36,36 @@
         document.form1.submit();
       }
       
-      function doRescue() {
-        document.form1.<quarantine:constants keyName="action"/>.value = "<quarantine:constants valueName="rescue"/>";
-        document.form1.submit();
+      function doResort(newSort) {
+        
+        var nextAscend = "true"
+        if(document.form1.<quarantine:constants keyName="sort"/>.value == newSort) {
+          //If not changing the sort criteria, the toggle up/down
+          if(document.form1.<quarantine:constants keyName="ascend"/>.value == "true") {
+            nextAscend = "false";
+          }
+        }
+        else {
+          //We're switching to a new criteria, so use ascending
+          //by default
+          document.form1.<quarantine:constants keyName="sort"/>.value = newSort;
+          nextAscend = "true";
+        }
+        document.form1.<quarantine:constants keyName="ascend"/>.value = nextAscend;
+        document.form1.submit();        
       }
+
+      function doResortBySender() {
+        doResort("2");
+      }
+
+      function doResortBySubject() {
+        doResort("3");
+      }
+
+      function doResortByScore() {
+        doResort("4");
+      }      
 
     </script>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
@@ -230,9 +256,9 @@ SEP
                               onclick="CheckAll()"
                               type="checkbox">
                           </th>
-                          <th scope="col">From</th>
-                          <th scope="col">Score</th>
-                          <th scope="col">Subject</th>
+                          <th scope="col"><a href="javascript:doResortBySender();">From</a></th>
+                          <th scope="col"><a href="javascript:doResortByScore();">Score</a></th>
+                          <th scope="col"><a href="javascript:doResortBySubject();">Subject</a></th>
                         </tr>
                       </thead>
                       <tfoot>

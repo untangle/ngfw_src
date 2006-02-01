@@ -39,7 +39,11 @@ public final class InboxRecordComparator {
     /**
      * Sort by the subject
      */
-    SUBJECT
+    SUBJECT,
+    /**
+     * Sort by the quarantine detail
+     */
+    DETAIL
   };
 
   private static final EnumMap<SortBy, IRComp> m_fwdComparitors;
@@ -60,6 +64,9 @@ public final class InboxRecordComparator {
 
     m_fwdComparitors.put(SortBy.SUBJECT, new SubjectComp().setReverse(false));
     m_bwdComparitors.put(SortBy.SUBJECT, new SubjectComp().setReverse(true));
+
+    m_fwdComparitors.put(SortBy.DETAIL, new DetailComp().setReverse(false));
+    m_bwdComparitors.put(SortBy.DETAIL, new DetailComp().setReverse(true));
   }
 
   /**
@@ -174,7 +181,71 @@ public final class InboxRecordComparator {
         (subject2==null?0:-1)://Subject1 null
         (subject2==null?1:subject1.compareTo(subject2));
     }
-  }      
+  }
+
+
+
+  //============================ Inner Class ============================
+  
+  private static class DetailComp extends IRComp {
+
+    //Null is less than not null
+  
+    protected int compareImpl(InboxRecord o1, InboxRecord o2) {
+    
+      String detail1 = o1.getMailSummary()==null?
+        null:o1.getMailSummary().getQuarantineDetail();
+        
+      String detail2 = o2.getMailSummary()==null?
+        null:o2.getMailSummary().getQuarantineDetail();
+        
+      return detail1==null?
+        (detail2==null?0:-1)://Sender1 null
+        (detail2==null?1:compareDetailsNotNull(detail1, detail2));
+    }
+
+    private int compareDetailsNotNull(String d1, String d2) {
+      //Likely that the Strings are numbers.  In such a case,
+      //numbers are "greater-than" Strings.
+      boolean d1IsNum = false;
+      boolean d2IsNum = false;
+      float d1AsNum = 0;
+      float d2AsNum = 0;
+
+      try {
+        d1AsNum = Float.parseFloat(d1);
+        d1IsNum = true;
+      }
+      catch(Exception ignore) {d1IsNum = false;}
+      
+      try {
+        d2AsNum = Float.parseFloat(d2);
+        d2IsNum = true;
+      }
+      catch(Exception ignore) {d2IsNum = false;}
+
+      //I could be a sadist and put this all in a bunch of nested
+      //terniary operators, but that would really suck to read.
+      if(d1IsNum) {//BEGIN D1 A a number
+        if(d2IsNum) {//BEGIN D2 a number
+          return d1AsNum>d2AsNum?
+            1:(d1AsNum<d2AsNum?-1:0);
+        }//ENDOF D2 a number
+        else {//BEGIN D2 not a number
+          return 1;
+        }//ENDOF D2 not a number
+      }//ENDOF D1 A a number
+      else {//BEGIN D1 not a number
+        if(d2IsNum) {//BEGIN D2 a number
+          return -1;
+        }//ENDOF D2 a number
+        else {//BEGIN D2 not a number
+          return d1.compareTo(d2);
+        }//ENDOF D2 not a number
+      }//ENDOF D1 not a number
+    
+    }
+  }     
 
 
 }

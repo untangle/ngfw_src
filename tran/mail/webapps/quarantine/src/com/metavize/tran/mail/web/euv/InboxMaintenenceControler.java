@@ -62,6 +62,9 @@ public class InboxMaintenenceControler
       boolean ascending = Util.readBooleanParam(req, Constants.SORT_ASCEND_RP, true);
       int startingAt = Util.readIntParam(req, Constants.FIRST_RECORD_RP, 0);
 
+      System.out.println("*** DEBUG ***" +
+        "SortBy: " + sortBy + ", Ascending: " + ascending + ", startingAt: " + startingAt);
+
       //No matter what action we take, the outcome
       //is an Index
       InboxIndex index = null;
