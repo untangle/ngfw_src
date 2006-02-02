@@ -88,8 +88,8 @@ public class SmtpSessionHandler
    * for a Quarantine submission.
    */
   protected String getQuarantineDetail(SpamReport report) {
-    //TODO bscott Do something real here
-    return "" + report.getScore();
+      // Make a nicely printed string for the UI.
+      return String.format("%03.1f", report.getScore());
   }
 
 

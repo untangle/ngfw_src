@@ -37,13 +37,6 @@ public class ShieldRejectionLogEntry implements Serializable
         this.rejected   = rejected;
     }
 
-    // util -------------------------------------------------------------------
-    public String getReputationString()
-    {
-        return String.format( "%.5g", this.reputation );
-    }
-    
-    
     // accessors --------------------------------------------------------------
     public Date getCreateDate()
     {

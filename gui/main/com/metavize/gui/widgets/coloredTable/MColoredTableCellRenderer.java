@@ -194,7 +194,11 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
 		     || (value instanceof Long)
 		     || (value instanceof Double) ){
                 if(value != null)
-                    renderJLabel.setText(value.toString());
+                    if ((value instanceof Double) || (value instanceof Float))
+                        // Print all floatign point like: 0.1, 124.2, 123.0, 0.0, -2.1, -2.0
+                        renderJLabel.setText(String.format("%03.1f", value));
+                    else
+                        renderJLabel.setText(value.toString());
                 else
                     renderJLabel.setText("");
                 if( col == 0 ) {
@@ -233,7 +237,10 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
 		    }
 		}
                 else{
-                    renderJLabel.setHorizontalAlignment(JTextField.LEFT);
+                    if (value instanceof Number)
+                        renderJLabel.setHorizontalAlignment(JTextField.RIGHT);
+                    else
+                        renderJLabel.setHorizontalAlignment(JTextField.LEFT);
                     renderJLabel.setIcon(null);
 		    renderJComponent = renderJLabel;
                 }

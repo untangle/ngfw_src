@@ -59,7 +59,7 @@ public class LogJPanel extends MLogTableJPanel {
                 event.add( Util.getLogDateFormat().format( log.getCreateDate() ));
                 event.add( log.getClient() );
                 event.add( log.getClientIntf() );
-                event.add( Math.floor(log.getReputation()) );
+                event.add( log.getReputation() );
                 event.add( log.getLimited() );
                 event.add( log.getDropped() );
                 event.add( log.getRejected() );
