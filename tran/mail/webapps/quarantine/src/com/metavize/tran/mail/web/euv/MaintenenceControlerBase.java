@@ -22,6 +22,11 @@ import com.metavize.tran.util.Pair;
 import com.metavize.tran.mail.web.euv.tags.MessagesSetTag;
 import com.metavize.tran.mail.web.euv.tags.CurrentEmailAddressTag;
 import com.metavize.tran.mail.web.euv.tags.CurrentAuthTokenTag;
+import com.metavize.tran.mail.web.euv.tags.IsRemappedTag;
+import com.metavize.tran.mail.web.euv.tags.ReceivingRemapsListTag;
+import com.metavize.tran.mail.web.euv.tags.RemappedToTag;
+import com.metavize.tran.mail.web.euv.tags.ReceivingRemapsListTag;
+import com.metavize.tran.mail.web.euv.tags.IsReceivesRemapsTag;
 
 import com.metavize.tran.mail.papi.quarantine.QuarantineUserView;
 import com.metavize.tran.mail.papi.quarantine.BadTokenException;
@@ -76,6 +81,20 @@ public abstract class MaintenenceControlerBase
     try {
       //Attempt to decrypt their token
       account = quarantine.getAccountFromToken(authTkn);
+      String remappedTo = quarantine.getMappedTo(account);
+      IsRemappedTag.setCurrent(req, remappedTo!= null);
+      if(remappedTo != null) {
+        RemappedToTag.setCurrent(req, remappedTo);
+      }
+
+      String[] inboundRemappings = quarantine.getMappedFrom(account);
+      if(inboundRemappings != null && inboundRemappings.length > 0) {
+        IsReceivesRemapsTag.setCurrent(req, false);
+        ReceivingRemapsListTag.setCurrentList(req, inboundRemappings);
+      }
+      else {
+        IsReceivesRemapsTag.setCurrent(req, false);
+      }
     }
     catch(BadTokenException ex) {
       //Put a message in the request

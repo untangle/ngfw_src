@@ -36,6 +36,7 @@ import com.metavize.tran.mail.papi.quarantine.QuarantineMaintenenceView;
 import com.metavize.tran.mail.papi.quarantine.QuarantineUserView;
 import com.metavize.tran.mail.papi.quarantine.QuarantineSettings;
 import com.metavize.tran.mail.papi.quarantine.QuarantineUserActionFailedException;
+import com.metavize.tran.mail.papi.quarantine.InboxAlreadyRemappedException;
 import com.metavize.tran.mail.papi.quarantine.NoSuchInboxException;
 import com.metavize.tran.mail.papi.quarantine.BadTokenException;
 import com.metavize.tran.mail.papi.quarantine.InboxIndex;
@@ -156,7 +157,7 @@ public class MailTransformImpl extends AbstractTransform
 
         reconfigure();
 
-        s_quarantine.setSettings(settings.getQuarantineSettings());
+        s_quarantine.setSettings(this, settings.getQuarantineSettings());
         s_safelistMngr.setSettings(this, settings);
     }
 
@@ -284,7 +285,7 @@ public class MailTransformImpl extends AbstractTransform
         getTransformContext().runTransaction(tw);
 
         logger.debug("Initialize SafeList/Quarantine...");
-        s_quarantine.setSettings(settings.getQuarantineSettings());
+        s_quarantine.setSettings(this, settings.getQuarantineSettings());
         s_safelistMngr.setSettings(this, settings);
         deployWebAppIfRequired(logger);
         s_quarantine.open();        
@@ -351,6 +352,26 @@ public class MailTransformImpl extends AbstractTransform
     public boolean requestDigestEmail(String account)
       throws NoSuchInboxException, QuarantineUserActionFailedException {
       return s_quarantine.requestDigestEmail(account);
+    }
+
+    public void remapSelfService(String from, String to)
+      throws QuarantineUserActionFailedException, InboxAlreadyRemappedException {
+      s_quarantine.remapSelfService(from, to);
+    }
+  
+    public boolean unmapSelfService(String inboxName, String aliasToRemove)
+      throws QuarantineUserActionFailedException {
+      return s_quarantine.unmapSelfService(inboxName, aliasToRemove);
+    }
+      
+    public String getMappedTo(String account)
+      throws QuarantineUserActionFailedException {
+      return s_quarantine.getMappedTo(account);
+    }
+  
+    public String[] getMappedFrom(String account)
+      throws QuarantineUserActionFailedException {
+      return s_quarantine.getMappedFrom(account);
     }
           
   }

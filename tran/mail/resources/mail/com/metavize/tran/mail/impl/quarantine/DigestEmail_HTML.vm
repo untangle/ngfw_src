@@ -562,7 +562,7 @@ hr {
 		  To delete a specific email from the quarantine,
 		  click <code>Delete</code>.
       <br><br>
-      You may also choose to <a href="$linkgenerator.generateInboxLink()">visit your Inbox</a> online now where you can also release or delete all messages.
+      You may also choose to <a href="$linkgenerator.generateInboxLink()">visit your Inbox</a> online for more options.
       <br><br>
 
 		<!-- MAIN MESSAGE -->

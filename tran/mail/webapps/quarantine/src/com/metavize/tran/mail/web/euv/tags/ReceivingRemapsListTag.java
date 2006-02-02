@@ -16,23 +16,19 @@ import java.util.Arrays;
 
 
 /**
- * Tag which is used to iterate over the contents
- * of a Safelist
- * <br><br>
- * It then sets-up an OddEvenTag and a MessageTag for each iteration.
+ * Tag which is used to iterate over the list
+ * of addresses which are remapped-to the
+ * current address
  */
-public final class SafelistListTag
+public final class ReceivingRemapsListTag
   extends IteratingTag<String> {
 
-  private static final String SL_KEY = "metavize.safelist.contents.";
+  private static final String KEY = "metavize.remapps.ReceivingRemapsListTag";
   
   @Override
   protected Iterator<String> createIterator() {
     String[] list = getCurrentList(pageContext.getRequest());
 
-//    System.out.println("***DEBUG*** Creating iterator, array: " +
-//      (list==null?"null":Integer.toString(list.length)) + "");
-    
     if(list == null || list.length == 0) {
       return null;
     }
@@ -40,22 +36,22 @@ public final class SafelistListTag
   }
   @Override
   protected void setCurrent(String s) {
-    SafelistEntryTag.setCurrent(pageContext, s);
+    ReceivingRemapsEntryTag.setCurrent(pageContext, s);
   }
 
   public static final void setCurrentList(ServletRequest request,
     String[] list) {
-    request.setAttribute(SL_KEY, list);
+    request.setAttribute(KEY, list);
   }
   public static final void clearCurrentList(ServletRequest request) {
-    request.removeAttribute(SL_KEY);
+    request.removeAttribute(KEY);
   }
 
   /**
    * Returns null if there are no such messages
    */
   static String[] getCurrentList(ServletRequest request) {
-    return (String[]) request.getAttribute(SL_KEY);
+    return (String[]) request.getAttribute(KEY);
   }
 
   static boolean hasCurrentList(ServletRequest request) {

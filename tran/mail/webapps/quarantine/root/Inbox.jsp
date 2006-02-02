@@ -160,6 +160,28 @@ SEP
 		  of email senders whose emails you do not want to quarantine.<br><br>
 		  </quarantine:hasSafelist>
 
+      <quarantine:isReceivesRemaps includeIfTrue="true">
+        <br>This address receives the following remaps<br>
+        <ul>
+          <quarantine:forEachReceivingRemapsEntry>
+            <li><quarantine:receivingRemapsEntry encoded="false"/></li>
+          </quarantine:forEachReceivingRemapsEntry>
+        </ul>
+        <br>
+      </quarantine:isReceivesRemaps>
+      <quarantine:isReceivesRemaps includeIfTrue="false">
+        <br>This address does not receive remaps<br>
+      </quarantine:isReceivesRemaps>
+
+      <quarantine:isRemapped includeIfTrue="true">
+        <br>This address is remapped to <quarantine:remappedTo encoded="false"/>
+      </quarantine:isRemapped>
+      <quarantine:isRemapped includeIfTrue="false">
+        <br>This address is not remapped</br>
+      </quarantine:isRemapped>
+      
+      
+
 		<!-- MAIN MESSAGE -->
 		<br/>
 		<center>

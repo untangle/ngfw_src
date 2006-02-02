@@ -28,12 +28,15 @@ import com.metavize.tran.mail.impl.quarantine.store.QuarantinePruningObserver;
 import com.metavize.tran.mail.impl.quarantine.store.QuarantineStore;
 import com.metavize.tran.mail.impl.GlobEmailAddressList;
 import com.metavize.tran.mail.impl.GlobEmailAddressMapper;
+import com.metavize.tran.mail.MailTransformImpl;
+import com.metavize.tran.mail.papi.MailTransformSettings;
 import com.metavize.tran.mail.papi.quarantine.BadTokenException;
 import com.metavize.tran.mail.papi.quarantine.Inbox;
 import com.metavize.tran.mail.papi.quarantine.InboxIndex;
 import com.metavize.tran.mail.papi.quarantine.InboxRecord;
 import com.metavize.tran.mail.papi.quarantine.MailSummary;
 import com.metavize.tran.mail.papi.quarantine.NoSuchInboxException;
+import com.metavize.tran.mail.papi.quarantine.InboxAlreadyRemappedException;
 import com.metavize.tran.mail.papi.quarantine.QuarantineEjectionHandler;
 import com.metavize.tran.mail.papi.quarantine.QuarantineMaintenenceView;
 import com.metavize.tran.mail.papi.quarantine.QuarantineManipulation;
@@ -73,6 +76,7 @@ public class Quarantine
   private CronJob m_cronJob;
   private GlobEmailAddressList m_quarantineForList;
   private GlobEmailAddressMapper m_addressAliases;
+  private MailTransformImpl m_impl;
 
 
   public Quarantine() {
@@ -96,7 +100,9 @@ public class Quarantine
    * by the Quarantine (i.e. the UI does not
    * talk to the Quarantine).
    */
-  public void setSettings(QuarantineSettings settings) {
+  public void setSettings(MailTransformImpl impl,
+    QuarantineSettings settings) {
+    m_impl = impl;
     m_settings = settings;
 
     m_atm.setKey(m_settings.getSecretKey());
@@ -113,25 +119,12 @@ public class Quarantine
     }
 
     //Update address mapping
-    ArrayList<Pair<String, String>> addressAliasPairList =
-      new ArrayList<Pair<String, String>>();
-
-    for(Object o : settings.getAddressRemaps()) {
-      EmailAddressPair pair = (EmailAddressPair) o;
-      addressAliasPairList.add(new
-        Pair<String, String>(pair.getAddress1(), pair.getAddress2()));
-    }
-    m_addressAliases = new GlobEmailAddressMapper(addressAliasPairList);
+    m_addressAliases = new GlobEmailAddressMapper(
+      fromEmailAddressListPair(settings.getAddressRemaps()));
 
     //Update the quarantine-for stuff
-    ArrayList<String> quarantineForList =
-      new ArrayList<String>();
-
-    for(Object o : settings.getAllowedAddressPatterns()) {
-      EmailAddressWrapper wrapper = (EmailAddressWrapper) o;
-      quarantineForList.add(wrapper.getAddress()); 
-    }
-    m_quarantineForList = new GlobEmailAddressList(quarantineForList);
+    m_quarantineForList = new GlobEmailAddressList(
+      fromEmailAddressWrapper(settings.getAllowedAddressPatterns()));
 
     
           
@@ -452,6 +445,64 @@ public class Quarantine
     return true;
   }
 
+  public void remapSelfService(String from, String to)
+    throws QuarantineUserActionFailedException, InboxAlreadyRemappedException {
+    
+    String existingMapping = m_addressAliases.getAddressMapping(from);
+    if(existingMapping != null) {
+      throw new InboxAlreadyRemappedException(from, existingMapping);
+    }
+
+    //Create a new List
+    List<Pair<String, String>> mappings = m_addressAliases.getRawMappings();
+    mappings.add(0, new Pair<String, String>(from, to));
+
+    //Convert list to form which makes settings happy
+    List newMappingsList = toEmailAddressPairList(mappings);
+
+    MailTransformSettings settings = m_impl.getMailTransformSettings();    settings.getQuarantineSettings().setAddressRemaps(newMappingsList);
+
+    m_impl.setMailTransformSettings(settings);
+  }
+
+
+  public boolean unmapSelfService(String inboxName, String aliasToRemove)
+    throws QuarantineUserActionFailedException {
+
+    GlobEmailAddressMapper newMapper =
+      m_addressAliases.removeMapping(new Pair<String, String>(inboxName, aliasToRemove));
+
+    if(newMapper == null) {
+      return false;
+    }
+    //Create a new List
+    List<Pair<String, String>> mappings = newMapper.getRawMappings();
+
+    //Convert list to form which makes settings happy
+    List newMappingsList = toEmailAddressPairList(mappings);
+
+    MailTransformSettings settings = m_impl.getMailTransformSettings();    settings.getQuarantineSettings().setAddressRemaps(newMappingsList);
+
+    m_impl.setMailTransformSettings(settings);
+
+    return true;
+  }
+  
+
+  public String getMappedTo(String account)
+    throws QuarantineUserActionFailedException {
+    
+    return m_addressAliases.getAddressMapping(account);
+    
+  }
+
+  public String[] getMappedFrom(String account)
+    throws QuarantineUserActionFailedException {
+
+    return m_addressAliases.getReverseMapping(account);
+  }
+  
+
 
 
   /**
@@ -512,6 +563,48 @@ public class Quarantine
     else if(status == QuarantineStore.GenericStatus.ERROR) {
       throw new QuarantineUserActionFailedException();
     }
+  }
+
+  private List toEmailAddressWrapper(List<String> typedList) {
+    ArrayList ret = new ArrayList();
+
+    for(String s : typedList) {
+      ret.add(new EmailAddressWrapper(s));
+    }
+
+    return ret;
+  }
+
+  private List<String> fromEmailAddressWrapper(List list) {
+    ArrayList<String> ret =
+      new ArrayList<String>();
+
+    for(Object o : list) {
+      EmailAddressWrapper wrapper = (EmailAddressWrapper) o;
+      ret.add(wrapper.getAddress());
+    }
+    return ret;  
+  }
+
+
+  private List toEmailAddressPairList(List<Pair<String, String>> typedList) {
+    ArrayList ret = new ArrayList();
+
+    for(Pair<String, String> pair : typedList) {
+      ret.add(new EmailAddressPair(pair.a, pair.b));
+    }
+    return ret;
+  }
+
+  private List<Pair<String, String>> fromEmailAddressListPair(List list) {
+    ArrayList<Pair<String, String>> ret =
+      new ArrayList<Pair<String, String>>();
+
+    for(Object o : list) {
+      EmailAddressPair eaPair = (EmailAddressPair) o;
+      ret.add(new Pair<String, String>(eaPair.getAddress1(), eaPair.getAddress2()));
+    }
+    return ret;  
   }
 
 

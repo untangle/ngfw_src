@@ -16,7 +16,10 @@ import java.util.regex.Pattern;
 
 import java.util.List;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 
 import com.metavize.tran.util.Pair;
 
@@ -31,7 +34,7 @@ import com.metavize.tran.util.Pair;
 public class GlobEmailAddressMapper {
 
   private final List<EmailAddressMatcher> m_list;
-
+  private final List<Pair<String, String>> m_origList;
 
   /**
    * Construct an EmailAddressMapper, mapping the given
@@ -44,6 +47,8 @@ public class GlobEmailAddressMapper {
    *        <code>new Pair&lt;String, String>("sales@foo.com", "jdoe@foo.com")</code>
    */
   public GlobEmailAddressMapper(List<Pair<String, String>> list) {
+
+    m_origList = list;
 
     m_list = new ArrayList<EmailAddressMatcher>();
   
@@ -67,7 +72,63 @@ public class GlobEmailAddressMapper {
     if(plainAddresses.size() > 0) {
       m_list.add(new SimpleEmailAddressMatcher(plainAddresses));
     }
+  }
+
+  /**
+   * Warning - shared reference.
+   */
+  public List<Pair<String, String>> getRawMappings() {
+    return m_origList;
+  }
+
+  /**
+   * Remove a mapping.  For thread-safety reasons, this returns
+   * a new mapper (i.e. the mapper is immutable).  Returns null
+   * if the mapping was not found
+   */
+  public GlobEmailAddressMapper removeMapping(Pair<String, String> mapping) {
+
+    boolean removedOne = false;
+    
+    boolean isWildcard = isWildcarded(mapping.a);
   
+    List<Pair<String, String>> newList = new ArrayList<Pair<String, String>>(m_origList);
+
+    
+    for(Pair<String, String> pair : m_origList) {
+      if(!(pair.b.equalsIgnoreCase(mapping.b))) {
+        continue;
+      }
+      boolean thisPairWildcard = isWildcarded(pair.a);
+      if(isWildcard && thisPairWildcard && pair.a.equals(mapping.a)) {
+        newList.remove(pair);
+        removedOne = true;
+      }
+      else {
+        if(!(thisPairWildcard) && pair.a.equalsIgnoreCase(mapping.a)) {
+          newList.remove(pair);
+          removedOne = true;
+        }
+      }
+    }
+    if(removedOne) {
+      return new GlobEmailAddressMapper(newList);
+    }
+    return null;
+  }
+
+
+  /**
+   * List all addresses which will route to the given
+   * address.
+   */
+  public String[] getReverseMapping(String rightSide) {
+    rightSide = rightSide.toLowerCase().trim();
+    HashSet<String> set = new HashSet<String>();
+    for(EmailAddressMatcher matcher : m_list) {
+      matcher.reverseMatch(rightSide, set);
+    }
+    return (String[]) set.toArray(new String[set.size()]);    
   }
 
   /**
@@ -125,6 +186,9 @@ public class GlobEmailAddressMapper {
   abstract class EmailAddressMatcher {
 
     abstract String matchAddress(String strLowerCase);
+
+    abstract void reverseMatch(String rightSideLowerCase,
+      Set addInto);
   
   }
 
@@ -150,6 +214,15 @@ public class GlobEmailAddressMapper {
     String matchAddress(String strLowerCase) {
       return m_map.get(strLowerCase);
     }
+
+    void reverseMatch(String rightLower,
+      Set writeInto) {
+      for(Map.Entry<String, String> entry : m_map.entrySet()) {
+        if(entry.getValue().equalsIgnoreCase(rightLower)) {
+          writeInto.add(entry.getKey().toLowerCase());
+        }
+      }
+    }
   }
 
   class RegexEmailAddressMatcher
@@ -168,6 +241,12 @@ public class GlobEmailAddressMapper {
       return m.matches()?
         m_mapTo:
         null;
+    }
+    void reverseMatch(String rightLower,
+      Set writeInto) {
+      if(rightLower.equalsIgnoreCase(rightLower)) {
+        writeInto.add(m_pattern.pattern());
+      }
     }
   }
 
@@ -198,6 +277,13 @@ public class GlobEmailAddressMapper {
     for(String test : tests) {
       System.out.println(test + ": " + mapper.getAddressMapping(test));
     }
+
+    String[] revMappings = mapper.getReverseMapping("foo2@foo.com");
+    System.out.println("BEGIN mappings for foo2");
+    for(String m : revMappings) {
+      System.out.println(m);
+    }
+    System.out.println("ENDOF mappings for foo2");
   
   }  
   

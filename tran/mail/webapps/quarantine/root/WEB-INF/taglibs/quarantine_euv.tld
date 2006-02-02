@@ -310,6 +310,66 @@
       <required>false</required>
       <rtexpvalue>false</rtexpvalue>
     </attribute>       
+  </tag>
+
+
+
+
+
+
+  
+<!--   For remapping -->
+
+  <tag>
+    <name>forEachReceivingRemapsEntry</name>
+    <tagclass>com.metavize.tran.mail.web.euv.tags.ReceivingRemapsListTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+  </tag>
+
+  <tag>
+    <name>receivingRemapsEntry</name>
+    <tagclass>com.metavize.tran.mail.web.euv.tags.ReceivingRemapsEntryTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <attribute>
+      <name>encoded</name>
+      <required>true</required>
+      <rtexpvalue>false</rtexpvalue>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>isReceivesRemaps</name>
+    <tagclass>com.metavize.tran.mail.web.euv.tags.IsReceivesRemapsTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <attribute>
+      <name>includeIfTrue</name>
+      <required>true</required>
+      <rtexpvalue>false</rtexpvalue>
+    </attribute>  
   </tag>    
+
+  <tag>
+    <name>isRemapped</name>
+    <tagclass>com.metavize.tran.mail.web.euv.tags.IsRemappedTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <attribute>
+      <name>includeIfTrue</name>
+      <required>true</required>
+      <rtexpvalue>false</rtexpvalue>
+    </attribute>      
+  </tag>
+
+  <tag>
+    <name>remappedTo</name>
+    <tagclass>com.metavize.tran.mail.web.euv.tags.RemappedToTag</tagclass>
+    <bodycontent>empty</bodycontent>
+    <attribute>
+      <name>encoded</name>
+      <required>true</required>
+      <rtexpvalue>false</rtexpvalue>
+    </attribute>    
+  </tag>
+  
+   
   
 </taglib>
