@@ -13,5 +13,5 @@ package com.metavize.mvvm.tapi;
 
 public interface SettingsChangeListener<T>
 {
-    public void newSettings(T settings);
+    void newSettings(T settings);
 }

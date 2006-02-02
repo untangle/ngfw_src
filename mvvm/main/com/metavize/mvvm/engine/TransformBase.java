@@ -462,8 +462,14 @@ public abstract class TransformBase implements Transform
             init(false, tps.getArgArray());
         } else if (TransformState.RUNNING == tps.getTargetState()) {
             logger.debug("bringing into RUNNING state: " + tid);
+            long t0 = System.currentTimeMillis();
             init(false, tps.getArgArray());
+            long t1 = System.currentTimeMillis();
             start(false);
+            long t2 = System.currentTimeMillis();
+            String name = tps.getName();
+            System.out.println(name + " INIT: " + (t1 - t0));
+            System.out.println(name + " START: " + (t2 - t1));
         } else if (TransformState.DESTROYED == tps.getTargetState()) {
             logger.debug("bringing into DESTROYED state: " + tid);
             runState = TransformState.DESTROYED;

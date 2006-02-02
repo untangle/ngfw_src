@@ -18,15 +18,23 @@ import org.hibernate.Session;
 
 public class AsyncSettings<T>
 {
-    private final TransformContext tctx;
-    private final SettingsChangeListener<T> settingsChangeListener;
-
+    private TransformContext tctx;
+    private SettingsChangeListener<T> settingsChangeListener;
     private boolean loaded = false;
+    private boolean initialized = false;
     private T settings = null;
 
-    public AsyncSettings(final TransformContext tctx, final String query,
-                         final SettingsChangeListener<T> settingsChangeListener)
+    public void init(final TransformContext tctx, final String query,
+                     final SettingsChangeListener<T> settingsChangeListener)
     {
+        synchronized (this) {
+            if (initialized) {
+                throw new IllegalStateException("already initialized");
+            } else {
+                initialized = true;
+            }
+        }
+
         this.tctx = tctx;
         this.settingsChangeListener = settingsChangeListener;
 
@@ -61,8 +69,38 @@ public class AsyncSettings<T>
             }).start();
     }
 
-    public AsyncSettings(final TransformContext tctx, final String query) {
-        this(tctx, query, null);
+    public void init(final TransformContext tctx, final String query) {
+        init(tctx, query, null);
+    }
+
+    public void init(TransformContext tctx, T settings,
+                     SettingsChangeListener settingsChangeListener)
+    {
+        synchronized (this) {
+            if (initialized) {
+                throw new IllegalStateException("already initialized");
+            } else {
+                initialized = true;
+            }
+        }
+
+        this.tctx = tctx;
+        this.loaded = true;
+        this.settingsChangeListener = settingsChangeListener;
+
+        setSettings(settings);
+    }
+
+    public void init(TransformContext tctx, T settings)
+    {
+        init(tctx, settings, null);
+    }
+
+    public boolean isInitialized()
+    {
+        synchronized (this) {
+            return initialized;
+        }
     }
 
     public T getSettings()

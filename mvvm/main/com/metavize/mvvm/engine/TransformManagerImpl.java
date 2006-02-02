@@ -373,6 +373,8 @@ class TransformManagerImpl implements TransformManager
 
     synchronized void restartUnloaded()
     {
+        long t0 = System.currentTimeMillis();
+
         if (!live) {
             throw new RuntimeException("TransformManager is shut down");
         }
@@ -486,6 +488,10 @@ class TransformManagerImpl implements TransformManager
                 }
             }
         }
+
+        long t1 = System.currentTimeMillis();
+
+        System.out.println("TOTAL TIME TO RESTART TRANFORMS: " + (t1 - t0));
     }
 
     // private classes --------------------------------------------------------
