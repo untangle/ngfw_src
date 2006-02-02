@@ -226,6 +226,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <include name="com/metavize/mvvm/util/SessionUtil.java"/>
       <include name="com/metavize/mvvm/util/TransactionWork.java"/>
       <include name="com/metavize/tran/util/Pair.java"/>
+      <include name="com/metavize/tran/util/IOUtil.java"/>
 
       <!-- Networking classes -->
       <include name="com/metavize/mvvm/networking/BasicNetworkSettings.java"/>
@@ -289,6 +290,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
         <include name="com/metavize/mvvm/util/SessionUtil*.class"/>
         <include name="com/metavize/mvvm/util/TransactionWork.class"/>
         <include name="com/metavize/tran/util/Pair.class"/>
+        <include name="com/metavize/tran/util/IOUtil.class"/>
 
         <!-- Networking classes -->
         <include name="com/metavize/mvvm/networking/BasicNetworkSettings.class"/>
