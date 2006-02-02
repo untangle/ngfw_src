@@ -18,6 +18,7 @@ import javax.swing.table.*;
 
 import com.metavize.gui.transform.*;
 import com.metavize.gui.widgets.editTable.*;
+import com.metavize.gui.util.Util;
 import com.metavize.mvvm.logging.EventRepository;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.logging.RepositoryDesc;
@@ -80,7 +81,7 @@ public class LogJPanel extends MLogTableJPanel {
             for( FirewallEvent requestLog : requestLogList ){
                 event = new Vector(6);
                 PipelineEndpoints pe = requestLog.getPipelineEndpoints();
-                event.add( null == pe ? "" : requestLog.getTimeStamp() );
+                event.add( null == pe ? "" : Util.getLogDateFormat().format(requestLog.getTimeStamp()) );
                 event.add( requestLog.getWasBlocked() ? "blocked" : "passed" );
                 event.add( null == pe ? "" : (pe.getCClientAddr().getHostAddress() + ":" + Integer.toString(pe.getCClientPort())) );
                 event.add( "rule #" + requestLog.getRuleIndex() );

@@ -18,6 +18,7 @@ import javax.swing.table.*;
 
 import com.metavize.gui.transform.*;
 import com.metavize.gui.widgets.editTable.*;
+import com.metavize.gui.util.Util;
 import com.metavize.mvvm.logging.EventRepository;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.logging.RepositoryDesc;
@@ -80,7 +81,7 @@ public class LogJPanel extends MLogTableJPanel {
             for( SpywareEvent requestLog : requestLogList ){
                 PipelineEndpoints pe = requestLog.getPipelineEndpoints();
                 event = new Vector(7);
-                event.add( requestLog.getTimeStamp() );
+                event.add( Util.getLogDateFormat().format(requestLog.getTimeStamp()) );
                 event.add( requestLog.isBlocked() ? "block" : "pass" );
                 event.add( pe.getCClientAddr() + ":" + ((Integer)pe.getCClientPort()).toString() );
                 event.add( requestLog.getLocation() + " : " + requestLog.getIdentification() );

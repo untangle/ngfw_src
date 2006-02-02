@@ -18,6 +18,7 @@ import javax.swing.table.*;
 
 import com.metavize.gui.transform.*;
 import com.metavize.gui.widgets.editTable.*;
+import com.metavize.gui.util.Util;
 import com.metavize.mvvm.logging.EventRepository;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.logging.RepositoryDesc;
@@ -80,7 +81,7 @@ public class LogJPanel extends MLogTableJPanel {
 
             for( VirusEvent log : logList ){
                 event = new Vector(7);
-                event.add( log.getTimeStamp() );
+                event.add( Util.getLogDateFormat().format(log.getTimeStamp()) );
                 event.add( log.getActionName() );
                 PipelineEndpoints pe = log.getPipelineEndpoints();
                 event.add( null == pe ? "" : (pe.getCClientAddr().getHostAddress() + ":" + Integer.toString(pe.getCClientPort())) );

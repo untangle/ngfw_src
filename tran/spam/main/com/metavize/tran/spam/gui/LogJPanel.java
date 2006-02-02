@@ -18,6 +18,7 @@ import javax.swing.table.*;
 
 import com.metavize.gui.transform.*;
 import com.metavize.gui.widgets.editTable.*;
+import com.metavize.gui.util.Util;
 import com.metavize.mvvm.logging.EventRepository;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.logging.RepositoryDesc;
@@ -83,7 +84,7 @@ public class LogJPanel extends MLogTableJPanel {
 
             for( SpamEvent requestLog : requestLogList ){
                 event = new Vector(9);
-                event.add( requestLog.getTimeStamp() );
+                event.add( Util.getLogDateFormat().format(requestLog.getTimeStamp()) );
                 event.add( requestLog.getActionName() );
                 event.add( requestLog.getClientAddr() + ":" + (Integer.toString(requestLog.getClientPort())));
                 event.add( requestLog.getSubject() );
