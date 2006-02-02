@@ -162,7 +162,8 @@ public class QuarantineStore {
    * Quarantine the mail file
    *
    * @param file the file
-   * @param address the recipient address
+   * @param inboxAddr the inbox address
+   * @param recipients the recipients of the email
    * @param summary a summary of the mail for quarantine
    * @param attemptRename if true, this operation will
    *        attempt to move the file into the quarantine
@@ -175,20 +176,21 @@ public class QuarantineStore {
    * @return the result
    */
   public Pair<AdditionStatus, String> quarantineMail(File file,
-    String address,
+    String inboxAddr,
+    String[] recipients,
     MailSummary summary,
     boolean attemptRename) {
 
-    address = address.toLowerCase();
+    inboxAddr = inboxAddr.toLowerCase();
 
     m_logger.debug("Call to quarantine mail from file \"",
       file,
-      "\" for user \"",
-      address,
+      "\" into inbox \"",
+      inboxAddr,
       "\"");
 
     //Get/create the inbox directory
-    RelativeFile dirRF = getInboxDir(address, true);
+    RelativeFile dirRF = getInboxDir(inboxAddr, true);
     if(dirRF == null) {
       return new Pair<AdditionStatus, String>(AdditionStatus.FAILURE);
     }
@@ -198,7 +200,7 @@ public class QuarantineStore {
     //operation of addition and index update.  This
     //is to prevent concurrent deletion of the directory
     //while purging old accounts.
-    m_addressLock.lock(address);
+    m_addressLock.lock(inboxAddr);
 
     long size = file.length();
 
@@ -212,7 +214,7 @@ public class QuarantineStore {
         //Try copy
         newFileName = copyFileToInbox(file, dir);
         if(newFileName == null) {
-          m_addressLock.unlock(address);
+          m_addressLock.unlock(inboxAddr);
           return new Pair<AdditionStatus, String>(AdditionStatus.FAILURE);
         }
         renamedFile = false;
@@ -221,7 +223,7 @@ public class QuarantineStore {
     else {
       newFileName = copyFileToInbox(file, dir);
       if(newFileName == null) {
-        m_addressLock.unlock(address);
+        m_addressLock.unlock(inboxAddr);
         return new Pair<AdditionStatus, String>(AdditionStatus.FAILURE);
       }
       renamedFile = false;
@@ -231,7 +233,7 @@ public class QuarantineStore {
     
 
     //Update (append) to the index
-    if(!appendSummaryToIndex(dir, address, newFileName, size, summary)) {
+    if(!appendSummaryToIndex(dir, inboxAddr, recipients, newFileName, size, summary)) {
       if(renamedFile) {
         //We're likely so hosed at this point
         //anyway, what's the use of worrying about
@@ -241,12 +243,12 @@ public class QuarantineStore {
       else {
         new File(dir, newFileName).delete();
       }
-      m_addressLock.unlock(address);
+      m_addressLock.unlock(inboxAddr);
       return new Pair<AdditionStatus, String>(AdditionStatus.FAILURE);
     }
 
-    m_masterTable.mailAdded(address, size);
-    m_addressLock.unlock(address);
+    m_masterTable.mailAdded(inboxAddr, size);
+    m_addressLock.unlock(inboxAddr);
     return new Pair<AdditionStatus, String>(
       renamedFile?AdditionStatus.SUCCESS_FILE_RENAMED:
         AdditionStatus.SUCCESS_FILE_COPIED,
@@ -530,6 +532,7 @@ public class QuarantineStore {
       }
       handler.ejectMail(record,
         read.b.getOwnerAddress(),
+        record.getRecipients(),
         file);
       if(file.exists()) {
         m_logger.debug("Handler for file  \"" +
@@ -549,18 +552,20 @@ public class QuarantineStore {
   // has done this).
   //
   private boolean appendSummaryToIndex(File inboxDir,
-    String address,
+    String inboxAddr,
+    String[] recipients,
     String fileNameInInbox,
     long size,
     MailSummary summary) {
 
     //Update (append) to the index
-    return InboxIndexDriver.appendIndex(address,
+    return InboxIndexDriver.appendIndex(inboxAddr,
       inboxDir,
       new InboxRecordImpl(fileNameInInbox,
         System.currentTimeMillis(),
         size,
-        summary));
+        summary,
+        recipients));
 
   }
 
@@ -815,15 +820,16 @@ public class QuarantineStore {
     implements QuarantineEjectionHandler {
 
     public void ejectMail(InboxRecord record,
-      String recipient,
+      String inboxAddress,
+      String[] recipients,
       File data) {
       if(data.delete()) {
         m_logger.debug("Deleted file \"" + data + "\" for inbox \"" +
-          recipient + "\"");
+          inboxAddress + "\"");
       }
       else {
         m_logger.debug("Unable to delete file \"" + data + "\" for inbox \"" +
-          recipient + "\"");
+          inboxAddress + "\"");
       }
     }
   }
@@ -841,16 +847,17 @@ public class QuarantineStore {
     }
 
     public void ejectMail(InboxRecord record,
-      String recipient,
+      String inboxAddress,
+      String[] recipients,
       File data) {
       if(data.delete()) {
         m_logger.debug("Pruned file \"" + data + "\" for inbox \"" +
-          recipient + "\"");
-        m_observer.pruningOldMessage(recipient, data, record);
+          inboxAddress + "\"");
+        m_observer.pruningOldMessage(inboxAddress, data, record);
       }
       else {
         m_logger.debug("Unable to Pruned file \"" + data + "\" for inbox \"" +
-          recipient + "\"");
+          inboxAddress + "\"");
       }
     }
   }

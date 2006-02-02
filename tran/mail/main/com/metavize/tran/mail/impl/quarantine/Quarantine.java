@@ -19,6 +19,8 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 import com.metavize.mvvm.CronJob;
 import com.metavize.mvvm.MvvmContextFactory;
@@ -286,6 +288,92 @@ public class Quarantine
       }
     }
 
+    //Here is the tricky part.  First off, we assume that a given
+    //recipient has not been addressed more than once (if they have,
+    //then they would have gotten duplicates and we will not change that
+    //situation).
+    //
+    //Now, for each recipient we may need to place the mail
+    //into a different quarantine.  However, we must preserve the original
+    //recipient(s).  In fact, if the mail was to "foo@moo.com" but
+    //quarantined into "fred@yahoo"'s inbox, when released it should go
+    //to "foo" and not "fred".
+    Map<String, List<String>> recipientGroupings =
+      new HashMap<String, List<String>>();
+      
+    for(EmailAddress eAddr : recipients) {
+      //Skip null address
+      if(eAddr == null || eAddr.isNullAddress()) {
+        continue;
+      }
+
+      String recipientAddress = eAddr.getAddress().toLowerCase();
+      String inboxAddress = m_addressAliases.getAddressMapping(recipientAddress);
+
+      if(inboxAddress != null) {
+         m_logger.debug("Recipient \"" + recipientAddress + "\" remaps to \"" + inboxAddress + "\"");
+      }
+      else {
+        inboxAddress = recipientAddress;
+      }
+
+      List<String> listForInbox = recipientGroupings.get(inboxAddress);
+      if(listForInbox == null) {
+        listForInbox = new ArrayList<String>();
+        recipientGroupings.put(inboxAddress, listForInbox);
+      };
+      listForInbox.add(recipientAddress);
+    }
+
+
+    //Now go ahead and perform inserts.  Note that we could save a few cycles
+    //by breaking-out the (common) case of a mail with a single recipient
+    ArrayList<Pair<String, String>> outcomeList = new ArrayList<Pair<String, String>>();
+    boolean allSuccess = true;
+
+    for(Map.Entry<String, List<String>> entry : recipientGroupings.entrySet()) {
+    
+      String inboxAddress = entry.getKey();
+      
+      //Get recipients as an array
+      String[] recipientsForThisInbox = (String[])
+        entry.getValue().toArray(new String[entry.getValue().size()]);
+
+      //Perform the insert
+      Pair<QuarantineStore.AdditionStatus, String> result =
+        m_store.quarantineMail(file,
+          inboxAddress,
+          recipientsForThisInbox,
+          summary,
+          false);
+      if(result.a == QuarantineStore.AdditionStatus.FAILURE) {
+        allSuccess = false;
+        break;
+      }
+      else {
+        outcomeList.add(new Pair<String, String>(inboxAddress, result.b));
+      }      
+    }
+
+    //Rollback
+    if(!allSuccess) {
+      m_logger.debug("Quarantine for multiple recipients had failure.  Rollback " +
+        "any success");
+      for(Pair<String, String> addition : outcomeList) {
+        m_store.purge(addition.a, addition.b);
+      }
+      return false;
+    }
+    return true;
+
+
+
+/*    
+    
+
+
+          
+
     //Perform any remapping
     ArrayList<String> sRecipients = new ArrayList<String>();
     for(EmailAddress eAddr : recipients) {
@@ -340,6 +428,7 @@ public class Quarantine
       }
       return true;
     }
+*/    
   }
 
 
@@ -616,21 +705,22 @@ public class Quarantine
     implements QuarantineEjectionHandler {
 
     public void ejectMail(InboxRecord record,
-      String recipient,
+      String inboxAddress,
+      String[] recipients,
       File data) {
 
       FileInputStream fIn = null;
       try {
         fIn = new FileInputStream(data);
         BufferedInputStream bufIn = new BufferedInputStream(fIn);
-        boolean success = MvvmContextFactory.context().mailSender().sendMessage(bufIn, recipient);
+        boolean success = MvvmContextFactory.context().mailSender().sendMessage(bufIn, recipients);
         if(success) {
-          m_logger.debug("Released mail \"" + record.getMailID() + "\" for \"" +
-            recipient + "\"");
+          m_logger.debug("Released mail \"" + record.getMailID() + "\" for " + recipients.length +
+            " recipients from inbox \"" + inboxAddress + "\"");
         }
         else {
-          m_logger.warn("Unable to release mail \"" + record.getMailID() + "\" for \"" +
-            recipient + "\"");
+          m_logger.warn("Unable to release mail \"" + record.getMailID() + "\" for " + recipients.length +
+            " recipients from inbox \"" + inboxAddress + "\"");
         }
       }
       catch(Exception ex) {

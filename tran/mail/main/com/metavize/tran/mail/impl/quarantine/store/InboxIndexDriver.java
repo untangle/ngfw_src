@@ -54,7 +54,7 @@ class InboxIndexDriver
   private static final String INDEX_FILE_NAME = "index.mqi";
   private static final String RECORD_SEP = "--SEP--";
   private static final String INBOX_OWNER_TAG = "Address:";
-  private static final int VERSION = 1;
+  private static final int VERSION = 3;
 
 
   
@@ -91,10 +91,10 @@ class InboxIndexDriver
       ret.setLastAccessTimestamp(f.lastModified());
 
       //Read entries
-      InboxRecordImpl record = readRecord(reader);
+      InboxRecordImpl record = readRecord(reader, ret.getOwnerAddress());
       while(record != null) {
         ret.put(record.getMailID(), record);
-        record = readRecord(reader);
+        record = readRecord(reader, ret.getOwnerAddress());
       }
       IOUtil.close(fIn);
       return new Pair<FileReadOutcome, InboxIndexImpl>(FileReadOutcome.OK, ret);
@@ -251,11 +251,21 @@ class InboxIndexDriver
     pw.println(nullToQQ(record.getMailID()));
     pw.println(Long.toString(record.getInternDate()));
     pw.println(Long.toString(record.getSize()));
+
+    String[] recipients = record.getRecipients();
+    if(recipients == null) {recipients = new String[0];}
+
+    pw.println(Long.toString(recipients.length));
+    for(String s : recipients) {
+      writeMultilineEntry(pw, s);
+    }
+    
     MailSummary summary = record.getMailSummary();
     writeMultilineEntry(pw, summary.getSender());
     writeMultilineEntry(pw, summary.getSubject());
     writeMultilineEntry(pw, summary.getQuarantineCategory());
     writeMultilineEntry(pw, summary.getQuarantineDetail());
+    pw.println(Long.toString(summary.getAttachmentCount()));
     pw.println();
   }
 
@@ -263,7 +273,8 @@ class InboxIndexDriver
   /**
    * Method returns null of EOF is encountered
    */
-  private static InboxRecordImpl readRecord(BufferedReader reader)
+  private static InboxRecordImpl readRecord(BufferedReader reader,
+    String inboxOwnerAddress)
     throws BadFileEntry, IOException {
 
     try {
@@ -274,24 +285,101 @@ class InboxIndexDriver
 
       //Read version
       int version = readVersion(reader);
-      //Someday, we'll care about version...
 
+      if(version == 1) {
+        return readV1Record(reader, inboxOwnerAddress);
+      }
+      if(version == 2) {
+        return readV2Record(reader, inboxOwnerAddress);
+      }
+      return readV3Record(reader);
+    }
+    catch(EOFException ex) {
+      return null;
+    }
+    
+  }
+
+  private static InboxRecordImpl readV3Record(BufferedReader reader)
+    throws BadFileEntry, IOException {
+
+    try {
       InboxRecordImpl ret = new InboxRecordImpl();
       ret.setMailID(readLine(reader));
       ret.setInternDate(readLong(reader));
       ret.setSize(readLong(reader));
+
+      String[] recipients = new String[(int) readLong(reader)];
+      for(int i = 0; i<recipients.length; i++) {
+        recipients[i] = readMultilineEntry(reader);
+      }
+      ret.setRecipients(recipients);
+      
       MailSummary summary = new MailSummary();
       ret.setMailSummary(summary);
       summary.setSender(readMultilineEntry(reader));
       summary.setSubject(readMultilineEntry(reader));
       summary.setQuarantineCategory(readMultilineEntry(reader));
       summary.setQuarantineDetail(readMultilineEntry(reader));
+      summary.setAttachmentCount((int) readLong(reader));
       return ret;
     }
     catch(EOFException ex) {
       return null;
     }
-    
+  }  
+  
+
+  private static InboxRecordImpl readV2Record(BufferedReader reader,
+    String inboxOwnerAddress)
+    throws BadFileEntry, IOException {
+
+    try {
+      InboxRecordImpl ret = new InboxRecordImpl();
+      ret.setMailID(readLine(reader));
+      ret.setInternDate(readLong(reader));
+      ret.setSize(readLong(reader));
+      //Fake the recipients (just assume same as inbox)
+      ret.setRecipients(new String[] {inboxOwnerAddress});      
+      MailSummary summary = new MailSummary();
+      ret.setMailSummary(summary);
+      summary.setSender(readMultilineEntry(reader));
+      summary.setSubject(readMultilineEntry(reader));
+      summary.setQuarantineCategory(readMultilineEntry(reader));
+      summary.setQuarantineDetail(readMultilineEntry(reader));
+      summary.setAttachmentCount((int) readLong(reader));
+      return ret;
+    }
+    catch(EOFException ex) {
+      return null;
+    }
+  }
+  
+  
+  private static InboxRecordImpl readV1Record(BufferedReader reader,
+    String inboxOwnerAddress)
+    throws BadFileEntry, IOException {
+
+    try {
+      InboxRecordImpl ret = new InboxRecordImpl();
+      ret.setMailID(readLine(reader));
+      ret.setInternDate(readLong(reader));
+      ret.setSize(readLong(reader));
+      //Fake the recipients (just assume same as inbox)
+      ret.setRecipients(new String[] {inboxOwnerAddress});
+      MailSummary summary = new MailSummary();
+      ret.setMailSummary(summary);
+      summary.setSender(readMultilineEntry(reader));
+      summary.setSubject(readMultilineEntry(reader));
+      summary.setQuarantineCategory(readMultilineEntry(reader));
+      summary.setQuarantineDetail(readMultilineEntry(reader));
+      //Just fake that there are no attachments
+      summary.setAttachmentCount(0);
+      return ret;
+    }
+    catch(EOFException ex) {
+      return null;
+    }
   }
 
 

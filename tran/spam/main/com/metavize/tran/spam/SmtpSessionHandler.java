@@ -419,7 +419,8 @@ public class SmtpSessionHandler
           msg.getMMHeaders().getFrom().getAddress(),
         msg.getMMHeaders().getSubject(),
         getQuarantineCategory(),
-        getQuarantineDetail(report)),
+        getQuarantineDetail(report),
+        msg.getAttachmentCount()),
       addresses);
   }
 }

@@ -89,7 +89,7 @@ public abstract class MaintenenceControlerBase
 
       String[] inboundRemappings = quarantine.getMappedFrom(account);
       if(inboundRemappings != null && inboundRemappings.length > 0) {
-        IsReceivesRemapsTag.setCurrent(req, false);
+        IsReceivesRemapsTag.setCurrent(req, true);
         ReceivingRemapsListTag.setCurrentList(req, inboundRemappings);
       }
       else {

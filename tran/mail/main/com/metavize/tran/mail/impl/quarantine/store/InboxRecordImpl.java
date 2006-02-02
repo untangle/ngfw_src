@@ -25,9 +25,10 @@ public final class InboxRecordImpl
   public InboxRecordImpl(String mailID,
     long addedOn,
     long size,
-    MailSummary summary) {
+    MailSummary summary,
+    String[] recipients) {
     
-    super(mailID, addedOn, size, summary);
+    super(mailID, addedOn, size, summary, recipients);
     
   }
 

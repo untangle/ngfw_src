@@ -74,6 +74,16 @@ public class GlobEmailAddressMapper {
     }
   }
 
+  @Override
+  public String toString() {
+    String newLine = System.getProperty("line.separator", "\n");
+    StringBuilder sb = new StringBuilder();
+    for(Pair<String, String> p : m_origList) {
+      sb.append(p.a).append(" ->").append(p.b).append(newLine);
+    }
+    return sb.toString();
+  }
+
   /**
    * Warning - shared reference.
    */
@@ -123,12 +133,16 @@ public class GlobEmailAddressMapper {
    * address.
    */
   public String[] getReverseMapping(String rightSide) {
+  
     rightSide = rightSide.toLowerCase().trim();
     HashSet<String> set = new HashSet<String>();
-    for(EmailAddressMatcher matcher : m_list) {
-      matcher.reverseMatch(rightSide, set);
+    for(Pair<String, String> pair : m_origList) {
+      if(pair.b.equalsIgnoreCase(rightSide)) {
+        set.add(pair.a.toLowerCase());
+      }
     }
-    return (String[]) set.toArray(new String[set.size()]);    
+
+    return (String[]) set.toArray(new String[set.size()]);
   }
 
   /**

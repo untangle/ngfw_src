@@ -23,6 +23,7 @@ public final class MailSummary
   private String m_subject;
   private String m_quarantineCategory;
   private String m_quarantineDetail;
+  private int m_attachmentCount = 0;
 
 
   public MailSummary() {}
@@ -30,13 +31,22 @@ public final class MailSummary
   public MailSummary(String sender,
     String subject,
     String quarantineCategory,
-    String quarantineDetail) {
+    String quarantineDetail,
+    int attachmentCount) {
 
     m_sender = sender;
     m_subject = subject;
     m_quarantineCategory = quarantineCategory;
     m_quarantineDetail = quarantineDetail;
+    m_attachmentCount = attachmentCount;
   }
+
+  public int getAttachmentCount() {
+    return m_attachmentCount;
+  }
+  public void setAttachmentCount(int attachmentCount) {
+    m_attachmentCount = attachmentCount;
+  }  
   
   public String getSender() {
     return m_sender;
@@ -69,6 +79,7 @@ public final class MailSummary
     sb.append("Sender: ").append(getSender()).
       append(", Subject: ").append(getSubject()).
       append(", Cat: ").append(getQuarantineCategory()).
+      append(", AttachCount: ").append(getAttachmentCount()).
       append(", Detail: ").append(getQuarantineDetail());
 
     return sb.toString();

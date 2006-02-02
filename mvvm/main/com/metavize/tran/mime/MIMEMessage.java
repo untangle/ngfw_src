@@ -201,6 +201,23 @@ public class MIMEMessage
     return (MIMEMessageHeaders) getMPHeaders();
   }
 
+  /**
+   * Convieience method to count attachments
+   */
+  public int getAttachmentCount() {
+    MIMEPart[] kids = getLeafParts(true);
+    if(kids == null) {
+      return 0;
+    }
+    int ret = 0;
+    for(MIMEPart part : kids) {
+      if(part.isAttachment()) {
+        ret++;
+      }
+    }
+    return ret;
+  }
+
  /**
   * Get the contents of this MIMEPart as a file.  This applies to
   *

@@ -29,6 +29,7 @@ public abstract class InboxRecord
   private long m_addedOn;
   private long m_size;
   private MailSummary m_mailSummary;
+  private String[] m_recipients;
 
   public InboxRecord() {
   
@@ -37,13 +38,30 @@ public abstract class InboxRecord
   public InboxRecord(String mailID,
     long addedOn,
     long size,
-    MailSummary summary) {
+    MailSummary summary,
+    String[] recipients) {
     
     m_mailID = mailID;
     m_addedOn = addedOn;
     m_size = size;
     m_mailSummary = summary;
-    
+    m_recipients = recipients;
+  }
+
+
+  /**
+   * Get the recipients <b>for this inbox entry</b>.  This does
+   * not mean all recipients of the email.  This refers to the
+   * destination(s) of the mail which were re-routed to quarantine.
+   * For the cases of address remapping, there may be more than
+   * one recipient, and the owner of the inbox may not be among
+   * the recipients.
+   */
+  public final String[] getRecipients() {
+    return m_recipients;
+  }
+  public final void setRecipients(String[] recipients) {
+    m_recipients = recipients;
   }
 
   /**
