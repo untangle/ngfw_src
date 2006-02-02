@@ -781,10 +781,10 @@ public class HttpParser extends AbstractParser
     {
         int l = b.remaining();
 
-        String uri = null;
+        StringBuilder uri = new StringBuilder(b.remaining());
 
         for (int i = 0; b.hasRemaining(); i++) {
-            if (buf.length <= i) {
+            if (maxUri <= i) {
                 String msg = "(buf limit exceeded) " + buf.length
                     + ": " + new String(buf);
                 if (blockLongUris) {
@@ -795,71 +795,58 @@ public class HttpParser extends AbstractParser
                     throw new ParseException("non-http " + msg);
                 }
             }
-            buf[i] = b.get();
 
-            if (SP == buf[i] || HT == buf[i]) {
+            char c = (char)b.get();
+
+            if (SP == c || HT == c) {
                 b.position(b.position() - 1);
-                uri = new String(buf, 0, i);
                 break;
             }
-        }
 
-        if (null == uri) {
-            uri = new String(buf, 0, l);
-        }
-
-        try {
-            return escapeUri(uri);
-        } catch (URISyntaxException exn) {
-            throw new ParseException(exn);
-        }
-    }
-
-    private URI escapeUri(String uri) throws URISyntaxException
-    {
-        StringBuilder sb = new StringBuilder(uri.length());
-
-        for (int i = 0; i < uri.length(); i++) {
-            char c = uri.charAt(i);
             switch (c) {
                 // unwise
-            case '{': sb.append("%7B"); break;
-            case '}': sb.append("%7D"); break;
-            case '|': sb.append("%7C"); break;
-            case '\\': sb.append("%5C"); break;
-            case '^': sb.append("%5E"); break;
-            case '[': sb.append("%5B"); break;
-            case ']': sb.append("%5D"); break;
-            case '`': sb.append("%60"); break;
+            case '{': uri.append("%7B"); break;
+            case '}': uri.append("%7D"); break;
+            case '|': uri.append("%7C"); break;
+            case '\\': uri.append("%5C"); break;
+            case '^': uri.append("%5E"); break;
+            case '[': uri.append("%5B"); break;
+            case ']': uri.append("%5D"); break;
+            case '`': uri.append("%60"); break;
                 // delimiter (except #)
-            case '<': sb.append("%3C"); break;
-            case '>': sb.append("%3E"); break;
-            case '"': sb.append("%22"); break;
+            case '<': uri.append("%3C"); break;
+            case '>': uri.append("%3E"); break;
+            case '"': uri.append("%22"); break;
             case '%':
-                if (uri.length() - 1 < i + 2
-                    || (!isHex((byte)uri.charAt(i + 1))
-                        || !isHex((byte)uri.charAt(i + 2)))) {
-                    sb.append("%25");
+                if (2 > b.remaining()
+                    || (!isHex((byte)b.get(b.position()))
+                        || !isHex((byte)b.get(b.position() + 1)))) {
+                    uri.append("%25");
                 } else {
-                    sb.append('%');
+                    uri.append('%');
                 }
                 break;
             default:
                 if (Character.isISOControl(c)) {
-                    sb.append('%');
+                    uri.append('%');
                     String hexStr = Integer.toHexString(c);
                     if (2 > hexStr.length()) {
                         hexStr = "0" + hexStr;
                     }
-                    sb.append(hexStr);
+                    uri.append(hexStr);
                 } else {
-                    sb.append(c);
+                    uri.append(c);
                 }
                 break;
             }
+
         }
 
-        return new URI(sb.toString());
+        try {
+            return new URI(uri.toString());
+        } catch (URISyntaxException exn) {
+            throw new ParseException(exn);
+        }
     }
 
     private void eat(ByteBuffer data, String s) throws ParseException
