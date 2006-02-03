@@ -48,7 +48,11 @@ public final class Constants
 
   public static final String SAFELIST_VIEW = "/Safelist.jsp";
 
+  public static final String UNMAP_ADDRESS_VIEW = "/UnmapAddress.jsp";
+
   public static final String INBOX_MAINTENENCE_CTL = "/manageuser";
+
+  public static final String UNMAP_CTL = "/unmp";
   
   
 }

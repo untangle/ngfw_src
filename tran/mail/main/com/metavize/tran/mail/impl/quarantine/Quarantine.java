@@ -558,10 +558,14 @@ public class Quarantine
   public boolean unmapSelfService(String inboxName, String aliasToRemove)
     throws QuarantineUserActionFailedException {
 
+    System.out.println("***DEBUG*** [unmapSelfService()] Called with inbox: " +
+      inboxName + " and aliasToRemove: " + aliasToRemove);
+
     GlobEmailAddressMapper newMapper =
-      m_addressAliases.removeMapping(new Pair<String, String>(inboxName, aliasToRemove));
+      m_addressAliases.removeMapping(new Pair<String, String>(aliasToRemove, inboxName));
 
     if(newMapper == null) {
+      System.out.println("***DEBUG*** newMapper is null!?!");
       return false;
     }
     //Create a new List
@@ -574,6 +578,7 @@ public class Quarantine
 
     m_impl.setMailTransformSettings(settings);
 
+    System.out.println("***DEBUG*** Returning True");
     return true;
   }
   

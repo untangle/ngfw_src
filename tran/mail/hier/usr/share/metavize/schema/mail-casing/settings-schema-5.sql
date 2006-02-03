@@ -66,17 +66,6 @@ CREATE TABLE settings.email_address_pair (
     PRIMARY KEY (pair_id));
 
 
-
--- com.metavize.tran.mail.papi.EmailAddressPair
-CREATE TABLE settings.email_address_pair (
-    pair_id int8 NOT NULL,
-    address1 text,
-    address2 text,
-    position int4,
-    settings_id int8,
-    PRIMARY KEY (pair_id));
-
-
 -- Silly little table, but this is how Aaron
 -- suggested I create a persistent list of Strings
 -- com.metavize.tran.mail.papi.EmailAddressWrapper

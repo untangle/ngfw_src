@@ -21,9 +21,15 @@ public class WebConstants {
   public static final String SAFELIST_REMOVE_RV = "slremove";
   public static final String VIEW_INBOX_RV = "viewibx";
   public static final String MAIL_ID_RP = "mid";
-
   //When the "action" is "sladd" or "slremove", this is the
   //key for the value of the (base64 encoded) email address
   public static final String SAFELIST_TARGET_ADDR_RP = "sladdr";
+
+  public static final String UNMAPPER_VIEW_RV = "unmapview";
+  public static final String UNMAPPER_REMOVE_RV = "unmapremove";
+  //When the "action" is "unmapremove", this is the
+  //key for the value of the (base64 encoded) email address
+  public static final String UNMAPPER_TARGET_ADDR_RP = "unmapaddr";
+  
 
 }

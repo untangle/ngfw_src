@@ -156,35 +156,46 @@ SEP
 
       <quarantine:isRemapped includeIfTrue="true">
         <div class="errortext">
-          Quarantined emails for <quarantine:currentAddress/> are being sent to the inbox of <quarantine:remappedTo encoded="false"/>.  If you believe this to be an error, please contact either your system administrator or <a href="mailto:<quarantine:remappedTo encoded="false"/>"><quarantine:remappedTo encoded="false"/></a>.
+          Quarantined emails for <quarantine:currentAddress/> are being sent to the inbox of <quarantine:remappedTo encoded="false"/>.  If you believe this to be an error, please contact either your system administrator or <a href="mailto:<quarantine:remappedTo encoded="false"/>"><quarantine:remappedTo encoded="false"/></a> directly.
         </div>
       </quarantine:isRemapped>
       
       <quarantine:isRemapped includeIfTrue="false">
         <!-- INTRO MESSAGE -->
-          The emails listed below have been quarantined by Metavize EdgeGuard.
-          These emails will be deleted automatically after 20 days.
+        The emails listed below have been quarantined by Metavize EdgeGuard.
+        These emails will be deleted automatically after 20 days.
+        <br><br>
+        To release any email from the quarantine and deliver the email to your inbox,
+        click the checkboxes for one or more emails and click <code>Release</code>.
+        To delete any email in the quarantine,
+        click the checkboxes for one or more emails and click <code>Delete</code>.
+        <br><br>
+        <quarantine:hasSafelist includeIfTrue="true">
+          You may also view your <a href="/quarantine/safelist?<quarantine:constants keyName="action"/>=<quarantine:constants valueName="slview"/>&<quarantine:constants keyName="tkn"/>=<quarantine:currentAuthToken encoded="true"/>">safelist</a>
+        of email senders whose emails you do not want to quarantine.
+        <br><br>        
+        </quarantine:hasSafelist>
+
+        <quarantine:isReceivesRemaps includeIfTrue="true">
+          <!--
+            This address received remaps.  Do not offer to let them pass 
+            their account along until all inbound remaps are empty
+          -->
+          Note that emails for <quarantine:currentAddress/> as well as:
+          <ul>
+            <quarantine:forEachReceivingRemapsEntry>
+              <li><quarantine:receivingRemapsEntry encoded="false"/></li>
+            </quarantine:forEachReceivingRemapsEntry>
+          </ul>
+          are accumulated into this inbox.  If you wish to change which email addresses
+          are quarantined at this address, please proceed <a href="/quarantine/unmp?action=unmapview&tkn=<quarantine:currentAuthToken encoded="true"/>">to the alias control page</a>.
           <br><br>
-          To release any email from the quarantine and deliver the email to your inbox,
-          click the checkboxes for one or more emails and click <code>Release</code>.
-          To delete any email in the quarantine,
-          click the checkboxes for one or more emails and click <code>Delete</code>.
+        </quarantine:isReceivesRemaps>
+        <quarantine:isReceivesRemaps includeIfTrue="false">
+          <!-- Offer to remap -->
+          You can also choose to forward all quarantined mail for <quarantine:currentAddress/> to a different email address.  This is useful for email lists (such as &quot;sales@mycompany.com&quot; or &quot;jobs@anotherCompany.com&quot;) to designate a single person to manage the quarantined emails for the group.  
           <br><br>
-          <quarantine:hasSafelist includeIfTrue="true">
-            You may also view your <a href="/quarantine/safelist?<quarantine:constants keyName="action"/>=<quarantine:constants valueName="slview"/>&<quarantine:constants keyName="tkn"/>=<quarantine:currentAuthToken encoded="true"/>">safelist</a>
-          of email senders whose emails you do not want to quarantine.
-          </quarantine:hasSafelist>
-          <br><br>
-          <quarantine:isReceivesRemaps includeIfTrue="true">
-            Note that emails for <quarantine:currentAddress/> as well as:
-            <ul>
-              <quarantine:forEachReceivingRemapsEntry>
-                <li><quarantine:receivingRemapsEntry encoded="false"/></li>
-              </quarantine:forEachReceivingRemapsEntry>              
-            </ul>
-            are accumulated into this inbox.
-            <br><br>            
-          </quarantine:isReceivesRemaps>
+        </quarantine:isReceivesRemaps>
       </quarantine:isRemapped>
       
       
