@@ -19,13 +19,15 @@ import com.metavize.mvvm.tran.Rule;
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
  * @hibernate.class
- * table="tr_mvvm_network_intf"
+ * table="mvvm_network_intf"
  */
 public class Interface extends Rule
 {
     private byte argonIntf;
     private NetworkSpace networkSpace;
     private EthernetMedia ethernetMedia = EthernetMedia.AUTO_NEGOTIATE;
+    /* This is the current status of the ethernet port */
+    private String currentMedia = "Link ok";
     private boolean isPingable = true;
 
     public Interface()
@@ -89,6 +91,7 @@ public class Interface extends Rule
     
     public void setEthernetMedia( EthernetMedia ethernetMedia )
     {
+        if ( ethernetMedia == null ) ethernetMedia = EthernetMedia.AUTO_NEGOTIATE;
         this.ethernetMedia = ethernetMedia;
     }
 
@@ -107,4 +110,16 @@ public class Interface extends Rule
     {
         this.isPingable = isPingable;
     }
+
+    /** The following are not stored in the database ***/
+    public String getCurrentMedia()
+    {
+        return this.currentMedia;
+    }
+
+    void setCurrentMedia( String newValue )
+    {
+        this.currentMedia = newValue;
+    }
+    
 }
