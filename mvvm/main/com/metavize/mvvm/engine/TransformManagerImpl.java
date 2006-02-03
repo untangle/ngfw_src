@@ -27,8 +27,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -371,128 +369,6 @@ class TransformManagerImpl implements TransformManager
         }
     }
 
-    synchronized void restartUnloaded()
-    {
-        long t0 = System.currentTimeMillis();
-
-        if (!live) {
-            throw new RuntimeException("TransformManager is shut down");
-        }
-
-        logger.info("Restarting unloaded transforms...");
-
-        ToolboxManagerImpl tbm = (ToolboxManagerImpl)MvvmContextFactory
-            .context().toolboxManager();
-
-        List<TransformPersistentState> unloaded = getUnloaded();
-        final Map<Tid, TransformDesc> tDescs = new HashMap<Tid, TransformDesc>();
-
-        for (Iterator<TransformPersistentState> i = unloaded.iterator();
-             i.hasNext(); ) {
-            TransformPersistentState tps = i.next();
-            String name = tps.getName();
-            URL[] urls = tbm.resources(name);
-            Tid tid = tps.getTid();
-            tid.setTransformName(name);
-            MackageDesc md = tbm.mackageDesc(name);
-
-            try {
-                logger.info("initializing transform desc for: " + name);
-                TransformDesc tDesc = initTransformDesc(md, urls, tid);
-                tDescs.put(tid, tDesc);
-            } catch (DeployException exn) {
-                logger.warn("TransformDesc could not be parsed", exn);
-                i.remove();
-            }
-        }
-
-        Comparator<TransformPersistentState> c
-            = new Comparator<TransformPersistentState>() {
-                public int compare(TransformPersistentState o1,
-                                   TransformPersistentState o2)
-                {
-                    TransformDesc td1 = tDescs.get(o1.getTid());
-                    MackageDesc md1 = td1.getMackageDesc();
-                    TransformDesc td2 = tDescs.get(o2.getTid());
-                    MackageDesc md2 = td2.getMackageDesc();
-
-                    if (md1.isService() != md2.isService()) {
-                        return md1.isService() ? -1 : 1;
-                    } else {
-                        // XXX we should use the parents here and
-                        // elminate the outer loop below
-                        return md1.getViewPosition() < md2.getViewPosition() ? -1 : 1;
-                    }
-                }
-            };
-
-        Queue<TransformPersistentState> q = new PriorityQueue<TransformPersistentState>(Math.max(unloaded.size(), 1), c);
-        q.addAll(unloaded);
-
-        boolean removed = true;
-        while (0 < q.size()) {
-            if (removed) {
-                removed = false;
-            } else {
-                logger.warn("Did not start all transforms.");
-                break;
-            }
-
-            for (Iterator<TransformPersistentState> i = q.iterator();
-                 i.hasNext(); ) {
-                TransformPersistentState tps = i.next();
-                Tid tid = tps.getTid();
-
-                String name = tps.getName();
-                URL[] urls = tbm.resources(name);
-
-                TransformDesc tDesc = tDescs.get(tid);
-
-                List<String> parents = tDesc.getParents();
-                boolean parentsLoaded = true;
-                for (String parent : parents) {
-                    for (TransformPersistentState utps : q) {
-                        if (parent.equals(utps.getName())) {
-                            parentsLoaded = false;
-                        }
-                    }
-                    if (false == parentsLoaded) { break; }
-                }
-
-                if (parentsLoaded) {
-                    removed = true;
-                    i.remove();
-
-                    MackageDesc mackageDesc = tbm.mackageDesc(name);
-                    String[] args = tps.getArgArray();
-                    logger.info("Restarting: " + tid + " (" + name + ")");
-
-                    URLClassLoader cl = getClassLoader(tDesc, urls);
-
-                    TransformContextImpl tc = null;
-                    try {
-                        tc = new TransformContextImpl(cl, tDesc, mackageDesc,
-                                                      false);
-                        tids.put(tid, tc);
-                        tc.init(args);
-                        logger.info("Restarted: " + tid);
-                    } catch (Exception exn) {
-                        logger.warn("Could not restart: " + tid, exn);
-                    } catch (LinkageError err) {
-                        logger.warn("Could not restart: " + tid, err);
-                    }
-
-                    if (null != tc && null == tc.transform()) {
-                        tids.remove(tid);
-                    }
-                }
-            }
-        }
-
-        long t1 = System.currentTimeMillis();
-        System.out.println("TOTAL TIME TO RESTART TRANFORMS: " + (t1 - t0));
-    }
-
     // private classes --------------------------------------------------------
 
     private static class UrlComparator implements Comparator<URL>
@@ -508,6 +384,150 @@ class TransformManagerImpl implements TransformManager
     }
 
     // private methods --------------------------------------------------------
+
+    private void restartUnloaded()
+    {
+        long t0 = System.currentTimeMillis();
+
+        if (!live) {
+            throw new RuntimeException("TransformManager is shut down");
+        }
+
+        logger.info("Restarting unloaded transforms...");
+
+        List<TransformPersistentState> unloaded = getUnloaded();
+        Map<Tid, TransformDesc> tDescs = loadTransformDescs(unloaded);
+        Set<String> loadedParents = new HashSet<String>(unloaded.size());
+
+        while (0 < unloaded.size()) {
+            List<TransformPersistentState> startQueue = getLoadable(unloaded,
+                                                                    tDescs,
+                                                                    loadedParents);
+            if (0 == startQueue.size()) {
+                logger.warn("could not restart all transforms");
+                break;
+            }
+
+            startUnloaded(startQueue, tDescs, loadedParents);
+        }
+
+        long t1 = System.currentTimeMillis();
+        logger.info("time to restart transforms: " + (t1 - t0));
+    }
+
+    private void startUnloaded(List<TransformPersistentState> startQueue,
+                               Map<Tid, TransformDesc> tDescs,
+                               Set<String> loadedParents)
+    {
+        ToolboxManagerImpl tbm = (ToolboxManagerImpl)MvvmContextFactory
+            .context().toolboxManager();
+
+        List<Thread> threads = new ArrayList<Thread>(startQueue.size());
+
+        for (TransformPersistentState tps : startQueue) {
+            final TransformDesc tDesc = tDescs.get(tps.getTid());
+            final Tid tid = tps.getTid();
+            final String name = tps.getName();
+            loadedParents.add(name);
+            final String[] args = tps.getArgArray();
+            final MackageDesc mackageDesc = tbm.mackageDesc(name);
+            URL[] urls = tbm.resources(name);
+            final URLClassLoader cl = getClassLoader(tDesc, urls);
+
+            Thread t = new Thread(new Runnable()
+                {
+                    public void run()
+                    {
+                        logger.info("Restarting: " + tid + " (" + name + ")");
+                        TransformContextImpl tc = null;
+                        try {
+                            tc = new TransformContextImpl(cl, tDesc,
+                                                          mackageDesc, false);
+                            tids.put(tid, tc);
+                            tc.init(args);
+                            logger.info("Restarted: " + tid);
+                        } catch (Exception exn) {
+                            logger.warn("Could not restart: " + tid, exn);
+                        } catch (LinkageError err) {
+                            logger.warn("Could not restart: " + tid, err);
+                        }
+                        if (null != tc && null == tc.transform()) {
+                            tids.remove(tid);
+                        }
+                    }
+                });
+            threads.add(t);
+            t.start();
+        }
+
+        for (Thread t : threads) {
+            try {
+                t.join();
+            } catch (InterruptedException exn) {
+                break; // XXX give up
+            }
+        }
+    }
+
+    private List<TransformPersistentState> getLoadable(List<TransformPersistentState> unloaded,
+                                                       Map<Tid, TransformDesc> tDescs,
+                                                       Set<String> loadedParents)
+    {
+        List<TransformPersistentState> l = new ArrayList<TransformPersistentState>(unloaded.size());
+
+        for (Iterator<TransformPersistentState> i = unloaded.iterator(); i.hasNext(); ) {
+            TransformPersistentState tps = i.next();
+            Tid tid = tps.getTid();
+            TransformDesc tDesc = tDescs.get(tid);
+            if (null == tDesc) {
+                logger.warn("no TransformDesc for: " + tid);
+                continue;
+            }
+
+            List<String> parents = tDesc.getParents();
+
+            boolean parentsLoaded = true;
+            for (String parent : parents) {
+                if (!loadedParents.contains(parent)) {
+                    parentsLoaded = false;
+                }
+                if (false == parentsLoaded) { break; }
+            }
+
+            if (parentsLoaded) {
+                i.remove();
+                l.add(tps);
+            }
+        }
+
+        return l;
+    }
+
+    private Map<Tid, TransformDesc> loadTransformDescs(List<TransformPersistentState> unloaded)
+    {
+        ToolboxManagerImpl tbm = (ToolboxManagerImpl)MvvmContextFactory
+            .context().toolboxManager();
+
+        Map<Tid, TransformDesc> tDescs = new HashMap<Tid, TransformDesc>(unloaded.size());
+
+        for (TransformPersistentState tps : unloaded) {
+            String name = tps.getName();
+            URL[] urls = tbm.resources(name);
+            Tid tid = tps.getTid();
+            tid.setTransformName(name);
+            MackageDesc md = tbm.mackageDesc(name);
+
+            try {
+                logger.info("initializing transform desc for: " + name);
+                TransformDesc tDesc = initTransformDesc(md, urls, tid);
+                tDescs.put(tid, tDesc);
+            } catch (DeployException exn) {
+                logger.warn("TransformDesc could not be parsed", exn);
+            }
+        }
+
+        return tDescs;
+    }
 
     private List<TransformPersistentState> getUnloaded()
     {
