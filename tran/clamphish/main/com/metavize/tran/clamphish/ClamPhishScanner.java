@@ -45,9 +45,7 @@ class ClamPhishScanner implements SpamScanner
             logger.debug("scanning file " + filePath);
         }
         ClamScannerLauncher scan = new ClamScannerLauncher(filePath);
-        Thread thread = MvvmContextFactory.context().newThread(scan);
-        thread.start();
-        VirusScannerResult vsr = scan.waitFor(this.timeout);
+        VirusScannerResult vsr = scan.doScan(this.timeout);
         if (logger.isDebugEnabled()) {
             logger.debug("scan finished, clean: " + vsr.isClean()
                          + ", name: " + vsr.getVirusName());
