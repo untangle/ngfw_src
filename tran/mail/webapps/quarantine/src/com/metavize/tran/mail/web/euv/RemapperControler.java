@@ -34,9 +34,10 @@ import com.metavize.tran.util.Pair;
 
 
 /**
- * Controler used for remapping (into) self-service maintenence
+ * Controler used for delegating the quarantining of one
+ * email address into the Inbox of another.
  */
-public class UnremapperControler
+public class RemapperControler
   extends MaintenenceControlerBase {
 
   protected void serviceImpl(HttpServletRequest req,
@@ -48,52 +49,55 @@ public class UnremapperControler
 
     try {
 
-      //Now, figure out what they wanted to do.  Either
-      //sladd, slremove, or simply to see the safelist
       String action = req.getParameter(Constants.ACTION_RP);
-      log("[UnremapperControler] Action " + action);
+      log("[RemapperControler] Action " + action);
       if(action == null) {
-        action = Constants.UNMAPPER_VIEW_RV;
+        action = Constants.MAPPER_VIEW_RV;
       }
 
-      String[] targetAddresses = req.getParameterValues(Constants.UNMAPPER_TARGET_ADDR_RP);
-
-      if(action.equals(Constants.UNMAPPER_REMOVE_RV) &&
-        targetAddresses != null) {
-        log("[UnremapperControler] Remove request " +
-          targetAddresses.length + " addresses for account \"" + account + "\"");
-          
-        for(String addr : targetAddresses) {
-          quarantine.unmapSelfService(account, addr);
+      if(action.equals(Constants.MAPPER_DO_REMAP_RV)) {
+  
+        String remapTo = req.getParameter(Constants.MAPPER_TARGET_ADDR_RP);
+  
+        if(remapTo == null || "".equals(remapTo.trim())) {
+          MessagesSetTag.addErrorMessage(req,
+            "Please provide the email address to forward quarantines into");
+          req.getRequestDispatcher(Constants.MAP_ADDRESS_VIEW).forward(req, resp);
+          return;
         }
+  
+        quarantine.remapSelfService(account, remapTo);
         MessagesSetTag.addInfoMessage(req,
-          targetAddresses.length + " addresses no longer redirecting to \"" + account + "\"");
+          "Quarantine email for \"" + account + "\" will be redirected to \"" + remapTo + "\"");
+
+  
+        //Fixup the display properties
+        String remappedTo = quarantine.getMappedTo(account);
+        IsRemappedTag.setCurrent(req, remappedTo!= null);
+        if(remappedTo != null) {
+          RemappedToTag.setCurrent(req, remappedTo);
+        }
+  
+        String[] inboundRemappings = quarantine.getMappedFrom(account);
+        if(inboundRemappings != null && inboundRemappings.length > 0) {
+          IsReceivesRemapsTag.setCurrent(req, true);
+          ReceivingRemapsListTag.setCurrentList(req, inboundRemappings);
+        }
+        else {
+          IsReceivesRemapsTag.setCurrent(req, false);
+        }            
+  
+        req.getRequestDispatcher("manageuser").forward(req, resp);          
       }
       else {
-        log("[UnremapperControler] View list request for account \"" + account + "\"");
+        //Nothing to do
+        req.getRequestDispatcher(Constants.MAP_ADDRESS_VIEW).forward(req, resp);
       }
 
-      //Fixup the display properties
-      String remappedTo = quarantine.getMappedTo(account);
-      IsRemappedTag.setCurrent(req, remappedTo!= null);
-      if(remappedTo != null) {
-        RemappedToTag.setCurrent(req, remappedTo);
-      }
-
-      String[] inboundRemappings = quarantine.getMappedFrom(account);
-      if(inboundRemappings != null && inboundRemappings.length > 0) {
-        IsReceivesRemapsTag.setCurrent(req, true);
-        ReceivingRemapsListTag.setCurrentList(req, inboundRemappings);
-      }
-      else {
-        IsReceivesRemapsTag.setCurrent(req, false);
-      }            
-
-      req.getRequestDispatcher(Constants.UNMAP_ADDRESS_VIEW).forward(req, resp);
       
     }
     catch(Exception ex) {
-      log("[UnremapperControler] Exception servicing request", ex);
+      log("[RemapperControler] Exception servicing request", ex);
       req.getRequestDispatcher(Constants.SERVER_UNAVAILABLE_ERRO_VIEW).forward(req, resp);
       return;    
     }

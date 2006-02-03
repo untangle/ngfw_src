@@ -155,7 +155,7 @@ SEP
 
 
       <quarantine:isRemapped includeIfTrue="true">
-        <div class="errortext">
+        <div>
           Quarantined emails for <quarantine:currentAddress/> are being sent to the inbox of <quarantine:remappedTo encoded="false"/>.  If you believe this to be an error, please contact either your system administrator or <a href="mailto:<quarantine:remappedTo encoded="false"/>"><quarantine:remappedTo encoded="false"/></a> directly.
         </div>
       </quarantine:isRemapped>
@@ -193,7 +193,7 @@ SEP
         </quarantine:isReceivesRemaps>
         <quarantine:isReceivesRemaps includeIfTrue="false">
           <!-- Offer to remap -->
-          You can also choose to forward all quarantined mail for <quarantine:currentAddress/> to a different email address.  This is useful for email lists (such as &quot;sales@mycompany.com&quot; or &quot;jobs@anotherCompany.com&quot;) to designate a single person to manage the quarantined emails for the group.  
+          You can also choose to forward all quarantined mail for <quarantine:currentAddress/> to a different email address.  This is useful for email lists (such as &quot;sales@mycompany.com&quot; or &quot;jobs@anotherCompany.com&quot;) to designate a single person to manage the quarantined emails for the group.  To enable such forwarding, please visit <a href="/quarantine/mp?action=mapview&tkn=<quarantine:currentAuthToken encoded="true"/>">the quarantine redirect</a> page.
           <br><br>
         </quarantine:isReceivesRemaps>
       </quarantine:isRemapped>

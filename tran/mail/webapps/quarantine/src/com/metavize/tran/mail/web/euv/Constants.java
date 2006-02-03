@@ -53,6 +53,9 @@ public final class Constants
   public static final String INBOX_MAINTENENCE_CTL = "/manageuser";
 
   public static final String UNMAP_CTL = "/unmp";
+
+  public static final String MAP_CTL = "/mp";
+  public static final String MAP_ADDRESS_VIEW = "/Rmap.jsp";
   
   
 }

@@ -30,6 +30,15 @@ public class WebConstants {
   //When the "action" is "unmapremove", this is the
   //key for the value of the (base64 encoded) email address
   public static final String UNMAPPER_TARGET_ADDR_RP = "unmapaddr";
+
+
+  //The action is really redundant, as there is only
+  //one "action" for this servlet.  However, with all of
+  //the other obnoxious scafolding around web<->java coding
+  //what's a few more lines just for consistency sake.
+  public static final String MAPPER_DO_REMAP_RV = "remap";
+  public static final String MAPPER_VIEW_RV = "remap";
+  public static final String MAPPER_TARGET_ADDR_RP = "mapaddr";
   
 
 }
