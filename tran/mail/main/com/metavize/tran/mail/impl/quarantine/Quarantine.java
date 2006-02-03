@@ -46,8 +46,8 @@ import com.metavize.tran.mail.papi.quarantine.QuarantineSettings;
 import com.metavize.tran.mail.papi.quarantine.QuarantineTransformView;
 import com.metavize.tran.mail.papi.quarantine.QuarantineUserActionFailedException;
 import com.metavize.tran.mail.papi.quarantine.QuarantineUserView;
-import com.metavize.tran.mail.papi.EmailAddressPair;
-import com.metavize.tran.mail.papi.EmailAddressWrapper;
+import com.metavize.tran.mail.papi.EmailAddressPairRule;
+import com.metavize.tran.mail.papi.EmailAddressRule;
 import com.metavize.tran.mime.EmailAddress;
 import com.metavize.tran.mime.MIMEMessage;
 import com.metavize.tran.util.ByteBufferInputStream;
@@ -114,7 +114,7 @@ public class Quarantine
       settings.getAllowedAddressPatterns().size() == 0) {
       settings.setAllowedAddressPatterns(
         java.util.Arrays.asList(
-          new EmailAddressWrapper[] {new EmailAddressWrapper("*")}));
+          new EmailAddressRule[] {new EmailAddressRule("*")}));
     }
     if(settings.getAddressRemaps() == null) {
       settings.setAddressRemaps(new ArrayList());
@@ -122,11 +122,11 @@ public class Quarantine
 
     //Update address mapping
     m_addressAliases = new GlobEmailAddressMapper(
-      fromEmailAddressListPair(settings.getAddressRemaps()));
+      fromEmailAddressRuleListPair(settings.getAddressRemaps()));
 
     //Update the quarantine-for stuff
     m_quarantineForList = new GlobEmailAddressList(
-      fromEmailAddressWrapper(settings.getAllowedAddressPatterns()));
+      fromEmailAddressRule(settings.getAllowedAddressPatterns()));
 
     
           
@@ -547,7 +547,7 @@ public class Quarantine
     mappings.add(0, new Pair<String, String>(from, to));
 
     //Convert list to form which makes settings happy
-    List newMappingsList = toEmailAddressPairList(mappings);
+    List newMappingsList = toEmailAddressPairRuleList(mappings);
 
     MailTransformSettings settings = m_impl.getMailTransformSettings();    settings.getQuarantineSettings().setAddressRemaps(newMappingsList);
 
@@ -572,7 +572,7 @@ public class Quarantine
     List<Pair<String, String>> mappings = newMapper.getRawMappings();
 
     //Convert list to form which makes settings happy
-    List newMappingsList = toEmailAddressPairList(mappings);
+    List newMappingsList = toEmailAddressPairRuleList(mappings);
 
     MailTransformSettings settings = m_impl.getMailTransformSettings();    settings.getQuarantineSettings().setAddressRemaps(newMappingsList);
 
@@ -660,43 +660,43 @@ public class Quarantine
     }
   }
 
-  private List toEmailAddressWrapper(List<String> typedList) {
+  private List toEmailAddressRule(List<String> typedList) {
     ArrayList ret = new ArrayList();
 
     for(String s : typedList) {
-      ret.add(new EmailAddressWrapper(s));
+      ret.add(new EmailAddressRule(s));
     }
 
     return ret;
   }
 
-  private List<String> fromEmailAddressWrapper(List list) {
+  private List<String> fromEmailAddressRule(List list) {
     ArrayList<String> ret =
       new ArrayList<String>();
 
     for(Object o : list) {
-      EmailAddressWrapper wrapper = (EmailAddressWrapper) o;
+      EmailAddressRule wrapper = (EmailAddressRule) o;
       ret.add(wrapper.getAddress());
     }
     return ret;  
   }
 
 
-  private List toEmailAddressPairList(List<Pair<String, String>> typedList) {
+  private List toEmailAddressPairRuleList(List<Pair<String, String>> typedList) {
     ArrayList ret = new ArrayList();
 
     for(Pair<String, String> pair : typedList) {
-      ret.add(new EmailAddressPair(pair.a, pair.b));
+      ret.add(new EmailAddressPairRule(pair.a, pair.b));
     }
     return ret;
   }
 
-  private List<Pair<String, String>> fromEmailAddressListPair(List list) {
+  private List<Pair<String, String>> fromEmailAddressRuleListPair(List list) {
     ArrayList<Pair<String, String>> ret =
       new ArrayList<Pair<String, String>>();
 
     for(Object o : list) {
-      EmailAddressPair eaPair = (EmailAddressPair) o;
+      EmailAddressPairRule eaPair = (EmailAddressPairRule) o;
       ret.add(new Pair<String, String>(eaPair.getAddress1(), eaPair.getAddress2()));
     }
     return ret;  
@@ -748,10 +748,10 @@ public class Quarantine
               System.out.println("********* Sleep for 2 minutes");
               Thread.currentThread().sleep(1000*60*2);
               System.out.println("********* Woke up");
-              com.metavize.tran.mail.papi.EmailAddressWrapper wrapper1 =
-                new com.metavize.tran.mail.papi.EmailAddressWrapper("*1@shoop.com");
-              com.metavize.tran.mail.papi.EmailAddressWrapper wrapper2 =
-                new com.metavize.tran.mail.papi.EmailAddressWrapper("billtest3@shoop.com");
+              com.metavize.tran.mail.papi.EmailAddressRule wrapper1 =
+                new com.metavize.tran.mail.papi.EmailAddressRule("*1@shoop.com");
+              com.metavize.tran.mail.papi.EmailAddressRule wrapper2 =
+                new com.metavize.tran.mail.papi.EmailAddressRule("billtest3@shoop.com");
               MailTransformSettings settings = getMailTransformSettings();
               com.metavize.tran.mail.papi.quarantine.QuarantineSettings qs =
                 settings.getQuarantineSettings();

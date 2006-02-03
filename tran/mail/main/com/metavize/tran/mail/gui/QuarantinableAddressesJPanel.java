@@ -71,14 +71,14 @@ class QuarantinableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  2,  C2_MW, true,  true,  false, false, String.class, "someone@somewhere.com", sc.html("quarantinable<br>address") );
         addTableColumn( tableColumnModel,  3,  C3_MW, true,  true,  false, false, String.class, sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY );
         addTableColumn( tableColumnModel,  4,  C4_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
-        addTableColumn( tableColumnModel,  5,  10,    false, false, true,  false, EmailAddressWrapper.class, null, "");
+        addTableColumn( tableColumnModel,  5,  10,    false, false, true,  false, EmailAddressRule.class, null, "");
         return tableColumnModel;
     }
     
     
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
-        List<EmailAddressWrapper> elemList = new ArrayList(tableVector.size());
-	EmailAddressWrapper newElem = null;
+        List<EmailAddressRule> elemList = new ArrayList(tableVector.size());
+	EmailAddressRule newElem = null;
         int rowIndex = 0;
 
         for( Vector rowVector : tableVector ){
@@ -98,13 +98,13 @@ class QuarantinableModel extends MSortedTableModel{
     }
 
     public Vector<Vector> generateRows(Object settings) {
-	List<EmailAddressWrapper> addressList = 
-            (List<EmailAddressWrapper>) ((MailTransform)transformContext.transform()).getMailTransformSettings().getQuarantineSettings().getAllowedAddressPatterns();
+	List<EmailAddressRule> addressList = 
+            (List<EmailAddressRule>) ((MailTransform)transformContext.transform()).getMailTransformSettings().getQuarantineSettings().getAllowedAddressPatterns();
         Vector<Vector> allRows = new Vector<Vector>(addressList.size());
 	Vector tempRow = null;
         int rowIndex = 0;
 
-        for( EmailAddressWrapper address : addressList ){
+        for( EmailAddressRule address : addressList ){
 	    rowIndex++;
 	    tempRow = new Vector(6);
 	    tempRow.add( super.ROW_SAVED );

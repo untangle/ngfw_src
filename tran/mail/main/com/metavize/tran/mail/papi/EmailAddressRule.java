@@ -11,41 +11,30 @@
 
 package com.metavize.tran.mail.papi;
 
+import com.metavize.mvvm.tran.Rule;
+
 
 /**
  * Class used to hold an email address (needed for 
  * hibernate stuff).
  *
  * @hibernate.class
- * table="EMAIL_ADDRESS_WRAPPER"
+ * table="EMAIL_ADDR_RULE"
  */
-public class EmailAddressWrapper implements java.io.Serializable {
+public class EmailAddressRule
+  extends Rule
+  implements java.io.Serializable {
 
   private static final long serialVersionUID = 7226453350424547957L;
 
-
   private String m_addr;
-  private Long m_id;
 
-  public EmailAddressWrapper() {
+  public EmailAddressRule() {
     this(null);  
   }
 
-  public EmailAddressWrapper(String addr) {
+  public EmailAddressRule(String addr) {
     m_addr = addr;
-  }
-
-  /**
-    * @hibernate.id
-    * column="ADDR_ID"
-    * generator-class="native"
-    */
-  private Long getId() {
-    return m_id;
-  }
-
-  private void setId(Long id) {
-    m_id = id;
   }
 
   public void setAddress(String addr) {

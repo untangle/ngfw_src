@@ -11,8 +11,8 @@
 
 package com.metavize.tran.mail.papi.quarantine;
 
-import com.metavize.tran.mail.papi.EmailAddressWrapper;
-import com.metavize.tran.mail.papi.EmailAddressPair;
+import com.metavize.tran.mail.papi.EmailAddressRule;
+import com.metavize.tran.mail.papi.EmailAddressPairRule;
 
 import java.util.List;
 
@@ -42,10 +42,10 @@ public class QuarantineSettings
   private List m_allowedAddressPatterns;
 /*
   private EmailAddressPair workaround1 = new EmailAddressPair("x", "X");
-  private EmailAddressWrapper workaround2 = new EmailAddressWrapper("x");
+  private EmailAddressRule workaround2 = new EmailAddressRule("x");
 
 
-  public void workaround(EmailAddressWrapper w,
+  public void workaround(EmailAddressRule w,
     EmailAddressPair p) {
     if(p != null) {
       p.getAddress1();
@@ -67,13 +67,13 @@ public class QuarantineSettings
   }
 
   /**
-   * Get the list of {@link com.metavize.tran.mail.papi.EmailAddressWrapper EmailAddressWrapper}
+   * Get the list of {@link com.metavize.tran.mail.papi.EmailAddressRule EmailAddressRule}
    * objects, defining the address patterns for-which this server will quarantine emails.
    * The patterns are based on email address syntax ("local@domain").  However, a limited
    * glob syntax is also supported ("*@domain").  The glob matches any characters (0 or more).
    * This should not be confused with "real" regex which is not supported.  Only glob.
    * <br>
-   * @return a List of com.metavize.tran.mail.papi.EmailAddressWrapper
+   * @return a List of com.metavize.tran.mail.papi.EmailAddressRule
    *         objects (can't use 1.5 template syntax for hibernate reasons).
    *
    * @hibernate.list
@@ -83,7 +83,7 @@ public class QuarantineSettings
    * @hibernate.collection-index
    * column="POSITION"
    * @hibernate.collection-one-to-many
-   * class="com.metavize.tran.mail.papi.EmailAddressWrapper"
+   * class="com.metavize.tran.mail.papi.EmailAddressRule"
    */  
   public List getAllowedAddressPatterns() {
     if(m_allowedAddressPatterns == null) {
@@ -100,12 +100,12 @@ public class QuarantineSettings
   }  
 
   /**
-   * Set a List of {@link com.metavize.tran.mail.papi.EmailAddressPair EmailAddressPair}
+   * Set a List of {@link com.metavize.tran.mail.papi.EmailAddressPairRule EmailAddressPairRule}
    * objects, defining the "remappings" supported by this server.  Remappings
    * associate a pattern with an address.  For example, to cause all emails for
    * "sales@foo.com" to be quarantined in the inbox of "joe.salesguy@foo.com"
    * "sales@foo.com" is the pattern and "joe.salesguy@foo.com" is the mapped
-   * address.  Since the "EmailAddressPair" class is generic (doesn't have
+   * address.  Since the "EmailAddressPairRule" class is generic (doesn't have
    * "pattern" and "address" members, the "address1" member is the pattern and
    * "address2" is the remap.
    * <br>
@@ -115,7 +115,7 @@ public class QuarantineSettings
    * "*@foo.com" and the remapping would be "fred@moo.com".
    *
    *
-   * @return a List of com.metavize.tran.mail.papi.EmailAddressPair
+   * @return a List of com.metavize.tran.mail.papi.EmailAddressPairRule
    *         objects (can't use 1.5 template syntax for hibernate reasons).
    *
    * @hibernate.list
@@ -125,7 +125,7 @@ public class QuarantineSettings
    * @hibernate.collection-index
    * column="POSITION"
    * @hibernate.collection-one-to-many
-   * class="com.metavize.tran.mail.papi.EmailAddressPair"
+   * class="com.metavize.tran.mail.papi.EmailAddressPairRule"
    */
   public List getAddressRemaps() {
     if(m_addressRemaps == null) {
@@ -136,7 +136,7 @@ public class QuarantineSettings
 
   /**
    * Set the list of addresses to be remapped.  The argument
-   * is a list of {@link com.metavize.tran.mail.papi.EmailAddressPair EmailAddressPairs}
+   * is a list of {@link com.metavize.tran.mail.papi.EmailAddressPairRule EmailAddressPairRules}
    * (cannot use templating because of hibernate).  These represent
    * the <b>ordered</b> collection of pairs to be remapped.  Note also
    * that the <code>addr1</code> property of the pair is the

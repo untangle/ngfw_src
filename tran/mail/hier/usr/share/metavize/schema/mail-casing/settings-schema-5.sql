@@ -55,25 +55,36 @@ CREATE TABLE settings.tr_mail_safelists (
     position int4 NOT NULL,
     PRIMARY KEY (setting_id, position));
 
--- com.metavize.tran.mail.papi.EmailAddressPair
-CREATE TABLE settings.email_address_pair (
-    pair_id int8 NOT NULL,
+-- com.metavize.tran.mail.papi.EmailAddressPairRule
+CREATE TABLE settings.email_addr_pair_rule (
+    rule_id int8 NOT NULL,
     address1 text,
     address2 text,
+    name text,
+    category text,
+    description text,
+    live bool,
+    alert bool,
+    log bool,
     position int4,
-    settings_id int8,
-    PRIMARY KEY (pair_id));
+    settings_id int8,    
+    PRIMARY KEY (rule_id));
 
-
--- Silly little table, but this is how Aaron
--- suggested I create a persistent list of Strings
--- com.metavize.tran.mail.papi.EmailAddressWrapper
-CREATE TABLE settings.email_address_wrapper (
-    addr_id int8 NOT NULL,
+-- com.metavize.mvvm.tran.EmailAddressRule
+CREATE TABLE settings.email_addr_rule (
+    rule_id int8 NOT NULL,
     address text,
+    name text,
+    category text,
+    description text,
+    live bool,
+    alert bool,
+    log bool,
     position int4,
-    settings_id int8,
-    PRIMARY KEY (addr_id));        
+    settings_id int8,     
+    PRIMARY KEY (rule_id));    
+
+        
 
 
 ----------------

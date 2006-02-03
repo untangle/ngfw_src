@@ -73,22 +73,22 @@ class ForwardsModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  3,  C3_MW, true,  true,  false, false, String.class, "someone@somewhere.com", sc.html("send to<br>address") );
         addTableColumn( tableColumnModel,  4,  C4_MW, true,  true,  false, false, String.class, sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY );
         addTableColumn( tableColumnModel,  5,  C5_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
-        addTableColumn( tableColumnModel,  6,  10,    false, false, true,  false, EmailAddressWrapper.class, null, "");
+        addTableColumn( tableColumnModel,  6,  10,    false, false, true,  false, EmailAddressRule.class, null, "");
         return tableColumnModel;
     }
     
     
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
-        List<EmailAddressPair> elemList = new ArrayList(tableVector.size());
-	EmailAddressPair newElem = null;
+        List<EmailAddressPairRule> elemList = new ArrayList(tableVector.size());
+	EmailAddressPairRule newElem = null;
         int rowIndex = 0;
 
         for( Vector rowVector : tableVector ){
 	    rowIndex++;
 	    newElem.setAddress1( (String) rowVector.elementAt(2) );
 	    newElem.setAddress2( (String) rowVector.elementAt(3) );
-	    //newElem.setCategory( (String) rowVector.elementAt(4) );
-	    //newElem.setDescription( (String) rowVector.elementAt(5) );
+	    newElem.setCategory( (String) rowVector.elementAt(4) );
+	    newElem.setDescription( (String) rowVector.elementAt(5) );
             elemList.add(newElem);
         }
         
@@ -101,21 +101,21 @@ class ForwardsModel extends MSortedTableModel{
     }
 
     public Vector<Vector> generateRows(Object settings) {
-	List<EmailAddressPair> addressList = 
-            (List<EmailAddressPair>) ((MailTransform)transformContext.transform()).getMailTransformSettings().getQuarantineSettings().getAddressRemaps();
+	List<EmailAddressPairRule> addressList = 
+            (List<EmailAddressPairRule>) ((MailTransform)transformContext.transform()).getMailTransformSettings().getQuarantineSettings().getAddressRemaps();
         Vector<Vector> allRows = new Vector<Vector>(addressList.size());
 	Vector tempRow = null;
         int rowIndex = 0;
 
-        for( EmailAddressPair address : addressList ){
+        for( EmailAddressPairRule address : addressList ){
 	    rowIndex++;
 	    tempRow = new Vector(7);
 	    tempRow.add( super.ROW_SAVED );
 	    tempRow.add( rowIndex );
             tempRow.add( address.getAddress1() );
             tempRow.add( address.getAddress2() );
-            tempRow.add( /*address.getCategory()*/ "unknown" );
-	    tempRow.add( /*address.getDescription()*/ "unknown" );
+            tempRow.add( address.getCategory());
+	    tempRow.add( address.getDescription());
 	    tempRow.add( address );
 	    allRows.add( tempRow );
         }

@@ -11,14 +11,18 @@
 
 package com.metavize.tran.mail.papi;
 
+import com.metavize.mvvm.tran.Rule;
+
 
 /**
  * Class used to associate two email addresses
  *
  * @hibernate.class
- * table="EMAIL_ADDRESS_PAIR"
+ * table="EMAIL_ADDR_PAIR_RULE"
  */
-public class EmailAddressPair implements java.io.Serializable {
+public class EmailAddressPairRule
+  extends Rule
+  implements java.io.Serializable {
 
   private static final long serialVersionUID = 4188555156332337464L;
 
@@ -27,27 +31,15 @@ public class EmailAddressPair implements java.io.Serializable {
   private String m_addr2;
   private Long m_id;
 
-  public EmailAddressPair() {
+  public EmailAddressPairRule() {
     this(null, null);  
   }
 
-  public EmailAddressPair(String addr1, String addr2) {
+  public EmailAddressPairRule(String addr1, String addr2) {
     m_addr1 = addr1;
     m_addr2 = addr2;
   }
 
-  /**
-    * @hibernate.id
-    * column="PAIR_ID"
-    * generator-class="native"
-    */
-  private Long getId() {
-    return m_id;
-  }
-
-  private void setId(Long id) {
-    m_id = id;
-  }
 
   public void setAddress1(String addr1) {
     m_addr1 = addr1;
