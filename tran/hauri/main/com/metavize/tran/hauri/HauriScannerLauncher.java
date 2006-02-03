@@ -46,11 +46,6 @@ public class HauriScannerLauncher extends VirusScannerLauncher
      */
     public void run()
     {
-        if (result != null) {
-            /* already done */
-            return;
-        }
-            
         try {
             this.scanProcess = Runtime.getRuntime().exec("virobot " + pathName);
             InputStream is  = this.scanProcess.getInputStream();

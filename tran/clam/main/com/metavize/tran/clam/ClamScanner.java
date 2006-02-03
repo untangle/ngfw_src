@@ -22,7 +22,6 @@ import java.nio.channels.FileChannel;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.tran.util.AlarmTimer;
 import com.metavize.tran.virus.VirusScanner;
 import com.metavize.tran.virus.VirusScannerResult;
@@ -93,9 +92,6 @@ public class ClamScanner implements VirusScanner
     public VirusScannerResult scanFile (String pathName)
     {
         ClamScannerLauncher scan = new ClamScannerLauncher(pathName);
-        Thread thread = MvvmContextFactory.context().newThread(scan);
-        thread.start();
-        
-        return scan.waitFor(this.timeout);
+        return scan.doScan(this.timeout);
     }
 }

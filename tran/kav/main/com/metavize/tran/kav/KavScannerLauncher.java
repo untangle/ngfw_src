@@ -38,11 +38,6 @@ public class KavScannerLauncher extends VirusScannerLauncher
      */
     public void run()
     {
-        if (result != null) {
-            /* already done */
-            return;
-        }
-
         try {
             String command = "kavclient " + pathName;
             this.scanProcess = Runtime.getRuntime().exec(command);

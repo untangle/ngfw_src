@@ -66,11 +66,6 @@ public class ClamScannerLauncher extends VirusScannerLauncher
      */
     public void run()
     {
-        if (result != null) {
-            /* already done */
-            return;
-        }
-            
         try {
             String command = "clamdscan " + pathName;
             this.scanProcess = Runtime.getRuntime().exec(command);

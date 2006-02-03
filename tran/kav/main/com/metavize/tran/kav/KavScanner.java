@@ -24,7 +24,6 @@ import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 
-import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.tran.virus.VirusScanner;
 import com.metavize.tran.virus.VirusScannerResult;
 
@@ -87,9 +86,6 @@ public class KavScanner implements VirusScanner
     public VirusScannerResult scanFile (String pathName)
     {
         KavScannerLauncher scan = new KavScannerLauncher(pathName);
-        Thread thread = MvvmContextFactory.context().newThread(scan);
-        thread.start();
-        
-        return scan.waitFor(this.timeout);
+        return scan.doScan(this.timeout);
     }
 }
