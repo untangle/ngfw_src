@@ -24,6 +24,7 @@ import com.metavize.mvvm.tran.Rule;
 public class Interface extends Rule
 {
     private byte argonIntf;
+    private String intfName; /* non-hibernate */
     private NetworkSpace networkSpace;
     private EthernetMedia ethernetMedia = EthernetMedia.AUTO_NEGOTIATE;
     /* This is the current status of the ethernet port */
@@ -121,5 +122,15 @@ public class Interface extends Rule
     {
         this.currentMedia = newValue;
     }
-    
+
+    public String getIntfName()
+    {
+        return this.intfName;
+    }
+
+    /* Should only be settable locally */
+    void setIntfName( String newValue )
+    {
+        this.intfName = newValue;
+    }
 }
