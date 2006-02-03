@@ -29,6 +29,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
     private static final String EXCEPTION_DHCP_GATEWAY = "You have manually specified an invalid \"Default Route\".  Please correct this before proceeding.";
     private static final String EXCEPTION_DHCP_DNS_1 = "You have manually specified an invalid \"Primary DNS\".  Please correct this before proceeding.";
     private static final String EXCEPTION_DHCP_DNS_2 = "You have manually specified an invalid \"Secondary DNS\".  Please correct this before proceeding.";
+	private static final String EXCEPTION_HOSTNAME = "You must specify a dotted hostname for your EdgeGuard.  Please correct this before proceeding.";
     private static final String EMPTY_DNS2 = "";
 
     public InitialSetupNetworkJPanel() {
@@ -37,7 +38,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
     }
 
 	public void initialFocus(){
-		dhcpEnabledRadioButton.requestFocus();
+		hostnameJTextField.requestFocus();
 	}
 	
     boolean isDhcpEnabled;
@@ -51,6 +52,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
     IPaddr dns1;
     String dns2String;
     IPaddr dns2;
+	String hostnameString;
     Exception exception;
     
     MProgressJDialog mProgressJDialog;
@@ -64,6 +66,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
 	    dhcpRouteJTextField.setBackground( Color.WHITE );
 	    dnsPrimaryJTextField.setBackground( Color.WHITE );
 	    dnsSecondaryJTextField.setBackground( Color.WHITE );
+		hostnameJTextField.setBackground( Color.WHITE );
 
 	    isDhcpEnabled = dhcpEnabledRadioButton.isSelected();
 	    hostString = dhcpIPaddrJTextField.getText();
@@ -71,6 +74,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
 	    gatewayString = dhcpRouteJTextField.getText();
 	    dns1String = dnsPrimaryJTextField.getText();
 	    dns2String = dnsSecondaryJTextField.getText();
+		hostnameString = hostnameJTextField.getText();
 
 	    exception = null;
 	    
@@ -140,6 +144,16 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
 		    return;
 		}
 	    }
+		
+		try{
+		    if( hostnameString.length() == 0 )
+			throw new Exception();
+		}
+		catch(Exception e){
+		    hostnameJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+		    exception = new Exception(EXCEPTION_HOSTNAME);
+		    return;
+		}
 	    
 	}});
 
@@ -171,6 +185,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                     networkingConfiguration.dns1( dns1 );
                     networkingConfiguration.dns2( dns2 );
                 }
+				networkingConfiguration.hostname( hostnameString );
                 Util.getNetworkingManager().set(networkingConfiguration);
                 
                 // SHOW RESULTS AND REMOVE SAVING DIALOG
@@ -214,14 +229,19 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                 jLabel8 = new javax.swing.JLabel();
                 dnsSecondaryJTextField = new javax.swing.JTextField();
                 jLabel9 = new javax.swing.JLabel();
+                jSeparator1 = new javax.swing.JSeparator();
+                jLabel4 = new javax.swing.JLabel();
                 jLabel3 = new javax.swing.JLabel();
+                hostnameJPanel = new javax.swing.JPanel();
+                jLabel10 = new javax.swing.JLabel();
+                hostnameJTextField = new javax.swing.JTextField();
 
                 setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
                 setOpaque(false);
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel2.setText("<html>Please specify how EdgeGuard will get its network settings.</html>");
-                add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, -1, -1));
+                add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 120, -1, -1));
 
                 buttonGroup1.add(dhcpEnabledRadioButton);
                 dhcpEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -235,7 +255,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                         }
                 });
 
-                add(dhcpEnabledRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 60, -1, -1));
+                add(dhcpEnabledRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 140, -1, -1));
 
                 buttonGroup1.add(dhcpDisabledRadioButton);
                 dhcpDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -247,7 +267,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                         }
                 });
 
-                add(dhcpDisabledRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 80, -1, -1));
+                add(dhcpDisabledRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 160, -1, -1));
 
                 staticIPJPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -340,10 +360,39 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 staticIPJPanel.add(jLabel9, gridBagConstraints);
 
-                add(staticIPJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 100, 350, 130));
+                add(staticIPJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 180, 350, 130));
+
+                add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 100, 350, -1));
+
+                jLabel4.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel4.setText("<html>Please specify EdgeGuard's hostname on your network.</html>");
+                add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, -1, -1));
 
                 jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
+                jLabel3.setEnabled(false);
                 add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(-130, 230, -1, -1));
+
+                hostnameJPanel.setLayout(new java.awt.GridBagLayout());
+
+                hostnameJPanel.setOpaque(false);
+                jLabel10.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel10.setText("Hostname:");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                hostnameJPanel.add(jLabel10, gridBagConstraints);
+
+                hostnameJTextField.setText("edgeguard.somedomain.com");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
+                hostnameJPanel.add(hostnameJTextField, gridBagConstraints);
+
+                add(hostnameJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(65, 50, 325, -1));
 
         }//GEN-END:initComponents
 
@@ -371,14 +420,19 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
         public javax.swing.JTextField dhcpRouteJTextField;
         public javax.swing.JTextField dnsPrimaryJTextField;
         public javax.swing.JTextField dnsSecondaryJTextField;
+        private javax.swing.JPanel hostnameJPanel;
+        private javax.swing.JTextField hostnameJTextField;
         private javax.swing.JLabel jLabel1;
+        private javax.swing.JLabel jLabel10;
         private javax.swing.JLabel jLabel2;
         private javax.swing.JLabel jLabel3;
+        private javax.swing.JLabel jLabel4;
         private javax.swing.JLabel jLabel5;
         private javax.swing.JLabel jLabel6;
         private javax.swing.JLabel jLabel7;
         private javax.swing.JLabel jLabel8;
         private javax.swing.JLabel jLabel9;
+        private javax.swing.JSeparator jSeparator1;
         private javax.swing.JPanel staticIPJPanel;
         // End of variables declaration//GEN-END:variables
     

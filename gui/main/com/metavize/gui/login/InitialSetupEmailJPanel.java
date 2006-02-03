@@ -34,12 +34,15 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
     
     public InitialSetupEmailJPanel() {
         initComponents();
-	portJSpinner.setModel(new SpinnerNumberModel(25,0,65535,1));
-	addressJTextField.setText("EdgeGuard@local.domain"); // XXX this should be directly linked from the actual default value
+		portJSpinner.setModel(new SpinnerNumberModel(25,0,65535,1));
     }
     
     public void initialFocus(){
+			
 	hostJTextField.requestFocus();
+	NetworkingConfiguration networkingConfiguration = Util.getNetworkingManager().get();
+        String hostname = networkingConfiguration.hostname();
+		addressJTextField.setText("edgeguard@" + hostname); // XXX this should be directly linked from the actual default value
     }
     
     String host;
@@ -223,10 +226,12 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
                 addressJTextField.setPreferredSize(new java.awt.Dimension(170, 19));
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.weightx = 1.0;
                 jPanel2.add(addressJTextField, gridBagConstraints);
 
-                add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(58, 200, 340, 30));
+                add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(58, 200, 375, 30));
 
                 jLabel3.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel3.setText("<html>Please choose the \"From Address\" of emails sent from EdgeGuard.</html>");
