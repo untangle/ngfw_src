@@ -76,7 +76,7 @@
       <td id="table_main_center" style="padding: 8px 0px 0px;">
         <hr size="1" width="100%"/>
 
-        Please provide the email address to-which any quarantined mails <quarantine:currentAddress/> will be managed.  This does <b>not</b> redirect all mails, just quarantine notifications and management.
+        Please provide the email address to-which any quarantined mails <quarantine:currentAddress/> will be managed.  This does <b>not</b> redirect all mails, just quarantine notifications.
 		<center>
 		<table>
               <quarantine:hasMessages type="info">
