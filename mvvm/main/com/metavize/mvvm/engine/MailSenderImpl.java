@@ -55,7 +55,9 @@ class MailSenderImpl implements MailSender
 
     // --
 
+    // JavaMail constants
     private static final String MAIL_HOST_PROP = "mail.host";
+    private static final String MAIL_ENVELOPE_FROM_PROP = "mail.smtp.from";
     private static final String MAIL_FROM_PROP = "mail.from";
     private static final String MAIL_TRANSPORT_PROTO_PROP = "mail.transport.protocol";
 
@@ -192,7 +194,7 @@ class MailSenderImpl implements MailSender
         sendAlertWithAttachment(subject, bodyText, null);
     }
 
-    public void sendAlertWithAttachment(String subject, String bodyText, List attachment) {
+    private void sendAlertWithAttachment(String subject, String bodyText, List attachment) {
         // Compute the list of recipients from the user list.
         AdminSettings adminSettings = MvvmContextFactory.context()
             .adminManager().getAdminSettings();
@@ -252,6 +254,7 @@ class MailSenderImpl implements MailSender
     }
 
     // Not currently used
+    /*
     public void sendReport(String subject, String bodyText) {
         String reportEmailAddr = mailSettings.getReportEmail();
         if (reportEmailAddr == null) {
@@ -262,6 +265,7 @@ class MailSenderImpl implements MailSender
             sendSimple(reportSession, recipients, subject, bodyText, null);
         }
     }
+    */
 
     public void sendReports(String subject, String bodyHTML, List<String> extraLocations, List<File> extras) {
         String reportEmailAddr = mailSettings.getReportEmail();
@@ -339,7 +343,7 @@ class MailSenderImpl implements MailSender
         sendMessageWithAttachment(recipients, subject, bodyText, null);
     }
 
-    public void sendMessageWithAttachment(String[] recipients, String subject,
+    private void sendMessageWithAttachment(String[] recipients, String subject,
                                           String bodyText, List attachment)
     {
         if (attachment == null) {

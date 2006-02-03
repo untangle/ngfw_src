@@ -35,7 +35,6 @@ public class QuarantineSettings
   private long m_maxMailIntern = 2*WEEK;
   private long m_maxIdleInbox = 4*WEEK;
   private byte[] m_secretKey;
-  private String m_digestFrom;
   private int m_digestHOD;//Hour Of Day
   private int m_digestMOD;//Minute Of Day
   private long m_maxQuarantineSz;
@@ -215,25 +214,6 @@ public class QuarantineSettings
    */
   public void setDigestMinuteOfDay(int mod) {
     m_digestMOD = mod;
-  }
-
-  /**
-    *
-    * @return email address.
-    * @hibernate.property
-    * column="DIGEST_FROM"
-    * not-null="true"
-    */
-  public String getDigestFrom() {
-    return m_digestFrom;
-  }
-
-  /**
-   * Set the name as it apears in the <b>mime</b> for the digest
-   * sender.
-   */
-  public void setDigestFrom(String f) {
-    m_digestFrom = f;
   }
 
   /**

@@ -613,11 +613,12 @@ public class Quarantine
       return false;
     }
 
+    String fromAddr = MvvmContextFactory.context().mailSender().getMailSettings().getFromAddress();
     MIMEMessage msg = m_digestGenerator.generateMsg(index,
-      internalHost,
-      account,
-      m_settings.getDigestFrom(),
-      m_atm);
+                                                    internalHost,
+                                                    account,
+                                                    fromAddr,
+                                                    m_atm);
 
     if(msg == null) {
       m_logger.debug("Unable to generate digest message " +

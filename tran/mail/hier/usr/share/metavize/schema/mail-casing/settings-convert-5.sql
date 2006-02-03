@@ -1,6 +1,7 @@
 -- settings converter for release 3.2
 
-
+ALTER TABLE settings.tr_mail_quarantine_settings
+    DROP COLUMN digest_from;
 
 -- com.metavize.tran.mail.papi.EmailAddressPair
 CREATE TABLE settings.email_address_pair (

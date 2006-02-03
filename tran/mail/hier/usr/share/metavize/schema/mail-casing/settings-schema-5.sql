@@ -25,7 +25,6 @@ CREATE TABLE settings.tr_mail_quarantine_settings (
     max_intern_time int8 NOT NULL,
     max_idle_inbox_time int8 NOT NULL,
     secret_key bytea NOT NULL,
-    digest_from text NOT NULL,
     hour_in_day int4,
     minute_in_day int4,
     max_quarantine_sz int8 NOT NULL,

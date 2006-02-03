@@ -252,7 +252,6 @@ public class MailTransformImpl extends AbstractTransform
                     qs.setMaxQuarantineTotalSz(10 * 1000000000);//10Gig - I hope
                     qs.setDigestHourOfDay(6);//6 am
                     qs.setDigestMinuteOfDay(0);//6 am
-                    qs.setDigestFrom("quarantine@local.host");
                     byte[] secretKey = new byte[4];
                     new java.util.Random().nextBytes(secretKey);
                     qs.setSecretKey(secretKey);

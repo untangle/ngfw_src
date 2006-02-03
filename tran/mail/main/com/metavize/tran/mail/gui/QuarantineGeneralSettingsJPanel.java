@@ -84,12 +84,8 @@ class QuarantineGeneralSettingsTableModel extends MSortedTableModel{
         tempRowVector = tableVector.elementAt(0);
 	int maxHoldingDays = (Integer) ((SpinnerNumberModel)tempRowVector.elementAt(3)).getValue();
         
-	// FROM ADDRESS
-        tempRowVector = tableVector.elementAt(1);
-	String fromAddress = (String) tempRowVector.elementAt(3);
-
 	// SENDING TIME
-        tempRowVector = tableVector.elementAt(2);
+        tempRowVector = tableVector.elementAt(1);
 	Date sendingTime = (Date) ((SpinnerDateModel)tempRowVector.elementAt(3)).getValue();
 	Calendar tempCalendar = new GregorianCalendar();
 	tempCalendar.setTime(sendingTime);
@@ -102,7 +98,6 @@ class QuarantineGeneralSettingsTableModel extends MSortedTableModel{
 	    QuarantineSettings quarantineSettings = mailTransformSettings.getQuarantineSettings();
 
 	    quarantineSettings.setMaxMailIntern( ((long)maxHoldingDays) * 1440l * 60 * 1000l );
-	    quarantineSettings.setDigestFrom( fromAddress );
 	    quarantineSettings.setDigestHourOfDay( sendingHour );
 	    quarantineSettings.setDigestMinuteOfDay( sendingMinute );
 
@@ -127,16 +122,6 @@ class QuarantineGeneralSettingsTableModel extends MSortedTableModel{
         tempRow.add( "Maximum Holding Time (days)" );
         tempRow.add( new SpinnerNumberModel( (int)(quarantineSettings.getMaxMailIntern()/(1440l*60l*1000l)), 1, 60, 1) );
         tempRow.add( "The number of days a quarantined email will be held, before it is automatically purged. (min=1, max=60)" );
-        allRows.add( tempRow );
-
-	// SENDING ADDRESS
-	rowIndex++;
-        tempRow = new Vector(5);
-        tempRow.add( super.ROW_SAVED );
-        tempRow.add( rowIndex );
-        tempRow.add( "Digest From Address" );
-        tempRow.add( quarantineSettings.getDigestFrom() );
-        tempRow.add( "The \"From Address\" of the digest email that will be sent to inform people that some of their email has been quarantined." );
         allRows.add( tempRow );
 
 	// SENDING TIME
