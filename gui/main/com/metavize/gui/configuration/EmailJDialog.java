@@ -32,9 +32,11 @@ public class EmailJDialog extends MConfigJDialog {
 
     private static final String NAME_EMAIL_CONFIG = "Email Config";
     private static final String NAME_OUTGOING_SETTINGS = "Outgoing Server";
-    private static final String NAME_SAFE_LIST = "Safe List";
+    private static final String NAME_SAFE_LIST = "From-Safe List";
     private static final String NAME_QUARANTINE_SETTINGS = "Quarantine";
     private static final String NAME_ALL_ACCOUNTS = "Release & Purge";
+    private static final String NAME_QUARANTINABLE_ADDRESSES = "Quarantinable Addresses";
+    private static final String NAME_QUARANTINABLE_FORWARDS = "Quarantinable Forwards";
     private static final String NAME_GENERAL_SETTINGS = "General Settings";
 
     public EmailJDialog( ) {
@@ -115,6 +117,34 @@ public class EmailJDialog extends MConfigJDialog {
             return;
         }
         quarantineJTabbedPane.addTab(NAME_ALL_ACCOUNTS, null, quarantineAllJPanel);
+
+        // QUARANTINABLE ADDRESSES //////
+        String quarantinableAddressesJPanelName = "com.metavize.tran.mail.gui.QuarantinableAddressesJPanel";
+        JPanel quarantinableAddressesJPanel = null;
+        try{
+            Class objectClass = Util.getClassLoader().loadClass( quarantinableAddressesJPanelName, transformDesc );
+            Constructor objectConstructor = objectClass.getConstructor(new Class[]{TransformContext.class});
+            quarantinableAddressesJPanel = (JPanel) objectConstructor.newInstance(transformContext);
+        }
+        catch(Exception e){
+            Util.handleExceptionNoRestart("Error loading quarantinable addresses: " + casingName, e);
+            return;
+        }
+        quarantineJTabbedPane.addTab(NAME_QUARANTINABLE_ADDRESSES, null, quarantinableAddressesJPanel);
+
+        // QUARANTINABLE FORWARDS //////
+        String quarantinableForwardsJPanelName = "com.metavize.tran.mail.gui.QuarantinableForwardsJPanel";
+        JPanel quarantinableForwardsJPanel = null;
+        try{
+            Class objectClass = Util.getClassLoader().loadClass( quarantinableForwardsJPanelName, transformDesc );
+            Constructor objectConstructor = objectClass.getConstructor(new Class[]{TransformContext.class});
+            quarantinableForwardsJPanel = (JPanel) objectConstructor.newInstance(transformContext);
+        }
+        catch(Exception e){
+            Util.handleExceptionNoRestart("Error loading quarantinable forwards: " + casingName, e);
+            return;
+        }
+        quarantineJTabbedPane.addTab(NAME_QUARANTINABLE_FORWARDS, null, quarantinableForwardsJPanel);
 
         // QUARANTINE GENERAL SETTINGS //////
         String quarantineGeneralSettingsJPanelName = "com.metavize.tran.mail.gui.QuarantineGeneralSettingsJPanel";

@@ -257,7 +257,7 @@ class WhitelistAllTableModel extends MSortedTableModel {
         addTableColumn( tableColumnModel,  0,  Util.STATUS_MIN_WIDTH, false, false, true, false, String.class,     null, sc.TITLE_STATUS );
 	addTableColumn( tableColumnModel,  1,  Util.LINENO_MIN_WIDTH, false, false, true, false, Integer.class,    null, sc.TITLE_INDEX );
         addTableColumn( tableColumnModel,  2, 300, true,  false,  false, true,  String.class, null, sc.html("Account Address") );
-        addTableColumn( tableColumnModel,  3,  85, true,  false,  false, false, String.class, null, sc.html("Pass List<br>Size") );
+        addTableColumn( tableColumnModel,  3,  85, true,  false,  false, false, String.class, null, sc.html("Safe List<br>Size") );
         return tableColumnModel;
     }
 

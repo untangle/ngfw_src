@@ -121,6 +121,7 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 jTabbedPane.setDoubleBuffered(true);
                 jTabbedPane.setFocusable(false);
                 jTabbedPane.setFont(new java.awt.Font("Default", 0, 12));
+                backupJTabbedPane.setBorder(new javax.swing.border.EmptyBorder(new java.awt.Insets(7, 13, 13, 13)));
                 backupJTabbedPane.setFocusable(false);
                 backupJTabbedPane.setFont(new java.awt.Font("Dialog", 0, 12));
                 backupHardDiskJPanel.setLayout(new java.awt.GridBagLayout());
@@ -348,6 +349,7 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
 
                 jTabbedPane.addTab("Backup", backupJTabbedPane);
 
+                restoreJTabbedPane.setBorder(new javax.swing.border.EmptyBorder(new java.awt.Insets(7, 13, 13, 13)));
                 restoreJTabbedPane.setFocusable(false);
                 restoreJTabbedPane.setFont(new java.awt.Font("Dialog", 0, 12));
                 restoreHDAndUSBJPanel.setLayout(new java.awt.GridBagLayout());
