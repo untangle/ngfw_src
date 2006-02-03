@@ -125,5 +125,22 @@ public interface MailSender
 
     MailSettings getMailSettings();
 
-
+    /**
+     * <code>sendTestMessage</code> is for the UI to test new MailSettings to see if
+     * they work.  A static test email is sent to the given address.  If some exception
+     * occurs during send, false is returned.  Otherwise true is returned.
+     * 
+     * Note that a
+     * true return doesn't guarantee that the email will be received, it could be dropped
+     * somewhere along the way.  But a false return guarantees that the settings are
+     * wrong.
+     *
+     * Note also that the <code>newSettings</code> are <b>not</b> saved.  They must be
+     * manually saved via <code>setMailSettings</code>.
+     *
+     * @param recipient a <code>String</code> giving the recipient
+     * email address for the test message
+     * @param newSettings a <code>MailSettings</code> containing the settings to be tested
+     */
+    boolean sendTestMessage(String recipient, MailSettings newSettings);
 }
