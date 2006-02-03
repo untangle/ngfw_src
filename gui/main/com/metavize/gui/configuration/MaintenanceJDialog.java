@@ -30,6 +30,7 @@ public class MaintenanceJDialog extends MConfigJDialog {
     private static final String NAME_MAINTENANCE_CONFIG = "Support Config";
     private static final String NAME_REMOTE_SETTINGS = "Access Restrictions";
     private static final String NAME_PROTOCOL_OVERRIDE = "Manual Protocol Override";
+    private static final String NAME_NETWORK_INTERFACES = "Network Interfaces";
     private static final String NAME_SECRET_PANEL = "Advanced Support";
 
     private static boolean showHiddenPanel;
@@ -67,6 +68,12 @@ public class MaintenanceJDialog extends MConfigJDialog {
             messageJPanel.add(messageJLabel);
             addTab(NAME_PROTOCOL_OVERRIDE, null, messageJPanel);
         }
+
+	// NETWORK INTERFACES //////
+	MaintenanceInterfaceJPanel maintenanceInterfaceJPanel = new MaintenanceInterfaceJPanel();
+	addTab(NAME_NETWORK_INTERFACES, null, maintenanceInterfaceJPanel);
+	addSavable(NAME_NETWORK_INTERFACES, maintenanceInterfaceJPanel);
+	addRefreshable(NAME_NETWORK_INTERFACES, maintenanceInterfaceJPanel);
 
 	// SECRET HIDDEN PANEL //////
 	if( showHiddenPanel ){
