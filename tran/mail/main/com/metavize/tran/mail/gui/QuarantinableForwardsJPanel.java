@@ -50,8 +50,8 @@ class ForwardsModel extends MSortedTableModel{
     private static final int  T_TW  = Util.TABLE_TOTAL_WIDTH;
     private static final int  C0_MW = Util.STATUS_MIN_WIDTH; /* status */
     private static final int  C1_MW = Util.LINENO_MIN_WIDTH; /* # */
-    private static final int  C2_MW = 120;  /* d-list address */
-    private static final int  C3_MW = 120;  /* send-to address */
+    private static final int  C2_MW = 150;  /* d-list address */
+    private static final int  C3_MW = 150;  /* send-to address */
     private static final int  C4_MW = 120;  /* category */
     private static final int  C5_MW = 120;  /* description */
     
@@ -69,10 +69,10 @@ class ForwardsModel extends MSortedTableModel{
         //                                 #   min    rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0,  C0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS );
         addTableColumn( tableColumnModel,  1,  C1_MW, false, false, false, false, Integer.class, null, sc.TITLE_INDEX );
-        addTableColumn( tableColumnModel,  2,  C2_MW, false, true,  false, false, String.class, "somedistributionlist@somewhere.com", sc.html("distribution<br>list address") );
-        addTableColumn( tableColumnModel,  3,  C3_MW, false, true,  false, false, String.class, "someone@somewhere.com", sc.html("send to<br>address") );
-        addTableColumn( tableColumnModel,  4,  C4_MW, false, true,  false, false, String.class, sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY );
-        addTableColumn( tableColumnModel,  5,  C5_MW, false, true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
+        addTableColumn( tableColumnModel,  2,  C2_MW, true,   true,  false, false, String.class, "somedistributionlist@somewhere.com", sc.html("distribution<br>list address") );
+        addTableColumn( tableColumnModel,  3,  C3_MW, true,  true,  false, false, String.class, "someone@somewhere.com", sc.html("send to<br>address") );
+        addTableColumn( tableColumnModel,  4,  C4_MW, true,  true,  false, false, String.class, sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY );
+        addTableColumn( tableColumnModel,  5,  C5_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
         addTableColumn( tableColumnModel,  6,  10,    false, false, true,  false, EmailAddressWrapper.class, null, "");
         return tableColumnModel;
     }
