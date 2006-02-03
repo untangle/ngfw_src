@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,6 +12,8 @@
 package com.metavize.mvvm.engine;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
@@ -20,10 +22,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
 
 import org.apache.log4j.Logger;
+import org.dom4j.Document;
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
 import org.hibernate.SessionFactory;
@@ -63,7 +66,7 @@ class Util
         SessionFactory sessionFactory = null;
 
         try {
-            Configuration cfg = new Configuration();
+            ShortBus cfg = new ShortBus();
 
             Set seen = new HashSet();
             for (JarFile jf : jfs) {
@@ -88,7 +91,7 @@ class Util
         SessionFactory sessionFactory = null;
 
         try {
-            Configuration cfg = new Configuration();
+            ShortBus cfg = new ShortBus();
 
             Set seen = new HashSet();
             while (null != cl) {
@@ -109,7 +112,7 @@ class Util
         return sessionFactory;
     }
 
-    private static void addClassLoader(URLClassLoader ucl, Configuration cfg,
+    private static void addClassLoader(URLClassLoader ucl, ShortBus cfg,
                                        Set seen)
     {
         Thread ct = Thread.currentThread();
@@ -139,23 +142,71 @@ class Util
         }
     }
 
-    private static void addJar(JarFile jf, Configuration cfg, Set seen)
+    private static void addJar(JarFile jf, ShortBus cfg, Set seen)
     {
         for (Enumeration e = jf.entries(); e.hasMoreElements(); ) {
-            JarEntry je = (JarEntry)e.nextElement();
+            ZipEntry je = (ZipEntry)e.nextElement();
             String name = je.getName();
             if (name.endsWith("hbm.xml") && !seen.contains(name)) {
-                try {
-                    logger.info("adding mappings for: " + name);
-                    cfg.addInputStream(jf.getInputStream(je));
-                } catch (MappingException exn) {
-                    logger.warn("bad mappings for: " + je, exn);
-                } catch (IOException exn) {
-                    logger.warn("could not read JarEntry: " + je, exn);
+                ZipEntry cache = (ZipEntry)jf.getEntry(name + ".bin");
+                if (null == cache) {
+                    logger.info("no cached dom for: " + name);
+                    addXml(cfg, jf, je);
+                } else {
+                    logger.info("using cached dom for: " + name);
+                    ObjectInputStream oos = null;
+                    try {
+                        oos = new ObjectInputStream(jf.getInputStream(cache));
+                        Document doc = (Document)oos.readObject();
+                        cfg.addDom4j(doc);
+                    } catch (Exception exn) {
+                        logger.warn("could not used cached dom for: " + name);
+                        addXml(cfg, jf, je);
+                    } finally {
+                        if (null != oos) {
+                            try {
+                                oos.close();
+                            } catch (IOException exn) {
+                                logger.warn("could not close output", exn);
+                            }
+                        }
+                    }
                 }
                 seen.add(name);
             }
         }
     }
 
+    private static void addXml(ShortBus cfg, JarFile jf, ZipEntry je)
+    {
+        InputStream is = null;
+
+        try {
+            logger.info("adding mappings for: " + je.getName());
+            is = jf.getInputStream(je);
+            cfg.addInputStream(is);
+        } catch (MappingException exn) {
+            logger.warn("bad mappings for: " + je, exn);
+        } catch (IOException exn) {
+            logger.warn("could not read ZipEntry: " + je, exn);
+        } finally {
+            if (null != is) {
+                try {
+                    is.close();
+                } catch (IOException exn) {
+                    logger.warn("could not close output", exn);
+                }
+            }
+        }
+    }
+
+    // private classes --------------------------------------------------------
+
+    private static class ShortBus extends Configuration
+    {
+        public void addDom4j(Document doc)
+        {
+            add(doc);
+        }
+    }
 }

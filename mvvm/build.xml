@@ -101,7 +101,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
         </hibernatedoclet>
 
         <!-- xdoclet is re re -->
-        <exec executable="${util.bin}/fix-hbm">
+        <exec executable="${util.bin}/fix-hbm" failonerror="true">
           <arg value="${build.gensrc}"/>
         </exec>
 
@@ -418,7 +418,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
   <target name="jar.mvvm" depends="compile.mvvm, gensrc.xdoclet">
     <jar destfile="${build.jar}/mvvm.jar" index="yes">
       <fileset dir="${build.gensrc}">
-        <include name="**/*.hbm.xml"/>
+        <include name="**/*.hbm.xml*"/>
       </fileset>
       <fileset dir="${build.mvvm}"/>
 
@@ -546,7 +546,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
     <jar destfile="${build.jar}/servlets.jar" index="yes">
       <fileset dir="${build.servlets}"/>
       <fileset dir="${build.gensrc}">
-        <include name="**/*.hbm.xml"/>
+        <include name="**/*.hbm.xml*"/>
       </fileset>
     </jar>
   </target>

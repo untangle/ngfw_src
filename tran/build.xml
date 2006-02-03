@@ -142,8 +142,8 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     </hibernatedoclet>
 
     <!-- xdoclet is re re -->
-    <exec executable="${util.bin}/fix-hbm">
-      <arg value="${build.gensrc}"/>
+    <exec executable="${util.bin}/fix-hbm" failonerror="true">
+      <arg value="${build.gensrc}/${tran.name}"/>
     </exec>
 
     <jrc srcdir="${build.gensrc}/${tran.name}" destdir="${build.root}/${tran.name}" tempdir="${build.tmp}"
@@ -576,10 +576,10 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <include name="com/metavize/tran/http/StatusLine.class"/>
       </fileset>
       <fileset dir="${build.gensrc}/http">
-        <include name="com/metavize/tran/http/HttpRequestEvent.hbm.xml"/>
-        <include name="com/metavize/tran/http/HttpResponseEvent.hbm.xml"/>
-        <include name="com/metavize/tran/http/RequestLine.hbm.xml"/>
-        <include name="com/metavize/tran/http/StatusLine.hbm.xml"/>
+        <include name="com/metavize/tran/http/HttpRequestEvent.hbm.xml*"/>
+        <include name="com/metavize/tran/http/HttpResponseEvent.hbm.xml*"/>
+        <include name="com/metavize/tran/http/RequestLine.hbm.xml*"/>
+        <include name="com/metavize/tran/http/StatusLine.hbm.xml*"/>
       </fileset>
     </jar>
   </target>
@@ -607,10 +607,10 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
       </fileset>
       <fileset dir="${build.gensrc}/mail">
-        <include name="com/metavize/tran/mail/papi/*.hbm.xml"/>
-        <include name="com/metavize/tran/mail/papi/quarantine/*.hbm.xml"/>
-        <include name="com/metavize/tran/mail/papi/smtp/*.hbm.xml"/>
-        <include name="com/metavize/tran/mail/papi/safelist/*.hbm.xml"/>
+        <include name="com/metavize/tran/mail/papi/*.hbm.xml*"/>
+        <include name="com/metavize/tran/mail/papi/quarantine/*.hbm.xml*"/>
+        <include name="com/metavize/tran/mail/papi/smtp/*.hbm.xml*"/>
+        <include name="com/metavize/tran/mail/papi/safelist/*.hbm.xml*"/>
       </fileset>
     </jar>
     <!--
