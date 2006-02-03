@@ -110,6 +110,12 @@ class AdminManagerImpl implements AdminManager
         ms.setMailSettings(settings);
     }
 
+    public boolean sendTestMessage(String recipient, MailSettings newSettings)
+    {
+        MailSender ms = MvvmContextFactory.context().mailSender();
+        return ms.sendTestMessage(recipient, newSettings);
+    }
+
     public AdminSettings getAdminSettings()
     {
         return adminSettings;

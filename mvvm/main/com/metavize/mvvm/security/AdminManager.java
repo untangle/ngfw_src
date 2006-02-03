@@ -35,6 +35,9 @@ public interface AdminManager
     void setMailSettings(MailSettings settings)
         throws TransactionRolledbackException;
 
+    // See MailSender for documentation.
+    boolean sendTestMessage(String recipient, MailSettings newSettings);
+
     LoginSession[] loggedInUsers();
 
     LoginSession whoAmI();
