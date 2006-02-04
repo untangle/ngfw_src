@@ -135,6 +135,7 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
 	    if( checkpointVector.elementAt(currentPage) )
 		previousJButton.setVisible(false);
 	}
+	buttonJPanel.repaint();
     }
 
     protected void updateLabelState(){
@@ -156,7 +157,8 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
 		label.setFont(NORMAL_FONT);
 	    }
 	    index++;
-	}	
+	}
+	titleJPanel.repaint();
     }
 
     protected void updatePageState(){
