@@ -40,12 +40,16 @@ if [ $is_reporting_enabled == 'true' ]; then
         com.metavize.mvvm.reporting.Reporter -o $REPORT_DIR -d 32 "$@" $mars
 
     if [ -h $REPORT_DIR/current ]; then
+        cp -pr $REPORT_DIR/css $REPORT_DIR/current
         cp -pr $REPORT_DIR/images $REPORT_DIR/current
 
 # generate the web viewable page
         @USR_BIN@/index-reports index.html daily false
         @USR_BIN@/index-reports index_online_weekly.html weekly false
         @USR_BIN@/index-reports index_online_monthly.html monthly false
+
+# convert all non-index html pages to have MV look-n-feel
+        @USR_BIN@/convert-reports
 
 # generate the emailable page
         @USR_BIN@/index-reports index_email_daily.html daily true

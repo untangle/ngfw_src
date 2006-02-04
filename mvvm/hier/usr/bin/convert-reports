@@ -1,0 +1,48 @@
+#!/bin/sh
+
+REPORT_DIR=@MVVM_WEB@/reports
+#REPORT_DIR=/home/cng/work_main/alpine/output/usr/share/metavize/web/reports
+
+add_mv_htmlheader()
+{
+cat >>$hf <<EOF
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <link href="../css/main.css" rel="stylesheet" type="text/css"/>
+  </head>
+  <body>
+    <table cellspacing="0" cellpadding="0" border="0" align="center" class="main">
+      <tbody>
+        <tr>
+          <td class="main-top">
+          </td>
+        </tr>
+        <tr>
+          <td class="main-middle">
+EOF
+}
+
+add_mv_htmlfooter()
+{
+cat >>$hf <<EOF
+          </td>
+        </tr>
+        <tr>
+          <td class="main-bottom">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>
+EOF
+}
+
+for hf in `find $REPORT_DIR/current/*/*html -type f | grep -v "sum-\(daily\|weekly\|monthly\)\.html"` ; do
+  \mv -f $hf $hf.org
+  sed -f @USR_BIN@/convert-reports.sed $hf.org > $hf.new
+  add_mv_htmlheader
+  cat $hf.new >> $hf
+  add_mv_htmlfooter
+  \rm -f $hf.org $hf.new
+done
