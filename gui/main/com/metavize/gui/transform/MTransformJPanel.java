@@ -338,6 +338,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
         }
     }
 
+    private Exception showControlsException = null;
     private class ShowControlsThread extends Thread {
         public ShowControlsThread(){
             setDaemon(true);
@@ -355,8 +356,16 @@ public class MTransformJPanel extends javax.swing.JPanel {
                                 jProgressBar.setString("Loading Settings...");
                             }});
                             SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-                                mTransformControlsJPanel.generateGui();
+				try{
+				    mTransformControlsJPanel.generateGui();
+				}
+				catch(Exception e){
+				    showControlsException = e;
+				}
                             }});
+			    if( showControlsException != null ){
+				Util.handleExceptionNoRestart("Error generating gui", showControlsException);
+			    }
                             mTransformControlsJPanel.refreshAll();
                             MTransformJPanel.this.controlsLoaded = true;
                             SwingUtilities.invokeLater( new Runnable(){ public void run(){
