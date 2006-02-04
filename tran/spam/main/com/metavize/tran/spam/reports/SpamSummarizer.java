@@ -136,20 +136,20 @@ public class SpamSummarizer extends BaseSummarizer {
             logger.warn("could not summarize", exn);
         }
 
-        int totalSpam = smtpBlocked + smtpMarked + smtpPassed;
         addEntry("Scanned emails (SMTP)", Util.trimNumber("",smtpScanned));
         addEntry("&nbsp;&nbsp;&nbsp;Spam & Quarantined", Util.trimNumber("",smtpQuarantined), Util.percentNumber(smtpQuarantined, smtpScanned));
         addEntry("&nbsp;&nbsp;&nbsp;Spam & Blocked", Util.trimNumber("",smtpBlocked), Util.percentNumber(smtpBlocked, smtpScanned));
         addEntry("&nbsp;&nbsp;&nbsp;Spam & Marked", Util.trimNumber("",smtpMarked), Util.percentNumber(smtpMarked, smtpScanned));
         addEntry("&nbsp;&nbsp;&nbsp;Spam & Passed", Util.trimNumber("",smtpPassed), Util.percentNumber(smtpPassed, smtpScanned));
+        int totalSpam = smtpQuarantined + smtpBlocked + smtpMarked + smtpPassed;
         addEntry("&nbsp;&nbsp;&nbsp;Clean & Passed", Util.trimNumber("",smtpScanned-totalSpam), Util.percentNumber(smtpScanned-totalSpam, smtpScanned));
 
         addEntry("&nbsp;","&nbsp;");
 
-        totalSpam = popimapMarked + popimapPassed;
         addEntry("Scanned emails (POP/IMAP)", Util.trimNumber("",popimapScanned));
         addEntry("&nbsp;&nbsp;&nbsp;Spam & Marked", Util.trimNumber("",popimapMarked), Util.percentNumber(popimapMarked, popimapScanned));
         addEntry("&nbsp;&nbsp;&nbsp;Spam & Passed", Util.trimNumber("",popimapPassed), Util.percentNumber(popimapPassed, popimapScanned));
+        totalSpam = popimapMarked + popimapPassed;
         addEntry("&nbsp;&nbsp;&nbsp;Clean & Passed", Util.trimNumber("",popimapScanned-totalSpam), Util.percentNumber(popimapScanned-totalSpam, popimapScanned));
 
         // XXXX

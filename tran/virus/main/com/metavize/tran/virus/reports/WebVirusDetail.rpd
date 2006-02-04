@@ -13,7 +13,7 @@ FIELD_2.name=c_client_addr
 FIELD_2.type=String
 FIELD_3.name=host
 FIELD_3.type=String
-FIELD_4.name=name
+FIELD_4.name=hname
 FIELD_4.type=String
 FIELD_5.name=c_server_addr
 FIELD_5.type=String
@@ -23,23 +23,15 @@ FIELD_7.name=virus_name
 FIELD_7.type=String
 
 QUERY=\
-SELECT c_server_port, c_client_addr, host, name, c_server_addr, \
+SELECT c_server_port, c_client_addr, host, hname, c_server_addr, \
        evt.time_stamp, virus_name \
   FROM tr_virus_evt_http evt \
-         JOIN tr_http_req_line line \
-           ON (evt.request_line = line.request_id) \
-         JOIN tr_http_evt_req req \
-           ON (evt.request_line = req.request_id \
-             AND NOT evt.clean \
-             AND evt.time_stamp >= $P{startTime} \
-             AND evt.time_stamp < $P{endTime} \
-             AND evt.vendor_name = $P{virusVendor}) \
-         JOIN pl_endp endp \
-           ON (line.pl_endp_id = endp.event_id) \
-         LEFT OUTER JOIN merged_address_map mam \
-           ON (endp.c_client_addr = mam.addr \
-             AND evt.time_stamp >= mam.start_time \
-             AND evt.time_stamp < mam.end_time) \
+       JOIN reports.webpages page \
+         ON (evt.request_line = page.request_id) \
+  WHERE (NOT evt.clean \
+    AND evt.time_stamp >= $P{startTime} \
+    AND evt.time_stamp < $P{endTime} \
+    AND evt.vendor_name = $P{virusVendor}) \
   ORDER BY evt.time_stamp DESC
 
 TOPLEFT.label=Timestamp
@@ -51,7 +43,7 @@ TOPRIGHT.label=Server
 BOTRIGHT.label=Port
 
 TOPRMID.expr=$F{virus_name}
-TOPLMID.expr=$F{name} == null ? "" : $F{name}
+TOPLMID.expr=$F{hname} == null ? "" : $F{hname}
 TOPLEFT.expr=$F{time_stamp}
 BOTRMID.expr=$F{host}
 BOTLMID.expr=$F{c_client_addr}

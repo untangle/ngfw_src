@@ -141,7 +141,7 @@ public class PhishSummarizer extends BaseSummarizer {
         addEntry("&nbsp;&nbsp;&nbsp;Phish & Blocked", Util.trimNumber("",smtpBlocked), Util.percentNumber(smtpBlocked, smtpScanned));
         addEntry("&nbsp;&nbsp;&nbsp;Phish & Marked", Util.trimNumber("",smtpMarked), Util.percentNumber(smtpMarked, smtpScanned));
         addEntry("&nbsp;&nbsp;&nbsp;Phish & Passed", Util.trimNumber("",smtpPassed), Util.percentNumber(smtpPassed, smtpScanned));
-        int totalSpam = smtpBlocked + smtpMarked + smtpPassed;
+        int totalSpam = smtpQuarantined + smtpBlocked + smtpMarked + smtpPassed;
         addEntry("&nbsp;&nbsp;&nbsp;Clean & Passed", Util.trimNumber("",smtpScanned-totalSpam), Util.percentNumber(smtpScanned-totalSpam, smtpScanned));
 
         addEntry("&nbsp;","&nbsp;");

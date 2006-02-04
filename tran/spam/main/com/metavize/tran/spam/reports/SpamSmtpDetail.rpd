@@ -26,11 +26,11 @@ QUERY=\
 SELECT evt.time_stamp, score, LOWER(recip_addr) AS recip_addr, \
        LOWER(from_addr) AS from_addr, is_spam, \
        c_client_addr AS ip_addr, action \
-  FROM reports.emails msg \
-         JOIN tr_spam_evt_smtp evt USING (msg_id) \
-           WHERE evt.time_stamp >= $P{startTime} \
-             AND evt.time_stamp < $P{endTime} \
-             AND evt.vendor_name = $P{spamVendor} \
+  FROM reports.emails_smtp msg \
+       JOIN tr_spam_evt_smtp evt USING (msg_id) \
+  WHERE (evt.time_stamp >= $P{startTime} \
+    AND evt.time_stamp < $P{endTime} \
+    AND evt.vendor_name = $P{spamVendor}) \
   ORDER BY evt.time_stamp DESC
 
 TOPLEFT.label=Timestamp

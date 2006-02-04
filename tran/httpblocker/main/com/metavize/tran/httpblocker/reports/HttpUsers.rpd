@@ -21,7 +21,7 @@ FIELD_7.type=Long
 QUERY=\
 SELECT hname, count, size, top_count, all_count, top_size, all_size \
   FROM (SELECT hname, COUNT(*), SUM(content_length) AS size \
-          FROM webpages page \
+          FROM reports.webpages page \
           WHERE page.time_stamp >= $P{startTime} \
             AND page.time_stamp < $P{endTime} \
           GROUP BY hname \
@@ -29,7 +29,7 @@ SELECT hname, count, size, top_count, all_count, top_size, all_size \
           LIMIT @REPORT_MAX_LENGTH@) AS foo, \
        (SELECT SUM(count) AS top_count, SUM(size) AS top_size \
           FROM (SELECT hname, COUNT(*), SUM(content_length) AS size \
-                  FROM webpages page \
+                  FROM reports.webpages page \
                   WHERE page.time_stamp >= $P{startTime} \
                     AND page.time_stamp < $P{endTime} \
                   GROUP BY hname \
@@ -37,7 +37,7 @@ SELECT hname, count, size, top_count, all_count, top_size, all_size \
                   LIMIT @REPORT_MAX_LENGTH@) AS foo2) AS foo3, \
        (SELECT SUM(count) AS all_count, SUM(size) AS all_size \
           FROM (SELECT hname, COUNT(*), SUM(content_length) AS size \
-                  FROM webpages page \
+                  FROM reports.webpages page \
                   WHERE page.time_stamp >= $P{startTime} \
                     AND page.time_stamp < $P{endTime} \
                   GROUP BY hname \

@@ -14,59 +14,29 @@ FIELD_4.type=Long
 
 QUERY=\
 SELECT hname, count, top_count, all_count \
-  FROM (SELECT COALESCE(NULLIF(name, ''), HOST(c_client_addr)) AS hname, \
-               COUNT(*) \
+  FROM (SELECT hname, COUNT(*) \
           FROM tr_httpblk_evt_blk blk \
-                 JOIN tr_http_req_line line \
-                   USING (request_id) \
-                 JOIN tr_http_evt_req req \
-                   ON (blk.request_id = req.request_id \
-                     AND blk.time_stamp >= $P{startTime} \
-                     AND blk.time_stamp < $P{endTime}) \
-                 JOIN pl_endp endp \
-                   ON (line.pl_endp_id = endp.event_id) \
-                 LEFT OUTER JOIN merged_address_map mam \
-                   ON (endp.c_client_addr = mam.addr \
-                     AND blk.time_stamp >= mam.start_time \
-                     AND blk.time_stamp < mam.end_time) \
+               JOIN reports.webpages page USING (request_id) \
+          WHERE (blk.time_stamp >= $P{startTime} \
+            AND blk.time_stamp < $P{endTime}) \
           GROUP BY hname \
           ORDER BY count DESC \
           LIMIT @REPORT_MAX_LENGTH@) AS foo, \
        (SELECT SUM(count) AS top_count \
-          FROM (SELECT COALESCE(NULLIF(name, ''), HOST(c_client_addr)) AS hname, \
-                       COUNT(*) \
+          FROM (SELECT hname, COUNT(*) \
                   FROM tr_httpblk_evt_blk blk \
-                         JOIN tr_http_req_line line \
-                           USING (request_id) \
-                         JOIN tr_http_evt_req req \
-                           ON (blk.request_id = req.request_id \
-                             AND blk.time_stamp >= $P{startTime} \
-                             AND blk.time_stamp < $P{endTime}) \
-                         JOIN pl_endp endp \
-                           ON (line.pl_endp_id = endp.event_id) \
-                         LEFT OUTER JOIN merged_address_map mam \
-                           ON (endp.c_client_addr = mam.addr \
-                             AND blk.time_stamp >= mam.start_time \
-                             AND blk.time_stamp < mam.end_time) \
+                       JOIN reports.webpages page USING (request_id) \
+                  WHERE (blk.time_stamp >= $P{startTime} \
+                    AND blk.time_stamp < $P{endTime}) \
                   GROUP BY hname \
                   ORDER BY count DESC \
                   LIMIT @REPORT_MAX_LENGTH@) AS foo2) AS foo3, \
        (SELECT SUM(count) AS all_count \
-          FROM (SELECT COALESCE(NULLIF(name, ''), HOST(c_client_addr)) AS hname, \
-                       COUNT(*) \
+          FROM (SELECT hname, COUNT(*) \
                   FROM tr_httpblk_evt_blk blk \
-                         JOIN tr_http_req_line line \
-                           USING (request_id) \
-                         JOIN tr_http_evt_req req \
-                           ON (blk.request_id = req.request_id \
-                             AND blk.time_stamp >= $P{startTime} \
-                             AND blk.time_stamp < $P{endTime}) \
-                         JOIN pl_endp endp \
-                           ON (line.pl_endp_id = endp.event_id) \
-                         LEFT OUTER JOIN merged_address_map mam \
-                           ON (endp.c_client_addr = mam.addr \
-                             AND blk.time_stamp >= mam.start_time \
-                             AND blk.time_stamp < mam.end_time) \
+                       JOIN reports.webpages page USING (request_id) \
+                  WHERE (blk.time_stamp >= $P{startTime} \
+                    AND blk.time_stamp < $P{endTime}) \
                   GROUP BY hname \
                   ORDER BY count DESC) AS foo4) AS foo5 \
   ORDER BY count DESC

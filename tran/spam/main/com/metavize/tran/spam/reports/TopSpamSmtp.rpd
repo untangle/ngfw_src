@@ -17,48 +17,36 @@ FIELD_4.type=Long
 
 QUERY=\
 SELECT lower AS addr, count, top_count, all_count \
-  FROM (SELECT LOWER(addr), COUNT(addr) \
-          FROM tr_mail_message_info msg \
-                 JOIN tr_mail_message_info_addr recip_addr \
-                   ON (msg.id = recip_addr.msg_id \
-                     AND recip_addr.kind = 'B') \
-                 JOIN tr_spam_evt_smtp evt \
-                   ON (msg.id = evt.msg_id \
-                     AND evt.is_spam \
-                     AND evt.time_stamp >= $P{startTime} \
-                     AND evt.time_stamp < $P{endTime} \
-                     AND evt.vendor_name = $P{spamVendor}) \
+  FROM (SELECT LOWER(recip_addr), COUNT(recip_addr) \
+          FROM reports.emails_smtp msg \
+               JOIN tr_spam_evt_smtp evt USING (msg_id) \
+          WHERE (evt.is_spam \
+            AND evt.time_stamp >= $P{startTime} \
+            AND evt.time_stamp < $P{endTime} \
+            AND evt.vendor_name = $P{spamVendor}) \
           GROUP BY lower \
           ORDER BY count DESC \
           LIMIT @REPORT_MAX_LENGTH@) AS foo, \
        (SELECT SUM(count) AS top_count \
-          FROM (SELECT COUNT(addr) \
-                  FROM tr_mail_message_info msg \
-                         JOIN tr_mail_message_info_addr recip_addr \
-                           ON (msg.id = recip_addr.msg_id \
-                             AND recip_addr.kind = 'B') \
-                         JOIN tr_spam_evt_smtp evt \
-                           ON (msg.id = evt.msg_id \
-                             AND evt.is_spam \
-                             AND evt.time_stamp >= $P{startTime} \
-                             AND evt.time_stamp < $P{endTime} \
-                             AND evt.vendor_name = $P{spamVendor}) \
-                  GROUP BY addr \
+          FROM (SELECT COUNT(recip_addr) \
+                  FROM reports.emails_smtp msg \
+                       JOIN tr_spam_evt_smtp evt USING (msg_id) \
+                  WHERE (evt.is_spam \
+                    AND evt.time_stamp >= $P{startTime} \
+                    AND evt.time_stamp < $P{endTime} \
+                    AND evt.vendor_name = $P{spamVendor}) \
+                  GROUP BY recip_addr \
                   ORDER BY count DESC \
                   LIMIT @REPORT_MAX_LENGTH@) AS foo2) AS foo3, \
        (SELECT SUM(count) AS all_count \
-          FROM (SELECT COUNT(addr) \
-                  FROM tr_mail_message_info msg \
-                         JOIN tr_mail_message_info_addr recip_addr \
-                           ON (msg.id = recip_addr.msg_id \
-                             AND recip_addr.kind = 'B') \
-                         JOIN tr_spam_evt_smtp evt \
-                           ON (msg.id = evt.msg_id \
-                             AND evt.is_spam \
-                             AND evt.time_stamp >= $P{startTime} \
-                             AND evt.time_stamp < $P{endTime} \
-                             AND evt.vendor_name = $P{spamVendor}) \
-                  GROUP BY addr \
+          FROM (SELECT COUNT(recip_addr) \
+                  FROM reports.emails_smtp msg \
+                       JOIN tr_spam_evt_smtp evt USING (msg_id) \
+                  WHERE (evt.is_spam \
+                    AND evt.time_stamp >= $P{startTime} \
+                    AND evt.time_stamp < $P{endTime} \
+                    AND evt.vendor_name = $P{spamVendor}) \
+                  GROUP BY recip_addr \
                   ORDER BY count DESC) AS foo4) AS foo5 \
   ORDER BY count DESC
 

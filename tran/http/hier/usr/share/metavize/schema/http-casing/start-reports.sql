@@ -6,7 +6,7 @@ CREATE TABLE reports.webpages AS
   SELECT evt.request_id, COALESCE(NULLIF(name, ''), HOST(c_client_addr)) AS hname, c_client_addr, c_server_addr, c_server_port, host, resp.content_length, resp.time_stamp
     FROM tr_http_evt_req evt
       JOIN tr_http_req_line line USING (request_id)
-      JOIN tr_http_evt_resp resp ON (evt.request_id = resp.request_id)
+      LEFT OUTER JOIN tr_http_evt_resp resp USING (request_id)
       JOIN pl_endp endp ON (line.pl_endp_id = endp.event_id)
       LEFT OUTER JOIN merged_address_map mam ON (endp.c_client_addr = mam.addr AND resp.time_stamp >= mam.start_time AND resp.time_stamp < mam.end_time);
 
