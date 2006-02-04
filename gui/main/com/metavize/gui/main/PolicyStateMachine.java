@@ -20,6 +20,7 @@ import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.*;
 import java.lang.reflect.*;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
@@ -28,12 +29,10 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Vector;
 import java.util.concurrent.*;
+import javax.jnlp.BasicService;
+import javax.jnlp.ServiceManager;
 import javax.swing.*;
 import javax.swing.border.*;
-
-import javax.jnlp.ServiceManager;
-import javax.jnlp.BasicService;
-import java.net.URL;
 
 import com.metavize.gui.configuration.*;
 import com.metavize.gui.pipeline.*;
@@ -44,10 +43,10 @@ import com.metavize.gui.util.*;
 import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.gui.widgets.separator.Separator;
 import com.metavize.mvvm.*;
+import com.metavize.mvvm.client.*;
 import com.metavize.mvvm.policy.*;
 import com.metavize.mvvm.security.*;
 import com.metavize.mvvm.toolbox.*;
-import com.metavize.mvvm.client.*;
 import com.metavize.mvvm.tran.*;
 
 public class PolicyStateMachine implements ActionListener {
@@ -376,7 +375,7 @@ public class PolicyStateMachine implements ActionListener {
         private Policy policy;
         private MTransformJButton mTransformJButton;
         public MoveFromToolboxToRackThread(final Policy policy, final MTransformJButton mTransformJButton){
-	    setDaemon(true);
+        setDaemon(true);
             this.policy = policy;
             this.mTransformJButton = mTransformJButton;
             setContextClassLoader( Util.getClassLoader() );
@@ -425,7 +424,7 @@ public class PolicyStateMachine implements ActionListener {
         private MTransformJButton mTransformJButton;
         private ButtonKey buttonKey;
         public MoveFromRackToToolboxThread(final Policy policy, final MTransformJPanel mTransformJPanel){
-	    setDaemon(true);
+        setDaemon(true);
             this.policy = policy;
             this.mTransformJPanel = mTransformJPanel;
             this.buttonKey = new ButtonKey(mTransformJPanel);
@@ -533,21 +532,21 @@ public class PolicyStateMachine implements ActionListener {
     private class StoreMessageVisitor implements ToolboxMessageVisitor {
         public void visitMackageInstallRequest(MackageInstallRequest req) {
             String mackageName = req.getMackageName();
-	    MTransformJButton mTransformJButton = null;
-	    for( MTransformJButton purchasedButton : storeMap.values() ){
-		if(purchasedButton.getName().equals(mackageName)){
-		    mTransformJButton = purchasedButton;
-		    break;
-		}
-	    }
+        MTransformJButton mTransformJButton = null;
+        for( MTransformJButton purchasedButton : storeMap.values() ){
+        if(purchasedButton.getName().equals(mackageName)){
+            mTransformJButton = purchasedButton;
+            break;
+        }
+        }
             try{
-		if(mTransformJButton == null)
-		    throw new Exception();
-		purchaseBlockingQueue.put(mTransformJButton);
+        if(mTransformJButton == null)
+            throw new Exception();
+        purchaseBlockingQueue.put(mTransformJButton);
             }
-	    catch (Exception e) {
-		Util.handleExceptionNoRestart("Error purchasing", e);
-		mTransformJButton.setFailedProcureView();
+        catch (Exception e) {
+        Util.handleExceptionNoRestart("Error purchasing", e);
+        mTransformJButton.setFailedProcureView();
             }
         }
     }
@@ -563,7 +562,7 @@ public class PolicyStateMachine implements ActionListener {
     }
     private class MoveFromStoreToToolboxThread extends Thread{
         public MoveFromStoreToToolboxThread(){
-	    setDaemon(true);
+        setDaemon(true);
             setContextClassLoader( Util.getClassLoader() );
             setName("MVCLIENT-MoveFromStoreToToolboxThread");
             start();
@@ -644,28 +643,28 @@ public class PolicyStateMachine implements ActionListener {
                 currentUninstalledMackages = Util.getToolboxManager().uninstalled();
                 List<MackageDesc> purchasedMackageDescs = computeNewMackageDescs(currentUninstalledMackages, originalUninstalledMackages);
                 for( MackageDesc purchasedMackageDesc : purchasedMackageDescs ){
-		    if( isMackageStoreItem(purchasedMackageDesc) ){
-			System.err.println("PURCHASED: " + purchasedMackageDesc.getName());
-			removeFromStore(purchasedMackageDesc);
-		    }
+            if( isMackageStoreItem(purchasedMackageDesc) ){
+            System.err.println("PURCHASED: " + purchasedMackageDesc.getName());
+            removeFromStore(purchasedMackageDesc);
+            }
                 }
                 // ADD TO TOOLBOX
                 List<MackageDesc> newMackageDescs = computeNewMackageDescs(originalInstalledMackages, currentInstalledMackages);
                 for( MackageDesc newMackageDesc : newMackageDescs ){
-		    if( !isMackageStoreItem(newMackageDesc) ){
-			System.err.println("INSTALLED: " + newMackageDesc.getName());
-			MTransformJButton newMTransformJButton = new MTransformJButton(newMackageDesc);
-			if( newMTransformJButton.getMackageDesc().isService() ){
-			    addToToolbox(null,newMTransformJButton.getMackageDesc(),false,false);
-			}
-			else{
-			    for( Policy policy : policyToolboxMap.keySet() )
-				addToToolbox(policy,newMTransformJButton.getMackageDesc(),false,false);
-			}
-			revalidateToolboxes();
-			// FOCUS AND HIGHLIGHT IN CURRENT TOOLBOX
-			focusInToolbox(newMTransformJButton, true);
-		    }
+            if( !isMackageStoreItem(newMackageDesc) ){
+            System.err.println("INSTALLED: " + newMackageDesc.getName());
+            MTransformJButton newMTransformJButton = new MTransformJButton(newMackageDesc);
+            if( newMTransformJButton.getMackageDesc().isService() ){
+                addToToolbox(null,newMTransformJButton.getMackageDesc(),false,false);
+            }
+            else{
+                for( Policy policy : policyToolboxMap.keySet() )
+                addToToolbox(policy,newMTransformJButton.getMackageDesc(),false,false);
+            }
+            revalidateToolboxes();
+            // FOCUS AND HIGHLIGHT IN CURRENT TOOLBOX
+            focusInToolbox(newMTransformJButton, true);
+            }
                 }
             }
             catch(Exception e){
@@ -739,9 +738,9 @@ public class PolicyStateMachine implements ActionListener {
             notify();
         }
         public void run(){
-	    // POLL MVVM FOR PURCHASES
+        // POLL MVVM FOR PURCHASES
 
-	    // MAIN STORE EVENT LOOP
+        // MAIN STORE EVENT LOOP
             while(true){
                 try{
                     initStoreModel();
@@ -916,7 +915,7 @@ public class PolicyStateMachine implements ActionListener {
         private int overallProgress;
         private JProgressBar progressBar;
         public LoadApplianceThread(Policy policy, Tid tid, int overallProgress, JProgressBar progressBar){
-	    setDaemon(true);
+        setDaemon(true);
             this.policy = policy;
             this.tid = tid;
             this.overallProgress = overallProgress;
@@ -1211,23 +1210,23 @@ public class PolicyStateMachine implements ActionListener {
                 return;
             // THE OLD SCHOOL WAY OF PURCHASING
             if( (evt.getModifiers() & ActionEvent.SHIFT_MASK) > 0){
-		mTransformJButton.setEnabled(false);
-		StoreJDialog storeJDialog = new StoreJDialog(mTransformJButton);
-		storeJDialog.setVisible(true);
-		if( storeJDialog.getPurchasedMTransformJButton() == null ){
-		    mTransformJButton.setEnabled(true);
-		}
-	    }
-	    // THE NEW SHITE
-	    else{
-		try{
-		    URL newURL = new URL( Util.getServerCodeBase(), "../store/storeitem?name=" + mTransformJButton.getName());
-		    ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
-		}
-		catch(Exception f){
-		    Util.handleExceptionNoRestart("error launching browser for Store", f);
-		}
-	    }
+        mTransformJButton.setEnabled(false);
+        StoreJDialog storeJDialog = new StoreJDialog(mTransformJButton);
+        storeJDialog.setVisible(true);
+        if( storeJDialog.getPurchasedMTransformJButton() == null ){
+            mTransformJButton.setEnabled(true);
+        }
+        }
+        // THE NEW SHITE
+        else{
+        try{
+            URL newURL = new URL( Util.getServerCodeBase(), "../store/storeitem.php?name=" + mTransformJButton.getName());
+            ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
+        }
+        catch(Exception f){
+            Util.handleExceptionNoRestart("error launching browser for Store", f);
+        }
+        }
         }
     }
     private class ToolboxActionListener implements java.awt.event.ActionListener {

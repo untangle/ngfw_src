@@ -69,6 +69,7 @@ public class ProxyServlet extends HttpServlet
 
 
             StatusLine sl = readStatusLine(sis);
+            resp.setStatus(sl.getStatusCode(), sl.getReasonPhrase());
 
             boolean rewriteStream = false;
             for (Header h : readHeader(sis)) {
