@@ -26,6 +26,7 @@ import javax.swing.table.*;
 import javax.swing.event.*;
 
 import com.metavize.tran.mail.papi.*;
+import com.metavize.tran.mail.papi.quarantine.*;
 
 public class QuarantinableForwardsJPanel extends MEditTableJPanel{
 
@@ -73,7 +74,7 @@ class ForwardsModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  3,  C3_MW, true,  true,  false, false, String.class, "someone@somewhere.com", sc.html("send to<br>address") );
         addTableColumn( tableColumnModel,  4,  C4_MW, true,  true,  false, false, String.class, sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY );
         addTableColumn( tableColumnModel,  5,  C5_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
-        addTableColumn( tableColumnModel,  6,  10,    false, false, true,  false, EmailAddressRule.class, null, "");
+        addTableColumn( tableColumnModel,  6,  10,    false, false, true,  false, EmailAddressPairRule.class, null, "");
         return tableColumnModel;
     }
     
@@ -85,6 +86,7 @@ class ForwardsModel extends MSortedTableModel{
 
         for( Vector rowVector : tableVector ){
 	    rowIndex++;
+	    newElem = (EmailAddressPairRule) rowVector.elementAt(6);
 	    newElem.setAddress1( (String) rowVector.elementAt(2) );
 	    newElem.setAddress2( (String) rowVector.elementAt(3) );
 	    newElem.setCategory( (String) rowVector.elementAt(4) );
@@ -95,7 +97,9 @@ class ForwardsModel extends MSortedTableModel{
 	// SAVE SETTINGS //////////
 	if( !validateOnly ){
 	    MailTransformSettings mailTransformSettings = ((MailTransform)transformContext.transform()).getMailTransformSettings();
-	    mailTransformSettings.getQuarantineSettings().setAddressRemaps(elemList);
+	    QuarantineSettings quarantineSettings = mailTransformSettings.getQuarantineSettings();
+	    quarantineSettings.setAddressRemaps(elemList);
+	    mailTransformSettings.setQuarantineSettings(quarantineSettings);
 	    ((MailTransform)transformContext.transform()).setMailTransformSettings(mailTransformSettings);
 	}
     }

@@ -26,6 +26,7 @@ import javax.swing.table.*;
 import javax.swing.event.*;
 
 import com.metavize.tran.mail.papi.*;
+import com.metavize.tran.mail.papi.quarantine.*;
 
 public class QuarantinableAddressesJPanel extends MEditTableJPanel{
 
@@ -83,16 +84,19 @@ class QuarantinableModel extends MSortedTableModel{
 
         for( Vector rowVector : tableVector ){
 	    rowIndex++;
+	    newElem = (EmailAddressRule) rowVector.elementAt(5);
 	    newElem.setAddress( (String) rowVector.elementAt(2) );
-	    //newElem.setCategory( (String) rowVector.elementAt(3) );
-	    //newElem.setDescription( (String) rowVector.elementAt(4) );
+	    newElem.setCategory( (String) rowVector.elementAt(3) );
+	    newElem.setDescription( (String) rowVector.elementAt(4) );
             elemList.add(newElem);
         }
         
 	// SAVE SETTINGS //////////
 	if( !validateOnly ){
 	    MailTransformSettings mailTransformSettings = ((MailTransform)transformContext.transform()).getMailTransformSettings();
-	    mailTransformSettings.getQuarantineSettings().setAllowedAddressPatterns(elemList);
+	    QuarantineSettings quarantineSettings = mailTransformSettings.getQuarantineSettings();
+	    quarantineSettings.setAllowedAddressPatterns(elemList);
+	    mailTransformSettings.setQuarantineSettings(quarantineSettings);
 	    ((MailTransform)transformContext.transform()).setMailTransformSettings(mailTransformSettings);
 	}
     }
@@ -110,8 +114,8 @@ class QuarantinableModel extends MSortedTableModel{
 	    tempRow.add( super.ROW_SAVED );
 	    tempRow.add( rowIndex );
             tempRow.add( address.getAddress() );
-            tempRow.add( /*address.getCategory()*/ "unknown" );
-	    tempRow.add( /*address.getDescription()*/ "unknown" );
+            tempRow.add( address.getCategory() );
+	    tempRow.add( address.getDescription() );
 	    tempRow.add( address );
 	    allRows.add( tempRow );
         }

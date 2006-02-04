@@ -131,6 +131,8 @@ public class EmailJDialog extends MConfigJDialog {
             return;
         }
         quarantineJTabbedPane.addTab(NAME_QUARANTINABLE_ADDRESSES, null, quarantinableAddressesJPanel);
+	addSavable(NAME_QUARANTINABLE_ADDRESSES, (Savable) quarantinableAddressesJPanel);
+	addRefreshable(NAME_QUARANTINABLE_ADDRESSES, (Refreshable) quarantinableAddressesJPanel);
 
         // QUARANTINABLE FORWARDS //////
         String quarantinableForwardsJPanelName = "com.metavize.tran.mail.gui.QuarantinableForwardsJPanel";
@@ -145,6 +147,8 @@ public class EmailJDialog extends MConfigJDialog {
             return;
         }
         quarantineJTabbedPane.addTab(NAME_QUARANTINABLE_FORWARDS, null, quarantinableForwardsJPanel);
+	addSavable(NAME_QUARANTINABLE_FORWARDS, (Savable) quarantinableForwardsJPanel);
+	addRefreshable(NAME_QUARANTINABLE_FORWARDS, (Refreshable) quarantinableForwardsJPanel);
 
         // QUARANTINE GENERAL SETTINGS //////
         String quarantineGeneralSettingsJPanelName = "com.metavize.tran.mail.gui.QuarantineGeneralSettingsJPanel";
