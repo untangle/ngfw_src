@@ -59,9 +59,6 @@ public class IDSRule extends Rule implements Serializable {
 
         super("Name", category,description,false);
 		
-        if(4096 < rule.length())
-            throw new IllegalArgumentException("definition too long:" + rule);
-
         this.rule = rule;
         this.modified = false;
         this.remove = false;
@@ -76,7 +73,6 @@ public class IDSRule extends Rule implements Serializable {
     /**
      * @hibernate.property
      * column="RULE"
-     * length="4096"
      */
     public String getText() { return this.rule; }
     public void setText(String s) { this.rule = s; }	

@@ -20,6 +20,8 @@ import com.metavize.mvvm.MvvmContextFactory;
 
 public class IDSRuleManager {
 
+    private static final String BLEEDING_PREFIX = "BLEEDING-EDGE";
+
     public static final boolean TO_SERVER = true;
     public static final boolean TO_CLIENT = false;
 
@@ -176,6 +178,12 @@ public class IDSRuleManager {
                 return null;
             }
             String msg = signature.getMessage();
+            // reomve useless 'BLEEDING-EDGE' prefix
+            if (msg.length() > BLEEDING_PREFIX.length()) {
+                String beginMsg = msg.substring(0, BLEEDING_PREFIX.length());
+                if (beginMsg.equalsIgnoreCase(BLEEDING_PREFIX))
+                    msg = msg.substring(BLEEDING_PREFIX.length()).trim();
+            }
             // remove the category since it's redundant
             int catlen = category.length();
             if (msg.length() > catlen) {
