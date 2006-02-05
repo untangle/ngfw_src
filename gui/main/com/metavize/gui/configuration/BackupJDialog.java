@@ -474,7 +474,7 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 getContentPane().add(backgroundJLabel, gridBagConstraints);
 
                 java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-                setBounds((screenSize.width-630)/2, (screenSize.height-402)/2, 630, 402);
+                setBounds((screenSize.width-630)/2, (screenSize.height-500)/2, 630, 500);
         }//GEN-END:initComponents
 
     private void restoreFileJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_restoreFileJButtonActionPerformed
