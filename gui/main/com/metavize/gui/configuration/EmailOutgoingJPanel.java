@@ -138,12 +138,15 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel implements Savable, 
                 restrictIPJPanel1 = new javax.swing.JPanel();
                 jLabel6 = new javax.swing.JLabel();
                 addressJTextField = new javax.swing.JTextField();
+                jSeparator3 = new javax.swing.JSeparator();
+                jLabel10 = new javax.swing.JLabel();
+                connectivityTestJButton = new javax.swing.JButton();
 
                 setLayout(new java.awt.GridBagLayout());
 
-                setMaximumSize(new java.awt.Dimension(563, 343));
-                setMinimumSize(new java.awt.Dimension(563, 343));
-                setPreferredSize(new java.awt.Dimension(563, 343));
+                setMaximumSize(new java.awt.Dimension(563, 286));
+                setMinimumSize(new java.awt.Dimension(563, 286));
+                setPreferredSize(new java.awt.Dimension(563, 286));
                 externalRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
                 externalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Outgoing Email Server (SMTP)", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
@@ -264,6 +267,35 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel implements Savable, 
                 gridBagConstraints.insets = new java.awt.Insets(5, 79, 5, 0);
                 enableRemoteJPanel.add(restrictIPJPanel1, gridBagConstraints);
 
+                jSeparator3.setForeground(new java.awt.Color(200, 200, 200));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                enableRemoteJPanel.add(jSeparator3, gridBagConstraints);
+
+                jLabel10.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel10.setText("<html><b>Connectivity Test</b> will try to send an email to a specified recipient, using your currently specified SMTP Email Server settings.  If the email is not received, your settings may be incorrect.  If you have made changes to the above settings, you must save them before this button will be enabled.</html>");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
+                enableRemoteJPanel.add(jLabel10, gridBagConstraints);
+
+                connectivityTestJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                connectivityTestJButton.setText("Run Connectivity Test");
+                connectivityTestJButton.setFocusPainted(false);
+                connectivityTestJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                connectivityTestJButtonActionPerformed(evt);
+                        }
+                });
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+                enableRemoteJPanel.add(connectivityTestJButton, gridBagConstraints);
+
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -282,20 +314,34 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel implements Savable, 
                 add(externalRemoteJPanel, gridBagConstraints);
 
         }//GEN-END:initComponents
+
+		private void connectivityTestJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectivityTestJButtonActionPerformed
+				    try{
+	    EmailConnectivityTestJDialog connectivityJDialog = new EmailConnectivityTestJDialog();
+	    connectivityJDialog.setVisible(true);
+	}
+	catch(Exception e){
+	    try{ Util.handleExceptionWithRestart("Error showing connectivity tester", e); }
+	    catch(Exception f){ Util.handleExceptionNoRestart("Error showing connectivity tester", f); }
+	}
+		}//GEN-LAST:event_connectivityTestJButtonActionPerformed
     
 
     
         // Variables declaration - do not modify//GEN-BEGIN:variables
         public javax.swing.JTextField addressJTextField;
+        private javax.swing.JButton connectivityTestJButton;
         private javax.swing.JPanel enableRemoteJPanel;
         private javax.swing.JPanel externalRemoteJPanel;
         public javax.swing.JTextField hostJTextField;
+        private javax.swing.JLabel jLabel10;
         private javax.swing.JLabel jLabel11;
         private javax.swing.JLabel jLabel12;
         private javax.swing.JLabel jLabel5;
         private javax.swing.JLabel jLabel6;
         private javax.swing.JLabel jLabel8;
         private javax.swing.JSeparator jSeparator2;
+        private javax.swing.JSeparator jSeparator3;
         private javax.swing.JSpinner portJSpinner;
         private javax.swing.JPanel restrictIPJPanel;
         private javax.swing.JPanel restrictIPJPanel1;

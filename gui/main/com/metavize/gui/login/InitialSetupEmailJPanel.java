@@ -18,12 +18,13 @@ import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.*;
 import com.metavize.mvvm.NetworkingManager;
 import com.metavize.mvvm.NetworkingConfiguration;
-
+import com.metavize.gui.configuration.EmailConnectivityTestJDialog;
 
 import java.util.Arrays;
 import javax.swing.SwingUtilities;
 import javax.swing.SpinnerNumberModel;
 import java.awt.Color;
+import java.awt.Dialog;
 
 public class InitialSetupEmailJPanel extends MWizardPageJPanel {
     
@@ -129,9 +130,11 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
                 jLabel12 = new javax.swing.JLabel();
                 addressJTextField = new javax.swing.JTextField();
                 jLabel3 = new javax.swing.JLabel();
-                jLabel4 = new javax.swing.JLabel();
                 jLabel1 = new javax.swing.JLabel();
+                connectivityTestJButton = new javax.swing.JButton();
+                jLabel11 = new javax.swing.JLabel();
                 jLabel5 = new javax.swing.JLabel();
+                jLabel4 = new javax.swing.JLabel();
 
                 setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -237,26 +240,69 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
                 jLabel3.setText("<html>Please choose the \"From Address\" of emails sent from EdgeGuard.</html>");
                 add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 180, -1, -1));
 
-                jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
-                add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(-130, 230, -1, -1));
-
                 jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel1.setText("(optional)");
                 add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 121, -1, -1));
+
+                connectivityTestJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                connectivityTestJButton.setText("Run Connectivity Test");
+                connectivityTestJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                connectivityTestJButtonActionPerformed(evt);
+                        }
+                });
+
+                add(connectivityTestJButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 275, -1, -1));
+
+                jLabel11.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel11.setText("<html>The <b>Connectivity Test is optional</b>, but it can tell you if your mail settings  above are correct, by sending you an email.</html>");
+                add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 265, 250, -1));
 
                 jLabel5.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel5.setText("(optional)");
                 add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 143, -1, -1));
 
+                jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
+                jLabel4.setEnabled(false);
+                add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(-130, 230, -1, -1));
+
         }//GEN-END:initComponents
 
+		private void connectivityTestJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectivityTestJButtonActionPerformed
+				new ConnectivityThread();
+		}//GEN-LAST:event_connectivityTestJButtonActionPerformed
+
+		private class ConnectivityThread extends Thread{
+				public ConnectivityThread(){
+						setDaemon(true);
+						connectivityTestJButton.setEnabled(false);
+						start();
+				}
+				public void run(){
+				try{
+						doSave(null, false);
+						EmailConnectivityTestJDialog connectivityJDialog = new EmailConnectivityTestJDialog((Dialog)InitialSetupEmailJPanel.this.getTopLevelAncestor(), true);
+						connectivityJDialog.setVisible(true);
+				}
+				catch(Exception e){
+						Util.handleExceptionNoRestart("Error testing connectivity", e);
+				}
+				finally{
+						SwingUtilities.invokeLater( new Runnable(){ public void run(){
+						InitialSetupEmailJPanel.this.connectivityTestJButton.setEnabled(true);
+						}});
+				}
+				}
+		}
     
         // Variables declaration - do not modify//GEN-BEGIN:variables
         public javax.swing.JTextField addressJTextField;
         private javax.swing.ButtonGroup buttonGroup1;
+        private javax.swing.JButton connectivityTestJButton;
         public javax.swing.JTextField hostJTextField;
         private javax.swing.JLabel jLabel1;
         private javax.swing.JLabel jLabel10;
+        private javax.swing.JLabel jLabel11;
         private javax.swing.JLabel jLabel12;
         private javax.swing.JLabel jLabel15;
         private javax.swing.JLabel jLabel16;
