@@ -1,9 +1,11 @@
 # Hotline - An old P2P filesharing protocol
 # pattern quality: marginal veryfast
+# Protocol groups: p2p
 # 
-# This pattern is untested!  If it does not work for you, or you believe
-# it could be improved, please post to l7-filter-developers@lists.sf.net
-# This list may be subscribed to at 
+# This pattern is untested!
+#
+# To get or provide more information about this protocol and/or pattern:
+# http://www.protocolinfo.org/wiki/Hotline
 # http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 #
 # This is lifted from http://oofle.com/filesharing.php?app=hotline

@@ -1,11 +1,11 @@
 # BGP - Border Gateway Protocol - RFC 1771
 # Pattern quality: ok veryfast
+# Protocol groups: ietf_draft_standard networking
 #
 # This pattern is UNTESTED.
 #
-# If it does not work for you, or you believe it could be improved,
-# please post to l7-filter-developers@lists.sf.net .  This list may be
-# subscribed to at:
+# To get or provide more information about this protocol and/or pattern:
+# http://www.protocolinfo.org/wiki/BGP
 # http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 bgp

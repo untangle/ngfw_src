@@ -1,11 +1,14 @@
 # NNTP - Network News Transfer Protocol - RFCs 977 and 2980
 # Pattern quality: good veryfast
+# Protocol groups: ietf_proposed_standard
+#
 # usually runs on port 119
 
 # This pattern is tested and is believed to work well (but could use
-# more testing).  If it does not work for you, or you believe it could
-# be improved, please post to l7-filter-developers@lists.sf.net .  This
-# list may be subscribed to at
+# more testing).
+#
+# To get or provide more information about this protocol and/or pattern:
+# http://www.protocolinfo.org/wiki/NNTP
 # http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 nntp

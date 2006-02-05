@@ -1,9 +1,11 @@
 # POP3 - Post Office Protocol version 3 (popular e-mail protocol) - RFC 1939
 # Pattern quality: good veryfast
+# Protocol groups: ietf_internet_standard mail
 #
-# This pattern has been tested somewhat.  If it does not
-# work for you, or you believe it could be improved, please post to 
-# l7-filter-developers@lists.sf.net .  This list may be subscribed to at
+# This pattern has been tested somewhat.
+#
+# To get or provide more information about this protocol and/or pattern:
+# http://www.protocolinfo.org/wiki/POP
 # http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 # this is a difficult protocol to match because of the relative lack of 

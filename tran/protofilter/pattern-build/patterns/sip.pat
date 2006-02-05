@@ -1,11 +1,11 @@
 # SIP - Internet telephony - RFC 3261
 # Pattern quality: ok veryfast
+# Protocol groups: ietf_proposed_standard voip
 #
 # This pattern has been tested with the Ubiquity SIP user agent.
 # 
-# If this pattern does not work for you, or you believe it could be
-# improved, please post to l7-filter-developers@lists.sf.net .  This
-# list may be subscribed to at
+# To get or provide more information about this protocol and/or pattern:
+# http://www.protocolinfo.org/wiki/SIP
 # http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 #
 # Thanks to Ankit Desai for this pattern.

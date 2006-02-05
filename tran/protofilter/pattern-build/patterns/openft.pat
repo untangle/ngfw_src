@@ -1,9 +1,9 @@
 # OpenFT - P2P filesharing (implemented in giFT library)
 # Pattern quality: good fast
+# Protocol groups: p2p
 #
-# Please post to l7-filter-developers@lists.sf.net as to whether it works 
-# for you or not.  If you believe it could be improved please post your 
-# suggestions to that list as well. You may subscribe to this list at 
+# To get or provide more information about this protocol and/or pattern:
+# http://www.protocolinfo.org/wiki/OpenFT
 # http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 # Ben Efros <ben AT xgendev.com> says:

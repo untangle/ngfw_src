@@ -1,11 +1,14 @@
 # X Windows Version 11 - Networked GUI system used in most Unices
 # Pattern quality: good veryfast
-# specification: http://www.msu.edu/~huntharo/xwin/docs/xwindows/PROTO.pdf
+# Protocol groups: x_consortium_standard remote_access
+#
+# Specification: http://www.msu.edu/~huntharo/xwin/docs/xwindows/PROTO.pdf
 # Usually runs on port 6000 (6001 for the second server on a host, etc)
 #
-# This pattern has been tested.  If this pattern does not
-# work for you, or you believe it could be improved, please post to 
-# l7-filter-developers@lists.sf.net .  This list may be subscribed to at
+# This pattern has been tested.
+#
+# To get or provide more information about this protocol and/or pattern:
+# http://www.protocolinfo.org/wiki/X11
 # http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 x11

@@ -9,7 +9,7 @@
  */
 package com.metavize.tran.protofilter;
 
-import java.util.LinkedHashMap;
+import java.util.TreeMap;
 
 /**
  * <b>WARNING WARNING WARNING WARNING WARNING WARNING</b>
@@ -22,13 +22,13 @@ public class LoadPatterns {
 
     private LoadPatterns() {}
 
-    public static LinkedHashMap getPatterns()
+    public static TreeMap getPatterns()
     {
         // Now that we have Policies,  we create a new map every time since we don't want sharing.
         return createPatterns();
     }
 
-    private static LinkedHashMap createPatterns()
+    private static TreeMap createPatterns()
     {
-        LinkedHashMap pats = new LinkedHashMap();
+        TreeMap pats = new TreeMap();
 

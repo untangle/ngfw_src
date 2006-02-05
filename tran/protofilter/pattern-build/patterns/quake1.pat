@@ -1,10 +1,11 @@
 # Quake 1 - A popular computer game.
 # Pattern quality: marginal veryfast
+# Protocol groups: proprietary game
 #
 # This pattern is untested and unconfirmed.
-# Please post to l7-filter-developers@lists.sf.net as to whether it works
-# for you or not.  If you believe it could be improved please post your
-# suggestions to that list as well. You may subscribe to this list at
+#
+# To get or provide more information about this protocol and/or pattern:
+# http://www.protocolinfo.org/wiki/Quake
 # http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 # Info taken from http://www.gamers.org/dEngine/quake/QDP/qnp.html,

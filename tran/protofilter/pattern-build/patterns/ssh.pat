@@ -1,12 +1,15 @@
 # SSH - Secure SHell
 # Pattern quality: great veryfast
+# Protocol groups: ietf_draft_standard remote_access secure
+#
 # usually runs on port 22
 #
 # http://www.ietf.org/internet-drafts/draft-ietf-secsh-transport-22.txt
 #
-# This pattern has been tested and is believed to work well.  If it does not
-# work for you, or you believe it could be improved, please post to 
-# l7-filter-developers@lists.sf.net .  This list may be subscribed to at
+# This pattern has been tested and is believed to work well.
+#
+# To get or provide more information about this protocol and/or pattern:
+# http://www.protocolinfo.org/wiki/SSH
 # http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 ssh

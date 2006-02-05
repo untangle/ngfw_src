@@ -1,5 +1,7 @@
 ./getPatterns.sh grabs all the patterns and puts them in patterns/
-./mkLoadPatterns.sh makes a LoadPatterns.java file that is then copied into the srcdir
+./mkLoadPatterns.sh makes a LoadPatterns.java file and copies it into the srcdir
 
-In order to update the signatures, all you should have to do is run ./getPatterns.sh
-then mkLoadPatterns.sh will be invoked from ant build script
+In order to update the signatures:
+ 1) run getPatterns.sh
+ 2) edit patternmaster appropriately
+ 3) run mkLoadPatterns.sh

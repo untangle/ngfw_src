@@ -1,5 +1,6 @@
 # Gnutella - P2P filesharing
 # Pattern quality: good fast
+# Protocol groups: p2p
 #
 # This should match both Gnutella and "Gnutella2" ("Mike's protocol")
 # 
@@ -8,9 +9,8 @@
 # 
 # This is tested with gtk-gnutella and Shareaza.
 #
-# Please report on how this pattern works for you at
-# l7-filter-developers@lists.sf.net .  If you can improve on this
-# pattern, please also post to that list. You may subscribe at
+# To get or provide more information about this protocol and/or pattern:
+# http://www.protocolinfo.org/wiki/Gnutella
 # http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 # http://www.gnutella2.com/tiki-index.php?page=UDP%20Transceiver

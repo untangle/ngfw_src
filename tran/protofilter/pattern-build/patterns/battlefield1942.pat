@@ -1,12 +1,13 @@
 # Battlefield 1942 - An EA game
 # Pattern quality: ok veryfast
+# Protocol groups: proprietary game
 #
 # Contributed by Myles Uyema <mylesuyema AT gmail.com>
 #
 # This pattern has only been tested by one person.
-# Please post to l7-filter-developers@lists.sf.net as to whether it works
-# for you or not.  If you believe it could be improved please post your
-# suggestions to that list as well. You may subscribe to this list at
+
+# To get or provide more information about this protocol and/or pattern:
+# http://www.protocolinfo.org/wiki/Battlefield_1942
 # http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 # tested on two original EA battlefield 1942 servers

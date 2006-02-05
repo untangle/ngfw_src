@@ -22,9 +22,16 @@ import java.io.Serializable;
  */
 public class ProtoFilterPattern implements Serializable
 {
+    // Converter sets all old patterns to this mid
+    public static final int NEEDS_CONVERSION_METAVIZE_ID = -27;
+
+    // All user owned rules should have this value
+    public static final int USER_CREATED_METAVIZE_ID = 0;
+
     private static final long serialVersionUID = 3997166364141492555L;
 
     private Long id;
+    private int mvid = USER_CREATED_METAVIZE_ID;
     private String protocol = "none";
     private String description = "None";
     private String category = "None";
@@ -39,15 +46,11 @@ public class ProtoFilterPattern implements Serializable
      */
     public ProtoFilterPattern() {}
 
-    public ProtoFilterPattern(String protocol, String category, String description,
-                              String definition,  String quality,
-                              boolean blocked, boolean alert, boolean log)
+    ProtoFilterPattern(int mvid, String protocol, String category, String description,
+                       String definition,  String quality,
+                       boolean blocked, boolean alert, boolean log)
     {
-        if (4096 < definition.length()) {
-            throw new IllegalArgumentException("definition too long:"
-                                               + definition);
-        }
-
+        this.mvid = mvid;
         this.protocol = protocol;
         this.category = category;
         this.description = description;
@@ -58,6 +61,11 @@ public class ProtoFilterPattern implements Serializable
         this.log = log;
     }
 
+    // For use by UI
+    public boolean isReadOnly() {
+        return (mvid == USER_CREATED_METAVIZE_ID);
+    }
+
     /**
      * @hibernate.id
      * column="RULE_ID"
@@ -65,6 +73,20 @@ public class ProtoFilterPattern implements Serializable
      */
     protected Long getId() { return id; }
     protected void setId(Long id) { this.id = id; }
+
+    /**
+     *
+     * Note that metavize id should not be set by the user.  It is only ever set for
+     * Metavize built-in patterns.
+     *
+     * @hibernate.property
+     * column="METAVIZE_ID"
+     */
+    public int getMetavizeId() { return mvid; }
+    public void setMetavizeId(int mvid) { this.mvid = mvid; }
+
+    // For UI
+    public void setMetavizeId(Integer mvid) { this.mvid = mvid.intValue(); }
 
     /**
      * Protocol name
@@ -98,16 +120,11 @@ public class ProtoFilterPattern implements Serializable
      *
      * @hibernate.property
      * column="DEFINITION"
-     * length="4096"
      */
     public String getDefinition() { return this.definition; }
 
     public void setDefinition(String s)
     {
-        if (4096 < s.length()) {
-            throw new IllegalArgumentException("argument too long:" + s);
-        }
-
         this.definition = s;
     }
 

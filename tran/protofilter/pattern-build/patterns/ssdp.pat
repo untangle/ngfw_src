@@ -1,8 +1,9 @@
 # SSDP - Simple Service Discovery Protocol - easy discovery of network devices
 # Pattern quality: good notsofast
+# Protocol groups: ietf_draft_standard networking
 #
-# If this pattern does not work for you, or you believe it could be
-# improved, please post to l7-filter-developers@lists.sf.net . Subscribe:
+# To get or provide more information about this protocol and/or pattern:
+# http://www.protocolinfo.org/wiki/SSDP
 # http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 # This pattern was tested only by listening to a Linksys WRT54G. However,

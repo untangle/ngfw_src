@@ -1,10 +1,13 @@
 # SMTP - Simple Mail Transfer Protocol - RFC 2821 (See also RFC 1869)
 # Pattern quality: great fast
+# Protocol groups: ietf_internet_standard mail
+#
 # usually runs on port 25
 # 
-# This pattern has been tested and is believed to work well.  If it does not
-# work for you, or you believe it could be improved, please post to 
-# l7-filter-developers@lists.sf.net .  This list may be subscribed to at
+# This pattern has been tested and is believed to work well.
+#
+# To get or provide more information about this protocol and/or pattern:
+# http://www.protocolinfo.org/wiki/SMTP
 # http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 smtp

@@ -13,7 +13,9 @@ package com.metavize.tran.protofilter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.TreeMap;
 
 import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.logging.EventLogger;
@@ -44,7 +46,7 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
 
     private final Logger logger = Logger.getLogger(ProtoFilterImpl.class);
 
-    private ProtoFilterSettings settings = null;
+    private ProtoFilterSettings cachedSettings = null;
 
     // constructors -----------------------------------------------------------
 
@@ -63,7 +65,7 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
 
     public ProtoFilterSettings getProtoFilterSettings()
     {
-        return this.settings;
+        return this.cachedSettings;
     }
 
     public void setProtoFilterSettings(final ProtoFilterSettings settings)
@@ -73,7 +75,7 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
                 public boolean doWork(Session s)
                 {
                     s.saveOrUpdate(settings);
-                    ProtoFilterImpl.this.settings = settings;
+                    ProtoFilterImpl.this.cachedSettings = settings;
                     return true;
                 }
 
@@ -104,13 +106,15 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
 
     // Transform methods ------------------------------------------------------
 
+    /*
+     * First time initialization
+     */
     protected void initializeSettings()
     {
         ProtoFilterSettings settings = new ProtoFilterSettings(this.getTid());
-        logger.info("Initializing Settings...");
-
-        updateToCurrent(settings);
-
+        logger.info("INIT: Importing patterns...");
+        TreeMap factoryPatterns = LoadPatterns.getPatterns(); /* Global List of Patterns */
+        settings.setPatterns(new ArrayList(factoryPatterns.values()));
         setProtoFilterSettings(settings);
     }
 
@@ -122,9 +126,7 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
                 {
                     Query q = s.createQuery("from ProtoFilterSettings hbs where hbs.tid = :tid");
                     q.setParameter("tid", getTid());
-                    ProtoFilterImpl.this.settings = (ProtoFilterSettings)q.uniqueResult();
-
-                    updateToCurrent(ProtoFilterImpl.this.settings);
+                    ProtoFilterImpl.this.cachedSettings = (ProtoFilterSettings)q.uniqueResult();
 
                     return true;
                 }
@@ -132,6 +134,8 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
                 public Object getResult() { return null; }
             };
         getTransformContext().runTransaction(tw);
+
+        updateToCurrent();
     }
 
     protected void preStart() throws TransformStartException
@@ -152,18 +156,17 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
 
     public    void reconfigure() throws TransformException
     {
-        ProtoFilterSettings settings = getProtoFilterSettings();
         ArrayList enabledPatternsList = new ArrayList();
 
         logger.info("Reconfigure()");
 
-        if (settings == null) {
-            throw new TransformException("Failed to get ProtoFilter settings: " + settings);
+        if (cachedSettings == null) {
+            throw new TransformException("Failed to get ProtoFilter settings: " + cachedSettings);
         }
 
-        List curPatterns = settings.getPatterns();
+        List curPatterns = cachedSettings.getPatterns();
         if (curPatterns == null)
-            logger.warn("NULL pattern list. Continuing anyway...");
+            logger.error("NULL pattern list. Continuing anyway...");
         else {
             for (Iterator i=curPatterns.iterator() ; i.hasNext() ; ) {
                 ProtoFilterPattern pat = (ProtoFilterPattern)i.next();
@@ -176,76 +179,128 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
         }
 
         handler.patternList(enabledPatternsList);
-        handler.byteLimit(settings.getByteLimit());
-        handler.chunkLimit(settings.getChunkLimit());
-        handler.unknownString(settings.getUnknownString());
-        handler.stripZeros(settings.isStripZeros());
+        handler.byteLimit(cachedSettings.getByteLimit());
+        handler.chunkLimit(cachedSettings.getChunkLimit());
+        handler.unknownString(cachedSettings.getUnknownString());
+        handler.stripZeros(cachedSettings.isStripZeros());
     }
 
 
-    private   void updateToCurrent(ProtoFilterSettings settings)
+    private   void updateToCurrent()
     {
-        if (settings == null) {
+        if (cachedSettings == null) {
             logger.error("NULL ProtoFilter Settings");
             return;
         }
 
-        HashMap    allPatterns = LoadPatterns.getPatterns(); /* Global List of Patterns */
-        List       curPatterns = settings.getPatterns(); /* Current list of Patterns */
+        boolean    madeChange = false;
+        TreeMap    factoryPatterns = LoadPatterns.getPatterns(); /* Global List of Patterns */
+        List       curPatterns = cachedSettings.getPatterns(); /* Current list of Patterns */
 
-        if (curPatterns == null) {
-            /*
-             * First time initialization
-             */
-            logger.info("UPDATE: Importing patterns...");
-            settings.setPatterns(new ArrayList(allPatterns.values()));
-            curPatterns = settings.getPatterns();
-        }
-        else {
-            /*
-             * Look for updates
-             */
-            for (Iterator i=curPatterns.iterator() ; i.hasNext() ; ) {
-                ProtoFilterPattern pat = (ProtoFilterPattern) i.next();
-                String name = pat.getProtocol();
-                String def  = pat.getDefinition();
+        /*
+         * Look for updates
+         */
+        for (Iterator i = curPatterns.iterator() ; i.hasNext() ; ) {
+            ProtoFilterPattern curPat = (ProtoFilterPattern) i.next();
+            int mvid = curPat.getMetavizeId();
+            ProtoFilterPattern newPat = (ProtoFilterPattern) factoryPatterns.get(mvid);
 
-                if (allPatterns.containsKey(name)) {
-                    /*
-                     * Key is present in current config
-                     * Update definition and description if needed
-                     */
-                    ProtoFilterPattern newpat = (ProtoFilterPattern)allPatterns.get(name);
-                    if (newpat == null) {
-                        logger.error("Missing pattern");
-                        continue;
+            // logger.info("INFO: Found existing pattern " + mvid + " Pattern (" + curPat.getProtocol() + ")");
+            if (mvid == ProtoFilterPattern.NEEDS_CONVERSION_METAVIZE_ID) {
+                // Special one-time handling for conversion from 3.1.3 to 3.2
+                // Find it by name
+                madeChange = true;
+                String curName = curPat.getProtocol();
+                boolean found = false;
+                for (Iterator j = factoryPatterns.values().iterator() ; j.hasNext() ; ) {
+                    newPat = (ProtoFilterPattern) j.next();
+                    if (newPat.getProtocol().equals(curName)) {
+                        found = true;
+                        break;
                     }
-
-                    if (!newpat.getDescription().equals(pat.getDescription())) {
-                        logger.info("UPDATE: Updating Description for Pattern (" + name + ")");
-                        pat.setDescription(newpat.getDescription());
-                    }
-                    if (!newpat.getDefinition().equals(pat.getDefinition())) {
-                        logger.info("UPDATE: Updating Definition  for Pattern (" + name + ")");
-                        pat.setDefinition(newpat.getDefinition());
-                    }
-
-                    /*
-                     * Remove it, its been accounted for
-                     */
-                    allPatterns.remove(name);
                 }
+                if (found) {
+                    logger.info("CONVERT: Updating MVID for Pattern (" + curName + ")");
+                    mvid = newPat.getMetavizeId();
+                    curPat.setMetavizeId(mvid);
+                } else {
+                    // A name mismatch, a user pattern, or the pattern has been deleted.
+                    newPat = null;
+                }
+                // In either case, fall through to below
             }
+            if (newPat != null) {
+                /*
+                 * Pattern is present in current config
+                 * Update it if needed
+                 */
+                if (!newPat.getProtocol().equals(curPat.getProtocol())) {
+                    logger.info("UPDATE: Updating Protocol for Pattern (" + mvid + ")");
+                    madeChange = true;
+                    curPat.setProtocol(newPat.getProtocol());
+                }
+                if (!newPat.getCategory().equals(curPat.getCategory())) {
+                    logger.info("UPDATE: Updating Category for Pattern (" + mvid + ")");
+                    madeChange = true;
+                    curPat.setCategory(newPat.getCategory());
+                }
+                if (!newPat.getDescription().equals(curPat.getDescription())) {
+                    logger.info("UPDATE: Updating Description for Pattern (" + mvid + ")");
+                    madeChange = true;
+                    curPat.setDescription(newPat.getDescription());
+                }
+                if (!newPat.getDefinition().equals(curPat.getDefinition())) {
+                    logger.info("UPDATE: Updating Definition  for Pattern (" + mvid + ")");
+                    madeChange = true;
+                    curPat.setDefinition(newPat.getDefinition());
+                }
+                if (!newPat.getQuality().equals(curPat.getQuality())) {
+                    logger.info("UPDATE: Updating Quality  for Pattern (" + mvid + ")");
+                    madeChange = true;
+                    curPat.setQuality(newPat.getQuality());
+                }
 
-            /*
-             * Add all the necessary new patterns.  Whatever is left
-             * in allPatterns at this point, is not in the curPatterns
-             */
-            for (Iterator i=allPatterns.values().iterator() ; i.hasNext() ; ) {
-                ProtoFilterPattern pat = (ProtoFilterPattern) i.next();
-                logger.info("UPDATE: Adding New Pattern (" + pat.getProtocol() + ")");
-                curPatterns.add(pat);
+                // Remove it, its been accounted for
+                factoryPatterns.remove(mvid);
+            } else if (mvid != ProtoFilterPattern.USER_CREATED_METAVIZE_ID) {
+                // MV Pattern has been deleted.
+                i.remove();
+                madeChange = true;
+                logger.info("UPDATE: Removing old Pattern " + mvid + " (" + curPat.getProtocol() + ")");
             }
+        }
+
+        /*
+         * At this point, curPatterns is correct except for the newly added factory patterns.
+         * Go ahead and add them now.  To put them in the right place, we do a linear
+         * insertion, which isn't bad since the list is never very long.
+         */
+        if (factoryPatterns.size() > 0) {
+            madeChange = true;
+            LinkedList allPatterns = new LinkedList(curPatterns);
+            for (Iterator i = factoryPatterns.values().iterator() ; i.hasNext() ; ) {
+                ProtoFilterPattern factoryPat = (ProtoFilterPattern) i.next();
+                logger.info("UPDATE: Adding New Pattern (" + factoryPat.getProtocol() + ")");
+                boolean added = false;
+                int index = 0;
+                for (Iterator j = allPatterns.iterator() ; j.hasNext() ; index++) {
+                    ProtoFilterPattern curPat = (ProtoFilterPattern) j.next();
+                    if (factoryPat.getMetavizeId() < curPat.getMetavizeId()) {
+                        allPatterns.add(index, factoryPat);
+                        added = true;
+                        break;
+                    }
+                }
+                if (!added)
+                    allPatterns.add(factoryPat);
+            }
+            curPatterns = new ArrayList(allPatterns);
+        }
+
+        if (madeChange) {
+            logger.info("UPDATE: Saving new patterns list, size " + curPatterns.size());
+            cachedSettings.setPatterns(new ArrayList(curPatterns));
+            setProtoFilterSettings(cachedSettings);
         }
 
         logger.info("UPDATE: Complete");

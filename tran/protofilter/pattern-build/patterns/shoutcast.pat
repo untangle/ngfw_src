@@ -1,5 +1,7 @@
-# Shoutcast & Icecast - streaming audio
+# Shoutcast and Icecast - streaming audio
 # Pattern quality: good fast
+# Protocol groups: streaming_audio
+#
 # usually runs on port 80
 #
 # Pattern contributed by Deepak Seshadri <dseshadri AT broadbandmaritime.com>
@@ -11,10 +13,10 @@
 # 
 # http://sander.vanzoest.com/talks/2002/audio_and_apache/
 # http://forums.radiotoolbox.com/viewtopic.php?t=74
-# www.icecast.org
-
-# If you believe this pattern could be improved, please post to
-# l7-filter-developers@lists.sf.net .  This list may be subscribed to at
+# http://www.icecast.org
+#
+# To get or provide more information about this protocol and/or pattern:
+# http://www.protocolinfo.org/wiki/Icecast
 # http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 

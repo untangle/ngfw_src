@@ -1,11 +1,11 @@
 # Cisco VPN - VPN client software to a Cisco VPN server
 # Pattern quality: ok veryfast
+# Protocol groups: proprietary remote_access
 # 
 # This pattern contributed by Myles Uyema <myles AT uyema.net>
 #
-# If this pattern it does not work for you, or you believe it could be
-# improved, please post to l7-filter-developers@lists.sf.net .  This
-# list may be subscribed to at
+# To get or provide more information about this protocol and/or pattern:
+# http://www.protocolinfo.org/wiki/Cisco_VPN
 # http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 ciscovpn

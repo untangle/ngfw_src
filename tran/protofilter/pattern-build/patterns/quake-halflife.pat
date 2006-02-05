@@ -1,5 +1,6 @@
 # Half Life 1 engine games (HL 1, Quake 2/3/World, Counterstrike 1.6, etc.)
 # Pattern quality: good veryfast
+# Protocol groups: proprietary game
 #
 # Contributed by Laurens Blankers <laurens AT blankersfamily.com>, who says:
 #
@@ -14,9 +15,8 @@
 # and I imagine all the other 3rd party mods that also use this engine
 # will match that pattern.
 #
-# Please post to l7-filter-developers@lists.sf.net as to whether it works
-# for you or not.  If you believe it could be improved please post your
-# suggestions to that list as well. You may subscribe to this list at
+# To get or provide more information about this protocol and/or pattern:
+# http://www.protocolinfo.org/wiki/Half-Life
 # http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 quake-halflife

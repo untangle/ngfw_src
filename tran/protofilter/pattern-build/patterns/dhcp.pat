@@ -1,5 +1,7 @@
 # DHCP - Dynamic Host Configuration Protocol - RFC 1541
 # Pattern quality: good veryfast
+# Protocol groups: ietf_draft_standard networking
+#
 # Usually runs on ports 67 (server) and 68 (client)
 #
 # Also matches BOOTP (Bootstrap Protocol (RFC 951)) in the case that 
@@ -7,9 +9,9 @@
 # for DHCP).
 #
 # This pattern is lightly tested.
-# Please post to l7-filter-developers@lists.sf.net as to whether it works 
-# for you or not.  If you believe it could be improved please post your 
-# suggestions to that list as well. You may subscribe to this list at 
+#
+# To get or provide more information about this protocol and/or pattern:
+# http://www.protocolinfo.org/wiki/DHCP
 # http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 dhcp

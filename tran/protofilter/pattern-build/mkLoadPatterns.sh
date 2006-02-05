@@ -1,6 +1,6 @@
 #!/bin/sh
 
-category_file=../categories
+master_pattern_file=../patternmaster
 
 FILE=../LoadPatterns.java
 
@@ -25,33 +25,33 @@ for i in `ls ./*.pat` ; do
     DESC="`echo $STR | perl -p -e 's/.*?-(.*)/\1/g'`"
     QUAL="`cat $i | head -n 2 | tail -n 1 | sed -e 's/.*: //'`"
     DEF="`head -n 2 $i.new  | tail -n 1 | sed -e 's/\\\\/\\\\\\\\/g' | sed -e 's/\\\"/\\\\\"/g' `"
-    CATEGORY="`grep \"^$NAME|:\" $category_file | sed -e 's/[^|]*|: *//g' -e 's/\([^ ].*[^ ]\) */\1/g'`"
+    PATLINE="`cat $master_pattern_file | grep -v \"^#\" | grep \"^[0-9]\+|: \+$NAME|:\"`"
+    MVID="`echo $PATLINE | sed -e 's/|.*//'`"
+    CATEGORY="`echo $PATLINE | sed -e 's/[^|]*|: *//g' -e 's/\([^ ].*[^ ]\) */\1/g'`"
 
     if [ "x$CATEGORY" == "x" ]; then
         echo "No category for $NAME"
         exit -2
     fi
 
-    if [ "$NAME" == "Unknown" ] ; then 
-        continue
-    fi
-
     echo " ==> " $NAME
 
-    echo -ne "\tpats.put(\"" >> $FILE
-    echo -n "$NAME" >> $FILE
-    echo -n "\",new ProtoFilterPattern(\"" >> $FILE
+    echo -ne "\tpats.put(" >> $FILE
+    echo -n "$MVID" >> $FILE
+    echo -n ", new ProtoFilterPattern(" >> $FILE
+    echo -n "$MVID"  >> $FILE
+    echo -n ", \""  >> $FILE
     echo -n "$NAME"  >> $FILE
-    echo -n "\",\""  >> $FILE
+    echo -n "\", \""  >> $FILE
     # XXX 
     echo -n "$CATEGORY" >> $FILE
-    echo -n "\",\""  >> $FILE
+    echo -n "\", \""  >> $FILE
     echo -n "$DESC" >> $FILE
-    echo -n "\",\""  >> $FILE
+    echo -n "\", \""  >> $FILE
     echo -n "$DEF" >> $FILE
-    echo -n "\",\""  >> $FILE
+    echo -n "\", \""  >> $FILE
     echo -n "$QUAL" >> $FILE
-    echo -n "\","  >> $FILE
+    echo -n "\", "  >> $FILE
     
     echo    "false,false,false));" >> $FILE
 done

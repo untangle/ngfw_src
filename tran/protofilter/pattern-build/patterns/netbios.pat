@@ -1,5 +1,6 @@
 # NetBIOS - Network Basic Input Output System
 # Pattern quality: marginal fast
+# Protocol groups: ietf_internet_standard proprietary networking
 #
 # As mentioned in smb.pat:
 #
@@ -10,14 +11,16 @@
 # NetBIOS header is only 4 bytes: not much to match on.
 #
 # http://www.ubiqx.org/cifs/SMB.html
+# See also RFCs 1001 and 1002.
 #
 # This pattern attempts to match the (Session layer) NetBIOS Session request. 
 # If sucessful, you may be able to match NetBIOS several packets earlier 
 # than if you just waited for the easier-to-match SMB header.
 #
-# This pattern is untested.  If it does not
-# work for you, or you believe it could be improved, please post to 
-# l7-filter-developers@lists.sf.net .  This list may be subscribed to at
+# This pattern is untested.
+#
+# To get or provide more information about this protocol and/or pattern:
+# http://www.protocolinfo.org/wiki/NetBIOS
 # http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 netbios

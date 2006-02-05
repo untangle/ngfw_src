@@ -1,9 +1,11 @@
 # (S)NTP - (Simple) Network Time Protocol - RFCs 1305 and 2030
 # Pattern quality: good veryfast overmatch 
+# Protocol groups: ietf_draft_standard time_synchronization
 #
-# This pattern is tested and is believed to work. If this does not work
-# for you, or you believe it could be improved, please post to
-# l7-filter-developers@lists.sf.net .  Subscribe at
+# This pattern is tested and is believed to work.
+#
+# To get or provide more information about this protocol and/or pattern:
+# http://www.protocolinfo.org/wiki/NTP
 # http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 # client|server

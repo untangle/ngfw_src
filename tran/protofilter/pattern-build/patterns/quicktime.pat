@@ -1,0 +1,19 @@
+# Quicktime HTTP 
+# Pattern quality: good fast
+# Protocol groups: ietf_draft_standard streaming_video streaming_audio
+#
+# This pattern has been tested and is believed to work well.  
+# (Quick Time v6.5.1 downloading from www.apple.com/trailers)
+#
+# To get or provide more information about this protocol and/or pattern:
+# http://www.protocolinfo.org/wiki/HTTP
+# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
+#
+# Since this is a subset of HTTP, it should be put earlier in the packet
+# filtering chain than HTTP.  Also, please don't use this to block Quicktime.
+# If you must do that, you should use a filtering HTTP proxy, which is probably
+# more accurate.
+
+quicktime
+user-agent: quicktime \(qtver=[0-9].[0-9].[0-9];os=[\x09-\x0d -~]+\)\x0d\x0a
+

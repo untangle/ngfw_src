@@ -1,9 +1,8 @@
 # Nimda - a worm that attacks Microsoft IIS web servers, and MORE!
 # Pattern quality: ok fast
 
-# If this pattern does not
-# work for you, or you believe it could be improved, please post to 
-# l7-filter-developers@lists.sf.net .  This list may be subscribed to at
+# To get or provide more information about this worm and/or pattern:
+# http://www.protocolinfo.org/wiki/Nimda
 # http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 nimda

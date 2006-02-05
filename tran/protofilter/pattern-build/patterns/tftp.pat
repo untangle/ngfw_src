@@ -1,11 +1,13 @@
 # TFTP - Trivial File Transfer Protocol - used for bootstrapping - RFC 1350
 # Pattern quality: marginal veryfast
+# Protocol groups: ietf_internet_standard document_retrieval
+#
 # usually runs on port 69
 # 
 # This pattern is unconfirmed. 
-# Please post to l7-filter-developers@lists.sf.net as to whether it works 
-# for you or not.  If you believe it could be improved please post your 
-# suggestions to that list as well. You may subscribe to this list at 
+#
+# To get or provide more information about this protocol and/or pattern:
+# http://www.protocolinfo.org/wiki/TFTP
 # http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 tftp

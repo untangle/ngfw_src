@@ -1,5 +1,6 @@
 # Valid certificate SSL 
 # Pattern quality: good notsofast
+# Protocol groups: ietf_proposed_standard secure
 
 # This matches anything claiming to use a valid certificate from a well 
 # known certificate authority.
@@ -11,10 +12,10 @@
 # only match the ssl pattern.  Thus, this pattern may not be very useful.
 #
 # This pattern is believed match only the above, but may not match all
-# of it. Please post to l7-filter-developers@lists.sf.net as to whether
-# it works for you or not.  If you believe it could be improved please
-# post your suggestions to that list as well. You may subscribe to this
-# list at
+# of it.
+#
+# To get or provide more information about this protocol and/or pattern:
+# http://www.protocolinfo.org/wiki/SSL
 # http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 #
 # the certificate authority info is sent in quasi plain text, if it matches 

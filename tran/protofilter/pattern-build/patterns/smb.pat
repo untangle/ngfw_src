@@ -1,5 +1,6 @@
 # Samba/SMB - Server Message Block - Microsoft Windows filesharing
 # Pattern quality: good fast
+# Protocol groups: proprietary document_retrieval networking
 #
 # "This protocol is sometimes also referred to as the Common Internet File 
 # System (CIFS), LanManager or NetBIOS protocol." -- "man samba"
@@ -9,9 +10,10 @@
 #
 # http://www.ubiqx.org/cifs/SMB.html
 #
-# This pattern is barely tested.  If it does not work for you, or you
-# believe it could be improved, please post to
-# l7-filter-developers@lists.sf.net .  This list may be subscribed to at
+# This pattern is lightly tested.
+#
+# To get or provide more information about this protocol and/or pattern:
+# http://www.protocolinfo.org/wiki/SMB
 # http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 smb

@@ -73,7 +73,8 @@ class ProtoTableModel extends MSortedTableModel{
         addTableColumn( tableColumnModel,  6, C6_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
         addTableColumn( tableColumnModel,  7, C7_MW, true,  true,  false, false, String.class,  sc.empty("no signature"), "signature");
         addTableColumn( tableColumnModel,  8, 10,    false, false, true,  false, String.class,  tempPattern.getQuality(), "");
-        addTableColumn( tableColumnModel,  9, 10,    false, false, true,  false, ProtoFilterPattern.class, null, "");
+        addTableColumn( tableColumnModel,  9, 10,    false, false, true,  false, Integer.class,  Integer.toString(tempPattern.getMetavizeId()), "");
+        addTableColumn( tableColumnModel,  10, 10,    false, false, true,  false, ProtoFilterPattern.class, null, "");
         return tableColumnModel;
     }
     
@@ -82,7 +83,7 @@ class ProtoTableModel extends MSortedTableModel{
 	ProtoFilterPattern newElem = null;
 
 	for( Vector rowVector : tableVector ){
-	    newElem = (ProtoFilterPattern) rowVector.elementAt(9);
+	    newElem = (ProtoFilterPattern) rowVector.elementAt(10);
             newElem.setCategory( (String) rowVector.elementAt(2) );
             newElem.setProtocol( (String) rowVector.elementAt(3) );
             newElem.setBlocked( (Boolean) rowVector.elementAt(4) );
@@ -90,6 +91,7 @@ class ProtoTableModel extends MSortedTableModel{
             newElem.setDescription( (String) rowVector.elementAt(6) );
             newElem.setDefinition( (String) rowVector.elementAt(7) );
 	    newElem.setQuality( (String) rowVector.elementAt(8) );
+	    newElem.setMetavizeId( (Integer) rowVector.elementAt(9) );
             elemList.add(newElem);
         }
 
@@ -110,7 +112,7 @@ class ProtoTableModel extends MSortedTableModel{
 
 	for( ProtoFilterPattern newElem : patterns ){
 	    rowIndex++;
-            tempRow = new Vector(10);
+            tempRow = new Vector(11);
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );
             tempRow.add( newElem.getCategory() );
@@ -120,6 +122,7 @@ class ProtoTableModel extends MSortedTableModel{
             tempRow.add( newElem.getDescription() );
             tempRow.add( newElem.getDefinition() );
 	    tempRow.add( newElem.getQuality() );
+	    tempRow.add( newElem.getMetavizeId() );
 	    tempRow.add( newElem );
             allRows.add( tempRow );
         }
