@@ -36,6 +36,13 @@ else
     sed -i -e "s|^.*pam_limits.so.*|${LOGIN_LINE}|g" ${LOGIN_FILE}
 fi
 
+# Have cron.daily run earlier in the day, at a random time between 1:00 and 2:00
+CRONTAB_FILE=/etc/crontab
+if [ -f "${CRONTAB_FILE}" ] ; then
+    let "ranmin = $RANDOM % 60"
+    grep -sq "^25 6" ${CRONTAB_FILE} && sed -i -e "s|^25 6|${ranmin} 1|" ${CRONTAB_FILE}
+fi
+
 # Extract the activation key if we were installed by a version older than 3.1
 if [ ! -f /usr/share/metavize/activation.key ]; then
     grep -sq "release.*\.metavize\.com" /etc/apt/sources.list && grep "release.*\.metavize\.com" /etc/apt/sources.list | sed -e "s|^.*http://||" -e "s|:.*||" > /usr/share/metavize/activation.key
