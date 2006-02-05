@@ -44,8 +44,6 @@ public class EmailConnectivityTestJDialog extends javax.swing.JDialog implements
 
     
         private void initComponents() {//GEN-BEGIN:initComponents
-                java.awt.GridBagConstraints gridBagConstraints;
-
                 labelJLabel = new javax.swing.JLabel();
                 messageJLabel = new javax.swing.JLabel();
                 jProgressBar = new javax.swing.JProgressBar();
@@ -190,10 +188,9 @@ public class EmailConnectivityTestJDialog extends javax.swing.JDialog implements
             
             
             try{
-		MailSender mailSender =  null; // Util.getMvvmContext().getMailShizzle();
-		MailSettings mailSettings = mailSender.getMailSettings();
+		MailSettings mailSettings = Util.getAdminManager().getMailSettings();
 		String recipient = emailAddressJTextField.getText();
-		boolean result = mailSender.sendTestMessage(recipient, mailSettings);
+		boolean result = Util.getAdminManager().sendTestMessage(recipient, mailSettings);
 		if(!result)
 		    throw new Exception();
             }
