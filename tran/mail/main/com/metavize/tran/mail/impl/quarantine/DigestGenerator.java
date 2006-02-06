@@ -72,7 +72,7 @@ class DigestGenerator {
   private static final String TOTAL_NUM_RECORDS_VV = "totalNumRecords";
   private static final String JS_ESCAPER = "jsEscaper";
   
-  private static final String MAIL_BLAST = "http://216.129.106.57/mail_blast/images";
+  private static final String MAIL_BLAST = "http://216.129.106.57/mail_blast/quarantine/images";
 
   private static final Integer MAX_RECORDS_PER_EMAIL = new Integer(25);
 
