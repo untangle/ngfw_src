@@ -139,6 +139,22 @@
   </tag>
 
   <!--
+    Used to conditionaly include code if there is an attachment
+    to the current InboxRecord.  Like inboxRecord tag, must be within
+    a "forEachInboxRecord" tag
+  -->
+  <tag>
+    <name>hasAttachments</name>
+    <tagclass>com.metavize.tran.mail.web.euv.tags.InboxRecordHasAttachmentTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <attribute>
+      <name>includeIfTrue</name>
+      <required>true</required>
+      <rtexpvalue>false</rtexpvalue>
+    </attribute>      
+  </tag>
+
+  <!--
     Tag outputs the number of records in the current index, or
     0 of there is no current index
   -->

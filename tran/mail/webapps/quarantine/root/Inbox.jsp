@@ -248,7 +248,10 @@ SEP
               value="<quarantine:pagnationProperties propName="ascending"/>"/>
             <input type="hidden"
               name="<quarantine:constants keyName="first"/>"
-              value="<quarantine:pagnationProperties propName="thisId"/>"/>                            
+              value="<quarantine:pagnationProperties propName="thisId"/>"/>
+            <input type="hidden"
+              name="rowsPerPage"
+              value="<quarantine:pagnationProperties propName="rowsPerPage"/>"/>                                        
             <table border="0" cellpadding="0" cellspacing="0" width="100%">
               <tbody>
                 <tr>
@@ -297,13 +300,14 @@ SEP
                               type="checkbox">
                           </th>
                           <th scope="col"><a href="javascript:doResortBySender();">From</a></th>
+                          <th scope="col"><img src="images/with_attach.png" height="16px" width="16px"/></th>
                           <th scope="col"><a href="javascript:doResortByScore();">Score</a></th>
                           <th scope="col"><a href="javascript:doResortBySubject();">Subject</a></th>
                         </tr>
                       </thead>
                       <tfoot>
                         <tr>
-                          <td colspan="4">
+                          <td colspan="5">
                             <div class="tableFooter">
                               <quarantine:hasPagnation linkType="prev" includeIfTrue="true">
                                 <a href="/quarantine<quarantine:pagnationLink linkType="prev"/>">Prev</a>
@@ -340,6 +344,12 @@ SEP
                                 <a href="/quarantine/manageuser?<quarantine:constants keyName="action"/>=<quarantine:constants valueName="sladd"/>&<quarantine:constants keyName="tkn"/>=<quarantine:currentAuthToken encoded="false"/>&<quarantine:constants keyName="sort"/>=<quarantine:pagnationProperties propName="sorting"/>&<quarantine:constants keyName="ascend"/>=<quarantine:pagnationProperties propName="ascending"/>&<quarantine:constants keyName="first"/>=<quarantine:pagnationProperties propName="thisId"/>&<quarantine:constants keyName="sladdr"/>=<quarantine:inboxRecord prop="from"/>">(Safelist)</a>
                               </quarantine:hasSafelist>
                             </td>
+                            <quarantine:hasAttachments includeIfTrue="true">
+                              <td><img src="images/with_attach.png" height="16px" width="16px"/></td>
+                            </quarantine:hasAttachments>
+                            <quarantine:hasAttachments includeIfTrue="false">
+                              <td><!--<img src="images/no_attach.png" height="16px" width="16px"/>--></td>
+                            </quarantine:hasAttachments>
                             <td><quarantine:inboxRecord prop="detail" JSEscape="true"/></td>
                             <td><quarantine:inboxRecord prop="subject" JSEscape="true"/></td>
                           </tr>

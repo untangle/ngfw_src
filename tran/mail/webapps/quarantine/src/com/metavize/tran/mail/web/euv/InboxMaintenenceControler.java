@@ -28,6 +28,7 @@ import com.metavize.tran.mail.papi.safelist.SafelistEndUserView;
 import com.metavize.tran.mail.web.euv.tags.MessagesSetTag;
 import com.metavize.tran.mail.web.euv.tags.InboxIndexTag;
 import com.metavize.tran.mail.web.euv.tags.HasSafelistTag;
+import com.metavize.tran.mail.web.euv.tags.PagnationPropertiesTag;
 
 import com.metavize.tran.util.Pair;
 
@@ -61,6 +62,7 @@ public class InboxMaintenenceControler
           InboxRecordComparator.SortBy.INTERN_DATE);
       boolean ascending = Util.readBooleanParam(req, Constants.SORT_ASCEND_RP, true);
       int startingAt = Util.readIntParam(req, Constants.FIRST_RECORD_RP, 0);
+      int rowsPerPage = Util.readIntParam(req, "rowsPerPage", Constants.RECORDS_PER_PAGE);
 
 //      System.out.println("*** DEBUG ***" +
 //        "SortBy: " + sortBy + ", Ascending: " + ascending + ", startingAt: " + startingAt);
@@ -114,7 +116,9 @@ public class InboxMaintenenceControler
           sortBy,
           ascending,
           startingAt,
-          Constants.RECORDS_PER_PAGE));
+          rowsPerPage));
+
+      PagnationPropertiesTag.setCurrentRowsPerPAge(req, "" + rowsPerPage);
 
       req.getRequestDispatcher(Constants.INBOX_VIEW).forward(req, resp);
       
