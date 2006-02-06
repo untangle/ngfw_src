@@ -23,17 +23,17 @@ function installButton(pkg)
 
       var a = div.appendChild(document.createElement("a"));
       a.appendChild(document.createTextNode("install"));
-      a.onclick = function() { requestInstall(pkg) };
+      a.onclick = function() { requestInstall(pkg); window.close(); };
    }
 }
 
 function requestInstall(pkg)
 {
-      new Ajax.Request("instreq",
-                       { method: "get",
-                          parameters: "mackage=" + pkg,
-                          onComplete: function() { window.close(); }
-                       });
+   new Ajax.Request("instreq",
+                    { method: "get",
+                       parameters: "mackage=" + pkg,
+                       onComplete: function() { }
+                    });
    setInstallStatus(pkg, "installing");
 }
 
