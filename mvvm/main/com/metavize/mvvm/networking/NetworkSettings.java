@@ -11,6 +11,8 @@
 
 package com.metavize.mvvm.networking;
 
+import java.io.Serializable;
+
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Collections;
@@ -28,16 +30,17 @@ import com.metavize.mvvm.tran.IPaddr;
  * @hibernate.class
  * table="mvvm_network_settings"
  */
-public class NetworkSettings
+public class NetworkSettings implements Serializable
 {
-    public static final String  DEF_HOSTNAME   = "edgeguard";
-    public static final String  DEF_PUBLIC_ADDRESS = "";
+    public static final String DEF_HOSTNAME = "edgeguard";
+    public static final String DEF_PUBLIC_ADDRESS = "";
 
     private Long id;
     
-    private List interfaceList = Collections.emptyList();
-    private List networkSpaceList = Collections.emptyList();
-    private List routingTable = Collections.emptyList();
+    private List interfaceList = new LinkedList();
+
+    private List networkSpaceList = new LinkedList();
+    private List routingTable = new LinkedList();
     
     private IPaddr dns1 = NetworkUtil.EMPTY_IPADDR;
     private IPaddr dns2 = NetworkUtil.EMPTY_IPADDR;
@@ -80,13 +83,13 @@ public class NetworkSettings
      */    
     public List getInterfaceList()
     {
-        if ( this.interfaceList == null ) this.interfaceList = Collections.emptyList();
+        if ( this.interfaceList == null ) this.interfaceList = new LinkedList();
         return this.interfaceList;
     }
 
     public void setInterfaceList( List interfaceList )
     {
-        if ( this.interfaceList == null ) this.interfaceList = Collections.emptyList();
+        if ( this.interfaceList == null ) this.interfaceList = new LinkedList();
         this.interfaceList = interfaceList;
     }
 
@@ -105,13 +108,13 @@ public class NetworkSettings
      */    
     public List getNetworkSpaceList()
     {
-        if ( this.networkSpaceList == null ) this.networkSpaceList = Collections.emptyList();
+        if ( this.networkSpaceList == null ) this.networkSpaceList = new LinkedList();
         return this.networkSpaceList;
     }
     
     public void setNetworkSpaceList( List networkSpaceList )
     {
-        if ( networkSpaceList == null ) networkSpaceList = Collections.emptyList();
+        if ( networkSpaceList == null ) networkSpaceList = new LinkedList();
         this.networkSpaceList = networkSpaceList;
     }
 
@@ -130,13 +133,13 @@ public class NetworkSettings
      */
     public List getRoutingTable()
     {
-        if ( this.routingTable == null ) this.routingTable = Collections.emptyList();
+        if ( this.routingTable == null ) this.routingTable = new LinkedList();
         return this.routingTable;
     }
 
     public void setRoutingTable( List routingTable )
     {
-        if ( routingTable == null ) routingTable = Collections.emptyList();
+        if ( routingTable == null ) routingTable = new LinkedList();
         this.routingTable = routingTable;
     }
 
@@ -256,10 +259,5 @@ public class NetworkSettings
     public boolean hasDns2() 
     {
         return ( this.dns2 != null && !this.dns2.equals( NetworkUtil.EMPTY_IPADDR ));
-    }
-
-    BasicNetworkSettings toBasicConfiguration()
-    {
-        return new BasicNetworkSettings( this );
     }
 }

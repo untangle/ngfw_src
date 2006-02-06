@@ -18,6 +18,10 @@ import com.metavize.gui.util.*;
 
 import com.metavize.mvvm.tran.*;
 import com.metavize.mvvm.tran.firewall.*;
+import com.metavize.mvvm.tran.firewall.intf.IntfDBMatcher;
+import com.metavize.mvvm.tran.firewall.intf.IntfMatcherFactory;
+import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
+import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
 import com.metavize.tran.nat.*;
 
 /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX This shouldn't be necessary */
@@ -77,11 +81,13 @@ class RedirectTableModel extends MSortedTableModel{
     
     public TableColumnModel getTableColumnModel(){
         IntfEnum intfEnum = Util.getNetworkingManager().getIntfEnum();
+        
+        IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
 
         /* XXXXX This is not where this code should be executed */
-        IntfMatcher.updateEnumeration( intfEnum );
+        imf.updateEnumeration( intfEnum );
         
-        ComboBoxModel intfMatcherModel = super.generateComboBoxModel( IntfMatcher.getEnumeration(), IntfMatcher.getDefault());
+        ComboBoxModel intfMatcherModel = super.generateComboBoxModel( imf.getEnumeration(), imf.getDefault());
             
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #   min    rsz    edit   remv   desc   typ            def
@@ -116,15 +122,15 @@ class RedirectTableModel extends MSortedTableModel{
             newElem.setLive( (Boolean) rowVector.elementAt(2) );
             newElem.setLog( (Boolean) rowVector.elementAt(3) );
             newElem.setProtocol( ProtocolMatcher.parse(((ComboBoxModel) rowVector.elementAt(4)).getSelectedItem().toString()) );
-            newElem.setSrcIntf( (IntfMatcher) ((ComboBoxModel) rowVector.elementAt(5)).getSelectedItem());
-            newElem.setDstIntf( (IntfMatcher) ((ComboBoxModel) rowVector.elementAt(6)).getSelectedItem());
-            try{ newElem.setSrcAddress( IPMatcher.parse((String) rowVector.elementAt(7)) ); }
+            newElem.setSrcIntf( (IntfDBMatcher) ((ComboBoxModel) rowVector.elementAt(5)).getSelectedItem());
+            newElem.setDstIntf( (IntfDBMatcher) ((ComboBoxModel) rowVector.elementAt(6)).getSelectedItem());
+            try{ newElem.setSrcAddress( IPMatcherFactory.parse((String) rowVector.elementAt(7)) ); }
             catch(Exception e){ throw new Exception("Invalid \"source address\" in row: " + rowIndex); }
-            try{ newElem.setDstAddress( IPMatcher.parse((String) rowVector.elementAt(8)) ); }
+            try{ newElem.setDstAddress( IPMatcherFactory.parse((String) rowVector.elementAt(8)) ); }
             catch(Exception e){ throw new Exception("Invalid \"destination address\" in row: " + rowIndex); }
-            try{ newElem.setSrcPort( PortMatcher.parse((String) rowVector.elementAt(9)) ); }
+            try{ newElem.setSrcPort( PortMatcherFactory.parse((String) rowVector.elementAt(9)) ); }
             catch(Exception e){ throw new Exception("Invalid \"source port\" in row: " + rowIndex); }
-            try{ newElem.setDstPort( PortMatcher.parse((String) rowVector.elementAt(10)) ); }
+            try{ newElem.setDstPort( PortMatcherFactory.parse((String) rowVector.elementAt(10)) ); }
             catch(Exception e){ throw new Exception("Invalid \"destination port\" in row: " + rowIndex); }
             try{ newElem.setRedirectAddress((String) rowVector.elementAt(11)); }
             catch(Exception e){ throw new Exception("Invalid \"redirect address\" in row: " + rowIndex); }
@@ -139,18 +145,20 @@ class RedirectTableModel extends MSortedTableModel{
         
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
-	    NatSettings natSettings = (NatSettings) settings;
+	    NatSettingsWrapper natSettings = (NatSettingsWrapper) settings;
 	    natSettings.setRedirectList( elemList );
 	}
     }
     
     
     public Vector<Vector> generateRows(Object settings) {
-        NatSettings natSettings = (NatSettings) settings;
+        NatSettingsWrapper natSettings = (NatSettingsWrapper) settings;
 	List<RedirectRule> redirectList = (List<RedirectRule>) natSettings.getRedirectList();
         Vector<Vector> allRows = new Vector<Vector>(redirectList.size());
 	Vector tempRow = null;
         int rowIndex = 0;
+
+        IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
 
         for( RedirectRule redirectRule : redirectList ){
 	    rowIndex++;
@@ -160,8 +168,8 @@ class RedirectTableModel extends MSortedTableModel{
 	    tempRow.add( redirectRule.isLive() );
 	    tempRow.add( redirectRule.getLog() );
 	    tempRow.add( super.generateComboBoxModel( ProtocolMatcher.getProtocolEnumeration(), redirectRule.getProtocol().toString() ) );
-            tempRow.add( super.generateComboBoxModel( IntfMatcher.getEnumeration(), redirectRule.getSrcIntf() ));
-	    tempRow.add( super.generateComboBoxModel( IntfMatcher.getEnumeration(), redirectRule.getDstIntf() ));
+            tempRow.add( super.generateComboBoxModel( imf.getEnumeration(), redirectRule.getSrcIntf() ));
+	    tempRow.add( super.generateComboBoxModel( imf.getEnumeration(), redirectRule.getDstIntf() ));
 	    tempRow.add( redirectRule.getSrcAddress().toString() );
 	    tempRow.add( redirectRule.getDstAddress().toString() );
 	    tempRow.add( redirectRule.getSrcPort().toString() );

@@ -47,4 +47,33 @@ public final class InterfaceData
     {
         return this.broadcast;
     }
+
+    public String toString()
+    {
+        return address.getHostAddress() + "/" + netmask.getHostAddress();
+    }
+
+    public boolean equals( Object o )
+    {
+        if (!(o instanceof InterfaceData )) return false;
+
+        InterfaceData id = (InterfaceData)o;
+        
+        if ((( id.address == null )   ? ( this.address == null )   : id.address.equals( this.address )) &&
+            (( id.netmask == null )   ? ( this.netmask == null )   : id.netmask.equals( this.netmask )) &&
+            (( id.broadcast == null ) ? ( this.broadcast == null ) : id.broadcast.equals( this.broadcast ))) {
+            return true;
+        }
+        return false;
+    }
+    
+    public int hashCode()
+    {
+        int hashCode = 17;
+        hashCode += ( 37 * hashCode ) + (( this.address == null )   ? 17 : this.address.hashCode());
+        hashCode += ( 37 * hashCode ) + (( this.netmask == null )   ? 17 : this.netmask.hashCode());
+        hashCode += ( 37 * hashCode ) + (( this.broadcast == null ) ? 17 : this.broadcast.hashCode());
+
+        return hashCode;
+    }
 }

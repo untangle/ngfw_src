@@ -28,7 +28,4 @@ public interface NetworkingManager  {
     NetworkingConfiguration renewDhcpLease() throws Exception;
 
     IntfEnum getIntfEnum();
-
-    /* Get the external HTTPS port */
-    public int getExternalHttpsPort();
 }

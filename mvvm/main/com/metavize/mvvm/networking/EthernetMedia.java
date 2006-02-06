@@ -11,12 +11,14 @@
 
 package com.metavize.mvvm.networking;
 
+import java.io.Serializable;
+
 import java.util.Map;
 import java.util.HashMap;
 
 import com.metavize.mvvm.tran.ParseException;
 
-public class EthernetMedia
+public class EthernetMedia implements Serializable
 {
     private static final Map<Integer,EthernetMedia> TYPE_TO_MEDIA = new HashMap<Integer,EthernetMedia>();
     private static final Map<String,EthernetMedia>  NAME_TO_MEDIA = new HashMap<String,EthernetMedia>();
@@ -94,11 +96,9 @@ public class EthernetMedia
 
     public static EthernetMedia getInstance( int type ) throws ParseException
     {
-        if ( type < 0 || type >= ENUMERATION.length ) {
-            throw new ParseException( "Invalid Ethernet Media" );
-        }
-
-        return ENUMERATION[type];
+        EthernetMedia instance = TYPE_TO_MEDIA.get( type );
+        if ( instance == null ) throw new ParseException( "Invalid ethernet media["+ type + "]." );
+        return instance;
     }
     
     static

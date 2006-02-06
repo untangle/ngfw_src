@@ -11,7 +11,11 @@
 
 package com.metavize.mvvm.networking;
 
+import java.net.InetAddress;
+
 import com.metavize.mvvm.tran.Rule;
+import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.ParseException;
 
 /**
  * An IPNetwork that is to go into a list, this is only to 
@@ -21,19 +25,19 @@ import com.metavize.mvvm.tran.Rule;
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
  * @hibernate.class
- * table="tr_mvvm_network_route"
+ * table="mvvm_network_ip"
  */
 public class IPNetworkRule extends Rule
 {
-    private IPNetwork network;
+    private IPNetwork ipNetwork;
 
     public IPNetworkRule()
     {
     }
 
-    public IPNetworkRule( IPNetwork network )
+    public IPNetworkRule( IPNetwork ipNetwork )
     {
-        this.network = network;
+        this.ipNetwork = ipNetwork;
     }
 
     /**
@@ -44,13 +48,40 @@ public class IPNetworkRule extends Rule
      * @hibernate.column
      * name="network"
      */
-    public IPNetwork getNetwork()
+    public IPNetwork getIPNetwork()
     {
-        return this.network;
+        return this.ipNetwork;
     }
 
-    public void setNetwork( IPNetwork network )
+    public void setIPNetwork( IPNetwork ipNetwork )
     {
-        this.network = network;
+        this.ipNetwork = ipNetwork;
+    }
+
+    /** The following are convenience methods, an IPNetwork is immutable, so the
+     *  corresponding setters do not exist */
+    public IPaddr getNetwork()
+    {
+        return this.ipNetwork.getNetwork();
+    }
+
+    public IPaddr getNetmask()
+    {
+        return this.ipNetwork.getNetmask();
+    }
+
+    public static IPNetworkRule parse( String value ) throws ParseException
+    {
+        return new IPNetworkRule( IPNetwork.parse( value ));
+    }
+
+    public static IPNetworkRule makeIPNetwork( InetAddress network, InetAddress netmask )
+    {
+        return new IPNetworkRule( IPNetwork.makeIPNetwork( network, netmask ));
+    }
+
+    public static IPNetworkRule makeIPNetwork( IPaddr network, IPaddr netmask )
+    {
+        return new IPNetworkRule( IPNetwork.makeIPNetwork( network, netmask ));
     }
 }

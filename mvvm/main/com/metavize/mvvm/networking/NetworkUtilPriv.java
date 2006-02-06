@@ -11,9 +11,13 @@
 
 package com.metavize.mvvm.networking;
 
-import java.util.Collections;
+import java.io.BufferedReader;
+import java.io.FileReader;
+
 import java.util.List;
 import java.util.LinkedList;
+
+import org.apache.log4j.Logger;
 
 import com.metavize.mvvm.argon.ArgonException;
 import com.metavize.mvvm.argon.IntfConverter;
@@ -26,6 +30,8 @@ import com.metavize.mvvm.tran.ValidateException;
 /* Utilities that are only required inside of this package */
 class NetworkUtilPriv extends NetworkUtil
 {
+    private static final Logger logger = Logger.getLogger( NetworkUtilPriv.class );
+
     private static final NetworkUtilPriv INSTANCE = new NetworkUtilPriv();
 
     /* Prefix for the bridge devices */
@@ -35,9 +41,71 @@ class NetworkUtilPriv extends NetworkUtil
     {
     }
 
+    /* Convert an Advanced settings object into a basic settings object */
+    BasicNetworkSettings toBasicNetworkSettings( NetworkSettings settings )
+    {
+        NetworkSpace space;
+
+        logger.debug( "Converting to basic network settings" );
+        List<NetworkSpace> networkSpaceList = (List<NetworkSpace>)settings.getNetworkSpaceList();
+        
+        if ( networkSpaceList.size() < 1 ) {
+            logger.error( "Network settings must have at least one network space, null pointer time." );
+            /* !!! Something has to deal with this */
+            throw new NullPointerException( "state inconsistency" );
+        }
+
+        space = networkSpaceList.get( 0 );
+
+        logger.debug( "Setting the primary network space to [" + space + "]" );
+
+        List<IPNetworkRule> aliasList = new LinkedList<IPNetworkRule>( space.getNetworkList());
+        IPNetwork primary = IPNetwork.getEmptyNetwork();
+        if (( !space.getIsDhcpEnabled()) && ( aliasList.size() > 0 )) {
+            primary = aliasList.remove( 0 ).getIPNetwork();
+        }
+
+        logger.debug( "done" );
+        
+        return new BasicNetworkSettings( settings, space, primary, aliasList );
+    }
+    
+    /* Convert a basic settings object back to an advanced settings object */
+    NetworkSettings toNetworkSettings( BasicNetworkSettings basicSettings ) throws NetworkException
+    {
+        NetworkSettings settings = basicSettings.getNetworkSettings();
+        
+        NetworkSpace space = basicSettings.getNetworkSpace();
+        
+        /* The alias list is the correct list to use, the list that is in
+         * the network space is no longer valid after once NetworkSettings
+         * are converted to BasicNetworkSettings. */
+        List<IPNetworkRule> networkList = basicSettings.getAliasList();
+        IPNetwork primaryAddress = basicSettings.getPrimaryAddress();
+        
+        if ( space.getIsDhcpEnabled()) {
+            /* If DHCP is enabled, clear out dns and default route settings */
+            
+            settings.setDns1( null );
+            settings.setDns2( null );
+            settings.setDefaultRoute( null );
+        } else {
+            /* If DHCP is not enabled, add the primary network to the network list */
+            if ( primaryAddress.getNetwork().isEmpty() || primaryAddress.getNetmask().isEmpty()) {
+                logger.warn( "Primary address or netmask should not be empty." );
+            } else {
+                networkList.add( 0, new IPNetworkRule( primaryAddress ));
+            }
+        }
+
+        space.setNetworkList( networkList );
+
+        return settings;
+    }
+
     /* Not a well named function, it is used before saving to update all of the indices
      * and the lists that go into the different objects that are referenced */
-    void complete( NetworkSettings config ) throws NetworkException, ArgonException
+    void complete( NetworkSettings config ) throws NetworkException
     {
         int index = 1;
         IntfConverter ic = IntfConverter.getInstance();
@@ -74,12 +142,47 @@ class NetworkUtilPriv extends NetworkUtil
         }
     }
 
-    String getDeviceName( Interface intf ) throws ArgonException
+    String getDeviceName( Interface intf ) throws NetworkException
     {
         IntfConverter ic = IntfConverter.getInstance();
         
-        return ic.argonIntfToString( intf.getArgonIntf());
+        try {
+            return ic.argonIntfToString( intf.getArgonIntf());
+        } catch ( ArgonException e ) {
+            throw new NetworkException( "Error getting interface string [" + intf.getArgonIntf() + "]", e );
+        }
     }
+
+    /* This retrieves a list of all of the DNS servers */
+    List<IPaddr> getDnsServers()
+    {
+        List<IPaddr> dnsServers = new LinkedList<IPaddr>();
+
+        BufferedReader in = null;
+
+        /* Open up the interfaces file */
+        try {
+            in = new BufferedReader( new FileReader( NetworkManagerImpl.ETC_RESOLV_FILE ));
+            String str;
+            while (( str = in.readLine()) != null ) {
+                str = str.trim();
+                if ( str.startsWith( ResolvScriptWriter.NS_PARAM )) {
+                    dnsServers.add( IPaddr.parse( str.substring( ResolvScriptWriter.NS_PARAM.length())));
+                }
+            }
+        } catch ( Exception ex ) {
+            logger.error( "Error reading file: ", ex );
+        }
+
+        try {
+            if ( in != null ) in.close();
+        } catch ( Exception ex ) {
+            logger.error( "Unable to close file", ex );
+        }
+
+        return dnsServers;
+    }
+
 
     static NetworkUtilPriv getPrivInstance()
     {

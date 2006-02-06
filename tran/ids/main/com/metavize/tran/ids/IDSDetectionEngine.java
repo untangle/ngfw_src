@@ -14,7 +14,6 @@ import org.apache.log4j.Level;
 import com.metavize.mvvm.argon.SessionEndpoints;
 import com.metavize.mvvm.tapi.*;
 import com.metavize.mvvm.tapi.event.*;
-import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.ParseException;
 import com.metavize.mvvm.tran.PortRange;
 import com.metavize.mvvm.tran.Transform;

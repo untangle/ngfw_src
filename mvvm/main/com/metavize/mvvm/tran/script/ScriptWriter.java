@@ -82,6 +82,8 @@ public class ScriptWriter
     }
     
     // Really only for shell scripts
+    // This should be rewritten so all of these methods are final, and then
+    // the method that takes four arguments is protected.
     public void appendVariable( String variable, String value, boolean isGlobal )
     {
         appendVariable( variable, value, isGlobal, false );

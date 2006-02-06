@@ -14,7 +14,6 @@ import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.StatisticEvent;
 import com.metavize.mvvm.tran.StatisticManager;
 import com.metavize.mvvm.tran.TransformContext;
-import com.metavize.mvvm.tran.firewall.IntfMatcher;
 
 class IDSStatisticManager extends StatisticManager {
 

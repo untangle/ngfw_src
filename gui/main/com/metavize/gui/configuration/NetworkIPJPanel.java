@@ -17,6 +17,12 @@ import com.metavize.gui.util.*;
 import com.metavize.mvvm.security.*;
 import com.metavize.mvvm.*;
 import com.metavize.mvvm.tran.*;
+import com.metavize.mvvm.networking.BasicNetworkSettings;
+import com.metavize.mvvm.networking.NetworkSpace;
+import com.metavize.mvvm.networking.IPNetwork;
+import com.metavize.mvvm.networking.IPNetworkRule;
+import com.metavize.mvvm.networking.DhcpStatus;
+
 
 import java.awt.*;
 
@@ -136,16 +142,21 @@ public class NetworkIPJPanel extends javax.swing.JPanel implements Savable, Refr
 	
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
-	    NetworkingConfiguration networkingConfiguration = (NetworkingConfiguration) settings;
-	    networkingConfiguration.isDhcpEnabled( isDhcpEnabled );
-	    if( !isDhcpEnabled ){
-		networkingConfiguration.host( host );
-		networkingConfiguration.netmask( netmask );
-		networkingConfiguration.gateway( gateway );
-		networkingConfiguration.dns1( dns1 );
-		networkingConfiguration.dns2( dns2 );
-		networkingConfiguration.hostname( hostname );
-	    }
+	    BasicNetworkSettings networkSettings = (BasicNetworkSettings) settings;
+            
+            networkSettings.setIsDhcpEnabled( isDhcpEnabled );
+            
+            if ( isDhcpEnabled ) {
+                networkSettings.setPrimaryAddress( IPNetwork.getEmptyNetwork());
+                networkSettings.setDefaultRoute( null );
+                networkSettings.setDns1( null );
+                networkSettings.setDns2( null );
+            } else {
+                networkSettings.setPrimaryAddress( IPNetwork.makeIPNetwork( host, netmask ));
+                networkSettings.setDefaultRoute( gateway );
+                networkSettings.setDns1( dns1 );
+                networkSettings.setDns2( dns2 );
+            }
         }
 
     }
@@ -158,51 +169,58 @@ public class NetworkIPJPanel extends javax.swing.JPanel implements Savable, Refr
     String dnsPrimaryCurrent;
     String dnsSecondaryCurrent;
     String hostnameCurrent;
-
     public void doRefresh(Object settings){
-        NetworkingConfiguration networkingConfiguration = (NetworkingConfiguration) settings;
+        BasicNetworkSettings networkSettings = (BasicNetworkSettings) settings;
+
+        DhcpStatus dhcpStatus = networkSettings.getDhcpStatus();
         
 	// DHCP ENABLED /////
-	isDhcpEnabledCurrent = networkingConfiguration.isDhcpEnabled();
+	isDhcpEnabledCurrent = networkSettings.getIsDhcpEnabled();
 	setDhcpEnabledDependency( isDhcpEnabledCurrent );
         renewDhcpLeaseJButton.setEnabled( isDhcpEnabledCurrent );
-	if( isDhcpEnabledCurrent )
+	if( isDhcpEnabledCurrent ) {
             dhcpEnabledRadioButton.setSelected(true);
-        else
+            dhcpIPaddrCurrent  = dhcpStatus.getAddress().toString();
+            dhcpNetmaskCurrent = dhcpStatus.getNetmask().toString();
+            dhcpRouteCurrent   = dhcpStatus.getDefaultRoute().toString();
+            dnsPrimaryCurrent  = dhcpStatus.getDns1().toString();
+            if ( dhcpStatus.hasDns2()) dnsSecondaryCurrent = dhcpStatus.getDns2().toString();
+            else dnsSecondaryCurrent = EMPTY_DNS2;    
+        } else {
+            IPNetwork network = networkSettings.getPrimaryAddress();
+
             dhcpDisabledRadioButton.setSelected(true);
+            dhcpIPaddrCurrent  = network.getNetwork().toString();
+            dhcpNetmaskCurrent = network.getNetmask().toString();
+            dhcpRouteCurrent   = networkSettings.getDefaultRoute().toString();
+            dnsPrimaryCurrent  = networkSettings.getDns1().toString();
+            if ( networkSettings.hasDns2()) dnsSecondaryCurrent = networkSettings.getDns2().toString();
+            else dnsSecondaryCurrent = EMPTY_DNS2;    
+        }
         
 	// DHCP HOST ////
-	dhcpIPaddrCurrent = networkingConfiguration.host().toString();
 	dhcpIPaddrJTextField.setText( dhcpIPaddrCurrent );
 	dhcpIPaddrJTextField.setBackground( Color.WHITE );
 	
 	// DHCP NETMASK /////
-	dhcpNetmaskCurrent = networkingConfiguration.netmask().toString();
         dhcpNetmaskJTextField.setText( dhcpNetmaskCurrent );
 	dhcpNetmaskJTextField.setBackground( Color.WHITE );
 
 	// DHCP DEFAULT ROUTE ////////
-	dhcpRouteCurrent = networkingConfiguration.gateway().toString();
         dhcpRouteJTextField.setText( dhcpRouteCurrent );
 	dhcpRouteJTextField.setBackground( Color.WHITE );
 
 	// DNS1 ///////////
-	dnsPrimaryCurrent = networkingConfiguration.dns1().toString();
         dnsPrimaryJTextField.setText( dnsPrimaryCurrent );
 	dnsPrimaryJTextField.setBackground( Color.WHITE );
 
 	// DNS2 //////////
-        if ( networkingConfiguration.hasDns2()) {
-	    dnsSecondaryCurrent = networkingConfiguration.dns2().toString();
-            dnsSecondaryJTextField.setText( dnsSecondaryCurrent );
-        } else {
-	    dnsSecondaryCurrent = "";
-            dnsSecondaryJTextField.setText( EMPTY_DNS2 );
-        }
+        dnsSecondaryJTextField.setText( dnsSecondaryCurrent );
+        dnsSecondaryJTextField.setText( EMPTY_DNS2 );
 	dnsSecondaryJTextField.setBackground( Color.WHITE );
 
 	// HOSTNAME /////////
-	hostnameCurrent = networkingConfiguration.hostname();
+	hostnameCurrent = networkSettings.getHostname();
 	hostnameJTextField.setText( hostnameCurrent );
 	hostnameJTextField.setBackground( Color.WHITE );
 
@@ -563,9 +581,9 @@ public class NetworkIPJPanel extends javax.swing.JPanel implements Savable, Refr
 	if( Util.getIsDemo() )
 	    return;
         NetworkDhcpRenewDialog dhcpLeaseRenewDialog = new NetworkDhcpRenewDialog();
-        NetworkingConfiguration newNetworkingConfiguration = dhcpLeaseRenewDialog.getNetworkingConfiguration();
-        if( newNetworkingConfiguration != null)
-            doRefresh( newNetworkingConfiguration );
+        BasicNetworkSettings newNetworkSettings = dhcpLeaseRenewDialog.getNetworkSettings();
+        if( newNetworkSettings != null)
+            doRefresh( newNetworkSettings );
     }//GEN-LAST:event_renewDhcpLeaseJButtonActionPerformed
 
     private void dhcpDisabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dhcpDisabledRadioButtonActionPerformed

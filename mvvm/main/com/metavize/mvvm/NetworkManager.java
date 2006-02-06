@@ -14,8 +14,10 @@ package com.metavize.mvvm;
 import com.metavize.mvvm.tran.ValidateException;
 
 import com.metavize.mvvm.networking.NetworkSettings;
+import com.metavize.mvvm.networking.NetworkSpace;
 import com.metavize.mvvm.networking.NetworkException;
 import com.metavize.mvvm.networking.BasicNetworkSettings;
+import com.metavize.mvvm.networking.DhcpStatus;
 
 public interface NetworkManager
 {
@@ -39,19 +41,27 @@ public interface NetworkManager
      */
     public void setNetworkSettings( NetworkSettings networkSettings ) 
         throws NetworkException, ValidateException;
+
+    public void updateAddress() throws NetworkException;
     
     /* Renew the DHCP address and return a new network settings with the updated address */
-    public NetworkSettings renewDhcpLease() throws Exception;
+    public BasicNetworkSettings renewDhcpLease() throws Exception;
+
+    /* Renew the DHCP address for a network space. */
+    public NetworkSpace renewDhcpLease( NetworkSpace space, boolean isPrimary ) throws Exception;
 
     /* Retrieve a mapping of all of the interfaces */
     public IntfEnum getIntfEnum();
 
     /* Get the external HTTPS port */
-    public int getExternalHttpsPort();
+    public int getPublicHttpsPort();
 
     /* Get the hostname of the box */
     public String getHostname();
 
     /* Get the public URL of the box */
     public String getPublicAddress();
+    
+    /* Enable or disable antisubscribing to the outside. */
+    public void subscribeLocalOutside( boolean newValue );
 }

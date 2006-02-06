@@ -55,11 +55,11 @@ public class NatJPanel extends javax.swing.JPanel implements Savable, Refreshabl
         }
         
         // INTERNAL SUBNET ///////
-        IPaddr natInternalSubnet = null;
+        IPaddr natInternalNetmask = null;
         internalSubnetIPaddrJTextField.setBackground( Color.WHITE );
         if(natEnabled){
             try{
-                natInternalSubnet = IPaddr.parse( internalSubnetIPaddrJTextField.getText() );
+                natInternalNetmask = IPaddr.parse( internalSubnetIPaddrJTextField.getText() );
             }
             catch(Exception e){
                 internalSubnetIPaddrJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
@@ -69,12 +69,12 @@ public class NatJPanel extends javax.swing.JPanel implements Savable, Refreshabl
         
         // SAVE THE VALUES ////////////////////////////////////
 	if( !validateOnly ){
-	    NatSettings natSettings = (NatSettings) settings;
-	    natSettings.setNatEnabled( natEnabled );
-	    if( natEnabled ){
-		natSettings.setNatInternalAddress( natInternalAddress );
-		natSettings.setNatInternalSubnet( natInternalSubnet );
-	    }
+	    NatSettingsWrapper natSettings = (NatSettingsWrapper) settings;
+            natSettings.setIsNatEnabled( natEnabled );
+            if( natEnabled ){
+                natSettings.setNatAddress( natInternalAddress );
+                natSettings.setNatNetmask( natInternalNetmask );
+            }
 	}
         
     }
@@ -87,10 +87,10 @@ public class NatJPanel extends javax.swing.JPanel implements Savable, Refreshabl
     boolean isDhcpEnabledCurrent;
 
     public void doRefresh(Object settings) {
-        NatSettings natSettings = (NatSettings) settings;        
+        NatSettingsWrapper natSettings = (NatSettingsWrapper) settings;
         
         // ENABLED ///////////
-	natEnabledCurrent = natSettings.getNatEnabled();
+	natEnabledCurrent = natSettings.getIsNatEnabled();
 	this.setNatEnabledDependency(natEnabledCurrent);
 	if( natEnabledCurrent )
 	    natEnabledJRadioButton.setSelected(true);
@@ -98,18 +98,19 @@ public class NatJPanel extends javax.swing.JPanel implements Savable, Refreshabl
 	    natDisabledJRadioButton.setSelected(true);
         
         // INTERNAL ADDRESS //////
-	natInternalAddressCurrent = natSettings.getNatInternalAddress().toString();
-	internalAddressIPaddrJTextField.setText( natInternalAddressCurrent );
+        natInternalAddressCurrent = natSettings.getNatAddress().toString();
+        internalAddressIPaddrJTextField.setText( natInternalAddressCurrent );
 	internalAddressIPaddrJTextField.setBackground( Color.WHITE );
         
-        // INTERNAL SUBNET ///////
-	natInternalSubnetCurrent  = natSettings.getNatInternalSubnet().toString();
-	internalSubnetIPaddrJTextField.setText( natInternalSubnetCurrent );
+        // INTERNAL NETMASK ///////
+        natInternalSubnetCurrent  = natSettings.getNatNetmask().toString();
+        internalSubnetIPaddrJTextField.setText( natInternalSubnetCurrent );
 	internalSubnetIPaddrJTextField.setBackground( Color.WHITE );
         
         // INTERNAL NETWORK ///////
-	natInternalNetworkCurrent = IPaddr.and(natSettings.getNatInternalAddress(), natSettings.getNatInternalSubnet()).toString();
-	internalNetworkJLabel.setText( natInternalNetworkCurrent );
+        natInternalNetworkCurrent = IPaddr.and(natSettings.getNatAddress(), natSettings.getNatNetmask()).toString();
+        internalNetworkJLabel.setText( natInternalNetworkCurrent );
+
         
         // EXTERNAL ADDRESS ///////
 	natExternalAddressCurrent = Util.getMvvmContext().networkingManager().get().host().toString();

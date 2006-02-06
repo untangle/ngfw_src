@@ -11,7 +11,6 @@
 
 package com.metavize.mvvm.networking;
 
-import java.util.Collections;
 import java.util.List;
 
 import com.metavize.mvvm.tran.Rule;

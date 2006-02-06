@@ -15,6 +15,8 @@ import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.tapi.AbstractEventHandler;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
@@ -22,8 +24,8 @@ import com.metavize.mvvm.tapi.MPipeException;
 import com.metavize.mvvm.tapi.event.TCPNewSessionRequestEvent;
 import com.metavize.mvvm.tapi.event.UDPNewSessionRequestEvent;
 import com.metavize.mvvm.tran.Transform;
-import com.metavize.mvvm.tran.firewall.IPMatcher;
-import org.apache.log4j.Logger;
+import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
+import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
 
 class EventHandler extends AbstractEventHandler
 {
@@ -173,10 +175,13 @@ class EventHandler extends AbstractEventHandler
         List <IPMatcher> clientAddressList = new LinkedList<IPMatcher>();
         List <IPMatcher> exportedAddressList = new LinkedList<IPMatcher>();
 
+        IPMatcherFactory imf = IPMatcherFactory.getInstance();
+
         for ( VpnGroup group : (List<VpnGroup>)settings.getGroupList()) {
             /* Don't insert inactive groups */
             if ( !group.isLive()) continue;
-            IPMatcher matcher = new IPMatcher( group.getAddress(), group.getNetmask(), false );
+            IPMatcher matcher = imf.makeSubnetMatcher( group.getAddress(), group.getNetmask());
+
             clientAddressList.add( matcher );
             if (logger.isDebugEnabled()) {
                 logger.debug( "clientAddressList: [" + matcher + "]" );
@@ -189,8 +194,9 @@ class EventHandler extends AbstractEventHandler
 
             for ( SiteNetwork siteNetwork : (List<SiteNetwork>)site.getExportedAddressList()) {
                 if ( !siteNetwork.isLive()) continue;
-                IPMatcher matcher = new IPMatcher( siteNetwork.getNetwork(), siteNetwork.getNetmask(),
-                                                   false );
+                IPMatcher matcher = 
+                    imf.makeSubnetMatcher( siteNetwork.getNetwork(), siteNetwork.getNetmask());
+
                 clientAddressList.add( matcher );
                 if (logger.isDebugEnabled()) {
                     logger.debug( "clientAddressList: [" + matcher + "]" );
@@ -200,7 +206,9 @@ class EventHandler extends AbstractEventHandler
 
         for ( SiteNetwork siteNetwork : (List<SiteNetwork>)settings.getExportedAddressList()) {
             if ( !siteNetwork.isLive()) continue;
-            IPMatcher matcher = new IPMatcher( siteNetwork.getNetwork(), siteNetwork.getNetmask(), false );
+            IPMatcher matcher = 
+                imf.makeSubnetMatcher( siteNetwork.getNetwork(), siteNetwork.getNetmask());
+
             exportedAddressList.add( matcher );
             if (logger.isDebugEnabled()) {
                 logger.debug( "exportedAddressList: [" + matcher + "]" );

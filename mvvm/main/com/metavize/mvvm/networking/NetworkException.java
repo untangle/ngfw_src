@@ -13,7 +13,8 @@ package com.metavize.mvvm.networking;
 
 import com.metavize.mvvm.MvvmException;
 
-public class NetworkException extends MvvmException {
+public class NetworkException extends MvvmException
+{
     public NetworkException() 
     { 
         super(); 

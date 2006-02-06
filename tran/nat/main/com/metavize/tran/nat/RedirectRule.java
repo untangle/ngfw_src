@@ -16,9 +16,9 @@ import java.net.UnknownHostException;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.ParseException;
 
-import com.metavize.mvvm.tran.firewall.IPMatcher;
-import com.metavize.mvvm.tran.firewall.PortMatcher;
-import com.metavize.mvvm.tran.firewall.IntfMatcher;
+import com.metavize.mvvm.tran.firewall.ip.IPDBMatcher;
+import com.metavize.mvvm.tran.firewall.port.PortDBMatcher;
+import com.metavize.mvvm.tran.firewall.intf.IntfDBMatcher;
 import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
 import com.metavize.mvvm.tran.firewall.TrafficIntfRule;
 
@@ -57,11 +57,11 @@ public class RedirectRule extends TrafficIntfRule
      */
     public RedirectRule() { }
 
-    public RedirectRule( boolean     isLive,  ProtocolMatcher protocol, 
-                         IntfMatcher srcIntf,    IntfMatcher  dstIntf, 
-                         IPMatcher   srcAddress, IPMatcher    dstAddress,
-                         PortMatcher srcPort,    PortMatcher  dstPort,
-                         boolean isDstRedirect,  IPaddr redirectAddress, int redirectPort )
+    public RedirectRule( boolean       isLive,        ProtocolMatcher protocol, 
+                         IntfDBMatcher srcIntf,       IntfDBMatcher  dstIntf, 
+                         IPDBMatcher   srcAddress,    IPDBMatcher    dstAddress,
+                         PortDBMatcher srcPort,       PortDBMatcher  dstPort,
+                         boolean       isDstRedirect, IPaddr redirectAddress, int redirectPort )
     {
         super( isLive, protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort );
         

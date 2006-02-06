@@ -14,9 +14,12 @@ package com.metavize.tran.nat;
 import java.net.InetAddress;
 
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
-import com.metavize.mvvm.tran.firewall.IPMatcher;
-import com.metavize.mvvm.tran.firewall.IntfMatcher;
-import com.metavize.mvvm.tran.firewall.PortMatcher;
+import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
+import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
+import com.metavize.mvvm.tran.firewall.intf.IntfMatcher;
+import com.metavize.mvvm.tran.firewall.intf.IntfMatcherFactory;
+import com.metavize.mvvm.tran.firewall.port.PortMatcher;
+import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
 import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
 import com.metavize.mvvm.tran.firewall.TrafficIntfMatcher;
 import org.apache.log4j.Logger;
@@ -29,12 +32,7 @@ import org.apache.log4j.Logger;
 class RedirectMatcher extends TrafficIntfMatcher {
     private static final Logger logger = Logger.getLogger( RedirectMatcher.class );
 
-    public static final RedirectMatcher MATCHER_DISABLED =
-        new RedirectMatcher( false, ProtocolMatcher.MATCHER_NIL,
-                             IntfMatcher.getNothing(), IntfMatcher.getNothing(),
-                             IPMatcher.MATCHER_NIL,   IPMatcher.MATCHER_ALL,
-                             PortMatcher.MATCHER_NIL, PortMatcher.MATCHER_NIL,
-                             false, null, -1 );
+    public static final RedirectMatcher MATCHER_DISABLED;
 
     /* True if this redirect applies to the source.
      * false if this redirect applies to the destination.*/
@@ -152,6 +150,20 @@ class RedirectMatcher extends TrafficIntfMatcher {
     public int ruleIndex()
     {
         return this.ruleIndex;
+    }
+
+    static
+    {
+        IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
+        IPMatcherFactory ipmf = IPMatcherFactory.getInstance();
+        PortMatcherFactory pmf = PortMatcherFactory.getInstance();
+        
+        MATCHER_DISABLED =
+            new RedirectMatcher( false, ProtocolMatcher.MATCHER_NIL,
+                                 imf.getNilMatcher(), imf.getNilMatcher(),
+                                 ipmf.getNilMatcher(), ipmf.getNilMatcher(),
+                                 pmf.getNilMatcher(), pmf.getNilMatcher(), 
+                                 false, null, -1 );
     }
 
 

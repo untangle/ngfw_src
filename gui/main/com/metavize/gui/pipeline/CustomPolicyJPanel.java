@@ -25,6 +25,9 @@ import com.metavize.mvvm.*;
 import com.metavize.mvvm.tran.*;
 import com.metavize.mvvm.policy.*;
 import com.metavize.mvvm.tran.firewall.*;
+import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
+import com.metavize.mvvm.tran.firewall.intf.IntfMatcherFactory;
+import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
 
 public class CustomPolicyJPanel extends MEditTableJPanel {
 
@@ -133,13 +136,13 @@ class CustomPolicyTableModel extends MSortedTableModel{
             newElem.setInbound( isInbound );
 	    try{ newElem.setProtocol( ProtocolMatcher.parse(((ComboBoxModel) rowVector.elementAt(5)).getSelectedItem().toString()) ); }
 	    catch(Exception e){ throw new Exception("Invalid \"protocol\" in row: " + rowIndex); }	   
-	    try{ newElem.setClientAddr( IPMatcher.parse((String) rowVector.elementAt(6)) ); }
+	    try{ newElem.setClientAddr( IPMatcherFactory.parse((String) rowVector.elementAt(6)) ); }
 	    catch(Exception e){ throw new Exception("Invalid \"client address\" in row: " + rowIndex); }
-	    try{ newElem.setServerAddr( IPMatcher.parse((String) rowVector.elementAt(7)) ); }
+	    try{ newElem.setServerAddr( IPMatcherFactory.parse((String) rowVector.elementAt(7)) ); }
 	    catch(Exception e){ throw new Exception("Invalid \"server address\" in row: " + rowIndex); }
-	    try{ newElem.setClientPort( PortMatcher.parse((String) rowVector.elementAt(8)) ); }
+	    try{ newElem.setClientPort( PortMatcherFactory.parse((String) rowVector.elementAt(8)) ); }
 	    catch(Exception e){ throw new Exception("Invalid \"client port\" in row: " + rowIndex); }
-	    try{ newElem.setServerPort( PortMatcher.parse((String) rowVector.elementAt(9)) ); }
+	    try{ newElem.setServerPort( PortMatcherFactory.parse((String) rowVector.elementAt(9)) ); }
 	    catch(Exception e){ throw new Exception("Invalid \"server port\" in row: " + rowIndex); }
             newElem.setDescription( (String) rowVector.elementAt(10) );
             elemList.add(newElem);

@@ -21,6 +21,8 @@ import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.MailSender;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.argon.ArgonException;
+import com.metavize.mvvm.networking.NetworkException;
+
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
@@ -417,7 +419,9 @@ public class VpnTransformImpl extends AbstractTransform
             MvvmContextFactory.context().argonManager().registerIntf( IntfConstants.VPN_INTF, "tun0" );
         } catch ( ArgonException e ) {
             throw new TransformException( "Unable to register VPN interface", e );
-        }
+        } catch ( NetworkException e ) {
+            throw new TransformException( "Unable to register VPN interface", e );
+        } 
     }
 
     @Override protected void postInit(final String[] args) throws TransformException

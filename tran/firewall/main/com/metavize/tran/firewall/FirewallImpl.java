@@ -30,8 +30,10 @@ import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformStartException;
-import com.metavize.mvvm.tran.firewall.IPMatcher;
-import com.metavize.mvvm.tran.firewall.PortMatcher;
+import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
+import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
+import com.metavize.mvvm.tran.firewall.port.PortMatcher;
+import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
 import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
 import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
@@ -213,21 +215,20 @@ public class FirewallImpl extends AbstractTransform implements Firewall
         NetworkingConfiguration netConfig = MvvmContextFactory.context().networkingManager().get();
 
         try {
-            /* Redirect settings */
+            IPMatcherFactory ipmf = IPMatcherFactory.getInstance();
+            PortMatcherFactory pmf = PortMatcherFactory.getInstance();
+
+            /* A few sample settings */
             settings.setQuickExit( true );
             settings.setRejectSilently( true );
             settings.setDefaultAccept( true );
 
             List<FirewallRule> firewallList = new LinkedList<FirewallRule>();
 
-            IPMatcher localHostMatcher = new IPMatcher( netConfig.host());
-
-
-
             FirewallRule tmp = new FirewallRule( false, ProtocolMatcher.MATCHER_ALL,
                                                  false, true,
-                                                 IPMatcher.MATCHER_ALL, IPMatcher.MATCHER_ALL,
-                                                 PortMatcher.MATCHER_ALL, new PortMatcher( 21 ),
+                                                 ipmf.getAllMatcher(), ipmf.getAllMatcher(),
+                                                 pmf.getAllMatcher(), pmf.makeSingleMatcher( 21 ),
                                                  true );
             tmp.setLog( true );
             tmp.setDescription( "Block and log all incoming traffic destined to port 21 (FTP)" );
@@ -236,16 +237,16 @@ public class FirewallImpl extends AbstractTransform implements Firewall
             /* Block all traffic TCP traffic from the network 1.2.3.4/255.255.255.0 */
             tmp = new FirewallRule( false, ProtocolMatcher.MATCHER_TCP,
                                     true, true,
-                                    IPMatcher.parse( "1.2.3.0/255.255.255.0" ), IPMatcher.MATCHER_ALL,
-                                    PortMatcher.MATCHER_ALL, PortMatcher.MATCHER_ALL,
+                                    ipmf.parse( "1.2.3.0/255.255.255.0" ), ipmf.getAllMatcher(),
+                                    pmf.getAllMatcher(), pmf.getAllMatcher(),
                                     true );
             tmp.setDescription( "Block all TCP traffic from 1.2.3.0 netmask 255.255.255.0" );
             firewallList.add( tmp );
 
             tmp = new FirewallRule( false, ProtocolMatcher.MATCHER_ALL,
                                     true, true,
-                                    IPMatcher.MATCHER_ALL, IPMatcher.parse( "1.2.3.1-1.2.3.10" ),
-                                    new PortMatcher( 1000, 5000 ), PortMatcher.MATCHER_ALL,
+                                    ipmf.getAllMatcher(), ipmf.parse( "1.2.3.1 - 1.2.3.10" ),
+                                    pmf.makeRangeMatcher( 1000, 5000 ), pmf.getAllMatcher(),
                                     false );
             tmp.setLog( true );
             tmp.setDescription( "Accept and log all traffic to the range 1.2.3.1 - 1.2.3.10 from ports 1000-5000" );
@@ -253,8 +254,8 @@ public class FirewallImpl extends AbstractTransform implements Firewall
 
             tmp = new FirewallRule( false, ProtocolMatcher.MATCHER_PING,
                                     true, true,
-                                    IPMatcher.MATCHER_ALL, IPMatcher.parse( "1.2.3.1" ),
-                                    PortMatcher.MATCHER_PING, PortMatcher.MATCHER_PING,
+                                    ipmf.getAllMatcher(), ipmf.parse( "1.2.3.1" ),
+                                    pmf.getPingMatcher(), pmf.getPingMatcher(),
                                     false );
             tmp.setDescription( "Accept PINGs to 1.2.3.1.  Note: the source and destination ports are ignored." );
             firewallList.add( tmp );

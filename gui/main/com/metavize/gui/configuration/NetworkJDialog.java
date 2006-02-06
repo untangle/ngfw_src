@@ -15,14 +15,12 @@ import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.util.*;
 
-import com.metavize.mvvm.NetworkingConfiguration;
-
 import java.awt.*;
 import java.util.*;
 import javax.swing.table.*;
 import javax.swing.*;
 
-
+import com.metavize.mvvm.networking.BasicNetworkSettings;
 
 public class NetworkJDialog extends MConfigJDialog {
     
@@ -61,11 +59,11 @@ public class NetworkJDialog extends MConfigJDialog {
     }
     
     protected void sendSettings(Object settings) throws Exception {
-	Util.getNetworkingManager().set( (NetworkingConfiguration) settings);
+	Util.getNetworkManager().setNetworkSettings((BasicNetworkSettings)settings );
         
     }
     protected void refreshSettings(){
-	settings = Util.getNetworkingManager().get();
+	settings = Util.getNetworkManager().getBasicNetworkSettings();
     }
 
     protected void saveAll(){

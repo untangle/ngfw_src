@@ -60,11 +60,11 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable, Refreshabl
         
         // SAVE THE VALUES ////////////////////////////////////
 	if( !validateOnly ){
-	    NatSettings natSettings = (NatSettings) settings;
-	    natSettings.setDmzEnabled( dmzEnabled );
+	    NatSettingsWrapper natSettings = (NatSettingsWrapper) settings;
+	    natSettings.setIsDmzHostEnabled( dmzEnabled );
 	    if(dmzEnabled){
-		natSettings.setDmzAddress( dmzTargetAddress );
-                natSettings.setDmzLoggingEnabled( dmzLoggingEnabled );
+	        natSettings.setDmzHost( dmzTargetAddress );
+                natSettings.setIsDmzLoggingEnabled( dmzLoggingEnabled );
 	    }
 	}
         
@@ -76,27 +76,28 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable, Refreshabl
 
     public void doRefresh(Object settings) {
         
-        NatSettings natSettings = (NatSettings) settings;
+        NatSettingsWrapper natSettings = (NatSettingsWrapper) settings;
         
         // ENABLED ///////////
-	dmzEnabledCurrent = natSettings.getDmzEnabled();
-	this.setDmzEnabledDependency(dmzEnabledCurrent);
-	if( dmzEnabledCurrent )
-	    dmzEnabledJRadioButton.setSelected(true);
-	else
-	    dmzDisabledJRadioButton.setSelected(true);
+        dmzEnabledCurrent = natSettings.getIsDmzHostEnabled();
+        this.setDmzEnabledDependency(dmzEnabledCurrent);
+        if( dmzEnabledCurrent )
+            dmzEnabledJRadioButton.setSelected(true);
+        else
+            dmzDisabledJRadioButton.setSelected(true);
         
         // TARGET ADDRESS //////
-	dmzTargetAddressCurrent = natSettings.getDmzAddress().toString();
-	targetAddressIPaddrJTextField.setText( dmzTargetAddressCurrent );
+        dmzTargetAddressCurrent = natSettings.getDmzHost().toString();
+        targetAddressIPaddrJTextField.setText( dmzTargetAddressCurrent );
         targetAddressIPaddrJTextField.setBackground( Color.WHITE );
         
         // LOGGING ///////////
-        dmzLoggingEnabledCurrent = natSettings.getDmzLoggingEnabled();
+        dmzLoggingEnabledCurrent = natSettings.getIsDmzLoggingEnabled();
         if( dmzLoggingEnabledCurrent )
             dmzLogEnabledJRadioButton.setSelected(true);
         else
             dmzLogDisabledJRadioButton.setSelected(true);
+
     }
 
     

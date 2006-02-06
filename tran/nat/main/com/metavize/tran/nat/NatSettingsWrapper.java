@@ -11,25 +11,35 @@
 
 package com.metavize.tran.nat;
 
+import java.io.Serializable;
+
 import java.util.List;
 
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.HostName;
 
+import com.metavize.mvvm.tran.ValidateException;
+import com.metavize.mvvm.tran.Validatable;
+
 import com.metavize.mvvm.networking.NetworkSettings;
+import com.metavize.mvvm.networking.NetworkUtil;
 import com.metavize.mvvm.networking.Route;
 import com.metavize.mvvm.networking.Interface;
 import com.metavize.mvvm.networking.NetworkSpace;
 
-public class NatSettingsWrapper
+public class NatSettingsWrapper implements Validatable, Serializable
 {
     private final NatSettings nat;
     private final NetworkSettings network;
 
+    /* Captured as final here so the nat settings cannot change from underneath it */
+    private final SetupState setupState;
+
     NatSettingsWrapper( NatSettings nat, NetworkSettings network )
     {
-        this.nat = nat;
-        this.network = network;
+        this.nat        = nat;
+        this.network    = network;
+        this.setupState = nat.getSetupState();
     }
 
     public NatSettings getNatSettings()
@@ -41,7 +51,7 @@ public class NatSettingsWrapper
     {
         return this.network;
     }
-
+        
     /** Functions for accessing through to the nat settings */
 
     public List<RedirectRule> getRedirectList()
@@ -139,6 +149,74 @@ public class NatSettingsWrapper
         nat.setDnsStaticHostList( s );
     }
 
+    /* These are only here for simple mode, in advanced mode these
+     * functions are have no effect */
+
+    /* nat functions (only useful in basic mode) */
+    public boolean getIsNatEnabled()
+    {
+        return nat.getIsNatEnabled();
+    }
+    
+    public void setIsNatEnabled( boolean newValue )
+    {
+        nat.setIsNatEnabled( newValue );
+    }
+
+    /** This is the network and netmask that is NATd, unlike in a network space where it
+     * is the address to NAT to.
+     */
+    public IPaddr getNatAddress()
+    {
+        return nat.getNatAddress();
+    }
+
+    public void setNatAddress( IPaddr newValue )
+    {
+        nat.setNatAddress( newValue );
+    }
+
+    public IPaddr getNatNetmask()
+    {
+        return nat.getNatNetmask();
+    }
+
+    public void setNatNetmask( IPaddr newValue )
+    {
+        nat.setNatNetmask( newValue );
+    }
+    
+    /* DMZ functions */
+    public boolean getIsDmzHostEnabled()
+    {
+        return nat.getIsDmzHostEnabled();
+    }
+    
+    public void setIsDmzHostEnabled( boolean newValue )
+    {
+        nat.setIsDmzHostEnabled( newValue );
+    }
+
+    public IPaddr getDmzHost()
+    {
+        return nat.getDmzHost();
+    }
+
+    public void setDmzHost( IPaddr newValue )
+    {
+        nat.setDmzHost( newValue );
+    }
+    
+    public boolean getIsDmzLoggingEnabled()
+    {
+        return nat.getIsDmzLoggingEnabled();
+    }
+    
+    public void setIsDmzLoggingEnabled( boolean newValue )
+    {
+        nat.setIsDmzLoggingEnabled( newValue );
+    }
+
     /* Functions for accessing through to the network settings */    
     public List<Interface> getInterfaceList()
     {
@@ -221,6 +299,16 @@ public class NatSettingsWrapper
     }
     
     /****************** Non-hibernate utility functions */
+    public SetupState getSetupState()
+    {
+        return this.setupState;
+    }
+
+    void setSetupState( SetupState setupState )
+    {
+        nat.setSetupState( setupState );
+    }
+    
     public boolean hasPublicAddress()
     {
         return network.hasPublicAddress();
@@ -230,4 +318,12 @@ public class NatSettingsWrapper
     {
         return network.hasDns2();
     }
+
+    public void validate() throws ValidateException
+    {
+        NetworkUtil.getInstance().validate( this.network );
+        this.nat.validate();
+    }
+
+
 }
