@@ -1,4 +1,4 @@
--- events schema for release 3.1.3
+-- events schema for release 3.2
 
 -----------
 -- tables |
