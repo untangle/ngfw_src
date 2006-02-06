@@ -1,7 +1,7 @@
 body {
  padding: 0px;
  margin: 0px;
- background: #FFFFFF url(./images/body.gif) repeat-x top left;
+ background: #FFFFFF url(../images/body.gif) repeat-x top left;
  text-align: center;
 }
 
@@ -19,20 +19,20 @@ table.main
 
 td.main-top
 {
- background: url(./images/top.gif) no-repeat;
+ background: url(../images/top.gif) no-repeat;
  height: 23px;
  width: 23px;
 }
 
 td.main-middle
 {
- background: url(./images/middle.gif) repeat;
+ background: url(../images/middle.gif) repeat;
  padding-left: 20px;
  padding-right: 20px;
 }
 
 td.main-bottom
 {
- background: url(./images/bottom.gif) repeat-x;
+ background: url(../images/bottom.gif) repeat-x;
  height: 23px;
 }
