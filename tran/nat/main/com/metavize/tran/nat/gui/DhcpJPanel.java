@@ -70,7 +70,7 @@ public class DhcpJPanel extends javax.swing.JPanel implements Savable, Refreshab
         
         // SAVE SETTINGS ////////////////////////////////////
 	if( !validateOnly ){
-	    NatSettingsWrapper natSettings = (NatSettingsWrapper) settings;
+	    NatSettings natSettings = (NatSettings) settings;
 	    natSettings.setDhcpEnabled( dhcpIsEnabled );
 	    if(dhcpIsEnabled){
 		natSettings.setDhcpStartAndEndAddress(dhcpStartAddress, dhcpEndAddress);
@@ -84,7 +84,7 @@ public class DhcpJPanel extends javax.swing.JPanel implements Savable, Refreshab
     String dhcpEndAddressCurrent;
 
     public void doRefresh(Object settings) {
-        NatSettingsWrapper natSettings = (NatSettingsWrapper) settings;        
+        NatSettings natSettings = (NatSettings) settings;        
         
         // DHCP ENABLED ///////////
 	dhcpIsEnabledCurrent = natSettings.getDhcpEnabled();

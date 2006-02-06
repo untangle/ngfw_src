@@ -6,8 +6,7 @@ import java.util.Vector;
 
 import com.metavize.tran.ids.options.*;
 import com.metavize.mvvm.tapi.Protocol;
-import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
-import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
+import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.PortRange;
 import com.metavize.mvvm.tran.ParseException;
 
@@ -153,22 +152,21 @@ public class IDSStringParser {
     }
 
     private static List<IPMatcher> parseIPToken(String ipString) throws ParseException {
-        IPMatcherFactory ipmf = IPMatcherFactory.getInstance();
-        
+		
         List<IPMatcher> ipList = new Vector<IPMatcher>();
         if(ipString.equalsIgnoreCase("any"))
-            ipList.add(ipmf.getAllMatcher());
+            ipList.add(IPMatcher.MATCHER_ALL);
         else if(ipString.equalsIgnoreCase(EXTERNAL_IP))
-            ipList.add(ipmf.getExternalMatcher());
+            ipList.add(IPMatcher.MATCHER_EXTERNAL);
         else if(ipString.equalsIgnoreCase(HOME_IP))
-            ipList.add(ipmf.getInternalMatcher());
+            ipList.add(IPMatcher.MATCHER_INTERNAL);
         else {
             ipString = ipString.replaceAll("\\[","");
             ipString = ipString.replaceAll("\\]","");
 			
             String allAddrs[] = ipString.split(",");			
             for(int i=0; i < allAddrs.length; i++)
-                ipList.add(IPMatcherFactory.parse(validateMask(allAddrs[i])));
+                ipList.add(IPMatcher.parse(validateMask(allAddrs[i])));
         }
         return ipList;
     }

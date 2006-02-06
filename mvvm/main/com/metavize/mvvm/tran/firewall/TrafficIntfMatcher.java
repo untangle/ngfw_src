@@ -17,10 +17,6 @@ import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
 import com.metavize.mvvm.tapi.IPSessionDesc;
 
-import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
-import com.metavize.mvvm.tran.firewall.intf.IntfMatcher;
-import com.metavize.mvvm.tran.firewall.port.PortMatcher;
-
 public abstract class TrafficIntfMatcher extends TrafficMatcher 
 {    
     final IntfMatcher srcIntf;

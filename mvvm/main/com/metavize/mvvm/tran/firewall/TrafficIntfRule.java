@@ -11,11 +11,6 @@
 
 package com.metavize.mvvm.tran.firewall;
 
-import com.metavize.mvvm.tran.firewall.ip.IPDBMatcher;
-import com.metavize.mvvm.tran.firewall.intf.IntfDBMatcher;
-import com.metavize.mvvm.tran.firewall.intf.IntfMatcherFactory;
-import com.metavize.mvvm.tran.firewall.port.PortDBMatcher;
-
 /**
  * Rule for matching sessions based on direction and IP addresses, ports
  *
@@ -26,11 +21,11 @@ public abstract class TrafficIntfRule extends TrafficRule
 {
     private static final long serialVersionUID = -3414932048560925028L;
 
-    /* True if this matches source interface */
-    private IntfDBMatcher srcIntf = IntfMatcherFactory.getInstance().getAllMatcher();
+    /* True if this matches inbound sessions */
+    private IntfMatcher srcIntf = IntfMatcher.getAll();
     
-    /* True if this matches the destination interface */
-    private IntfDBMatcher dstIntf = IntfMatcherFactory.getInstance().getAllMatcher();
+    /* True if this matches outbound sessions */
+    private IntfMatcher dstIntf = IntfMatcher.getAll();
 
     /**
      * Hibernate constructor.
@@ -39,10 +34,10 @@ public abstract class TrafficIntfRule extends TrafficRule
     {
     }
 
-    public TrafficIntfRule( boolean       isLive,     ProtocolMatcher protocol,
-                            IntfDBMatcher srcIntf,    IntfDBMatcher     dstIntf,
-                            IPDBMatcher   srcAddress, IPDBMatcher       dstAddress,
-                            PortDBMatcher srcPort,    PortDBMatcher     dstPort )
+    public TrafficIntfRule( boolean     isLive,     ProtocolMatcher protocol,
+                            IntfMatcher srcIntf,    IntfMatcher     dstIntf,
+                            IPMatcher   srcAddress, IPMatcher       dstAddress,
+                            PortMatcher srcPort,    PortMatcher     dstPort )
     {
         super( isLive, protocol, srcAddress, dstAddress, srcPort, dstPort );
         this.srcIntf = srcIntf;
@@ -58,18 +53,18 @@ public abstract class TrafficIntfRule extends TrafficRule
      * @hibernate.column
      * name="SRC_INTF_MATCHER"
      */
-    public IntfDBMatcher getSrcIntf()
+    public IntfMatcher getSrcIntf()
     {
         return srcIntf;
     }
 
-    public void setSrcIntf( IntfDBMatcher srcIntf )
+    public void setSrcIntf( IntfMatcher srcIntf )
     {
         this.srcIntf = srcIntf;
     }
     
     /**
-     * destination IntfDBMatcher
+     * destination IntfMatcher
      *
      * @return the destination IP matcher.
      * @hibernate.property
@@ -77,12 +72,12 @@ public abstract class TrafficIntfRule extends TrafficRule
      * @hibernate.column
      * name="DST_INTF_MATCHER"
      */
-    public IntfDBMatcher getDstIntf()
+    public IntfMatcher getDstIntf()
     {
         return dstIntf;
     }
 
-    public void setDstIntf( IntfDBMatcher dstIntf )
+    public void setDstIntf( IntfMatcher dstIntf )
     {
         this.dstIntf = dstIntf;
     }

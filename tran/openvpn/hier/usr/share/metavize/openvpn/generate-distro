@@ -15,7 +15,6 @@ fi
 EMAIL_TEMPLATE="${DATA_DIR}/mail-template.html"
 EG_TEMPLATE="${DATA_DIR}/eg-template.html"
 
-## The internal and external address are presently the same
 commonName=`removeSpaces ${1}`
 distributionKey=${2}
 internalAddress=${3}

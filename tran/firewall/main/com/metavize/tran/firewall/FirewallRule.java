@@ -12,8 +12,8 @@
 package com.metavize.tran.firewall;
 
 import com.metavize.mvvm.tran.ParseException;
-import com.metavize.mvvm.tran.firewall.ip.IPDBMatcher;
-import com.metavize.mvvm.tran.firewall.port.PortDBMatcher;
+import com.metavize.mvvm.tran.firewall.IPMatcher;
+import com.metavize.mvvm.tran.firewall.PortMatcher;
 import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
 import com.metavize.mvvm.tran.firewall.TrafficDirectionRule;
 
@@ -45,10 +45,10 @@ public class FirewallRule extends TrafficDirectionRule
     {
     }
 
-    public FirewallRule( boolean       isLive,     ProtocolMatcher protocol,
-                         boolean       inbound,    boolean outbound,
-                         IPDBMatcher   srcAddress, IPDBMatcher       dstAddress,
-                         PortDBMatcher srcPort,    PortDBMatcher     dstPort,
+    public FirewallRule( boolean     isLive,     ProtocolMatcher protocol,
+                         boolean     inbound,    boolean outbound,
+                         IPMatcher   srcAddress, IPMatcher       dstAddress,
+                         PortMatcher srcPort,    PortMatcher     dstPort,
                          boolean isTrafficBlocker )
     {
         super( isLive, protocol, inbound, outbound, srcAddress, dstAddress, srcPort, dstPort );

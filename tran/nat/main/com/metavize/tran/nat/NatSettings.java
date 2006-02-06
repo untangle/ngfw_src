@@ -21,7 +21,6 @@ import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.Validatable;
-import com.metavize.mvvm.tran.ValidateException;
 
 /**
  * Settings for the Nat transform.
@@ -31,21 +30,21 @@ import com.metavize.mvvm.tran.ValidateException;
  * @hibernate.class
  * table="TR_NAT_SETTINGS"
  */
-public class NatSettings implements Serializable
+public class NatSettings implements Serializable, Validatable
 {
     private Long id;
     private Tid tid;
 
-    // !!!!!! private static final long serialVersionUID = 4349679825783697834L;
+    private static final long serialVersionUID = 4349679825783697834L;
 
     /* Nat Settings */
     private boolean natEnabled = false;
-    private IPaddr  natAddress;
-    private IPaddr  natNetmask;
+    private IPaddr  natInternalAddress;
+    private IPaddr  natInternalSubnet;
 
     /* DMZ settings */
     private boolean dmzEnabled;
-    private IPaddr  dmzHost;
+    private IPaddr  dmzAddress;
     private boolean dmzLoggingEnabled = false;
 
     /* Redirect rules */
@@ -67,9 +66,6 @@ public class NatSettings implements Serializable
     /* DNS Static Hosts */
     private List    dnsStaticHostList = new LinkedList();
 
-    /* Setup state (simple,advanced, possibly unconfigured) */
-    private SetupState setupState = SetupState.BASIC;
-
     /**
      * Hibernate constructor.
      */
@@ -85,100 +81,96 @@ public class NatSettings implements Serializable
         this.tid = tid;
     }
 
-    public void validate() throws ValidateException
+    public void validate() throws Exception
     {
+        validate( null );
     }
 
-//     public void validate() throws Exception
-//     {
-//         validate( null );
-//     }
+    /* Validation method */
+    public void validate( NetworkingConfiguration netConfig ) throws Exception
+    {
+        boolean isStartAddressValid = true;
+        boolean isEndAddressValid   = true;
+        boolean isValid             = true;
 
-//     /* Validation method */
-//     public void validate( NetworkingConfiguration netConfig ) throws Exception
-//     {
-//         boolean isStartAddressValid = true;
-//         boolean isEndAddressValid   = true;
-//         boolean isValid             = true;
+        for ( Iterator iter = this.redirectList.iterator(); iter.hasNext() ; ) {
+            ((RedirectRule)iter.next()).fixPing();
+        }
 
-//         for ( Iterator iter = this.redirectList.iterator(); iter.hasNext() ; ) {
-//             ((RedirectRule)iter.next()).fixPing();
-//         }
+        if ( natEnabled &&
+             ( natInternalAddress == null || natInternalSubnet == null  ||
+               natInternalAddress.isEmpty() || natInternalSubnet.isEmpty())) {
+            throw new Exception( "Enablng NAT requires an \"Internal IP address\" and " +
+                                 "an \"Internal Subnet\"" );
+        }
 
-//         if ( natEnabled &&
-//              ( natInternalAddress == null || natInternalSubnet == null  ||
-//                natInternalAddress.isEmpty() || natInternalSubnet.isEmpty())) {
-//             throw new Exception( "Enablng NAT requires an \"Internal IP address\" and " +
-//                                  "an \"Internal Subnet\"" );
-//         }
+        if ( dmzEnabled ) {
+            if ( dmzAddress == null ) {
+                throw new Exception( "Enabling DMZ requires a target IP address" );
+            }
 
-//         if ( dmzEnabled ) {
-//             if ( dmzAddress == null ) {
-//                 throw new Exception( "Enabling DMZ requires a target IP address" );
-//             }
+            if ( natEnabled && !dmzAddress.isInNetwork( natInternalAddress, natInternalSubnet )) {
+                throw new Exception( "When NAT is enabled, the \"DMZ address\" in the DMZ Host panel " +
+                                     "must be in the internal network." );
+            }
+        }
 
-//             if ( natEnabled && !dmzAddress.isInNetwork( natInternalAddress, natInternalSubnet )) {
-//                 throw new Exception( "When NAT is enabled, the \"DMZ address\" in the DMZ Host panel " +
-//                                      "must be in the internal network." );
-//             }
-//         }
+        if ( dhcpEnabled ) {
+            IPaddr host = null;
+            IPaddr netmask = null;
 
-//         if ( dhcpEnabled ) {
-//             IPaddr host = null;
-//             IPaddr netmask = null;
+            if ( natEnabled ) {
+                host    = natInternalAddress;
+                netmask = natInternalSubnet;
+            } else {
+                /* Need the network settings */
+                /* XXX This inefficient since it has to call to the server */
+                /* XXX Currently a bug, getting around by ignoring */
+                if ( netConfig == null ) {
+                    //netConfig = MvvmContextFactory.context().networkingManager().get();
+                }
 
-//             if ( natEnabled ) {
-//                 host    = natInternalAddress;
-//                 netmask = natInternalSubnet;
-//             } else {
-//                 /* Need the network settings */
-//                 /* XXX This inefficient since it has to call to the server */
-//                 /* XXX Currently a bug, getting around by ignoring */
-//                 if ( netConfig == null ) {
-//                     //netConfig = MvvmContextFactory.context().networkingManager().get();
-//                 }
+                if ( netConfig != null ) {
+                    host    = netConfig.host();
+                    netmask = netConfig.netmask();
+                }
+            }
 
-//                 if ( netConfig != null ) {
-//                     host    = netConfig.host();
-//                     netmask = netConfig.netmask();
-//                 }
-//             }
+            if ( host != null && !dhcpStartAddress.isInNetwork( host, netmask )) {
+                isStartAddressValid = false;
 
-//             if ( host != null && !dhcpStartAddress.isInNetwork( host, netmask )) {
-//                 isStartAddressValid = false;
+                throw new Exception( "\"IP Address Range Start\" in the DHCP panel must be in the network: "
+                                     + host.toString() + "/" + netmask.toString());
 
-//                 throw new Exception( "\"IP Address Range Start\" in the DHCP panel must be in the network: "
-//                                      + host.toString() + "/" + netmask.toString());
+            }
 
-//             }
+            if ( host != null && !dhcpEndAddress.isInNetwork( host, netmask )) {
+                isEndAddressValid = false;
 
-//             if ( host != null && !dhcpEndAddress.isInNetwork( host, netmask )) {
-//                 isEndAddressValid = false;
-
-//                 throw new Exception( "\"IP Address Range End\" in the DHCP panel must be in the network: " 
-//                                      + host.toString() + "/" + netmask.toString());
-//             }
+                throw new Exception( "\"IP Address Range End\" in the DHCP panel must be in the network: " 
+                                     + host.toString() + "/" + netmask.toString());
+            }
             
-//             if ( host != null && netmask != null && !host.isEmpty() && !netmask.isEmpty()) {
-//                 int c = 1;
-//                 for ( Iterator iter = this.dhcpLeaseList.iterator() ; iter.hasNext() ; c++ ) {
-//                     DhcpLeaseRule rule =  (DhcpLeaseRule)iter.next();
-//                     IPaddr address = rule.getStaticAddress();
-//                     if ( address.getAddr() == null ) continue;
+            if ( host != null && netmask != null && !host.isEmpty() && !netmask.isEmpty()) {
+                int c = 1;
+                for ( Iterator iter = this.dhcpLeaseList.iterator() ; iter.hasNext() ; c++ ) {
+                    DhcpLeaseRule rule =  (DhcpLeaseRule)iter.next();
+                    IPaddr address = rule.getStaticAddress();
+                    if ( address.getAddr() == null ) continue;
                     
-//                     if ( !address.isInNetwork( host, netmask )) {
-//                         throw new 
-//                             Exception( "\"target static IP address\" for DHCP Address Map entry '" +
-//                                        address.toString() + "' must be in the network: " + 
-//                                        host.toString() + "/" + netmask.toString());
-//                     }
-//                 }
-//             }
-//         }
+                    if ( !address.isInNetwork( host, netmask )) {
+                        throw new 
+                            Exception( "\"target static IP address\" for DHCP Address Map entry '" +
+                                       address.toString() + "' must be in the network: " + 
+                                       host.toString() + "/" + netmask.toString());
+                    }
+                }
+            }
+        }
 
-//         /* Setup this way to allow reporting of multiple errors in one place */
-//         isValid = isStartAddressValid & isEndAddressValid;
-//     }
+        /* Setup this way to allow reporting of multiple errors in one place */
+        isValid = isStartAddressValid & isEndAddressValid;
+    }
 
     /**
      * @hibernate.id
@@ -211,6 +203,118 @@ public class NatSettings implements Serializable
     public void setTid( Tid tid )
     {
         this.tid = tid;
+    }
+
+    /**
+     * Get whether or not nat is enabled.
+     *
+     * @return is NAT is being used.
+     * @hibernate.property
+     * column="NAT_ENABLED"
+     */
+    public boolean getNatEnabled()
+    {
+    return natEnabled;
+    }
+
+    public void setNatEnabled( boolean enabled )
+    {
+    natEnabled = enabled;
+    }
+
+    /**
+     * Get the base of the internal address.
+     *
+     * @return internal Address.
+     * @hibernate.property
+     * type="com.metavize.mvvm.type.IPaddrUserType"
+     * @hibernate.column
+     * name="NAT_INTERNAL_ADDR"
+     * sql-type="inet"
+     */
+    public IPaddr getNatInternalAddress()
+    {
+        return natInternalAddress;
+    }
+
+    public void setNatInternalAddress( IPaddr addr )
+    {
+        natInternalAddress = addr;
+    }
+
+    /**
+     * Get the subnet of the internal addresses.
+     *
+     * @return internal subnet.
+     * @hibernate.property
+     * type="com.metavize.mvvm.type.IPaddrUserType"
+     * @hibernate.column
+     * name="NAT_INTERNAL_SUBNET"
+     * sql-type="inet"
+     */
+    public IPaddr getNatInternalSubnet()
+    {
+        return natInternalSubnet;
+    }
+
+    public void setNatInternalSubnet( IPaddr addr )
+    {
+        natInternalSubnet = addr;
+    }
+
+    /**
+     * Get whether or not DMZ is being used.
+     *
+     * @return is NAT is being used.
+     * @hibernate.property
+     * column="DMZ_ENABLED"
+     */
+    public boolean getDmzEnabled()
+    {
+    return dmzEnabled;
+    }
+
+    public void setDmzEnabled( boolean enabled )
+    {
+    dmzEnabled = enabled;
+    }
+
+    /**
+     * Get whether or not DMZ is being used.
+     *
+     * @return is NAT is being used.
+     * @hibernate.property
+     * column="DMZ_LOGGING_ENABLED"
+     */
+    public boolean getDmzLoggingEnabled()
+    {
+    return this.dmzLoggingEnabled;
+    }
+
+    public void setDmzLoggingEnabled( boolean enabled )
+    {
+    this.dmzLoggingEnabled = enabled;
+    }
+
+
+    /**
+     * Get the address of the dmz host
+     *
+     * @return dmz address.
+     * @hibernate.property
+     * type="com.metavize.mvvm.type.IPaddrUserType"
+     * @hibernate.column
+     * name="DMZ_ADDRESS"
+     * sql-type="inet"
+     */
+    public IPaddr getDmzAddress()
+    {
+        return dmzAddress;
+    }
+
+    public void setDmzAddress( IPaddr dmzAddress )
+    {
+        this.dmzAddress = dmzAddress;
     }
 
     /**
@@ -415,90 +519,5 @@ public class NatSettings implements Serializable
     public void setDnsStaticHostList( List s )
     {
         dnsStaticHostList = s;
-    }
-
-    /**
-     * The current setup type, this shouldn't be modified outside of this package.
-     * @return The media for type for this interface.
-     * @hibernate.property
-     * type="com.metavize.tran.nat.SetupStateUserType"
-     * @hibernate.column
-     * name="setup_state"
-     */
-    public SetupState getSetupState()
-    {
-        return this.setupState;
-    }
-    
-    void setSetupState( SetupState setupState )
-    {
-        if ( setupState == null ) setupState = SetupState.BASIC;
-        this.setupState = setupState;
-    }
-
-    /* ******************** non-hibernate variables *********/
-    
-    /** These should only be used when in basic mode */
-
-    /* NAT functions */
-    boolean getIsNatEnabled()
-    {
-        return this.natEnabled;
-    }
-    
-    void setIsNatEnabled( boolean newValue )
-    {
-        this.natEnabled = newValue;
-    }
-
-    IPaddr getNatAddress()
-    {
-        return this.natAddress;
-    }
-
-    void setNatAddress( IPaddr newValue )
-    {
-        this.natAddress = newValue;
-    }
-
-    IPaddr getNatNetmask()
-    {
-        return this.natNetmask;
-    }
-
-    void setNatNetmask( IPaddr newValue )
-    {
-        this.natNetmask = newValue;
-    }
-
-    /* DMZ functions */
-    boolean getIsDmzHostEnabled()
-    {
-        return this.dmzEnabled;
-    }
-    
-    void setIsDmzHostEnabled( boolean newValue )
-    {
-        this.dmzEnabled = newValue;
-    }
-
-    IPaddr getDmzHost()
-    {
-        return this.dmzHost;
-    }
-
-    void setDmzHost( IPaddr newValue )
-    {
-        this.dmzHost = newValue;
-    }
-    
-    boolean getIsDmzLoggingEnabled()
-    {
-        return this.dmzLoggingEnabled;
-    }
-    
-    void setIsDmzLoggingEnabled( boolean newValue )
-    {
-        this.dmzLoggingEnabled = newValue;
     }
 }

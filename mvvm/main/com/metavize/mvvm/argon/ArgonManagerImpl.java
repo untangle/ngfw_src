@@ -30,13 +30,12 @@ import com.metavize.jnetcap.InterfaceData;
 import com.metavize.jnetcap.Shield;
 import com.metavize.jnetcap.JNetcapException;
 
-import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.engine.PolicyManagerPriv;
+
 import com.metavize.mvvm.ArgonManager;
 import com.metavize.mvvm.NetworkingConfiguration;
 
-import com.metavize.mvvm.engine.PolicyManagerPriv;
-import com.metavize.mvvm.networking.NetworkException;
-
+import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.firewall.InterfaceRedirect;
 
 import com.metavize.mvvm.shield.ShieldNodeSettings;
@@ -78,7 +77,6 @@ public class ArgonManagerImpl implements ArgonManager
     {
     }
 
-    /* Send current shield status over UDP to <ip>:<port> */
     public void shieldStatus( InetAddress ip, int port )
     {
         if ( port < 0 || port > 0xFFFF ) {
@@ -87,13 +85,179 @@ public class ArgonManagerImpl implements ArgonManager
         shield.status( ip, port );
     }
 
-    /* Reload the shield configuration from the current configuration file */
     public void shieldReconfigure()
     {
         String shieldFile = Argon.getInstance().shieldFile;
         if ( shieldFile  != null ) {
             shield.config( shieldFile );
         }
+    }
+
+    synchronized public void updateAddress() throws ArgonException
+    {
+        if ( isShutdown ) {
+            logger.warn( "MVVM is already shutting down, no longer able to update address" );
+            return;
+        }
+
+        /* Update the rules */
+        generateRules();
+
+        IntfConverter intfConverter = IntfConverter.getInstance();
+
+        String inside  = intfConverter.argonIntfToString( IntfConverter.INSIDE );
+        String outside = intfConverter.argonIntfToString( IntfConverter.OUTSIDE );
+            
+        Netcap.updateAddress();
+        
+        try {
+            this.insideIntfDataList = netcap.getInterfaceData( inside );
+        } catch ( Exception e ) {
+            logger.warn( "Exception retrieving inside interface data, setting to an empty list" );
+            this.insideIntfDataList = EMPTY_INTF_DATA_LIST;
+        }
+
+        if ( this.insideIntfDataList == null ) this.insideIntfDataList = EMPTY_INTF_DATA_LIST;
+        
+        try {
+            this.outsideIntfDataList = netcap.getInterfaceData( outside );
+        } catch ( Exception e ) {
+            logger.warn( "Exception retrieving inside interface data, setting to an empty list" );
+            this.outsideIntfDataList = EMPTY_INTF_DATA_LIST;
+        }
+        
+        if ( this.outsideIntfDataList == null ) this.outsideIntfDataList = EMPTY_INTF_DATA_LIST;
+                
+        IPMatcher.setInsideAddress( getInsideAddress(), getInsideNetmask());
+        InetAddress outsideAddress = getOutsideAddress();
+        InetAddress outsideNetmask = getOutsideNetmask();
+        
+        if (( outsideAddress == null ) || ( outsideAddress.equals( BOGUS_OUTSIDE_ADDRESS ))) {
+            IPMatcher.setOutsideAddress((InetAddress)null, (InetAddress)null );
+        } else {
+            IPMatcher.setOutsideAddress( outsideAddress, outsideNetmask );
+        }
+    }
+
+    /**
+     * Load a networking configuration
+     */
+    synchronized public void loadNetworkingConfiguration( NetworkingConfiguration netConfig ) 
+        throws ArgonException
+    {
+        BridgeConfigurationManager.getInstance().reconfigureBridge( netConfig );
+        pause();
+        updateAddress();
+    }
+    
+    /* Indicate that the shutdown process has started, this is used to prevent NAT from both
+     * re-enabling the bridge during shutdown, Argon will do that automatically.
+     * This also prevents transforms from registering or deregistering interfaces after shutdown 
+     */
+    synchronized void isShutdown() 
+    {
+        isShutdown = true;
+    }    
+
+    synchronized public void destroyBridge( NetworkingConfiguration netConfig, InetAddress internalAddress, 
+                                            InetAddress internalNetmask ) throws ArgonException
+    {
+        if ( isShutdown ) {
+            logger.warn( "MVVM is already shutting down, no longer able to destroy bridge" );
+            return;
+        }
+
+        BridgeConfigurationManager.getInstance().destroyBridge( netConfig, internalAddress,
+                                                                internalNetmask );
+        pause();
+        updateAddress();
+    }
+    
+    synchronized public void restoreBridge( NetworkingConfiguration netConfig ) throws ArgonException
+    {
+        if ( isShutdown ) {
+            logger.warn( "MVVM is already shutting down, no longer able to restore bridge" );
+            return;
+        }
+
+        BridgeConfigurationManager.getInstance().restoreBridge( netConfig );
+        pause();
+        updateAddress();
+    }
+
+    /* This re-enables the bridge, but checks if it is already enabled before attempting to 
+     * re-enable it */
+    synchronized public void argonRestoreBridge( NetworkingConfiguration netConfig ) throws ArgonException
+    {
+        BridgeConfigurationManager.getInstance().argonRestoreBridge( netConfig );
+        pause();
+        updateAddress();
+    }
+
+    public void disableLocalAntisubscribe()
+    {
+        RuleManager.getInstance().subscribeLocalOutside( true );
+    }
+
+    public void enableLocalAntisubscribe()
+    {
+        RuleManager.getInstance().subscribeLocalOutside( false );
+    }
+
+    public void disableDhcpForwarding()
+    {
+        RuleManager.getInstance().dhcpEnableForwarding( false );
+    }
+
+    public void enableDhcpForwarding()
+    {
+        RuleManager.getInstance().dhcpEnableForwarding( true );
+    }
+
+    /* Update all of the iptables rules and the inside address database */
+    public void generateRules() throws ArgonException
+    {
+        RuleManager.getInstance().generateIptablesRules();
+    }
+
+    public String getInside() throws ArgonException
+    {
+        return IntfConverter.getInstance().argonIntfToString( IntfConverter.INSIDE );
+    }
+
+    public InetAddress getInsideAddress()
+    {
+        if ( this.insideIntfDataList.size() < 1 ) return null;
+        return insideIntfDataList.get( 0 ).getAddress();
+    }
+
+    public InetAddress getInsideNetmask()
+    {
+        if ( this.insideIntfDataList.size() < 1 ) return null;
+        return insideIntfDataList.get( 0 ).getNetmask();
+    }
+
+    public String getOutside() throws ArgonException
+    {
+        return IntfConverter.getInstance().argonIntfToString( IntfConverter.OUTSIDE );
+    }
+
+    public InetAddress getOutsideAddress()
+    {
+        if ( this.outsideIntfDataList.size() < 1 ) return null;
+        return outsideIntfDataList.get( 0 ).getAddress();
+    }
+
+    public InetAddress getOutsideNetmask()
+    {
+        if ( this.outsideIntfDataList.size() < 1 ) return null;
+        return outsideIntfDataList.get( 0 ).getNetmask();
+    }
+
+    public List<InterfaceData> getOutsideAliasList()
+    {
+        if ( this.outsideIntfDataList.size() < 2 ) return EMPTY_INTF_DATA_LIST;
+        return Collections.unmodifiableList( outsideIntfDataList.subList( 1, outsideIntfDataList.size()));
     }
         
     /* Set the interface override list. */
@@ -172,7 +336,7 @@ public class ArgonManagerImpl implements ArgonManager
         }
     }
 
-    private void updateIntfArray() throws ArgonException, NetworkException
+    private void updateIntfArray() throws ArgonException
     {
         IntfConverter ic = IntfConverter.getInstance();
 
@@ -203,9 +367,9 @@ public class ArgonManagerImpl implements ArgonManager
         } catch ( Exception e ) {
             logger.error( "Unable to write transform interface properties:" + TRANSFORM_INTF_FILE, e );
         }
-        
+
         /* Update the address database */
-        MvvmContextFactory.context().networkManager().updateAddress();
+        updateAddress();
         
         /* Update the policy manager */
         if ( ic.clearUpdatePolicyManager()) {
@@ -216,7 +380,7 @@ public class ArgonManagerImpl implements ArgonManager
     /* Interface management function */
     void initializeIntfArray( PolicyManagerPriv policyManager, String inside, String outside, 
                               String dmz, String userIntfs ) 
-        throws ArgonException, NetworkException
+        throws ArgonException
     {
         this.policyManager = policyManager;
 
@@ -227,7 +391,7 @@ public class ArgonManagerImpl implements ArgonManager
     }
 
     public void registerIntf( byte argonIntf, String deviceName )
-        throws ArgonException, NetworkException
+        throws ArgonException
     {
         if ( isShutdown ) {
             logger.info( "Already shutdown, unable to deregister interface" );
@@ -243,7 +407,7 @@ public class ArgonManagerImpl implements ArgonManager
     }
     
     public void deregisterIntf( byte argonIntf )
-        throws ArgonException, NetworkException
+        throws ArgonException
     {
         if ( isShutdown ) {
             logger.info( "Already shutdown, unable to deregister interface" );
@@ -256,6 +420,20 @@ public class ArgonManagerImpl implements ArgonManager
         }
 
         updateIntfArray();
+    }
+
+    /** Add an interface to the internal bridge */
+    public void enableInternalBridgeIntf( NetworkingConfiguration netConfig, String intf )
+        throws ArgonException
+    {
+        BridgeConfigurationManager.getInstance().setInternalBridgeIntf( netConfig, intf );        
+    }
+    
+    /** Remove all interfaces bridged with the internal interface */
+    public void disableInternalBridgeIntf( NetworkingConfiguration netConfig )
+        throws ArgonException
+    {
+        BridgeConfigurationManager.getInstance().clearInternalBridgeIntf( netConfig );
     }
 
     public static final ArgonManagerImpl getInstance()

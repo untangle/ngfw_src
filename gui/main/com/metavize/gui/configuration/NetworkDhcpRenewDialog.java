@@ -14,15 +14,15 @@ package com.metavize.gui.configuration;
 import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.gui.util.Util;
 
-import com.metavize.mvvm.NetworkManager;
-import com.metavize.mvvm.networking.BasicNetworkSettings;
+import com.metavize.mvvm.NetworkingManager;
+import com.metavize.mvvm.NetworkingConfiguration;
 
 import javax.swing.*;
 
 
 final public class NetworkDhcpRenewDialog extends MOneButtonProgressJDialog {
     
-    private BasicNetworkSettings networkSettings = null;
+    private NetworkingConfiguration networkingConfiguration = null;
     
     public NetworkDhcpRenewDialog() {
         this.setTitle("Renewing DHCP Lease");
@@ -32,8 +32,8 @@ final public class NetworkDhcpRenewDialog extends MOneButtonProgressJDialog {
         this.setVisible(true);
     }
     
-    public BasicNetworkSettings getNetworkSettings(){
-        return networkSettings;
+    public NetworkingConfiguration getNetworkingConfiguration(){
+        return networkingConfiguration;
     }
 
     public void windowClosing(java.awt.event.WindowEvent windowEvent) {}
@@ -53,7 +53,7 @@ final public class NetworkDhcpRenewDialog extends MOneButtonProgressJDialog {
         }
         public void run(){
             try{
-                NetworkDhcpRenewDialog.this.networkSettings = Util.getNetworkManager().renewDhcpLease();
+                NetworkDhcpRenewDialog.this.networkingConfiguration = Util.getNetworkingManager().renewDhcpLease();
                 Thread.currentThread().sleep(2000l);
                 SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
                     NetworkDhcpRenewDialog.this.jProgressBar.setIndeterminate(false);

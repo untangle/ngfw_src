@@ -12,26 +12,14 @@
 package com.metavize.tran.nat;
 
 import java.net.InetAddress;
-import java.net.Inet4Address;
-
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Collections;
 
 import com.metavize.mvvm.ArgonManager;
-import com.metavize.mvvm.NetworkManager;
 import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.NetworkingConfiguration;
-
-import com.metavize.mvvm.networking.NetworkSpace;
-import com.metavize.mvvm.networking.NetworkException;
-import com.metavize.mvvm.networking.IPNetwork;
-import com.metavize.mvvm.networking.IPNetworkRule;
-import com.metavize.mvvm.networking.Interface;
-
-
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.tapi.AbstractEventHandler;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
@@ -47,17 +35,12 @@ import com.metavize.mvvm.tapi.event.UDPSessionEvent;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.mvvm.tran.TransformException;
-import com.metavize.mvvm.tran.ParseException;
-
-import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
-import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
-import com.metavize.mvvm.tran.firewall.intf.IntfMatcher;
-import com.metavize.mvvm.tran.firewall.intf.IntfMatcherFactory;
-import com.metavize.mvvm.tran.firewall.port.PortMatcher;
-import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
+import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.firewall.InterfaceAddressRedirect;
 import com.metavize.mvvm.tran.firewall.InterfaceRedirect;
 import com.metavize.mvvm.tran.firewall.InterfaceStaticRedirect;
+import com.metavize.mvvm.tran.firewall.IntfMatcher;
+import com.metavize.mvvm.tran.firewall.PortMatcher;
 import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
 import org.apache.log4j.Logger;
 
@@ -72,18 +55,9 @@ class NatEventHandler extends AbstractEventHandler
     private static final int SLEEP_TIME = 1000;
 
     /* match to determine whether a session is natted */
-    private List<NatMatcher> natMatchers     = Collections.emptyList();
-
-    /* !!! This is going to have to scale for more stuff */
-    private boolean isNatEnabled = false;
-
-    /* match to determine whether a session should pass to be passed to the DMZ
-     * on a NATd interface */
-    private List<DmzMatcher> dmzHostMatchers = Collections.emptyList();
-
-    // private RedirectMatcher nat = RedirectMatcher.MATCHER_DISABLED;
-    // private RedirectMatcher vpn = RedirectMatcher.MATCHER_DISABLED;
-    // private IPMatcher natLocalNetwork;
+    private RedirectMatcher nat = RedirectMatcher.MATCHER_DISABLED;
+    private RedirectMatcher vpn = RedirectMatcher.MATCHER_DISABLED;
+    private IPMatcher natLocalNetwork;
 
     /* match to determine  whether a session is directed for the dmz */
     private RedirectMatcher dmzHost = RedirectMatcher.MATCHER_DISABLED;
@@ -103,6 +77,10 @@ class NatEventHandler extends AbstractEventHandler
 
     /* Tracks the open ICMP identifiers, Not exactly a port, but same kind of thing */
     private final PortList icmpPidList;
+
+    /* The internal address */
+    private IPaddr internalAddress;
+    private IPaddr internalSubnet;
 
     /* Nat Transform */
     private final NatImpl transform;
@@ -147,9 +125,9 @@ class NatEventHandler extends AbstractEventHandler
         try {
             if (logger.isInfoEnabled())
                 logger.info( "Testing <" + request + ">" );
-            if ( handleNat( request, protocol )      ||
-                 handleRedirect( request, protocol ) ||
-                 handleDmzHost( request,  protocol )) {
+            if ( isNat( request, protocol )      ||
+                 isRedirect( request, protocol ) ||
+                 isDmzHost( request,  protocol )) {
 
 
                 if (logger.isInfoEnabled())
@@ -184,8 +162,7 @@ class NatEventHandler extends AbstractEventHandler
 
             /* If nat is on, and this session wasn't natted, redirected or dmzed, it
              * must be rejected */
-            if ( isNatEnabled ) {
-                /* !!!!  This must get more interesting */
+            if ( nat.isEnabled()) {
                 /* Increment the block counter */
                 transform.incrementCount( BLOCK_COUNTER ); // BLOCK COUNTER
 
@@ -278,39 +255,73 @@ class NatEventHandler extends AbstractEventHandler
         }
     }
 
-    void configure( NetworkSpacesSettingsPriv settings ) throws TransformException
+    void configure( NatSettings settings, NetworkingConfiguration netConfig ) throws TransformException
     {
-        /* !!!! This is going to have to be updated */
-        // IPMatcher localHostMatcher = IPMatcherFactory.getInstance().getLocalMatcher();
-        
+        IPMatcher localHostMatcher = IPMatcher.MATCHER_LOCAL;
+
         ArgonManager argonManager = MvvmContextFactory.context().argonManager();
-        NetworkManager networkManager = MvvmContextFactory.context().networkManager();
 
-        /* Create a new override */
         List<InterfaceRedirect> overrideList = new LinkedList<InterfaceRedirect>();
-        
-        /* Create a list of the NAT Matchers */
-        List<NatMatcher> natMatchers = new LinkedList<NatMatcher>();
 
-        /* Create a list of the DMZ host matchers */
-        List<DmzMatcher> dmzHostMatchers = new LinkedList<DmzMatcher>();
+        if ( settings.getNatEnabled()) {
+            internalAddress = settings.getNatInternalAddress();
+            internalSubnet  = settings.getNatInternalSubnet();
 
-        /* First deal with all of the NATd spaces */
-        for ( NetworkSpace space : settings.getNatdNetworkSpaceList()) {
-            /* Create a NAT matcher for each space */
-            for ( IPNetworkRule networkRule : (List<IPNetworkRule>)space.getNetworkList()) {
-                natMatchers.add( NatMatcher.makeNatMatcher( networkRule.getIPNetwork(), space ));
-                isNatEnabled = true;
+            /* Create the nat redirect */
+            natLocalNetwork = new IPMatcher( internalAddress, internalSubnet, false );
+
+            /* Nat anything in the VPN or the inside */
+            IntfMatcher clientIntfMatcher = IntfMatcher.getByteMatcher( IntfConstants.INTERNAL_INTF );
+
+            /* This really should be anything but VPN and internal, but this setup will have to
+             * do until there are more effective interface matchers */
+            IntfMatcher serverIntfMatcher = IntfMatcher.getByteMatcher( IntfConstants.EXTERNAL_INTF,
+                                                                        IntfConstants.DMZ_INTF );
+
+            /* This should NEVER happen */
+            if ( clientIntfMatcher == null || serverIntfMatcher == null ) {
+                throw new TransformException( "Unable to create client or server interface matcher" );
             }
 
-            if ( space.getIsDmzHostEnabled()) {
-                dmzHostMatchers.add( DmzMatcher.makeDmzMatcher( space ));
+            /* XXX Update to use local host ??? */
+            nat = new RedirectMatcher( true, ProtocolMatcher.MATCHER_ALL,
+                                       clientIntfMatcher, serverIntfMatcher,
+                                       natLocalNetwork, IPMatcher.MATCHER_ALL,
+                                       PortMatcher.MATCHER_ALL, PortMatcher.MATCHER_ALL,
+                                       false, null, -1 );
+
+            /* Nat all VPN traffic from the vpn interface out */
+            clientIntfMatcher = IntfMatcher.getByteMatcher( IntfConstants.VPN_INTF );
+
+            if ( clientIntfMatcher == null ) {
+                throw new TransformException( "Unable to create client or server interface matcher" );
             }
+
+            vpn = new RedirectMatcher( true, ProtocolMatcher.MATCHER_ALL,
+                                       clientIntfMatcher, serverIntfMatcher,
+                                       IPMatcher.MATCHER_ALL, IPMatcher.MATCHER_ALL,
+                                       PortMatcher.MATCHER_ALL, PortMatcher.MATCHER_ALL,
+                                       false, null, -1 );
+
+            enableNat( netConfig );
+        } else {
+            nat = RedirectMatcher.MATCHER_DISABLED;
+            vpn = RedirectMatcher.MATCHER_DISABLED;
+            disableNat( netConfig );
         }
-        
-        /* Save all of the objects at once */
-        this.natMatchers     = natMatchers;
-        this.dmzHostMatchers = dmzHostMatchers;
+
+        /* Configure the DMZ */
+        if ( settings.getDmzEnabled()) {
+            dmzHost = new RedirectMatcher( true, ProtocolMatcher.MATCHER_ALL,
+                                       IntfMatcher.getAll(), IntfMatcher.getInside(),
+                                       IPMatcher.MATCHER_ALL, localHostMatcher,
+                                       PortMatcher.MATCHER_ALL, PortMatcher.MATCHER_ALL,
+                                       true, settings.getDmzAddress().getAddr(), -1 );
+            isDmzLoggingEnabled = settings.getDmzLoggingEnabled();
+        } else {
+            dmzHost = RedirectMatcher.MATCHER_DISABLED;
+            isDmzLoggingEnabled = false;
+        }
 
         /* Empty out the list */
         redirectList.clear();
@@ -320,7 +331,7 @@ class NatEventHandler extends AbstractEventHandler
         if ( list == null ) {
             logger.error( "Settings contain null redirect list" );
         } else {
-            int index = 1;
+            int index =1;
             /* Update all of the rules */
             for ( RedirectRule rule : list ) {
                 if ( rule.isLive()) {
@@ -337,89 +348,83 @@ class NatEventHandler extends AbstractEventHandler
         }
 
         /* This override has to go after the rules */
-//         if ( settings.getDmzEnabled() || settings.getNatEnabled()) {
-//             /* Create a new redirect to redirect all traffic destined
-//              * to the outside interface to the inside.  This handles sessions
-//              * both sessions that are managed for FTP and sessions that are for
-//              * the DMZ. */
-//             InterfaceRedirect redirect =
-//                 new InterfaceStaticRedirect( ProtocolMatcher.MATCHER_ALL,
-//                                              IntfMatcher.getNotInside(), IntfMatcher.getAll(),
-//                                              IPMatcher.MATCHER_ALL, localHostMatcher,
-//                                              PortMatcher.MATCHER_ALL, PortMatcher.MATCHER_ALL,
-//                                              IntfConstants.INTERNAL_INTF );
+        if ( settings.getDmzEnabled() || settings.getNatEnabled()) {
+            /* Create a new redirect to redirect all traffic destined
+             * to the outside interface to the inside.  This handles sessions
+             * both sessions that are managed for FTP and sessions that are for
+             * the DMZ. */
+            InterfaceRedirect redirect =
+                new InterfaceStaticRedirect( ProtocolMatcher.MATCHER_ALL,
+                                             IntfMatcher.getNotInside(), IntfMatcher.getAll(),
+                                             IPMatcher.MATCHER_ALL, localHostMatcher,
+                                             PortMatcher.MATCHER_ALL, PortMatcher.MATCHER_ALL,
+                                             IntfConstants.INTERNAL_INTF );
 
-//             overrideList.add( redirect );
-//         }
+            overrideList.add( redirect );
+        }
+
 
         argonManager.setInterfaceOverrideList( overrideList );
-        networkManager.subscribeLocalOutside( true );
-        try {
-            networkManager.updateAddress();
-        } catch ( NetworkException e ) {
-            throw new TransformException( "Unable to update address:", e );
-        }
     }
 
-    /* Not sure which this should ever throw an exception */
     void deconfigure() throws TransformException
     {
-        NetworkManager networkManager = MvvmContextFactory.context().networkManager();
-        networkManager.subscribeLocalOutside( false );
+        /* Bring down NAT */
+        disableNat( MvvmContextFactory.context().networkingManager().get());
 
-        try {
-            networkManager.updateAddress();
-        } catch ( NetworkException e ) {
-            throw new TransformException( "Unable to update address:", e );
-        }
+        /* Remove all of the interface override redirects */
+        MvvmContextFactory.context().argonManager().clearInterfaceOverrideList();
+    }
+
+
+    RedirectMatcher getNat()
+    {
+        return nat;
+    }
+
+
+    RedirectMatcher getDmzHost()
+    {
+        return dmzHost;
+    }
+
+    List <RedirectMatcher> getRedirectList()
+    {
+        return redirectList;
     }
 
     /**
      * Determine if a session is natted, and if necessary, rewrite its session information.
      */
-    private boolean handleNat( IPNewSessionRequest request, Protocol protocol )
+    private boolean isNat( IPNewSessionRequest request, Protocol protocol )
         throws MPipeException, NatUnconfiguredException
     {
         int port;
-        
-        boolean isNat = false;
-        NatMatcher natMatcher = null;
-        
-        for ( NatMatcher matcher : natMatchers ) {
-            logger.debug( "testing nat matcher" );            
 
-            if ( matcher.isMatch( request, protocol )) {
-                natMatcher = matcher;
-                break;
+        if ( nat.isMatch( request, protocol ) || vpn.isMatch( request, protocol )) {
+            /* Check to see if this is destined to the NATd network, if it is drop it */
+            if ( natLocalNetwork.isMatch( request.serverAddr())) {
+                request.rejectSilently();
+                request.attach( null );
+                return true;
             }
-        }
 
-        /* !!!!!!!!!!!!!!!!!! have to check for VPN */
-        if (( natMatcher != null )) {
-            /* !!!!!! Checking if destined to local network doesn't really work anymore because   *
-             * it may be bridged, hopefully the interface check in the argon hook should fix this */
             /* Check to see if this is redirect, check before changing the source address */
-            handleRedirect( request, protocol );
+            isRedirect( request, protocol );
 
             /* Change the source in the request */
             /* All redirecting occurs here */
-
-            /* !!!!!!! Need to be able to grab the new address, and have that update with DHCP */
-            InetAddress localAddr = natMatcher.getNatAddress();
-
+            InetAddress localAddr = IPMatcher.getOutsideAddress();
             // Unfortunately, as of 5/02/05, this can sometimes be null, probably due to
             // initialization order, the sleeping involved, etc.  For now, just make sure
             // not to ever change the client addr to null, which causes awful things to happen.  jdi XXX
             if (localAddr == null) throw NatUnconfiguredException.getInstance();
 
-            /* Update the client address */
-            request.clientAddr( localAddr );
+            request.clientAddr(localAddr);
 
             /* Set the client port */
             /* XXX THIS IS A HACK, it really should check if the protocol is ICMP, but
              * for now there are only UDP sessions */
-            /* !!!!! This actually gets worse memory wise, because now there should be 
-             * a port list per space */
             if ( request.clientPort() == 0 && request.serverPort() == 0 ) {
                 port = icmpPidList.getNextPort();
                 ((UDPNewSessionRequest)request).icmpId( port );
@@ -452,7 +457,7 @@ class NatEventHandler extends AbstractEventHandler
     /**
      * Determine if a session is redirected, and if necessary, rewrite its session information.
      */
-    private boolean handleRedirect( IPNewSessionRequest request, Protocol protocol ) throws MPipeException
+    private boolean isRedirect( IPNewSessionRequest request, Protocol protocol ) throws MPipeException
     {
         /* Check if this is a session redirect (A redirect related to a session) */
         if ( transform.getSessionManager().isSessionRedirect( request, protocol )) {
@@ -476,13 +481,7 @@ class NatEventHandler extends AbstractEventHandler
                 if ( matcher.rule() == null ) {
                     logger.warn( "Null rule for a redirect matcher" );
                 } else if ( matcher.rule().getLog()) {
-                    NatAttachment attachment = (NatAttachment)request.attachment();
-                    if ( attachment == null ) {
-                        logger.error( "null attachment to a NAT session" );
-                    } else {
-                        attachment.eventToLog(new RedirectEvent( request.pipelineEndpoints(), 
-                                                                 matcher.rule(), matcher.ruleIndex()));
-                    }
+                    ((NatAttachment)request.attachment()).eventToLog(new RedirectEvent(request.pipelineEndpoints(), matcher.rule(), matcher.ruleIndex()));
                 }
 
                 /* Log the stat */
@@ -497,9 +496,8 @@ class NatEventHandler extends AbstractEventHandler
     /**
      * Determine if a session is for the DMZ, and if necessary, rewrite its session information.
      */
-    private boolean handleDmzHost( IPNewSessionRequest request, Protocol protocol )
+    private boolean isDmzHost( IPNewSessionRequest request, Protocol protocol )
     {
-        
         if ( dmzHost.isMatch( request, protocol )) {
             dmzHost.redirect( request );
 
@@ -507,12 +505,8 @@ class NatEventHandler extends AbstractEventHandler
             transform.incrementCount( DMZ_COUNTER ); // DMZ COUNTER
 
             if ( isDmzLoggingEnabled ) {
-                NatAttachment attachment = (NatAttachment)request.attachment();
-                if ( attachment == null ) {
-                    logger.error( "null attachment to a NAT session" );
-                } else {
-                    attachment.eventToLog(new RedirectEvent( request.pipelineEndpoints()));
-                }
+                /* Log the event if necessary */
+                ((NatAttachment)request.attachment()).eventToLog(new RedirectEvent(request.pipelineEndpoints()));
             }
 
             transform.statisticManager.incrDmzSessions();
@@ -617,6 +611,20 @@ class NatEventHandler extends AbstractEventHandler
         throw new IllegalArgumentException( "Unknown protocol: " + protocol );
     }
 
+    private void enableNat( NetworkingConfiguration netConfig ) throws TransformException
+    {
+        try {
+            ArgonManager argonManager = MvvmContextFactory.context().argonManager();
+            /* Local antisubscribe is only used in non-production environments,
+             * in production environments it is never antisubscribed */
+            argonManager.disableLocalAntisubscribe();
+            argonManager.destroyBridge( netConfig, internalAddress.getAddr(), internalSubnet.getAddr());
+        } catch ( Exception e ) {
+            logger.error( "error while reconfiguring interface" );
+            throw new TransformException( "unable to reconfiguring interface", e );
+        }
+    }
+
     private boolean isFtp( IPNewSessionRequest request, Protocol protocol )
     {
         if (( protocol == Protocol.TCP ) && ( request.serverPort() == FTP_SERVER_PORT )) {
@@ -625,162 +633,20 @@ class NatEventHandler extends AbstractEventHandler
 
         return false;
     }
-}
 
-class NatMatcher
-{
-    private final RedirectMatcher matcher;
-    private final NetworkSpace space;
-    private InetAddress natAddress;
-
-    NatMatcher( RedirectMatcher matcher, NetworkSpace space, InetAddress natAddress )
+    private void disableNat( NetworkingConfiguration netConfig ) throws TransformException
     {
-        this.matcher    = matcher;
-        this.space      = space;
-        this.natAddress = natAddress;
-    }
-
-    RedirectMatcher getMatcher()
-    {
-        return this.matcher;
-    }
-
-    NetworkSpace getSpace()
-    {
-        return this.space;
-    }
-
-    InetAddress getNatAddress()
-    {
-        /* !!!!! This has to be updated, eg for DHCP on the NATd address */
-        return this.natAddress;
-    }
-
-    void setNatAddress( InetAddress newValue )
-    {
-        this.natAddress = newValue;
-    }
-
-    boolean isMatch( IPNewSessionRequest request, Protocol protocol )
-    {
-
-        boolean isMatch = this.matcher.isMatch( request, protocol );
-
-        // System.out.println( "" + this.matcher.isEnabled() + "," + this.matcher.isMatchProtocol( protocol ));
-        // System.out.println( "address" + this.matcher.isMatchAddress( request.clientAddr(), request.serverAddr()));
-        // System.out.println( "port" + this.matcher.isMatchPort( request.clientPort(), request.serverPort()));
-        System.out.println( "intf" + this.matcher.isMatchIntf( request.clientIntf(), request.serverIntf()));
-                    
-        return isMatch;
-        
-    }
-    
-    /* Create a matcher for handling traffic to be NATd */
-    static NatMatcher makeNatMatcher( IPNetwork network, NetworkSpace space ) throws TransformException
-    {
-        IntfMatcherFactory intfMatcherFactory = IntfMatcherFactory.getInstance();
-        IPMatcherFactory imf = IPMatcherFactory.getInstance();
-        PortMatcherFactory pmf = PortMatcherFactory.getInstance();
-
-        IPMatcher clientIPMatcher = imf.makeSubnetMatcher( network.getNetwork(), network.getNetmask());
-        
-        List<Interface> interfaceList = space.getInterfaceList();
-        byte intfArray[] = new byte[interfaceList.size()];
-        int c = 0;
-        for ( Interface intf : interfaceList ) intfArray[c++] = intf.getArgonIntf();
-
-        
-        /* XXX !!! RBS, i think the server interface should not be all */
-        IntfMatcher clientIntfMatcher, serverIntfMatcher;
+        /* Wait for this to finish */
         try {
-            clientIntfMatcher = intfMatcherFactory.makeSetMatcher( intfArray );
-            
-            /* All interfaces but VPN */
-            serverIntfMatcher = intfMatcherFactory.makeInverseMatcher( IntfConstants.VPN_INTF );
-            serverIntfMatcher = intfMatcherFactory.getAllMatcher();
-        } catch ( ParseException e ) {
-            throw new TransformException( "Unable to create the client or server interface matcher " +
-                                          "for a NAT matcher", e );
+            ArgonManager argonManager = MvvmContextFactory.context().argonManager();
+            /* Local antisubscribe is only used in non-production environments,
+             * in production environments it is never antisubscribed */
+            argonManager.enableLocalAntisubscribe();
+            argonManager.restoreBridge( netConfig );
+        } catch ( Exception e ) {
+            logger.error( "Interrupting while reconfiguring interface" );
+            throw new TransformException( "Interrupting while reconfiguring interface", e );
         }
-
-        System.out.println( "client: " + clientIPMatcher + " server: " + serverIntfMatcher );
-        RedirectMatcher matcher = new RedirectMatcher( true, ProtocolMatcher.MATCHER_ALL,
-                                                       clientIntfMatcher, serverIntfMatcher,
-                                                       clientIPMatcher, imf.getAllMatcher(),
-                                                       pmf.getAllMatcher(), pmf.getAllMatcher(),
-                                                       false, null, -1 );
-
-        return new NatMatcher( matcher, space, space.getRealNatAddress().getAddr());
     }
 }
 
-class DmzMatcher
-{
-    private final RedirectMatcher matcher;
-    private final NetworkSpace space;
-
-    DmzMatcher( RedirectMatcher matcher, NetworkSpace space )
-    {
-        this.matcher = matcher;
-        this.space   = space;
-    }
-
-    RedirectMatcher getMatcher()
-    {
-        return this.matcher;
-    }
-
-    NetworkSpace getSpace()
-    {
-        return this.space;
-    }
-    
-    boolean isMatch( IPNewSessionRequest request, Protocol protocol )
-    {
-        return matcher.isMatch( request, protocol );
-    }
-
-    void redirect( IPNewSessionRequest request )
-    {
-        matcher.redirect( request );
-    }
-
-    /* Create a matcher for handling DMZ traffic */
-    static DmzMatcher makeDmzMatcher( NetworkSpace space ) throws TransformException
-    {
-        IntfMatcherFactory intfMatcherFactory = IntfMatcherFactory.getInstance();
-        IPMatcherFactory imf = IPMatcherFactory.getInstance();
-        PortMatcherFactory pmf = PortMatcherFactory.getInstance();
-
-        IPMatcher serverIPMatcher = imf.makeSingleMatcher( space.getNatAddress());
-
-        List<Interface> interfaceList = space.getInterfaceList();
-        byte intfArray[] = new byte[interfaceList.size()];
-        int c = 0;
-        for ( Interface intf : interfaceList ) intfArray[c] = intf.getArgonIntf();
-
-        IntfMatcher clientIntfMatcher, serverIntfMatcher;
-
-        try {
-            clientIntfMatcher = intfMatcherFactory.makeInverseMatcher( intfArray );
-            serverIntfMatcher = intfMatcherFactory.makeSetMatcher( intfArray );
-        } catch ( ParseException e ) {
-            throw new TransformException( "Unable to create the interface matchers", e );
-        }
-
-        InetAddress dmzHost = null;
-
-        /* XXX !!!! if this is null, this shouldn't create a DMZ matcher */
-        if (( space.getDmzHost() != null ) && !space.getDmzHost().isEmpty()) {
-            dmzHost = space.getDmzHost().getAddr();
-        }
-        
-        RedirectMatcher matcher = new RedirectMatcher( true, ProtocolMatcher.MATCHER_ALL,
-                                                       clientIntfMatcher, serverIntfMatcher,
-                                                       imf.getAllMatcher(), serverIPMatcher,
-                                                       pmf.getAllMatcher(), pmf.getAllMatcher(),
-                                                       false, dmzHost, -1 );
-        
-        return new DmzMatcher( matcher, space );
-    }
-}

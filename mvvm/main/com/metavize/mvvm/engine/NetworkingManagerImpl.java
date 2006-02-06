@@ -46,7 +46,7 @@ import com.metavize.mvvm.argon.ArgonManagerImpl;
 import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.InterfaceAlias;
 import com.metavize.mvvm.tran.IPaddr;
-import com.metavize.mvvm.tran.firewall.intf.IntfMatcher;
+import com.metavize.mvvm.tran.firewall.IntfMatcher;
 import com.metavize.mvvm.tran.ValidateException;
 
 class NetworkingManagerImpl implements NetworkingManager
@@ -124,11 +124,11 @@ class NetworkingManagerImpl implements NetworkingManager
 
         save();
 
-        //try {
-        // MvvmContextFactory.context().argonManager().loadNetworkingConfiguration( netConfig );
-        //} catch ( Exception ex ) {
-        // logger.error( "Unable to load networking configuration", ex );
-        //}
+        try {
+            MvvmContextFactory.context().argonManager().loadNetworkingConfiguration( netConfig );
+        } catch ( Exception ex ) {
+            logger.error( "Unable to load networking configuration", ex );
+        }
     }
 
     private NetworkingManagerImpl()
@@ -141,11 +141,54 @@ class NetworkingManagerImpl implements NetworkingManager
         this.configuration = new NetworkingConfiguration();
 
         /* Retrieve the DHCP configuration */
+        getInterface();
         buildIntfEnum();
         getNameservers();
         getFlags();
         getHttpsPort();
         getSsh();
+    }
+
+    private void getInterface()
+    {
+        getDhcp();
+
+        ArgonManager argon = ArgonManagerImpl.getInstance();
+
+        configuration.host( new IPaddr((Inet4Address)argon.getOutsideAddress()));
+        configuration.netmask( new IPaddr((Inet4Address)argon.getOutsideNetmask()));
+        configuration.gateway( new IPaddr((Inet4Address)Netcap.getGateway()));
+
+        List<InterfaceAlias> list = new LinkedList<InterfaceAlias>();
+        /* XXX Should be exposed in the manager, but the the InterfaceData from jnetcap has
+         * to be exposed */
+        for ( InterfaceData data : ((ArgonManagerImpl)argon).getOutsideAliasList()) {
+            list.add( new InterfaceAlias( data.getAddress(), data.getNetmask(), data.getBroadcast()));
+        }
+        configuration.setAliasList( list );
+    }
+
+    private void getDhcp()
+    {
+        BufferedReader in = null;
+
+        /* Open up the interfaces file */
+        try {
+            in = new BufferedReader( new FileReader( IP_CFG_FILE ));
+            String str;
+            while ((str = in.readLine()) != null) {
+                str = str.trim();
+                if ( str.startsWith( "iface br0" )) {
+                    if ( str.contains( "dhcp" )) {
+                        configuration.isDhcpEnabled( true );
+                    }
+                }
+            }
+        } catch ( Exception ex ) {
+            logger.error( "Error reading file: ", ex );
+        }
+
+        close( in );
     }
 
     private void getNameservers()
@@ -491,6 +534,23 @@ class NetworkingManagerImpl implements NetworkingManager
         close( out );
     }
 
+    /* Get the external HTTPS port */
+    public int getExternalHttpsPort()
+    {
+        /* Only refresh if the configuration is null, otherwise */
+        if ( this.configuration == null ) refresh();
+
+        /* Just in case */
+        if ( this.configuration == null ) {
+            logger.warn( "NULL Settings after a refresh, using defaults", new Exception());
+            return 443;
+        }
+
+        /* This doesn't query the file, it just grabs the port */
+        return this.configuration.httpsPort();
+    }
+
+
     static NetworkingManagerImpl getInstance()
     {
         return INSTANCE;
@@ -516,9 +576,7 @@ class NetworkingManagerImpl implements NetworkingManager
         }
     }
 
-    /* XXXXXXXXXXXX Should go away XXXXXXXXXXXX */
-    public NetworkingConfiguration renewDhcpLease() throws Exception
-    {
+    public NetworkingConfiguration renewDhcpLease() throws Exception {
         /* Renew the address */
         Process p = Runtime.getRuntime().exec( "sh " + DHCP_RENEW_SCRIPT );
 
@@ -527,12 +585,11 @@ class NetworkingManagerImpl implements NetworkingManager
         }
 
         /* Update the address and generate new rules */
-        MvvmContextFactory.context().networkManager().updateAddress();
+        MvvmContextFactory.context().argonManager().updateAddress();
 
         /* Return a new copy of the Networking configuration */
         return get();
     }
-
 
     public IntfEnum getIntfEnum()
     {
@@ -572,8 +629,6 @@ class NetworkingManagerImpl implements NetworkingManager
 
         intfEnum = new IntfEnum( argonIntfArray, intfNameArray );
         
-        // XXXXXXXXX
-        // IntfMatcher.updateEnumeration( intfEnum );
-        // XXXXXXXXX
+        IntfMatcher.updateEnumeration( intfEnum );
     }
 }

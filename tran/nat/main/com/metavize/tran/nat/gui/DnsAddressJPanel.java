@@ -76,7 +76,7 @@ class DnsAddressTableModel extends MSortedTableModel{
     }
     
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
-        NatSettingsWrapper natSettings = (NatSettingsWrapper) settings;        
+        NatSettings natSettings = (NatSettings) settings;        
         List elemList = new ArrayList(tableVector.size());
 	DnsStaticHostRule newElem = null;
         int rowIndex = 0;
@@ -101,7 +101,7 @@ class DnsAddressTableModel extends MSortedTableModel{
     
     
     public Vector<Vector> generateRows(Object settings) {    
-        NatSettingsWrapper natSettings = (NatSettingsWrapper) settings;
+        NatSettings natSettings = (NatSettings) settings;
 	List<DnsStaticHostRule> dnsStaticHostList = (List<DnsStaticHostRule>) natSettings.getDnsStaticHostList();
         Vector<Vector> allRows = new Vector<Vector>(dnsStaticHostList.size());
 	Vector tempRow = null;

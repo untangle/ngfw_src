@@ -16,16 +16,13 @@ import com.metavize.mvvm.tapi.IPNewSessionRequest;
 import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tran.StatisticManager;
 import com.metavize.mvvm.tran.TransformContext;
-import com.metavize.mvvm.tran.firewall.intf.IntfMatcher;
-import com.metavize.mvvm.tran.firewall.intf.IntfMatcherFactory;
-
+import com.metavize.mvvm.tran.firewall.IntfMatcher;
 
 class NatStatisticManager extends StatisticManager
 {
     /* Interface matcher to determine if the sessions is incoming or outgoing */
-    /* !!!! These are totally bunk */
-    final IntfMatcher matcherIncoming = IntfMatcherFactory.getInstance().getInternalMatcher();
-    final IntfMatcher matcherOutgoing = IntfMatcherFactory.getInstance().getExternalMatcher();
+    final IntfMatcher matcherIncoming = IntfMatcher.getInside();
+    final IntfMatcher matcherOutgoing = IntfMatcher.getOutside();
 
     private NatStatisticEvent statisticEvent = new NatStatisticEvent();
 

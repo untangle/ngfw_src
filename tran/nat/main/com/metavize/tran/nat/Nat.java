@@ -17,8 +17,8 @@ import com.metavize.mvvm.tran.Transform;
 
 public interface Nat extends Transform
 {
-    public NatSettingsWrapper getNatSettings();
-    public void setNatSettings( NatSettingsWrapper settings ) throws Exception;
+    NatSettings getNatSettings();
+    void setNatSettings( NatSettings settings ) throws Exception;
 
     public EventManager<LogEvent> getEventManager();
 }

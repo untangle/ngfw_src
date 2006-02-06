@@ -1,0 +1,291 @@
+#!/bin/sh
+
+exec >> @MVVM_LOG@/iptables.log 2>&1
+
+FUNCTIONS_FILE=@MVVM_HOME@/networking/functions
+MVVM_TMP_PARAMS_FILE=/@MVVM_CONF@/bridge-settings
+## These are for network configuration settings.
+MVVM_NETWORK_PARAMS_FILE=@MVVM_CONF@/networking.sh
+
+if [ -r ${FUNCTIONS_FILE} ]; then
+    . ${FUNCTIONS_FILE}
+else
+    echo "Unable to load the functions file ${FUNCTIONS_FILE}"
+    exit -1
+fi
+
+if [ -r ${MVVM_TMP_PARAMS_FILE} ]; then
+    . ${MVVM_TMP_PARAMS_FILE}
+else
+    echo "Unable to load the functions file ${MVVM_TMP_PARAMS_FILE}"
+    exit -2
+fi
+
+if [ -f ${MVVM_NETWORK_PARAMS_FILE} ]; then
+    . ${MVVM_NETWORK_PARAMS_FILE}
+else
+    echo "File ${MVVM_NETWORK_PARAMS_FILE} not found."
+fi
+
+## Non-zero string if the interface is participating in a bridge
+function isInterfaceInBridge() {
+    local l_port=$1
+    local l_test=`find ${SYSFS_INTERFACE_PATH} -path '*/brif/'${l_port}`
+    echo ${l_test} >> /dev/stderr
+    
+    if [ -n "${l_test}" ]; then echo "true" ; fi
+}
+
+## True false functions return empty string on false, (easy to test using -z)
+function doesBridgeExist() {
+    local l_bridge=$1
+    if [ -d "${SYSFS_INTERFACE_PATH}/${l_bridge}" ]; then
+        echo "true"
+    fi
+}
+
+function doesBridgeContainInterface() {
+    local l_bridge=$1
+    local l_port=$2
+    
+    ## This could be either a (exists) or h(symbolic link)
+    if [ -h "${SYSFS_INTERFACE_PATH}/${l_bridge}/brif/${l_port}" ]; then
+        echo "true"
+    fi
+}
+
+function bridgeNumInterfaces() {
+    local l_bridge=$1
+    
+    echo `find ${SYSFS_INTERFACE_PATH}/${l_bridge}/brif/ -mindepth 1 2> /dev/null | wc -l`
+}
+
+function interfaceGetPorts() {
+    eval echo \$${1}_ports
+}
+
+function interfaceGetPort() {
+    eval echo \$${1}_port
+}
+
+
+function interfaceGetName() {
+    eval echo \$${1}_name
+}
+
+function interfaceGetDhcpFlag() {
+    eval echo \$${1}_dhcp
+}
+
+function interfaceGetAddress() {
+    eval echo \$${1}_address
+}
+
+function interfaceGetNetmask() {
+    eval echo \$${1}_netmask    
+}
+
+function interfaceGetType() {
+    eval echo \$${1}_type
+}
+
+function isInterfaceBridge() {
+    local l_interface=$1
+    local l_type=`interfaceGetType ${l_interface}`
+
+    if [ "${l_type}x" == "bridgex" ]; then
+        echo "true"
+    fi
+}
+
+function isInterfaceCurrent() {
+    local l_interface=$1
+    local l_isBridge=`isInterfaceBridge ${l_interface}`
+    local l_name
+    local l_ports
+    local l_port
+    
+    if [ -n "${l_isBridge}" ]; then
+        ## Check if this bridge has the corresponding interfaces
+        l_name=`interfaceGetName ${l_interface}`
+        l_ports=`interfaceGetPorts ${l_interface}`
+
+        if [ -z "`doesBridgeExist ${l_name}`" ]; then return ; fi
+        
+        ###DBG echo "Bridge ${l_name} exists" >> /dev/stderr
+        
+        for l_port in ${l_ports}; do 
+            if [ -z "`bridgeContainsInterface ${l_name} ${l_port}`" ]; then return ; fi
+            ###DBG echo "Bridge ${l_name} contains ${l_port}" >> /dev/stderr
+        done
+        
+        ## Check if the bridge has the correct number of ports.  (The configuration may have just
+        ## removed an interface
+        if [ "`bridgeNumInterfaces ${l_name}`x" != "`echo ${l_ports} | wc -w`x" ]; then
+            ### DBG echo "The bridge ${l_name} doesn't have the correct number of ports" >> /dev/stderr
+            return
+        fi
+    else
+        l_port=`interfaceGetPort ${l_interface}`
+        
+        if [ -n "`isInterfaceInBridge ${l_port}`" ]; then return; fi
+        
+        echo "The interface ${l_port} is not in a bridge" >> /dev/stderr
+    fi
+
+    echo "true"
+}
+
+function areInterfacesCurrent() {
+    local l_interfaceList=$1
+    local l_interface
+
+    ## Check if all of the bridges are the same
+    for l_interface in ${l_interfaceList} ; do
+        if [ -z "`isInterfaceCurrent $l_interface`" ]; then return; fi
+    done
+    
+    echo "true"
+}
+
+function createBridge() {
+    local l_interface=$1
+    local l_name=`interfaceGetName ${l_interface}`
+    local l_ports=`interfaceGetPorts ${l_interface}`
+    local l_port
+    
+    if [ -z "${l_ports}" ] || [ -z "${l_name}" ]; then
+        echo "ERR: The bridge ${l_interface} either doesn't have ports '${l_ports}' or names '${l_name}'"
+        return
+    fi
+
+    echo "Creating the bridge: ${l_name} (May already exist, creating anyway)"
+    brctl addbr ${l_name}
+    
+    for l_port in ${l_ports}; do
+        echo "Adding interface ${l_port} to bridge ${l_name}"
+        ifconfig ${l_port} 0.0.0.0 promisc up        
+        brctl addif ${l_name} ${l_port}
+    done
+}
+
+function createAllBridges() {
+    local l_interfaceList=$1
+    local l_interface
+    
+    for l_interface in ${l_interfaceList}; do
+        if [ -n "`isInterfaceBridge ${l_interface}`" ]; then
+            createBridge ${l_interface}
+        fi
+    done
+}
+
+function configureInterface() {
+    local l_interface=$1
+    local l_name
+    local l_address=`interfaceGetAddress ${l_interface}`
+    local l_netmask=`interfaceGetNetmask ${l_interface}`
+    local l_dhcp=`interfaceGetDhcpFlag ${l_interface}`
+    local l_port
+    local l_ports
+
+
+    ### XXX Must handle aliases, 
+        
+    ## Bridges should not be deleted because the device index for the bridge 'br0' 
+    ## increments by one each time the bridge is deleted and then recreated.
+
+    if [ "${l_dhcp}x" != "truex" ] && ( [ -z "${l_address}" ] || [ -z "${l_netmask}" ] ); then
+        echo "ERR: The interface: '${l_interface}' is either missing and the dhcp flag is not set"
+        echo "ERR:   an address '${l_address}' or a netmask '${l_netmask}' '${l_dhcp}'"
+        return
+    fi
+        
+    if [ -n "`isInterfaceBridge ${l_interface}`" ]; then
+        l_name=`interfaceGetName ${l_interface}`
+        l_ports=`interfaceGetPorts ${l_interface}`
+        for l_port in ${l_ports}; do
+            echo "Bringing interface ${l_port} up"
+            ifconfig ${l_port} 0.0.0.0 promisc up        
+        done
+    else
+        l_name=`interfaceGetPort ${l_interface}`
+    fi
+
+    if [ -z "${l_name}" ]; then 
+        echo "ERR: The interface: ${l_interface} is missing a name/port"
+        return
+    fi
+    
+    if [ "${l_dhcp}x" = "truex" ]; then
+        echo "Configuring interface: ${l_interface} using DHCP"
+        pumpInterface ${l_name}
+    else
+        echo "Configuring the interface: ${l_interface} ${l_name} ${l_address} ${l_netmask}"
+
+        if [ "${l_address}x" = "0.0.0.0x" ] || [ "${l_netmask}x" = "0.0.0.0x" ]; then
+            echo "ERR: The interface is missing an address '${l_address}' or a netmask '${l_netmask}'"
+            return
+        fi
+
+        ## Do not bring the interface up in promiscuous mode.
+        ifconfig ${l_name} ${l_address} netmask ${l_netmask} -promisc
+    fi
+}
+
+function configureInterfaces() {
+    local l_interfaceList=$1
+    local l_interface
+
+    ## Get rid of any instances of pump that are running
+    killPump
+
+    for l_interface in ${l_interfaceList} ; do
+        configureInterface ${l_interface}
+    done
+    
+    if [ -n "${GATEWAY}" ]; then
+        deleteGateways
+        addGateway ${GATEWAY}
+    fi
+}
+
+
+############################
+## Start of script
+############################
+
+
+if [ -z "`areInterfacesCurrent \"${INTERFACE_LIST}\"`" ]; then
+    ## Destroy all of the current bridges
+    deleteAllBridges
+
+    ## Deconfigure all interfaces
+    deconfigureAllInterfaces
+
+    ## Let the dust settle
+    sleep 2
+
+    ## Create any new bridges
+    createAllBridges "${INTERFACE_LIST}"
+fi
+
+## Unconfigure all interfaces This gets rid of any active interfaces
+## that are not in the current configuration
+deconfigureAllInterfaces
+
+## Reconfigure all interfaces
+configureInterfaces "${INTERFACE_LIST}"
+
+## If necessary Run the post configuration script
+if [ -n "${MVVM_POST_CONF}" ]; then 
+    ${MVVM_POST_CONF} ; 
+else
+    ${LOG_DEBUG} "Post configuration script is disabled"
+fi
+
+## Always configure loopback just in case.
+ifconfig lo 127.0.0.1 netmask 255.0.0.0
+
+## Guarantee there are no "errors"
+true

@@ -24,10 +24,6 @@ import java.util.Map;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.NetworkingConfiguration;
-import com.metavize.mvvm.networking.NetworkSpace;
-import com.metavize.mvvm.networking.NetworkSettings;
-import com.metavize.mvvm.networking.IPNetwork;
-
 import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.HostNameList;
 import com.metavize.mvvm.tran.IPNullAddr;
@@ -102,13 +98,11 @@ class DhcpManager
         this.dhcpMonitor = new DhcpMonitor( transform, MvvmContextFactory.context());
     }
 
-    void configure( NetworkSpacesSettingsPriv settingsPriv ) throws TransformStartException
+    void configure( NatSettings settings, NetworkingConfiguration netConfig ) throws TransformStartException
     {
 
-        NatSettings settings = settingsPriv.getNatSettings();
-
         try {
-            writeConfiguration( settingsPriv );
+            writeConfiguration( settings, netConfig );
             writeHosts( settings );
         } catch ( Exception e ) {
             throw new TransformStartException( "Unable to reload DNS masq configuration", e );
@@ -116,16 +110,15 @@ class DhcpManager
 
         /* Enable/Disable DHCP forwarding  */
         try {
-            /* !!!!!! This is per space */
-//             if ( settings.getDhcpEnabled()) {
-//                 dhcpMonitor.start();
+            if ( settings.getDhcpEnabled()) {
+                dhcpMonitor.start();
 
-//                 MvvmContextFactory.context().argonManager().disableDhcpForwarding();
-//             } else {
-//                 dhcpMonitor.stop();
+                MvvmContextFactory.context().argonManager().disableDhcpForwarding();
+            } else {
+                dhcpMonitor.stop();
 
-//                 MvvmContextFactory.context().argonManager().enableDhcpForwarding();
-//             }
+                MvvmContextFactory.context().argonManager().enableDhcpForwarding();
+            }
         } catch ( Exception e ) {
             throw new TransformStartException( "Error updating DHCP forwarding settings", e );
         }
@@ -166,23 +159,20 @@ class DhcpManager
         }
 
         /* Re-enable DHCP forwarding */
-        /* !!!!!!!!!! This is per space. */
-//         try {
-//             logger.info( "Reenabling DHCP forwarding" );
-//             MvvmContextFactory.context().argonManager().enableDhcpForwarding();
-//         } catch ( Exception e ) {
-//             logger.error( "Error enabling DHCP forwarding", e );
-//         }
+        try {
+            logger.info( "Reenabling DHCP forwarding" );
+            MvvmContextFactory.context().argonManager().enableDhcpForwarding();
+        } catch ( Exception e ) {
+            logger.error( "Error enabling DHCP forwarding", e );
+        }
 
         /* Stop the DHCP Monitor */
         dhcpMonitor.stop();
     }
 
-    void loadLeases( NetworkSpacesSettingsPriv settingsPriv )
+    void loadLeases( NatSettings settings )
     {
         BufferedReader in = null;
-
-        NatSettings settings = settingsPriv.getNatSettings();
 
         /* Insert the rules from the leases file, than layover the rules from the settings */
         List<DhcpLeaseRule> leaseList  = new LinkedList<DhcpLeaseRule>();
@@ -315,10 +305,8 @@ class DhcpManager
     }
 
     /* This removes all of the non-static leases */
-    void fleeceLeases( NetworkSpacesSettingsPriv settingsPriv )
+    void fleeceLeases( NatSettings settings )
     {
-        NatSettings settings = settingsPriv.getNatSettings();
-
         /* Lay over the settings from NAT */
         List <DhcpLeaseRule> staticList = settings.getDhcpLeaseList();
 
@@ -333,12 +321,11 @@ class DhcpManager
         }
     }
 
-    private void writeConfiguration( NetworkSpacesSettingsPriv settingsPriv )
+    private void writeConfiguration( NatSettings settings, NetworkingConfiguration netConfig )
     {
-        NatSettings settings = settingsPriv.getNatSettings();
         StringBuilder sb = new StringBuilder();
-        NetworkSpace serviceSpace = settingsPriv.getServiceSpace();
-        NetworkSettings networkSettings = settingsPriv.getNetworkSettings();
+
+        IPaddr externalAddress = netConfig.host();
 
         sb.append( HEADER );
 
@@ -352,12 +339,21 @@ class DhcpManager
             /* XXXX Could move this outside of the is dhcp enabled, which would bind to the
              * inside interface if using NAT, without DHCP but with DNS forwarding
              */
+            /* Bind to the inside interface if using Nat */
+            if ( settings.getNatEnabled()) {
+                String inside = null;
 
-            /* Bind to the interface of the network space running services */
-            String device = serviceSpace.getDeviceName();
-            comment( sb, "Bind to the " + device + " interface" );
-            sb.append( FLAG_DNS_BIND_INTERFACES + "\n" );
-            sb.append( FLAG_DNS_INTERFACE + "=" + device + "\n\n" );
+                try {
+                    inside = MvvmContextFactory.context().argonManager().getInside();
+
+                    comment( sb, "Bind to the inside interface" );
+                    sb.append( FLAG_DNS_BIND_INTERFACES + "\n" );
+                    sb.append( FLAG_DNS_INTERFACE + "=" + inside + "\n\n" );
+                } catch( Exception e ) {
+                    logger.error( "Error retrieving inside interface, not binding to inside" );
+                    inside = null;
+                }
+            }
 
             /* Configure all of the hosts */
             List<DhcpLeaseRule> list = (List<DhcpLeaseRule>)settings.getDhcpLeaseList();
@@ -384,17 +380,12 @@ class DhcpManager
 
             /* If Nat is turned on, use the settings from nat, otherwise use
              * the settings from networking configuration */
-            if ( serviceSpace.getIsNatEnabled()) {
-                IPNetwork network = serviceSpace.getPrimaryAddress();
-                /* The gateway is the address of the primray network */
-                gateway = network.getNetwork();
-                netmask = network.getNetmask();
+            if ( settings.getNatEnabled()) {
+                gateway = settings.getNatInternalAddress();
+                netmask = settings.getNatInternalSubnet();
             } else {
-                /* The gateway is the default route */
-                IPNetwork network = serviceSpace.getPrimaryAddress();
-
-                gateway = networkSettings.getDefaultRoute();
-                netmask = network.getNetmask();
+                gateway = netConfig.gateway();
+                netmask  = netConfig.netmask();
             }
 
             comment( sb, "Setting the gateway" );
@@ -405,7 +396,8 @@ class DhcpManager
             sb.append( FLAG_DHCP_OPTION + "=" + FLAG_DHCP_NETMASK );
             sb.append( "," + netmask.toString() + "\n\n" );
 
-            appendNameServers( sb, settingsPriv );
+
+            appendNameServers( sb, settings, netConfig );
         } else {
             comment( sb, "DHCP is disabled, not using a range or any host rules\n" );
         }
@@ -420,7 +412,7 @@ class DhcpManager
             comment( sb, "Setting the Local domain name" );
 
             if ( localDomain.isEmpty()) {
-                comment( sb, "Local domain name is empty, using " + LOCAL_DOMAIN_DEFAULT );
+                comment( sb, "Local domain name is empty, using " + LOCAL_DOMAIN_DEFAULT.toString());
                 localDomain = LOCAL_DOMAIN_DEFAULT;
             }
 
@@ -559,31 +551,27 @@ class DhcpManager
         }
     }
 
-    private void appendNameServers( StringBuilder sb, NetworkSpacesSettingsPriv settingsPriv )
+    private void appendNameServers( StringBuilder sb, NatSettings settings, NetworkingConfiguration netConfig )
     {
         String nameservers = "";
         IPaddr tmp;
 
-        NatSettings settings = settingsPriv.getNatSettings();
-        NetworkSettings networkSettings = settingsPriv.getNetworkSettings();
-        NetworkSpace serviceSpace = settingsPriv.getServiceSpace();
-
         if ( settings.getDnsEnabled()) {
-
-            /* The nameserver is always going to be the primary network address of 
-             * the service space.
-             */               
-            nameservers += serviceSpace.getPrimaryAddress().getNetwork();
+            if ( settings.getNatEnabled()) {
+                nameservers += settings.getNatInternalAddress().toString();
+            } else {
+                nameservers += netConfig.host().toString();
+            }
         } else {
 
-            tmp = networkSettings.getDns1();
+            tmp = netConfig.dns1();
 
             if ( tmp != null && !tmp.isEmpty()) {
                 nameservers += ( nameservers.length() == 0 ) ? "" : ",";
                 nameservers += tmp.toString();
             }
 
-            tmp = networkSettings.getDns2();
+            tmp = netConfig.dns2();
 
             if ( tmp != null && !tmp.isEmpty()) {
                 nameservers += ( nameservers.length() == 0 ) ? "" : ",";

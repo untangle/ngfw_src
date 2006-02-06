@@ -2,16 +2,16 @@
 
 exec >> @MVVM_LOG@/iptables.log 2>&1
 
+## For the outside interface
+RULE_CONFIG_FILE=@MVVM_HOME@/networking/rule-config
 FUNCTIONS_FILE=@MVVM_HOME@/networking/functions
 
-## Interface to pump is the first argument.
-intf=$1
-
-## Interface index (used to assign an address if DHCP fails is)
-intfIndex=$2
-
-## The flags to pass to pump, use this to disable updating the resolv.conf and gateway
-flags=$3
+if [ -r ${RULE_CONFIG_FILE}  ]; then
+    . ${RULE_CONFIG_FILE}
+else
+    echo "Unable to load the rule configuration file ${RULE_CONFIG_FILE}"
+    exit -2
+fi
 
 if [ -r ${FUNCTIONS_FILE} ]; then
     . ${FUNCTIONS_FILE}
@@ -20,6 +20,14 @@ else
     exit -1
 fi
 
-pumpInterface ${intf} ${intfIndex} ${flags}
+echo "Renewing DHCP lease(`date`)"
 
-true
+generateConfiguration
+
+bridge=$(getBridge ${MVVM_OUTSIDE_INTF} )
+
+if [ "${bridge}x" = "x" ]; then
+    pumpInterface ${MVVM_OUTSIDE_INTF}
+else
+    pumpInterface ${bridge}
+fi

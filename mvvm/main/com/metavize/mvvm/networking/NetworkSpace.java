@@ -11,6 +11,7 @@
 
 package com.metavize.mvvm.networking;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Iterator;
@@ -18,6 +19,7 @@ import java.util.Iterator;
 import com.metavize.mvvm.tran.Rule;
 
 import com.metavize.mvvm.tran.IPaddr;
+
 
 /**
  * The configuration state for one network space.
@@ -30,15 +32,11 @@ import com.metavize.mvvm.tran.IPaddr;
 public class NetworkSpace extends Rule
 {
     /* There should be at least one */
-    private List networkList = new LinkedList();
+    private List networkList = Collections.emptyList();
 
-    static final int DEFAULT_MTU = 1500;
-    
-    /* This is the primary address of the interface, if DHCP is enabled, this is actually
-     * the secondary address (the assigned DHCP address is the primary address). */
-    
-    /* This is the address that has been assigned by DHCP.  This will be null if DHCP is disabled. */
-    private DhcpStatus dhcpStatus = DhcpStatus.EMPTY_STATUS;
+    private static final int DEFAULT_MTU = 1500;
+
+    private IPNetwork primaryAddress;
     
     private boolean isDhcpEnabled;
     private boolean isTrafficForwarded = true;
@@ -48,30 +46,15 @@ public class NetworkSpace extends Rule
 
     /* This is the address that traffic is NATd to */
     private boolean isNatEnabled;
-    
-    /* Set this to non-null to use the primary address of another network space as 
-     * the NAT address for this network space. */
-    private NetworkSpace natSpace;
-    
-    /* If natSpace is non-null, then this is the address to use when NATing traffic */
     private IPaddr  natAddress;
-    
-    private boolean isDmzHostEnabled = false;
-    private boolean isDmzLoggingEnabled = false;
+    private boolean isDmzHostEnabled;
+    private boolean isDmzLoggingEnabled;
     private IPaddr  dmzHost;
 
     /* List of interfaces in this bridge, this is only used in 
      * this package for writing the configuration.  It is not stored in the database */
-    private List interfaceList = new LinkedList();
+    private List interfaceList = Collections.emptyList();
     
-    /* non-hibernate, the following are not hibernate or GUI accessible and should be moved
-     * into a different sub-class. */
-    private IPNetwork primaryAddress;
-
-    /* This is the address that traffic should be NATd to, this may vary since
-     * it could be DHCP if it is in a NATSpace. */
-    private IPaddr realNatAddress;
-
     /* This is a property based on whether or not this network space is a bridge, it is 
      * only available to this package. */
     private String deviceName;
@@ -83,7 +66,7 @@ public class NetworkSpace extends Rule
      * @hibernate.list
      * cascade="all-delete-orphan"
      * @hibernate.collection-key
-     * column="network_space"
+     * column="space_id"
      * @hibernate.collection-index
      * column="position"
      * @hibernate.collection-one-to-many
@@ -91,16 +74,18 @@ public class NetworkSpace extends Rule
      */    
     public List getNetworkList()
     {
-        if ( this.networkList == null ) this.networkList = new LinkedList();
+        if ( this.networkList == null ) this.networkList = Collections.emptyList();
             
         return this.networkList;
     }
     
     public void setNetworkList( List networkList )
     {
-        /* Hibernate likes it when list are reused for all-delete-orphan, no copying lists on set. */
+        /* This make a copy of the list involved */
         if ( networkList == null ) {
-            networkList = ( this.networkList == null ) ? new LinkedList() : this.networkList;
+            networkList = Collections.emptyList();
+        } else {
+            networkList = new LinkedList( networkList );
         }
 
         this.networkList = networkList;
@@ -108,25 +93,18 @@ public class NetworkSpace extends Rule
         /* Detect if this space has a primary address, a primary address is the
          * first valid unicast address */
         this.primaryAddress = null;
-        IPNetworkRule rule = null;
 
         NetworkUtil nu = NetworkUtil.getInstance();
 
         for ( Iterator iter = this.networkList.iterator() ; iter.hasNext() ; ) {
             IPNetworkRule networkRule = (IPNetworkRule)iter.next();
-            IPNetwork network = networkRule.getIPNetwork();
+            IPNetwork network = networkRule.getNetwork();
             
             if ( nu.isUnicast( network )) {
-                rule = networkRule;
                 this.primaryAddress = network;
-                /* Remove itself from the list and move it to the front */
-                iter.remove();
                 break;
             }
         }
-
-        /* Always move the primary address to the front of the list */
-        if ( rule != null ) this.networkList.add( 0, rule );
     }
 
     /**
@@ -179,31 +157,8 @@ public class NetworkSpace extends Rule
         this.isNatEnabled = isNatEnabled;
     }
 
-    
     /**
-     * The network space to NAT to.  If this is non-null, then NAT will use the primary
-     * address of the selected network space as the NAT address.  This cannot point
-     * to its
-     * @return The network space to nat traffic to. 
-     * @hibernate.many-to-one
-     * cascade="none"
-     * class="com.metavize.mvvm.networking.NetworkSpace"
-     * column="nat_space"
-     */
-    /** XXX Should this have cascade="all" because this is typically inside of the NetworkSettings object, 
-     * which also saves the list of network spaces. */
-    public NetworkSpace getNatSpace()
-    {
-        return this.natSpace;
-    }
-    
-    public void setNatSpace( NetworkSpace newValue )
-    {
-        this.natSpace = newValue;
-    }
-    
-    /**
-     * Address to NAT connections to if NAT is enabled and natSpace is null.
+     * Address to NAT connections to if, NAT is enabled.
      *
      * @return address to NAT connections to.
      * @hibernate.property
@@ -297,7 +252,7 @@ public class NetworkSpace extends Rule
     }
 
     /* The following are not stored inside of the database */
-
+    
     /* May be null, should check hasPrimaryAddress first */
     public IPNetwork getPrimaryAddress()
     {
@@ -306,40 +261,14 @@ public class NetworkSpace extends Rule
 
     public boolean hasPrimaryAddress()
     {
-        return ( this.primaryAddress != null );
-    }
-
-    public IPaddr getRealNatAddress()
-    {
-        return this.realNatAddress;
-    }
-
-    public void setRealNatAddress( IPaddr newValue )
-    {
-        this.realNatAddress = newValue;
-    }
-
-    /* Retrieve the address that a DHCP server assigned to this network space, null
-     * if dhcp is disabled. */
-    public DhcpStatus getDhcpStatus()
-    {
-        if ( this.dhcpStatus == null ) this.dhcpStatus = DhcpStatus.EMPTY_STATUS;
-        return this.dhcpStatus;
-    }
-
-    /* Set the address a DHCP assigned to this network space */
-    void setDhcpStatus( DhcpStatus dhcpStatus )
-    {
-        if ( dhcpStatus == null ) dhcpStatus = DhcpStatus.EMPTY_STATUS;
-
-        this.dhcpStatus = dhcpStatus;
+        return ( !isDhcpEnabled && ( this.primaryAddress != null ));
     }
 
     /* Local property used to link the configuration between the /etc/network/interfaces
      * file and the routing and post configuration functions */
     int getIndex() throws NetworkException
     {
-        if ( this.index < 1 ) {
+        if ( this.index < 0 ) {
             throw new NetworkException( "The index on this network space is not initialized" );
         }
 
@@ -350,12 +279,6 @@ public class NetworkSpace extends Rule
     {
         this.index = index;
     }
-    
-    boolean isPrimarySpace() throws NetworkException
-    {
-        return ( getIndex() == 1 );
-    }
-
 
     public String getDeviceName()
     {

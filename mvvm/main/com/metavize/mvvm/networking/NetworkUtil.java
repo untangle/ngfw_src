@@ -11,6 +11,7 @@
 
 package com.metavize.mvvm.networking;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.LinkedList;
 
@@ -48,12 +49,9 @@ public class NetworkUtil
     /* Validate that a network configuration is okay */
     public void validate( NetworkSettings config ) throws ValidateException
     {
-        int index = 0;
         for ( NetworkSpace space : (List<NetworkSpace>)config.getNetworkSpaceList()) {
-            index++;
             if ( getInterfaceList( config, space ).size() == 0 ) {
-                throw new ValidateException( "Each network space["+ index +"] must have at least one" + 
-                                             " interface" );
+                throw new ValidateException( "Each network space must have at least one interface" );
             }
 
             /* If dhcp is not enabled, there must be at least one address */
@@ -79,25 +77,9 @@ public class NetworkUtil
                                          " or use DHCP." );
         }
 
-        if ( isDhcpEnabled && space.getIsNatEnabled()) {
-            throw new ValidateException( "A network space running NAT should not get its address" +
-                                         " from a DHCP server." );
-        }
-
-        if ( space.getIsNatEnabled()) {
-            if ( !space.hasPrimaryAddress()) {
-                throw new ValidateException( "If NAT is enabled, A network space should have at " +
-                                             "least one static unicast address " );
-            }
-            
-            if ( space.getNatSpace() == space ) {
-                throw new ValidateException( "A Network space cannot NAT to itself" );
-            }
-
-            if (( space.getNatSpace() == null ) && 
-                ((space.getNatAddress() == null ) || ( space.getNatAddress().isEmpty()))) {
-                throw new ValidateException( " A Network space that is running NAT must have a NAT Address" );
-            }
+        if ( space.getIsNatEnabled() && !space.hasPrimaryAddress()) {
+            throw new ValidateException( "If NAT is enabled, A network space should have at " +
+                                         "least one unicast address " );
         }
 
         IPaddr dmzHost = space.getDmzHost();
@@ -129,16 +111,16 @@ public class NetworkUtil
     public String toRouteString( IPNetwork network ) throws NetworkException
     {
         /* XXX This is kind of hokey and should be precalculated at creation time */
-        IPaddr netmask = network.getNetmask();
+        IPaddr subnet = network.getSubnet();
 
         try {
-            int cidr = netmask.toCidr();
+            int cidr = subnet.toCidr();
             
-            IPaddr networkAddress = network.getNetwork().and( netmask );
+            IPaddr networkAddress = network.getNetwork().and( subnet );
             /* Very important, the ip command barfs on spaces. */
             return networkAddress.toString() + "/" + cidr;
         } catch ( ParseException e ) {
-            throw new NetworkException( "Unable to convert the netmask " + netmask + " into a cidr suffix" );
+            throw new NetworkException( "Unable to convert the subnet " + subnet + " into a cidr suffix" );
         }
     }    
 

@@ -17,10 +17,6 @@ import org.apache.log4j.Logger;
 
 import com.metavize.mvvm.tapi.Protocol;
 
-import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
-import com.metavize.mvvm.tran.firewall.intf.IntfMatcher;
-import com.metavize.mvvm.tran.firewall.port.PortMatcher;
-
 public abstract class InterfaceRedirect extends TrafficIntfMatcher
 {
     protected InterfaceRedirect( ProtocolMatcher protocol, 

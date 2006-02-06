@@ -239,8 +239,6 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <include name="com/metavize/mvvm/networking/NetworkUtil.java"/>
       <include name="com/metavize/mvvm/networking/Route.java"/>
       <include name="com/metavize/mvvm/networking/EthernetMedia.java"/>
-      <include name="com/metavize/mvvm/networking/DhcpStatus.java"/>
-      <include name="com/metavize/mvvm/networking/EthernetMedia.java"/>
     </javac>
   </target>
 
@@ -305,8 +303,6 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
         <include name="com/metavize/mvvm/networking/NetworkSpace.class"/>
         <include name="com/metavize/mvvm/networking/NetworkUtil.class"/>
         <include name="com/metavize/mvvm/networking/Route.class"/>
-        <include name="com/metavize/mvvm/networking/EthernetMedia.class"/>
-        <include name="com/metavize/mvvm/networking/DhcpStatus.class"/>
         <include name="com/metavize/mvvm/networking/EthernetMedia.class"/>
       </fileset>
     </jar>

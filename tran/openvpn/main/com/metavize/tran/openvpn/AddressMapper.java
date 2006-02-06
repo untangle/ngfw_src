@@ -28,8 +28,7 @@ import org.apache.log4j.Logger;
 
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.IPaddr;
-import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
-import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
+import com.metavize.mvvm.tran.firewall.IPMatcher;
 
 /* Class used to assign addresses to clients */
 class AddressMapper
@@ -95,8 +94,7 @@ class AddressMapper
             boolean isServerGroup = group.equals( serverGroup );
             
             /* Create a new ip matcher to validate all of the created addresses */
-            IPMatcher matcher = 
-                IPMatcherFactory.getInstance().makeSubnetMatcher( group.getAddress(), group.getNetmask());
+            IPMatcher matcher = new IPMatcher( group.getAddress(), group.getNetmask(), false );
                                            
             /* Create enough addresses for all of the clients, and possible the server */
             Set<IPaddr> addressSet = createAddressSet( clients.size() + ( isServerGroup ? 1 : 0 ), 

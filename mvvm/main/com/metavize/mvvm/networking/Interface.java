@@ -24,7 +24,7 @@ import com.metavize.mvvm.tran.Rule;
 public class Interface extends Rule
 {
     private byte argonIntf;
-    private String intfName = ""; /* non-hibernate */
+    private String intfName; /* non-hibernate */
     private NetworkSpace networkSpace;
     private EthernetMedia ethernetMedia = EthernetMedia.AUTO_NEGOTIATE;
     /* This is the current status of the ethernet port */
@@ -60,14 +60,12 @@ public class Interface extends Rule
     }    
 
     /**
-     * @return The network space this interface belongs to. 
+     * @return The network space this interface belongs to
      * @hibernate.many-to-one
-     * cascade="none"
+     * cascade="all"
      * class="com.metavize.mvvm.networking.NetworkSpace"
      * column="network_space"
      */
-    /** XXX Should this have cascade="all" because this is typically inside of the NetworkSettings object, 
-     * which also saves the list of network spaces. */
     public NetworkSpace getNetworkSpace()
     {
         return this.networkSpace;

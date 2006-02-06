@@ -19,11 +19,9 @@ import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
 import com.metavize.mvvm.tapi.IPSessionDesc;
 
-import com.metavize.mvvm.tran.firewall.port.PortMatcher;
-import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
+import com.metavize.mvvm.tran.firewall.PortMatcher;
 import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
-import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
-import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
+import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.firewall.DirectionMatcher;
 import com.metavize.mvvm.tran.firewall.TrafficDirectionMatcher;
 
@@ -35,7 +33,12 @@ import com.metavize.mvvm.tran.firewall.TrafficDirectionMatcher;
 class FirewallMatcher extends TrafficDirectionMatcher {
     private static final Logger logger = Logger.getLogger( FirewallMatcher.class );
     
-    public static final FirewallMatcher MATCHER_DISABLED;
+    public static final FirewallMatcher MATCHER_DISABLED = 
+        new FirewallMatcher( false, ProtocolMatcher.MATCHER_NIL,
+                             DirectionMatcher.getInstance( false, false ),
+                             IPMatcher.MATCHER_NIL,   IPMatcher.MATCHER_ALL, 
+                             PortMatcher.MATCHER_NIL, PortMatcher.MATCHER_NIL,
+                             false );
 
     /* Used for logging */
     private final FirewallRule rule;
@@ -85,18 +88,4 @@ class FirewallMatcher extends TrafficDirectionMatcher {
     {
         return this.ruleIndex;
     }
-
-    static
-    {
-        IPMatcherFactory ipmf = IPMatcherFactory.getInstance();
-        PortMatcherFactory pmf = PortMatcherFactory.getInstance();
-        
-        MATCHER_DISABLED =
-            new FirewallMatcher( false, ProtocolMatcher.MATCHER_NIL,
-                                 DirectionMatcher.getInstance( false, false ),
-                                 ipmf.getNilMatcher(), ipmf.getNilMatcher(),
-                                 pmf.getNilMatcher(), pmf.getNilMatcher(), 
-                                 false );
-    }
-
 }

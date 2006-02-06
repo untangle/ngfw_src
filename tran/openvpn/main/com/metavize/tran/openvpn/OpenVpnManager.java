@@ -19,11 +19,7 @@ import java.util.List;
 import com.metavize.mvvm.ArgonManager;
 import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.NetworkManager;
-
 import com.metavize.mvvm.argon.ArgonException;
-import com.metavize.mvvm.networking.NetworkException;
-
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.script.ScriptException;
@@ -173,25 +169,16 @@ class OpenVpnManager
         try {
             boolean isBridgeMode = settings.isBridgeMode();
             String intf = ( isBridgeMode ) ? DEVICE_BRIDGE : DEVICE_ROUTING;
-
             ArgonManager am = MvvmContextFactory.context().argonManager();
-            NetworkManager nm = MvvmContextFactory.context().networkManager();
             am.registerIntf( IntfConstants.VPN_INTF, intf );
 
             if ( isBridgeMode ) {
-                // !!!!!!!!!!!!!!!
+                am.enableInternalBridgeIntf( MvvmContextFactory.context().networkingManager().get(), intf );
             }
-
-            nm.updateAddress();
-        } catch ( NetworkException e ) {
-            logger.error( "Error updating network settings, unable to start openvpn server", e );
-            throw new TransformException( "Error updating settings, unable to start openvpn server" );
-        }  catch ( ArgonException e ) {
-            logger.error( "Error updating network settings, unable to start the openvpn server", e );
-            throw new TransformException( "Error updating settings, unable to start openvpn server" );
+            am.updateAddress();
+        } catch ( ArgonException e ) {
+            throw new TransformException( e );
         }
-
-
     }
 
     void restart( VpnSettings settings ) throws TransformException
@@ -206,10 +193,10 @@ class OpenVpnManager
         ScriptRunner.getInstance().exec( VPN_STOP_SCRIPT );
 
         try {
-            NetworkManager nm = MvvmContextFactory.context().networkManager();
-            // !!!! Have to stop bridging with the internal interface.
-            nm.updateAddress();
-        } catch ( NetworkException e ) {
+            ArgonManager am = MvvmContextFactory.context().argonManager();
+            am.disableInternalBridgeIntf( MvvmContextFactory.context().networkingManager().get());
+            am.updateAddress();
+        } catch ( ArgonException e ) {
             throw new TransformException( e );
         }
     }
@@ -306,13 +293,15 @@ class OpenVpnManager
     void writeClientConfigurationFiles( VpnSettings settings, VpnClient client )
         throws TransformException
     {
-        
-        NetworkManager nm = MvvmContextFactory.context().networkManager();
+        ArgonManager am = MvvmContextFactory.context().argonManager();
 
-        String publicAddress  = nm.getPublicAddress();
-        int publicPort        = nm.getPublicHttpsPort();
+        InetAddress internalAddress = am.getInsideAddress();
+        InetAddress externalAddress = am.getOutsideAddress();
+        int externalHttpsPort =  MvvmContextFactory.context().networkingManager().getExternalHttpsPort();
 
-        if ( publicAddress == null ) throw new TransformException( "The public address is not set." );
+        if ( internalAddress == null || externalAddress == null ) {
+            throw new TransformException( "The inside address is not set" );
+        }
 
         writeClientConfigurationFile( settings, client, UNIX_CLIENT_DEFAULTS, UNIX_EXTENSION );
         writeClientConfigurationFile( settings, client, WIN_CLIENT_DEFAULTS,  WIN_EXTENSION );
@@ -323,11 +312,11 @@ class OpenVpnManager
         try {
             String key = client.getDistributionKey();
             if ( key == null ) key = "";
-            
-            /* !!!!!!!! Public address is passed in twice until the scripts are updated */
+
             ScriptRunner.getInstance().exec( GENERATE_DISTRO_SCRIPT, client.getInternalName(),
-                                             key, publicAddress, publicAddress,
-                                             String.valueOf( publicPort ),
+                                             key, internalAddress.getHostAddress(),
+                                             externalAddress.getHostAddress(),
+                                             String.valueOf( externalHttpsPort ),
                                              String.valueOf( client.getDistributeUsb()),
                                              String.valueOf( client.getIsEdgeGuard()));
         } catch ( ScriptException e ) {
@@ -363,12 +352,12 @@ class OpenVpnManager
         sw.appendVariable( FLAG_KEY,  CLI_KEY_DIR + "/" + name + ".key" );
 
         /* VPN configuratoins needs information from the networking settings. */
-        NetworkManager nm = MvvmContextFactory.context().networkManager();
+        ArgonManager argonManager = MvvmContextFactory.context().argonManager();
 
         /* XXXXXX This needs some global address and possibly the port, possibly an address
            from the settings */
-        sw.appendVariable( FLAG_REMOTE, nm.getPublicAddress() + " " + DEFAULT_PORT );
-                           
+        sw.appendVariable( FLAG_REMOTE, argonManager.getOutsideAddress().getHostAddress() + " " +
+                           DEFAULT_PORT );
 
         sw.writeFile( CLIENT_CONF_FILE_BASE + name + "." + extension );
     }

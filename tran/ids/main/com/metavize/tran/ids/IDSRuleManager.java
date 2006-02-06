@@ -14,6 +14,7 @@ import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.argon.SessionEndpoints;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.PortRange;
+import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.ParseException;
 import com.metavize.mvvm.MvvmContextFactory;
 

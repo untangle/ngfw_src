@@ -6,13 +6,6 @@ PUMP_FLAG="pump"
 IPTABLES="/sbin/iptables"
 #IPTABLES=iptablesDbg
 
-RT_TABLE_NAME_PREFIX="metavize-"
-
-## All of the custom rules start in the 16,000 range.
-RULE_PRIORITY_BASE=16
-
-IP_CMD=ip
-
 ## don't print out debug messages in the production environment
 LOG_DEBUG=true
 
@@ -20,6 +13,7 @@ if [ "x" != "x@PREFIX@" ] ; then
     ## Printout debuging info in the non-production environment
     LOG_DEBUG=logDebug
 fi
+
 
 # if necessary
 LOG_DEBUG=logDebug
@@ -32,7 +26,7 @@ CHAIN_INTERCEPT="intercept"
 CHAINS_ORDER="${CHAIN_MARKINTF} ${CHAIN_GUARDS} ${CHAIN_ANTISUB} ${CHAIN_INTERCEPT}"
 
 ## Invalid address and netmask used when pump fails.
-BOGUS_ADDRESS_BASE="169.254.210.5"
+BOGUS_ADDRESS="169.254.210.51"
 BOGUS_NETMASK="255.255.0.0"
 
 ## Base SYSFS path for interfaces
@@ -182,21 +176,11 @@ function isPumpRunning() {
 
 function pumpInterface() {
     local t_interface=$1
-    local t_intfIndex=$2
-    local t_fakeAddress="${BOGUS_ADDRESS_BASE}${t_intfIndex}"
-
-    ${LOG_DEBUG} "Pumping interface ${t_interface}, index ${t_intfIndex}"
-
-    if [ -z "${t_interface}" ] || [ -z "${t_intfIndex}" ]; then
-        echo "Interface or interface index is empty"
-        return
-    fi
-
+    echo "Pumping interface ${t_interface}"
     pump -i ${t_interface}
-
     if [ $? != 0 ]; then
-        echo "Unable to pump interface ${t_interface}, going to fake address: ${t_fakeAddress}"
-        ifconfig ${t_interface} ${t_fakeAddress} netmask ${BOGUS_NETMASK}
+        echo "Unable to pump interface ${t_interface}, going to bogus address"
+        ifconfig ${t_interface} ${BOGUS_ADDRESS} netmask ${BOGUS_NETMASK}
     fi
 }
 
@@ -254,7 +238,6 @@ function deleteBridge() {
             ifconfig ${l_port} 0.0.0.0
             ifconfig ${l_port} down
         done
-        brctl delbr ${l_bridge}
     fi
 }
 
@@ -274,9 +257,12 @@ function addGateway() {
 }
 
 function deleteGateways() {
-    ${LOG_DEBUG} "Deleting all of the default route(s)"
-    ${IP_CMD} route show | grep '^default' | sed  -e '/^default/d' -e 's| dev.*$||g' \
-        -e 's|\(.*\)|ip route del \1|' | sh
+    local t_gateway
+    for t_gateway in `route -n | grep "^0.0.0.0" | awk '{ print $2}'`; do
+        route del default gw ${t_gateway}
+        ## No returning an error here
+        echo -n
+    done
 }
 
 function logDebug() {

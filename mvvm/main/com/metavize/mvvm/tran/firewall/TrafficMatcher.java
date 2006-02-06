@@ -19,17 +19,12 @@ import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
 import com.metavize.mvvm.tapi.IPSessionDesc;
 
-import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
-import com.metavize.mvvm.tran.firewall.port.PortMatcher;
-import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
-
 /**
  * A class for matching Traffic
  *   This is cannot be squashed into a RedirectRule because all of its elements are final. 
  *   This is a property which is not possible in hibernate objects.
  */
-abstract class TrafficMatcher
-{
+abstract class TrafficMatcher {
     private static final Logger logger = Logger.getLogger( TrafficMatcher.class );
         
     private final boolean isEnabled;
@@ -56,12 +51,10 @@ abstract class TrafficMatcher
         this.srcAddress = srcAddress;
         this.dstAddress = dstAddress;
 
-        PortMatcher pingMatcher = PortMatcherFactory.getInstance().getPingMatcher();
-
         /* Ports are ignored for PING sessions */
         if ( this.protocol.equals( ProtocolMatcher.MATCHER_PING )) {
-            this.srcPort       = pingMatcher;
-            this.dstPort       = pingMatcher;
+            this.srcPort       = PortMatcher.MATCHER_PING;
+            this.dstPort       = PortMatcher.MATCHER_PING;
             this.isPingMatcher = true;
         } else {
             this.srcPort       = srcPort;
@@ -90,7 +83,7 @@ abstract class TrafficMatcher
             isMatchPort( request.clientPort(), request.serverPort()) &&
             isTimeMatch();
 
-        if ( isMatch && logger.isDebugEnabled())
+        if ( isMatch )
             logger.debug( "Matched: " + request + " the session " );
 
         return isMatch;

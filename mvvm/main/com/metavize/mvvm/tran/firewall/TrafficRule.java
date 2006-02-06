@@ -17,10 +17,6 @@ import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.Rule;
 import com.metavize.mvvm.tran.ParseException;
 
-import com.metavize.mvvm.tran.firewall.ip.IPDBMatcher;
-import com.metavize.mvvm.tran.firewall.port.PortDBMatcher;
-import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
-
 /**
  * Rule for matching based on IP addresses and subnets.
  *
@@ -29,15 +25,15 @@ import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
  */
 abstract class TrafficRule extends Rule
 {
-    // !!! private static final long serialVersionUID = -3950973798403822835L;
+    private static final long serialVersionUID = -3950973798403822835L;
 
     private ProtocolMatcher protocol;
 
-    private IPDBMatcher   srcAddress;
-    private IPDBMatcher   dstAddress;
+    private IPMatcher   srcAddress;
+    private IPMatcher   dstAddress;
 
-    private PortDBMatcher srcPort;
-    private PortDBMatcher dstPort;
+    private PortMatcher srcPort;
+    private PortMatcher dstPort;
 
     // constructors -----------------------------------------------------------
 
@@ -48,9 +44,9 @@ abstract class TrafficRule extends Rule
     {
     }
 
-    public TrafficRule( boolean       isLive,     ProtocolMatcher protocol, 
-                        IPDBMatcher   srcAddress, IPDBMatcher     dstAddress,
-                        PortDBMatcher srcPort,    PortDBMatcher   dstPort )
+    public TrafficRule( boolean     isLive,  ProtocolMatcher protocol, 
+                        IPMatcher   srcAddress, IPMatcher       dstAddress,
+                        PortMatcher srcPort,    PortMatcher     dstPort )
     {
         setLive( isLive );
         this.protocol   = protocol;
@@ -65,11 +61,11 @@ abstract class TrafficRule extends Rule
     /* Hack that sets the ports to zero for Ping sessions */
     public void fixPing() throws ParseException
     {
-        PortDBMatcher pingMatcher = PortMatcherFactory.getInstance().getPingMatcher();
         if ( this.protocol.equals( ProtocolMatcher.MATCHER_PING )) {
-            this.srcPort = pingMatcher;
-            this.dstPort = pingMatcher;
-        } else if ( this.srcPort.equals( pingMatcher ) || this.dstPort.equals( pingMatcher )) {
+            this.srcPort = PortMatcher.MATCHER_PING;
+            this.dstPort = PortMatcher.MATCHER_PING;
+        } else if ( this.srcPort.equals( PortMatcher.MATCHER_PING ) || 
+                    this.dstPort.equals( PortMatcher.MATCHER_PING )) {
             throw new ParseException( "Invalid port for a non-ping traffic type" );
         }
     }
@@ -94,7 +90,7 @@ abstract class TrafficRule extends Rule
     }
         
     /**
-     * source IPDBMatcher
+     * source IPMatcher
      *
      * @return the source IP matcher.
      * @hibernate.property
@@ -102,18 +98,18 @@ abstract class TrafficRule extends Rule
      * @hibernate.column
      * name="SRC_IP_MATCHER"
      */
-    public IPDBMatcher getSrcAddress()
+    public IPMatcher getSrcAddress()
     {
         return srcAddress;
     }
 
-    public void setSrcAddress( IPDBMatcher srcAddress )
+    public void setSrcAddress( IPMatcher srcAddress )
     {
         this.srcAddress = srcAddress;
     }
     
     /**
-     * destination IPDBMatcher
+     * destination IPMatcher
      *
      * @return the destination IP matcher.
      * @hibernate.property
@@ -121,18 +117,18 @@ abstract class TrafficRule extends Rule
      * @hibernate.column
      * name="DST_IP_MATCHER"
      */
-    public IPDBMatcher getDstAddress()
+    public IPMatcher getDstAddress()
     {
         return dstAddress;
     }
 
-    public void setDstAddress( IPDBMatcher dstAddress )
+    public void setDstAddress( IPMatcher dstAddress )
     {
         this.dstAddress = dstAddress;
     }
     
     /**
-     * source PortDBMatcher
+     * source PortMatcher
      *
      * @return the source IP matcher.
      * @hibernate.property
@@ -140,18 +136,18 @@ abstract class TrafficRule extends Rule
      * @hibernate.column
      * name="SRC_PORT_MATCHER"
      */
-    public PortDBMatcher getSrcPort()
+    public PortMatcher getSrcPort()
     {
         return srcPort;
     }
 
-    public void setSrcPort( PortDBMatcher srcPort )
+    public void setSrcPort( PortMatcher srcPort )
     {
         this.srcPort = srcPort;
     }
     
     /**
-     * destination PortDBMatcher
+     * destination PortMatcher
      *
      * @return the destination IP matcher.
      * @hibernate.property
@@ -159,12 +155,12 @@ abstract class TrafficRule extends Rule
      * @hibernate.column
      * name="DST_PORT_MATCHER"
      */
-    public PortDBMatcher getDstPort()
+    public PortMatcher getDstPort()
     {
         return dstPort;
     }
 
-    public void setDstPort( PortDBMatcher dstPort )
+    public void setDstPort( PortMatcher dstPort )
     {
         this.dstPort = dstPort;
     }

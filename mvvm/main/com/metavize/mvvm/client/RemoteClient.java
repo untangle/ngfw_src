@@ -726,7 +726,7 @@ public class RemoteClient
 
     private static void updateAddress() throws Exception
     {
-        mc.networkManager().updateAddress();
+        mc.argonManager().updateAddress();
     }
 
     // helper functions -------------------------------------------------------

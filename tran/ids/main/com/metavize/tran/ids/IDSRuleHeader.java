@@ -5,8 +5,7 @@ import com.metavize.mvvm.argon.SessionEndpoints;
 import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.PortRange;
-import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
-import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
+import com.metavize.mvvm.tran.firewall.IPMatcher;
 import org.apache.log4j.Logger;
 import java.util.List;
 import java.util.ArrayList;
@@ -96,16 +95,11 @@ public class IDSRuleHeader {
         InetAddress cAddr = forward ? sess.clientAddr() : sess.serverAddr();
         boolean clientIPMatch = false;
         Iterator<IPMatcher> clientIt = clientIPList.iterator();
-
-        IPMatcherFactory ipmf = IPMatcherFactory.getInstance();
-        IPMatcher internalMatcher = ipmf.getInternalMatcher();
-        IPMatcher externalMatcher = ipmf.getExternalMatcher();
-
         while(clientIt.hasNext() && !clientIPMatch)  {
             IPMatcher matcher = clientIt.next();
-            if (matcher == externalMatcher)
+            if (matcher == IPMatcher.MATCHER_EXTERNAL)
                 clientIPMatch = isInbound;
-            else if (matcher == internalMatcher)
+            else if (matcher == IPMatcher.MATCHER_INTERNAL)
                 clientIPMatch = !isInbound;
             else
                 clientIPMatch =  matcher.isMatch(cAddr);
@@ -117,9 +111,9 @@ public class IDSRuleHeader {
         Iterator<IPMatcher> serverIt = serverIPList.iterator();
         while(serverIt.hasNext() && !serverIPMatch) {
             IPMatcher matcher = serverIt.next();
-            if (matcher == externalMatcher)
+            if (matcher == IPMatcher.MATCHER_EXTERNAL)
                 serverIPMatch = !isInbound;
-            else if (matcher == internalMatcher)
+            else if (matcher == IPMatcher.MATCHER_INTERNAL)
                 serverIPMatch = isInbound;
             else
                 serverIPMatch = matcher.isMatch(sAddr);

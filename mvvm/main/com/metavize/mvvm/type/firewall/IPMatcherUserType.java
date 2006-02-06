@@ -13,8 +13,7 @@ package com.metavize.mvvm.type.firewall;
 
 import com.metavize.mvvm.type.StringBasedUserType;
 
-import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
-import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
+import com.metavize.mvvm.tran.firewall.IPMatcher;
 
 public class IPMatcherUserType extends StringBasedUserType
 {
@@ -25,11 +24,11 @@ public class IPMatcherUserType extends StringBasedUserType
 
     protected String userTypeToString( Object v )
     {
-        return ((IPMatcher)v).toDatabaseString();
+        return ((IPMatcher)v).toString();
     }
 
     public Object createUserType( String val ) throws Exception
     {
-        return IPMatcherFactory.parse( val );
+        return IPMatcher.parse( val );
     }
 }

@@ -19,12 +19,9 @@ import org.apache.log4j.Logger;
 
 import com.metavize.mvvm.argon.IntfConverter;
 
+
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.argon.ArgonException;
-
-import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
-import com.metavize.mvvm.tran.firewall.intf.IntfMatcher;
-import com.metavize.mvvm.tran.firewall.port.PortMatcher;
 
 public class InterfaceAddressRedirect extends InterfaceRedirect
 {
