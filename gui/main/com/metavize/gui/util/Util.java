@@ -45,7 +45,14 @@ import com.metavize.mvvm.tran.*;
 
 public class Util {
 
-    static{
+    private Util(){}
+
+    private static boolean isInitialized;
+    public static void initialize(){
+	if(isInitialized)
+	    return;
+	else
+	    isInitialized = true;
         daemonThreadVector = new Vector<Killable>();
         logDateFormat = new SimpleDateFormat("EEE, MMM d HH:mm:ss");
         log = new Vector();
@@ -79,6 +86,9 @@ public class Util {
         buttonProcuring = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Procuring_106x17.png") );
         buttonBackupToHardDisk = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Backup_To_Hard_Disk_130x17.png") );
         buttonBackupToUsbKey = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Backup_To_Usb_Key_130x17.png") );
+
+	INVALID_BACKGROUND_COLOR = Color.PINK;
+	VALID_BACKGROUND_COLOR = new Color(224, 224, 224);
     }
 
 
@@ -212,8 +222,8 @@ public class Util {
 
 
     // VALIDATION //////////////////
-    public static Color INVALID_BACKGROUND_COLOR = Color.PINK;
-    public static Color VALID_BACKGROUND_COLOR = new Color(224, 224, 224);
+    public static Color INVALID_BACKGROUND_COLOR;
+    public static Color VALID_BACKGROUND_COLOR;
     ///////////////////////////////
 
 
@@ -295,10 +305,10 @@ public class Util {
 
 
     // GUI COMPONENTS AND FUNCTIONALITY //////////
-    private static ClassLoader initClassLoader = null;
-    private static MURLClassLoader mURLClassLoader = null;
+    private static ClassLoader initClassLoader;
+    private static MURLClassLoader mURLClassLoader;
     private static JProgressBar statusJProgressBar;
-    private static boolean isDemo = false;
+    private static boolean isDemo;
     private static MPipelineJPanel mPipelineJPanel;
     private static MRackJPanel mRackJPanel;
     private static MLoginJFrame mLoginJFrame;
