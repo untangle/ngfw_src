@@ -239,6 +239,86 @@ CREATE TABLE settings.ab_settings (
     ab_configuration char(1) NOT NULL,
     PRIMARY KEY (settings_id));
 
+-- com.metavize.mvvm.networking.NetworkSettings
+CREATE TABLE settings.mvvm_network_settings (
+    settings_id INT8 NOT NULL,
+    default_route INET,
+    dns_1 INET,
+    dns_2 INET,
+    hostname TEXT,
+    public_address TEXT,
+    PRIMARY KEY (settings_id));
+
+-- com.metavize.mvvm.networking.Interface
+CREATE TABLE settings.mvvm_network_intf (
+    rule_id       INT8 NOT NULL,
+    argon_intf    INT2,
+    network_space INT8,
+    media         INT2,
+    pingable      BOOL,
+    name          TEXT,
+    category      TEXT,
+    description   TEXT,
+    live          BOOL,
+    alert         BOOL,
+    log           BOOL,
+    settings_id   INT8,
+    position      INT4,
+    PRIMARY KEY (rule_id));
+
+-- com.metavize.mvvm.networking.Route
+CREATE TABLE settings.mvvm_network_route (
+    rule_id       INT8 NOT NULL,
+    network_space INT8,
+    destination   TEXT,
+    next_hop      INET,
+    name          TEXT,
+    category      TEXT,
+    description   TEXT,
+    live          BOOL,
+    alert         BOOL,
+    log           BOOL,
+    settings_id   INT8,
+    position      INT4,
+    PRIMARY KEY (rule_id));
+
+
+-- com.metavize.mvvm.networking.IPNetworkRule
+CREATE TABLE settings.mvvm_network_ip (
+    rule_id       INT8 NOT NULL,
+    network_space INT8,
+    network       TEXT,
+    name          TEXT,
+    category      TEXT,
+    description   TEXT,
+    live          BOOL,
+    alert         BOOL,
+    log           BOOL,
+    position      INT4,
+    PRIMARY KEY (rule_id));
+
+
+-- com.metavize.mvvm.networking.NetworkSpace
+CREATE TABLE settings.mvvm_network_space (
+    rule_id                INT8 NOT NULL,
+    is_traffic_forwarded   BOOL,
+    is_dhcp_enabled        BOOL,
+    is_nat_enabled         BOOL,
+    nat_address            INET,
+    nat_space              INT8,
+    is_dmz_host_enabled    BOOL,
+    is_dmz_logging_enabled BOOL,
+    dmz_host               INET,
+    mtu                    INT4,
+    name                   TEXT,
+    category               TEXT,
+    description            TEXT,
+    live                   BOOL,
+    alert                  BOOL,
+    log                    BOOL,
+    settings_id            INT8,
+    position               INT4,
+    PRIMARY KEY (rule_id));
 
 ----------------
 -- constraints |

@@ -23,13 +23,13 @@ MVVM_SESSION_LIMIT=""
 
 MVVM_ARGS=""
 
-## For testing, setup the interfaces here
-MVVM_INSIDE_INTF=vmnet1
+## For testing, setup the interfaces here (for testing modify this value, not the one below)
+#MVVM_INSIDE_INTF=""
 #MVVM_OUTSIDE_INTF=""
 #MVVM_DMZ_INTF=""
 
 ## Set inside and outside interface to a default if it is not set
-MVVM_INSIDE_INTF=vmnet1
+MVVM_INSIDE_INTF=${MVVM_INSIDE_INTF:-"eth1"}
 MVVM_OUTSIDE_INTF=${MVVM_OUTSIDE_INTF:-"eth0"}
 
 if [ "x${USER}" = "x" -o "x${USER}" = "xroot" ]; then
