@@ -149,18 +149,20 @@ public class EventLogger<E extends LogEvent> implements EventManager<E>
     public EventCache addSimpleEventFilter(SimpleEventFilter<E> simpleFilter)
     {
         ListEventFilter lef = new SimpleEventFilterAdaptor(simpleFilter);
-        EventCache<E> ec = new EventCache<E>(this, lef);
-        caches.add(ec);
-
-        return ec;
+        EventCache<E> ec = new SimpleEventCache<E>(lef);
+        return addEventCache(ec);
     }
 
     public EventCache addListEventFilter(ListEventFilter<E> listFilter)
     {
-        EventCache<E> ec = new EventCache<E>(this, listFilter);
-        caches.add(ec);
+        EventCache<E> ec = new SimpleEventCache<E>(listFilter);
+        return addEventCache(ec);
+    }
 
-        return ec;
+    public EventCache addEventCache(EventCache<E> ec) {
+      ec.setEventLogger(this);
+      caches.add(ec);
+      return ec;
     }
 
     public void log(E e)

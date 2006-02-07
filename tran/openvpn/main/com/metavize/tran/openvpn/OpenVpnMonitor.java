@@ -157,18 +157,22 @@ class OpenVpnMonitor implements Runnable
 
             /* Update the current time */
             now.setTime( System.currentTimeMillis());
-            
-            try {
-                /* Cleanup UNDEF sessions every time you are going to update the stats */
-                boolean killUndef = now.after( nextUpdate );
-                updateStatus( killUndef );
-            } catch ( Exception e ) {
-                logger.info( "Error updating status", e );
-            }
-            
-            if ( now.after( nextUpdate )) {
-                logStatistics( now );
-                nextUpdate.setTime( now.getTime() + LOG_TIME_MSEC );
+
+            //Grab lock, such that a concurrent read of the "activeMap"
+            //doesn't happen during an update
+            synchronized(this) {
+              try {
+                  /* Cleanup UNDEF sessions every time you are going to update the stats */
+                  boolean killUndef = now.after( nextUpdate );
+                  updateStatus( killUndef );
+              } catch ( Exception e ) {
+                  logger.info( "Error updating status", e );
+              }
+              
+              if ( now.after( nextUpdate )) {
+                  logStatistics( now );
+                  nextUpdate.setTime( now.getTime() + LOG_TIME_MSEC );
+              }
             }
 
             /* Check if the transform is still running */
@@ -180,6 +184,11 @@ class OpenVpnMonitor implements Runnable
 
         logger.debug( "Finished" );
     }
+
+    private synchronized List<ClientConnectEvent> getOpenConnectionsAsEvents() {
+      return null;
+    }
+
 
     public synchronized void start()
     {
