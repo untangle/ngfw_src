@@ -166,7 +166,7 @@ public abstract class SessionImpl implements Session
      */
     public long t2cBytes()
     {
-        return sessionGlobalState.clientSideListener().rxBytes;
+        return sessionGlobalState.clientSideListener().txBytes;
     }
 
     /**
@@ -198,7 +198,7 @@ public abstract class SessionImpl implements Session
      */
     public long t2cChunks()
     {
-        return sessionGlobalState.clientSideListener().rxChunks;
+        return sessionGlobalState.clientSideListener().txChunks;
     }
 
     /* These are not really useable without a little bit of tweaking to the vector machine */
