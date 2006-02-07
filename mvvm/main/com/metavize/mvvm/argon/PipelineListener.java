@@ -18,9 +18,13 @@ public interface PipelineListener
 {
     void clientEvent( IncomingSocketQueue in );
     void clientEvent( OutgoingSocketQueue out );
+    /* This is equivalent to an EPIPE */
+    void clientOutputResetEvent( OutgoingSocketQueue out );
 
     void serverEvent( IncomingSocketQueue in );
     void serverEvent( OutgoingSocketQueue out );
+    /* This is equivalent to an EPIPE */    
+    void serverOutputResetEvent( OutgoingSocketQueue out );
 
     void raze();
 

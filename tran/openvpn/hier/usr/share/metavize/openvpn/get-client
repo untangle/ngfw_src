@@ -105,7 +105,7 @@ function installClient()
 
 function testInstall()
 {
-    sudo /etc/init.d/openvpn start
+    /etc/init.d/openvpn start
     local t
     local t_success
 

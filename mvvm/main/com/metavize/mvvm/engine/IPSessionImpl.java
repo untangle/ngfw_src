@@ -427,6 +427,20 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         }
     }
 
+    /** The write side of the client has been closed from underneath the transform,
+     * this is the same as an EPIPE, but is delivered as an event */
+    public void clientOutputResetEvent(OutgoingSocketQueue out)
+    {
+        
+    }
+
+    /** The write side of the server has been closed from underneath the transform,
+     * this is the same as an EPIPE, but is delivered as an event */
+    public void serverOutputResetEvent(OutgoingSocketQueue out)
+    {
+        
+    }
+
     /**
      * This one sets up the socket queues for streaming to begin.
      *

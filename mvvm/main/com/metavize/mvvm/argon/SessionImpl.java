@@ -60,8 +60,17 @@ public abstract class SessionImpl implements Session
             public void serverEvent( IncomingSocketQueue in )
             {
             }
+
+            public void serverOutputResetEvent( OutgoingSocketQueue out )
+            {
+            }
+
             
             public void serverEvent( OutgoingSocketQueue out )
+            {
+            }
+            
+            public void clientOutputResetEvent( OutgoingSocketQueue out )
             {
             }
             
@@ -373,6 +382,7 @@ public abstract class SessionImpl implements Session
         public void event( IncomingSocketQueue in, OutgoingSocketQueue out )
         {
             /* XXX An optimization we don't have yet */
+            throw new IllegalStateException( "This is an optimization we don't have yet" );
         }
 
         public void event( IncomingSocketQueue in )
@@ -446,30 +456,36 @@ public abstract class SessionImpl implements Session
             }
         }
             
-
+        /** This occurs when the outgoing socket queue is shutdown */
         public void shutdownEvent( OutgoingSocketQueue out )
         {
-            IncomingSocketQueue in;
-
+            boolean isDebugEnabled = logger.isDebugEnabled();
             if ( out == serverOutgoingSocketQueue ) {
-                if ( logger.isDebugEnabled())
-                    logger.debug( "ShutdownEvent: server - " + out );
-                in = serverIncomingSocketQueue;
+                if ( isDebugEnabled ) {
+                    logger.debug( "ShutdownEvent: server - " + out + " closed: " + out.isClosed());
+                }
+                /* If the transform hasn't closed the socket queue yet, send the even */
+                if ( !out.isClosed()) {
+                    /* This is equivalent to an EPIPE */
+                    listener.serverOutputResetEvent( out );
+                } else {
+                    if ( isDebugEnabled ) logger.debug( "shutdown event for closed sink" );
+                }
             } else if ( out == clientOutgoingSocketQueue ) {
-                if ( logger.isDebugEnabled())
-                    logger.debug( "ShutdownEvent: client - " + out );
-                
-                in = clientIncomingSocketQueue;
+                if ( isDebugEnabled ) {
+                    logger.debug( "ShutdownEvent: client - " + out + " closed: " + out.isClosed());
+                }
+
+                if ( !out.isClosed()) {
+                    /* This is equivalent to an EPIPE */
+                    listener.clientOutputResetEvent( out );
+                } else {
+                    if ( isDebugEnabled ) logger.debug( "shutdown event for closed sink" );
+                }
             } else {
                 /* This should never happen */
                 throw new IllegalStateException( "Invalid socket queue: " + out );
-            }
-            
-            // if ( !in.isClosed()) {
-                /* XXX This doesn't really apply for UDP, but it also should
-                 * never happen for UDP */
-            // in.add( ResetCrumb.getInstance());
-            // }
+            }                        
         }
     }
 }
