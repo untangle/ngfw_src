@@ -22,6 +22,8 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import javax.net.SocketFactory;
+import javax.net.ssl.SSLSocketFactory;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -48,9 +50,10 @@ public class ProxyServlet extends HttpServlet
         OutputStream sos = null;
 
         try {
-            Socket s = new Socket();
+            SocketFactory ssf = SSLSocketFactory.getDefault();
+            Socket s = ssf.createSocket();
             InetAddress addr = InetAddress.getByName(STORE_HOST);
-            s.connect(new InetSocketAddress(addr, 80));
+            s.connect(new InetSocketAddress(addr, 443));
             sis = s.getInputStream();
             sos = s.getOutputStream();
 

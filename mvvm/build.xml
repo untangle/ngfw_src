@@ -722,6 +722,14 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       </fileset>
     </copy>
 
+    <copy todir="${dist.mvvm.conf}" filtering="false">
+      <fileset file="${java.home}/lib/security/cacerts"/>
+    </copy>
+
+    <exec executable="${java.home}/bin/keytool" failonerror="true">
+      <arg line="-import -noprompt -keystore ${dist.mvvm.conf}/cacerts -storepass changeit -file ${src.resources}/mv-ca.pem -alias metavizeprivateca"/>
+    </exec>
+
     <!-- This stuff was moved here from gui/build.xml, since it belongs here. -->
     <copy todir="${dist.mvvm.webstart}/WEB-INF/lib">
       <fileset refid="mvvm-client.jarset"/>
