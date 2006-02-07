@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -17,10 +17,10 @@ import javax.swing.event.ChangeListener;
 import javax.swing.table.*;
 
 import com.metavize.gui.transform.*;
-import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.util.Util;
-import com.metavize.mvvm.logging.EventRepository;
+import com.metavize.gui.widgets.editTable.*;
 import com.metavize.mvvm.logging.EventManager;
+import com.metavize.mvvm.logging.EventRepository;
 import com.metavize.mvvm.logging.RepositoryDesc;
 import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.mvvm.tran.Transform;
@@ -81,14 +81,14 @@ public class LogJPanel extends MLogTableJPanel {
             for( SpywareEvent requestLog : requestLogList ){
                 PipelineEndpoints pe = requestLog.getPipelineEndpoints();
                 event = new Vector(7);
-                event.add( Util.getLogDateFormat().format(requestLog.getTimeStamp()) );
-                event.add( requestLog.isBlocked() ? "block" : "pass" );
-                event.add( pe.getCClientAddr() + ":" + ((Integer)pe.getCClientPort()).toString() );
-                event.add( requestLog.getLocation() + " : " + requestLog.getIdentification() );
-                event.add( requestLog.getReason() );
-                event.add( pe.getDirectionName() );
-                event.add( pe.getSServerAddr() + ":" + ((Integer)pe.getSServerPort()).toString() );
-                allEvents.add( event );
+                event.add(Util.getLogDateFormat().format(requestLog.getTimeStamp()));
+                event.add(requestLog.isBlocked() ? "block" : "pass");
+                event.add(null == pe ? "" : (pe.getCClientAddr().getHostAddress() + ":" + ((Integer)pe.getCClientPort()).toString()));
+                event.add(requestLog.getLocation() + " : " + requestLog.getIdentification());
+                event.add(requestLog.getReason());
+                event.add(pe.getDirectionName());
+                event.add(null == pe ? "" : (pe.getSServerAddr().getHostAddress() + ":" + ((Integer)pe.getSServerPort()).toString()));
+                allEvents.add(event);
             }
 
             return allEvents;
