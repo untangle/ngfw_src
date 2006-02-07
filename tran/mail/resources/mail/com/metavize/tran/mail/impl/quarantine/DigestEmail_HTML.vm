@@ -598,6 +598,7 @@ hr {
                       <tr>
                         <th class="first" scope="col">Actions</th>
                         <th scope="col">From</th>
+                        <th scope="col"><img src="$image_root/with_attach.png"/></th>
                         <th scope="col">Score</th>
                         <th scope="col">Subject</th>
                       </tr>
@@ -606,14 +607,14 @@ hr {
                     #if ($hasRecsNotShown)
                       <tr>
                         <th scope="row">Not Listed</th>
-                        <td colspan="4">
+                        <td colspan="5">
                           $numRecsNotShown older mails
                           <a href="$linkgenerator.generateInboxLink()">in your online inbox</a></td>
                       </tr>
                     #else
                       <tr>
                         <th scope="row">Total</th>
-                        <td colspan="4">$totalNumRecords mails</td>
+                        <td colspan="5">$totalNumRecords mails</td>
                       </tr>
                     #end
                     </tfoot>
@@ -633,6 +634,13 @@ hr {
                               <a href="$linkgenerator.generatePurgeLink($record.getMailID())">Delete</a>&nbsp;|
                               &nbsp;<a href="$linkgenerator.generateRescueLink($record.getMailID())">Release</a></td>
                             <td>$jsEscaper.escapeJS($record.getMailSummary().Sender)</td>
+                            <!-- Before the whole new conditional block -->
+                            <td>
+                            #if ($record.getMailSummary().hasAttachments())
+                              <img src="$image_root/with_attach.png"/>
+                            #end
+                            </td>
+                            <!-- After the whole new conditional block -->
                             <td>$record.getMailSummary().QuarantineDetail</td>
                             <td>$jsEscaper.escapeJS($record.getMailSummary().Subject)</td>
                           </tr>

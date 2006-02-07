@@ -46,7 +46,15 @@ public final class MailSummary
   }
   public void setAttachmentCount(int attachmentCount) {
     m_attachmentCount = attachmentCount;
-  }  
+  }
+
+  /**
+   * Convienence method (needed for Velocity since "getAttachmentCount()>0"
+   * seems to have bugs)
+   */
+  public boolean hasAttachments() {
+    return getAttachmentCount()>0;
+  }
   
   public String getSender() {
     return m_sender;
