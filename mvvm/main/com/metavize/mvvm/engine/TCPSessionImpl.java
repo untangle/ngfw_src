@@ -270,14 +270,15 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     }
 
 
-    protected boolean sideDieing(int side, IncomingSocketQueue in)
+    protected boolean isSideDieing(int side, IncomingSocketQueue in)
+    {
+        return (in.containsReset());
+    }
+
+    protected void sideDieing(int side)
         throws MPipeException
     {
-        if (in.containsReset()) {
-            sendRSTEvent(side);
-            return true;
-        }
-        return false;
+        sendRSTEvent(side);
     }
 
     void tryWrite(int side, OutgoingSocketQueue out, boolean warnIfUnable)

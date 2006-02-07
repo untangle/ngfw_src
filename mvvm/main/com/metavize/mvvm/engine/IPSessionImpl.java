@@ -431,15 +431,90 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
      * this is the same as an EPIPE, but is delivered as an event */
     public void clientOutputResetEvent(OutgoingSocketQueue out)
     {
-        
+        Transform xform = mPipe().transform();
+        if (xform.getRunState() != TransformState.RUNNING) {
+            String message = "killing: output reset(client) for transform in state " + xform.getRunState();
+            warn(message);
+            // killSession(message);
+            return;
+        }
+        TransformContext tctx = xform.getTransformContext();
+        ClassLoader classLoader = tctx.getClassLoader();
+        Thread ct = Thread.currentThread();
+        ClassLoader oldCl = ct.getContextClassLoader();
+
+        // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        ct.setContextClassLoader(classLoader);
+        try {
+            transformManager.registerThreadContext(tctx);
+            MDC.put(SESSION_ID_MDC_KEY, idForMDC());
+            
+            IncomingSocketQueue in = ((com.metavize.mvvm.argon.Session)pSession).clientIncomingSocketQueue();
+            if (in != null)
+                in.reset();
+            sideDieing(CLIENT);
+        } catch (MPipeException x) {
+            String message = "MPipeException while output resetting";
+            error(message, x);
+            // killSession(message);
+        } catch (Exception x) {
+            String message = "" + x.getClass().getName() + " while output resetting";
+            // error(message, x);
+            killSession(message);
+        } catch (OutOfMemoryError x) {
+            Main.fatalError("SessionHandler", x);
+        } finally {
+            transformManager.deregisterThreadContext();
+            MDC.remove(SESSION_ID_MDC_KEY);
+            ct.setContextClassLoader(oldCl);
+            // left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        }
     }
 
     /** The write side of the server has been closed from underneath the transform,
      * this is the same as an EPIPE, but is delivered as an event */
     public void serverOutputResetEvent(OutgoingSocketQueue out)
     {
-        
+        Transform xform = mPipe().transform();
+        if (xform.getRunState() != TransformState.RUNNING) {
+            String message = "killing: output reset(server) for transform in state " + xform.getRunState();
+            warn(message);
+            // killSession(message);
+            return;
+        }
+        TransformContext tctx = xform.getTransformContext();
+        ClassLoader classLoader = tctx.getClassLoader();
+        Thread ct = Thread.currentThread();
+        ClassLoader oldCl = ct.getContextClassLoader();
+
+        // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        ct.setContextClassLoader(classLoader);
+        try {
+            transformManager.registerThreadContext(tctx);
+            MDC.put(SESSION_ID_MDC_KEY, idForMDC());
+            
+            IncomingSocketQueue in = ((com.metavize.mvvm.argon.Session)pSession).serverIncomingSocketQueue();
+            if (in != null)
+                in.reset();
+            sideDieing(SERVER);
+        } catch (MPipeException x) {
+            String message = "MPipeException while output resetting";
+            error(message, x);
+            // killSession(message);
+        } catch (Exception x) {
+            String message = "" + x.getClass().getName() + " while output resetting";
+            // error(message, x);
+            killSession(message);
+        } catch (OutOfMemoryError x) {
+            Main.fatalError("SessionHandler", x);
+        } finally {
+            transformManager.deregisterThreadContext();
+            MDC.remove(SESSION_ID_MDC_KEY);
+            ct.setContextClassLoader(oldCl);
+            // left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        }
     }
+
 
     /**
      * This one sets up the socket queues for streaming to begin.
@@ -638,8 +713,10 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
 
             // need to check if input contains RST (for TCP) or EXPIRE (for UDP)
             // independent of the write buffers.
-            if (sideDieing(side, in))
+            if (isSideDieing(side, in)) {
+                sideDieing(side);
                 return;
+            }
 
             assert streamer == null : "readEvent when streaming";;
 
@@ -734,14 +811,16 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
     }
 
     /**
-     * <code>containsEnding</code> returns true if the incoming socket queue contains an event
-     * that will cause the end of the session (at least on that side).  These are RST for TCP
-     * and EXPIRE for UDP.  It also sends the event to the user.
+     * <code>isSideDieing</code> returns true if the incoming socket queue
+     * contains an event that will cause the end of the session (at least on
+     * that side). These are RST for TCP and EXPIRE for UDP.
      *
      * @param in an <code>IncomingSocketQueue</code> value
      * @return a <code>boolean</code> value
      */
-    abstract boolean sideDieing(int side, IncomingSocketQueue in) throws MPipeException;
+    abstract protected boolean isSideDieing(int side, IncomingSocketQueue in);
+
+    abstract protected void sideDieing(int side) throws MPipeException;
 
     abstract void killSession(String message);
 

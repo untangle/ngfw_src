@@ -112,13 +112,13 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         if (out != null) {
             Crumb crumb = ShutdownCrumb.getInstance(true);
             out.write(crumb);
-            // 8/15/05 we also now reset the incoming side, to avoid the race in case a packet outraces
-            // the close-other-half event.
-            IncomingSocketQueue in = ((com.metavize.mvvm.argon.Session)pSession).serverIncomingSocketQueue();
-            if (in != null) {
-                // Should always happen.
-                in.reset();
-            }
+        }
+        // 8/15/05 we also now reset the incoming side, to avoid the race in case a packet outraces
+        // the close-other-half event.
+        IncomingSocketQueue in = ((com.metavize.mvvm.argon.Session)pSession).serverIncomingSocketQueue();
+        if (in != null) {
+            // Should always happen.
+            in.reset();
         }
     }
 
@@ -128,24 +128,25 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         if (out != null) {
             Crumb crumb = ShutdownCrumb.getInstance(true);
             out.write(crumb);
-            // 8/15/05 we also now reset the incoming side, to avoid the race in case a packet outraces
-            // the close-other-half event.
-            IncomingSocketQueue in = ((com.metavize.mvvm.argon.Session)pSession).clientIncomingSocketQueue();
-            if (in != null) {
-                // Should always happen.
-                in.reset();
-            }
+        }
+        // 8/15/05 we also now reset the incoming side, to avoid the race in case a packet outraces
+        // the close-other-half event.
+        IncomingSocketQueue in = ((com.metavize.mvvm.argon.Session)pSession).clientIncomingSocketQueue();
+        if (in != null) {
+            // Should always happen.
+            in.reset();
         }
     }
 
-    protected boolean sideDieing(int side, IncomingSocketQueue in)
+    protected boolean isSideDieing(int side, IncomingSocketQueue in)
+    {
+        return (in.containsReset() || in.containsShutdown());
+    }
+
+    protected void sideDieing(int side)
         throws MPipeException
     {
-        if (in.containsShutdown()) {
-            sendExpiredEvent(side);
-            return true;
-        }
-        return false;
+        sendExpiredEvent(side);
     }
 
     public void sendClientPacket(ByteBuffer packet, IPPacketHeader header)
