@@ -16,4 +16,8 @@ ln -s "/usr/share/zoneinfo/$ZONE" /etc/localtime
 
 grep -sq lang= /boot/grub/menu.lst && sed -i -e "s|\( tz=[^ ]*\)\? lang=| tz=$ZONE lang=|" /boot/grub/menu.lst
 
+# Restart system daemons that depend on timezone
+/etc/init.d/sysklogd restart
+/etc/init.d/cron restart
+
 exit 0
