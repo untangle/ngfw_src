@@ -1793,7 +1793,7 @@ Description: The third party libraries needed for the MVVM
 
 Package: mvvm
 Architecture: any
-Depends: jre-mv, libmvvm-thirdparty, sudo, iptables-mv, restore-mv, kiosk-mv, libxml2, kernel-mv, pump-mv, ntp-simple, snmpd, snmp, sg3-utils
+Depends: jre-mv, libmvvm-thirdparty, sudo, iptables-mv, restore-mv, libxml2, kernel-mv, pump-mv, ntp-simple, snmpd, snmp, sg3-utils
 Pre-Depends: postgresql-mv
 Conflicts: xenon, xenon-dbg
 XB-Display-Name: Metavize Server
