@@ -393,7 +393,9 @@ static int _srv_start_connection( netcap_session_t* netcap_sess, struct sockaddr
             } else if ( errno == EINPROGRESS ) {
                 /* nothing to do here */
             } else {
-                ret = perrlog( "connect" );
+                ret = errlog( ERR_CRITICAL, "connect: %s : (%s:%d -> %s:%d)\n", errstr,
+                              unet_inet_ntoa( src_addr.sin_addr.s_addr ), ntohs( src_addr.sin_port ),
+                              unet_inet_ntoa( dst_addr->sin_addr.s_addr ), ntohs( dst_addr->sin_port ));
             }
         }
     } while ( 0 );

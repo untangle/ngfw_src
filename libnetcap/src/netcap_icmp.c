@@ -409,12 +409,13 @@ int  netcap_icmp_call_hook( netcap_pkt_t* pkt )
             netcap_pkt_raze( pkt );
             pkt = NULL;
             ret = 0;
-            
             break;
 
         case _FIND_ERROR:
         default:
-            ret = errlog( ERR_CRITICAL, "_icmp_find_session\n" );
+            ret = errlog ( ERR_CRITICAL, "_icmp_find_session (%s:%d -> %s:%d)\n",
+                           unet_next_inet_ntoa ( pkt->src.host.s_addr ), pkt->src.port, 
+                           unet_next_inet_ntoa ( pkt->dst.host.s_addr ), pkt->dst.port );
         }
     } while ( 0 );
 

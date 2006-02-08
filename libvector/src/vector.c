@@ -522,7 +522,17 @@ static int  _vector_handle_src_error_event    ( vector_t* vec, relay_t* relay )
             errlog( ERR_WARNING, "VECTOR(%08x): ERR without a shutdown event (event NULL/%08x)\n", 
                     vec, key_type );
         } else {
-            errlog( ERR_WARNING, "VECTOR(%08x): ERR without a shutdown event (event type: %08x/%08x)\n",
+               /* This has been changed from an errlog to a debug
+                  statment. This is not an abnormal case - epoll will
+                  give us an error flag when a reset has been given to
+                  us, but will give us the data first if there data in
+                  the buffer. However we are not guaranteed to have
+                  room in the relay for this event. Since a
+                  error/reset is coming and we don't guarantee data
+                  integrity when a error/reset is coming, we just drop
+                  the event totally, and replace with an error
+                  shutdown event - dmorris */
+            debug( 1, "VECTOR(%08x): ERR without a shutdown event (event type: %08x/%08x)\n",
                     vec, evt->type, key_type );
             
             /* Free the event, and return, if there is an error, no need to queue it */
