@@ -33,9 +33,9 @@ import java.util.Map;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
-import com.metavize.mvvm.logging.EventCache;
 import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.EventLoggerFactory;
+import com.metavize.mvvm.logging.EventRepository;
 import com.metavize.mvvm.logging.RepositoryDesc;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.TransformStats;
@@ -116,7 +116,7 @@ class OpenVpnMonitor implements Runnable
         this.eventLogger = EventLoggerFactory.factory().getEventLogger(transform.getTransformContext());
         //Add the magical thingies to make UI log reading from cache happen
         eventLogger.addSimpleEventFilter(new ClientConnectEventAllFilter());//For "final" events
-        eventLogger.addEventCache(new ActiveEventCache());//For "open" events
+        eventLogger.addEventRepository(new ActiveEventCache(eventLogger));//For "open" events
         this.localContext = MvvmContextFactory.context();
         this.transform = transform;
     }
@@ -622,25 +622,20 @@ class OpenVpnMonitor implements Runnable
     //are never sent to persistent store, this class simulates
     //the behavior of "normal" EventCaches by examining only
     //the actie records and returning them to the client.
-    class ActiveEventCache implements EventCache<ClientConnectEvent> {
+    class ActiveEventCache implements EventRepository<ClientConnectEvent> {
 
-        private EventLogger<ClientConnectEvent> eventLogger;
+        private final EventLogger<ClientConnectEvent> eventLogger;
         private RepositoryDesc rd = new RepositoryDesc("Active Sessions");
 
-        public void log(ClientConnectEvent e) {
-          //Nothing to do
+        ActiveEventCache(EventLogger eventLogger)
+        {
+            this.eventLogger = eventLogger;
         }
 
-        public void checkCold() {
-          //Nothing to do
-        }
-
-        public void setEventLogger(EventLogger<ClientConnectEvent> eventLogger) {
-          this.eventLogger = eventLogger;
-        }
         public RepositoryDesc getRepositoryDesc() {
           return rd;
         }
+
         public List<ClientConnectEvent> getEvents() {
           List<ClientConnectEvent> list = getOpenConnectionsAsEvents();
           Collections.sort(list);
