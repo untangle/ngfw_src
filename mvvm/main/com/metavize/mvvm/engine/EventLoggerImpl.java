@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.logging.EventLoggerListener;
 import com.metavize.mvvm.logging.EventRepository;
 import com.metavize.mvvm.logging.ListEventFilter;
 import com.metavize.mvvm.logging.LogEvent;
@@ -51,6 +52,7 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
 
     private final List<EventCache<E>> caches = new LinkedList<EventCache<E>>();
     private final TransformContext transformContext;
+    private final List<EventLoggerListener> listeners = new LinkedList<EventLoggerListener>();
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -175,6 +177,33 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
         return ec;
     }
 
+    public void addEventLoggerShutdownListener(EventLoggerListener l)
+    {
+        synchronized (listeners) {
+            for (Iterator<EventLoggerListener> i = listeners.iterator(); i.hasNext(); ) {
+                if (i.next() == l) {
+                    logger.warn("ignoring duplicate listener: " + l);
+                    return;
+                }
+            }
+            listeners.add(l);
+        }
+    }
+
+    public void removeEventLoggerShutdownListener(EventLoggerListener l)
+    {
+        synchronized (listeners) {
+            for (Iterator<EventLoggerListener> i = listeners.iterator(); i.hasNext(); ) {
+                if (i.next() == l) {
+                    i.remove();
+                    return;
+                }
+            }
+        }
+
+        logger.warn("listener not registered: " + l);
+    }
+
     public void log(E e)
     {
         if (!inputQueue.offer(new EventDesc(this, e))) {
@@ -199,6 +228,12 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
 
     public void stop()
     {
+        synchronized (listeners) {
+            for (EventLoggerListener l : listeners) {
+                l.preShutdown(this);
+            }
+        }
+
         Tid tid = null == transformContext ? null : transformContext.getTid();
         synchronized (WORKERS) {
             inputQueue = null;
@@ -282,21 +317,7 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
                         continue;
                     }
 
-                    if (null == ed) {
-                        continue;
-                    }
-
-                    LogEvent e = ed.getLogEvent();
-
-                    logQueue.add(e);
-
-                    try {
-                        syslogManager.sendSyslog(e, tag);
-                    } catch (Exception exn) { // never say die
-                        logger.warn("failed to send syslog", exn);
-                    }
-
-                    ed.getEventLogger().doLog(e);
+                    accept(ed);
                 }
 
                 if (logQueue.size() >= BATCH_SIZE || t >= nextSync) {
@@ -313,9 +334,30 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
                 }
             }
 
+            while (accept(inputQueue.poll()));
+
             if (0 < logQueue.size()) {
                 persist();
             }
+        }
+
+        private boolean accept(EventDesc ed)
+        {
+            if (null == ed) { return false; }
+
+            LogEvent e = ed.getLogEvent();
+
+            logQueue.add(e);
+
+            try {
+                syslogManager.sendSyslog(e, tag);
+            } catch (Exception exn) { // never say die
+                logger.warn("failed to send syslog", exn);
+            }
+
+            ed.getEventLogger().doLog(e);
+
+            return true;
         }
 
         private void persist()

@@ -11,6 +11,9 @@
 
 package com.metavize.mvvm.engine;
 
+import java.util.Map;
+import java.util.WeakHashMap;
+
 import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.EventLoggerFactory;
 import com.metavize.mvvm.logging.LogEvent;
@@ -21,6 +24,9 @@ public class EventLoggerFactoryImpl extends EventLoggerFactory
     private static final EventLoggerFactoryImpl FACTORY
         = new EventLoggerFactoryImpl();
 
+    private final Map<EventLoggerImpl, Object> loggers
+        = new WeakHashMap<EventLoggerImpl, Object>();
+
     public static EventLoggerFactoryImpl factory()
     {
         return FACTORY;
@@ -28,11 +34,19 @@ public class EventLoggerFactoryImpl extends EventLoggerFactory
 
     public <E extends LogEvent> EventLogger<E> getEventLogger()
     {
-        return new EventLoggerImpl<E>();
+        EventLoggerImpl el = new EventLoggerImpl<E>();
+        synchronized (loggers) {
+            loggers.put(el, null);
+        }
+        return el;
     }
 
     public <E extends LogEvent> EventLogger<E> getEventLogger(TransformContext tctx)
     {
-        return new EventLoggerImpl<E>(tctx);
+        EventLoggerImpl el = new EventLoggerImpl<E>(tctx);
+        synchronized (loggers) {
+            loggers.put(el, null);
+        }
+        return el;
     }
 }
