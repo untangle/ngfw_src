@@ -29,6 +29,9 @@ is_reporting_enabled=$(@USR_BIN@/mcli isReportingEnabled)
 if [ $is_reporting_enabled == 'true' ]; then
     mars=$(@USR_BIN@/mcli instances | grep running | awk '{print $2}' | uniq | sed 's|^\(.*\)$|@MVVM_TOOLBOX@/\1.mar|')
 
+    DAYOFWEEK=`date +%a`
+    DAYOFMONTH=`date +%d`
+
     # Build pre-joined reports tables
     for c in @MVVM_SCHEMA@/*/start-reports.sql; do
         psql -U metavize -f $c mvvm
@@ -53,15 +56,22 @@ if [ $is_reporting_enabled == 'true' ]; then
 
 # generate the emailable page
         @USR_BIN@/index-reports index_email_daily.html daily true
-        @USR_BIN@/index-reports index_email_weekly.html weekly true
-        @USR_BIN@/index-reports index_email_monthly.html monthly true
+        if [ $DAYOFWEEK == "Sun" ]; then
+          @USR_BIN@/index-reports index_email_weekly.html weekly true
+        fi
+        if [ $DAYOFMONTH == "01" ]; then
+          @USR_BIN@/index-reports index_email_monthly.html monthly true
+        fi
 
 # email the reports to all recipients
         cd $REPORT_DIR/current
         cat @PREFIX@/tmp/mail_reports_arguments_daily.txt | xargs @USR_BIN@/mail-reports
-        cat @PREFIX@/tmp/mail_reports_arguments_weekly.txt | xargs @USR_BIN@/mail-reports
-        cat @PREFIX@/tmp/mail_reports_arguments_monthly.txt | xargs @USR_BIN@/mail-reports
-
+        if [ $DAYOFWEEK == "Sun" ]; then
+          cat @PREFIX@/tmp/mail_reports_arguments_weekly.txt | xargs @USR_BIN@/mail-reports
+        fi
+        if [ $DAYOFMONTH == "01" ]; then
+          cat @PREFIX@/tmp/mail_reports_arguments_monthly.txt | xargs @USR_BIN@/mail-reports
+        fi
     fi
 
     for c in @MVVM_SCHEMA@/*/finish-reports.sql; do
