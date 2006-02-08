@@ -17,6 +17,8 @@ import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.ValidateException;
 
+import com.metavize.mvvm.logging.EventManager;
+
 
 import java.util.List;
 
@@ -54,5 +56,18 @@ public interface VpnTransform extends Transform
     public void setAddressGroups( GroupList parameters ) throws Exception;
     public void setExportedAddressList( ExportList parameters ) throws Exception;
     public void setClients( ClientList parameters ) throws Exception;
-    public void setSites( SiteList parameters ) throws Exception;    
+    public void setSites( SiteList parameters ) throws Exception;
+
+    /**
+     * Access the EventManager for ClientConnectEvents
+     */
+    public EventManager<ClientConnectEvent> getClientConnectEventManager();
+    /**
+     * Access the EventManager for VpnStatisticEvents
+     */    
+    public EventManager<VpnStatisticEvent> getVpnStatisticEventManager();
+    /**
+     * Access the EventManager for ClientDistributionEvents
+     */    
+    public EventManager<ClientDistributionEvent> getClientDistributionEventManager();
 }

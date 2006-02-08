@@ -16,8 +16,10 @@ import com.metavize.mvvm.logging.SimpleEventFilter;
 
 public class ClientConnectEventAllFilter
   implements SimpleEventFilter<ClientConnectEvent> {
+
+    public static final String REPOSITORY_NAME = "Closed Sessions";
   
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc("Closed Sessions");
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc(REPOSITORY_NAME);
 
     private static final String WARM_QUERY
         = "FROM ClientConnectEvent evt ORDER BY evt.timeStamp DESC";

@@ -82,7 +82,12 @@ class OpenVpnMonitor implements Runnable
     private static final int PROCNET_STAT_TX_BYTES   = 8;
     private static final int PROCNET_STAT_TX_PACKETS = 9;
 
-    private final EventLogger eventLogger;
+    private static final String ACTIVE_SESSIONS_REPO_NAME = "Active Sessions";
+    private static final String ALL_SESSIONS_REPO_NAME = "All Sessions";
+
+    private final EventLogger<ClientConnectEvent> clientConnectLogger;
+    private final EventLogger<VpnStatisticEvent> vpnStatsDistLogger;
+    private final EventLogger<ClientDistributionEvent> clientDistLogger;
     private final Logger logger = Logger.getLogger( this.getClass());
 
     private Map<Key,Stats> statusMap    = new HashMap<Key,Stats>();
@@ -113,13 +118,44 @@ class OpenVpnMonitor implements Runnable
 
     OpenVpnMonitor( VpnTransformImpl transform )
     {
-        this.eventLogger = EventLoggerFactory.factory().getEventLogger(transform.getTransformContext());
+        this.vpnStatsDistLogger = EventLoggerFactory.factory().getEventLogger(transform.getTransformContext());
+        this.clientConnectLogger = EventLoggerFactory.factory().getEventLogger(transform.getTransformContext());
+        this.clientDistLogger = EventLoggerFactory.factory().getEventLogger(transform.getTransformContext());
         //Add the magical thingies to make UI log reading from cache happen
-        eventLogger.addSimpleEventFilter(new ClientConnectEventAllFilter());//For "final" events
-        eventLogger.addEventRepository(new ActiveEventCache(eventLogger));//For "open" events
+        clientConnectLogger.addSimpleEventFilter(new ClientConnectEventAllFilter());//For "closed" events
+        clientConnectLogger.addEventRepository(new ActiveEventCache(clientConnectLogger));//For "open" events
+        clientConnectLogger.addEventRepository(new AllEventsCache(clientConnectLogger));//For "all" events
+        
         this.localContext = MvvmContextFactory.context();
         this.transform = transform;
     }
+
+    /**
+     * Accessor for the ClientConnectLogger, for the impl
+     * to pass to the UI
+     */
+    EventLogger<ClientConnectEvent> getClientConnectLogger() {
+      return clientConnectLogger;
+    }
+
+    
+    /**
+     * Accessor for the ClientConnectLogger, for the impl
+     * to pass to the UI
+     */
+    EventLogger<VpnStatisticEvent> getVpnStatsDistLogger() {
+      return vpnStatsDistLogger;
+    }
+
+    
+    /**
+     * Accessor for the ClientConnectLogger, for the impl
+     * to pass to the UI
+     */
+    EventLogger<ClientDistributionEvent> getClientDistLogger() {
+      return clientDistLogger;
+    }
+    
 
     public void run()
     {
@@ -222,7 +258,9 @@ class OpenVpnMonitor implements Runnable
             return;
         }
 
-        eventLogger.start();
+        clientConnectLogger.start();
+        vpnStatsDistLogger.start();
+        clientDistLogger.start();
         thread = this.localContext.newThread( this );
         thread.start();
     }
@@ -256,7 +294,9 @@ class OpenVpnMonitor implements Runnable
             thread = null;
         }
 
-        eventLogger.stop();
+        clientConnectLogger.stop();
+        vpnStatsDistLogger.stop();
+        clientDistLogger.stop();
     }
 
     TransformStats updateStats( TransformStats stats )
@@ -421,7 +461,7 @@ class OpenVpnMonitor implements Runnable
             stats.lastUpdate = now;
         }
 
-        eventLogger.log( currentStatistics );
+        vpnStatsDistLogger.log( currentStatistics );
     }
 
 
@@ -600,7 +640,7 @@ class OpenVpnMonitor implements Runnable
         List<ClientDistributionEvent> clientDistributionList = this.clientDistributionList;
         this.clientDistributionList = new LinkedList<ClientDistributionEvent>();
 
-        for ( ClientDistributionEvent event : clientDistributionList ) eventLogger.log( event );
+        for ( ClientDistributionEvent event : clientDistributionList ) clientDistLogger.log( event );
     }
 
     void addClientDistributionEvent( ClientDistributionEvent event )
@@ -612,7 +652,7 @@ class OpenVpnMonitor implements Runnable
       if(stats.isActive || stats.logged) {
         return;
       }
-      eventLogger.log(stats.sessionEvent);
+      clientConnectLogger.log(stats.sessionEvent);
       stats.logged = true;
     }
 
@@ -625,9 +665,9 @@ class OpenVpnMonitor implements Runnable
     class ActiveEventCache implements EventRepository<ClientConnectEvent> {
 
         private final EventLogger<ClientConnectEvent> eventLogger;
-        private RepositoryDesc rd = new RepositoryDesc("Active Sessions");
+        private RepositoryDesc rd = new RepositoryDesc(ACTIVE_SESSIONS_REPO_NAME);
 
-        ActiveEventCache(EventLogger eventLogger)
+        ActiveEventCache(EventLogger<ClientConnectEvent> eventLogger)
         {
             this.eventLogger = eventLogger;
         }
@@ -638,12 +678,48 @@ class OpenVpnMonitor implements Runnable
 
         public List<ClientConnectEvent> getEvents() {
           List<ClientConnectEvent> list = getOpenConnectionsAsEvents();
-          Collections.sort(list);
+          Collections.sort(list,
+            ClientConnectEventComparator.getComparator(ClientConnectEventComparator.SortBy.END_DATE, true));
           int maxLen = eventLogger.getLimit();
           if(list.size() > maxLen) {
             list = list.subList(0, maxLen);
           }
           return list;
+        }
+    }
+
+    //Provides a view of all ClientConnectEvent - both active and closed
+    class AllEventsCache implements EventRepository<ClientConnectEvent> {
+
+        private final EventLogger<ClientConnectEvent> eventLogger;
+        private RepositoryDesc rd = new RepositoryDesc(ALL_SESSIONS_REPO_NAME);
+
+        AllEventsCache(EventLogger<ClientConnectEvent> eventLogger)
+        {
+            this.eventLogger = eventLogger;
+        }
+
+        public RepositoryDesc getRepositoryDesc() {
+          return rd;
+        }
+
+        public List<ClientConnectEvent> getEvents() {
+        
+          List<ClientConnectEvent> openList =
+            eventLogger.getRepository(ACTIVE_SESSIONS_REPO_NAME).getEvents();
+          List<ClientConnectEvent> closedList =
+            eventLogger.getRepository(ClientConnectEventAllFilter.REPOSITORY_NAME).getEvents();
+
+          openList.addAll(closedList);
+
+          Collections.sort(openList,
+            ClientConnectEventComparator.getComparator(ClientConnectEventComparator.SortBy.END_DATE, true));
+
+          int maxLen = eventLogger.getLimit();
+          if(openList.size() > maxLen) {
+            openList = openList.subList(0, maxLen);
+          }
+          return openList;
         }
     }
 }

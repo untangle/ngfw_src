@@ -259,6 +259,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <include name="com/metavize/tran/${tran.name}/gui/**"/>
       <include name="com/metavize/tran/${tran.name}/*Event.java"/>
       <include name="com/metavize/tran/${tran.name}/**/*Exception.java"/>
+      <include name="com/metavize/tran/${tran.name}/**/*Comparator.java"/>
       <!-- Don't need this since the GUI references them: include
            name="com/metavize/tran/${tran.name}/*Transform.java" -->
 

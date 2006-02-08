@@ -36,6 +36,7 @@ import com.metavize.mvvm.tran.UnconfiguredException;
 import com.metavize.mvvm.tran.ValidateException;
 import com.metavize.mvvm.tran.script.ScriptRunner;
 import com.metavize.mvvm.util.TransactionWork;
+import com.metavize.mvvm.logging.EventManager;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -675,4 +676,20 @@ public class VpnTransformImpl extends AbstractTransform
     {
         this.sandbox.setSiteList( parameters );
     }
+
+    public EventManager<ClientConnectEvent> getClientConnectEventManager()
+    {
+        return this.openVpnMonitor.getClientConnectLogger();
+    }
+    
+    public EventManager<VpnStatisticEvent> getVpnStatisticEventManager()
+    {
+        return this.openVpnMonitor.getVpnStatsDistLogger();
+    }
+    
+    public EventManager<ClientDistributionEvent> getClientDistributionEventManager()
+    {
+        return this.openVpnMonitor.getClientDistLogger();
+    }
+    
 }
