@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created using an evaluation version of JasperAssistant (http://www.jasperassistant.com) -->
 <!DOCTYPE jasperReport PUBLIC "-//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
-<jasperReport name="@REPORT_NAME@" whenNoDataType="AllSectionsNoDetail" pageWidth="612" pageHeight="791" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="0" bottomMargin="0">
+
+<!--pageWidth="612" value matched in convert-reports.sed-->
+<!--topMargin="19" odd value chosen for convert-reports.sed-->
+<jasperReport name="@REPORT_NAME@" whenNoDataType="AllSectionsNoDetail" pageWidth="612" pageHeight="791" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="19" bottomMargin="5">
     <property name="com.jasperassistant.designer.HGuides" value="109,112,204,207,492,494"/>
     <property name="com.jasperassistant.designer.GridHeight" value="12"/>
     <property name="com.jasperassistant.designer.GridWidth" value="12"/>
@@ -207,28 +210,32 @@
             </textField>
         </band>
     </detail>
+    <columnFooter>
+      <band height="0"  isSplitAllowed="true" >
+      </band>
+    </columnFooter>
+    <pageFooter>
+      <band height="5"  isSplitAllowed="true" >
+      </band>
+    </pageFooter>
     <lastPageFooter>
-        <band height="16">
-            <printWhenExpression><![CDATA[20 < $V{PAGE_NUMBER}.intValue() ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
-            <staticText>
-                <reportElement positionType="Float" x="0" y="0" width="572" height="15"/>
-                <textElement>
-                    <font size="12" isItalic="true" isBold="true"/>
-                </textElement>
-                <text><![CDATA[Note: Report limited to 500 entries]]></text>
-            </staticText>
-            <line>
-                <reportElement positionType="Float" x="0" y="15" width="572" height="1"/>
-                <graphicElement pen="1Point" fill="Solid"/>
-            </line>
-        </band>
+      <band height="16">
+        <printWhenExpression><![CDATA[20 < $V{PAGE_NUMBER}.intValue() ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+        <staticText>
+          <reportElement positionType="Float" x="0" y="0" width="572" height="15"/>
+          <textElement>
+            <font fontName="SansSerif" pdfFontName="Helvetica" size="12" isBold="true" isItalic="true" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+          </textElement>
+          <text><![CDATA[Note: Report limited to 500 entries]]></text>
+        </staticText>
+        <line direction="TopDown">
+          <reportElement key="line" positionType="Float" mode="Opaque" x="0" y="15" width="572" height="1"/>
+          <graphicElement stretchType="NoStretch" pen="1Point" fill="Solid" />
+        </line>
+      </band>
     </lastPageFooter>
     <summary>
-        <band height="4">
-            <line>
-                <reportElement positionType="Float" x="0" y="0" width="572" height="1"/>
-                <graphicElement pen="2Point"/>
-            </line>
+        <band height="0">
         </band>
     </summary>
 </jasperReport>

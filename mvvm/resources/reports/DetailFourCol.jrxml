@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"  ?>
 <!-- Created with iReport - A designer for JasperReports -->
-<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
-<jasperReport name="@REPORT_NAME@" whenNoDataType="AllSectionsNoDetail" pageWidth="612" pageHeight="791" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="0" bottomMargin="0">
+<!DOCTYPE jasperReport PUBLIC "-//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+
+<!--pageWidth="612" value matched in convert-reports.sed-->
+<!--topMargin="19" odd value chosen for convert-reports.sed-->
+<jasperReport name="@REPORT_NAME@" whenNoDataType="AllSectionsNoDetail" pageWidth="612" pageHeight="791" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="19" bottomMargin="5">
   <property name="com.jasperassistant.designer.HGuides" value="109,112,204,207,492,494" />
   <property name="com.jasperassistant.designer.GridHeight" value="12" />
   <property name="com.jasperassistant.designer.GridWidth" value="12" />
@@ -626,7 +629,7 @@
       </band>
     </columnFooter>
     <pageFooter>
-      <band height="0"  isSplitAllowed="true" >
+      <band height="5"  isSplitAllowed="true" >
       </band>
     </pageFooter>
     <lastPageFooter>

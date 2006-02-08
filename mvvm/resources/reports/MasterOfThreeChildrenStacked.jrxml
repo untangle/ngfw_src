@@ -2,7 +2,9 @@
 <!-- Created using an evaluation version of JasperAssistant (http://www.jasperassistant.com) -->
 <!DOCTYPE jasperReport PUBLIC "-//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
 
-<jasperReport name="@REPORT_NAME@" whenNoDataType="AllSectionsNoDetail" pageWidth="612" pageHeight="791" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="0" bottomMargin="0">
+<!--pageWidth="612" value matched in convert-reports.sed-->
+<!--topMargin="19" odd value chosen for convert-reports.sed-->
+<jasperReport name="@REPORT_NAME@" whenNoDataType="AllSectionsNoDetail" pageWidth="612" pageHeight="791" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="19" bottomMargin="5">
     <property name="com.jasperassistant.designer.HGuides" value="101,108,183,189,510,515"/>
     <property name="com.jasperassistant.designer.GridHeight" value="12"/>
     <property name="com.jasperassistant.designer.Rulers" value="true"/>
