@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -8,33 +8,31 @@
  *
  * $Id$
  */
+
 package com.metavize.tran.boxbackup;
 
 import com.metavize.mvvm.CronJob;
+import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.Period;
-import com.metavize.mvvm.tran.TransformContext;
+import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.logging.EventLoggerFactory;
+import com.metavize.mvvm.logging.EventManager;
+import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.tapi.AbstractTransform;
-import com.metavize.mvvm.tapi.Affinity;
-import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
-import com.metavize.mvvm.tapi.SoloPipeSpec;
+import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformStartException;
 import com.metavize.mvvm.util.TransactionWork;
-import com.metavize.mvvm.logging.SimpleEventFilter;
-import com.metavize.mvvm.logging.EventLogger;
-import com.metavize.mvvm.logging.EventManager;
-import com.metavize.mvvm.engine.MvvmContextImpl;
-import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.tran.util.SimpleExec;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import com.metavize.tran.util.SimpleExec;
 
 public class BoxBackupImpl extends AbstractTransform implements BoxBackup
 {
     private static final String DEF_BACKUP_URL = "http://boxtrack.metavize.com/boxbackup/backup.php";
-    
+
     private final EventHandler handler = new EventHandler(this);
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { };
     private final Logger logger = Logger.getLogger(BoxBackupImpl.class);
@@ -45,7 +43,7 @@ public class BoxBackupImpl extends AbstractTransform implements BoxBackup
 
     public BoxBackupImpl() {
       TransformContext tctx = getTransformContext();
-      eventLogger = new EventLogger<BoxBackupEvent>(tctx);
+      eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
 
       SimpleEventFilter ef = new BoxBackupFilterAllFilter();
       eventLogger.addSimpleEventFilter(ef);
@@ -54,7 +52,7 @@ public class BoxBackupImpl extends AbstractTransform implements BoxBackup
     public EventManager<BoxBackupEvent> getEventManager()
     {
         return eventLogger;
-    }    
+    }
 
     public BoxBackupSettings getBoxBackupSettings()
     {
@@ -87,7 +85,7 @@ public class BoxBackupImpl extends AbstractTransform implements BoxBackup
             int m = settings.getMinuteInHour();
             Period p = new Period(h, m, true);
             cronJob.reschedule(p);
-        }        
+        }
     }
 
     @Override
@@ -127,7 +125,7 @@ public class BoxBackupImpl extends AbstractTransform implements BoxBackup
                 public Object getResult() { return null; }
             };
         getTransformContext().runTransaction(tw);
-        
+
     }
 
     protected void preStart() throws TransformStartException
@@ -182,7 +180,7 @@ public class BoxBackupImpl extends AbstractTransform implements BoxBackup
       logger.debug("doBackup invoked");
 
       BoxBackupEvent event = null;
-      
+
       try {
         SimpleExec.SimpleExecResult result = SimpleExec.exec(
           "mv-remotebackup.sh",
@@ -242,7 +240,7 @@ public class BoxBackupImpl extends AbstractTransform implements BoxBackup
     }
 
 
-    
+
 
     public void reconfigure() throws TransformException
     {

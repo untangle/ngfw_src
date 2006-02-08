@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -19,10 +19,11 @@ import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.argon.SessionMatcher;
 import com.metavize.mvvm.argon.SessionMatcherFactory;
-import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.logging.EventLoggerFactory;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.logging.LogEvent;
+import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
@@ -85,7 +86,7 @@ public class NatImpl extends AbstractTransform implements Nat
         pipeSpecs = new SoloPipeSpec[] { natPipeSpec, natFtpPipeSpec };
 
         TransformContext tctx = getTransformContext();
-        eventLogger = new EventLogger<LogEvent>(tctx);
+        eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
 
         SimpleEventFilter ef = new NatRedirectFilter();
         eventLogger.addSimpleEventFilter(ef);

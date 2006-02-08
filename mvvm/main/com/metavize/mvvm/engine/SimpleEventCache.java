@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -9,7 +9,7 @@
  * $Id: EventCache.java 3779 2005-12-05 23:29:15Z amread $
  */
 
-package com.metavize.mvvm.logging;
+package com.metavize.mvvm.engine;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -20,16 +20,18 @@ import java.util.List;
 import java.util.Map;
 
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.logging.ListEventFilter;
+import com.metavize.mvvm.logging.LogEvent;
+import com.metavize.mvvm.logging.RepositoryDesc;
 import com.metavize.mvvm.policy.Policy;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
-class SimpleEventCache<E extends LogEvent>
-  implements EventCache<E>
+class SimpleEventCache<E extends LogEvent> extends EventCache<E>
 {
-    private EventLogger<E> eventLogger;
+    private EventLoggerImpl<E> eventLogger;
     private final ListEventFilter<E> eventFilter;
 
     private final LinkedList<E> cache = new LinkedList<E>();
@@ -45,7 +47,7 @@ class SimpleEventCache<E extends LogEvent>
         this.eventFilter = eventFilter;
     }
 
-    public void setEventLogger(EventLogger<E> eventLogger)
+    public void setEventLogger(EventLoggerImpl<E> eventLogger)
     {
         this.eventLogger = eventLogger;
     }
@@ -55,7 +57,7 @@ class SimpleEventCache<E extends LogEvent>
     public List<E> getEvents()
     {
         synchronized (cache) {
-            if (cold && EventLogger.isConversionComplete()) {
+            if (cold && EventLoggerImpl.isConversionComplete()) {
                 warm();
             }
             return new ArrayList<E>(cache);

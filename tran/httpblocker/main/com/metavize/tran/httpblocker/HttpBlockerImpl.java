@@ -16,6 +16,7 @@ import java.util.List;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.logging.EventLoggerFactory;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.logging.ListEventFilter;
 import com.metavize.mvvm.logging.SimpleEventFilter;
@@ -56,7 +57,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
     public HttpBlockerImpl()
     {
         TransformContext tctx = getTransformContext();
-        eventLogger = new EventLogger<HttpBlockerEvent>(tctx);
+        eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
         SimpleEventFilter sef = new HttpBlockerBlockedFilter();
         eventLogger.addSimpleEventFilter(sef);
         ListEventFilter lef = new HttpBlockerAllFilter();

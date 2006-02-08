@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -10,7 +10,7 @@
  */
 package com.metavize.tran.nat;
 
-import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.logging.EventLoggerFactory;
 import com.metavize.mvvm.logging.StatisticEvent;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
 import com.metavize.mvvm.tapi.Protocol;
@@ -28,7 +28,7 @@ class NatStatisticManager extends StatisticManager
 
     NatStatisticManager(TransformContext tctx)
     {
-        super(new EventLogger(tctx));
+        super(EventLoggerFactory.factory().getEventLogger(tctx));
     }
 
     protected StatisticEvent getInitialStatisticEvent()

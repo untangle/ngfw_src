@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -14,12 +14,12 @@ package com.metavize.tran.ids;
 import java.io.*;
 import java.nio.*;
 import java.nio.channels.*;
-import java.util.ArrayList;
 import java.util.List;
 
-import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.logging.EventLoggerFactory;
 import com.metavize.mvvm.logging.EventManager;
+import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
@@ -58,7 +58,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         httpPipeSpec = new SoloPipeSpec("ids-http", this, new TokenAdaptor(this, new IDSHttpFactory(this)), Fitting.HTTP_TOKENS, Affinity.SERVER,0);
         pipeSpecs = new PipeSpec[] { httpPipeSpec, octetPipeSpec };
 
-        eventLogger = new EventLogger<IDSLogEvent>(getTransformContext());
+        eventLogger = EventLoggerFactory.factory().getEventLogger(getTransformContext());
 
         SimpleEventFilter<IDSLogEvent> ef = new IDSLogFilter();
         eventLogger.addSimpleEventFilter(ef);

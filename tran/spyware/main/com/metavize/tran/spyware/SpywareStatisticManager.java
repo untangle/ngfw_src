@@ -10,7 +10,7 @@
  */
 package com.metavize.tran.spyware;
 
-import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.logging.EventLoggerFactory;
 import com.metavize.mvvm.logging.StatisticEvent;
 import com.metavize.mvvm.tran.StatisticManager;
 import com.metavize.mvvm.tran.TransformContext;
@@ -20,7 +20,7 @@ class SpywareStatisticManager extends StatisticManager {
     private SpywareStatisticEvent statisticEvent = new SpywareStatisticEvent();
 
     public SpywareStatisticManager(TransformContext tctx) {
-        super(new EventLogger(tctx));
+        super(EventLoggerFactory.factory().getEventLogger(tctx));
     }
 
     protected StatisticEvent getInitialStatisticEvent() {

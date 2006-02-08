@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -10,7 +10,7 @@
  */
 package com.metavize.tran.ids;
 
-import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.logging.EventLoggerFactory;
 import com.metavize.mvvm.logging.StatisticEvent;
 import com.metavize.mvvm.tran.StatisticManager;
 import com.metavize.mvvm.tran.TransformContext;
@@ -25,7 +25,7 @@ class IDSStatisticManager extends StatisticManager {
     private IDSStatisticEvent statisticEvent = new IDSStatisticEvent();
 
     public IDSStatisticManager(TransformContext tctx) {
-        super(new EventLogger(tctx));
+        super(EventLoggerFactory.factory().getEventLogger(tctx));
     }
 
     protected StatisticEvent getInitialStatisticEvent() {

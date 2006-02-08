@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -16,24 +16,23 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-import com.metavize.mvvm.AppServerManager;
-import com.metavize.mvvm.engine.addrbook.AddressBookImpl;
 import com.metavize.mvvm.CronJob;
 import com.metavize.mvvm.MvvmLocalContext;
+import com.metavize.mvvm.NetworkManager;
 import com.metavize.mvvm.Period;
-import com.metavize.mvvm.toolbox.ToolboxManager;
 import com.metavize.mvvm.argon.Argon;
 import com.metavize.mvvm.argon.ArgonManagerImpl;
 import com.metavize.mvvm.client.MvvmRemoteContext;
+import com.metavize.mvvm.engine.addrbook.AddressBookImpl;
 import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.logging.EventLoggerFactory;
+import com.metavize.mvvm.networking.NetworkManagerImpl;
 import com.metavize.mvvm.tapi.MPipeManager;
+import com.metavize.mvvm.toolbox.ToolboxManager;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformManager;
 import com.metavize.mvvm.util.TransactionRunner;
 import com.metavize.mvvm.util.TransactionWork;
-import com.metavize.tran.util.IOUtil;
-import com.metavize.mvvm.networking.NetworkManagerImpl;
-import com.metavize.mvvm.NetworkManager;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
@@ -82,7 +81,7 @@ public class MvvmContextImpl extends MvvmContextBase
 
     private MvvmContextImpl()
     {
-        EventLogger.initSchema("mvvm");
+        EventLoggerImpl.initSchema("mvvm");
         sessionFactory = Util.makeSessionFactory(getClass().getClassLoader());
         transactionRunner = new TransactionRunner(sessionFactory);
         state = MvvmState.LOADED;
@@ -112,12 +111,12 @@ public class MvvmContextImpl extends MvvmContextBase
     public AddressBookImpl appAddressBook() {
       return addressBookImpl;
     }
-    
+
     public AppServerManagerImpl appServerManager()
     {
         return appServerManager;
     }
-        
+
     public ToolboxManagerImpl toolboxManager()
     {
         return toolboxManager;
@@ -161,7 +160,7 @@ public class MvvmContextImpl extends MvvmContextBase
     public NetworkManager networkManager()
     {
         return networkManager;
-    }    
+    }
 
     public ReportingManagerImpl reportingManager()
     {
@@ -288,7 +287,7 @@ public class MvvmContextImpl extends MvvmContextBase
 
     public void restoreBackup(byte[] backupBytes) throws IOException, IllegalArgumentException {
       backupManager.restoreBackup(backupBytes);
-    }    
+    }
 
     public boolean isActivated() {
         // This is ez since we aren't concerned about local box security -- the key is ultimately
@@ -353,7 +352,7 @@ public class MvvmContextImpl extends MvvmContextBase
         cronManager = new CronManager();
         syslogManager = SyslogManagerImpl.manager();
         loggingManager = LoggingManagerImpl.loggingManager();
-        eventLogger = new EventLogger();
+        eventLogger = EventLoggerFactory.factory().getEventLogger();
         eventLogger.start();
 
         // start services:
@@ -374,7 +373,7 @@ public class MvvmContextImpl extends MvvmContextBase
         // Retrieve the networking configuration manager
         // XXXXXXXXXXXXXXXX This is deprecated
         networkingManager = NetworkingManagerImpl.getInstance();
-        
+
         // Retrieve the network settings manager
         networkManager = NetworkManagerImpl.getInstance();
 

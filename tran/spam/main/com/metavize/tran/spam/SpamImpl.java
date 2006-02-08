@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -14,6 +14,7 @@ package com.metavize.tran.spam;
 import static com.metavize.tran.util.Ascii.CRLF;
 
 import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.logging.EventLoggerFactory;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.tapi.AbstractTransform;
@@ -98,7 +99,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
 
         String vendor = scanner.getVendorName();
 
-        eventLogger = new EventLogger<SpamEvent>(tctx);
+        eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
 
         SimpleEventFilter ef = new SpamAllFilter(vendor);
         eventLogger.addSimpleEventFilter(ef);

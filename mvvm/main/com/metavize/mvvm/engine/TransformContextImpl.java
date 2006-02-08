@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -20,12 +20,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.metavize.mvvm.toolbox.MackageDesc;
 import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.policy.Policy;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tapi.IPSessionDesc;
+import com.metavize.mvvm.toolbox.MackageDesc;
 import com.metavize.mvvm.tran.DeployException;
 import com.metavize.mvvm.tran.TooManyInstancesException;
 import com.metavize.mvvm.tran.Transform;
@@ -73,9 +72,9 @@ class TransformContextImpl implements TransformContext
         throws DeployException
     {
         if (null != tDesc.getTransformBase()) {
-            EventLogger.initSchema(tDesc.getTransformBase());
+            EventLoggerImpl.initSchema(tDesc.getTransformBase());
         }
-        EventLogger.initSchema(tDesc.getName());
+        EventLoggerImpl.initSchema(tDesc.getName());
 
         this.classLoader = classLoader;
 

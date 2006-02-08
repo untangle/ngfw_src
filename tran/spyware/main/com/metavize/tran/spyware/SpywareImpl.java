@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.logging.EventLoggerFactory;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.tapi.AbstractTransform;
@@ -112,7 +113,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         urlBlacklist = SpywareCache.cache().getUrls();
 
         TransformContext tctx = getTransformContext();
-        eventLogger = new EventLogger<SpywareEvent>(tctx);
+        eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
         statisticManager = new SpywareStatisticManager(tctx);
 
         SimpleEventFilter ef = new SpywareAllFilter();

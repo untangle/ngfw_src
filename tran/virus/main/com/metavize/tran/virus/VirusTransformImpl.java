@@ -21,6 +21,7 @@ import java.util.Set;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.argon.SessionMatcher;
 import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.logging.EventLoggerFactory;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.tapi.AbstractTransform;
@@ -136,7 +137,7 @@ public abstract class VirusTransformImpl extends AbstractTransform
         this.pipeSpecs = initialPipeSpecs();
 
         TransformContext tctx = getTransformContext();
-        eventLogger = new EventLogger<VirusEvent>(tctx);
+        eventLogger = EventLoggerFactory.factory().getEventLogger(getTransformContext());
 
         String vendor = scanner.getVendorName();
 

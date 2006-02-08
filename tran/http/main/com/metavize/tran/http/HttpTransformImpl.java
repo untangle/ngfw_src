@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,6 +12,7 @@
 package com.metavize.tran.http;
 
 import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.logging.EventLoggerFactory;
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.CasingPipeSpec;
@@ -40,7 +41,7 @@ public class HttpTransformImpl extends AbstractTransform
 
     public HttpTransformImpl()
     {
-        this.eventLogger = new EventLogger(getTransformContext());
+        this.eventLogger = EventLoggerFactory.factory().getEventLogger(getTransformContext());
     }
 
     // HttpTransform methods --------------------------------------------------

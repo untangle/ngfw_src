@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,15 +11,15 @@
 package com.metavize.tran.protofilter;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
 
-import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.logging.EventLoggerFactory;
 import com.metavize.mvvm.logging.EventManager;
+import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
@@ -53,7 +53,7 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
     public ProtoFilterImpl()
     {
         TransformContext tctx = getTransformContext();
-        eventLogger = new EventLogger<ProtoFilterLogEvent>(tctx);
+        eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
 
         SimpleEventFilter ef = new ProtoFilterAllFilter();
         eventLogger.addSimpleEventFilter(ef);
