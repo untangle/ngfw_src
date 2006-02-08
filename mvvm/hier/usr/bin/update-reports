@@ -61,6 +61,7 @@ if [ $is_reporting_enabled == 'true' ]; then
         cat @PREFIX@/tmp/mail_reports_arguments_daily.txt | xargs @USR_BIN@/mail-reports
         cat @PREFIX@/tmp/mail_reports_arguments_weekly.txt | xargs @USR_BIN@/mail-reports
         cat @PREFIX@/tmp/mail_reports_arguments_monthly.txt | xargs @USR_BIN@/mail-reports
+
     fi
 
     for c in @MVVM_SCHEMA@/*/finish-reports.sql; do

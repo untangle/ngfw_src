@@ -1,7 +1,6 @@
 #!/bin/sh
 
 REPORT_DIR=@MVVM_WEB@/reports
-#REPORT_DIR=/home/cng/work_main/alpine/output/usr/share/metavize/web/reports
 
 add_mv_htmlheader()
 {
@@ -19,12 +18,18 @@ cat >>$hf <<EOF
         </tr>
         <tr>
           <td class="main-middle">
+            <div align=center>
+            <a href="$AHREFVAL"><font face="SansSerif" size="-1">back</font></a>
+            </div>
 EOF
 }
 
 add_mv_htmlfooter()
 {
 cat >>$hf <<EOF
+            <div align=center>
+            <a href="$AHREFVAL"><font face="SansSerif" size="-1">back</font></a>
+            </div>
           </td>
         </tr>
         <tr>
@@ -38,11 +43,45 @@ cat >>$hf <<EOF
 EOF
 }
 
-for hf in `find $REPORT_DIR/current/*/*html -type f | grep -v "sum-\(daily\|weekly\|monthly\)\.html"` ; do
-  \mv -f $hf $hf.org
-  sed -f @USR_BIN@/convert-reports.sed $hf.org > $hf.new
-  add_mv_htmlheader
-  cat $hf.new >> $hf
-  add_mv_htmlfooter
-  \rm -f $hf.org $hf.new
+ORG_PWD=`pwd`
+NEW_PWD=$REPORT_DIR/current
+cd $NEW_PWD
+
+for df in `find * -type d`; do
+  if [ -f $df/name ]; then
+    cd $df
+    # note that index-reports uses content of transform name file to create anchor point on index html page
+    TNAME=`cat name`
+
+    for hf in `find *.html -type f | grep -v "sum-\(daily\|weekly\|monthly\)\.html"`; do
+      # note that update-reports chooses names of index html page files
+      echo $hf | grep monthly &> /dev/null
+      if [ $? -eq 1 ]; then
+        echo $hf | grep weekly &> /dev/null
+        if [ $? -eq 1 ]; then
+          AHREFVAL=../index.html#$TNAME
+        else
+          AHREFVAL=../index_online_weekly.html#$TNAME
+        fi
+      else
+        AHREFVAL=../index_online_monthly.html#$TNAME
+      fi
+
+      \mv -f $hf $hf.org
+
+      # strip JR look-n-feel
+      sed -f @USR_BIN@/convert-reports.sed $hf.org > $hf.new
+
+      # add MV look-n-feel
+      add_mv_htmlheader
+      cat $hf.new >> $hf
+      add_mv_htmlfooter
+
+      \rm -f $hf.org $hf.new
+    done
+
+    cd $NEW_PWD
+  fi
 done
+
+cd $ORG_PWD
