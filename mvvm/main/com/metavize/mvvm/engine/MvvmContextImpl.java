@@ -301,6 +301,8 @@ public class MvvmContextImpl extends MvvmContextBase
         if (key.length() == 16)
             key = key.substring(0, 4) + "-" + key.substring(4, 8) + "-" +
                 key.substring(8, 12) + "-" + key.substring(12,16);
+        // Fix for bug 1310: Make sure all the hex chars are lower cased.
+        key = key.toLowerCase();
         if (key.length() != 19) {
             // Don't even bother if the key isn't the right length.  Could do other
             // sanity checking here as well. XX
