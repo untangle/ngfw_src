@@ -47,7 +47,7 @@ public final class PagnationPropertiesTag
   /**
    * Returns null if there is no current number of rows
    */
-  static String getCurrentRowsPerPAge(ServletRequest request) {
+  public static String getCurrentRowsPerPAge(ServletRequest request) {
     return (String) request.getAttribute(KEY);
   }
 

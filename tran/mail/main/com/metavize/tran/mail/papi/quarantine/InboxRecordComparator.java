@@ -43,7 +43,11 @@ public final class InboxRecordComparator {
     /**
      * Sort by the quarantine detail
      */
-    DETAIL
+    DETAIL,
+    /**
+     * Sort by the attachment count
+     */
+    ATTACHMENT_COUNT    
   };
 
   private static final EnumMap<SortBy, IRComp> m_fwdComparitors;
@@ -67,6 +71,10 @@ public final class InboxRecordComparator {
 
     m_fwdComparitors.put(SortBy.DETAIL, new DetailComp().setReverse(false));
     m_bwdComparitors.put(SortBy.DETAIL, new DetailComp().setReverse(true));
+    
+    m_fwdComparitors.put(SortBy.ATTACHMENT_COUNT, new AttachmentComp().setReverse(false));
+    m_bwdComparitors.put(SortBy.ATTACHMENT_COUNT, new AttachmentComp().setReverse(true));
+    
   }
 
   /**
@@ -243,7 +251,20 @@ public final class InboxRecordComparator {
         );
     }
 
-  }     
+  }
+
+  
+  //============================ Inner Class ============================
+  
+  private static class AttachmentComp extends IRComp {
+
+    protected int compareImpl(InboxRecord o1, InboxRecord o2) {
+      return o1.getMailSummary().getAttachmentCount()<o2.getMailSummary().getAttachmentCount()?
+        -1:
+        o1.getMailSummary().getAttachmentCount()>o2.getMailSummary().getAttachmentCount()?
+          1:0;
+    }
+  }   
 
 
 }

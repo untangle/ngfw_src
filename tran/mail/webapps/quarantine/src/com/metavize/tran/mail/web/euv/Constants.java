@@ -25,7 +25,7 @@ public final class Constants
   public static final String SORT_ASCEND_RP = "ascend";
   public static final String FIRST_RECORD_RP = "first";
 
-  public static final int RECORDS_PER_PAGE = 50;
+  public static final int RECORDS_PER_PAGE = 25;
 
 
   /**

@@ -70,7 +70,21 @@
 
       function doResortByScore() {
         doResort("4");
+      }
+
+      function doResortByAttachmentCount() {
+        doResort("5");
       }      
+
+      function mv_doNext() {
+        document.form1.<quarantine:constants keyName="first"/>.value = <quarantine:pagnationProperties propName="nextId"/>;
+        document.form1.submit();        
+      }
+      function mv_doPrev() {
+        document.form1.<quarantine:constants keyName="first"/>.value = <quarantine:pagnationProperties propName="prevId"/>;
+        document.form1.submit();      
+      }    
+      
 
     </script>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
@@ -78,27 +92,6 @@
 </head>
 <body>
 
-<!--
-Prev link: <quarantine:pagnationLink linkType="prev"/>
-Next link: <quarantine:pagnationLink linkType="next"/>
-
-SEP
-<quarantine:hasPagnation linkType="prev" includeIfTrue="true">
-  LinkType="prev" includeIfTrue="true"
-</quarantine:hasPagnation>
-SEP
-<quarantine:hasPagnation linkType="prev" includeIfTrue="false">
-  LinkType="prev" includeIfTrue="false"
-</quarantine:hasPagnation>
-SEP
-<quarantine:hasPagnation linkType="next" includeIfTrue="true">
-  LinkType="next" includeIfTrue="true"
-</quarantine:hasPagnation>
-SEP
-<quarantine:hasPagnation linkType="next" includeIfTrue="false">
-  LinkType="next" includeIfTrue="false"
-</quarantine:hasPagnation>
--->  
 
 <center>
 <table border="0" cellpadding="0" cellspacing="0" width="904">
@@ -249,9 +242,7 @@ SEP
             <input type="hidden"
               name="<quarantine:constants keyName="first"/>"
               value="<quarantine:pagnationProperties propName="thisId"/>"/>
-            <input type="hidden"
-              name="rowsPerPage"
-              value="<quarantine:pagnationProperties propName="rowsPerPage"/>"/>                                        
+
             <table border="0" cellpadding="0" cellspacing="0" width="100%">
               <tbody>
                 <tr>
@@ -270,13 +261,13 @@ SEP
                           <td>
                             <div class="msiehack1">
                               <quarantine:hasPagnation linkType="prev" includeIfTrue="true">
-                                <a href="/quarantine<quarantine:pagnationLink linkType="prev"/>">Prev</a>
+                                <a href="javascript:mv_doPrev();">Prev</a>
                               </quarantine:hasPagnation>
                               <quarantine:hasPagnation linkType="prev" includeIfTrue="false">
                                 Prev
                               </quarantine:hasPagnation>
                               <quarantine:hasPagnation linkType="next" includeIfTrue="true">
-                                <a href="/quarantine<quarantine:pagnationLink linkType="next"/>">|Next</a>
+                                <a href="javascript:mv_doNext();">|Next</a>
                               </quarantine:hasPagnation>
                               <quarantine:hasPagnation linkType="next" includeIfTrue="false">
                                 |Next
@@ -300,23 +291,37 @@ SEP
                               type="checkbox">
                           </th>
                           <th scope="col"><a href="javascript:doResortBySender();">From</a></th>
-                          <th scope="col"><img src="images/with_attach.png" height="16px" width="16px"/></th>
+                          <th scope="col"><a href="javascript:doResortByAttachmentCount();">
+                            <img src="images/with_attach.png" height="16px" width="16px"/></a></th>
                           <th scope="col"><a href="javascript:doResortByScore();">Score</a></th>
                           <th scope="col"><a href="javascript:doResortBySubject();">Subject</a></th>
                         </tr>
                       </thead>
                       <tfoot>
                         <tr>
-                          <td colspan="5">
+                          <td colspan="4">
+                            Mails Per Page: &nbsp;
+                            <select name="rowsPerPage">
+                            <quarantine:forEachRPPOption>
+                              <quarantine:isRPPOptionSelected includeIfTrue="true">
+                                <option value="<quarantine:rPPOption/>" selected="selected"><quarantine:rPPOption/></option>
+                              </quarantine:isRPPOptionSelected>
+                              <quarantine:isRPPOptionSelected includeIfTrue="false">
+                                <option value="<quarantine:rPPOption/>"><quarantine:rPPOption/></option>
+                              </quarantine:isRPPOptionSelected>
+                            </quarantine:forEachRPPOption>
+                            </select>                            
+                          </td>
+                          <td>
                             <div class="tableFooter">
                               <quarantine:hasPagnation linkType="prev" includeIfTrue="true">
-                                <a href="/quarantine<quarantine:pagnationLink linkType="prev"/>">Prev</a>
+                                <a href="javascript:mv_doPrev();">Prev</a>
                               </quarantine:hasPagnation>
                               <quarantine:hasPagnation linkType="prev" includeIfTrue="false">
                                 Prev
                               </quarantine:hasPagnation>
                               <quarantine:hasPagnation linkType="next" includeIfTrue="true">
-                                <a href="/quarantine<quarantine:pagnationLink linkType="next"/>">|Next</a>
+                                <a href="javascript:mv_doNext();">|Next</a>
                               </quarantine:hasPagnation>
                               <quarantine:hasPagnation linkType="next" includeIfTrue="false">
                                 |Next

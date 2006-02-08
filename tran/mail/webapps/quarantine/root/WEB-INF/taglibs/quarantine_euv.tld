@@ -385,7 +385,44 @@
       <rtexpvalue>false</rtexpvalue>
     </attribute>    
   </tag>
-  
+
+
+
+  <!-- Rows Per Page "RPP" stuff -->
+
+  <!--
+    Block which sets the "rPPOption" and "isRPPOptionSelected" tag
+    for each possible RowsPerPage value
+  -->
+  <tag>
+    <name>forEachRPPOption</name>
+    <tagclass>com.metavize.tran.mail.web.euv.tags.RPPIteratorTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+  </tag>
+
+  <!--
+    From within a "forEachRPPOption" block, this is the current option
+  -->
+  <tag>
+    <name>rPPOption</name>
+    <tagclass>com.metavize.tran.mail.web.euv.tags.RPPCurrentOptionTag</tagclass>
+    <bodycontent>empty</bodycontent>
+  </tag>
+
+  <!--
+    From within a "forEAchRPPOption" block, this indicates if the current
+    option is selected
+  -->
+  <tag>
+    <name>isRPPOptionSelected</name>
+    <tagclass>com.metavize.tran.mail.web.euv.tags.RPPIsCurrentOptionSelectedTag</tagclass>
+    <bodycontent>JSP</bodycontent>
+    <attribute>
+      <name>includeIfTrue</name>
+      <required>true</required>
+      <rtexpvalue>false</rtexpvalue>
+    </attribute>      
+  </tag>  
    
   
 </taglib>
