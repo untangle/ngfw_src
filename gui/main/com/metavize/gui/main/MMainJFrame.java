@@ -566,26 +566,12 @@ public class MMainJFrame extends javax.swing.JFrame {
         }//GEN-END:initComponents
 
     private void upgradeJButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeJButton1ActionPerformed
-        if( Util.isLocal() ){
-            try{
-                URL newURL = new URL( "http://www.metavize.com/docs/" + Version.getVersion());
-                MOneButtonJDialog.factory(this,"","<html>You cannot view the help documents because there is "
-                                          + "no web browser installed on this system.  Please try the help system "
-                                          + "from a computer with a web browser installed.  The help files are located at: "
-                                          + newURL.toString() + "</html>","Metavize Help Notice", "Notice");
-            }
-            catch(Exception e){
-                Util.handleExceptionNoRestart("Error: ", e);
-            }
+        try{
+            URL newURL = new URL( "http://www.metavize.com/docs/" + Version.getVersion());
+            ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
         }
-        else{
-            try{
-                URL newURL = new URL( "http://www.metavize.com/docs/" + Version.getVersion());
-                ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
-            }
-            catch(Exception f){
-                Util.handleExceptionNoRestart("Error showing help for EdgeReport", f);
-            }
+        catch(Exception f){
+            Util.handleExceptionNoRestart("Error showing help for EdgeReport", f);
         }
     }//GEN-LAST:event_upgradeJButton1ActionPerformed
 

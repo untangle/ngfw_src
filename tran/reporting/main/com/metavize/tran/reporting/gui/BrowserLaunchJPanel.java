@@ -42,16 +42,6 @@ public class BrowserLaunchJPanel extends JPanel implements ActionListener {
         launchJButton.addActionListener(this);
         this.add(launchJButton, launchJButtonConstraints);
 
-        if( Util.isLocal() ){
-            launchJButton.setEnabled(false);
-            JLabel noteJLabel = new JLabel();
-            noteJLabel.setFont(new java.awt.Font("Arial", 0, 11));
-	    noteJLabel.setHorizontalAlignment(SwingConstants.CENTER);
-	    noteJLabel.setHorizontalTextPosition(SwingConstants.CENTER);
-	    noteJLabel.setText("<html><center><b>Note:</b> No web browser is installed on this machine for security reasons.<br>Please re-connect from an external machine.</center></html>");
-            this.add(noteJLabel, noteJLabelConstraints);
-        }
-        
 	try{
             JLabel launchJLabel;
 	    URL newURL = new URL( Util.getServerCodeBase(), "../reports");

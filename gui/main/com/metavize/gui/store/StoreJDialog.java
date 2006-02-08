@@ -48,14 +48,7 @@ public class StoreJDialog extends javax.swing.JDialog implements java.awt.event.
         this.setBounds( Util.generateCenteredBounds( Util.getMMainJFrame().getBounds(), this.getWidth(), this.getHeight()) );
         this.addWindowListener(this);   
 
-
-        // WEBPAGE BUTTON ///////
-        if( Util.isLocal() ){
-            moreJButton.setEnabled(false);
-        }
-        else{
-            localJLabel.setVisible(false);
-        }
+        localJLabel.setVisible(false);
         
         // APPLIANCE INFO //////
         mTransformJPanel.add(mTransformJButton.duplicate(), gridBagConstraints);

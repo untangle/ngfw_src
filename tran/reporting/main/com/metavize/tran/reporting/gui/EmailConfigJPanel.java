@@ -94,7 +94,7 @@ class EmailTableModel extends MSortedTableModel{
 	    if( (smtpHost==null) || (smtpHost.length()==0) ){
 		MOneButtonJDialog.factory((Window)emailConfigJPanel.getTopLevelAncestor(),
 				      "EdgeReport",
-				      "<html>Your Email Reports Recipients have been saved, however, your outgoing email server is not configured.  You must configure it in System Config -> Network Settings before you will receive email reports.</html>",
+				      "<html>Your Email Reports Recipients have been saved, however, your outgoing email server is not configured.  You must configure it in <b>System Config -> Email</b> before you will receive email reports.</html>",
 				      "EdgeReport Confirmation",
 				      "Confirmation:");
 	    }
