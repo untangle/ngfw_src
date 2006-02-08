@@ -229,8 +229,15 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
     public void stop()
     {
         synchronized (listeners) {
-            for (EventLoggerListener l : listeners) {
-                l.preShutdown(this);
+            Thread t = Thread.currentThread();
+            ClassLoader ocl = t.getContextClassLoader();
+            try {
+                for (EventLoggerListener l : listeners) {
+                    t.setContextClassLoader(l.getClass().getClassLoader());
+                    l.preShutdown(this);
+                }
+            } finally {
+                t.setContextClassLoader(ocl);
             }
         }
 
