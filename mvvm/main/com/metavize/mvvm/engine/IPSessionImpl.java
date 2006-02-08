@@ -205,12 +205,8 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         else
             out = ((com.metavize.mvvm.argon.Session)pSession).serverOutgoingSocketQueue();
         if (out == null || out.isClosed()) {
-            // 8/8/05 jdi -- if we've released, this isn't an error because
-            // we're just using the stupid passthrough version.
-            if (!released) {
-                String sideName = side == CLIENT ? "client" : "server";
-                warn("Ignoring crumb for dead " + sideName + " outgoing socket queue");
-            }
+            String sideName = side == CLIENT ? "client" : "server";
+            warn("Ignoring crumb for dead " + sideName + " outgoing socket queue");
             return;
         }
 
@@ -684,6 +680,14 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         MDC.put(SESSION_ID_MDC_KEY, idForMDC());
         try {
             assert in != null;
+
+            // need to check if input contains RST (for TCP) or EXPIRE (for UDP)
+            // independent of the write buffers.
+            if (isSideDieing(side, in)) {
+                sideDieing(side);
+                return;
+            }
+
             if (!in.isEnabled()) {
                 warn("ignoring readEvent called for disabled side " + side);
                 return;
@@ -709,13 +713,6 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
                 debug("read(" + sideName + ") in: " + in +
                       "   /  opp-write-crumbs: " + crumbs2write[1 - side] + ", opp-write-queue: " +
                       (ourout == null ? null : ourout.numEvents()));
-            }
-
-            // need to check if input contains RST (for TCP) or EXPIRE (for UDP)
-            // independent of the write buffers.
-            if (isSideDieing(side, in)) {
-                sideDieing(side);
-                return;
             }
 
             assert streamer == null : "readEvent when streaming";;
