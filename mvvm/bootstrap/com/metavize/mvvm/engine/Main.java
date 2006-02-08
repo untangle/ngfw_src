@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -13,13 +13,13 @@ package com.metavize.mvvm.engine;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
+import java.util.Properties;
+import java.util.Properties;
+
 import org.apache.log4j.Logger;
 
 
@@ -104,8 +104,8 @@ public class Main
         logger.info("setting up properties");
         setProperties();
         logger.info("starting mvvm");
-        //Create the tomcat manager *before* the MVVM, so we can "register"
-        //webapps to be started before Tomcat exists.
+        // Create the tomcat manager *before* the MVVM, so we can
+        // "register" webapps to be started before Tomcat exists.
         tomcatManager = new TomcatManager(bunniculaHome,
           bunniculaWeb,
           bunniculaLog);
@@ -228,6 +228,6 @@ public class Main
       return tomcatManager;
     }
 
-}    
+}
 
 

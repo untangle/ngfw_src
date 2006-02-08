@@ -109,7 +109,7 @@ public class MvvmContextImpl extends MvvmContextBase
 
 
     public AddressBookImpl appAddressBook() {
-      return addressBookImpl;
+        return addressBookImpl;
     }
 
     public AppServerManagerImpl appServerManager()
@@ -236,7 +236,7 @@ public class MvvmContextImpl extends MvvmContextBase
     public void shutdown()
     {
         // XXX check access permission
-        new Thread(new Runnable()
+        Thread t = new Thread(new Runnable()
             {
                 public void run()
                 {
@@ -246,7 +246,9 @@ public class MvvmContextImpl extends MvvmContextBase
                     logger.info("thank you for choosing bunnicula");
                     System.exit(0);
                 }
-            }).start();
+            });
+        t.setDaemon(true);
+        t.start();
     }
 
     public void rebootBox() {
@@ -282,16 +284,18 @@ public class MvvmContextImpl extends MvvmContextBase
     }
 
     public byte[] createBackup() throws IOException {
-      return backupManager.createBackup();
+        return backupManager.createBackup();
     }
 
-    public void restoreBackup(byte[] backupBytes) throws IOException, IllegalArgumentException {
-      backupManager.restoreBackup(backupBytes);
+    public void restoreBackup(byte[] backupBytes)
+        throws IOException, IllegalArgumentException {
+        backupManager.restoreBackup(backupBytes);
     }
 
     public boolean isActivated() {
-        // This is ez since we aren't concerned about local box security -- the key is ultimately
-        // checked on the release webserver, which is what matters.
+        // This is ez since we aren't concerned about local box
+        // security -- the key is ultimately checked on the release
+        // webserver, which is what matters.
         File keyFile = new File(ACTIVATION_KEY_FILE);
         return keyFile.exists();
     }
@@ -304,8 +308,8 @@ public class MvvmContextImpl extends MvvmContextBase
         // Fix for bug 1310: Make sure all the hex chars are lower cased.
         key = key.toLowerCase();
         if (key.length() != 19) {
-            // Don't even bother if the key isn't the right length.  Could do other
-            // sanity checking here as well. XX
+            // Don't even bother if the key isn't the right length.
+            // Could do other sanity checking here as well. XX
             logger.error("Unable to activate with wrong length key: " + key);
             return false;
         }
@@ -315,7 +319,8 @@ public class MvvmContextImpl extends MvvmContextBase
             for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
             int exitValue = p.waitFor();
             if (0 != exitValue) {
-                logger.error("Unable to activate (" + exitValue + ") with key: " + key);
+                logger.error("Unable to activate (" + exitValue
+                             + ") with key: " + key);
                 return false;
             } else {
                 logger.info("Product activated with key: " + key);
@@ -398,11 +403,12 @@ public class MvvmContextImpl extends MvvmContextBase
         if (null == argonFake || !argonFake.equalsIgnoreCase("yes")) {
             Argon.getInstance().run( policyManager );
         } else {
-            logger.info( "Argon not activated, using fake interfaces in the policy manager" +
-                         " and networking manager." );
+            logger.info( "Argon not activated, using fake interfaces in the "
+                         + "policy and networking manager." );
             byte interfaces[] = new byte[] { 0, 1 };
             policyManager.reconfigure(interfaces);
-            // this is done by the policy manager, but leave it here just in case.
+            // this is done by the policy manager, but leave it here
+            // just in case.
             networkingManager.buildIntfEnum();
         }
 
@@ -413,7 +419,7 @@ public class MvvmContextImpl extends MvvmContextBase
     }
 
     @Override
-    protected void postInit()
+        protected void postInit()
     {
         logger.debug("restarting transforms");
         transformManager.init();
@@ -433,7 +439,7 @@ public class MvvmContextImpl extends MvvmContextBase
     }
 
     @Override
-    protected void destroy()
+        protected void destroy()
     {
         state = MvvmState.DESTROYED;
 
@@ -511,7 +517,7 @@ public class MvvmContextImpl extends MvvmContextBase
     }
 
     @Override
-    protected InvokerBase getInvoker()
+        protected InvokerBase getInvoker()
     {
         return httpInvoker;
     }

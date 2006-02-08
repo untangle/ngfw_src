@@ -30,9 +30,6 @@ public abstract class EventLogger<E extends LogEvent>
     public abstract EventRepository<E> addListEventFilter(ListEventFilter<E> listFilter);
     public abstract EventRepository<E> addEventRepository(EventRepository<E> ec);
 
-    public abstract void addEventLoggerShutdownListener(EventLoggerListener l);
-    public abstract void removeEventLoggerShutdownListener(EventLoggerListener l);
-
     public abstract void log(E e);
     public abstract void start();
     public abstract void stop();
