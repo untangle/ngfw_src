@@ -396,11 +396,13 @@ class OpenVpnManager
             sw.appendVariable( FLAG_CLI_IFCONFIG, "" + localEndpoint + " " + remoteEndpoint );
 
             /*
-              This is where some magical flag needs to be set in the config file for using DNS.  I
-              think it is "--pull --dhcp-option DNS <server>" but would like Robert to verify
-              the syntax
+              //This has been commented-out until Bug1228 is fixed
+
+              if(client.getGroup().isUseDNS()) {
+                String dnsServerName = networkSpaces.getEffectiveDNSStuff();//TO BE WRITTEN BY BUG 1228
+                sw.appendVariable( "push", "dhcp-option DNS " + dnsServerName);
+              }
             */
-            client.getGroup().isUseDNS();
 
             sw.writeFile( OPENVPN_CCD_DIR + "/" + name );
         }
