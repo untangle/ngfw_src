@@ -22,24 +22,24 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Collections;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
+import com.metavize.mvvm.logging.EventCache;
 import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.EventLoggerFactory;
+import com.metavize.mvvm.logging.RepositoryDesc;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.TransformStats;
 import org.apache.log4j.Logger;
-import com.metavize.mvvm.logging.EventCache;
-import com.metavize.mvvm.logging.RepositoryDesc;
 
 
 class OpenVpnMonitor implements Runnable
@@ -623,18 +623,18 @@ class OpenVpnMonitor implements Runnable
     //the behavior of "normal" EventCaches by examining only
     //the actie records and returning them to the client.
     class ActiveEventCache implements EventCache<ClientConnectEvent> {
-      
+
         private EventLogger<ClientConnectEvent> eventLogger;
         private RepositoryDesc rd = new RepositoryDesc("Active Sessions");
-        
+
         public void log(ClientConnectEvent e) {
           //Nothing to do
         }
-          
+
         public void checkCold() {
           //Nothing to do
         }
-        
+
         public void setEventLogger(EventLogger<ClientConnectEvent> eventLogger) {
           this.eventLogger = eventLogger;
         }
@@ -733,13 +733,9 @@ class Stats
     boolean updated;
 
     boolean isActive;
-<<<<<<< .mine
-
-=======
 
     boolean logged = false;
-    
->>>>>>> .r4496
+
     Stats( Key key, long bytesRx, long bytesTx ) {
         this.key          = key;
         this.bytesRxTotal = bytesRx;
@@ -761,11 +757,8 @@ class Stats
         event.setEnd( now );
         event.setBytesTx( this.bytesTxTotal );
         event.setBytesRx( this.bytesRxTotal );
-    }    
+    }
 
-<<<<<<< .mine
-
-=======
     ClientConnectEvent copyCurrentEvent(Date now) {
       ClientConnectEvent cce = new ClientConnectEvent(
         sessionEvent.getStart(),
@@ -773,11 +766,10 @@ class Stats
         sessionEvent.getPort(),
         sessionEvent.getClientName());
       fillEventImpl(cce, now);
-      return cce;              
+      return cce;
     }
 
-    
->>>>>>> .r4496
+
     void update( long bytesRx, long bytesTx )
     {
         /* XXX In v2.0.6 they actually use 64 bit counters */
