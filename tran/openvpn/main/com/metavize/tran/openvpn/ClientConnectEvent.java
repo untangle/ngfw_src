@@ -137,7 +137,8 @@ public class ClientConnectEvent extends LogEvent implements Serializable
     }
 
     /**
-     * Time the session ended.
+     * Time the session ended. <b>Note that this
+     * may be null if the session is still open</b>
      *
      * @return time logged.
      * @hibernate.property

@@ -11,7 +11,7 @@
 
 package com.metavize.mvvm.logging;
 
-interface EventCache<E extends LogEvent>
+public interface EventCache<E extends LogEvent>
   extends EventRepository<E> {
   
   void log(E e);

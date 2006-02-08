@@ -28,8 +28,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Date;
+import java.util.Collections;
 
 import org.apache.log4j.Logger;
 
@@ -39,6 +41,9 @@ import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.TransformStats;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.logging.EventCache;
+import com.metavize.mvvm.logging.RepositoryDesc;
+
 
 class OpenVpnMonitor implements Runnable
 {
@@ -112,6 +117,9 @@ class OpenVpnMonitor implements Runnable
     OpenVpnMonitor( VpnTransformImpl transform )
     {
         this.eventLogger = new EventLogger( transform.getTransformContext());
+        //Add the magical thingies to make UI log reading from cache happen
+        eventLogger.addSimpleEventFilter(new ClientConnectEventAllFilter());//For "final" events
+        eventLogger.addEventCache(new ActiveEventCache());//For "open" events
         this.localContext = MvvmContextFactory.context();
         this.transform = transform;
     }
@@ -185,8 +193,22 @@ class OpenVpnMonitor implements Runnable
         logger.debug( "Finished" );
     }
 
+    /**
+     * Method returns a list of open clients as ClientConnectEvents w/o
+     * an end date.
+     */
     private synchronized List<ClientConnectEvent> getOpenConnectionsAsEvents() {
-      return null;
+      Date now = new Date();
+      List<ClientConnectEvent> ret = new ArrayList<ClientConnectEvent>();
+      for(Stats s : activeMap.values()) {
+        if(s.isActive) {
+          ClientConnectEvent copy = s.copyCurrentEvent(now);
+          copy.setTimeStamp(copy.getStart());
+          copy.setEnd(null);
+          ret.add(copy);
+        }
+      }
+      return ret;
     }
 
 
@@ -370,7 +392,7 @@ class OpenVpnMonitor implements Runnable
         
         for ( Stats stats : activeMap.values()) { 
             stats.fillEvent( now );
-            eventLogger.log( stats.sessionEvent );
+            logClientConnectEvent(stats);
         }
 
         activeMap.clear();
@@ -425,7 +447,7 @@ class OpenVpnMonitor implements Runnable
                 stats.fillEvent( now );
 
                 if ( logger.isDebugEnabled()) logger.debug( "Logging " + stats.key );
-                eventLogger.log( stats.sessionEvent );
+                logClientConnectEvent(stats);
             }
         }
     }
@@ -588,6 +610,50 @@ class OpenVpnMonitor implements Runnable
     {
         this.clientDistributionList.add( event );
     }
+
+    private void logClientConnectEvent(Stats stats) {
+      if(stats.isActive || stats.logged) {
+        return;
+      }
+      eventLogger.log(stats.sessionEvent);
+      stats.logged = true;
+    }
+
+
+    //Little class that participates in the whole EventManager
+    //API to satisfy requests for "active" sessions.  Since these
+    //are never sent to persistent store, this class simulates
+    //the behavior of "normal" EventCaches by examining only
+    //the actie records and returning them to the client.
+    class ActiveEventCache implements EventCache<ClientConnectEvent> {
+      
+        private EventLogger<ClientConnectEvent> eventLogger;
+        private RepositoryDesc rd = new RepositoryDesc("Active Sessions");
+        
+        public void log(ClientConnectEvent e) {
+          //Nothing to do
+        }
+          
+        public void checkCold() {
+          //Nothing to do
+        }
+        
+        public void setEventLogger(EventLogger<ClientConnectEvent> eventLogger) {
+          this.eventLogger = eventLogger;
+        }
+        public RepositoryDesc getRepositoryDesc() {
+          return rd;
+        }
+        public List<ClientConnectEvent> getEvents() {
+          List<ClientConnectEvent> list = getOpenConnectionsAsEvents();
+          Collections.sort(list);
+          int maxLen = eventLogger.getLimit();
+          if(list.size() > maxLen) {
+            list = list.subList(0, maxLen);
+          }
+          return list;
+        }
+    }
 }
 
 class Key
@@ -670,6 +736,8 @@ class Stats
     boolean updated;
 
     boolean isActive;
+
+    boolean logged = false;
     
     Stats( Key key, long bytesRx, long bytesTx ) {
         this.key          = key;
@@ -686,9 +754,22 @@ class Stats
     }
 
     void fillEvent( Date now ) {
-        this.sessionEvent.setEnd( now );
-        this.sessionEvent.setBytesTx( this.bytesTxTotal );
-        this.sessionEvent.setBytesRx( this.bytesRxTotal );
+        fillEventImpl(this.sessionEvent, now );
+    }
+    void fillEventImpl(ClientConnectEvent event, Date now ) {
+        event.setEnd( now );
+        event.setBytesTx( this.bytesTxTotal );
+        event.setBytesRx( this.bytesRxTotal );
+    }    
+
+    ClientConnectEvent copyCurrentEvent(Date now) {
+      ClientConnectEvent cce = new ClientConnectEvent(
+        sessionEvent.getStart(),
+        sessionEvent.getAddress(),
+        sessionEvent.getPort(),
+        sessionEvent.getClientName());
+      fillEventImpl(cce, now);
+      return cce;              
     }
 
     

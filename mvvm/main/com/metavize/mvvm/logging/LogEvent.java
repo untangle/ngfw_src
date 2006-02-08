@@ -66,7 +66,11 @@ public abstract class LogEvent implements Comparable, Serializable
         return timeStamp;
     }
 
-    void setTimeStamp(Date timeStamp)
+    /**
+     * Don't make Aaron angry!  This should only be set by the event logging
+     * system unless you're doing tricky things (with Aaron's approval).
+     */
+    public void setTimeStamp(Date timeStamp)
     {
         if (timeStamp instanceof Timestamp) {
             this.timeStamp = new Date(timeStamp.getTime());
