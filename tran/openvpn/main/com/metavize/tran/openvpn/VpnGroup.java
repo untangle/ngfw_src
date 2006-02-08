@@ -33,12 +33,29 @@ public class VpnGroup extends Rule implements Validatable
 
     private IPaddr address;
     private IPaddr netmask;
+    private boolean useDNS = false;
 
     /**
      * Hibernate constructor.
      */
     public VpnGroup()
     {
+    }
+
+    /**
+     * Should clients use DNS from the server
+     *
+     * @hibernate.property
+     * column="USE_DNS"
+     */    
+    public boolean isUseDNS()
+    {
+       return useDNS;
+    }
+    
+    public void setUseDNS(boolean useDNS)
+    {
+        this.useDNS = useDNS;
     }
 
     /**

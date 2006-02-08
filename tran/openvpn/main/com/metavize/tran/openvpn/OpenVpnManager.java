@@ -395,6 +395,13 @@ class OpenVpnManager
             /* XXXX This won't work for a bridge configuration */
             sw.appendVariable( FLAG_CLI_IFCONFIG, "" + localEndpoint + " " + remoteEndpoint );
 
+            /*
+              This is where some magical flag needs to be set in the config file for using DNS.  I
+              think it is "--pull --dhcp-option DNS <server>" but would like Robert to verify
+              the syntax
+            */
+            client.getGroup().isUseDNS();
+
             sw.writeFile( OPENVPN_CCD_DIR + "/" + name );
         }
 
