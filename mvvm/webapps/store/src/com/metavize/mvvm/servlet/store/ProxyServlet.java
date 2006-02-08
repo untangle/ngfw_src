@@ -37,9 +37,17 @@ import org.apache.log4j.Logger;
 
 public class ProxyServlet extends HttpServlet
 {
-    private static final String STORE_HOST = "butters";
-    private static final String URI_BASE = "/joomla/";
-    private static final String BASE_URL = "http://" + STORE_HOST + URI_BASE;
+    private static final String STORE_HOST;
+    private static final String URI_BASE;
+    private static final String BASE_URL;
+
+    static {
+        String s = System.getProperty("mvvm.store.host");
+        STORE_HOST = null == s ? "store.metavize.com" : s;
+        s = System.getProperty("mvvm.store.uri");
+        URI_BASE = null == s ? "/" : s;
+        BASE_URL = "http://" + STORE_HOST + URI_BASE;
+    }
 
     private final Logger logger = Logger.getLogger(getClass());
 
