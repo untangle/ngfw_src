@@ -30,18 +30,18 @@
         </band>
     </background>
     <title>
-        <!-- 64 (logo) + 366 (3 subreports) -->
-        <band height="450"  isSplitAllowed="true" >
+        <!-- 96 (logo) + 360 (3 subreports) + spacing -->
+        <band height="500"  isSplitAllowed="true" >
 
             <image>
-              <reportElement key="image" positionType="Float" mode="Opaque" x="0" y="0" width="64" height="64"/>
+              <reportElement key="image" positionType="Float" mode="Opaque" x="0" y="0" width="96" height="96"/>
               <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#FFFFFF"/>
               <graphicElement/>
-              <imageExpression class="java.lang.String"><![CDATA["com/metavize/gui/icons/LogoNoText64x64.gif"]]></imageExpression>
+              <imageExpression class="java.lang.String"><![CDATA["com/metavize/gui/icons/LogoNoText96x96.gif"]]></imageExpression>
             </image>
 
             <staticText>
-              <reportElement key="staticText" positionType="Float" mode="Opaque" x="68" y="0" width="115" height="23"/>
+              <reportElement key="staticText" positionType="Float" mode="Opaque" x="100" y="0" width="110" height="23"/>
               <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#FFFFFF"/>
               <textElement>
                 <font fontName="SansSerif" size="18" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
@@ -50,7 +50,7 @@
             </staticText>
 
             <staticText>
-              <reportElement key="staticText" positionType="Float" mode="Opaque" x="68" y="25" width="115" height="23"/>
+              <reportElement key="staticText" positionType="Float" mode="Opaque" x="100" y="25" width="110" height="23"/>
               <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#FFFFFF"/>
               <textElement>
                 <font fontName="SansSerif" size="18" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
@@ -59,7 +59,7 @@
             </staticText>
 
             <textField pattern="">
-              <reportElement key="textField" positionType="Float" mode="Opaque" x="185" y="0" width="387" height="17"/>
+              <reportElement key="textField" positionType="Float" mode="Opaque" x="215" y="0" width="357" height="17"/>
               <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#FFFFFF"/>
               <textElement textAlignment="Right">
                 <font fontName="SansSerif" size="14" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
@@ -68,7 +68,7 @@
 	    </textField>
 
             <textField pattern="">
-              <reportElement key="textField" positionType="Float" mode="Opaque" x="185" y="19" width="387" height="15"/>
+              <reportElement key="textField" positionType="Float" mode="Opaque" x="215" y="19" width="357" height="15"/>
               <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#FFFFFF"/>
               <textElement textAlignment="Right">
                 <font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
@@ -79,12 +79,12 @@
             </textField>
 
             <line direction="TopDown">
-              <reportElement key="line" positionType="Float" mode="Opaque" x="0" y="69" width="572" height="1"/>
+              <reportElement key="line" positionType="Float" mode="Opaque" x="0" y="101" width="572" height="1"/>
               <graphicElement pen="Thin" fill="Solid"/>
             </line>
 
             <subreport>
-                <reportElement key="subreport-1" positionType="Float" mode="Opaque" x="0" y="74" width="276" height="120"/>
+                <reportElement key="subreport-1" positionType="Float" mode="Opaque" x="0" y="106" width="276" height="120"/>
                 <subreportParameter name="startTime">
                     <subreportParameterExpression><![CDATA[$P{startTime}]]></subreportParameterExpression>
                 </subreportParameter>
@@ -96,7 +96,7 @@
                 <subreportExpression class="java.lang.String"><![CDATA["@SUBREPORT_1@"]]></subreportExpression>
             </subreport>
             <subreport>
-                <reportElement key="subreport-2" positionType="Float" mode="Opaque" x="0" y="196" width="276" height="120"/>
+                <reportElement key="subreport-2" positionType="Float" mode="Opaque" x="0" y="237" width="276" height="120"/>
                 <subreportParameter name="startTime">
                     <subreportParameterExpression><![CDATA[$P{startTime}]]></subreportParameterExpression>
                 </subreportParameter>
@@ -108,7 +108,7 @@
                 <subreportExpression class="java.lang.String"><![CDATA["@SUBREPORT_2@"]]></subreportExpression>
             </subreport>
             <subreport>
-                <reportElement key="subreport-3" positionType="Float" mode="Opaque" x="0" y="318" width="276" height="120"/>
+                <reportElement key="subreport-3" positionType="Float" mode="Opaque" x="0" y="368" width="276" height="120"/>
                 <subreportParameter name="startTime">
                     <subreportParameterExpression><![CDATA[$P{startTime}]]></subreportParameterExpression>
                 </subreportParameter>
