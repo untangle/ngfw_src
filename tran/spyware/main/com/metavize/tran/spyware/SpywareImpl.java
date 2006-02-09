@@ -35,22 +35,21 @@ import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
-import com.metavize.mvvm.tapi.AsyncSettings;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
-import com.metavize.mvvm.tapi.SettingsChangeListener;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tran.IPMaddr;
 import com.metavize.mvvm.tran.IPMaddrRule;
 import com.metavize.mvvm.tran.StringRule;
 import com.metavize.mvvm.tran.TransformContext;
+import com.metavize.mvvm.util.TransactionWork;
 import com.metavize.tran.token.TokenAdaptor;
 import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 public class SpywareImpl extends AbstractTransform implements Spyware
 {
-    final SpywareStatisticManager statisticManager;
-
     private static final String ACTIVEX_LIST
         = "com/metavize/tran/spyware/activex.txt";
     private static final String ACTIVEX_DIFF_BASE
@@ -73,22 +72,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     private final TokenAdaptor tokenAdaptor = new TokenAdaptor(this, factory);
     private final SpywareEventHandler streamHandler = new SpywareEventHandler(this);
 
-    private final SettingsChangeListener<SpywareSettings> CHANGE_LISTENER
-        = new SettingsChangeListener<SpywareSettings>()
-    {
-        public void newSettings(SpywareSettings settings) {
-            if (null == settings) {
-                initializeSettings();
-            } else {
-                updateActiveX(settings);
-                updateCookie(settings);
-                updateSubnet(settings);
-            }
-
-            doReconfigure();
-        }
-    };
-
+    final SpywareStatisticManager statisticManager;
     private final EventLogger<SpywareEvent> eventLogger;
 
     private final Set urlBlacklist;
@@ -99,12 +83,10 @@ public class SpywareImpl extends AbstractTransform implements Spyware
           new SoloPipeSpec("spyware-byte", this, streamHandler,
                            Fitting.OCTET_STREAM, Affinity.SERVER, 0) };
 
-    private final AsyncSettings<SpywareSettings> settings
-        = new AsyncSettings<SpywareSettings>();
-
-    private volatile Map<String, StringRule> activeXRules = Collections.emptyMap();
-    private volatile Map<String, StringRule> cookieRules = Collections.emptyMap();
-    private volatile Set<String> domainWhitelist = Collections.emptySet();
+    private volatile SpywareSettings settings;
+    private volatile Map<String, StringRule> activeXRules;
+    private volatile Map<String, StringRule> cookieRules;
+    private volatile Set<String> domainWhitelist;
 
     // constructors -----------------------------------------------------------
 
@@ -134,12 +116,25 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
     public SpywareSettings getSpywareSettings()
     {
-        return settings.getSettings();
+        return settings;
     }
 
-    public void setSpywareSettings(SpywareSettings settings)
+    public void setSpywareSettings(final SpywareSettings settings)
     {
-        this.settings.setSettings(settings);
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    s.saveOrUpdate(settings);
+                    SpywareImpl.this.settings = settings;
+                    return true;
+                }
+
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
+
+        reconfigure();
     }
 
     public EventManager<SpywareEvent> getEventManager()
@@ -150,13 +145,11 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     // Transform methods ------------------------------------------------------
 
     // XXX avoid
-    private void doReconfigure()
+    public void reconfigure()
     {
-        SpywareSettings settings = this.settings.getSettings();
-
         logger.info("Reconfigure.");
-        if (settings.getSpywareEnabled()) {
-            streamHandler.subnetList(settings.getSubnetRules());
+        if (this.settings.getSpywareEnabled()) {
+            streamHandler.subnetList(this.settings.getSubnetRules());
         }
 
         List<StringRule> l = (List<StringRule>)settings.getActiveXRules();
@@ -220,18 +213,32 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         updateCookie(settings);
         updateSubnet(settings);
 
-        this.settings.init(getTransformContext(), settings, CHANGE_LISTENER);
+        setSpywareSettings(settings);
 
         statisticManager.stop();
     }
 
     protected void postInit(String[] args)
     {
-        if (!settings.isInitialized()) {
-            settings.init(getTransformContext(),
-                          "from SpywareSettings ss where ss.tid = :tid",
-                          CHANGE_LISTENER);
-        }
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery
+                        ("from SpywareSettings ss where ss.tid = :tid");
+                    q.setParameter("tid", getTid());
+                    SpywareImpl.this.settings = (SpywareSettings)q.uniqueResult();
+
+                    updateActiveX(SpywareImpl.this.settings);
+                    updateCookie(SpywareImpl.this.settings);
+                    updateSubnet(SpywareImpl.this.settings);
+
+                    return true;
+                }
+            };
+        getTransformContext().runTransaction(tw);
+
+        reconfigure();
     }
 
     @Override
@@ -252,7 +259,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
     boolean isBlacklistDomain(String domain, URI uri)
     {
-        if (!settings.getSettings().getUrlBlacklistEnabled()) {
+        if (!settings.getUrlBlacklistEnabled()) {
             return false;
         }
 
@@ -288,7 +295,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         domain = domain.startsWith(".") && 1 < domain.length()
             ? domain.substring(1) : domain;
 
-        if (null == cookieRules && !settings.getSettings().getCookieBlockerEnabled()) {
+        if (null == cookieRules && !settings.getCookieBlockerEnabled()) {
             return false;
         }
 
