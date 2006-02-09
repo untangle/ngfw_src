@@ -12,6 +12,8 @@
 package com.metavize.mvvm.engine;
 
 import java.net.InetAddress;
+import java.util.Iterator;
+import java.util.Set;
 import javax.security.auth.login.FailedLoginException;
 
 import com.metavize.mvvm.MvvmContextFactory;
@@ -95,24 +97,15 @@ class MvvmLoginImpl implements MvvmLogin
         HttpInvoker invoker = HttpInvoker.invoker();
         InetAddress clientAddr = invoker.getClientAddr();
 
-        TransactionWork<User> tw = new TransactionWork<User>()
-            {
-                private User user = null;
-
-                public boolean doWork(Session s)
-                {
-                    Query q = s.createQuery("from User u where u.login = :login");
-                    q.setString("login", login);
-                    user = (User)q.uniqueResult();
-                    return true;
-                }
-
-                public User getResult() { return user; }
-            };
-        MvvmContextFactory.context().runTransaction(tw);
-
-        User user = tw.getResult();
-
+        Set users = MvvmContextFactory.context().adminManager().getAdminSettings().getUsers();
+        User user = null;
+        for (Iterator iter = users.iterator(); iter.hasNext(); ) {
+            user = (User) iter.next();
+            if (login.equals(user.getLogin()))
+                break;
+            user = null;
+        }
+            
         if (null == user) {
             logger.debug("no user found with login: " + login);
             eventLogger.log(new LoginEvent(clientAddr, login, false, false,
