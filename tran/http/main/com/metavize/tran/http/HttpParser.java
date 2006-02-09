@@ -453,6 +453,13 @@ public class HttpParser extends AbstractParser
     {
         ByteBuffer d = b.duplicate();
 
+        // no header
+        if (d.remaining() > 0 && d.remaining() <= 2) {
+            if (LF == d.get(d.limit() - 1)) {
+                return true;
+            }
+        }
+
         if (d.remaining() >= 4) {
             d.position(d.limit() - 4);
         }
