@@ -69,7 +69,7 @@ class HttpCasing extends AbstractCasing
             return requests.remove(0);
         } else {
             if (4 != statusCode / 100) {
-                logger.error("requests is empty: " + statusCode);
+                logger.warn("requests is empty: " + statusCode);
             }
             return null;
         }
