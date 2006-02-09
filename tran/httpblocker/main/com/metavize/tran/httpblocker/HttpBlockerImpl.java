@@ -62,6 +62,10 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         eventLogger.addSimpleEventFilter(sef);
         ListEventFilter lef = new HttpBlockerAllFilter();
         eventLogger.addListEventFilter(lef);
+        sef = new HttpBlockerWhitelistFilter();
+        eventLogger.addSimpleEventFilter(sef);
+        lef = new HttpBlockerPassedFilter();
+        eventLogger.addListEventFilter(lef);
     }
 
     // HttpBlocker methods ----------------------------------------------------

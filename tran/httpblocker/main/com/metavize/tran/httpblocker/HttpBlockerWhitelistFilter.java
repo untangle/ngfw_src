@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: FirewallAccessEventHandler.java 3373 2005-11-12 00:13:48Z amread $
+ * $Id$
  */
 
 package com.metavize.tran.httpblocker;
@@ -15,13 +15,14 @@ package com.metavize.tran.httpblocker;
 import com.metavize.mvvm.logging.RepositoryDesc;
 import com.metavize.mvvm.logging.SimpleEventFilter;
 
-public class HttpBlockerBlockedFilter implements SimpleEventFilter<HttpBlockerEvent>
+public class HttpBlockerWhitelistFilter
+    implements SimpleEventFilter<HttpBlockerEvent>
 {
     private static final RepositoryDesc REPO_DESC
-        = new RepositoryDesc("Blocked HTTP Traffic");
+        = new RepositoryDesc("Whitelisted HTTP Traffic");
 
     private static final String WARM_QUERY
-        = "FROM HttpBlockerEvent evt WHERE evt.action = 'B' AND evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
+        = "FROM HttpBlockerEvent evt WHERE evt.action = 'P' AND evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
 
     // SimpleEventFilter methods ----------------------------------------------
 
@@ -37,6 +38,6 @@ public class HttpBlockerBlockedFilter implements SimpleEventFilter<HttpBlockerEv
 
     public boolean accept(HttpBlockerEvent e)
     {
-        return e.isPersistent() && Action.BLOCK == e.getAction();
+        return e.isPersistent() && Action.PASS == e.getAction();
     }
 }
