@@ -11,15 +11,22 @@
 
 package com.metavize.mvvm.client;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import com.metavize.mvvm.policy.Policy;
 import com.metavize.mvvm.policy.PolicyException;
+import com.metavize.mvvm.security.AdminSettings;
 import com.metavize.mvvm.security.LoginSession;
 import com.metavize.mvvm.security.MvvmPrincipal;
 import com.metavize.mvvm.security.RegistrationInfo;
 import com.metavize.mvvm.security.Tid;
+import com.metavize.mvvm.security.User;
 import com.metavize.mvvm.tapi.IPSessionDesc;
 import com.metavize.mvvm.tapi.SessionDesc;
 import com.metavize.mvvm.tapi.SessionStats;
@@ -192,6 +199,10 @@ public class RemoteClient
             listPolicies();
         } else if (args[0].equalsIgnoreCase("aptTail")) {
             doAptTail(Long.parseLong(args[1]));
+        } else if (args[0].equalsIgnoreCase("passwd")) {
+            String[] pwArgs = new String[args.length - 1];
+            System.arraycopy(args, 1, pwArgs, 0, pwArgs.length);
+            doPasswd(pwArgs);
         } else {
             System.out.print("dont know: ");
             for (int i = 0; i < args.length; i++) {
@@ -475,6 +486,87 @@ public class RemoteClient
 
         System.out.println(tran.neverStarted());
         return;
+    }
+
+    private static void doPasswd(String[] args)
+        throws Exception
+    {
+        boolean addUser = false;
+        boolean delUser = false;
+        int i = 0;
+        String login;
+        String password = null;
+        if (args.length < 1) {
+            System.out.println("Usage: ");
+            System.out.println("    mcli passwd [ -a | -d ] login [ password ]");
+            System.exit(-1);
+        }
+        if ("-a".equals(args[i])) {
+            addUser = true;
+            i++;
+        } else if ("-d".equals(args[i])) {
+            delUser = true;
+            i++;
+        }
+        if (args.length <= i || args.length > i + 2 || (delUser && args.length > i + 1)) {
+            System.out.println("Usage: ");
+            System.out.println("    mcli passwd [ -a | -d ] login [ password ]");
+            System.exit(-1);
+        }
+        login = args[i++];
+        if (args.length > i)
+            password = args[i];
+
+        AdminSettings as = mc.adminManager().getAdminSettings();
+        Set users = as.getUsers();
+        User user = null;
+        for (Iterator iter = users.iterator(); iter.hasNext(); ) {
+            user = (User)iter.next();
+            if (login.equals(user.getLogin())) {
+                if (addUser) {
+                    System.out.println("Error: User already exists.  Aborting.");
+                    System.exit(-1);
+                } else {
+                    break;
+                }
+            }
+            user = null;
+        }
+        if (!addUser && user == null) {
+            System.out.println("Error: User not found.  Aborting.");
+            System.exit(-1);
+        }
+        if (delUser) {
+            users.remove(user);
+            mc.adminManager().setAdminSettings(as);
+            System.out.println("Removed user with login: " + login);
+        } else {
+            if (password == null)
+                password = readPassword();
+            if (addUser) {
+                users.add(new User(login, password, "[created by Metavize support]", false));
+                mc.adminManager().setAdminSettings(as);
+                System.out.println("Created new user with login: " + login);
+            } else {
+                user.setClearPassword(password);
+                mc.adminManager().setAdminSettings(as);
+                System.out.println("Set password of user with login: " + login);
+            }
+        }
+    }
+         
+    private static String readPassword()
+    {
+        try {
+            System.out.print("Password: ");
+            BufferedReader d
+                = new BufferedReader(new InputStreamReader(System.in));
+            return d.readLine();
+        } catch (IOException x) {
+            x.printStackTrace();
+            System.exit(-1);
+            return null;
+        }
     }
 
     private static void instances()
@@ -806,6 +898,7 @@ public class RemoteClient
         System.out.println("  admin manager:");
         System.out.println("    mcli who");
         System.out.println("    mcli getRegInfo");
+        System.out.println("    mcli passwd [ -a | -d ] login [ password ]");
         System.out.println("  mvvm commands:");
         System.out.println("    mcli shutdown");
         System.out.println("    mcli serverStats");
