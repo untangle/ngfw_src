@@ -27,7 +27,8 @@ SELECT c_server_port, c_client_addr, host, hname, c_server_addr, \
        JOIN reports.webpages page USING (request_id) \
        JOIN tr_http_req_line line USING (request_id) \
   WHERE (blk.time_stamp >= $P{startTime} \
-    AND blk.time_stamp < $P{endTime}) \
+    AND blk.time_stamp < $P{endTime} \
+    AND blk.action = 'B') \
   ORDER BY blk.time_stamp DESC
 
 TOPLEFT.label=Timestamp

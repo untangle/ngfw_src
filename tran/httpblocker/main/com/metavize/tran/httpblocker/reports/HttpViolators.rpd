@@ -18,7 +18,8 @@ SELECT hname, count, top_count, all_count \
           FROM tr_httpblk_evt_blk blk \
                JOIN reports.webpages page USING (request_id) \
           WHERE (blk.time_stamp >= $P{startTime} \
-            AND blk.time_stamp < $P{endTime}) \
+            AND blk.time_stamp < $P{endTime} \
+            AND blk.action = 'B') \
           GROUP BY hname \
           ORDER BY count DESC \
           LIMIT @REPORT_MAX_LENGTH@) AS foo, \
@@ -27,7 +28,8 @@ SELECT hname, count, top_count, all_count \
                   FROM tr_httpblk_evt_blk blk \
                        JOIN reports.webpages page USING (request_id) \
                   WHERE (blk.time_stamp >= $P{startTime} \
-                    AND blk.time_stamp < $P{endTime}) \
+                    AND blk.time_stamp < $P{endTime} \
+                    AND blk.action = 'B') \
                   GROUP BY hname \
                   ORDER BY count DESC \
                   LIMIT @REPORT_MAX_LENGTH@) AS foo2) AS foo3, \
@@ -36,7 +38,8 @@ SELECT hname, count, top_count, all_count \
                   FROM tr_httpblk_evt_blk blk \
                        JOIN reports.webpages page USING (request_id) \
                   WHERE (blk.time_stamp >= $P{startTime} \
-                    AND blk.time_stamp < $P{endTime}) \
+                    AND blk.time_stamp < $P{endTime} \
+                    AND blk.action = 'B') \
                   GROUP BY hname \
                   ORDER BY count DESC) AS foo4) AS foo5 \
   ORDER BY count DESC
