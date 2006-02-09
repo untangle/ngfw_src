@@ -30,7 +30,7 @@
       </image>
 
       <staticText>
-        <reportElement key="staticText" positionType="Float" mode="Opaque" x="100" y="0" width="110" height="23"/>
+        <reportElement key="staticText" positionType="Float" mode="Opaque" x="100" y="24" width="110" height="23"/>
         <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#FFFFFF"/>
         <textElement>
           <font fontName="SansSerif" size="18" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
@@ -39,7 +39,7 @@
       </staticText>
 
       <staticText>
-        <reportElement key="staticText" positionType="Float" mode="Opaque" x="100" y="25" width="110" height="23"/>
+        <reportElement key="staticText" positionType="Float" mode="Opaque" x="100" y="49" width="110" height="23"/>
         <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#FFFFFF"/>
         <textElement>
           <font fontName="SansSerif" size="18" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
@@ -48,7 +48,7 @@
       </staticText>
 
       <textField pattern="">
-        <reportElement key="textField" positionType="Float" mode="Opaque" x="215" y="0" width="357" height="17"/>
+        <reportElement key="textField" positionType="Float" mode="Opaque" x="215" y="30" width="357" height="18"/>
         <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#FFFFFF"/>
         <textElement textAlignment="Right">
           <font fontName="SansSerif" size="14" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
@@ -57,7 +57,7 @@
       </textField>
 
       <textField pattern="">
-        <reportElement key="textField" positionType="Float" mode="Opaque" x="215" y="19" width="357" height="15"/>
+        <reportElement key="textField" positionType="Float" mode="Opaque" x="215" y="50" width="357" height="13"/>
         <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#FFFFFF"/>
         <textElement textAlignment="Right">
           <font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
@@ -230,7 +230,7 @@
         </textElement>
         <textFieldExpression class="java.lang.String"><![CDATA[
         500 <= $V{REPORT_COUNT}.intValue() ?
-        new String("Note: EdgeReport is limited to 500 incidents") :
+        new String("Note: This EdgeReport is limited to 500 incidents.") :
         new String("")]]></textFieldExpression>
       </textField>
 
@@ -246,7 +246,7 @@
         </textElement>
         <textFieldExpression class="java.lang.String"><![CDATA[
         500 <= $V{REPORT_COUNT}.intValue() ?
-        new String("Note: EdgeReport is limited to 500 incidents") :
+        new String("Note: This EdgeReport is limited to 500 incidents.") :
         new String("")]]></textFieldExpression>
       </textField>
 
