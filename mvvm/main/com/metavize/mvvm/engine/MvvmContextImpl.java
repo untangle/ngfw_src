@@ -421,6 +421,9 @@ public class MvvmContextImpl extends MvvmContextBase
     @Override
         protected void postInit()
     {
+        // Mailsender can now query the hostname
+        mailSender.postInit();
+
         logger.debug("restarting transforms");
         transformManager.init();
 

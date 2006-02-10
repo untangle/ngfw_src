@@ -70,11 +70,6 @@ public class AdminSettings implements Serializable
         this.users = users;
     }
 
-    public void getUsers(Set users)
-    {
-        this.users = users;
-    }
-
     public void addUser(User user)
     {
         users.add(user);
