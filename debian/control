@@ -1462,7 +1462,7 @@ XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgA
 
 Package: ids-transform
 Architecture: any
-Depends: mvvm, http-casing, snort-rules
+Depends: mvvm, http-casing, snort-rules-current
 XB-Display-Name: Intrusion Prevention
 XB-Website: http://www.metavize.com/ips.html
 XB-View-Position: 75
