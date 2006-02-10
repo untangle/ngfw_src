@@ -1,6 +1,6 @@
 TARGET_DIR=../resources/spyware/com/metavize/tran/spyware
 
-all: clean build
+all:
 	cp ./urlblacklist.txt $(TARGET_DIR)
 
 	cp ./cookie-diff-* $(TARGET_DIR) || true
@@ -33,9 +33,9 @@ url:
 	@cat ./files/hosts > ./files/hostslist
 	@cat ./files/hosts.txt >> ./files/hostslist
 	@cat ./files/hostslist | grep -v "^#.*" | grep "^127.0.0.1" | awk '{print $$2}' | sed -e 's/\#.*//' -e 's///' > ./files/urlblacklist
-	@cat ./files/ag-sites-full.txt | grep -v "^\." >> ./files/urlblacklist
+	@cat ./files/ag-sites-full.txt | egrep -v '^[0-9]{1,3}\.[0-9]{1,3}\.' | grep -v "^\." >> ./files/urlblacklist
 	@cat ./files/urlblacklist | grep -v '^$$' | sed -e "/[\x80-\xff]/d" | sort | uniq > ./files/urlblacklist.txt
-	@cat ./files/urlblacklist.txt | fgrep -vwf domains.clean > urlblacklist.txt
+	@cat ./files/urlblacklist.txt | grep -vwf domains.clean > urlblacklist.txt
 
 activex-init-%:
 	mkdir -p ./files
@@ -53,7 +53,7 @@ cookie-init-%: domains.clean
 	@( cd ./files ; wget http://www.geocities.com/spywarekilla/autoinstaller.zip  && unzip autoinstaller.zip)
 	@cat ./files/Spyware\ blacklist\ auto-installer.reg | tr -d '\377' | tr -d '\376' | tr -d '\000' >| ./files/cookies
 	@cat ./files/cookies | grep HKEY | sed 's/^.*History\\\(.*\)\]/\1/' | grep -v HKEY > ./files/cookie.txt.tmp
-	@cat ./files/cookie.txt.tmp | fgrep -vwf domains.clean | sort > $@
+	@cat ./files/cookie.txt.tmp | grep -vwf domains.clean | sort > $@
 
 cookie-diff-%: cookie-init-%
 	if diff cookie-init-$(shell expr $* - 1) $< >$@; then \
