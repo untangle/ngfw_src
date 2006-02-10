@@ -27,11 +27,14 @@ subnet: subnet-diff-$(shell expr `ls subnet-init-* | cut -d- -f3 | sort -r -n | 
 
 url:
 	mkdir -p ./files
-	@( cd ./files ; wget http://www.geocities.com/spywarekilla/hosts.zip && unzip -a -o hosts.zip)
+	@( cd ./files ; wget http://www.geocities.com/spywarekilla/hosts.zip && unzip -a -o hosts.zip )
 	@( cd ./files ; wget http://www.mvps.org/winhelp2002/hosts.txt )
-	@cat ./files/hosts > ./files/urlblacklist
-	@cat ./files/hosts.txt >> ./files/urlblacklist
-	@cat ./files/urlblacklist | grep -v "^#.*" | grep "^127.0.0.1" | awk '{print $$2}' | sed -e 's/\#.*//' -e 's///' | sort | uniq > ./files/urlblacklist.txt
+	@( cd ./files ; wget http://www.spywarewarrior.com/uiuc/res/agnis-sites.zip && unzip -a -o agnis-sites.zip ag-sites-full.txt )
+	@cat ./files/hosts > ./files/hostslist
+	@cat ./files/hosts.txt >> ./files/hostslist
+	@cat ./files/hostslist | grep -v "^#.*" | grep "^127.0.0.1" | awk '{print $$2}' | sed -e 's/\#.*//' -e 's///' > ./files/urlblacklist
+	@cat ./files/ag-sites-full.txt | grep -v "^\." >> ./files/urlblacklist
+	@cat ./files/urlblacklist | grep -v '^$$' | sed -e "/[\x80-\xff]/d" | sort | uniq > ./files/urlblacklist.txt
 	@cat ./files/urlblacklist.txt | fgrep -vwf domains.clean > urlblacklist.txt
 
 activex-init-%:
@@ -69,7 +72,7 @@ subnet-init-%:
 	@cat ./files/blockips-single.txt | awk '{print $$1 " mask 255.255.255.255,Malware," $$2 }' >> ./files/subnet.txt
 	@cat ./files/blockips-mask.txt | awk '{print $$1 " mask " $$2 ",Malware," $$3 }' >> ./files/subnet.txt
 	@cat ./files/subnet.txt | egrep '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3} mask [0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' > ./files/subnet.txt.tmp
-	@cat ./files/subnet.txt.tmp | egrep -v -i "(Microsoft|MSN|Netscape)" > $@
+	@cat ./files/subnet.txt.tmp | egrep -v -i "(Microsoft|MSN|Netscape)" | sort > $@
 
 subnet-diff-%: subnet-init-%
 	if diff subnet-init-$(shell expr $* - 1) $< >$@; then \
