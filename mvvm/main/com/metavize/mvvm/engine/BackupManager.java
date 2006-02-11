@@ -40,9 +40,9 @@ class BackupManager {
     OLD_BACKUP_SCRIPT = System.getProperty("bunnicula.home")
         + "/../../bin/mvvmdb-backup";  
     BACKUP_SCRIPT = System.getProperty("bunnicula.home")
-        + "/../../bin/mvv-backup-bundled.sh";
+        + "/../../bin/mv-backup-bundled.sh";
     RESTORE_SCRIPT = System.getProperty("bunnicula.home")
-        + "/../../bin/mvv-restore-bundled.sh";
+        + "/../../bin/mv-restore-bundled.sh";
   }
 
 
