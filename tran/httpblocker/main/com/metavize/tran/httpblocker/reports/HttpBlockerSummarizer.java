@@ -27,7 +27,7 @@ public class HttpBlockerSummarizer extends BaseSummarizer {
     {
         long hitCount = 0l;
         long blockCount = 0l;
-        long totalTraffic = 0l;
+        long webTraffic = 0l; // filtered web traffic (to other transforms)
 
         try {
         String sql;
@@ -54,29 +54,24 @@ public class HttpBlockerSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "SELECT SUM(c2p_bytes), SUM(s2p_bytes), SUM(p2c_bytes), SUM(p2s_bytes) FROM tr_http_evt_req AS evt, tr_http_req_line AS line, pl_stats AS stats WHERE evt.time_stamp >= ? AND evt.time_stamp < ? AND evt.request_id = line.request_id AND line.pl_endp_id = stats.pl_endp_id";
+            sql = "SELECT SUM(p2s_bytes) FROM tr_http_evt_req AS evt, tr_http_req_line AS line, pl_stats AS stats WHERE evt.time_stamp >= ? AND evt.time_stamp < ? AND evt.request_id = line.request_id AND line.pl_endp_id = stats.pl_endp_id";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
             rs = ps.executeQuery();
             rs.first();
-            long c2p = rs.getLong(1);
-            long s2p = rs.getLong(2);
-            long p2c = rs.getLong(3);
-            long p2s = rs.getLong(4);
-            totalTraffic += s2p;
-            totalTraffic += p2s;
+            webTraffic = rs.getLong(1);
             rs.close();
             ps.close();
         } catch (SQLException exn) {
             logger.warn("could not summarize", exn);
         }
 
-        addEntry("Total web traffic", Util.trimNumber("Bytes",totalTraffic));
+        addEntry("Filtered web traffic", Util.trimNumber("Bytes",webTraffic));
 
         addEntry("&nbsp;", "&nbsp;");
 
-        addEntry("Total domain visits", Util.trimNumber("",hitCount));
+        addEntry("Scanned domain visits", Util.trimNumber("",hitCount));
         addEntry("&nbsp;&nbsp;&nbsp;Blocked domain visits", Util.trimNumber("",blockCount), Util.percentNumber(blockCount,hitCount));
         addEntry("&nbsp;&nbsp;&nbsp;Passed domain visits", Util.trimNumber("",hitCount-blockCount), Util.percentNumber(hitCount-blockCount,hitCount));
 
