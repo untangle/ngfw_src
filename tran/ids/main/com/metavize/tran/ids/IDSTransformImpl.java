@@ -138,6 +138,12 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
     protected void postInit(String args[]) {
         logger.info("Post init");
         queryDBForSettings();
+
+        // Upgrade to 3.2 will have nuked the settings.  Recreate them
+        if (IDSTransformImpl.this.settings == null) {
+            logger.warn("No settings found.  Creating anew.");
+            initializeSettings();
+        }
     }
 
     protected void preStart() throws TransformStartException {
