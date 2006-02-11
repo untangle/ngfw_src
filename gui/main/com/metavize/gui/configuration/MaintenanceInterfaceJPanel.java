@@ -44,7 +44,7 @@ public class MaintenanceInterfaceJPanel extends MEditTableJPanel{
 
 
 
-class InterfaceModel extends MSortedTableModel{ 
+class InterfaceModel extends MSortedTableModel<MaintenanceCompoundSettings>{ 
     
     private static final int  T_TW  = Util.TABLE_TOTAL_WIDTH;
     private static final int  C0_MW = Util.STATUS_MIN_WIDTH; /* status */
@@ -70,7 +70,8 @@ class InterfaceModel extends MSortedTableModel{
     }
     
     
-    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {        
+    public void generateSettings(MaintenanceCompoundSettings maintenanceCompoundSettings,
+				 Vector<Vector> tableVector, boolean validateOnly) throws Exception {        
         List<Interface> elemList = new ArrayList(tableVector.size());
 	Interface newElem = null;
         int rowIndex = 0;
@@ -85,14 +86,13 @@ class InterfaceModel extends MSortedTableModel{
         
 	// SAVE SETTINGS //////////
 	if( !validateOnly ){
-	    NetworkSettings networkSettings = Util.getNetworkManager().getNetworkSettings();
+	    NetworkSettings networkSettings = maintenanceCompoundSettings.getNetworkSettings();
 	    networkSettings.setInterfaceList(elemList);
-	    Util.getNetworkManager().setNetworkSettings(networkSettings);
 	}
     }
 
-    public Vector<Vector> generateRows(Object settings) {
-	NetworkSettings networkSettings = Util.getNetworkManager().getNetworkSettings();
+    public Vector<Vector> generateRows(MaintenanceCompoundSettings maintenanceCompoundSettings) {
+	NetworkSettings networkSettings = maintenanceCompoundSettings.getNetworkSettings();
 	List<Interface> interfaceList = 
             (List<Interface>) networkSettings.getInterfaceList();
         Vector<Vector> allRows = new Vector<Vector>(interfaceList.size());

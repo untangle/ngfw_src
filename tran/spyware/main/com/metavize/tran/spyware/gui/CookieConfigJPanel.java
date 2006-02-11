@@ -49,7 +49,7 @@ public class CookieConfigJPanel extends MEditTableJPanel{
 }
 
 
-class CookieTableModel extends MSortedTableModel{ 
+class CookieTableModel extends MSortedTableModel<Object>{ 
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */

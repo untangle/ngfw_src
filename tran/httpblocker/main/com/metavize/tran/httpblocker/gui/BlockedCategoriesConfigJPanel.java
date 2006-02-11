@@ -42,8 +42,7 @@ public class BlockedCategoriesConfigJPanel extends MEditTableJPanel {
 }
 
 
-class CategoryTableModel extends MSortedTableModel
-{ 
+class CategoryTableModel extends MSortedTableModel<Object> { 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
     private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # - invisible */

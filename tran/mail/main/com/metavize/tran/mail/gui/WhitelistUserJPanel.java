@@ -31,15 +31,15 @@ import java.awt.*;
 import java.awt.event.*;
 import com.metavize.gui.widgets.editTable.*;
 
-public class WhitelistUserJPanel extends javax.swing.JPanel implements ComponentListener {
+public class WhitelistUserJPanel extends javax.swing.JPanel
+    implements Refreshable<MailTransformCompoundSettings>, ComponentListener {
 
     private static final Color TABLE_BACKGROUND_COLOR = new Color(213, 213, 226);
     private WhitelistUserTableModel whitelistUserTableModel;
-    private SafelistAdminView safelistAdminView;
+    private MailTransformCompoundSettings mailTransformCompoundSettings;
     private String account;
     
-    public WhitelistUserJPanel(SafelistAdminView safelistAdminView, String account) {
-        this.safelistAdminView = safelistAdminView;
+    public WhitelistUserJPanel(String account) {
         this.account = account;
         
         // INIT GUI & CUSTOM INIT
@@ -50,14 +50,14 @@ public class WhitelistUserJPanel extends javax.swing.JPanel implements Component
         addComponentListener(WhitelistUserJPanel.this);
         
         // create actual table model
-        whitelistUserTableModel = new WhitelistUserTableModel(safelistAdminView, account);
-        setTableModel( whitelistUserTableModel );
-        
-        whitelistUserTableModel.doRefresh(null);
+        whitelistUserTableModel = new WhitelistUserTableModel();
+        setTableModel( whitelistUserTableModel );        
     }
 
-    protected void sendSettings(Object settings) throws Exception { }
-    protected void refreshSettings(){}
+    public void doRefresh(MailTransformCompoundSettings mailTransformCompoundSettings){
+	this.mailTransformCompoundSettings = mailTransformCompoundSettings;
+	whitelistUserTableModel.doRefresh(mailTransformCompoundSettings);
+    }
     
     public void setTableModel(MSortedTableModel mSortedTableModel){
         entryJTable.setModel( mSortedTableModel );
@@ -75,9 +75,6 @@ public class WhitelistUserJPanel extends javax.swing.JPanel implements Component
         return (MColoredJTable) entryJTable;
     }
         
-    protected Vector<Vector> generateRows(Object settings) {
-        return null;
-    }
 
     public void componentHidden(ComponentEvent e){}
     public void componentMoved(ComponentEvent e){}
@@ -171,7 +168,7 @@ public class WhitelistUserJPanel extends javax.swing.JPanel implements Component
         }
         try{
             for( String email : emails )
-                safelistAdminView.removeFromSafelist(account, email);
+		mailTransformCompoundSettings.getSafelistAdminView().removeFromSafelist(account, email);
         }
         catch(Exception e){Util.handleExceptionNoRestart("Error removing from whitelist: " + account, e);}
         
@@ -204,15 +201,12 @@ public class WhitelistUserJPanel extends javax.swing.JPanel implements Component
 
 
 
-class WhitelistUserTableModel extends MSortedTableModel {
+class WhitelistUserTableModel extends MSortedTableModel<MailTransformCompoundSettings> {
 
-    private SafelistAdminView safelistAdminView;
-    private String account;
     private static final StringConstants sc = StringConstants.getInstance();
     
-    public WhitelistUserTableModel(SafelistAdminView safelistAdminView, String account){
-        this.safelistAdminView = safelistAdminView;
-        this.account = account;
+    public WhitelistUserTableModel(){
+
     }
     
     public TableColumnModel getTableColumnModel(){
@@ -227,19 +221,12 @@ class WhitelistUserTableModel extends MSortedTableModel {
 
 
    
-    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception { }
+    public void generateSettings(MailTransformCompoundSettings mailTransformCompoundSettings,
+				 Vector<Vector> tableVector, boolean validateOnly) throws Exception { }
 
-    public Vector<Vector> generateRows(Object settings) {
+    public Vector<Vector> generateRows(MailTransformCompoundSettings mailTransformCompoundSettings) {
         
-        String[] addresses;
-        try{
-              addresses = safelistAdminView.getSafelistContents(account);
-        }
-        catch(Exception e){
-            Util.handleExceptionNoRestart("Error getting safelist record", e);
-            return new Vector<Vector>();
-        }
-        
+        String[] addresses = mailTransformCompoundSettings.getSafelistContents();
         Vector<Vector> allRows = new Vector<Vector>(addresses.length);
 	Vector tempRow = null;
         int rowIndex = 0;

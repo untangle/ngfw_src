@@ -27,6 +27,7 @@ import com.metavize.mvvm.security.*;
 public class MLoginJFrame extends javax.swing.JFrame {
 
     private MMainJFrame mMainJFrame;
+    private DropdownLoginTask dropdownLoginTask;
 
     public MLoginJFrame(final String[] args) {
 
@@ -67,8 +68,8 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 loginJTextField.setText("egdemo");
                 passJPasswordField.setText("egdemo");
             }
+	    dropdownLoginTask = new DropdownLoginTask(MLoginJFrame.this, contentJPanel);
         }});
-
     }
 
 
@@ -90,52 +91,45 @@ public class MLoginJFrame extends javax.swing.JFrame {
         }});
     }
 
-
-    public void reshowLogin(){
+    public void setMessage(final String message){
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
-            synchronized(this){
-                if(mMainJFrame != null){
-                    mMainJFrame.setVisible(false);
-                    mMainJFrame.dispose();
-                    mMainJFrame = null;
-                }
-                if(!MLoginJFrame.this.isVisible()){
-                    MLoginJFrame.this.setVisible(true);
-                }
-            }
+            statusJProgressBar.setString(message);
+            statusJProgressBar.setValue(0);
+            statusJProgressBar.setIndeterminate(false);
         }});
     }
 
 
-    private boolean alreadyLoggedIn() {
-        LoginSession loginSession = MvvmRemoteContextFactory.factory().loginSession();
-        LoginSession[] loggedInUsers = Util.getMvvmContext().adminManager().loggedInUsers();
-        int mySessionId = loginSession.getSessionId();
-
-        String mySessionName = loginSession.getMvvmPrincipal().getName();
-
-        int tempSessionId;
-        String otherUserName = null;
-        if(loggedInUsers.length > 1){
-            for(int i=0; i<loggedInUsers.length; i++){
-                tempSessionId = loggedInUsers[i].getSessionId();
-                if(mySessionId != tempSessionId){
-                    otherUserName = loggedInUsers[i].getMvvmPrincipal().getName();
-                    if(otherUserName.equals(mySessionName))
-                        return true;
-                }
-            }
-            return false;
-        }
-        else
-            return false;
+    public void reshowLogin(){
+	if(isVisible())
+	    return;
+        SwingUtilities.invokeLater( new Runnable(){ public void run(){
+	    if(mMainJFrame != null){
+		mMainJFrame.setVisible(false);
+		mMainJFrame.dispose();
+		mMainJFrame = null;
+	    }
+	    MLoginJFrame.this.contentJPanel.setPreferredSize(new Dimension(330,400));
+	    MLoginJFrame.this.pack();
+	    MLoginJFrame.this.setVisible(true);
+        }});
+	setInputsEnabled(true);
+	//dropdownLoginTask.start(true);
     }
 
 
-    private int loginCount() {
-        LoginSession loginSession = MvvmRemoteContextFactory.factory().loginSession();
-        LoginSession[] loggedInUsers = Util.getMvvmContext().adminManager().loggedInUsers();
-        return loggedInUsers.length - 1;
+    public void setInputsEnabled(final boolean isEnabled){
+	SwingUtilities.invokeLater( new Runnable(){ public void run(){
+	    loginJTextField.setEnabled(isEnabled);
+	    passJPasswordField.setEnabled(isEnabled);
+	    serverJTextField.setEnabled(isEnabled);
+	    protocolJTextField.setEnabled(isEnabled);
+	    acceptJButton.setEnabled(isEnabled);
+            if(loginJTextField.getText().length() == 0)
+                loginJTextField.requestFocus();
+            else
+                passJPasswordField.requestFocus();
+	}});
     }
 
 
@@ -148,6 +142,8 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 java.awt.GridBagConstraints gridBagConstraints;
 
                 contentJPanel = new javax.swing.JPanel();
+                logoLabel = new javax.swing.JLabel();
+                upperBackgroundJLabel = new com.metavize.gui.widgets.MTiledIconLabel();
                 inputJPanel = new javax.swing.JPanel();
                 loginJTextField = new javax.swing.JTextField();
                 passJPasswordField = new javax.swing.JPasswordField();
@@ -159,8 +155,9 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 protocolJLabel = new javax.swing.JLabel();
                 acceptJButton = new javax.swing.JButton();
                 statusJProgressBar = new javax.swing.JProgressBar();
-                logoLabel = new javax.swing.JLabel();
-                backgroundJLabel = new com.metavize.gui.widgets.MTiledIconLabel();
+                lowerBackgroundJLabel = new com.metavize.gui.widgets.MTiledIconLabel();
+
+                getContentPane().setLayout(new java.awt.GridBagLayout());
 
                 setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
                 setTitle("Metavize EdgeGuard " + Version.getVersion());
@@ -175,13 +172,46 @@ public class MLoginJFrame extends javax.swing.JFrame {
 
                 contentJPanel.setLayout(new java.awt.GridBagLayout());
 
-                contentJPanel.setMaximumSize(new java.awt.Dimension(330, 421));
-                contentJPanel.setOpaque(false);
+                contentJPanel.setMaximumSize(new java.awt.Dimension(330, 400));
+                contentJPanel.setMinimumSize(new java.awt.Dimension(330, 238));
                 contentJPanel.setPreferredSize(new java.awt.Dimension(330, 400));
+                logoLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+                logoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText96x96.png")));
+                logoLabel.setDoubleBuffered(true);
+                logoLabel.setFocusable(false);
+                logoLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+                logoLabel.setIconTextGap(0);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(48, 115, 0, 115);
+                contentJPanel.add(logoLabel, gridBagConstraints);
+
+                upperBackgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/LightGreyBackground1600x100.png")));
+                upperBackgroundJLabel.setDoubleBuffered(true);
+                upperBackgroundJLabel.setFocusable(false);
+                upperBackgroundJLabel.setMaximumSize(null);
+                upperBackgroundJLabel.setMinimumSize(null);
+                upperBackgroundJLabel.setOpaque(true);
+                upperBackgroundJLabel.setPreferredSize(null);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.ipady = 75;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+                gridBagConstraints.weightx = 1.0;
+                contentJPanel.add(upperBackgroundJLabel, gridBagConstraints);
+
                 inputJPanel.setLayout(new java.awt.GridBagLayout());
 
                 inputJPanel.setFocusable(false);
+                inputJPanel.setMaximumSize(new java.awt.Dimension(270, 140));
+                inputJPanel.setMinimumSize(new java.awt.Dimension(270, 140));
                 inputJPanel.setOpaque(false);
+                inputJPanel.setPreferredSize(new java.awt.Dimension(270, 140));
                 loginJTextField.setFont(new java.awt.Font("Arial", 0, 12));
                 loginJTextField.setHorizontalAlignment(javax.swing.JTextField.LEFT);
                 loginJTextField.setDoubleBuffered(true);
@@ -330,61 +360,49 @@ public class MLoginJFrame extends javax.swing.JFrame {
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 1;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 30, 20, 30);
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 66, 0);
                 contentJPanel.add(inputJPanel, gridBagConstraints);
 
                 statusJProgressBar.setFont(new java.awt.Font("Default", 0, 12));
                 statusJProgressBar.setForeground(new java.awt.Color(68, 91, 255));
                 statusJProgressBar.setDoubleBuffered(true);
-                statusJProgressBar.setMaximumSize(new java.awt.Dimension(150, 16));
-                statusJProgressBar.setMinimumSize(new java.awt.Dimension(150, 16));
-                statusJProgressBar.setPreferredSize(new java.awt.Dimension(150, 16));
+                statusJProgressBar.setMaximumSize(new java.awt.Dimension(270, 16));
+                statusJProgressBar.setMinimumSize(new java.awt.Dimension(270, 16));
+                statusJProgressBar.setPreferredSize(new java.awt.Dimension(270, 16));
                 statusJProgressBar.setString("");
                 statusJProgressBar.setStringPainted(true);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 2;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 30, 30, 30);
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 30, 0);
                 contentJPanel.add(statusJProgressBar, gridBagConstraints);
 
-                logoLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                logoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText96x96.png")));
-                logoLabel.setDoubleBuffered(true);
-                logoLabel.setFocusable(false);
-                logoLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                logoLabel.setIconTextGap(0);
+                lowerBackgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/LightGreyBackground1600x100.png")));
+                lowerBackgroundJLabel.setDoubleBuffered(true);
+                lowerBackgroundJLabel.setFocusable(false);
+                lowerBackgroundJLabel.setMaximumSize(null);
+                lowerBackgroundJLabel.setMinimumSize(null);
+                lowerBackgroundJLabel.setOpaque(true);
+                lowerBackgroundJLabel.setPreferredSize(null);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
-                gridBagConstraints.gridwidth = 2;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-                gridBagConstraints.insets = new java.awt.Insets(48, 96, 48, 96);
-                contentJPanel.add(logoLabel, gridBagConstraints);
-
-                backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/LightGreyBackground1600x100.png")));
-                backgroundJLabel.setDoubleBuffered(true);
-                backgroundJLabel.setFocusable(false);
-                backgroundJLabel.setMaximumSize(null);
-                backgroundJLabel.setMinimumSize(null);
-                backgroundJLabel.setOpaque(true);
-                backgroundJLabel.setPreferredSize(null);
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.gridheight = 3;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.weighty = 1.0;
-                contentJPanel.add(backgroundJLabel, gridBagConstraints);
+                contentJPanel.add(lowerBackgroundJLabel, gridBagConstraints);
 
-                getContentPane().add(contentJPanel, java.awt.BorderLayout.CENTER);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                getContentPane().add(contentJPanel, gridBagConstraints);
 
                 pack();
         }//GEN-END:initComponents
@@ -414,18 +432,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_loginJTextFieldActionPerformed
 
 
-    private void updateAcceptJButtonState(){
-        return;
-        /*
-          if( (loginJTextField.getText().length()>0)
-          && (passJPasswordField.getPassword().length>0)
-          && (serverJTextField.getText().length()>0))
-          acceptJButton.setEnabled(true);
-          else
-          acceptJButton.setEnabled(false);
-        **/
-    }
-
 
 
     private void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
@@ -436,12 +442,12 @@ public class MLoginJFrame extends javax.swing.JFrame {
 
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JButton acceptJButton;
-        private javax.swing.JLabel backgroundJLabel;
         private javax.swing.JPanel contentJPanel;
         private javax.swing.JPanel inputJPanel;
         private javax.swing.JLabel loginJLabel;
         private javax.swing.JTextField loginJTextField;
         private javax.swing.JLabel logoLabel;
+        private javax.swing.JLabel lowerBackgroundJLabel;
         private javax.swing.JLabel passJLabel;
         private javax.swing.JPasswordField passJPasswordField;
         private javax.swing.JLabel protocolJLabel;
@@ -449,6 +455,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
         private javax.swing.JLabel serverJLabel;
         private javax.swing.JTextField serverJTextField;
         private javax.swing.JProgressBar statusJProgressBar;
+        private javax.swing.JLabel upperBackgroundJLabel;
         // End of variables declaration//GEN-END:variables
 
     private class ConnectThread extends Thread {
@@ -464,11 +471,8 @@ public class MLoginJFrame extends javax.swing.JFrame {
         }
 
         public void run() {
+	    setInputsEnabled(false);
 	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		loginJTextField.setEnabled(false);
-		passJPasswordField.setEnabled(false);
-		serverJTextField.setEnabled(false);
-		protocolJTextField.setEnabled(false);
 		statusJProgressBar.setValue(0);
 		statusJProgressBar.setIndeterminate(true);
 		statusJProgressBar.setString("Authenticating");
@@ -519,6 +523,11 @@ public class MLoginJFrame extends javax.swing.JFrame {
                     }});
                     Thread.sleep(500);
                     retryLogin = -1;
+                    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+			MLoginJFrame.this.contentJPanel.setPreferredSize(new Dimension(330,238));
+			MLoginJFrame.this.pack();
+		    }});
+			//dropdownLoginTask.start(false);
                     break;
                 }
                 catch(MultipleLoginsException e){
@@ -630,7 +639,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 }
                 finally{
                     if(retryClient >= Util.LOGIN_RETRY_COUNT){
-                        resetLogin("Error: Unable to launch client.");
+                        setMessage("Error: Unable to launch client.");
                         reshowLogin();
                         return;
                     }

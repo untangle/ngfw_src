@@ -28,6 +28,7 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 import javax.jnlp.*;
 import javax.swing.*;
+import java.lang.reflect.Constructor;
 
 import com.metavize.gui.login.*;
 import com.metavize.gui.main.MMainJFrame;
@@ -35,6 +36,7 @@ import com.metavize.gui.main.PolicyStateMachine;
 import com.metavize.gui.pipeline.MPipelineJPanel;
 import com.metavize.gui.pipeline.MRackJPanel;
 import com.metavize.gui.widgets.editTable.*;
+import com.metavize.gui.transform.CompoundSettings;
 import com.metavize.mvvm.*;
 import com.metavize.mvvm.client.*;
 import com.metavize.mvvm.logging.*;
@@ -597,4 +599,36 @@ public class Util {
         return stringBuffer.toString();
     }
     ///////////////////////////////////////////
+
+    // TRANSFORM LOADING //////////////////////
+    public static Transform getTransform(String transformName) throws Exception {
+	Transform transform = null;
+	List<Tid> transformInstances = Util.getTransformManager().transformInstances(transformName);
+	if(transformInstances.size()>0){
+	    TransformContext transformContext = Util.getTransformManager().transformContext(transformInstances.get(0));	    
+	    transform = transformContext.transform();
+	}
+	return transform;
+    }
+
+    public static Object getRemoteObject(String className, String transformName) throws Exception {
+	Transform transform = getTransform(transformName);
+	if( transform != null){
+	    TransformDesc transformDesc = transform.getTransformDesc();
+	    Class transformClass = Util.getClassLoader().loadClass(className, transformDesc);
+	    Constructor transformConstructor = transformClass.getConstructor(new Class[]{});
+	    return transformConstructor.newInstance();
+	}
+	else
+	    return null;
+    }
+
+    public static CompoundSettings getCompoundSettings(String className, String transformName) throws Exception {
+	return (CompoundSettings) getRemoteObject(className, transformName);
+    }
+    
+    public static Component getSettingsComponent(String className, String transformName) throws Exception {
+	return (Component) getRemoteObject(className, transformName);
+    }
+    //////////////////////////////////////////
 }

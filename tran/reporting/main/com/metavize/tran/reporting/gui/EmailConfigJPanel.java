@@ -47,7 +47,7 @@ public class EmailConfigJPanel extends MEditTableJPanel {
 }
 
 
-class EmailTableModel extends MSortedTableModel{ 
+class EmailTableModel extends MSortedTableModel<Object>{ 
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */

@@ -27,7 +27,7 @@ import javax.swing.event.*;
 import javax.swing.table.*;
 
 
-public class TableModelSiteToSite extends MSortedTableModel{
+public class TableModelSiteToSite extends MSortedTableModel<Object>{
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH_LARGE;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */

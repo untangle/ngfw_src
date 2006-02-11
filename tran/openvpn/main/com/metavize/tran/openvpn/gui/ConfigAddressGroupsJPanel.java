@@ -41,7 +41,7 @@ public class ConfigAddressGroupsJPanel extends MEditTableJPanel {
     }
 }
 
-class TableModelAddressGroups extends MSortedTableModel{
+class TableModelAddressGroups extends MSortedTableModel<Object>{
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH_LARGE;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */

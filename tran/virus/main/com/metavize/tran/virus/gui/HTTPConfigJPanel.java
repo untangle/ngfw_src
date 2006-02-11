@@ -44,7 +44,7 @@ public class HTTPConfigJPanel extends MEditTableJPanel {
 }
 
 
-class HTTPTableModel extends MSortedTableModel{ 
+class HTTPTableModel extends MSortedTableModel<Object>{ 
 
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;

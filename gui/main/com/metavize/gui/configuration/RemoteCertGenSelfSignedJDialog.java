@@ -42,12 +42,12 @@ public class RemoteCertGenSelfSignedJDialog extends javax.swing.JDialog implemen
     }
 
     public RemoteCertGenSelfSignedJDialog(Dialog topLevelDialog, MConfigJDialog mConfigJDialog) {
-        super( topLevelDialog, true);
+        super(topLevelDialog, true);
 	init(topLevelDialog, mConfigJDialog);	
     }
 
     public RemoteCertGenSelfSignedJDialog(Frame topLevelFrame, MConfigJDialog mConfigJDialog) {
-        super( topLevelFrame, true);
+        super(topLevelFrame, true);
 	init(topLevelFrame, mConfigJDialog);
     }
 

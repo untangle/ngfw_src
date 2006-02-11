@@ -12,6 +12,7 @@
 
 package com.metavize.tran.mail.gui;
 
+import com.metavize.gui.configuration.*;
 import com.metavize.gui.transform.*;
 import com.metavize.gui.util.*;
 
@@ -23,10 +24,9 @@ import com.metavize.tran.mail.papi.MailTransformSettings;
 import java.awt.*;
 import javax.swing.*;
 
-public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
+public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel<MaintenanceCompoundSettings> {
 
-    public MCasingJPanel(TransformContext transformContext) {
-        super(transformContext);
+    public MCasingJPanel() {
         initComponents();
         
         smtpInboundJSpinner.setModel( new SpinnerNumberModel((Long)(MailTransformSettings.TIMEOUT_MIN/1000l),
@@ -56,7 +56,9 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
 	timeoutLimitsJLabel.setText("(max=" + (MailTransformSettings.TIMEOUT_MAX/1000l) + " min=" +  (MailTransformSettings.TIMEOUT_MIN/1000l) + ")");
     }
 
-    public void doSave(Object settings, boolean validateOnly) throws Exception {
+    public String getDisplayName(){ return "Mail Settings"; }
+
+    public void doSave(MaintenanceCompoundSettings maintenanceCompoundSettings, boolean validateOnly) throws Exception {
 
         // EMAIL ENABLED ///////////
         boolean isSmtpEnabled = smtpEnabledRadioButton.isSelected();
@@ -73,7 +75,8 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
-            MailTransformSettings mailTransformSettings = (MailTransformSettings) transformContext.transform().getSettings();
+            MailTransformSettings mailTransformSettings =
+		((MailTransformCompoundSettings)maintenanceCompoundSettings.getMailTransformCompoundSettings()).getMailTransformSettings();
             mailTransformSettings.setSmtpEnabled(isSmtpEnabled);
             mailTransformSettings.setPopEnabled(isPopEnabled);
             mailTransformSettings.setImapEnabled(isImapEnabled);
@@ -83,14 +86,14 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
             mailTransformSettings.setPopOutboundTimeout(popOutboundTimeout);
             mailTransformSettings.setImapInboundTimeout(imapInboundTimeout);
             mailTransformSettings.setImapOutboundTimeout(imapOutboundTimeout);
-            transformContext.transform().setSettings(mailTransformSettings);
         }
 
     }
 
-    public void doRefresh(Object settings){
+    public void doRefresh(MaintenanceCompoundSettings maintenanceCompoundSettings){
         
-        MailTransformSettings mailTransformSettings = (MailTransformSettings) transformContext.transform().getSettings();
+        MailTransformSettings mailTransformSettings =
+	    ((MailTransformCompoundSettings)maintenanceCompoundSettings.getMailTransformCompoundSettings()).getMailTransformSettings();
         
         // EMAIL ENABLED /////////
         boolean isSmtpEnabled = mailTransformSettings.isSmtpEnabled();

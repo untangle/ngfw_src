@@ -101,9 +101,6 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
         expandJDialog.getContentPane().setLayout(new GridBagLayout());
 	expandJDialog.getContentPane().add(new com.metavize.gui.widgets.MTiledIconLabel("",greyBackgroundImageIcon,JLabel.CENTER), greyBackgroundConstraints);
     
-	// these are now done only on demand
-	//generateGui();
-	//refreshAll();
     }
 
     public void settingsChanged(Object source){
@@ -168,6 +165,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
     /////////////////////////
 
     public JToggleButton getControlsJToggleButton(){ return mTransformJPanel.getControlsJToggleButton(); }
+    
     
     public void setAllEnabled(boolean enabled){
         int innerComponentCount, outerComponentCount;

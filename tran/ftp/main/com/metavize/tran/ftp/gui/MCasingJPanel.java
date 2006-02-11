@@ -12,6 +12,7 @@
 
 package com.metavize.tran.ftp.gui;
 
+import com.metavize.gui.configuration.*;
 import com.metavize.gui.transform.*;
 import com.metavize.gui.util.*;
 
@@ -23,32 +24,32 @@ import com.metavize.tran.ftp.FtpSettings;
 import java.awt.*;
 
 
-public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
+public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel<MaintenanceCompoundSettings> {
 
     
-    public MCasingJPanel(TransformContext transformContext) {
-        super(transformContext);
+    public MCasingJPanel() {
         initComponents();
     }
 
-    public void doSave(Object settings, boolean validateOnly) throws Exception {
+    public String getDisplayName(){ return "FTP Settings"; }
+
+    public void doSave(MaintenanceCompoundSettings maintenanceCompoundSettings, boolean validateOnly) throws Exception {
 
         // FTP ENABLED ///////////
         boolean isFtpEnabled = ftpEnabledRadioButton.isSelected();
         
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
-            FtpSettings ftpSettings = (FtpSettings) transformContext.transform().getSettings();
+            FtpSettings ftpSettings = ((FtpTransformCompoundSettings)maintenanceCompoundSettings.getFtpTransformCompoundSettings()).getFtpTransformSettings();
             ftpSettings.setEnabled(isFtpEnabled);
-            transformContext.transform().setSettings(ftpSettings);
         }
 
     }
 
-    public void doRefresh(Object settings){
+    public void doRefresh(MaintenanceCompoundSettings maintenanceCompoundSettings){
         
         // FTP ENABLED /////////
-        FtpSettings ftpSettings = (FtpSettings) transformContext.transform().getSettings();
+	FtpSettings ftpSettings = ((FtpTransformCompoundSettings)maintenanceCompoundSettings.getFtpTransformCompoundSettings()).getFtpTransformSettings();
         boolean isFtpEnabled = ftpSettings.isEnabled();
         if( isFtpEnabled )
             ftpEnabledRadioButton.setSelected(true);

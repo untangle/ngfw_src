@@ -26,9 +26,9 @@ import com.metavize.mvvm.tran.*;
 import com.metavize.mvvm.policy.*;
 import com.metavize.mvvm.tran.firewall.*;
 
-public class CustomPolicyJPanel extends MEditTableJPanel {
+public class PolicyCustomJPanel extends MEditTableJPanel {
 
-    public CustomPolicyJPanel() {
+    public PolicyCustomJPanel() {
         super(true, true);
         super.setInsets(new Insets(4, 4, 2, 2));
         super.setTableTitle("");
@@ -43,7 +43,7 @@ public class CustomPolicyJPanel extends MEditTableJPanel {
 }
 
 
-class CustomPolicyTableModel extends MSortedTableModel{
+class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
     
     public CustomPolicyTableModel(){
 
@@ -68,15 +68,13 @@ class CustomPolicyTableModel extends MSortedTableModel{
     private static final String INBOUND_STRING = " (inbound)";
     private static final String OUTBOUND_STRING = " (outbound)";
 
-    private IntfEnum intfEnum = Util.getNetworkingManager().getIntfEnum();
 
     private ComboBoxModel protocolModel = super.generateComboBoxModel( ProtocolMatcher.getProtocolEnumeration(),
 								       ProtocolMatcher.getProtocolDefault() );
-
-    private ComboBoxModel interfaceModel = super.generateComboBoxModel( intfEnum.getIntfNames(),
-									intfEnum.getIntfNames()[0] );
-
+    private DefaultComboBoxModel interfaceModel = new DefaultComboBoxModel();
     private DefaultComboBoxModel policyModel = new DefaultComboBoxModel();
+    private IntfEnum intfEnum;
+
     private Map<String,Policy> policyNames = new LinkedHashMap();
     private void updatePolicyNames(List<Policy> policyList){
 	policyNames.clear();
@@ -115,7 +113,8 @@ class CustomPolicyTableModel extends MSortedTableModel{
     }
 
 
-    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
+    public void generateSettings(PolicyCompoundSettings policyCompoundSettings,
+				 Vector<Vector> tableVector, boolean validateOnly) throws Exception {
         List elemList = new ArrayList(tableVector.size());
 	UserPolicyRule newElem = null;
 	int rowIndex = 0;
@@ -147,13 +146,23 @@ class CustomPolicyTableModel extends MSortedTableModel{
 
 	// SAVE SETTINGS /////////
 	if( !validateOnly ){
-	   PolicyConfiguration policyConfiguration = (PolicyConfiguration) settings;
+	   PolicyConfiguration policyConfiguration = policyCompoundSettings.getPolicyConfiguration();
 	   policyConfiguration.setUserPolicyRules( elemList );
 	}
     }
 
-    public Vector<Vector> generateRows(Object settings){
-        PolicyConfiguration policyConfiguration = (PolicyConfiguration) settings;
+    public Vector<Vector> generateRows(PolicyCompoundSettings policyCompoundSettings){
+
+	// UPDATE MODELS IF NECESSARY
+	if(intfEnum == null)
+	    intfEnum = policyCompoundSettings.getIntfEnum();
+	if(interfaceModel.getSize() == 0){
+	    for(String intfName : intfEnum.getIntfNames())
+		interfaceModel.addElement(intfName);
+	    interfaceModel.setSelectedItem(intfEnum.getIntfNames()[0]);
+	}
+
+	PolicyConfiguration policyConfiguration = policyCompoundSettings.getPolicyConfiguration();
 	List<UserPolicyRule> userPolicyRules = (List<UserPolicyRule>) policyConfiguration.getUserPolicyRules();
         Vector<Vector> allRows = new Vector<Vector>(userPolicyRules.size());
 	Vector tempRow = null;

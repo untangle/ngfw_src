@@ -27,7 +27,7 @@ public class MLauncher {
 
     public static void main(final String args[]) {
 
-        // set the proper look and feel, and dynamic resizing
+        // SET LAF
         try {
 	    /*
 	    com.incors.plaf.alloy.AlloyLookAndFeel.setProperty("alloy.licenseCode", "2006/02/11#imnieves@gmail.com#ay1m62#13knm1");
@@ -37,22 +37,35 @@ public class MLauncher {
             com.incors.plaf.kunststoff.KunststoffLookAndFeel kunststoffLaf = new com.incors.plaf.kunststoff.KunststoffLookAndFeel();
             kunststoffLaf.setCurrentTheme(new com.incors.plaf.kunststoff.KunststoffTheme());
             UIManager.setLookAndFeel(kunststoffLaf);
-            Toolkit.getDefaultToolkit().setDynamicLayout(true);
         }
         catch (Exception e) {
-            Util.handleExceptionNoRestart("Error setting LAF:", e);
+	    System.err.println("Error starting LAF:");
+	    e.printStackTrace();
         }
+
+        // SET CLASS LOADER
+        MURLClassLoader mUrlClassLoader = new MURLClassLoader( Thread.currentThread().getContextClassLoader() );
+        UIManager.getLookAndFeelDefaults().put("ClassLoader", mUrlClassLoader);
+        Thread.currentThread().setContextClassLoader(mUrlClassLoader);
 
 	// INITIALIZE UTIL
 	Util.initialize();
+        Util.setClassLoader( mUrlClassLoader );
 	
-        // SET THE REPAINT MANAGER
+        // SET THE REPAINT OPTIONS
         RepaintManager.setCurrentManager( new DebugRepaintManager() );
+	try{
+	    Toolkit.getDefaultToolkit().setDynamicLayout(true);
+	}
+	catch(Exception e){
+	    System.err.println("Error setting dynamic layout:");
+	    e.printStackTrace();
+	}
 
-        // start a shutdown hook
+        // SHUTDOWN HOOK
         Runtime.getRuntime().addShutdownHook( new ShutdownHookThread() );
 
-        // give all these class loaders full permissions
+        // FULL PERMISSIONS POLICY
         Policy.setPolicy( 
 			 new Policy(){
 			     public PermissionCollection getPermissions(CodeSource codeSource){
@@ -63,14 +76,6 @@ public class MLauncher {
 			     public void refresh(){}
 			 }
 			 );
-
-        // set up the new class loader
-        MURLClassLoader mUrlClassLoader = new MURLClassLoader( Thread.currentThread().getContextClassLoader() );
-        Util.setClassLoader( mUrlClassLoader );
-        Thread.currentThread().setContextClassLoader(mUrlClassLoader);
-
-        // apply the new class loader to future swing threads
-        UIManager.getLookAndFeelDefaults().put("ClassLoader", mUrlClassLoader);
 
         // HANDLE FIRST TIME LOGINS
         try{

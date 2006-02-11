@@ -13,6 +13,7 @@ package com.metavize.tran.mail.gui;
 
 import com.metavize.gui.widgets.coloredTable.*;
 import com.metavize.gui.widgets.dialogs.RefreshLogFailureDialog;
+import com.metavize.gui.configuration.EmailCompoundSettings;
 import com.metavize.gui.transform.*;
 import com.metavize.gui.util.*;
 
@@ -31,13 +32,14 @@ import java.awt.*;
 import java.awt.event.*;
 import com.metavize.gui.widgets.editTable.*;
 
-public class QuarantineAllJPanel extends javax.swing.JPanel implements ComponentListener {
+public class QuarantineAllJPanel extends javax.swing.JPanel
+    implements Refreshable<EmailCompoundSettings>, ComponentListener {
 
     private static final Color TABLE_BACKGROUND_COLOR = new Color(213, 213, 226);
     private QuarantineAllTableModel quarantineAllTableModel;
-    private QuarantineMaintenenceView quarantineMaintenenceView;
+    private MailTransformCompoundSettings mailTransformCompoundSettings;
     
-    public QuarantineAllJPanel(TransformContext transformContext) {
+    public QuarantineAllJPanel() {
         // INIT GUI & CUSTOM INIT
         initComponents();
         entryJScrollPane.getViewport().setOpaque(true);
@@ -45,18 +47,15 @@ public class QuarantineAllJPanel extends javax.swing.JPanel implements Component
         entryJScrollPane.setViewportBorder(new MatteBorder(2, 2, 2, 1, TABLE_BACKGROUND_COLOR));
         addComponentListener(QuarantineAllJPanel.this);
         
-        // GET PROXY
-        quarantineMaintenenceView = ((MailTransform)transformContext.transform()).getQuarantineMaintenenceView();
-        
         // create actual table model
-        quarantineAllTableModel = new QuarantineAllTableModel(quarantineMaintenenceView);
+        quarantineAllTableModel = new QuarantineAllTableModel();
         setTableModel( quarantineAllTableModel );
-        
-        quarantineAllTableModel.doRefresh(null);
     }
 
-    protected void sendSettings(Object settings) throws Exception {}
-    protected void refreshSettings(){}
+    public void doRefresh(EmailCompoundSettings emailCompoundSettings){
+	mailTransformCompoundSettings = (MailTransformCompoundSettings) emailCompoundSettings.getMailTransformCompoundSettings();
+	quarantineAllTableModel.doRefresh(emailCompoundSettings);
+    }
     
     public void setTableModel(MSortedTableModel mSortedTableModel){
         entryJTable.setModel( mSortedTableModel );
@@ -208,7 +207,7 @@ public class QuarantineAllJPanel extends javax.swing.JPanel implements Component
         // show detail dialog
         Vector<Vector> dataVector = quarantineAllTableModel.getDataVector();
         String account = (String) dataVector.elementAt(selectedModelRows[0]).elementAt(2);
-        (new QuarantineUserJDialog((Dialog)getTopLevelAncestor(), quarantineMaintenenceView, account)).setVisible(true);
+        (new QuarantineUserJDialog((Dialog)getTopLevelAncestor(), mailTransformCompoundSettings, account)).setVisible(true);
         
         // refresh
         quarantineAllTableModel.doRefresh(null);
@@ -225,7 +224,7 @@ public class QuarantineAllJPanel extends javax.swing.JPanel implements Component
         for( int i : selectedModelRows ){
             account = (String) dataVector.elementAt(i).elementAt(2);
             try{
-                quarantineMaintenenceView.rescueInbox(account);
+		mailTransformCompoundSettings.getQuarantineMaintenanceView().rescueInbox(account);
             }
             catch(Exception e){Util.handleExceptionNoRestart("Error rescuing inbox: " + account, e);}
         }
@@ -249,7 +248,7 @@ public class QuarantineAllJPanel extends javax.swing.JPanel implements Component
         for( int i : selectedModelRows ){
             account = (String) dataVector.elementAt(i).elementAt(2);
             try{
-                quarantineMaintenenceView.deleteInbox(account);
+                mailTransformCompoundSettings.getQuarantineMaintenanceView().deleteInbox(account);
             }
             catch(Exception e){Util.handleExceptionNoRestart("Error deleting inbox: " + account, e);}
         }
@@ -285,13 +284,11 @@ public class QuarantineAllJPanel extends javax.swing.JPanel implements Component
 
 
 
-class QuarantineAllTableModel extends MSortedTableModel {
+class QuarantineAllTableModel extends MSortedTableModel<EmailCompoundSettings> {
 
-    private QuarantineMaintenenceView quarantineMaintenenceView;
     private static final StringConstants sc = StringConstants.getInstance();
     
-    public QuarantineAllTableModel(QuarantineMaintenenceView quarantineMaintenenceView){
-        this.quarantineMaintenenceView = quarantineMaintenenceView;
+    public QuarantineAllTableModel(){
     }
     
     public TableColumnModel getTableColumnModel(){
@@ -301,26 +298,19 @@ class QuarantineAllTableModel extends MSortedTableModel {
         addTableColumn( tableColumnModel,  0,  Util.STATUS_MIN_WIDTH, false, false, true, false, String.class,     null, sc.TITLE_STATUS );
 	addTableColumn( tableColumnModel,  1,  Util.LINENO_MIN_WIDTH, false, false, true, false, Integer.class,    null, sc.TITLE_INDEX );
         addTableColumn( tableColumnModel,  2, 300, true,  false,  false, true,  String.class, null, sc.html("Account Address") );
-        addTableColumn( tableColumnModel,  3,  85, true,  false,  false, false, String.class, null, sc.html("Message<br>Count") );
-        addTableColumn( tableColumnModel,  4,  85, true,  false,  false, false, String.class, null, sc.html("Data Size<br>(kB)") );
+        addTableColumn( tableColumnModel,  3,  85, true,  false,  false, false, Integer.class, null, sc.html("Message<br>Count") );
+        addTableColumn( tableColumnModel,  4,  85, true,  false,  false, false, Long.class,    null, sc.html("Data Size<br>(kB)") );
         return tableColumnModel;
     }
 
 
    
-    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception { }
+    public void generateSettings(EmailCompoundSettings emailCompoundSettings,
+				 Vector<Vector> tableVector, boolean validateOnly) throws Exception { }
 
-    public Vector<Vector> generateRows(Object settings) {
+    public Vector<Vector> generateRows(EmailCompoundSettings emailCompoundSettings) {
         
-        java.util.List<Inbox> inboxes;
-        try{
-             inboxes = quarantineMaintenenceView.listInboxes();
-        }
-        catch(Exception e){
-            Util.handleExceptionNoRestart("Error getting inbox list", e);
-            return new Vector<Vector>();
-        }
-        
+        java.util.List<Inbox> inboxes = ((MailTransformCompoundSettings)emailCompoundSettings.getMailTransformCompoundSettings()).getInboxList();
         Vector<Vector> allRows = new Vector<Vector>(inboxes.size());
 	Vector tempRow = null;
         int rowIndex = 0;

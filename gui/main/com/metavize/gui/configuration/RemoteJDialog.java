@@ -23,18 +23,19 @@ import com.metavize.mvvm.NetworkingConfiguration;
 
 public class RemoteJDialog extends MConfigJDialog {
 
-    private static final String NAME_ADMINISTRATION_CONFIG = "Remote Admin Config";
-    private static final String NAME_ADMIN_ACCOUNTS = "Admin Accounts";
-    private static final String NAME_ADMIN_RESTRICTIONS = "Restrictions";
-    private static final String NAME_CERTIFICATE_TAB = "Certificates";
-    private static final String NAME_CERTIFICATE_STATUS = "Status";
+    private static final String NAME_ADMINISTRATION_CONFIG  = "Remote Admin Config";
+    private static final String NAME_ADMIN_ACCOUNTS         = "Admin Accounts";
+    private static final String NAME_ADMIN_RESTRICTIONS     = "Restrictions";
+    private static final String NAME_CERTIFICATE_TAB        = "Certificates";
+    private static final String NAME_CERTIFICATE_STATUS     = "Status";
     private static final String NAME_CERTIFICATE_GENERATION = "Generation";
-    private static final String NAME_MONITORING_TAB = "Monitoring";
-    private static final String NAME_MONITORING_SNMP = "SNMP";
-    private static final String NAME_MONITORING_SYSLOG = "Syslog";
-    private static final String NAME_MANUAL_REBOOT = "Manual Reboot";
+    private static final String NAME_MONITORING_TAB         = "Monitoring";
+    private static final String NAME_MONITORING_SNMP        = "SNMP";
+    private static final String NAME_MONITORING_SYSLOG      = "Syslog";
+    private static final String NAME_MANUAL_REBOOT          = "Manual Reboot";
     
     public RemoteJDialog( ) {
+	compoundSettings = new RemoteCompoundSettings();
     }
 
     protected void generateGui(){
@@ -84,16 +85,9 @@ public class RemoteJDialog extends MConfigJDialog {
         addTab(NAME_MANUAL_REBOOT, null, remoteRebootJPanel);
     }
 
-    protected void sendSettings(Object settings) throws Exception {
-        Util.getNetworkingManager().set( (NetworkingConfiguration) settings);
-    }
-    protected void refreshSettings(){
-        settings = Util.getNetworkingManager().get();
-    }
-
-    protected void saveAll(){
+    protected void saveAll() throws Exception {
         // ASK THE USER IF HE REALLY WANTS TO SAVE SETTINGS ////////
-        NetworkSaveSettingsProceedJDialog saveSettingsProceedJDialog = new NetworkSaveSettingsProceedJDialog();
+        NetworkSaveSettingsProceedJDialog saveSettingsProceedJDialog = new NetworkSaveSettingsProceedJDialog(this);
         boolean isProceeding = saveSettingsProceedJDialog.isProceeding();
         if( isProceeding ){
             super.saveAll();

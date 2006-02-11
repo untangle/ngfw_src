@@ -62,7 +62,7 @@ public class LogJPanel extends MLogTableJPanel {
         settings = ef.getEvents();
     }
 
-    class LogTableModel extends MSortedTableModel{
+    class LogTableModel extends MSortedTableModel<Object>{
 
         public TableColumnModel getTableColumnModel(){
             DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();

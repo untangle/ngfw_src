@@ -39,7 +39,7 @@ public class InitialSetupKeyJPanel extends MWizardPageJPanel {
 	SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
 	    keyJTextField.setBackground( Color.WHITE );
 
-	    key = keyJTextField.getText().replaceAll("-","").replaceAll(" ","");
+	    key = keyJTextField.getText().replaceAll("-","").replaceAll(" ","").toLowerCase();
 
 	    exception = null;
 

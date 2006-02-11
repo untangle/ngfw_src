@@ -24,7 +24,9 @@ import java.awt.event.*;
 import javax.swing.border.*;
 
 
-public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectionListener, TableModelListener, Refreshable, Savable, ComponentListener {
+public class MEditTableJPanel extends javax.swing.JPanel
+    implements ListSelectionListener, TableModelListener, ComponentListener,
+	       Savable<Object>, Refreshable<Object> {
 
     private JLabel messageJLabel;
     
@@ -57,8 +59,10 @@ public class MEditTableJPanel extends javax.swing.JPanel implements ListSelectio
     ///////////////////////////////////////////
 
     // SAVE/REFRESH ///////////
-    public void doRefresh(Object settings){ getTableModel().doRefresh(settings); }
-    public void doSave(Object settings, boolean validateOnly) throws Exception { getTableModel().doSave(settings, validateOnly); }
+    public void doRefresh(Object compoundSettings){ getTableModel().doRefresh(compoundSettings); }
+    public void doSave(Object compoundSettings, boolean validateOnly) throws Exception {
+	getTableModel().doSave(compoundSettings, validateOnly);
+    }
     
     public void setMTransformJPanel(MTransformJPanel mTransformJPanel){
         this.mTransformJPanel = mTransformJPanel;

@@ -18,13 +18,14 @@ import com.metavize.mvvm.NetworkingManager;
 import com.metavize.mvvm.NetworkingConfiguration;
 
 import javax.swing.*;
-
+import java.awt.Dialog;
 
 final public class NetworkDhcpRenewDialog extends MOneButtonProgressJDialog {
     
     private NetworkingConfiguration networkingConfiguration = null;
     
-    public NetworkDhcpRenewDialog() {
+    public NetworkDhcpRenewDialog(Dialog parentDialog) {
+	super(parentDialog);
         this.setTitle("Renewing DHCP Lease");
         this.labelJLabel.setText("Renewing DHCP Lease");
         this.messageJLabel.setText("<html><center>You have requested that EdgeGuard contact the network's DHCP<br>server in order to renew its lease on DHCP settings.</center></html>");

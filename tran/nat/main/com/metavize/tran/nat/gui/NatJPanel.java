@@ -20,7 +20,7 @@ import com.metavize.tran.nat.*;
 import java.awt.*;
 
 
-public class NatJPanel extends javax.swing.JPanel implements Savable, Refreshable {
+public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Refreshable<Object> {
     
     private static final String EXCEPTION_INTERNAL_ADDRESS = "The Internal IP address must be a valid IP address.";
     private static final String EXCEPTION_INTERNAL_SUBNET = "The Internal Subnet must be a valid IP address.";

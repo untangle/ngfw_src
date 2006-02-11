@@ -13,6 +13,7 @@ package com.metavize.tran.mail.gui;
 
 import com.metavize.gui.transform.*;
 import com.metavize.gui.pipeline.MPipelineJPanel;
+import com.metavize.gui.configuration.EmailCompoundSettings;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.util.*;
 
@@ -30,7 +31,7 @@ import com.metavize.tran.mail.papi.quarantine.*;
 
 public class QuarantinableForwardsJPanel extends MEditTableJPanel{
 
-    public QuarantinableForwardsJPanel(TransformContext transformContext) {
+    public QuarantinableForwardsJPanel() {
         super(true, true);
         super.setFillJButtonEnabled( true );
         super.setInsets(new Insets(4, 4, 2, 2));
@@ -39,14 +40,14 @@ public class QuarantinableForwardsJPanel extends MEditTableJPanel{
         super.setAddRemoveEnabled(true);
         
         // create actual table model
-        ForwardsModel forwardsModel = new ForwardsModel(transformContext);
+        ForwardsModel forwardsModel = new ForwardsModel();
         this.setTableModel( forwardsModel );
     }
     
 
 
 
-class ForwardsModel extends MSortedTableModel{ 
+class ForwardsModel extends MSortedTableModel<EmailCompoundSettings>{ 
     
     private static final int  T_TW  = Util.TABLE_TOTAL_WIDTH;
     private static final int  C0_MW = Util.STATUS_MIN_WIDTH; /* status */
@@ -56,10 +57,7 @@ class ForwardsModel extends MSortedTableModel{
     private static final int  C4_MW = 120;  /* category */
     private static final int  C5_MW = 120;  /* description */
     
-    private TransformContext transformContext;
-
-    public ForwardsModel(TransformContext transformContext){
-	this.transformContext = transformContext;
+    public ForwardsModel(){
     }
 
     protected boolean getSortable(){ return false; }
@@ -79,7 +77,8 @@ class ForwardsModel extends MSortedTableModel{
     }
     
     
-    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
+    public void generateSettings(EmailCompoundSettings emailCompoundSettings,
+				 Vector<Vector> tableVector, boolean validateOnly) throws Exception {
         List<EmailAddressPairRule> elemList = new ArrayList(tableVector.size());
 	EmailAddressPairRule newElem = null;
         int rowIndex = 0;
@@ -96,17 +95,14 @@ class ForwardsModel extends MSortedTableModel{
         
 	// SAVE SETTINGS //////////
 	if( !validateOnly ){
-	    MailTransformSettings mailTransformSettings = ((MailTransform)transformContext.transform()).getMailTransformSettings();
-	    QuarantineSettings quarantineSettings = mailTransformSettings.getQuarantineSettings();
+	    QuarantineSettings quarantineSettings = ((MailTransformCompoundSettings)emailCompoundSettings.getMailTransformCompoundSettings()).getQuarantineSettings();
 	    quarantineSettings.setAddressRemaps(elemList);
-	    mailTransformSettings.setQuarantineSettings(quarantineSettings);
-	    ((MailTransform)transformContext.transform()).setMailTransformSettings(mailTransformSettings);
 	}
     }
 
-    public Vector<Vector> generateRows(Object settings) {
-	List<EmailAddressPairRule> addressList = 
-            (List<EmailAddressPairRule>) ((MailTransform)transformContext.transform()).getMailTransformSettings().getQuarantineSettings().getAddressRemaps();
+    public Vector<Vector> generateRows(EmailCompoundSettings emailCompoundSettings) {
+	QuarantineSettings quarantineSettings = ((MailTransformCompoundSettings)emailCompoundSettings.getMailTransformCompoundSettings()).getQuarantineSettings();
+	List<EmailAddressPairRule> addressList = (List<EmailAddressPairRule>) quarantineSettings.getAddressRemaps();
         Vector<Vector> allRows = new Vector<Vector>(addressList.size());
 	Vector tempRow = null;
         int rowIndex = 0;

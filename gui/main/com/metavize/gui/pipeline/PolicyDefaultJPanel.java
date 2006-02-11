@@ -25,9 +25,9 @@ import com.metavize.mvvm.*;
 import com.metavize.mvvm.tran.*;
 import com.metavize.mvvm.policy.*;
 
-public class DefaultPolicyJPanel extends MEditTableJPanel {
+public class PolicyDefaultJPanel extends MEditTableJPanel {
 
-    public DefaultPolicyJPanel() {
+    public PolicyDefaultJPanel() {
         super(true, true);
         super.setInsets(new Insets(4, 4, 2, 2));
         super.setTableTitle("");
@@ -42,7 +42,7 @@ public class DefaultPolicyJPanel extends MEditTableJPanel {
 }
 
 
-class DefaultPolicyTableModel extends MSortedTableModel{
+class DefaultPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
@@ -53,8 +53,6 @@ class DefaultPolicyTableModel extends MSortedTableModel{
     private static final int C5_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW), 125); /* description */
 
     protected boolean getSortable(){ return false; }
-
-    private IntfEnum intfEnum = Util.getNetworkingManager().getIntfEnum();
 
     private static final String NULL_STRING = "> No rack";
     private static final String INBOUND_STRING = " (inbound)";
@@ -84,7 +82,8 @@ class DefaultPolicyTableModel extends MSortedTableModel{
         return tableColumnModel;
     }
 
-    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
+    public void generateSettings(PolicyCompoundSettings policyCompoundSettings,
+				 Vector<Vector> tableVector, boolean validateOnly) throws Exception {
         List elemList = new ArrayList(tableVector.size());
 	SystemPolicyRule newElem = null;
 
@@ -146,14 +145,14 @@ class DefaultPolicyTableModel extends MSortedTableModel{
 
 	// SAVE SETTINGS /////////
 	if( !validateOnly ){
-	   PolicyConfiguration policyConfiguration = (PolicyConfiguration) settings;
+	   PolicyConfiguration policyConfiguration = policyCompoundSettings.getPolicyConfiguration();
 	   policyConfiguration.setSystemPolicyRules( elemList );
 	}
 
     }
 
-    public Vector<Vector> generateRows(Object settings){
-        PolicyConfiguration policyConfiguration = (PolicyConfiguration) settings;
+    public Vector<Vector> generateRows(PolicyCompoundSettings policyCompoundSettings){
+	PolicyConfiguration policyConfiguration = policyCompoundSettings.getPolicyConfiguration();
 	List<SystemPolicyRule> systemPolicyRules = (List<SystemPolicyRule>) policyConfiguration.getSystemPolicyRules();
         Vector<Vector> allRows = new Vector<Vector>(systemPolicyRules.size());
 	Vector tempRow = null;
@@ -166,8 +165,8 @@ class DefaultPolicyTableModel extends MSortedTableModel{
 	    tempRow = new Vector(7);
 	    tempRow.add( super.ROW_SAVED );
 	    tempRow.add( rowIndex );
-	    tempRow.add( intfEnum.getIntfName( newElem.getClientIntf() ) );
-	    tempRow.add( intfEnum.getIntfName( newElem.getServerIntf() ) );
+	    tempRow.add( policyCompoundSettings.getIntfEnum().getIntfName( newElem.getClientIntf() ) );
+	    tempRow.add( policyCompoundSettings.getIntfEnum().getIntfName( newElem.getServerIntf() ) );
 	    String policyName;
 	    if( newElem.getPolicy() != null )
 		policyName = newElem.getPolicy().getName() + (newElem.isInbound()?INBOUND_STRING:OUTBOUND_STRING);

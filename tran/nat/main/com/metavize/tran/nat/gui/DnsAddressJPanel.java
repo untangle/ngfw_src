@@ -48,7 +48,7 @@ public class DnsAddressJPanel extends MEditTableJPanel{
 
 
 
-class DnsAddressTableModel extends MSortedTableModel{ 
+class DnsAddressTableModel extends MSortedTableModel<Object>{ 
 
     
     private static final int  T_TW = Util.TABLE_TOTAL_WIDTH;

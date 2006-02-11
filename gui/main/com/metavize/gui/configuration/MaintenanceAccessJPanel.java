@@ -19,14 +19,15 @@ import com.metavize.mvvm.*;
 import com.metavize.mvvm.tran.*;
 import java.awt.*;
 
-public class MaintenanceAccessJPanel extends javax.swing.JPanel implements Savable, Refreshable {
+public class MaintenanceAccessJPanel extends javax.swing.JPanel
+    implements Savable<MaintenanceCompoundSettings>, Refreshable<MaintenanceCompoundSettings> {
 
     
     public MaintenanceAccessJPanel() {
         initComponents();
     }
 
-    public void doSave(Object settings, boolean validateOnly) throws Exception {
+    public void doSave(MaintenanceCompoundSettings maintenanceCompoundSettings, boolean validateOnly) throws Exception {
 
         // SSH ENABLED ////////
 	boolean isSshEnabled = sshEnabledRadioButton.isSelected();
@@ -36,14 +37,14 @@ public class MaintenanceAccessJPanel extends javax.swing.JPanel implements Savab
         
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
-	    NetworkingConfiguration networkingConfiguration = (NetworkingConfiguration) settings;
+	    NetworkingConfiguration networkingConfiguration = maintenanceCompoundSettings.getNetworkingConfiguration();
             networkingConfiguration.isSshEnabled( isSshEnabled );
             networkingConfiguration.isExceptionReportingEnabled( isExceptionReportingEnabled );
         }
     }
 
-    public void doRefresh(Object settings){
-        NetworkingConfiguration networkingConfiguration = (NetworkingConfiguration) settings;
+    public void doRefresh(MaintenanceCompoundSettings maintenanceCompoundSettings){
+        NetworkingConfiguration networkingConfiguration = maintenanceCompoundSettings.getNetworkingConfiguration();
         
         // SSH ENABLED ///////
 	boolean isSshEnabled = networkingConfiguration.isSshEnabled();

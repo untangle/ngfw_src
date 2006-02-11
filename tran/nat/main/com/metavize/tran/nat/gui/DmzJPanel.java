@@ -21,7 +21,7 @@ import com.metavize.tran.nat.*;
 import java.awt.*;
 
 
-public class DmzJPanel extends javax.swing.JPanel implements Savable, Refreshable {
+public class DmzJPanel extends javax.swing.JPanel implements Savable<Object>, Refreshable<Object> {
 
     private static final String EXCEPTION_DMZ_TARGET = "The Target IP Address must be a valid IP address.";
 

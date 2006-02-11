@@ -11,6 +11,7 @@
 
 package com.metavize.gui.configuration;
 
+import com.metavize.gui.widgets.dialogs.MConfigJDialog;
 import com.metavize.gui.transform.*;
 import com.metavize.gui.util.*;
 
@@ -19,9 +20,10 @@ import com.metavize.mvvm.*;
 import com.metavize.mvvm.tran.*;
 
 import java.awt.*;
+import javax.swing.JDialog;
 
-
-public class NetworkIPJPanel extends javax.swing.JPanel implements Savable, Refreshable {
+public class NetworkIPJPanel extends javax.swing.JPanel
+    implements Savable<NetworkCompoundSettings>, Refreshable<NetworkCompoundSettings> {
 
     private static final String EXCEPTION_DHCP_IP_ADDRESS = "Invalid \"IP Address\" manually specified.";
     private static final String EXCEPTION_DHCP_NETMASK = "Invalid \"Netmask\" manually specified.";
@@ -31,16 +33,14 @@ public class NetworkIPJPanel extends javax.swing.JPanel implements Savable, Refr
     private static final String EXCEPTION_HOSTNAME = "Invalid \"Hostname\" specified.";
     private static final String EMPTY_DNS2 = "";
 
-    
-    public NetworkIPJPanel() {
+    private MConfigJDialog mConfigJDialog;
+
+    public NetworkIPJPanel(MConfigJDialog mConfigJDialog) {
         initComponents();
+	this.mConfigJDialog = mConfigJDialog;
     }
 
-    public void doSave(Object settings, boolean validateOnly) throws Exception {
-
-	// DISABLE BUTTONS
-	renewDhcpLeaseJButton.setEnabled(false);
-	connectivityTestJButton.setEnabled(false);
+    public void doSave(NetworkCompoundSettings networkCompoundSettings, boolean validateOnly) throws Exception {
 
         // DHCP ENABLED //////////
 	boolean isDhcpEnabled = dhcpEnabledRadioButton.isSelected();
@@ -135,8 +135,8 @@ public class NetworkIPJPanel extends javax.swing.JPanel implements Savable, Refr
 	}
 	
 	// SAVE SETTINGS ////////////
-	if( !validateOnly ){
-	    NetworkingConfiguration networkingConfiguration = (NetworkingConfiguration) settings;
+	if( !validateOnly ){	    
+	    NetworkingConfiguration networkingConfiguration = networkCompoundSettings.getNetworkingConfiguration();
 	    networkingConfiguration.isDhcpEnabled( isDhcpEnabled );
 	    if( !isDhcpEnabled ){
 		networkingConfiguration.host( host );
@@ -147,7 +147,6 @@ public class NetworkIPJPanel extends javax.swing.JPanel implements Savable, Refr
 		networkingConfiguration.hostname( hostname );
 	    }
         }
-
     }
 
 
@@ -159,8 +158,8 @@ public class NetworkIPJPanel extends javax.swing.JPanel implements Savable, Refr
     String dnsSecondaryCurrent;
     String hostnameCurrent;
 
-    public void doRefresh(Object settings){
-        NetworkingConfiguration networkingConfiguration = (NetworkingConfiguration) settings;
+    public void doRefresh(NetworkCompoundSettings networkCompoundSettings){
+        NetworkingConfiguration networkingConfiguration = networkCompoundSettings.getNetworkingConfiguration();
         
 	// DHCP ENABLED /////
 	isDhcpEnabledCurrent = networkingConfiguration.isDhcpEnabled();
@@ -550,7 +549,7 @@ public class NetworkIPJPanel extends javax.swing.JPanel implements Savable, Refr
     
     private void connectivityTestJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectivityTestJButtonActionPerformed
         try{
-	    NetworkConnectivityTestJDialog connectivityJDialog = new NetworkConnectivityTestJDialog();
+	    NetworkConnectivityTestJDialog connectivityJDialog = new NetworkConnectivityTestJDialog((JDialog)this.getTopLevelAncestor());
 	    connectivityJDialog.setVisible(true);
 	}
 	catch(Exception e){
@@ -562,10 +561,10 @@ public class NetworkIPJPanel extends javax.swing.JPanel implements Savable, Refr
     private void renewDhcpLeaseJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renewDhcpLeaseJButtonActionPerformed
 	if( Util.getIsDemo() )
 	    return;
-        NetworkDhcpRenewDialog dhcpLeaseRenewDialog = new NetworkDhcpRenewDialog();
+        NetworkDhcpRenewDialog dhcpLeaseRenewDialog = new NetworkDhcpRenewDialog((JDialog)this.getTopLevelAncestor());
         NetworkingConfiguration newNetworkingConfiguration = dhcpLeaseRenewDialog.getNetworkingConfiguration();
         if( newNetworkingConfiguration != null)
-            doRefresh( newNetworkingConfiguration );
+            mConfigJDialog.refreshGui();
     }//GEN-LAST:event_renewDhcpLeaseJButtonActionPerformed
 
     private void dhcpDisabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dhcpDisabledRadioButtonActionPerformed

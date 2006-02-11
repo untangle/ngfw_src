@@ -13,6 +13,7 @@ package com.metavize.tran.mail.gui;
 
 import com.metavize.gui.transform.*;
 import com.metavize.gui.pipeline.MPipelineJPanel;
+import com.metavize.gui.configuration.EmailCompoundSettings;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.util.*;
 
@@ -30,7 +31,7 @@ import com.metavize.tran.mail.papi.quarantine.*;
 
 public class QuarantinableAddressesJPanel extends MEditTableJPanel{
 
-    public QuarantinableAddressesJPanel(TransformContext transformContext) {
+    public QuarantinableAddressesJPanel() {
         super(true, true);
         super.setFillJButtonEnabled( true );
         super.setInsets(new Insets(4, 4, 2, 2));
@@ -39,14 +40,14 @@ public class QuarantinableAddressesJPanel extends MEditTableJPanel{
         super.setAddRemoveEnabled(true);
         
         // create actual table model
-        QuarantinableModel quarantinableModel = new QuarantinableModel(transformContext);
+        QuarantinableModel quarantinableModel = new QuarantinableModel();
         this.setTableModel( quarantinableModel );
     }
     
 
 
 
-class QuarantinableModel extends MSortedTableModel{ 
+class QuarantinableModel extends MSortedTableModel<EmailCompoundSettings>{ 
     
     private static final int  T_TW  = Util.TABLE_TOTAL_WIDTH;
     private static final int  C0_MW = Util.STATUS_MIN_WIDTH; /* status */
@@ -55,10 +56,7 @@ class QuarantinableModel extends MSortedTableModel{
     private static final int  C3_MW = 120;  /* category */
     private static final int  C4_MW = 120;  /* description */
     
-    private TransformContext transformContext;
-
-    public QuarantinableModel(TransformContext transformContext){
-	this.transformContext = transformContext;
+    public QuarantinableModel(){
     }
 
     protected boolean getSortable(){ return false; }
@@ -77,7 +75,8 @@ class QuarantinableModel extends MSortedTableModel{
     }
     
     
-    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
+    public void generateSettings(EmailCompoundSettings emailCompoundSettings,
+				 Vector<Vector> tableVector, boolean validateOnly) throws Exception {
         List<EmailAddressRule> elemList = new ArrayList(tableVector.size());
 	EmailAddressRule newElem = null;
         int rowIndex = 0;
@@ -93,17 +92,14 @@ class QuarantinableModel extends MSortedTableModel{
         
 	// SAVE SETTINGS //////////
 	if( !validateOnly ){
-	    MailTransformSettings mailTransformSettings = ((MailTransform)transformContext.transform()).getMailTransformSettings();
-	    QuarantineSettings quarantineSettings = mailTransformSettings.getQuarantineSettings();
+	    QuarantineSettings quarantineSettings = ((MailTransformCompoundSettings)emailCompoundSettings.getMailTransformCompoundSettings()).getQuarantineSettings();
 	    quarantineSettings.setAllowedAddressPatterns(elemList);
-	    mailTransformSettings.setQuarantineSettings(quarantineSettings);
-	    ((MailTransform)transformContext.transform()).setMailTransformSettings(mailTransformSettings);
 	}
     }
 
-    public Vector<Vector> generateRows(Object settings) {
-	List<EmailAddressRule> addressList = 
-            (List<EmailAddressRule>) ((MailTransform)transformContext.transform()).getMailTransformSettings().getQuarantineSettings().getAllowedAddressPatterns();
+    public Vector<Vector> generateRows(EmailCompoundSettings emailCompoundSettings) {
+	QuarantineSettings quarantineSettings = ((MailTransformCompoundSettings)emailCompoundSettings.getMailTransformCompoundSettings()).getQuarantineSettings();
+	List<EmailAddressRule> addressList = (List<EmailAddressRule>) quarantineSettings.getAllowedAddressPatterns();
         Vector<Vector> allRows = new Vector<Vector>(addressList.size());
 	Vector tempRow = null;
         int rowIndex = 0;

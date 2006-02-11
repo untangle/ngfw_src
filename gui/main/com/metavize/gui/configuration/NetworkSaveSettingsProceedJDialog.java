@@ -13,16 +13,17 @@ package com.metavize.gui.configuration;
 
 import com.metavize.gui.util.Util;
 
+import java.awt.Dialog;
+
 final public class NetworkSaveSettingsProceedJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
 
     private boolean isProceeding = false;
 
-
-    public NetworkSaveSettingsProceedJDialog() {
-        super(Util.getMMainJFrame(), true);
+    public NetworkSaveSettingsProceedJDialog(Dialog parentDialog) {
+        super(parentDialog, true);
         initComponents();
         this.addWindowListener(this);
-        this.setBounds( Util.generateCenteredBounds( Util.getMMainJFrame().getBounds(), this.getWidth(), this.getHeight()) );
+        this.setBounds( Util.generateCenteredBounds( parentDialog.getBounds(), this.getWidth(), this.getHeight()) );
         this.setVisible(true);
     }
 

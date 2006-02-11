@@ -22,7 +22,8 @@ import javax.swing.SpinnerNumberModel;
 import java.awt.*;
 
 
-public class RemoteRestrictionJPanel extends javax.swing.JPanel implements Savable, Refreshable {
+public class RemoteRestrictionJPanel extends javax.swing.JPanel
+    implements Savable<RemoteCompoundSettings>, Refreshable<RemoteCompoundSettings> {
 
     private static final String EXCEPTION_OUTSIDE_ACCESS_NETWORK = "Invalid External Remote Administration \"IP Address\" specified.";
     private static final String EXCEPTION_OUTSIDE_ACCESS_NETMASK = "Invalid External Remote Administration \"Netmask\" specified.";
@@ -33,7 +34,7 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel implements Savab
 	externalAdminPortJSpinner.setModel(new SpinnerNumberModel(0,0,65535,1));
     }
 
-    public void doSave(Object settings, boolean validateOnly) throws Exception {
+    public void doSave(RemoteCompoundSettings remoteCompoundSettings, boolean validateOnly) throws Exception {
 
 	// OUTSIDE ACCESS ENABLED ////////
 	boolean isOutsideAccessEnabled = externalAdminEnabledRadioButton.isSelected();
@@ -80,10 +81,10 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel implements Savab
         
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
-	    NetworkingConfiguration networkingConfiguration = (NetworkingConfiguration) settings;
+	    NetworkingConfiguration networkingConfiguration = remoteCompoundSettings.getNetworkingConfiguration();
 	    networkingConfiguration.isOutsideAccessEnabled( isOutsideAccessEnabled );
 	    if( isOutsideAccessEnabled ){
-				networkingConfiguration.httpsPort( httpsPort );
+		networkingConfiguration.httpsPort( httpsPort );
 		networkingConfiguration.isOutsideAccessRestricted( isOutsideAccessRestricted );
 		if( isOutsideAccessRestricted ){
 		    networkingConfiguration.outsideNetwork( outsideNetwork );
@@ -95,8 +96,8 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel implements Savab
 
     }
 
-    public void doRefresh(Object settings){
-        NetworkingConfiguration networkingConfiguration = (NetworkingConfiguration) settings;
+    public void doRefresh(RemoteCompoundSettings remoteCompoundSettings){
+        NetworkingConfiguration networkingConfiguration = remoteCompoundSettings.getNetworkingConfiguration();
         
 	// OUTSIDE ACCESS ENABLED //////
 	boolean isOutsideAccessEnabled = networkingConfiguration.isOutsideAccessEnabled();
@@ -371,29 +372,29 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel implements Savab
         setOutsideAccessEnabledDependency( false );
 	setOutsideAccessRestrictedDependency( false );
     }//GEN-LAST:event_externalAdminDisabledRadioButtonActionPerformed
-
+    
     private void externalAdminEnabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_externalAdminEnabledRadioButtonActionPerformed
         setOutsideAccessEnabledDependency( true );
 	setOutsideAccessRestrictedDependency( externalAdminRestrictEnabledRadioButton.isSelected() );
     }//GEN-LAST:event_externalAdminEnabledRadioButtonActionPerformed
-
+    
     private void externalAdminRestrictEnabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_externalAdminRestrictEnabledRadioButtonActionPerformed
         if( externalAdminEnabledRadioButton.isSelected() )
 	    setOutsideAccessRestrictedDependency( true );
     }//GEN-LAST:event_externalAdminRestrictEnabledRadioButtonActionPerformed
-
+    
     private void externalAdminRestrictDisabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_externalAdminRestrictDisabledRadioButtonActionPerformed
 	setOutsideAccessRestrictedDependency( false );
     }//GEN-LAST:event_externalAdminRestrictDisabledRadioButtonActionPerformed
     
-
+    
     private void setOutsideAccessEnabledDependency(boolean enabled){
-			externalAdminPortJSpinner.setEnabled( enabled );
-			externalAdminPortJLabel.setEnabled( enabled );
-			externalAdminRestrictEnabledRadioButton.setEnabled( enabled );
-			externalAdminRestrictDisabledRadioButton.setEnabled( enabled );
+	externalAdminPortJSpinner.setEnabled( enabled );
+	externalAdminPortJLabel.setEnabled( enabled );
+	externalAdminRestrictEnabledRadioButton.setEnabled( enabled );
+	externalAdminRestrictDisabledRadioButton.setEnabled( enabled );
     }
-
+    
     private void setOutsideAccessRestrictedDependency(boolean enabled){
 	restrictIPaddrJTextField.setEnabled( enabled );
 	restrictIPaddrJLabel.setEnabled( enabled );

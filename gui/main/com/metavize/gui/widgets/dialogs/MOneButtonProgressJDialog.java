@@ -12,16 +12,23 @@
 package com.metavize.gui.widgets.dialogs;
 
 import com.metavize.gui.util.Util;
+import java.awt.Dialog;
 
 public class MOneButtonProgressJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
 
+
+    public MOneButtonProgressJDialog(Dialog parentDialog){
+	super(parentDialog, true);
+        initComponents();
+        this.addWindowListener(this);
+        this.setBounds( Util.generateCenteredBounds(parentDialog.getBounds(), this.getWidth(), this.getHeight()) );
+    }
 
     public MOneButtonProgressJDialog() {
         super(Util.getMMainJFrame(), true);
         initComponents();
         this.addWindowListener(this);
         this.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), this.getWidth(), this.getHeight()) );
-
     }
 
     private void initComponents() {//GEN-BEGIN:initComponents

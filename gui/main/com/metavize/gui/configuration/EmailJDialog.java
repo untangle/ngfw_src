@@ -22,6 +22,7 @@ import com.metavize.mvvm.security.Tid;
 import java.lang.reflect.Constructor;
 
 import java.awt.Dimension;
+import java.awt.Component;
 import java.awt.BorderLayout;
 import java.util.*;
 import javax.swing.table.*;
@@ -30,16 +31,20 @@ import javax.swing.*;
 
 public class EmailJDialog extends MConfigJDialog {
 
-    private static final String NAME_EMAIL_CONFIG = "Email Config";
-    private static final String NAME_OUTGOING_SETTINGS = "Outgoing Server";
-    private static final String NAME_SAFE_LIST = "From-Safe List";
-    private static final String NAME_QUARANTINE_SETTINGS = "Quarantine";
-    private static final String NAME_ALL_ACCOUNTS = "Release & Purge";
+    private static final String NAME_EMAIL_CONFIG            = "Email Config";
+    private static final String NAME_OUTGOING_SETTINGS       = "Outgoing Server";
+    private static final String NAME_SAFE_LIST               = "From-Safe List";
+    private static final String NAME_QUARANTINE_SETTINGS     = "Quarantine";
+    private static final String NAME_ALL_ACCOUNTS            = "Release & Purge";
     private static final String NAME_QUARANTINABLE_ADDRESSES = "Quarantinable Addresses";
-    private static final String NAME_QUARANTINABLE_FORWARDS = "Quarantinable Forwards";
-    private static final String NAME_GENERAL_SETTINGS = "General Settings";
+    private static final String NAME_QUARANTINABLE_FORWARDS  = "Quarantinable Forwards";
+    private static final String NAME_GENERAL_SETTINGS        = "General Settings";
+
+    private EmailCompoundSettings emailCompoundSettings;
 
     public EmailJDialog( ) {
+	compoundSettings = new EmailCompoundSettings();
+	emailCompoundSettings = (EmailCompoundSettings) compoundSettings;
     }
 
     protected Dimension getMinSize(){
@@ -54,120 +59,50 @@ public class EmailJDialog extends MConfigJDialog {
 	addScrollableTab(null, NAME_OUTGOING_SETTINGS, null, emailOutgoingJPanel, false, true);
 	addSavable(NAME_OUTGOING_SETTINGS, emailOutgoingJPanel );
 	addRefreshable(NAME_OUTGOING_SETTINGS, emailOutgoingJPanel );
-        
-	// GET TRANSFORM CONTEXT //
-        String casingName = "mail-casing";
-	TransformContext transformContext = null;
-	TransformDesc transformDesc = null;
-	try{
-	    List<Tid> casingInstances = Util.getTransformManager().transformInstances(casingName);
-	    if( casingInstances.size() == 0 ){
-		/*
-		JPanel messageJPanel = new JPanel();
-		messageJPanel.setLayout(new BorderLayout());
-		JLabel messageJLabel = new JLabel("<html>There are currently no Software Appliances in<br>"
-						  + "the rack that need a Safe List.</html>");
-		messageJLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-		messageJPanel.add(messageJLabel);
-		addTab(NAME_SAFE_LIST, null, messageJPanel);
-		*/
-		return;
-	    }
-	    transformContext = Util.getTransformManager().transformContext(casingInstances.get(0));
-	    transformDesc = transformContext.getTransformDesc();
-	}
-	catch(Exception e){
-	    try{
-		Util.handleExceptionWithRestart("Error loading mail casing: ", e);
-	    }
-	    catch(Exception f){
-		Util.handleExceptionNoRestart("Error loading mail casing: " + casingName, f);
-		return;
-	    }
-	}
 
-        // SAFELIST CONTROLS //////
-        String whitelistAllJPanelName = "com.metavize.tran.mail.gui.WhitelistAllJPanel";
-        JPanel whitelistAllJPanel = null;
-        try{
-            Class objectClass = Util.getClassLoader().loadClass( whitelistAllJPanelName, transformDesc );
-            Constructor objectConstructor = objectClass.getConstructor(new Class[]{TransformContext.class});
-            whitelistAllJPanel = (JPanel) objectConstructor.newInstance(transformContext);
-        }
-        catch(Exception e){
-            Util.handleExceptionNoRestart("Error loading whitelist management: " + casingName, e);
-            return;
-        }
-        addTab(NAME_SAFE_LIST, null, whitelistAllJPanel);
+	// EMAIL TRANSFORM SETTINGS //
+	if( emailCompoundSettings.getMailTransformCompoundSettings() != null ){
+
+	    // SAFELIST CONTROLS //////
+	    Component whitelistAllComponent = emailCompoundSettings.getSafelistComponent();
+	    addTab(NAME_SAFE_LIST, null, whitelistAllComponent);
+	    addRefreshable(NAME_SAFE_LIST, (Refreshable) whitelistAllComponent);
 	
-	// QUARANTINE ///////
-	JTabbedPane quarantineJTabbedPane = addTabbedPane(NAME_QUARANTINE_SETTINGS, null);
+	    // QUARANTINE ///////
+	    JTabbedPane quarantineJTabbedPane = addTabbedPane(NAME_QUARANTINE_SETTINGS, null);
 
-        // QUARANTINE RELEASE & PURGE //////
-        String quarantineAllJPanelName = "com.metavize.tran.mail.gui.QuarantineAllJPanel";
-        JPanel quarantineAllJPanel = null;
-        try{
-            Class objectClass = Util.getClassLoader().loadClass( quarantineAllJPanelName, transformDesc );
-            Constructor objectConstructor = objectClass.getConstructor(new Class[]{TransformContext.class});
-            quarantineAllJPanel = (JPanel) objectConstructor.newInstance(transformContext);
-        }
-        catch(Exception e){
-            Util.handleExceptionNoRestart("Error loading quarantine management: " + casingName, e);
-            return;
-        }
-        quarantineJTabbedPane.addTab(NAME_ALL_ACCOUNTS, null, quarantineAllJPanel);
+	    // QUARANTINE RELEASE & PURGE //////
+	    Component quarantineAllComponent = emailCompoundSettings.getQuarantineReleaseAndPurgeComponent();
+	    quarantineJTabbedPane.addTab(NAME_ALL_ACCOUNTS, null, quarantineAllComponent);
+	    addRefreshable(NAME_ALL_ACCOUNTS, (Refreshable) quarantineAllComponent);
 
-        // QUARANTINABLE ADDRESSES //////
-        String quarantinableAddressesJPanelName = "com.metavize.tran.mail.gui.QuarantinableAddressesJPanel";
-        JPanel quarantinableAddressesJPanel = null;
-        try{
-            Class objectClass = Util.getClassLoader().loadClass( quarantinableAddressesJPanelName, transformDesc );
-            Constructor objectConstructor = objectClass.getConstructor(new Class[]{TransformContext.class});
-            quarantinableAddressesJPanel = (JPanel) objectConstructor.newInstance(transformContext);
-        }
-        catch(Exception e){
-            Util.handleExceptionNoRestart("Error loading quarantinable addresses: " + casingName, e);
-            return;
-        }
-        quarantineJTabbedPane.addTab(NAME_QUARANTINABLE_ADDRESSES, null, quarantinableAddressesJPanel);
-	addSavable(NAME_QUARANTINABLE_ADDRESSES, (Savable) quarantinableAddressesJPanel);
-	addRefreshable(NAME_QUARANTINABLE_ADDRESSES, (Refreshable) quarantinableAddressesJPanel);
+	    // QUARANTINABLE ADDRESSES //////
+	    Component quarantinableAddressesComponent = emailCompoundSettings.getQuarantinableAddressesComponent();
+	    quarantineJTabbedPane.addTab(NAME_QUARANTINABLE_ADDRESSES, null, quarantinableAddressesComponent);
+	    addSavable(NAME_QUARANTINABLE_ADDRESSES, (Savable) quarantinableAddressesComponent);
+	    addRefreshable(NAME_QUARANTINABLE_ADDRESSES, (Refreshable) quarantinableAddressesComponent);
 
-        // QUARANTINABLE FORWARDS //////
-        String quarantinableForwardsJPanelName = "com.metavize.tran.mail.gui.QuarantinableForwardsJPanel";
-        JPanel quarantinableForwardsJPanel = null;
-        try{
-            Class objectClass = Util.getClassLoader().loadClass( quarantinableForwardsJPanelName, transformDesc );
-            Constructor objectConstructor = objectClass.getConstructor(new Class[]{TransformContext.class});
-            quarantinableForwardsJPanel = (JPanel) objectConstructor.newInstance(transformContext);
-        }
-        catch(Exception e){
-            Util.handleExceptionNoRestart("Error loading quarantinable forwards: " + casingName, e);
-            return;
-        }
-        quarantineJTabbedPane.addTab(NAME_QUARANTINABLE_FORWARDS, null, quarantinableForwardsJPanel);
-	addSavable(NAME_QUARANTINABLE_FORWARDS, (Savable) quarantinableForwardsJPanel);
-	addRefreshable(NAME_QUARANTINABLE_FORWARDS, (Refreshable) quarantinableForwardsJPanel);
+	    // QUARANTINABLE FORWARDS //////
+	    Component quarantinableForwardsComponent = emailCompoundSettings.getQuarantinableForwardsComponent();
+	    quarantineJTabbedPane.addTab(NAME_QUARANTINABLE_FORWARDS, null, quarantinableForwardsComponent);
+	    addSavable(NAME_QUARANTINABLE_FORWARDS, (Savable) quarantinableForwardsComponent);
+	    addRefreshable(NAME_QUARANTINABLE_FORWARDS, (Refreshable) quarantinableForwardsComponent);
 
-        // QUARANTINE GENERAL SETTINGS //////
-        String quarantineGeneralSettingsJPanelName = "com.metavize.tran.mail.gui.QuarantineGeneralSettingsJPanel";
-        JPanel quarantineGeneralSettingsJPanel = null;
-        try{
-            Class objectClass = Util.getClassLoader().loadClass( quarantineGeneralSettingsJPanelName, transformDesc );
-            Constructor objectConstructor = objectClass.getConstructor(new Class[]{TransformContext.class});
-            quarantineGeneralSettingsJPanel = (JPanel) objectConstructor.newInstance(transformContext);
-        }
-        catch(Exception e){
-            Util.handleExceptionNoRestart("Error loading quarantine general settings: " + casingName, e);
-            return;
-        }
-        quarantineJTabbedPane.addTab(NAME_GENERAL_SETTINGS, null, quarantineGeneralSettingsJPanel);
-	addSavable(NAME_GENERAL_SETTINGS, (Savable) quarantineGeneralSettingsJPanel);
-	addRefreshable(NAME_GENERAL_SETTINGS, (Refreshable) quarantineGeneralSettingsJPanel);
+	    // QUARANTINE GENERAL SETTINGS //////
+	    Component quarantineGeneralSettingsComponent = emailCompoundSettings.getQuarantineGeneralSettingsComponent();
+	    quarantineJTabbedPane.addTab(NAME_GENERAL_SETTINGS, null, quarantineGeneralSettingsComponent);
+	    addSavable(NAME_GENERAL_SETTINGS, (Savable) quarantineGeneralSettingsComponent);
+	    addRefreshable(NAME_GENERAL_SETTINGS, (Refreshable) quarantineGeneralSettingsComponent);
+	}
     }
-    
-    protected void sendSettings(Object settings) throws Exception { }
-    protected void refreshSettings() {  }
 
+    protected void refreshAll() throws Exception{
+	super.refreshAll();
+	if( emailCompoundSettings.getMailTransformCompoundSettings() != null ){
+	    emailCompoundSettings.loadSafelists();
+	    emailCompoundSettings.loadSafelistCounts();
+	    emailCompoundSettings.loadInboxList();
+	}
+
+    }
 }

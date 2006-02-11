@@ -281,7 +281,7 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
 				public void run(){
 				try{
 						doSave(null, false);
-						EmailConnectivityTestJDialog connectivityJDialog = new EmailConnectivityTestJDialog((Dialog)InitialSetupEmailJPanel.this.getTopLevelAncestor(), true);
+						EmailConnectivityTestJDialog connectivityJDialog = new EmailConnectivityTestJDialog((Dialog)InitialSetupEmailJPanel.this.getTopLevelAncestor());
 						connectivityJDialog.setVisible(true);
 				}
 				catch(Exception e){

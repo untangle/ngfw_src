@@ -26,9 +26,9 @@ import com.metavize.mvvm.tran.*;
 import com.metavize.mvvm.policy.*;
 import com.metavize.mvvm.security.*;
 
-public class AvailablePolicyJPanel extends MEditTableJPanel {
+public class PolicyAvailableJPanel extends MEditTableJPanel {
 
-    public AvailablePolicyJPanel() {
+    public PolicyAvailableJPanel() {
         super(true, true);
         super.setInsets(new Insets(4, 4, 2, 2));
         super.setTableTitle("");
@@ -43,7 +43,7 @@ public class AvailablePolicyJPanel extends MEditTableJPanel {
 }
 
 
-class AvailablePolicyTableModel extends MSortedTableModel{
+class AvailablePolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
@@ -66,8 +66,8 @@ class AvailablePolicyTableModel extends MSortedTableModel{
         return tableColumnModel;
     }
 
-    public void prevalidate(Object settings, Vector<Vector> tableVector) throws Exception {
-	PolicyConfiguration policyConfiguration = (PolicyConfiguration) settings;
+    public void prevalidate(PolicyCompoundSettings policyCompoundSettings, Vector<Vector> tableVector) throws Exception {
+	PolicyConfiguration policyConfiguration = policyCompoundSettings.getPolicyConfiguration();
 	boolean oneRackLeft = false;
 	int rowIndex = 0;
 	Map<String,Object> nameMap = new HashMap<String,Object>();
@@ -131,7 +131,8 @@ class AvailablePolicyTableModel extends MSortedTableModel{
 	
     }
 
-    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
+    public void generateSettings(PolicyCompoundSettings policyCompoundSettings,
+				 Vector<Vector> tableVector, boolean validateOnly) throws Exception {
         List elemList = new ArrayList(tableVector.size());
 	Policy newElem = null;
 
@@ -144,13 +145,13 @@ class AvailablePolicyTableModel extends MSortedTableModel{
 
 	// SAVE SETTINGS /////////
 	if( !validateOnly ){
-	   PolicyConfiguration policyConfiguration = (PolicyConfiguration) settings;
+	   PolicyConfiguration policyConfiguration = policyCompoundSettings.getPolicyConfiguration();
 	   policyConfiguration.setPolicies( elemList );
 	}
     }
 
-    public Vector<Vector> generateRows(Object settings){
-        PolicyConfiguration policyConfiguration = (PolicyConfiguration) settings;
+    public Vector<Vector> generateRows(PolicyCompoundSettings policyCompoundSettings){
+	PolicyConfiguration policyConfiguration = policyCompoundSettings.getPolicyConfiguration();
 	List<Policy> policies = (List<Policy>) policyConfiguration.getPolicies();
         Vector<Vector> allRows = new Vector<Vector>(policies.size());
 	Vector tempRow = null;

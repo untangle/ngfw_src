@@ -174,6 +174,11 @@ public class AboutRegistrationJPanel extends JPanel implements Savable, Refresha
 	String email = registrationInfo.getEmailAddr();
 	emailJTextField.setText( email );
 	emailJTextField.setBackground( Color.WHITE );
+
+	// COMPUTER COUNT //
+	int count = registrationInfo.getNumSeats();
+	countJTextField.setText( Integer.toString(count) );
+	countJTextField.setBackground( Color.WHITE );
 	
     }
         private void initComponents() {//GEN-BEGIN:initComponents

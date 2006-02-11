@@ -21,16 +21,16 @@ public class EmailConnectivityTestJDialog extends javax.swing.JDialog implements
     
     private boolean upgradesAvailable = true;
     
-    public EmailConnectivityTestJDialog(Dialog topLevelDialog, boolean isModal){
-        super(topLevelDialog, isModal);
-        init(topLevelDialog);
+    public EmailConnectivityTestJDialog(Dialog parentDialog){
+        super(parentDialog, true);
+	init(parentDialog);
     }
     
     public EmailConnectivityTestJDialog() {
         super(Util.getMMainJFrame(), true);
         init(Util.getMMainJFrame());
     }
-    
+
     private void init(Window window){
         initComponents();
         this.addWindowListener(this);

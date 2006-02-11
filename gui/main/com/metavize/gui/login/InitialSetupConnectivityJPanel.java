@@ -67,7 +67,7 @@ public class InitialSetupConnectivityJPanel extends MWizardPageJPanel {
 
     private void connectivityTestJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectivityTestJButtonActionPerformed
         try{
-	    NetworkConnectivityTestJDialog connectivityJDialog = new NetworkConnectivityTestJDialog((Dialog)getTopLevelAncestor(), true);
+	    NetworkConnectivityTestJDialog connectivityJDialog = new NetworkConnectivityTestJDialog((Dialog)getTopLevelAncestor());
 	    connectivityJDialog.setVisible(true);
 	}
 	catch(Exception e){

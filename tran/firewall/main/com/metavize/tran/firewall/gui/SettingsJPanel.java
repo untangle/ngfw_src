@@ -19,7 +19,7 @@ import com.metavize.mvvm.tran.IPaddr;
 
 import java.awt.*;
 
-public class SettingsJPanel extends javax.swing.JPanel implements Savable, Refreshable {
+public class SettingsJPanel extends javax.swing.JPanel implements Savable<Object>, Refreshable<Object> {
 
     public SettingsJPanel() {
         initComponents();

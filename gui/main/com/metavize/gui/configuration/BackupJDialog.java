@@ -556,7 +556,7 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
 
 			if(file.exists()){
 			    // ASK IF YOU WANT TO REALLY OVER-WRITE!!
-			    BackupSaveFileJDialog backupSaveFileJDialog = new BackupSaveFileJDialog();
+			    BackupSaveFileJDialog backupSaveFileJDialog = new BackupSaveFileJDialog(BackupJDialog.this);
 			    boolean isProceeding = backupSaveFileJDialog.isProceeding();
 			    
 			    if(isProceeding){

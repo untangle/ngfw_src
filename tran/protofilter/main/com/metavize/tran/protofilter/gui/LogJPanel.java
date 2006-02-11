@@ -59,7 +59,7 @@ public class LogJPanel extends MLogTableJPanel {
     }
 
 
-    class LogTableModel extends MSortedTableModel{
+    class LogTableModel extends MSortedTableModel<Object>{
 
         public TableColumnModel getTableColumnModel(){
             DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();

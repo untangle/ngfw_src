@@ -13,6 +13,7 @@
 
 package com.metavize.tran.http.gui;
 
+import com.metavize.gui.configuration.*;
 import com.metavize.gui.transform.*;
 import com.metavize.gui.util.*;
 
@@ -25,11 +26,10 @@ import java.awt.*;
 import javax.swing.*;
 
 
-public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
+public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel<MaintenanceCompoundSettings> {
 
     
-    public MCasingJPanel(TransformContext transformContext) {
-        super(transformContext);
+    public MCasingJPanel() {
         initComponents();
         
         maxUriJSpinner.setModel( new SpinnerNumberModel((Integer)HttpSettings.MIN_URI_LENGTH, 
@@ -44,7 +44,9 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         maxHeaderLimitsJLabel.setText("(max=" + HttpSettings.MAX_HEADER_LENGTH + " min=" + HttpSettings.MIN_HEADER_LENGTH + ")");
     }
 
-    public void doSave(Object settings, boolean validateOnly) throws Exception {
+    public String getDisplayName(){ return "HTTP Settings"; }
+
+    public void doSave(MaintenanceCompoundSettings maintenanceCompoundSettings, boolean validateOnly) throws Exception {
 
         // HTTP ENABLED ///////////
         boolean isHttpEnabled = httpEnabledRadioButton.isSelected();
@@ -62,20 +64,19 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel {
         
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){ 
-            HttpSettings httpSettings = (HttpSettings) transformContext.transform().getSettings();
+            HttpSettings httpSettings = ((HttpTransformCompoundSettings)maintenanceCompoundSettings.getHttpTransformCompoundSettings()).getHttpTransformSettings();
             httpSettings.setEnabled(isHttpEnabled);
             httpSettings.setBlockLongUris(blockLongUris);
             httpSettings.setMaxUriLength(maxUriLength);
             httpSettings.setBlockLongHeaders(blockLongHeaders);
             httpSettings.setMaxHeaderLength(maxHeaderLength);
             httpSettings.setNonHttpBlocked(nonHttpBlocked);
-            transformContext.transform().setSettings(httpSettings); 
         }
 
     }
 
-    public void doRefresh(Object settings){
-        HttpSettings httpSettings = (HttpSettings) transformContext.transform().getSettings();
+    public void doRefresh(MaintenanceCompoundSettings maintenanceCompoundSettings){
+	HttpSettings httpSettings = ((HttpTransformCompoundSettings)maintenanceCompoundSettings.getHttpTransformCompoundSettings()).getHttpTransformSettings();
         
         // HTTP ENABLED /////////
         boolean isHttpEnabled = httpSettings.isEnabled();

@@ -137,7 +137,6 @@ public interface AppServerManager  {
    *
    * @return the CertInfo, or null if the cert could not be parsed.
    */
-  public CertInfo getCertInfo(byte[] certBytes);
-  
+  public CertInfo getCertInfo(byte[] certBytes);  
 
 }

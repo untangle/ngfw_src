@@ -21,14 +21,15 @@ import com.metavize.mvvm.tran.*;
 import java.awt.*;
 import javax.swing.*;
 
-public class MaintenanceSecretJPanel extends javax.swing.JPanel implements Savable, Refreshable {
+public class MaintenanceSecretJPanel extends javax.swing.JPanel
+    implements Savable<MaintenanceCompoundSettings>, Refreshable<MaintenanceCompoundSettings> {
 
     
     public MaintenanceSecretJPanel() {
         initComponents();
     }
 
-    public void doSave(Object settings, boolean validateOnly) throws Exception {
+    public void doSave(MaintenanceCompoundSettings maintenanceCompoundSettings, boolean validateOnly) throws Exception {
 
 	// SCRIPT ///
 	String script = scriptJTextArea.getText();
@@ -37,14 +38,14 @@ public class MaintenanceSecretJPanel extends javax.swing.JPanel implements Savab
 
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
-	    NetworkingConfiguration networkingConfiguration = (NetworkingConfiguration) settings;
+	    NetworkingConfiguration networkingConfiguration = maintenanceCompoundSettings.getNetworkingConfiguration();
             networkingConfiguration.setPostConfigurationScript( script );
         }
 
     }
 
-    public void doRefresh(Object settings){
-	NetworkingConfiguration networkingConfiguration = Util.getNetworkingManager().get();
+    public void doRefresh(MaintenanceCompoundSettings maintenanceCompoundSettings){
+	NetworkingConfiguration networkingConfiguration = maintenanceCompoundSettings.getNetworkingConfiguration();
 	
 	// SCRIPT //
 	String script = networkingConfiguration.getPostConfigurationScript();

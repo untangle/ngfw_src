@@ -32,7 +32,7 @@ public class LogJPanel extends MLogTableJPanel {
         settings = ((AirgapTransform)super.logTransform).getLogs(depthJSlider.getValue());
     }
 
-    class LogTableModel extends MSortedTableModel{
+    class LogTableModel extends MSortedTableModel<Object>{
 
         public TableColumnModel getTableColumnModel(){
             DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();

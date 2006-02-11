@@ -21,7 +21,8 @@ import com.metavize.mvvm.tran.*;
 import java.awt.*;
 import javax.swing.*;
 
-public class RemoteSnmpJPanel extends javax.swing.JPanel implements Savable, Refreshable {
+public class RemoteSnmpJPanel extends javax.swing.JPanel
+    implements Savable<RemoteCompoundSettings>, Refreshable<RemoteCompoundSettings> {
 
     private static final String EXCEPTION_SNMP_COMMUNITY_MISSING = "An SNMP \"Community\" must be specified.";
     private static final String EXCEPTION_TRAP_COMMUNITY_MISSING = "A Trap \"Community\" must be specified.";
@@ -33,7 +34,7 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel implements Savable, Ref
 	trapPortJSpinner.setModel(new SpinnerNumberModel(0,0,65535,1));
     }
 
-    public void doSave(Object settings, boolean validateOnly) throws Exception {
+    public void doSave(RemoteCompoundSettings remoteCompoundSettings, boolean validateOnly) throws Exception {
 
 	// SNMP ENABLED ////////
 	boolean isSnmpEnabled = snmpEnabledRadioButton.isSelected();
@@ -76,8 +77,7 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel implements Savable, Ref
 
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
-	    SnmpManager snmpManager = Util.getAdminManager().getSnmpManager();
-	    SnmpSettings snmpSettings = snmpManager.getSnmpSettings();
+	    SnmpSettings snmpSettings = remoteCompoundSettings.getSnmpSettings();
 	    
 	    snmpSettings.setEnabled( isSnmpEnabled );
 	    if( isSnmpEnabled ){
@@ -91,14 +91,12 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel implements Savable, Ref
 		    snmpSettings.setTrapPort( trapPort );
 		}
 	    }
-
-	    snmpManager.setSnmpSettings( snmpSettings );
         }
 
     }
 
-    public void doRefresh(Object settings){
-	SnmpSettings snmpSettings = Util.getAdminManager().getSnmpManager().getSnmpSettings();
+    public void doRefresh(RemoteCompoundSettings remoteCompoundSettings){
+	SnmpSettings snmpSettings = remoteCompoundSettings.getSnmpSettings();
 
 	// SNMP ENABLED //////
 	boolean isSnmpEnabled = snmpSettings.isEnabled();

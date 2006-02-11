@@ -13,6 +13,7 @@ package com.metavize.tran.mail.gui;
 
 import com.metavize.gui.transform.*;
 import com.metavize.gui.pipeline.MPipelineJPanel;
+import com.metavize.gui.configuration.EmailCompoundSettings;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.widgets.MPasswordField;
 import com.metavize.gui.widgets.dialogs.*;
@@ -33,7 +34,7 @@ import javax.swing.event.*;
 
 public class QuarantineGeneralSettingsJPanel extends MEditTableJPanel {
 
-    public QuarantineGeneralSettingsJPanel(TransformContext transformContext) {
+    public QuarantineGeneralSettingsJPanel() {
         super(true, true);
         super.setInsets(new Insets(4, 4, 2, 2));
         super.setTableTitle("General Settings");
@@ -42,15 +43,13 @@ public class QuarantineGeneralSettingsJPanel extends MEditTableJPanel {
 	super.setFillJButtonEnabled(false);
         
         // create actual table model
-	MailTransform mailTransform = ((MailTransform)transformContext.transform());
-
-        QuarantineGeneralSettingsTableModel tableModel = new QuarantineGeneralSettingsTableModel(mailTransform);
+        QuarantineGeneralSettingsTableModel tableModel = new QuarantineGeneralSettingsTableModel();
         this.setTableModel( tableModel );
     }
 }
 
 
-class QuarantineGeneralSettingsTableModel extends MSortedTableModel{ 
+class QuarantineGeneralSettingsTableModel extends MSortedTableModel<EmailCompoundSettings>{ 
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
@@ -59,10 +58,7 @@ class QuarantineGeneralSettingsTableModel extends MSortedTableModel{
     private static final int C3_MW = 215; /* setting value */
     private static final int C4_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW + C3_MW), 120); /* description */
 
-    private MailTransform mailTransform;
-
-    public QuarantineGeneralSettingsTableModel(MailTransform mailTransform){
-	this.mailTransform = mailTransform;
+    public QuarantineGeneralSettingsTableModel(){
     }
     
     public TableColumnModel getTableColumnModel(){
@@ -77,7 +73,8 @@ class QuarantineGeneralSettingsTableModel extends MSortedTableModel{
         return tableColumnModel;
     }
 
-    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
+    public void generateSettings(EmailCompoundSettings emailCompoundSettings,
+				 Vector<Vector> tableVector, boolean validateOnly) throws Exception {
         Vector tempRowVector;
 	
         // MAX HOLDING TIME
@@ -94,22 +91,16 @@ class QuarantineGeneralSettingsTableModel extends MSortedTableModel{
 
 	// SAVE SETTINGS //////////
 	if( !validateOnly ){
-	    MailTransformSettings mailTransformSettings = mailTransform.getMailTransformSettings();
-	    QuarantineSettings quarantineSettings = mailTransformSettings.getQuarantineSettings();
+	    QuarantineSettings quarantineSettings = ((MailTransformCompoundSettings)emailCompoundSettings.getMailTransformCompoundSettings()).getQuarantineSettings();
 
 	    quarantineSettings.setMaxMailIntern( ((long)maxHoldingDays) * 1440l * 60 * 1000l );
 	    quarantineSettings.setDigestHourOfDay( sendingHour );
 	    quarantineSettings.setDigestMinuteOfDay( sendingMinute );
-
-	    mailTransformSettings.setQuarantineSettings( quarantineSettings );
-	    mailTransform.setMailTransformSettings( mailTransformSettings );
 	}
     }
     
-    public Vector<Vector> generateRows(Object settings){
-	MailTransformSettings mailTransformSettings = mailTransform.getMailTransformSettings();
-	QuarantineSettings quarantineSettings = mailTransformSettings.getQuarantineSettings();
-
+    public Vector<Vector> generateRows(EmailCompoundSettings emailCompoundSettings){
+	QuarantineSettings quarantineSettings = ((MailTransformCompoundSettings)emailCompoundSettings.getMailTransformCompoundSettings()).getQuarantineSettings();
         Vector<Vector> allRows = new Vector<Vector>(3);
 	int rowIndex = 0;
         Vector tempRow;

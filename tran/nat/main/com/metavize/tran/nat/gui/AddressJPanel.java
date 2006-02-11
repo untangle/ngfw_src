@@ -48,7 +48,7 @@ public class AddressJPanel extends MEditTableJPanel{
 
 
 
-class AddressTableModel extends MSortedTableModel{ 
+class AddressTableModel extends MSortedTableModel<Object>{ 
 
     
     private static final int  T_TW = Util.TABLE_TOTAL_WIDTH;

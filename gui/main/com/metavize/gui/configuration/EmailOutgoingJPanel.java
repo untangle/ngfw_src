@@ -317,7 +317,7 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel implements Savable, 
 
 		private void connectivityTestJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectivityTestJButtonActionPerformed
 				    try{
-	    EmailConnectivityTestJDialog connectivityJDialog = new EmailConnectivityTestJDialog();
+	    EmailConnectivityTestJDialog connectivityJDialog = new EmailConnectivityTestJDialog((JDialog)this.getTopLevelAncestor());
 	    connectivityJDialog.setVisible(true);
 	}
 	catch(Exception e){

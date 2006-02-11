@@ -21,9 +21,9 @@ public class NetworkConnectivityTestJDialog extends javax.swing.JDialog implemen
     
     private boolean upgradesAvailable = true;
     
-    public NetworkConnectivityTestJDialog(Dialog topLevelDialog, boolean isModal){
-        super(topLevelDialog, isModal);
-        init(topLevelDialog);
+    public NetworkConnectivityTestJDialog(Dialog parentDialog){
+        super(parentDialog, true);
+        init(parentDialog);
     }
     
     public NetworkConnectivityTestJDialog() {

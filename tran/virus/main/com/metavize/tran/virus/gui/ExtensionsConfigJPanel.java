@@ -31,8 +31,6 @@ import com.metavize.tran.virus.*;
 
 public class ExtensionsConfigJPanel extends MEditTableJPanel {
 
-
-
     public ExtensionsConfigJPanel() {
         super(true, true);
         super.setInsets(new Insets(4, 4, 2, 2));
@@ -49,7 +47,7 @@ public class ExtensionsConfigJPanel extends MEditTableJPanel {
 
 
 
-class ExtensionTableModel extends MSortedTableModel{
+class ExtensionTableModel extends MSortedTableModel<Object>{
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */

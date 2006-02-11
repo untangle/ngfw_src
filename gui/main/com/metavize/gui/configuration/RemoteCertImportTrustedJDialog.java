@@ -36,12 +36,12 @@ public class RemoteCertImportTrustedJDialog extends javax.swing.JDialog implemen
     }
     
     public RemoteCertImportTrustedJDialog(Dialog topLevelDialog, MConfigJDialog mConfigJDialog) {
-        super( topLevelDialog);
+        super(topLevelDialog, true);
 	init(topLevelDialog, mConfigJDialog);	
     }
     
     public RemoteCertImportTrustedJDialog(Frame topLevelFrame, MConfigJDialog mConfigJDialog) {
-        super( topLevelFrame);
+        super(topLevelFrame, true);
 	init(topLevelFrame, mConfigJDialog);
     }
     

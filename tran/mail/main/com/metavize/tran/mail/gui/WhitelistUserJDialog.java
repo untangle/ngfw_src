@@ -34,48 +34,33 @@ import javax.swing.*;
 public class WhitelistUserJDialog extends MConfigJDialog {
 
     private static final String NAME_WHITELIST_USER = "Email Quarantine Whitelist Details for: ";
-    private static final String NAME_ALL_ACCOUNTS = "Email Quarantine Whitelist Details for: ";
+
     private SafelistAdminView safelistAdminView;
     private String account;
         
-    public WhitelistUserJDialog(Dialog topLevelDialog, SafelistAdminView safelistAdminView, String account) {
-	super(topLevelDialog, true);
-        this.safelistAdminView = safelistAdminView;
+    public WhitelistUserJDialog(Dialog topLevelDialog, MailTransformCompoundSettings mailTransformCompoundSettings, String account) {
+	super(topLevelDialog);
+	compoundSettings = mailTransformCompoundSettings;
         this.account = account;
-	generateGuiAfter();
     }
 
     protected Dimension getMinSize(){
 	return new Dimension(640, 550);
     }
     
-    protected void generateGui(){}
-    private void generateGuiAfter(){
+    protected void generateGui(){
         this.setTitle(NAME_WHITELIST_USER + account);
-        
-        // ALL ACCOUNTS //////
-        String casingName = "mail-casing";
-        String objectName = "com.metavize.tran.mail.gui.WhitelistUserJPanel";
-        JPanel whitelistAllJPanel = null;
-        try{
-	    List<Tid> casingInstances = Util.getTransformManager().transformInstances(casingName);
-	    TransformContext transformContext = Util.getTransformManager().transformContext(casingInstances.get(0));
-            Class objectClass = Util.getClassLoader().loadClass( objectName, transformContext.getTransformDesc() );
-            Constructor objectConstructor = objectClass.getConstructor(new Class[]{SafelistAdminView.class, String.class});
-            whitelistAllJPanel = (JPanel) objectConstructor.newInstance(safelistAdminView, account);
-        }
-        catch(Exception e){
-            Util.handleExceptionNoRestart("Error loading whitelist: " + casingName, e);
-            return;
-        }
-
-        this.contentJTabbedPane.addTab(NAME_ALL_ACCOUNTS + account, null, whitelistAllJPanel);
-
         reloadJButton.setVisible(false);
         saveJButton.setVisible(false);
+        
+        // ALL ACCOUNTS //////
+	WhitelistUserJPanel whitelistUserJPanel = new WhitelistUserJPanel(account);
+	addRefreshable(NAME_WHITELIST_USER, whitelistUserJPanel);
+        addTab(NAME_WHITELIST_USER + account, null, whitelistUserJPanel);
     }
     
-    protected void sendSettings(Object settings) throws Exception { }
-    protected void refreshSettings() {  }
-
+    protected void refreshAll() throws Exception {
+	super.refreshAll();
+	((MailTransformCompoundSettings)compoundSettings).loadSafelistContents(account);
+    }
 }

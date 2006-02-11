@@ -22,7 +22,8 @@ import com.metavize.mvvm.logging.*;
 import java.awt.*;
 import javax.swing.*;
 
-public class RemoteSyslogJPanel extends javax.swing.JPanel implements Savable, Refreshable {
+public class RemoteSyslogJPanel extends javax.swing.JPanel
+    implements Savable<RemoteCompoundSettings>, Refreshable<RemoteCompoundSettings> {
 
     private static final String EXCEPTION_HOST_MISSING = "A \"Host\" must be specified.";
 
@@ -36,7 +37,7 @@ public class RemoteSyslogJPanel extends javax.swing.JPanel implements Savable, R
             thresholdJComboBox.addItem(syslogPriority.getName());
     }
 
-    public void doSave(Object settings, boolean validateOnly) throws Exception {
+    public void doSave(RemoteCompoundSettings remoteCompoundSettings, boolean validateOnly) throws Exception {
 
 	// SYSLOG ENABLED ////////
 	boolean isSyslogEnabled = syslogEnabledRadioButton.isSelected();
@@ -62,8 +63,7 @@ public class RemoteSyslogJPanel extends javax.swing.JPanel implements Savable, R
 
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
-            LoggingManager loggingManager = Util.getLoggingManager();
-            LoggingSettings loggingSettings = loggingManager.getLoggingSettings();
+            LoggingSettings loggingSettings = remoteCompoundSettings.getLoggingSettings();
 	    
 	    loggingSettings.setSyslogEnabled( isSyslogEnabled );
 	    if( isSyslogEnabled ){
@@ -72,14 +72,12 @@ public class RemoteSyslogJPanel extends javax.swing.JPanel implements Savable, R
                 loggingSettings.setSyslogFacility( facility );
                 loggingSettings.setSyslogThreshold( threshold );
 	    }
-
-	    loggingManager.setLoggingSettings( loggingSettings );
         }
 
     }
 
-    public void doRefresh(Object settings){
-	LoggingSettings loggingSettings = Util.getLoggingManager().getLoggingSettings();
+    public void doRefresh(RemoteCompoundSettings remoteCompoundSettings){
+	LoggingSettings loggingSettings = remoteCompoundSettings.getLoggingSettings();
 
 	// SYSLOG ENABLED //////
 	boolean isSyslogEnabled = loggingSettings.isSyslogEnabled();

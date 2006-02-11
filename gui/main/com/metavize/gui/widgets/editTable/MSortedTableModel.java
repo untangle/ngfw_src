@@ -79,7 +79,8 @@ import javax.swing.table.*;
  * @version 2.0 02/27/04
  */
 
-public abstract class MSortedTableModel extends DefaultTableModel implements Refreshable, Savable {
+public abstract class MSortedTableModel<T> extends DefaultTableModel
+    implements Refreshable<T>, Savable<T> {
 
     public MSortedTableModel() {
         this.mouseListener = new MouseHandler();
@@ -108,8 +109,8 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
 
     // ABSTRACT METHODS /////////////
     public abstract TableColumnModel getTableColumnModel();
-    public abstract Vector<Vector> generateRows(Object settings);
-    public abstract void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception;
+    public abstract Vector<Vector> generateRows(T compoundSettings);
+    public abstract void generateSettings(T compoundSettings, Vector<Vector> tableVector, boolean validateOnly) throws Exception;
     /////////////////////////////////
 
     // COMPARATORS //////////////////////
@@ -126,7 +127,7 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
 
     // PROTECTEDS ///////////////
     protected boolean getSortable(){ return true; }
-	public void handleDependencies(int modelCol, int modelRow){ fireTableRowsUpdated(modelRow, modelRow); }
+    public void handleDependencies(int modelCol, int modelRow){ fireTableRowsUpdated(modelRow, modelRow); }
 
     private static Directive EMPTY_DIRECTIVE = new Directive(-1, NOT_SORTED);
 
@@ -173,7 +174,7 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
     // MODEL-VIEW MAPPINGS ///////////////
     private Vector<Integer> colViewToModelMapping = new Vector();
     private Vector<Integer> colModelToViewMapping = new Vector();
-    private Row[] rowViewToModelMapping;
+    private Row<?>[] rowViewToModelMapping;
     private int[] rowModelToViewMapping;
 
     public int getColViewToModelIndex(int viewIndex){
@@ -258,15 +259,14 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
         if (this.tableHeader != null) {
             this.tableHeader.removeMouseListener(mouseListener);
             TableCellRenderer defaultRenderer = this.tableHeader.getDefaultRenderer();
-            if (defaultRenderer instanceof SortableHeaderRenderer) {
+            if (defaultRenderer.getClass().getName().endsWith("SortableHeaderRenderer")) {
                 this.tableHeader.setDefaultRenderer(((SortableHeaderRenderer) defaultRenderer).tableCellRenderer);
             }
         }
         this.tableHeader = tableHeader;
         if (this.tableHeader != null) {
             this.tableHeader.addMouseListener(mouseListener);
-            this.tableHeader.setDefaultRenderer(
-                    new SortableHeaderRenderer(this.tableHeader.getDefaultRenderer()));
+            this.tableHeader.setDefaultRenderer(new SortableHeaderRenderer(this.tableHeader.getDefaultRenderer()));
         }
     }
     private void clearSortingState() {
@@ -608,23 +608,23 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
     ///////////////////////////////////////////////////
             
     // SAVABLE / REFRESHABLE ///////////////
-    public void doRefresh(final Object settings){
+    public void doRefresh(T compoundSettings){
 	this.getTableHeader().getTable().getCellEditor().stopCellEditing();
 	this.getTableHeader().getTable().clearSelection();
-	Vector<Vector> tableVector = generateRows( settings );
+	Vector<Vector> tableVector = generateRows( compoundSettings );
 	getDataVector().removeAllElements();
 	getDataVector().addAll(tableVector);
 	fireTableDataChanged();
     }
-    public void doSave(Object settings, boolean validateOnly) throws Exception {
+    public void doSave(T compoundSettings, boolean validateOnly) throws Exception {
 	if(Util.getIsDemo())
             return;
 	this.getTableHeader().getTable().getCellEditor().stopCellEditing();
 	this.getTableHeader().getTable().clearSelection();
-	prevalidate(settings, getDataVector());
-	generateSettings(settings, getFilteredDataVector(), validateOnly);
+	prevalidate(compoundSettings, getDataVector());
+	generateSettings(compoundSettings, getFilteredDataVector(), validateOnly);
     }
-    public void prevalidate(Object settings, Vector<Vector> tableVector) throws Exception {
+    public void prevalidate(T compoundSettings, Vector<Vector> tableVector) throws Exception {
 	// default implementation meant to do nothing
     }
     ///////////////////////////
@@ -669,7 +669,7 @@ public abstract class MSortedTableModel extends DefaultTableModel implements Ref
 
 
     // PRIVATE CLASSES ///////////////
-    private class Row implements Comparable {
+    private class Row<T> implements Comparable {
         private int modelIndex;
 
         public Row(int index) {

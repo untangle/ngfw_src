@@ -13,6 +13,7 @@ package com.metavize.tran.mail.gui;
 
 import com.metavize.gui.widgets.coloredTable.*;
 import com.metavize.gui.widgets.dialogs.RefreshLogFailureDialog;
+import com.metavize.gui.configuration.EmailCompoundSettings;
 import com.metavize.gui.transform.*;
 import com.metavize.gui.util.*;
 
@@ -31,13 +32,15 @@ import java.awt.*;
 import java.awt.event.*;
 import com.metavize.gui.widgets.editTable.*;
 
-public class WhitelistAllJPanel extends javax.swing.JPanel implements ComponentListener {
+public class WhitelistAllJPanel extends javax.swing.JPanel
+    implements Refreshable<EmailCompoundSettings>, ComponentListener {
 
     private static final Color TABLE_BACKGROUND_COLOR = new Color(213, 213, 226);
+
     private WhitelistAllTableModel whitelistAllTableModel;
-    private SafelistAdminView safelistAdminView;
+    private MailTransformCompoundSettings mailTransformCompoundSettings;
     
-    public WhitelistAllJPanel(TransformContext transformContext) {
+    public WhitelistAllJPanel() {
         // INIT GUI & CUSTOM INIT
         initComponents();
         entryJScrollPane.getViewport().setOpaque(true);
@@ -45,19 +48,18 @@ public class WhitelistAllJPanel extends javax.swing.JPanel implements ComponentL
         entryJScrollPane.setViewportBorder(new MatteBorder(2, 2, 2, 1, TABLE_BACKGROUND_COLOR));
         addComponentListener(WhitelistAllJPanel.this);
         
-        // GET PROXY
-        safelistAdminView = ((MailTransform)transformContext.transform()).getSafelistAdminView();
-        
         // create actual table model
-        whitelistAllTableModel = new WhitelistAllTableModel(safelistAdminView);
+        whitelistAllTableModel = new WhitelistAllTableModel();
         setTableModel( whitelistAllTableModel );
         
-        whitelistAllTableModel.doRefresh(null);
     }
 
-    protected void sendSettings(Object settings) throws Exception {}
-    protected void refreshSettings(){}
-    
+    public void doRefresh(EmailCompoundSettings emailCompoundSettings){
+	mailTransformCompoundSettings = (MailTransformCompoundSettings) emailCompoundSettings.getMailTransformCompoundSettings();
+	whitelistAllTableModel.doRefresh(emailCompoundSettings);
+    }
+
+
     public void setTableModel(MSortedTableModel mSortedTableModel){
         entryJTable.setModel( mSortedTableModel );
         entryJTable.setColumnModel( mSortedTableModel.getTableColumnModel() );
@@ -185,7 +187,7 @@ public class WhitelistAllJPanel extends javax.swing.JPanel implements ComponentL
         // show detail dialog
         Vector<Vector> dataVector = whitelistAllTableModel.getDataVector();
         String account = (String) dataVector.elementAt(selectedModelRows[0]).elementAt(2);
-        (new WhitelistUserJDialog((Dialog)getTopLevelAncestor(), safelistAdminView, account)).setVisible(true);
+        (new WhitelistUserJDialog((Dialog)getTopLevelAncestor(), mailTransformCompoundSettings, account)).setVisible(true);
         
         // refresh
         whitelistAllTableModel.doRefresh(null);
@@ -206,7 +208,7 @@ public class WhitelistAllJPanel extends javax.swing.JPanel implements ComponentL
         for( int i : selectedModelRows ){
             account = (String) dataVector.elementAt(i).elementAt(2);
             try{
-                safelistAdminView.deleteSafelist(account);
+		mailTransformCompoundSettings.getSafelistAdminView().deleteSafelist(account);
             }
             catch(Exception e){Util.handleExceptionNoRestart("Error deleting whitelist: " + account, e);}
         }
@@ -241,13 +243,12 @@ public class WhitelistAllJPanel extends javax.swing.JPanel implements ComponentL
 
 
 
-class WhitelistAllTableModel extends MSortedTableModel {
+class WhitelistAllTableModel extends MSortedTableModel<EmailCompoundSettings> {
 
     private SafelistAdminView safelistAdminView;
     private static final StringConstants sc = StringConstants.getInstance();
     
-    public WhitelistAllTableModel(SafelistAdminView safelistAdminView){
-        this.safelistAdminView = safelistAdminView;
+    public WhitelistAllTableModel(){
     }
     
     public TableColumnModel getTableColumnModel(){
@@ -257,28 +258,19 @@ class WhitelistAllTableModel extends MSortedTableModel {
         addTableColumn( tableColumnModel,  0,  Util.STATUS_MIN_WIDTH, false, false, true, false, String.class,     null, sc.TITLE_STATUS );
 	addTableColumn( tableColumnModel,  1,  Util.LINENO_MIN_WIDTH, false, false, true, false, Integer.class,    null, sc.TITLE_INDEX );
         addTableColumn( tableColumnModel,  2, 300, true,  false,  false, true,  String.class, null, sc.html("Account Address") );
-        addTableColumn( tableColumnModel,  3,  85, true,  false,  false, false, String.class, null, sc.html("Safe List<br>Size") );
+        addTableColumn( tableColumnModel,  3,  85, true,  false,  false, false, Integer.class, null, sc.html("Safe List<br>Size") );
         return tableColumnModel;
     }
 
 
    
-    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception { }
+    public void generateSettings(EmailCompoundSettings emailCompoundSettings,
+				 Vector<Vector> tableVector, boolean validateOnly) throws Exception { }
 
-    public Vector<Vector> generateRows(Object settings) {
+    public Vector<Vector> generateRows(EmailCompoundSettings emailCompoundSettings) {
         
-        java.util.List<String> safelists;
-        int[] counts;
-        try{
-             safelists = safelistAdminView.listSafelists();
-             counts = new int[safelists.size()];
-             for(int i=0; i<safelists.size(); i++)
-                 counts[i] = safelistAdminView.getSafelistCnt( safelists.get(i) );
-        }
-        catch(Exception e){
-            Util.handleExceptionNoRestart("Error getting safelist", e);
-            return new Vector<Vector>();
-        }
+        java.util.List<String> safelists = ((MailTransformCompoundSettings)emailCompoundSettings.getMailTransformCompoundSettings()).getSafelists();
+        int[] counts = ((MailTransformCompoundSettings)emailCompoundSettings.getMailTransformCompoundSettings()).getSafelistCounts();
         
         Vector<Vector> allRows = new Vector<Vector>(safelists.size());
 	Vector tempRow = null;

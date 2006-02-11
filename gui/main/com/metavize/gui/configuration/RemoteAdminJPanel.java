@@ -47,7 +47,7 @@ public class RemoteAdminJPanel extends MEditTableJPanel{
 
 
     
-class RemoteAdminTableModel extends MSortedTableModel {
+class RemoteAdminTableModel extends MSortedTableModel<RemoteCompoundSettings> {
 
     private static final int MIN_PASSWD_LENGTH = 3;
     private Hashtable loginHashtable = new Hashtable();
@@ -74,7 +74,7 @@ class RemoteAdminTableModel extends MSortedTableModel {
     }
 
 
-    public void prevalidate(Object settings, Vector<Vector> tableVector) throws Exception {
+    public void prevalidate(RemoteCompoundSettings remoteCompoundSettings, Vector<Vector> tableVector) throws Exception {
         loginHashtable.clear();
 	boolean oneValidAccount = false;
         int rowIndex = 0;
@@ -142,8 +142,7 @@ class RemoteAdminTableModel extends MSortedTableModel {
 
     }
     
-    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
-
+    public void generateSettings(RemoteCompoundSettings remoteCompoundSettings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
 	Set allRows = new LinkedHashSet(tableVector.size());
 	User newElem = null;
 	Util.printMessage("STATUS: STARTING SAVING of accounts");
@@ -171,15 +170,14 @@ class RemoteAdminTableModel extends MSortedTableModel {
         
 	// SAVE SETTINGS /////////////
 	if( !validateOnly ){
-	    AdminSettings adminSettings = Util.getAdminManager().getAdminSettings();
+	    AdminSettings adminSettings = remoteCompoundSettings.getAdminSettings();
 	    adminSettings.setUsers(allRows);
-	    Util.getAdminManager().setAdminSettings( adminSettings );
 	}
 
     }
 
-    public Vector<Vector> generateRows(Object settings) {
-	AdminSettings adminSettings = Util.getAdminManager().getAdminSettings();
+    public Vector<Vector> generateRows(RemoteCompoundSettings remoteCompoundSettings) {
+	AdminSettings adminSettings = remoteCompoundSettings.getAdminSettings();
 	Set<User> users = (Set<User>) adminSettings.getUsers(); 
         Vector<Vector> allRows = new Vector<Vector>(users.size());
 	Vector tempRow = null;

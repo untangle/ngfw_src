@@ -21,7 +21,7 @@ import com.metavize.tran.nat.*;
 import java.awt.*;
 
 
-public class DnsJPanel extends javax.swing.JPanel implements Savable, Refreshable {
+public class DnsJPanel extends javax.swing.JPanel implements Savable<Object>, Refreshable<Object> {
     
     private static final String EXCEPTION_DNS_DOMAIN = "The Domain Name Suffix must be a valid domain name.";
 

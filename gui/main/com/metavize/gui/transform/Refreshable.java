@@ -12,6 +12,8 @@
 package com.metavize.gui.transform;
 
 
-public interface Refreshable {
-    public void doRefresh(Object settings);
+public interface Refreshable<T> {
+
+    public void doRefresh(T compoundSettings);
+
 }

@@ -60,7 +60,7 @@ public class NetworkAliasJPanel extends MEditTableJPanel{
 
 
 
-class InterfaceAliasModel extends MSortedTableModel{ 
+class InterfaceAliasModel extends MSortedTableModel<NetworkCompoundSettings>{ 
     
     private static final int  T_TW  = Util.TABLE_TOTAL_WIDTH;
     private static final int  C0_MW = Util.STATUS_MIN_WIDTH; /* status */
@@ -83,7 +83,8 @@ class InterfaceAliasModel extends MSortedTableModel{
     }
     
     
-    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {        
+    public void generateSettings(NetworkCompoundSettings networkCompoundSettings,
+				 Vector<Vector> tableVector, boolean validateOnly) throws Exception {        
         List<InterfaceAlias> elemList = new ArrayList(tableVector.size());
 	InterfaceAlias newElem = null;
         int rowIndex = 0;
@@ -100,13 +101,13 @@ class InterfaceAliasModel extends MSortedTableModel{
         
 	// SAVE SETTINGS //////////
 	if( !validateOnly ){
-	    NetworkingConfiguration networkingConfiguraion = (NetworkingConfiguration) settings;
+	    NetworkingConfiguration networkingConfiguraion = networkCompoundSettings.getNetworkingConfiguration();
 	    networkingConfiguraion.setAliasList( elemList );
 	}
     }
 
-    public Vector<Vector> generateRows(Object settings) {
-        NetworkingConfiguration networkingConfiguration = (NetworkingConfiguration) settings;
+    public Vector<Vector> generateRows(NetworkCompoundSettings networkCompoundSettings) {
+        NetworkingConfiguration networkingConfiguration = networkCompoundSettings.getNetworkingConfiguration();
 	List<InterfaceAlias> interfaceAliasList = 
             (List<InterfaceAlias>) networkingConfiguration.getAliasList();
         Vector<Vector> allRows = new Vector<Vector>(interfaceAliasList.size());

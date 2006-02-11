@@ -24,7 +24,7 @@ import com.metavize.tran.spyware.*;
 import java.awt.*;
 
 
-public class UrlConfigJPanel extends javax.swing.JPanel implements Savable, Refreshable {
+public class UrlConfigJPanel extends javax.swing.JPanel implements Savable<Object>, Refreshable<Object> {
 
     
     public UrlConfigJPanel() {

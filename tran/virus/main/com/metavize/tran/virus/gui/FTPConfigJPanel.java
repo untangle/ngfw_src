@@ -43,7 +43,7 @@ public class FTPConfigJPanel extends MEditTableJPanel {
 }
 
 
-class FTPTableModel extends MSortedTableModel{ 
+class FTPTableModel extends MSortedTableModel<Object>{ 
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */

@@ -27,12 +27,13 @@ import javax.swing.*;
 
 public class PolicyJDialog extends MConfigJDialog {
 
-    private static final String NAME_POLICY_MANAGER = "Policy Manager";
-    private static final String NAME_SYSTEM_POLICIES = "Default Policies";
-    private static final String NAME_USER_POLICIES = "Custom Policies";
+    private static final String NAME_POLICY_MANAGER     = "Policy Manager";
+    private static final String NAME_SYSTEM_POLICIES    = "Default Policies";
+    private static final String NAME_USER_POLICIES      = "Custom Policies";
     private static final String NAME_AVAILABLE_POLICIES = "Available Racks";
     
     public PolicyJDialog( ) {
+	compoundSettings = new PolicyCompoundSettings();
     }
 
     protected Dimension getMinSize(){
@@ -43,35 +44,27 @@ public class PolicyJDialog extends MConfigJDialog {
         this.setTitle(NAME_POLICY_MANAGER);
         
         // SYSTEM POLICIES //////
-        DefaultPolicyJPanel defaultPolicyJPanel = new DefaultPolicyJPanel();
-        addTab(NAME_SYSTEM_POLICIES, null, defaultPolicyJPanel);
-	addSavable(NAME_SYSTEM_POLICIES, defaultPolicyJPanel);
-	addRefreshable(NAME_SYSTEM_POLICIES, defaultPolicyJPanel);
+        PolicyDefaultJPanel policyDefaultJPanel = new PolicyDefaultJPanel();
+        addTab(NAME_SYSTEM_POLICIES, null, policyDefaultJPanel);
+	addSavable(NAME_SYSTEM_POLICIES, policyDefaultJPanel);
+	addRefreshable(NAME_SYSTEM_POLICIES, policyDefaultJPanel);
 
         // USER POLICIES //////
-        CustomPolicyJPanel customPolicyJPanel = new CustomPolicyJPanel();
-        addTab(NAME_USER_POLICIES, null, customPolicyJPanel);
-	addSavable(NAME_USER_POLICIES, customPolicyJPanel);
-	addRefreshable(NAME_USER_POLICIES, customPolicyJPanel);
+        PolicyCustomJPanel policyCustomJPanel = new PolicyCustomJPanel();
+        addTab(NAME_USER_POLICIES, null, policyCustomJPanel);
+	addSavable(NAME_USER_POLICIES, policyCustomJPanel);
+	addRefreshable(NAME_USER_POLICIES, policyCustomJPanel);
 
         // AVAILABLE RACKS ////// (THIS MUST BE LAST BECAUSE IT VALIDATES SETTINGS)
-        AvailablePolicyJPanel availablePolicyJPanel = new AvailablePolicyJPanel();
-        addTab(NAME_AVAILABLE_POLICIES, null, availablePolicyJPanel);
-	addSavable(NAME_AVAILABLE_POLICIES, availablePolicyJPanel);
-	addRefreshable(NAME_AVAILABLE_POLICIES, availablePolicyJPanel);
+        PolicyAvailableJPanel policyAvailableJPanel = new PolicyAvailableJPanel();
+        addTab(NAME_AVAILABLE_POLICIES, null, policyAvailableJPanel);
+	addSavable(NAME_AVAILABLE_POLICIES, policyAvailableJPanel);
+	addRefreshable(NAME_AVAILABLE_POLICIES, policyAvailableJPanel);
     }
     
-    protected void sendSettings(Object settings) throws Exception {
-	Util.getPolicyManager().setPolicyConfiguration( (PolicyConfiguration) settings );
-    }
-    
-    protected void refreshSettings(){
-	settings = Util.getPolicyManager().getPolicyConfiguration();
-    }
-
-    protected void saveAll(){
+    protected void saveAll() throws Exception{
 	// ASK THE USER IF HE REALLY WANTS TO SAVE SETTINGS ////////
-        NetworkSaveSettingsProceedJDialog saveSettingsProceedJDialog = new NetworkSaveSettingsProceedJDialog();
+        NetworkSaveSettingsProceedJDialog saveSettingsProceedJDialog = new NetworkSaveSettingsProceedJDialog(this);
         boolean isProceeding = saveSettingsProceedJDialog.isProceeding();
         if( isProceeding ){
             super.saveAll();

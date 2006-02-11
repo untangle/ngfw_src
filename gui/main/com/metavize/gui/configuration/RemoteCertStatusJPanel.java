@@ -19,14 +19,15 @@ import com.metavize.mvvm.security.*;
 import java.awt.Window;
 
 
-public class RemoteCertStatusJPanel extends javax.swing.JPanel implements Refreshable {
+public class RemoteCertStatusJPanel extends javax.swing.JPanel
+    implements Refreshable<RemoteCompoundSettings> {
     
     public RemoteCertStatusJPanel() {
         initComponents();
     }
     
-    public void doRefresh(Object settings){
-	CertInfo certInfo = Util.getAppServerManager().getCertInfo(Util.getAppServerManager().getCurrentServerCert());
+    public void doRefresh(RemoteCompoundSettings remoteCompoundSettings){
+	CertInfo certInfo = remoteCompoundSettings.getCurrentCertInfo();
         
 	// SELF SIGNED /////
 	boolean isSelfSigned = certInfo.appearsSelfSigned();

@@ -28,15 +28,16 @@ import javax.swing.*;
 public class MaintenanceJDialog extends MConfigJDialog {
 
     private static final String NAME_MAINTENANCE_CONFIG = "Support Config";
-    private static final String NAME_REMOTE_SETTINGS = "Access Restrictions";
-    private static final String NAME_PROTOCOL_OVERRIDE = "Manual Protocol Override";
+    private static final String NAME_REMOTE_SETTINGS    = "Access Restrictions";
+    private static final String NAME_PROTOCOL_OVERRIDE  = "Manual Protocol Override";
     private static final String NAME_NETWORK_INTERFACES = "Network Interfaces";
-    private static final String NAME_SECRET_PANEL = "Advanced Support";
+    private static final String NAME_SECRET_PANEL       = "Advanced Support";
 
     private static boolean showHiddenPanel;
     public static void setShowHiddenPanel(boolean showHiddenPanelX){ showHiddenPanel = showHiddenPanelX; }
 
     public MaintenanceJDialog( ) {
+	compoundSettings = new MaintenanceCompoundSettings();
     }
 
     protected void generateGui(){
@@ -48,18 +49,18 @@ public class MaintenanceJDialog extends MConfigJDialog {
 	addSavable(NAME_REMOTE_SETTINGS, maintenanceAccessJPanel);
 	addRefreshable(NAME_REMOTE_SETTINGS, maintenanceAccessJPanel);
 
-        // ADD ALL CASINGS TO THE PANEL //
-        MCasingJPanel[] mCasingJPanels = Util.getPolicyStateMachine().loadAllCasings(true);
+	// CASINGS //
+        MCasingJPanel[] mCasingJPanels = ((MaintenanceCompoundSettings)compoundSettings).getCasingJPanels();
 	if( mCasingJPanels.length > 0 ){
 	    JTabbedPane overrideJTabbedPane = addTabbedPane(NAME_PROTOCOL_OVERRIDE, null);
 	    for(MCasingJPanel mCasingJPanel : mCasingJPanels){
-		String casingDisplayName = mCasingJPanel.getMackageDesc().getDisplayName();
+		String casingDisplayName = mCasingJPanel.getDisplayName();
 		addScrollableTab(overrideJTabbedPane, casingDisplayName, null, mCasingJPanel, false, true);
 		addSavable(casingDisplayName, mCasingJPanel);
 		addRefreshable(casingDisplayName, mCasingJPanel);
 	    }
 	}
-	else{
+	else {
             JPanel messageJPanel = new JPanel();
             messageJPanel.setLayout(new BorderLayout());
             JLabel messageJLabel = new JLabel("There are currently no protocols being used by the rack.");
@@ -82,13 +83,6 @@ public class MaintenanceJDialog extends MConfigJDialog {
 	    addSavable(NAME_SECRET_PANEL, maintenanceSecretJPanel);
 	    addRefreshable(NAME_SECRET_PANEL, maintenanceSecretJPanel);
 	}
-    }
-    
-    protected void sendSettings(Object settings) throws Exception {
-	Util.getNetworkingManager().set( (NetworkingConfiguration) settings );
-    }
-    protected void refreshSettings(){
-	settings = Util.getNetworkingManager().get();
     }
 
 

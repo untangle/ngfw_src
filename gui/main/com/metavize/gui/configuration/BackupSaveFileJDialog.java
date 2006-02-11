@@ -13,16 +13,17 @@ package com.metavize.gui.configuration;
 
 import com.metavize.gui.util.Util;
 
+import java.awt.Dialog;
+
 final public class BackupSaveFileJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
 
     private boolean isProceeding = false;
 
-
-    public BackupSaveFileJDialog() {
-        super(Util.getMMainJFrame(), true);
+    public BackupSaveFileJDialog(Dialog parentDialog) {
+        super(parentDialog, true);
         initComponents();
         this.addWindowListener(this);
-        this.setBounds( Util.generateCenteredBounds( Util.getMMainJFrame().getBounds(), this.getWidth(), this.getHeight()) );
+        this.setBounds( Util.generateCenteredBounds( parentDialog.getBounds(), this.getWidth(), this.getHeight()) );
         this.setVisible(true);
     }
 

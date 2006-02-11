@@ -33,49 +33,33 @@ import javax.swing.*;
 
 public class QuarantineUserJDialog extends MConfigJDialog {
 
-    private static final String NAME_QUARANTINE_USER = "Email Quarantine Details for: ";
-    private static final String NAME_ALL_ACCOUNTS = "Email Quarantine Details for: ";
-    private QuarantineMaintenenceView quarantineMaintenenceView;
+    private static final String NAME_ALL_ACCOUNTS    = "Email Quarantine Details for: ";
+
     private String account;
         
-    public QuarantineUserJDialog(Dialog topLevelDialog, QuarantineMaintenenceView quarantineMaintenenceView, String account) {
-	super(topLevelDialog, true);
-        this.quarantineMaintenenceView = quarantineMaintenenceView;
+    public QuarantineUserJDialog(Dialog topLevelDialog, MailTransformCompoundSettings mailTransformCompoundSettings, String account) {
+	super(topLevelDialog);
+	compoundSettings = mailTransformCompoundSettings;
         this.account = account;
-	generateGuiAfter();
     }
 
     protected Dimension getMinSize(){
 	return new Dimension(640, 550);
     }
     
-    protected void generateGui(){}
-    private void generateGuiAfter(){
-        this.setTitle(NAME_QUARANTINE_USER + account);
-        
-        // ALL ACCOUNTS //////
-        String casingName = "mail-casing";
-        String objectName = "com.metavize.tran.mail.gui.QuarantineUserJPanel";
-        JPanel quarantineAllJPanel = null;
-        try{
-	    List<Tid> casingInstances = Util.getTransformManager().transformInstances(casingName);
-	    TransformContext transformContext = Util.getTransformManager().transformContext(casingInstances.get(0));
-            Class objectClass = Util.getClassLoader().loadClass( objectName, transformContext.getTransformDesc() );
-            Constructor objectConstructor = objectClass.getConstructor(new Class[]{QuarantineMaintenenceView.class, String.class});
-            quarantineAllJPanel = (JPanel) objectConstructor.newInstance(quarantineMaintenenceView, account);
-        }
-        catch(Exception e){
-            Util.handleExceptionNoRestart("Error loading quarantine: " + casingName, e);
-            return;
-        }
-
-        this.contentJTabbedPane.addTab(NAME_ALL_ACCOUNTS + account, null, quarantineAllJPanel);
-
-        reloadJButton.setVisible(false);
+    protected void generateGui(){
+        this.setTitle(NAME_ALL_ACCOUNTS + account);
+	reloadJButton.setVisible(false);
         saveJButton.setVisible(false);
-    }
-    
-    protected void sendSettings(Object settings) throws Exception { }
-    protected void refreshSettings() {  }
 
+        // ALL ACCOUNTS //////
+	QuarantineAllJPanel quarantineAllJPanel = new QuarantineAllJPanel();
+	addRefreshable(NAME_ALL_ACCOUNTS, quarantineAllJPanel);
+        addTab(NAME_ALL_ACCOUNTS + account, null, quarantineAllJPanel);
+    }
+
+    protected void refreshAll() throws Exception {
+	super.refreshAll();
+	((MailTransformCompoundSettings)compoundSettings).loadInboxIndex(account);
+    }
 }

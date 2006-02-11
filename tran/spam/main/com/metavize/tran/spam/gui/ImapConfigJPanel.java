@@ -16,7 +16,7 @@ import com.metavize.gui.transform.*;
 import com.metavize.gui.util.*;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.tran.spam.*;
-import com.metavize.tran.mail.*;
+//import com.metavize.tran.mail.*;
 import com.metavize.mvvm.tran.TransformContext;
 
 
@@ -44,7 +44,7 @@ public class ImapConfigJPanel extends MEditTableJPanel {
 }
 
 
-class ImapTableModel extends MSortedTableModel{
+class ImapTableModel extends MSortedTableModel<Object>{
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH_LARGE;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */

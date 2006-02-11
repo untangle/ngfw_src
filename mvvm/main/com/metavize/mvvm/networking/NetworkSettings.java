@@ -20,6 +20,8 @@ import java.net.InetAddress;
 
 import com.metavize.mvvm.tran.IPaddr;
 
+import java.io.Serializable;
+
 /**
  * Network Configuration for the box.
  *
@@ -28,8 +30,11 @@ import com.metavize.mvvm.tran.IPaddr;
  * @hibernate.class
  * table="mvvm_network_settings"
  */
-public class NetworkSettings
+public class NetworkSettings implements Serializable
 {
+    // XXXXXXXX put serializable stuff in here
+    
+
     public static final String  DEF_HOSTNAME   = "edgeguard";
     public static final String  DEF_PUBLIC_ADDRESS = "";
 
