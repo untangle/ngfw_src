@@ -66,10 +66,6 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	    WizardJPanel wizardJPanel = new WizardJPanel( vpnTransform, this );
 	    addTab( WIZARD_NAME, null, wizardJPanel );
 
-	    // EVENT LOG ///////
-	    //LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
-	    //super.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
-	    //super.shutdownableMap.put(NAME_LOG, logJPanel);	    
 	}
 	else if( VpnTransform.ConfigState.SERVER_ROUTE == configState ){
 	    // SHOW WIZARD/STATUS, CLIENTS, EXPORTS, CLIENT-TO-SITE, SITE-TO-SITE, AND EVENT LOG
@@ -110,9 +106,9 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	    clientsAndSitesJTabbedPane.addTab( SITE_TO_SITE_NAME, null, configSiteToSiteJPanel );
 
 	    // EVENT LOG ///////
-	    //LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
-	    //super.mTabbedPane.addTab(NAME_LOG, null, logJPanel);
-	    //super.shutdownableMap.put(NAME_LOG, logJPanel);	    
+	    LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
+	    addTab(NAME_LOG, null, logJPanel);
+	    addShutdownable(NAME_LOG, logJPanel);	    
 	}
 	else if( VpnTransform.ConfigState.SERVER_BRIDGE == configState ){
 	    // WE DONT SUPPORT THIS

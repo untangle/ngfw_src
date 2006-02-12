@@ -122,9 +122,9 @@ class OpenVpnMonitor implements Runnable
         this.clientConnectLogger = EventLoggerFactory.factory().getEventLogger(transform.getTransformContext());
         this.clientDistLogger = EventLoggerFactory.factory().getEventLogger(transform.getTransformContext());
         //Add the magical thingies to make UI log reading from cache happen
-        clientConnectLogger.addSimpleEventFilter(new ClientConnectEventAllFilter());//For "closed" events
-        clientConnectLogger.addEventRepository(new ActiveEventCache(clientConnectLogger));//For "open" events
         clientConnectLogger.addEventRepository(new AllEventsCache(clientConnectLogger));//For "all" events
+        clientConnectLogger.addEventRepository(new ActiveEventCache(clientConnectLogger));//For "open" events
+        clientConnectLogger.addSimpleEventFilter(new ClientConnectEventAllFilter());//For "closed" events
         
         this.localContext = MvvmContextFactory.context();
         this.transform = transform;
