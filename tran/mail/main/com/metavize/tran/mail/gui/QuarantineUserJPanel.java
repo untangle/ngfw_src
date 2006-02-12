@@ -12,7 +12,7 @@
 package com.metavize.tran.mail.gui;
 
 import com.metavize.gui.widgets.coloredTable.*;
-import com.metavize.gui.widgets.dialogs.RefreshLogFailureDialog;
+import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.gui.transform.*;
 import com.metavize.gui.util.*;
 
@@ -190,13 +190,7 @@ public class QuarantineUserJPanel extends javax.swing.JPanel
         for( int i=0; i<selectedModelRows.length; i++){
             emails[i] = (String) dataVector.elementAt(selectedModelRows[i]).elementAt(2);
         }
-        try{
-            mailTransformCompoundSettings.getQuarantineMaintenanceView().rescue(account, emails);
-        }
-        catch(Exception e){Util.handleExceptionNoRestart("Error releasing account: " + account, e);}
-        
-        // refresh
-        quarantineUserTableModel.doRefresh(null);
+	new ReleaseAndPurgeThread(account,emails,true);
     }//GEN-LAST:event_releaseJButtonActionPerformed
     
     private void purgeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_purgeJButtonActionPerformed
@@ -214,14 +208,57 @@ public class QuarantineUserJPanel extends javax.swing.JPanel
         for( int i=0; i<selectedModelRows.length; i++){
             emails[i] = (String) dataVector.elementAt(selectedModelRows[i]).elementAt(2);
         }
-        try{
-            mailTransformCompoundSettings.getQuarantineMaintenanceView().purge(account, emails);
-        }
-        catch(Exception e){Util.handleExceptionNoRestart("Error purging account: " + account, e);}
-        
-        // refresh
-        quarantineUserTableModel.doRefresh(null);
+	new ReleaseAndPurgeThread(account,emails,false);
     }//GEN-LAST:event_purgeJButtonActionPerformed
+
+    private class ReleaseAndPurgeThread extends Thread {
+	private String[] emails;
+	private String account;
+	private boolean doRelease;
+	public ReleaseAndPurgeThread(String account, String[] emails, boolean doRelease){
+	    this.account = account;
+	    this.emails = emails;
+	    this.doRelease = doRelease;
+	    setDaemon(true);
+	    if( doRelease )
+		((MConfigJDialog)QuarantineUserJPanel.this.getTopLevelAncestor()).infiniteProgressJComponent.setText("Releasing...");
+	    else
+		((MConfigJDialog)QuarantineUserJPanel.this.getTopLevelAncestor()).infiniteProgressJComponent.setText("Purging...");
+	    ((MConfigJDialog)QuarantineUserJPanel.this.getTopLevelAncestor()).infiniteProgressJComponent.start();
+	    start();
+	}
+	public void run(){
+	    // DO RESCUE
+            try{
+		if( doRelease ){
+		    mailTransformCompoundSettings.getQuarantineMaintenanceView().rescue(account,emails);
+		}
+		else{
+		    mailTransformCompoundSettings.getQuarantineMaintenanceView().purge(account,emails);
+		}
+            }
+            catch(Exception e){
+		if( doRelease ){
+		    Util.handleExceptionNoRestart("Error releasing inbox", e);
+		    new MOneButtonJDialog((Dialog)QuarantineUserJPanel.this.getTopLevelAncestor(), "Quarantine Release Warning", "An account could not be released.");
+		}
+		else{
+		    Util.handleExceptionNoRestart("Error purging inbox", e);
+		    new MOneButtonJDialog((Dialog)QuarantineUserJPanel.this.getTopLevelAncestor(), "Quarantine Purge Warning", "An account could not be purged.");		    
+		}
+	    }
+	    // DO REFRESH
+	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		((MConfigJDialog)QuarantineUserJPanel.this.getTopLevelAncestor()).infiniteProgressJComponent.setText("Refreshing...");
+	    }});
+	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		quarantineUserTableModel.doRefresh(null);
+	    }});
+	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		((MConfigJDialog)QuarantineUserJPanel.this.getTopLevelAncestor()).infiniteProgressJComponent.stop();
+	    }});
+        }
+    }
 
     private int[] getSelectedModelRows(){
         int[] selectedViewRows = entryJTable.getSelectedRows();

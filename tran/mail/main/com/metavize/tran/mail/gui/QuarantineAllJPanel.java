@@ -12,7 +12,7 @@
 package com.metavize.tran.mail.gui;
 
 import com.metavize.gui.widgets.coloredTable.*;
-import com.metavize.gui.widgets.dialogs.RefreshLogFailureDialog;
+import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.gui.configuration.EmailCompoundSettings;
 import com.metavize.gui.transform.*;
 import com.metavize.gui.util.*;
@@ -219,20 +219,14 @@ public class QuarantineAllJPanel extends javax.swing.JPanel
                 return;
         
         // release
-        String account;
+        Vector<String> accounts = new Vector<String>();;
         Vector<Vector> dataVector = quarantineAllTableModel.getDataVector();
         for( int i : selectedModelRows ){
-            account = (String) dataVector.elementAt(i).elementAt(2);
-            try{
-		mailTransformCompoundSettings.getQuarantineMaintenanceView().rescueInbox(account);
-            }
-            catch(Exception e){Util.handleExceptionNoRestart("Error rescuing inbox: " + account, e);}
-        }
-        
-        // refresh
-        quarantineAllTableModel.doRefresh(null);
+	    accounts.add( (String) dataVector.elementAt(i).elementAt(2) );
+	}
+	new ReleaseAndPurgeThread(accounts,true);
     }//GEN-LAST:event_releaseJButtonActionPerformed
-    
+
     private void purgeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_purgeJButtonActionPerformed
         int[] selectedModelRows = getSelectedModelRows();
         if( selectedModelRows.length == 0 )
@@ -243,20 +237,62 @@ public class QuarantineAllJPanel extends javax.swing.JPanel
 	    return;
         
         // purge
-        String account;
+        Vector<String> accounts = new Vector<String>();
         Vector<Vector> dataVector = quarantineAllTableModel.getDataVector();
         for( int i : selectedModelRows ){
-            account = (String) dataVector.elementAt(i).elementAt(2);
-            try{
-                mailTransformCompoundSettings.getQuarantineMaintenanceView().deleteInbox(account);
-            }
-            catch(Exception e){Util.handleExceptionNoRestart("Error deleting inbox: " + account, e);}
-        }
-        
-        // refresh
-        quarantineAllTableModel.doRefresh(null);
+	    accounts.add( (String) dataVector.elementAt(i).elementAt(2) );
+	}
+	new ReleaseAndPurgeThread(accounts,false);
     }//GEN-LAST:event_purgeJButtonActionPerformed
 
+    private class ReleaseAndPurgeThread extends Thread {
+	private Vector<String> accounts;
+	private boolean doRelease;
+	public ReleaseAndPurgeThread(Vector<String> accounts, boolean doRelease){
+	    this.accounts = accounts;
+	    this.doRelease = doRelease;
+	    setDaemon(true);
+	    if( doRelease )
+		((MConfigJDialog)QuarantineAllJPanel.this.getTopLevelAncestor()).infiniteProgressJComponent.setText("Releasing...");
+	    else
+		((MConfigJDialog)QuarantineAllJPanel.this.getTopLevelAncestor()).infiniteProgressJComponent.setText("Purging...");
+	    ((MConfigJDialog)QuarantineAllJPanel.this.getTopLevelAncestor()).infiniteProgressJComponent.start();
+	    start();
+	}
+	public void run(){
+	    // DO RESCUE
+            try{
+		for( String account : accounts )
+		    if( doRelease ){
+			mailTransformCompoundSettings.getQuarantineMaintenanceView().rescueInbox(account);
+		    }
+		    else{
+			mailTransformCompoundSettings.getQuarantineMaintenanceView().deleteInbox(account);
+		    }
+            }
+            catch(Exception e){
+		if( doRelease ){
+		    Util.handleExceptionNoRestart("Error releasing inbox", e);
+		    new MOneButtonJDialog((Dialog)QuarantineAllJPanel.this.getTopLevelAncestor(), "Quarantine Release Warning", "An account could not be released.");
+		}
+		else{
+		    Util.handleExceptionNoRestart("Error purging inbox", e);
+		    new MOneButtonJDialog((Dialog)QuarantineAllJPanel.this.getTopLevelAncestor(), "Quarantine Purge Warning", "An account could not be purged.");		    
+		}
+	    }
+	    // DO REFRESH
+	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		((MConfigJDialog)QuarantineAllJPanel.this.getTopLevelAncestor()).infiniteProgressJComponent.setText("Refreshing...");
+	    }});
+	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		quarantineAllTableModel.doRefresh(null);
+	    }});
+	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		((MConfigJDialog)QuarantineAllJPanel.this.getTopLevelAncestor()).infiniteProgressJComponent.stop();
+	    }});
+        }
+    }
+    
     private int[] getSelectedModelRows(){
         int[] selectedViewRows = entryJTable.getSelectedRows();
         if( (selectedViewRows==null) || (selectedViewRows.length==0) || (selectedViewRows[0]==-1) )
