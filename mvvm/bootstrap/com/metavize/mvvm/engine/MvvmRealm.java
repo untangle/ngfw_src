@@ -6,12 +6,14 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
+
  * $Id$
  */
 
 package com.metavize.mvvm.engine;
 
 import java.net.InetAddress;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
@@ -105,7 +107,7 @@ class MvvmRealm extends RealmBase
         String nonce = new BASE64Encoder().encode(buffer);
         nonces.put(nonce, user);
 
-        return MvvmAuthenticator.AUTH_NONCE_FIELD_NAME + "=" + nonce;
+        return MvvmAuthenticator.AUTH_NONCE_FIELD_NAME + "=" + URLEncoder.encode(nonce);
    }
 
     // Used by servlets (reports, store)

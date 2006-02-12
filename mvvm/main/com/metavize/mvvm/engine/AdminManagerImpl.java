@@ -242,7 +242,7 @@ class AdminManagerImpl implements AdminManager
         if (ls == null)
             throw new IllegalStateException("generateAuthNonce called from backend");
         TomcatManager tm = ((MvvmContextImpl)MvvmContextFactory.context()).getMain().getTomcatManager();
-        logger.warn("Generating auth nonce for " + ls.getClientAddr() + " " + ls.getMvvmPrincipal());
+        logger.info("Generating auth nonce for " + ls.getClientAddr() + " " + ls.getMvvmPrincipal());
         return tm.generateAuthNonce(ls.getClientAddr(), ls.getMvvmPrincipal());
     }
 
