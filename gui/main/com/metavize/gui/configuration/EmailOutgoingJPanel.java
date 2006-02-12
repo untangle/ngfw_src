@@ -21,7 +21,8 @@ import com.metavize.mvvm.tran.*;
 import java.awt.*;
 import javax.swing.*;
 
-public class EmailOutgoingJPanel extends javax.swing.JPanel implements Savable, Refreshable {
+public class EmailOutgoingJPanel extends javax.swing.JPanel
+    implements Savable<EmailCompoundSettings>, Refreshable<EmailCompoundSettings> {
 
     private static final String EXCEPTION_PASSWORD_MISSING = "A \"Password\" must be specified if a \"Login\" is specified.";
     private static final String EXCEPTION_LOGIN_MISSING = "A \"Login\" must be specified if a \"Password\" is specified.";
@@ -34,7 +35,7 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel implements Savable, 
 	portJSpinner.setModel(new SpinnerNumberModel(0,0,65535,1));
     }
 
-    public void doSave(Object settings, boolean validateOnly) throws Exception {
+    public void doSave(EmailCompoundSettings emailCompoundSettings, boolean validateOnly) throws Exception {
 
 	// HOSTNAME ///////
 	String host = hostJTextField.getText();
@@ -79,42 +80,48 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel implements Savable, 
 
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
-            MailSettings mailSettings = Util.getAdminManager().getMailSettings();
-
+            MailSettings mailSettings = emailCompoundSettings.getMailSettings();
             mailSettings.setSmtpHost( host );
             mailSettings.setSmtpPort( port );
             mailSettings.setAuthUser( login );
             mailSettings.setAuthPass( password );
             mailSettings.setFromAddress( address );
-            
-            Util.getAdminManager().setMailSettings( mailSettings );
         }
 
     }
 
-    public void doRefresh(Object settings){
-	MailSettings mailSettings = Util.getAdminManager().getMailSettings();
+    private String hostCurrent;
+    private int portCurrent;
+    private String loginCurrent;
+    private String passwordCurrent;
+    private String addressCurrent;
+
+    public void doRefresh(EmailCompoundSettings emailCompoundSettings){
+	MailSettings mailSettings = emailCompoundSettings.getMailSettings();
 
 	// HOST /////
-	String host = mailSettings.getSmtpHost();
-	hostJTextField.setText( host );
+	hostCurrent = mailSettings.getSmtpHost();
+	hostJTextField.setText( hostCurrent );
 	hostJTextField.setBackground( Color.WHITE );
 
 	// PORT /////
-	int port = mailSettings.getSmtpPort();
-	portJSpinner.setValue( port );
+	portCurrent = mailSettings.getSmtpPort();
+	portJSpinner.setValue( portCurrent );
 
 	// LOGIN //////
-	String login = mailSettings.getAuthUser();
-	smtpLoginJTextField.setText( login );
+	loginCurrent = mailSettings.getAuthUser();
+	smtpLoginJTextField.setText( loginCurrent );
 
-	// PASSWOR /////
-	String password = mailSettings.getAuthPass();
-	smtpPasswordJPasswordField.setText( password );
+	// PASSWORD /////
+	passwordCurrent = mailSettings.getAuthPass();
+	smtpPasswordJPasswordField.setText( passwordCurrent );
 
 	// FROM ADDRESS //////
-	String address = mailSettings.getFromAddress();
-	addressJTextField.setText( address );	
+	addressCurrent = mailSettings.getFromAddress();
+	addressJTextField.setText( addressCurrent );	
+
+	// CONNECTIVITY TEST //
+	connectivityTestJButton.setEnabled(true);
     }
     
     
@@ -165,6 +172,12 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel implements Savable, 
                 hostJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
                 hostJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
                 hostJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
+                hostJTextField.addCaretListener(new javax.swing.event.CaretListener() {
+                        public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                                hostJTextFieldCaretUpdate(evt);
+                        }
+                });
+
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
                 gridBagConstraints.gridy = 0;
@@ -185,6 +198,12 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel implements Savable, 
                 portJSpinner.setMaximumSize(new java.awt.Dimension(75, 19));
                 portJSpinner.setMinimumSize(new java.awt.Dimension(75, 19));
                 portJSpinner.setPreferredSize(new java.awt.Dimension(75, 19));
+                portJSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+                        public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                                portJSpinnerStateChanged(evt);
+                        }
+                });
+
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
                 gridBagConstraints.gridy = 1;
@@ -203,6 +222,12 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel implements Savable, 
                 smtpLoginJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
                 smtpLoginJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
                 smtpLoginJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
+                smtpLoginJTextField.addCaretListener(new javax.swing.event.CaretListener() {
+                        public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                                smtpLoginJTextFieldCaretUpdate(evt);
+                        }
+                });
+
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
                 gridBagConstraints.gridy = 2;
@@ -221,6 +246,12 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel implements Savable, 
                 smtpPasswordJPasswordField.setMaximumSize(new java.awt.Dimension(150, 19));
                 smtpPasswordJPasswordField.setMinimumSize(new java.awt.Dimension(150, 19));
                 smtpPasswordJPasswordField.setPreferredSize(new java.awt.Dimension(150, 19));
+                smtpPasswordJPasswordField.addCaretListener(new javax.swing.event.CaretListener() {
+                        public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                                smtpPasswordJPasswordFieldCaretUpdate(evt);
+                        }
+                });
+
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
                 gridBagConstraints.gridy = 3;
@@ -254,6 +285,12 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel implements Savable, 
                 addressJTextField.setMaximumSize(new java.awt.Dimension(200, 19));
                 addressJTextField.setMinimumSize(new java.awt.Dimension(200, 19));
                 addressJTextField.setPreferredSize(new java.awt.Dimension(200, 19));
+                addressJTextField.addCaretListener(new javax.swing.event.CaretListener() {
+                        public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                                addressJTextFieldCaretUpdate(evt);
+                        }
+                });
+
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
                 gridBagConstraints.gridy = 0;
@@ -274,7 +311,7 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel implements Savable, 
                 enableRemoteJPanel.add(jSeparator3, gridBagConstraints);
 
                 jLabel10.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel10.setText("<html><b>Connectivity Test</b> will try to send an email to a specified recipient, using your currently specified SMTP Email Server settings.  If the email is not received, your settings may be incorrect.  If you have made changes to the above settings, you must save them before this button will be enabled.</html>");
+                jLabel10.setText("<html><b>Connectivity Test</b> will try to send an email to a specified recipient, using your currently saved SMTP Email Server settings.  If the email is not received, your settings may be incorrect.  If you have made changes to the above settings, you must save them before this button will be enabled.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -315,8 +352,32 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel implements Savable, 
 
         }//GEN-END:initComponents
 
-		private void connectivityTestJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectivityTestJButtonActionPerformed
-				    try{
+    private void portJSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_portJSpinnerStateChanged
+	connectivityTestJButton.setEnabled(false);
+    }//GEN-LAST:event_portJSpinnerStateChanged
+    
+    private void hostJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_hostJTextFieldCaretUpdate
+	if( !hostJTextField.getText().equals(hostCurrent) )
+	    connectivityTestJButton.setEnabled(false);
+    }//GEN-LAST:event_hostJTextFieldCaretUpdate
+    
+    private void smtpLoginJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_smtpLoginJTextFieldCaretUpdate
+	if( !smtpLoginJTextField.getText().equals(loginCurrent) )
+	    connectivityTestJButton.setEnabled(false);
+    }//GEN-LAST:event_smtpLoginJTextFieldCaretUpdate
+    
+    private void smtpPasswordJPasswordFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_smtpPasswordJPasswordFieldCaretUpdate
+	if( !(new String(smtpPasswordJPasswordField.getPassword()).equals(passwordCurrent)) )	
+	    connectivityTestJButton.setEnabled(false);
+    }//GEN-LAST:event_smtpPasswordJPasswordFieldCaretUpdate
+    
+    private void addressJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_addressJTextFieldCaretUpdate
+	if( !addressJTextField.getText().equals(addressCurrent) )
+	    connectivityTestJButton.setEnabled(false);
+    }//GEN-LAST:event_addressJTextFieldCaretUpdate
+    
+    private void connectivityTestJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectivityTestJButtonActionPerformed
+	try{
 	    EmailConnectivityTestJDialog connectivityJDialog = new EmailConnectivityTestJDialog((JDialog)this.getTopLevelAncestor());
 	    connectivityJDialog.setVisible(true);
 	}
@@ -324,7 +385,7 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel implements Savable, 
 	    try{ Util.handleExceptionWithRestart("Error showing connectivity tester", e); }
 	    catch(Exception f){ Util.handleExceptionNoRestart("Error showing connectivity tester", f); }
 	}
-		}//GEN-LAST:event_connectivityTestJButtonActionPerformed
+    }//GEN-LAST:event_connectivityTestJButtonActionPerformed
     
 
     
