@@ -27,7 +27,7 @@ public class SpamSMTPConfig extends SpamProtoConfig
     private static final long serialVersionUID = 7520156745253589107L;
 
     /* settings */
-    private SMTPSpamMessageAction zMsgAction = SMTPSpamMessageAction.MARK;
+    private SMTPSpamMessageAction zMsgAction = SMTPSpamMessageAction.QUARANTINE;
     private SpamSMTPNotifyAction zNotifyAction = SpamSMTPNotifyAction.NEITHER;
     private transient SmtpNotifyMessageGenerator m_notifyMsgGenerator;
     private String m_notifySubjectWrapperTemplate;
