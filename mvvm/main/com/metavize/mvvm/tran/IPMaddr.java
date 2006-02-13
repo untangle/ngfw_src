@@ -28,7 +28,7 @@ import java.util.LinkedList;
  * @author <a href="mailto:jdi@chef">jdi</a>
  * @version 1.0
  */
-public class IPMaddr implements Serializable
+public class IPMaddr implements Serializable, Comparable
 {
     private static final long serialVersionUID = 9135497849829655626L;
 
@@ -403,6 +403,46 @@ public class IPMaddr implements Serializable
         return true;
     }
 
+    public int compareTo(Object o)
+    {
+        IPMaddr other = (IPMaddr)o;
+        long oper1 = toLong();
+        long oper2 = other.toLong();
+
+        if (oper1 < oper2)
+            return -1;
+        else if (oper1 > oper2)
+            return 1;
+        else{
+	    if( maskToNumbits(mask) > maskToNumbits(other.mask) )
+		return 1;
+	    else if( maskToNumbits(mask) < maskToNumbits(other.mask) )
+		return -1;
+	    else
+		return 0;
+	}
+    }
+
+    /** Convert an IPaddr to a long */
+    private long toLong( )
+    {
+        long val = 0;
+        
+        byte valArray[] = textToNumericFormat(addr);
+        
+        for ( int c = 0 ; c < INADDRSZ ; c++ ) {
+            val += ((long)byteToInt(valArray[c])) << ( 8 * c );
+        }
+
+        return val;
+    }
+
+    static int byteToInt ( byte val ) 
+    {
+        int num = val;
+        if ( num < 0 ) num = num & 0x7F + 0x80;
+        return num;
+    }
 
     static final int INADDRSZ = 4;
 
