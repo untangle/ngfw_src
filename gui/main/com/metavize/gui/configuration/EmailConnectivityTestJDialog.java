@@ -188,9 +188,8 @@ public class EmailConnectivityTestJDialog extends javax.swing.JDialog implements
             
             
             try{
-		MailSettings mailSettings = Util.getAdminManager().getMailSettings();
 		String recipient = emailAddressJTextField.getText();
-		boolean result = Util.getAdminManager().sendTestMessage(recipient, mailSettings);
+		boolean result = Util.getAdminManager().sendTestMessage(recipient);
 		if(!result)
 		    throw new Exception();
             }

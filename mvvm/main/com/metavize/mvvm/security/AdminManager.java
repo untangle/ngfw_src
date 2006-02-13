@@ -36,7 +36,7 @@ public interface AdminManager
         throws TransactionRolledbackException;
 
     // See MailSender for documentation.
-    boolean sendTestMessage(String recipient, MailSettings newSettings);
+    boolean sendTestMessage(String recipient);
 
     LoginSession[] loggedInUsers();
 

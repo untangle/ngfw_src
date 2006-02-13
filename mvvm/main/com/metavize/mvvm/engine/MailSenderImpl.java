@@ -558,51 +558,10 @@ class MailSenderImpl implements MailSender
 
       
     // Here's where we actually do the sending
-    public boolean sendTestMessage(String recipient, MailSettings newSettings)
+    public boolean sendTestMessage(String recipient)
     {
-        Properties commonProps = new Properties();
-        if (newSettings.getSmtpHost() != null && !"".equals(newSettings.getSmtpHost()))
-            commonProps.put(MAIL_HOST_PROP, newSettings.getSmtpHost());
-        commonProps.put(MAIL_FROM_PROP, newSettings.getFromAddress());
-        commonProps.put(MAIL_ENVELOPE_FROM_PROP, newSettings.getFromAddress());
-        commonProps.put(MAIL_TRANSPORT_PROTO_PROP, "smtp");
-        Session session = Session.getInstance(commonProps);
-
-        SMTPTransport transport = null;
-        Message msg = null;
-        try {
-            msg = prepMessage(session, new String[] { recipient }, TEST_MESSAGE_SUBJECT);
-            if (msg == null)
-                return false;
-            msg.setText(TEST_MESSAGE_BODY);
-
-            transport = (SMTPTransport) session.getTransport();
-            // We get the host from the session since it can differ (mv errors).
-            String host = session.getProperty(MAIL_HOST_PROP);
-            String localhost = newSettings.getLocalHostName();
-            int port = newSettings.getSmtpPort();
-            String user = newSettings.getAuthUser();
-            String pass = newSettings.getAuthPass();
-            if ((user == null && pass != null) || (user != null && pass == null)) {
-                logger.warn("SMTP AUTH user/pass -- only one set, ignoring");
-                user = null;
-                pass = null;
-            }
-            transport.setStartTLS(newSettings.isUseTls());
-            transport.setLocalHost(newSettings.getLocalHostName());
-            transport.connect(host, port, user, pass);
-            transport.sendMessage(msg, msg.getAllRecipients());
-            return true;
-        } catch (MessagingException x) {
-            logger.warn("sendTestMessage failed test", x);
-            return false;
-        } catch (Exception x) {
-            // Uh oh...
-            logger.error("Unexpected exception in sendTestMessage", x);
-            return false;
-        } finally {
-            try { if (transport != null) transport.close(); } catch (MessagingException x) { }
-        }
+        return sendSimple(alertSession, new String[] { recipient },
+                          TEST_MESSAGE_SUBJECT, TEST_MESSAGE_BODY, null);
     }
 
 
