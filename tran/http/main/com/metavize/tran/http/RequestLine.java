@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -15,6 +15,7 @@ import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+
 import com.metavize.mvvm.tran.PipelineEndpoints;
 
 /**
@@ -28,7 +29,7 @@ import com.metavize.mvvm.tran.PipelineEndpoints;
  */
 public class RequestLine implements Serializable
 {
-    // XXX serial UID
+    private static final long serialVersionUID = -2183950932382112727L;
 
     private Long id;
     private HttpMethod method;
