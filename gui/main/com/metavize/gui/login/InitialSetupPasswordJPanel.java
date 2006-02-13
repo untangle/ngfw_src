@@ -119,7 +119,7 @@ public class InitialSetupPasswordJPanel extends MWizardPageJPanel {
                 jPanel1.add(jLabel3, gridBagConstraints);
 
                 jLabel4.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel4.setText("Retype Password:");
+                jLabel4.setText("Confirm Password:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
