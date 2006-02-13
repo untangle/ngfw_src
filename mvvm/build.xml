@@ -230,6 +230,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
 
       <!-- Networking classes -->
       <include name="com/metavize/mvvm/networking/BasicNetworkSettings.java"/>
+      <include name="com/metavize/mvvm/networking/DynamicDNSSettings.java"/>
       <include name="com/metavize/mvvm/networking/IPNetwork.java"/>
       <include name="com/metavize/mvvm/networking/IPNetworkRule.java"/>
       <include name="com/metavize/mvvm/networking/Interface.java"/>
@@ -295,6 +296,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
 
         <!-- Networking classes -->
         <include name="com/metavize/mvvm/networking/BasicNetworkSettings.class"/>
+        <include name="com/metavize/mvvm/networking/DynamicDNSSettings.class"/>
         <include name="com/metavize/mvvm/networking/IPNetwork.class"/>
         <include name="com/metavize/mvvm/networking/IPNetworkRule.class"/>
         <include name="com/metavize/mvvm/networking/Interface.class"/>

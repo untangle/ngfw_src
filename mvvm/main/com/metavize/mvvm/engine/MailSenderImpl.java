@@ -32,6 +32,7 @@ import com.metavize.mvvm.MailSettings;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.security.AdminSettings;
 import com.metavize.mvvm.security.User;
+import com.metavize.mvvm.util.ConfigFileUtil;
 import com.metavize.mvvm.util.TransactionRunner;
 import com.metavize.mvvm.util.TransactionWork;
 
@@ -230,7 +231,7 @@ class MailSenderImpl implements MailSender
             sb.append("local_hosts=\"localhost;");
             sb.append(hostName);
             sb.append("\"\n");
-            writeFile( sb, MASQMAIL_CONF_FILE );
+            ConfigFileUtil.writeFile( sb, MASQMAIL_CONF_FILE );
 
             
             sb = new StringBuilder();
@@ -264,36 +265,12 @@ class MailSenderImpl implements MailSender
                     sb.append("\"\n");
                 }
             }
-            writeFile( sb, MASQMAIL_DEFAULT_ROUTE_FILE );
-
+            ConfigFileUtil.writeFile( sb, MASQMAIL_DEFAULT_ROUTE_FILE );
+            ConfigFileUtil.protectFile(MASQMAIL_DEFAULT_ROUTE_FILE);
 
             sb = new StringBuilder();
             sb.append(MASQMAIL_CONNECTED_CONTENTS);
-            writeFile( sb, MASQMAIL_CONNECTED_FILE);
-        }
-    }
-
-    /* XXX This should go into a global util class */
-    private void writeFile( StringBuilder sb, String fileName )
-    {
-        BufferedWriter out = null;
-
-        /* Open up the interfaces file */
-        try {
-            String data = sb.toString();
-
-            out = new BufferedWriter(new FileWriter( fileName ));
-            out.write( data, 0, data.length());
-        } catch ( Exception ex ) {
-            /* XXX May need to catch this exception, restore defaults
-             * then try again */
-            logger.error( "Error writing file " + fileName + ":", ex );
-        }
-
-        try {
-            if ( out != null )
-                out.close();
-        } catch ( Exception ex ) {
+            ConfigFileUtil.writeFile( sb, MASQMAIL_CONNECTED_FILE);
         }
     }
 
