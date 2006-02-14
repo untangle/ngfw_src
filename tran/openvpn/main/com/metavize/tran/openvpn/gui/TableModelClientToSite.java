@@ -29,6 +29,9 @@ import javax.swing.table.*;
 
 public class TableModelClientToSite extends MSortedTableModel<Object>{
 
+    private static final String EXCEPTION_CANNOT_CHANGE_NAME = "You cannot change an account name after its key has been distributed.";
+
+
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH_LARGE;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
     private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # */
@@ -84,7 +87,15 @@ public class TableModelClientToSite extends MSortedTableModel<Object>{
 	    rowIndex++;
             newElem = (VpnClient) rowVector.elementAt(7);
 	    newElem.setLive( (Boolean) rowVector.elementAt(2) );
+	    
+	    KeyButtonRunnable keyButtonRunnable = (KeyButtonRunnable) rowVector.elementAt(5);
+	    String rowState = (String) rowVector.elementAt( getStateModelIndex() );
+	    String proposedName = (String) rowVector.elementAt(3);
+	    if( rowState.equals(ROW_CHANGED) && !proposedName.equals(newElem.getName()) ){
+		throw new Exception(EXCEPTION_CANNOT_CHANGE_NAME);
+	    }	    
 	    newElem.setName( (String) rowVector.elementAt(3) );
+
 	    newElem.setGroup( (VpnGroup) ((ComboBoxModel) rowVector.elementAt(4)).getSelectedItem() );
 	    newElem.setDescription( (String) rowVector.elementAt(6) );
 	    elemList.add(newElem);
