@@ -1,16 +1,26 @@
+/*
+ * Copyright (c) 2006 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.ids.options;
 
 import java.util.regex.*;
 
-//import org.apache.log4j.Logger;
 import com.metavize.tran.ids.IDSRuleSignature;
 
 /**
- * This class matches the reference option found in snort based rule signatures.
+ * This class matches the reference option found in snort based rule
+ * signatures.
  *
  * @Author Nick Childers
  */
-
 public class ReferenceOption extends IDSOption {
 
     //private static final Logger logger = Logger.getLogger(ReferenceOption.class);

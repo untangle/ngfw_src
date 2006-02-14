@@ -1,22 +1,25 @@
+/*
+ * Copyright (c) 2006 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.ids;
 
-import java.util.regex.*;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
-import org.apache.log4j.Level;
+import java.util.regex.*;
 
-import java.net.InetAddress;
-import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.argon.SessionEndpoints;
-import com.metavize.mvvm.tran.IPaddr;
-import com.metavize.mvvm.tran.PortRange;
-import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.ParseException;
-import com.metavize.mvvm.MvvmContextFactory;
+import org.apache.log4j.Logger;
 
 public class IDSRuleManager {
 
@@ -25,12 +28,12 @@ public class IDSRuleManager {
     public static final boolean TO_SERVER = true;
     public static final boolean TO_CLIENT = false;
 
-    public static List<IDSVariable> immutableVariables = new ArrayList<IDSVariable>(); 
+    public static List<IDSVariable> immutableVariables = new ArrayList<IDSVariable>();
     static {
         immutableVariables.add(new IDSVariable("$EXTERNAL_NET",IDSStringParser.EXTERNAL_IP,"Magic EXTERNAL_NET token"));
         immutableVariables.add(new IDSVariable("$HOME_NET",IDSStringParser.HOME_IP,"Magic HOME_NET token"));
     }
-    public static List<IDSVariable> defaultVariables = new ArrayList<IDSVariable>(); 
+    public static List<IDSVariable> defaultVariables = new ArrayList<IDSVariable>();
     static {
         defaultVariables.add(new IDSVariable("$HTTP_SERVERS", "$HOME_NET","Addresses of possible local HTTP servers"));
         defaultVariables.add(new IDSVariable("$HTTP_PORTS", "80","Port that HTTP servers run on"));
@@ -196,7 +199,7 @@ public class IDSRuleManager {
             rule.setClassification(signature.getClassification());
             rule.setURL(signature.getURL());
             //logger.debug("create rule, rc: " + rule.getClassification() + ", rurl: " + rule.getURL());
-        } catch(ParseException e) { 
+        } catch(ParseException e) {
             logger.error("Parsing exception for rule: " + text, e);
             return null;
         }
@@ -258,7 +261,7 @@ public class IDSRuleManager {
             }
             for(IDSVariable var : imVarList) {
                 string = string.replaceAll("\\"+var.getVariable(),var.getDefinition());
-            } 
+            }
             for(IDSVariable var : varList) {
                 // Special case == allow regular variables to refer to immutable variables
                 String def = var.getDefinition();
@@ -269,7 +272,7 @@ public class IDSRuleManager {
                     }
                 }
                 string = string.replaceAll("\\"+var.getVariable(),def);
-            } 
+            }
         }
         return string;
     }

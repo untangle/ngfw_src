@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -50,7 +50,7 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
         RESP_BODY_END_STATE
     };
 
-    private enum Mode {
+    protected enum Mode {
         QUEUEING,
         RELEASED,
         BLOCKED
@@ -159,6 +159,16 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
     protected boolean isResponsePersistent()
     {
         return responsePersistent;
+    }
+
+    protected Mode getRequestMode()
+    {
+        return requestMode;
+    }
+
+    protected Mode getResponseMode()
+    {
+        return responseMode;
     }
 
     protected void releaseRequest()
@@ -502,8 +512,9 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
 
                 switch (requestMode) {
                 case QUEUEING:
-                    throw new IllegalStateException
-                        ("queueing request after EndMarker");
+                    logger.error("queueing after EndMarker, release request");
+                    releaseRequest();
+                    /* fall through */
 
                 case RELEASED:
                     doRequestBodyEnd();
@@ -666,7 +677,10 @@ public abstract class HttpStateMachine extends AbstractTokenHandler
 
                 switch (responseMode) {
                 case QUEUEING:
-                    throw new IllegalStateException("queueing after EndMarker");
+                    logger.warn("queueing after EndMarker, release repsonse");
+                    releaseResponse();
+                    /* fall through */
+
                 case RELEASED:
                     responseQueue.add(em);
                     Token[] toks = new Token[responseQueue.size()];

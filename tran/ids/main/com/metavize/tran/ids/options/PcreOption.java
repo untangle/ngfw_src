@@ -1,20 +1,32 @@
+/*
+ * Copyright (c) 2006 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.ids.options;
 
-import java.util.regex.*;
 import java.nio.ByteBuffer;
-import org.apache.log4j.Logger;
+import java.util.regex.*;
+
 import com.metavize.tran.ids.IDSRuleSignature;
 import com.metavize.tran.ids.IDSSessionInfo;
+import org.apache.log4j.Logger;
 
 public class PcreOption extends IDSOption {
 
     private static final Logger logger = Logger.getLogger(PcreOption.class);
-				
+
     private Pattern pcrePattern;
 
     public PcreOption(IDSRuleSignature signature, String params) {
         super(signature, params);
-		
+
         int beginIndex = params.indexOf("/");
         int endIndex = params.lastIndexOf("/");
 
@@ -30,7 +42,7 @@ public class PcreOption extends IDSOption {
                 for (int i = 0; i < options.length(); i++) {
                     char c = options.charAt(i);
                     switch (c) {
-                    case 'i': 
+                    case 'i':
                         flag = flag | Pattern.CASE_INSENSITIVE;
                         break;
                     case 's':
@@ -65,10 +77,10 @@ public class PcreOption extends IDSOption {
     public boolean run(IDSSessionInfo sessionInfo) {
         ByteBuffer eventData = sessionInfo.getEvent().data();
         String data = new String(eventData.array());
-	//	if(pcrePattern == null) {
-	//		System.out.println("pcrePattern is null\n\n"+getSignature());
-	//		return false;
-	//	}
+    //  if(pcrePattern == null) {
+    //      System.out.println("pcrePattern is null\n\n"+getSignature());
+    //      return false;
+    //  }
         return negationFlag ^ pcrePattern.matcher(data).find();
     }
 }

@@ -1,14 +1,25 @@
+/*
+ * Copyright (c) 2006 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.ids;
 
-import java.util.regex.*;
 import java.util.List;
 import java.util.Vector;
+import java.util.regex.*;
 
-import com.metavize.tran.ids.options.*;
 import com.metavize.mvvm.tapi.Protocol;
-import com.metavize.mvvm.tran.firewall.IPMatcher;
-import com.metavize.mvvm.tran.PortRange;
 import com.metavize.mvvm.tran.ParseException;
+import com.metavize.mvvm.tran.PortRange;
+import com.metavize.mvvm.tran.firewall.IPMatcher;
+import com.metavize.tran.ids.options.*;
 
 public class IDSStringParser {
 
@@ -16,30 +27,30 @@ public class IDSStringParser {
     public static final String EXTERNAL_IP = "External"+0xBEEF;
     private static Pattern maskPattern = Pattern.compile("\\d\\d");
     private static Pattern semicolonMask = Pattern.compile("\\;");
-	
+
     private static boolean clientIPFlag;
     private static boolean clientPortFlag;
     private static boolean serverIPFlag;
     private static boolean serverPortFlag;
-	
+
     public static String[] parseRuleSplit(String rule) throws ParseException {
         int first = rule.indexOf("(");
         int last = rule.lastIndexOf(")");
         if(first < 0 || last < 0)
             throw new ParseException("Could not split rule: "+rule);
         String parts[] = { rule.substring(0,first).trim(), rule.substring(first+1,last).trim() };
-		
+
         return parts;
     }
-	
+
     public static IDSRuleSignature parseSignature(String signatureString, int action, IDSRule rule, boolean initializeSettingsTime) throws ParseException {
         IDSRuleSignature returnSignature = new IDSRuleSignature(action, rule);
-			
+
         String replaceChar = ""+0xff42;
         signatureString = signatureString.replaceAll("\\\\;",replaceChar);
         String options[] = signatureString.trim().split(";");
         for(int i = 0; i < options.length; i++) {
-            options[i].trim();	
+            options[i].trim();
             options[i] = options[i].replaceAll(replaceChar,"\\\\;");
             int delim = options[i].indexOf(':');
             if(delim < 0)
@@ -51,49 +62,49 @@ public class IDSStringParser {
             if (returnSignature.remove())
                 // Early exit.  Don't bother with rest of options.
                 break;
-        } 
+        }
         return returnSignature;
-    }	
+    }
 
     // Returns null if the rule is to be removed (like an 'ip' rule for instance)
     public static IDSRuleHeader parseHeader(String header, int action) throws ParseException {
-		
+
         List<IPMatcher> ipMatcher, portMatcher;
         clientIPFlag = clientPortFlag = serverIPFlag = serverPortFlag = false;
-		
+
         /* Header should match: prot sourceIP sourcePort -> destIP destPort */
         String tokens[] = header.split(" ");
         if(tokens.length != 6) {
             throw new ParseException("Not a valid String Header:\n" + header);
         }
-		
+
         /*Objects needed for a IDSRuleHeader constructor*/
         Protocol protocol;
         List<IPMatcher> clientIPList, serverIPList;
         PortRange clientPortRange, serverPortRange;
-        boolean	direction = parseDirection(tokens[3]);
-		
+        boolean direction = parseDirection(tokens[3]);
+
         /*Parse Protocol*/
         protocol = parseProtocol(tokens[0]);
         if (protocol == null)
             return null;
 
         /*Parse server and client IP data - this will throw exceptions*/
-        clientIPFlag	= parseNegation(tokens[1]);
-        tokens[1]		= stripNegation(tokens[1]);
-        clientIPList 	= parseIPToken(tokens[1]);
-		
-        serverIPFlag 	= parseNegation(tokens[4]);
-        tokens[4]		= stripNegation(tokens[4]);
-        serverIPList 	= parseIPToken(tokens[4]);
-		
+        clientIPFlag    = parseNegation(tokens[1]);
+        tokens[1]       = stripNegation(tokens[1]);
+        clientIPList    = parseIPToken(tokens[1]);
+
+        serverIPFlag    = parseNegation(tokens[4]);
+        tokens[4]       = stripNegation(tokens[4]);
+        serverIPList    = parseIPToken(tokens[4]);
+
         /*Parse server and client port data - this will not throw exceptions*/
-        clientPortFlag	= parseNegation(tokens[2]);
-        tokens[2]		= stripNegation(tokens[2]);
+        clientPortFlag  = parseNegation(tokens[2]);
+        tokens[2]       = stripNegation(tokens[2]);
         clientPortRange = parsePortToken(tokens[2]);
-		
-        serverPortFlag 	= parseNegation(tokens[5]);
-        tokens[5]		= stripNegation(tokens[5]);
+
+        serverPortFlag  = parseNegation(tokens[5]);
+        tokens[5]       = stripNegation(tokens[5]);
         serverPortRange = parsePortToken(tokens[5]);
 
         /*So we throw them ourselves*/
@@ -102,7 +113,7 @@ public class IDSStringParser {
         if(serverPortRange == null) {
             throw new ParseException("Invalid destination port: " +tokens[5]);
         }
-		
+
         /*Build and return the rule header*/
         IDSRuleHeader ruleHeader = new IDSRuleHeader(action, direction, protocol, clientIPList, clientPortRange, serverIPList, serverPortRange);
         ruleHeader.setNegationFlags(clientIPFlag, clientPortFlag, serverIPFlag, serverPortFlag);
@@ -152,7 +163,7 @@ public class IDSStringParser {
     }
 
     private static List<IPMatcher> parseIPToken(String ipString) throws ParseException {
-		
+
         List<IPMatcher> ipList = new Vector<IPMatcher>();
         if(ipString.equalsIgnoreCase("any"))
             ipList.add(IPMatcher.MATCHER_ALL);
@@ -163,14 +174,14 @@ public class IDSStringParser {
         else {
             ipString = ipString.replaceAll("\\[","");
             ipString = ipString.replaceAll("\\]","");
-			
-            String allAddrs[] = ipString.split(",");			
+
+            String allAddrs[] = ipString.split(",");
             for(int i=0; i < allAddrs.length; i++)
                 ipList.add(IPMatcher.parse(validateMask(allAddrs[i])));
         }
         return ipList;
     }
-	
+
     private static PortRange parsePortToken(String portString) {
         if(portString.equalsIgnoreCase("any"))
             return PortRange.ANY;
@@ -214,7 +225,7 @@ public class IDSStringParser {
             return null;
         }
     }
-		
+
     /**
      * This function converts an ip mask in the form of x.x.x.x/24
      * to an ip type mask, eg x.x.x.x/255.255.255.0 (24 ones followed by 8 zeros)
@@ -229,7 +240,7 @@ public class IDSStringParser {
             int maskNum = Integer.parseInt(mask[1]);
             if(maskNum > 32 || maskNum < 0)
                 validateMask(mask[0]+"/32");
-			
+
             long tmp = 0xFFFFFFFF;
             tmp = tmp << (32-maskNum);
             return mask[0]+"/"+longToIPv4String(tmp);
@@ -239,12 +250,12 @@ public class IDSStringParser {
 
     private static String longToIPv4String(long addr) {
         String addrString = "";
-		
+
         for ( int c = 4 ; --c >= 0  ; ) {
             addrString += (int)((addr >> ( 8 * c )) & 0xFF);
             if ( c > 0 )
                 addrString += ".";
-        }	
+        }
         return addrString;
     }
 }

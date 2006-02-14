@@ -187,6 +187,16 @@ class VirusHttpHandler extends HttpStateMachine
                 logger.warn("could not close channel", exn);
             }
             scanFile();
+            if (getResponseMode() == Mode.QUEUEING) {
+                logger.error("still queueing after scanFile, buffering: "
+                            + buffering);
+                releaseResponse();
+            }
+        } else {
+            if (getResponseMode() == Mode.QUEUEING) {
+                logger.error("still queueing, but not scanned");
+                releaseResponse();
+            }
         }
     }
 

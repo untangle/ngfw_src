@@ -1,31 +1,41 @@
+/*
+ * Copyright (c) 2006 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.ids.options;
 
 import java.util.regex.*;
-import java.nio.ByteBuffer;
-import org.apache.log4j.Logger;
 
-import com.metavize.tran.ids.IDSRuleSignature;
-import com.metavize.mvvm.tran.ParseException;
 import com.metavize.mvvm.tapi.event.*;
+import com.metavize.mvvm.tran.ParseException;
+import com.metavize.tran.ids.IDSRuleSignature;
+import org.apache.log4j.Logger;
 
 public class OffsetOption extends IDSOption {
 
     private static final Logger logger = Logger.getLogger(OffsetOption.class);
-				
+
     public OffsetOption(IDSRuleSignature signature, String params) throws ParseException {
         super(signature, params);
         ContentOption option = (ContentOption) signature.getOption("ContentOption",this);
         if(option == null) {
             logger.warn("Unable to find content option to set offset for sig: " + signature);
-            return;	
+            return;
         }
-		
+
         int offset = 0;
         try {
             offset = Integer.parseInt(params);
-        } catch (Exception e) { 
+        } catch (Exception e) {
             throw new ParseException("Not a valid Offset argument: " + params);
         }
-        option.setOffset(offset);	
+        option.setOffset(offset);
     }
 }

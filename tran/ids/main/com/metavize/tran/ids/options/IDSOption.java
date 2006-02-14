@@ -1,23 +1,32 @@
+/*
+ * Copyright (c) 2006 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.ids.options;
 
 import java.lang.reflect.*;
 import java.util.regex.PatternSyntaxException;
-import org.apache.log4j.Logger;
-import org.apache.log4j.Level;
 
 import com.metavize.mvvm.tapi.event.*;
 import com.metavize.tran.ids.IDSRuleSignature;
 import com.metavize.tran.ids.IDSSessionInfo;
-import com.metavize.mvvm.tran.ParseException;
+import org.apache.log4j.Logger;
 
 public abstract class IDSOption {
     protected IDSRuleSignature signature;
     protected boolean negationFlag = false;
-	
+
     private static final Logger log = Logger.getLogger(IDSOption.class);
-				
-    protected IDSOption(IDSRuleSignature signature, String params) { 
-		
+
+    protected IDSOption(IDSRuleSignature signature, String params) {
+
         this.signature = signature;
     }
 
@@ -33,14 +42,14 @@ public abstract class IDSOption {
 
     public static IDSOption buildOption(IDSRuleSignature signature, String optionName, String params,
                                         boolean initializeSettingsTime) {
-		
+
         boolean flag = false;
         if(params.charAt(0) == '!')  {
             flag = true;
             params = params.replaceFirst("!","").trim();
         }
 
-        if(params.charAt(0) == '\"' && params.charAt(params.length()-1) == '\"') 
+        if(params.charAt(0) == '\"' && params.charAt(params.length()-1) == '\"')
             params = params.substring(1,params.length()-1);
 
         IDSOption option = null;
@@ -49,16 +58,16 @@ public abstract class IDSOption {
         Object[] threeOptionArgs = new Object[] { signature, params, initializeSettingsTime };
         Class[] twoArgsClass = new Class[] { IDSRuleSignature.class, String.class };
         Object[] twoOptionArgs = new Object[] { signature, params };
-        Constructor optionConstructor; 
-		
+        Constructor optionConstructor;
+
         optionName = optionName.toLowerCase();
         char ch = optionName.charAt(0);
         try {
             optionName = optionName.replaceFirst(""+ch,""+(char)(ch - 'a' + 'A'));
-        } catch(PatternSyntaxException e) { 
+        } catch(PatternSyntaxException e) {
             log.error("Bad option name", e);
         }
-		
+
         try {
             // First look for a three arg one, then the two arg one (since most don't care about
             // initializeSettingsTime).
@@ -80,7 +89,7 @@ public abstract class IDSOption {
         }
         return option;
     }
-		
+
     private static Object createObject(Constructor constructor, Object[] arguments) {
         Object object = null;
         try {

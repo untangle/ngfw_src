@@ -1,12 +1,23 @@
+/*
+ * Copyright (c) 2006 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.ids;
 
-import org.apache.log4j.Logger;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.http.HttpStateMachine;
 import com.metavize.tran.http.RequestLineToken;
 import com.metavize.tran.http.StatusLine;
 import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.Header;
+import org.apache.log4j.Logger;
 
 class IDSHttpHandler extends HttpStateMachine {
 

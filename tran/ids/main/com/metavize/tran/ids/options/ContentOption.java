@@ -1,18 +1,27 @@
+/*
+ * Copyright (c) 2006 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.ids.options;
 
-import java.util.regex.*;
-//import java.util.Vector;
-
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.BMPattern;
-import org.apache.log4j.Logger;
 import java.nio.ByteBuffer;
 import java.text.CharacterIterator;
-import com.metavize.tran.util.AsciiCharBuffer;
-import com.metavize.tran.util.AsciiCharBufferCharacterIterator;
+import java.util.regex.*;
+
 import com.metavize.mvvm.tapi.event.*;
-import com.metavize.tran.ids.IDSDetectionEngine;
 import com.metavize.tran.ids.IDSRuleSignature;
 import com.metavize.tran.ids.IDSSessionInfo;
+import com.metavize.tran.util.AsciiCharBuffer;
+import com.metavize.tran.util.AsciiCharBufferCharacterIterator;
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.BMPattern;
+import org.apache.log4j.Logger;
 
 /**
  * This class matches the content option found in snort based rule signatures.
@@ -27,7 +36,7 @@ public class ContentOption extends IDSOption {
     private static final Logger logger = Logger.getLogger(ContentOption.class);
 
     private ContentOption previousContentOption = null;
-	
+
     //private int indexOfMatch = 0;
     private int start = 0;
     private int end = 0;
@@ -35,11 +44,11 @@ public class ContentOption extends IDSOption {
     private int within = 0;
 
     private BMPattern contentPattern;
-	
-    private byte[] bytePattern;	
+
+    private byte[] bytePattern;
     private String stringPattern;
     private ByteBuffer binaryBuffer = ByteBuffer.allocate(2048);
-	
+
     private boolean hasBinaryData = false;
     private boolean withinFlag = false;
     private boolean distanceFlag = false;
@@ -56,49 +65,49 @@ public class ContentOption extends IDSOption {
             binaryBuffer.flip();
             binaryBuffer.get(bytePattern);
             stringPattern = new String(bytePattern);
-        }	
+        }
         contentPattern = new BMPattern(stringPattern, false);
     }
-	
+
     //public int getIndexOfLastMatch() {
       //  return indexOfMatch;
     //}
-	
+
     public void setNoCase() {
         contentPattern = new BMPattern(stringPattern, true);
     }
 
     public void setOffset(int val) {
-		start = val;
+        start = val;
         //setStartAndEndPoints(val,end);
     }
 
     public void setDepth(int val) {
         end = start+val;
         if(start == end)
-			end = 0;
+            end = 0;
     }
 
     public void setDistance(int val) {
         previousContentOption = getPreviousContentOption();
-		
+
         if(previousContentOption == null) {
             setOffset(val);
             return;
         }
-		
+
         distance = val;
         distanceFlag = true;
     }
 
     public void setWithin(int val) {
         previousContentOption = getPreviousContentOption();
-		
+
         if(previousContentOption == null) {
             setDepth(val+stringPattern.length());
             return;
         }
-		
+
         within = val+stringPattern.length();
         withinFlag = true;
     }
@@ -109,31 +118,31 @@ public class ContentOption extends IDSOption {
             return (ContentOption) option;
         return null; //error checking OMGWTFBBQ
     }
-						 
-	
+
+
     private void setStartAndEndPoints(int offset, int depth, IDSSessionInfo sessionInfo) {
         sessionInfo.start = offset;
         sessionInfo.end = offset+depth;
         if(sessionInfo.start == sessionInfo.end)
             sessionInfo.end = 0;
     }
-	
+
     public boolean runnable() {
         return true;
     }
-	
+
     public boolean run(IDSSessionInfo sessionInfo) {
         ByteBuffer eventData = sessionInfo.getEvent().data();
         AsciiCharBuffer data = AsciiCharBuffer.wrap(eventData);
         CharacterIterator iter = new AsciiCharBufferCharacterIterator(data);
-		
+
         sessionInfo.start = start;
         sessionInfo.end = end;
 
         if(distanceFlag)
             sessionInfo.start = sessionInfo.indexOfLastMatch + distance;
             //start = previousContentOption.getIndexOfLastMatch()+distance;
-		
+
         if(withinFlag) {
             if(distanceFlag)
                 setStartAndEndPoints(sessionInfo.start,within,sessionInfo);
@@ -141,10 +150,10 @@ public class ContentOption extends IDSOption {
                 setStartAndEndPoints(sessionInfo.indexOfLastMatch, within, sessionInfo);
                 // setStartAndEndPoints(previousContentOption.getIndexOfLastMatch(),within,sessionInfo);
         }
-		
+
         if(sessionInfo.start > data.length() || sessionInfo.start < 0)
             return false;
-		
+
         if(sessionInfo.end <= 0 || sessionInfo.end > data.length())
             sessionInfo.end = data.length();
 
@@ -163,12 +172,12 @@ public class ContentOption extends IDSOption {
 
     /**
      * This must parse strings in the form of "|byte byte byte| string | byte | string" etc...
-     * This class will recursivly call itself to iterate over all the | byte | sections, calling 
+     * This class will recursivly call itself to iterate over all the | byte | sections, calling
      * a sub function to put those bytes in the objects binaryBuffer. It will parse out the
-     * string sections using a second sub function. That second sub function will also put all 
+     * string sections using a second sub function. That second sub function will also put all
      * the bytes of the string onto the byte buffer.
      */
-	
+
     private void buildBytePattern(String params, int index) {
         if(index == 0) {
             index = params.indexOf('|', 1);
@@ -177,7 +186,7 @@ public class ContentOption extends IDSOption {
             parseBinaryPattern(bytes);
             String substring = params.substring(index+1);
             index = substring.indexOf('|') ;
-			
+
             if(substring.length() > 0)
                 buildBytePattern(substring, index);
         }
@@ -187,10 +196,10 @@ public class ContentOption extends IDSOption {
             parseASCIIPattern(params.substring(0,index));
             String substring = params.substring(index);
             index = 0;
-			
-            if(substring.length() > 0) 
+
+            if(substring.length() > 0)
                 buildBytePattern(substring, index);
-        }	
+        }
     }
 
     private void parseASCIIPattern(String params) {

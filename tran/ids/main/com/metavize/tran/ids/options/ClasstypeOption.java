@@ -1,14 +1,24 @@
+/*
+ * Copyright (c) 2006 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.ids.options;
 
-import org.apache.log4j.Logger;
-
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.tapi.event.*;
 import com.metavize.tran.ids.IDSDetectionEngine;
 import com.metavize.tran.ids.IDSRule;
 import com.metavize.tran.ids.IDSRuleSignature;
 import com.metavize.tran.ids.IDSTransformImpl;
 import com.metavize.tran.ids.RuleClassification;
-import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.tapi.event.*;
+import org.apache.log4j.Logger;
 
 public class ClasstypeOption extends IDSOption {
     private static final int HIGH_PRIORITY = 1;

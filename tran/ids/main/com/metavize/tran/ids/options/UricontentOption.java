@@ -1,9 +1,21 @@
+/*
+ * Copyright (c) 2006 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.ids.options;
 
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.BMPattern;
 import java.util.regex.*;
+
 import com.metavize.tran.ids.IDSRuleSignature;
 import com.metavize.tran.ids.IDSSessionInfo;
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.BMPattern;
 
 public class UricontentOption extends IDSOption {
 

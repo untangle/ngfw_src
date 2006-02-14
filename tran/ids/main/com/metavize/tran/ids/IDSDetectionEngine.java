@@ -1,23 +1,27 @@
+/*
+ * Copyright (c) 2006 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.ids;
 
 import java.nio.*;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
-import org.apache.log4j.Logger;
-import org.apache.log4j.Level;
 
-import com.metavize.mvvm.argon.SessionEndpoints;
 import com.metavize.mvvm.tapi.*;
 import com.metavize.mvvm.tapi.event.*;
-import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.ParseException;
-import com.metavize.mvvm.tran.PortRange;
 import com.metavize.mvvm.tran.Transform;
+import org.apache.log4j.Logger;
 
 public class IDSDetectionEngine {
 
@@ -28,8 +32,8 @@ public class IDSDetectionEngine {
 
     private static final int SCAN_COUNTER  = Transform.GENERIC_0_COUNTER;
 
-    private int 	        maxChunks 	= 8;
-    private IDSSettings 	settings 	= null;
+    private int             maxChunks   = 8;
+    private IDSSettings     settings    = null;
     private Map<String,RuleClassification> classifications = null;
 
     private IDSRuleManager   manager;
@@ -39,14 +43,14 @@ public class IDSDetectionEngine {
     // we have to access it from multiple pipes (octet & http).  So we keep the registry here.
     private Map<Integer, IDSSessionInfo> sessionInfoMap = new ConcurrentHashMap<Integer, IDSSessionInfo>();
 
-    Map<Integer,List<IDSRuleHeader>> 	portS2CMap      = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
-    Map<Integer,List<IDSRuleHeader>> 	portC2SMap 	= new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
-	
+    Map<Integer,List<IDSRuleHeader>>    portS2CMap      = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
+    Map<Integer,List<IDSRuleHeader>>    portC2SMap  = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
+
     private static final Logger log = Logger.getLogger(IDSDetectionEngine.class);
-	
+
     /*private static IDSDetectionEngine instance = new IDSDetectionEngine();
       public  static IDSDetectionEngine instance() {
-      if(instance == null) 
+      if(instance == null)
       instance = new IDSDetectionEngine();
       return instance;
       }*/
@@ -84,7 +88,7 @@ public class IDSDetectionEngine {
     public void setSettings(IDSSettings settings) {
         this.settings = settings;
     }
-	
+
     //fix this - settigns?
     public void setMaxChunks(int max) {
         maxChunks = max;
@@ -101,7 +105,7 @@ public class IDSDetectionEngine {
     public void onReconfigure() {
         portC2SMap = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
         portS2CMap = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
-		
+
         manager.onReconfigure();
         log.debug("Done with reconfigure");
     }
@@ -120,15 +124,15 @@ public class IDSDetectionEngine {
         } catch (Exception e) {
             log.error("Some sort of really bad exception: ", e);
             log.error("For rule: " + rule);
-        }	
+        }
     }
-	
+
     //Deprecating?
     public boolean addRule(IDSRule rule) {
         try {
             return (manager.addRule(rule));
-        } catch (ParseException e) { 
-            log.warn("Could not parse rule: ", e); 
+        } catch (ParseException e) {
+            log.warn("Could not parse rule: ", e);
         } catch (Exception e) {
             log.error("Some sort of really bad exception: ", e);
             log.error("For rule: " + rule);
@@ -137,11 +141,11 @@ public class IDSDetectionEngine {
     }
 
     public void processNewSessionRequest(IPNewSessionRequest request, Protocol protocol) {
-		
+
         //Get Mapped list
         List<IDSRuleHeader> c2sList = portC2SMap.get(request.serverPort());
         List<IDSRuleHeader> s2cList = portS2CMap.get(request.serverPort());
-		
+
         if(c2sList == null) {
             c2sList = manager.matchingPortsList(request.serverPort(), IDSRuleManager.TO_SERVER);
             portC2SMap.put(request.serverPort(),c2sList);
@@ -149,20 +153,20 @@ public class IDSDetectionEngine {
             if (log.isDebugEnabled())
                 log.debug("c2sHeader list Size: "+c2sList.size() + " For port: "+request.serverPort());
         }
-		
+
         if(s2cList == null) {
             s2cList = manager.matchingPortsList(request.serverPort(), IDSRuleManager.TO_CLIENT);
             portS2CMap.put(request.serverPort(),s2cList);
-			
+
             if (log.isDebugEnabled())
                 log.debug("s2cHeader list Size: "+s2cList.size() + " For port: "+request.serverPort());
         }
-		
+
         //Check matches
         List<IDSRuleSignature> c2sSignatures = manager.matchesHeader(request, request.isInbound(), IDSRuleManager.TO_SERVER, c2sList);
 
         List<IDSRuleSignature> s2cSignatures = manager.matchesHeader(request, request.isInbound(), IDSRuleManager.TO_CLIENT, s2cList);
-			
+
         if (log.isDebugEnabled())
             log.debug("s2cSignature list size: " + s2cSignatures.size() + ", c2sSignature list size: " +
                       c2sSignatures.size());
@@ -198,7 +202,7 @@ public class IDSDetectionEngine {
     public IDSRuleManager getRulesForTesting() {
         return manager;
     }
-	
+
     public void dumpRules()
     {
         manager.dumpRules();
@@ -208,17 +212,17 @@ public class IDSDetectionEngine {
     public void handleChunk(IPDataEvent event, IPSession session, boolean isFromServer) {
         try {
             long startTime = System.currentTimeMillis();
-		
+
             SessionStats stats = session.stats();
             if(stats.s2tChunks() >= maxChunks || stats.c2tChunks() >= maxChunks)
                 // Takes effect after this packet/chunk
                 session.release();
-		
+
             IDSSessionInfo info = sessionInfoMap.get(session.id());
-		
+
             info.setEvent(event);
             info.setFlow(isFromServer);
-		
+
             updateUICount(SCAN_COUNTER);
 
             boolean result;
