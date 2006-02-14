@@ -423,7 +423,7 @@ public class IPMaddr implements Serializable, Comparable
 	}
     }
 
-    /** Convert an IPaddr to a long */
+    /** Convert an IPMaddr to a long */
     private long toLong( )
     {
         long val = 0;

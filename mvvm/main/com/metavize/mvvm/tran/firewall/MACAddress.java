@@ -19,7 +19,7 @@ import java.net.InetAddress;
 
 import com.metavize.mvvm.tran.ParseException;
 
-public final class MACAddress implements Serializable
+public final class MACAddress implements Serializable, Comparable
 {
     static final int MACADDRSZ = 6;
     static final String SAMPLE = "01:23:45:67:89:ab";
@@ -78,5 +78,9 @@ public final class MACAddress implements Serializable
         }
 
         return false;
+    }
+
+    public int compareTo(Object o){
+	return mac.compareToIgnoreCase(o.toString());
     }
 }
