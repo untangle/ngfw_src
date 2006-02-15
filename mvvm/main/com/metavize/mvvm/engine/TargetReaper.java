@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -14,8 +14,8 @@ package com.metavize.mvvm.engine;
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
@@ -25,7 +25,7 @@ class TargetReaper implements Runnable
 
     private final ReferenceQueue referenceQueue = new ReferenceQueue();
     private final Map<Reference, Runnable> actions
-        = new ConcurrentHashMap<Reference, Runnable>();
+        = new HashMap<Reference, Runnable>();
 
     private volatile Thread thread;
 
@@ -43,7 +43,10 @@ class TargetReaper implements Runnable
                 continue;
             }
 
-            Runnable r = actions.get(ref);
+            Runnable r;
+            synchronized (actions) {
+                r = actions.remove(ref);
+            }
             if (null == r) {
                 logger.warn("no action for reference: " + ref);
             } else {
@@ -70,7 +73,9 @@ class TargetReaper implements Runnable
     WeakReference makeReference(Object target, Runnable runnable)
     {
         WeakReference targetRef = new WeakReference(target, referenceQueue);
-        actions.put(targetRef, runnable);
+        synchronized (actions) {
+            actions.put(targetRef, runnable);
+        }
         return targetRef;
     }
 }
