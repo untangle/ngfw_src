@@ -18,7 +18,6 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -197,7 +196,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     // AbstractTransform methods ----------------------------------------------
 
     @Override
-        protected PipeSpec[] getPipeSpecs()
+    protected PipeSpec[] getPipeSpecs()
     {
         return pipeSpecs;
     }
@@ -205,9 +204,6 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     protected void initializeSettings()
     {
         SpywareSettings settings = new SpywareSettings(getTid());
-        settings.setActiveXRules(new ArrayList());
-        settings.setCookieRules(new ArrayList());
-        settings.setSubnetRules(new ArrayList());
 
         updateActiveX(settings);
         updateCookie(settings);
@@ -338,6 +334,10 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         int ver = settings.getActiveXVersion();
 
         if (0 > ver || null == settings.getActiveXRules()) {
+            List l = settings.getActiveXRules();
+            if (null != l) {
+                l.clear();
+            }
             Set<String> add = initList(ACTIVEX_LIST);
             Set<String> remove = Collections.emptySet();
             updateActiveX(settings, add, remove);
@@ -364,12 +364,19 @@ public class SpywareImpl extends AbstractTransform implements Spyware
             StringRule sr = i.next();
             if (remove.contains(sr.getString())) {
                 i.remove();
+                if (logger.isDebugEnabled()) {
+                    logger.debug("removing activex: " + sr.getString());
+                }
             } else {
                 remove.remove(sr);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("not removing activex: " + sr.getString());
+                }
             }
         }
 
         for (String s : add) {
+            logger.debug("adding activex: " + s);
             rules.add(new StringRule(s));
         }
     }
@@ -379,6 +386,10 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         int ver = settings.getCookieVersion();
 
         if (0 > ver || null == settings.getCookieRules()) {
+            List l = settings.getCookieRules();
+            if (null != l) {
+                l.clear();
+            }
             Set<String> add = initList(COOKIE_LIST);
             Set<String> remove = Collections.emptySet();
             updateCookie(settings, add, remove);
@@ -405,13 +416,22 @@ public class SpywareImpl extends AbstractTransform implements Spyware
             StringRule sr = i.next();
             if (remove.contains(sr.getString())) {
                 i.remove();
+                if (logger.isDebugEnabled()) {
+                    logger.debug("removing cookie: " + sr.getString());
+                }
             } else {
                 remove.remove(sr);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("not cookie: " + sr.getString());
+                }
             }
         }
 
         for (String s : add) {
             rules.add(new StringRule(s));
+            if (logger.isDebugEnabled()) {
+                logger.debug("added cookie: " + s);
+            }
         }
     }
 
@@ -420,6 +440,11 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         int ver = settings.getSubnetVersion();
 
         if (0 > ver || null == settings.getSubnetRules()) {
+            List l = settings.getSubnetRules();
+            if (null != l) {
+                l.clear();
+            }
+
             Set<String> add = initList(SUBNET_LIST);
             Set<String> remove = Collections.emptySet();
             updateSubnet(settings, add, remove);
@@ -455,8 +480,14 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
             if (remove.contains(imr)) {
                 i.remove();
+                if (logger.isDebugEnabled()) {
+                    logger.debug("removed subnet: " + imr.getIpMaddr());
+                }
             } else {
                 remove.remove(imr);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("not removed subnet: " + imr.getIpMaddr());
+                }
             }
         }
 
@@ -464,6 +495,9 @@ public class SpywareImpl extends AbstractTransform implements Spyware
             IPMaddrRule imr = makeIPMAddrRule(s);
             if (null != imr) {
                 rules.add(imr);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("added subnet: " + s);
+                }
             }
         }
     }
