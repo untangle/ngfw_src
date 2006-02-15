@@ -52,7 +52,7 @@ public class UpgradeJDialog extends MConfigJDialog {
 
     public void generateGui(){
         // PROCEDURE //
-	UpgradeProcessJPanel upgradeProcessJPanel = new UpgradeProcessJPanel(this);
+	UpgradeProcessJPanel upgradeProcessJPanel = new UpgradeProcessJPanel();
 	addTab(NAME_UPGRADE, null, upgradeProcessJPanel);
 	addRefreshable(NAME_UPGRADE, upgradeProcessJPanel);
 

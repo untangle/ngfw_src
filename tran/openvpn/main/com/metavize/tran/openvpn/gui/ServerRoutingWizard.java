@@ -55,12 +55,12 @@ public class ServerRoutingWizard extends MWizardJDialog {
     private void init(MTransformControlsJPanel mTransformControlsJPanel, VpnTransform vpnTransform){
 	this.mTransformControlsJPanel = mTransformControlsJPanel;
         setTitle("Metavize OpenVPN Server Routing Setup Wizard");
-        addWizardPageJPanel(new ServerRoutingWizardWelcomeJPanel(vpnTransform), "1. Welcome", false, true);
-        addWizardPageJPanel(new ServerRoutingWizardCertificateJPanel(vpnTransform), "2. Generate Certificate", false, true);
-        addWizardPageJPanel(new ServerRoutingWizardGroupsJPanel(vpnTransform), "3. Add Address Pools", false, true);
-        addWizardPageJPanel(new ServerRoutingWizardExportsJPanel(vpnTransform), "4. Add Exports", false, true);
-        addWizardPageJPanel(new ServerRoutingWizardClientsJPanel(vpnTransform), "5. Add VPN Clients", false, true);
-        addWizardPageJPanel(new ServerRoutingWizardSitesJPanel(vpnTransform), "6. Add VPN Sites", false, true);
+        addWizardPageJPanel(new ServerRoutingWizardWelcomeJPanel(vpnTransform),         "1. Welcome", false, true);
+        addWizardPageJPanel(new ServerRoutingWizardCertificateJPanel(vpnTransform),     "2. Generate Certificate", false, true);
+        addWizardPageJPanel(new ServerRoutingWizardGroupsJPanel(vpnTransform),          "3. Add Address Pools", false, true);
+        addWizardPageJPanel(new ServerRoutingWizardExportsJPanel(vpnTransform),         "4. Add Exports", false, true);
+        addWizardPageJPanel(new ServerRoutingWizardClientsJPanel(vpnTransform),         "5. Add VPN Clients", false, true);
+        addWizardPageJPanel(new ServerRoutingWizardSitesJPanel(vpnTransform),           "6. Add VPN Sites", false, true);
         addWizardPageJPanel(new ServerRoutingWizardCongratulationsJPanel(vpnTransform), "7. Congratulations", false, true);
     }
 

@@ -72,8 +72,16 @@ public class ServerRoutingWizardExportsJPanel extends MWizardPageJPanel {
             throw exception;
 	        
         if( !validateOnly ){
-	    ExportList exportList = new ExportList(elemList);
-	    vpnTransform.setExportedAddressList(exportList);
+	    try{
+		ServerRoutingWizard.getInfiniteProgressJComponent().startLater("Adding Exports...");
+		ExportList exportList = new ExportList(elemList);
+		vpnTransform.setExportedAddressList(exportList);
+		ServerRoutingWizard.getInfiniteProgressJComponent().stopLater(1500l);
+	    }
+	    catch(Exception e){
+		ServerRoutingWizard.getInfiniteProgressJComponent().stopLater(-1l);
+		throw e;
+	    }
         }
     }
     

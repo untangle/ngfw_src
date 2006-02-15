@@ -29,7 +29,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
     private static final String EXCEPTION_DHCP_GATEWAY = "You have manually specified an invalid \"Default Route\".  Please correct this before proceeding.";
     private static final String EXCEPTION_DHCP_DNS_1 = "You have manually specified an invalid \"Primary DNS\".  Please correct this before proceeding.";
     private static final String EXCEPTION_DHCP_DNS_2 = "You have manually specified an invalid \"Secondary DNS\".  Please correct this before proceeding.";
-	private static final String EXCEPTION_HOSTNAME = "You must specify a dotted hostname for your EdgeGuard.  Please correct this before proceeding.";
+    private static final String EXCEPTION_HOSTNAME = "You must specify a dotted hostname for your EdgeGuard.  Please correct this before proceeding.";
     private static final String EMPTY_DNS2 = "";
 
     public InitialSetupNetworkJPanel() {
@@ -37,9 +37,9 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
         setDhcpEnabledDependency(dhcpEnabledRadioButton.isSelected());
     }
 
-	public void initialFocus(){
-		hostnameJTextField.requestFocus();
-	}
+    public void initialFocus(){
+	hostnameJTextField.requestFocus();
+    }
 	
     boolean isDhcpEnabled;
     String hostString;
@@ -52,7 +52,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
     IPaddr dns1;
     String dns2String;
     IPaddr dns2;
-	String hostnameString;
+    String hostnameString;
     Exception exception;
     
     MProgressJDialog mProgressJDialog;
@@ -66,7 +66,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
 	    dhcpRouteJTextField.setBackground( Color.WHITE );
 	    dnsPrimaryJTextField.setBackground( Color.WHITE );
 	    dnsSecondaryJTextField.setBackground( Color.WHITE );
-		hostnameJTextField.setBackground( Color.WHITE );
+	    hostnameJTextField.setBackground( Color.WHITE );
 
 	    isDhcpEnabled = dhcpEnabledRadioButton.isSelected();
 	    hostString = dhcpIPaddrJTextField.getText();
@@ -74,7 +74,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
 	    gatewayString = dhcpRouteJTextField.getText();
 	    dns1String = dnsPrimaryJTextField.getText();
 	    dns2String = dnsSecondaryJTextField.getText();
-		hostnameString = hostnameJTextField.getText();
+	    hostnameString = hostnameJTextField.getText();
 
 	    exception = null;
 	    
@@ -162,20 +162,8 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
 
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
-            // BRING UP SAVING DIALOG
-            SwingUtilities.invokeLater( new Runnable(){ public void run(){
-                mProgressJDialog = new MProgressJDialog("Saving Network Settings",
-                                                                        "<html><center>Please wait a moment while your network settings are configured.<br>This may take up to one minute.</center></html>",
-                                                                        (Dialog)InitialSetupNetworkJPanel.this.getTopLevelAncestor(), false);
-                jProgressBar = mProgressJDialog.getJProgressBar();
-                jProgressBar.setValue(0);
-                jProgressBar.setString("Saving...");
-                jProgressBar.setIndeterminate(true);
-                mProgressJDialog.setVisible(true);
-            }});
-            
+	    InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving Network Settings... (This may take up to one minute)");
             try{
-                // SAVE SETTINGS
                 NetworkingConfiguration networkingConfiguration = Util.getNetworkingManager().get();
                 networkingConfiguration.isDhcpEnabled( isDhcpEnabled );
                 if( !isDhcpEnabled ){
@@ -185,24 +173,13 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                     networkingConfiguration.dns1( dns1 );
                     networkingConfiguration.dns2( dns2 );
                 }
-				networkingConfiguration.hostname( hostnameString );
+		networkingConfiguration.hostname( hostnameString );
+		InitialSetupWizard.setSharedData( hostnameString );
                 Util.getNetworkingManager().set(networkingConfiguration);
-                
-                // SHOW RESULTS AND REMOVE SAVING DIALOG
-                SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-                    jProgressBar.setValue(100);
-                    jProgressBar.setString("Finished Saving");
-                    jProgressBar.setIndeterminate(false);
-                }});
-                try{Thread.currentThread().sleep(2000);} catch(Exception e){e.printStackTrace();}
-                SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-                    mProgressJDialog.setVisible(false);
-                }});
+		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);
             }
             catch(Exception e){
-                SwingUtilities.invokeLater( new Runnable(){ public void run(){
-                    mProgressJDialog.setVisible(false);
-                }});
+		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(-1l);
                 throw e;
             }
         }

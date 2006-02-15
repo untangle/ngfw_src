@@ -35,15 +35,13 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
     
     public InitialSetupEmailJPanel() {
         initComponents();
-		portJSpinner.setModel(new SpinnerNumberModel(25,0,65535,1));
+	portJSpinner.setModel(new SpinnerNumberModel(25,0,65535,1));
     }
     
-    public void initialFocus(){
-			
+    public void initialFocus(){			
 	hostJTextField.requestFocus();
-	NetworkingConfiguration networkingConfiguration = Util.getNetworkingManager().get();
-        String hostname = networkingConfiguration.hostname();
-		addressJTextField.setText("edgeguard@" + hostname); // XXX this should be directly linked from the actual default value
+        String hostname = (String) InitialSetupWizard.getSharedData();
+	addressJTextField.setText("edgeguard@" + hostname); // XXX this should be directly linked from the actual default value
     }
     
     String host;
@@ -94,18 +92,24 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
 
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
-            if( host.length() > 0){
-                MailSettings mailSettings = Util.getAdminManager().getMailSettings();
-
-                mailSettings.setSmtpHost( host );
-                mailSettings.setSmtpPort( port );
-                mailSettings.setAuthUser( login );
-                mailSettings.setAuthPass( password );
-                if( address.length() > 0 )
-                    mailSettings.setFromAddress( address );
-
-                Util.getAdminManager().setMailSettings( mailSettings );
+	    try{
+		if( host.length() > 0){
+		    InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving Email Settings...");
+		    MailSettings mailSettings = Util.getAdminManager().getMailSettings();
+		    mailSettings.setSmtpHost( host );
+		    mailSettings.setSmtpPort( port );
+		    mailSettings.setAuthUser( login );
+		    mailSettings.setAuthPass( password );
+		    if( address.length() > 0 )
+			mailSettings.setFromAddress( address );
+		    Util.getAdminManager().setMailSettings( mailSettings );
+		    InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);
+		}
             }
+	    catch(Exception e){
+		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(-1l);
+		throw e;
+	    }
         }
 
     }

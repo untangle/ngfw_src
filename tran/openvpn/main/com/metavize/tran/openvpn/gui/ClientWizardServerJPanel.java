@@ -121,19 +121,7 @@ public class ClientWizardServerJPanel extends MWizardPageJPanel {
         
         
         if( !validateOnly ){
-
-	    // BRING UP DOWNLOADING DIALOG
-	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		mProgressJDialog = new MProgressJDialog("Downloading Configuration",
-							"<html><center>Please wait a moment while your configuration is downloaded." + 
-							"<br>This may take up to one minute.</center></html>",
-							(Dialog)ClientWizardServerJPanel.this.getTopLevelAncestor(), false);
-		jProgressBar = mProgressJDialog.getJProgressBar();
-		jProgressBar.setValue(0);
-		jProgressBar.setString("Downloading...");
-		jProgressBar.setIndeterminate(true);
-		mProgressJDialog.setVisible(true);
-	    }});
+	    ClientWizard.getInfiniteProgressJComponent().startLater("Downloading Configuration... (This may take up to one minute)");
 	    try{
 		// DOWNLOAD THE STUFFS
 		if( useServer )
@@ -142,21 +130,12 @@ public class ClientWizardServerJPanel extends MWizardPageJPanel {
 		    vpnTransform.downloadConfigUsb( selection );
 		
 		// SHOW RESULTS AND REMOVE DOWNLOADING DIALOG
-		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-		    jProgressBar.setValue(100);
-		    jProgressBar.setString("Finished Downloading");
-		    jProgressBar.setIndeterminate(false);
-		}});
-		try{Thread.currentThread().sleep(2000);} catch(Exception e){e.printStackTrace();}
-		SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		    mProgressJDialog.setVisible(false);
-		}});
-		
+		ClientWizard.getInfiniteProgressJComponent().stopLater(2000l);
+		ClientWizard.getInfiniteProgressJComponent().startLater("Finished Downloading");
+		ClientWizard.getInfiniteProgressJComponent().stopLater(2000l);		
 	    }
 	    catch(Exception e){
-		SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		    mProgressJDialog.setVisible(false);
-		}});
+		ClientWizard.getInfiniteProgressJComponent().stopLater(-1l);
 		if( useServer ){
 		    Util.handleExceptionNoRestart("Error downloading config from server:", e);
 		    throw new Exception("Your VPN Client configuration could not be downloaded from the server.  Please try again.");

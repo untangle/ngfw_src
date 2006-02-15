@@ -29,9 +29,9 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
         initComponents();
     }
 
-	public void initialFocus(){
-		companyJTextField.requestFocus();
-	}
+    public void initialFocus(){
+	companyJTextField.requestFocus();
+    }
 	
     String company;
     String firstName;
@@ -112,15 +112,23 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
             throw exception;
 	        
         if( !validateOnly ){
-	    RegistrationInfo registrationInfo = new RegistrationInfo(company, firstName, lastName, email, count);
-	    registrationInfo.setAddress1(address1);
-	    registrationInfo.setAddress2(address2);
-	    registrationInfo.setCity(city);
-	    registrationInfo.setState(state);
-	    registrationInfo.setZipcode(zipcode);
-	    registrationInfo.setPhone(phone);
-            Util.getAdminManager().setRegistrationInfo(registrationInfo);            
-        }
+	    try{
+		InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving Contact Information...");
+		RegistrationInfo registrationInfo = new RegistrationInfo(company, firstName, lastName, email, count);
+		registrationInfo.setAddress1(address1);
+		registrationInfo.setAddress2(address2);
+		registrationInfo.setCity(city);
+		registrationInfo.setState(state);
+		registrationInfo.setZipcode(zipcode);
+		registrationInfo.setPhone(phone);
+		Util.getAdminManager().setRegistrationInfo(registrationInfo);
+		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);
+	    }
+	    catch(Exception e){
+		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(-1l);
+		throw e;
+	    }
+	}
     }
     
 

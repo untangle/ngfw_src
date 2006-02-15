@@ -34,6 +34,7 @@ import java.awt.geom.Rectangle2D;
 import javax.swing.JComponent;
 import javax.swing.Timer;
 import javax.swing.JProgressBar;
+import javax.swing.SwingUtilities;
 
 public class InfiniteProgressJComponent extends JComponent implements MouseListener, ActionListener {
     protected Area[]  ticker      = null;
@@ -52,6 +53,8 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
     protected RenderingHints hints = null;
     private JProgressBar jProgressBar = null;
     private GridBagConstraints progressBarGridBagConstraints = null;
+
+    private volatile long startTime, minRunTime;
 
     public InfiniteProgressJComponent(){
         this("");
@@ -97,8 +100,13 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
     }
 
     public void setText(String text){
-        repaint();
         this.text = text;
+        repaint();
+    }
+    public void setTextLater(final String text){
+	SwingUtilities.invokeLater( new Runnable(){ public void run(){
+	    setText(text);
+	}});
     }
 
     public String getText(){
@@ -118,6 +126,11 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
 	getProgressBar().setVisible(isVisible);
     }
 
+
+    public void start(String text){
+	setText(text);
+	start();
+    }
     public void start(){
 	if( !actionTimer.isRunning() ){
 	    addMouseListener(this);
@@ -125,19 +138,41 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
 	    setVisible(true);
 	    rampUp = started = doInit = true;
 	    actionTimer.start();
+	    startTime = System.currentTimeMillis();
 	}
     }
+    public void startLater(final String text){
+	SwingUtilities.invokeLater( new Runnable(){ public void run(){
+	    start(text);
+	}});
+    }
+    public void startLater(){
+	SwingUtilities.invokeLater( new Runnable(){ public void run(){
+	    start();
+	}});
+    }
+
+
 
     public void stop(){
 	if( actionTimer.isRunning() ){
 	    rampUp = false;
 	}
     }
-
-    public boolean isRunning(){
-	return actionTimer.isRunning();
+    public void stopLater(){ stopLater(-1); }
+    public void stopLater(final long minRunTime){
+	if( minRunTime > 0 ){
+	    long currentTime = System.currentTimeMillis();
+	    if( (currentTime - startTime) < minRunTime ){
+		try{ Thread.currentThread().sleep(minRunTime - (currentTime-startTime)); }
+		catch(Exception e){ Util.handleExceptionNoRestart("Error sleeping", e); }
+	    }	
+	}
+	SwingUtilities.invokeLater(new Runnable(){ public void run(){
+	    stop();
+	}});
     }
-    
+
     public void interrupt(){
 	if( actionTimer.isRunning() ){
 	    actionTimer.stop();
@@ -148,7 +183,16 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
 	repaint();
 	ticker = buildTicker();
     }
+    public void interruptLater(){
+	SwingUtilities.invokeLater( new Runnable(){ public void run(){
+	    interrupt();
+	}});
+    }
 
+    public boolean isRunning(){
+	return actionTimer.isRunning();
+    }
+    
     public void paintComponent(Graphics g){
         if (started){
             int width  = getWidth();

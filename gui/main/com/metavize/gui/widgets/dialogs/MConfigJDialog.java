@@ -40,7 +40,8 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
     private Map<String, Shutdownable> shutdownableMap = new LinkedHashMap(1);
     protected void addShutdownable(String name, Shutdownable shutdownable){ shutdownableMap.put(name, shutdownable); }
     protected CompoundSettings compoundSettings;
-    public InfiniteProgressJComponent infiniteProgressJComponent = new InfiniteProgressJComponent();
+    private static InfiniteProgressJComponent infiniteProgressJComponent = new InfiniteProgressJComponent();
+    public static InfiniteProgressJComponent getInfiniteProgressJComponent(){ return infiniteProgressJComponent; }
     private static final long MIN_PROGRESS_MILLIS = 1000;
     ///////////////////////////////
 
@@ -333,8 +334,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         public SaveAllThread(){
 	    super("MVCLIENT-MConfigJDialog.SaveAllThread");
 	    setDaemon(true);
-	    infiniteProgressJComponent.setText("Saving...");
-	    infiniteProgressJComponent.start();
+	    infiniteProgressJComponent.start("Saving...");
             start();
         }        
         public void run(){
@@ -352,9 +352,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 		try{ sleep(MIN_PROGRESS_MILLIS - (endTime-startTime)); }
 		catch(Exception e){ Util.handleExceptionNoRestart("Error sleeping", e); }
 	    }		
-	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		infiniteProgressJComponent.stop();
-	    }});
+	    infiniteProgressJComponent.stopLater();
         }
     }
         
@@ -365,8 +363,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 	    setDaemon(true);
 	    this.doGenerateGui = doGenerateGui;
 	    // START INFINITE PROGRESS
-	    infiniteProgressJComponent.setText("Refreshing...");
-	    infiniteProgressJComponent.start();
+	    infiniteProgressJComponent.start("Refreshing...");
             start();
         }
         public void run(){
@@ -399,14 +396,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 	    if(!failedRefresh)
 		MConfigJDialog.this.populateAll();
 	    // END INFINITE PROGRESS
-	    long endTime = System.currentTimeMillis();
-	    if( (endTime - startTime) < MIN_PROGRESS_MILLIS ){
-		try{ sleep(MIN_PROGRESS_MILLIS - (endTime-startTime)); }
-		catch(Exception e){ Util.handleExceptionNoRestart("Error sleeping", e); }
-	    }		
-	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		infiniteProgressJComponent.stop();
-	    }});
+	    infiniteProgressJComponent.stopLater(MIN_PROGRESS_MILLIS);
         }
     }
 }

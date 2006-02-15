@@ -34,25 +34,25 @@ public class ServerRoutingWizardCertificateJPanel extends MWizardPageJPanel {
 		initComponents();
     }
 
-	String organization;
-	String country;
-	String state;
-	String locality;
+    String organization;
+    String country;
+    String state;
+    String locality;
     Exception exception;
     
     public void doSave(Object settings, boolean validateOnly) throws Exception {
 
 	SwingUtilities.invokeAndWait( new Runnable(){ public void run() {
-		organizationJTextField.setBackground( Color.WHITE );
-		countryJTextField.setBackground( Color.WHITE );
-		stateJTextField.setBackground( Color.WHITE );
-		localityJTextField.setBackground( Color.WHITE );
-
-		organization = organizationJTextField.getText().trim();
-		country = countryJTextField.getText().trim();
-		state = stateJTextField.getText().trim();
-		locality = localityJTextField.getText().trim();
-
+	    organizationJTextField.setBackground( Color.WHITE );
+	    countryJTextField.setBackground( Color.WHITE );
+	    stateJTextField.setBackground( Color.WHITE );
+	    localityJTextField.setBackground( Color.WHITE );
+	    
+	    organization = organizationJTextField.getText().trim();
+	    country = countryJTextField.getText().trim();
+	    state = stateJTextField.getText().trim();
+	    locality = localityJTextField.getText().trim();
+	    
 	    exception = null;
             
 	    if(organization.length() == 0){
@@ -91,8 +91,16 @@ public class ServerRoutingWizardCertificateJPanel extends MWizardPageJPanel {
             throw exception;
 	        
         if( !validateOnly ){
-			CertificateParameters certificateParameters = new CertificateParameters( organization, "", country, state, locality, false );
-			vpnTransform.generateCertificate( certificateParameters );
+	    ServerRoutingWizard.getInfiniteProgressJComponent().startLater("Generating Certificate...");
+	    try{
+		CertificateParameters certificateParameters = new CertificateParameters( organization, "", country, state, locality, false );
+		vpnTransform.generateCertificate( certificateParameters );
+		ServerRoutingWizard.getInfiniteProgressJComponent().stopLater(1500l);
+	    }
+	    catch(Exception e){
+		ServerRoutingWizard.getInfiniteProgressJComponent().stopLater(-1l);
+		throw e;
+	    }
         }
     }
     

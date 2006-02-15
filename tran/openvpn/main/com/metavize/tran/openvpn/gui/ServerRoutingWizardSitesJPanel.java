@@ -96,42 +96,20 @@ public class ServerRoutingWizardSitesJPanel extends MWizardPageJPanel {
             throw exception;
 	        
         if( !validateOnly ){
-	    SiteList siteList = new SiteList(elemList);
-	    vpnTransform.setSites(siteList);
+	    ServerRoutingWizard.getInfiniteProgressJComponent().startLater("Adding VPN Sites...");
+	    try{
+		SiteList siteList = new SiteList(elemList);
+		vpnTransform.setSites(siteList);
+		vpnTransform.completeConfig();
 		
-		// BRING UP SAVING DIALOG
-		SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		    mProgressJDialog = new MProgressJDialog("Saving Configuration",
-							    "<html><center>Please wait a moment while your configuration is being saved." + 
-							    "<br>This may take up to one minute.</center></html>",
-							    (Dialog)ServerRoutingWizardSitesJPanel.this.getTopLevelAncestor(), false);
-		    jProgressBar = mProgressJDialog.getJProgressBar();
-		    jProgressBar.setValue(0);
-		    jProgressBar.setString("Saving...");
-		    jProgressBar.setIndeterminate(true);
-		    mProgressJDialog.setVisible(true);
-		}});
-		try{
-		    vpnTransform.completeConfig();
-
-		    // SHOW RESULTS AND REMOVE SAVING DIALOG
-		    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-			jProgressBar.setValue(100);
-			jProgressBar.setString("Finished Saving");
-			jProgressBar.setIndeterminate(false);
-		    }});
-		    try{Thread.currentThread().sleep(2000);} catch(Exception e){e.printStackTrace();}
-		    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-			mProgressJDialog.setVisible(false);
-		    }});
-		    
-		}
-		catch(Exception e){
-		    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-			mProgressJDialog.setVisible(false);
-		    }});
-		    throw new Exception("Your VPN Routing Server configuration could not be saved.  Please try again.");
-		}
+		ServerRoutingWizard.getInfiniteProgressJComponent().stopLater(1500l);
+		ServerRoutingWizard.getInfiniteProgressJComponent().startLater("Finished Adding");
+		ServerRoutingWizard.getInfiniteProgressJComponent().stopLater(1500l);
+	    }
+	    catch(Exception e){
+		ServerRoutingWizard.getInfiniteProgressJComponent().stopLater(-1l);
+		throw new Exception("Your VPN Routing Server configuration could not be saved.  Please try again.");
+	    }
         }
     }
     

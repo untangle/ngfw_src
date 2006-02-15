@@ -25,14 +25,14 @@ public class InitialSetupTimezoneJPanel extends MWizardPageJPanel {
         
 	SwingUtilities.invokeLater( new Runnable(){ public void run(){
 	    for(String timezone : timezones){
-		    timezoneJComboBox.addItem(timezone);
+		timezoneJComboBox.addItem(timezone);
 	    }
 	}});
     }
 
-	public void initialFocus(){
-		timezoneJComboBox.requestFocus();
-	}
+    public void initialFocus(){
+	timezoneJComboBox.requestFocus();
+    }
 	
     String timezone;
 
@@ -44,7 +44,15 @@ public class InitialSetupTimezoneJPanel extends MWizardPageJPanel {
 	}});
 
         if( !validateOnly ){
-            Util.getAdminManager().setTimeZone( TimeZone.getTimeZone(timezone) ); 
+	    try{
+		InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving Timezone...");
+		Util.getAdminManager().setTimeZone( TimeZone.getTimeZone(timezone) ); 
+		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);
+	    }
+	    catch(Exception e){
+		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(-1l);
+		throw e;
+	    }
         }
     }
     

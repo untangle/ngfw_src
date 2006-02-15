@@ -32,13 +32,10 @@ public class UpgradeProcessJPanel extends JPanel
     private static final int DOWNLOAD_SLEEP_MILLIS = 1000;
     private static final int DOWNLOAD_FINAL_SLEEP_MILLIS = 3000;
     		
-    private MConfigJDialog mConfigJDialog;
     private UpgradeTableModel upgradeTableModel;
     private MEditTableJPanel mEditTableJPanel;
 
-    public UpgradeProcessJPanel(MConfigJDialog mConfigJDialog) {
-	this.mConfigJDialog = mConfigJDialog;
-
+    public UpgradeProcessJPanel() {
 	// UPGRADE TABLE //
         mEditTableJPanel = new MEditTableJPanel(false, true);
         mEditTableJPanel.setInsets(new Insets(0,0,0,0));
@@ -191,9 +188,8 @@ public class UpgradeProcessJPanel extends JPanel
             super("MVCLIENT-PerformUpgradeThread");
 	    setDaemon(true);
             this.setContextClassLoader(Util.getClassLoader());
-	    mConfigJDialog.infiniteProgressJComponent.setText("Upgrading...");
-	    mConfigJDialog.infiniteProgressJComponent.setProgressBarVisible(true);
-	    mConfigJDialog.infiniteProgressJComponent.start();
+	    MConfigJDialog.getInfiniteProgressJComponent().setProgressBarVisible(true);
+	    MConfigJDialog.getInfiniteProgressJComponent().start("Upgrading...");
             this.start();
         }
         public void run() {
@@ -208,7 +204,7 @@ public class UpgradeProcessJPanel extends JPanel
                 // DO THE DOWNLOAD AND INSTALL
                 long key = Util.getToolboxManager().upgrade();
                 com.metavize.gui.util.Visitor visitor =
-		    new com.metavize.gui.util.Visitor(UpgradeProcessJPanel.this.mConfigJDialog.infiniteProgressJComponent.getProgressBar());
+		    new com.metavize.gui.util.Visitor(MConfigJDialog.getInfiniteProgressJComponent().getProgressBar());
                 while (true) {
                     java.util.List<InstallProgress> lip = Util.getToolboxManager().getProgress(key);
                     for (InstallProgress ip : lip) {
@@ -225,10 +221,8 @@ public class UpgradeProcessJPanel extends JPanel
 
                 if( visitor.isSuccessful() ){
                     // LET THE USER KNOW WERE FINISHED NORMALLY
-                    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-			UpgradeProcessJPanel.this.mConfigJDialog.infiniteProgressJComponent.setText("Upgrade Successful!");
-                    }});
-		    Thread.currentThread().sleep(DOWNLOAD_FINAL_SLEEP_MILLIS);
+		    MConfigJDialog.getInfiniteProgressJComponent().setTextLater("Upgrade Successful!");
+		    MConfigJDialog.getInfiniteProgressJComponent().stopLater(DOWNLOAD_FINAL_SLEEP_MILLIS);
                 }
                 else{
                     throw new Exception();
@@ -237,9 +231,7 @@ public class UpgradeProcessJPanel extends JPanel
             catch(Exception e){
                 Util.handleExceptionNoRestart("Termination of upgrade:", e);
                 // LET THE USER KNOW WERE FINISHED ABNORMALLY
-                SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		    UpgradeProcessJPanel.this.mConfigJDialog.infiniteProgressJComponent.setText("Error.  Please contact Metavize.");
-                }});
+		MConfigJDialog.getInfiniteProgressJComponent().setTextLater("Error.  Please contact Metavize.");
             }
             finally{
                 new RestartDialog();

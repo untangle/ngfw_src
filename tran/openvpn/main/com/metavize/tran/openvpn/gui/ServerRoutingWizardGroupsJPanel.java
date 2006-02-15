@@ -79,8 +79,16 @@ public class ServerRoutingWizardGroupsJPanel extends MWizardPageJPanel {
             throw exception;
 	        
         if( !validateOnly ){
-	    GroupList groupList = new GroupList(elemList);
-	    vpnTransform.setAddressGroups(groupList);
+	    try{
+		ServerRoutingWizard.getInfiniteProgressJComponent().startLater("Adding Address Pools...");
+		GroupList groupList = new GroupList(elemList);
+		vpnTransform.setAddressGroups(groupList);
+		ServerRoutingWizard.getInfiniteProgressJComponent().stopLater(1500l);
+	    }
+	    catch(Exception e){
+		ServerRoutingWizard.getInfiniteProgressJComponent().stopLater(-1l);
+		throw e;
+	    }
         }
     }
     

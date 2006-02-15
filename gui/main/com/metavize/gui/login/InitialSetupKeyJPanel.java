@@ -21,15 +21,16 @@ import java.awt.Color;
 
 public class InitialSetupKeyJPanel extends MWizardPageJPanel {
     
-    private static final String EXCEPTION_KEY_FORMAT = "The key must be exactly 16 alpha-numeric digits long (excluding dashes and spaces).  Please make sure your key is the correct length.";
+    private static final String EXCEPTION_KEY_FORMAT = "The key must be exactly 16 alpha-numeric digits long (excluding dashes and spaces).  " +
+	"Please make sure your key is the correct length.";
 
     public InitialSetupKeyJPanel() {
         initComponents();
     }
 
-	public void initialFocus(){
-		keyJTextField.requestFocus();
-	}
+    public void initialFocus(){
+	keyJTextField.requestFocus();
+    }
 	
     String key;
     Exception exception;
@@ -55,17 +56,25 @@ public class InitialSetupKeyJPanel extends MWizardPageJPanel {
         
         
         if( !validateOnly){
-            URL url = Util.getServerCodeBase();
-            boolean isActivated = com.metavize.mvvm.client.MvvmRemoteContextFactory.factory().isActivated( url.getHost(), url.getPort(), 0, Util.isSecureViaHttps() );
-            if( !isActivated ){
-                MvvmRemoteContext mvvmContext = MvvmRemoteContextFactory.factory().activationLogin( url.getHost(), url.getPort(),
-                											key,
-                        										0,
-                                									Util.getClassLoader(),
-                                        								Util.isSecureViaHttps() );
-                                                                                   
-                    Util.setMvvmContext(mvvmContext);
-            }
+	    try{
+		InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving Key...");
+		URL url = Util.getServerCodeBase();
+		boolean isActivated = com.metavize.mvvm.client.MvvmRemoteContextFactory.factory().isActivated( url.getHost(), url.getPort(), 0, Util.isSecureViaHttps() );
+		if( !isActivated ){
+		    MvvmRemoteContext mvvmContext = MvvmRemoteContextFactory.factory().activationLogin( url.getHost(), url.getPort(),
+													key,
+													0,
+													Util.getClassLoader(),
+													Util.isSecureViaHttps() );
+		    
+		    Util.setMvvmContext(mvvmContext);
+		    InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);
+		}
+	    }
+	    catch(Exception e){
+		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(-1l);
+		throw e;
+	    }
 	    
         }
     }

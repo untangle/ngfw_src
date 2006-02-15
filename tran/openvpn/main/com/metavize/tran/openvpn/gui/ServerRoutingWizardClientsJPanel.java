@@ -86,8 +86,16 @@ public class ServerRoutingWizardClientsJPanel extends MWizardPageJPanel {
             throw exception;
 	        
         if( !validateOnly ){
-	    ClientList clientList = new ClientList(elemList);
-	    vpnTransform.setClients(clientList);
+	    try{
+		ServerRoutingWizard.getInfiniteProgressJComponent().startLater("Adding VPN Clients...");
+		ClientList clientList = new ClientList(elemList);
+		vpnTransform.setClients(clientList);
+		ServerRoutingWizard.getInfiniteProgressJComponent().stopLater(1500l);
+	    }
+	    catch(Exception e){
+		ServerRoutingWizard.getInfiniteProgressJComponent().stopLater(-1l);
+		throw e;
+	    }
         }
     }
     

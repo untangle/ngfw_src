@@ -51,8 +51,8 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
     protected Icon ICON_UNCOMPLETED = null;
 
     // LABEL SPECS ////
-	protected Font NORMAL_FONT = new Font("Default", 0, 16);
-	protected Font BOLD_FONT = new Font("Default", 1, 16);
+    protected Font NORMAL_FONT = new Font("Default", 0, 16);
+    protected Font BOLD_FONT = new Font("Default", 1, 16);
     protected int FONT_SPACING = 10;
     
     // WIZARD STATE //////
@@ -62,14 +62,18 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
     protected Vector<Boolean> checkpointVector = new Vector<Boolean>();
     protected Vector<Boolean> saveVector = new Vector<Boolean>();
 
-    public MWizardJDialog(Dialog topLevelDialog, boolean isModal){
-	super(topLevelDialog, isModal);
-	init(topLevelDialog);
+    // INFINITE PROGRESS INDICATOR //
+    private static InfiniteProgressJComponent infiniteProgressJComponent = new InfiniteProgressJComponent();
+    public static InfiniteProgressJComponent getInfiniteProgressJComponent(){ return infiniteProgressJComponent; }
+
+    public MWizardJDialog(Dialog parentDialog, boolean isModal){
+	super(parentDialog, isModal);
+	init(parentDialog);
     }
 
-    public MWizardJDialog(Frame topLevelFrame, boolean isModal){
-	super(topLevelFrame, isModal);
-	init(topLevelFrame);
+    public MWizardJDialog(Frame parentFrame, boolean isModal){
+	super(parentFrame, isModal);
+	init(parentFrame);
     }
 
     public MWizardJDialog(){
@@ -77,7 +81,8 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
 	init(null);
     }
 
-    protected void init(Window topLevelWindow){
+    protected void init(Window parentWindow){
+	setGlassPane(infiniteProgressJComponent);
         initComponents();
 	titleJPanel.setPreferredSize( getTitleJPanelPreferredSize() );
 	titleJPanel.setMinimumSize( getTitleJPanelPreferredSize() );
@@ -87,7 +92,7 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
 	contentJPanel.setMaximumSize( getContentJPanelPreferredSize() );
 	pack();
 	
-        setBounds( Util.generateCenteredBounds( topLevelWindow,
+        setBounds( Util.generateCenteredBounds( parentWindow,
 						getPreferredSize().width,
 						getPreferredSize().height) );
         addWindowListener(this);
@@ -105,7 +110,7 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
 	    updateButtonState(false);
 	    updateLabelState();
 	    updatePageState();
-		nextJButton.requestFocus();
+	    nextJButton.requestFocus();
 	}
 	super.setVisible(isVisible);
     }
@@ -368,8 +373,8 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
 		    updateButtonState(false);
 		    updateLabelState();
 		    updatePageState();
-			nextJButton.requestFocus();
-			previousWizardPageJPanel.initialFocus();
+		    nextJButton.requestFocus();
+		    previousWizardPageJPanel.initialFocus();
 		}});
 	    }catch(Exception e){ Util.handleExceptionNoRestart("Error updating wizard on move previous", e); }
 	}
@@ -379,8 +384,8 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
         new NextPageThread();
     }//GEN-LAST:event_nextJButtonActionPerformed
 
-	MWizardPageJPanel previousWizardPageJPanel;
-	MWizardPageJPanel nextWizardPageJPanel;
+    MWizardPageJPanel previousWizardPageJPanel;
+    MWizardPageJPanel nextWizardPageJPanel;
 	
     private class NextPageThread extends Thread{
         public NextPageThread(){

@@ -28,9 +28,9 @@ public class InitialSetupPasswordJPanel extends MWizardPageJPanel {
         initComponents();
     }
 
-	public void initialFocus(){
-		passwordJPasswordField.requestFocus();
-	}
+    public void initialFocus(){
+	passwordJPasswordField.requestFocus();
+    }
 	
     String password;
     String retypePassword;
@@ -71,12 +71,20 @@ public class InitialSetupPasswordJPanel extends MWizardPageJPanel {
 	    throw exception;
         
         if( !validateOnly ){
-            AdminSettings adminSettings = Util.getAdminManager().getAdminSettings();
-            Set<User> users = (Set<User>) adminSettings.getUsers();
-            for( User user : users )
-                if( user.getLogin().equals("admin") )
-                    user.setClearPassword(password);
-            Util.getAdminManager().setAdminSettings(adminSettings);
+	    try{
+		InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving Admin Password...");
+		AdminSettings adminSettings = Util.getAdminManager().getAdminSettings();
+		Set<User> users = (Set<User>) adminSettings.getUsers();
+		for( User user : users )
+		    if( user.getLogin().equals("admin") )
+			user.setClearPassword(password);
+		Util.getAdminManager().setAdminSettings(adminSettings);
+		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);
+	    }
+	    catch(Exception e){
+		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(-1l);
+		throw e;
+	    }
         }
     }
     

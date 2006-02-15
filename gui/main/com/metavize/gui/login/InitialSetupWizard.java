@@ -25,22 +25,29 @@ public class InitialSetupWizard extends MWizardJDialog {
 
     private boolean isRegistered = false;
     
-    private static final String MESSAGE_DIALOG_TITLE = "Setup Wizard Warning";
+    private static final String MESSAGE_DIALOG_TITLE   = "Setup Wizard Warning";
     private static final String MESSAGE_NOT_REGISTERED = "You have not registered your EdgeGuard.  Please run the Setup Wizard again.";
-    private static final String MESSAGE_NOT_CONFIGURED = "You have registered your EdgeGuard, but you have not configured other necessary settings.  You may do this in the Config Panel after logging in.  Your default login/password is: admin/passwd";
+    private static final String MESSAGE_NOT_CONFIGURED = "You have registered your EdgeGuard, but you have not configured other " +
+	"necessary settings.  You may do this in the Config Panel after logging in.  Your default login/password is: admin/passwd";
+
+    // SHARED DATA //
+    private static Object sharedData;
+    public static Object getSharedData(){ return sharedData; }
+    public static void setSharedData(Object data){ sharedData = data; }
     
     public InitialSetupWizard() {
-        setTitle("Metavize EdgeGuard Setup Wizard");
 	setModal(true);
-        addWizardPageJPanel(new InitialSetupWelcomeJPanel(), "1. Welcome", false, false);
-        addWizardPageJPanel(new InitialSetupLicenseJPanel(), "2. License Agreement", false, false);
-        addWizardPageJPanel(new InitialSetupContactJPanel(), "3. Contact Information", false, false);
-        addWizardPageJPanel(new InitialSetupKeyJPanel(), "4. Activation Key", false, true);
-        addWizardPageJPanel(new InitialSetupTimezoneJPanel(), "5. Timezone", true, true);
-        addWizardPageJPanel(new InitialSetupNetworkJPanel(), "6. Network Settings", false, true);
-        addWizardPageJPanel(new InitialSetupConnectivityJPanel(), "7. Connectivity Test", false, true);
-        addWizardPageJPanel(new InitialSetupEmailJPanel(), "8. Email Server", false, true);
-        addWizardPageJPanel(new InitialSetupPasswordJPanel(), "9. Admin Account", false, true);        
+        setTitle("Metavize EdgeGuard Setup Wizard");
+        addWizardPageJPanel(new InitialSetupWelcomeJPanel(),         "1. Welcome", false, false);
+        addWizardPageJPanel(new InitialSetupLicenseJPanel(),         "2. License Agreement", false, false);
+        addWizardPageJPanel(new InitialSetupContactJPanel(),         "3. Contact Information", false, false);
+        addWizardPageJPanel(new InitialSetupKeyJPanel(),             "4. Activation Key", false, true);
+        addWizardPageJPanel(new InitialSetupTimezoneJPanel(),        "5. Timezone", true, true);
+        addWizardPageJPanel(new InitialSetupNetworkJPanel(),         "6. External Network", false, true);
+		//addWizardPageJPanel(new InitialSetupNetworkJPanel(),         "7. Internal Network", false, true);
+        addWizardPageJPanel(new InitialSetupConnectivityJPanel(),    "7. Connectivity Test", false, true);
+        addWizardPageJPanel(new InitialSetupEmailJPanel(),           "8. Email Settings", false, true);
+        addWizardPageJPanel(new InitialSetupPasswordJPanel(),        "9. Admin Settings", false, true);        
         addWizardPageJPanel(new InitialSetupCongratulationsJPanel(), "10. Finished!", true, true);
     }
     
