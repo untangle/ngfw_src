@@ -1,12 +1,12 @@
 #!/bin/sh
 
 util_dir=$(pwd)
-jfreechart_home=$util_dir/../../downloads/output/jfreechart-1.0.0
+jfreechart_home=$util_dir/../../downloads/output/jfreechart-1.0.1
 
 unpacked=$(mktemp -d)
 closure=$(mktemp)
 
-(cd $unpacked && jar xf $jfreechart_home/jfreechart-1.0.0.jar && jar xf $jfreechart_home/jcommon-1.0.0.jar)
+(cd $unpacked && jar xf $jfreechart_home/jfreechart-1.0.1.jar && jar xf $jfreechart_home/jcommon-1.0.0.jar)
 
 cat jfreechart-gui.list \
     | xargs ./closure -cp $unpacked compute-closure \

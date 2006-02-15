@@ -136,7 +136,7 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
   </path>
 
   <fileset id="c3p0.jarset" dir="${C3P0_HOME}/lib">
-    <include name="c3p0-0.9.0.2.jar"/>
+    <include name="c3p0-0.9.0.4.jar"/>
   </fileset>
 
   <path id="c3p0.classpath">
@@ -289,7 +289,7 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
   </path>
 
   <fileset id="jfreechart.jarset" dir="${JFREECHART_HOME}">
-    <include name="jfreechart-1.0.0.jar"/>
+    <include name="jfreechart-1.0.1.jar"/>
     <include name="jcommon-1.0.0.jar"/>
   </fileset>
 

@@ -23,16 +23,27 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.labels.ItemLabelAnchor;
+import org.jfree.chart.labels.ItemLabelPosition;
+import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
+import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.chart.urls.StandardCategoryURLGenerator;
+import org.jfree.chart.urls.StandardXYURLGenerator;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.data.time.DynamicTimeSeriesCollection;
-import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.Second;
-import org.jfree.data.xy.TableXYDataset;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.RectangleInsets;
+import org.jfree.ui.TextAnchor;
 
 public class MTransformDisplayJPanel extends javax.swing.JPanel {
 
@@ -48,9 +59,10 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
     // THROUGHPUT & SESSION COUNT DISPLAY
     private static long SLEEP_MILLIS = 1000l;
     protected ChartPanel throughputChartJPanel;
-    protected AreaDynamicTimeSeriesCollection throughputDynamicTimeSeriesCollection;
+    protected TimeSeriesCollection throughputDynamicTimeSeriesCollection;
+
     protected ChartPanel sessionChartJPanel;
-    protected AreaDynamicTimeSeriesCollection sessionDynamicTimeSeriesCollection;
+    protected TimeSeriesCollection sessionDynamicTimeSeriesCollection;
 
     // ACTIVITY COUNT DISPLAY
     protected ChartPanel activityChartJPanel;
@@ -62,16 +74,41 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
     private DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
 
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    protected javax.swing.JLabel activity0JLabel;
+    protected javax.swing.JLabel activity1JLabel;
+    protected javax.swing.JLabel activity2JLabel;
+    protected javax.swing.JLabel activity3JLabel;
+    private javax.swing.JPanel activityContentJPanel;
+    private javax.swing.JLabel activityJLabel;
+    private javax.swing.JPanel activityJPanel;
+    private javax.swing.JPanel inputJPanel;
+    protected javax.swing.JLabel sessionRequestTotalJLabel;
+    protected javax.swing.JLabel sessionTotalJLabel;
+    private javax.swing.JLabel sessionsJLabel;
+    private javax.swing.JPanel sessionsJPanel;
+    protected javax.swing.JLabel throughputJLabel;
+    protected javax.swing.JLabel throughputTotalJLabel;
+    // End of variables declaration//GEN-END:variables
+
+
     public MTransformDisplayJPanel(MTransformJPanel mTransformJPanel) {
 	setDoubleBuffered(true);
         this.mTransformJPanel = mTransformJPanel;
 
-        throughputDynamicTimeSeriesCollection = new AreaDynamicTimeSeriesCollection(1, 60, new Second());
-        throughputDynamicTimeSeriesCollection.setTimeBase(new Second());
+        throughputDynamicTimeSeriesCollection = new TimeSeriesCollection();
+        TimeSeries tsRate = new TimeSeries("Rate", Second.class);
+        tsRate.setMaximumItemCount(60);
+        throughputDynamicTimeSeriesCollection.addSeries(tsRate);
         throughputChartJPanel = createLineChart(throughputDynamicTimeSeriesCollection, true);
 
-        sessionDynamicTimeSeriesCollection = new AreaDynamicTimeSeriesCollection(2, 60, new Second());
-        sessionDynamicTimeSeriesCollection.setTimeBase(new Second());
+        sessionDynamicTimeSeriesCollection = new TimeSeriesCollection();
+        TimeSeries tsCount = new TimeSeries("Session Count", Second.class);
+        tsCount.setMaximumItemCount(60);
+        TimeSeries tsReq = new TimeSeries("Session Requests", Second.class);
+        tsReq.setMaximumItemCount(60);
+        sessionDynamicTimeSeriesCollection.addSeries(tsCount);
+        sessionDynamicTimeSeriesCollection.addSeries(tsReq);
         sessionChartJPanel = createLineChart(sessionDynamicTimeSeriesCollection, false);
 
         activityChartJPanel = createBarChart(dataset);
@@ -107,7 +144,6 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
 
         JFreeChart jFreeChart = MVChartFactory.createBarChart(null,null,null, dataset, PlotOrientation.HORIZONTAL, false,false,false);
         jFreeChart.setBackgroundPaint(Color.BLACK);
-        jFreeChart.setBorderPaint(null);
         jFreeChart.setBorderVisible(false);
 
         // PLOT
@@ -119,17 +155,13 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         plot.setInsets(new RectangleInsets(0,0,0,2), false);
         plot.setRangeAxisLocation(AxisLocation.BOTTOM_OR_LEFT);
         plot.setDomainGridlinesVisible(false);
-        plot.setDomainGridlinePaint(null);
         plot.setRangeGridlinesVisible(false);
-        plot.setRangeGridlinePaint(null);
 
         // X AXIS
         CategoryAxis catAxis = plot.getDomainAxis();
         catAxis.setVisible(false);
         catAxis.setAxisLineVisible(true);
         catAxis.setAxisLinePaint(Color.BLACK);
-        //catAxis.setTickLabelPaint(null);
-        //catAxis.setTickMarkPaint(null);
         catAxis.setTickMarksVisible(false);
 
         // Y AXIS
@@ -153,7 +185,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
     }
 
 
-    private ChartPanel createLineChart(TableXYDataset dataset, boolean showDecimal) {
+    private ChartPanel createLineChart(XYDataset dataset, boolean showDecimal) {
 
         JFreeChart jFreeChart = MVChartFactory.createXYLineChart(null,null,null, dataset, PlotOrientation.VERTICAL, false,false,false);
         jFreeChart.setBackgroundPaint(Color.BLACK);
@@ -421,31 +453,30 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
             public void run(){
                 if(!updateGraph){
                     resetCounters();
-                    for(int i=0; i<60; i++){
-                        newestIndex = sessionDynamicTimeSeriesCollection.getNewestIndex();
-                        sessionDynamicTimeSeriesCollection.addValue(0, newestIndex, 0f);
-                        sessionDynamicTimeSeriesCollection.addValue(1, newestIndex, 0f);
-                        sessionDynamicTimeSeriesCollection.advanceTime();
-                        throughputDynamicTimeSeriesCollection.addValue( 0, throughputDynamicTimeSeriesCollection.getNewestIndex(), 0f);
-                        throughputDynamicTimeSeriesCollection.advanceTime();
+                    // Fill graph with blank lines
+                    long now = System.currentTimeMillis();
+                    for(int i=60; i>0; i--){
+                        Second second = new Second(new Date(now - i * 1000));
+                        sessionDynamicTimeSeriesCollection.getSeries(0).add(second, 0f);
+                        sessionDynamicTimeSeriesCollection.getSeries(1).add(second, 0f);
+                        throughputDynamicTimeSeriesCollection.getSeries(0).add(second, 0f);
                     }
                     byteCountLast = byteCountCurrent = 0;
                     sessionRequestLast = sessionRequestCurrent = 0;
+                    return;
                 }
+                Second second = new Second();
                 if( MTransformDisplayJPanel.this.getUpdateSessions() ){
-                    newestIndex = sessionDynamicTimeSeriesCollection.getNewestIndex();
-                    sessionDynamicTimeSeriesCollection.addValue(0, newestIndex, (float) sessionCountCurrent);
-                    sessionDynamicTimeSeriesCollection.addValue(1, newestIndex, (float) sessionRequestCurrent - sessionRequestLast);
-                    sessionDynamicTimeSeriesCollection.advanceTime();
+                    sessionDynamicTimeSeriesCollection.getSeries(0).addOrUpdate(second, (float) sessionCountCurrent);
+                    sessionDynamicTimeSeriesCollection.getSeries(1).addOrUpdate(second, (float) sessionRequestCurrent - sessionRequestLast);
                     sessionRequestLast = sessionRequestCurrent;
                     generateCountLabel(sessionCountTotal, " ACC", sessionTotalJLabel);
                     generateCountLabel(sessionRequestCurrent, " REQ", sessionRequestTotalJLabel);
                 }
                 if( MTransformDisplayJPanel.this.getUpdateThroughput() ){
-                    throughputDynamicTimeSeriesCollection.addValue( 0,
-                                                                    throughputDynamicTimeSeriesCollection.getNewestIndex(),
-                                                                    ((float)(byteCountCurrent - byteCountLast))/1000f);
-                    throughputDynamicTimeSeriesCollection.advanceTime();
+                    //System.out.println("Adding throughput value " + ((float)(byteCountCurrent - byteCountLast)) + " at index " + throughputDynamicTimeSeriesCollection.getNewestIndex());
+                    throughputDynamicTimeSeriesCollection.getSeries(0).
+                        addOrUpdate(second, ((float)(byteCountCurrent - byteCountLast))/1000f);
                     byteCountLast = byteCountCurrent;
                     generateCountLabel(byteCountCurrent, "B", throughputTotalJLabel);
                 }
@@ -538,102 +569,156 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
     }
 
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    protected javax.swing.JLabel activity0JLabel;
-    protected javax.swing.JLabel activity1JLabel;
-    protected javax.swing.JLabel activity2JLabel;
-    protected javax.swing.JLabel activity3JLabel;
-    private javax.swing.JPanel activityContentJPanel;
-    private javax.swing.JLabel activityJLabel;
-    private javax.swing.JPanel activityJPanel;
-    private javax.swing.JPanel inputJPanel;
-    protected javax.swing.JLabel sessionRequestTotalJLabel;
-    protected javax.swing.JLabel sessionTotalJLabel;
-    private javax.swing.JLabel sessionsJLabel;
-    private javax.swing.JPanel sessionsJPanel;
-    protected javax.swing.JLabel throughputJLabel;
-    protected javax.swing.JLabel throughputTotalJLabel;
-    // End of variables declaration//GEN-END:variables
+    static class DoubleFIFO {
 
-}
+        static final double BARGRAPH_FALLOFF = .9d;
 
-class DoubleFIFO {
+        double tempVal;
 
-    static final double BARGRAPH_FALLOFF = .9d;
-
-    double tempVal;
-
-    double lastTotal;
-    double windowTotal;
-    int index;
-    double data[];
-    final int size;
-    double decay;
-    boolean resetable = false;
-    DoubleFIFO(int size){
-        data = new double[size];
-        this.size = size;
-        lastTotal = 0;
-        windowTotal = 0;
-        index = 0;
-        decay = 0d;
-        resetable = true;
-        reset();
-    }
-
-    public synchronized void add(double newTotal){
-
-        if(!resetable){
-            lastTotal = newTotal;
+        double lastTotal;
+        double windowTotal;
+        int index;
+        double data[];
+        final int size;
+        double decay;
+        boolean resetable = false;
+        DoubleFIFO(int size){
+            data = new double[size];
+            this.size = size;
+            lastTotal = 0;
+            windowTotal = 0;
+            index = 0;
+            decay = 0d;
+            resetable = true;
+            reset();
         }
-        else{
-            tempVal = data[index];
-            data[index] = newTotal - lastTotal;
-            lastTotal = newTotal;
-            windowTotal = windowTotal + data[index] - tempVal;
-            index = (index + 1) % size;
+
+        public synchronized void add(double newTotal){
+
+            if(!resetable){
+                lastTotal = newTotal;
+            }
+            else{
+                tempVal = data[index];
+                data[index] = newTotal - lastTotal;
+                lastTotal = newTotal;
+                windowTotal = windowTotal + data[index] - tempVal;
+                index = (index + 1) % size;
+            }
+            resetable = true;
         }
-        resetable = true;
+
+        public synchronized double getTotal(){
+            return windowTotal;
+        }
+
+        public synchronized void reset(){
+            if(!resetable)
+                return;
+            for(int i=0; i<data.length; i++)
+                data[i] = 0d;
+            lastTotal = 0d;
+            windowTotal = 0d;
+            index = 0;
+            decay = 0d;
+            resetable = false;
+        }
+
+        public synchronized double lastValue(){
+            return data[ (size + index-1) %size];
+        }
+
+        public synchronized double decayValue(){
+            if(this.lastValue() > 0)
+                decay = 98d;
+            else
+                decay *= BARGRAPH_FALLOFF;
+            return decay;
+        }
     }
 
-    public synchronized double getTotal(){
-        return windowTotal;
+    static class MVChartFactory
+    {
+        public static JFreeChart createBarChart(String title,
+                                                String categoryAxisLabel,
+                                                String valueAxisLabel,
+                                                CategoryDataset dataset,
+                                                PlotOrientation orientation,
+                                                boolean legend,
+                                                boolean tooltips,
+                                                boolean urls) {
+
+            if (orientation == null) {
+                throw new IllegalArgumentException("Null 'orientation' argument.");
+            }
+            CategoryAxis categoryAxis = new CategoryAxis(categoryAxisLabel);
+            ValueAxis valueAxis = new NumberAxis(valueAxisLabel);
+
+            BarRenderer renderer = new BarRenderer();
+            if (orientation == PlotOrientation.HORIZONTAL) {
+                ItemLabelPosition position1 = new ItemLabelPosition(
+                                                                    ItemLabelAnchor.OUTSIDE3, TextAnchor.CENTER_LEFT
+                                                                    );
+                renderer.setPositiveItemLabelPosition(position1);
+                ItemLabelPosition position2 = new ItemLabelPosition(
+                                                                    ItemLabelAnchor.OUTSIDE9, TextAnchor.CENTER_RIGHT
+                                                                    );
+                renderer.setNegativeItemLabelPosition(position2);
+            }
+            else if (orientation == PlotOrientation.VERTICAL) {
+                ItemLabelPosition position1 = new ItemLabelPosition(
+                                                                    ItemLabelAnchor.OUTSIDE12, TextAnchor.BOTTOM_CENTER
+                                                                    );
+                renderer.setPositiveItemLabelPosition(position1);
+                ItemLabelPosition position2 = new ItemLabelPosition(
+                                                                    ItemLabelAnchor.OUTSIDE6, TextAnchor.TOP_CENTER
+                                                                    );
+                renderer.setNegativeItemLabelPosition(position2);
+            }
+            if (tooltips) {
+                renderer.setToolTipGenerator(new StandardCategoryToolTipGenerator());
+            }
+            if (urls) {
+                renderer.setItemURLGenerator(new StandardCategoryURLGenerator());
+            }
+
+            CategoryPlot plot = new CategoryPlot(dataset, categoryAxis, valueAxis, renderer);
+            plot.setOrientation(orientation);
+            JFreeChart chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT, plot, legend);
+
+            return chart;
+
+        }
+
+        public static JFreeChart createXYLineChart(String title,
+                                                   String xAxisLabel,
+                                                   String yAxisLabel,
+                                                   XYDataset dataset,
+                                                   PlotOrientation orientation,
+                                                   boolean legend,
+                                                   boolean tooltips,
+                                                   boolean urls) {
+
+            if (orientation == null) {
+                throw new IllegalArgumentException("Null 'orientation' argument.");
+            }
+            NumberAxis xAxis = new NumberAxis(xAxisLabel);
+            xAxis.setAutoRangeIncludesZero(false);
+            NumberAxis yAxis = new NumberAxis(yAxisLabel);
+            XYItemRenderer renderer = new StandardXYItemRenderer(StandardXYItemRenderer.LINES);
+            XYPlot plot = new XYPlot(dataset, xAxis, yAxis, renderer);
+            plot.setOrientation(orientation);
+            if (tooltips) {
+                renderer.setToolTipGenerator(new StandardXYToolTipGenerator());
+            }
+            if (urls) {
+                renderer.setURLGenerator(new StandardXYURLGenerator());
+            }
+
+            JFreeChart chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT, plot, legend);
+
+            return chart;
+
+        }
     }
-
-    public synchronized void reset(){
-        if(!resetable)
-            return;
-        for(int i=0; i<data.length; i++)
-            data[i] = 0d;
-        lastTotal = 0d;
-        windowTotal = 0d;
-        index = 0;
-        decay = 0d;
-        resetable = false;
-    }
-
-    public synchronized double lastValue(){
-        return data[ (size + index-1) %size];
-    }
-
-    public synchronized double decayValue(){
-        if(this.lastValue() > 0)
-            decay = 98d;
-        else
-            decay *= BARGRAPH_FALLOFF;
-        return decay;
-    }
-}
-
-class AreaDynamicTimeSeriesCollection extends DynamicTimeSeriesCollection implements TableXYDataset {
-
-    AreaDynamicTimeSeriesCollection(int nSeries, int nMoments){ super(nSeries, nMoments); }
-    AreaDynamicTimeSeriesCollection(int nSeries, int nMoments, RegularTimePeriod timeSample){ super(nSeries, nMoments, timeSample); }
-    AreaDynamicTimeSeriesCollection(int nSeries, int nMoments, RegularTimePeriod timeSample, java.util.TimeZone zone){ super(nSeries, nMoments, timeSample, zone); }
-    AreaDynamicTimeSeriesCollection(int nSeries, int nMoments, java.util.TimeZone zone){ super(nSeries, nMoments, zone); }
-
-    public int getItemCount() {
-        return super.getItemCount(0);
-    }
-
 }

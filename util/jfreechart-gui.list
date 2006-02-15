@@ -1,4 +1,5 @@
 org.jfree.base.BaseBoot
+org.jfree.base.log.DefaultLogModule
 org.jfree.chart.resources.JFreeChartResources
 org.jfree.data.resources.DataPackageResources
 org.jfree.data.resources.DataPackageResources_de
