@@ -253,10 +253,9 @@ public class QuarantineAllJPanel extends javax.swing.JPanel
 	    this.doRelease = doRelease;
 	    setDaemon(true);
 	    if( doRelease )
-		((MConfigJDialog)QuarantineAllJPanel.this.getTopLevelAncestor()).infiniteProgressJComponent.setText("Releasing...");
+		MConfigJDialog.getInfiniteProgressJComponent().start("Releasing...");
 	    else
-		((MConfigJDialog)QuarantineAllJPanel.this.getTopLevelAncestor()).infiniteProgressJComponent.setText("Purging...");
-	    ((MConfigJDialog)QuarantineAllJPanel.this.getTopLevelAncestor()).infiniteProgressJComponent.start();
+		MConfigJDialog.getInfiniteProgressJComponent().start("Purging...");
 	    start();
 	}
 	public void run(){
@@ -281,15 +280,11 @@ public class QuarantineAllJPanel extends javax.swing.JPanel
 		}
 	    }
 	    // DO REFRESH
-	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		((MConfigJDialog)QuarantineAllJPanel.this.getTopLevelAncestor()).infiniteProgressJComponent.setText("Refreshing...");
-	    }});
+	    MConfigJDialog.getInfiniteProgressJComponent().setTextLater("Refreshing...");
 	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
 		quarantineAllTableModel.doRefresh(null);
 	    }});
-	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		((MConfigJDialog)QuarantineAllJPanel.this.getTopLevelAncestor()).infiniteProgressJComponent.stop();
-	    }});
+	    MConfigJDialog.getInfiniteProgressJComponent().stopLater(1500l);
         }
     }
     
