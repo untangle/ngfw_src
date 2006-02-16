@@ -457,9 +457,9 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
                     long now = System.currentTimeMillis();
                     for(int i=60; i>0; i--){
                         Second second = new Second(new Date(now - i * 1000));
-                        sessionDynamicTimeSeriesCollection.getSeries(0).add(second, 0f);
-                        sessionDynamicTimeSeriesCollection.getSeries(1).add(second, 0f);
-                        throughputDynamicTimeSeriesCollection.getSeries(0).add(second, 0f);
+                        sessionDynamicTimeSeriesCollection.getSeries(0).addOrUpdate(second, 0f);
+                        sessionDynamicTimeSeriesCollection.getSeries(1).addOrUpdate(second, 0f);
+                        throughputDynamicTimeSeriesCollection.getSeries(0).addOrUpdate(second, 0f);
                     }
                     byteCountLast = byteCountCurrent = 0;
                     sessionRequestLast = sessionRequestCurrent = 0;
