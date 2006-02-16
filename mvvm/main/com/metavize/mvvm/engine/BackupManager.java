@@ -82,7 +82,9 @@ class BackupManager {
       //unzip file
       result = SimpleExec.exec(RESTORE_SCRIPT,//cmd
           new String[] {//args
-            tempFile.getAbsolutePath()
+            "-i",
+            tempFile.getAbsolutePath(),
+            "-v"
           },
           null,//env
           null,//dir
@@ -125,7 +127,9 @@ class BackupManager {
       SimpleExec.SimpleExecResult result =
         SimpleExec.exec(BACKUP_SCRIPT,//cmd
           new String[] {//args
-            tempFile.getAbsolutePath()
+            "-o",
+            tempFile.getAbsolutePath(),
+            "-v"
           },
           null,//env
           null,//dir
