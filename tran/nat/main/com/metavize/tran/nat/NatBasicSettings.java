@@ -11,7 +11,6 @@
 
 package com.metavize.tran.nat;
 
-import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.IPaddr;
 
 public interface NatBasicSettings extends NatCommonSettings
