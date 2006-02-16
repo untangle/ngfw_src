@@ -15,7 +15,7 @@ import com.metavize.gui.util.Util;
 import com.metavize.gui.transform.CompoundSettings;
 import com.metavize.gui.transform.MCasingJPanel;
 import com.metavize.mvvm.NetworkingConfiguration;
-import com.metavize.mvvm.networking.NetworkSettings;
+import com.metavize.mvvm.networking.NetworkSpacesSettings;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.Transform;
@@ -29,8 +29,8 @@ public class MaintenanceCompoundSettings implements CompoundSettings {
     public NetworkingConfiguration getNetworkingConfiguration(){ return networkingConfiguration; }
 
     // NETWORK SETTINGS //
-    private NetworkSettings networkSettings;
-    public NetworkSettings getNetworkSettings(){ return networkSettings; }
+    private NetworkSpacesSettings networkSettings;
+    public NetworkSpacesSettings getNetworkSettings(){ return networkSettings; }
 
     // MAIL TRANSFORM SETTINGS //
     private CompoundSettings mailTransformCompoundSettings;

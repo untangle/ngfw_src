@@ -138,10 +138,11 @@ class SettingsManager
         return networkSettings;
     }
 
-    NatSettings toNatSettings( Tid tid, SetupState state, NetworkSpacesInternalSettings networkSettings,
-                               ServicesInternalSettings servicesSettings )
+    NatBasicSettings toBasicSettings( Tid tid, SetupState state, 
+                                      NetworkSpacesInternalSettings networkSettings,
+                                      ServicesInternalSettings servicesSettings )
     {
-        NatSettings natSettings = null;
+        NatBasicSettings natSettings = null;
 
         if ( state.equals( SetupState.BASIC )) {
             natSettings = new NatSettingsImpl( tid );
@@ -211,7 +212,7 @@ class SettingsManager
     }
 
 
-    private void setupDmz( NatSettings settings, NetworkSpaceInternal space )
+    private void setupDmz( NatBasicSettings settings, NetworkSpaceInternal space )
     {
         settings.setDmzEnabled( space.getIsDmzHostEnabled());
         settings.setDmzLoggingEnabled( space.getIsDmzHostLoggingEnabled());
@@ -227,7 +228,7 @@ class SettingsManager
     }
 
 
-    NatSettings getDefaultSettings( Tid tid )
+    NatBasicSettings getDefaultSettings( Tid tid )
     {
         logger.info( "Using default settings" );
 

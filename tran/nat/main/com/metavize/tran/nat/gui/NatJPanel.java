@@ -69,7 +69,7 @@ public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Re
         
         // SAVE THE VALUES ////////////////////////////////////
 	if( !validateOnly ){
-	    NatSettings natSettings = (NatSettings) settings;
+	    NatBasicSettings natSettings = (NatBasicSettings) settings;
 	    natSettings.setNatEnabled( natEnabled );
 	    if( natEnabled ){
 		natSettings.setNatInternalAddress( natInternalAddress );
@@ -87,7 +87,7 @@ public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Re
     boolean isDhcpEnabledCurrent;
 
     public void doRefresh(Object settings) {
-        NatSettings natSettings = (NatSettings) settings;        
+        NatBasicSettings natSettings = (NatBasicSettings) settings;
         
         // ENABLED ///////////
 	natEnabledCurrent = natSettings.getNatEnabled();

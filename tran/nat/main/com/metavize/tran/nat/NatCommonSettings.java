@@ -13,6 +13,9 @@ package com.metavize.tran.nat;
 
 import java.util.List;
 
+import com.metavize.mvvm.tran.Validatable;
+import java.io.Serializable;
+
 import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.IPaddr;
 
@@ -22,7 +25,7 @@ import com.metavize.mvvm.networking.RedirectRule;
 import com.metavize.mvvm.networking.SetupState;
 
 
-public interface NatCommonSettings extends ServicesSettings
+public interface NatCommonSettings extends ServicesSettings, Validatable
 {
     // !!!!! private static final long serialVersionUID = 4349679825783697834L;
 

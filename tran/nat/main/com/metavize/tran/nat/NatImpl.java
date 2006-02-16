@@ -96,7 +96,7 @@ public class NatImpl extends AbstractTransform implements Nat
         eventLogger.addSimpleEventFilter(ef);
     }
 
-    public NatSettings getNatSettings()
+    public NatCommonSettings getNatSettings()
     {
         /* Get the settings from Network Spaces (The only state in the transform is the setup state) */
         
@@ -105,10 +105,10 @@ public class NatImpl extends AbstractTransform implements Nat
         
         SetupState state = getSetupState();
 
-        return settingsManager.toNatSettings( this.getTid(), state, networkSettings, getServicesSettings());
+        return settingsManager.toBasicSettings( this.getTid(), state, networkSettings, getServicesSettings());
     }
         
-    public void setNatSettings( NatSettings settings ) throws Exception
+    public void setNatSettings( NatCommonSettings settings ) throws Exception
     {        
         /* Remove all of the non-static addresses before saving */
         // !!!! Pushed into the networking package
@@ -128,10 +128,19 @@ public class NatImpl extends AbstractTransform implements Nat
         /* Integrate the settings from the internal network and the ones from the user */
         NetworkSpacesSettings networkSettings = networkManager.getNetworkSettings();
         
-        NetworkSpacesSettings newNetworkSettings;
+        NetworkSpacesSettings newNetworkSettings = null;
         
         try {
-            newNetworkSettings = this.settingsManager.toNetworkSettings( networkSettings, settings );
+            SetupState state = settings.getSetupState();
+            if ( state.equals( SetupState.BASIC )) {
+                newNetworkSettings = this.settingsManager.
+                    toNetworkSettings( networkSettings, (NatBasicSettings)settings );
+            } else if ( state.equals( SetupState.ADVANCED )) {
+                
+            } else {
+                throw new Exception( "Illegal setup state: " + state );
+            }
+            
         } catch ( Exception e ) {
             logger.error( "Unable to convert the settings objects.", e );
             throw e;
@@ -146,7 +155,19 @@ public class NatImpl extends AbstractTransform implements Nat
             throw e;
         }
     }
-
+    
+    /* Reinitialize the settings to basic nat */
+    public void resetBasic()
+    {
+        
+    }
+    
+    /* Convert the basic settings to advanced Network Spaces */
+    public void switchToAdvanced()
+    {
+        
+    }
+    
     public SetupState getSetupState()
     {
         return getNetworkSettings().getSetupState();
@@ -186,7 +207,7 @@ public class NatImpl extends AbstractTransform implements Nat
     {
         logger.info("Initializing Settings...");
 
-        NatSettings settings = settingsManager.getDefaultSettings( this.getTid());
+        NatBasicSettings settings = settingsManager.getDefaultSettings( this.getTid());
 
         /* Disable everything */
 
@@ -196,7 +217,7 @@ public class NatImpl extends AbstractTransform implements Nat
         dhcpMonitor.stop();
 
         try {
-            setNatSettings(settings);
+            setNatSettings( settings );
             // Handler doesn't need to be deconfigured at initialization.
             // handler.deconfigure();
         } catch( Exception e ) {
@@ -340,7 +361,7 @@ public class NatImpl extends AbstractTransform implements Nat
 
     public void setSettings(Object settings) throws Exception
     {
-        setNatSettings((NatSettings)settings);
+        setNatSettings((NatCommonSettings)settings);
     }
 
     private void configureDhcpMonitor( boolean isDhcpEnabled )

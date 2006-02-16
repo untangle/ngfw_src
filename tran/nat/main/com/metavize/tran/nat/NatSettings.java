@@ -11,13 +11,10 @@
 
 package com.metavize.tran.nat;
 
-import java.io.Serializable;
-import com.metavize.mvvm.tran.Validatable;
-
 /**
  * Settings for the Nat transform in simple mode.
  */
-public interface NatSettings extends Serializable, Validatable, NatCommonSettings, NatBasicSettings
+public interface NatSettings extends NatBasicSettings
 {
     
 }

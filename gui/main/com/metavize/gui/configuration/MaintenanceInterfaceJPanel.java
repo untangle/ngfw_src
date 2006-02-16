@@ -86,13 +86,13 @@ class InterfaceModel extends MSortedTableModel<MaintenanceCompoundSettings>{
         
 	// SAVE SETTINGS //////////
 	if( !validateOnly ){
-	    NetworkSettings networkSettings = maintenanceCompoundSettings.getNetworkSettings();
+	    NetworkSpacesSettings networkSettings = maintenanceCompoundSettings.getNetworkSettings();
 	    networkSettings.setInterfaceList(elemList);
 	}
     }
 
     public Vector<Vector> generateRows(MaintenanceCompoundSettings maintenanceCompoundSettings) {
-	NetworkSettings networkSettings = maintenanceCompoundSettings.getNetworkSettings();
+	NetworkSpacesSettings networkSettings = maintenanceCompoundSettings.getNetworkSettings();
 	List<Interface> interfaceList = 
             (List<Interface>) networkSettings.getInterfaceList();
         Vector<Vector> allRows = new Vector<Vector>(interfaceList.size());

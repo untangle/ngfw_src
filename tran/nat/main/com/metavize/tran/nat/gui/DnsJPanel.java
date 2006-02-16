@@ -57,7 +57,7 @@ public class DnsJPanel extends javax.swing.JPanel implements Savable<Object>, Re
         
         // SAVE SETTINGS  ////////////////////////////////////
 	if( !validateOnly ){
-	    NatSettings natSettings = (NatSettings) settings;
+	    NatCommonSettings natSettings = (NatCommonSettings) settings;
 	    natSettings.setDnsEnabled( dnsEnabled );
             if( dnsEnabled ){
                 natSettings.setDnsLocalDomain( dnsLocalDomain );
@@ -70,7 +70,7 @@ public class DnsJPanel extends javax.swing.JPanel implements Savable<Object>, Re
     String dnsLocalDomainCurrent;
 
     public void doRefresh(Object settings) {
-        NatSettings natSettings = (NatSettings) settings;
+        NatCommonSettings natSettings = (NatCommonSettings) settings;
 
         // ENABLED ///////////
 	dnsEnabledCurrent = natSettings.getDnsEnabled();

@@ -42,8 +42,8 @@ import com.metavize.mvvm.argon.ArgonManagerImpl;
 import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.firewall.intf.IntfMatcherFactory;
+import com.metavize.mvvm.tran.firewall.intf.IntfMatcher;
 import com.metavize.mvvm.tran.ValidateException;
-import com.metavize.mvvm.tran.firewall.IntfMatcher;
 import org.apache.log4j.Logger;
 
 import com.metavize.mvvm.networking.NetworkSettingsListener;

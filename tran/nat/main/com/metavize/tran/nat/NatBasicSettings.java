@@ -14,7 +14,7 @@ package com.metavize.tran.nat;
 import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.IPaddr;
 
-public interface NatBasicSettings
+public interface NatBasicSettings extends NatCommonSettings
 {
     /** Get whether or not nat is enabled. */
     public boolean getNatEnabled();

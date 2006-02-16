@@ -146,14 +146,14 @@ class RedirectTableModel extends MSortedTableModel<Object>{
         
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
-	    NatSettings natSettings = (NatSettings) settings;
+	    NatCommonSettings natSettings = (NatCommonSettings) settings;
 	    natSettings.setRedirectList( elemList );
 	}
     }
     
     
     public Vector<Vector> generateRows(Object settings) {
-        NatSettings natSettings = (NatSettings) settings;
+        NatCommonSettings natSettings = (NatCommonSettings) settings;
 	List<RedirectRule> redirectList = (List<RedirectRule>) natSettings.getRedirectList();
         Vector<Vector> allRows = new Vector<Vector>(redirectList.size());
 	Vector tempRow = null;

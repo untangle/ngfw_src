@@ -60,7 +60,7 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable<Object>, Re
         
         // SAVE THE VALUES ////////////////////////////////////
 	if( !validateOnly ){
-	    NatSettings natSettings = (NatSettings) settings;
+	    NatBasicSettings natSettings = (NatBasicSettings) settings;
 	    natSettings.setDmzEnabled( dmzEnabled );
 	    if(dmzEnabled){
 		natSettings.setDmzAddress( dmzTargetAddress );
@@ -76,7 +76,7 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable<Object>, Re
 
     public void doRefresh(Object settings) {
         
-        NatSettings natSettings = (NatSettings) settings;
+        NatBasicSettings natSettings = (NatBasicSettings) settings;
         
         // ENABLED ///////////
 	dmzEnabledCurrent = natSettings.getDmzEnabled();

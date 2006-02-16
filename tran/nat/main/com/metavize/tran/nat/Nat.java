@@ -19,10 +19,16 @@ import com.metavize.mvvm.networking.SetupState;
 
 public interface Nat extends Transform
 {
-    public NatSettings getNatSettings();
-    public void setNatSettings( NatSettings settings ) throws Exception;
+    public NatCommonSettings getNatSettings();
+    public void setNatSettings( NatCommonSettings settings ) throws Exception;
 
     public SetupState getSetupState();
+
+    /* Reinitialize the settings to basic nat */
+    public void resetBasic();
+    
+    /* Convert the basic settings to advanced Network Spaces */
+    public void switchToAdvanced();
 
     public EventManager<LogEvent> getEventManager();
 }

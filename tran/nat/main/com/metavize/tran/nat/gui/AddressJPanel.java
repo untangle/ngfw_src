@@ -86,7 +86,7 @@ class AddressTableModel extends MSortedTableModel<Object>{
 
     
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
-        NatSettings natSettings = (NatSettings) settings;        
+        NatCommonSettings natSettings = (NatCommonSettings) settings;
         List elemList = new ArrayList(tableVector.size());
 	DhcpLeaseRule newElem = null;
         int rowIndex = 0;
@@ -112,7 +112,7 @@ class AddressTableModel extends MSortedTableModel<Object>{
 
     
     public Vector<Vector> generateRows(Object settings) {    
-        NatSettings natSettings = (NatSettings) settings;
+        NatCommonSettings natSettings = (NatCommonSettings) settings;
 	List<DhcpLeaseRule> dhcpLeaseList = (List<DhcpLeaseRule>) natSettings.getDhcpLeaseList();
         Vector<Vector> allRows = new Vector<Vector>(dhcpLeaseList.size());
 	Vector tempRow = null;

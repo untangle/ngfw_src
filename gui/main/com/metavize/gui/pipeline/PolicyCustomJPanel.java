@@ -25,6 +25,8 @@ import com.metavize.mvvm.*;
 import com.metavize.mvvm.tran.*;
 import com.metavize.mvvm.policy.*;
 import com.metavize.mvvm.tran.firewall.*;
+import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
+import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
 
 public class PolicyCustomJPanel extends MEditTableJPanel {
 
@@ -119,6 +121,10 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
 	UserPolicyRule newElem = null;
 	int rowIndex = 0;
 
+        PortMatcherFactory pmf = PortMatcherFactory.getInstance();
+        IPMatcherFactory ipmf = IPMatcherFactory.getInstance();
+        
+
 	for( Vector rowVector : tableVector ){
 	    rowIndex++;
             newElem = (UserPolicyRule) rowVector.elementAt(11);
@@ -132,13 +138,13 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
             newElem.setInbound( isInbound );
 	    try{ newElem.setProtocol( ProtocolMatcher.parse(((ComboBoxModel) rowVector.elementAt(5)).getSelectedItem().toString()) ); }
 	    catch(Exception e){ throw new Exception("Invalid \"protocol\" in row: " + rowIndex); }	   
-	    try{ newElem.setClientAddr( IPMatcher.parse((String) rowVector.elementAt(6)) ); }
+	    try{ newElem.setClientAddr( ipmf.parse((String) rowVector.elementAt(6)) ); }
 	    catch(Exception e){ throw new Exception("Invalid \"client address\" in row: " + rowIndex); }
-	    try{ newElem.setServerAddr( IPMatcher.parse((String) rowVector.elementAt(7)) ); }
+	    try{ newElem.setServerAddr( ipmf.parse((String) rowVector.elementAt(7)) ); }
 	    catch(Exception e){ throw new Exception("Invalid \"server address\" in row: " + rowIndex); }
-	    try{ newElem.setClientPort( PortMatcher.parse((String) rowVector.elementAt(8)) ); }
+	    try{ newElem.setClientPort( pmf.parse((String) rowVector.elementAt(8)) ); }
 	    catch(Exception e){ throw new Exception("Invalid \"client port\" in row: " + rowIndex); }
-	    try{ newElem.setServerPort( PortMatcher.parse((String) rowVector.elementAt(9)) ); }
+	    try{ newElem.setServerPort( pmf.parse((String) rowVector.elementAt(9)) ); }
 	    catch(Exception e){ throw new Exception("Invalid \"server port\" in row: " + rowIndex); }
             newElem.setDescription( (String) rowVector.elementAt(10) );
             elemList.add(newElem);
