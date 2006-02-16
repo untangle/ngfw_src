@@ -43,6 +43,8 @@
     <url-pattern>/instreq</url-pattern>
   </servlet-mapping>
 
+  @JSP_PRE_COMPILED_SERVLETS@
+
   <security-constraint>
     <web-resource-collection>
       <url-pattern>/*</url-pattern>
