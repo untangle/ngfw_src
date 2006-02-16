@@ -15,7 +15,9 @@ import java.io.Serializable;
 import java.util.List;
 
 import com.metavize.mvvm.networking.NetworkSpacesSettings;
+import com.metavize.mvvm.networking.NetworkSpacesSettingsImpl;
 import com.metavize.mvvm.networking.ServicesSettings;
+import com.metavize.mvvm.networking.ServicesSettingsImpl;
 import com.metavize.mvvm.networking.NetworkSpace;
 import com.metavize.mvvm.networking.Interface;
 import com.metavize.mvvm.networking.Route;
@@ -31,8 +33,23 @@ import com.metavize.mvvm.tran.ValidateException;
 public class NatAdvancedSettingsImpl implements NatAdvancedSettings
 {
     // !!!! private static final long serialVersionUID = 4349679825783697834L;
-    NetworkSpacesSettings networkSpacesSettings;
-    ServicesSettings servicesSettings;
+    private final NetworkSpacesSettings networkSpacesSettings;
+    private final ServicesSettings servicesSettings;
+
+    /* Use with caution */
+    NatAdvancedSettingsImpl()
+    {
+        networkSpacesSettings = new NetworkSpacesSettingsImpl();
+
+        /* Not the perfect fit, but it implements services settings */
+        servicesSettings = new ServicesSettingsImpl();
+    }
+    
+    NatAdvancedSettingsImpl( NetworkSpacesSettings networkSpaces, ServicesSettings services )
+    {
+        this.networkSpacesSettings = networkSpaces;
+        this.servicesSettings = services;
+    }
 
     public SetupState getSetupState()
     {

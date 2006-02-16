@@ -99,13 +99,23 @@ public class NatImpl extends AbstractTransform implements Nat
     public NatCommonSettings getNatSettings()
     {
         /* Get the settings from Network Spaces (The only state in the transform is the setup state) */
-        
-        NetworkSpacesInternalSettings networkSettings = getNetworkSettings();
-        ServicesInternalSettings servicesSettings = getServicesSettings();
+        NetworkManagerImpl nm = getNetworkManager();
         
         SetupState state = getSetupState();
 
-        return settingsManager.toBasicSettings( this.getTid(), state, networkSettings, getServicesSettings());
+        NetworkSpacesSettings network = nm.getNetworkSettings();
+        NetworkSpacesInternalSettings networkInternal = nm.getNetworkInternalSettings();
+        ServicesInternalSettings servicesInternal = nm.getServicesInternalSettings();
+        
+        if ( state.equals( SetupState.BASIC )) {
+            return settingsManager.toBasicSettings( this.getTid(), networkInternal, servicesInternal );
+        } else if ( state.equals( SetupState.ADVANCED )) {
+            return settingsManager.toAdvancedSettings( network, servicesInternal );
+        }
+        
+        logger.error( "Invalid state: [" + state + "] using basic" );
+
+        return settingsManager.toBasicSettings( this.getTid(), networkInternal, servicesInternal );
     }
         
     public void setNatSettings( NatCommonSettings settings ) throws Exception
@@ -170,7 +180,13 @@ public class NatImpl extends AbstractTransform implements Nat
     
     public SetupState getSetupState()
     {
-        return getNetworkSettings().getSetupState();
+        SetupState state =getNetworkSettings().getSetupState();
+        if ( state == null ) {
+            logger.error( "NULL State" );
+            state = SetupState.BASIC;
+        }
+
+        return state;
     }
 
     public EventManager<LogEvent> getEventManager()

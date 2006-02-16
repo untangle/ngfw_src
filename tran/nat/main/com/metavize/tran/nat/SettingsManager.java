@@ -31,12 +31,14 @@ import com.metavize.mvvm.networking.NetworkSpacesSettings;
 import com.metavize.mvvm.networking.NetworkSpace;
 import com.metavize.mvvm.networking.NetworkSpacesSettingsImpl;
 import com.metavize.mvvm.networking.ServicesSettings;
+import com.metavize.mvvm.networking.ServicesSettingsImpl;
 import com.metavize.mvvm.networking.EthernetMedia;
 
 import com.metavize.mvvm.networking.internal.DhcpLeaseInternal;
 import com.metavize.mvvm.networking.internal.DnsStaticHostInternal;
 import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
 import com.metavize.mvvm.networking.internal.NetworkSpaceInternal;
+import com.metavize.mvvm.networking.internal.RedirectInternal;
 import com.metavize.mvvm.networking.internal.ServicesInternalSettings;
 
 import com.metavize.mvvm.security.Tid;
@@ -138,48 +140,48 @@ class SettingsManager
         return networkSettings;
     }
 
-    NatBasicSettings toBasicSettings( Tid tid, SetupState state, 
+    NatAdvancedSettings toAdvancedSettings( NetworkSpacesSettings network,
+                                            ServicesInternalSettings services )
+    {
+        return new NatAdvancedSettingsImpl( network, new ServicesSettingsImpl( services ));
+    }
+
+    NatBasicSettings toBasicSettings( Tid tid,
                                       NetworkSpacesInternalSettings networkSettings,
                                       ServicesInternalSettings servicesSettings )
     {
-        NatBasicSettings natSettings = null;
-
-        if ( state.equals( SetupState.BASIC )) {
-            natSettings = new NatSettingsImpl( tid );
+        NatBasicSettings natSettings = new NatSettingsImpl( tid );
+        
+        ((NatSettingsImpl)natSettings).setSetupState( SetupState.BASIC );
+        
+        List<NetworkSpaceInternal> networkSpaceList = networkSettings.getNetworkSpaceList();
+        
+        /* Get the network space list in order to determine how many spaces there are */
+        if ( networkSpaceList.size() == 1 ) {
+            /* Use this for the dmz */
+            NetworkSpaceInternal networkSpace = networkSpaceList.get( 0 );
             
-            List<NetworkSpaceInternal> networkSpaceList = networkSettings.getNetworkSpaceList();
+            /* Nat is disabled */
+            natSettings.setNatEnabled( false );
+            natSettings.setNatInternalAddress( NatUtil.DEFAULT_NAT_ADDRESS );
+            natSettings.setNatInternalSubnet( NatUtil.DEFAULT_NAT_NETMASK );                
+        } else if ( networkSpaceList.size() > 1 ) {
+            NetworkSpaceInternal networkSpace = networkSpaceList.get( 1 );
             
-            /* Get the network space list in order to determine how many spaces there are */
-            if ( networkSpaceList.size() == 1 ) {
-                /* Use this for the dmz */
-                NetworkSpaceInternal networkSpace = networkSpaceList.get( 0 );
-
-                /* Nat is disabled */
-                natSettings.setNatEnabled( false );
-                natSettings.setNatInternalAddress( NatUtil.DEFAULT_NAT_ADDRESS );
-                natSettings.setNatInternalSubnet( NatUtil.DEFAULT_NAT_NETMASK );                
-            } else if ( networkSpaceList.size() > 1 ) {
-                NetworkSpaceInternal networkSpace = networkSpaceList.get( 1 );
-                
-                natSettings.setNatEnabled( networkSpace.getIsEnabled());
-                IPNetwork primary = networkSpace.getPrimaryAddress();
-                natSettings.setNatInternalAddress( primary.getNetwork());
-                natSettings.setNatInternalSubnet( primary.getNetmask());                
-            } else {
-                logger.error( "No network spaces, returning default settings" );
-                natSettings = getDefaultSettings( tid );
-            }
-
-            /* DMZ settings (DMZ settings are registered against the primary space) */
-            setupDmz( natSettings, networkSpaceList.get( 0 ));
-        } else if ( state.equals( SetupState.ADVANCED )) {
-            throw new IllegalStateException( "Implement me" );
+            natSettings.setNatEnabled( networkSpace.getIsEnabled());
+            IPNetwork primary = networkSpace.getPrimaryAddress();
+            natSettings.setNatInternalAddress( primary.getNetwork());
+            natSettings.setNatInternalSubnet( primary.getNetmask());                
         } else {
-            logger.error( "Invalid setup state [" + state + "]" );
+            logger.error( "No network spaces, returning default settings" );
+            natSettings = getDefaultSettings( tid );
         }
+        
+        /* DMZ settings (DMZ settings are registered against the primary space) */
+        setupDmz( natSettings, networkSpaceList.get( 0 ));
 
         /* Setup the services settings */
-
+        
         /* dhcp settings */
         if ( servicesSettings == null ) {
             /* Default services settings */
@@ -206,8 +208,13 @@ class SettingsManager
         }
         
         /* Setup the redirect settings */
-        /* XXXXXXX */
-        
+        List<RedirectRule> redirectList = new LinkedList<RedirectRule>();
+
+        for ( RedirectInternal internal : networkSettings.getRedirectList()) {
+            redirectList.add( internal.toRule());
+        }
+        natSettings.setRedirectList( redirectList );
+                
         return natSettings;
     }
 
