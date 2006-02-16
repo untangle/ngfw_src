@@ -79,11 +79,8 @@ function getHTTPStatus() {
 #
 # returns the return of CURL
 function callCurl() {
-  # There is odd stuff printed to the screen which I cannot supress even
-  # by redirecting stderr ?!?
-  #   &2>1 > /dev/null
   debug "Calling CURL.  Dumping headers to $2"
-  curl $URL -F boxkey=$BOX_KEY -F uploadedfile=@$1 --dump-header $2 --max-time $TIMEOUT > /dev/null 2>&1
+  curl $URL -k -F boxkey=$BOX_KEY -F uploadedfile=@$1 --dump-header $2 --max-time $TIMEOUT > /dev/null 2>&1
   return $?
 }
 
