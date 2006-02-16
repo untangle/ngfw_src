@@ -148,6 +148,9 @@ class HttpInvoker extends InvokerBase
                 return;
             }
 
+            if (logger.isDebugEnabled()) 
+                logger.debug("Invoking " + target.getClass() + "." + methodName);
+
             Method method = targetDesc.getMethod(methodName);
 
             // XXX setting context-cl to current object's cl may not
