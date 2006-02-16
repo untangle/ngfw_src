@@ -13,41 +13,54 @@ package com.metavize.mvvm;
 
 import com.metavize.mvvm.tran.ValidateException;
 
-import com.metavize.mvvm.networking.NetworkSettings;
 import com.metavize.mvvm.networking.NetworkException;
 import com.metavize.mvvm.networking.BasicNetworkSettings;
+import com.metavize.mvvm.networking.NetworkSpacesSettings;
+import com.metavize.mvvm.networking.DhcpStatus;
 
 public interface NetworkManager
 {
     /**
      * Retrieve the basic network settings
      */
-    public BasicNetworkSettings getBasicNetworkSettings();
+    public NetworkingConfiguration getNetworkingConfiguration();
 
     /* Save the basic network settings */
-    public void setNetworkSettings( BasicNetworkSettings configuration ) 
+    public void setNetworkingConfiguration( NetworkingConfiguration configuration ) 
         throws NetworkException, ValidateException;
 
     /**
      * Retrieve the current network configuration
      */
-    public NetworkSettings getNetworkSettings();
+    public NetworkSpacesSettings getNetworkSettings();
     
     /**
      * Set a network configuration.
      * @param configuration - Configuration to save
      */
-    public void setNetworkSettings( NetworkSettings networkSettings ) 
+    public void setNetworkSettings( NetworkSpacesSettings networkSettings ) 
         throws NetworkException, ValidateException;
-    
-    /* Renew the DHCP address and return a new network settings with the updated address */
-    public NetworkSettings renewDhcpLease() throws Exception;
 
+    /** Update the internal representation of the address */
+    public void updateAddress() throws NetworkException;
+
+    /** This should require an interface list to block */
+    public void disableDhcpForwarding();
+    public void enableDhcpForwarding();
+
+    public void subscribeLocalOutside( boolean newValue );
+    
     /* Retrieve a mapping of all of the interfaces */
     public IntfEnum getIntfEnum();
 
+    /* Renew the DHCP address and return a new network settings with the updated address */
+    public NetworkingConfiguration renewDhcpLease() throws NetworkException;
+    
+    /* Renew the DHCP address for a network space. */
+    public DhcpStatus renewDhcpLease( int index ) throws NetworkException;
+
     /* Get the external HTTPS port */
-    public int getExternalHttpsPort();
+    public int getPublicHttpsPort();
 
     /* Get the hostname of the box */
     public String getHostname();

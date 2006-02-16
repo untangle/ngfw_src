@@ -20,6 +20,7 @@ import com.metavize.gui.util.*;
 import com.metavize.mvvm.tran.*;
 import com.metavize.mvvm.tran.firewall.*;
 import com.metavize.tran.nat.*;
+import com.metavize.mvvm.networking.DnsStaticHostRule;
 
 
 import java.util.*;

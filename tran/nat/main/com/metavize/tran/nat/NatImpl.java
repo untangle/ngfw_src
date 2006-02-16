@@ -15,8 +15,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.NetworkingConfiguration;
+import com.metavize.mvvm.MvvmLocalContext;
+
+import com.metavize.mvvm.networking.NetworkManagerImpl;
+import com.metavize.mvvm.networking.NetworkException;
+import com.metavize.mvvm.networking.RedirectRule;
+import com.metavize.mvvm.networking.SetupState;
+import com.metavize.mvvm.networking.NetworkSpacesSettings;
+import com.metavize.mvvm.networking.ServicesSettings;
+import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
+import com.metavize.mvvm.networking.internal.ServicesInternalSettings;
 import com.metavize.mvvm.argon.SessionMatcher;
 import com.metavize.mvvm.argon.SessionMatcherFactory;
 import com.metavize.mvvm.logging.EventLogger;
@@ -24,7 +35,6 @@ import com.metavize.mvvm.logging.EventLoggerFactory;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SimpleEventFilter;
-import com.metavize.mvvm.networking.SetupState;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
@@ -34,49 +44,42 @@ import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformException;
+import com.metavize.mvvm.tran.ParseException;
 import com.metavize.mvvm.tran.TransformStartException;
 import com.metavize.mvvm.tran.TransformState;
 import com.metavize.mvvm.tran.TransformStopException;
-import com.metavize.mvvm.tran.firewall.IPMatcher;
-import com.metavize.mvvm.tran.firewall.IntfMatcher;
-import com.metavize.mvvm.tran.firewall.PortMatcher;
-import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
-import com.metavize.mvvm.util.TransactionWork;
+
 import com.metavize.tran.token.TokenAdaptor;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 public class NatImpl extends AbstractTransform implements Nat
 {
     private final NatEventHandler handler;
     private final NatSessionManager sessionManager;
+    private final SettingsManager settingsManager;
     final NatStatisticManager statisticManager;
+    private final DhcpMonitor dhcpMonitor;
 
     private final SoloPipeSpec natPipeSpec;
     private final SoloPipeSpec natFtpPipeSpec;
 
     private final PipeSpec[] pipeSpecs;
 
-    private final DhcpManager dhcpManager;
-
     private final EventLogger<LogEvent> eventLogger;
 
     private final Logger logger = Logger.getLogger( NatImpl.class );
 
-    private NatSettings settings = null;
-
     public NatImpl()
     {
-        handler = new NatEventHandler(this);
-        sessionManager = new NatSessionManager(this);
-        dhcpManager = new DhcpManager( this );
-        statisticManager = new NatStatisticManager(getTransformContext());
+        this.handler          = new NatEventHandler(this);
+        this.sessionManager   = new NatSessionManager(this);
+        this.statisticManager = new NatStatisticManager(getTransformContext());
+        this.settingsManager  = new SettingsManager();
+        this.dhcpMonitor      = new DhcpMonitor( this, MvvmContextFactory.context());
 
         /* Have to figure out pipeline ordering, this should always next
          * to towards the outside */
         natPipeSpec = new SoloPipeSpec
-            ("nat", this, handler, Fitting.OCTET_STREAM, Affinity.OUTSIDE,
+            ("nat", this, this.handler, Fitting.OCTET_STREAM, Affinity.OUTSIDE,
              SoloPipeSpec.MAX_STRENGTH - 1);
 
         /* This subscription has to evaluate after NAT */
@@ -95,66 +98,59 @@ public class NatImpl extends AbstractTransform implements Nat
 
     public NatSettings getNatSettings()
     {
-        if (settings.getDhcpEnabled()) {
-            /* Insert all of the leases from DHCP */
-            dhcpManager.loadLeases(settings);
-        } else {
-            /* remove any leftover leases from DHCP */
-            dhcpManager.fleeceLeases(settings);
-        }
+        /* Get the settings from Network Spaces (The only state in the transform is the setup state) */
+        
+        NetworkSpacesInternalSettings networkSettings = getNetworkSettings();
+        ServicesInternalSettings servicesSettings = getServicesSettings();
+        
+        SetupState state = getSetupState();
 
-        return this.settings;
+        return settingsManager.toNatSettings( this.getTid(), state, networkSettings, getServicesSettings());
     }
-
-    public void setNatSettings(final NatSettings settings) throws Exception
-    {
+        
+    public void setNatSettings( NatSettings settings ) throws Exception
+    {        
         /* Remove all of the non-static addresses before saving */
-        dhcpManager.fleeceLeases( settings );
-
+        // !!!! Pushed into the networking package
+        // dhcpManager.fleeceLeases( settings );
+        
         /* Validate the settings */
         try {
             settings.validate();
         }
-        catch (Exception e) {
+        catch ( Exception e ) {
             logger.error("Invalid NAT settings", e);
             throw e;
         }
 
-        TransactionWork tw = new TransactionWork()
-            {
-                public boolean doWork(Session s)
-                {
-                    s.saveOrUpdate(settings);
-                    NatImpl.this.settings = settings;
-                    return true;
-                }
-
-                public Object getResult() { return null; }
-            };
-        getTransformContext().runTransaction(tw);
-
+        NetworkManagerImpl networkManager = getNetworkManager();
+        
+        /* Integrate the settings from the internal network and the ones from the user */
+        NetworkSpacesSettings networkSettings = networkManager.getNetworkSettings();
+        
+        NetworkSpacesSettings newNetworkSettings;
+        
         try {
-            reconfigure();
-
-            if (getRunState() == TransformState.RUNNING) {
-                /* NAT configuration needs information from the
-                 * networking settings. */
-                NetworkingConfiguration netConfig = MvvmContextFactory.context().networkingManager().get();
-
-                /* Have to configure DHCP before the handler */
-                dhcpManager.configure(settings, netConfig);
-                this.handler.configure(settings, netConfig);
-                dhcpManager.startDnsMasq();
-            }
-        } catch (TransformException exn) {
-            logger.error( "Could not save Nat settings", exn );
+            newNetworkSettings = this.settingsManager.toNetworkSettings( networkSettings, settings );
+        } catch ( Exception e ) {
+            logger.error( "Unable to convert the settings objects.", e );
+            throw e;
+        }
+        
+        try {
+            /* Have to reconfigure the network before configure the services settings */
+            networkManager.setNetworkSettings( newNetworkSettings );
+            networkManager.setServicesSettings( settings );
+        } catch ( Exception e ) {
+            logger.error( "Could not reconfigure the network", e );
+            throw e;
         }
     }
 
     public SetupState getSetupState()
     {
-        return SetupState.BASIC;
-    }    
+        return getNetworkSettings().getSetupState();
+    }
 
     public EventManager<LogEvent> getEventManager()
     {
@@ -190,12 +186,14 @@ public class NatImpl extends AbstractTransform implements Nat
     {
         logger.info("Initializing Settings...");
 
-        NatSettings settings = getDefaultSettings();
+        NatSettings settings = settingsManager.getDefaultSettings( this.getTid());
 
         /* Disable everything */
 
         /* deconfigure the event handle and the dhcp manager */
-        dhcpManager.deconfigure();
+        // !!!! Pushed into the networking package
+        // dhcpManager.deconfigure();
+        dhcpMonitor.stop();
 
         try {
             setNatSettings(settings);
@@ -211,47 +209,45 @@ public class NatImpl extends AbstractTransform implements Nat
 
     protected void postInit(String[] args)
     {
-        TransactionWork tw = new TransactionWork()
-            {
-                public boolean doWork(Session s)
-                {
-                    Query q = s.createQuery("from NatSettings hbs where hbs.tid = :tid");
-                    q.setParameter("tid", getTid());
-                    NatImpl.this.settings = (NatSettings)q.uniqueResult();
-
-                    updateToCurrent(NatImpl.this.settings);
-
-                    return true;
-                }
-
-                public Object getResult() { return null; }
-            };
-        getTransformContext().runTransaction(tw);
     }
 
     protected void preStart() throws TransformStartException
     {
         eventLogger.start();
 
+        MvvmLocalContext context = MvvmContextFactory.context();
+        MvvmLocalContext.MvvmState state = context.state();
+        NetworkManagerImpl networkManager = (NetworkManagerImpl)context.networkManager();
+        
+        NetworkSpacesInternalSettings networkSettings = getNetworkSettings();
+        ServicesInternalSettings servicesSettings = getServicesSettings();
+
+        /* Have to configure DHCP before the handler */
+        // ??????
+//         try {
+//             if ( !state.equals( MvvmLocalContext.MvvmState.LOADED ))  {
+//                 logger.debug( "Enabling services since user turned on network spaces." );
+                
+//             }
+//         } catch ( NetworkException e ) {
+//             logger.error( "Unable to configure DHCP/DNS server", e );
+//             throw new TransformStartException( "Unable to configure DHCP/DNS server" );
+//         }
+        
         try {
-            reconfigure();
-        } catch (Exception e) {
-            throw new TransformStartException(e);
+            configureDhcpMonitor( servicesSettings.getIsDhcpEnabled());
+            this.handler.configure( networkSettings );
+
+            // !!!! Pushed into the networking package dhcpManager.startDnsMasq();
+            networkManager.startServices();
+        } catch( TransformException e ) {
+            logger.error( "Could not configure the handler.", e );
+            throw new TransformStartException( "Unable to configure the handler" );
+        } catch( NetworkException e ) {
+            logger.error( "Could not start services.", e );
+            throw new TransformStartException( "Unable to configure the handler" );
         }
-
-        /* NAT configuration needs information from the networking settings. */
-        NetworkingConfiguration netConfig = MvvmContextFactory.context()
-            .networkingManager().get();
-
-
-        dhcpManager.configure( settings, netConfig );
-        try {
-            handler.configure( settings, netConfig );
-        } catch ( TransformException e ) {
-            throw new TransformStartException(e);
-        }
-        dhcpManager.startDnsMasq();
-
+        
         statisticManager.start();
     }
 
@@ -265,17 +261,31 @@ public class NatImpl extends AbstractTransform implements Nat
     {
         /* Kill all active sessions */
         shutdownMatchingSessions();
+        
+        MvvmLocalContext context = MvvmContextFactory.context();
+        
+        MvvmLocalContext.MvvmState state = context.state();
 
-        dhcpManager.deconfigure();
+        NetworkManagerImpl networkManager = (NetworkManagerImpl)context.networkManager();
+        
+        /* Only stop the services if the box isn't going down (the user turned off the appliance) */
+        if ( !state.equals( MvvmLocalContext.MvvmState.DESTROYED ))  {
+            logger.debug( "Disabling services since user turned off network spaces." );
+            networkManager.stopServices();
+        }
+        
+        dhcpMonitor.stop();
 
         statisticManager.stop();
 
         /* deconfigure the event handle */
-        try {
-            handler.deconfigure();
-        } catch ( TransformException e ) {
-            /* XXX Why ??? */
-            throw new TransformStopException( e );
+        handler.deconfigure();
+
+        /* Deconfigure the network spaces */
+        /* Only stop the services if the box isn't going down (the user turned off the appliance) */
+        if ( !state.equals( MvvmLocalContext.MvvmState.DESTROYED )) {
+            logger.debug( "Disabling network spaces since user turned off network spaces." );
+            networkManager.disableNetworkSpaces();
         }
 
         eventLogger.stop();
@@ -283,22 +293,30 @@ public class NatImpl extends AbstractTransform implements Nat
 
     public void reconfigure() throws TransformException
     {
-        NatSettings settings = getNatSettings();
-
         logger.info("Reconfigure()");
 
         /* ????, what goes here. Configure the handler */
-
-        /* Settings will always be null right now */
-        if (settings == null) throw new TransformException("Failed to get Nat settings: " + settings);
+        
+        /* Retrieve the new settings from the network manager */
+        NetworkManagerImpl networkManager = (NetworkManagerImpl)MvvmContextFactory.context().networkManager();
+        NetworkSpacesInternalSettings networkSettings = networkManager.getNetworkInternalSettings();
+        ServicesInternalSettings servicesSettings = getServicesSettings();
+        
+        if ( getRunState() == TransformState.RUNNING ) {
+            /* Have to configure DHCP before the handler, this automatically starts the dns server */
+            configureDhcpMonitor( servicesSettings.getIsDhcpEnabled());
+            this.handler.configure( networkSettings );
+        } else {
+            networkManager.stopServices();
+        }
     }
 
-    private void updateToCurrent(NatSettings settings)
+    private void updateToCurrent( NatSettings settings )
     {
         if (settings == null) {
             logger.error("NULL Nat Settings");
         } else {
-            logger.info("Update Settings Complete");
+            logger.info( "Update Settings Complete" );
         }
     }
 
@@ -325,135 +343,24 @@ public class NatImpl extends AbstractTransform implements Nat
         setNatSettings((NatSettings)settings);
     }
 
-    private NatSettings getDefaultSettings()
+    private void configureDhcpMonitor( boolean isDhcpEnabled )
     {
-        logger.info( "Using default settings" );
-
-        NatSettings settings = new NatSettings( this.getTid());
-
-        List<RedirectRule> redirectList = new LinkedList<RedirectRule>();
-
-        try {
-            settings.setNatEnabled( true );
-            settings.setNatInternalAddress( IPaddr.parse( "192.168.1.1" ));
-            settings.setNatInternalSubnet( IPaddr.parse( "255.255.255.0" ));
-
-            settings.setDmzLoggingEnabled( false );
-
-            /* DMZ Settings */
-            settings.setDmzEnabled( false );
-            /* A sample DMZ */
-            settings.setDmzAddress( IPaddr.parse( "192.168.1.2" ));
-
-            RedirectRule tmp = new RedirectRule( false, ProtocolMatcher.MATCHER_ALL,
-                                                 IntfMatcher.getOutside(), IntfMatcher.getAll(),
-                                                 IPMatcher.MATCHER_ALL, IPMatcher.MATCHER_LOCAL,
-                                                 PortMatcher.MATCHER_ALL, new PortMatcher( 8080 ),
-                                                 true, IPaddr.parse( "192.168.1.16" ), 80 );
-            tmp.setDescription( "Redirect incoming traffic to EdgeGuard port 8080 to port 80 on 192.168.1.16" );
-            tmp.setLog( true );
-
-            redirectList.add( tmp );
-
-            tmp = new RedirectRule( false, ProtocolMatcher.MATCHER_ALL,
-                                    IntfMatcher.getOutside(), IntfMatcher.getAll(),
-                                    IPMatcher.MATCHER_ALL, IPMatcher.MATCHER_ALL,
-                                    PortMatcher.MATCHER_ALL, new PortMatcher( 6000, 10000 ),
-                                    true, (IPaddr)null, 6000 );
-            tmp.setDescription( "Redirect incoming traffic from ports 6000-10000 to port 6000" );
-            redirectList.add( tmp );
-
-            tmp = new RedirectRule( false, ProtocolMatcher.MATCHER_ALL,
-                                    IntfMatcher.getInside(), IntfMatcher.getAll(),
-                                    IPMatcher.MATCHER_ALL, IPMatcher.parse( "1.2.3.4" ),
-                                    PortMatcher.MATCHER_ALL, PortMatcher.MATCHER_ALL,
-                                    true, IPaddr.parse( "4.3.2.1" ), 0 );
-            tmp.setDescription( "Redirect outgoing traffic going to 1.2.3.4 to 4.2.3.1, (port is unchanged)" );
-            tmp.setLog( true );
-
-            redirectList.add( tmp );
-
-
-            for ( Iterator<RedirectRule> iter = redirectList.iterator() ; iter.hasNext() ; ) {
-                iter.next().setCategory( "[Sample]" );
-            }
-
-            /* Enable DNS and DHCP */
-            settings.setDnsEnabled( true );
-            settings.setDhcpEnabled( true );
-
-            settings.setDhcpStartAndEndAddress( IPaddr.parse( "192.168.1.100" ),
-                                                IPaddr.parse( "192.168.1.200" ));
-        } catch ( Exception e ) {
-            logger.error( "This should never happen", e );
-        }
-
-        settings.setRedirectList( redirectList );
-
-        return settings;
+        if ( isDhcpEnabled ) dhcpMonitor.start();
+        else dhcpMonitor.stop();
+    }
+    
+    private NetworkManagerImpl getNetworkManager()
+    {
+        return (NetworkManagerImpl)MvvmContextFactory.context().networkManager();
+    }
+    private NetworkSpacesInternalSettings getNetworkSettings()
+    {
+        return getNetworkManager().getNetworkInternalSettings();
     }
 
-    private NatSettings getTestSettings()
+    private ServicesInternalSettings getServicesSettings()
     {
-        logger.info( "Using the test settings" );
-
-        NatSettings settings = new NatSettings( this.getTid());
-
-        /* Need this to lookup the local IP address */
-        NetworkingConfiguration netConfig = MvvmContextFactory.context().networkingManager().get();
-
-        try {
-            /* Nat settings */
-            settings.setNatEnabled( true );
-            settings.setNatInternalAddress( IPaddr.parse( "192.168.1.1" ));
-            settings.setNatInternalSubnet( IPaddr.parse( "255.255.255.0" ));
-
-            /* DMZ Settings */
-            settings.setDmzEnabled( true );
-            settings.setDmzAddress( IPaddr.parse( "192.168.1.4" ));
-
-            /* Redirect settings */
-            IPaddr redirectHost        = IPaddr.parse( "192.168.1.6" );
-            IPMatcher localHostMatcher = new IPMatcher( netConfig.host());
-
-            List redirectList = new LinkedList();
-
-            /* This rule is enabled, redirect port 7000 to the redirect host port 7 */
-            redirectList.add( new RedirectRule( true, ProtocolMatcher.MATCHER_ALL,
-                                                IntfMatcher.getOutside(), IntfMatcher.getAll(),
-                                                IPMatcher.MATCHER_ALL, localHostMatcher,
-                                                PortMatcher.MATCHER_ALL, new PortMatcher( 7000 ),
-                                                true, redirectHost, 7 ));
-
-            /* This rule is disabled, to verify the on off switch works */
-            redirectList.add( new RedirectRule( false, ProtocolMatcher.MATCHER_ALL,
-                                                IntfMatcher.getInside(), IntfMatcher.getInside(),
-                                                IPMatcher.MATCHER_ALL, localHostMatcher,
-                                                PortMatcher.MATCHER_ALL, new PortMatcher( 5901 ),
-                                                true, redirectHost, 5900 ));
-
-            settings.setRedirectList( redirectList );
-
-            /* Enable DNS and DHCP */
-            settings.setDnsEnabled( true );
-            settings.setDhcpEnabled( true );
-
-            /* Quick sanity test, remove in a second */
-            IPaddr tmp  = IPaddr.parse( "192.168.1.1" );
-            IPaddr full = IPaddr.parse( "0.0.0.0" );
-
-            if ( !tmp.isInNetwork( tmp, full ))
-                throw new IllegalStateException( "isInNetwork is totally busted" );
-
-            /* Set in reverse to test if it works */
-            settings.setDhcpStartAndEndAddress( IPaddr.parse( "192.168.1.155" ),
-                                                IPaddr.parse( "192.168.1.150" ));
-
-        } catch (Exception e ) {
-            logger.error( "This should never happen", e );
-        }
-
-        return settings;
+        return getNetworkManager().getServicesInternalSettings();
     }
 
     NatSessionManager getSessionManager()

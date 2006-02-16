@@ -24,11 +24,16 @@ import com.metavize.mvvm.tran.IPaddr;
 import static com.metavize.mvvm.tran.script.ScriptWriter.COMMENT;
 import static com.metavize.mvvm.tran.script.ScriptWriter.METAVIZE_HEADER;
 
+import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
+import com.metavize.mvvm.networking.internal.NetworkSpaceInternal;
+import com.metavize.mvvm.networking.internal.RouteInternal;
+import com.metavize.mvvm.networking.internal.InterfaceInternal;
+
 class InterfacesScriptWriter extends ScriptWriter
 {
     private static final Logger logger = Logger.getLogger( InterfacesScriptWriter.class );
 
-    private final NetworkSettings configuration;
+    private final NetworkSpacesInternalSettings settings;
 
     private static final String INTERFACE_HEADER = 
         COMMENT + METAVIZE_HEADER +
@@ -40,38 +45,42 @@ class InterfacesScriptWriter extends ScriptWriter
     private static final String BUNNICULA_BASE = System.getProperty( "bunnicula.home" );
     private static final String FLUSH_CONFIG = BUNNICULA_BASE + "/networking/flush-interfaces";
 
-    InterfacesScriptWriter( NetworkSettings configuration )
+    private static final String DHCP_BOGUS_ADDRESS = "169.254.210.5";
+
+    /* String used to indicate that pump should only update the address of the interface */
+    static final String DHCP_FLAG_ADDRESS_ONLY = " --no-gateway --no-resolvconf ";
+
+    InterfacesScriptWriter( NetworkSpacesInternalSettings settings )
     {
         super();
-        this.configuration = configuration;
+        this.settings = settings;
     }
     
     /* This function should only be called once */
-    void addNetworkSettings()
-        throws NetworkException, ArgonException
+    void addNetworkSettings() throws NetworkException, ArgonException
     {
         boolean isFirst = true;
-        for ( Iterator<NetworkSpace> iter = this.configuration.getNetworkSpaceList().iterator() ; 
+        for ( Iterator<NetworkSpaceInternal> iter = this.settings.getNetworkSpaceList().iterator() ; 
               iter.hasNext() ; ) {
-            NetworkSpace space = iter.next();
+            NetworkSpaceInternal space = iter.next();
             addNetworkSpace( space, isFirst, !iter.hasNext());
             isFirst = false;
         }
     }
 
     /* Index is used to name the bridge */
-    private void addNetworkSpace( NetworkSpace space, boolean isFirst, boolean isLast )
+    private void addNetworkSpace( NetworkSpaceInternal space, boolean isFirst, boolean isLast )
         throws NetworkException, ArgonException
     {
         NetworkUtilPriv nu = NetworkUtilPriv.getPrivInstance();
-        List<Interface> interfaceList = (List<Interface>)space.getInterfaceList();
+        List<InterfaceInternal> interfaceList = (List<InterfaceInternal>)space.getInterfaceList();
         String name = space.getDeviceName();
         boolean isBridge = space.isBridge();
         int mtu = space.getMtu();
                 
         appendLine( "auto " + name );
 
-        List<IPNetworkRule> networkList = (List<IPNetworkRule>)space.getNetworkList();
+        List<IPNetwork> networkList = (List<IPNetwork>)space.getNetworkList();
         IPNetwork primaryAddress = null;
         
         appendLine( "iface " + name + " inet manual" );
@@ -81,42 +90,50 @@ class InterfacesScriptWriter extends ScriptWriter
             appendCommands( "pre-up if [ -r " + FLUSH_CONFIG + " ]; then sh " + FLUSH_CONFIG + "; fi" );
         }
 
-        /* If this is a bridge, then add the necessary configuration for the bridge */
+        /* If this is a bridge, then add the necessary settings for the bridge */
         if ( isBridge ) {
             appendCommands( "up brctl addbr " + name );
 
             /* Build a list of all of the ports inside of the bridge */
-            for ( Interface intf : interfaceList ) {
-                String dev = nu.getDeviceName( intf );
+            for ( InterfaceInternal intf : interfaceList ) {
+                String dev = intf.getIntfName();
                 appendCommands( "up brctl addif " + name + " " + dev,
                                 "up ifconfig " + dev + " 0.0.0.0 mtu " + mtu + " up" );
             }
         }
         
         /* Add the primary address */
-        if ( space.hasPrimaryAddress()) {
-            primaryAddress = space.getPrimaryAddress();
-            appendLine( "\tup ifconfig " + name + " " + primaryAddress.getNetwork() +
-                         " netmask " + primaryAddress.getSubnet() + " mtu " + mtu );
+        if ( space.getIsDhcpEnabled()) {
+            /* This jibberish guarantees that if the device doesn't come up, it still
+             * gets an address */
+            String flags = "";
+            
+            /* If this is not the primary space, then the gateway and
+             * /etc/resolv.conf should not be updated. */
+            if ( !isFirst ) flags = DHCP_FLAG_ADDRESS_ONLY;
+
+            String command = "up pump " + flags + " -i " + name + 
+                " || ifconfig " + name + " " + DHCP_BOGUS_ADDRESS + space.getIndex() + 
+                " netmask 255.255.255.0"; 
+            
+            appendCommands( command );
+            appendCommands( "up ifconfig " + name + " mtu " + mtu );
         } else {
-            if ( space.getIsDhcpEnabled()) {
-                appendCommands( "up pump -i " + name );
-                appendCommands( "up ifconfig " + name + " mtu " + mtu );
-            } else {
-                appendCommands( "up ifconfig " + name + " 0.0.0.0 mtu " + mtu + " up" );
-            }
+            primaryAddress = space.getPrimaryAddress();
+            appendCommands( "up ifconfig " + name + " " + primaryAddress.getNetwork() +
+                            " netmask " + primaryAddress.getNetmask() + " mtu " + mtu );
         }
 
         /* Add all of the aliases */
         int aliasIndex = 0;
-        for ( IPNetworkRule networkRule : networkList ) {
-            IPNetwork network = networkRule.getNetwork();
-            if ( network.equals( primaryAddress )) continue;
+        for ( IPNetwork network : networkList ) {
+            /* Only add the primary address is DHCP is not enabled */
+            if ( !space.getIsDhcpEnabled() && network.equals( primaryAddress )) continue;
             
             if ( nu.isUnicast( network )) {
-                String aliasName = name + ":" + aliasIndex;
+                String aliasName = name + ":" + aliasIndex++;
                 appendCommands( "up ifconfig " + aliasName + " " + network.getNetwork() +
-                                " netmask " + network.getSubnet() + " mtu " + mtu );
+                                " netmask " + network.getNetmask() + " mtu " + mtu );
             } else {
                 appendCommands( "up ip route add to " + nu.toRouteString( network ) + " dev " + name );
             }
@@ -125,13 +142,14 @@ class InterfacesScriptWriter extends ScriptWriter
         /* Add the default route and all of the other routes after configuring the
          * last network space */
         if ( isLast ) {
-            IPaddr defaultRoute = configuration.getDefaultRoute();
+            IPaddr defaultRoute = settings.getDefaultRoute();
             
             /* Add the routing table */
-            for ( Route route : (List<Route>)configuration.getRoutingTable()) {
-                if ( route.getNetworkSpace() != null ) {
-                    logger.warn( "Custom routing rules with per network space are presently not supported" );
-                }
+            for ( RouteInternal route : (List<RouteInternal>)settings.getRoutingTable()) {
+                // !!! This is currently not supported.
+                // if ( route.getNetworkSpace() != null ) {
+                // logger.warn( "Custom routing rules with per network space are presently not supported" );
+                //}
 
                 appendCommands( "up ip route add to " + nu.toRouteString( route.getDestination()) + " via " + 
                                 route.getNextHop());
@@ -139,7 +157,7 @@ class InterfacesScriptWriter extends ScriptWriter
 
             /* Add the default route last */
             if (( defaultRoute != null ) && ( !defaultRoute.isEmpty())) {
-                appendCommands( "up ip route add to default via " + configuration.getDefaultRoute());
+                appendCommands( "up ip route add to default via " + settings.getDefaultRoute());
             }
             
             appendCommands( "up ip route flush table cache" );
@@ -159,5 +177,4 @@ class InterfacesScriptWriter extends ScriptWriter
     {
         return INTERFACE_HEADER;
     }
-
 } 

@@ -11,7 +11,6 @@
 
 package com.metavize.mvvm.networking;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Iterator;
@@ -19,7 +18,6 @@ import java.util.Iterator;
 import com.metavize.mvvm.tran.Rule;
 
 import com.metavize.mvvm.tran.IPaddr;
-
 
 /**
  * The configuration state for one network space.
@@ -32,32 +30,50 @@ import com.metavize.mvvm.tran.IPaddr;
 public class NetworkSpace extends Rule
 {
     /* There should be at least one */
-    private List networkList = Collections.emptyList();
+    private List networkList = new LinkedList();
 
     private static final int DEFAULT_MTU = 1500;
-
-    private IPNetwork primaryAddress;
     
     private boolean isDhcpEnabled;
     private boolean isTrafficForwarded = true;
     
     private int mtu = DEFAULT_MTU;
-    private int index = -1;
 
     /* This is the address that traffic is NATd to */
     private boolean isNatEnabled;
     private IPaddr  natAddress;
-    private boolean isDmzHostEnabled;
-    private boolean isDmzLoggingEnabled;
+
+    /* If non-null, NAT to whatever the primary address of this space is */
+    private NetworkSpace natSpace;
+    
+    private boolean isDmzHostEnabled = false;
+    private boolean isDmzHostLoggingEnabled = false;
     private IPaddr  dmzHost;
 
-    /* List of interfaces in this bridge, this is only used in 
-     * this package for writing the configuration.  It is not stored in the database */
-    private List interfaceList = Collections.emptyList();
+    /* The current status of the interface, only valid if DHCP is enabled */
+    private DhcpStatus dhcpStatus = DhcpStatus.EMPTY_STATUS;
     
-    /* This is a property based on whether or not this network space is a bridge, it is 
-     * only available to this package. */
-    private String deviceName;
+    /** Helper constructor */
+    public NetworkSpace( boolean isEnabled, 
+                         List networkList, boolean isDhcpEnabled, boolean isTrafficForwarded, int mtu,
+                         boolean isNatEnabled, IPaddr natAddress,
+                         boolean isDmzHostEnabled, boolean isDmzHostLoggingEnabled, IPaddr dmzHost )
+    {
+        setLive( isEnabled );
+        this.networkList             = networkList;
+        this.isDhcpEnabled           = isDhcpEnabled;
+        this.isTrafficForwarded      = isTrafficForwarded;
+        this.mtu                     = mtu;
+        this.isNatEnabled            = isNatEnabled;
+        this.natAddress              = natAddress;
+        this.isDmzHostEnabled        = isDmzHostEnabled;
+        this.isDmzHostLoggingEnabled = isDmzHostLoggingEnabled;
+        this.dmzHost                 = dmzHost;
+    }
+
+    public NetworkSpace()
+    {
+    }
 
     /**
      * The list of networks in this network space.
@@ -74,7 +90,7 @@ public class NetworkSpace extends Rule
      */    
     public List getNetworkList()
     {
-        if ( this.networkList == null ) this.networkList = Collections.emptyList();
+        if ( this.networkList == null ) this.networkList = new LinkedList();
             
         return this.networkList;
     }
@@ -83,28 +99,10 @@ public class NetworkSpace extends Rule
     {
         /* This make a copy of the list involved */
         if ( networkList == null ) {
-            networkList = Collections.emptyList();
-        } else {
-            networkList = new LinkedList( networkList );
+            networkList = new LinkedList();
         }
 
         this.networkList = networkList;
-
-        /* Detect if this space has a primary address, a primary address is the
-         * first valid unicast address */
-        this.primaryAddress = null;
-
-        NetworkUtil nu = NetworkUtil.getInstance();
-
-        for ( Iterator iter = this.networkList.iterator() ; iter.hasNext() ; ) {
-            IPNetworkRule networkRule = (IPNetworkRule)iter.next();
-            IPNetwork network = networkRule.getNetwork();
-            
-            if ( nu.isUnicast( network )) {
-                this.primaryAddress = network;
-                break;
-            }
-        }
     }
 
     /**
@@ -179,6 +177,28 @@ public class NetworkSpace extends Rule
     }
 
     /**
+     * The network space to NAT to.  If this is non-null, then NAT will use the primary
+     * address of the selected network space as the NAT address.  This cannot point
+     * to itself.
+     * @return The network space to nat traffic to. 
+     * @hibernate.many-to-one
+     * cascade="none"
+     * class="com.metavize.mvvm.networking.NetworkSpace"
+     * column="nat_space"
+     */
+    /** XXX Should this have cascade="all" because this is typically inside of the NetworkSettings object, 
+     * which also saves the list of network spaces. */
+    public NetworkSpace getNatSpace()
+    {
+        return this.natSpace;
+    }
+    
+    public void setNatSpace( NetworkSpace newValue )
+    {
+        this.natSpace = newValue;
+    }
+    
+    /**
      * Is the DMZ host enabled.
      * @return is this space using a DMZ host.
      * @hibernate.property
@@ -221,14 +241,14 @@ public class NetworkSpace extends Rule
      * @hibernate.property
      * column="is_dmz_logging_enabled"
      */
-    public boolean getIsDmzLoggingEnabled()
+    public boolean getIsDmzHostLoggingEnabled()
     {
-        return isDmzLoggingEnabled;
+        return isDmzHostLoggingEnabled;
     }
 
-    public void setIsDmzLoggingEnabled( boolean isDmzLoggingEnabled )
+    public void setIsDmzHostLoggingEnabled( boolean newValue )
     {
-        this.isDmzLoggingEnabled = isDmzLoggingEnabled;
+        this.isDmzHostLoggingEnabled = isDmzHostLoggingEnabled;
     }
 
     /**
@@ -252,67 +272,38 @@ public class NetworkSpace extends Rule
     }
 
     /* The following are not stored inside of the database */
-    
-    /* May be null, should check hasPrimaryAddress first */
-    public IPNetwork getPrimaryAddress()
+    /* Retrieve the address that a DHCP server assigned to this network space, null
+     * if dhcp is disabled. */
+    public DhcpStatus getDhcpStatus()
     {
-        return this.primaryAddress;
+        if ( this.dhcpStatus == null ) this.dhcpStatus = DhcpStatus.EMPTY_STATUS;
+        return this.dhcpStatus;
+    }
+ 
+    /* Set the address a DHCP assigned to this network space */
+    void setDhcpStatus( DhcpStatus dhcpStatus )
+    {
+        if ( dhcpStatus == null ) dhcpStatus = DhcpStatus.EMPTY_STATUS;
+ 
+        this.dhcpStatus = dhcpStatus;
     }
 
-    public boolean hasPrimaryAddress()
+    public String toString()
     {
-        return ( !isDhcpEnabled && ( this.primaryAddress != null ));
-    }
+        StringBuilder sb = new StringBuilder();
+        
+        sb.append( "isEnabled:   "   + isLive());
+        sb.append( "\nnetworks:    " + getNetworkList());
+        sb.append( "\ndhcp:        " + getIsDhcpEnabled());
+        sb.append( "\nforwarded:   " + getIsTrafficForwarded());
+        sb.append( "\nmtu:         " + getMtu()); 
+        sb.append( "\nnat:         " + getIsNatEnabled());
+        sb.append( "\nnat-address: " + getNatAddress());
+                
+        sb.append( "\ndmz-host:    " + getIsDmzHostEnabled() + " logging " + getIsDmzHostLoggingEnabled() + 
+                   "["  + getDmzHost() + "]" );
 
-    /* Local property used to link the configuration between the /etc/network/interfaces
-     * file and the routing and post configuration functions */
-    int getIndex() throws NetworkException
-    {
-        if ( this.index < 0 ) {
-            throw new NetworkException( "The index on this network space is not initialized" );
-        }
-
-        return this.index;
-    }
-
-    void setIndex( int index )
-    {
-        this.index = index;
-    }
-
-    public String getDeviceName()
-    {
-        return this.deviceName;
-    }
-    
-    void setDeviceName( String deviceName )
-    {
-        this.deviceName = deviceName;
-    }
-
-    /* ??? Should this be able to return null
-     * only be used by networking and nat */
-    public List getInterfaceList()
-    {
-        return this.interfaceList;
-    }
-    
-    void setInterfaceList( List interfaceList )
-    {
-        this.interfaceList = interfaceList;
-    }
-
-    boolean isBridge() throws NetworkException
-    {
-        if ( this.interfaceList == null ) {
-            throw new NetworkException( "The interface list for '" + this + "' is not initialized" );
-        }
-
-        switch( this.interfaceList.size()) {
-        case 0: throw new NetworkException( "The interface list for '" + this + "' is empty" );
-        case 1: return false;
-        default: return true;
-        }
+        return sb.toString();
     }
 }
 

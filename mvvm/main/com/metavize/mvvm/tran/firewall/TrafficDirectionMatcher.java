@@ -17,6 +17,9 @@ import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
 import com.metavize.mvvm.tapi.IPSessionDesc;
 
+import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
+import com.metavize.mvvm.tran.firewall.port.PortMatcher;
+
 public abstract class TrafficDirectionMatcher extends TrafficMatcher 
 {
     final DirectionMatcher direction;

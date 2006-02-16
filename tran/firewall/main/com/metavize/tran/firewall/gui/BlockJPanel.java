@@ -19,6 +19,8 @@ import com.metavize.gui.util.*;
 import com.metavize.mvvm.tran.*;
 import com.metavize.mvvm.tran.firewall.*;
 import com.metavize.tran.firewall.*;
+import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
+import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
 
 import java.awt.*;
 import java.util.*;
@@ -106,13 +108,13 @@ class BlockTableModel extends MSortedTableModel<Object>{
             newElem.setLog( (Boolean) rowVector.elementAt(4) );
 	    newElem.setProtocol( ProtocolMatcher.parse(((ComboBoxModel) rowVector.elementAt(5)).getSelectedItem().toString()) );
             newElem.setDirection( ((ComboBoxModel) rowVector.elementAt(6)).getSelectedItem().toString() );
-            try{ newElem.setSrcAddress( IPMatcher.parse((String) rowVector.elementAt(7)) ); }
+            try{ newElem.setSrcAddress( IPMatcherFactory.parse((String) rowVector.elementAt(7)) ); }
             catch(Exception e){ throw new Exception("Invalid \"source address\" in row: " + rowIndex); }
-            try{ newElem.setDstAddress( IPMatcher.parse((String) rowVector.elementAt(8)) ); }
+            try{ newElem.setDstAddress( IPMatcherFactory.parse((String) rowVector.elementAt(8)) ); }
             catch(Exception e){ throw new Exception("Invalid \"destination address\" in row: " + rowIndex); }
-            try{ newElem.setSrcPort( PortMatcher.parse((String) rowVector.elementAt(9)) ); }
+            try{ newElem.setSrcPort( PortMatcherFactory.parse((String) rowVector.elementAt(9)) ); }
             catch(Exception e){ throw new Exception("Invalid \"source port\" in row: " + rowIndex); }
-            try{ newElem.setDstPort( PortMatcher.parse((String) rowVector.elementAt(10)) ); }
+            try{ newElem.setDstPort( PortMatcherFactory.parse((String) rowVector.elementAt(10)) ); }
             catch(Exception e){ throw new Exception("Invalid \"destination port\" in row: " + rowIndex); }
             newElem.setCategory( (String) rowVector.elementAt(11) );
             newElem.setDescription( (String) rowVector.elementAt(12) );

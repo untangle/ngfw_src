@@ -11,7 +11,6 @@
 
 package com.metavize.mvvm.networking;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.LinkedList;
 
@@ -19,7 +18,7 @@ import java.net.InetAddress;
 import java.net.Inet4Address;
 
 import com.metavize.mvvm.tran.IPaddr;
-
+import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.ValidateException;
 import com.metavize.mvvm.tran.ParseException;
 
@@ -28,18 +27,24 @@ public class NetworkUtil
     private static final NetworkUtil INSTANCE = new NetworkUtil();
     
     public static final IPaddr  EMPTY_IPADDR;
+    public static final IPaddr  DEF_OUTSIDE_NETWORK;
+    public static final IPaddr  DEF_OUTSIDE_NETMASK;
+    public static final HostName LOCAL_DOMAIN_DEFAULT;
 
-    /* Package protected */
+    public static final int     DEF_HTTPS_PORT = 443;
+    
+
+    /* Package protected so that NetworkUtilPriv can work */
     NetworkUtil()
     {
     }
 
     /* Get all of the interfaces in a particular network space */
-    public List getInterfaceList( NetworkSettings config, NetworkSpace space )
+    public List getInterfaceList( NetworkSpacesSettings settings, NetworkSpace space )
     {
         List list = new LinkedList();
         
-        for ( Interface intf : (List<Interface>)config.getInterfaceList()) {
+        for ( Interface intf : (List<Interface>)settings.getInterfaceList()) {
             if ( intf.getNetworkSpace().equals( space )) list.add( intf );
         }
         
@@ -47,18 +52,21 @@ public class NetworkUtil
     }
 
     /* Validate that a network configuration is okay */
-    public void validate( NetworkSettings config ) throws ValidateException
+    public void validate( NetworkSpacesSettings settings ) throws ValidateException
     {
-        for ( NetworkSpace space : (List<NetworkSpace>)config.getNetworkSpaceList()) {
-            if ( getInterfaceList( config, space ).size() == 0 ) {
-                throw new ValidateException( "Each network space must have at least one interface" );
+        int index = 0;
+        for ( NetworkSpace space : (List<NetworkSpace>)settings.getNetworkSpaceList()) {
+            index++;
+            if ( getInterfaceList( settings, space ).size() == 0 ) {
+                throw new ValidateException( "Each network space["+ index +"] must have at least one" + 
+                                             " interface" );
             }
 
             /* If dhcp is not enabled, there must be at least one address */
             validate( space );
         }
 
-        for ( Route route : (List<Route>)config.getRoutingTable()) validate( route );
+        for ( Route route : (List<Route>)settings.getRoutingTable()) validate( route );
 
         /* XXX Check the reverse, make sure each interface is in one of the network spaces
          * in the list */
@@ -77,9 +85,9 @@ public class NetworkUtil
                                          " or use DHCP." );
         }
 
-        if ( space.getIsNatEnabled() && !space.hasPrimaryAddress()) {
-            throw new ValidateException( "If NAT is enabled, A network space should have at " +
-                                         "least one unicast address " );
+        if ( isDhcpEnabled && space.getIsNatEnabled()) {
+            throw new ValidateException( "A network space running NAT should not get its address" +
+                                         " from a DHCP server." );
         }
 
         IPaddr dmzHost = space.getDmzHost();
@@ -111,16 +119,16 @@ public class NetworkUtil
     public String toRouteString( IPNetwork network ) throws NetworkException
     {
         /* XXX This is kind of hokey and should be precalculated at creation time */
-        IPaddr subnet = network.getSubnet();
+        IPaddr netmask = network.getNetmask();
 
         try {
-            int cidr = subnet.toCidr();
+            int cidr = netmask.toCidr();
             
-            IPaddr networkAddress = network.getNetwork().and( subnet );
+            IPaddr networkAddress = network.getNetwork().and( netmask );
             /* Very important, the ip command barfs on spaces. */
             return networkAddress.toString() + "/" + cidr;
         } catch ( ParseException e ) {
-            throw new NetworkException( "Unable to convert the subnet " + subnet + " into a cidr suffix" );
+            throw new NetworkException( "Unable to convert the netmask " + netmask + " into a cidr suffix" );
         }
     }    
 
@@ -132,16 +140,30 @@ public class NetworkUtil
     static
     {
         Inet4Address emptyAddr = null;
+        Inet4Address outsideNetwork = null;
+        Inet4Address outsideNetmask = null;
+        HostName h;
 
         try {
             emptyAddr = (Inet4Address)InetAddress.getByName( "0.0.0.0" );
+            outsideNetwork = (Inet4Address)InetAddress.getByName( "1.2.3.4" );
+            outsideNetmask = (Inet4Address)InetAddress.getByName( "255.255.255.0" );
         } catch( Exception e ) {
             System.err.println( "this should never happen: " + e );
             emptyAddr = null;
             /* THIS SHOULD NEVER HAPPEN */
         }
-        
-        EMPTY_IPADDR = new IPaddr( emptyAddr );
-    }
 
+        try {
+            h = HostName.parse( "local.domain" );
+        } catch ( ParseException e ) {
+            /* This should never happen */
+            System.err.println( "Unable to initialize LOCAL_DOMAIN_DEFAULT: " + e );
+            h = null;
+        }
+        EMPTY_IPADDR = new IPaddr( emptyAddr );
+        DEF_OUTSIDE_NETWORK = new IPaddr( outsideNetwork );
+        DEF_OUTSIDE_NETMASK = new IPaddr( outsideNetmask );
+        LOCAL_DOMAIN_DEFAULT = h;
+    }
 }

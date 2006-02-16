@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.tran.nat;
+package com.metavize.mvvm.networking;
 
 import java.util.Date;
 
@@ -26,7 +26,7 @@ import com.metavize.mvvm.tran.firewall.MACAddress;
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
  * @hibernate.class
- * table="DHCP_LEASE_RULE"
+ * table="dhcp_lease_rule"
  */
 public class DhcpLeaseRule extends Rule
 {

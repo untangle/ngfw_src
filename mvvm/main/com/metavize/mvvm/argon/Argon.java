@@ -16,13 +16,18 @@ import java.util.Properties;
 import java.io.File;
 import java.io.FileInputStream;
 
+import org.apache.log4j.Logger;
+
 import com.metavize.jnetcap.Netcap;
 import com.metavize.jnetcap.Shield;
 import com.metavize.jvector.Vector;
+
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.engine.PolicyManagerPriv;
 import com.metavize.mvvm.shield.ShieldMonitor;
-import org.apache.log4j.Logger;
+
+import com.metavize.mvvm.networking.NetworkManagerImpl;
+import com.metavize.mvvm.networking.NetworkException;
 
 public class Argon
 {
@@ -34,6 +39,9 @@ public class Argon
 
     /* Maximum number of threads allowed at any time */
     private static int MAX_THREADS = 10000;
+
+    /* The networking manager impl is passed in at init time */
+    private NetworkManagerImpl networkManager = null;
 
     /* Singleton */
     private static final Argon INSTANCE = new Argon();
@@ -74,8 +82,10 @@ public class Argon
     {
     }
 
-    public void run( PolicyManagerPriv policyManager  )
+    public void run( PolicyManagerPriv policyManager, NetworkManagerImpl networkManager )
     {
+        this.networkManager = networkManager;
+
         /* Get an instance of the shield */
         shield = Shield.getInstance();
 
@@ -183,6 +193,20 @@ public class Argon
     {
         Netcap.init( isShieldEnabled, netcapDebugLevel, jnetcapDebugLevel );
 
+        /* Start the scheduler */
+        Netcap.startScheduler();
+
+        try {
+            /* Configure the array of active interfaces */
+            ArgonManagerImpl.getInstance().
+                initializeIntfArray( policyManager, inside, outside, dmz, userIntfs );
+        } catch ( ArgonException e ) {
+            logger.error( "Unable to initialize interface array.", e );
+        }
+
+        /* Initialize the network manager, this has to be done after netcap init. */
+        networkManager.init();
+
         if ( isShieldEnabled ) {
             shield.registerEventListener( ShieldMonitor.getInstance());
         }
@@ -198,35 +222,8 @@ public class Argon
         activeThreads   = 0;
         Netcap.getInstance().setSessionLimit( this.sessionThreadLimit );
 
-        /* Start the scheduler */
-        Netcap.startScheduler();
-
-        /* Convert all of the interface names from strings to bytes */
-        // try {
-        // IntfConverter.init( inside, outside, dmz, userIntfs );
-        // } catch ( ArgonException e ) {
-        // logger.error( "Error initializing IntfConverter, continuing", e );
-        // }
-
-        try {
-            /* Configure the array of active interfaces */
-            ArgonManagerImpl.getInstance().
-                initializeIntfArray( policyManager, inside, outside, dmz, userIntfs );
-        } catch ( ArgonException e ) {
-            logger.error( "Unable to initialize iptables rules!!!", e );
-        }
-        // policyManager.reconfigure( IntfConverter.getInstance().getArgonIntfArray());
-
-        /* Initialize the address database */
-        //try {
-        // argonManager.updateAddress();
-        // } catch ( ArgonException e ) {
-        //logger.error( "Unable to initialize iptables rules!!!!", e );
-        //}
-
         /* Initialize the shield configuration */
         if ( isShieldEnabled && shieldFile != null ) shield.config( shieldFile );
-
 
         /* Initialize the InterfaceOverride table, this is just so the logger doesn't get into the NAT
          * transform context */
@@ -237,9 +234,9 @@ public class Argon
     {
         logger.debug( "Shutting down" );
         ArgonManagerImpl argonManager = ArgonManagerImpl.getInstance();
-
-        RuleManager.getInstance().isShutdown();
+        
         argonManager.isShutdown();
+        networkManager.isShutdown();
 
         shield.unregisterEventListener();
 
@@ -268,17 +265,10 @@ public class Argon
         Netcap.cleanup();
 
         try {
-            argonManager.argonRestoreBridge( MvvmContextFactory.context().networkingManager().get());
-        } catch ( ArgonException e ) {
-            logger.error( "Unable to remove restore bridge!!!!", e );
+            networkManager.flushIPTables();
+        } catch ( NetworkException e ) {
+            logger.error( "Unable to flush iptables rules!!!!", e );
         }
-
-        try {
-            RuleManager.getInstance().destroyIptablesRules();
-        } catch ( ArgonException e ) {
-            logger.error( "Unable to remove iptables rules!!!!", e );
-        }
-
     }
 
     public static Argon getInstance()

@@ -12,74 +12,60 @@
 package com.metavize.mvvm.networking;
 
 import java.util.List;
-import java.util.LinkedList;
-import java.util.Collections;
 
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.InterfaceAlias;
 
-public class BasicNetworkSettings
+public interface BasicNetworkSettings
 {
-    private final NetworkSettings completeConfiguration;
+    /* Get if DHCP is enabled */
+    public boolean isDhcpEnabled();
     
-    /* Going back and forth is only allowed inside this package */
-    BasicNetworkSettings( NetworkSettings configuration )
-    {
-        this.completeConfiguration = configuration;
-    }
+    /* Set if DHCP is enabled */
+    public void isDhcpEnabled( boolean newValue );
+
+    /* Get the hostname of the box */
+    public String hostname();
+
+    /* Set the hostname of the box */
+    public void hostname( String newValue );
+
+    /* Get the address of the box */
+    public IPaddr host();
     
-    public void setDns1( IPaddr dns1 ) 
-    {
-        this.completeConfiguration.setDns1( dns1 );
-    }
+    /* Set the address of the box */
+    public void host( IPaddr newValue );
 
-    public IPaddr getDns1() 
-    {
-        return this.completeConfiguration.getDns1();
-    }
+    /* Get the netmask of the box */
+    public IPaddr netmask();
+    
+    /* Set the netmask of the box */
+    public void netmask( IPaddr newValue );
 
-    public void setDns2( IPaddr dns2 ) 
-    {
-        this.completeConfiguration.setDns2( dns2 );
-    }
+    /* Get the gateway of the box */
+    public IPaddr gateway();
+    
+    /* Set the gateway of the box */
+    public void gateway( IPaddr newValue );
 
-    public IPaddr getDns2() 
-    {
-        return this.completeConfiguration.getDns2();
-    }
+    /* Get the dns1 of the box */
+    public IPaddr dns1();
+    
+    /* Set the dns1 of the box */
+    public void dns1( IPaddr newValue );
+    
+    /* Get the dns2 of the box */
+    public IPaddr dns2();
+    
+    /* Set the dns2 of the box */
+    public void dns2( IPaddr newValue );
 
-    public boolean hasDns2() 
-    {
-        return this.completeConfiguration.hasDns2();
-    }
+    /* Get whether or not the configuration includes a second DNS setting */
+    public boolean hasDns2();
 
-    public String getHostname()
-    {
-        return this.completeConfiguration.getHostname();
-    }
+    /* Get the list of aliases */
+    public List<InterfaceAlias> getAliasList();
 
-    public void setHostname( String hostname )
-    {
-        this.completeConfiguration.setHostname( hostname );
-    }
-
-    public String getPublicAddress()
-    {
-        return this.completeConfiguration.getPublicAddress();
-    }
-
-    public void setPublicAddress( String publicAddress )
-    {
-        this.completeConfiguration.setPublicAddress( publicAddress );
-    }
-
-    public boolean hasPublicAddress()
-    {
-        return this.completeConfiguration.hasPublicAddress();
-    }
-
-    /* Going back and forth is only allowed inside this package */
-    NetworkSettings getNetworkSettings()
-    {
-        return this.completeConfiguration;
-    }
+    /* Set the list of aliases */
+    public void setAliasList( List<InterfaceAlias> newValue );
 }

@@ -11,7 +11,7 @@
 
 package com.metavize.mvvm.tran;
 
-public class ParseException extends Exception
+public class ParseException extends ValidateException
 {
     public ParseException() 
     { 

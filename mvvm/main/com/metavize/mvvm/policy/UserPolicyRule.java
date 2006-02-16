@@ -15,8 +15,10 @@ import java.util.*;
 
 import com.metavize.mvvm.argon.IPSessionDesc;
 import com.metavize.mvvm.tran.ParseException;
-import com.metavize.mvvm.tran.firewall.IPMatcher;
-import com.metavize.mvvm.tran.firewall.PortMatcher;
+import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
+import com.metavize.mvvm.tran.firewall.port.PortMatcher;
+import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
+
 import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
 
 /**
@@ -71,11 +73,12 @@ public class UserPolicyRule extends PolicyRule
     /* Hack that sets the ports to zero for Ping sessions */
     public void fixPing() throws ParseException
     {
+        PortMatcher pingMatcher = PortMatcherFactory.getInstance().getPingMatcher();
+
         if ( this.protocol.equals( ProtocolMatcher.MATCHER_PING )) {
-            this.clientPort = PortMatcher.MATCHER_PING;
-            this.serverPort = PortMatcher.MATCHER_PING;
-        } else if ( this.clientPort.equals( PortMatcher.MATCHER_PING ) ||
-                    this.serverPort.equals( PortMatcher.MATCHER_PING )) {
+            this.clientPort = pingMatcher;
+            this.serverPort = pingMatcher;
+        } else if ( this.clientPort.equals( pingMatcher ) || this.serverPort.equals( pingMatcher )) {
             throw new ParseException( "Invalid port for a non-ping traffic type" );
         }
     }

@@ -85,7 +85,7 @@ public class VpnSettings implements Serializable, Validatable
         this.tid = tid;
     }
 
-    public void validate() throws Exception
+    public void validate() throws ValidateException
     {
         /* XXXXXXXXXXX */
         

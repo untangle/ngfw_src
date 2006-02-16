@@ -19,6 +19,5 @@ public interface Validatable {
      * @author <a href="mailto:inieves@metavize.com">Ian Morris Nieves</a>
      * @version 1.0
      */
-    public void validate() throws Exception;
-
+    public void validate() throws ValidateException;
 }

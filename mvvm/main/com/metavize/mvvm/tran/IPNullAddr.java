@@ -18,6 +18,7 @@ import java.net.UnknownHostException;
 
 /* This adds the extension that an empty string is parseable as a null IPaddr.
  * This is different from an IPaddr where an empty string is not parseable.
+ * This is not a very elegant class, and should be destroyed. (rbs).
  */
 public class IPNullAddr extends IPaddr implements Comparable
 {
@@ -29,7 +30,7 @@ public class IPNullAddr extends IPaddr implements Comparable
     {
         super( addr );
     }
-
+    
     public static IPNullAddr parse( String dotNotation ) 
         throws ParseException, UnknownHostException
     {

@@ -35,7 +35,6 @@ import com.metavize.mvvm.engine.PolicyManagerPriv;
 import com.metavize.mvvm.ArgonManager;
 import com.metavize.mvvm.NetworkingConfiguration;
 
-import com.metavize.mvvm.tran.firewall.IPMatcher;
 import com.metavize.mvvm.tran.firewall.InterfaceRedirect;
 
 import com.metavize.mvvm.shield.ShieldNodeSettings;
@@ -127,16 +126,6 @@ public class ArgonManagerImpl implements ArgonManager
         }
         
         if ( this.outsideIntfDataList == null ) this.outsideIntfDataList = EMPTY_INTF_DATA_LIST;
-                
-        IPMatcher.setInsideAddress( getInsideAddress(), getInsideNetmask());
-        InetAddress outsideAddress = getOutsideAddress();
-        InetAddress outsideNetmask = getOutsideNetmask();
-        
-        if (( outsideAddress == null ) || ( outsideAddress.equals( BOGUS_OUTSIDE_ADDRESS ))) {
-            IPMatcher.setOutsideAddress((InetAddress)null, (InetAddress)null );
-        } else {
-            IPMatcher.setOutsideAddress( outsideAddress, outsideNetmask );
-        }
     }
 
     /**
@@ -196,28 +185,23 @@ public class ArgonManagerImpl implements ArgonManager
 
     public void disableLocalAntisubscribe()
     {
-        RuleManager.getInstance().subscribeLocalOutside( true );
     }
 
     public void enableLocalAntisubscribe()
     {
-        RuleManager.getInstance().subscribeLocalOutside( false );
     }
 
     public void disableDhcpForwarding()
     {
-        RuleManager.getInstance().dhcpEnableForwarding( false );
     }
 
     public void enableDhcpForwarding()
     {
-        RuleManager.getInstance().dhcpEnableForwarding( true );
     }
 
     /* Update all of the iptables rules and the inside address database */
     public void generateRules() throws ArgonException
     {
-        RuleManager.getInstance().generateIptablesRules();
     }
 
     public String getInside() throws ArgonException

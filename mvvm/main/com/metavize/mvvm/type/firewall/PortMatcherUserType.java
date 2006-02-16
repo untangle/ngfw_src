@@ -13,7 +13,8 @@ package com.metavize.mvvm.type.firewall;
 
 import com.metavize.mvvm.type.StringBasedUserType;
 
-import com.metavize.mvvm.tran.firewall.PortMatcher;
+import com.metavize.mvvm.tran.firewall.port.PortMatcher;
+import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
 
 public class PortMatcherUserType extends StringBasedUserType
 {
@@ -24,11 +25,11 @@ public class PortMatcherUserType extends StringBasedUserType
 
     protected String userTypeToString( Object v )
     {
-        return ((PortMatcher)v).toString();
+        return ((PortMatcher)v).toDatabaseString();
     }
 
     public Object createUserType( String val ) throws Exception
     {
-        return PortMatcher.parse( val );
+        return PortMatcherFactory.parse( val );
     }
 }

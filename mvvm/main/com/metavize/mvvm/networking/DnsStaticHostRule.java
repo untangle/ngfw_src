@@ -9,7 +9,7 @@
  * $Id: MimeTypeRule.java 229 2005-04-07 22:25:00Z amread $
  */
 
-package com.metavize.tran.nat;
+package com.metavize.mvvm.networking;
 
 import com.metavize.mvvm.tran.Rule;
 
@@ -22,7 +22,7 @@ import com.metavize.mvvm.tran.HostNameList;
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
  * @hibernate.class
- * table="DNS_STATIC_HOST_RULE"
+ * table="dns_static_host_rule"
  */
 public class DnsStaticHostRule extends Rule
 {
@@ -51,7 +51,7 @@ public class DnsStaticHostRule extends Rule
      * @hibernate.property
      * type="com.metavize.mvvm.type.HostNameListUserType"
      * @hibernate.column
-     * name="HOSTNAME_LIST"
+     * name="hostname_list"
      */
     public HostNameList getHostNameList()
     {
@@ -73,7 +73,7 @@ public class DnsStaticHostRule extends Rule
      * @hibernate.property
      * type="com.metavize.mvvm.type.IPaddrUserType"
      * @hibernate.column
-     * name="STATIC_ADDRESS"
+     * name="static_address"
      * sql-type="inet"
      */
     public IPaddr getStaticAddress()

@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.regex.*;
 
 import com.metavize.mvvm.argon.SessionEndpoints;
+import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.PortRange;
 import com.metavize.mvvm.tran.ParseException;
 import org.apache.log4j.Logger;
 

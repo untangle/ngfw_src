@@ -229,18 +229,27 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <include name="com/metavize/tran/util/IOUtil.java"/>
 
       <!-- Networking classes -->
+      <include name="com/metavize/mvvm/networking/RemoteSettings.java"/>
       <include name="com/metavize/mvvm/networking/BasicNetworkSettings.java"/>
       <include name="com/metavize/mvvm/networking/DynamicDNSSettings.java"/>
       <include name="com/metavize/mvvm/networking/IPNetwork.java"/>
       <include name="com/metavize/mvvm/networking/IPNetworkRule.java"/>
       <include name="com/metavize/mvvm/networking/Interface.java"/>
       <include name="com/metavize/mvvm/networking/NetworkException.java"/>
-      <include name="com/metavize/mvvm/networking/NetworkSettings.java"/>
+      <include name="com/metavize/mvvm/networking/NetworkingConfigurationImpl.java"/>
+      <include name="com/metavize/mvvm/networking/NetworkSpacesSettings.java"/>
       <include name="com/metavize/mvvm/networking/NetworkSpace.java"/>
       <include name="com/metavize/mvvm/networking/NetworkUtil.java"/>
       <include name="com/metavize/mvvm/networking/Route.java"/>
       <include name="com/metavize/mvvm/networking/EthernetMedia.java"/>
+      <include name="com/metavize/mvvm/networking/DhcpLeaseRule.java"/>
+      <include name="com/metavize/mvvm/networking/DnsStaticHostRule.java"/>
+      <include name="com/metavize/mvvm/networking/DhcpServerSettings.java"/>
+      <include name="com/metavize/mvvm/networking/DnsServerSettings.java"/>
+      <include name="com/metavize/mvvm/networking/ServicesSettings.java"/>
       <include name="com/metavize/mvvm/networking/SetupState.java"/>
+      <include name="com/metavize/mvvm/networking/RedirectRule.java"/>
+      <include name="com/metavize/mvvm/networking/DhcpStatus.java"/>
     </javac>
   </target>
 
@@ -296,18 +305,28 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
         <include name="com/metavize/tran/util/IOUtil.class"/>
 
         <!-- Networking classes -->
+        <include name="com/metavize/mvvm/networking/RemoteSettings.class"/>
         <include name="com/metavize/mvvm/networking/BasicNetworkSettings.class"/>
         <include name="com/metavize/mvvm/networking/DynamicDNSSettings.class"/>
         <include name="com/metavize/mvvm/networking/IPNetwork.class"/>
         <include name="com/metavize/mvvm/networking/IPNetworkRule.class"/>
         <include name="com/metavize/mvvm/networking/Interface.class"/>
         <include name="com/metavize/mvvm/networking/NetworkException.class"/>
-        <include name="com/metavize/mvvm/networking/NetworkSettings.class"/>
+        <include name="com/metavize/mvvm/networking/NetworkingConfigurationImpl.class"/>
+        <include name="com/metavize/mvvm/networking/NetworkSpacesSettings.class"/>
         <include name="com/metavize/mvvm/networking/NetworkSpace.class"/>
         <include name="com/metavize/mvvm/networking/NetworkUtil.class"/>
         <include name="com/metavize/mvvm/networking/Route.class"/>
         <include name="com/metavize/mvvm/networking/EthernetMedia.class"/>
+        <include name="com/metavize/mvvm/networking/DhcpLeaseRule.class"/>
+        <include name="com/metavize/mvvm/networking/DnsStaticHostRule.class"/>
+        <include name="com/metavize/mvvm/networking/DnsStaticHostRule.class"/>
+        <include name="com/metavize/mvvm/networking/DhcpServerSettings.class"/>
+        <include name="com/metavize/mvvm/networking/DnsServerSettings.class"/>
+        <include name="com/metavize/mvvm/networking/ServicesSettings.class"/>
         <include name="com/metavize/mvvm/networking/SetupState.class"/>
+        <include name="com/metavize/mvvm/networking/RedirectRule.class"/>
+        <include name="com/metavize/mvvm/networking/DhcpStatus.class"/>
       </fileset>
     </jar>
   </target>
@@ -401,7 +420,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
 
       <include name="com/metavize/mvvm/MvvmContext.java"/>
       <include name="com/metavize/mvvm/argon/*"/>
-      <include name="com/metavize/mvvm/networking/*"/>
+      <include name="com/metavize/mvvm/networking/**"/>
       <include name="com/metavize/mvvm/shield/*"/>
       <include name="com/metavize/mvvm/engine/**"/>
       <include name="com/metavize/mvvm/logging/**"/>

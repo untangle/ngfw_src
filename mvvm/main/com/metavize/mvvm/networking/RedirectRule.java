@@ -9,32 +9,30 @@
  * $Id: MimeTypeRule.java 229 2005-04-07 22:25:00Z amread $
  */
 
-package com.metavize.tran.nat;
+package com.metavize.mvvm.networking;
 
 import java.net.UnknownHostException;
 
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.ParseException;
 
-import com.metavize.mvvm.tran.firewall.IPMatcher;
-import com.metavize.mvvm.tran.firewall.PortMatcher;
-import com.metavize.mvvm.tran.firewall.IntfMatcher;
+import com.metavize.mvvm.tran.firewall.ip.IPDBMatcher;
+import com.metavize.mvvm.tran.firewall.port.PortDBMatcher;
+import com.metavize.mvvm.tran.firewall.intf.IntfDBMatcher;
 import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
 import com.metavize.mvvm.tran.firewall.TrafficIntfRule;
-
-import com.metavize.mvvm.security.Tid;
 
 /**
  * Rule for matching based on IP addresses and subnets.
  *
- * @author <a href="mailto:rbscott@metavize.com">Aaron Read</a>
+ * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
  * @hibernate.class
- * table="REDIRECT_RULE"
+ * table="redirect_rule"
  */
 public class RedirectRule extends TrafficIntfRule
 {
-    private static final long serialVersionUID = -7898386470255279187L;
+    // !!! private static final long serialVersionUID = -7898386470255279187L;
     
     private static final String REDIRECT_PORT_PING         = "n/a";
     private static final String REDIRECT_PORT_UNCHANGED    = "unchanged";
@@ -57,11 +55,11 @@ public class RedirectRule extends TrafficIntfRule
      */
     public RedirectRule() { }
 
-    public RedirectRule( boolean     isLive,  ProtocolMatcher protocol, 
-                         IntfMatcher srcIntf,    IntfMatcher  dstIntf, 
-                         IPMatcher   srcAddress, IPMatcher    dstAddress,
-                         PortMatcher srcPort,    PortMatcher  dstPort,
-                         boolean isDstRedirect,  IPaddr redirectAddress, int redirectPort )
+    public RedirectRule( boolean       isLive,        ProtocolMatcher protocol, 
+                         IntfDBMatcher srcIntf,       IntfDBMatcher  dstIntf, 
+                         IPDBMatcher   srcAddress,    IPDBMatcher    dstAddress,
+                         PortDBMatcher srcPort,       PortDBMatcher  dstPort,
+                         boolean       isDstRedirect, IPaddr redirectAddress, int redirectPort )
     {
         super( isLive, protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort );
         
@@ -95,7 +93,7 @@ public class RedirectRule extends TrafficIntfRule
      *
      * @return If this is a destinatino redirect.
      * @hibernate.property
-     * column="IS_DST_REDIRECT"
+     * column="is_dst_redirect"
      */
     public boolean isDstRedirect()
     {
@@ -112,7 +110,7 @@ public class RedirectRule extends TrafficIntfRule
      *
      * @return the port to redirect to.
      * @hibernate.property
-     * column="REDIRECT_PORT"
+     * column="redirect_port"
      */
     public int getRedirectPort()
     {
@@ -155,7 +153,7 @@ public class RedirectRule extends TrafficIntfRule
      * @hibernate.property
      * type="com.metavize.mvvm.type.IPaddrUserType"
      * @hibernate.column
-     * name="REDIRECT_ADDR"
+     * name="redirect_addr"
      * sql-type="inet"
      */
     public IPaddr getRedirectAddress()
@@ -200,7 +198,7 @@ public class RedirectRule extends TrafficIntfRule
             throw new ParseException( "Invalid action: " + action );
         }
     }
-
+    
     public static String[] getActionEnumeration()
     {
         return ACTION_ENUMERATION;

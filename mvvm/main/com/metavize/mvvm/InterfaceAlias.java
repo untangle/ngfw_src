@@ -18,7 +18,7 @@ import java.net.Inet4Address;
 
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.Equivalence;
-import static com.metavize.mvvm.NetworkingConfiguration.EMPTY_IPADDR;
+import static com.metavize.mvvm.networking.NetworkUtil.EMPTY_IPADDR;
 
 public class InterfaceAlias implements Serializable, Equivalence
 {

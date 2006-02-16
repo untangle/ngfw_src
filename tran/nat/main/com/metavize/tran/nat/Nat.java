@@ -10,6 +10,7 @@
  */
 package com.metavize.tran.nat;
 
+
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.tran.Transform;
@@ -18,10 +19,10 @@ import com.metavize.mvvm.networking.SetupState;
 
 public interface Nat extends Transform
 {
-    NatSettings getNatSettings();
-    void setNatSettings( NatSettings settings ) throws Exception;
+    public NatSettings getNatSettings();
+    public void setNatSettings( NatSettings settings ) throws Exception;
 
     public SetupState getSetupState();
-    
+
     public EventManager<LogEvent> getEventManager();
 }

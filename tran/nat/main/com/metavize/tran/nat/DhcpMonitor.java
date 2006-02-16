@@ -29,6 +29,7 @@ import com.metavize.mvvm.tran.ParseException;
 import com.metavize.mvvm.tran.firewall.MACAddress;
 import org.apache.log4j.Logger;
 
+/** !!! Time permitting, this should also move into the MVVM */
 class DhcpMonitor implements Runnable
 {
     private static final int    DHCP_LEASE_ENTRY_LENGTH = 5;

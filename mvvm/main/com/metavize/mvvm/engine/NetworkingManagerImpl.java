@@ -36,13 +36,19 @@ import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.InterfaceAlias;
 import com.metavize.mvvm.MvvmException;
 import com.metavize.mvvm.NetworkingConfiguration;
+import com.metavize.mvvm.networking.NetworkingConfigurationImpl;
 import com.metavize.mvvm.NetworkingManager;
 import com.metavize.mvvm.argon.ArgonManagerImpl;
 import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.firewall.intf.IntfMatcherFactory;
 import com.metavize.mvvm.tran.ValidateException;
 import com.metavize.mvvm.tran.firewall.IntfMatcher;
 import org.apache.log4j.Logger;
+
+import com.metavize.mvvm.networking.NetworkSettingsListener;
+import com.metavize.mvvm.networking.IntfEnumListener;
+
 
 class NetworkingManagerImpl implements NetworkingManager
 {
@@ -133,7 +139,7 @@ class NetworkingManagerImpl implements NetworkingManager
     private void refresh()
     {
         /* Create a new network configuration with all defaults */
-        this.configuration = new NetworkingConfiguration();
+        this.configuration = new NetworkingConfigurationImpl();
 
         /* Retrieve the DHCP configuration */
         getInterface();
@@ -446,7 +452,7 @@ class NetworkingManagerImpl implements NetworkingManager
     private void getHttpsPort()
     {
         /* Try to read in the properties for the HTTPS port */
-        configuration.httpsPort( NetworkingConfiguration.DEF_HTTPS_PORT );
+        configuration.httpsPort( NetworkingConfigurationImpl.DEF_HTTPS_PORT );
 
         try {
             Properties properties = new Properties();
@@ -463,7 +469,7 @@ class NetworkingManagerImpl implements NetworkingManager
             }
         } catch ( Exception e ) {
             logger.warn( "Unable to load properties file: " + PROPERTY_FILE, e );
-            configuration.httpsPort( NetworkingConfiguration.DEF_HTTPS_PORT );
+            configuration.httpsPort( NetworkingConfigurationImpl.DEF_HTTPS_PORT );
         }
     }
 
@@ -478,7 +484,7 @@ class NetworkingManagerImpl implements NetworkingManager
 //            rebindExternalHttpsPort( configuration.httpsPort());
 
         Properties properties = new Properties();
-        // if ( configuration.httpsPort() != NetworkingConfiguration.DEF_HTTPS_PORT ) {
+        // if ( configuration.httpsPort() != NetworkingConfigurationImpl.DEF_HTTPS_PORT ) {
             /* Make sure to write the file anyway, this guarantees that if the property
              * is already set, it gets overwritten with an empty value */
         // }
@@ -591,6 +597,16 @@ class NetworkingManagerImpl implements NetworkingManager
         return intfEnum;
     }
 
+    public void registerNetworkSettingsListener( NetworkSettingsListener listener )
+    {
+        
+    }
+
+    public void registerIntfEnumListener( IntfEnumListener listener )
+    {
+
+    }
+    
     void buildIntfEnum()
     {
         IntfConverter converter = IntfConverter.getInstance();
@@ -624,6 +640,6 @@ class NetworkingManagerImpl implements NetworkingManager
 
         intfEnum = new IntfEnum( argonIntfArray, intfNameArray );
 
-        IntfMatcher.updateEnumeration( intfEnum );
+        IntfMatcherFactory.getInstance().updateEnumeration( intfEnum );
     }
 }

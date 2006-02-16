@@ -35,13 +35,11 @@ public class Interface extends Rule
     {
     }
 
-    public Interface( byte argonIntf, NetworkSpace networkSpace, EthernetMedia ethernetMedia, 
-                      boolean isPingable )
+    public Interface( byte argonIntf, EthernetMedia ethernetMedia, boolean isPingable )
     {
-        this.argonIntf = argonIntf;
-        this.networkSpace = networkSpace;
+        this.argonIntf     = argonIntf;
         this.ethernetMedia = ethernetMedia;
-        this.isPingable = isPingable;
+        this.isPingable    = isPingable;
     }
 
     /**

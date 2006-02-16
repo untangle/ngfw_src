@@ -13,6 +13,9 @@ package com.metavize.mvvm.tran.firewall;
 
 import com.metavize.mvvm.tran.ParseException;
 
+import com.metavize.mvvm.tran.firewall.ip.IPDBMatcher;
+import com.metavize.mvvm.tran.firewall.port.PortDBMatcher;
+
 /**
  * Rule for matching sessions based on direction and IP addresses, ports
  *
@@ -42,10 +45,10 @@ public abstract class TrafficDirectionRule extends TrafficRule
     {
     }
 
-    public TrafficDirectionRule( boolean     isLive,     ProtocolMatcher protocol,
-                                 boolean     inbound,    boolean         outbound,
-                                 IPMatcher   srcAddress, IPMatcher       dstAddress,
-                                 PortMatcher srcPort,    PortMatcher     dstPort )
+    public TrafficDirectionRule( boolean       isLive,     ProtocolMatcher protocol,
+                                 boolean       inbound,    boolean         outbound,
+                                 IPDBMatcher   srcAddress, IPDBMatcher     dstAddress,
+                                 PortDBMatcher srcPort,    PortDBMatcher   dstPort )
     {
         super( isLive, protocol, srcAddress, dstAddress, srcPort, dstPort );
         this.inbound  = inbound;

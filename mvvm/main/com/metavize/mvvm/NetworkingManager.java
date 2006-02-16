@@ -13,7 +13,8 @@ package com.metavize.mvvm;
 
 import com.metavize.mvvm.tran.ValidateException;
 
-public interface NetworkingManager  {
+public interface NetworkingManager
+{
     /**
      * Retrieve the current network configuration
      */

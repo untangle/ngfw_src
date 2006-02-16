@@ -15,6 +15,9 @@ import java.io.Serializable;
 
 import com.metavize.mvvm.logging.PipelineEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
+
+import com.metavize.mvvm.networking.RedirectRule;
+
 import com.metavize.mvvm.tran.PipelineEndpoints;
 
 /**
@@ -23,12 +26,11 @@ import com.metavize.mvvm.tran.PipelineEndpoints;
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
  * @hibernate.class
- * table="TR_NAT_REDIRECT_EVT"
+ * table="tr_nat_redirect_evt"
  * mutable="false"
  */
 public class RedirectEvent extends PipelineEvent implements Serializable
 {
-    private RedirectRule rule;
     private int          ruleIndex;
     private boolean      isDmz;
 
@@ -40,10 +42,9 @@ public class RedirectEvent extends PipelineEvent implements Serializable
     {
     }
 
-    public RedirectEvent( PipelineEndpoints pe, RedirectRule rule, int ruleIndex )
+    public RedirectEvent( PipelineEndpoints pe, int ruleIndex )
     {
         super(pe);
-        this.rule      = rule;
         this.ruleIndex = ruleIndex;
         this.isDmz     = false;
     }
@@ -52,27 +53,8 @@ public class RedirectEvent extends PipelineEvent implements Serializable
     public RedirectEvent( PipelineEndpoints pe )
     {
         super (pe);
-        this.rule      = null;
         this.ruleIndex = 0;
         this.isDmz     = true;
-    }
-
-    /**
-     * Redirect rule that triggered this event
-     *
-     * @return firewall rule that triggered this event
-     * @hibernate.many-to-one
-     * class="com.metavize.tran.nat.RedirectRule"
-     * column="RULE_ID"
-     */
-    public RedirectRule getRule()
-    {
-        return rule;
-    }
-
-    public void setRule( RedirectRule rule )
-    {
-        this.rule = rule;
     }
 
     /**
@@ -80,7 +62,7 @@ public class RedirectEvent extends PipelineEvent implements Serializable
      *
      * @return current rule index for the rule that triggered this event.
      * @hibernate.property
-     * column="RULE_INDEX"
+     * column="rule_index"
      */
     public int getRuleIndex()
     {
@@ -97,7 +79,7 @@ public class RedirectEvent extends PipelineEvent implements Serializable
      *
      * @return Whether or not this was a DMZ event.
      * @hibernate.property
-     * column="IS_DMZ"
+     * column="is_dmz"
      */
     public boolean getIsDmz()
     {

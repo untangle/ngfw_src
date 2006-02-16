@@ -13,13 +13,20 @@ package com.metavize.tran.nat;
 
 import java.net.InetAddress;
 
+import org.apache.log4j.Logger;
+
+import com.metavize.mvvm.networking.RedirectRule;
+import com.metavize.mvvm.networking.internal.RedirectInternal;
+
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
-import com.metavize.mvvm.tran.firewall.IPMatcher;
-import com.metavize.mvvm.tran.firewall.IntfMatcher;
-import com.metavize.mvvm.tran.firewall.PortMatcher;
+import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
+import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
+import com.metavize.mvvm.tran.firewall.intf.IntfMatcher;
+import com.metavize.mvvm.tran.firewall.intf.IntfMatcherFactory;
+import com.metavize.mvvm.tran.firewall.port.PortMatcher;
+import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
 import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
 import com.metavize.mvvm.tran.firewall.TrafficIntfMatcher;
-import org.apache.log4j.Logger;
 
 /**
  * A class for matching redirects
@@ -29,12 +36,7 @@ import org.apache.log4j.Logger;
 class RedirectMatcher extends TrafficIntfMatcher {
     private static final Logger logger = Logger.getLogger( RedirectMatcher.class );
 
-    public static final RedirectMatcher MATCHER_DISABLED =
-        new RedirectMatcher( false, ProtocolMatcher.MATCHER_NIL,
-                             IntfMatcher.getNothing(), IntfMatcher.getNothing(),
-                             IPMatcher.MATCHER_NIL,   IPMatcher.MATCHER_ALL,
-                             PortMatcher.MATCHER_NIL, PortMatcher.MATCHER_NIL,
-                             false, null, -1 );
+    public static final RedirectMatcher MATCHER_DISABLED;
 
     /* True if this redirect applies to the source.
      * false if this redirect applies to the destination.*/
@@ -55,17 +57,27 @@ class RedirectMatcher extends TrafficIntfMatcher {
     /**
      * Index of the rule this matched
      */
-    private final RedirectRule rule;
     private final int ruleIndex;
 
-    private RedirectMatcher( boolean     isEnabled,  ProtocolMatcher protocol,
+
+    /** Whether or not to log */
+    private final boolean isLoggingEnabled;
+     
+
+
+    private RedirectMatcher( boolean     isEnabled, boolean isLoggingEnabled,
+                             ProtocolMatcher protocol,
                              IntfMatcher srcIntf,    IntfMatcher     dstIntf,
                              IPMatcher   srcAddress, IPMatcher       dstAddress,
                              PortMatcher srcPort,    PortMatcher     dstPort,
                              boolean isDstRedirect,  InetAddress     redirectAddress, int redirectPort,
-                             RedirectRule rule,      int             ruleIndex )
+                             int ruleIndex )
     {
-        super( isEnabled, protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort );
+        /* XXX logging should be pushed into a higher class, but for now just leave it in here */
+        super( isEnabled, protocol, srcIntf, dstIntf, srcAddress, dstAddress, 
+               srcPort, dstPort );
+
+        this.isLoggingEnabled = isLoggingEnabled;
 
         /* Attributes of the redirect */
         this.isDstRedirect   = isDstRedirect;
@@ -77,32 +89,42 @@ class RedirectMatcher extends TrafficIntfMatcher {
             this.redirectPort = redirectPort;
         }
 
-        this.rule      = rule;
         this.ruleIndex = ruleIndex;
-
-
     }
 
-    RedirectMatcher( boolean     isEnabled,  ProtocolMatcher protocol,
+    RedirectMatcher( boolean     isEnabled,  boolean isLoggingEnabled,
+                     ProtocolMatcher protocol,
                      IntfMatcher srcIntf,    IntfMatcher     dstIntf,
                      IPMatcher   srcAddress, IPMatcher       dstAddress,
                      PortMatcher srcPort,    PortMatcher     dstPort,
                      boolean isDstRedirect,  InetAddress redirectAddress, int redirectPort )
     {
-        this( isEnabled, protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort,
-              isDstRedirect, redirectAddress, redirectPort, null, 0 );
+        this( isEnabled, isLoggingEnabled, protocol, srcIntf, dstIntf, srcAddress, dstAddress, 
+              srcPort, dstPort, isDstRedirect, redirectAddress, redirectPort, 0 );
     }
 
     RedirectMatcher( RedirectRule rule, int ruleIndex )
     {
-        this( rule.isLive(), rule.getProtocol(),
+        this( rule.isLive(), rule.getLog(), rule.getProtocol(),
               rule.getSrcIntf(),    rule.getDstIntf(),
               rule.getSrcAddress(), rule.getDstAddress(),
               rule.getSrcPort(),    rule.getDstPort(),
               rule.isDstRedirect(),
               ( rule.getRedirectAddress() == null ) ? null : rule.getRedirectAddress().getAddr(),
-              rule.getRedirectPort(), rule, ruleIndex );
+              rule.getRedirectPort(), ruleIndex );
     }
+
+    RedirectMatcher( RedirectInternal redirect )
+    {
+        this( redirect.getIsEnabled(), redirect.getIsLoggingEnabled(), redirect.getProtocol(),
+              redirect.getSrcIntf(),    redirect.getDstIntf(),
+              redirect.getSrcAddress(), redirect.getDstAddress(),
+              redirect.getSrcPort(),    redirect.getDstPort(),
+              redirect.getIsDstRedirect(),
+              ( redirect.getRedirectAddress() == null ) ? null : redirect.getRedirectAddress().getAddr(),
+              redirect.getRedirectPort(), redirect.getIndex());
+    }
+
 
     InetAddress getRedirectAddress()
     {
@@ -144,14 +166,28 @@ class RedirectMatcher extends TrafficIntfMatcher {
         }
     }
 
-    public RedirectRule rule()
-    {
-        return this.rule;
-    }
-
     public int ruleIndex()
     {
         return this.ruleIndex;
+    }
+
+    public boolean getIsLoggingEnabled()
+    {
+        return this.isLoggingEnabled;
+    }
+
+    static
+    {
+        IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
+        IPMatcherFactory ipmf = IPMatcherFactory.getInstance();
+        PortMatcherFactory pmf = PortMatcherFactory.getInstance();
+        
+        MATCHER_DISABLED =
+            new RedirectMatcher( false, false, ProtocolMatcher.MATCHER_NIL,
+                                 imf.getNilMatcher(), imf.getNilMatcher(),
+                                 ipmf.getNilMatcher(), ipmf.getNilMatcher(),
+                                 pmf.getNilMatcher(), pmf.getNilMatcher(), 
+                                 false, null, -1, -1 );
     }
 
 
