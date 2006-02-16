@@ -1,3 +1,9 @@
+metavize-java (0.2.0-863) stable; urgency=low
+
+  * auto build
+
+ -- Bill Scott <bscott@metavize.com>  Thu, 16 Feb 2006 11:13:59 -0800
+
 metavize-java (0.2.0-862) stable; urgency=low
 
   * auto build
