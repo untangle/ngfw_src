@@ -1,3 +1,5 @@
 #!/bin/sh
 
+echo "$0 $@" >> ~amread/kaka
+
 exec nice -n $(expr 0 - $(nice)) "$@"

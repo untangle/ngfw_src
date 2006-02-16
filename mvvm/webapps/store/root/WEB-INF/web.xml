@@ -43,6 +43,21 @@
     <url-pattern>/instreq</url-pattern>
   </servlet-mapping>
 
-  @JSP_PRE_COMPILED_SERVLETS@
+  <security-constraint>
+    <web-resource-collection>
+      <url-pattern>/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+       <role-name>user</role-name>
+    </auth-constraint>
+  </security-constraint>
 
+  <security-role>
+    <role-name>user</role-name>
+  </security-role>
+
+  <login-config>
+    <auth-method>BASIC</auth-method>
+    <realm-name>Metavize Reports</realm-name>
+  </login-config>
 </web-app>
