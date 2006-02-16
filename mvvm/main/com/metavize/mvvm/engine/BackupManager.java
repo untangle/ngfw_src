@@ -79,13 +79,32 @@ class BackupManager {
       //Copy the bytes to a temp file
       IOUtil.bytesToFile(backupFileBytes, tempFile);
 
+      //nohup sh @PREFIX@/usr/share/metavize/mvvm_restart.sh 1 2 > @PREFIX@/var/log/mvvm/restart.log 2>&1 &
+
+      File restartLog = new File(
+        System.getProperty("bunnicula.log.dir") +
+        File.separator +
+        "restart.log");
+      
       //unzip file
-      result = SimpleExec.exec(RESTORE_SCRIPT,//cmd
+      result = SimpleExec.exec("nohup",//cmd
+        new String[] {//args
+          "sh",
+          RESTORE_SCRIPT,
+          "-i",
+          tempFile.getAbsolutePath(),
+          "-v",
+          "2>&1",
+          "&"
+        },
+/*
+      RESTORE_SCRIPT,//cmd
           new String[] {//args
             "-i",
             tempFile.getAbsolutePath(),
             "-v"
           },
+*/          
           null,//env
           null,//dir
           true,//stdout
