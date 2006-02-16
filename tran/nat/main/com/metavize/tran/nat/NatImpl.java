@@ -24,6 +24,7 @@ import com.metavize.mvvm.logging.EventLoggerFactory;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SimpleEventFilter;
+import com.metavize.mvvm.networking.SetupState;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
@@ -149,6 +150,11 @@ public class NatImpl extends AbstractTransform implements Nat
             logger.error( "Could not save Nat settings", exn );
         }
     }
+
+    public SetupState getSetupState()
+    {
+        return SetupState.BASIC;
+    }    
 
     public EventManager<LogEvent> getEventManager()
     {
