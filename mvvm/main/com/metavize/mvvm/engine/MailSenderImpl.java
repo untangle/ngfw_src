@@ -304,10 +304,16 @@ class MailSenderImpl implements MailSender
     // Called when settings updated.
     private void refreshSessions() {
         Properties commonProps = new Properties();
-        commonProps.put(MAIL_HOST_PROP, "localhost");
         commonProps.put(MAIL_FROM_PROP, mailSettings.getFromAddress());
         commonProps.put(MAIL_ENVELOPE_FROM_PROP, mailSettings.getFromAddress());
         commonProps.put(MAIL_TRANSPORT_PROTO_PROP, "smtp");
+        
+        File masqmail_dir = new File(MASQMAIL_CONF_DIR);
+        if (masqmail_dir.isDirectory()) {
+            commonProps.put(MAIL_HOST_PROP, "localhost");
+        } else if (mailSettings.getSmtpHost() != null && !"".equals(mailSettings.getSmtpHost())) {
+            commonProps.put(MAIL_HOST_PROP, mailSettings.getSmtpHost());
+        }
 
         Properties mvProps = (Properties) commonProps.clone();
         // This one always uses our SMTP host.
@@ -788,7 +794,23 @@ class MailSenderImpl implements MailSender
             transport = (SMTPTransport) session.getTransport();
             // We get the host from the session since it can differ (mv errors).
             String host = session.getProperty(MAIL_HOST_PROP);
-            transport.connect(host, null, null);
+
+            File masqmail_dir = new File(MASQMAIL_CONF_DIR);
+            if (masqmail_dir.isDirectory()) {
+                transport.connect(host, null, null);
+            } else {
+                int port = mailSettings.getSmtpPort();
+                String user = mailSettings.getAuthUser();
+                String pass = mailSettings.getAuthPass();
+                if ((user == null && pass != null) || (user != null && pass == null)) {
+                    logger.warn("SMTP AUTH user/pass -- only one set, ignoring");
+                    user = null;
+                    pass = null;
+                }
+                transport.setStartTLS(mailSettings.isUseTls());
+                transport.setLocalHost(mailSettings.getLocalHostName());
+                transport.connect(host, port, user, pass);
+            }
             transport.sendMessage(msg, recipients);
         } catch (MessagingException x) {
             throw x;
