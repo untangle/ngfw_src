@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,18 +11,14 @@
 
 package com.metavize.mvvm.networking;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.LinkedList;
-import org.apache.log4j.Logger;
+import java.util.List;
 
+import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.argon.ArgonException;
 import com.metavize.mvvm.argon.IntfConverter;
-
-import com.metavize.mvvm.tran.IPaddr;
-import com.metavize.mvvm.tran.ValidateException;
-
 import com.metavize.mvvm.util.ConfigFileUtil;
+import org.apache.log4j.Logger;
 
 
 /* Utilities that are only required inside of this package */
@@ -66,7 +62,7 @@ class NetworkUtilPriv extends NetworkUtil
         for ( NetworkSpace space : (List<NetworkSpace>)config.getNetworkSpaceList()) {
             /* Set the index of this network space */
             space.setIndex( index );
-            
+
             /* Create a list of all of the interfaces beloning to this network space */
             List<Interface> spaceInterfaceList = new LinkedList<Interface>();
             Interface primary = null;
@@ -81,7 +77,7 @@ class NetworkUtilPriv extends NetworkUtil
             if ( primary == null ) {
                 throw new NetworkException( "The space [" + space + "] doesn't have any interfaces" );
             }
-            
+
             space.setInterfaceList( spaceInterfaceList );
 
             /* Last set the name of the device */
@@ -90,7 +86,7 @@ class NetworkUtilPriv extends NetworkUtil
             } else {
                 space.setDeviceName( getDeviceName( primary ));
             }
-            
+
             index++;
         }
     }
@@ -147,7 +143,7 @@ class NetworkUtilPriv extends NetworkUtil
         try {
             logger.debug( "Restarting ddclient server" );
 
-            Process p = Runtime.getRuntime().exec( DDCLIENT_CMD_RESTART );
+            Process p = MvvmContextFactory.context().exec( DDCLIENT_CMD_RESTART );
             code = p.waitFor();
         } catch ( Exception e ) {
             logger.error( "Unable to restart ddclient server", e );
@@ -165,7 +161,7 @@ class NetworkUtilPriv extends NetworkUtil
         try {
             logger.debug( "Stopping ddclient server" );
 
-            Process p = Runtime.getRuntime().exec( DDCLIENT_CMD_STOP );
+            Process p = MvvmContextFactory.context().exec( DDCLIENT_CMD_STOP );
             code = p.waitFor();
         } catch ( Exception e ) {
             logger.error( "Unable to stop ddclient server", e );
@@ -182,7 +178,7 @@ class NetworkUtilPriv extends NetworkUtil
     String getDeviceName( Interface intf ) throws ArgonException
     {
         IntfConverter ic = IntfConverter.getInstance();
-        
+
         return ic.argonIntfToString( intf.getArgonIntf());
     }
 

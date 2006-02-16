@@ -15,6 +15,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.StringTokenizer;
 
 import com.metavize.mvvm.CronJob;
 import com.metavize.mvvm.MvvmLocalContext;
@@ -233,6 +234,35 @@ public class MvvmContextImpl extends MvvmContextBase
             });
     }
 
+    public Process exec(String cmd) throws IOException
+    {
+        StringTokenizer st = new StringTokenizer(cmd);
+        String[] cmdArray = new String[st.countTokens()];
+        for (int i = 0; i < cmdArray.length; i++) {
+            cmdArray[i] = st.nextToken();
+        }
+
+        return exec(cmdArray, null, null);
+    }
+
+    public Process exec(String[] cmd) throws IOException
+    {
+        return exec(cmd, null, null);
+    }
+
+    public Process exec(String[] cmd, String[] envp) throws IOException
+    {
+        return exec(cmd, envp, null);
+    }
+
+    public Process exec(String[] cmd, String[] envp, File dir) throws IOException
+    {
+        String[] newCmd = new String[cmd.length + 1];
+        newCmd[0] = "mvnice";
+        System.arraycopy(cmd, 0, newCmd, 1, cmd.length);
+        return Runtime.getRuntime().exec(newCmd, envp, dir);
+    }
+
     public void shutdown()
     {
         // XXX check access permission
@@ -253,7 +283,7 @@ public class MvvmContextImpl extends MvvmContextBase
 
     public void rebootBox() {
         try {
-            Process p = Runtime.getRuntime().exec(new String[] { REBOOT_SCRIPT });
+            Process p = exec(new String[] { REBOOT_SCRIPT });
             for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
             int exitValue = p.waitFor();
             if (0 != exitValue) {
@@ -315,7 +345,7 @@ public class MvvmContextImpl extends MvvmContextBase
         }
 
         try {
-            Process p = Runtime.getRuntime().exec(new String[] { ACTIVATE_SCRIPT, key });
+            Process p = exec(new String[] { ACTIVATE_SCRIPT, key });
             for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
             int exitValue = p.waitFor();
             if (0 != exitValue) {

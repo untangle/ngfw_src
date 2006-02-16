@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,21 +11,15 @@
 package com.metavize.tran.hauri;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.util.List;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Logger;
-
+import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.tran.virus.VirusScanner;
 import com.metavize.tran.virus.VirusScannerResult;
+import org.apache.log4j.Logger;
 
 public class HauriScanner implements VirusScanner
 {
@@ -46,7 +40,7 @@ public class HauriScanner implements VirusScanner
         String version = "unknown";
 
         try {
-            Process scanProcess = Runtime.getRuntime().exec("virobot " + VERSION_ARG);
+            Process scanProcess = MvvmContextFactory.context().exec("virobot " + VERSION_ARG);
             InputStream is  = scanProcess.getInputStream();
             BufferedReader in = new BufferedReader(new InputStreamReader(is));
 

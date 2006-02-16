@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004,2005 Metavize Inc.
+ * Copyright (c) 2004,2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,22 +11,15 @@
 package com.metavize.tran.hauri;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.util.List;
 import java.util.StringTokenizer;
 
-import com.metavize.tran.util.AlarmTimer;
-import com.metavize.tran.virus.VirusScanner;
+import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.tran.virus.VirusScannerLauncher;
 import com.metavize.tran.virus.VirusScannerResult;
-import org.apache.log4j.Logger;
 
 public class HauriScannerLauncher extends VirusScannerLauncher
 {
@@ -37,7 +30,7 @@ public class HauriScannerLauncher extends VirusScannerLauncher
     {
         super(pathName);
     }
-        
+
 
     /**
      * This runs the virus scan, and stores the result for retrieval.
@@ -47,7 +40,7 @@ public class HauriScannerLauncher extends VirusScannerLauncher
     public void run()
     {
         try {
-            this.scanProcess = Runtime.getRuntime().exec("virobot " + pathName);
+            this.scanProcess = MvvmContextFactory.context().exec("virobot " + pathName);
             InputStream is  = this.scanProcess.getInputStream();
             OutputStream os = this.scanProcess.getOutputStream();
             BufferedReader in = new BufferedReader(new InputStreamReader(is));
@@ -69,14 +62,14 @@ public class HauriScannerLauncher extends VirusScannerLauncher
                      * Copyright (c) 1998-2002 HAURI Inc.                        All rights reserved
                      * E-mail : hauri98@hauri.co.kr                                     Version 2.00
                      * -------------------------------------------------------------------------------
-                     * 
+                     *
                      * Probing into q347558.exe
                      * Detected [I-Worm.Win32.Swen.106496] Virus - Recover ? (y/N)  <Virus Infected>
-                     * 
-                     * 
-                     * 
+                     *
+                     *
+                     *
                      * Engine Version : 2005-09-15
-                     * 
+                     *
                      * 1 Virus detected files.
                      */
 

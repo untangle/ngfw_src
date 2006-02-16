@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,16 +11,14 @@
 
 package com.metavize.mvvm.argon;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.FileNotFoundException;
 import java.io.BufferedWriter;
+import java.io.FileWriter;
 
-import org.apache.log4j.Logger;
-
-import com.metavize.jnetcap.Netcap;
 import com.metavize.jnetcap.JNetcapException;
+import com.metavize.jnetcap.Netcap;
 import com.metavize.jnetcap.PortRange;
+import com.metavize.mvvm.MvvmContextFactory;
+import org.apache.log4j.Logger;
 
 public class RuleManager
 {
@@ -62,14 +60,14 @@ public class RuleManager
             writeConfig();
 
             /* Call the rule generator */
-            Process p = Runtime.getRuntime().exec( "sh " + RULE_GENERATOR_SCRIPT );
-            
+            Process p = MvvmContextFactory.context().exec( "sh " + RULE_GENERATOR_SCRIPT );
+
             ret = p.waitFor();
         } catch ( Exception e ) {
             logger.error( "Error while generating iptables rules", e );
             throw new ArgonException( "Unable to generate iptables rules", e );
         }
-        
+
         if ( ret != 0 ) throw new ArgonException( "Error while generating iptables rules: " + ret );
     }
 
@@ -79,14 +77,14 @@ public class RuleManager
         try {
             /* Call the rule generator */
             /* XXXXXXX Make the scripts executable */
-            Process p = Runtime.getRuntime().exec( "sh " + RULE_DESTROYER_SCRIPT );
-            
+            Process p = MvvmContextFactory.context().exec( "sh " + RULE_DESTROYER_SCRIPT );
+
             ret = p.waitFor();
         } catch ( Exception e ) {
             logger.error( "Error while removing iptables rules", e );
             throw new ArgonException( "Unable to remove iptables rules", e );
         }
-        
+
         if ( ret != 0 ) throw new ArgonException( "Error while removing iptables rules: " + ret );
     }
 
@@ -99,7 +97,7 @@ public class RuleManager
     {
         this.subscribeLocalOutside = subscribeLocalOutside;
     }
-    
+
     void dhcpEnableForwarding( boolean dhcpEnableForwarding )
     {
         this.dhcpEnableForwarding = dhcpEnableForwarding;
@@ -114,20 +112,20 @@ public class RuleManager
     {
         try {
             StringBuilder sb = new StringBuilder();
-            
+
             Netcap netcap = Netcap.getInstance();
-            
+
             sb.append( HEADER );
-            
+
             PortRange tcp = netcap.tcpRedirectPortRange();
             int divertPort = netcap.udpDivertPort();
-            
+
             sb.append( TCP_REDIRECT_PORT_FLAG       + "=" + tcp.low() + ":" + tcp.high() + "\n" );
             sb.append( UDP_DIVERT_PORT_FLAG         + "=" + divertPort + "\n" );
             sb.append( ANTISUBSCRIBE_LOCAL_IN_FLAG  + "=" + !subscribeLocalInside + "\n" );
             sb.append( ANTISUBSCRIBE_LOCAL_OUT_FLAG + "=" + !subscribeLocalOutside + "\n" );
             sb.append( DHCP_BLOCK_FORWARD_FLAG      + "=" + !dhcpEnableForwarding  + "\n\n" );
-            
+
             writeFile( sb, MVVM_TMP_FILE );
         } catch ( JNetcapException e ) {
             logger.error( "Unable to write rule manager configuration", e );
@@ -137,11 +135,11 @@ public class RuleManager
     private void writeFile( StringBuilder sb, String fileName ) throws ArgonException
     {
         BufferedWriter out = null;
-        
+
         /* Open up the interfaces file */
         try {
             String data = sb.toString();
-            
+
             out = new BufferedWriter(new FileWriter( fileName ));
             out.write( data, 0, data.length());
         } catch ( Exception ex ) {
@@ -163,7 +161,7 @@ public class RuleManager
         if ( INSTANCE == null ) {
             INSTANCE = new RuleManager();
         }
-        
+
         return INSTANCE;
     }
 

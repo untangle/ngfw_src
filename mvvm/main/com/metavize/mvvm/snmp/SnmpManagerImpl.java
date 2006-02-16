@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,14 +11,15 @@
 
 package com.metavize.mvvm.snmp;
 
-import org.apache.log4j.Logger;
-import com.metavize.mvvm.util.TransactionWork;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.tran.util.IOUtil;
 import java.io.File;
 import java.io.FileOutputStream;
+
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.util.TransactionWork;
+import com.metavize.tran.util.IOUtil;
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 //TODO bscott The template for the snmpd.conf file should
 //            be a Velocity template
@@ -38,8 +39,8 @@ public class SnmpManagerImpl
     "/etc/default/snmpd";
   private static final String CONF_FILE_NAME =
     "/etc/snmp/snmpd.conf";
-    
-  
+
+
   private static final SnmpManagerImpl s_instance =
     new SnmpManagerImpl();
   private final Logger m_logger =
@@ -47,12 +48,12 @@ public class SnmpManagerImpl
   private SnmpSettings m_settings;
 
   private SnmpManagerImpl() {
-  
+
     TransactionWork tw = new TransactionWork() {
       public boolean doWork(Session s) {
         Query q = s.createQuery("from SnmpSettings");
         m_settings = (SnmpSettings)q.uniqueResult();
-        
+
         if(m_settings == null) {
           m_settings = new SnmpSettings();
 
@@ -65,7 +66,7 @@ public class SnmpManagerImpl
           m_settings.setTrapHost("MY_TRAP_HOST");
           m_settings.setTrapCommunity("MY_TRAP_COMMUNITY");
           m_settings.setTrapPort(SnmpSettings.STANDARD_TRAP_PORT);
-          
+
           s.save(m_settings);
         }
         return true;
@@ -95,7 +96,7 @@ public class SnmpManagerImpl
         s.saveOrUpdate(settings);
         return true;
       }
-  
+
       public Object getResult() { return null; }
     };
     MvvmContextFactory.context().runTransaction(tw);
@@ -116,7 +117,7 @@ public class SnmpManagerImpl
 
     //This is a total hack - and we should use templates
 
-    
+
     StringBuilder snmpdCtl = new StringBuilder();
     snmpdCtl.append("export MIBDIRS=/usr/share/snmp/mibs").append(EOL);
     snmpdCtl.append("SNMPDRUN=").
@@ -126,12 +127,12 @@ public class SnmpManagerImpl
     snmpdCtl.append("SNMPDOPTS='-Lsd -Lf /dev/null -p /var/run/snmpd.pid UDP:").
       append(Integer.toString(settings.getPort())).append("'").append(EOL);
     snmpdCtl.append("TRAPDRUN=no").append(EOL);
-    snmpdCtl.append("TRAPDOPTS='-Lsd -p /var/run/snmptrapd.pid'").append(EOL);  
-  
+    snmpdCtl.append("TRAPDOPTS='-Lsd -p /var/run/snmptrapd.pid'").append(EOL);
+
     strToFile(snmpdCtl.toString(), DEFAULT_FILE_NAME);
   }
 
-  
+
   private void writeSnmpdConfFile(SnmpSettings settings) {
 
     StringBuilder snmpd_config = new StringBuilder();
@@ -142,7 +143,7 @@ public class SnmpManagerImpl
     if(settings.isSendTraps() &&
       isNotNullOrBlank(settings.getTrapHost()) &&
       isNotNullOrBlank(settings.getTrapCommunity())) {
-      
+
       snmpd_config.append("# Enable default SNMP traps to be sent").append(EOL);
       snmpd_config.append("trapsink ").
         append(settings.getTrapHost()).append(" ").
@@ -150,19 +151,19 @@ public class SnmpManagerImpl
         append(Integer.toString(settings.getTrapPort())).
         append(BLANK_LINE);
       snmpd_config.append("# Enable traps for failed auth (this is a security appliance)").append(EOL);
-      snmpd_config.append("authtrapenable  1").append(TWO_LINES);     
+      snmpd_config.append("authtrapenable  1").append(TWO_LINES);
     }
     else {
-      snmpd_config.append("# Not sending traps").append(TWO_LINES);     
+      snmpd_config.append("# Not sending traps").append(TWO_LINES);
     }
-    
+
     snmpd_config.append("# Physical system location").append(EOL);
     snmpd_config.append("syslocation").append(" ").
       append(qqOrNullToDefault(settings.getSysLocation(), "location")).append(BLANK_LINE);
     snmpd_config.append("# System contact info").append(EOL);
     snmpd_config.append("syscontact").append(" ").
       append(qqOrNullToDefault(settings.getSysContact(), "contact")).append(TWO_LINES);
-      
+
     snmpd_config.append("sysservices 78").append(TWO_LINES);
 
     if(isNotNullOrBlank(settings.getCommunityString())) {
@@ -184,7 +185,7 @@ public class SnmpManagerImpl
     else {
       snmpd_config.append("# No one has access (no community string)").append(EOL);
     }
-  
+
     strToFile(snmpd_config.toString(), CONF_FILE_NAME);
   }
 
@@ -210,8 +211,8 @@ public class SnmpManagerImpl
       return false;
     }
   }
-  
-  
+
+
   /**
    * Note that if we've disabled SNMP support (and it was enabled)
    * forcing this "restart" actualy causes it to stop.  Doesn't sound
@@ -221,7 +222,7 @@ public class SnmpManagerImpl
   private void restartDaemon() {
     try {
       m_logger.debug("Restarting the snmpd...");
-      Process p = Runtime.getRuntime().exec(new String[] {
+      Process p = MvvmContextFactory.context().exec(new String[] {
         "/etc/init.d/snmpd", "restart"});
       p.waitFor();
       m_logger.debug("Restart of SNMPD exited with " +
@@ -314,7 +315,7 @@ group MyROGroup usm        local
 #                   incl/excl subtree                          mask
 #view all            included  .1
 #view snipNetSnmp    excluded  .1.3.6.1.4.8072
-view mib2   included  .iso.org.dod.internet.mgmt.mib-2 
+view mib2   included  .iso.org.dod.internet.mgmt.mib-2
 
 ####
 # Finally, grant the 2 groups access to the 1 view with different
@@ -336,7 +337,7 @@ access MyROGroup ""      any       noauth    exact  mib2            none   none
   on the system, and accept request received from any of them.  With
   version 4.2, the '-p' option can be used to listen on individual
   interfaces.  For example,
-  
+
       snmpd -p 161@127.0.0.1
 
   will listen (on the standard port) on the loopback interface only, and

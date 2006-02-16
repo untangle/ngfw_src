@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,43 +11,38 @@
 
 package com.metavize.mvvm.engine;
 
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Properties;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.FileOutputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
-
 import java.net.Inet4Address;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
 
-import org.apache.log4j.Logger;
-
-import com.metavize.jnetcap.Netcap;
 import com.metavize.jnetcap.InterfaceData;
-
+import com.metavize.jnetcap.Netcap;
+import com.metavize.mvvm.InterfaceAlias;
 import com.metavize.mvvm.ArgonManager;
+import com.metavize.mvvm.InterfaceAlias;
 import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.IntfEnum;
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.InterfaceAlias;
 import com.metavize.mvvm.MvvmException;
 import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.NetworkingManager;
-import com.metavize.mvvm.ArgonManager;
-import com.metavize.mvvm.MvvmException;
-import com.metavize.mvvm.InterfaceAlias;
 import com.metavize.mvvm.argon.ArgonManagerImpl;
 import com.metavize.mvvm.argon.IntfConverter;
-import com.metavize.mvvm.InterfaceAlias;
 import com.metavize.mvvm.tran.IPaddr;
-import com.metavize.mvvm.tran.firewall.IntfMatcher;
 import com.metavize.mvvm.tran.ValidateException;
+import com.metavize.mvvm.tran.firewall.IntfMatcher;
+import org.apache.log4j.Logger;
 
 class NetworkingManagerImpl implements NetworkingManager
 {
@@ -82,7 +77,7 @@ class NetworkingManagerImpl implements NetworkingManager
 
     private static final String PROPERTY_FILE       = BUNNICULA_CONF + "/mvvm.networking.properties";
     private static final String PROPERTY_HTTPS_PORT = "mvvm.https.port";
-    private static final String PROPERTY_COMMENT    = "Properties for the networking configuration";    
+    private static final String PROPERTY_COMMENT    = "Properties for the networking configuration";
 
     private static final Logger logger = Logger.getLogger( NetworkingManagerImpl.class );
 
@@ -114,7 +109,7 @@ class NetworkingManagerImpl implements NetworkingManager
     {
         /* Validate the networking configuration before saving it. */
         netConfig.validate();
-        
+
         /* If the configuration is null */
         if (( this.configuration != null ) && ( this.configuration.equals( netConfig ))) {
             return; // if NetworkingConfiguration has not changed, do nothing
@@ -249,7 +244,7 @@ class NetworkingManagerImpl implements NetworkingManager
                     } else if ( str.startsWith( FLAG_EXCEPTION )) {
                         configuration.isExceptionReportingEnabled( parseBooleanFlag( str, FLAG_EXCEPTION ));
                     } else if ( str.startsWith( FLAG_POST_FUNC )) {
-                        /* Nothing to do here, this is just here to indicate that a 
+                        /* Nothing to do here, this is just here to indicate that a
                          * postConfiguration function exists */
                     } else if ( str.equals( DECL_POST_CONF )) {
                         parsePostConfigurationScript( in );
@@ -293,7 +288,7 @@ class NetworkingManagerImpl implements NetworkingManager
                 isComplete = true;
                 break;
             }
-            
+
             sb.append( command + "\n" );
         }
 
@@ -363,17 +358,17 @@ class NetworkingManagerImpl implements NetworkingManager
                 continue;
             }
             String aliasName = "br0:" + c++;
-            
+
             /* Indicate that the alias should be configured at startup */
             sb.append( "\nauto " + aliasName + "\n" );
-            
+
             /* Write out the alias configuration */
             sb.append( "iface " + aliasName + " inet static\n" );
             sb.append( "\taddress " + alias.getAddress() + "\n" );
             sb.append( "\tnetmask " + alias.getNetmask() + "\n" );
             sb.append( "\n\n" );
         }
-        
+
         writeFile( sb, IP_CFG_FILE );
         writeFile( sb, BUNNICULA_CONF + IP_CFG_FILE );
     }
@@ -452,7 +447,7 @@ class NetworkingManagerImpl implements NetworkingManager
     {
         /* Try to read in the properties for the HTTPS port */
         configuration.httpsPort( NetworkingConfiguration.DEF_HTTPS_PORT );
-        
+
         try {
             Properties properties = new Properties();
             File f = new File( PROPERTY_FILE );
@@ -465,7 +460,7 @@ class NetworkingManagerImpl implements NetworkingManager
                     configuration.httpsPort( Integer.parseInt( temp ));
                     logger.debug( "Found HTTPS port " + configuration.httpsPort());
                 }
-            }            
+            }
         } catch ( Exception e ) {
             logger.warn( "Unable to load properties file: " + PROPERTY_FILE, e );
             configuration.httpsPort( NetworkingConfiguration.DEF_HTTPS_PORT );
@@ -487,7 +482,7 @@ class NetworkingManagerImpl implements NetworkingManager
             /* Make sure to write the file anyway, this guarantees that if the property
              * is already set, it gets overwritten with an empty value */
         // }
-        
+
         /* Maybe only store this value if it has been changed */
         properties.setProperty( PROPERTY_HTTPS_PORT, String.valueOf( configuration.httpsPort()));
 
@@ -506,9 +501,9 @@ class NetworkingManagerImpl implements NetworkingManager
     {
         try {
             if ( configuration.isSshEnabled()) {
-                Runtime.getRuntime().exec( SSH_ENABLE_SCRIPT );
+                MvvmContextFactory.context().exec( SSH_ENABLE_SCRIPT );
             } else {
-                Runtime.getRuntime().exec( SSH_DISABLE_SCRIPT );
+                MvvmContextFactory.context().exec( SSH_DISABLE_SCRIPT );
             }
         } catch ( Exception ex ) {
             logger.error( "Unable to configure ssh", ex );
@@ -578,7 +573,7 @@ class NetworkingManagerImpl implements NetworkingManager
 
     public NetworkingConfiguration renewDhcpLease() throws Exception {
         /* Renew the address */
-        Process p = Runtime.getRuntime().exec( "sh " + DHCP_RENEW_SCRIPT );
+        Process p = MvvmContextFactory.context().exec( "sh " + DHCP_RENEW_SCRIPT );
 
         if ( p.waitFor() != 0 ) {
             throw new MvvmException( "Error while Renewing DHCP Lease" );
@@ -595,21 +590,21 @@ class NetworkingManagerImpl implements NetworkingManager
     {
         return intfEnum;
     }
-    
+
     void buildIntfEnum()
     {
         IntfConverter converter = IntfConverter.getInstance();
         if ( converter == null ) { /* Running in fake mode */
             logger.info( "Running in fake mode, using internal and external" );
-            intfEnum = new IntfEnum( new byte[]   { IntfConstants.EXTERNAL_INTF, 
+            intfEnum = new IntfEnum( new byte[]   { IntfConstants.EXTERNAL_INTF,
                                                     IntfConstants.INTERNAL_INTF },
                                      new String[] { IntfConstants.EXTERNAL,
                                                     IntfConstants.INTERNAL } );
             return;
         }
-        
+
         byte[] argonIntfArray = converter.argonIntfArray();
-        
+
         String[] intfNameArray = new String[argonIntfArray.length];
 
         for ( int c = 0; c < argonIntfArray.length ; c++ ) {
@@ -623,12 +618,12 @@ class NetworkingManagerImpl implements NetworkingManager
             default:
                 logger.error( "Unknown interface: " + intf + " using unknown" );
             }
-            
+
             intfNameArray[c] = name;
         }
 
         intfEnum = new IntfEnum( argonIntfArray, intfNameArray );
-        
+
         IntfMatcher.updateEnumeration( intfEnum );
     }
 }

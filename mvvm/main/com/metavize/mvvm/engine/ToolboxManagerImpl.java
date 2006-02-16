@@ -55,9 +55,6 @@ class ToolboxManagerImpl implements ToolboxManager
 {
     static final URL TOOLBOX_URL;
 
-    private static final String MKG_CMD
-        = System.getProperty("bunnicula.home") + "/../../bin/mkg ";
-
     private static final Object LOCK = new Object();
     private static final MackageDesc[] MACKAGE_DESC_PROTO = new MackageDesc[0];
 
@@ -483,7 +480,7 @@ class ToolboxManagerImpl implements ToolboxManager
         Map pkgs;
 
         try {
-            Process p = Runtime.getRuntime().exec("mkg available");
+            Process p = MvvmContextFactory.context().exec("mkg available");
             pkgs = readPkgList(p.getInputStream(), instList);
         } catch (IOException exn) {
             throw new RuntimeException(exn); // XXX
@@ -561,7 +558,7 @@ class ToolboxManagerImpl implements ToolboxManager
         Map instList;
 
         try {
-            Process p = Runtime.getRuntime().exec("mkg installed");
+            Process p = MvvmContextFactory.context().exec("mkg installed");
             instList = readInstalledList(p.getInputStream());
         } catch (IOException exn) {
             throw new RuntimeException(exn); // XXX
@@ -592,11 +589,11 @@ class ToolboxManagerImpl implements ToolboxManager
     {
         Exception exn;
 
-        String cmdStr = MKG_CMD + (0 > key ? "" : "-k " + key + " ") + command;
+        String cmdStr = "mkg" + (0 > key ? "" : "-k " + key + " ") + command;
 
         logger.debug("running: " + cmdStr);
         try {
-            Process proc = Runtime.getRuntime().exec(cmdStr);
+            Process proc = MvvmContextFactory.context().exec(cmdStr);
             InputStream is = proc.getInputStream();
             byte[] outBuf = new byte[4092];
             int i;

@@ -6,18 +6,14 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id$ 
+ * $Id$
  */
 package com.metavize.mvvm.util;
 
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.FileOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
+
+import com.metavize.mvvm.MvvmContextFactory;
 import org.apache.log4j.Logger;
 
 public class ConfigFileUtil {
@@ -59,7 +55,7 @@ public class ConfigFileUtil {
             logger.debug( "Protecting " + fileName );
 
             String command = CHMOD_PROTECT_CMD + fileName;
-            Process p = Runtime.getRuntime().exec(command);
+            Process p = MvvmContextFactory.context().exec(command);
             code = p.waitFor();
         } catch ( Exception e ) {
             logger.error( "Unable to protect " + fileName, e );

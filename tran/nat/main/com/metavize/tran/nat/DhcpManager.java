@@ -132,7 +132,7 @@ class DhcpManager
             logger.debug( "Restarting DNS Masq server" );
 
             /* restart dnsmasq */
-            Process p = Runtime.getRuntime().exec( DNS_MASQ_CMD_RESTART );
+            Process p = MvvmContextFactory.context().exec( DNS_MASQ_CMD_RESTART );
             code = p.waitFor();
         } catch ( Exception e ) {
             throw new TransformStartException( "Unable to reload DNS masq configuration", e );
@@ -150,7 +150,7 @@ class DhcpManager
         try {
             writeDisabledConfiguration();
 
-            Process p = Runtime.getRuntime().exec( DNS_MASQ_CMD_RESTART );
+            Process p = MvvmContextFactory.context().exec( DNS_MASQ_CMD_RESTART );
             code = p.waitFor();
 
             if ( code != 0 ) logger.error( "Error stopping DNS masq server, returned code: " + code );

@@ -11,6 +11,7 @@
 
 package com.metavize.mvvm;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -176,6 +177,11 @@ public interface MvvmLocalContext
      */
     void usbBackup() throws IOException;
 
+    Process exec(String cmd) throws IOException;
+    Process exec(String[] cmd) throws IOException;
+    Process exec(String[] cmd, String[] envp) throws IOException;
+    Process exec(String[] cmd, String[] envp, File dir) throws IOException;
+
     void shutdown();
 
     /**
@@ -265,6 +271,6 @@ public interface MvvmLocalContext
      *            to have come from a valid backup (is the user's fault).
      */
     void restoreBackup(byte[] backupFileBytes)
-      throws IOException, IllegalArgumentException;     
+      throws IOException, IllegalArgumentException;
 
 }

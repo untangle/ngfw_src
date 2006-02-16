@@ -1,0 +1,12 @@
+#!/bin/sh
+
+niceness=0;
+
+while getopts n: opt; do
+    case $opt in
+        n) niceness=$OPTARG
+    esac
+done
+shift $(expr $OPTIND - 1)
+
+exec nice -n $(expr $niceness - $(nice)) "$@"

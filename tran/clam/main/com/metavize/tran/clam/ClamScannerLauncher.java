@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004,2005 Metavize Inc.
+ * Copyright (c) 2004,2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,22 +11,15 @@
 package com.metavize.tran.clam;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.util.List;
 import java.util.StringTokenizer;
 
-import com.metavize.tran.util.AlarmTimer;
-import com.metavize.tran.virus.VirusScanner;
+import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.tran.virus.VirusScannerLauncher;
 import com.metavize.tran.virus.VirusScannerResult;
-import org.apache.log4j.Logger;
 
 public class ClamScannerLauncher extends VirusScannerLauncher
 {
@@ -57,7 +50,7 @@ public class ClamScannerLauncher extends VirusScannerLauncher
     {
         super(pathName);
     }
-        
+
 
     /**
      * This runs the virus scan, and stores the result for retrieval.
@@ -68,7 +61,7 @@ public class ClamScannerLauncher extends VirusScannerLauncher
     {
         try {
             String command = "clamdscan " + pathName;
-            this.scanProcess = Runtime.getRuntime().exec(command);
+            this.scanProcess = MvvmContextFactory.context().exec(command);
             InputStream is  = scanProcess.getInputStream();
             OutputStream os = scanProcess.getOutputStream();
             BufferedReader in = new BufferedReader(new InputStreamReader(is));
@@ -104,7 +97,7 @@ public class ClamScannerLauncher extends VirusScannerLauncher
                 while ((line = in.readLine()) != null) {
                     if (firstLine == null)
                         firstLine = line;
-                    
+
                     if (true == line.endsWith(" FOUND")) {
                         StringTokenizer st = new StringTokenizer(line);
                         String str = null;
@@ -196,10 +189,10 @@ public class ClamScannerLauncher extends VirusScannerLauncher
                 } catch (Exception e) {
                     logger.warn("Exception reading Error output: " + e);
                 }
-                
-                logger.error("clamdscan exit code error: " + i + 
-                             " \nCommand: " + command + 
-                             " \nfirstLine output: " + firstLine + 
+
+                logger.error("clamdscan exit code error: " + i +
+                             " \nCommand: " + command +
+                             " \nfirstLine output: " + firstLine +
                              " \nerror     output: " + errorOut);
                 this.result = VirusScannerResult.ERROR;
                 synchronized (this) {this.notifyAll();}

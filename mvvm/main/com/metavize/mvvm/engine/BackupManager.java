@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,11 +11,13 @@
 
 package com.metavize.mvvm.engine;
 
-import java.io.IOException;
-import com.metavize.tran.util.SimpleExec;
-import com.metavize.tran.util.IOUtil;
-import org.apache.log4j.Logger;
 import java.io.File;
+import java.io.IOException;
+
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.tran.util.IOUtil;
+import com.metavize.tran.util.SimpleExec;
+import org.apache.log4j.Logger;
 
 
 /**
@@ -28,17 +30,17 @@ class BackupManager {
   private static final String RESTORE_SCRIPT;
   private static final String LOCAL_ARG = "local";
   private static final String USB_ARG = "usb";
-  
 
 
-  
+
+
 
   private final Logger m_logger =
-    Logger.getLogger(BackupManager.class);  
+    Logger.getLogger(BackupManager.class);
 
   static {
     OLD_BACKUP_SCRIPT = System.getProperty("bunnicula.home")
-        + "/../../bin/mvvmdb-backup";  
+        + "/../../bin/mvvmdb-backup";
     BACKUP_SCRIPT = System.getProperty("bunnicula.home")
         + "/../../bin/mv-backup-bundled.sh";
     RESTORE_SCRIPT = System.getProperty("bunnicula.home")
@@ -72,11 +74,11 @@ class BackupManager {
 
     File tempFile = File.createTempFile("restore_", ".tar.gz");
     SimpleExec.SimpleExecResult result = null;
-   
+
     try {
       //Copy the bytes to a temp file
       IOUtil.bytesToFile(backupFileBytes, tempFile);
-  
+
       //unzip file
       result = SimpleExec.exec(RESTORE_SCRIPT,//cmd
           new String[] {//args
@@ -89,15 +91,15 @@ class BackupManager {
           1000*60,//timeout
           m_logger,//log-into
           true);//use MVVM threads
-          
+
       IOUtil.delete(tempFile);
-      
+
     }
     catch(IOException ex) {
       //Delete our temp file
       IOUtil.delete(tempFile);
       m_logger.error("Exception performing restore", ex);
-      throw ex; 
+      throw ex;
     }
 
     if(result.exitCode != 0) {
@@ -158,8 +160,8 @@ class BackupManager {
   // private methods --------------------------------------------------------
 
   private void backup(boolean local) throws IOException {
-  
-    Process p = Runtime.getRuntime().exec(new String[]
+
+      Process p = MvvmContextFactory.context().exec(new String[]
         { OLD_BACKUP_SCRIPT, local ? LOCAL_ARG : USB_ARG });
     for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
 
@@ -173,6 +175,6 @@ class BackupManager {
         }
       } catch (InterruptedException exn) { }
     }
-  }  
+  }
 
 }

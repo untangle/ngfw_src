@@ -24,9 +24,6 @@ import org.apache.log4j.Logger;
  */
 public class SchemaUtil
 {
-    private static final String UPDATE_SCHEMA_CMD
-        = System.getProperty("bunnicula.home") + "/../../bin/update-schema";
-
     private static final Logger logger = Logger.getLogger(SchemaUtil.class);
 
     // static methods ---------------------------------------------------------
@@ -42,7 +39,7 @@ public class SchemaUtil
     public static void initSchema(String type, String component)
     {
         try {
-            ProcessBuilder pb = new ProcessBuilder(UPDATE_SCHEMA_CMD, type, component);
+            ProcessBuilder pb = new ProcessBuilder("mvnice", "update-schema", type, component);
             Process p = pb.start();
             InputStream is = p.getInputStream();
             // XXX we log in the script, maybe move up to here

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,8 +11,8 @@
 
 package com.metavize.mvvm.tran.script;
 
+import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tran.TransformException;
-
 import org.apache.log4j.Logger;
 
 public class ScriptRunner
@@ -49,12 +49,12 @@ public class ScriptRunner
 
             input[c++] = arg;
         }
-    
+
         try {
             int code = 0;
-            Process p = Runtime.getRuntime().exec( input );
+            Process p = MvvmContextFactory.context().exec( input );
             code = p.waitFor();
-            
+
             if ( code != 0 ) throw new ScriptException( scriptName, code );
         } catch ( TransformException e ) {
             throw e;

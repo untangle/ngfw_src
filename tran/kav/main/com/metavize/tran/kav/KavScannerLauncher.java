@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004,2005, 2006 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -17,6 +17,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.StringTokenizer;
 
+import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.tran.virus.VirusScannerLauncher;
 import com.metavize.tran.virus.VirusScannerResult;
 
@@ -40,7 +41,7 @@ public class KavScannerLauncher extends VirusScannerLauncher
     {
         try {
             String command = "kavclient " + pathName;
-            this.scanProcess = Runtime.getRuntime().exec(command);
+            this.scanProcess = MvvmContextFactory.context().exec(command);
             InputStream is  = scanProcess.getInputStream();
             OutputStream os = scanProcess.getOutputStream();
             BufferedReader in = new BufferedReader(new InputStreamReader(is));

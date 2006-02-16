@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -22,10 +22,9 @@ import java.nio.channels.FileChannel;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Logger;
-
 import com.metavize.tran.virus.VirusScanner;
 import com.metavize.tran.virus.VirusScannerResult;
+import org.apache.log4j.Logger;
 
 public class SophosScanner implements VirusScanner
 {
@@ -44,7 +43,7 @@ public class SophosScanner implements VirusScanner
          * but by default,
          * Sophos sweep doesn't sweep these special files
          */
-        Process proc = Runtime.getRuntime().exec("nice -n 19 sweep -archive " + fileName);
+        Process proc = MvvmContextFactory.context().exec("sweep -archive " + fileName);
         InputStream is  = proc.getInputStream();
         OutputStream os = proc.getOutputStream();
         BufferedReader in = new BufferedReader(new InputStreamReader(is));
@@ -91,7 +90,7 @@ public class SophosScanner implements VirusScanner
         case 0:
             logger.info("sweep: clean");
             return VirusScannerResult.CLEAN;
-        case 3: 
+        case 3:
             if (virusName == null) {
                 logger.info("sweep: infected (unknown)");
                 return VirusScannerResult.INFECTED;

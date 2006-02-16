@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -17,11 +17,9 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Random;
 
-import com.metavize.mvvm.NetworkingConfiguration;
-import com.metavize.mvvm.MvvmContextFactory;
-
-
 import com.metavize.mvvm.ConnectivityTester;
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.NetworkingConfiguration;
 import org.apache.log4j.Logger;
 
 class ConnectivityTesterImpl implements ConnectivityTester
@@ -47,7 +45,7 @@ class ConnectivityTesterImpl implements ConnectivityTester
     /* The amount of time before giving up on the DNS attempt in milliseconds */
     private static final int DNS_TEST_TIMEOUT_MS = 5000;
     private static final int TCP_TEST_TIMEOUT_MS = 10000;
-    
+
     /* Exit code for a DNS test that passed */
     private static final int DNS_TEST_PASS = 0;
 
@@ -64,10 +62,10 @@ class ConnectivityTesterImpl implements ConnectivityTester
     public Status getStatus()
     {
         NetworkingConfiguration netConfig = MvvmContextFactory.context().networkingManager().get();
-        
+
         InetAddress dnsPrimary   = netConfig.dns1().getAddr();
         InetAddress dnsSecondary = ( netConfig.dns2().isEmpty()) ? null : netConfig.dns2().getAddr();
-            
+
         /* Returns the lookuped address if DNS is working, or null if it is not */
         return ConnectionStatus.
             makeConnectionStatus( isDnsWorking( dnsPrimary, dnsSecondary ), isTcpWorking());
@@ -84,8 +82,8 @@ class ConnectivityTesterImpl implements ConnectivityTester
             String script = "sh " + DNS_TEST_SCRIPT + " " + dnsPrimaryServer.getHostAddress();
             if ( null != dnsSecondaryServer ) script = script + " " + dnsSecondaryServer.getHostAddress();
 
-            Process p = Runtime.getRuntime().exec( script );
-            
+            Process p = MvvmContextFactory.context().exec( script );
+
             if ( p.waitFor() == DNS_TEST_PASS ) isWorking=true;
         } catch( Exception e ) {
             logger.error( "Error testing dns", e );

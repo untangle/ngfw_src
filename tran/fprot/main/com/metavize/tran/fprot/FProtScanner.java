@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -22,10 +22,9 @@ import java.nio.channels.FileChannel;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Logger;
-
 import com.metavize.tran.virus.VirusScanner;
 import com.metavize.tran.virus.VirusScannerResult;
+import org.apache.log4j.Logger;
 
 public class FProtScanner implements VirusScanner {
 
@@ -43,7 +42,7 @@ public class FProtScanner implements VirusScanner {
         /* F-Prot f-prot can process special files (archives/zip/etc) and
          * by default, it handles these special files
          */
-        Process proc = Runtime.getRuntime().exec("nice -n 19 f-prot " + fileName);
+        Process proc = MvvmContextFactory.context().exec("f-prot " + fileName);
         InputStream is  = proc.getInputStream();
         OutputStream os = proc.getOutputStream();
         BufferedReader in = new BufferedReader(new InputStreamReader(is));

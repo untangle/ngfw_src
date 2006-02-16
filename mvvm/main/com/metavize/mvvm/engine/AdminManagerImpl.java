@@ -168,7 +168,7 @@ class AdminManagerImpl implements AdminManager
         String id = timezone.getID();
 
         try {
-            Process p = Runtime.getRuntime().exec(new String[] { SET_TIMEZONE_SCRIPT, id });
+            Process p = MvvmContextFactory.context().exec(new String[] { SET_TIMEZONE_SCRIPT, id });
             for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
             int exitValue = p.waitFor();
             if (0 != exitValue) {

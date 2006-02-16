@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -8,21 +8,21 @@
  *
  *  $Id$
  */
- 
+
 package com.metavize.tran.util;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import org.apache.log4j.Logger;
+import java.io.IOException;
+import java.io.InputStream;
 
 import com.metavize.mvvm.MvvmContextFactory;
+import org.apache.log4j.Logger;
 
 /**
  * Wrapper around a simple exec (short-lived) which takes care of timeouts and buffering
  * output.  Does not handle stdin.
- * 
+ *
  */
 public final class SimpleExec {
 
@@ -72,14 +72,14 @@ public final class SimpleExec {
         sb.append("----------- BEGIN stderr -----------").append(newLine);
         sb.append(new String(stdErr)).append(newLine);
         sb.append("----------- BEGIN stderr -----------").append(newLine);
-      }      
+      }
       return sb.toString();
     }
-    
+
   }
 
 
-  private static final String[] EMPTY_ARRAY = new String[0];  
+  private static final String[] EMPTY_ARRAY = new String[0];
   private final Logger m_logger;
   private final long m_maxTime;
   private volatile boolean m_wasTimeout = false;
@@ -95,7 +95,7 @@ public final class SimpleExec {
   private SimpleExec(long maxTime,
     Logger logAs) {
 
-    
+
     m_logger = logAs==null?Logger.getLogger(SimpleExec.class):logAs;
     m_maxTime = maxTime;
   }
@@ -163,7 +163,7 @@ public final class SimpleExec {
     fullCmd[0] = cmd;
     System.arraycopy(args, 0, fullCmd, 1, args.length);
 
-    m_process = Runtime.getRuntime().exec(fullCmd, env, rootDir);
+    m_process = useMVVMThread ? MvvmContextFactory.context().exec(fullCmd, env, rootDir) : Runtime.getRuntime().exec(fullCmd, env, rootDir);
 
     //If we're here, we created a process
     try {
@@ -191,7 +191,7 @@ public final class SimpleExec {
       }
       int retCode = m_process.exitValue();
 
-      return new SimpleExecResult(retCode, 
+      return new SimpleExecResult(retCode,
         bufferStdOut?m_stdOutBuf.toByteArray():null,
         bufferStdErr?m_stdErrBuf.toByteArray():null);
     }
@@ -209,7 +209,7 @@ public final class SimpleExec {
         throw new IOException("Interrupted");
       }
     }
-    
+
   }
 
   private void done() {
@@ -275,7 +275,7 @@ public final class SimpleExec {
    * @param bufferStdErr If true, stderr of the process will be buffered
    *        and available on the returned {@link #SimpleExecResult}
    * @param maxTime the max time the process should run before it is killed
-   * @param logAs a log instance, so log messages may be made from a more 
+   * @param logAs a log instance, so log messages may be made from a more
    *        suitable context.
    * @param useMVVMThread if running in MVVM, this is true.  False otherwise.
    */

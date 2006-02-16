@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -21,11 +21,6 @@ import javax.activation.FileDataSource;
 import javax.activation.MimetypesFileTypeMap;
 import javax.mail.*;
 import javax.mail.internet.*;
-import com.sun.mail.smtp.SMTPTransport;
-
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.SessionFactory;
 
 import com.metavize.mvvm.MailSender;
 import com.metavize.mvvm.MailSettings;
@@ -35,6 +30,10 @@ import com.metavize.mvvm.security.User;
 import com.metavize.mvvm.util.ConfigFileUtil;
 import com.metavize.mvvm.util.TransactionRunner;
 import com.metavize.mvvm.util.TransactionWork;
+import com.sun.mail.smtp.SMTPTransport;
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.SessionFactory;
 
 
 /**
@@ -163,13 +162,13 @@ class MailSenderImpl implements MailSender
         // This is safe to do early, and it allows exception emails early.
         refreshSessions();
     }
-    
+
     // Called from MvvmContextImpl at postInit time, after the networking manager
     // is up and runing
     void postInit() {
         reconfigure();
     }
-        
+
 
     static MailSenderImpl mailSender() {
         synchronized (LOCK) {
@@ -233,7 +232,7 @@ class MailSenderImpl implements MailSender
             sb.append("\"\n");
             ConfigFileUtil.writeFile( sb, MASQMAIL_CONF_FILE );
 
-            
+
             sb = new StringBuilder();
             sb.append(MASQMAIL_DEFAULT_ROUTE_START);
             String mailHost = mailSettings.getSmtpHost();
@@ -283,7 +282,7 @@ class MailSenderImpl implements MailSender
                 logger.debug( "Restarting MasqMail server" );
 
                 /* restart masqmail */
-                Process p = Runtime.getRuntime().exec( MASQMAIL_CMD_RESTART );
+                Process p = MvvmContextFactory.context().exec( MASQMAIL_CMD_RESTART );
                 code = p.waitFor();
             } catch ( Exception e ) {
                 logger.error( "Unable to reload masqmail configuration", e );
@@ -530,7 +529,7 @@ class MailSenderImpl implements MailSender
         logger.warn("No recipients for email");
         return false;
       }
-    
+
       //TODO bscott Need better error handling
       //TODO bscott by using JavaMail, we don't seem to be able to have
       //     a null ("<>") MAIL FROM.  This is a violation of some spec
@@ -554,9 +553,9 @@ class MailSenderImpl implements MailSender
         logger.warn("Unable to send Message", ex);
         return false;
       }
-    }    
+    }
 
-      
+
     // Here's where we actually do the sending
     public boolean sendTestMessage(String recipient)
     {
@@ -778,8 +777,8 @@ class MailSenderImpl implements MailSender
         throws MessagingException
     {
       dosend(session, msg, msg.getAllRecipients());
-    }    
-    
+    }
+
     // Here's where we actually do the sending
     private void dosend(Session session, Message msg, Address[] recipients)
         throws MessagingException

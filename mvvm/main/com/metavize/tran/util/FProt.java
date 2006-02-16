@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003 Metavize Inc.
+ * Copyright (c) 2003, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -10,10 +10,12 @@
  */
 package com.metavize.tran.util;
 
-import java.util.*;
 import java.io.*;
 import java.nio.*;
 import java.nio.channels.*;
+import java.util.*;
+
+import com.metavize.mvvm.MvvmContextFactory;
 
 public class FProt {
 
@@ -32,13 +34,13 @@ public class FProt {
     public static int scanFile (String fileName) throws IOException,InterruptedException
     {
         byte[] outbuf = new byte[CHUNK_SIZE];
-        Process proc = Runtime.getRuntime().exec("nice -n 19 f-prot " + fileName);
+        Process proc = MvvmContextFactory.context().exec("f-prot " + fileName);
         InputStream is  = proc.getInputStream();
         OutputStream os = proc.getOutputStream();
         int i;
 
         os.close();
-        
+
         /**
          * Drain f-prots output
          * XXX contains useful info
@@ -60,7 +62,7 @@ public class FProt {
         proc.waitFor();
         i = proc.exitValue();
         is.close();
-        
+
         switch(i) {
         case 0:
             return FProt.VIRUS_FREE;
@@ -87,11 +89,11 @@ public class FProt {
         File fileBuf = File.createTempFile("f-prot-cache",null);
         FileChannel outFile = (new FileOutputStream(fileBuf)).getChannel();
         int ret,i;
-        
+
         for (i = 0; i < bufs.size(); i++) {
             ByteBuffer bb = (ByteBuffer)bufs.get(i);
             bb.flip();
-            while (bb.remaining()>0) 
+            while (bb.remaining()>0)
                 outFile.write(bb);
         }
         outFile.close();
@@ -101,5 +103,5 @@ public class FProt {
 
         return ret;
     }
-    
+
 }
