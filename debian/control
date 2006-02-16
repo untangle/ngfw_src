@@ -1313,7 +1313,7 @@ Description: The Metavize Test Software Appliance
 
 Package: openvpn-transform
 Architecture: any
-Depends: mvvm, openvpn, nsis, nsis-mv, sysutils, zip
+Depends: mvvm, openvpn, nsis, nsis-mv, sysutils, zip, openssl
 XB-Display-Name: OpenVPN
 XB-Website: http://www.metavize.com/openvpn.html
 XB-View-Position: 990
