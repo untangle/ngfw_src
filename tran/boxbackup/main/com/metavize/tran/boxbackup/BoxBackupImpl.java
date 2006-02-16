@@ -31,7 +31,7 @@ import org.hibernate.Session;
 
 public class BoxBackupImpl extends AbstractTransform implements BoxBackup
 {
-    private static final String DEF_BACKUP_URL = "http://boxtrack.metavize.com/boxbackup/backup.php";
+    private static final String DEF_BACKUP_URL = "https://boxtrack.metavize.com/boxbackup/backup.php";
 
     private final EventHandler handler = new EventHandler(this);
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { };
