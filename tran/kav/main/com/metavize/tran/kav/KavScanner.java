@@ -16,7 +16,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
-import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.tran.virus.VirusScanner;
 import com.metavize.tran.virus.VirusScannerResult;
 import org.apache.log4j.Logger;
@@ -40,7 +39,9 @@ public class KavScanner implements VirusScanner
         String version = "unknown";
 
         try {
-            Process scanProcess = MvvmContextFactory.context().exec("virobot " + VERSION_ARG);
+            // Note that we do NOT use MvvmContext.exec here because we run at
+            // reports time where there is no MvvmContext.
+            Process scanProcess = Runtime.getRuntime().exec("kavclient " + VERSION_ARG);
             InputStream is  = scanProcess.getInputStream();
             BufferedReader in = new BufferedReader(new InputStreamReader(is));
 
@@ -72,7 +73,7 @@ public class KavScanner implements VirusScanner
             scanProcess.destroy(); // It should be dead already, just to be sure...
         }
         catch (java.io.IOException e) {
-            logger.error("virobot version exception: ", e);
+            logger.error("kavclient version exception: ", e);
         }
         return version;
     }
