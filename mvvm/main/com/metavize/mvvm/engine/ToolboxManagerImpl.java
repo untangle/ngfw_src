@@ -589,7 +589,7 @@ class ToolboxManagerImpl implements ToolboxManager
     {
         Exception exn;
 
-        String cmdStr = "mkg" + (0 > key ? "" : "-k " + key + " ") + command;
+        String cmdStr = "mkg " + (0 > key ? "" : "-k " + key + " ") + command;
 
         logger.debug("running: " + cmdStr);
         try {
