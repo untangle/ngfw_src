@@ -214,9 +214,6 @@ public class IDSDetectionEngine {
             long startTime = System.currentTimeMillis();
 
             SessionStats stats = session.stats();
-            if(stats.s2tChunks() >= maxChunks || stats.c2tChunks() >= maxChunks)
-                // Takes effect after this packet/chunk
-                session.release();
 
             IDSSessionInfo info = sessionInfoMap.get(session.id());
 
@@ -231,8 +228,14 @@ public class IDSDetectionEngine {
             else
                 result = info.processC2SSignatures();
 
-            if (!result)
+            if (!result) {
                 transform.statisticManager.incrDNC();
+                if (stats.s2tChunks() > maxChunks || stats.c2tChunks() > maxChunks) {
+                    session.release();
+                    // Free up storage immediately in case session stays around a long time.
+                    sessionInfoMap.remove(session.id());
+                }
+            }
 
             long elapsed = System.currentTimeMillis() - startTime;
             if (isFromServer) {
