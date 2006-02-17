@@ -100,7 +100,7 @@ public class PolicyStateMachine implements ActionListener {
     private Separator rackSeparator;
     private static final String POLICY_MANAGER_SEPARATOR = "____________";
     private static final String POLICY_MANAGER_OPTION = "Show Policy Manager";
-    private static final int CONCURRENT_LOAD_MAX = 3;
+    private static final int CONCURRENT_LOAD_MAX = 1;
     private static Semaphore loadSemaphore;
     // STORE DELAYS //////////////////
     private static final long STORE_UPDATE_CHECK_SLEEP = 24l*60l*60l*1000l;
