@@ -91,9 +91,6 @@ class NetworkUtilPriv extends NetworkUtil
         /* Set the network list */
         primary.setNetworkList( networkList );
 
-        /* Handle all of the other settings */
-        settings.setHostname( basic.hostname());
-
         settings.setDefaultRoute( basic.gateway());
         settings.setDns1( basic.dns1());
         settings.setDns2( basic.dns2());            
@@ -204,9 +201,6 @@ class NetworkUtilPriv extends NetworkUtil
         
         IPaddr defaultRoute  = networkSettings.getDefaultRoute();
         
-        String hostname      = networkSettings.getHostname();
-        String publicAddress = networkSettings.getPublicAddress();
-
         SetupState setupState = networkSettings.getSetupState();
         boolean isEnabled     = networkSettings.getIsEnabled();
 
@@ -241,7 +235,7 @@ class NetworkUtilPriv extends NetworkUtil
 
         return NetworkSpacesInternalSettings.
             makeInstance( setupState, isEnabled, realInterfaceList, interfaceList, networkSpaceList, 
-                          routingTable, redirectList, dns1, dns2, defaultRoute, hostname, publicAddress );
+                          routingTable, redirectList, dns1, dns2, defaultRoute );
                           
     }
     
@@ -316,9 +310,6 @@ class NetworkUtilPriv extends NetworkUtil
         newSettings.setDefaultRoute( configuration.gateway());
         newSettings.setDns1( configuration.dns1());
         newSettings.setDns2( configuration.dns2());
-        newSettings.setHostname( configuration.hostname());
-        // ????
-        newSettings.setPublicAddress( null );
         
         return toInternal( newSettings );
     }
@@ -413,10 +404,11 @@ class NetworkUtilPriv extends NetworkUtil
         configuration.setAliasList( aliasList );
 
         /* Grab the basic parameters */
-        configuration.hostname( settings.getHostname());
-        configuration.gateway( settings.getDefaultRoute());
         configuration.dns1( settings.getDns1());
         configuration.dns2( settings.getDns2());
+        configuration.gateway( settings.getDefaultRoute());
+        configuration.setHostname( remoteSettings.getHostname());
+        configuration.setPublicAddress( remoteSettings.getPublicAddress());
         configuration.isSshEnabled( remoteSettings.isSshEnabled());
         configuration.isExceptionReportingEnabled( remoteSettings.isExceptionReportingEnabled());
         configuration.isTcpWindowScalingEnabled( remoteSettings.isTcpWindowScalingEnabled());
@@ -483,8 +475,6 @@ class NetworkUtilPriv extends NetworkUtil
         settings.setDefaultRoute( internalSettings.getDefaultRoute());
         settings.setDns1( internalSettings.getDns1());
         settings.setDns2( internalSettings.getDns2());
-        settings.setHostname( internalSettings.getHostname());
-        settings.setPublicAddress( internalSettings.getPublicAddress());
 
         settings.setRedirectList( internalSettings.getRedirectRuleList());
 

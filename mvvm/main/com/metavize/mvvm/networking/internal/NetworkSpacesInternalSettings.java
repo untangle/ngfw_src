@@ -46,9 +46,6 @@ public class NetworkSpacesInternalSettings
     private final IPaddr dns2;
     private final IPaddr defaultRoute;
     
-    private final String hostname;
-    private final String publicAddress;
-
     /* This is the space where services (dhcp/dns) are bound to */
     private final NetworkSpaceInternal serviceSpace;
 
@@ -59,7 +56,6 @@ public class NetworkSpacesInternalSettings
                                            List<RouteInternal> routingTable,
                                            List<RedirectInternal> redirectList,
                                            IPaddr dns1, IPaddr dns2, IPaddr defaultRoute,
-                                           String hostname, String publicAddress, 
                                            NetworkSpaceInternal serviceSpace )
     {
         this.setupState       = setupState;
@@ -73,8 +69,6 @@ public class NetworkSpacesInternalSettings
         this.dns1          = dns1;
         this.dns2          = dns2;
         this.defaultRoute  = defaultRoute;
-        this.hostname      = hostname;
-        this.publicAddress = publicAddress;
         this.serviceSpace  = serviceSpace;
     }
     
@@ -134,20 +128,10 @@ public class NetworkSpacesInternalSettings
         return this.dns2;
     }
     
-    public String getHostname()
-    {
-        return this.hostname;
-    }
-
     /* This is the space where all of the services (dhcp/dns) should be running on */
     public NetworkSpaceInternal getServiceSpace()
     {
         return this.serviceSpace;
-    }
-
-    public String getPublicAddress()
-    {
-        return this.publicAddress;
     }
 
     public String toString()
@@ -169,8 +153,6 @@ public class NetworkSpacesInternalSettings
         sb.append( "dns1:     " + getDns1());
         sb.append( "\ndns2:     " + getDns2());
         sb.append( "\ngateway:  " + getDefaultRoute());
-        sb.append( "\nhostname: " + getHostname());
-        sb.append( "\npublic:   " + getPublicAddress());
         sb.append( "\nservices: " + getServiceSpace().getIndex());
 
         return sb.toString();
@@ -182,8 +164,7 @@ public class NetworkSpacesInternalSettings
                       List<NetworkSpaceInternal> networkSpaceList,
                       List<RouteInternal> routingTable,
                       List<RedirectInternal> redirectList,
-                      IPaddr dns1, IPaddr dns2, IPaddr defaultRoute,
-                      String hostname, String publicAddress )
+                      IPaddr dns1, IPaddr dns2, IPaddr defaultRoute )
     {
         /* Set the service space to either the first network space, or the first network space
          * that is running nat */
@@ -198,8 +179,7 @@ public class NetworkSpacesInternalSettings
         return new 
             NetworkSpacesInternalSettings( setupState, isEnabled, 
                                            interfaceList, enabledList, networkSpaceList, routingTable, 
-                                           redirectList, dns1, dns2, defaultRoute, hostname, publicAddress, 
-                                           serviceSpace );
+                                           redirectList, dns1, dns2, defaultRoute, serviceSpace );
     }
 }
 

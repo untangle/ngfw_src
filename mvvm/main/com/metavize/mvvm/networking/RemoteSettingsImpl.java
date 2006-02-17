@@ -67,6 +67,9 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
     private IPaddr outsideNetwork = NetworkUtil.DEF_OUTSIDE_NETWORK;
     private IPaddr outsideNetmask = NetworkUtil.DEF_OUTSIDE_NETMASK;
     
+    private String hostname = "";
+    private String publicAddress;
+
     private int httpsPort = DEF_HTTPS_PORT;
 
     /* This is a script that gets executed after the bridge configuration runs */
@@ -215,6 +218,35 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
         if ( httpsPort == 0 || httpsPort > 0xFFFF || httpsPort == 80 ) httpsPort = DEF_HTTPS_PORT;
         
         this.httpsPort = httpsPort;
+    }
+
+    /** The hostname for the box(this is the hostname that goes into certificates). */
+    public String getHostname()
+    {
+        return this.hostname;
+    }
+
+    public void setHostname( String newValue )
+    {
+        /* ??? empty strings, null, etc */
+        this.hostname = newValue;
+    }
+
+    /** @return the public url for the box, this is the address (may be hostname or ip address) */
+    public String getPublicAddress()
+    {
+        return this.publicAddress;
+    }
+
+    public void setPublicAddress( String newValue )
+    {
+        this.publicAddress = newValue;
+    }
+
+    /* Return true if the current settings have a public address */
+    public boolean hasPublicAddress()
+    {
+        return (( this.publicAddress == null ) || ( this.publicAddress.length() == 0 ));
     }
 
     @Override

@@ -63,17 +63,4 @@ public interface NetworkSpacesSettings
 
     /* Return true if there is a secondary DNS entry */
     public boolean hasDns2();
-
-    /** The hostname for the box(this is the hostname that goes into certificates). */
-    public String getHostname();
-
-    public void setHostname( String newValue );
-
-    /** @return the public url for the box, this is the address (may be hostname or ip address) */
-    public String getPublicAddress();
-
-    public void setPublicAddress( String newValue );
-
-    /* Return true if the current settings have a public address */
-    public boolean hasPublicAddress();
 }

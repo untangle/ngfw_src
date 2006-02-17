@@ -74,7 +74,7 @@ public class NetworkManagerImpl implements NetworkManager
 
     /** The nuts and bolts of networking, the real bits of panther.  this my friend
      * should never be null */
-    private NetworkSpacesInternalSettings settings = null;
+    private NetworkSpacesInternalSettings networkSettings = null;
 
     /** The configuration for the DHCP/DNS Server */
     private ServicesInternalSettings servicesSettings = null;
@@ -82,6 +82,9 @@ public class NetworkManagerImpl implements NetworkManager
     /* These are the "networking" settings that aren't related to the nuts and bolts of
      * network spaces.  Things like SSH support */
     private RemoteSettings remote = null;
+
+    /* These are the dynamic dns settings */
+    private DynamicDNSSettings ddnsSettings = null;
 
     /* the netcap  */
     private final Netcap netcap = Netcap.getInstance();
@@ -122,19 +125,20 @@ public class NetworkManagerImpl implements NetworkManager
 
     public NetworkingConfiguration getNetworkingConfiguration()
     {
-        return NetworkUtilPriv.getPrivInstance().toConfiguration( this.settings, this.remote );
+        return NetworkUtilPriv.getPrivInstance().toConfiguration( this.networkSettings, this.remote );
     }
     
     public synchronized void setNetworkingConfiguration( NetworkingConfiguration configuration )
         throws NetworkException, ValidateException
     {
-        setNetworkSettings( NetworkUtilPriv.getPrivInstance().toInternal( configuration, this.settings ));
+        setNetworkSettings( NetworkUtilPriv.getPrivInstance().
+                            toInternal( configuration, this.networkSettings ));
         setRemoteSettings( configuration );
     }
 
     public NetworkSpacesSettings getNetworkSettings()
     {
-        return NetworkUtilPriv.getPrivInstance().toSettings( this.settings );
+        return NetworkUtilPriv.getPrivInstance().toSettings( this.networkSettings );
     }
 
     public synchronized void setNetworkSettings( NetworkSpacesSettings settings )
@@ -154,7 +158,7 @@ public class NetworkManagerImpl implements NetworkManager
         /* Write the settings */
         writeConfiguration( newSettings );
         
-        this.settings = newSettings;
+        this.networkSettings = newSettings;
     }
 
     public synchronized void setRemoteSettings( RemoteSettings remote )
@@ -166,7 +170,7 @@ public class NetworkManagerImpl implements NetworkManager
 
     public NetworkSpacesInternalSettings getNetworkInternalSettings()
     {
-        return this.settings;
+        return this.networkSettings;
     }
     
     /* XXXX This is kind of busted since you can't change the services on/off switch from here */
@@ -182,7 +186,9 @@ public class NetworkManagerImpl implements NetworkManager
         logger.debug( "Loading the new dhcp settings: " + dhcp );
         logger.debug( "Loading the new dns settings: " + dns );
 
-        this.servicesSettings = NetworkUtilPriv.getPrivInstance().toInternal( settings, dhcp, dns );
+        this.servicesSettings = 
+            NetworkUtilPriv.getPrivInstance().toInternal( this.networkSettings, dhcp, dns );
+
         this.dhcpManager.configure( this.servicesSettings );
         // !!!!!! this.dhcpManager.startDnsMasq();
     }
@@ -232,13 +238,13 @@ public class NetworkManagerImpl implements NetworkManager
     /* Renew the DHCP address for a network space. */
     public synchronized DhcpStatus renewDhcpLease( int index ) throws NetworkException
     {
-        if (( index < 0 ) || ( index >= this.settings.getNetworkSpaceList().size())) {
+        if (( index < 0 ) || ( index >= this.networkSettings.getNetworkSpaceList().size())) {
             throw new NetworkException( "There isn't a network space at index " + index );
         }
 
         boolean isPrimary = ( index == 0 );
         
-        NetworkSpaceInternal space = this.settings.getNetworkSpaceList().get( index );
+        NetworkSpaceInternal space = this.networkSettings.getNetworkSpaceList().get( index );
         
         if ( !space.getIsDhcpEnabled()) {
             throw new NetworkException( "DHCP is not enabled on this network space." );
@@ -261,11 +267,11 @@ public class NetworkManagerImpl implements NetworkManager
         updateAddress();
 
         /* Get the new space (the settings get updated by updateAddress) */
-        if (( index < 0 ) || ( index >= this.settings.getNetworkSpaceList().size())) {
+        if (( index < 0 ) || ( index >= this.networkSettings.getNetworkSpaceList().size())) {
             throw new NetworkException( "There is no longer a network space at index " + index );
         }
         
-        space = this.settings.getNetworkSpaceList().get( index );
+        space = this.networkSettings.getNetworkSpaceList().get( index );
         
         if ( !space.getIsDhcpEnabled()) {
             throw new NetworkException( "DHCP is no longer enabled on this network space." );
@@ -274,8 +280,9 @@ public class NetworkManagerImpl implements NetworkManager
         IPNetwork network = space.getPrimaryAddress();
         if ( !isPrimary ) return new DhcpStatus( network.getNetwork(), network.getNetmask());
         
-        return new DhcpStatus( network.getNetwork(), network.getNetmask(), this.settings.getDefaultRoute(),
-                               this.settings.getDns1(), this.settings.getDns2());
+        return new DhcpStatus( network.getNetwork(), network.getNetmask(), 
+                               this.networkSettings.getDefaultRoute(),
+                               this.networkSettings.getDns1(), this.networkSettings.getDns2());
     }
 
     /* Retrieve the enumeration of all of the active interfaces */
@@ -286,12 +293,12 @@ public class NetworkManagerImpl implements NetworkManager
 
     public String getHostname()
     {
-        return this.settings.getHostname();
+        return this.remote.getHostname();
     }
 
     public String getPublicAddress()
     {
-        return this.settings.getPublicAddress();
+        return this.remote.getPublicAddress();
     }
     
     public void updateAddress()
@@ -345,7 +352,7 @@ public class NetworkManagerImpl implements NetworkManager
         if ( Boolean.valueOf( saveSettings ) == false ) this.saveSettings = false;
         
         /* If there are no settings, get the settings from the database */
-        if ( this.settings == null ) {
+        if ( this.networkSettings == null ) {
             /* Need to create new settings, (The method setNetworkingConfiguration assumes that
              * settings is already set, and cannot be used here) */
             NetworkingConfiguration configuration = networkConfigurationLoader.getNetworkingConfiguration();
@@ -368,6 +375,7 @@ public class NetworkManagerImpl implements NetworkManager
         generateRules();
     }    
     
+    /* Methods for writing the configuration files */
     private void writeConfiguration( NetworkSpacesInternalSettings newSettings ) throws NetworkException
     {
         
@@ -407,6 +415,36 @@ public class NetworkManagerImpl implements NetworkManager
         ResolvScriptWriter rsw = new ResolvScriptWriter( newSettings );
         rsw.addNetworkSettings();
         rsw.writeFile( ETC_RESOLV_FILE );
+    }
+
+    /* Methods for saving and loading the settings files to the database */
+    private void loadSettings()
+    {
+        this.remote = loadRemoteSettings();
+        this.networkSettings = loadNetworkSettings();
+        this.ddnsSettings = loadDynamicDns();
+    }
+
+    private RemoteSettings loadRemoteSettings()
+    {
+        /* CCCCCCCCCC <<<<<<<<<<<<<<<<< */
+        return null;
+    }
+
+    private NetworkSpacesInternalSettings loadNetworkSettings()
+    {
+        /* CCCCCCCCCC <<<<<<<<<<<<<<<<< */
+        return null;
+    }
+
+    private DynamicDNSSettings loadDynamicDns()
+    {
+        /* CCCCCCCCCC <<<<<<<<<<<<<<<<< */
+        return null;
+    }
+
+    private void saveNetworkSettings( )
+    {
     }
 
     /* Create a networking manager, this is a first come first serve

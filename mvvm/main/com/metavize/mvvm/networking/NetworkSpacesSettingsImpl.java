@@ -33,9 +33,6 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
     private IPaddr dns1 = NetworkUtil.EMPTY_IPADDR;
     private IPaddr dns2 = NetworkUtil.EMPTY_IPADDR;
 
-    private String hostname = "";
-    private String publicAddress;
-
     /* This is a data class */
     public NetworkSpacesSettingsImpl()
     {
@@ -160,35 +157,6 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
         return (( this.dns2 == null ) || this.dns2.isEmpty());
     }
 
-    /** The hostname for the box(this is the hostname that goes into certificates). */
-    public String getHostname()
-    {
-        return this.hostname;
-    }
-
-    public void setHostname( String newValue )
-    {
-        /* ??? empty strings, null, etc */
-        this.hostname = newValue;
-    }
-
-    /** @return the public url for the box, this is the address (may be hostname or ip address) */
-    public String getPublicAddress()
-    {
-        return this.publicAddress;
-    }
-
-    public void setPublicAddress( String newValue )
-    {
-        this.publicAddress = newValue;
-    }
-
-    /* Return true if the current settings have a public address */
-    public boolean hasPublicAddress()
-    {
-        return (( this.publicAddress == null ) || ( this.publicAddress.length() == 0 ));
-    }
-
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
@@ -208,8 +176,6 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
         sb.append( "dns1:     " + getDns1());
         sb.append( "\ndns2:     " + getDns2());
         sb.append( "\ngateway:  " + getDefaultRoute());
-        sb.append( "\nhostname: " + getHostname());
-        sb.append( "\npublic:   " + getPublicAddress());
 
         return sb.toString();
     }

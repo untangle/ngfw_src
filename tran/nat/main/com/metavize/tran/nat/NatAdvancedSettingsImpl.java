@@ -154,34 +154,6 @@ public class NatAdvancedSettingsImpl implements NatAdvancedSettings
         return networkSpacesSettings.hasDns2();
     }
 
-    /** The hostname for the box(this is the hostname that goes into certificates). */
-    public String getHostname()
-    {
-        return networkSpacesSettings.getHostname();
-    }
-
-    public void setHostname( String newValue )
-    {
-        networkSpacesSettings.setHostname( newValue );
-    }
-
-    /** @return the public url for the box, this is the address (may be hostname or ip address) */
-    public String getPublicAddress()
-    {
-        return networkSpacesSettings.getPublicAddress();
-    }
-
-    public void setPublicAddress( String newValue )
-    {
-        networkSpacesSettings.setPublicAddress( newValue );
-    }
-
-    /* Return true if the current settings have a public address */
-    public boolean hasPublicAddress()
-    {
-        return networkSpacesSettings.hasPublicAddress();
-    }
-
     /* DHCP Settings */
     /**
      * Returns If DHCP is enabled.

@@ -75,4 +75,17 @@ public interface RemoteSettings
 
     /* Set the port to run HTTPs on in addition to port 443. */
     public void httpsPort( int httpsPort );
+
+    /** The hostname for the box(this is the hostname that goes into certificates). */
+    public String getHostname();
+
+    public void setHostname( String newValue );
+
+    /** @return the public url for the box, this is the address (may be hostname or ip address) */
+    public String getPublicAddress();
+
+    public void setPublicAddress( String newValue );
+
+    /* Return true if the current settings have a public address */
+    public boolean hasPublicAddress();
 }

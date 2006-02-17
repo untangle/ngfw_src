@@ -58,6 +58,7 @@ public class NetworkingConfigurationImpl implements Serializable, NetworkingConf
      * Hostname, Host and Netmask of the EdgeGuard GSP
      */
     private String hostname = DEFAULT_HOSTNAME;
+    private String publicAddress = null;
     private IPaddr host     = NetworkUtil.EMPTY_IPADDR;
     private IPaddr netmask  = NetworkUtil.EMPTY_IPADDR;
 
@@ -126,20 +127,52 @@ public class NetworkingConfigurationImpl implements Serializable, NetworkingConf
 
 
     /**
-     * Set the hostname with a string
+     * Set the hostname with a string, this method is deprecated.
      */
     public void hostname( String hostname )
     {
 	// do some shizzle 'n checks here
 	this.hostname = hostname;
     }
+
+    /* This is from the interface, this is the non-deprecated method */
+    public void setHostname( String hostname )
+    {
+	// do some shizzle 'n checks here
+	this.hostname = hostname;
+    }
+
     public String hostname()
     {
 	return hostname;
     }
 
+    /* This is from the interface, this is the non-deprecated method */
+    public String getHostname()
+    {
+        return this.hostname;
+    }
+
+    /** @return the public url for the box, this is the address (may be hostname or ip address) */
+    public String getPublicAddress()
+    {
+        return this.publicAddress;
+    }
+
+    public void setPublicAddress( String newValue )
+    {
+        this.publicAddress = newValue;
+    }
+
+    /* Return true if the current settings have a public address */
+    public boolean hasPublicAddress()
+    {
+        return (( this.publicAddress == null ) || ( this.publicAddress.length() == 0 ));
+    }
+
+
     /**
-     * Set the host with an IP Maddr
+     * Set the host with an IP addr
      */
     public void host( IPaddr host )
     {
