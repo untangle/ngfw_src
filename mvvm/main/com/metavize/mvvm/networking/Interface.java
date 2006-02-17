@@ -85,6 +85,7 @@ public class Interface extends Rule
      */
     public EthernetMedia getEthernetMedia()
     {
+        if ( this.ethernetMedia == null ) this.ethernetMedia = EthernetMedia.AUTO_NEGOTIATE;
         return this.ethernetMedia;
     }
     

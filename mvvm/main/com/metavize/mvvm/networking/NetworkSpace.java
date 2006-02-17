@@ -32,7 +32,7 @@ public class NetworkSpace extends Rule
     /* There should be at least one */
     private List networkList = new LinkedList();
 
-    private static final int DEFAULT_MTU = 1500;
+    public static final int DEFAULT_MTU = 1500;
     
     private boolean isDhcpEnabled;
     private boolean isTrafficForwarded = true;

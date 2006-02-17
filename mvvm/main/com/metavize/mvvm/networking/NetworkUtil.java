@@ -31,6 +31,12 @@ public class NetworkUtil
     public static final IPaddr  DEF_OUTSIDE_NETMASK;
     public static final HostName LOCAL_DOMAIN_DEFAULT;
 
+    public static final IPaddr DEFAULT_DHCP_START;
+    public static final IPaddr DEFAULT_DHCP_END;
+    
+    public static int DEFAULT_LEASE_TIME_SEC = 4 * 60 * 60;
+
+
     public static final int     DEF_HTTPS_PORT = 443;
     
 
@@ -152,15 +158,22 @@ public class NetworkUtil
         Inet4Address emptyAddr = null;
         Inet4Address outsideNetwork = null;
         Inet4Address outsideNetmask = null;
+
+        IPaddr dhcpStart, dhcpEnd;
+
         HostName h;
 
         try {
             emptyAddr = (Inet4Address)InetAddress.getByName( "0.0.0.0" );
             outsideNetwork = (Inet4Address)InetAddress.getByName( "1.2.3.4" );
             outsideNetmask = (Inet4Address)InetAddress.getByName( "255.255.255.0" );
+
+            dhcpStart = IPaddr.parse( "192.168.1.100" );
+            dhcpEnd   = IPaddr.parse( "192.168.1.200" );
         } catch( Exception e ) {
             System.err.println( "this should never happen: " + e );
             emptyAddr = null;
+            dhcpStart = dhcpEnd = null;
             /* THIS SHOULD NEVER HAPPEN */
         }
 
@@ -174,6 +187,10 @@ public class NetworkUtil
         EMPTY_IPADDR = new IPaddr( emptyAddr );
         DEF_OUTSIDE_NETWORK = new IPaddr( outsideNetwork );
         DEF_OUTSIDE_NETMASK = new IPaddr( outsideNetmask );
+
+        DEFAULT_DHCP_START = dhcpStart;
+        DEFAULT_DHCP_END = dhcpEnd;
+
         LOCAL_DOMAIN_DEFAULT = h;
     }
 }

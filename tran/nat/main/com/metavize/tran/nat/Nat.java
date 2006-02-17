@@ -25,10 +25,10 @@ public interface Nat extends Transform
     public SetupState getSetupState();
 
     /* Reinitialize the settings to basic nat */
-    public void resetBasic();
+    public void resetBasic() throws Exception;
     
     /* Convert the basic settings to advanced Network Spaces */
-    public void switchToAdvanced();
+    public void switchToAdvanced() throws Exception;
 
     public EventManager<LogEvent> getEventManager();
 }

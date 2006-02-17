@@ -30,12 +30,24 @@ public class RouteInternal
     
     private final IPNetwork destination;
     private final IPaddr nextHop;
+    
+    /* values from a rule */
+    private final boolean isEnabled;
+    private final String name;
+    private final String category;
+    private final String description;
+
 
     private RouteInternal( Route route, NetworkSpaceInternal networkSpace )
     {
         this.networkSpace = networkSpace;
         this.destination = route.getDestination();
         this.nextHop = route.getNextHop();
+        
+        this.isEnabled = route.isLive();
+        this.name = route.getName();
+        this.category = route.getCategory();
+        this.description = route.getDescription();
     }
     
     /** The network space this route belongs to, this will not be
@@ -44,6 +56,11 @@ public class RouteInternal
     // {
     // return this.networkSpace;
     // }
+
+    public boolean getIsEnabled()
+    {
+        return this.isEnabled;
+    }
 
     /** destination network that triggers this routing entry. */
     public IPNetwork getDestination()
@@ -59,13 +76,34 @@ public class RouteInternal
 
     public Route toRoute()
     {
-        return new Route( null, this.destination, this.nextHop );
+        Route route = new Route( null, this.destination, this.nextHop );
+        route.setLive( getIsEnabled());
+        route.setName( getName());
+        route.setDescription( getDescription());
+        route.setCategory( getCategory());
+        return route;
+    }
+
+    public String getName()
+    {
+        return this.name;
+    }
+
+    public String getDescription()
+    {
+        return this.description;
+    }
+
+    public String getCategory()
+    {
+        return this.category;
     }
 
     public String toString()
     {
         return
-            "destination: " + getDestination() +
+            "name:        "   + getName() +
+            "\ndestination: " + getDestination() +
             "\nnext-hop:    " + getNextHop();
     }
 

@@ -140,7 +140,7 @@ public class NetworkManagerImpl implements NetworkManager
         setRemoteSettings( configuration );
     }
 
-    public NetworkSpacesSettings getNetworkSettings()
+    public NetworkSpacesSettingsImpl getNetworkSettings()
     {
         return NetworkUtilPriv.getPrivInstance().toSettings( this.networkSettings );
     }
@@ -178,6 +178,7 @@ public class NetworkManagerImpl implements NetworkManager
     }
     
     /* XXXX This is kind of busted since you can't change the services on/off switch from here */
+    /* XXXX This is just kind of busted because it passes the same argument twice */
     public synchronized void setServicesSettings( ServicesSettings servicesSettings )
         throws NetworkException
     {
@@ -375,15 +376,17 @@ public class NetworkManagerImpl implements NetworkManager
 
         if ( Boolean.valueOf( saveSettings ) == false ) this.saveSettings = false;
         
+        NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
+        
         /* If there are no settings, get the settings from the database */
         if ( this.networkSettings == null ) {
             /* Need to create new settings, (The method setNetworkingConfiguration assumes that
              * settings is already set, and cannot be used here) */
             NetworkingConfiguration configuration = networkConfigurationLoader.getNetworkingConfiguration();
-                        
+            
             /* Save these settings */
-            NetworkSpacesInternalSettings internal = 
-                NetworkUtilPriv.getPrivInstance().toInternal( configuration );
+            NetworkSpacesInternalSettings internal = nup.toInternal( configuration );
+            
 
             if ( logger.isDebugEnabled()) {
                 logger.debug( "Loaded the configuration: \n" + configuration );
@@ -393,6 +396,9 @@ public class NetworkManagerImpl implements NetworkManager
             /* Save the network settings */
             setNetworkSettings( internal );
             setRemoteSettings( configuration );
+
+            /* Get new settings for the services */
+            setServicesSettings( nup.getDefaultServicesSettings());
 
             /* Create new dynamic dns settings */
             DynamicDNSSettings ddns = new DynamicDNSSettings();

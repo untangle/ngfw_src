@@ -14,5 +14,5 @@ package com.metavize.mvvm.networking;
 /* Interface for monitoring changes to the Network Settings */
 public interface NetworkSettingsListener
 {
-    public void updateNetworkSettings( Object settings );
+    public void updateNetworkSettings( NetworkSpacesSettings settings );
 }

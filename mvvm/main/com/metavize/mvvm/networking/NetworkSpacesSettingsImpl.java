@@ -162,7 +162,7 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
         StringBuilder sb = new StringBuilder();
         
         sb.append( "Network Settings\n" );
-        sb.append( "setup-state: " + getSetupState());
+        sb.append( "setup-state: " + getSetupState() + " isEnabled: " + getIsEnabled());
         
         sb.append( "\nInterfaces:\n" );
         for ( Interface intf : getInterfaceList()) sb.append( intf + "\n" );

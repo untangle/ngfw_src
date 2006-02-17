@@ -149,7 +149,8 @@ class NetworkUtilPriv extends NetworkUtil
 
                 switch ( networkSpaceIntfList.size()) {
                 case 0:
-                    throw new NetworkException( "Each enabled network space must be mapped to an interface" );
+                    throw new NetworkException( "Each enabled network space " + index +
+                                                " must be mapped to an interface" );
                 case 1:
                     deviceName = primaryIntf.getIntfName();
                     break;
@@ -345,6 +346,21 @@ class NetworkUtilPriv extends NetworkUtil
             makeInstance( settings.getIsEnabled(), dhcp, dns, defaultRoute, netmask, dnsServerList, 
                           interfaceName );
     }
+
+    /* Get the default settings for services */
+    ServicesSettingsImpl getDefaultServicesSettings()
+    {
+        ServicesSettingsImpl services = new ServicesSettingsImpl();
+
+        services.setDhcpEnabled( false );
+        services.setDhcpStartAddress( NetworkUtil.DEFAULT_DHCP_START );
+        services.setDhcpEndAddress( NetworkUtil.DEFAULT_DHCP_END );
+        services.setDhcpLeaseTime( NetworkUtil.DEFAULT_LEASE_TIME_SEC );
+
+        services.setDnsEnabled( false );
+        return services;
+        
+    }
     
     /* Used when the network settings change, but the dns masq settings haven't */
     ServicesInternalSettings update( NetworkSpacesInternalSettings settings, 
@@ -434,8 +450,12 @@ class NetworkUtilPriv extends NetworkUtil
         Map<NetworkSpaceInternal,NetworkSpace> networkSpaceMap = 
             new HashMap<NetworkSpaceInternal,NetworkSpace>();
 
+        NetworkSpace primary = null;
+
         for ( NetworkSpaceInternal si : internalSettings.getNetworkSpaceList()) {
             NetworkSpace space = si.toNetworkSpace();
+            
+            if ( primary == null ) primary = space;
 
             /* Placed into both in order to maintain the order of the items */
             networkSpaceMap.put( si, space );
@@ -456,11 +476,14 @@ class NetworkUtilPriv extends NetworkUtil
             }
         }
                    
-        /* Generate the interfaces, wire them up to the correct network space. */
+        /* Generate the interfaces, wire them up to the correct network space.
+         * always wire settings up as if they were enabled. */
         List<Interface> intfList = new LinkedList<Interface>();
-        for ( InterfaceInternal intfInternal : internalSettings.getInterfaceList()) {
+        for ( InterfaceInternal intfInternal : internalSettings.getEnabledList()) {
             Interface i = intfInternal.toInterface();
-            i.setNetworkSpace( networkSpaceMap.get( intfInternal.getNetworkSpace()));
+            
+            NetworkSpace space = networkSpaceMap.get( intfInternal.getNetworkSpace());
+            i.setNetworkSpace(( space == null ) ? primary : space );
             intfList.add( i );
         }
 

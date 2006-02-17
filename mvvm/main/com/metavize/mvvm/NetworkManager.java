@@ -15,6 +15,7 @@ import com.metavize.mvvm.networking.BasicNetworkSettings;
 import com.metavize.mvvm.networking.DhcpStatus;
 import com.metavize.mvvm.networking.NetworkException;
 import com.metavize.mvvm.networking.NetworkSpacesSettings;
+import com.metavize.mvvm.networking.NetworkSpacesSettingsImpl;
 import com.metavize.mvvm.networking.RemoteSettings;
 import com.metavize.mvvm.networking.DynamicDNSSettings;
 
@@ -38,7 +39,7 @@ public interface NetworkManager
     /**
      * Retrieve the current network configuration
      */
-    public NetworkSpacesSettings getNetworkSettings();
+    public NetworkSpacesSettingsImpl getNetworkSettings();
     
     /**
      * Set a network configuration.

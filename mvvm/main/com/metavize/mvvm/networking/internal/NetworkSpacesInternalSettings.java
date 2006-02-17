@@ -87,6 +87,11 @@ public class NetworkSpacesInternalSettings
         return this.interfaceList;
     }
 
+    public List<InterfaceInternal> getEnabledList()
+    {
+        return this.enabledList;
+    }
+
     public List<NetworkSpaceInternal> getNetworkSpaceList()
     {
         return this.networkSpaceList;

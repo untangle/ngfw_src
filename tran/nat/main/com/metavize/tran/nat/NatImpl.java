@@ -171,15 +171,28 @@ public class NatImpl extends AbstractTransform implements Nat
     }
     
     /* Reinitialize the settings to basic nat */
-    public void resetBasic()
+    public void resetBasic() throws Exception
     {
+        /* This shouldn't fail */
+
+        /* Get the settings from Network Spaces (The only state in the transform is the setup state) */
+        NetworkManagerImpl nm = getNetworkManager();
         
+        NetworkSpacesSettings newSettings = 
+            this.settingsManager.resetToBasic( getTid(), nm.getNetworkSettings());
+        
+        nm.setNetworkSettings( newSettings );
     }
     
     /* Convert the basic settings to advanced Network Spaces */
-    public void switchToAdvanced()
+    public void switchToAdvanced() throws Exception
     {
+        /* Get the settings from Network Spaces (The only state in the transform is the setup state) */
+        NetworkManagerImpl nm = getNetworkManager();
         
+        NetworkSpacesSettings newSettings = this.settingsManager.basicToAdvanced( nm.getNetworkSettings());
+        
+        nm.setNetworkSettings( newSettings );
     }
     
     public SetupState getSetupState()

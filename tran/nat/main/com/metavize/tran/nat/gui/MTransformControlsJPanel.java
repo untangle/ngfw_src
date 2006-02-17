@@ -161,7 +161,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	super.refreshAll();
 	setupState = ((NatCommonSettings)settings).getSetupState();
 	natTransform = (Nat) mTransformJPanel.getTransformContext().transform();
-	if(SetupState.ADVANCED == setupState){
+	if(SetupState.ADVANCED.equals( setupState )){
 	    networkSpaceList = ((NetworkSpacesSettings)settings).getNetworkSpaceList();
 	}
     }

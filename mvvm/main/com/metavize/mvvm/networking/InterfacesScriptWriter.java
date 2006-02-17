@@ -160,6 +160,8 @@ class InterfacesScriptWriter extends ScriptWriter
         
         /* Add the routing table */
         for ( RouteInternal route : (List<RouteInternal>)this.settings.getRoutingTable()) {
+            /* Ignore disabled routes */
+            if ( !route.getIsEnabled()) continue;
             // !!! This is currently not supported.
             // if ( route.getNetworkSpace() != null ) {
             // logger.warn( "Custom routing rules with per network space are presently not supported" );

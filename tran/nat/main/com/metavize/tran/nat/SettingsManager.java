@@ -105,6 +105,10 @@ class SettingsManager
         networkSpaceList.add( natSpace );
         networkSettings.setNetworkSpaceList( networkSpaceList );
 
+        /* The mtu is not configurable from this panel */
+        primary.setMtu( primary.DEFAULT_MTU );
+        natSpace.setMtu( natSpace.DEFAULT_MTU );
+
         /* Setup the interfaces */
         List<Interface> interfaceList = networkSettings.getInterfaceList();
 
@@ -238,6 +242,52 @@ class SettingsManager
         return natSettings;
     }
 
+    /** Convert a set of network settings from basic mode to advanced mode */
+    /* This recycles network, but that is okay since the network manager always *
+     * returns a copy */
+    NetworkSpacesSettings basicToAdvanced( NetworkSpacesSettingsImpl ns )
+    {
+        /* Update the setup state */
+        ns.setSetupState( SetupState.ADVANCED );
+        
+        /* use the interface out, because the interface has generics and the impl doesn't */
+        NetworkSpacesSettings network = ns;
+
+        NetworkSpace primary = ns.getNetworkSpaceList().get( 0 );
+        
+        if ( primary.getIsDmzHostEnabled() && ( primary.getNetworkList().size() > 0 )) {
+            
+            IPNetworkRule primaryNetwork = (IPNetworkRule)primary.getNetworkList().get( 0 );
+            IPaddr local = primaryNetwork.getNetwork();
+            
+            IntfMatcherFactory imf  = IntfMatcherFactory.getInstance();
+            IPMatcherFactory   ipmf = IPMatcherFactory.getInstance();
+            PortMatcherFactory pmf  = PortMatcherFactory.getInstance();
+            
+            RedirectRule dmz = new RedirectRule( true, ProtocolMatcher.MATCHER_ALL,
+                                                 imf.getExternalMatcher(), imf.getAllMatcher(),
+                                                 ipmf.getAllMatcher(), ipmf.makeSingleMatcher( local ),
+                                                 pmf.getAllMatcher(), pmf.getAllMatcher(),
+                                                 true, primary.getDmzHost(), -1 );
+
+            /* Add the dmz to the end of the redirect list */
+            network.getRedirectList().add( dmz );
+        }
+        
+        /* Disable dmz host, it may/may not have been replaced by a redirect rule */
+        primary.setIsDmzHostEnabled( false );
+        
+        return network;
+    }
+
+    /** Convert a set of network settings from basic mode to advanced mode */
+    /* This recycles network, but that is okay since the network manager always *
+     * returns a copy */
+    NetworkSpacesSettings resetToBasic( Tid tid, NetworkSpacesSettingsImpl ns )
+    {
+        /* Reset to the default settings */
+        return toNetworkSettings( ns, getDefaultSettings( tid ));
+    }
 
     private void setupDmz( NatBasicSettings settings, NetworkSpaceInternal space )
     {
@@ -253,7 +303,6 @@ class SettingsManager
             settings.setDmzAddress( dmz );
         }
     }
-
 
     NatBasicSettings getDefaultSettings( Tid tid )
     {
