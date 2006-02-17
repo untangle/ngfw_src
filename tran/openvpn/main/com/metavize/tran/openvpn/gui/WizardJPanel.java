@@ -11,11 +11,13 @@
 
 package com.metavize.tran.openvpn.gui;
 
+import com.metavize.gui.transform.Refreshable;
+
 import java.awt.Window;
 
 import com.metavize.tran.openvpn.*;
 
-public class WizardJPanel extends javax.swing.JPanel {
+public class WizardJPanel extends javax.swing.JPanel implements Refreshable<Object>{
     
     private VpnTransform vpnTransform;
     private MTransformControlsJPanel mTransformControlsJPanel;
@@ -24,22 +26,27 @@ public class WizardJPanel extends javax.swing.JPanel {
         this.vpnTransform = vpnTransform;
 	this.mTransformControlsJPanel = mTransformControlsJPanel;
         initComponents();
+    }
 
-	VpnTransform.ConfigState configState = vpnTransform.getConfigState();
+    public void doRefresh(Object settings){
+	VpnTransform.ConfigState configState = com.metavize.tran.openvpn.gui.MTransformControlsJPanel.getConfigState();
 	if( VpnTransform.ConfigState.UNCONFIGURED == configState ){
 	    statusJLabel.setText("Unconfigured: Use buttons below.");
 	}
 	else if( VpnTransform.ConfigState.CLIENT == configState ){
-	    statusJLabel.setText("VPN Client: Connected to " + vpnTransform.getVpnServerAddress().toString());
+	    statusJLabel.setText("VPN Client: Connected to " + com.metavize.tran.openvpn.gui.MTransformControlsJPanel.getVpnServerAddress().toString());
+	    serverRoutingJButton.setEnabled(true);
+	    clientJButton.setEnabled(false);
 	}
 	else if( VpnTransform.ConfigState.SERVER_ROUTE == configState ){
 	    statusJLabel.setText("VPN Server");
-	}
-	else if( VpnTransform.ConfigState.SERVER_BRIDGE == configState ){
-	    // we dont support this yet
+	    serverRoutingJButton.setEnabled(false);
+	    clientJButton.setEnabled(true);
 	}
 	else{
 	    // bad shite happened
+	    serverRoutingJButton.setEnabled(false);
+	    clientJButton.setEnabled(false);
 	}
 
     }

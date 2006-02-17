@@ -16,7 +16,7 @@ import com.metavize.gui.util.Util;
 import com.metavize.gui.transform.*;
 import com.metavize.gui.pipeline.MPipelineJPanel;
 
-import com.metavize.mvvm.tran.TransformContext;
+import com.metavize.mvvm.tran.*;
 import com.metavize.tran.openvpn.*;
 
 import javax.swing.*;
@@ -31,18 +31,17 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     private static final String SITE_TO_SITE_NAME = "VPN Sites";
     private static final String NAME_LOG = "Event Log";
     
+    private static VpnTransform.ConfigState configState;
+    public static VpnTransform.ConfigState getConfigState(){ return configState; }
+    private VpnTransform vpnTransform;
+    private static IPaddr vpnServerAddress;
+    public static IPaddr getVpnServerAddress(){ return vpnServerAddress; }
+
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
         super(mTransformJPanel);
     }
         
     public void generateGui(){
-
-	TransformContext transformContext = mTransformJPanel.getTransformContext();
-	VpnTransform vpnTransform = (VpnTransform) transformContext.transform();
-	VpnTransform.ConfigState configState = vpnTransform.getConfigState();
-
-	KeyButtonRunnable.setVpnTransform( vpnTransform );
-
 	// BASE STATE
 	removeAllTabs();
 	super.saveJButton.setVisible(true);
@@ -66,6 +65,10 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	    WizardJPanel wizardJPanel = new WizardJPanel( vpnTransform, this );
 	    addTab( WIZARD_NAME, null, wizardJPanel );
 
+	    // EVENT LOG ///////
+	    LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
+	    addTab(NAME_LOG, null, logJPanel);
+	    addShutdownable(NAME_LOG, logJPanel);
 	}
 	else if( VpnTransform.ConfigState.SERVER_ROUTE == configState ){
 	    // SHOW WIZARD/STATUS, CLIENTS, EXPORTS, CLIENT-TO-SITE, SITE-TO-SITE, AND EVENT LOG
@@ -115,10 +118,15 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	}
 	else{
 	    // BAD SHITE HAPPENED
-	}
-	
-
+	}	
     }
 
+    public void refreshAll() throws Exception {	
+	vpnTransform = (VpnTransform) mTransformJPanel.getTransformContext().transform();
+	configState = vpnTransform.getConfigState();
+	vpnServerAddress = vpnTransform.getVpnServerAddress();
+	KeyButtonRunnable.setVpnTransform( vpnTransform );
+	super.refreshAll();
+    }
     
 }
