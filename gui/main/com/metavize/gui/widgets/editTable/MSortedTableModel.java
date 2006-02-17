@@ -653,6 +653,9 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
         newComboBoxModel.setSelectedItem(comboBoxModel.getSelectedItem());
         return newComboBoxModel;
     }
+    public ComboBoxModel generateComboBoxModel(List optionList, Object setting){
+	return generateComboBoxModel(optionList.toArray(), setting);
+    }
     public ComboBoxModel generateComboBoxModel(Object[] options, Object setting){
         DefaultComboBoxModel returnComboBoxModel = new DefaultComboBoxModel();
 	for( Object option : options ){
