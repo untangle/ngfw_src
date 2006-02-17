@@ -32,9 +32,9 @@ class IDSHttpHandler extends HttpStateMachine {
 
     protected RequestLineToken doRequestLine(RequestLineToken requestLine) {
         IDSSessionInfo info = engine.getSessionInfo(getSession());
-        if (info == null) {
-            logger.warn("No session info at doRequestLine time");
-        } else {
+        if (info != null) {
+            // Null is no longer unusual, it happens whenever we've released the
+            // session from the byte pipe.
             String path = requestLine.getRequestUri().normalize().getPath();
             info.setUriPath(path);
         }
