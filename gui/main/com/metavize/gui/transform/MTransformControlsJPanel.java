@@ -161,7 +161,12 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
 	}});
 	return newJScrollPane;
     }
-    protected void removeAllTabs(){ mTabbedPane.removeAll(); }
+    protected void removeAllTabs(){
+	mTabbedPane.removeAll();
+	refreshableMap.clear();
+	savableMap.clear();
+	shutdownableMap.clear();
+    }
     /////////////////////////
 
     public JToggleButton getControlsJToggleButton(){ return mTransformJPanel.getControlsJToggleButton(); }
