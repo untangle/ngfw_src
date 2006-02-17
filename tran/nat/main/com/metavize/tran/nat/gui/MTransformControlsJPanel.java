@@ -12,33 +12,39 @@
 
 package com.metavize.tran.nat.gui;
 
+import com.metavize.gui.util.*;
 import com.metavize.gui.transform.*;
 import com.metavize.gui.pipeline.MPipelineJPanel;
 import com.metavize.gui.widgets.editTable.*;
-import com.metavize.gui.util.*;
 import com.metavize.gui.widgets.dialogs.*;
 
-import java.awt.*;
-import javax.swing.*;
+import java.util.*;
+import java.awt.Dimension;
+import javax.swing.JTabbedPane;
+import javax.swing.JPanel;
 import javax.swing.table.*;
-import java.util.Vector;
 import javax.swing.event.*;
 import javax.swing.border.*;
 
 import com.metavize.tran.nat.*;
+import com.metavize.mvvm.networking.*;
 
 public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransformControlsJPanel{
 
-    private static final String NAME_NAT = "NAT";
-    private static final String NAME_DHCP = "DHCP";
-    private static final String NAME_DHCP_SETTINGS = "Settings";
+    private static final String NAME_NET_SPACES       = "Net Spaces";
+    private static final String NAME_INTERFACE_MAP    = "Interface Map";
+    private static final String NAME_ROUTING          = "Routing";
+    private static final String NAME_NAT              = "NAT";
+    private static final String NAME_DMZ              = "DMZ";
+    private static final String NAME_DHCP             = "DHCP";
+    private static final String NAME_DHCP_SETTINGS    = "Settings";
     private static final String NAME_DHCP_ADDRESS_MAP = "Address Map";
-    private static final String NAME_REDIRECT = "Redirect";
-    private static final String NAME_DMZ = "DMZ Host";
-    private static final String NAME_DNS = "DNS Forwarding";
-    private static final String NAME_DNS_FORWARDING = "Settings";
-    private static final String NAME_DNS_ADDRESS_MAP = "Address Map";
-    private static final String NAME_LOG = "Event Log";
+    private static final String NAME_REDIRECT         = "Redirect";
+    private static final String NAME_DNS              = "DNS";
+    private static final String NAME_DNS_FORWARDING   = "Settings";
+    private static final String NAME_DNS_ADDRESS_MAP  = "Address Map";
+    private static final String NAME_ADVANCED         = "Advanced";
+    private static final String NAME_LOG              = "Event Log";
 
     protected Dimension MIN_SIZE = new Dimension(640, 480);
     protected Dimension MAX_SIZE = new Dimension(640, 1200);
@@ -47,15 +53,59 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         super(mTransformJPanel);
     }
 
+    private static Nat natTransform;
+    public static Nat getNatTransform(){ return natTransform; }
+    private SetupState setupState;
+    private List<NetworkSpace> networkSpaceList;
+
+    
+
     public void generateGui(){
-        // NAT ///////////////
-        NatJPanel natJPanel = new NatJPanel();
-        addScrollableTab(null, NAME_NAT, null, natJPanel, false, true);
-	addSavable(NAME_NAT, natJPanel);
-	addRefreshable(NAME_NAT, natJPanel);
-	natJPanel.setSettingsChangedListener(this);
-        
-        // DHCP /////////////
+	// BASE STATE
+	removeAllTabs();
+	super.saveJButton.setVisible(true);
+	super.reloadJButton.setVisible(true);
+
+	if(SetupState.BASIC == setupState){
+	    // NAT ///////////////
+	    NatJPanel natJPanel = new NatJPanel();
+	    addScrollableTab(null, NAME_NAT, null, natJPanel, false, true);
+	    addSavable(NAME_NAT, natJPanel);
+	    addRefreshable(NAME_NAT, natJPanel);
+	    natJPanel.setSettingsChangedListener(this);
+	    
+	    // DMZ ////////////////
+	    DmzJPanel dmzJPanel = new DmzJPanel();
+	    addScrollableTab(null, NAME_DMZ, null, dmzJPanel, false, true);
+	    addSavable(NAME_DMZ, dmzJPanel);
+	    addRefreshable(NAME_DMZ, dmzJPanel);
+	    dmzJPanel.setSettingsChangedListener(this);
+	}
+	else if(SetupState.ADVANCED == setupState){
+	    // NET SPACES
+	    JTabbedPane spacesJTabbedPane = addTabbedPane(NAME_NET_SPACES, null);
+
+	    // INTERFACE MAP //
+	    JPanel interfaceMapJPanel = new JPanel();
+	    spacesJTabbedPane.addTab(NAME_INTERFACE_MAP, null, interfaceMapJPanel);
+	    
+	    // SPACES //
+	    for( NetworkSpace networkSpace : networkSpaceList ){
+		JPanel spaceJPanel = new JPanel();
+		spacesJTabbedPane.addTab(networkSpace.toString(), null, spaceJPanel);
+	    }
+
+	    // ROUTING //
+	    RoutingJPanel routingJPanel = new RoutingJPanel();
+	    addTab(NAME_ROUTING, null, routingJPanel);
+	    addSavable(NAME_ROUTING, routingJPanel);
+	    addRefreshable(NAME_ROUTING, routingJPanel);
+	}
+	else{
+	    // SOME BAD SHITE HAPPENED
+	}
+
+	// DHCP /////////////
         JTabbedPane dhcpJTabbedPane = addTabbedPane(NAME_DHCP, null);
 
 	// DHCP SETTINGS /////
@@ -67,24 +117,17 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 
 	// DHCP ADDRESSES /////
 	AddressJPanel addressJPanel = new AddressJPanel();
-        dhcpJTabbedPane.addTab(NAME_DHCP_ADDRESS_MAP, null, addressJPanel );
+        dhcpJTabbedPane.addTab(NAME_DHCP + " " + NAME_DHCP_ADDRESS_MAP, null, addressJPanel );
         addSavable(NAME_DHCP + " " + NAME_DHCP_ADDRESS_MAP, addressJPanel);
         addRefreshable(NAME_DHCP + " " + NAME_DHCP_ADDRESS_MAP, addressJPanel);
 	addressJPanel.setSettingsChangedListener(this);
 
         // REDIRECT /////////////
         RedirectJPanel redirectJPanel = new RedirectJPanel();
-        addTab(NAME_REDIRECT, null, redirectJPanel );
+        addTab(NAME_REDIRECT, null, redirectJPanel);
         addSavable(NAME_REDIRECT, redirectJPanel);
 	addRefreshable(NAME_REDIRECT, redirectJPanel);
 	redirectJPanel.setSettingsChangedListener(this);
-
-        // DMZ ////////////////
-        DmzJPanel dmzJPanel = new DmzJPanel();
-	addScrollableTab(null, NAME_DMZ, null, dmzJPanel, false, true);
-	addSavable(NAME_DMZ, dmzJPanel);
-	addRefreshable(NAME_DMZ, dmzJPanel);
-	dmzJPanel.setSettingsChangedListener(this);
 
         // DNS /////////////
         JTabbedPane dnsJTabbedPane = addTabbedPane(NAME_DNS, null);
@@ -103,11 +146,24 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         addRefreshable(NAME_DNS + " " + NAME_DNS_ADDRESS_MAP, dnsAddressJPanel);
 	dnsAddressJPanel.setSettingsChangedListener(this);
 
+	// ADVANCED //
+	AdvancedJPanel advancedJPanel = new AdvancedJPanel(this);
+	addTab(NAME_ADVANCED, null, advancedJPanel);
+	addRefreshable(NAME_ADVANCED, advancedJPanel);
+
+	// EVENT LOG //
         LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
         addTab(NAME_LOG, null, logJPanel);
 	addShutdownable(NAME_LOG, logJPanel);
     }
+
+    public void refreshAll() throws Exception {
+	super.refreshAll();
+	setupState = ((NatCommonSettings)settings).getSetupState();
+	natTransform = (Nat) mTransformJPanel.getTransformContext().transform();
+	if(SetupState.ADVANCED == setupState){
+	    networkSpaceList = ((NetworkSpacesSettings)settings).getNetworkSpaceList();
+	}
+    }
         
 }
-
-
