@@ -18,7 +18,7 @@ import com.metavize.jnetcap.Netcap;
 import com.metavize.mvvm.NetworkManager;
 import com.metavize.mvvm.IntfEnum;
 import com.metavize.mvvm.NetworkingConfiguration;
-
+import com.metavize.mvvm.MvvmContextFactory;
 
 import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.argon.ArgonException;
@@ -32,6 +32,10 @@ import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
 import com.metavize.mvvm.networking.internal.NetworkSpaceInternal;
 import com.metavize.mvvm.networking.internal.RouteInternal;
 import com.metavize.mvvm.networking.internal.InterfaceInternal;
+
+import com.metavize.mvvm.util.DataLoader;
+import com.metavize.mvvm.util.DataSaver;
+
 
 /* XXX This shouldn't be public */
 public class NetworkManagerImpl implements NetworkManager
@@ -198,7 +202,6 @@ public class NetworkManagerImpl implements NetworkManager
         return this.servicesSettings;
     }
 
-
     public synchronized void startServices() throws NetworkException
     {
         this.dhcpManager.configure( servicesSettings );
@@ -208,6 +211,27 @@ public class NetworkManagerImpl implements NetworkManager
     public synchronized void stopServices()
     {
         this.dhcpManager.deconfigure();
+    }
+
+    public synchronized DynamicDNSSettings getDynamicDnsSettings()
+    {
+        if ( this.ddnsSettings == null ) {
+            logger.error( "null ddns settings, returning fresh object." );
+            this.ddnsSettings = new DynamicDNSSettings();
+            this.ddnsSettings.setEnabled( false );
+        }
+
+        logger.debug( "getting ddns settings: " + this.ddnsSettings );
+        
+        return this.ddnsSettings;
+    }
+            
+    public synchronized void setDynamicDnsSettings( DynamicDNSSettings newSettings )
+    {
+        logger.debug( "Saving new ddns settings: " + newSettings );
+        saveDynamicDnsSettings( newSettings );
+        
+        /* XXX Do whatever Dynamic DNS has to do */
     }
 
     public synchronized void disableNetworkSpaces()
@@ -369,6 +393,11 @@ public class NetworkManagerImpl implements NetworkManager
             /* Save the network settings */
             setNetworkSettings( internal );
             setRemoteSettings( configuration );
+
+            /* Create new dynamic dns settings */
+            DynamicDNSSettings ddns = new DynamicDNSSettings();
+            ddns.setEnabled( false );
+            setDynamicDnsSettings( ddns );
         }
 
         /* Generate rules */
@@ -418,34 +447,94 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /* Methods for saving and loading the settings files to the database */
-    private void loadSettings()
+    private void loadAllSettings()
     {
         this.remote = loadRemoteSettings();
-        this.networkSettings = loadNetworkSettings();
-        this.ddnsSettings = loadDynamicDns();
+        try {
+            this.networkSettings = loadNetworkSettings();
+        } catch ( Exception e ) {
+            logger.error( "Error loading network settings, setting to null to be initialized later" );
+            this.networkSettings = null;
+        }
+        this.ddnsSettings = loadDynamicDnsSettings();
     }
 
     private RemoteSettings loadRemoteSettings()
     {
-        /* CCCCCCCCCC <<<<<<<<<<<<<<<<< */
-        return null;
+        RemoteSettings remote = new RemoteSettingsImpl();
+        /* These come from files */
+        networkConfigurationLoader.loadRemoteSettings( remote );
+
+        return remote;
     }
 
-    private NetworkSpacesInternalSettings loadNetworkSettings()
+    private NetworkSpacesInternalSettings loadNetworkSettings() throws NetworkException, ValidateException
     {
-        /* CCCCCCCCCC <<<<<<<<<<<<<<<<< */
-        return null;
+        DataLoader<NetworkSpacesSettingsImpl> loader = 
+            new DataLoader<NetworkSpacesSettingsImpl>( "NetworkSpacesSettingsImpl", 
+                                                       MvvmContextFactory.context());
+        NetworkSpacesSettings dbSettings = loader.loadData();
+        
+        /* No database settings */
+        if ( dbSettings == null ) {
+            logger.info( "There are no network database settings" );
+            return null;
+        }
+        
+        return NetworkUtilPriv.getPrivInstance().toInternal( dbSettings );
     }
 
-    private DynamicDNSSettings loadDynamicDns()
+    private DynamicDNSSettings loadDynamicDnsSettings()
     {
-        /* CCCCCCCCCC <<<<<<<<<<<<<<<<< */
-        return null;
+        DataLoader<DynamicDNSSettings> loader = 
+            new DataLoader<DynamicDNSSettings>( "DynamicDNSSettings", MvvmContextFactory.context());
+        
+        return loader.loadData();
     }
 
-    private void saveNetworkSettings( )
+    private void saveNetworkSettings( NetworkSpacesSettingsImpl newSettings )
+        throws NetworkException, ValidateException
+    {
+        DataSaver<NetworkSpacesSettingsImpl> saver = 
+            new DataSaver<NetworkSpacesSettingsImpl>( MvvmContextFactory.context());
+        
+        /* Have to reuse idz */
+        /* !!!!!!! save the id inside of the internal object */
+        NetworkSpacesSettings dbSettings = saver.saveData( newSettings );
+        
+        /* No database settings */
+        if ( dbSettings == null ) {
+            logger.error( "Unable to save the network settings." );
+            return;
+        }
+        
+        this.networkSettings = NetworkUtilPriv.getPrivInstance().toInternal( dbSettings );
+    }
+
+    private void saveRemoteSettings()
     {
     }
+
+    private void saveDynamicDnsSettings( DynamicDNSSettings newSettings )
+    {
+        DataSaver<DynamicDNSSettings> saver = 
+            new DataSaver<DynamicDNSSettings>( MvvmContextFactory.context());
+        
+        /* Have to reuse ids in order to avoid settings proliferation.
+         * reusing ids doesn't seem to work (or at least it didn't for ovpn.  have
+         * fortunately, hibernate does have a delete method
+         * to delete then save. */
+        // if ( this.ddnsSettings != null ) newSettings.setId( this.ddnsSettings.getId());
+
+        newSettings = saver.saveData( newSettings );
+        if ( newSettings == null ) {
+            logger.error( "Unable to save the dynamic dns settings." );
+            return;
+        }
+        
+        this.ddnsSettings = newSettings;
+    }
+
 
     /* Create a networking manager, this is a first come first serve
      * basis.  The first class to create the network manager gets a
@@ -465,3 +554,4 @@ public class NetworkManagerImpl implements NetworkManager
         return INSTANCE;
     }
 }
+

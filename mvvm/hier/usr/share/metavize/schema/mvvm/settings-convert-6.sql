@@ -32,3 +32,13 @@ DELETE FROM user_policy_rule WHERE set_id IS NULL;
 ALTER TABLE settings.mvvm_user ADD COLUMN read_only bool;
 UPDATE settings.mvvm_user SET read_only = false;
 ALTER TABLE settings.mvvm_user ALTER COLUMN read_only SET NOT NULL;
+
+-- Add the table for the dynamic DNS settings
+-- com.metavize.mvvm.networking.DynamicDNSSettings
+CREATE TABLE mvvm_ddns_settings (
+    settings_id int8 NOT NULL,
+    enabled     BOOL,
+    provider    TEXT,
+    login       TEXT,
+    password    TEXT,
+    PRIMARY KEY (settings_id));

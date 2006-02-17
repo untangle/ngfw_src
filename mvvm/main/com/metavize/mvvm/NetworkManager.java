@@ -16,6 +16,7 @@ import com.metavize.mvvm.networking.DhcpStatus;
 import com.metavize.mvvm.networking.NetworkException;
 import com.metavize.mvvm.networking.NetworkSpacesSettings;
 import com.metavize.mvvm.networking.RemoteSettings;
+import com.metavize.mvvm.networking.DynamicDNSSettings;
 
 import com.metavize.mvvm.tran.ValidateException;
 
@@ -48,6 +49,12 @@ public interface NetworkManager
 
     /** Update the internal representation of the address */
     public void updateAddress() throws NetworkException;
+
+    /* Get the current dynamic dns settings */
+    public DynamicDNSSettings getDynamicDnsSettings();
+
+    /* Set the dynamic dns settings */
+    public void setDynamicDnsSettings( DynamicDNSSettings newValue );
 
     /** This should require an interface list to block */
     public void disableDhcpForwarding();

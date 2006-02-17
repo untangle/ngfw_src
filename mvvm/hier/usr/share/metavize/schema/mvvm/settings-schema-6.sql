@@ -239,6 +239,14 @@ CREATE TABLE settings.ab_settings (
     ab_configuration char(1) NOT NULL,
     PRIMARY KEY (settings_id));
 
+-- com.metavize.mvvm.networking.DynamicDNSSettings
+CREATE TABLE mvvm_ddns_settings (
+    settings_id int8 NOT NULL,
+    enabled     BOOL,
+    provider    TEXT,
+    login       TEXT,
+    password    TEXT,
+    PRIMARY KEY (settings_id));
 
 ----------------
 -- constraints |

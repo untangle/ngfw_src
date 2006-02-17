@@ -109,6 +109,8 @@ class NetworkConfigurationLoader
         loadFlags( remote );
         loadHttpsPort( remote );
         loadSshFlag( remote );
+
+        /* !!!!!!!!!!! Must load the hostname and public address */
     }
 
     void loadBasicNetworkSettings( BasicNetworkSettings basic ) throws NetworkException

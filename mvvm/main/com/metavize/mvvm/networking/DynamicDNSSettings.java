@@ -27,7 +27,7 @@ import java.io.Serializable;
  *
  * @version 1.0
  * @hibernate.class
- * table="mvvm_ddns_settigns"
+ * table="mvvm_ddns_settings"
  */
 public class DynamicDNSSettings implements Serializable
 {
