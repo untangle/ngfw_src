@@ -101,13 +101,14 @@ class InterfaceModel extends MSortedTableModel<MaintenanceCompoundSettings>{
 
         for( Interface intf : interfaceList ){
 	    rowIndex++;
-	    tempRow = new Vector(5);
+	    tempRow = new Vector(7);
 	    tempRow.add( super.ROW_SAVED );
 	    tempRow.add( rowIndex );
             tempRow.add( intf.getIntfName() );
 	    tempRow.add( super.generateComboBoxModel( EthernetMedia.getEnumeration(), intf.getEthernetMedia()) );
             tempRow.add( intf.getIsPingable() );
 	    tempRow.add( intf.getCurrentMedia() );
+	    tempRow.add( intf );
 	    allRows.add( tempRow );
         }
         return allRows;
