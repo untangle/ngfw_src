@@ -47,9 +47,9 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
 	    standardJButton.setEnabled(true);
 	}
 	else{
-	    // bad shite happened
-	    advancedJButton.setEnabled(false);
-	    standardJButton.setEnabled(false);
+	    statusJLabel.setText("Network Sharing (deprecated)");
+	    advancedJButton.setEnabled(true);
+	    standardJButton.setEnabled(true);
 	}
     }
     
