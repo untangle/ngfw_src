@@ -36,10 +36,10 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     private static final String NAME_ROUTING          = "Routing";
     private static final String NAME_NAT              = "NAT";
     private static final String NAME_DMZ              = "DMZ";
+    private static final String NAME_REDIRECT         = "Redirect";
     private static final String NAME_DHCP             = "DHCP";
     private static final String NAME_DHCP_SETTINGS    = "Settings";
     private static final String NAME_DHCP_ADDRESS_MAP = "Address Map";
-    private static final String NAME_REDIRECT         = "Redirect";
     private static final String NAME_DNS              = "DNS";
     private static final String NAME_DNS_FORWARDING   = "Settings";
     private static final String NAME_DNS_ADDRESS_MAP  = "Address Map";
@@ -64,7 +64,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	super.saveJButton.setVisible(true);
 	super.reloadJButton.setVisible(true);
 
-	if(SetupState.BASIC == setupState){
+	if(SetupState.BASIC.equals(setupState)){
 	    // NAT ///////////////
 	    NatJPanel natJPanel = new NatJPanel();
 	    addScrollableTab(null, NAME_NAT, null, natJPanel, false, true);
@@ -79,7 +79,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	    addRefreshable(NAME_DMZ, dmzJPanel);
 	    dmzJPanel.setSettingsChangedListener(this);
 	}
-	else if(SetupState.ADVANCED == setupState){
+	else if(SetupState.ADVANCED.equals(setupState)){
 	    // NET SPACES
 	    JTabbedPane spacesJTabbedPane = addTabbedPane(NAME_NET_SPACES, null);
 
@@ -105,6 +105,13 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	    // SOME BAD SHITE HAPPENED
 	}
 
+        // REDIRECT /////////////
+        RedirectJPanel redirectJPanel = new RedirectJPanel();
+        addTab(NAME_REDIRECT, null, redirectJPanel);
+        addSavable(NAME_REDIRECT, redirectJPanel);
+	addRefreshable(NAME_REDIRECT, redirectJPanel);
+	redirectJPanel.setSettingsChangedListener(this);
+
 	// DHCP /////////////
         JTabbedPane dhcpJTabbedPane = addTabbedPane(NAME_DHCP, null);
 
@@ -122,13 +129,6 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         addRefreshable(NAME_DHCP + " " + NAME_DHCP_ADDRESS_MAP, addressJPanel);
 	addressJPanel.setSettingsChangedListener(this);
 
-        // REDIRECT /////////////
-        RedirectJPanel redirectJPanel = new RedirectJPanel();
-        addTab(NAME_REDIRECT, null, redirectJPanel);
-        addSavable(NAME_REDIRECT, redirectJPanel);
-	addRefreshable(NAME_REDIRECT, redirectJPanel);
-	redirectJPanel.setSettingsChangedListener(this);
-
         // DNS /////////////
         JTabbedPane dnsJTabbedPane = addTabbedPane(NAME_DNS, null);
 
@@ -141,7 +141,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 
 	// DNS HOSTS /////
 	DnsAddressJPanel dnsAddressJPanel = new DnsAddressJPanel();
-        dnsJTabbedPane.addTab(NAME_DNS_ADDRESS_MAP, null, dnsAddressJPanel);
+        dnsJTabbedPane.addTab(NAME_DNS + " " + NAME_DNS_ADDRESS_MAP, null, dnsAddressJPanel);
         addSavable(NAME_DNS + " " + NAME_DNS_ADDRESS_MAP, dnsAddressJPanel);
         addRefreshable(NAME_DNS + " " + NAME_DNS_ADDRESS_MAP, dnsAddressJPanel);
 	dnsAddressJPanel.setSettingsChangedListener(this);

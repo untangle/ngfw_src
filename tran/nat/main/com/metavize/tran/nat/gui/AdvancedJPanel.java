@@ -31,17 +31,17 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
 
     public void doRefresh(Object settings){
 	SetupState setupState = ((NatCommonSettings)settings).getSetupState();
-	if( SetupState.ADVANCED == setupState ){
+	if( SetupState.ADVANCED.equals(setupState) ){
 	    statusJLabel.setText("Advanced (Net Spaces & Routing)");
 	    advancedJButton.setEnabled(false);
 	    standardJButton.setEnabled(true);
 	}
-	else if( SetupState.BASIC == setupState ){
+	else if( SetupState.BASIC.equals(setupState) ){
 	    statusJLabel.setText("Standard (NAT & DMZ)");
 	    advancedJButton.setEnabled(true);
 	    standardJButton.setEnabled(false);
 	}
-	else if( SetupState.UNCONFIGURED == setupState ){
+	else if( SetupState.UNCONFIGURED.equals(setupState) ){
 	    statusJLabel.setText("Unconfigured");
 	    advancedJButton.setEnabled(true);
 	    standardJButton.setEnabled(true);
@@ -132,7 +132,7 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
                 clientJPanel.add(advancedJButton, gridBagConstraints);
 
                 jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel1.setText("<html>This allows you to protect your internal network using multiple NAT spaces and a Routing table.  You can also setup DHCP, DNS, and Redirect rules.</html>");
+                jLabel1.setText("<html>This allows you to protect your internal network using multiple NAT spaces and a Routing table.  You can also setup DHCP, DNS, Redirect rules, and set MTU.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
                 gridBagConstraints.gridy = 0;
