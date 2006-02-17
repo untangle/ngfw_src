@@ -34,9 +34,9 @@ public class MTransformJButton extends JButton {
     private JLabel nameJLabel;
     private JLabel organizationIconJLabel;
     private JLabel descriptionIconJLabel;
-
     private String toolTipString;
 
+    private static Color COLOR_NAME_DISABLED = new Color(140,140,140);
 
     public MTransformJButton(MackageDesc mackageDesc) {
 
@@ -216,6 +216,10 @@ public class MTransformJButton extends JButton {
         organizationIconJLabel.setEnabled(enabled);
         descriptionIconJLabel.setEnabled(enabled);
         nameJLabel.setEnabled(enabled);
+	if(enabled)
+	    nameJLabel.setForeground(Color.BLACK);
+	else
+	    nameJLabel.setForeground(COLOR_NAME_DISABLED);
     }
     ///////////////////////////////////
 
