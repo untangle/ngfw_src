@@ -41,6 +41,11 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
 	    advancedJButton.setEnabled(true);
 	    standardJButton.setEnabled(false);
 	}
+	else if( SetupState.UNCONFIGURED == setupState ){
+	    statusJLabel.setText("Unconfigured");
+	    advancedJButton.setEnabled(true);
+	    standardJButton.setEnabled(true);
+	}
 	else{
 	    // bad shite happened
 	    advancedJButton.setEnabled(false);
