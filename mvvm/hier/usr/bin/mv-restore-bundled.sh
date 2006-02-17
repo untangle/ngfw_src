@@ -147,7 +147,7 @@ fi
 
 # Invoke restore-mv ("Usage: $0 dumpfile tarfile instfile")
 
-restore-mv $DB_FILE $FILES_FILE $INSTALLED_FILE
+restore-mv $WORKING_DIR/$DB_FILE $WORKING_DIR/$FILES_FILE $WORKING_DIR/$INSTALLED_FILE
 
 EXIT_VAL=$?
 
