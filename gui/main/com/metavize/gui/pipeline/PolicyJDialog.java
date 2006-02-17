@@ -28,6 +28,7 @@ import javax.swing.*;
 public class PolicyJDialog extends MConfigJDialog {
 
     private static final String NAME_POLICY_MANAGER     = "Policy Manager";
+    private static final String NAME_POLICIES           = "Policies";
     private static final String NAME_SYSTEM_POLICIES    = "Default Policies";
     private static final String NAME_USER_POLICIES      = "Custom Policies";
     private static final String NAME_AVAILABLE_POLICIES = "Available Racks";
@@ -43,15 +44,18 @@ public class PolicyJDialog extends MConfigJDialog {
     protected void generateGui(){
         this.setTitle(NAME_POLICY_MANAGER);
         
+        // POLICIES //////
+	JTabbedPane policiesJTabbedPane = addTabbedPane(NAME_POLICIES, null);
+
         // SYSTEM POLICIES //////
         PolicyDefaultJPanel policyDefaultJPanel = new PolicyDefaultJPanel();
-        addTab(NAME_SYSTEM_POLICIES, null, policyDefaultJPanel);
+        policiesJTabbedPane.addTab(NAME_SYSTEM_POLICIES, null, policyDefaultJPanel);
 	addSavable(NAME_SYSTEM_POLICIES, policyDefaultJPanel);
 	addRefreshable(NAME_SYSTEM_POLICIES, policyDefaultJPanel);
 
         // USER POLICIES //////
         PolicyCustomJPanel policyCustomJPanel = new PolicyCustomJPanel();
-        addTab(NAME_USER_POLICIES, null, policyCustomJPanel);
+        policiesJTabbedPane.addTab(NAME_USER_POLICIES, null, policyCustomJPanel);
 	addSavable(NAME_USER_POLICIES, policyCustomJPanel);
 	addRefreshable(NAME_USER_POLICIES, policyCustomJPanel);
 
