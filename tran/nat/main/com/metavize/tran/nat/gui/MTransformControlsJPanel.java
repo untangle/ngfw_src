@@ -56,9 +56,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     private static Nat natTransform;
     public static Nat getNatTransform(){ return natTransform; }
     private SetupState setupState;
-    private List<NetworkSpace> networkSpaceList;
-
-    
+    private List<NetworkSpace> networkSpaceList;    
 
     public void generateGui(){
 	// BASE STATE
@@ -86,8 +84,10 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	    JTabbedPane spacesJTabbedPane = addTabbedPane(NAME_NET_SPACES, null);
 
 	    // INTERFACE MAP //
-	    JPanel interfaceMapJPanel = new JPanel();
+	    InterfaceMapJPanel interfaceMapJPanel = new InterfaceMapJPanel();
 	    spacesJTabbedPane.addTab(NAME_INTERFACE_MAP, null, interfaceMapJPanel);
+	    addSavable(NAME_INTERFACE_MAP, interfaceMapJPanel);
+	    addRefreshable(NAME_INTERFACE_MAP, interfaceMapJPanel);
 	    
 	    // SPACES //
 	    for( NetworkSpace networkSpace : networkSpaceList ){
