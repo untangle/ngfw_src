@@ -36,6 +36,8 @@ public class NatAdvancedSettingsImpl implements NatAdvancedSettings
     private final NetworkSpacesSettings networkSpacesSettings;
     private final ServicesSettings servicesSettings;
 
+    private boolean isEnabled;
+
     /* Use with caution */
     NatAdvancedSettingsImpl()
     {
@@ -54,6 +56,17 @@ public class NatAdvancedSettingsImpl implements NatAdvancedSettings
     public SetupState getSetupState()
     {
         return SetupState.ADVANCED;
+    }
+    
+    /** True if network spaces is enabled */
+    public boolean getIsEnabled()
+    {
+        return this.isEnabled;
+    }
+
+    public void setIsEnabled( boolean newValue )
+    {
+        this.isEnabled = newValue;
     }
     
     /** Retrieve a list of interfaces */

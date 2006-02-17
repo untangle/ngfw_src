@@ -177,10 +177,8 @@ class SettingsManager
                                       NetworkSpacesInternalSettings networkSettings,
                                       ServicesInternalSettings servicesSettings )
     {
-        NatBasicSettings natSettings = new NatSettingsImpl( tid );
-        
-        ((NatSettingsImpl)natSettings).setSetupState( SetupState.BASIC );
-        
+        NatBasicSettings natSettings = new NatSettingsImpl( tid, SetupState.BASIC );
+                
         List<NetworkSpaceInternal> networkSpaceList = networkSettings.getNetworkSpaceList();
         
         /* Get the network space list in order to determine how many spaces there are */
@@ -261,7 +259,7 @@ class SettingsManager
     {
         logger.info( "Using default settings" );
 
-        NatSettingsImpl settings = new NatSettingsImpl( tid );
+        NatSettingsImpl settings = new NatSettingsImpl( tid, SetupState.BASIC );
 
         List<RedirectRule> redirectList = new LinkedList<RedirectRule>();
 
@@ -270,7 +268,6 @@ class SettingsManager
         PortMatcherFactory pmf = PortMatcherFactory.getInstance();
 
         try {
-            settings.setSetupState( SetupState.BASIC );
             settings.setNatEnabled( true );
             settings.setNatInternalAddress( NatUtil.DEFAULT_NAT_ADDRESS );
             settings.setNatInternalSubnet( NatUtil.DEFAULT_NAT_NETMASK );

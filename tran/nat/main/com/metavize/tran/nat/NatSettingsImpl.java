@@ -43,7 +43,7 @@ public class NatSettingsImpl implements NatSettings
 
     private Long id;
     private Tid tid;
-
+    
     private SetupState setupState = SetupState.BASIC;
 
     /* Nat Settings */
@@ -89,6 +89,13 @@ public class NatSettingsImpl implements NatSettings
     {
         this.tid = tid;
     }
+
+    public NatSettingsImpl( Tid tid, SetupState setupState )
+    {
+        this.tid = tid;
+        this.setupState = setupState;
+    }
+
 
     public void validate() throws ValidateException
     {
@@ -215,7 +222,6 @@ public class NatSettingsImpl implements NatSettings
     {
         this.tid = tid;
     }
-    
     
     /**
      * The current setup state for this tranform.  (deprecated, unconfigured, basic, advanced).
