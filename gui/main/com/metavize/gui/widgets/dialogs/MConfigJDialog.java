@@ -106,9 +106,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 	    final Savable savableComponent = savableMapEntry.getValue();
 	    saveException = null;
 	    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-		try{
-		    savableComponent.doSave(compoundSettings, false);
-		}
+		try{ savableComponent.doSave(compoundSettings, false); }
 		catch(Exception e){
 		    saveException = e;
 		}
@@ -128,10 +126,6 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 	}
 	// SEND SETTINGS TO SERVER
 	compoundSettings.save();
-	// GET LATEST SETTINGS
-	refreshAll();
-	// SHOW TO USER
-	populateAll();
     }
 
 
@@ -140,15 +134,13 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 	compoundSettings.refresh();
     }
 
-    protected void populateAll() {
+    protected void populateAll() throws Exception {
 	// UPDATE PANELS WITH NEW SETTINGS
 	for( Map.Entry<String, Refreshable> refreshableMapEntry : refreshableMap.entrySet() ){
 	    final String componentName = refreshableMapEntry.getKey();
 	    final Refreshable refreshableComponent = refreshableMapEntry.getValue();	    
-	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		try{
-		    refreshableComponent.doRefresh(compoundSettings);
-		}
+	    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		try{ refreshableComponent.doRefresh(compoundSettings); }
 		catch(Exception e){
 		    Util.handleExceptionNoRestart("Error distributing settings", e);
 		    new RefreshFailureDialog( componentName );
@@ -339,7 +331,11 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         }        
         public void run(){
 	    long startTime = System.currentTimeMillis();
-	    try{ MConfigJDialog.this.saveAll(); }
+	    try{
+		MConfigJDialog.this.saveAll();
+		MConfigJDialog.this.refreshAll();
+		MConfigJDialog.this.populateAll();
+	    }
 	    catch(Exception e){
 		try{ Util.handleExceptionWithRestart("Error sending saved settings", e); }
 		catch(Exception f){
@@ -347,15 +343,11 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 		    new SaveFailureDialog( MConfigJDialog.this.getTitle() );
 		}
 	    }
-	    long endTime = System.currentTimeMillis();
-	    if( (endTime - startTime) < MIN_PROGRESS_MILLIS ){
-		try{ sleep(MIN_PROGRESS_MILLIS - (endTime-startTime)); }
-		catch(Exception e){ Util.handleExceptionNoRestart("Error sleeping", e); }
-	    }		
-	    infiniteProgressJComponent.stopLater();
+	    infiniteProgressJComponent.stopLater(MIN_PROGRESS_MILLIS);
         }
     }
         
+    private Exception generateGuiException;
     private class RefreshAllThread extends Thread{
 	private boolean doGenerateGui;
         public RefreshAllThread(boolean doGenerateGui){
@@ -368,33 +360,26 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         }
         public void run(){
 	    long startTime = System.currentTimeMillis();
-	    boolean failedRefresh = false;
 	    // INIT COMPOUND SETTINGS
-	    try{ MConfigJDialog.this.refreshAll(); }
+	    try{
+		MConfigJDialog.this.refreshAll();
+		if(doGenerateGui){
+		    generateGuiException = null;
+		    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+			MConfigJDialog.this.generateGui();
+		    }});
+		    if( generateGuiException != null )
+			throw generateGuiException;
+		}
+		MConfigJDialog.this.populateAll();
+	    }
 	    catch(Exception e){
 		try{ Util.handleExceptionWithRestart("Error refreshing settings", e); }
 		catch(Exception f){
-		    failedRefresh = true;
 		    Util.handleExceptionNoRestart("Error refreshing settings", f);
 		    new RefreshFailureDialog( MConfigJDialog.this.getTitle() );
 		}
 	    }
-	    // IF FIRST REFRESH, BUILD GUI
-	    if(doGenerateGui){
-		try{
-		    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-			MConfigJDialog.this.generateGui();
-		    }});
-		}
-		catch(Exception e){
-		    failedRefresh = true;
-		    Util.handleExceptionNoRestart("Error generating gui", e);
-		    new RefreshFailureDialog( MConfigJDialog.this.getTitle() );
-		}
-	    }
-	    // IF COMPOUND SETTINGS WERE BUILD, POPULATE GUI
-	    if(!failedRefresh)
-		MConfigJDialog.this.populateAll();
 	    // END INFINITE PROGRESS
 	    infiniteProgressJComponent.stopLater(MIN_PROGRESS_MILLIS);
         }

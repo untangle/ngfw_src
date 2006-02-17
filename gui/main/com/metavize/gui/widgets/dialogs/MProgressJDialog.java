@@ -17,6 +17,15 @@ import java.awt.*;
 import javax.swing.*;
 
 public class MProgressJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
+
+    public static MProgressJDialog factory(String label, String message, Window parentWindow){
+	if( parentWindow instanceof Frame )
+	    return new MProgressJDialog(label, message, (Frame)parentWindow, true);
+	else if( parentWindow instanceof Dialog )
+	    return new MProgressJDialog(label, message, (Dialog)parentWindow, true);
+	else
+	    return null;
+    }
     
     public MProgressJDialog(String label, String message, Frame topLevelFrame, boolean isModal){
         super(topLevelFrame, isModal);
