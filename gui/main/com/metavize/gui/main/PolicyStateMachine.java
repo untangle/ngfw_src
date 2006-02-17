@@ -925,22 +925,25 @@ public class PolicyStateMachine implements ActionListener {
             start();
         }
         public void run(){
-            // GET THE TRANSFORM CONTEXT AND MACKAGE DESC
-            TransformContext transformContext = Util.getTransformManager().transformContext( tid );
-            MackageDesc mackageDesc = transformContext.getMackageDesc();
-            if( isMackageVisible(mackageDesc) ){
-                // CONSTRUCT AND ADD THE APPLIANCE
-                try{
-                    loadSemaphore.acquire();
+	    try{
+		loadSemaphore.acquire();
+		// GET THE TRANSFORM CONTEXT AND MACKAGE DESC
+		TransformContext transformContext = Util.getTransformManager().transformContext( tid );
+		MackageDesc mackageDesc = transformContext.getMackageDesc();
+		if( isMackageVisible(mackageDesc) ){
+		    // CONSTRUCT AND ADD THE APPLIANCE
                     MTransformJPanel mTransformJPanel = MTransformJPanel.instantiate(transformContext);
                     addToRack(policy,mTransformJPanel,false);
-                    loadSemaphore.release();
                 }
-                catch(Exception e){
-                    try{ Util.handleExceptionWithRestart("Error instantiating appliance", e); }
-                    catch(Exception f){ Util.handleExceptionNoRestart("Error instantiating appliance: " + mackageDesc.getName(), f); }
-                }
-            }
+	    }
+	    catch(Exception e){
+		try{ Util.handleExceptionWithRestart("Error instantiating appliance", e); }
+		catch(Exception f){ Util.handleExceptionNoRestart("Error instantiating appliance", f); }
+	    }
+	    finally{
+		loadSemaphore.release();
+	    }
+            
             final float overallFinal = (float) overallProgress;
             SwingUtilities.invokeLater( new Runnable(){ public void run(){
                 PolicyStateMachine.this.applianceLoadProgress++;
