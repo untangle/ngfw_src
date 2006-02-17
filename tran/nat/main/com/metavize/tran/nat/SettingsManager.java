@@ -65,7 +65,7 @@ class SettingsManager
     NetworkSpacesSettings toNetworkSettings( NetworkSpacesSettings networkSettings, 
                                              NatBasicSettings natSettings )
     {
-        ((NetworkSpacesSettingsImpl)networkSettings).setSetupState( SetupState.BASIC );
+        ((NetworkSpacesSettingsImpl)networkSettings).setSetupState( SetupState.BASIC );        
         List<NetworkSpace> networkSpaceList = networkSettings.getNetworkSpaceList();
 
         NetworkSpace primary;
@@ -77,7 +77,8 @@ class SettingsManager
         /* Just ignore the previous settings */
         natSpace = new NetworkSpace();
         
-        natSpace.setLive( natSettings.getNatEnabled());
+        boolean isNatEnabled = natSettings.getNatEnabled();
+        natSpace.setLive( isNatEnabled );
         List<IPNetworkRule> networkList = new LinkedList<IPNetworkRule>();
             
         networkList.add( IPNetworkRule.makeInstance( natSettings.getNatInternalAddress(),
@@ -110,15 +111,17 @@ class SettingsManager
         /* Move the internal interface into the secondary network space */
         boolean foundInternal = false;
         for ( Interface intf : interfaceList ) {
+            intf.setNetworkSpace( primary );
+
             if ( intf.getArgonIntf() == IntfConstants.INTERNAL_INTF ) {
-                intf.setNetworkSpace( natSpace );
                 foundInternal = true;
-            } else {
-                intf.setNetworkSpace( primary );
-            }
+                if ( isNatEnabled ) intf.setNetworkSpace( natSpace );
+            };
         }
         
         if ( !foundInternal ) {
+            /* XXXX This is error code, but it should probably try to retain some of the interface
+             * settings XXX */
             logger.error( "The interface list did not contain the internal " + 
                           "interface, creating a new interface list" );
             
@@ -129,16 +132,40 @@ class SettingsManager
                 
                 /* Add each interface to the list */
                 Interface intf =  new Interface( argonIntf, EthernetMedia.AUTO_NEGOTIATE, true );
-                if ( argonIntf == IntfConstants.INTERNAL_INTF ) intf.setNetworkSpace( primary );
-                else                                            intf.setNetworkSpace( natSpace );
+                if ( isNatEnabled && ( argonIntf == IntfConstants.INTERNAL_INTF )) {
+                    intf.setNetworkSpace( natSpace );
+                } else {
+                    intf.setNetworkSpace( primary );
+                }
+                
                 interfaceList.add( intf );
             }
         }
 
         networkSettings.setInterfaceList( interfaceList );
+
+        /* Set the redirects */
+        networkSettings.setRedirectList( natSettings.getRedirectList());
         
         return networkSettings;
     }
+
+    NetworkSpacesSettings toNetworkSettings( NetworkSpacesSettings networkSettings, 
+                                             NatAdvancedSettings advanced )
+    {
+        ((NetworkSpacesSettingsImpl)networkSettings).setSetupState( SetupState.ADVANCED );
+        /* Is enabled should have already been set */
+        // networkSettings.setIEnabled();
+
+        networkSettings.setInterfaceList( advanced.getInterfaceList());
+        networkSettings.setNetworkSpaceList( advanced.getNetworkSpaceList());
+        networkSettings.setRoutingTable( advanced.getRoutingTable());
+        networkSettings.setRedirectList( advanced.getRedirectList());
+        
+        /* Everything else is not configurable here. */
+        return networkSettings;
+    }
+
 
     NatAdvancedSettings toAdvancedSettings( NetworkSpacesSettings network,
                                             ServicesInternalSettings services )
@@ -208,12 +235,7 @@ class SettingsManager
         }
         
         /* Setup the redirect settings */
-        List<RedirectRule> redirectList = new LinkedList<RedirectRule>();
-
-        for ( RedirectInternal internal : networkSettings.getRedirectList()) {
-            redirectList.add( internal.toRule());
-        }
-        natSettings.setRedirectList( redirectList );
+        natSettings.setRedirectList( networkSettings.getRedirectRuleList());
                 
         return natSettings;
     }

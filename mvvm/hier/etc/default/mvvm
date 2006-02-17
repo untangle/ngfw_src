@@ -28,6 +28,9 @@ MVVM_ARGS=""
 #MVVM_OUTSIDE_INTF=""
 #MVVM_DMZ_INTF=""
 
+## For testing uncomment if you want to generate /etc/network/interfaces files.
+#MVVM_ENABLE_NETWORK_CFG="anything"
+
 ## Set inside and outside interface to a default if it is not set, for testing
 ## modify the interface above, this setting will only change if the variable
 ## has not been set yet.
@@ -49,6 +52,11 @@ fi
 
 if [ -n "${MVVM_DMZ_INTF}" ]; then
     MVVM_ARGS="${MVVM_ARGS} -Dargon.dmz=${MVVM_DMZ_INTF}"
+fi
+
+# if in the build, disable network configuration by default
+if [ "x" != "x@PREFIX@" ]  && [ -z "${MVVM_ENABLE_NETWORK_CFG}" ] ; then
+    MVVM_ARGS="${MVVM_ARGS} -Dbunnicula.devel.networking=false"
 fi
 
 ## Append the session limit if it is set

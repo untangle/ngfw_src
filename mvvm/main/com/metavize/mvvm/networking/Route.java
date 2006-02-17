@@ -73,11 +73,13 @@ public class Route extends Rule
      */
     public IPNetwork getDestination()
     {
+        if ( this.destination == null ) this.destination = IPNetwork.getEmptyNetwork();
         return this.destination;
     }
 
-    public void setDestination( IPNetwork destination )
+    public void setDestination( IPNetwork newValue )
     {
+        if ( newValue == null ) newValue = IPNetwork.getEmptyNetwork();
         this.destination = destination;
     }
 
@@ -94,11 +96,13 @@ public class Route extends Rule
      */
     public IPaddr getNextHop()
     {
+        if ( this.nextHop == null ) this.nextHop = NetworkUtil.EMPTY_IPADDR;
         return this.nextHop;
     }
 
-    public void setNextHop( IPaddr nextHop )
+    public void setNextHop( IPaddr newValue )
     {
-        this.nextHop = nextHop;
+        if ( newValue == null ) newValue = NetworkUtil.EMPTY_IPADDR;
+        this.nextHop = newValue;
     }
 }

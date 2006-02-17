@@ -30,6 +30,9 @@ import com.metavize.mvvm.networking.DhcpLeaseRule;
 public class ServicesInternalSettings
 {
     // !!!!! private static final long serialVersionUID = 4349679825783697834L;
+    
+    /* The global flag for whether all services are enabled */
+    private final boolean isEnabled;
 
     private final boolean isDhcpEnabled;
     private final IPaddr dhcpStartAddress;
@@ -48,13 +51,17 @@ public class ServicesInternalSettings
     private final String interfaceName;
 
 
-    public ServicesInternalSettings( boolean isDhcpEnabled, IPaddr dhcpStartAddress, IPaddr dhcpEndAddress,
-                                       int dhcpLeaseTime, List<DhcpLeaseInternal> leaseList, 
-                                       boolean isDnsEnabled, HostName dnsLocalDomain, 
-                                       List<DnsStaticHostInternal> hostList,
-                                       IPaddr defaultRoute, IPaddr netmask, List<IPaddr> dnsServerList,
-                                       String interfaceName )
+    public ServicesInternalSettings( boolean isEnabled,
+                                     boolean isDhcpEnabled, IPaddr dhcpStartAddress, IPaddr dhcpEndAddress,
+                                     int dhcpLeaseTime, List<DhcpLeaseInternal> leaseList, 
+                                     boolean isDnsEnabled, HostName dnsLocalDomain, 
+                                     List<DnsStaticHostInternal> hostList,
+                                     IPaddr defaultRoute, IPaddr netmask, List<IPaddr> dnsServerList,
+                                     String interfaceName )
     {
+        /* Indicator for whether or not services are enabled */
+        this.isEnabled         = isEnabled;
+
         /* dhcp settings */
         this.isDhcpEnabled     = isDhcpEnabled;
         this.dhcpStartAddress  = dhcpStartAddress;
@@ -72,6 +79,12 @@ public class ServicesInternalSettings
         this.netmask           = netmask;
         this.dnsServerList     = Collections.unmodifiableList( new LinkedList( dnsServerList ));
         this.interfaceName     = interfaceName;
+    }
+
+    /** Return whether or not services are enabled */
+    public boolean getIsEnabled()
+    {
+        return this.isEnabled;
     }
 
     /**
@@ -190,7 +203,7 @@ public class ServicesInternalSettings
     }
 
     public static ServicesInternalSettings 
-        makeInstance( DhcpServerSettings dhcp, DnsServerSettings dns,
+        makeInstance( boolean isEnabled, DhcpServerSettings dhcp, DnsServerSettings dns,
                       IPaddr defaultRoute, IPaddr netmask, List<IPaddr> dnsServerList,
                       String interfaceName )
     {
@@ -216,10 +229,9 @@ public class ServicesInternalSettings
             hostList.add( new DnsStaticHostInternal( rule ));
         }
 
-        return new ServicesInternalSettings( isDhcpEnabled, dhcpStartAddress, dhcpEndAddress,
-                                               leaseTime, leaseList, isDnsEnabled, local, hostList,
-                                               defaultRoute, netmask, dnsServerList, interfaceName );
-        
+        return new ServicesInternalSettings( isEnabled, isDhcpEnabled, dhcpStartAddress, dhcpEndAddress,
+                                             leaseTime, leaseList, isDnsEnabled, local, hostList,
+                                             defaultRoute, netmask, dnsServerList, interfaceName );
     }
 
     public static ServicesInternalSettings 
@@ -245,7 +257,8 @@ public class ServicesInternalSettings
         /* Build a new list of static host mapping entries */
         List<DnsStaticHostInternal> hostList = server.getDnsStaticHostList();
 
-        return new ServicesInternalSettings( isDhcpEnabled, dhcpStartAddress, dhcpEndAddress,
+        return new ServicesInternalSettings( server.isEnabled, 
+                                             isDhcpEnabled, dhcpStartAddress, dhcpEndAddress,
                                              leaseTime, leaseList, isDnsEnabled, local, hostList,
                                              defaultRoute, netmask, dnsServerList, interfaceName );
     }

@@ -28,7 +28,14 @@ public class NetworkSpacesInternalSettings
 {
     private final SetupState setupState;
 
+    /* Indicator for whether the network space settings are enabled */
+    private final boolean isEnabled;
+
     private final List<InterfaceInternal> interfaceList;
+
+    /* List of interfaces and their mappings to use if network spaces was enabled */
+    private final List<InterfaceInternal> enabledList;
+
     private final List<NetworkSpaceInternal> networkSpaceList;
     private final List<RouteInternal> routingTable;
     private final List<RedirectInternal> redirectList;
@@ -45,8 +52,9 @@ public class NetworkSpacesInternalSettings
     /* This is the space where services (dhcp/dns) are bound to */
     private final NetworkSpaceInternal serviceSpace;
 
-    private NetworkSpacesInternalSettings( SetupState setupState,
+    private NetworkSpacesInternalSettings( SetupState setupState, boolean isEnabled,
                                            List<InterfaceInternal> interfaceList,
+                                           List<InterfaceInternal> enabledList,
                                            List<NetworkSpaceInternal> networkSpaceList,
                                            List<RouteInternal> routingTable,
                                            List<RedirectInternal> redirectList,
@@ -55,7 +63,9 @@ public class NetworkSpacesInternalSettings
                                            NetworkSpaceInternal serviceSpace )
     {
         this.setupState       = setupState;
+        this.isEnabled        = isEnabled;
         this.interfaceList    = Collections.unmodifiableList( new LinkedList( interfaceList ));
+        this.enabledList      = Collections.unmodifiableList( new LinkedList( enabledList ));
         this.networkSpaceList = Collections.unmodifiableList( new LinkedList( networkSpaceList ));
         this.routingTable     = Collections.unmodifiableList( new LinkedList( routingTable ));
         this.redirectList     = Collections.unmodifiableList( new LinkedList( redirectList ));
@@ -71,6 +81,11 @@ public class NetworkSpacesInternalSettings
     public SetupState getSetupState()
     {
         return this.setupState;
+    }
+
+    public boolean getIsEnabled()
+    {
+        return this.isEnabled;
     }
     
     public List<InterfaceInternal> getInterfaceList()
@@ -140,7 +155,7 @@ public class NetworkSpacesInternalSettings
         StringBuilder sb = new StringBuilder();
 
         sb.append( "Network Settings\n" );
-        sb.append( "setup-state: " + getSetupState());
+        sb.append( "setup-state: " + getSetupState() + " isEnabled: " + getIsEnabled());
         
         sb.append( "\nInterfaces:\n" );
         for ( InterfaceInternal intf : getInterfaceList()) sb.append( intf + "\n" );
@@ -162,7 +177,8 @@ public class NetworkSpacesInternalSettings
     }
 
     public static NetworkSpacesInternalSettings 
-        makeInstance( SetupState setupState, List<InterfaceInternal> interfaceList,
+        makeInstance( SetupState setupState, boolean isEnabled, List<InterfaceInternal> interfaceList,
+                      List<InterfaceInternal> enabledList,
                       List<NetworkSpaceInternal> networkSpaceList,
                       List<RouteInternal> routingTable,
                       List<RedirectInternal> redirectList,
@@ -177,9 +193,11 @@ public class NetworkSpacesInternalSettings
                 serviceSpace = space;
                 break;
             }
-        }
+        }        
+
         return new 
-            NetworkSpacesInternalSettings( setupState, interfaceList, networkSpaceList, routingTable, 
+            NetworkSpacesInternalSettings( setupState, isEnabled, 
+                                           interfaceList, enabledList, networkSpaceList, routingTable, 
                                            redirectList, dns1, dns2, defaultRoute, hostname, publicAddress, 
                                            serviceSpace );
     }

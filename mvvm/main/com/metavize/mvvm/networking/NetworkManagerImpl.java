@@ -55,6 +55,10 @@ public class NetworkManagerImpl implements NetworkManager
     /* Script to run renew the DHCP lease */
     private static final String DHCP_RENEW_SCRIPT    = BUNNICULA_BASE + "/networking/dhcp-renew";
 
+    /* A flag for devel environments, used to determine whether or not 
+     * the etc files actually are written, this enables/disables reconfiguring networking */
+    private boolean saveSettings = true;
+    
     /* Inidicates whether or not the networking manager has been initialized */
     private boolean isInitialized = false;
 
@@ -111,7 +115,9 @@ public class NetworkManagerImpl implements NetworkManager
             logger.error( "Exception initializing settings, using reasonable defaults", e );
 
             /* !!!!!!!! use reasonable defaults */
-        }        
+        }
+
+        this.isInitialized = true;
     }
 
     public NetworkingConfiguration getNetworkingConfiguration()
@@ -123,8 +129,9 @@ public class NetworkManagerImpl implements NetworkManager
         throws NetworkException, ValidateException
     {
         setNetworkSettings( NetworkUtilPriv.getPrivInstance().toInternal( configuration, this.settings ));
+        setRemoteSettings( configuration );
     }
-    
+
     public NetworkSpacesSettings getNetworkSettings()
     {
         return NetworkUtilPriv.getPrivInstance().toSettings( this.settings );
@@ -137,13 +144,24 @@ public class NetworkManagerImpl implements NetworkManager
         setNetworkSettings( NetworkUtilPriv.getPrivInstance().toInternal( settings ));
     }
 
-    private synchronized void setNetworkSettings( NetworkSpacesInternalSettings settings )
+    private synchronized void setNetworkSettings( NetworkSpacesInternalSettings newSettings )
+        throws NetworkException, ValidateException
     {
-        logger.debug( "Loading the new network settings: " + settings );
+        logger.debug( "Loading the new network settings: " + newSettings );
         /* XXXX implement me */
         // throw new IllegalStateException( "implement me" );
-        this.settings = settings;
-        logger.warn( "Implement me" );
+
+        /* Write the settings */
+        writeConfiguration( newSettings );
+        
+        this.settings = newSettings;
+    }
+
+    public synchronized void setRemoteSettings( RemoteSettings remote )
+        throws NetworkException
+    {
+        /* XXXXXXXXX Implement me */
+        this.remote = remote;
     }
 
     public NetworkSpacesInternalSettings getNetworkInternalSettings()
@@ -151,6 +169,7 @@ public class NetworkManagerImpl implements NetworkManager
         return this.settings;
     }
     
+    /* XXXX This is kind of busted since you can't change the services on/off switch from here */
     public synchronized void setServicesSettings( ServicesSettings servicesSettings )
         throws NetworkException
     {
@@ -321,11 +340,14 @@ public class NetworkManagerImpl implements NetworkManager
     private void initPriv() throws NetworkException, ValidateException
     {
         /* !!!! Load settings */
-        
+        String saveSettings = System.getProperty( "bunnicula.devel.networking" );
+
+        if ( Boolean.valueOf( saveSettings ) == false ) this.saveSettings = false;
         
         /* If there are no settings, get the settings from the database */
         if ( this.settings == null ) {
-            /* Need to create new settings */
+            /* Need to create new settings, (The method setNetworkingConfiguration assumes that
+             * settings is already set, and cannot be used here) */
             NetworkingConfiguration configuration = networkConfigurationLoader.getNetworkingConfiguration();
                         
             /* Save these settings */
@@ -339,41 +361,52 @@ public class NetworkManagerImpl implements NetworkManager
             
             /* Save the network settings */
             setNetworkSettings( internal );
+            setRemoteSettings( configuration );
         }
 
         /* Generate rules */
         generateRules();
     }    
     
-    private void writeConfiguration() throws NetworkException
+    private void writeConfiguration( NetworkSpacesInternalSettings newSettings ) throws NetworkException
     {
+        
+        if ( this.saveSettings == false ) {
+            /* Set to a warn, because if this gets emailed out, something has gone terribly awry */
+            logger.warn( "Not writing configuration files because the debug property was set" );
+            return;
+        }
+
         try {
-            // NetworkUtilPriv.getPrivInstance().complete( this.configuration );
-            
-            writeEtcFiles();
+            writeEtcFiles( newSettings );
         } catch ( ArgonException e ) {
             logger.error( "Unable to write network settings" );
         }
     }
 
-    private void writeEtcFiles() throws NetworkException, ArgonException
+    private void writeEtcFiles( NetworkSpacesInternalSettings newSettings ) 
+        throws NetworkException, ArgonException
     {
-        writeInterfaces();
-        writeResolvConf();
+        writeInterfaces( newSettings );
+        writeResolvConf( newSettings );
     }
 
     /* This is for /etc/network/interfaces interfaces */
-    private void writeInterfaces() throws NetworkException, ArgonException
+    private void writeInterfaces( NetworkSpacesInternalSettings newSettings )
+        throws NetworkException, ArgonException
     {
         /* This is a script writer customized to generate etc interfaces files */
-        InterfacesScriptWriter isw = new InterfacesScriptWriter( this.settings );
-        
+        InterfacesScriptWriter isw = new InterfacesScriptWriter( newSettings );
         isw.addNetworkSettings();
         isw.writeFile( ETC_INTERFACES_FILE );
     }
 
-    private void writeResolvConf()
+    private void writeResolvConf( NetworkSpacesInternalSettings newSettings )
     {
+        /* This is a script writer customized to generate etc resolv.conf files */
+        ResolvScriptWriter rsw = new ResolvScriptWriter( newSettings );
+        rsw.addNetworkSettings();
+        rsw.writeFile( ETC_RESOLV_FILE );
     }
 
     /* Create a networking manager, this is a first come first serve

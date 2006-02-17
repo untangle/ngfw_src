@@ -51,7 +51,7 @@ public class InterfaceInternal
     {
         return this.networkSpace;
     }
-
+        
     public EthernetMedia getEthernetMedia()
     {
         return this.ethernetMedia;
@@ -68,8 +68,7 @@ public class InterfaceInternal
      */
     public Interface toInterface()
     {
-        return new Interface( this.argonIntf, this.ethernetMedia,
-                              this.isPingable );
+        return new Interface( this.argonIntf, this.ethernetMedia, this.isPingable );
     }
 
     public String toString()
@@ -82,8 +81,8 @@ public class InterfaceInternal
             "\npingable:    " + isPingable();
     }
     
-    public static InterfaceInternal makeInterfaceInternal( Interface intf,
-                                                           NetworkSpaceInternal networkSpace ) 
+    public static InterfaceInternal 
+        makeInterfaceInternal( Interface intf, NetworkSpaceInternal networkSpace )
         throws ValidateException
     {
         /* unable to pass this in since the internal interfaces are

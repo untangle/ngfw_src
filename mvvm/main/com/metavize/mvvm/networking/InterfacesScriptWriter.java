@@ -60,16 +60,26 @@ class InterfacesScriptWriter extends ScriptWriter
     void addNetworkSettings() throws NetworkException, ArgonException
     {
         boolean isFirst = true;
-        for ( Iterator<NetworkSpaceInternal> iter = this.settings.getNetworkSpaceList().iterator() ; 
-              iter.hasNext() ; ) {
-            NetworkSpaceInternal space = iter.next();
-            addNetworkSpace( space, isFirst, !iter.hasNext());
+        for ( NetworkSpaceInternal space : this.settings.getNetworkSpaceList()) { 
+            /* If the space is not enabled, keep on trucking */
+            if ( !space.getIsEnabled()) continue;
+            
+            /* Add a seperator betwixt each active space */
+            if ( !isFirst ) appendLine( "" );
+
+            addNetworkSpace( space, isFirst );
             isFirst = false;
+            
+            if ( !this.settings.getIsEnabled()) break;
         }
+
+        /* Add this after the last interface, done this way so there isn't a space
+         * in between the interface and the final commands */
+        addRoutingTable();
     }
 
     /* Index is used to name the bridge */
-    private void addNetworkSpace( NetworkSpaceInternal space, boolean isFirst, boolean isLast )
+    private void addNetworkSpace( NetworkSpaceInternal space, boolean isFirst )
         throws NetworkException, ArgonException
     {
         NetworkUtilPriv nu = NetworkUtilPriv.getPrivInstance();
@@ -138,32 +148,33 @@ class InterfacesScriptWriter extends ScriptWriter
                 appendCommands( "up ip route add to " + nu.toRouteString( network ) + " dev " + name );
             }
         }
+    }
+
+    private void addRoutingTable() throws NetworkException
+    {
+        NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
 
         /* Add the default route and all of the other routes after configuring the
          * last network space */
-        if ( isLast ) {
-            IPaddr defaultRoute = settings.getDefaultRoute();
+        IPaddr defaultRoute = this.settings.getDefaultRoute();
+        
+        /* Add the routing table */
+        for ( RouteInternal route : (List<RouteInternal>)this.settings.getRoutingTable()) {
+            // !!! This is currently not supported.
+            // if ( route.getNetworkSpace() != null ) {
+            // logger.warn( "Custom routing rules with per network space are presently not supported" );
+            //}
             
-            /* Add the routing table */
-            for ( RouteInternal route : (List<RouteInternal>)settings.getRoutingTable()) {
-                // !!! This is currently not supported.
-                // if ( route.getNetworkSpace() != null ) {
-                // logger.warn( "Custom routing rules with per network space are presently not supported" );
-                //}
-
-                appendCommands( "up ip route add to " + nu.toRouteString( route.getDestination()) + " via " + 
-                                route.getNextHop());
-            }
-
-            /* Add the default route last */
-            if (( defaultRoute != null ) && ( !defaultRoute.isEmpty())) {
-                appendCommands( "up ip route add to default via " + settings.getDefaultRoute());
-            }
-            
-            appendCommands( "up ip route flush table cache" );
+            appendCommands( "up ip route add to " + nup.toRouteString( route.getDestination()) + " via " + 
+                            route.getNextHop());
         }
-
-        appendLine( "" );
+        
+        /* Add the default route last */
+        if (( defaultRoute != null ) && ( !defaultRoute.isEmpty())) {
+            appendCommands( "up ip route add to default via " + settings.getDefaultRoute());
+        }
+        
+        appendCommands( "up ip route flush table cache" );
     }
 
     /* A helper to append commands that can't fail */

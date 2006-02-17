@@ -25,6 +25,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.NetworkManager;
 import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.HostNameList;
 import com.metavize.mvvm.tran.IPNullAddr;
@@ -97,6 +98,13 @@ class DhcpManager
 
     void configure( ServicesInternalSettings settings ) throws NetworkException
     {
+        NetworkManager nm = MvvmContextFactory.context().networkManager();
+        
+        if ( settings.getIsEnabled()) {
+            logger.debug( "Services are currently disabled, deconfiguring dns masq" );
+            deconfigure();
+            return;
+        }
 
         try {
             writeConfiguration( settings );
@@ -108,9 +116,9 @@ class DhcpManager
         /* Enable/Disable DHCP forwarding  */
         try {
             if ( settings.getIsDhcpEnabled()) {
-                MvvmContextFactory.context().argonManager().disableDhcpForwarding();
+                nm.disableDhcpForwarding();
             } else {
-                MvvmContextFactory.context().argonManager().enableDhcpForwarding();
+                nm.enableDhcpForwarding();
             }
         } catch ( Exception e ) {
             throw new NetworkException( "Error updating DHCP forwarding settings", e );
@@ -154,7 +162,7 @@ class DhcpManager
         /* Re-enable DHCP forwarding */
         try {
             logger.info( "Reenabling DHCP forwarding" );
-            MvvmContextFactory.context().argonManager().enableDhcpForwarding();
+            MvvmContextFactory.context().networkManager().enableDhcpForwarding();
         } catch ( Exception e ) {
             logger.error( "Error enabling DHCP forwarding", e );
         }

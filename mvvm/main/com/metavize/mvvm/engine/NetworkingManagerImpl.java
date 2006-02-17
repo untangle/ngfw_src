@@ -20,35 +20,32 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+
 import java.net.Inet4Address;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
-import com.metavize.jnetcap.InterfaceData;
-import com.metavize.jnetcap.Netcap;
-import com.metavize.mvvm.InterfaceAlias;
+import org.apache.log4j.Logger;
+
 import com.metavize.mvvm.ArgonManager;
-import com.metavize.mvvm.InterfaceAlias;
 import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.IntfEnum;
 import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.InterfaceAlias;
-import com.metavize.mvvm.MvvmException;
 import com.metavize.mvvm.NetworkingConfiguration;
-import com.metavize.mvvm.networking.NetworkingConfigurationImpl;
 import com.metavize.mvvm.NetworkingManager;
-import com.metavize.mvvm.argon.ArgonManagerImpl;
+import com.metavize.mvvm.NetworkManager;
+
 import com.metavize.mvvm.argon.IntfConverter;
+
+import com.metavize.mvvm.networking.NetworkException;
+import com.metavize.mvvm.networking.NetworkingConfigurationImpl;
+
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.ValidateException;
+
 import com.metavize.mvvm.tran.firewall.intf.IntfMatcherFactory;
 import com.metavize.mvvm.tran.firewall.intf.IntfMatcher;
-import com.metavize.mvvm.tran.ValidateException;
-import org.apache.log4j.Logger;
-
-import com.metavize.mvvm.networking.NetworkSettingsListener;
-import com.metavize.mvvm.networking.IntfEnumListener;
-
 
 class NetworkingManagerImpl implements NetworkingManager
 {
@@ -57,7 +54,6 @@ class NetworkingManagerImpl implements NetworkingManager
     private static final String BUNNICULA_BASE = System.getProperty( "bunnicula.home" );
     private static final String BUNNICULA_CONF = System.getProperty( "bunnicula.conf.dir" );
 
-    private static final String BUNNICULA_RESET_SCRIPT = BUNNICULA_BASE + "/mvvm_restart.sh";
     private static final String SSH_ENABLE_SCRIPT      = BUNNICULA_BASE + "/ssh_enable.sh";
     private static final String SSH_DISABLE_SCRIPT     = BUNNICULA_BASE + "/ssh_disable.sh";
     private static final String DHCP_RENEW_SCRIPT      = BUNNICULA_BASE + "/networking/dhcp-renew";
@@ -94,17 +90,16 @@ class NetworkingManagerImpl implements NetworkingManager
 
     private IntfEnum intfEnum;
 
+    private NetworkingManagerImpl()
+    {
+    }
+
     /**
      * Retrieve the current network configuration
      */
     public synchronized NetworkingConfiguration get()
     {
-        /* Retrieve all of the networking parameters */
-        refresh();
-
-        /* Return a copy of the current configuration */
-        /* XXX Need to make a copy */
-        return configuration;
+        return getNetworkManager().getNetworkingConfiguration();
     }
 
     /**
@@ -113,219 +108,38 @@ class NetworkingManagerImpl implements NetworkingManager
      */
     public synchronized void set( NetworkingConfiguration netConfig ) throws ValidateException
     {
-        /* Validate the networking configuration before saving it. */
-        netConfig.validate();
-
-        /* If the configuration is null */
-        if (( this.configuration != null ) && ( this.configuration.equals( netConfig ))) {
-            return; // if NetworkingConfiguration has not changed, do nothing
-        }
-
-        configuration = netConfig;
-
-        save();
-
         try {
-            MvvmContextFactory.context().argonManager().loadNetworkingConfiguration( netConfig );
-        } catch ( Exception ex ) {
-            logger.error( "Unable to load networking configuration", ex );
+            getNetworkManager().setNetworkingConfiguration( netConfig );
+        } catch ( NetworkException e ) {
+            logger.error( "Network exception while setting the network configuration.", e );
+            /* !!! This is kind of dangerous */
+            throw new ValidateException( "Unable to save the network configuration" );
         }
     }
 
-    private NetworkingManagerImpl()
+    /* Get the external HTTPS port */
+    public int getExternalHttpsPort()
     {
+        return getNetworkManager().getPublicHttpsPort();
     }
 
-    private void refresh()
+    public IntfEnum getIntfEnum()
     {
-        /* Create a new network configuration with all defaults */
-        this.configuration = new NetworkingConfigurationImpl();
-
-        /* Retrieve the DHCP configuration */
-        getInterface();
-        buildIntfEnum();
-        getNameservers();
-        getFlags();
-        getHttpsPort();
-        getSsh();
+        return getNetworkManager().getIntfEnum();
     }
 
-    private void getInterface()
+    public NetworkingConfiguration renewDhcpLease() throws Exception
     {
-        getDhcp();
-
-        ArgonManager argon = ArgonManagerImpl.getInstance();
-
-        configuration.host( new IPaddr((Inet4Address)argon.getOutsideAddress()));
-        configuration.netmask( new IPaddr((Inet4Address)argon.getOutsideNetmask()));
-        configuration.gateway( new IPaddr((Inet4Address)Netcap.getGateway()));
-
-        List<InterfaceAlias> list = new LinkedList<InterfaceAlias>();
-        /* XXX Should be exposed in the manager, but the the InterfaceData from jnetcap has
-         * to be exposed */
-        for ( InterfaceData data : ((ArgonManagerImpl)argon).getOutsideAliasList()) {
-            list.add( new InterfaceAlias( data.getAddress(), data.getNetmask(), data.getBroadcast()));
-        }
-        configuration.setAliasList( list );
+        return getNetworkManager().renewDhcpLease();
     }
 
-    private void getDhcp()
+    private NetworkManager getNetworkManager()
     {
-        BufferedReader in = null;
-
-        /* Open up the interfaces file */
-        try {
-            in = new BufferedReader( new FileReader( IP_CFG_FILE ));
-            String str;
-            while ((str = in.readLine()) != null) {
-                str = str.trim();
-                if ( str.startsWith( "iface br0" )) {
-                    if ( str.contains( "dhcp" )) {
-                        configuration.isDhcpEnabled( true );
-                    }
-                }
-            }
-        } catch ( Exception ex ) {
-            logger.error( "Error reading file: ", ex );
-        }
-
-        close( in );
-    }
-
-    private void getNameservers()
-    {
-        BufferedReader in = null;
-
-        /* Open up the interfaces file */
-        try {
-            in = new BufferedReader(new FileReader( NS_CFG_FILE ));
-            String str;
-            while ((str = in.readLine()) != null) {
-                str = str.trim();
-                if ( str.startsWith( NS_PARAM )) {
-                    IPaddr dns = IPaddr.parse( str.substring( NS_PARAM.length() ));
-
-                    if ( configuration.dns1().isEmpty()) {
-                        configuration.dns1( dns );
-                    } else {
-                        configuration.dns2( dns );
-                        break;
-                    }
-                }
-            }
-        } catch ( Exception ex ) {
-            logger.error( "Error reading file: ", ex );
-        }
-
-        close( in );
-    }
-
-    private void getFlags()
-    {
-        String host = null;
-        String mask = null;
-
-        /* Open up the interfaces file */
-        try {
-            BufferedReader in = new BufferedReader(new FileReader( BUNNICULA_CONF + FLAGS_CFG_FILE ));
-            String str;
-            while ((str = in.readLine()) != null) {
-                str = str.trim();
-                try {
-                    /* Skip comments and empty lines */
-                    if (( str.startsWith( "#" )) || ( str.length() == 0 )) {
-                        continue;
-                    } else if ( str.startsWith( FLAG_TCP_WIN )) {
-                        configuration.isTcpWindowScalingEnabled( parseBooleanFlag( str, FLAG_TCP_WIN ));
-                    } else if ( str.startsWith( FLAG_HTTP_IN )) {
-                        configuration.isInsideInsecureEnabled( parseBooleanFlag( str, FLAG_HTTP_IN ));
-                    } else if ( str.startsWith( FLAG_HTTPS_OUT )) {
-                        configuration.isOutsideAccessEnabled( parseBooleanFlag( str, FLAG_HTTPS_OUT ));
-                    } else if ( str.startsWith( FLAG_HTTPS_RES )) {
-                        configuration.isOutsideAccessRestricted( parseBooleanFlag( str, FLAG_HTTPS_RES ));
-                    } else if ( str.startsWith( FLAG_OUT_NET )) {
-                        host = str.substring( FLAG_OUT_NET.length() + 1 );
-                    } else if ( str.startsWith( FLAG_OUT_MASK )) {
-                        mask = str.substring( FLAG_OUT_MASK.length() + 1 );
-                    } else if ( str.startsWith( FLAG_EXCEPTION )) {
-                        configuration.isExceptionReportingEnabled( parseBooleanFlag( str, FLAG_EXCEPTION ));
-                    } else if ( str.startsWith( FLAG_POST_FUNC )) {
-                        /* Nothing to do here, this is just here to indicate that a
-                         * postConfiguration function exists */
-                    } else if ( str.equals( DECL_POST_CONF )) {
-                        parsePostConfigurationScript( in );
-                    }
-                } catch ( Exception ex ) {
-                    logger.warn( "Error while retrieving flags", ex );
-                }
-            }
-            in.close();
-        } catch ( FileNotFoundException ex ) {
-            logger.warn( "Could not read '" + BUNNICULA_CONF + FLAGS_CFG_FILE +
-                         "' because it doesn't exist" );
-        } catch ( Exception ex ) {
-            logger.warn( "Error reading file: ", ex );
-        }
-
-        try {
-            if ( host != null ) {
-                configuration.outsideNetwork( IPaddr.parse( host ));
-
-                if ( mask != null ) configuration.outsideNetmask( IPaddr.parse( mask ));
-            }
-        } catch ( Exception ex ) {
-            logger.error( "Error parsing outside host or netmask", ex );
-        }
-    }
-
-    /* Parse the input stream until it reaches the end of the function */
-    private void parsePostConfigurationScript( BufferedReader in )
-        throws IOException
-    {
-        String command;
-        StringBuilder sb = new StringBuilder();
-
-        boolean isComplete = false;
-
-        while (( command = in.readLine()) != null ) {
-            command = command.trim();
-
-            if ( command.equals( "}" )) {
-                isComplete = true;
-                break;
-            }
-
-            sb.append( command + "\n" );
-        }
-
-        if ( isComplete ) {
-            configuration.setPostConfigurationScript( sb.toString().trim());
-        } else {
-            logger.warn( "Invalid post configuration script: " + sb.toString());
-        }
-    }
-
-    private Boolean parseBooleanFlag( String nameValuePair, String name )
-    {
-        if ( nameValuePair.length() < name.length() + 1 )
-            return null;
-
-        nameValuePair = nameValuePair.substring( name.length() + 1 );
-        return Boolean.parseBoolean( nameValuePair );
-    }
-
-    private void getSsh()
-    {
-        /* SSH is enabled if and only if this file exists */
-        File sshd = new File( SSHD_PID_FILE );
-
-        configuration.isSshEnabled( sshd.exists());
+        return MvvmContextFactory.context().networkManager();
     }
 
     private void save()
     {
-        saveInterfaces();
-        saveNameservers();
         try {
             saveHttpsPort();
         } catch ( Exception e ) {
@@ -333,69 +147,6 @@ class NetworkingManagerImpl implements NetworkingManager
         }
         saveFlags();
         saveSsh();
-    }
-
-    private void saveInterfaces()
-    {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append( HEADER );
-        sb.append( "# The loopback network interface\n" );
-        sb.append( "auto lo\n" );
-        sb.append( "auto br0\n" );
-        sb.append( "iface lo inet loopback\n\n# The bridge interface\n" );
-
-        if ( configuration.isDhcpEnabled()) {
-            sb.append( "iface br0 inet dhcp\n" );
-        } else {
-            sb.append( "iface br0 inet static\n" );
-            sb.append( "\taddress " + configuration.host()    + "\n" );
-            sb.append( "\tnetmask " + configuration.netmask() + "\n" );
-            sb.append( "\tgateway " + configuration.gateway() + "\n" );
-        }
-
-        sb.append( "\tbridge_ports all\n" );
-        sb.append( "\tbridge_maxwait 0\n" );
-
-        int c = 0;
-        for ( InterfaceAlias alias : configuration.getAliasList()) {
-            if ( !alias.isValid()) {
-                logger.warn( "Ignoring an invalid alias" );
-                continue;
-            }
-            String aliasName = "br0:" + c++;
-
-            /* Indicate that the alias should be configured at startup */
-            sb.append( "\nauto " + aliasName + "\n" );
-
-            /* Write out the alias configuration */
-            sb.append( "iface " + aliasName + " inet static\n" );
-            sb.append( "\taddress " + alias.getAddress() + "\n" );
-            sb.append( "\tnetmask " + alias.getNetmask() + "\n" );
-            sb.append( "\n\n" );
-        }
-
-        writeFile( sb, IP_CFG_FILE );
-        writeFile( sb, BUNNICULA_CONF + IP_CFG_FILE );
-    }
-
-    private void saveNameservers() {
-        StringBuilder sb = new StringBuilder();
-
-        if ( configuration.isDhcpEnabled())
-            return;
-
-        sb.append( HEADER );
-        sb.append( NS_PARAM + " " + configuration.dns1() + "\n" );
-
-        /* Set the System property for DNS */
-
-        if ( !configuration.dns2().isEmpty())
-            sb.append( NS_PARAM + " " + configuration.dns2() + "\n" );
-
-        /* XXX write both files */
-        writeFile( sb, NS_CFG_FILE );
-        writeFile( sb, BUNNICULA_CONF + NS_CFG_FILE );
     }
 
     private void saveFlags() {
@@ -447,30 +198,6 @@ class NetworkingManagerImpl implements NetworkingManager
         }
 
         writeFile( sb, BUNNICULA_CONF + FLAGS_CFG_FILE );
-    }
-
-    private void getHttpsPort()
-    {
-        /* Try to read in the properties for the HTTPS port */
-        configuration.httpsPort( NetworkingConfigurationImpl.DEF_HTTPS_PORT );
-
-        try {
-            Properties properties = new Properties();
-            File f = new File( PROPERTY_FILE );
-            if ( f.exists()) {
-                logger.debug( "Loading " + f );
-                properties.load( new FileInputStream( f ));
-
-                String temp = properties.getProperty( PROPERTY_HTTPS_PORT );
-                if ( temp != null ) {
-                    configuration.httpsPort( Integer.parseInt( temp ));
-                    logger.debug( "Found HTTPS port " + configuration.httpsPort());
-                }
-            }
-        } catch ( Exception e ) {
-            logger.warn( "Unable to load properties file: " + PROPERTY_FILE, e );
-            configuration.httpsPort( NetworkingConfigurationImpl.DEF_HTTPS_PORT );
-        }
     }
 
     private void saveHttpsPort() throws Exception
@@ -535,23 +262,6 @@ class NetworkingManagerImpl implements NetworkingManager
         close( out );
     }
 
-    /* Get the external HTTPS port */
-    public int getExternalHttpsPort()
-    {
-        /* Only refresh if the configuration is null, otherwise */
-        if ( this.configuration == null ) refresh();
-
-        /* Just in case */
-        if ( this.configuration == null ) {
-            logger.warn( "NULL Settings after a refresh, using defaults", new Exception());
-            return 443;
-        }
-
-        /* This doesn't query the file, it just grabs the port */
-        return this.configuration.httpsPort();
-    }
-
-
     static NetworkingManagerImpl getInstance()
     {
         return INSTANCE;
@@ -575,36 +285,6 @@ class NetworkingManagerImpl implements NetworkingManager
         } catch ( Exception ex ) {
             logger.error( "Unable to close file", ex );
         }
-    }
-
-    public NetworkingConfiguration renewDhcpLease() throws Exception {
-        /* Renew the address */
-        Process p = MvvmContextFactory.context().exec( "sh " + DHCP_RENEW_SCRIPT );
-
-        if ( p.waitFor() != 0 ) {
-            throw new MvvmException( "Error while Renewing DHCP Lease" );
-        }
-
-        /* Update the address and generate new rules */
-        MvvmContextFactory.context().argonManager().updateAddress();
-
-        /* Return a new copy of the Networking configuration */
-        return get();
-    }
-
-    public IntfEnum getIntfEnum()
-    {
-        return intfEnum;
-    }
-
-    public void registerNetworkSettingsListener( NetworkSettingsListener listener )
-    {
-        
-    }
-
-    public void registerIntfEnumListener( IntfEnumListener listener )
-    {
-
     }
     
     void buildIntfEnum()

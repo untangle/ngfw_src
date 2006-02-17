@@ -20,6 +20,7 @@ import com.metavize.mvvm.tran.IPaddr;
 
 import com.metavize.mvvm.networking.Interface;
 import com.metavize.mvvm.networking.IPNetwork;
+import com.metavize.mvvm.networking.IPNetworkRule;
 import com.metavize.mvvm.networking.NetworkSpace;
 
 public class NetworkSpaceInternal
@@ -77,6 +78,12 @@ public class NetworkSpaceInternal
     /* True if this network space is a bridge */
     private final boolean isBridge;
 
+    /* */
+    private final String name;
+    private final String category;
+    private final String description;
+
+
     /* List of interfaces in this network space */
     private NetworkSpaceInternal( NetworkSpace networkSpace, List<Interface> intfList, 
                                   IPNetwork primaryAddress, String deviceName, int index,
@@ -87,7 +94,13 @@ public class NetworkSpaceInternal
         this.isEnabled = networkSpace.isLive();
 
         /* Get the network list */
-        this.networkList = Collections.unmodifiableList( new LinkedList ( networkSpace.getNetworkList()));
+        /* Convert the list to ip network */
+        /* This is going to lose the name/description/category info */
+        List<IPNetwork> networkList = new LinkedList<IPNetwork>();
+        for ( IPNetworkRule rule : (List<IPNetworkRule>)networkSpace.getNetworkList()) {
+            networkList.add( rule.getIPNetwork());
+        }
+        this.networkList = Collections.unmodifiableList( networkList );
 
         /* Build the interface list */
         List<InterfaceInternal> interfaceList = new LinkedList<InterfaceInternal>();
@@ -137,6 +150,11 @@ public class NetworkSpaceInternal
 
         /* Set whether or not this is a bridge */
         this.isBridge = ( this.interfaceList.size() > 1 );
+
+        /** stuff from a rule */
+        this.name = networkSpace.getName();
+        this.category = networkSpace.getCategory();
+        this.description = networkSpace.getDescription();
     }
     
     public boolean getIsEnabled()
@@ -147,6 +165,13 @@ public class NetworkSpaceInternal
     public List<IPNetwork> getNetworkList()
     {
         return this.networkList;
+    }
+
+    public List<IPNetworkRule> getNetworkRuleList()
+    {
+        List<IPNetworkRule> networkList = new LinkedList<IPNetworkRule>();
+        for ( IPNetwork network : getNetworkList()) networkList.add( new IPNetworkRule( network ));
+        return networkList;
     }
 
     public IPNetwork getPrimaryAddress()
@@ -219,15 +244,36 @@ public class NetworkSpaceInternal
         return this.isBridge;
     }
 
+    public String getName()
+    {
+        return this.name;
+    }
+
+    public String getDescription()
+    {
+        return this.description;
+    }
+
+    public String getCategory()
+    {
+        return this.category;
+    }
+
     /* Create a new network space, use with caution, since the links between
      * interfaces and other network spaces cannot be maintained */
     public NetworkSpace toNetworkSpace()
     {
         /* Create a copy of the network list, since the current list is not modifiable */
-        return new NetworkSpace( getIsEnabled(), new LinkedList( getNetworkList()), getIsDhcpEnabled(),
-                                 getIsTrafficForwarded(), getMtu(),
-                                 getIsNatEnabled(), getNatAddress(),
-                                 getIsDmzHostEnabled(), getIsDmzHostLoggingEnabled(), getDmzHost());
+        NetworkSpace s = new NetworkSpace( getIsEnabled(), getNetworkRuleList(), getIsDhcpEnabled(),
+                                           getIsTrafficForwarded(), getMtu(),
+                                           getIsNatEnabled(), getNatAddress(),
+                                           getIsDmzHostEnabled(), getIsDmzHostLoggingEnabled(), getDmzHost());
+
+        s.setName( getName());
+        s.setDescription( getDescription());
+        s.setCategory( getCategory());
+        
+        return s;
     }
 
     public String toString()

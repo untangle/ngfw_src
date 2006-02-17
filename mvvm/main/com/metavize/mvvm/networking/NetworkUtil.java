@@ -56,14 +56,20 @@ public class NetworkUtil
     {
         int index = 0;
         for ( NetworkSpace space : (List<NetworkSpace>)settings.getNetworkSpaceList()) {
-            index++;
-            if ( getInterfaceList( settings, space ).size() == 0 ) {
+            if ( index == 0 && !space.isLive()) {
+                throw new ValidateException( "The primary network space must be active." );
+            }
+            
+            /* Could also check if the external interface is in the first network space */
+            if ( space.isLive() && getInterfaceList( settings, space ).size() == 0 ) {
                 throw new ValidateException( "Each network space["+ index +"] must have at least one" + 
                                              " interface" );
             }
 
             /* If dhcp is not enabled, there must be at least one address */
             validate( space );
+            
+            index++;
         }
 
         for ( Route route : (List<Route>)settings.getRoutingTable()) validate( route );
@@ -98,7 +104,11 @@ public class NetworkUtil
 
     public void validate( Route route ) throws ValidateException
     {
-        /* implement me */
+        IPNetwork network = route.getDestination();
+        /* Try to convert the netmask to CIDR notation, if it fails this isn't a valid route */
+        network.getNetmask().toCidr();
+
+        if ( route.getNextHop().isEmpty()) throw new ValidateException( "The next hop is empty" );
     }
 
     /** Functions for IPNetworks */

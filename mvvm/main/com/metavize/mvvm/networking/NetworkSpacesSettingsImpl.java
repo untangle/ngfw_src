@@ -22,6 +22,7 @@ import com.metavize.mvvm.tran.Validatable; /* perhaps */
 public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Serializable
 {
     private SetupState setupState = SetupState.BASIC;
+    private boolean isEnabled = false;;
 
     private List<Interface> interfaceList = new LinkedList<Interface>();
     private List<NetworkSpace> networkSpaceList = new LinkedList<NetworkSpace>();
@@ -49,6 +50,17 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
     public void setSetupState( SetupState newValue )
     {
         this.setupState = newValue;
+    }
+
+    /** Retrieve whether or not the settings are enabled */
+    public boolean getIsEnabled()
+    {
+        return this.isEnabled;
+    }
+
+    public void setIsEnabled( boolean newValue )
+    {
+        this.isEnabled = newValue;
     }
     
     /** Retrieve a list of interfaces */

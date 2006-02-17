@@ -146,7 +146,8 @@ public class NatImpl extends AbstractTransform implements Nat
                 newNetworkSettings = this.settingsManager.
                     toNetworkSettings( networkSettings, (NatBasicSettings)settings );
             } else if ( state.equals( SetupState.ADVANCED )) {
-                
+                newNetworkSettings = this.settingsManager.
+                    toNetworkSettings( networkSettings, (NatAdvancedSettings)settings );
             } else {
                 throw new Exception( "Illegal setup state: " + state );
             }
@@ -155,6 +156,9 @@ public class NatImpl extends AbstractTransform implements Nat
             logger.error( "Unable to convert the settings objects.", e );
             throw e;
         }
+
+        /* This isn't necessary, (the state should carry over), but just in case. */
+        newNetworkSettings.setIsEnabled( getRunState() == TransformState.RUNNING );
         
         try {
             /* Have to reconfigure the network before configure the services settings */
@@ -180,7 +184,7 @@ public class NatImpl extends AbstractTransform implements Nat
     
     public SetupState getSetupState()
     {
-        SetupState state =getNetworkSettings().getSetupState();
+        SetupState state = getNetworkSettings().getSetupState();
         if ( state == null ) {
             logger.error( "NULL State" );
             state = SetupState.BASIC;

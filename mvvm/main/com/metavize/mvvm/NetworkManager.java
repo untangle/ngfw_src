@@ -11,12 +11,14 @@
 
 package com.metavize.mvvm;
 
+import com.metavize.mvvm.networking.BasicNetworkSettings;
+import com.metavize.mvvm.networking.DhcpStatus;
+import com.metavize.mvvm.networking.NetworkException;
+import com.metavize.mvvm.networking.NetworkSpacesSettings;
+import com.metavize.mvvm.networking.RemoteSettings;
+
 import com.metavize.mvvm.tran.ValidateException;
 
-import com.metavize.mvvm.networking.NetworkException;
-import com.metavize.mvvm.networking.BasicNetworkSettings;
-import com.metavize.mvvm.networking.NetworkSpacesSettings;
-import com.metavize.mvvm.networking.DhcpStatus;
 
 public interface NetworkManager
 {
@@ -28,6 +30,9 @@ public interface NetworkManager
     /* Save the basic network settings */
     public void setNetworkingConfiguration( NetworkingConfiguration configuration ) 
         throws NetworkException, ValidateException;
+
+    /* Use this to mess with the remote settings without modifying the network settings */
+    public void setRemoteSettings( RemoteSettings remote ) throws NetworkException;
 
     /**
      * Retrieve the current network configuration

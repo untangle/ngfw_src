@@ -20,6 +20,11 @@ public interface NetworkSpacesSettings
     /** Retrieve the setup state of network spaces. */
     public SetupState getSetupState();
 
+    /** Retrieve whether or not the settings are enabled */
+    public boolean getIsEnabled();
+
+    public void setIsEnabled( boolean newValue );
+
     /** Retrieve a list of interfaces */
     public List<Interface> getInterfaceList();
     
