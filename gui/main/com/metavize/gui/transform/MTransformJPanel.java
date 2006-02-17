@@ -19,6 +19,7 @@ import javax.swing.*;
 
 import com.metavize.gui.util.*;
 import com.metavize.gui.widgets.*;
+import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.mvvm.*;
 import com.metavize.mvvm.policy.*;
 import com.metavize.mvvm.security.*;
@@ -338,7 +339,8 @@ public class MTransformJPanel extends javax.swing.JPanel {
         }
     }
 
-    private Exception showControlsException = null;
+
+    private Exception generateGuiException;
     private class ShowControlsThread extends Thread {
         public ShowControlsThread(){
             setDaemon(true);
@@ -355,18 +357,27 @@ public class MTransformJPanel extends javax.swing.JPanel {
                                 jProgressBar.setIndeterminate(true);
                                 jProgressBar.setString("Loading Settings...");
                             }});
-                            SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-				try{
-				    mTransformControlsJPanel.generateGui();
-				}
-				catch(Exception e){
-				    showControlsException = e;
-				}
-                            }});
-			    if( showControlsException != null ){
-				Util.handleExceptionNoRestart("Error generating gui", showControlsException);
+			    try{
+				// LOAD SETTINGS //
+				mTransformControlsJPanel.refreshAll();
+				// GENERATE GUI //
+				generateGuiException = null;
+				SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+				    try{ mTransformControlsJPanel.generateGui(); }
+				    catch(Exception f){ generateGuiException = f; }
+				}});
+				if( generateGuiException != null )
+				    throw generateGuiException;
+				// POPULATE GUI //
+				mTransformControlsJPanel.populateAll();
 			    }
-                            mTransformControlsJPanel.refreshAll();
+			    catch(Exception e){
+				try{ Util.handleExceptionWithRestart("Error showing settings", e); }
+				catch(Exception f){
+				    Util.handleExceptionNoRestart("Error showing settings", f);
+				    new RefreshFailureDialog(mackageDesc.getDisplayName());
+				}
+			    }
                             MTransformJPanel.this.controlsLoaded = true;
                             SwingUtilities.invokeLater( new Runnable(){ public void run(){
                                 jProgressBar.setIndeterminate(false);

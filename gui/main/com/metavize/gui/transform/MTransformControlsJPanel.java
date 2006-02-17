@@ -193,119 +193,64 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
     public abstract void generateGui();
 
     private Exception saveException;
-    void saveAll(){
-
+    void saveAll() throws Exception {
 	// GENERATE AND VALIDATE ALL SETTINGS
-	String transformName = mTransformJPanel.getMackageDesc().getDisplayName();
-	String componentName = "";
-	StringBuilder message = new StringBuilder();
-        try {
-	    message.append("Saving: " + transformName);
-	    for( Map.Entry<String, Savable> savableMapEntry : savableMap.entrySet() ){
-		componentName = savableMapEntry.getKey();
-		final Savable savableComponent = savableMapEntry.getValue();
-		saveException = null;
-		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-		    try{
-			savableComponent.doSave(settings, false);
-		    }
-		    catch(Exception f){
-			saveException = f;
-		    }
-		}});
-		if( saveException != null )
-		    throw saveException;
-		message.append("\n  " + componentName);
+	final String transformName = mTransformJPanel.getMackageDesc().getDisplayName();
+	for( Map.Entry<String, Savable> savableMapEntry : savableMap.entrySet() ){
+	    final String componentName = savableMapEntry.getKey();
+	    final Savable savableComponent = savableMapEntry.getValue();
+	    saveException = null;
+	    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		try{ savableComponent.doSave(settings, false); }
+		catch(Exception e){
+		    saveException = e;
+		}
+	    }});
+	    if( saveException != null ){
+		new ValidateFailureDialog( transformName, componentName, saveException.getMessage() );
+		return;
 	    }
-            if( settings instanceof Validatable )
-                ((Validatable)settings).validate();
-        }
-        catch(Exception e){
-	    Util.handleExceptionNoRestart("ERROR VALIDATING: " + transformName, e);
-            new ValidateFailureDialog( transformName, componentName, e.getMessage() );
-	    return;
-        }
-        
-	// SEND SETTINGS TO SERVER AND RECONFIGURE
-        try {
-	    mTransformJPanel.getTransformContext().transform().setSettings( settings );
-            mTransformJPanel.getTransformContext().transform().reconfigure();
-	    setSaveSettingsHintVisible(false);
-        }
-        catch ( Exception e ) {
-            try{
-                Util.handleExceptionWithRestart("ERROR SAVING: " + transformName, e);
-            }
-            catch(Exception f){
-                Util.handleExceptionNoRestart("ERROR SAVING: " + transformName, f);
-                new SaveFailureDialog( mTransformJPanel.getTransformContext().getTransformDesc().getDisplayName() );
-            }
-        }
-        finally{
-	    Util.printMessage(message.toString());
-            refreshAll();
-        }
-
+	}
+	if( settings instanceof Validatable ){
+	    try{ ((Validatable)settings).validate(); }
+	    catch(Exception e){
+		new ValidateFailureDialog( transformName, "multiple settings panels", e.getMessage() );
+		return;
+	    }
+	}        
+	// SEND SETTINGS TO SERVER
+	mTransformJPanel.getTransformContext().transform().setSettings( settings );
+	mTransformJPanel.getTransformContext().transform().reconfigure();
+	setSaveSettingsHintVisible(false);
     }
+
 
     public void refreshGui(){
 	reloadJButton.doClick();
     }
 
-    private Exception refreshException;
-    void refreshAll(){
-	String transformName = mTransformJPanel.getMackageDesc().getDisplayName();
-	StringBuilder message = new StringBuilder();
-	// GET SETTINGS OBJECT FROM MVVM
-	try{
-	    message.append("Refreshing: " + transformName );
-	    settings = mTransformJPanel.getTransformContext().transform().getSettings();
-	}
-	catch(Exception e){
-	    try{
-		Util.handleExceptionWithRestart("ERROR GETTING SETTINGS: " + transformName, e);
-	    }
-	    catch(Exception f){
-		Util.handleExceptionNoRestart("ERROR GETTING SETTINGS: " + transformName, f);
-		new RefreshFailureDialog( transformName );
-	    }
-	}
+    public void refreshAll() throws Exception {
+	settings = mTransformJPanel.getTransformContext().transform().getSettings();
+    }
+
+    void populateAll() throws Exception {
+	final String transformName = mTransformJPanel.getMackageDesc().getDisplayName();
 	// SEND SETTINGS TO EACH PANEL, SERIALLY, INDEPENDANTLY
-	try{
-	    for( Map.Entry<String, Refreshable> refreshableMapEntry : refreshableMap.entrySet() ){
-		String componentName = refreshableMapEntry.getKey();
-		final Refreshable refreshableComponent = refreshableMapEntry.getValue();
-		refreshException = null;
-		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-		    try{
-			refreshableComponent.doRefresh(settings);
-		    }
-		    catch(Exception f){
-			refreshException = f;
-		    }
-		}});
-		if( refreshException != null )
-		    throw refreshException;
-		else
-		    message.append("\n  " + componentName);
-	    }
-	    setSaveSettingsHintVisible(false);
+	for( Map.Entry<String, Refreshable> refreshableMapEntry : refreshableMap.entrySet() ){
+	    final Refreshable refreshableComponent = refreshableMapEntry.getValue();
+	    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		try{ refreshableComponent.doRefresh(settings); }
+		catch(Exception e){
+		    Util.handleExceptionNoRestart("Error distributing settings",e);
+		    new RefreshFailureDialog( transformName );
+		}
+	    }});
 	}
-	catch(Exception e){
-	    try{
-		Util.handleExceptionWithRestart("ERROR DISPLAYING SETTINGS: " + transformName, e);
-	    }
-	    catch(Exception f){
-		Util.handleExceptionNoRestart("ERROR DISPLAYING SETTINGS: " + transformName, f);
-		new RefreshFailureDialog( transformName );
-	    }
-	}
-	// PRINT OUT WHAT WAS ACTUALLY REFRESHED
-	Util.printMessage(message.toString());	
-	
+	setSaveSettingsHintVisible(false);
     }
     
-	
+
+
 
     public JButton saveJButton(){ return saveJButton; }
     public JButton reloadJButton(){ return reloadJButton; }

@@ -140,43 +140,46 @@ public class MStateMachine implements java.awt.event.ActionListener {
     class SaveThread extends Thread{
         public SaveThread(){
             super("MVCLIENT-MStateMachine.SaveThread: " + mackageDesc.getDisplayName());
+	    setDaemon(true);
             saveJButton.setIcon(Util.getButtonSaving());
             setProcessingView(false);
-            this.start();
+            start();
         }
         public void run(){
             try{
                 mTransformControlsJPanel.saveAll();
+                mTransformControlsJPanel.refreshAll();
+                mTransformControlsJPanel.populateAll();
                 refreshState(true);
             }
             catch(Exception e){
-                try{
-                    Util.handleExceptionWithRestart("Error doing save", e);
-                }
+                try{ Util.handleExceptionWithRestart("Error doing save", e); }
                 catch(Exception f){
                     Util.handleExceptionNoRestart("Error doing save", f);
                     setProblemView(true);
+		    new SaveFailureDialog( mackageDesc.getDisplayName() );
                 }
             }
-            finally{
-                SwingUtilities.invokeLater( new Runnable(){ public void run(){
-                    saveJButton.setIcon(Util.getButtonSaveSettings());
-                }});
-            }
+	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		saveJButton.setIcon(Util.getButtonSaveSettings());
+	    }});
         }
     }
 
+    
 
     class RefreshThread extends Thread{
         public RefreshThread(){
             super("MVCLIENT-MStateMachine.RefreshThread: " + mackageDesc.getDisplayName());
+	    setDaemon(true);
             reloadJButton.setIcon(Util.getButtonReloading());
             setProcessingView(false);
-            this.start();
+            start();
         }
         public void run(){
             try{
                 mTransformControlsJPanel.refreshAll();
+                mTransformControlsJPanel.populateAll();
                 refreshState(true);
             }
             catch(Exception e){
@@ -185,14 +188,13 @@ public class MStateMachine implements java.awt.event.ActionListener {
                 }
                 catch(Exception f){
                     Util.handleExceptionNoRestart("Error doing refresh", f);
-                    setProblemView(true);
+                    setProblemView(true);		
+		    new RefreshFailureDialog( mackageDesc.getDisplayName() );
                 }
             }
-            finally{
-                SwingUtilities.invokeLater( new Runnable(){ public void run(){
-                    reloadJButton.setIcon(Util.getButtonReloadSettings());
-                }});
-            }
+	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		reloadJButton.setIcon(Util.getButtonReloadSettings());
+	    }});
         }
     }
 
@@ -200,6 +202,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
         private final boolean powerOn;
         public PowerThread(){
             super("MVCLIENT-MStateMachine.PowerThread: " + mackageDesc.getDisplayName());
+	    setDaemon(true);
             powerOn = powerJToggleButton.isSelected();
             if( powerOn )
                 setStartingView(false);
