@@ -11,6 +11,7 @@
 
 package com.metavize.mvvm.networking;
 
+import java.util.List;
 import java.net.InetAddress;
 
 import com.metavize.mvvm.tran.Rule;
@@ -84,6 +85,11 @@ public class IPNetworkRule extends Rule
     public static IPNetworkRule parse( String value ) throws ParseException
     {
         return new IPNetworkRule( IPNetwork.parse( value ));
+    }
+
+    public static List parseList( String value ) throws ParseException
+    {
+        return null; // XXX something actually needs to be done here...
     }
 
     public static IPNetworkRule makeInstance( InetAddress network, InetAddress netmask )
