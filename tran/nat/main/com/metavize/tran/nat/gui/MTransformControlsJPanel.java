@@ -33,6 +33,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 
     private static final String NAME_NET_SPACES       = "Net Spaces";
     private static final String NAME_INTERFACE_MAP    = "Interface Map";
+    private static final String NAME_SPACE            = "Space";
     private static final String NAME_ROUTING          = "Routing";
     private static final String NAME_NAT              = "NAT";
     private static final String NAME_DMZ              = "DMZ";
@@ -88,11 +89,15 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	    spacesJTabbedPane.addTab(NAME_INTERFACE_MAP, null, interfaceMapJPanel);
 	    addSavable(NAME_INTERFACE_MAP, interfaceMapJPanel);
 	    addRefreshable(NAME_INTERFACE_MAP, interfaceMapJPanel);
+	    interfaceMapJPanel.setSettingsChangedListener(this);
 	    
 	    // SPACES //
 	    for( NetworkSpace networkSpace : networkSpaceList ){
-		JPanel spaceJPanel = new JPanel();
-		spacesJTabbedPane.addTab(networkSpace.toString(), null, spaceJPanel);
+		SpaceJPanel spaceJPanel = new SpaceJPanel(networkSpace);
+		spacesJTabbedPane.addTab(NAME_SPACE + " (" + networkSpace.getName() + ")", null, spaceJPanel);
+		addSavable(NAME_SPACE + networkSpace.getName(), spaceJPanel);
+		addRefreshable(NAME_SPACE + networkSpace.getName(), spaceJPanel);
+		spaceJPanel.setSettingsChangedListener(this);
 	    }
 
 	    // ROUTING //
@@ -100,6 +105,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	    addTab(NAME_ROUTING, null, routingJPanel);
 	    addSavable(NAME_ROUTING, routingJPanel);
 	    addRefreshable(NAME_ROUTING, routingJPanel);
+	    routingJPanel.setSettingsChangedListener(this);
 	}
 	else{
 	    // SOME BAD SHITE HAPPENED
