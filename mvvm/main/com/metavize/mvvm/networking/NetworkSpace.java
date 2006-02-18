@@ -33,6 +33,8 @@ public class NetworkSpace extends Rule
     private List networkList = new LinkedList();
 
     public static final int DEFAULT_MTU = 1500;
+    public static final int MIN_MTU = 100;
+    public static final int MAX_MTU = 3000;
     
     private boolean isDhcpEnabled;
     private boolean isTrafficForwarded = true;
