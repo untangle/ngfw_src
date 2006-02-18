@@ -47,7 +47,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	super.saveJButton.setVisible(true);
 	super.reloadJButton.setVisible(true);
 
-	if( VpnTransform.ConfigState.UNCONFIGURED == configState ){
+	if( VpnTransform.ConfigState.UNCONFIGURED.equals(configState) ){
 	    // SHOW WIZARD/STATUS
 
 	    // WIZARD/STATUS
@@ -58,7 +58,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	    super.saveJButton.setVisible(false);
 	    super.reloadJButton.setVisible(false);	
 	}
-	else if( VpnTransform.ConfigState.CLIENT == configState ){
+	else if( VpnTransform.ConfigState.CLIENT.equals(configState)){
 	    // SHOW WIZARD/STATUS, AND EVENT LOG
 
 	    // WIZARD/STATUS
@@ -70,7 +70,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	    addTab(NAME_LOG, null, logJPanel);
 	    addShutdownable(NAME_LOG, logJPanel);
 	}
-	else if( VpnTransform.ConfigState.SERVER_ROUTE == configState ){
+	else if( VpnTransform.ConfigState.SERVER_ROUTE.equals(configState) ){
 	    // SHOW WIZARD/STATUS, CLIENTS, EXPORTS, CLIENT-TO-SITE, SITE-TO-SITE, AND EVENT LOG
 
 	    // WIZARD/STATUS
@@ -113,7 +113,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	    addTab(NAME_LOG, null, logJPanel);
 	    addShutdownable(NAME_LOG, logJPanel);	    
 	}
-	else if( VpnTransform.ConfigState.SERVER_BRIDGE == configState ){
+	else if( VpnTransform.ConfigState.SERVER_BRIDGE.equals(configState) ){
 	    // WE DONT SUPPORT THIS
 	}
 	else{

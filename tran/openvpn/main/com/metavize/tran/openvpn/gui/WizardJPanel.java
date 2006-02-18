@@ -30,15 +30,15 @@ public class WizardJPanel extends javax.swing.JPanel implements Refreshable<Obje
 
     public void doRefresh(Object settings){
 	VpnTransform.ConfigState configState = com.metavize.tran.openvpn.gui.MTransformControlsJPanel.getConfigState();
-	if( VpnTransform.ConfigState.UNCONFIGURED == configState ){
+	if( VpnTransform.ConfigState.UNCONFIGURED.equals(configState) ){
 	    statusJLabel.setText("Unconfigured: Use buttons below.");
 	}
-	else if( VpnTransform.ConfigState.CLIENT == configState ){
+	else if( VpnTransform.ConfigState.CLIENT.equals(configState) ){
 	    statusJLabel.setText("VPN Client: Connected to " + com.metavize.tran.openvpn.gui.MTransformControlsJPanel.getVpnServerAddress().toString());
 	    serverRoutingJButton.setEnabled(true);
 	    clientJButton.setEnabled(false);
 	}
-	else if( VpnTransform.ConfigState.SERVER_ROUTE == configState ){
+	else if( VpnTransform.ConfigState.SERVER_ROUTE.equals(configState) ){
 	    statusJLabel.setText("VPN Server");
 	    serverRoutingJButton.setEnabled(false);
 	    clientJButton.setEnabled(true);
