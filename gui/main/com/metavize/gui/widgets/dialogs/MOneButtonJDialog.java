@@ -30,6 +30,11 @@ public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.e
         init(parentDialog);
     }
 
+    public MOneButtonJDialog(Frame parentFrame) {
+        super(parentFrame, true);
+        init(parentFrame);
+    }
+
     public static MOneButtonJDialog factory(Window topLevelWindow, String applianceName, String warning, String title, String subtitle){
         if( topLevelWindow instanceof Dialog )
             return new MOneButtonJDialog((Dialog)topLevelWindow, applianceName, warning, title, subtitle);

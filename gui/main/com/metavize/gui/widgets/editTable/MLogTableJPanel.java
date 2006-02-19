@@ -318,7 +318,8 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
                 }
                 catch(Exception h){
                     Util.handleExceptionNoRestart("Error refreshing event log", h);
-                    new RefreshLogFailureDialog( logTransform.getTransformDesc().getDisplayName() );
+                    RefreshLogFailureDialog.factory( (Window) MLogTableJPanel.this.mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(),
+						     logTransform.getTransformDesc().getDisplayName() );
                 }
             }
             finally{

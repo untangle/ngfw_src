@@ -13,6 +13,8 @@ package com.metavize.gui.widgets.dialogs;
 
 import com.metavize.gui.util.Util;
 import java.awt.Dialog;
+import java.awt.Frame;
+import java.awt.Window;
 
 public class MOneButtonProgressJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
 

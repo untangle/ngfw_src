@@ -72,6 +72,16 @@ public class MTwoButtonJDialog extends javax.swing.JDialog implements java.awt.e
         init( topLevelFrame );
     }
 
+    public MTwoButtonJDialog(Dialog topLevelDialog) {
+        super( topLevelDialog, true);
+        init( topLevelDialog );
+    }
+
+    public MTwoButtonJDialog(Frame topLevelFrame) {
+        super( topLevelFrame , true);
+        init( topLevelFrame );
+    }
+
     private void init(Window window){
         initComponents();
         this.addWindowListener(this);

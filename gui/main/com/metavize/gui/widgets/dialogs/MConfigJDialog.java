@@ -112,7 +112,8 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 		}
 	    }});
 	    if(saveException != null){
-		new ValidateFailureDialog( getTitle(), componentName, saveException.getMessage() );
+		ValidateFailureDialog.factory( (Window) MConfigJDialog.this,
+					       getTitle(), componentName, saveException.getMessage() );
 		return;
 	    }
 	}
@@ -121,7 +122,8 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 	    compoundSettings.validate();
 	}
 	catch(Exception e){
-	    new ValidateFailureDialog( getTitle(), "multiple settings panels", e.getMessage() );
+	    ValidateFailureDialog.factory( (Window) MConfigJDialog.this,
+					   getTitle(), "multiple settings panels", e.getMessage() );
 	    return;
 	}
 	// SEND SETTINGS TO SERVER
@@ -143,7 +145,8 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 		try{ refreshableComponent.doRefresh(compoundSettings); }
 		catch(Exception e){
 		    Util.handleExceptionNoRestart("Error distributing settings", e);
-		    new RefreshFailureDialog( componentName );
+		    RefreshFailureDialog.factory( (Window) MConfigJDialog.this,
+						  componentName );
 		}
 	    }});
 	}
@@ -340,7 +343,8 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 		try{ Util.handleExceptionWithRestart("Error sending saved settings", e); }
 		catch(Exception f){
 		    Util.handleExceptionNoRestart("Error sending saved settings", f);
-		    new SaveFailureDialog( MConfigJDialog.this.getTitle() );
+		    SaveFailureDialog.factory( (Window) MConfigJDialog.this,
+					       MConfigJDialog.this.getTitle() );
 		}
 	    }
 	    infiniteProgressJComponent.stopLater(MIN_PROGRESS_MILLIS);
@@ -377,7 +381,8 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 		try{ Util.handleExceptionWithRestart("Error refreshing settings", e); }
 		catch(Exception f){
 		    Util.handleExceptionNoRestart("Error refreshing settings", f);
-		    new RefreshFailureDialog( MConfigJDialog.this.getTitle() );
+		    RefreshFailureDialog.factory( (Window) MConfigJDialog.this,
+						  MConfigJDialog.this.getTitle() );
 		}
 	    }
 	    // END INFINITE PROGRESS
