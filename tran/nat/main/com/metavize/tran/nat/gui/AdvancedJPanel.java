@@ -250,7 +250,9 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
 					      "Network Sharing Warning", "Warning");
 		}
 	    }
-	    mTransformControlsJPanel.refreshGui();
+	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		mTransformControlsJPanel.refreshGui();
+	    }});
 
 	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
 		progressJDialog.setVisible(false);

@@ -18,18 +18,20 @@ import com.metavize.mvvm.tran.*;
 import com.metavize.tran.nat.*;
 import com.metavize.mvvm.networking.*;
 
+import java.awt.Color;
 import java.util.List;
 import javax.swing.*;
 
 
 public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, Refreshable<Object> {
     
+    private static final String EXCEPTION_NAME = "The name must be at least one character long.";
     private static final String EXCEPTION_ALIAS = "The Network Aliases must be a comma separated list of masked IP Addresses.";
 
-    private NetworkSpace networkSpace;
+    private NetworkSpace initNetworkSpace;
 
     public SpaceJPanel(NetworkSpace networkSpace) {
-	this.networkSpace = networkSpace;
+	initNetworkSpace = networkSpace;
         initComponents();
 	mtuJSpinner.setModel(new SpinnerNumberModel(NetworkSpace.DEFAULT_MTU, NetworkSpace.MIN_MTU, NetworkSpace.MAX_MTU, 1));
     }
@@ -42,7 +44,14 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
     ///////////////////////////////////////////
     
     public void doSave(Object settings, boolean validateOnly) throws Exception {
-        
+
+	// NAME //
+	String name = nameJTextField.getText().trim();
+	if( name.length() == 0 ){
+	    nameJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+	    throw new Exception(EXCEPTION_NAME);
+        }
+
         // NAT ENABLED ///////////
         boolean natEnabled = natEnabledJRadioButton.isSelected();
 
@@ -50,10 +59,10 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
 	IPaddr natAddress = null;
 	if( natEnabled ){
 	    // NAT ADDRESS SPACE //
-	    natSpace = (NetworkSpace) natSpaceJComboBox.getSelectedItem();
+	    natSpace = ((NattedPair) nattedJComboBox.getSelectedItem()).getNetworkSpace();
 	    
 	    // NAT ADDRESS IP ADDRESS //
-	    natAddress = (IPaddr) natAddressJComboBox.getSelectedItem();
+	    natAddress = ((NattedPair) nattedJComboBox.getSelectedItem()).getNetworkAddress();
 	}
 
 	// NETWORK ALIASES //
@@ -77,11 +86,12 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
 	    NetworkSpacesSettings networkSpacesSettings = (NetworkSpacesSettings) settings;
 	    NetworkSpace thisNetworkSpace = null;
 	    for(NetworkSpace networkSpace : networkSpacesSettings.getNetworkSpaceList() )
-		if( networkSpace.getName().equals(this.networkSpace.getName()) ) // XXX this may not be kosher
+		if( networkSpace.getBusinessPapers() == initNetworkSpace.getBusinessPapers() )
 		    thisNetworkSpace = networkSpace;
 	    if( thisNetworkSpace == null )
-		return;
+		throw new Exception("network space not found");
 
+	    thisNetworkSpace.setName(name);
 	    thisNetworkSpace.setIsNatEnabled(natEnabled);
 	    if( natEnabled ){
 		thisNetworkSpace.setNatSpace(natSpace);
@@ -93,20 +103,71 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
 	}
         
     }
-    
+
+    String nameCurrent;
     boolean natEnabledCurrent;
-    NetworkSpace natSpaceCurrent;
-    IPaddr natAddressCurrent;
+    NattedPair nattedPairCurrent;
     String aliasesCurrent;
     boolean forwardingEnabledCurrent;
     int mtuCurrent;
+
+    private class NattedPair {
+	private NetworkSpace networkSpace;
+	private IPaddr networkAddress;
+	public NattedPair(NetworkSpace networkSpace, IPaddr networkAddress){
+	    this.networkSpace = networkSpace;
+	    this.networkAddress = networkAddress;
+	}
+	public String toString(){
+	    return "Space: " + networkSpace.getName() + (networkAddress==null?"":" @ Address: " + networkAddress.toString());
+	}
+	public NetworkSpace getNetworkSpace(){ return networkSpace; }
+	public IPaddr getNetworkAddress(){ return networkAddress; }
+	public boolean equals(Object o){
+	    if( !(o instanceof NattedPair) )
+		return false;
+	    else if( o == null )
+		return false;
+	    NattedPair other = (NattedPair) o;
+	    if( (other.getNetworkAddress()==null) && (networkAddress!=null) )
+		return false;
+	    else if( (other.getNetworkAddress()!=null) && (networkAddress==null) )
+		return false;
+	    else if( (other.getNetworkAddress()!=null) && (networkAddress!=null) && !(other.getNetworkAddress().equals(networkAddress)) )
+		return false;
+	    else if ( !other.getNetworkSpace().equals(networkSpace) )
+		return false;
+	    else
+		return true;
+	}
+    }
 
     public void doRefresh(Object settings) {
 	NetworkSpacesSettings networkSpacesSettings = (NetworkSpacesSettings) settings;        
 	NetworkSpace thisNetworkSpace = null;
 	for(NetworkSpace networkSpace : networkSpacesSettings.getNetworkSpaceList() )
-	    if( networkSpace.getName().equals(this.networkSpace.getName()) ) // XXX this may not be kosher
+	    if( networkSpace.getBusinessPapers() == initNetworkSpace.getBusinessPapers() )
 		thisNetworkSpace = networkSpace;
+
+	// POPULATE NAT MAP //
+	nattedJComboBox.setEnabled(false);
+	nattedJComboBox.removeAllItems();
+	for(NetworkSpace networkSpace : networkSpacesSettings.getNetworkSpaceList() ) {
+	    if( networkSpace.getBusinessPapers() != initNetworkSpace.getBusinessPapers() ){
+		for( IPNetworkRule address : (List<IPNetworkRule>) networkSpace.getNetworkList() ){
+		    NattedPair nattedPair = new NattedPair(networkSpace,address.getNetwork());
+		    nattedJComboBox.addItem( nattedPair );
+		}
+	    }
+	}
+	nattedPairCurrent = new NattedPair(thisNetworkSpace.getNatSpace(),thisNetworkSpace.getNatAddress());
+	nattedJComboBox.setSelectedItem(nattedPairCurrent);
+	nattedJComboBox.setEnabled(true);
+	
+	// NAME //
+	nameCurrent = thisNetworkSpace.getName();
+	nameJTextField.setBackground( Color.WHITE );
+	nameJTextField.setText(nameCurrent);
 
         // ENABLED ///////////
 	natEnabledCurrent = thisNetworkSpace.getIsNatEnabled();
@@ -116,17 +177,9 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
 	else
 	    natDisabledJRadioButton.setSelected(true);
         
-	// NAT ADDRESS SPACE //
-	natSpaceCurrent = thisNetworkSpace.getNatSpace();
-	natSpaceJComboBox.setSelectedItem( natSpaceCurrent );	
-	
-	// NAT ADDRESS IP ADDRESS //
-	natAddressCurrent = thisNetworkSpace.getNatAddress();
-	natAddressJComboBox.setSelectedItem( natAddressCurrent );	
-
 	// NETWORK ALIASES //
 	aliasesCurrent = thisNetworkSpace.getNetworkList().toString();
-	aliasJTextArea.setBackground( Util.INVALID_BACKGROUND_COLOR );
+	aliasJTextArea.setBackground( Color.WHITE );
 	aliasJTextArea.setText( aliasesCurrent );
 
 	// TRAFFIC FORWARDING //
@@ -151,6 +204,11 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
 
                 natButtonGroup = new javax.swing.ButtonGroup();
                 forwardingButtonGroup = new javax.swing.ButtonGroup();
+                spaceJPanel = new javax.swing.JPanel();
+                jTextArea4 = new javax.swing.JTextArea();
+                jPanel6 = new javax.swing.JPanel();
+                jLabel2 = new javax.swing.JLabel();
+                nameJTextField = new javax.swing.JTextField();
                 natJPanel = new javax.swing.JPanel();
                 jTextArea2 = new javax.swing.JTextArea();
                 jPanel1 = new javax.swing.JPanel();
@@ -158,12 +216,9 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
                 natDisabledJRadioButton = new javax.swing.JRadioButton();
                 jLabel1 = new javax.swing.JLabel();
                 jSeparator1 = new javax.swing.JSeparator();
-                jLabel2 = new javax.swing.JLabel();
+                nattedJLabel = new javax.swing.JLabel();
                 jPanel2 = new javax.swing.JPanel();
-                natSpaceJLabel = new javax.swing.JLabel();
-                natSpaceJComboBox = new javax.swing.JComboBox();
-                natAddressJLabel = new javax.swing.JLabel();
-                natAddressJComboBox = new javax.swing.JComboBox();
+                nattedJComboBox = new javax.swing.JComboBox();
                 aliasJPanel = new javax.swing.JPanel();
                 jTextArea3 = new javax.swing.JTextArea();
                 restrictIPJPanel = new javax.swing.JPanel();
@@ -183,8 +238,54 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
 
                 setLayout(new java.awt.GridBagLayout());
 
-                setMinimumSize(new java.awt.Dimension(530, 731));
-                setPreferredSize(new java.awt.Dimension(530, 731));
+                setMinimumSize(new java.awt.Dimension(515, 820));
+                setPreferredSize(new java.awt.Dimension(515, 820));
+                spaceJPanel.setLayout(new java.awt.GridBagLayout());
+
+                spaceJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Space", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+                jTextArea4.setEditable(false);
+                jTextArea4.setLineWrap(true);
+                jTextArea4.setText("A Net Space allows multiple networks to be bridged together on a single EdgeGuard physical network interface.  You can also optionally NAT traffic from this Space to another Space.");
+                jTextArea4.setWrapStyleWord(true);
+                jTextArea4.setOpaque(false);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 15);
+                spaceJPanel.add(jTextArea4, gridBagConstraints);
+
+                jPanel6.setLayout(new java.awt.GridBagLayout());
+
+                jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel2.setText("Name: ");
+                jPanel6.add(jLabel2, new java.awt.GridBagConstraints());
+
+                nameJTextField.setMaximumSize(new java.awt.Dimension(250, 19));
+                nameJTextField.setMinimumSize(new java.awt.Dimension(250, 19));
+                nameJTextField.setPreferredSize(new java.awt.Dimension(250, 19));
+                nameJTextField.addCaretListener(new javax.swing.event.CaretListener() {
+                        public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                                nameJTextFieldCaretUpdate(evt);
+                        }
+                });
+
+                jPanel6.add(nameJTextField, new java.awt.GridBagConstraints());
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 4;
+                gridBagConstraints.insets = new java.awt.Insets(10, 0, 5, 0);
+                spaceJPanel.add(jPanel6, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
+                add(spaceJPanel, gridBagConstraints);
+
                 natJPanel.setLayout(new java.awt.GridBagLayout());
 
                 natJPanel.setBorder(new javax.swing.border.TitledBorder(null, "NAT (Network Address Translation)", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
@@ -260,67 +361,33 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
                 natJPanel.add(jSeparator1, gridBagConstraints);
 
-                jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html>You must choose a NAT address, which is the address that traffic from this Space will appear to be coming from.</html>");
+                nattedJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                nattedJLabel.setText("<html>You must choose a NAT address, which is the address that traffic from this Space will appear to be coming from.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 3;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.insets = new java.awt.Insets(10, 15, 0, 15);
-                natJPanel.add(jLabel2, gridBagConstraints);
+                natJPanel.add(nattedJLabel, gridBagConstraints);
 
                 jPanel2.setLayout(new java.awt.GridBagLayout());
 
-                natSpaceJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                natSpaceJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-                natSpaceJLabel.setText("Space: ");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                jPanel2.add(natSpaceJLabel, gridBagConstraints);
-
-                natSpaceJComboBox.setMaximumSize(new java.awt.Dimension(200, 24));
-                natSpaceJComboBox.setMinimumSize(new java.awt.Dimension(200, 24));
-                natSpaceJComboBox.setPreferredSize(new java.awt.Dimension(200, 24));
-                natSpaceJComboBox.addActionListener(new java.awt.event.ActionListener() {
+                nattedJComboBox.setFont(new java.awt.Font("Dialog", 0, 12));
+                nattedJComboBox.setFocusable(false);
+                nattedJComboBox.setMaximumSize(new java.awt.Dimension(400, 24));
+                nattedJComboBox.setMinimumSize(new java.awt.Dimension(400, 24));
+                nattedJComboBox.setPreferredSize(new java.awt.Dimension(400, 24));
+                nattedJComboBox.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                natSpaceJComboBoxActionPerformed(evt);
+                                nattedJComboBoxActionPerformed(evt);
                         }
                 });
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 0;
-                jPanel2.add(natSpaceJComboBox, gridBagConstraints);
-
-                natAddressJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                natAddressJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-                natAddressJLabel.setText("IP Address: ");
-                gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 1;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
-                jPanel2.add(natAddressJLabel, gridBagConstraints);
-
-                natAddressJComboBox.setMaximumSize(new java.awt.Dimension(200, 24));
-                natAddressJComboBox.setMinimumSize(new java.awt.Dimension(200, 24));
-                natAddressJComboBox.setPreferredSize(new java.awt.Dimension(200, 24));
-                natAddressJComboBox.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                natAddressJComboBoxActionPerformed(evt);
-                        }
-                });
-
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 1;
-                gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
-                jPanel2.add(natAddressJComboBox, gridBagConstraints);
+                gridBagConstraints.gridy = 0;
+                jPanel2.add(nattedJComboBox, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -355,6 +422,7 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
 
                 jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
                 jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+                aliasJTextArea.setLineWrap(true);
                 aliasJTextArea.setWrapStyleWord(true);
                 aliasJTextArea.addCaretListener(new javax.swing.event.CaretListener() {
                         public void caretUpdate(javax.swing.event.CaretEvent evt) {
@@ -482,6 +550,7 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 jPanel4.add(jLabel6, gridBagConstraints);
 
+                mtuJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
                 mtuJSpinner.setMaximumSize(new java.awt.Dimension(100, 20));
                 mtuJSpinner.setMinimumSize(new java.awt.Dimension(100, 20));
                 mtuJSpinner.setPreferredSize(new java.awt.Dimension(100, 20));
@@ -513,37 +582,38 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
 
         }//GEN-END:initComponents
 
-		private void aliasJTextAreaCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_aliasJTextAreaCaretUpdate
-		    if( !aliasJTextArea.getText().equals(aliasesCurrent) && (settingsChangedListener != null) )
-			settingsChangedListener.settingsChanged(this);
-		}//GEN-LAST:event_aliasJTextAreaCaretUpdate
-
-		private void mtuJSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_mtuJSpinnerStateChanged
-		    if( !mtuJSpinner.getValue().equals(mtuCurrent) && (settingsChangedListener != null) )
-			settingsChangedListener.settingsChanged(this);
-		}//GEN-LAST:event_mtuJSpinnerStateChanged
-
-		private void natAddressJComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_natAddressJComboBoxActionPerformed
-		    if( !natAddressCurrent.equals(((IPaddr)natSpaceJComboBox.getSelectedItem())) && (settingsChangedListener != null) )
-			settingsChangedListener.settingsChanged(this);
-		}//GEN-LAST:event_natAddressJComboBoxActionPerformed
-
-		private void natSpaceJComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_natSpaceJComboBoxActionPerformed
-		    if( !natSpaceCurrent.getName().equals(((NetworkSpace)natSpaceJComboBox.getSelectedItem()).getName()) && (settingsChangedListener != null) )
-			settingsChangedListener.settingsChanged(this);
-		}//GEN-LAST:event_natSpaceJComboBoxActionPerformed
-
-		private void forwardingDisabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_forwardingDisabledJRadioButtonActionPerformed
-		    if( forwardingEnabledCurrent && (settingsChangedListener != null) )
-			settingsChangedListener.settingsChanged(this);
-		}//GEN-LAST:event_forwardingDisabledJRadioButtonActionPerformed
-
-		private void forwardingEnabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_forwardingEnabledJRadioButtonActionPerformed
-		    if( !forwardingEnabledCurrent && (settingsChangedListener != null) )
-			settingsChangedListener.settingsChanged(this);
-		}//GEN-LAST:event_forwardingEnabledJRadioButtonActionPerformed
-
-        
+    private void nameJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_nameJTextFieldCaretUpdate
+	if( !nameJTextField.getText().trim().equals(nameCurrent) && (settingsChangedListener != null) )
+	    settingsChangedListener.settingsChanged(this);
+    }//GEN-LAST:event_nameJTextFieldCaretUpdate
+    
+    private void aliasJTextAreaCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_aliasJTextAreaCaretUpdate
+	if( !aliasJTextArea.getText().equals(aliasesCurrent) && (settingsChangedListener != null) )
+	    settingsChangedListener.settingsChanged(this);
+    }//GEN-LAST:event_aliasJTextAreaCaretUpdate
+    
+    private void mtuJSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_mtuJSpinnerStateChanged
+	if( !mtuJSpinner.getValue().equals(mtuCurrent) && (settingsChangedListener != null) )
+	    settingsChangedListener.settingsChanged(this);
+    }//GEN-LAST:event_mtuJSpinnerStateChanged
+    
+    private void nattedJComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nattedJComboBoxActionPerformed
+	if( (nattedPairCurrent!=null) && (nattedJComboBox.getSelectedItem()!=null) )
+	    if( !nattedPairCurrent.equals(((NattedPair)nattedJComboBox.getSelectedItem())) && (settingsChangedListener != null) )
+		settingsChangedListener.settingsChanged(this);
+    }//GEN-LAST:event_nattedJComboBoxActionPerformed
+    
+    private void forwardingDisabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_forwardingDisabledJRadioButtonActionPerformed
+	if( forwardingEnabledCurrent && (settingsChangedListener != null) )
+	    settingsChangedListener.settingsChanged(this);
+    }//GEN-LAST:event_forwardingDisabledJRadioButtonActionPerformed
+    
+    private void forwardingEnabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_forwardingEnabledJRadioButtonActionPerformed
+	if( !forwardingEnabledCurrent && (settingsChangedListener != null) )
+	    settingsChangedListener.settingsChanged(this);
+    }//GEN-LAST:event_forwardingEnabledJRadioButtonActionPerformed
+    
+    
     private void natDisabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_natDisabledJRadioButtonActionPerformed
         this.setNatEnabledDependency(false);
 	if( natEnabledCurrent && (settingsChangedListener != null) )
@@ -557,10 +627,8 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
     }//GEN-LAST:event_natEnabledJRadioButtonActionPerformed
     
     private void setNatEnabledDependency(boolean enabled){
-	natSpaceJLabel.setEnabled( enabled );
-	natSpaceJComboBox.setEnabled( enabled );
-	natAddressJLabel.setEnabled( enabled );
-	natAddressJComboBox.setEnabled( enabled );
+	nattedJLabel.setEnabled( enabled );
+	nattedJComboBox.setEnabled( enabled );
     }
     
         // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -580,21 +648,23 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
         private javax.swing.JPanel jPanel2;
         private javax.swing.JPanel jPanel3;
         private javax.swing.JPanel jPanel4;
+        private javax.swing.JPanel jPanel6;
         private javax.swing.JScrollPane jScrollPane1;
         private javax.swing.JSeparator jSeparator1;
         private javax.swing.JTextArea jTextArea2;
         private javax.swing.JTextArea jTextArea3;
+        private javax.swing.JTextArea jTextArea4;
         private javax.swing.JPanel mtuJPanel;
         private javax.swing.JSpinner mtuJSpinner;
-        private javax.swing.JComboBox natAddressJComboBox;
-        private javax.swing.JLabel natAddressJLabel;
+        private javax.swing.JTextField nameJTextField;
         private javax.swing.ButtonGroup natButtonGroup;
         public javax.swing.JRadioButton natDisabledJRadioButton;
         public javax.swing.JRadioButton natEnabledJRadioButton;
         private javax.swing.JPanel natJPanel;
-        private javax.swing.JComboBox natSpaceJComboBox;
-        private javax.swing.JLabel natSpaceJLabel;
+        private javax.swing.JComboBox nattedJComboBox;
+        private javax.swing.JLabel nattedJLabel;
         private javax.swing.JPanel restrictIPJPanel;
+        private javax.swing.JPanel spaceJPanel;
         // End of variables declaration//GEN-END:variables
     
 }
