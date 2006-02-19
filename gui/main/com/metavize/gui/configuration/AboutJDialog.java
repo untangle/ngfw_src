@@ -37,12 +37,11 @@ public class AboutJDialog extends MConfigJDialog {
 
 
     public AboutJDialog( ) {
+        this.setTitle(NAME_ABOUT_CONFIG);
 	compoundSettings = new AboutCompoundSettings();
     }
 
-    public void generateGui(){
-        this.setTitle(NAME_ABOUT_CONFIG);
-        
+    public void generateGui(){        
         // ABOUT /////////////
 	AboutAboutJEditorPane aboutAboutJEditorPane = new AboutAboutJEditorPane();
 	JScrollPane aboutAboutJScrollPane = addScrollableTab(null, NAME_ABOUT_INFO, null, aboutAboutJEditorPane, false, true);

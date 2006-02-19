@@ -32,6 +32,7 @@ public class NetworkJDialog extends MConfigJDialog {
     private static final String NAME_TIMEZONE_PANEL    = "Timezone";
 
     public NetworkJDialog( ) {
+        this.setTitle(NAME_NETWORKING_CONFIG);
 	compoundSettings = new NetworkCompoundSettings();
     }
 
@@ -39,9 +40,7 @@ public class NetworkJDialog extends MConfigJDialog {
 	return new Dimension(640, 550);
     }
     
-    protected void generateGui(){
-        this.setTitle(NAME_NETWORKING_CONFIG);
-        
+    protected void generateGui(){        
         // NETWORK SETTINGS //////
         NetworkIPJPanel ipJPanel = new NetworkIPJPanel(this);
 	addScrollableTab(null, NAME_NETWORK_SETTINGS, null, ipJPanel, false, true);

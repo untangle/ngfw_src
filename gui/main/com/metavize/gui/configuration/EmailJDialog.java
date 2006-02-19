@@ -43,6 +43,7 @@ public class EmailJDialog extends MConfigJDialog {
     private EmailCompoundSettings emailCompoundSettings;
 
     public EmailJDialog( ) {
+        this.setTitle(NAME_EMAIL_CONFIG);
 	compoundSettings = new EmailCompoundSettings();
 	emailCompoundSettings = (EmailCompoundSettings) compoundSettings;
     }
@@ -52,8 +53,6 @@ public class EmailJDialog extends MConfigJDialog {
     }
     
     protected void generateGui(){
-        this.setTitle(NAME_EMAIL_CONFIG);
-
         // OUTGOING SERVER /////
         EmailOutgoingJPanel emailOutgoingJPanel = new EmailOutgoingJPanel();
 	addScrollableTab(null, NAME_OUTGOING_SETTINGS, null, emailOutgoingJPanel, false, true);

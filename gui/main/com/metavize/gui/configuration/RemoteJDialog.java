@@ -35,12 +35,11 @@ public class RemoteJDialog extends MConfigJDialog {
     private static final String NAME_MANUAL_REBOOT          = "Manual Reboot";
     
     public RemoteJDialog( ) {
+        this.setTitle(NAME_ADMINISTRATION_CONFIG);
 	compoundSettings = new RemoteCompoundSettings();
     }
 
     protected void generateGui(){
-        this.setTitle(NAME_ADMINISTRATION_CONFIG);
-
 	// ADMIN ACCOUNTS ////////
 	RemoteAdminJPanel remoteAdminJPanel = new RemoteAdminJPanel();
 	addTab(NAME_ADMIN_ACCOUNTS, null, remoteAdminJPanel);
