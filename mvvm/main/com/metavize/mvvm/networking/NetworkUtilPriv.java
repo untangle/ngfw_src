@@ -510,6 +510,70 @@ class NetworkUtilPriv extends NetworkUtil
         return settings;
     }
 
+    String getPublicAddress( NetworkSpacesInternalSettings network, RemoteSettings remote,
+                             DynamicDNSSettings ddns )
+    {
+        /* assumes at least one space */
+        IPaddr primaryAddress = null;
+
+        if ( network == null ) {
+            logger.warn( "Null network settings, may be unable to initialize the public address" );
+        } else {
+            NetworkSpaceInternal primary = network.getNetworkSpaceList().get( 0 );
+            
+            primaryAddress = primary.getPrimaryAddress().getNetwork();
+        }
+
+        String publicAddress = remote.getPublicAddress();
+        if ( publicAddress != null && ( publicAddress.trim().length() > 0 )) return publicAddress;
+        
+        String hostname = remote.getHostname();
+        
+        /* Here is where a some validation is required. */
+        if ( hostname != null && ( hostname.trim().length() > 0 )) {
+            /* If using dynamic dns, assume the hostname is valid */
+            if (( ddns != null ) && ddns.isEnabled() || remote.getIsHostnamePublic()) return hostname;
+        }
+
+        /* Otherwise return the primary address of the primary space and the HTTPS port */
+        if ( primaryAddress == null ) {
+            logger.warn( "Network settings are unitialized, using hostname as fallback" );
+            if ( hostname == null || ( hostname.trim().length() == 0 )) return NetworkUtil.DEFAULT_HOSTNAME;
+            else return hostname;
+        } else {
+            return primaryAddress.toString() + ":" + remote.httpsPort();
+        }
+    }
+
+    List<IPaddr> getDnsServers()
+    {
+        List<IPaddr> dnsServers = new LinkedList<IPaddr>();
+        
+        BufferedReader in = null;
+        
+        /* Open up the interfaces file */
+        try {
+            in = new BufferedReader( new FileReader( NetworkManagerImpl.ETC_RESOLV_FILE ));
+            String str;
+            while (( str = in.readLine()) != null ) {
+                str = str.trim();
+                if ( str.startsWith( ResolvScriptWriter.NS_PARAM )) {
+                    dnsServers.add( IPaddr.parse( str.substring( ResolvScriptWriter.NS_PARAM.length())));
+                }
+            }
+        } catch ( Exception ex ) {
+            logger.error( "Error reading file: ", ex );
+        }
+
+        try {
+            if ( in != null ) in.close();
+        } catch ( Exception ex ) {
+            logger.error( "Unable to close file", ex );
+        }
+
+        return dnsServers;
+    }
+
     /************* PRIVATE **********/
     private SpaceInfo makeBasicNetworkSpace( BasicNetworkSettings basicNetworkSettings, 
                                              NetworkSpacesInternalSettings internalSettings )
@@ -592,36 +656,6 @@ class NetworkUtilPriv extends NetworkUtil
                           info.getDeviceName(), info.getIndex(), info.getNatAddress(), 
                           info.getNatSpaceIndex());
     }
-
-    List<IPaddr> getDnsServers()
-    {
-        List<IPaddr> dnsServers = new LinkedList<IPaddr>();
-        
-        BufferedReader in = null;
-        
-        /* Open up the interfaces file */
-        try {
-            in = new BufferedReader( new FileReader( NetworkManagerImpl.ETC_RESOLV_FILE ));
-            String str;
-            while (( str = in.readLine()) != null ) {
-                str = str.trim();
-                if ( str.startsWith( ResolvScriptWriter.NS_PARAM )) {
-                    dnsServers.add( IPaddr.parse( str.substring( ResolvScriptWriter.NS_PARAM.length())));
-                }
-            }
-        } catch ( Exception ex ) {
-            logger.error( "Error reading file: ", ex );
-        }
-
-        try {
-            if ( in != null ) in.close();
-        } catch ( Exception ex ) {
-            logger.error( "Unable to close file", ex );
-        }
-
-        return dnsServers;
-    }
-
 
     static NetworkUtilPriv getPrivInstance()
     {

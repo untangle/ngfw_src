@@ -23,9 +23,7 @@ import com.metavize.mvvm.tran.ValidateException;
 
 public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equivalence
 {
-    // private static final long serialVersionUID = 172494253701617361L;
-    
-    public static final boolean DEF_IS_DHCP_EN            = false;
+    // private static final long serialVersionUID = 172494253701617361L;    
     public static final boolean DEF_IS_INSIDE_INSECURE_EN = true;
     public static final boolean DEF_IS_OUTSIDE_EN         = false;
     public static final boolean DEF_IS_OUTSIDE_RESTRICTED = false;
@@ -36,11 +34,6 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
     /* Post configuration script is empty */
     public static final String DEF_POST_CONFIGURATION = "";
     
-    /**
-     * True if DHCP is enabled
-     */
-    private boolean isDhcpEnabled = DEF_IS_DHCP_EN;
-
     public static final int DEF_HTTPS_PORT = 443;
 
     /**
@@ -68,6 +61,7 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
     private IPaddr outsideNetmask = NetworkUtil.DEF_OUTSIDE_NETMASK;
     
     private String hostname = "";
+    private boolean isHostnamePublic = false;
     private String publicAddress;
 
     private int httpsPort = DEF_HTTPS_PORT;
@@ -231,6 +225,17 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
         /* ??? empty strings, null, etc */
         this.hostname = newValue;
     }
+    
+    /* True if the hostname for the box is publicly resolvable */
+    public boolean getIsHostnamePublic()
+    {
+        return this.isHostnamePublic;
+    }
+
+    public void setIsHostnamePublic( boolean newValue )
+    {
+        this.isHostnamePublic = newValue;
+    }
 
     /** @return the public url for the box, this is the address (may be hostname or ip address) */
     public String getPublicAddress()
@@ -305,15 +310,19 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
 
     public String toString()
     {
-        return 
-            "script:      " + getPostConfigurationScript() +
-            "\nssh:         " + isSshEnabled() +
-            "\nexceptions:  " + isExceptionReportingEnabled() +
-            "\ntcp window:  " + isTcpWindowScalingEnabled() +
-            "\ninside in:   " + isInsideInsecureEnabled() +
-            "\noutside:     " + isOutsideAccessEnabled() + 
-            "\nrestriced:   " + isOutsideAccessRestricted() +
-            "\nrestriction: " + outsideNetwork() + "/" + outsideNetmask() +
-            "\nHTTPS:       " + httpsPort();
+        StringBuilder sb = new StringBuilder();
+        sb.append( "script:      " + getPostConfigurationScript());               
+        sb.append( "\nssh:         " + isSshEnabled());
+        sb.append( "\nexceptions:  " + isExceptionReportingEnabled());
+        sb.append( "\ntcp window:  " + isTcpWindowScalingEnabled());
+        sb.append( "\ninside-in:   " + isInsideInsecureEnabled());
+        sb.append( "\noutside:     " + isOutsideAccessEnabled()); 
+        sb.append( "\nrestriced:   " + isOutsideAccessRestricted());
+        sb.append( "\nrestriction: " + outsideNetwork() + "/" + outsideNetmask());
+        sb.append( "\nHTTPS:       " + httpsPort());
+        sb.append( "\npublic:      " + getPublicAddress());
+        sb.append( "\nhostname:    " + getHostname());
+        
+        return sb.toString();
     }
 }

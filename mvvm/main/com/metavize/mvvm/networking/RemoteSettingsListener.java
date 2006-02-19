@@ -11,8 +11,10 @@
 
 package com.metavize.mvvm.networking;
 
+import com.metavize.mvvm.networking.internal.RemoteInternalSettings;
+
 /* Interface for monitoring changes to the remote settings */
 public interface RemoteSettingsListener
 {
-    public void event( RemoteSettings settings );
+    public void event( RemoteInternalSettings settings );
 }

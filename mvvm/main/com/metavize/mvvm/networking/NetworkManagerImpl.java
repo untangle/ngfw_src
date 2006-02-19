@@ -32,6 +32,7 @@ import com.metavize.mvvm.tran.script.ScriptRunner;
 
 import com.metavize.mvvm.networking.internal.ServicesInternalSettings;
 import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
+import com.metavize.mvvm.networking.internal.RemoteInternalSettings;
 import com.metavize.mvvm.networking.internal.NetworkSpaceInternal;
 import com.metavize.mvvm.networking.internal.RouteInternal;
 import com.metavize.mvvm.networking.internal.InterfaceInternal;
@@ -93,7 +94,7 @@ public class NetworkManagerImpl implements NetworkManager
 
     /* These are the "networking" settings that aren't related to the nuts and bolts of
      * network spaces.  Things like SSH support */
-    private RemoteSettings remote = null;
+    private RemoteInternalSettings remote = null;
 
     /* These are the dynamic dns settings */
     private DynamicDNSSettings ddnsSettings = null;
@@ -140,7 +141,8 @@ public class NetworkManagerImpl implements NetworkManager
 
     public NetworkingConfiguration getNetworkingConfiguration()
     {
-        return NetworkUtilPriv.getPrivInstance().toConfiguration( this.networkSettings, this.remote );
+        return NetworkUtilPriv.getPrivInstance().
+            toConfiguration( this.networkSettings, this.remote.toSettings());
     }
     
     public synchronized void setNetworkingConfiguration( NetworkingConfiguration configuration )
@@ -185,7 +187,12 @@ public class NetworkManagerImpl implements NetworkManager
         throws NetworkException
     {
         /* XXXXXXXXX Implement me */
-        this.remote = remote;
+        NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
+        String pa = nup.getPublicAddress( this.networkSettings, remote, this.ddnsSettings );
+
+        this.remote = new RemoteInternalSettings( remote, pa );
+
+        if ( logger.isDebugEnabled()) logger.debug( "Loaded remote settings: " + this.remote );
 
         callRemoteListeners();
     }
@@ -266,8 +273,7 @@ public class NetworkManagerImpl implements NetworkManager
     /* Get the external HTTPS port */
     public int getPublicHttpsPort()
     {
-        /* !!!!!!!!!!!!! */
-        return 443;
+        return this.remote.getPublicHttpsPort();
     }
     
     /* Renew the DHCP address and return a new network settings with the updated address */
@@ -341,7 +347,7 @@ public class NetworkManagerImpl implements NetworkManager
 
     public String getPublicAddress()
     {
-        return this.remote.getPublicAddress();
+        return this.remote.getCurrentPublicAddress();
     }
     
     public void updateAddress()
@@ -539,23 +545,32 @@ public class NetworkManagerImpl implements NetworkManager
     /* Methods for saving and loading the settings files to the database */
     private void loadAllSettings()
     {
-        this.remote = loadRemoteSettings();
+        this.ddnsSettings = loadDynamicDnsSettings();
+
         try {
             this.networkSettings = loadNetworkSettings();
         } catch ( Exception e ) {
             logger.error( "Error loading network settings, setting to null to be initialized later" );
             this.networkSettings = null;
         }
-        this.ddnsSettings = loadDynamicDnsSettings();
+
+        /* These must load after the dynamic dns and the network settings in order to initialze
+         * the public address. */
+        this.remote = loadRemoteSettings();
+        
+        if ( logger.isDebugEnabled()) logger.debug( "Loaded remote settings: " + this.remote );
     }
 
-    private RemoteSettings loadRemoteSettings()
+    private RemoteInternalSettings loadRemoteSettings()
     {
         RemoteSettings remote = new RemoteSettingsImpl();
         /* These come from files */
         networkConfigurationLoader.loadRemoteSettings( remote );
 
-        return remote;
+        NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
+        String pa = nup.getPublicAddress( this.networkSettings, remote, this.ddnsSettings );
+
+        return new RemoteInternalSettings( remote, pa );
     }
 
     private NetworkSpacesInternalSettings loadNetworkSettings() throws NetworkException, ValidateException

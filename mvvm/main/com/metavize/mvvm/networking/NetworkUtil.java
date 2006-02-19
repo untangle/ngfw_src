@@ -33,6 +33,8 @@ public class NetworkUtil
 
     public static final IPaddr DEFAULT_DHCP_START;
     public static final IPaddr DEFAULT_DHCP_END;
+
+    public static final String DEFAULT_HOSTNAME      = "mv-edgeguard";
     
     public static int DEFAULT_LEASE_TIME_SEC = 4 * 60 * 60;
 

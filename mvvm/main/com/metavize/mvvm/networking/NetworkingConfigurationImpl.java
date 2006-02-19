@@ -59,6 +59,8 @@ public class NetworkingConfigurationImpl implements Serializable, NetworkingConf
      */
     private String hostname = DEFAULT_HOSTNAME;
     private String publicAddress = null;
+    private boolean isHostnamePublic = false;
+
     private IPaddr host     = NetworkUtil.EMPTY_IPADDR;
     private IPaddr netmask  = NetworkUtil.EMPTY_IPADDR;
 
@@ -140,6 +142,17 @@ public class NetworkingConfigurationImpl implements Serializable, NetworkingConf
     {
 	// do some shizzle 'n checks here
 	this.hostname = hostname;
+    }
+
+    /* Returns if the hostname for this box is publicly resolvable to this box */
+    public boolean getIsHostnamePublic()
+    {
+        return this.isHostnamePublic;
+    }
+    
+    public void setIsHostnamePublic( boolean newValue )
+    {
+        this.isHostnamePublic = newValue;
     }
 
     public String hostname()

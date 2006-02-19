@@ -72,7 +72,6 @@ class DhcpManager
 
     private static final String HOST_FILE             = "/etc/hosts";
     private static final String HOST_NAME_FILE        = "/etc/hostname";
-    private static final String DEFAULT_HOSTNAME      = "mv-edgeguard";
     private static final String[] HOST_FILE_START     = new String[] {
         HEADER,
         "127.0.0.1  localhost"
@@ -436,7 +435,7 @@ class DhcpManager
     /* Get the hostname of the box */
     private String getHostName()
     {
-        String hostname = DEFAULT_HOSTNAME;
+        String hostname = NetworkUtil.DEFAULT_HOSTNAME;
 
         BufferedReader in = null;
 
@@ -450,7 +449,7 @@ class DhcpManager
             hostname = str;
         } catch ( Exception ex ) {
             /* Go to the default */
-            hostname = DEFAULT_HOSTNAME;
+            hostname = NetworkUtil.DEFAULT_HOSTNAME;
         }
 
         try {

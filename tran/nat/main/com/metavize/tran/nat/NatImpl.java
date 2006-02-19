@@ -366,16 +366,16 @@ public class NatImpl extends AbstractTransform implements Nat
         /* ????, what goes here. Configure the handler */
         
         /* Retrieve the new settings from the network manager */
-        NetworkManagerImpl networkManager = (NetworkManagerImpl)MvvmContextFactory.context().networkManager();
-        NetworkSpacesInternalSettings networkSettings = networkManager.getNetworkInternalSettings();
-        ServicesInternalSettings servicesSettings = getServicesSettings();
+        NetworkManagerImpl nm = getNetworkManager();
+        NetworkSpacesInternalSettings networkSettings = nm.getNetworkInternalSettings();
+        ServicesInternalSettings servicesSettings = nm.getServicesInternalSettings();
         
         if ( getRunState() == TransformState.RUNNING ) {
             /* Have to configure DHCP before the handler, this automatically starts the dns server */
             configureDhcpMonitor( servicesSettings.getIsDhcpEnabled());
             this.handler.configure( networkSettings );
         } else {
-            networkManager.stopServices();
+            nm.stopServices();
         }
     }
 
