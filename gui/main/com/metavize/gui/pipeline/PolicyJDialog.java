@@ -28,12 +28,13 @@ import javax.swing.*;
 public class PolicyJDialog extends MConfigJDialog {
 
     private static final String NAME_POLICY_MANAGER     = "Policy Manager";
-    private static final String NAME_POLICIES           = "Policies";
+    private static final String NAME_POLICIES           = "Policy-To-Rack Map";
     private static final String NAME_SYSTEM_POLICIES    = "Default Policies";
     private static final String NAME_USER_POLICIES      = "Custom Policies";
-    private static final String NAME_AVAILABLE_POLICIES = "Available Racks";
+    private static final String NAME_AVAILABLE_POLICIES = "Racks";
     
     public PolicyJDialog( ) {
+        this.setTitle(NAME_POLICY_MANAGER);
 	compoundSettings = new PolicyCompoundSettings();
     }
 
@@ -41,9 +42,7 @@ public class PolicyJDialog extends MConfigJDialog {
 	return new Dimension(700, 480);
     }
     
-    protected void generateGui(){
-        this.setTitle(NAME_POLICY_MANAGER);
-        
+    protected void generateGui(){        
         // POLICIES //////
 	JTabbedPane policiesJTabbedPane = addTabbedPane(NAME_POLICIES, null);
 
