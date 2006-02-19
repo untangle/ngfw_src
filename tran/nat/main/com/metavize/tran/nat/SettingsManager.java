@@ -174,6 +174,7 @@ class SettingsManager
     NatAdvancedSettings toAdvancedSettings( NetworkSpacesSettings network,
                                             ServicesInternalSettings services )
     {
+        network.getNetworkSpaceList().get( 0 ).setIsPrimary( true );
         return new NatAdvancedSettingsImpl( network, new ServicesSettingsImpl( services ));
     }
 

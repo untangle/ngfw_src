@@ -36,6 +36,8 @@ public class NetworkSpace extends Rule
     public static final int MIN_MTU = 100;
     public static final int MAX_MTU = 3000;
     
+    private boolean isPrimary;
+    
     private boolean isDhcpEnabled;
     private boolean isTrafficForwarded = true;
     
@@ -75,6 +77,16 @@ public class NetworkSpace extends Rule
 
     public NetworkSpace()
     {
+    }
+
+    public boolean getIsPrimary()
+    {
+        return this.isPrimary;
+    }
+
+    public void setIsPrimary( boolean newValue )
+    {
+        this.isPrimary = newValue;
     }
 
     /**

@@ -26,6 +26,7 @@ import com.metavize.mvvm.networking.RedirectRule;
 import com.metavize.mvvm.networking.SetupState;
 import com.metavize.mvvm.networking.NetworkSpacesSettings;
 import com.metavize.mvvm.networking.ServicesSettings;
+import com.metavize.mvvm.networking.NetworkSettingsListener;
 import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
 import com.metavize.mvvm.networking.internal.ServicesInternalSettings;
 import com.metavize.mvvm.argon.SessionMatcher;
@@ -58,6 +59,9 @@ public class NatImpl extends AbstractTransform implements Nat
     private final SettingsManager settingsManager;
     final NatStatisticManager statisticManager;
     private final DhcpMonitor dhcpMonitor;
+    /* Done with an inner class so the GUI doesn't freak out about not
+     * having the NetworkSettingsListener class */
+    private final SettingsListener listener;
 
     private final SoloPipeSpec natPipeSpec;
     private final SoloPipeSpec natFtpPipeSpec;
@@ -75,6 +79,7 @@ public class NatImpl extends AbstractTransform implements Nat
         this.statisticManager = new NatStatisticManager(getTransformContext());
         this.settingsManager  = new SettingsManager();
         this.dhcpMonitor      = new DhcpMonitor( this, MvvmContextFactory.context());
+        this.listener         = new SettingsListener();
 
         /* Have to figure out pipeline ordering, this should always next
          * to towards the outside */
@@ -261,8 +266,11 @@ public class NatImpl extends AbstractTransform implements Nat
         statisticManager.stop();
     }
 
+    @Override
     protected void postInit(String[] args)
     {
+        /* Register a listener, this should hang out until the transform is removed dies. */
+        getNetworkManager().registerListener( this.listener );
     }
 
     protected void preStart() throws TransformStartException
@@ -271,7 +279,7 @@ public class NatImpl extends AbstractTransform implements Nat
 
         MvvmLocalContext context = MvvmContextFactory.context();
         MvvmLocalContext.MvvmState state = context.state();
-        NetworkManagerImpl networkManager = (NetworkManagerImpl)context.networkManager();
+        NetworkManagerImpl networkManager = getNetworkManager();
         
         NetworkSpacesInternalSettings networkSettings = getNetworkSettings();
         ServicesInternalSettings servicesSettings = getServicesSettings();
@@ -343,6 +351,12 @@ public class NatImpl extends AbstractTransform implements Nat
         }
 
         eventLogger.stop();
+    }
+
+    @Override protected void postDestroy() throws TransformException
+    {
+        /* Register a listener, this should hang out until the transform is removed dies. */
+        getNetworkManager().unregisterListener( this.listener );
     }
 
     public void reconfigure() throws TransformException
@@ -420,5 +434,14 @@ public class NatImpl extends AbstractTransform implements Nat
     NatSessionManager getSessionManager()
     {
         return sessionManager;
+    }
+
+    class SettingsListener implements NetworkSettingsListener
+    {
+        public void event( NetworkSpacesInternalSettings settings )
+        {
+            logger.debug( "Listener hath been called" );
+        }
+        
     }
 }

@@ -11,10 +11,8 @@
 
 package com.metavize.mvvm.networking;
 
-import com.metavize.mvvm.IntfEnum;
-
-/* Interface for monitoring changes to the Interface Enumeration */
-public interface IntfEnumListener
+/* Interface for monitoring changes to the remote settings */
+public interface RemoteSettingsListener
 {
-    public void event( IntfEnum newEnum );
+    public void event( RemoteSettings settings );
 }

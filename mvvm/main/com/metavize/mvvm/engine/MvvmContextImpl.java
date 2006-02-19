@@ -408,19 +408,21 @@ public class MvvmContextImpl extends MvvmContextBase
         mPipeManager = MPipeManagerImpl.manager();
         pipelineFoundry = PipelineFoundryImpl.foundry();
 
+        // Retrieve the network settings manager.
+        // (Kind of busted, but NAT may register a listener, and thus the network manager
+        // should exist.
+        try {
+            networkManager = NetworkManagerImpl.makeInstance();
+        } catch ( AccessException e ) {
+            logger.error( "Access exception creating the networking manager", e );
+        }
+
         // start transforms:
         transformManager = TransformManagerImpl.manager();
 
         // Retrieve the networking configuration manager
         // XXXXXXXXXXXXXXXX This is deprecated
         networkingManager = NetworkingManagerImpl.getInstance();
-
-        // Retrieve the network settings manager
-        try {
-            networkManager = NetworkManagerImpl.makeInstance();
-        } catch ( AccessException e ) {
-            logger.error( "Access exception creating the networking manager", e );
-        }
 
         // Retrieve the reporting configuration manager
         reportingManager = ReportingManagerImpl.reportingManager();

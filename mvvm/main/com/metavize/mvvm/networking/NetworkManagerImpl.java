@@ -11,6 +11,9 @@
 
 package com.metavize.mvvm.networking;
 
+import java.util.Set;
+import java.util.HashSet;
+
 import org.apache.log4j.Logger;
 
 import com.metavize.jnetcap.Netcap;
@@ -76,6 +79,11 @@ public class NetworkManagerImpl implements NetworkManager
      * network spaces has never been executed before */
     private NetworkConfigurationLoader networkConfigurationLoader;
 
+    /* ??? Does the order matter, it shouldn't.  */
+    private Set<NetworkSettingsListener> networkListeners = new HashSet<NetworkSettingsListener>();
+    private Set<IntfEnumListener> intfEnumListeners = new HashSet<IntfEnumListener>();
+    private Set<RemoteSettingsListener> remoteListeners = new HashSet<RemoteSettingsListener>();
+
     /** The nuts and bolts of networking, the real bits of panther.  this my friend
      * should never be null */
     private NetworkSpacesInternalSettings networkSettings = null;
@@ -95,6 +103,9 @@ public class NetworkManagerImpl implements NetworkManager
 
     /* Flag to indicate when the MVVM has been shutdown */
     private boolean isShutdown = false;
+
+    /* Interface enum */
+    private IntfEnum intfEnum;
 
     private NetworkManagerImpl()
     {
@@ -162,7 +173,12 @@ public class NetworkManagerImpl implements NetworkManager
         /* Write the settings */
         writeConfiguration( newSettings );
         
+        /* Actually load the new settings */
+        
         this.networkSettings = newSettings;
+
+        /* call the listeners */
+        callNetworkListeners();        
     }
 
     public synchronized void setRemoteSettings( RemoteSettings remote )
@@ -170,6 +186,8 @@ public class NetworkManagerImpl implements NetworkManager
     {
         /* XXXXXXXXX Implement me */
         this.remote = remote;
+
+        callRemoteListeners();
     }
 
     public NetworkSpacesInternalSettings getNetworkInternalSettings()
@@ -313,7 +331,7 @@ public class NetworkManagerImpl implements NetworkManager
     /* Retrieve the enumeration of all of the active interfaces */
     public IntfEnum getIntfEnum()
     {
-        return null;
+        return this.intfEnum;
     }
 
     public String getHostname()
@@ -366,6 +384,72 @@ public class NetworkManagerImpl implements NetworkManager
     public void flushIPTables() throws NetworkException
     {
         this.ruleManager.destroyIptablesRules();
+    }
+
+    /* Listener functions */
+    private void callNetworkListeners()
+    {
+        for ( NetworkSettingsListener listener : this.networkListeners ) {
+            try {
+                listener.event( this.networkSettings );
+            } catch ( Exception e ) {
+                logger.error( "Exception calling listener", e );
+            }
+        }
+    }
+
+    public void registerListener( NetworkSettingsListener networkListener )
+    {
+        this.networkListeners.add( networkListener );
+    }
+
+    public void unregisterListener( NetworkSettingsListener networkListener )
+    {
+        this.networkListeners.remove( networkListener );
+    }
+
+    /* Remote settings */
+    private void callRemoteListeners()
+    {
+        for ( RemoteSettingsListener listener : this.remoteListeners ) {
+            try {
+                listener.event( this.remote );
+            } catch ( Exception e ) {
+                logger.error( "Exception calling listener", e );
+            }
+        }
+    }
+
+    public void registerListener( RemoteSettingsListener remoteListener )
+    {
+        this.remoteListeners.add( remoteListener );
+    }
+
+    public void unregisterListener( RemoteSettingsListener remoteListener )
+    {
+        this.remoteListeners.remove( remoteListener );
+    }
+
+    /* Intf enum settings */
+    private void callIntfEnumListeners()
+    {
+        for ( IntfEnumListener listener : this.intfEnumListeners ) {
+            try {
+                listener.event( this.intfEnum );
+            } catch ( Exception e ) {
+                logger.error( "Exception calling listener", e );
+            }
+        }
+    }
+
+    public void registerListener( IntfEnumListener intfEnumListener )
+    {
+        this.intfEnumListeners.add( intfEnumListener );
+    }
+
+    public void unregisterListener( IntfEnumListener intfEnumListener )
+    {
+        this.intfEnumListeners.remove( intfEnumListener );
     }
 
     /**** private methods ***/

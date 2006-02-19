@@ -460,7 +460,11 @@ class NetworkUtilPriv extends NetworkUtil
             /* Placed into both in order to maintain the order of the items */
             networkSpaceMap.put( si, space );
             networkSpaceList.add( space );
+            space.setIsPrimary( false );
         }
+
+        /* Assuming there is at least one space, otherwise primary would be null. */
+        primary.setIsPrimary( true );
         
         /* Update the nat space in the ones where this is needed. */
         for ( Map.Entry<NetworkSpaceInternal,NetworkSpace> entry : networkSpaceMap.entrySet()) {

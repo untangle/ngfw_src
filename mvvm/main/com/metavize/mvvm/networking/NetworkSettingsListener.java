@@ -11,8 +11,10 @@
 
 package com.metavize.mvvm.networking;
 
+import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
+
 /* Interface for monitoring changes to the Network Settings */
 public interface NetworkSettingsListener
 {
-    public void updateNetworkSettings( NetworkSpacesSettings settings );
+    public void event( NetworkSpacesInternalSettings settings );
 }
