@@ -37,9 +37,9 @@ public class UpgradeJDialog extends MConfigJDialog {
     public static final String NAME_SETTINGS = "Settings";
 
     public UpgradeJDialog() {
-	compoundSettings = new UpgradeCompoundSettings();
-	setResizable(false);
 	setTitle(NAME_TITLE);
+	setResizable(false);
+	compoundSettings = new UpgradeCompoundSettings();
     }
 
     protected Dimension getMinSize(){

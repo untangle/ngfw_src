@@ -375,7 +375,8 @@ public class MTransformJPanel extends javax.swing.JPanel {
 				try{ Util.handleExceptionWithRestart("Error showing settings", e); }
 				catch(Exception f){
 				    Util.handleExceptionNoRestart("Error showing settings", f);
-				    new RefreshFailureDialog(mackageDesc.getDisplayName());
+				    RefreshFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(),
+								  mackageDesc.getDisplayName());
 				}
 			    }
                             MTransformJPanel.this.controlsLoaded = true;

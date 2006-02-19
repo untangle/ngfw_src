@@ -83,7 +83,9 @@ public class MStateMachine implements java.awt.event.ActionListener {
             }
             else if( source.equals(removeJButton) ){
                 removeJButton.setEnabled(false);
-                if( (new RemoveProceedDialog(displayName)).isProceeding() ){
+		RemoveProceedDialog dialog = RemoveProceedDialog.factory((Window)mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(),
+									 displayName);
+                if( dialog.isProceeding() ){
                     Util.getPolicyStateMachine().moveFromRackToToolbox(mTransformJPanel.getPolicy(),mTransformJPanel);
                 }
                 removeJButton.setEnabled(true);
@@ -94,7 +96,9 @@ public class MStateMachine implements java.awt.event.ActionListener {
                 // REMOVE
                 if( (modifiers & java.awt.event.ActionEvent.SHIFT_MASK) > 0 ){
                     if( (modifiers & java.awt.event.ActionEvent.CTRL_MASK) == 0 ){
-                        if( (new RemoveProceedDialog(displayName)).isProceeding() ){
+			RemoveProceedDialog dialog = RemoveProceedDialog.factory((Window)mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(),
+										 displayName);
+                        if( dialog.isProceeding() ){
                             Util.getPolicyStateMachine().moveFromRackToToolbox(mTransformJPanel.getPolicy(),mTransformJPanel);
                         }
                         else{
@@ -157,7 +161,8 @@ public class MStateMachine implements java.awt.event.ActionListener {
                 catch(Exception f){
                     Util.handleExceptionNoRestart("Error doing save", f);
                     setProblemView(true);
-		    new SaveFailureDialog( mackageDesc.getDisplayName() );
+		    SaveFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(),
+					       mackageDesc.getDisplayName() );
                 }
             }
 	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
@@ -189,7 +194,8 @@ public class MStateMachine implements java.awt.event.ActionListener {
                 catch(Exception f){
                     Util.handleExceptionNoRestart("Error doing refresh", f);
                     setProblemView(true);		
-		    new RefreshFailureDialog( mackageDesc.getDisplayName() );
+		    RefreshFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(),
+						  mackageDesc.getDisplayName() );
                 }
             }
 	    SwingUtilities.invokeLater( new Runnable(){ public void run(){

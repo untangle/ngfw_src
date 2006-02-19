@@ -35,8 +35,10 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
     // SAVING/REFRESHING/SHUTDOWN //////////
     private Map<String, Refreshable> refreshableMap = new LinkedHashMap(5);
     protected void addRefreshable(String name, Refreshable refreshable){ refreshableMap.put(name, refreshable); }
+    protected void removeRefreshable(String refreshableKey){ refreshableMap.remove(refreshableKey); }
     private Map<String, Savable> savableMap = new LinkedHashMap(5);
     protected void addSavable(String name, Savable savable){ savableMap.put(name, savable); }
+    protected void removeSavable(String savableKey){ savableMap.remove(savableKey); }
     private Map<String, Shutdownable> shutdownableMap = new LinkedHashMap(1);
     protected void addShutdownable(String name, Shutdownable shutdownable){ shutdownableMap.put(name, shutdownable); }
     protected Object settings;
@@ -138,24 +140,32 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
 
     // TABBED PANE ////////
     public JTabbedPane getMTabbedPane(){ return mTabbedPane; }
-    protected void addTab(String title, Icon icon, Component component){ mTabbedPane.addTab(title, icon, component); }
-    protected JTabbedPane addTabbedPane(String name, Icon icon){
+    protected void removeTab(Component c){ mTabbedPane.remove(c); }
+    protected void addTab(String title, Icon icon, Component component){ addTab(mTabbedPane.getTabCount(), title, icon, component); }
+    protected void addTab(int index, String title, Icon icon, Component component){ mTabbedPane.insertTab(title, icon, component, null, index); }
+    protected JTabbedPane addTabbedPane(String name, Icon icon){ return addTabbedPane(mTabbedPane.getTabCount(), name, icon); }
+    protected JTabbedPane addTabbedPane(int index, String name, Icon icon){
         JTabbedPane newJTabbedPane = new JTabbedPane();
         newJTabbedPane.setBorder(new EmptyBorder(7, 13, 13, 13));
         newJTabbedPane.setFocusable(false);
         newJTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
 	newJTabbedPane.setRequestFocusEnabled(false);
-	addTab(name, icon, newJTabbedPane);
+	addTab(index, name, icon, newJTabbedPane);
 	return newJTabbedPane;
     }
-    protected JScrollPane addScrollableTab(JTabbedPane parentJTabbedPane, String name, Icon icon, Component childComponent, boolean scrollH, boolean scrollV){
+    protected JScrollPane addScrollableTab(JTabbedPane parentJTabbedPane, String name, Icon icon,
+					   Component childComponent, boolean scrollH, boolean scrollV){
+	return addScrollableTab(mTabbedPane.getTabCount(), parentJTabbedPane, name, icon, childComponent, scrollH, scrollV);
+    }
+    protected JScrollPane addScrollableTab(int index, JTabbedPane parentJTabbedPane, String name, Icon icon,
+					   Component childComponent, boolean scrollH, boolean scrollV){
 	final JScrollPane newJScrollPane = new JScrollPane(childComponent);
 	newJScrollPane.setHorizontalScrollBarPolicy( scrollH ? JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS : JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
 	newJScrollPane.setVerticalScrollBarPolicy( scrollV ? JScrollPane.VERTICAL_SCROLLBAR_ALWAYS : JScrollPane.VERTICAL_SCROLLBAR_NEVER );
 	if( parentJTabbedPane != null )
 	    parentJTabbedPane.addTab(name, icon, newJScrollPane);
 	else
-	    addTab(name, icon, newJScrollPane);
+	    addTab(index, name, icon, newJScrollPane);
 	SwingUtilities.invokeLater( new Runnable(){ public void run(){
 	    newJScrollPane.getVerticalScrollBar().setValue(0);
 	}});
@@ -212,14 +222,16 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
 		}
 	    }});
 	    if( saveException != null ){
-		new ValidateFailureDialog( transformName, componentName, saveException.getMessage() );
+		ValidateFailureDialog.factory( (Window) MTransformControlsJPanel.this.contentJPanel.getTopLevelAncestor(),
+					       transformName, componentName, saveException.getMessage() );
 		return;
 	    }
 	}
 	if( settings instanceof Validatable ){
 	    try{ ((Validatable)settings).validate(); }
 	    catch(Exception e){
-		new ValidateFailureDialog( transformName, "multiple settings panels", e.getMessage() );
+		ValidateFailureDialog.factory( (Window) MTransformControlsJPanel.this.contentJPanel.getTopLevelAncestor(),
+					       transformName, "multiple settings panels", e.getMessage() );
 		return;
 	    }
 	}        
@@ -247,7 +259,8 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
 		try{ refreshableComponent.doRefresh(settings); }
 		catch(Exception e){
 		    Util.handleExceptionNoRestart("Error distributing settings",e);
-		    new RefreshFailureDialog( transformName );
+		    RefreshFailureDialog.factory( (Window) MTransformControlsJPanel.this.contentJPanel.getTopLevelAncestor(),
+						  transformName );
 		}
 	    }});
 	}
@@ -256,7 +269,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
     
 
 
-
+    public JPanel getContentJPanel(){ return contentJPanel; }
     public JButton saveJButton(){ return saveJButton; }
     public JButton reloadJButton(){ return reloadJButton; }
     public JButton removeJButton(){ return removeJButton; }
