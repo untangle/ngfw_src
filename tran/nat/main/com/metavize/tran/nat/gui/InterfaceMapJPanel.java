@@ -35,7 +35,8 @@ public class InterfaceMapJPanel extends MEditTableJPanel{
         super.setInsets(new Insets(4, 4, 2, 2));
         super.setTableTitle("");
         super.setDetailsTitle("");
-        super.setAddRemoveEnabled(true);
+        super.setAddRemoveEnabled(false);
+	super.setFillJButtonEnabled(false);
         
         // create actual table model
         InterfaceTableModel interfaceTableModel = new InterfaceTableModel();
