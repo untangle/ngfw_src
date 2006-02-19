@@ -81,6 +81,7 @@ public class NetworkSpace extends Rule
 
     public NetworkSpace()
     {
+                this.businessPapers = ( new Random()).nextLong();
     }
 
     public boolean getIsPrimary()
