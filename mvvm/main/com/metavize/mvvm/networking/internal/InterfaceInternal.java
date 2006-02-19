@@ -19,6 +19,8 @@ import com.metavize.mvvm.networking.EthernetMedia;
 public class InterfaceInternal
 {
     private final byte argonIntf;
+    /* This is the user representation of the interface name (eg. Internal/External) */
+    private final String name;
     private final String intfName;
     private final NetworkSpaceInternal networkSpace;
     private final EthernetMedia ethernetMedia;
@@ -35,6 +37,8 @@ public class InterfaceInternal
         this.intfName  = intfName;
         this.ethernetMedia = intf.getEthernetMedia();
         this.isPingable = intf.getIsPingable();
+
+        this.name = intf.getName();
     }
     
     public byte getArgonIntf()
@@ -45,6 +49,11 @@ public class InterfaceInternal
     public String getIntfName()
     {
         return this.intfName;
+    }
+    
+    public String getName()
+    {
+        return this.name;
     }
 
     public NetworkSpaceInternal getNetworkSpace()
@@ -68,14 +77,17 @@ public class InterfaceInternal
      */
     public Interface toInterface()
     {
-        return new Interface( this.argonIntf, this.ethernetMedia, this.isPingable );
+        Interface i = new Interface( this.argonIntf, this.ethernetMedia, this.isPingable );
+        i.setName( getName());
+        return i;
     }
 
     public String toString()
     {
         return 
             "argon intf:  "   + getArgonIntf() +
-            "\nname:        " + getIntfName() +
+            "\name:         " + getName() +
+            "\nphy-name:    " + getIntfName() +
             "\nspace-index: " + getNetworkSpace().getIndex() +
             "\neth-media:   " + getEthernetMedia() +
             "\npingable:    " + isPingable();

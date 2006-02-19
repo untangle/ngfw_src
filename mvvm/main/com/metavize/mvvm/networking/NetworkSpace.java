@@ -14,6 +14,7 @@ package com.metavize.mvvm.networking;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Iterator;
+import java.util.Random;
 
 import com.metavize.mvvm.tran.Rule;
 
@@ -37,7 +38,9 @@ public class NetworkSpace extends Rule
     public static final int MAX_MTU = 3000;
     
     private boolean isPrimary;
-    
+
+    /* This is a special piece, it should stay the same for the life of a network space.  */
+    private long businessPapers;
     private boolean isDhcpEnabled;
     private boolean isTrafficForwarded = true;
     
@@ -64,6 +67,7 @@ public class NetworkSpace extends Rule
                          boolean isDmzHostEnabled, boolean isDmzHostLoggingEnabled, IPaddr dmzHost )
     {
         setLive( isEnabled );
+        this.businessPapers          = ( new Random()).nextLong();
         this.networkList             = networkList;
         this.isDhcpEnabled           = isDhcpEnabled;
         this.isTrafficForwarded      = isTrafficForwarded;
@@ -87,6 +91,19 @@ public class NetworkSpace extends Rule
     public void setIsPrimary( boolean newValue )
     {
         this.isPrimary = newValue;
+    }
+
+    public long getBusinessPapers()
+    {
+        return this.businessPapers;
+    }
+
+    /* This should only be done once per the life of the network
+     * space.  It should remain the same throughout restarts, saves,
+     * etc. */
+    public void setBusinessPapers( long newValue )
+    {
+        this.businessPapers = newValue;
     }
 
     /**

@@ -27,5 +27,18 @@ public class IntfConstants
     public static final byte   MAX_INTF      = 8;
     public static final byte   UNKNOWN_INTF  = MAX_INTF + 2;
     public static final byte   LOOPBACK_INTF = MAX_INTF + 1;
+
+    /* If the intf is not in the list, this returns the empty string */
+    public static String toName( byte intf  )
+    {
+        switch ( intf ) {
+        case INTERNAL_INTF: return INTERNAL;
+        case EXTERNAL_INTF: return EXTERNAL;
+        case DMZ_INTF: return DMZ;
+        case VPN_INTF: return VPN;
+        }
+        
+        return "unknown";
+    }
 }
 

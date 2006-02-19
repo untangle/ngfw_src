@@ -28,6 +28,11 @@ public class NetworkSpaceInternal
     /** True if this network space is enabled */
     private final boolean isEnabled;
 
+    /* The bunesiess papers associated with this network space, if you
+     * don't know about papers (aka, your name is not robert or ian)
+     * don't mess with this). */
+    private final long businessPapers;
+
     /** List of networks on this network space */
     private final List<IPNetwork> networkList;
     
@@ -92,6 +97,9 @@ public class NetworkSpaceInternal
     {
         /* Set whether or not the space is enabled */
         this.isEnabled = networkSpace.isLive();
+
+        /* Set the business papears */
+        this.businessPapers = networkSpace.getBusinessPapers();
 
         /* Get the network list */
         /* Convert the list to ip network */
@@ -160,6 +168,11 @@ public class NetworkSpaceInternal
     public boolean getIsEnabled()
     {
         return this.isEnabled;
+    }
+
+    public long getBusinessPapers()
+    {
+        return this.businessPapers;
     }
     
     public List<IPNetwork> getNetworkList()
@@ -272,6 +285,7 @@ public class NetworkSpaceInternal
         s.setName( getName());
         s.setDescription( getDescription());
         s.setCategory( getCategory());
+        s.setBusinessPapers( getBusinessPapers());
         
         return s;
     }

@@ -261,6 +261,7 @@ class NetworkUtilPriv extends NetworkUtil
         
         /* Create a single network space */
         NetworkSpace primary = new NetworkSpace();
+        primary.setBusinessPapers( 0 );
         primary.setIsTrafficForwarded( true );
         primary.setIsNatEnabled( false );
         primary.setIsDmzHostEnabled( false );
@@ -271,7 +272,8 @@ class NetworkUtilPriv extends NetworkUtil
             if ( argonIntf == IntfConstants.VPN_INTF ) continue;
             
             /* Add each interface to the list */
-            Interface intf =  new Interface( argonIntf, EthernetMedia.AUTO_NEGOTIATE, true );
+            Interface intf =  new Interface( argonIntf, EthernetMedia.AUTO_NEGOTIATE, true );            
+            intf.setName( IntfConstants.toName( argonIntf ));
             intf.setNetworkSpace( primary );
             interfaceList.add( intf );
         }

@@ -136,6 +136,7 @@ class SettingsManager
                 
                 /* Add each interface to the list */
                 Interface intf =  new Interface( argonIntf, EthernetMedia.AUTO_NEGOTIATE, true );
+                intf.setName( IntfConstants.toName( argonIntf ));
                 if ( isNatEnabled && ( argonIntf == IntfConstants.INTERNAL_INTF )) {
                     intf.setNetworkSpace( natSpace );
                 } else {
