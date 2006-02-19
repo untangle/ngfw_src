@@ -50,7 +50,7 @@ class InterfaceModel extends MSortedTableModel<MaintenanceCompoundSettings>{
     private static final int  C0_MW = Util.STATUS_MIN_WIDTH; /* status */
     private static final int  C1_MW = Util.LINENO_MIN_WIDTH; /* # */
     private static final int  C2_MW = 120;  /* network interface */
-    private static final int  C3_MW = 120;  /* mode */
+    private static final int  C3_MW = 150;  /* mode */
     private static final int  C4_MW = 65;   /* block ping */
     private static final int  C5_MW = 150;  /* status */
     
