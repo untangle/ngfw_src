@@ -114,7 +114,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 	    if(saveException != null){
 		ValidateFailureDialog.factory( (Window) MConfigJDialog.this,
 					       getTitle(), componentName, saveException.getMessage() );
-		return;
+		throw new ValidationException();
 	    }
 	}
 	// VALIDATE SIMULTANEOUSLY
@@ -124,7 +124,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 	catch(Exception e){
 	    ValidateFailureDialog.factory( (Window) MConfigJDialog.this,
 					   getTitle(), "multiple settings panels", e.getMessage() );
-	    return;
+	    throw new ValidationException();
 	}
 	// SEND SETTINGS TO SERVER
 	compoundSettings.save();
@@ -341,8 +341,9 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 	    }
 	    catch(Exception e){
 		try{ Util.handleExceptionWithRestart("Error sending saved settings", e); }
-		catch(Exception f){
-		    Util.handleExceptionNoRestart("Error sending saved settings", f);
+		catch(ValidationException f){ /* this was handled at a lower layer*/ }
+		catch(Exception g){
+		    Util.handleExceptionNoRestart("Error sending saved settings", g);
 		    SaveFailureDialog.factory( (Window) MConfigJDialog.this,
 					       MConfigJDialog.this.getTitle() );
 		}

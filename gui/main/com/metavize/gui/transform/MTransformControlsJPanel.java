@@ -224,7 +224,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
 	    if( saveException != null ){
 		ValidateFailureDialog.factory( (Window) MTransformControlsJPanel.this.contentJPanel.getTopLevelAncestor(),
 					       transformName, componentName, saveException.getMessage() );
-		return;
+		throw new ValidationException();
 	    }
 	}
 	if( settings instanceof Validatable ){
@@ -232,7 +232,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
 	    catch(Exception e){
 		ValidateFailureDialog.factory( (Window) MTransformControlsJPanel.this.contentJPanel.getTopLevelAncestor(),
 					       transformName, "multiple settings panels", e.getMessage() );
-		return;
+		throw new ValidationException();
 	    }
 	}        
 	// SEND SETTINGS TO SERVER

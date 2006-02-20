@@ -158,8 +158,9 @@ public class MStateMachine implements java.awt.event.ActionListener {
             }
             catch(Exception e){
                 try{ Util.handleExceptionWithRestart("Error doing save", e); }
-                catch(Exception f){
-                    Util.handleExceptionNoRestart("Error doing save", f);
+		catch(ValidationException f){ refreshState(true); }
+                catch(Exception g){
+                    Util.handleExceptionNoRestart("Error doing save", g);
                     setProblemView(true);
 		    SaveFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(),
 					       mackageDesc.getDisplayName() );
