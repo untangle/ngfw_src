@@ -17,6 +17,7 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 import com.metavize.mvvm.ArgonManager;
+import com.metavize.mvvm.NetworkManager;
 import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.argon.ArgonException;
@@ -293,16 +294,9 @@ class OpenVpnManager
     void writeClientConfigurationFiles( VpnSettings settings, VpnClient client )
         throws TransformException
     {
-        ArgonManager am = MvvmContextFactory.context().argonManager();
-
-        InetAddress internalAddress = am.getInsideAddress();
-        InetAddress externalAddress = am.getOutsideAddress();
-        int externalHttpsPort =  MvvmContextFactory.context().networkingManager().getExternalHttpsPort();
-
-        if ( internalAddress == null || externalAddress == null ) {
-            throw new TransformException( "The inside address is not set" );
-        }
-
+        NetworkManager nm = MvvmContextFactory.context().networkManager();
+        
+        String publicAddress = nm.getPublicAddress();
         writeClientConfigurationFile( settings, client, UNIX_CLIENT_DEFAULTS, UNIX_EXTENSION );
         writeClientConfigurationFile( settings, client, WIN_CLIENT_DEFAULTS,  WIN_EXTENSION );
 
@@ -314,9 +308,7 @@ class OpenVpnManager
             if ( key == null ) key = "";
 
             ScriptRunner.getInstance().exec( GENERATE_DISTRO_SCRIPT, client.getInternalName(),
-                                             key, internalAddress.getHostAddress(),
-                                             externalAddress.getHostAddress(),
-                                             String.valueOf( externalHttpsPort ),
+                                             key, publicAddress,
                                              String.valueOf( client.getDistributeUsb()),
                                              String.valueOf( client.getIsEdgeGuard()));
         } catch ( ScriptException e ) {
@@ -352,12 +344,21 @@ class OpenVpnManager
         sw.appendVariable( FLAG_KEY,  CLI_KEY_DIR + "/" + name + ".key" );
 
         /* VPN configuratoins needs information from the networking settings. */
-        ArgonManager argonManager = MvvmContextFactory.context().argonManager();
+        NetworkManager networkManager = MvvmContextFactory.context().networkManager();
+
+        /* This is kind of janky */
+        String publicAddress = networkManager.getPublicAddress();
+        
+        /* Strip off the port, (This guarantees if they set it to a hostname the value will be
+         * correct) */
+        publicAddress = publicAddress.split( ":" )[0];
+        
+        publicAddress = publicAddress.trim();
 
         /* XXXXXX This needs some global address and possibly the port, possibly an address
            from the settings */
-        sw.appendVariable( FLAG_REMOTE, argonManager.getOutsideAddress().getHostAddress() + " " +
-                           DEFAULT_PORT );
+        sw.appendVariable( FLAG_REMOTE, publicAddress + " " + DEFAULT_PORT );
+                           
 
         sw.writeFile( CLIENT_CONF_FILE_BASE + name + "." + extension );
     }

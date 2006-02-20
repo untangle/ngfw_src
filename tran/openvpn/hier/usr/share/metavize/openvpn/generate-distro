@@ -17,11 +17,9 @@ EG_TEMPLATE="${DATA_DIR}/eg-template.html"
 
 commonName=`removeSpaces ${1}`
 distributionKey=${2}
-internalAddress=${3}
-externalAddress=${4}
-externalPort=${5}
-distributeUsb=${6}
-isEdgeGuard=${7}
+publicAddress=${3}
+distributeUsb=${4}
+isEdgeGuard=${5}
 
 ## XXX May need to do some checks to see if files exists etc.
 
@@ -80,20 +78,12 @@ function buildEmail()
     
     local t_externalAddress
     
-    if [ "${externalPort}x" = "443x" ]; then
-        t_externalAddress=${externalAddress}
-    else
-        t_externalAddress="${externalAddress}:${externalPort}"
-    fi
-
-    
     if [ "${isEdgeGuard}x" = "truex" ]; then
         t_mailTemplate=${EG_TEMPLATE}
     fi
 
     sed -e "s|%%KEY%%|${distributionKey}|g" \
-        -e "s|%%ADDRESS%%|${internalAddress}|g" \
-        -e "s|%%EXTERNAL_ADDRESS%%|${t_externalAddress}|g" \
+        -e "s|%%ADDRESS%%|${publicAddress}|g" \
         ${t_mailTemplate} > ${t_emailFile}
 }
 
