@@ -27,6 +27,7 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
     
     private static final String EXCEPTION_NAME = "The name must be at least one character long.";
     private static final String EXCEPTION_ALIAS = "The Network Aliases must be a comma separated list of masked IP Addresses.";
+    private static final String EXCEPTION_NATTED_ADDRESS = "You must choose the NATted address for this space.";
 
     private NetworkSpace initNetworkSpace;
 
@@ -63,6 +64,11 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
 	    
 	    // NAT ADDRESS IP ADDRESS //
 	    natAddress = ((NattedPair) nattedJComboBox.getSelectedItem()).getNetworkAddress();
+
+	    if( (natSpace==null) && (natAddress==null) ){
+		nattedJComboBox.setBackground( Util.INVALID_BACKGROUND_COLOR );
+		throw new Exception(EXCEPTION_NATTED_ADDRESS);
+	    }
 	}
 
 	// NETWORK ALIASES //
@@ -89,7 +95,7 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
 		if( networkSpace.getBusinessPapers() == initNetworkSpace.getBusinessPapers() )
 		    thisNetworkSpace = networkSpace;
 	    if( thisNetworkSpace == null )
-		throw new Exception("network space not found");
+		throw new Exception("network space not found during save");
 
 	    thisNetworkSpace.setName(name);
 	    thisNetworkSpace.setIsNatEnabled(natEnabled);
@@ -119,26 +125,22 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
 	    this.networkAddress = networkAddress;
 	}
 	public String toString(){
-	    return "Space: " + networkSpace.getName() + (networkAddress==null?"":" @ Address: " + networkAddress.toString());
+	    if( (networkSpace==null) && (networkAddress==null) )
+		return "Please make a selection...";
+	    else
+		return "Space: " + networkSpace.getName() + (networkAddress==null?"":" Address: " + networkAddress.toString());
 	}
 	public NetworkSpace getNetworkSpace(){ return networkSpace; }
 	public IPaddr getNetworkAddress(){ return networkAddress; }
 	public boolean equals(Object o){
-	    if( !(o instanceof NattedPair) )
-		return false;
-	    else if( o == null )
+	    if( !(o instanceof NattedPair) || (o==null))
 		return false;
 	    NattedPair other = (NattedPair) o;
-	    if( (other.getNetworkAddress()==null) && (networkAddress!=null) )
-		return false;
-	    else if( (other.getNetworkAddress()!=null) && (networkAddress==null) )
-		return false;
-	    else if( (other.getNetworkAddress()!=null) && (networkAddress!=null) && !(other.getNetworkAddress().equals(networkAddress)) )
-		return false;
-	    else if ( !other.getNetworkSpace().equals(networkSpace) )
-		return false;
-	    else
-		return true;
+	    return Util.isEqual(networkSpace,other.getNetworkSpace())
+		&& Util.isEqual(networkAddress,other.getNetworkAddress());
+	}
+	public boolean isEmpty(){
+	    return (networkSpace==null) && (networkAddress==null);
 	}
     }
 
@@ -162,6 +164,7 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
 	}
 	nattedPairCurrent = new NattedPair(thisNetworkSpace.getNatSpace(),thisNetworkSpace.getNatAddress());
 	nattedJComboBox.setSelectedItem(nattedPairCurrent);
+	nattedJComboBox.setBackground( Util.VALID_BACKGROUND_COLOR );
 	nattedJComboBox.setEnabled(true);
 	
 	// NAME //

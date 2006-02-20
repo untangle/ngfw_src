@@ -535,16 +535,9 @@ public class Util {
 
 
     // GENERAL UTIL ////////////////////////////////
-    public static int chooseMax(int iValue, int iMinValue)
-    {
-        if (iValue >= iMinValue)
-            {
-                return iValue;
-            }
-        else
-            {
-                return iMinValue;
-            }
+    public static int chooseMax(int iValue, int iMinValue){
+        if(iValue >= iMinValue){ return iValue;	}
+        else { return iMinValue; }
     }
 
     public static boolean isArrayEmpty(Object[] inArray){
@@ -556,9 +549,19 @@ public class Util {
             return false;
     }
 
-    public static boolean isListEmpty(List inList)
-    {
+    public static boolean isListEmpty(List inList){
         return null == inList || 0 == inList.size();
+    }
+
+    public static boolean isEqual(Object a, Object b){
+	if( (a==null) && (b==null) )
+	    return true;
+	else if( (a!=null) && (b==null) )
+	    false;
+	else if( (a==null) && (b!=null) )
+	    false;
+	else
+	    return a.equals(b) && b.equals(a);
     }
 
     ///////////////////////////////////////////
