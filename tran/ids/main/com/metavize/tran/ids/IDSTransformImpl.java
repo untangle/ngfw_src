@@ -101,12 +101,12 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 
     protected void initializeSettings() {
 
-        logger.info("Loading Rules...");
+        logger.info("Loading Variables...");
         IDSSettings settings = new IDSSettings(getTid());
         settings.setVariables(IDSRuleManager.defaultVariables);
         settings.setImmutableVariables(IDSRuleManager.immutableVariables);
 
-        logger.info("Settings was null, loading from file");
+        logger.info("Loading Rules...");
         IDSRuleManager manager = new IDSRuleManager(engine); // A fake one for now.  XXX
         List<IDSRule> ruleList = FileLoader.loadAllRuleFiles(manager);
 

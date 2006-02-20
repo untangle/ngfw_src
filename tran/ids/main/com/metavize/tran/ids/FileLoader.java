@@ -20,10 +20,18 @@ import org.apache.log4j.Logger;
 
 
 class FileLoader {
+    public static final String SNORT_RULES_HOME = "/etc/snort";
+
     public static final String[] IGNORED_RULE_FILES = {
         "deleted.rules", "experimental.rules",
         "icmp-info.rules", "local.rules", "porn.rules", "shellcode.rules" };
-    public static final String SNORT_RULES_HOME = "/etc/snort";
+
+    // This should be elsewhere.  XXX
+    public static final int[] VERY_SLOW_RULES = {
+        2001102, 2001101, 2001103, 2001401, 2001727, 2001537 };
+    public static final int[] VERY_STUPID_RULES = {
+        // These are rules that have lots of false positives
+        2229 };
 
     // The default Snort priority for some classifications is stupid.
     public static final String[] FORCED_LOW_PRIORITY_CLASSIFICATIONS = {
@@ -113,13 +121,28 @@ class FileLoader {
             category = category.replace("bleeding-",""); //Should move this to script land
             BufferedReader in = new BufferedReader(new FileReader(file));
             String str;
+            lineloop:
             while ((str = in.readLine()) != null) {
                 str = str.trim();
                 if (str.length() == 0 || str.charAt(0) == '#')
                     continue;
                 IDSRule rule = manager.createRule(str.trim(), category);
-                if (rule != null)
+                if (rule != null) {
+                    int sid = rule.getSid();
+                    for (int slowRule : VERY_SLOW_RULES) {
+                        if (sid == slowRule) {
+                            logger.info("Skipping slow rule " + sid);
+                            continue lineloop;
+                        }
+                    }
+                    for (int stupidRule : VERY_STUPID_RULES) {
+                        if (sid == stupidRule) {
+                            logger.info("Skipping stupid rule " + sid);
+                            continue lineloop;
+                        }
+                    }
                     result.add(rule);
+                }
             }
             in.close();
         } catch (IOException e) {

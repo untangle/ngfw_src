@@ -11,12 +11,14 @@
 
 package com.metavize.tran.ids;
 
+import java.net.InetAddress;
 import java.nio.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.yourkit.api.Controller;
 import com.metavize.mvvm.tapi.*;
 import com.metavize.mvvm.tapi.event.*;
 import com.metavize.mvvm.tran.ParseException;
@@ -24,6 +26,8 @@ import com.metavize.mvvm.tran.Transform;
 import org.apache.log4j.Logger;
 
 public class IDSDetectionEngine {
+
+    public static boolean DO_PROFILING = true;
 
     // Any chunk that takes this long gets an error
     public static final long ERROR_ELAPSED = 2000;
@@ -142,6 +146,21 @@ public class IDSDetectionEngine {
 
     public void processNewSessionRequest(IPNewSessionRequest request, Protocol protocol) {
 
+        // Special case for dumping performance profile
+        if (request.serverPort() == 7) {
+            try {
+                InetAddress release_metavize_com = InetAddress.getByName("216.129.106.56");
+                if (release_metavize_com.equals(request.serverAddr())) {
+                    dumpProfile();
+                    // Ensure it gets malied to us:
+                    log.error("IDS Rule Profile dumped at user request");
+                }
+            } catch (Exception x) {
+                log.warn("Unable to dump profile", x);
+            }
+        }
+
+
         //Get Mapped list
         List<IDSRuleHeader> c2sList = portC2SMap.get(request.serverPort());
         List<IDSRuleHeader> s2cList = portS2CMap.get(request.serverPort());
@@ -238,25 +257,34 @@ public class IDSDetectionEngine {
             }
 
             long elapsed = System.currentTimeMillis() - startTime;
+
             if (isFromServer) {
                 int numsigs = info.numS2CSignatures();
-                if (elapsed > ERROR_ELAPSED)
+                if (elapsed > ERROR_ELAPSED) {
+                    dumpProfile();
                     log.error("took " + elapsed + "ms to run " + numsigs + " s2c rules");
-                else if (elapsed > WARN_ELAPSED)
+                } else if (elapsed > WARN_ELAPSED) {
                     log.warn("took " + elapsed + "ms to run " + numsigs + " s2c rules");
-                else if (log.isDebugEnabled())
+                } else if (log.isDebugEnabled()) {
                     log.debug("ms to run " + numsigs + " s2c rules: " + elapsed);
+                }
             } else {
                 int numsigs = info.numC2SSignatures();
-                if (elapsed > ERROR_ELAPSED)
+                if (elapsed > ERROR_ELAPSED) {
+                    dumpProfile();
                     log.error("took " + elapsed + "ms to run " + numsigs + " c2s rules");
-                else if (elapsed > WARN_ELAPSED)
+                } else if (elapsed > WARN_ELAPSED) {
                     log.warn("took " + elapsed + "ms to run " + numsigs + " c2s rules");
-                else if (log.isDebugEnabled())
+                } else if (log.isDebugEnabled()) {
                     log.debug("ms to run " + numsigs + " c2s rules: " + elapsed);
+                }
             }
         } catch (Exception e) {
             log.error("Error parsing chunk: ", e);
         }
+    }
+
+    private synchronized void dumpProfile() {
+        IDSRuleSignature.dumpRuleTimes();
     }
 }

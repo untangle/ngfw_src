@@ -11,6 +11,7 @@
 
 package com.metavize.tran.ids;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Vector;
@@ -35,6 +36,8 @@ public class IDSRuleSignature {
 
     private static final int DETECT_COUNTER   = Transform.GENERIC_1_COUNTER;
     private static final int BLOCK_COUNTER    = Transform.GENERIC_2_COUNTER;
+
+    private static HashMap<IDSRule,long[]> ruleTimes = new HashMap<IDSRule,long[]>();
 
     private List<IDSOption> options = new Vector<IDSOption>();
 
@@ -141,15 +144,38 @@ public class IDSRuleSignature {
     }
 
     public boolean execute(IDSSessionInfo info) {
+        boolean result = true;
+        long startTime = 0;
+        if (IDSDetectionEngine.DO_PROFILING)
+            startTime = System.nanoTime();
         for(IDSOption option : options) {
             if(false == option.run(info)) {
                 // do not match
-                return false;
+                result = false;
+                break;
             }
         }
 
-        doAction(info); // match
-        return true;
+        if (IDSDetectionEngine.DO_PROFILING) {
+            // Throw away last three digits as they are always zero on linux.
+            long elapsed = (System.nanoTime() - startTime) / 1000l;
+            synchronized(ruleTimes) {
+                long[] existingCountAndTime = ruleTimes.get(rule);
+                if (existingCountAndTime == null) {
+                    existingCountAndTime = new long[2];
+                    existingCountAndTime[0] = 1;
+                    existingCountAndTime[1] = elapsed;
+                    ruleTimes.put(rule, existingCountAndTime);
+                } else {
+                    existingCountAndTime[0]++;
+                    existingCountAndTime[1] += elapsed;
+                }
+            }
+        }
+
+        if (result)
+            doAction(info); // match
+        return result;
     }
 
     private void doAction(IDSSessionInfo info) {
@@ -196,5 +222,21 @@ public class IDSRuleSignature {
 
     public String toString() {
         return toString;
+    }
+
+    static void dumpRuleTimes() {
+        if (IDSDetectionEngine.DO_PROFILING) {
+            StringBuilder sb = new StringBuilder(String.format("\n%10s %12s %10s\n",
+                                                               "Count", "Micros", "Rule"));
+            synchronized(ruleTimes) {
+                for (IDSRule rule : ruleTimes.keySet()) {
+                    long[] countAndTime = ruleTimes.get(rule);
+                    sb.append(String.format("%10d %12d %10d\n",
+                                            countAndTime[0], countAndTime[1], rule.getSid()));
+                }
+                ruleTimes.clear();
+            }
+            log.warn(sb.toString());
+        }
     }
 }
