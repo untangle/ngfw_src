@@ -224,9 +224,11 @@ class SettingsManager
                 natSpace = networkSpaceMap.get( natSpace.getBusinessPapers());
                 /* if this happens there is nothing the user can do. */
                 if ( natSpace == null ) {
-                    throw new ValidateException( "Network space " + space.getName() + " is unassigned" );
+                    throw new ValidateException( "Network space '" + space.getName() + 
+                                                 "' has an invalid nat sace." );
                 }
-            } else if ( !space.getIsPrimary()) {
+                space.setNatSpace( natSpace );
+            } else if ( !space.getIsPrimary() && space.isLive() && space.getIsNatEnabled()) {
                 logger.warn( "Network space: " + space.getName() + " has a null nat space" );
             }
         }

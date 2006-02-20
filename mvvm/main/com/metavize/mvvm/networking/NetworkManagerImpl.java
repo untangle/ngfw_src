@@ -360,7 +360,8 @@ public class NetworkManagerImpl implements NetworkManager
     
     public void updateAddress()
     {
-        
+        /* Get the new address for any dhcp spaces */
+
     }
 
     public void disableDhcpForwarding()
@@ -661,16 +662,14 @@ public class NetworkManagerImpl implements NetworkManager
      * networking manager, all other classes get AccessException.  Done
      * this way so only the MvvmContextImpl can create a networking manager
      * and then give out access to those classes (argon) that need it.
-     * @throws AccessException - the networking manager has already
-     * been initialized. */
-    public synchronized static NetworkManagerImpl makeInstance() throws AccessException
+     * RBS (2/19/06) this is kind of silly, and annoying, switching to getInstance.
+     */
+    public synchronized static NetworkManagerImpl getInstance()
     {
-        if ( INSTANCE != null ) {
-            throw new AccessException( "The networking manager has already been initialized" );
-        }
+        if ( INSTANCE != null ) return INSTANCE;
 
         INSTANCE = new NetworkManagerImpl();
-
+        
         return INSTANCE;
     }
 }

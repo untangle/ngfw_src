@@ -358,7 +358,6 @@ class OpenVpnManager
         /* XXXXXX This needs some global address and possibly the port, possibly an address
            from the settings */
         sw.appendVariable( FLAG_REMOTE, publicAddress + " " + DEFAULT_PORT );
-                           
 
         sw.writeFile( CLIENT_CONF_FILE_BASE + name + "." + extension );
     }

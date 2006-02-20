@@ -36,7 +36,6 @@ import com.metavize.mvvm.util.TransactionRunner;
 import com.metavize.mvvm.util.TransactionWork;
 import com.metavize.tran.util.IOUtil;
 import com.metavize.mvvm.networking.NetworkManagerImpl;
-import com.metavize.mvvm.networking.AccessException;
 import com.metavize.mvvm.NetworkManager;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
@@ -411,11 +410,7 @@ public class MvvmContextImpl extends MvvmContextBase
         // Retrieve the network settings manager.
         // (Kind of busted, but NAT may register a listener, and thus the network manager
         // should exist.
-        try {
-            networkManager = NetworkManagerImpl.makeInstance();
-        } catch ( AccessException e ) {
-            logger.error( "Access exception creating the networking manager", e );
-        }
+        networkManager = NetworkManagerImpl.getInstance();
 
         // start transforms:
         transformManager = TransformManagerImpl.manager();
