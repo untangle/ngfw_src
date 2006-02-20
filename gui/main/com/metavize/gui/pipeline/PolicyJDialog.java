@@ -31,7 +31,7 @@ public class PolicyJDialog extends MConfigJDialog {
     private static final String NAME_POLICIES           = "Policy-To-Rack Map";
     private static final String NAME_SYSTEM_POLICIES    = "Default Policies";
     private static final String NAME_USER_POLICIES      = "Custom Policies";
-    private static final String NAME_AVAILABLE_POLICIES = "Racks";
+    private static final String NAME_AVAILABLE_POLICIES = "Rack List";
     
     public PolicyJDialog( ) {
         this.setTitle(NAME_POLICY_MANAGER);
