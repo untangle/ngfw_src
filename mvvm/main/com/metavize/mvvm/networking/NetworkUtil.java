@@ -13,6 +13,8 @@ package com.metavize.mvvm.networking;
 
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Set;
+import java.util.HashSet;
 
 import java.net.InetAddress;
 import java.net.Inet4Address;
@@ -38,6 +40,8 @@ public class NetworkUtil
     
     public static int DEFAULT_LEASE_TIME_SEC = 4 * 60 * 60;
 
+    public static final String DEFAULT_SPACE_NAME_PRIMARY = "public";
+    public static final String DEFAULT_SPACE_NAME_NAT     = "private";
 
     public static final int     DEF_HTTPS_PORT = 443;
     
@@ -63,6 +67,8 @@ public class NetworkUtil
     public void validate( NetworkSpacesSettings settings ) throws ValidateException
     {
         int index = 0;
+        Set<String> nameSet = new HashSet<String>();
+
         for ( NetworkSpace space : (List<NetworkSpace>)settings.getNetworkSpaceList()) {
             if ( index == 0 && !space.isLive()) {
                 throw new ValidateException( "The primary network space must be active." );
@@ -74,13 +80,31 @@ public class NetworkUtil
                                              " interface" );
             }
 
+            String name = space.getName().trim();
+            space.setName( name );
+
+            if ( !nameSet.add( name )) {
+                throw new ValidateException( "Two network spaces cannot have the same name[" + name + "]" );
+            }
+
             /* If dhcp is not enabled, there must be at least one address */
             validate( space );
-            
+                        
             index++;
+        }
+        
+        if ( settings.getNetworkSpaceList().size() < 1 ) {
+            throw new ValidateException( "There must be at least one network space" );
         }
 
         for ( Route route : (List<Route>)settings.getRoutingTable()) validate( route );
+        
+        for ( Interface intf : settings.getInterfaceList()) {
+            NetworkSpace space = intf.getNetworkSpace();
+            if ( space == null ) {
+                throw new ValidateException( "Interface " + intf.getName() + " has an empty network space" );
+            }
+        }
 
         /* XXX Check the reverse, make sure each interface is in one of the network spaces
          * in the list */
@@ -93,6 +117,10 @@ public class NetworkUtil
     {
         boolean isDhcpEnabled = space.getIsDhcpEnabled();
         List<IPNetworkRule> networkList = (List<IPNetworkRule>)space.getNetworkList();
+        
+        if (( space.getName() == null ) || ( space.getName().trim().length() == 0 )) {
+            throw new ValidateException( "A network space should have a non-empty an empty name" );
+        }
         
         if ( !isDhcpEnabled && (( networkList == null ) || ( networkList.size() < 1 ))) {
             throw new ValidateException( "A network space should either have at least one address,"+

@@ -17,9 +17,10 @@ import java.util.LinkedList;
 import java.io.Serializable;
 
 import com.metavize.mvvm.tran.IPaddr;
-import com.metavize.mvvm.tran.Validatable; /* perhaps */
+import com.metavize.mvvm.tran.Validatable;
+import com.metavize.mvvm.tran.ValidateException;
 
-public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Serializable
+public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Serializable, Validatable
 {
     private SetupState setupState = SetupState.BASIC;
     private boolean isEnabled = false;;
@@ -178,5 +179,10 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
         sb.append( "\ngateway:  " + getDefaultRoute());
 
         return sb.toString();
+    }
+
+    public void validate() throws ValidateException
+    {
+        NetworkUtil.getInstance().validate( this );
     }
 }

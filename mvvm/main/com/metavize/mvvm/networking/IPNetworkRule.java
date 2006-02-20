@@ -11,12 +11,15 @@
 
 package com.metavize.mvvm.networking;
 
-import java.util.List;
 import java.net.InetAddress;
+
+import java.util.List;
+import java.util.LinkedList;
 
 import com.metavize.mvvm.tran.Rule;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.ParseException;
+import com.metavize.mvvm.tran.firewall.ParsingConstants;;
 
 /**
  * An IPNetwork that is to go into a list, this is only to 
@@ -89,7 +92,17 @@ public class IPNetworkRule extends Rule
 
     public static List parseList( String value ) throws ParseException
     {
-        return null; // XXX something actually needs to be done here...
+        List networkList = new LinkedList();
+        
+        /* empty list, null or throw parse exception */
+        if ( value == null ) throw new ParseException( "Null list" );
+
+        value = value.trim();
+
+        String networkArray[] = value.split( ParsingConstants.MARKER_SEPERATOR );
+        
+        for ( int c = 0 ; c < networkArray.length ; c++ ) networkList.add( parse( networkArray[c] ));
+        return networkList;
     }
 
     public static IPNetworkRule makeInstance( InetAddress network, InetAddress netmask )

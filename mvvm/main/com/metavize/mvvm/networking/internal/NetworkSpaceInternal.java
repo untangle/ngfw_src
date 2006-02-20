@@ -294,7 +294,8 @@ public class NetworkSpaceInternal
     {
         StringBuilder sb = new StringBuilder();
         
-        sb.append( "isEnabled:   "   + getIsEnabled());
+        sb.append( "name:      "     + getName());
+        sb.append( "\nisEnabled:   " + getIsEnabled());
         sb.append( "\nnetworks:    " + getNetworkList());
         sb.append( "\nprimary:     " + getPrimaryAddress());
         sb.append( "\ndhcp:        " + getIsDhcpEnabled());

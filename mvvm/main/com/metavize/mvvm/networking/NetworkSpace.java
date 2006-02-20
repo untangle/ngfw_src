@@ -36,6 +36,7 @@ public class NetworkSpace extends Rule
     public static final int DEFAULT_MTU = 1500;
     public static final int MIN_MTU = 100;
     public static final int MAX_MTU = 3000;
+    public static final String DEFAULT_SPACE_NAME = "space";
     
     private boolean isPrimary;
 
@@ -67,6 +68,7 @@ public class NetworkSpace extends Rule
                          boolean isDmzHostEnabled, boolean isDmzHostLoggingEnabled, IPaddr dmzHost )
     {
         setLive( isEnabled );
+        this.setName( DEFAULT_SPACE_NAME );
         this.businessPapers          = ( new Random()).nextLong();
         this.networkList             = networkList;
         this.isDhcpEnabled           = isDhcpEnabled;
@@ -81,7 +83,8 @@ public class NetworkSpace extends Rule
 
     public NetworkSpace()
     {
-                this.businessPapers = ( new Random()).nextLong();
+        this.businessPapers = ( new Random()).nextLong();
+        this.setName( DEFAULT_SPACE_NAME );
     }
 
     public boolean getIsPrimary()
@@ -324,7 +327,8 @@ public class NetworkSpace extends Rule
     {
         StringBuilder sb = new StringBuilder();
         
-        sb.append( "isEnabled:   "   + isLive());
+        sb.append( "name:        "   + getName());
+        sb.append( "\nisEnabled:   " + isLive());
         sb.append( "\nnetworks:    " + getNetworkList());
         sb.append( "\ndhcp:        " + getIsDhcpEnabled());
         sb.append( "\nforwarded:   " + getIsTrafficForwarded());

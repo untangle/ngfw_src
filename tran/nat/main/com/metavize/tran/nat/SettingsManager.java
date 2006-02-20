@@ -12,6 +12,8 @@ package com.metavize.tran.nat;
 
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 
@@ -33,6 +35,7 @@ import com.metavize.mvvm.networking.NetworkSpacesSettingsImpl;
 import com.metavize.mvvm.networking.ServicesSettings;
 import com.metavize.mvvm.networking.ServicesSettingsImpl;
 import com.metavize.mvvm.networking.EthernetMedia;
+import com.metavize.mvvm.networking.NetworkUtil;
 
 import com.metavize.mvvm.networking.internal.DhcpLeaseInternal;
 import com.metavize.mvvm.networking.internal.DnsStaticHostInternal;
@@ -44,6 +47,8 @@ import com.metavize.mvvm.networking.internal.ServicesInternalSettings;
 import com.metavize.mvvm.security.Tid;
 
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.ValidateException;
+
 import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
 import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
 import com.metavize.mvvm.tran.firewall.intf.IntfMatcher;
@@ -76,6 +81,7 @@ class SettingsManager
         
         /* Just ignore the previous settings */
         natSpace = new NetworkSpace();
+        natSpace.setName( NetworkUtil.DEFAULT_SPACE_NAME_NAT );
         
         boolean isNatEnabled = natSettings.getNatEnabled();
         natSpace.setLive( isNatEnabled );
@@ -88,6 +94,7 @@ class SettingsManager
         natSpace.setIsTrafficForwarded( true );
         natSpace.setIsNatEnabled( true );
         natSpace.setNatSpace( primary );
+        natSpace.setNatAddress( null );
         
         /* DMZ is disabled on this space */
         natSpace.setIsDmzHostEnabled( false );
@@ -157,13 +164,60 @@ class SettingsManager
 
     NetworkSpacesSettings toNetworkSettings( NetworkSpacesSettings networkSettings, 
                                              NatAdvancedSettings advanced )
+        throws ValidateException
     {
         ((NetworkSpacesSettingsImpl)networkSettings).setSetupState( SetupState.ADVANCED );
         /* Is enabled should have already been set */
         // networkSettings.setIEnabled();
+        
+        /* Fix all of the links to NetworkSpaces */
+        List<NetworkSpace> networkSpaceList = advanced.getNetworkSpaceList();
+        
+        Map<Long,NetworkSpace> networkSpaceMap = new HashMap<Long,NetworkSpace>();
 
-        networkSettings.setInterfaceList( advanced.getInterfaceList());
-        networkSettings.setNetworkSpaceList( advanced.getNetworkSpaceList());
+        for( NetworkSpace space : networkSpaceList ) networkSpaceMap.put( space.getBusinessPapers(), space );
+
+        List<Interface> interfaceList = advanced.getInterfaceList();
+
+        for( Interface intf : interfaceList ) {
+            String name = intf.getName();
+            if ( intf.getNetworkSpace() == null ) {
+                throw new ValidateException( "Interface " + name + " has an empty network space" );
+            }
+            
+            NetworkSpace space = networkSpaceMap.get( intf.getNetworkSpace().getBusinessPapers());
+            /* This shouldn't happen */
+            if ( space == null ) {
+                throw new ValidateException( "Interface " + name + " is not assigned a network space" );
+            }
+            
+            logger.debug( "stitching the interface to " + space.hashCode() +  " " + space.getBusinessPapers());
+            intf.setNetworkSpace( space );
+            space = intf.getNetworkSpace();
+            logger.debug( "interface -> " + space.hashCode() +  " " + space.getBusinessPapers());
+        }
+
+        for ( NetworkSpace space : networkSpaceList ) {
+            NetworkSpace natSpace = space.getNatSpace();
+            if ( natSpace != null ) {
+                natSpace = networkSpaceMap.get( natSpace.getBusinessPapers());
+                /* if this happens there is nothing the user can do. */
+                if ( natSpace == null ) {
+                    throw new ValidateException( "Network space " + space.getName() + " is unassigned" );
+                }
+            } else if ( !space.getIsPrimary()) {
+                logger.warn( "Network space: " + space.getName() + " has a null nat space" );
+            }
+        }
+        
+        networkSettings.setInterfaceList( interfaceList );
+
+        for( Interface intf : interfaceList ) {
+            NetworkSpace space = intf.getNetworkSpace();
+            logger.debug( "interface -> " + space.hashCode() +  " " + space.getBusinessPapers());
+        }
+
+        networkSettings.setNetworkSpaceList( networkSpaceList );
         networkSettings.setRoutingTable( advanced.getRoutingTable());
         networkSettings.setRedirectList( advanced.getRedirectList());
         

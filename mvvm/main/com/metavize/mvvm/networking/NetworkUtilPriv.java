@@ -124,8 +124,18 @@ class NetworkUtilPriv extends NetworkUtil
             String deviceName = BRIDGE_PREFIX + index;
             
             if ( networkSpace.isLive()) {
+                
+                logger.debug( "network space: " + networkSpace.hashCode() + " " + 
+                              networkSpace.getBusinessPapers());
+
+                /* Use an iterator in order to allow for remove */
                 for ( Iterator<Interface> iter = intfListCopy.iterator() ; iter.hasNext() ; ) {
                     Interface intf = iter.next();
+                    
+                    NetworkSpace intfSpace = intf.getNetworkSpace();
+                    logger.debug( "Interface: " + intf.getArgonIntf() + " / " + 
+                                  intfSpace.getName() + " " + intfSpace.hashCode()
+                                  + " " + intfSpace.getBusinessPapers());
                     
                     if ( intf.getNetworkSpace().equals( networkSpace )) {
                         try {
@@ -261,6 +271,8 @@ class NetworkUtilPriv extends NetworkUtil
         
         /* Create a single network space */
         NetworkSpace primary = new NetworkSpace();
+        primary.setName( NetworkUtil.DEFAULT_SPACE_NAME_PRIMARY );
+        
         primary.setBusinessPapers( 0 );
         primary.setIsTrafficForwarded( true );
         primary.setIsNatEnabled( false );

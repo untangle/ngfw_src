@@ -462,6 +462,7 @@ public class NetworkManagerImpl implements NetworkManager
     private void initPriv() throws NetworkException, ValidateException
     {
         /* !!!! Load settings */
+
         String saveSettings = System.getProperty( "bunnicula.devel.networking" );
 
         if ( Boolean.valueOf( saveSettings ) == false ) this.saveSettings = false;
