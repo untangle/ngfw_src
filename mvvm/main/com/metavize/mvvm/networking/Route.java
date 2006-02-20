@@ -80,7 +80,7 @@ public class Route extends Rule
     public void setDestination( IPNetwork newValue )
     {
         if ( newValue == null ) newValue = IPNetwork.getEmptyNetwork();
-        this.destination = destination;
+        this.destination = newValue;
     }
 
     /**
@@ -104,5 +104,10 @@ public class Route extends Rule
     {
         if ( newValue == null ) newValue = NetworkUtil.EMPTY_IPADDR;
         this.nextHop = newValue;
+    }
+
+    public String toString()
+    {
+        return "destination: "  + getDestination() + " next-hop: " + getNextHop();
     }
 }

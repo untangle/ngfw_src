@@ -162,13 +162,24 @@ class InterfacesScriptWriter extends ScriptWriter
         for ( RouteInternal route : (List<RouteInternal>)this.settings.getRoutingTable()) {
             /* Ignore disabled routes */
             if ( !route.getIsEnabled()) continue;
+
+            IPNetwork destination = route.getDestination();
+            IPaddr nextHop = route.getNextHop();
+
+            /* Ignore empty routing entries */
+            if ( destination.equals( IPNetwork.getEmptyNetwork()) ||
+                 ( destination.getNetwork() == null || destination.getNetwork().isEmpty()) ||
+                 ( destination.getNetmask() == null || destination.getNetmask().isEmpty()) ||
+                 ( nextHop == null || nextHop.isEmpty())) {
+                logger.warn( "Ignoring empty routing entry: " + route );
+            }
+
             // !!! This is currently not supported.
             // if ( route.getNetworkSpace() != null ) {
             // logger.warn( "Custom routing rules with per network space are presently not supported" );
             //}
             
-            appendCommands( "up ip route add to " + nup.toRouteString( route.getDestination()) + " via " + 
-                            route.getNextHop());
+            appendCommands( "up ip route add to " + nup.toRouteString( destination ) + " via " + nextHop );
         }
         
         /* Add the default route last */

@@ -52,12 +52,12 @@ public class NetworkUtil
     }
 
     /* Get all of the interfaces in a particular network space */
-    public List getInterfaceList( NetworkSpacesSettings settings, NetworkSpace space )
+    public List<Interface> getInterfaceList( NetworkSpacesSettings settings, NetworkSpace space )
     {
-        List list = new LinkedList();
+        List<Interface> list = new LinkedList<Interface>();
         
         long papers = space.getBusinessPapers();
-        for ( Interface intf : (List<Interface>)settings.getInterfaceList()) {
+        for ( Interface intf : settings.getInterfaceList()) {
             NetworkSpace intfSpace = intf.getNetworkSpace();
             if ( intfSpace.equals( space ) || ( intfSpace.getBusinessPapers() == papers )) list.add( intf );
         }
@@ -71,15 +71,17 @@ public class NetworkUtil
         int index = 0;
         Set<String> nameSet = new HashSet<String>();
 
-        for ( NetworkSpace space : (List<NetworkSpace>)settings.getNetworkSpaceList()) {
+        /* Calculate if a space is live, a space is not alive if it is not mapped to. */
+        for ( NetworkSpace space : settings.getNetworkSpaceList()) {
+            space.setLive( true );
+            /* The external interface is always mapped to the primary space */
+            if ( space.getIsPrimary()) continue;
+            if ( getInterfaceList( settings, space ).size() == 0 ) space.setLive( false );
+        }
+        
+        for ( NetworkSpace space : settings.getNetworkSpaceList()) {
             if ( index == 0 && !space.isLive()) {
                 throw new ValidateException( "The primary network space must be active." );
-            }
-            
-            /* Could also check if the external interface is in the first network space */
-            if ( space.isLive() && getInterfaceList( settings, space ).size() == 0 ) {
-                throw new ValidateException( "The space "+ space.getName() + " must have at least one" + 
-                                             " interface" );
             }
 
             String name = space.getName().trim();
@@ -99,6 +101,7 @@ public class NetworkUtil
             throw new ValidateException( "There must be at least one network space" );
         }
 
+        /* Have to validate that all of the next hops are reachable */
         for ( Route route : (List<Route>)settings.getRoutingTable()) validate( route );
         
         for ( Interface intf : settings.getInterfaceList()) {
@@ -124,23 +127,24 @@ public class NetworkUtil
             throw new ValidateException( "A network space should have a non-empty an empty name" );
         }
         
-        if ( !isDhcpEnabled && (( networkList == null ) || ( networkList.size() < 1 ))) {
-            throw new ValidateException( "A network space should either have at least one address,"+
-                                         " or use DHCP." );
-        }
-        
-        if ( space.isLive() && space.getIsNatEnabled()) {
-             if ( isDhcpEnabled ) {
-                 throw new ValidateException( "A network space running NAT should not get its address" +
-                                              " from a DHCP server." );
-             }
+        if ( space.isLive()) {
+            if ( !isDhcpEnabled && (( networkList == null ) || ( networkList.size() < 1 ))) {
+                throw new ValidateException( "A network space should either have at least one address,"+
+                                             " or use DHCP." );
+            }
+            if ( space.getIsNatEnabled()) {
+                if ( isDhcpEnabled ) {
+                    throw new ValidateException( "A network space running NAT should not get its address" +
+                                                 " from a DHCP server." );
+                }
 
-             if ( space.getNatSpace() == null ) {
-                 throw new ValidateException( "The network space " + space.getName() +
-                                              " running NAT must have a NAT space" );
-             }
+                if ( space.getNatSpace() == null ) {
+                    throw new ValidateException( "The network space '" + space.getName() +
+                                                 "' running NAT must have a NAT space" );
+                }
+            }
         }
-
+       
 
         IPaddr dmzHost = space.getDmzHost();
         if ( space.getIsDmzHostEnabled() && (( dmzHost == null ) || dmzHost.isEmpty())) {

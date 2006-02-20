@@ -200,8 +200,17 @@ class SettingsManager
 
         List<Interface> interfaceList = advanced.getInterfaceList();
 
+        boolean hasExternalIntf = false;
+
         for( Interface intf : interfaceList ) {
             String name = intf.getName();
+
+            if ( intf.getArgonIntf() == IntfConstants.EXTERNAL_INTF ) {
+                intf.setNetworkSpace( previousPrimary );
+                hasExternalIntf = true;
+                continue;
+            }
+
             if ( intf.getNetworkSpace() == null ) {
                 throw new ValidateException( "Interface " + name + " has an empty network space" );
             }
@@ -217,6 +226,28 @@ class SettingsManager
             space = intf.getNetworkSpace();
             logger.debug( "interface -> " + space.hashCode() +  " " + space.getBusinessPapers());
         }
+
+        if ( !hasExternalIntf ) {
+            /* Depending on the contract with the GUI, this may or may not be true */
+            logger.debug( "Interface list doesn't contain external interface, inserting" );
+            for ( Interface intf : networkSettings.getInterfaceList()) {
+                if ( intf.getArgonIntf() != IntfConstants.EXTERNAL_INTF ) continue;
+                intf.setNetworkSpace( previousPrimary );
+                interfaceList.add( 0, intf );
+                hasExternalIntf = true;
+                break;
+            }
+            
+            /* If the previous list didn't have an external interface, then add one */
+            if ( !hasExternalIntf ) {
+                logger.warn( "Previous list didn't have external interface, inserting" );
+                Interface intf = 
+                    new Interface( IntfConstants.EXTERNAL_INTF, EthernetMedia.AUTO_NEGOTIATE, true );
+                intf.setNetworkSpace( previousPrimary );
+                interfaceList.add( 0, intf );
+            }
+        }
+
 
         for ( NetworkSpace space : networkSpaceList ) {
             NetworkSpace natSpace = space.getNatSpace();

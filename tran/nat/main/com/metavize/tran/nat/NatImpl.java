@@ -445,23 +445,27 @@ public class NatImpl extends AbstractTransform implements Nat
 
         private final Runnable go;
         
+        /* This are the settings passed in by the network settings */
+        private NetworkSpacesInternalSettings settings;
+        
         SettingsListener()
         {
             tl = new TransformContextSwitcher( getTransformContext().getClassLoader());
             go = new Runnable() {
                     public void run()
                     {
-                        logger.debug( "The Network setting hath changed" + NatImpl.this.dhcpMonitor );
-                        logger.debug( "Classloader: " + Thread.currentThread().getContextClassLoader());
+                        if ( logger.isDebugEnabled()) logger.debug( "network settings changed:" + settings );
+                        
+                        
                     }
                 };
         }
 
         public void event( NetworkSpacesInternalSettings settings )
         {
-            logger.debug( "Classloader: " + Thread.currentThread().getContextClassLoader());
+            
+            this.settings = settings;
             tl.run( go );
-            go.run();
         }
         
     }

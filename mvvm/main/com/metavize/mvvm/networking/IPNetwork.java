@@ -90,7 +90,6 @@ public class IPNetwork implements Serializable
         return new IPNetwork( network, netmask, user );
     }
 
-
     public static IPNetwork getEmptyNetwork()
     {
         return EMPTY_IPNETWORK;
