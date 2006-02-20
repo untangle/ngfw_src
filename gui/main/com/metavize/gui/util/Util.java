@@ -557,9 +557,9 @@ public class Util {
 	if( (a==null) && (b==null) )
 	    return true;
 	else if( (a!=null) && (b==null) )
-	    false;
+	    return false;
 	else if( (a==null) && (b!=null) )
-	    false;
+	    return false;
 	else
 	    return a.equals(b) && b.equals(a);
     }
