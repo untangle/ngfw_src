@@ -23,6 +23,7 @@ import java.awt.Dimension;
 import java.awt.Component;
 import javax.swing.JTabbedPane;
 import javax.swing.JPanel;
+import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import javax.swing.table.*;
 import javax.swing.event.*;
@@ -35,6 +36,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 
     private static final String NAME_NET_SPACES       = "Net Spaces";
     private static final String NAME_INTERFACE_MAP    = "Interface-To-Space Map";
+    private static final String NAME_SPACE_LIST       = "Space List";
     private static final String NAME_SPACE            = "Space";
     private static final String NAME_ROUTING          = "Routing";
     private static final String NAME_NAT              = "NAT";
@@ -68,6 +70,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     private Component dmzScrollable;
     private JTabbedPane spacesJTabbedPane;
     private InterfaceMapJPanel interfaceMapJPanel;
+    private SpaceListJPanel spaceListJPanel;
     private List<String> spaceNameList;
     private List<Component> spaceScrollableList;
     private RoutingJPanel routingJPanel;
@@ -84,6 +87,12 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 		removeSavable(NAME_INTERFACE_MAP);
 		removeRefreshable(NAME_INTERFACE_MAP);
 		interfaceMapJPanel = null;
+	    }
+	    if(spaceListJPanel != null){
+		removeTab(spaceListJPanel);
+		removeSavable(NAME_SPACE_LIST);
+		removeRefreshable(NAME_SPACE_LIST);
+		spaceListJPanel = null;
 	    }
 	    if(spaceNameList != null){
 		for( String name : spaceNameList ){
@@ -146,6 +155,15 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 		interfaceMapJPanel.setSettingsChangedListener(this);
 	    }
 
+	    // SPACE LIST //
+	    if( spaceListJPanel == null ){
+		spaceListJPanel = new SpaceListJPanel();
+		spacesJTabbedPane.addTab(NAME_SPACE_LIST, null, spaceListJPanel);
+		addSavable(NAME_SPACE_LIST, spaceListJPanel);
+		addRefreshable(NAME_SPACE_LIST, spaceListJPanel);
+		spaceListJPanel.setSettingsChangedListener(this);
+	    }
+
 	    // SPACES //
 	    if( spaceNameList != null ){
 		for( String name : spaceNameList ){
@@ -158,17 +176,24 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	    }
 	    spaceNameList = new ArrayList<String>();
 	    spaceScrollableList = new ArrayList<Component>();
-	    int index = 0;
+	    JComponent spaceJComponent;
 	    for( NetworkSpace networkSpace : networkSpaceList ){
-		SpaceJPanel spaceJPanel = new SpaceJPanel(networkSpace);
-		spaceNameList.add(Integer.toString(index) + NAME_SPACE + networkSpace.getName());
-		spaceScrollableList.add( addScrollableTab(spacesJTabbedPane, NAME_SPACE 
-							  + " (" + networkSpace.getName() + ")", 
-							  null, spaceJPanel, false, true) );
-		addSavable( Integer.toString(index) + NAME_SPACE + networkSpace.getName(), spaceJPanel);
-		addRefreshable( Integer.toString(index) + NAME_SPACE + networkSpace.getName(), spaceJPanel);
-		spaceJPanel.setSettingsChangedListener(this);
-		index++;
+		if( networkSpace.getIsPrimary() ){
+		    PrimarySpaceJPanel primarySpaceJPanel = new PrimarySpaceJPanel(networkSpace);
+		    primarySpaceJPanel.setSettingsChangedListener(this);
+		    spaceJComponent = primarySpaceJPanel;
+		}
+		else{
+		    SpaceJPanel spaceJPanel = new SpaceJPanel(networkSpace);
+		    spaceJPanel.setSettingsChangedListener(this);
+		    spaceJComponent = spaceJPanel;
+		}
+		spaceNameList.add(networkSpace.getName() + " (" + NAME_SPACE + ")");
+		spaceScrollableList.add( addScrollableTab(spacesJTabbedPane, networkSpace.getName()
+							  + " (" + NAME_SPACE + ")", 
+							  null, spaceJComponent, false, true) );
+		addSavable( networkSpace.getName() + " (" + NAME_SPACE + ")", (Savable)spaceJComponent);
+		addRefreshable( networkSpace.getName() + " (" + NAME_SPACE + ")", (Refreshable)spaceJComponent);
 	    }
 
 	    // ROUTING //

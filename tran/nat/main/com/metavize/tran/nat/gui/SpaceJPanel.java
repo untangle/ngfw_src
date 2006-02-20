@@ -25,7 +25,6 @@ import javax.swing.*;
 
 public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, Refreshable<Object> {
     
-    private static final String EXCEPTION_NAME = "The name must be at least one character long.";
     private static final String EXCEPTION_ALIAS = "The Network Aliases must be a comma separated list of masked IP Addresses.";
     private static final String EXCEPTION_NATTED_ADDRESS = "You must choose the NATted address for this space.";
 
@@ -45,13 +44,6 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
     ///////////////////////////////////////////
     
     public void doSave(Object settings, boolean validateOnly) throws Exception {
-
-	// NAME //
-	String name = nameJTextField.getText().trim();
-	if( name.length() == 0 ){
-	    nameJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
-	    throw new Exception(EXCEPTION_NAME);
-        }
 
         // NAT ENABLED ///////////
         boolean natEnabled = natEnabledJRadioButton.isSelected();
@@ -91,13 +83,13 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
 	if( !validateOnly ){
 	    NetworkSpacesSettings networkSpacesSettings = (NetworkSpacesSettings) settings;
 	    NetworkSpace thisNetworkSpace = null;
-	    for(NetworkSpace networkSpace : networkSpacesSettings.getNetworkSpaceList() )
+	    List<NetworkSpace> networkSpaceList = (List<NetworkSpace>) networkSpacesSettings.getNetworkSpaceList();
+	    for(NetworkSpace networkSpace : networkSpaceList )
 		if( networkSpace.getBusinessPapers() == initNetworkSpace.getBusinessPapers() )
 		    thisNetworkSpace = networkSpace;
 	    if( thisNetworkSpace == null )
-		throw new Exception("network space not found during save");
+		throw new Exception("network space not found during save: " + initNetworkSpace.getName());
 
-	    thisNetworkSpace.setName(name);
 	    thisNetworkSpace.setIsNatEnabled(natEnabled);
 	    if( natEnabled ){
 		thisNetworkSpace.setNatSpace(natSpace);
@@ -106,6 +98,7 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
 	    thisNetworkSpace.setNetworkList(aliases);
 	    thisNetworkSpace.setIsTrafficForwarded(forwardingEnabled);
 	    thisNetworkSpace.setMtu(mtu);
+	    networkSpacesSettings.setNetworkSpaceList(networkSpaceList);
 	}
         
     }
@@ -128,7 +121,7 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
 	    if( (networkSpace==null) && (networkAddress==null) )
 		return "Please make a selection...";
 	    else
-		return "Space: " + networkSpace.getName() + (networkAddress==null?"":" Address: " + networkAddress.toString());
+		return "Space: " + networkSpace.getName() + (networkAddress==null?"":"    Address: " + networkAddress.toString());
 	}
 	public NetworkSpace getNetworkSpace(){ return networkSpace; }
 	public IPaddr getNetworkAddress(){ return networkAddress; }
@@ -165,12 +158,7 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
 	nattedPairCurrent = new NattedPair(thisNetworkSpace.getNatSpace(),thisNetworkSpace.getNatAddress());
 	nattedJComboBox.setSelectedItem(nattedPairCurrent);
 	nattedJComboBox.setBackground( Util.VALID_BACKGROUND_COLOR );
-	nattedJComboBox.setEnabled(true);
-	
-	// NAME //
-	nameCurrent = thisNetworkSpace.getName();
-	nameJTextField.setBackground( Color.WHITE );
-	nameJTextField.setText(nameCurrent);
+	nattedJComboBox.setEnabled(true);       
 
         // ENABLED ///////////
 	natEnabledCurrent = thisNetworkSpace.getIsNatEnabled();
@@ -181,7 +169,15 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
 	    natDisabledJRadioButton.setSelected(true);
         
 	// NETWORK ALIASES //
-	aliasesCurrent = thisNetworkSpace.getNetworkList().toString();
+	aliasesCurrent = "";
+	List<IPNetworkRule> aliases = (List<IPNetworkRule>) thisNetworkSpace.getNetworkList();
+	int aliasIndex = 0;
+	for( IPNetworkRule alias : aliases ){
+	    aliasesCurrent += alias.toString();
+	    if( aliasIndex < aliases.size()-1)
+		aliasesCurrent += ", ";
+	    aliasIndex++;
+	}
 	aliasJTextArea.setBackground( Color.WHITE );
 	aliasJTextArea.setText( aliasesCurrent );
 
@@ -207,11 +203,6 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
 
                 natButtonGroup = new javax.swing.ButtonGroup();
                 forwardingButtonGroup = new javax.swing.ButtonGroup();
-                spaceJPanel = new javax.swing.JPanel();
-                jTextArea4 = new javax.swing.JTextArea();
-                jPanel6 = new javax.swing.JPanel();
-                jLabel2 = new javax.swing.JLabel();
-                nameJTextField = new javax.swing.JTextField();
                 natJPanel = new javax.swing.JPanel();
                 jTextArea2 = new javax.swing.JTextArea();
                 jPanel1 = new javax.swing.JPanel();
@@ -241,54 +232,8 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
 
                 setLayout(new java.awt.GridBagLayout());
 
-                setMinimumSize(new java.awt.Dimension(515, 820));
-                setPreferredSize(new java.awt.Dimension(515, 820));
-                spaceJPanel.setLayout(new java.awt.GridBagLayout());
-
-                spaceJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Space", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
-                jTextArea4.setEditable(false);
-                jTextArea4.setLineWrap(true);
-                jTextArea4.setText("A Net Space allows multiple networks to be bridged together on a single EdgeGuard physical network interface.  You can also optionally NAT traffic from this Space to another Space.");
-                jTextArea4.setWrapStyleWord(true);
-                jTextArea4.setOpaque(false);
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 15);
-                spaceJPanel.add(jTextArea4, gridBagConstraints);
-
-                jPanel6.setLayout(new java.awt.GridBagLayout());
-
-                jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("Name: ");
-                jPanel6.add(jLabel2, new java.awt.GridBagConstraints());
-
-                nameJTextField.setMaximumSize(new java.awt.Dimension(250, 19));
-                nameJTextField.setMinimumSize(new java.awt.Dimension(250, 19));
-                nameJTextField.setPreferredSize(new java.awt.Dimension(250, 19));
-                nameJTextField.addCaretListener(new javax.swing.event.CaretListener() {
-                        public void caretUpdate(javax.swing.event.CaretEvent evt) {
-                                nameJTextFieldCaretUpdate(evt);
-                        }
-                });
-
-                jPanel6.add(nameJTextField, new java.awt.GridBagConstraints());
-
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 4;
-                gridBagConstraints.insets = new java.awt.Insets(10, 0, 5, 0);
-                spaceJPanel.add(jPanel6, gridBagConstraints);
-
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
-                add(spaceJPanel, gridBagConstraints);
-
+                setMinimumSize(new java.awt.Dimension(515, 700));
+                setPreferredSize(new java.awt.Dimension(515, 700));
                 natJPanel.setLayout(new java.awt.GridBagLayout());
 
                 natJPanel.setBorder(new javax.swing.border.TitledBorder(null, "NAT (Network Address Translation)", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
@@ -584,11 +529,6 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
                 add(mtuJPanel, gridBagConstraints);
 
         }//GEN-END:initComponents
-
-    private void nameJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_nameJTextFieldCaretUpdate
-	if( !nameJTextField.getText().trim().equals(nameCurrent) && (settingsChangedListener != null) )
-	    settingsChangedListener.settingsChanged(this);
-    }//GEN-LAST:event_nameJTextFieldCaretUpdate
     
     private void aliasJTextAreaCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_aliasJTextAreaCaretUpdate
 	if( !aliasJTextArea.getText().equals(aliasesCurrent) && (settingsChangedListener != null) )
@@ -642,7 +582,6 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
         public javax.swing.JRadioButton forwardingEnabledJRadioButton;
         private javax.swing.JPanel forwardingJPanel;
         private javax.swing.JLabel jLabel1;
-        private javax.swing.JLabel jLabel2;
         private javax.swing.JLabel jLabel3;
         private javax.swing.JLabel jLabel4;
         private javax.swing.JLabel jLabel5;
@@ -651,15 +590,12 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
         private javax.swing.JPanel jPanel2;
         private javax.swing.JPanel jPanel3;
         private javax.swing.JPanel jPanel4;
-        private javax.swing.JPanel jPanel6;
         private javax.swing.JScrollPane jScrollPane1;
         private javax.swing.JSeparator jSeparator1;
         private javax.swing.JTextArea jTextArea2;
         private javax.swing.JTextArea jTextArea3;
-        private javax.swing.JTextArea jTextArea4;
         private javax.swing.JPanel mtuJPanel;
         private javax.swing.JSpinner mtuJSpinner;
-        private javax.swing.JTextField nameJTextField;
         private javax.swing.ButtonGroup natButtonGroup;
         public javax.swing.JRadioButton natDisabledJRadioButton;
         public javax.swing.JRadioButton natEnabledJRadioButton;
@@ -667,7 +603,6 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
         private javax.swing.JComboBox nattedJComboBox;
         private javax.swing.JLabel nattedJLabel;
         private javax.swing.JPanel restrictIPJPanel;
-        private javax.swing.JPanel spaceJPanel;
         // End of variables declaration//GEN-END:variables
     
 }
