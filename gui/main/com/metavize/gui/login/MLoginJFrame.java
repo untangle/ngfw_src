@@ -475,7 +475,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
 	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
 		statusJProgressBar.setValue(0);
 		statusJProgressBar.setIndeterminate(true);
-		statusJProgressBar.setString("Authenticating");
+		statusJProgressBar.setString("Authenticating...");
 	    }});
 
             // ATTEMPT TO LOG IN
@@ -518,7 +518,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                     SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
                         statusJProgressBar.setValue(16);
                         statusJProgressBar.setIndeterminate(false);
-                        statusJProgressBar.setString("Successful authentication");
+                        statusJProgressBar.setString("Successful Authentication");
                         passJPasswordField.setText("");
                     }});
                     Thread.sleep(500);
@@ -573,7 +573,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                     else if( retryLogin > 1 ){
                         final int retry = retryLogin;
                         SwingUtilities.invokeLater( new Runnable(){ public void run(){
-                            statusJProgressBar.setString( "Retrying login..." + " (" + retry + ")" );
+                            statusJProgressBar.setString( "Retrying Login..." + " (" + retry + ")" );
                         }});
                         try{ Thread.currentThread().sleep( Util.LOGIN_RETRY_SLEEP ); }
                         catch(Exception e){}
@@ -595,7 +595,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
 
                     // (UPDATE GUI) tell the user we are about to see the gui
                     SwingUtilities.invokeAndWait( new Runnable(){ public void run (){
-                        statusJProgressBar.setString("Showing EdgeGuard client...");
+                        statusJProgressBar.setString("Showing EdgeGuard Client...");
                         statusJProgressBar.setValue(100);
                     }});
 
@@ -646,7 +646,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                     else if( retryClient > 1 ){
                         final int retry = retryClient;
                         SwingUtilities.invokeLater( new Runnable(){ public void run(){
-                            statusJProgressBar.setString( "Retrying launch..." + " (" + retry + ")" );
+                            statusJProgressBar.setString( "Retrying Launch..." + " (" + retry + ")" );
                         }});
                         try{ Thread.currentThread().sleep( Util.LOGIN_RETRY_SLEEP ); }
                         catch(Exception e){}
