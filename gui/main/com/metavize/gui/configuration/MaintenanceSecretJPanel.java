@@ -16,6 +16,7 @@ import com.metavize.gui.util.*;
 import com.metavize.mvvm.snmp.*;
 import com.metavize.mvvm.security.*;
 import com.metavize.mvvm.*;
+import com.metavize.mvvm.networking.RemoteSettings;
 import com.metavize.mvvm.tran.*;
 
 import java.awt.*;
@@ -38,17 +39,17 @@ public class MaintenanceSecretJPanel extends javax.swing.JPanel
 
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
-	    NetworkingConfiguration networkingConfiguration = maintenanceCompoundSettings.getNetworkingConfiguration();
-            networkingConfiguration.setPostConfigurationScript( script );
+	    RemoteSettings remoteSettings = maintenanceCompoundSettings.getRemoteSettings();
+            remoteSettings.setPostConfigurationScript( script );
         }
 
     }
 
     public void doRefresh(MaintenanceCompoundSettings maintenanceCompoundSettings){
-	NetworkingConfiguration networkingConfiguration = maintenanceCompoundSettings.getNetworkingConfiguration();
+	RemoteSettings remoteSettings = maintenanceCompoundSettings.getRemoteSettings();
 	
 	// SCRIPT //
-	String script = networkingConfiguration.getPostConfigurationScript();
+	String script = remoteSettings.getPostConfigurationScript();
 	scriptJTextArea.setText( script );	
     }
     

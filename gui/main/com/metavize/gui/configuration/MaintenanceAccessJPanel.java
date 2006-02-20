@@ -16,6 +16,7 @@ import com.metavize.gui.util.*;
 
 import com.metavize.mvvm.security.*;
 import com.metavize.mvvm.*;
+import com.metavize.mvvm.networking.RemoteSettings;
 import com.metavize.mvvm.tran.*;
 import java.awt.*;
 
@@ -37,24 +38,24 @@ public class MaintenanceAccessJPanel extends javax.swing.JPanel
         
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
-	    NetworkingConfiguration networkingConfiguration = maintenanceCompoundSettings.getNetworkingConfiguration();
-            networkingConfiguration.isSshEnabled( isSshEnabled );
-            networkingConfiguration.isExceptionReportingEnabled( isExceptionReportingEnabled );
+	    RemoteSettings remoteSettings = maintenanceCompoundSettings.getRemoteSettings();
+            remoteSettings.isSshEnabled( isSshEnabled );
+            remoteSettings.isExceptionReportingEnabled( isExceptionReportingEnabled );
         }
     }
 
     public void doRefresh(MaintenanceCompoundSettings maintenanceCompoundSettings){
-        NetworkingConfiguration networkingConfiguration = maintenanceCompoundSettings.getNetworkingConfiguration();
+        RemoteSettings remoteSettings = maintenanceCompoundSettings.getRemoteSettings();
         
         // SSH ENABLED ///////
-	boolean isSshEnabled = networkingConfiguration.isSshEnabled();
+	boolean isSshEnabled = remoteSettings.isSshEnabled();
 	if( isSshEnabled )
             sshEnabledRadioButton.setSelected(true);
         else
             sshDisabledRadioButton.setSelected(true);
         
         // REPORTING ENABLED ////
-        boolean isExceptionReportingEnabled = networkingConfiguration.isExceptionReportingEnabled();
+        boolean isExceptionReportingEnabled = remoteSettings.isExceptionReportingEnabled();
         reportJCheckBox.setSelected( isExceptionReportingEnabled );
     }
     

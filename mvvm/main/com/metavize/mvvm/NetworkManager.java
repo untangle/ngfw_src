@@ -33,6 +33,9 @@ public interface NetworkManager
     public void setNetworkingConfiguration( NetworkingConfiguration configuration ) 
         throws NetworkException, ValidateException;
 
+    /* Use this to retrieve just the remote settings */
+    public RemoteSettings getRemoteSettings();
+
     /* Use this to mess with the remote settings without modifying the network settings */
     public void setRemoteSettings( RemoteSettings remote ) throws NetworkException;
 

@@ -163,6 +163,9 @@ public class NetworkManagerImpl implements NetworkManager
     {
         logger.debug( "Loading the new network settings: " + settings );
         setNetworkSettings( NetworkUtilPriv.getPrivInstance().toInternal( settings ));
+        
+        /* Have to update the remote settings */
+        updateRemoteSettings();
     }
 
     private synchronized void setNetworkSettings( NetworkSpacesInternalSettings newSettings )
@@ -181,6 +184,11 @@ public class NetworkManagerImpl implements NetworkManager
 
         /* call the listeners */
         callNetworkListeners();        
+    }
+
+    public RemoteSettings getRemoteSettings()
+    {
+        return this.remote.toSettings();
     }
 
     public synchronized void setRemoteSettings( RemoteSettings remote )
@@ -379,6 +387,12 @@ public class NetworkManagerImpl implements NetworkManager
     private void generateRules() throws NetworkException
     {
         this.ruleManager.generateIptablesRules();
+    }
+
+    private void updateRemoteSettings() throws NetworkException
+    {
+        /* This just reinitializes the public address */
+        setRemoteSettings( this.remote.toSettings());
     }
     
     public void isShutdown()

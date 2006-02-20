@@ -230,6 +230,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
 
       <!-- Networking classes -->
       <include name="com/metavize/mvvm/networking/RemoteSettings.java"/>
+      <include name="com/metavize/mvvm/networking/RemoteSettingsImpl.java"/>
       <include name="com/metavize/mvvm/networking/BasicNetworkSettings.java"/>
       <include name="com/metavize/mvvm/networking/DynamicDNSSettings.java"/>
       <include name="com/metavize/mvvm/networking/IPNetwork.java"/>
@@ -308,6 +309,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
 
         <!-- Networking classes -->
         <include name="com/metavize/mvvm/networking/RemoteSettings.class"/>
+        <include name="com/metavize/mvvm/networking/RemoteSettingsImpl.class"/>
         <include name="com/metavize/mvvm/networking/BasicNetworkSettings.class"/>
         <include name="com/metavize/mvvm/networking/DynamicDNSSettings.class"/>
         <include name="com/metavize/mvvm/networking/IPNetwork.class"/>

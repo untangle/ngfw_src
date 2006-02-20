@@ -168,6 +168,7 @@ public class RemoteInternalSettings
         rs.isTcpWindowScalingEnabled( isTcpWindowScalingEnabled());
         rs.isInsideInsecureEnabled( isInsideInsecureEnabled());
         rs.isOutsideAccessEnabled( isOutsideAccessEnabled());
+        rs.isOutsideAccessRestricted( isOutsideAccessRestricted());
         rs.outsideNetwork( outsideNetwork());
         rs.outsideNetmask( outsideNetmask());
         rs.setPostConfigurationScript( getPostConfigurationScript());

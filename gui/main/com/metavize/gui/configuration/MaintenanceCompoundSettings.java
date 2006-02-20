@@ -14,7 +14,7 @@ package com.metavize.gui.configuration;
 import com.metavize.gui.util.Util;
 import com.metavize.gui.transform.CompoundSettings;
 import com.metavize.gui.transform.MCasingJPanel;
-import com.metavize.mvvm.NetworkingConfiguration;
+import com.metavize.mvvm.networking.RemoteSettings;
 import com.metavize.mvvm.networking.NetworkSpacesSettings;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.TransformContext;
@@ -25,8 +25,8 @@ import java.util.List;
 public class MaintenanceCompoundSettings implements CompoundSettings {
 
     // NETWORKING CONFIGURATION //
-    private NetworkingConfiguration networkingConfiguration;
-    public NetworkingConfiguration getNetworkingConfiguration(){ return networkingConfiguration; }
+    private RemoteSettings remoteSettings;
+    public RemoteSettings getRemoteSettings(){ return remoteSettings; }
 
     // NETWORK SETTINGS //
     private NetworkSpacesSettings networkSettings;
@@ -48,7 +48,7 @@ public class MaintenanceCompoundSettings implements CompoundSettings {
     public MCasingJPanel[] getCasingJPanels(){ return casingJPanels; }
 
     public void save() throws Exception {
-	Util.getNetworkingManager().set(networkingConfiguration);
+	Util.getNetworkManager().setRemoteSettings(remoteSettings);
 	Util.getNetworkManager().setNetworkSettings(networkSettings);
 
 	if(mailTransformCompoundSettings != null){
@@ -63,7 +63,7 @@ public class MaintenanceCompoundSettings implements CompoundSettings {
     }
 
     public void refresh() throws Exception {
-	networkingConfiguration = Util.getNetworkingManager().get();
+	remoteSettings  = Util.getNetworkManager().getRemoteSettings();
 	networkSettings = Util.getNetworkManager().getNetworkSettings();
 
 	casingJPanels = Util.getPolicyStateMachine().loadAllCasings(true);
