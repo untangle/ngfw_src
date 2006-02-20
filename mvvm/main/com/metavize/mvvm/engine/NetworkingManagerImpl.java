@@ -22,6 +22,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import java.net.Inet4Address;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -300,6 +301,7 @@ class NetworkingManagerImpl implements NetworkingManager
         }
 
         byte[] argonIntfArray = converter.argonIntfArray();
+        Arrays.sort( argonIntfArray );
 
         String[] intfNameArray = new String[argonIntfArray.length];
 

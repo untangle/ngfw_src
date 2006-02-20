@@ -56,8 +56,10 @@ public class NetworkUtil
     {
         List list = new LinkedList();
         
+        long papers = space.getBusinessPapers();
         for ( Interface intf : (List<Interface>)settings.getInterfaceList()) {
-            if ( intf.getNetworkSpace().equals( space )) list.add( intf );
+            NetworkSpace intfSpace = intf.getNetworkSpace();
+            if ( intfSpace.equals( space ) || ( intfSpace.getBusinessPapers() == papers )) list.add( intf );
         }
         
         return list;
@@ -76,7 +78,7 @@ public class NetworkUtil
             
             /* Could also check if the external interface is in the first network space */
             if ( space.isLive() && getInterfaceList( settings, space ).size() == 0 ) {
-                throw new ValidateException( "Each network space["+ index +"] must have at least one" + 
+                throw new ValidateException( "The space "+ space.getName() + " must have at least one" + 
                                              " interface" );
             }
 
@@ -126,16 +128,25 @@ public class NetworkUtil
             throw new ValidateException( "A network space should either have at least one address,"+
                                          " or use DHCP." );
         }
+        
+        if ( space.isLive() && space.getIsNatEnabled()) {
+             if ( isDhcpEnabled ) {
+                 throw new ValidateException( "A network space running NAT should not get its address" +
+                                              " from a DHCP server." );
+             }
 
-        if ( isDhcpEnabled && space.getIsNatEnabled()) {
-            throw new ValidateException( "A network space running NAT should not get its address" +
-                                         " from a DHCP server." );
+             if ( space.getNatSpace() == null ) {
+                 throw new ValidateException( "The network space " + space.getName() +
+                                              " running NAT must have a NAT space" );
+             }
         }
+
 
         IPaddr dmzHost = space.getDmzHost();
         if ( space.getIsDmzHostEnabled() && (( dmzHost == null ) || dmzHost.isEmpty())) {
             throw new ValidateException( "If DMZ is enabled, the DMZ host should also be set" );
         }
+        
     }
 
     public void validate( Route route ) throws ValidateException

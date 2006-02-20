@@ -10,6 +10,7 @@
  */
 package com.metavize.tran.nat;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
@@ -137,7 +138,10 @@ class SettingsManager
                           "interface, creating a new interface list" );
             
             interfaceList = new LinkedList<Interface>();
-            for ( byte argonIntf : IntfConverter.getInstance().argonIntfArray()) {
+
+            byte argonIntfArray[] = IntfConverter.getInstance().argonIntfArray();
+            Arrays.sort( argonIntfArray );
+            for ( byte argonIntf : argonIntfArray ) {
                 /* The VPN interface doesn't belong to a network space */
                 if ( argonIntf == IntfConstants.VPN_INTF ) continue;
                 
@@ -166,12 +170,29 @@ class SettingsManager
                                              NatAdvancedSettings advanced )
         throws ValidateException
     {
+
+        logger.debug( "New advanced settings: " + advanced );
+
         ((NetworkSpacesSettingsImpl)networkSettings).setSetupState( SetupState.ADVANCED );
         /* Is enabled should have already been set */
         // networkSettings.setIEnabled();
         
         /* Fix all of the links to NetworkSpaces */
         List<NetworkSpace> networkSpaceList = advanced.getNetworkSpaceList();
+
+        /* Replace the primary network space */
+        NetworkSpace primary = networkSpaceList.get( 0 );
+
+        NetworkSpace previousPrimary = networkSettings.getNetworkSpaceList().get( 0 );
+        
+        /* MTU is the only value that carries over */
+        previousPrimary.setMtu( primary.getMtu());
+        previousPrimary.setName( primary.getName());
+        previousPrimary.setIsTrafficForwarded( primary.getIsTrafficForwarded());
+
+        /* Swap out the primary network space */
+        networkSpaceList.remove( 0 );
+        networkSpaceList.add( 0, previousPrimary );
         
         Map<Long,NetworkSpace> networkSpaceMap = new HashMap<Long,NetworkSpace>();
 

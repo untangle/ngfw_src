@@ -104,7 +104,7 @@ class InterfaceModel extends MSortedTableModel<MaintenanceCompoundSettings>{
 	    tempRow = new Vector(7);
 	    tempRow.add( super.ROW_SAVED );
 	    tempRow.add( rowIndex );
-            tempRow.add( intf.getIntfName() );
+            tempRow.add( intf.getName() );
 	    tempRow.add( super.generateComboBoxModel( EthernetMedia.getEnumeration(), intf.getEthernetMedia()) );
             tempRow.add( intf.getIsPingable() );
 	    tempRow.add( intf.getCurrentMedia() );

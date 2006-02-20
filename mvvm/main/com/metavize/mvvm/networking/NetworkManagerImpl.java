@@ -463,9 +463,9 @@ public class NetworkManagerImpl implements NetworkManager
     {
         /* !!!! Load settings */
 
-        String saveSettings = System.getProperty( "bunnicula.devel.networking" );
+        String disableSaveSettings = System.getProperty( "bunnicula.devel.nonetworking" );
 
-        if ( Boolean.valueOf( saveSettings ) == false ) this.saveSettings = false;
+        if ( Boolean.valueOf( disableSaveSettings ) == true ) this.saveSettings = false;
         
         NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
         

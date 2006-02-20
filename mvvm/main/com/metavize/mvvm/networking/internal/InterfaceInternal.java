@@ -86,7 +86,7 @@ public class InterfaceInternal
     {
         return 
             "argon intf:  "   + getArgonIntf() +
-            "\name:         " + getName() +
+            "\nname:        " + getName() +
             "\nphy-name:    " + getIntfName() +
             "\nspace-index: " + getNetworkSpace().getIndex() +
             "\neth-media:   " + getEthernetMedia() +

@@ -49,6 +49,8 @@ import com.metavize.mvvm.tran.ParseException;
 import com.metavize.mvvm.tran.TransformStartException;
 import com.metavize.mvvm.tran.TransformState;
 import com.metavize.mvvm.tran.TransformStopException;
+import com.metavize.mvvm.tran.TransformContextSwitcher;
+
 
 import com.metavize.tran.token.TokenAdaptor;
 
@@ -438,9 +440,28 @@ public class NatImpl extends AbstractTransform implements Nat
 
     class SettingsListener implements NetworkSettingsListener
     {
+        /* Use this to automatically switch context */
+        private final TransformContextSwitcher tl;
+
+        private final Runnable go;
+        
+        SettingsListener()
+        {
+            tl = new TransformContextSwitcher( getTransformContext().getClassLoader());
+            go = new Runnable() {
+                    public void run()
+                    {
+                        logger.debug( "The Network setting hath changed" + NatImpl.this.dhcpMonitor );
+                        logger.debug( "Classloader: " + Thread.currentThread().getContextClassLoader());
+                    }
+                };
+        }
+
         public void event( NetworkSpacesInternalSettings settings )
         {
-            logger.debug( "Listener hath been called" );
+            logger.debug( "Classloader: " + Thread.currentThread().getContextClassLoader());
+            tl.run( go );
+            go.run();
         }
         
     }

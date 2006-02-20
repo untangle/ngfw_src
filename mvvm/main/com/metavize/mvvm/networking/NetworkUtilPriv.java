@@ -137,7 +137,8 @@ class NetworkUtilPriv extends NetworkUtil
                                   intfSpace.getName() + " " + intfSpace.hashCode()
                                   + " " + intfSpace.getBusinessPapers());
                     
-                    if ( intf.getNetworkSpace().equals( networkSpace )) {
+                    if ( intfSpace.equals( networkSpace ) || 
+                         ( intfSpace.getBusinessPapers() == networkSpace.getBusinessPapers())) {
                         try {
                             /* Set the name of the interface */
                             intf.setIntfName( ic.argonIntfToString( intf.getArgonIntf()));
@@ -455,6 +456,8 @@ class NetworkUtilPriv extends NetworkUtil
     NetworkSpacesSettingsImpl toSettings( NetworkSpacesInternalSettings internalSettings )
     {
         NetworkSpacesSettingsImpl settings = new NetworkSpacesSettingsImpl();
+
+        settings.setSetupState( internalSettings.getSetupState());
         
         /* Generate the list network spaces and a map from internal -> normal. */
         List<NetworkSpace> networkSpaceList = new LinkedList<NetworkSpace>();

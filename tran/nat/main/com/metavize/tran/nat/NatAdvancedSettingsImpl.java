@@ -14,6 +14,7 @@ package com.metavize.tran.nat;
 import java.io.Serializable;
 import java.util.List;
 
+import com.metavize.mvvm.networking.NetworkUtil;
 import com.metavize.mvvm.networking.NetworkSpacesSettings;
 import com.metavize.mvvm.networking.NetworkSpacesSettingsImpl;
 import com.metavize.mvvm.networking.ServicesSettings;
@@ -271,5 +272,8 @@ public class NatAdvancedSettingsImpl implements NatAdvancedSettings
     public void validate() throws ValidateException
     {
         /* implement me */
+        NetworkUtil.getInstance().validate( this.networkSpacesSettings );
     }
+
+    
 }
