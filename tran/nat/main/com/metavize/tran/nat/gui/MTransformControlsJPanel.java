@@ -62,7 +62,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 
     private static Nat natTransform;
     public static Nat getNatTransform(){ return natTransform; }
-    private SetupState setupState, lastSetupState;
+    private SetupState setupState;
     private List<NetworkSpace> networkSpaceList;    
 
 
@@ -273,23 +273,35 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     public void refreshAll() throws Exception {
 	super.refreshAll();
 	setupState = ((NatCommonSettings)settings).getSetupState();
-	if( lastSetupState == null )
-	    lastSetupState = setupState;
 	natTransform = (Nat) mTransformJPanel.getTransformContext().transform();
 	if(SetupState.ADVANCED.equals( setupState )){
 	    networkSpaceList = ((NetworkSpacesSettings)settings).getNetworkSpaceList();
 	}
 	if( baseGuiBuilt ){
 	    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		int selectedIndex = MTransformControlsJPanel.this.getMTabbedPane().getSelectedIndex();
+		String selectedTitle = MTransformControlsJPanel.this.getMTabbedPane().getTitleAt(selectedIndex);
+		Component selectedComponent = MTransformControlsJPanel.this.getMTabbedPane().getSelectedComponent();
+		JTabbedPane selectedJTabbedPane = null;
+		int subSelectedIndex = -1;
+		String subSelectedTitle = null;
+		if( selectedComponent instanceof JTabbedPane ){
+		    selectedJTabbedPane = (JTabbedPane) selectedComponent;
+		    subSelectedIndex = selectedJTabbedPane.getSelectedIndex();
+		    subSelectedTitle = selectedJTabbedPane.getTitleAt(subSelectedIndex);
+		}
 		generateSpecificGui();
+		int newIndex = MTransformControlsJPanel.this.getMTabbedPane().indexOfTab(selectedTitle);
+		MTransformControlsJPanel.this.getMTabbedPane().setSelectedIndex(newIndex);
+		if( subSelectedIndex != -1 ){
+		    int newSubIndex = selectedJTabbedPane.indexOfTab(subSelectedTitle);
+		    if( newSubIndex >= 0 )
+			selectedJTabbedPane.setSelectedIndex(newSubIndex);
+		    else
+			selectedJTabbedPane.setSelectedIndex(subSelectedIndex);
+		}		
 	    }});
 	}
-	if( !setupState.equals(lastSetupState) ){
-	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		MTransformControlsJPanel.this.getMTabbedPane().setSelectedIndex(0);
-	    }});
-	}
-	lastSetupState = setupState;
     }
         
 }
