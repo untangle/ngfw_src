@@ -260,7 +260,7 @@ class Blacklist
                 category = findCategory(blockedUrls, url,
                                         settings.getBlockedUrls());
                 if (null != category) {
-                    reason = Reason.PASS_URL;
+                    reason = Reason.BLOCK_URL;
                 }
             }
 
