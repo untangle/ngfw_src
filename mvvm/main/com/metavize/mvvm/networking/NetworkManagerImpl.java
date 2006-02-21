@@ -275,7 +275,8 @@ public class NetworkManagerImpl implements NetworkManager
         logger.debug( "Saving new ddns settings: " + newSettings );
         saveDynamicDnsSettings( newSettings );
         
-        /* XXX Do whatever Dynamic DNS has to do */
+        NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
+        nup.writeDDNSConfiguration(newSettings, getHostname());
     }
 
     public synchronized void disableNetworkSpaces()
@@ -530,6 +531,9 @@ public class NetworkManagerImpl implements NetworkManager
 
         /* Generate rules */
         generateRules();
+
+        // Register the built-in listeners
+        registerListener(new DynamicDNSListener());
     }    
     
     /* Methods for writing the configuration files */
@@ -736,6 +740,16 @@ public class NetworkManagerImpl implements NetworkManager
         INSTANCE = new NetworkManagerImpl();
         
         return INSTANCE;
+    }
+
+
+    class DynamicDNSListener implements RemoteSettingsListener
+    {
+        public void event( RemoteInternalSettings settings )
+        {
+            NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
+            nup.writeDDNSConfiguration(getDynamicDnsSettings(), settings.getHostname());
+        }
     }
 }
 
