@@ -13,7 +13,6 @@ function modalDialog(title)
    Element.addClassName(tb, "dialog-titlebar");
    tb.appendChild(document.createTextNode(title));
 
-
    var cb = clickBlocker();
 
    var b = document.getElementsByTagName("body")[0];
