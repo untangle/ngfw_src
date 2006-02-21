@@ -97,6 +97,13 @@ public class NetworkSpace extends Rule
         this.isPrimary = newValue;
     }
 
+    /**
+     * Get the business papers for the space.
+     *
+     * @return The business papers for the space.
+     * @hibernate.property
+     * column="papers"
+     */
     public long getBusinessPapers()
     {
         return this.businessPapers;
@@ -237,7 +244,7 @@ public class NetworkSpace extends Rule
      * Is the DMZ host enabled.
      * @return is this space using a DMZ host.
      * @hibernate.property
-     * column="is_dmz_host_enabled"
+     * column="dmz_host_enabled"
      */
     public boolean getIsDmzHostEnabled()
     {
@@ -274,7 +281,7 @@ public class NetworkSpace extends Rule
      * Is the DMZ host enabled.
      * @return is this space using a DMZ host.
      * @hibernate.property
-     * column="is_dmz_logging_enabled"
+     * column="dmz_host_logging"
      */
     public boolean getIsDmzHostLoggingEnabled()
     {
@@ -294,15 +301,14 @@ public class NetworkSpace extends Rule
      */
     public int getMtu()
     {
-        if ( this.mtu <= 0 ) this.mtu = DEFAULT_MTU;
+        if ( this.mtu <= MIN_MTU || this.mtu >= MAX_MTU ) this.mtu = DEFAULT_MTU;
 
         return this.mtu;
     }
    
     public void setMtu( int mtu )
     {
-        if ( mtu <= 0 ) mtu = DEFAULT_MTU;
-
+        if ( mtu <= MIN_MTU || mtu >= MAX_MTU ) mtu = DEFAULT_MTU;
         this.mtu = mtu;
     }
 

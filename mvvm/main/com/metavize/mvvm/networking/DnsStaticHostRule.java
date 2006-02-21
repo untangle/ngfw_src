@@ -22,7 +22,7 @@ import com.metavize.mvvm.tran.HostNameList;
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
  * @hibernate.class
- * table="dns_static_host_rule"
+ * table="mvvm_dns_static_host_rule"
  */
 public class DnsStaticHostRule extends Rule
 {

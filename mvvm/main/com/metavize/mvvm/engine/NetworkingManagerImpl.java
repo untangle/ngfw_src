@@ -126,7 +126,7 @@ class NetworkingManagerImpl implements NetworkingManager
 
     public IntfEnum getIntfEnum()
     {
-        return getNetworkManager().getIntfEnum();
+        return this.intfEnum;
     }
 
     public NetworkingConfiguration renewDhcpLease() throws Exception
@@ -293,10 +293,9 @@ class NetworkingManagerImpl implements NetworkingManager
         IntfConverter converter = IntfConverter.getInstance();
         if ( converter == null ) { /* Running in fake mode */
             logger.info( "Running in fake mode, using internal and external" );
-            intfEnum = new IntfEnum( new byte[]   { IntfConstants.EXTERNAL_INTF,
-                                                    IntfConstants.INTERNAL_INTF },
-                                     new String[] { IntfConstants.EXTERNAL,
-                                                    IntfConstants.INTERNAL } );
+            this.intfEnum = 
+                new IntfEnum( new byte[]   { IntfConstants.EXTERNAL_INTF, IntfConstants.INTERNAL_INTF },
+                              new String[] { IntfConstants.EXTERNAL,      IntfConstants.INTERNAL } );
             return;
         }
 
@@ -315,12 +314,13 @@ class NetworkingManagerImpl implements NetworkingManager
             case IntfConstants.VPN_INTF:      name = IntfConstants.VPN;      break;
             default:
                 logger.error( "Unknown interface: " + intf + " using unknown" );
+                continue;
             }
 
             intfNameArray[c] = name;
         }
 
-        intfEnum = new IntfEnum( argonIntfArray, intfNameArray );
+        this.intfEnum = new IntfEnum( argonIntfArray, intfNameArray );
 
         IntfMatcherFactory.getInstance().updateEnumeration( intfEnum );
     }

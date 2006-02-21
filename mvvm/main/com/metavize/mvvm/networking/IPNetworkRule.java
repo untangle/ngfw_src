@@ -29,7 +29,7 @@ import com.metavize.mvvm.tran.firewall.ParsingConstants;;
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
  * @hibernate.class
- * table="mvvm_network_ip"
+ * table="mvvm_ip_network"
  */
 public class IPNetworkRule extends Rule
 {

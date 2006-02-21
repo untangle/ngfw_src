@@ -272,7 +272,7 @@ public class ArgonManagerImpl implements ArgonManager
         throws ArgonException
     {
         if ( isShutdown ) {
-            logger.info( "Already shutdown, unable to deregister interface" );
+            logger.info( "Already shutdown, unable to register an interface" );
             return;
         }
         

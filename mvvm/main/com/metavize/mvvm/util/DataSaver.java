@@ -55,7 +55,9 @@ public class DataSaver<T>
             {
                 public boolean doWork( Session s )
                 {
+                    preSave( s );
                     s.saveOrUpdate( newData );
+                    postSave( s );
                     DataSaver.this.data = (T)newData;
                     return true;
                 }
@@ -70,5 +72,14 @@ public class DataSaver<T>
         else this.localContext.runTransaction( tw );
         
         return this.data;
+    }
+    
+    /* Use this to run a function before the save */
+    protected void preSave( Session s )
+    {
+    }
+
+    protected void postSave( Session s )
+    {
     }
 }

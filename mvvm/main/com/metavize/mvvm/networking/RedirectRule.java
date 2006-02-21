@@ -28,7 +28,7 @@ import com.metavize.mvvm.tran.firewall.TrafficIntfRule;
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
  * @hibernate.class
- * table="redirect_rule"
+ * table="mvvm_redirect_rule"
  */
 public class RedirectRule extends TrafficIntfRule
 {
@@ -68,7 +68,6 @@ public class RedirectRule extends TrafficIntfRule
         this.redirectAddress = redirectAddress;
         this.redirectPort    = redirectPort;
     }
-
 
     // accessors --------------------------------------------------------------
 
@@ -146,7 +145,7 @@ public class RedirectRule extends TrafficIntfRule
     }
 
     /**
-     * Redirect host. -1 to not modify
+     * Redirect host. null to not modify
      *
      * @return the host to redirect to.
      *

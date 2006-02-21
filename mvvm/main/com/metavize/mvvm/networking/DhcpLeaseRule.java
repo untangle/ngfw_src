@@ -26,7 +26,7 @@ import com.metavize.mvvm.tran.firewall.MACAddress;
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
  * @hibernate.class
- * table="dhcp_lease_rule"
+ * table="mvvm_dhcp_lease_rule"
  */
 public class DhcpLeaseRule extends Rule
 {

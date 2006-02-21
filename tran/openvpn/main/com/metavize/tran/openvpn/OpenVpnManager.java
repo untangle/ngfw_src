@@ -16,11 +16,11 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 
-import com.metavize.mvvm.ArgonManager;
 import com.metavize.mvvm.NetworkManager;
 import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.argon.ArgonException;
+import com.metavize.mvvm.networking.NetworkException;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.script.ScriptException;
@@ -170,14 +170,17 @@ class OpenVpnManager
         try {
             boolean isBridgeMode = settings.isBridgeMode();
             String intf = ( isBridgeMode ) ? DEVICE_BRIDGE : DEVICE_ROUTING;
-            ArgonManager am = MvvmContextFactory.context().argonManager();
-            am.registerIntf( IntfConstants.VPN_INTF, intf );
+            MvvmContextFactory.context().argonManager().registerIntf( IntfConstants.VPN_INTF, intf );
 
-            if ( isBridgeMode ) {
-                am.enableInternalBridgeIntf( MvvmContextFactory.context().networkingManager().get(), intf );
-            }
-            am.updateAddress();
+            /* ** XXXXXXX Bridge mode is unsupported */
+            
+            // if ( isBridgeMode ) {
+            // am.enableInternalBridgeIntf( MvvmContextFactory.context().networkingManager().get(), intf );
+            // }
+            MvvmContextFactory.context().networkManager().updateAddress();
         } catch ( ArgonException e ) {
+            throw new TransformException( e );
+        } catch ( NetworkException e ) {
             throw new TransformException( e );
         }
     }
@@ -194,10 +197,10 @@ class OpenVpnManager
         ScriptRunner.getInstance().exec( VPN_STOP_SCRIPT );
 
         try {
-            ArgonManager am = MvvmContextFactory.context().argonManager();
-            am.disableInternalBridgeIntf( MvvmContextFactory.context().networkingManager().get());
-            am.updateAddress();
-        } catch ( ArgonException e ) {
+            // 
+            // am.disableInternalBridgeIntf( MvvmContextFactory.context().networkingManager().get());
+            MvvmContextFactory.context().networkManager().updateAddress();
+        } catch ( NetworkException e ) {
             throw new TransformException( e );
         }
     }
