@@ -244,6 +244,7 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
         private int clientCount = 0;
 
         private volatile Thread thread;
+        private boolean interruptable;
 
         // constructors -------------------------------------------------------
 
@@ -272,6 +273,11 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
 
                 if (t < nextSync) {
                     EventDesc ed;
+
+                    synchronized (this) {
+                        interruptable = true;
+                    }
+
                     try {
                         if (0 < logQueue.size()) {
                             ed = inputQueue.poll(nextSync - t, TimeUnit.MILLISECONDS);
@@ -280,6 +286,10 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
                         }
                     } catch (InterruptedException exn) {
                         continue;
+                    }
+
+                    synchronized (this) {
+                        interruptable = false;
                     }
 
                     accept(ed);
@@ -371,7 +381,11 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
             if (0 == clientCount) {
                 Thread t = thread;
                 thread = null;
-                t.interrupt();
+                synchronized (this) {
+                    if (interruptable) {
+                        t.interrupt();
+                    }
+                }
             }
         }
 

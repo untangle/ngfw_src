@@ -17,8 +17,9 @@
 <form action="toolbar.jsp" method="post" enctype="multipart/form-data">
 <input type="button" value="delete" onclick="deleteSelection()"/>
 <input type="button" value="refresh" onclick="refreshDetails()"/>
-<input type="file" name="file"/>
-<input type="submit" value="upload"/>
+<input type="button" value="upload" onclick="modalDialog()"/>
+<!-- <input type="file" name="file" onchange="modalDialog()"/> -->
+<!-- <input type="submit" value="upload"/> -->
 <browser:save-upload/>
 </form>
 

@@ -1,0 +1,33 @@
+.shadow {
+          position: absolute;
+          z-index: 2;
+          top: 25%;
+          left: 25%;
+          width: 256px;
+          height: 256px;
+          background-color: black;
+          }
+
+.dialog { position: relative;
+                background-color: red;
+                width: 256px;
+                height: 256px;
+                left: -10px;
+                top: -10px;
+                }
+
+.dialog-titlebar { background-color: purple;
+                   font-weight: bold;
+                   padding: 2px;
+                   }
+
+#click-blocker { position: absolute;
+                 z-index: 1;
+                 top: 0;
+                 left: 0;
+                 bottom: 0;
+                 right: 0;
+                 background-color: blue;
+                 opacity: .5;
+                 filter: alpha(opacity=50);
+                 }

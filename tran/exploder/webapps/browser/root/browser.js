@@ -244,9 +244,9 @@ function parseDomFromString(text)
                     },
                     function()
                     {
-                       var xmlDom = new ActiveXObject("Microsoft.XMLDOM")
-                       xmlDom.async = "false"
-                       xmlDom.loadXML(text)
+                       var xmlDom = new ActiveXObject("Microsoft.XMLDOM");
+                       xmlDom.async = "false";
+                       xmlDom.loadXML(text);
                        return xmlDom;
                     });
 }
