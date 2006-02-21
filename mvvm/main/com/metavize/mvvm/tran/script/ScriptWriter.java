@@ -109,7 +109,7 @@ public class ScriptWriter
     private void appendVariable( String variable, String value, boolean isGlobal, boolean isEscaped )
     {
         if (( variable == null ) || ( value == null )) {
-            logger.warn( "NULL variable[" + variable +"] or value[" + variable + "], ignoring" );
+            logger.warn( "NULL variable[" + variable +"] or value[" + value + "], ignoring" );
             return;
         }
         

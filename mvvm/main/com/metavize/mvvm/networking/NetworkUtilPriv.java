@@ -115,7 +115,7 @@ class NetworkUtilPriv extends NetworkUtil
 
         settings.setDefaultRoute( basic.gateway());
         settings.setDns1( basic.dns1());
-        settings.setDns2( basic.dns2());            
+        settings.setDns2( basic.dns2());
 
         return toInternal( settings );
     }

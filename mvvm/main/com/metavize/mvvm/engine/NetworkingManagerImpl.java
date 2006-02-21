@@ -55,10 +55,6 @@ class NetworkingManagerImpl implements NetworkingManager
     private static final String BUNNICULA_BASE = System.getProperty( "bunnicula.home" );
     private static final String BUNNICULA_CONF = System.getProperty( "bunnicula.conf.dir" );
 
-    private static final String SSH_ENABLE_SCRIPT      = BUNNICULA_BASE + "/ssh_enable.sh";
-    private static final String SSH_DISABLE_SCRIPT     = BUNNICULA_BASE + "/ssh_disable.sh";
-    private static final String DHCP_RENEW_SCRIPT      = BUNNICULA_BASE + "/networking/dhcp-renew";
-
     private static final String IP_CFG_FILE    = "/etc/network/interfaces";
     private static final String NS_CFG_FILE    = "/etc/resolv.conf";
     private static final String FLAGS_CFG_FILE = "/networking.sh";
@@ -78,9 +74,6 @@ class NetworkingManagerImpl implements NetworkingManager
     /* Functionm declaration for the post configuration function */
     private static final String DECL_POST_CONF = "function " + POST_FUNC_NAME + "() {";
 
-    private static final String PROPERTY_FILE       = BUNNICULA_CONF + "/mvvm.networking.properties";
-    private static final String PROPERTY_HTTPS_PORT = "mvvm.https.port";
-    private static final String PROPERTY_COMMENT    = "Properties for the networking configuration";
 
     private static final Logger logger = Logger.getLogger( NetworkingManagerImpl.class );
 
@@ -137,111 +130,6 @@ class NetworkingManagerImpl implements NetworkingManager
     private NetworkManager getNetworkManager()
     {
         return MvvmContextFactory.context().networkManager();
-    }
-
-    private void save()
-    {
-        try {
-            saveHttpsPort();
-        } catch ( Exception e ) {
-            logger.error( "Exception saving https port", e );
-        }
-        saveFlags();
-        saveSsh();
-    }
-
-    private void saveFlags() {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append( "#!/bin/sh\n" );
-        sb.append( HEADER + "\n" );
-        sb.append( "## Set to true to enable\n" );
-        sb.append( "## false or undefined is disabled.\n" );
-        sb.append( FLAG_TCP_WIN + "=" + configuration.isTcpWindowScalingEnabled() + "\n\n" );
-        sb.append( "## Allow inside HTTP true to enable\n" );
-        sb.append( "## false or undefined is disabled.\n" );
-        sb.append( FLAG_HTTP_IN + "=" + configuration.isInsideInsecureEnabled() + "\n\n" );
-        sb.append( "## Allow outside HTTPS true to enable\n" );
-        sb.append( "## false or undefined to disable.\n" );
-        sb.append( FLAG_HTTPS_OUT + "=" + configuration.isOutsideAccessEnabled() + "\n\n" );
-        sb.append( "## Restrict outside HTTPS access\n" );
-        sb.append( "## True if restricted, undefined or false if unrestricted\n" );
-        sb.append( FLAG_HTTPS_RES + "=" + configuration.isOutsideAccessRestricted() + "\n\n" );
-        sb.append( "## Report exceptions\n" );
-        sb.append( "## True to send out exception logs, undefined or false for not\n" );
-        sb.append( FLAG_EXCEPTION + "=" + configuration.isExceptionReportingEnabled() + "\n\n" );
-
-        if ( !configuration.outsideNetwork().isEmpty()) {
-            IPaddr network = configuration.outsideNetwork();
-            IPaddr netmask = configuration.outsideNetmask();
-
-            sb.append( "## If outside access is enabled and restricted, only allow access from\n" );
-            sb.append( "## this network.\n" );
-
-            sb.append( FLAG_OUT_NET + "=" + network + "\n" );
-
-            if ( !netmask.isEmpty()) {
-                sb.append( FLAG_OUT_MASK + "=" + netmask + "\n" );
-            }
-            sb.append( "\n" );
-        }
-
-        if ( configuration.getPostConfigurationScript().length() > 0 ) {
-            sb.append( "## Script to be executed after the bridge configuration script is executed\n" );
-            sb.append( DECL_POST_CONF + "\n" );
-            /* The post configuration script should be an object, allowing it to
-             * be prevalidated */
-            sb.append( configuration.getPostConfigurationScript().toString().trim() + "\n" );
-            sb.append( "}\n" );
-
-            sb.append( "## Flag to indicate that there is a post configuuration script\n" );
-            sb.append( FLAG_POST_FUNC + "=" + POST_FUNC_NAME + "\n\n" );
-        }
-
-        writeFile( sb, BUNNICULA_CONF + FLAGS_CFG_FILE );
-    }
-
-    private void saveHttpsPort() throws Exception
-    {
-
-        /* rebind the https port */
-        MvvmContextFactory.context().appServerManager().rebindExternalHttpsPort(
-          configuration.httpsPort());
-
-//        ((MvvmContextImpl)MvvmContextFactory.context()).getMain().
-//            rebindExternalHttpsPort( configuration.httpsPort());
-
-        Properties properties = new Properties();
-        // if ( configuration.httpsPort() != NetworkingConfigurationImpl.DEF_HTTPS_PORT ) {
-            /* Make sure to write the file anyway, this guarantees that if the property
-             * is already set, it gets overwritten with an empty value */
-        // }
-
-        /* Maybe only store this value if it has been changed */
-        properties.setProperty( PROPERTY_HTTPS_PORT, String.valueOf( configuration.httpsPort()));
-
-        try {
-            logger.debug( "Storing properties into: " + PROPERTY_FILE + "[" + configuration.httpsPort()
-                          + "]" );
-            properties.store( new FileOutputStream( new File( PROPERTY_FILE )), PROPERTY_COMMENT );
-        } catch ( Exception e ) {
-            logger.error( "Error saving HTTPS port" );
-        }
-
-        logger.debug( "Rebinding the HTTPS port" );
-    }
-
-    private void saveSsh()
-    {
-        try {
-            if ( configuration.isSshEnabled()) {
-                MvvmContextFactory.context().exec( SSH_ENABLE_SCRIPT );
-            } else {
-                MvvmContextFactory.context().exec( SSH_DISABLE_SCRIPT );
-            }
-        } catch ( Exception ex ) {
-            logger.error( "Unable to configure ssh", ex );
-        }
     }
 
     private void writeFile( StringBuilder sb, String fileName )

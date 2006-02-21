@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import java.net.Inet4Address;
@@ -34,10 +35,16 @@ import com.metavize.jnetcap.InterfaceData;
 
 import com.metavize.mvvm.InterfaceAlias;
 import com.metavize.mvvm.IntfConstants;
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.MvvmLocalContext;
 
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.script.ScriptWriter;
+import com.metavize.mvvm.tran.script.ScriptRunner;
+
 import com.metavize.mvvm.argon.ArgonException;
 import com.metavize.mvvm.argon.IntfConverter;
+import com.metavize.mvvm.networking.internal.RemoteInternalSettings;
 
 import static com.metavize.mvvm.networking.NetworkManagerImpl.BUNNICULA_BASE;
 import static com.metavize.mvvm.networking.NetworkManagerImpl.BUNNICULA_CONF;
@@ -56,6 +63,11 @@ class NetworkConfigurationLoader
     private static final String IP_CFG_FILE       = "/etc/network/interfaces";
     private static final String NS_CFG_FILE       = "/etc/resolv.conf";
     private static final String FLAGS_CFG_FILE    = BUNNICULA_CONF + "/networking.sh";
+
+    private static final String SSH_ENABLE_SCRIPT  = BUNNICULA_BASE + "/ssh_enable.sh";
+    private static final String SSH_DISABLE_SCRIPT = BUNNICULA_BASE + "/ssh_disable.sh";
+    private static final String DHCP_RENEW_SCRIPT  = BUNNICULA_BASE + "/networking/dhcp-renew";
+
     private static final String SSHD_PID_FILE     = "/var/run/sshd.pid";
     private static final String PROPERTY_FILE     = BUNNICULA_CONF + "/mvvm.networking.properties";
     private static final String DHCP_TEST_SCRIPT  = BUNNICULA_BASE + "/networking/dhcp-check";
@@ -72,9 +84,13 @@ class NetworkConfigurationLoader
     private static final String POST_FUNC_NAME    = "postConfigurationScript";
     /* Functionm declaration for the post configuration function */
     private static final String DECL_POST_CONF    = "function " + POST_FUNC_NAME + "() {";
+    
+    private static final String FLAG_HOSTNAME       = "MVVM_HOSTNAME";
+    private static final String FLAG_PUBLIC_ADDRESS = "MVVM_PUBLIC_ADDRESS";
 
     /* Property to determine the secondary https port */
     private static final String PROPERTY_HTTPS_PORT = "mvvm.https.port";
+    private static final String PROPERTY_COMMENT    = "Properties for the networking configuration";
 
     private final Logger logger = Logger.getLogger( this.getClass());
 
@@ -109,8 +125,6 @@ class NetworkConfigurationLoader
         loadFlags( remote );
         loadHttpsPort( remote );
         loadSshFlag( remote );
-
-        /* !!!!!!!!!!! Must load the hostname and public address */
     }
 
     void loadBasicNetworkSettings( BasicNetworkSettings basic ) throws NetworkException
@@ -233,6 +247,10 @@ class NetworkConfigurationLoader
                          * post configuration function exists */
                     } else if ( str.equals( DECL_POST_CONF )) {
                         parsePostConfigurationScript( remote, in );
+                    } else if ( str.equals( FLAG_HOSTNAME )) {
+                        remote.setHostname( str.substring( FLAG_HOSTNAME.length() + 1 ));
+                    } else if ( str.equals( FLAG_PUBLIC_ADDRESS )) {
+                        remote.setPublicAddress( str.substring( FLAG_PUBLIC_ADDRESS.length() + 1 ));
                     } else {
                         logger.info( "Unknown line: '" + str + "'" );
                     }
@@ -327,6 +345,124 @@ class NetworkConfigurationLoader
 
         nameValuePair = nameValuePair.substring( name.length() + 1 );
         return Boolean.parseBoolean( nameValuePair );
+    }
+
+    /* Save methods */
+    
+    void saveRemoteSettings( RemoteInternalSettings remote )
+    {
+        try {
+            saveHttpsPort( remote );
+        } catch ( Exception e ) {
+            logger.error( "Exception saving https port", e );
+        }
+        saveFlags( remote );
+        saveSsh( remote );
+    }
+
+    private void saveFlags( RemoteInternalSettings remote ) {
+        ScriptWriter sw = new ScriptWriter();
+
+        sw.appendComment( "Set to true to enable\n" );
+        sw.appendComment( "false or undefined is disabled.\n" );
+        sw.appendVariable( FLAG_TCP_WIN, "" + remote.isTcpWindowScalingEnabled());
+        sw.appendComment( "Allow inside HTTP true to enable" );
+        sw.appendComment( "false or undefined is disabled." );
+        sw.appendVariable( FLAG_HTTP_IN, "" + remote.isInsideInsecureEnabled());
+        sw.appendComment( "Allow outside HTTPS true to enable" );
+        sw.appendComment( "false or undefined to disable." );
+        sw.appendVariable( FLAG_HTTPS_OUT, "" + remote.isOutsideAccessEnabled());
+        sw.appendComment( "Restrict outside HTTPS access" );
+        sw.appendComment( "True if restricted, undefined or false if unrestricted" );
+        sw.appendVariable( FLAG_HTTPS_RES, "" + remote.isOutsideAccessRestricted());
+        sw.appendComment( "Report exceptions\n" );
+        sw.appendComment( "True to send out exception logs, undefined or false for not" );
+        sw.appendVariable( FLAG_EXCEPTION, "" + remote.isExceptionReportingEnabled());
+
+        if ( !remote.outsideNetwork().isEmpty()) {
+            IPaddr network = remote.outsideNetwork();
+            IPaddr netmask = remote.outsideNetmask();
+
+            sw.appendComment( "If outside access is enabled and restricted, only allow access from" );
+            sw.appendComment( "this network.\n" );
+
+            sw.appendVariable( FLAG_OUT_NET, network.toString());
+
+            if ( !netmask.isEmpty()) sw.appendVariable( FLAG_OUT_MASK, netmask.toString());
+
+            sw.appendLine();
+        }
+
+        if ( remote.getPostConfigurationScript().length() > 0 ) {
+            sw.appendComment( "Script to be executed after the bridge configuration script is executed\n" );
+            sw.appendLine( DECL_POST_CONF );
+            /* The post configuration script should be an object, allowing it to
+             * be prevalidated */
+            sw.appendLine( remote.getPostConfigurationScript().toString().trim());
+            sw.appendLine( "}" );
+
+            sw.appendComment( "Flag to indicate that there is a post configuuration script" );
+            sw.appendVariable( FLAG_POST_FUNC, POST_FUNC_NAME );
+        }
+
+        if ( remote.getHostname() != null ) {
+            sw.appendVariable( FLAG_HOSTNAME, remote.getHostname());
+        }
+        
+        if ( remote.getPublicAddress() != null ) {
+            sw.appendVariable( FLAG_PUBLIC_ADDRESS, remote.getPublicAddress());
+        }
+
+        sw.writeFile( FLAGS_CFG_FILE );
+    }
+
+    private void saveHttpsPort( RemoteInternalSettings remote ) throws Exception
+    {
+
+        /* rebind the https port */
+        int httpsPort = remote.getPublicHttpsPort();
+        try {
+            MvvmContextFactory.context().appServerManager().rebindExternalHttpsPort( httpsPort );
+        } catch ( Exception e ) {
+            if ( MvvmContextFactory.context().state().equals( MvvmLocalContext.MvvmState.LOADED )) {
+                /* This isn't a problem at startup, because the app manager uses the property also */
+                /* this fails the first time because the tomcat manager isn't initialized yet */
+                logger.info( "unable to rebind port at startup" + e );
+            } else {
+                logger.warn( "unable to rebind https port", e );
+            }
+        }
+
+        Properties properties = new Properties();
+        // if ( configuration.httpsPort() != NetworkingConfigurationImpl.DEF_HTTPS_PORT ) {
+            /* Make sure to write the file anyway, this guarantees that if the property
+             * is already set, it gets overwritten with an empty value */
+        // }
+
+        /* Maybe only store this value if it has been changed */
+        properties.setProperty( PROPERTY_HTTPS_PORT, String.valueOf( httpsPort ));
+
+        try {
+            logger.debug( "Storing properties into: " + PROPERTY_FILE + "[" + httpsPort + "]" );
+            properties.store( new FileOutputStream( new File( PROPERTY_FILE )), PROPERTY_COMMENT );
+        } catch ( Exception e ) {
+            logger.error( "Error saving HTTPS port" );
+        }
+
+        logger.debug( "Rebinding the HTTPS port" );
+    }
+
+    private void saveSsh( RemoteInternalSettings remote )
+    {
+        try {
+            if ( remote.isSshEnabled()) {
+                ScriptRunner.getInstance().exec( SSH_ENABLE_SCRIPT );
+            } else {
+                ScriptRunner.getInstance().exec( SSH_DISABLE_SCRIPT );
+            }
+        } catch ( Exception ex ) {
+            logger.error( "Unable to configure ssh", ex );
+        }
     }
 
     static NetworkConfigurationLoader getInstance()

@@ -201,16 +201,22 @@ public class NetworkManagerImpl implements NetworkManager
         return this.remote.toSettings();
     }
 
-    public synchronized void setRemoteSettings( RemoteSettings remote )
+    public synchronized void setRemoteSettings( RemoteSettings newSettings )
         throws NetworkException
     {
         /* XXXXXXXXX Implement me */
+        if ( logger.isDebugEnabled()) logger.debug( "Loaded remote settings: " + newSettings );
         NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
 
-        String pa = nup.getPublicAddress( this.networkSettings, remote, this.ddnsSettings );
+        String pa = nup.getPublicAddress( this.networkSettings, newSettings, this.ddnsSettings );
 
-        this.remote = new RemoteInternalSettings( remote, pa );
+        this.remote = new RemoteInternalSettings( newSettings, pa );
+        
+        saveRemoteSettings( this.remote );
 
+        /* Update the rules */
+        generateRules();
+        
         if ( logger.isDebugEnabled()) logger.debug( "Loaded remote settings: " + this.remote );
 
         callRemoteListeners();
@@ -529,9 +535,6 @@ public class NetworkManagerImpl implements NetworkManager
 
         updateAddress();
 
-        /* Generate rules */
-        generateRules();
-
         // Register the built-in listeners
         registerListener(new DynamicDNSListener());
     }    
@@ -539,8 +542,7 @@ public class NetworkManagerImpl implements NetworkManager
     /* Methods for writing the configuration files */
     private void writeConfiguration( NetworkSpacesInternalSettings newSettings ) throws NetworkException
     {
-        
-        if ( this.saveSettings == false ) {
+        if ( !this.saveSettings ) {
             /* Set to a warn, because if this gets emailed out, something has gone terribly awry */
             logger.warn( "Not writing configuration files because the debug property was set" );
             return;
@@ -683,8 +685,9 @@ public class NetworkManagerImpl implements NetworkManager
         this.networkSettings = nssi;
     }
 
-    private void saveRemoteSettings()
+    private void saveRemoteSettings( RemoteInternalSettings remote )
     {
+        networkConfigurationLoader.saveRemoteSettings( remote );
     }
 
     private void saveDynamicDnsSettings( DynamicDNSSettings newSettings )

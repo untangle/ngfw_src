@@ -144,8 +144,8 @@ public class NetworkIPJPanel extends javax.swing.JPanel
 		networkingConfiguration.gateway( gateway );
 		networkingConfiguration.dns1( dns1 );
 		networkingConfiguration.dns2( dns2 );
-		networkingConfiguration.hostname( hostname );
 	    }
+            networkingConfiguration.hostname( hostname );
         }
     }
 

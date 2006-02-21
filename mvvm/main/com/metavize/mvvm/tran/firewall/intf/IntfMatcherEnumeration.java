@@ -40,6 +40,8 @@ public final class IntfMatcherEnumeration
         List<IntfDBMatcher> matchers = new LinkedList<IntfDBMatcher>();
         
         try {
+            matchers.add( IntfSimpleMatcher.getAllMatcher());
+
             matchers.add( IntfSingleMatcher.makeInstance( IntfConstants.INTERNAL_INTF ));
             matchers.add( IntfSingleMatcher.makeInstance( IntfConstants.EXTERNAL_INTF ));
 
@@ -52,9 +54,7 @@ public final class IntfMatcherEnumeration
                 matchers.add( IntfSingleMatcher.makeInstance( IntfConstants.DMZ_INTF ));
                 matchers.add( IntfSetMatcher.makeInstance( IntfConstants.EXTERNAL_INTF, 
                                                            IntfConstants.DMZ_INTF ));
-            }
-            
-            matchers.add( IntfSimpleMatcher.getAllMatcher());
+            }            
         } catch ( ParseException e ) {
             /* XXX Done this way because this may be executed from the GUI */
             System.err.println( "Unable to initialize the interface matcher enumeration" );

@@ -152,7 +152,7 @@ public class RemoteInternalSettings
     public String getPublicAddress()
     {
         return this.publicAddress;
-    }
+    }        
 
     public String getCurrentPublicAddress()
     {
