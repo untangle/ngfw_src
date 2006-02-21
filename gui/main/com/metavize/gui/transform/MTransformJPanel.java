@@ -206,118 +206,117 @@ public class MTransformJPanel extends javax.swing.JPanel {
     JToggleButton powerJToggleButton(){ return powerJToggleButton; }
     BlinkJLabel stateJLabel(){ return (BlinkJLabel) stateJLabel; }
 
-    private void initComponents() {//GEN-BEGIN:initComponents
-        onOffbuttonGroup = new javax.swing.ButtonGroup();
-        descriptionTextJLabel = new javax.swing.JLabel();
-        nbPowerOnHintJLabel = powerOnHintJLabel;
-        stateJLabel = (JLabel) new com.metavize.gui.transform.BlinkJLabel();
-        controlsJToggleButton = new javax.swing.JToggleButton();
-        descriptionIconJLabel = new javax.swing.JLabel();
-        organizationIconJLabel = new javax.swing.JLabel();
-        jProgressBar = new javax.swing.JProgressBar();
-        powerJToggleButton = new javax.swing.JToggleButton();
-        effectsJPanel = new javax.swing.JPanel();
-        backgroundJLabel = new javax.swing.JLabel();
+        private void initComponents() {//GEN-BEGIN:initComponents
+                onOffbuttonGroup = new javax.swing.ButtonGroup();
+                descriptionTextJLabel = new javax.swing.JLabel();
+                nbPowerOnHintJLabel = powerOnHintJLabel;
+                stateJLabel = (JLabel) new com.metavize.gui.transform.BlinkJLabel();
+                controlsJToggleButton = new javax.swing.JToggleButton();
+                descriptionIconJLabel = new javax.swing.JLabel();
+                organizationIconJLabel = new javax.swing.JLabel();
+                jProgressBar = new javax.swing.JProgressBar();
+                powerJToggleButton = new javax.swing.JToggleButton();
+                effectsJPanel = new javax.swing.JPanel();
+                backgroundJLabel = new javax.swing.JLabel();
 
-        setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+                setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        setMaximumSize(new java.awt.Dimension(688, 500));
-        setMinimumSize(new java.awt.Dimension(688, 100));
-        setOpaque(false);
-        setPreferredSize(new java.awt.Dimension(688, 100));
-        descriptionTextJLabel.setFont(new java.awt.Font("Arial", 0, 18));
-        descriptionTextJLabel.setForeground(new java.awt.Color(124, 123, 123));
-        descriptionTextJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        descriptionTextJLabel.setText("SuperTransform");
-        descriptionTextJLabel.setDoubleBuffered(true);
-        descriptionTextJLabel.setFocusable(false);
-        descriptionTextJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        descriptionTextJLabel.setIconTextGap(0);
-        add(descriptionTextJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(106, 16, -1, 20));
+                setMaximumSize(new java.awt.Dimension(688, 500));
+                setMinimumSize(new java.awt.Dimension(688, 100));
+                setOpaque(false);
+                setPreferredSize(new java.awt.Dimension(688, 100));
+                descriptionTextJLabel.setFont(new java.awt.Font("Arial", 0, 18));
+                descriptionTextJLabel.setForeground(new java.awt.Color(124, 123, 123));
+                descriptionTextJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+                descriptionTextJLabel.setText("SuperTransform");
+                descriptionTextJLabel.setDoubleBuffered(true);
+                descriptionTextJLabel.setFocusable(false);
+                descriptionTextJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+                descriptionTextJLabel.setIconTextGap(0);
+                add(descriptionTextJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(106, 16, -1, 20));
 
-        nbPowerOnHintJLabel.setFont(new java.awt.Font("Arial", 0, 18));
-        nbPowerOnHintJLabel.setForeground(new java.awt.Color(255, 0, 0));
-        nbPowerOnHintJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        nbPowerOnHintJLabel.setDoubleBuffered(true);
-        nbPowerOnHintJLabel.setFocusable(false);
-        nbPowerOnHintJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        nbPowerOnHintJLabel.setIconTextGap(0);
-        add(nbPowerOnHintJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 80, -1, -1));
+                nbPowerOnHintJLabel.setFont(new java.awt.Font("Arial", 0, 18));
+                nbPowerOnHintJLabel.setForeground(new java.awt.Color(255, 0, 0));
+                nbPowerOnHintJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+                nbPowerOnHintJLabel.setDoubleBuffered(true);
+                nbPowerOnHintJLabel.setFocusable(false);
+                nbPowerOnHintJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+                nbPowerOnHintJLabel.setIconTextGap(0);
+                add(nbPowerOnHintJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 80, -1, -1));
 
-        stateJLabel.setToolTipText("<HTML> The <B>Status Indicator</B> shows the current operating condition of a particular software appliance.<BR>\n<font color=\"00FF00\"><b>Green</b></font> indicates that the appliance is \"on\" and operating normally.<BR>\n<font color=\"FF0000\"><b>Red</b></font> indicates that the appliance is \"on\", but that an abnormal condition has occurred.<BR>\n<font color=\"FFFF00\"><b>Yellow</b></font> indicates that the appliance is saving or refreshing settings.<BR>\n<b>Clear</b> indicates that the appliance is \"off\", and may be turned \"on\" by the user.\n</HTML>");
-        add(stateJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(606, 20, 28, 28));
+                stateJLabel.setToolTipText("<HTML> The <B>Status Indicator</B> shows the current operating condition of a particular software appliance.<BR>\n<font color=\"00FF00\"><b>Green</b></font> indicates that the appliance is \"on\" and operating normally.<BR>\n<font color=\"FF0000\"><b>Red</b></font> indicates that the appliance is \"on\", but that an abnormal condition has occurred.<BR>\n<font color=\"FFFF00\"><b>Yellow</b></font> indicates that the appliance is saving or refreshing settings.<BR>\n<b>Clear</b> indicates that the appliance is \"off\", and may be turned \"on\" by the user.\n</HTML>");
+                add(stateJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(606, 20, 28, 28));
 
-        controlsJToggleButton.setFont(new java.awt.Font("Default", 0, 12));
-        controlsJToggleButton.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconControlsClosed28x28.png")));
-        controlsJToggleButton.setText("Show Settings");
-        controlsJToggleButton.setToolTipText("<HTML>\nThe <B>Settings Button</B> allows you to show and hide configuration for<BR>\na particular software appliance.  Press the Settings Button once to show the<BR>\nsettings, and press the button again to hide the settings.\n</HTML>");
-        controlsJToggleButton.setAlignmentX(0.5F);
-        controlsJToggleButton.setDoubleBuffered(true);
-        controlsJToggleButton.setFocusPainted(false);
-        controlsJToggleButton.setFocusable(false);
-        controlsJToggleButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
-        controlsJToggleButton.setIconTextGap(0);
-        controlsJToggleButton.setMargin(new java.awt.Insets(0, 0, 1, 3));
-        controlsJToggleButton.setSelectedIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconControlsOpen28x28.png")));
-        controlsJToggleButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    controlsJToggleButtonActionPerformed(evt);
-                }
-            });
+                controlsJToggleButton.setFont(new java.awt.Font("Default", 0, 12));
+                controlsJToggleButton.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconControlsClosed28x28.png")));
+                controlsJToggleButton.setText("Show Settings");
+                controlsJToggleButton.setAlignmentX(0.5F);
+                controlsJToggleButton.setDoubleBuffered(true);
+                controlsJToggleButton.setFocusPainted(false);
+                controlsJToggleButton.setFocusable(false);
+                controlsJToggleButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+                controlsJToggleButton.setIconTextGap(0);
+                controlsJToggleButton.setMargin(new java.awt.Insets(0, 0, 1, 3));
+                controlsJToggleButton.setSelectedIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconControlsOpen28x28.png")));
+                controlsJToggleButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                controlsJToggleButtonActionPerformed(evt);
+                        }
+                });
 
-        add(controlsJToggleButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(106, 60, 120, 25));
+                add(controlsJToggleButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(106, 60, 120, 25));
 
-        descriptionIconJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        descriptionIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconDesc42x42.png")));
-        descriptionIconJLabel.setDoubleBuffered(true);
-        descriptionIconJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        add(descriptionIconJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(52, 6, 42, 42));
+                descriptionIconJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+                descriptionIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconDesc42x42.png")));
+                descriptionIconJLabel.setDoubleBuffered(true);
+                descriptionIconJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+                add(descriptionIconJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(52, 6, 42, 42));
 
-        organizationIconJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        organizationIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconOrg42x42.png")));
-        organizationIconJLabel.setAlignmentX(0.5F);
-        organizationIconJLabel.setDoubleBuffered(true);
-        organizationIconJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        organizationIconJLabel.setIconTextGap(0);
-        add(organizationIconJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(52, 51, 42, 42));
+                organizationIconJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+                organizationIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconOrg42x42.png")));
+                organizationIconJLabel.setAlignmentX(0.5F);
+                organizationIconJLabel.setDoubleBuffered(true);
+                organizationIconJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+                organizationIconJLabel.setIconTextGap(0);
+                add(organizationIconJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(52, 51, 42, 42));
 
-        jProgressBar.setFont(new java.awt.Font("Dialog", 0, 12));
-        jProgressBar.setForeground(new java.awt.Color(68, 91, 255));
-        jProgressBar.setMaximumSize(new java.awt.Dimension(232, 16));
-        jProgressBar.setMinimumSize(new java.awt.Dimension(232, 16));
-        jProgressBar.setPreferredSize(new java.awt.Dimension(232, 16));
-        jProgressBar.setString("");
-        jProgressBar.setStringPainted(true);
-        add(jProgressBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(106, 39, -1, -1));
+                jProgressBar.setFont(new java.awt.Font("Dialog", 0, 12));
+                jProgressBar.setForeground(new java.awt.Color(68, 91, 255));
+                jProgressBar.setMaximumSize(new java.awt.Dimension(232, 16));
+                jProgressBar.setMinimumSize(new java.awt.Dimension(232, 16));
+                jProgressBar.setPreferredSize(new java.awt.Dimension(232, 16));
+                jProgressBar.setString("");
+                jProgressBar.setStringPainted(true);
+                add(jProgressBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(106, 39, -1, -1));
 
-        powerJToggleButton.setFont(new java.awt.Font("Default", 0, 12));
-        powerJToggleButton.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconPowerOffState28x28.png")));
-        powerJToggleButton.setToolTipText("<HTML>\nThe <B>Power Button</B> allows you to turn a Software Appliance \"on\" and \"off\".<br>\n\n</HTML>");
-        powerJToggleButton.setAlignmentX(0.5F);
-        powerJToggleButton.setBorderPainted(false);
-        powerJToggleButton.setContentAreaFilled(false);
-        powerJToggleButton.setDoubleBuffered(true);
-        powerJToggleButton.setFocusPainted(false);
-        powerJToggleButton.setFocusable(false);
-        powerJToggleButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        powerJToggleButton.setIconTextGap(0);
-        powerJToggleButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        powerJToggleButton.setMaximumSize(new java.awt.Dimension(28, 28));
-        powerJToggleButton.setMinimumSize(new java.awt.Dimension(28, 28));
-        powerJToggleButton.setPreferredSize(new java.awt.Dimension(28, 28));
-        powerJToggleButton.setSelectedIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconPowerOnState28x28.png")));
-        add(powerJToggleButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(606, 54, 28, 28));
+                powerJToggleButton.setFont(new java.awt.Font("Default", 0, 12));
+                powerJToggleButton.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconPowerOffState28x28.png")));
+                powerJToggleButton.setToolTipText("<HTML>\nThe <B>Power Button</B> allows you to turn a Software Appliance \"on\" and \"off\".<br>\n\n</HTML>");
+                powerJToggleButton.setAlignmentX(0.5F);
+                powerJToggleButton.setBorderPainted(false);
+                powerJToggleButton.setContentAreaFilled(false);
+                powerJToggleButton.setDoubleBuffered(true);
+                powerJToggleButton.setFocusPainted(false);
+                powerJToggleButton.setFocusable(false);
+                powerJToggleButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+                powerJToggleButton.setIconTextGap(0);
+                powerJToggleButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+                powerJToggleButton.setMaximumSize(new java.awt.Dimension(28, 28));
+                powerJToggleButton.setMinimumSize(new java.awt.Dimension(28, 28));
+                powerJToggleButton.setPreferredSize(new java.awt.Dimension(28, 28));
+                powerJToggleButton.setSelectedIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconPowerOnState28x28.png")));
+                add(powerJToggleButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(606, 54, 28, 28));
 
-        effectsJPanel.setBackground(new Color(255,255,255,0));
-        add(effectsJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 688, 100));
+                effectsJPanel.setBackground(new Color(255,255,255,0));
+                add(effectsJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 688, 100));
 
-        backgroundJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/TransformBackground688x100.png")));
-        backgroundJLabel.setDisabledIcon(new javax.swing.ImageIcon(""));
-        backgroundJLabel.setDoubleBuffered(true);
-        backgroundJLabel.setOpaque(true);
-        add(backgroundJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 688, 100));
+                backgroundJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/TransformBackground688x100.png")));
+                backgroundJLabel.setDisabledIcon(new javax.swing.ImageIcon(""));
+                backgroundJLabel.setDoubleBuffered(true);
+                backgroundJLabel.setOpaque(true);
+                add(backgroundJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 688, 100));
 
-    }//GEN-END:initComponents
+        }//GEN-END:initComponents
 
     private void controlsJToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_controlsJToggleButtonActionPerformed
         handleControlsJButton(controlsJToggleButton.isSelected());
@@ -408,18 +407,18 @@ public class MTransformJPanel extends javax.swing.JPanel {
 
 
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel backgroundJLabel;
-    protected javax.swing.JToggleButton controlsJToggleButton;
-    protected javax.swing.JLabel descriptionIconJLabel;
-    protected javax.swing.JLabel descriptionTextJLabel;
-    private javax.swing.JPanel effectsJPanel;
-    private javax.swing.JProgressBar jProgressBar;
-    protected javax.swing.JLabel nbPowerOnHintJLabel;
-    private javax.swing.ButtonGroup onOffbuttonGroup;
-    protected javax.swing.JLabel organizationIconJLabel;
-    protected javax.swing.JToggleButton powerJToggleButton;
-    private javax.swing.JLabel stateJLabel;
-    // End of variables declaration//GEN-END:variables
+        // Variables declaration - do not modify//GEN-BEGIN:variables
+        private javax.swing.JLabel backgroundJLabel;
+        protected javax.swing.JToggleButton controlsJToggleButton;
+        protected javax.swing.JLabel descriptionIconJLabel;
+        protected javax.swing.JLabel descriptionTextJLabel;
+        private javax.swing.JPanel effectsJPanel;
+        private javax.swing.JProgressBar jProgressBar;
+        protected javax.swing.JLabel nbPowerOnHintJLabel;
+        private javax.swing.ButtonGroup onOffbuttonGroup;
+        protected javax.swing.JLabel organizationIconJLabel;
+        protected javax.swing.JToggleButton powerJToggleButton;
+        private javax.swing.JLabel stateJLabel;
+        // End of variables declaration//GEN-END:variables
 
 }
