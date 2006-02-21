@@ -30,11 +30,9 @@ public class NetworkTimezoneJPanel extends javax.swing.JPanel
     
     public NetworkTimezoneJPanel() {
         initComponents();
-	SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    for(String timezone : timezones){
-		    timezoneJComboBox.addItem(timezone);
-	    }
-	}});
+	for(String timezone : timezones){
+	    timezoneJComboBox.addItem(timezone);
+	}
     }
 
     public void doSave(NetworkCompoundSettings networkCompoundSettings, boolean validateOnly) throws Exception {
@@ -55,10 +53,10 @@ public class NetworkTimezoneJPanel extends javax.swing.JPanel
 	// TIMEZONE ////
 	String timezone = networkCompoundSettings.getTimeZone().getID();
 	for( String tz : timezones ){
-			if( tz.startsWith(timezone) ){
-					timezone = tz;
-					break;
-			}
+	    if( tz.startsWith(timezone) ){
+		timezone = tz;
+		break;
+	    }
 	}
 	timezoneJComboBox.setSelectedItem(timezone);
 			

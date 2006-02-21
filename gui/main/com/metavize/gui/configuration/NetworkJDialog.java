@@ -29,6 +29,7 @@ public class NetworkJDialog extends MConfigJDialog {
     private static final String NAME_NETWORKING_CONFIG = "Networking Config";
     private static final String NAME_NETWORK_SETTINGS  = "External Address";
     private static final String NAME_ALIAS_PANEL       = "External Address Aliases";
+    private static final String NAME_DYNAMIC_DNS       = "Dynamic DNS";
     private static final String NAME_TIMEZONE_PANEL    = "Timezone";
 
     public NetworkJDialog( ) {
@@ -53,7 +54,13 @@ public class NetworkJDialog extends MConfigJDialog {
 	addSavable(NAME_ALIAS_PANEL, aliasJPanel );
 	addRefreshable(NAME_ALIAS_PANEL, aliasJPanel );
 
-	// NETWORK SETTINGS //////
+	// DYNAMIC DNS //////
+        NetworkDynamicDNSJPanel dynamicDNSJPanel = new NetworkDynamicDNSJPanel();
+	addScrollableTab(null, NAME_DYNAMIC_DNS, null, dynamicDNSJPanel, false, true);
+	addSavable(NAME_DYNAMIC_DNS, dynamicDNSJPanel);
+	addRefreshable(NAME_DYNAMIC_DNS, dynamicDNSJPanel);
+
+	// TIME ZONE //////
         NetworkTimezoneJPanel timezoneJPanel = new NetworkTimezoneJPanel();
 	addScrollableTab(null, NAME_TIMEZONE_PANEL, null, timezoneJPanel, false, true);
 	addSavable(NAME_TIMEZONE_PANEL, timezoneJPanel);
