@@ -372,7 +372,7 @@ class SettingsManager
         /* use the interface out, because the interface has generics and the impl doesn't */
         NetworkSpacesSettings network = ns;
 
-        NetworkSpace primary = ns.getNetworkSpaceList().get( 0 );
+        NetworkSpace primary = (NetworkSpace)ns.getNetworkSpaceList().get( 0 );
         
         if ( primary.getIsDmzHostEnabled() && ( primary.getNetworkList().size() > 0 )) {
             
