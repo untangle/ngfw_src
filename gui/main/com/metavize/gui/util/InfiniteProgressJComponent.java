@@ -31,6 +31,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import javax.swing.JPanel;
 import javax.swing.JComponent;
 import javax.swing.Timer;
 import javax.swing.JProgressBar;
@@ -96,7 +97,6 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
 	this.actionTimer = new Timer(mspf, this);
 	this.actionTimer.setInitialDelay(0);
 	ticker = buildTicker();
-
     }
 
     public void setText(String text){
@@ -137,8 +137,8 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
 	    paintContent = false;
 	    setVisible(true);
 	    rampUp = started = doInit = true;
-	    actionTimer.start();
 	    startTime = System.currentTimeMillis();
+	    actionTimer.start();
 	}
     }
     public void startLater(final String text){

@@ -70,13 +70,9 @@ public class ClientWizard extends MWizardJDialog {
 
     protected void wizardFinishedNormal(){
 	super.wizardFinishedNormal();
-	try{
-	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		mTransformControlsJPanel.generateGui();
-		mTransformControlsJPanel.refreshGui();
-	    }});
-	}
-	catch(Exception e){ Util.handleExceptionNoRestart("Error updating panel assortment", e); }
+	mTransformControlsJPanel.getInfiniteProgressJComponent().startLater("Reconfiguring...");
+	mTransformControlsJPanel.getInfiniteProgressJComponent().stopLater(3000l);
+	mTransformControlsJPanel.refreshGui();
     }  
         
 }

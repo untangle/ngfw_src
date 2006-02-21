@@ -35,6 +35,7 @@ public class MColoredJTable extends JTable {
         setShowVerticalLines(false);
         setIntercellSpacing(new Dimension(1,1));
         setOpaque(true);
+	setDoubleBuffered(true);
         setBackground(TABLE_BACKGROUND_COLOR);
         setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         getTableHeader().setReorderingAllowed(false);

@@ -30,6 +30,8 @@ public class MLoginJFrame extends javax.swing.JFrame {
     private DropdownLoginTask dropdownLoginTask;
 
     public MLoginJFrame(final String[] args) {
+	getRootPane().setDoubleBuffered(true);
+	RepaintManager.currentManager(this).setDoubleBufferingEnabled(true);
 
         // PARSE ARGS
         boolean isEgdemo=false;

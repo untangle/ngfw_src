@@ -31,7 +31,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     private static final String SITE_TO_SITE_NAME = "VPN Sites";
     private static final String NAME_LOG = "Event Log";
     
-    private static VpnTransform.ConfigState configState;
+    private static VpnTransform.ConfigState configState, lastConfigState;;
     public static VpnTransform.ConfigState getConfigState(){ return configState; }
     private VpnTransform vpnTransform;
     private static IPaddr vpnServerAddress;
@@ -124,9 +124,14 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     public void refreshAll() throws Exception {	
 	vpnTransform = (VpnTransform) mTransformJPanel.getTransformContext().transform();
 	configState = vpnTransform.getConfigState();
+	if( lastConfigState == null )
+	    lastConfigState = configState;
 	vpnServerAddress = vpnTransform.getVpnServerAddress();
 	KeyButtonRunnable.setVpnTransform( vpnTransform );
+	if( !lastConfigState.equals(configState) )
+	    generateGui();
 	super.refreshAll();
+	lastConfigState = configState;
     }
     
 }

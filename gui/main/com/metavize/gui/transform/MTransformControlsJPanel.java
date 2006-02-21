@@ -42,6 +42,9 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
     private Map<String, Shutdownable> shutdownableMap = new LinkedHashMap(1);
     protected void addShutdownable(String name, Shutdownable shutdownable){ shutdownableMap.put(name, shutdownable); }
     protected Object settings;
+    private InfiniteProgressJComponent infiniteProgressJComponent = new InfiniteProgressJComponent();
+    public  InfiniteProgressJComponent getInfiniteProgressJComponent(){ return infiniteProgressJComponent; }
+    public static final long MIN_PROGRESS_MILLIS = 1500;
     ///////////////////////////////
     
     // EXPANDING/CONTACTING //////
@@ -54,6 +57,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
     private static final int EXPAND_INSET = 75;
     private static GridBagConstraints greyBackgroundConstraints = new GridBagConstraints(0,0,1,1,1d,1d,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0,0,0,0), 0, 0);
     private static GridBagConstraints contentConstraints = new GridBagConstraints(0,0,1,1,1d,1d,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(15,15,15,15), 0, 0);
+    private static GridBagConstraints infiniteConstraints = new GridBagConstraints(0,0,1,1,1d,1d,GridBagConstraints.NORTH, GridBagConstraints.BOTH, new Insets(0,0,0,0), 0, 0);
     private static ImageIcon greyBackgroundImageIcon;
     //////////////////////////////
 
@@ -62,11 +66,10 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
     private static ImageIcon[] saveSettingsImageIcons;
     CycleJLabel saveSettingsHintJLabel;
 
-    protected MTransformJPanel mTransformJPanel;
-    
+    protected MTransformJPanel mTransformJPanel;    
 
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
-	setDoubleBuffered(true);
+	//setDoubleBuffered(true);
         this.mTransformJPanel = mTransformJPanel;
 
 	// HELPER //
@@ -87,6 +90,8 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
 
         // INITIALIZE GUI
         initComponents();
+	add(infiniteProgressJComponent, infiniteConstraints, 0);
+
 	mTabbedPane.setFont( new java.awt.Font("Arial", 0, 14) );
 
 
@@ -103,6 +108,10 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
         expandJDialog.getContentPane().setLayout(new GridBagLayout());
 	expandJDialog.getContentPane().add(new com.metavize.gui.widgets.MTiledIconLabel("",greyBackgroundImageIcon,JLabel.CENTER), greyBackgroundConstraints);
     
+    }
+
+    public boolean isOptimizedDrawingEnabled(){
+	return false;
     }
 
     public void settingsChanged(Object source){
@@ -288,7 +297,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 readoutJLabel = new javax.swing.JLabel();
                 backgroundJLabel = new com.metavize.gui.widgets.MTiledIconLabel();
 
-                setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+                setLayout(new java.awt.GridBagLayout());
 
                 setMaximumSize(new java.awt.Dimension(596, 404));
                 setMinimumSize(new java.awt.Dimension(596, 404));
@@ -413,7 +422,15 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
 
                 socketJPanel.add(contentJPanel, java.awt.BorderLayout.CENTER);
 
-                add(socketJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(13, 7, 570, 354));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(7, 13, 20, 13);
+                add(socketJPanel, gridBagConstraints);
 
                 readoutJLabel.setFont(new java.awt.Font("Default", 0, 12));
                 readoutJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -421,12 +438,28 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 readoutJLabel.setBorder(new javax.swing.border.EtchedBorder());
                 readoutJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 readoutJLabel.setIconTextGap(0);
-                add(readoutJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(175, 50, 250, 250));
+                readoutJLabel.setMaximumSize(new java.awt.Dimension(200, 200));
+                readoutJLabel.setMinimumSize(new java.awt.Dimension(200, 200));
+                readoutJLabel.setPreferredSize(new java.awt.Dimension(200, 200));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                add(readoutJLabel, gridBagConstraints);
 
                 backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/LightGreyBackground1600x100.png")));
                 backgroundJLabel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(128, 127, 127)));
                 backgroundJLabel.setDoubleBuffered(true);
-                add(backgroundJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 596, 380));
+                backgroundJLabel.setMaximumSize(new java.awt.Dimension(596, 380));
+                backgroundJLabel.setMinimumSize(new java.awt.Dimension(596, 380));
+                backgroundJLabel.setPreferredSize(new java.awt.Dimension(596, 380));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                add(backgroundJLabel, gridBagConstraints);
 
         }//GEN-END:initComponents
 
@@ -441,25 +474,30 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
     private void expandJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_expandJButtonActionPerformed
 	if( !MTransformControlsJPanel.this.expandJDialog.isVisible() ){
 	    // change layout
-            MTransformControlsJPanel.this.socketJPanel.remove(contentJPanel);
-            MTransformControlsJPanel.this.socketJPanel.revalidate();
-            MTransformControlsJPanel.this.expandJDialog.getContentPane().add(contentJPanel, contentConstraints, 0);
+	    remove(infiniteProgressJComponent);
+            socketJPanel.remove(contentJPanel);
+            revalidate();
+	    repaint();
+	    expandJDialog.setGlassPane(infiniteProgressJComponent);
+            expandJDialog.getContentPane().add(contentJPanel, contentConstraints, 0);
 
             // place new window in the center of parent window and show
-            MTransformControlsJPanel.this.expandJDialog.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(),
-											       Util.getMMainJFrame().getWidth()-EXPAND_INSET,
-											       Util.getMMainJFrame().getHeight()-EXPAND_INSET) );
+            expandJDialog.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(),
+								 Util.getMMainJFrame().getWidth()-EXPAND_INSET,
+								 Util.getMMainJFrame().getHeight()-EXPAND_INSET) );
 	    expandJButton.setIcon(Util.getButtonCollapseSettings());
-            MTransformControlsJPanel.this.expandJDialog.setVisible(true);
+            expandJDialog.setVisible(true);
 
             // cleanup after new window is closed
 	    expandJButton.setIcon(Util.getButtonExpandSettings());
-            MTransformControlsJPanel.this.expandJDialog.getContentPane().remove(contentJPanel);
-            MTransformControlsJPanel.this.socketJPanel.add(contentJPanel);
-            MTransformControlsJPanel.this.socketJPanel.revalidate();
+            expandJDialog.getContentPane().remove(contentJPanel);
+            socketJPanel.add(contentJPanel);
+	    add(infiniteProgressJComponent, infiniteConstraints, 0);
+            revalidate();
+	    repaint();
 	}
 	else{
-	    MTransformControlsJPanel.this.expandJDialog.setVisible(false);
+	    expandJDialog.setVisible(false);
 	}
     }//GEN-LAST:event_expandJButtonActionPerformed
     

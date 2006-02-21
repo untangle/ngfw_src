@@ -238,9 +238,11 @@ public class MEditTableJPanel extends javax.swing.JPanel
                 tableJPanel.setMinimumSize(new java.awt.Dimension(40, 40));
                 entryJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
                 entryJScrollPane.setDoubleBuffered(true);
+                entryJScrollPane.setRequestFocusEnabled(false);
                 entryJTable.setBackground(new java.awt.Color(213, 213, 226));
                 entryJTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
                 entryJTable.setDoubleBuffered(true);
+                entryJTable.setRequestFocusEnabled(false);
                 entryJScrollPane.setViewportView(entryJTable);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
@@ -337,16 +339,19 @@ public class MEditTableJPanel extends javax.swing.JPanel
                 detailJScrollPane.setMinimumSize(new java.awt.Dimension(31, 50));
                 detailJScrollPane.setOpaque(false);
                 detailJScrollPane.setPreferredSize(new java.awt.Dimension(104, 50));
-                detailJTextArea.setBackground(new java.awt.Color(204, 204, 204));
+                detailJScrollPane.setRequestFocusEnabled(false);
+                detailJTextArea.setBackground(new java.awt.Color(240, 240, 240));
                 detailJTextArea.setEditable(false);
                 detailJTextArea.setLineWrap(true);
                 detailJTextArea.setWrapStyleWord(true);
                 detailJTextArea.setBorder(null);
+                detailJTextArea.setDoubleBuffered(true);
                 detailJTextArea.setFocusable(false);
                 detailJTextArea.setMargin(new java.awt.Insets(2, 2, 2, 2));
                 detailJTextArea.setMinimumSize(new java.awt.Dimension(100, 50));
                 detailJTextArea.setOpaque(false);
                 detailJTextArea.setPreferredSize(null);
+                detailJTextArea.setRequestFocusEnabled(false);
                 detailJScrollPane.setViewportView(detailJTextArea);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();

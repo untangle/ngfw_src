@@ -56,6 +56,8 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
     }
     
     private void init(Window parentWindow){
+	getRootPane().setDoubleBuffered(true);
+	RepaintManager.currentManager(this).setDoubleBufferingEnabled(true);
         this.initComponents();
         this.setBounds( Util.generateCenteredBounds( parentWindow.getBounds(), getMinSize().width, getMinSize().height) );
         this.addWindowListener(this);

@@ -41,6 +41,8 @@ public class MMainJFrame extends javax.swing.JFrame {
 
 
     public MMainJFrame() {
+	getRootPane().setDoubleBuffered(true);
+	RepaintManager.currentManager(this).setDoubleBufferingEnabled(true);
         Util.setMMainJFrame(this);
 
         // INIT GUI

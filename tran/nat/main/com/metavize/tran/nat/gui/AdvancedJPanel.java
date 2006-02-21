@@ -222,9 +222,11 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
 	public NatModeResetThread(boolean isAdvanced){
 	    setDaemon(true);
 	    this.isAdvanced = isAdvanced;
+	    mTransformControlsJPanel.getInfiniteProgressJComponent().start("Reconfiguring...");
 	    start();
 	}
 	public void run(){
+	    /*
 	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
 		progressJDialog = MProgressJDialog.factory("Network Sharing Reconfiguring...",
 									    "Please wait a moment...",
@@ -233,6 +235,7 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
 		progressJDialog.getJProgressBar().setIndeterminate(true);
 		progressJDialog.setVisible(true);
 	    }});
+	    */
 
 	    try{
 		Nat natTransform = com.metavize.tran.nat.gui.MTransformControlsJPanel.getNatTransform();
@@ -250,13 +253,15 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
 					      "Network Sharing Warning", "Warning");
 		}
 	    }
+	    mTransformControlsJPanel.getInfiniteProgressJComponent().stopLater(3000l);
 	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
 		mTransformControlsJPanel.refreshGui();
 	    }});
-
+	    /*
 	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
 		progressJDialog.setVisible(false);
 	    }});
+	    */
 	}
     }
     

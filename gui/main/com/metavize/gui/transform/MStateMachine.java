@@ -66,12 +66,12 @@ public class MStateMachine implements java.awt.event.ActionListener {
         try{
             if( source.equals(saveJButton) ){
                 if( transformName.equals("nat-transform") ){
-                    saveJButton.setEnabled(false);
+                    /* saveJButton.setEnabled(false); */
                     if( (new SaveProceedDialog( displayName )).isProceeding() ){
                         new SaveThread();
                     }
                     else{
-                        saveJButton.setEnabled(true);
+                        /* saveJButton.setEnabled(true); */
                     }
                 }
                 else{
@@ -82,13 +82,13 @@ public class MStateMachine implements java.awt.event.ActionListener {
                 new RefreshThread();
             }
             else if( source.equals(removeJButton) ){
-                removeJButton.setEnabled(false);
+                /* removeJButton.setEnabled(false); */
 		RemoveProceedDialog dialog = RemoveProceedDialog.factory((Window)mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(),
 									 displayName);
                 if( dialog.isProceeding() ){
                     Util.getPolicyStateMachine().moveFromRackToToolbox(mTransformJPanel.getPolicy(),mTransformJPanel);
                 }
-                removeJButton.setEnabled(true);
+                /* removeJButton.setEnabled(true); */
             }
             else if( source.equals(powerJToggleButton) ){
                 int modifiers = evt.getModifiers();
@@ -145,8 +145,9 @@ public class MStateMachine implements java.awt.event.ActionListener {
         public SaveThread(){
             super("MVCLIENT-MStateMachine.SaveThread: " + mackageDesc.getDisplayName());
 	    setDaemon(true);
-            saveJButton.setIcon(Util.getButtonSaving());
+            /*saveJButton.setIcon(Util.getButtonSaving()); */
             setProcessingView(false);
+	    mTransformControlsJPanel.getInfiniteProgressJComponent().start("Saving...");
             start();
         }
         public void run(){
@@ -154,6 +155,24 @@ public class MStateMachine implements java.awt.event.ActionListener {
                 mTransformControlsJPanel.saveAll();
                 mTransformControlsJPanel.refreshAll();
                 mTransformControlsJPanel.populateAll();
+            }
+            catch(Exception e){
+                try{ Util.handleExceptionWithRestart("Error doing save", e); }
+		catch(ValidationException f){ refreshState(true); }
+                catch(Exception g){
+                    Util.handleExceptionNoRestart("Error doing save", g);
+                    setProblemView(true);
+		    SaveFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(),
+					       mackageDesc.getDisplayName() );
+                }
+            }
+	    /*
+	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		saveJButton.setIcon(Util.getButtonSaveSettings());
+	    }});
+	    */
+	    mTransformControlsJPanel.getInfiniteProgressJComponent().stopLater(MTransformControlsJPanel.MIN_PROGRESS_MILLIS);
+            try{
                 refreshState(true);
             }
             catch(Exception e){
@@ -166,9 +185,6 @@ public class MStateMachine implements java.awt.event.ActionListener {
 					       mackageDesc.getDisplayName() );
                 }
             }
-	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		saveJButton.setIcon(Util.getButtonSaveSettings());
-	    }});
         }
     }
 
@@ -178,15 +194,15 @@ public class MStateMachine implements java.awt.event.ActionListener {
         public RefreshThread(){
             super("MVCLIENT-MStateMachine.RefreshThread: " + mackageDesc.getDisplayName());
 	    setDaemon(true);
-            reloadJButton.setIcon(Util.getButtonReloading());
+            /* reloadJButton.setIcon(Util.getButtonReloading()); */
             setProcessingView(false);
+	    mTransformControlsJPanel.getInfiniteProgressJComponent().start("Reloading...");
             start();
         }
         public void run(){
             try{
                 mTransformControlsJPanel.refreshAll();
                 mTransformControlsJPanel.populateAll();
-                refreshState(true);
             }
             catch(Exception e){
                 try{
@@ -199,9 +215,27 @@ public class MStateMachine implements java.awt.event.ActionListener {
 						  mackageDesc.getDisplayName() );
                 }
             }
+	    /*
 	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
 		reloadJButton.setIcon(Util.getButtonReloadSettings());
 	    }});
+	    */
+	    mTransformControlsJPanel.getInfiniteProgressJComponent().stopLater(MTransformControlsJPanel.MIN_PROGRESS_MILLIS);
+	    try{
+		refreshState(true);
+	    }
+	    catch(Exception e){
+		try{
+                    Util.handleExceptionWithRestart("Error doing refresh", e);
+                }
+                catch(Exception f){
+                    Util.handleExceptionNoRestart("Error doing refresh", f);
+                    setProblemView(true);		
+		    RefreshFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(),
+						  mackageDesc.getDisplayName() );
+                }
+	    }
+		
         }
     }
 
@@ -278,10 +312,10 @@ public class MStateMachine implements java.awt.event.ActionListener {
 
         Runnable runnable = new Runnable(){
                 public void run(){
-                    mTransformControlsJPanel.setAllEnabled( allControlsEnabled );
+                    /* mTransformControlsJPanel.setAllEnabled( allControlsEnabled );
                     saveJButton.setEnabled( saveEnabled );
                     reloadJButton.setEnabled( refreshEnabled );
-                    removeJButton.setEnabled( removeEnabled );
+                    removeJButton.setEnabled( removeEnabled ); */
                     if( Util.getIsDemo() )
                         powerJToggleButton.setEnabled(false);
                     else
