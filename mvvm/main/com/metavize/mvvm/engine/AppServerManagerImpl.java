@@ -275,7 +275,7 @@ public class AppServerManagerImpl
         m_keyStore.importCert(caCert, cn + "-ca");
       }
       reason = "Unable to CA cert \"" + new String(cert) + "\"";
-      m_keyStore.importCert(caCert, cn);
+      m_keyStore.importCert(cert, cn);
       m_tomcatManager.setSecurityInfo("conf/keystore", KS_STORE_PASS, getFQDN());
     }
     catch(Exception ex) {
