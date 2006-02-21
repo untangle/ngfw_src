@@ -161,7 +161,7 @@ public class MvvmContextImpl extends MvvmContextBase
         return networkingManager;
     }
 
-    public NetworkManager networkManager()
+    public NetworkManagerImpl networkManager()
     {
         return networkManager;
     }

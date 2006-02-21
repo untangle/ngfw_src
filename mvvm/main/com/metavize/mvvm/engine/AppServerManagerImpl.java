@@ -25,6 +25,9 @@ import com.metavize.mvvm.security.CertInfo;
 import com.metavize.tran.util.MVKeyStore;
 import com.metavize.tran.util.OpenSSLWrapper;
 
+import com.metavize.mvvm.networking.internal.RemoteInternalSettings;
+import com.metavize.mvvm.networking.RemoteSettingsListener;
+
 //name_
 
 
@@ -50,6 +53,7 @@ public class AppServerManagerImpl
 
   private TomcatManager m_tomcatManager;
   private MVKeyStore m_keyStore;
+  private String m_oldHostName;
 
   private AppServerManagerImpl() {
 
@@ -121,7 +125,7 @@ public class AppServerManagerImpl
   public void postInit(MvvmContextBase mvvmContext) {
 
     String effectiveHostname = getFQDN();
-  
+
     //Open the KeyStore
     try {
       m_keyStore = MVKeyStore.open(System.getProperty("bunnicula.conf.dir") +
@@ -167,6 +171,20 @@ public class AppServerManagerImpl
     catch(Exception ex) {
       ex.printStackTrace(System.out);
     }
+
+    //Register our listener
+    MvvmContextImpl.getInstance().networkManager().registerListener(
+      new RemoteSettingsListener() {
+        public void event( RemoteInternalSettings settings ) {
+          String existingAlias = m_tomcatManager.getKeyAlias();
+          String currentHostname =
+            MvvmContextImpl.getInstance().networkManager().getHostname();
+          if(existingAlias == null ||
+            !(existingAlias.equals(currentHostname))) {
+            hostnameChanged(currentHostname);
+          }
+        }
+      });
   }
 
   //===================================================
