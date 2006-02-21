@@ -16,9 +16,6 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.HashSet;
 
-import java.net.InetAddress;
-import java.net.Inet4Address;
-
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.ValidateException;
@@ -32,6 +29,8 @@ public class NetworkUtil
     public static final IPaddr  DEF_OUTSIDE_NETWORK;
     public static final IPaddr  DEF_OUTSIDE_NETMASK;
     public static final HostName LOCAL_DOMAIN_DEFAULT;
+    public static final IPaddr  BOGUS_DHCP_ADDRESS;
+    public static final IPaddr  BOGUS_DHCP_NETMASK;
 
     public static final IPaddr DEFAULT_DHCP_START;
     public static final IPaddr DEFAULT_DHCP_END;
@@ -200,25 +199,30 @@ public class NetworkUtil
     
     static
     {
-        Inet4Address emptyAddr = null;
-        Inet4Address outsideNetwork = null;
-        Inet4Address outsideNetmask = null;
-
-        IPaddr dhcpStart, dhcpEnd;
+        IPaddr emptyAddr      = null;
+        IPaddr outsideNetwork = null;
+        IPaddr outsideNetmask = null;
+        IPaddr bogusAddress   = null;
+        IPaddr bogusNetmask   = null;
+        IPaddr dhcpStart      = null;
+        IPaddr dhcpEnd        = null;
 
         HostName h;
 
         try {
-            emptyAddr = (Inet4Address)InetAddress.getByName( "0.0.0.0" );
-            outsideNetwork = (Inet4Address)InetAddress.getByName( "1.2.3.4" );
-            outsideNetmask = (Inet4Address)InetAddress.getByName( "255.255.255.0" );
+            emptyAddr      = IPaddr.parse( "0.0.0.0" );
+            outsideNetwork = IPaddr.parse( "1.2.3.4" );
+            outsideNetmask = IPaddr.parse( "255.255.255.0" );
+            bogusAddress   = IPaddr.parse( "169.254.210.50" );
+            bogusNetmask   = IPaddr.parse( "255.255.255.0" );
 
-            dhcpStart = IPaddr.parse( "192.168.1.100" );
-            dhcpEnd   = IPaddr.parse( "192.168.1.200" );
+            dhcpStart      = IPaddr.parse( "192.168.1.100" );
+            dhcpEnd        = IPaddr.parse( "192.168.1.200" );
         } catch( Exception e ) {
             System.err.println( "this should never happen: " + e );
             emptyAddr = null;
             dhcpStart = dhcpEnd = null;
+            bogusAddress = bogusNetmask = null;
             /* THIS SHOULD NEVER HAPPEN */
         }
 
@@ -229,12 +233,15 @@ public class NetworkUtil
             System.err.println( "Unable to initialize LOCAL_DOMAIN_DEFAULT: " + e );
             h = null;
         }
-        EMPTY_IPADDR = new IPaddr( emptyAddr );
-        DEF_OUTSIDE_NETWORK = new IPaddr( outsideNetwork );
-        DEF_OUTSIDE_NETMASK = new IPaddr( outsideNetmask );
+        EMPTY_IPADDR        = emptyAddr;
+        DEF_OUTSIDE_NETWORK = outsideNetwork;
+        DEF_OUTSIDE_NETMASK = outsideNetmask;
 
-        DEFAULT_DHCP_START = dhcpStart;
-        DEFAULT_DHCP_END = dhcpEnd;
+        DEFAULT_DHCP_START  = dhcpStart;
+        DEFAULT_DHCP_END    = dhcpEnd;
+
+        BOGUS_DHCP_ADDRESS  = bogusAddress;
+        BOGUS_DHCP_NETMASK  = bogusNetmask;
 
         LOCAL_DOMAIN_DEFAULT = h;
     }

@@ -23,6 +23,9 @@ import java.io.FileReader;
 
 import org.apache.log4j.Logger;
 
+import com.metavize.jnetcap.Netcap;
+import com.metavize.jnetcap.InterfaceData;
+
 import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.InterfaceAlias;
 import com.metavize.mvvm.IntfConstants;
@@ -278,6 +281,7 @@ class NetworkUtilPriv extends NetworkUtil
         primary.setIsTrafficForwarded( true );
         primary.setIsNatEnabled( false );
         primary.setIsDmzHostEnabled( false );
+        primary.setIsDhcpEnabled( configuration.isDhcpEnabled());
         
         List<Interface> interfaceList = new LinkedList<Interface>();
         for ( byte argonIntf : ic.argonIntfArray()) {
@@ -362,6 +366,48 @@ class NetworkUtilPriv extends NetworkUtil
                           interfaceName );
     }
 
+    /** Used when update address is called.  This only updates the dhcp address */
+    NetworkSpacesInternalSettings updateDhcpAddresses( NetworkSpacesInternalSettings internal )
+        throws NetworkException, ValidateException
+    {
+        /* Convert the settings out */
+        NetworkSpacesSettings settings = toSettings( internal );
+        
+        /* XXXX DHCP only works on the first space. */
+        /* This assumes at least one space */
+        NetworkSpace space = settings.getNetworkSpaceList().get( 0 );
+                
+        Netcap netcap = Netcap.getInstance();
+        
+        DhcpStatus status = 
+            new DhcpStatus( NetworkUtil.BOGUS_DHCP_ADDRESS, NetworkUtil.BOGUS_DHCP_NETMASK );
+        
+        try {
+            IntfConverter ic = IntfConverter.getInstance();
+            
+            /* XXX Right now the only space that supports DHCP is the external space,
+             * need to update for when there are others */
+            String external = ic.argonIntfToString( IntfConstants.EXTERNAL_INTF );
+            List<InterfaceData> externalIntfDataList = netcap.getInterfaceData( external );
+            
+            if ( externalIntfDataList == null || ( externalIntfDataList.size() == 0 )) {
+                throw new Exception( "no interface data for external interface." );
+            }
+            
+            InterfaceData data = externalIntfDataList.get( 0 );
+            status = new DhcpStatus( data.getAddress(), data.getNetmask());
+        } catch( Exception e ) {
+            logger.warn( "Error updating DHCP address, setting to bogus address", e );
+        }
+        
+        logger.debug( "Updating the primary address for the space '" + space.getName() + "'" );
+        logger.debug( status );
+        
+        space.setDhcpStatus( status );
+
+        return toInternal( settings );
+    }
+
     /* Get the default settings for services */
     ServicesSettingsImpl getDefaultServicesSettings()
     {
@@ -376,7 +422,7 @@ class NetworkUtilPriv extends NetworkUtil
         return services;
         
     }
-    
+
     /* Used when the network settings change, but the dns masq settings haven't */
     ServicesInternalSettings update( NetworkSpacesInternalSettings settings, 
                                      ServicesInternalSettings server )

@@ -818,7 +818,7 @@ public class RemoteClient
 
     private static void updateAddress() throws Exception
     {
-        mc.argonManager().updateAddress();
+        mc.networkManager().updateAddress();
     }
 
     // helper functions -------------------------------------------------------

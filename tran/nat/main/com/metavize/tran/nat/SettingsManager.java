@@ -13,6 +13,7 @@ package com.metavize.tran.nat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -280,10 +281,18 @@ class SettingsManager
     }
 
 
+    /* This removes the external interface, since it cannot be modified */
     NatAdvancedSettings toAdvancedSettings( NetworkSpacesSettings network,
                                             ServicesInternalSettings services )
     {
         network.getNetworkSpaceList().get( 0 ).setIsPrimary( true );
+        List<Interface> interfaceList = network.getInterfaceList();
+        
+        
+        for ( Iterator<Interface> iter = interfaceList.iterator() ; iter.hasNext() ; ) {
+            Interface intf = iter.next();
+            if ( intf.getArgonIntf() == IntfConstants.EXTERNAL_INTF ) iter.remove();
+        }
         return new NatAdvancedSettingsImpl( network, new ServicesSettingsImpl( services ));
     }
 

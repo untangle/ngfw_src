@@ -142,7 +142,6 @@ class NetworkConfigurationLoader
             logger.warn( "Exception retrieving external interface data, setting to an empty list" );
             externalIntfDataList = EMPTY_INTF_DATA_LIST;
         }
-
         
         if ( externalIntfDataList == null ) externalIntfDataList = EMPTY_INTF_DATA_LIST;
         

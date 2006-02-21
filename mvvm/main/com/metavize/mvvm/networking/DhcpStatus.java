@@ -18,8 +18,11 @@ import java.net.InetAddress;
 
 import com.metavize.mvvm.tran.IPaddr;
 
-/* Class for tracking the current configuration of a network space
- * that was configured with DHCP. */
+/* Class for tracking the current configuration of a network space.
+ * that was configured with DHCP.
+ * Less useful than originally anticipated.  This really should just be an address
+ * and a netmask 
+ */
 public class DhcpStatus implements Serializable
 {
     /* Just used in the case where there is no status */

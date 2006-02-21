@@ -171,6 +171,12 @@ public class NetworkManagerImpl implements NetworkManager
     private synchronized void setNetworkSettings( NetworkSpacesInternalSettings newSettings )
         throws NetworkException, ValidateException
     {
+        try {
+            newSettings = NetworkUtilPriv.getPrivInstance().updateDhcpAddresses( newSettings );
+        } catch ( Exception e ) {
+            logger.error( "Unable to update dhcp addresses", e );
+        }
+
         logger.debug( "Loading the new network settings: " + newSettings );
         /* XXXX implement me */
         // throw new IllegalStateException( "implement me" );
@@ -358,10 +364,20 @@ public class NetworkManagerImpl implements NetworkManager
         return this.remote.getCurrentPublicAddress();
     }
     
-    public void updateAddress()
+    public synchronized void updateAddress()
     {
         /* Get the new address for any dhcp spaces */
+        NetworkSpacesInternalSettings previous = this.networkSettings;
+        
+        try {
+            /* Update the netcap address */
+            Netcap.getInstance().updateAddress();
 
+            this.networkSettings = NetworkUtilPriv.getPrivInstance().updateDhcpAddresses( previous );
+        } catch ( Exception e ) {
+            logger.error( "Exception updating address, reverting to previous settings", e );
+            this.networkSettings = previous;
+        }
     }
 
     public void disableDhcpForwarding()
@@ -483,7 +499,7 @@ public class NetworkManagerImpl implements NetworkManager
         if ( Boolean.valueOf( disableSaveSettings ) == true ) this.saveSettings = false;
         
         NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
-        
+                
         /* If there are no settings, get the settings from the database */
         if ( this.networkSettings == null ) {
             /* Need to create new settings, (The method setNetworkingConfiguration assumes that
@@ -511,6 +527,8 @@ public class NetworkManagerImpl implements NetworkManager
             ddns.setEnabled( false );
             setDynamicDnsSettings( ddns );
         }
+
+        updateAddress();
 
         /* Generate rules */
         generateRules();

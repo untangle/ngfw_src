@@ -92,53 +92,6 @@ public class ArgonManagerImpl implements ArgonManager
         }
     }
 
-    synchronized public void updateAddress() throws ArgonException
-    {
-        if ( isShutdown ) {
-            logger.warn( "MVVM is already shutting down, no longer able to update address" );
-            return;
-        }
-
-        /* Update the rules */
-        generateRules();
-
-        IntfConverter intfConverter = IntfConverter.getInstance();
-
-        String inside  = intfConverter.argonIntfToString( IntfConverter.INSIDE );
-        String outside = intfConverter.argonIntfToString( IntfConverter.OUTSIDE );
-            
-        Netcap.updateAddress();
-        
-        try {
-            this.insideIntfDataList = netcap.getInterfaceData( inside );
-        } catch ( Exception e ) {
-            logger.warn( "Exception retrieving inside interface data, setting to an empty list" );
-            this.insideIntfDataList = EMPTY_INTF_DATA_LIST;
-        }
-
-        if ( this.insideIntfDataList == null ) this.insideIntfDataList = EMPTY_INTF_DATA_LIST;
-        
-        try {
-            this.outsideIntfDataList = netcap.getInterfaceData( outside );
-        } catch ( Exception e ) {
-            logger.warn( "Exception retrieving inside interface data, setting to an empty list" );
-            this.outsideIntfDataList = EMPTY_INTF_DATA_LIST;
-        }
-        
-        if ( this.outsideIntfDataList == null ) this.outsideIntfDataList = EMPTY_INTF_DATA_LIST;
-    }
-
-    /**
-     * Load a networking configuration
-     */
-    synchronized public void loadNetworkingConfiguration( NetworkingConfiguration netConfig ) 
-        throws ArgonException
-    {
-        BridgeConfigurationManager.getInstance().reconfigureBridge( netConfig );
-        pause();
-        updateAddress();
-    }
-    
     /* Indicate that the shutdown process has started, this is used to prevent NAT from both
      * re-enabling the bridge during shutdown, Argon will do that automatically.
      * This also prevents transforms from registering or deregistering interfaces after shutdown 
@@ -147,63 +100,7 @@ public class ArgonManagerImpl implements ArgonManager
     {
         isShutdown = true;
     }    
-
-    synchronized public void destroyBridge( NetworkingConfiguration netConfig, InetAddress internalAddress, 
-                                            InetAddress internalNetmask ) throws ArgonException
-    {
-        if ( isShutdown ) {
-            logger.warn( "MVVM is already shutting down, no longer able to destroy bridge" );
-            return;
-        }
-
-        BridgeConfigurationManager.getInstance().destroyBridge( netConfig, internalAddress,
-                                                                internalNetmask );
-        pause();
-        updateAddress();
-    }
     
-    synchronized public void restoreBridge( NetworkingConfiguration netConfig ) throws ArgonException
-    {
-        if ( isShutdown ) {
-            logger.warn( "MVVM is already shutting down, no longer able to restore bridge" );
-            return;
-        }
-
-        BridgeConfigurationManager.getInstance().restoreBridge( netConfig );
-        pause();
-        updateAddress();
-    }
-
-    /* This re-enables the bridge, but checks if it is already enabled before attempting to 
-     * re-enable it */
-    synchronized public void argonRestoreBridge( NetworkingConfiguration netConfig ) throws ArgonException
-    {
-        BridgeConfigurationManager.getInstance().argonRestoreBridge( netConfig );
-        pause();
-        updateAddress();
-    }
-
-    public void disableLocalAntisubscribe()
-    {
-    }
-
-    public void enableLocalAntisubscribe()
-    {
-    }
-
-    public void disableDhcpForwarding()
-    {
-    }
-
-    public void enableDhcpForwarding()
-    {
-    }
-
-    /* Update all of the iptables rules and the inside address database */
-    public void generateRules() throws ArgonException
-    {
-    }
-
     public String getInside() throws ArgonException
     {
         return IntfConverter.getInstance().argonIntfToString( IntfConverter.INSIDE );
@@ -351,9 +248,6 @@ public class ArgonManagerImpl implements ArgonManager
         } catch ( Exception e ) {
             logger.error( "Unable to write transform interface properties:" + TRANSFORM_INTF_FILE, e );
         }
-
-        /* Update the address database */
-        updateAddress();
         
         /* Update the policy manager */
         if ( ic.clearUpdatePolicyManager()) {
