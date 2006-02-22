@@ -25,7 +25,9 @@ public class RemoteJDialog extends MConfigJDialog {
 
     private static final String NAME_ADMINISTRATION_CONFIG  = "Remote Admin Config";
     private static final String NAME_ADMIN_ACCOUNTS         = "Admin Accounts";
-    private static final String NAME_ADMIN_RESTRICTIONS     = "Restrictions";
+    private static final String NAME_ACCESS_TAB             = "Access";
+    private static final String NAME_ACCESS_RESTRICTIONS    = "Restrictions";
+    private static final String NAME_ACCESS_PUBLIC          = "Public Address";
     private static final String NAME_CERTIFICATE_TAB        = "Certificates";
     private static final String NAME_CERTIFICATE_STATUS     = "Status";
     private static final String NAME_CERTIFICATE_GENERATION = "Generation";
@@ -46,11 +48,20 @@ public class RemoteJDialog extends MConfigJDialog {
 	addSavable(NAME_ADMIN_ACCOUNTS, remoteAdminJPanel);
 	addRefreshable(NAME_ADMIN_ACCOUNTS, remoteAdminJPanel);
 	
-        // REMOTE RESTRICTION //////
+	// ACCESS //
+        JTabbedPane accessJTabbedPane = addTabbedPane(NAME_ACCESS_TAB, null);
+
+        // ACCESS RESTRICTIONS //////
         RemoteRestrictionJPanel remoteRestrictionJPanel = new RemoteRestrictionJPanel();
-        addScrollableTab(null, NAME_ADMIN_RESTRICTIONS, null, remoteRestrictionJPanel, false, true);
-        addSavable(NAME_ADMIN_RESTRICTIONS, remoteRestrictionJPanel);
-        addRefreshable(NAME_ADMIN_RESTRICTIONS, remoteRestrictionJPanel);
+        addScrollableTab(accessJTabbedPane, NAME_ACCESS_RESTRICTIONS, null, remoteRestrictionJPanel, false, true);
+        addSavable(NAME_ACCESS_RESTRICTIONS, remoteRestrictionJPanel);
+        addRefreshable(NAME_ACCESS_RESTRICTIONS, remoteRestrictionJPanel);
+
+	// ACCESS PUBLIC ADDRESS //
+	RemotePublicAddressJPanel remotePublicAddressJPanel = new RemotePublicAddressJPanel();
+	addScrollableTab(accessJTabbedPane, NAME_ACCESS_PUBLIC, null, remotePublicAddressJPanel, false, true);
+	addSavable(NAME_ACCESS_PUBLIC, remotePublicAddressJPanel);
+	addRefreshable(NAME_ACCESS_PUBLIC, remotePublicAddressJPanel);
 	
         // CERTIFICATES /////////////
         JTabbedPane certificateJTabbedPane = addTabbedPane(NAME_CERTIFICATE_TAB, null);

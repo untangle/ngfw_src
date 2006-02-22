@@ -63,7 +63,9 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
     private String hostname = NetworkUtil.DEFAULT_HOSTNAME;
     private boolean isHostnamePublic = false;
     private String publicAddress;
-
+    private IPaddr publicIPaddr;
+    private int publicPort;
+    
     private int httpsPort = DEF_HTTPS_PORT;
 
     /* This is a script that gets executed after the bridge configuration runs */
@@ -252,10 +254,32 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
         this.publicAddress = newValue;
     }
 
+    /** @return the public url for the box, this is the address (may be hostname or ip address) */
+    public IPaddr getPublicIPaddr()
+    {
+        return this.publicIPaddr;
+    }
+
+    public void setPublicIPaddr( IPaddr newValue )
+    {
+        this.publicIPaddr = newValue;
+    }
+
+    /** @return the public url for the box, this is the address (may be hostname or ip address) */
+    public int getPublicPort()
+    {
+        return this.publicPort;
+    }
+
+    public void setPublicPort( int newValue )
+    {
+        this.publicPort = newValue;
+    }
+
     /* Return true if the current settings have a public address */
     public boolean hasPublicAddress()
     {
-        return (( this.publicAddress == null ) || ( this.publicAddress.length() == 0 ));
+        return (this.publicAddress != null ) && (this.publicAddress.length() > 0 );
     }
 
     @Override

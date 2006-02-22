@@ -89,6 +89,16 @@ public interface RemoteSettings
 
     public void setPublicAddress( String newValue );
 
+    /** @return the public url for the box, this is the address (may be hostname or ip address) */
+    public IPaddr getPublicIPaddr();
+
+    public void setPublicIPaddr( IPaddr newValue );
+
+    /** @return the public url for the box, this is the address (may be hostname or ip address) */
+    public int getPublicPort();
+
+    public void setPublicPort( int newValue );
+
     /* Return true if the current settings have a public address */
     public boolean hasPublicAddress();
 }

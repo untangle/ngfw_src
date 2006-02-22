@@ -61,6 +61,8 @@ public class NetworkingConfigurationImpl implements Serializable, NetworkingConf
      */
     private String hostname = DEFAULT_HOSTNAME;
     private String publicAddress = null;
+    private IPaddr publicIPaddr = null;
+    private int publicPort = 0;
     private boolean isHostnamePublic = false;
 
     private IPaddr host     = NetworkUtil.EMPTY_IPADDR;
@@ -180,10 +182,32 @@ public class NetworkingConfigurationImpl implements Serializable, NetworkingConf
         this.publicAddress = newValue;
     }
 
+    /** @return the public url for the box, this is the address (may be hostname or ip address) */
+    public IPaddr getPublicIPaddr()
+    {
+        return this.publicIPaddr;
+    }
+
+    public void setPublicIPaddr( IPaddr newValue )
+    {
+        this.publicIPaddr = newValue;
+    }
+
+    /** @return the public url for the box, this is the address (may be hostname or ip address) */
+    public int getPublicPort()
+    {
+        return this.publicPort;
+    }
+
+    public void setPublicPort( int newValue )
+    {
+        this.publicPort = newValue;
+    }
+
     /* Return true if the current settings have a public address */
     public boolean hasPublicAddress()
     {
-        return (( this.publicAddress == null ) || ( this.publicAddress.length() == 0 ));
+        return (this.publicAddress != null ) && (this.publicAddress.length() > 0);
     }
 
 
