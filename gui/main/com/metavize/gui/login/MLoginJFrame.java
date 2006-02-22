@@ -469,6 +469,8 @@ public class MLoginJFrame extends javax.swing.JFrame {
             this.setDaemon(true);
             this.setContextClassLoader( Util.getClassLoader() );
             acceptJButton.setEnabled(false);
+	    loginJTextField.setBackground( Color.WHITE );
+	    passJPasswordField.setBackground( Color.WHITE );
             this.start();
         }
 
@@ -548,6 +550,10 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 }
                 catch(FailedLoginException e){
                     resetLogin("Error: Invalid login/password.");
+                    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+			loginJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+			passJPasswordField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+		    }});
                     retryLogin = -1;
                     return;
                 }

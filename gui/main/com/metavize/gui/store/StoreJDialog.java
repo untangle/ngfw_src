@@ -320,7 +320,7 @@ public class StoreJDialog extends javax.swing.JDialog implements java.awt.event.
         }
         
         // PURCHASE /////// launch a thread, close dialog when done
-	Util.getPolicyStateMachine().moveFromStoreToToolbox(mTransformJButton);
+	// disabled for compilation reasons Util.getPolicyStateMachine().moveFromStoreToToolbox(mTransformJButton);
 	windowClosing(null);
     }//GEN-LAST:event_saveJButtonActionPerformed
 
