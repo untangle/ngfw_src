@@ -1,0 +1,19 @@
+#!/bin/sh
+
+exec >> @MVVM_LOG@/iptables.log 2>&1
+
+REGDONE="@MVVM_HOME@/.regdone"
+REGINFO="@MVVM_HOME@/registration.info"
+
+# For now we run everything with '&' since the listener runs this script
+# inline using the UI thread.
+
+/etc/init.d/ntpdate restart 2>&1 > /dev/null &
+
+if [ -f "$REGINFO" ]; then
+    if [ ! -f "$REGDONE" -o "$REGDONE" -ot "$REGINFO" ]; then
+        /usr/bin/mvregister 2>&1 > /dev/null &
+    fi
+fi
+
+exit 0

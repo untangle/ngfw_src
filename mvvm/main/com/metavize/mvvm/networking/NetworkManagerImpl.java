@@ -68,6 +68,9 @@ public class NetworkManagerImpl implements NetworkManager
     /* Script to run renew the DHCP lease */
     private static final String DHCP_RENEW_SCRIPT    = BUNNICULA_BASE + "/networking/dhcp-renew";
 
+    /* Script to run after reconfiguration (from NetworkSettings Listener) */
+    private static final String AFTER_RECONFIGURE_SCRIPT = BUNNICULA_BASE + "/networking/after-reconfigure";
+
     /* A flag for devel environments, used to determine whether or not 
      * the etc files actually are written, this enables/disables reconfiguring networking */
     private boolean saveSettings = true;
@@ -287,9 +290,8 @@ public class NetworkManagerImpl implements NetworkManager
     {
         logger.debug( "Saving new ddns settings: " + newSettings );
         saveDynamicDnsSettings( newSettings );
-        
-        NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
-        nup.writeDDNSConfiguration(newSettings, getHostname());
+
+        doDDNSUpdate();
     }
 
     public synchronized void disableNetworkSpaces() throws NetworkException
@@ -561,6 +563,7 @@ public class NetworkManagerImpl implements NetworkManager
         
         // Register the built-in listeners
         registerListener(new DynamicDNSListener());
+        registerListener(new AfterReconfigureScriptListener());
     }    
     
     /* Methods for writing the configuration files */
@@ -769,13 +772,32 @@ public class NetworkManagerImpl implements NetworkManager
         return INSTANCE;
     }
 
+    private void doDDNSUpdate()
+    {
+        NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
+        NetworkSpaceInternal externalSpace = networkSettings.getNetworkSpaceList().get(0);
+        String externalInterfaceName = externalSpace.getDeviceName();
+        nup.writeDDNSConfiguration(getDynamicDnsSettings(), getHostname(), externalInterfaceName);
+    }
 
     class DynamicDNSListener implements RemoteSettingsListener
     {
         public void event( RemoteInternalSettings settings )
         {
-            NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
-            nup.writeDDNSConfiguration(getDynamicDnsSettings(), settings.getHostname());
+            doDDNSUpdate();
+        }
+    }
+
+    class AfterReconfigureScriptListener implements NetworkSettingsListener
+    {
+        public void event( NetworkSpacesInternalSettings settings )
+        {
+            /* Run the script */
+            try {
+                ScriptRunner.getInstance().exec( AFTER_RECONFIGURE_SCRIPT );
+            } catch ( Exception e ) { 
+                logger.error( "Error running after reconfigure script", e );
+            }
         }
     }
 }
