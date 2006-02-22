@@ -63,12 +63,20 @@ case "$1" in
         fi
         echo -n "." ; sleep 1 ; echo -n "." ; sleep 1 # time for console.log to be rm'd
 
+        pid=$(cat ${MVVM_RUNDIR}/${MVVM_PID})
+
         # Wait for completion
         for i in `seq 1 $MVVM_TIMEOUT` ; do
+            ps -p $pid >/dev/null
+            if [ $? -ne 0 ]; then
+                exit
+            fi
+
             EXPC="`cat $MVVM_CONSOLE_LOG 2>/dev/null | grep -i exception `"
             FINI="`cat $MVVM_CONSOLE_LOG 2>/dev/null | grep -i 'vegetables' `"
             sleep 1
             echo -n "."
+
             if [ "x" != "x$EXPC" ] ; then
                 if [ ! -z "`echo $EXPC | grep -i \"address already in use\"`" ] ; then
                     echo -e "x]\nAddress already in use. Will attempt to rebind for five minutes."
@@ -81,6 +89,7 @@ case "$1" in
                     exit
                 fi
             fi
+
             if [ "x" != "x$FINI" ] ; then
                 break
             fi
@@ -144,7 +153,9 @@ case "$1" in
         # Attempt more aggressive kill now
         echo -n "ungraceful exit"
         kill -INT `ps awwx | grep java | grep mvvm | awk '{print $1}' | grep -v $$ ` &>/dev/null
+        killall -s INT mvvm.sh &>/dev/null
         kill `ps awwx | grep java | grep mvvm | awk '{print $1}' | grep -v $$ ` &>/dev/null
+        killall mvvm.sh &>/dev/null
 
         # Wait for completion
         for i in `seq 1 20` ; do
