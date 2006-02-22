@@ -47,9 +47,9 @@ class DefaultPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
     private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* invisible */
-    private static final int C2_MW = 100; /* client interface */
-    private static final int C3_MW = 100; /* server interface */
-    private static final int C4_MW = 200; /* policy / direction */
+    private static final int C2_MW = 200; /* policy / direction */
+    private static final int C3_MW = 100; /* client interface */
+    private static final int C4_MW = 100; /* server interface */
     private static final int C5_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW), 125); /* description */
 
     protected boolean getSortable(){ return false; }
@@ -73,9 +73,9 @@ class DefaultPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
         //                                 #  min    rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0, C0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS );
         addTableColumn( tableColumnModel,  1, C1_MW, false, false, false, false, Integer.class, null, sc.TITLE_INDEX );
-        addTableColumn( tableColumnModel,  2, C2_MW, true,  false, false, false, String.class, null, sc.html("client<br>interface"));
-        addTableColumn( tableColumnModel,  3, C3_MW, true,  false, false, false, String.class, null, sc.html("server<br>interface"));
-        addTableColumn( tableColumnModel,  4, C4_MW, true,  true,  false, false, ComboBoxModel.class, null, sc.bold("rack"));
+        addTableColumn( tableColumnModel,  2, C2_MW, true,  true,  false, false, ComboBoxModel.class, null, sc.html("<b>use this rack</b> when the<br>next columns are matched..."));
+        addTableColumn( tableColumnModel,  3, C3_MW, true,  false, false, false, String.class, null, sc.html("client<br>interface"));
+        addTableColumn( tableColumnModel,  4, C4_MW, true,  false, false, false, String.class, null, sc.html("server<br>interface"));
         addTableColumn( tableColumnModel,  5, C5_MW, true,  true,  false, true,  String.class, null, "description" );
         addTableColumn( tableColumnModel,  6, 10,    false, false, true,  false, SystemPolicyRule.class, null, "" );
 
@@ -95,9 +95,9 @@ class DefaultPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
 	for( Vector rowVector : tableVector ){
 	    rowIndex++;
             newElem = (SystemPolicyRule) rowVector.elementAt(6);
-	    Policy policy = policyNames.get((String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem());
+	    Policy policy = policyNames.get((String) ((ComboBoxModel)rowVector.elementAt(2)).getSelectedItem());
             newElem.setPolicy( policy );
-	    boolean isInbound = ((String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem()).contains(INBOUND_STRING);
+	    boolean isInbound = ((String) ((ComboBoxModel)rowVector.elementAt(2)).getSelectedItem()).contains(INBOUND_STRING);
 	    newElem.setInbound( isInbound );
 	    newElem.setDescription( (String) rowVector.elementAt(5) );
             elemList.add(newElem);
@@ -165,8 +165,6 @@ class DefaultPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
 	    tempRow = new Vector(7);
 	    tempRow.add( super.ROW_SAVED );
 	    tempRow.add( rowIndex );
-	    tempRow.add( policyCompoundSettings.getIntfEnum().getIntfName( newElem.getClientIntf() ) );
-	    tempRow.add( policyCompoundSettings.getIntfEnum().getIntfName( newElem.getServerIntf() ) );
 	    String policyName;
 	    if( newElem.getPolicy() != null )
 		policyName = newElem.getPolicy().getName() + (newElem.isInbound()?INBOUND_STRING:OUTBOUND_STRING);
@@ -174,6 +172,8 @@ class DefaultPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
 		policyName = NULL_STRING;
 	    tempRow.add( super.generateComboBoxModel(policyNames.keySet().toArray(),
 						     policyName) );
+	    tempRow.add( policyCompoundSettings.getIntfEnum().getIntfName( newElem.getClientIntf() ) );
+	    tempRow.add( policyCompoundSettings.getIntfEnum().getIntfName( newElem.getServerIntf() ) );
 	    tempRow.add( newElem.getDescription() );
 	    tempRow.add( newElem );
 	    allRows.add( tempRow );
