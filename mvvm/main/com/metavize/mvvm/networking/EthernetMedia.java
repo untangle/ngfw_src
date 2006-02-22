@@ -20,24 +20,32 @@ import com.metavize.mvvm.tran.ParseException;
 
 public class EthernetMedia implements Serializable
 {
+    private static final String NAME_AUTO_NEGOTIATE = "Auto-Negotiate";
+    /* These are the strings used by ethtool */
+    private static final String SPEED_100   = "100";
+    private static final String SPEED_10    = "10";
+
+    private static final String DUPLEX_FULL = "full";
+    private static final String DUPLEX_HALF = "half";
+    
     private static final Map<Integer,EthernetMedia> TYPE_TO_MEDIA = new HashMap<Integer,EthernetMedia>();
     private static final Map<String,EthernetMedia>  NAME_TO_MEDIA = new HashMap<String,EthernetMedia>();
 
     /* This is kind of janky because mii-tool has different flags for using auto mode */
     public static final EthernetMedia AUTO_NEGOTIATE  =
-        new EthernetMedia( 0, "Auto-Negotiate", "" );
+        new EthernetMedia( 0, NAME_AUTO_NEGOTIATE, SPEED_100, DUPLEX_FULL );
     
     public static final EthernetMedia FULL_DUPLEX_100 =
-        new EthernetMedia( 1, "100 Mbps, Full Duplex", "100baseTx-FD" );
+        new EthernetMedia( 1, "100 Mbps, Full Duplex", SPEED_100, DUPLEX_FULL  );
 
     public static final EthernetMedia HALF_DUPLEX_100 =
-        new EthernetMedia( 2, "100 Mbps, Half Duplex", "100baseTx-HD" );
+        new EthernetMedia( 2, "100 Mbps, Half Duplex", SPEED_100, DUPLEX_HALF );
 
     public static final EthernetMedia FULL_DUPLEX_10  =
-        new EthernetMedia( 3, "10 Mbps, Full Duplex", "10baseT-FD" );
+        new EthernetMedia( 3, "10 Mbps, Full Duplex",  SPEED_10,  DUPLEX_FULL );
 
     public static final EthernetMedia HALF_DUPLEX_10  =
-        new EthernetMedia( 4, "10 Mbps, Half Duplex", "10baseT-HD" );
+        new EthernetMedia( 4, "10 Mbps, Half Duplex",  SPEED_10,  DUPLEX_HALF );
 
     private static final EthernetMedia ENUMERATION[] =
     {
@@ -47,14 +55,16 @@ public class EthernetMedia implements Serializable
     private final int type;
     private final String name;
 
-    /* This is the media type that is used by mii-tool */
-    private final String media;
+    /* This is the media type that is used by ethtool */
+    private final String speed;
+    private final String duplex;
 
-    private EthernetMedia( int type, String name, String media )
+    private EthernetMedia( int type, String name, String speed, String duplex )
     {
         this.type  = type;
         this.name  = name;
-        this.media = media;
+        this.speed = speed;
+        this.duplex = duplex;
     }
 
     public int getType()
@@ -66,22 +76,26 @@ public class EthernetMedia implements Serializable
     {
         return this.name;
     }
+    
+    public String getSpeed()
+    {
+        return this.speed;
+    }
+
+    public String getDuplex()
+    {
+        return this.duplex;
+    }
 
     public String toString()
     {
         return this.name;
     }
 
-    /* This is only required by this package */
-    String getMiiToolMedia()
-    {
-        return this.media;
-    }
-
     boolean isAuto()
     {
-        /* ,,, kind of janky */
-        return (( this.media.length() == 0 ) || this.equals( AUTO_NEGOTIATE ));
+        /* ,,, kind of janky, slightly paranoid */
+        return ( this.name.equals( NAME_AUTO_NEGOTIATE ) || this.equals( AUTO_NEGOTIATE ));
     }
 
     public static EthernetMedia[] getEnumeration()

@@ -594,7 +594,7 @@ public class NetworkManagerImpl implements NetworkManager
         throws NetworkException, ArgonException
     {
         /* This is a script writer customized to generate etc interfaces files */
-        InterfacesScriptWriter isw = new InterfacesScriptWriter( newSettings );
+        InterfacesScriptWriter isw = new InterfacesScriptWriter( newSettings, this.remote );
         isw.addNetworkSettings();
         isw.writeFile( ETC_INTERFACES_FILE );
     }

@@ -25,6 +25,7 @@ import static com.metavize.mvvm.tran.script.ScriptWriter.COMMENT;
 import static com.metavize.mvvm.tran.script.ScriptWriter.METAVIZE_HEADER;
 
 import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
+import com.metavize.mvvm.networking.internal.RemoteInternalSettings;
 import com.metavize.mvvm.networking.internal.NetworkSpaceInternal;
 import com.metavize.mvvm.networking.internal.RouteInternal;
 import com.metavize.mvvm.networking.internal.InterfaceInternal;
@@ -34,6 +35,7 @@ class InterfacesScriptWriter extends ScriptWriter
     private static final Logger logger = Logger.getLogger( InterfacesScriptWriter.class );
 
     private final NetworkSpacesInternalSettings settings;
+    private final RemoteInternalSettings remote;
 
     private static final String INTERFACE_HEADER = 
         COMMENT + METAVIZE_HEADER +
@@ -43,17 +45,19 @@ class InterfacesScriptWriter extends ScriptWriter
         "iface lo inet loopback\n\n";
     
     private static final String BUNNICULA_BASE = System.getProperty( "bunnicula.home" );
-    private static final String FLUSH_CONFIG = BUNNICULA_BASE + "/networking/flush-interfaces";
+    private static final String FLUSH_CONFIG   = BUNNICULA_BASE + "/networking/flush-interfaces";
+    private static final String POST_SCRIPT    = BUNNICULA_BASE + "/networking/post-script";
 
     private static final String DHCP_BOGUS_ADDRESS = "169.254.210.5";
 
     /* String used to indicate that pump should only update the address of the interface */
     static final String DHCP_FLAG_ADDRESS_ONLY = " --no-gateway --no-resolvconf ";
 
-    InterfacesScriptWriter( NetworkSpacesInternalSettings settings )
+    InterfacesScriptWriter( NetworkSpacesInternalSettings settings, RemoteInternalSettings remote )
     {
         super();
         this.settings = settings;
+        this.remote   = remote;
     }
     
     /* This function should only be called once */
@@ -76,6 +80,9 @@ class InterfacesScriptWriter extends ScriptWriter
         /* Add this after the last interface, done this way so there isn't a space
          * in between the interface and the final commands */
         addRoutingTable();
+
+        /* Add the post configuration script */
+        addPostConfigurationScript();
     }
 
     /* Index is used to name the bridge */
@@ -109,6 +116,16 @@ class InterfacesScriptWriter extends ScriptWriter
                 String dev = intf.getIntfName();
                 appendCommands( "up brctl addif " + name + " " + dev,
                                 "up ifconfig " + dev + " 0.0.0.0 mtu " + mtu + " up" );
+                
+                EthernetMedia media = intf.getEthernetMedia();
+                
+                
+                if ( media.isAuto()) {
+                    appendCommands( "up ethtool -s " + dev + " autoneg on" );
+                } else {
+                    appendCommands( "up ethtool -s " + dev + " autoneg off" + " speed " + media.getSpeed() + 
+                                    " duplex " + media.getDuplex());
+                }
             }
         }
         
@@ -188,6 +205,20 @@ class InterfacesScriptWriter extends ScriptWriter
         }
         
         appendCommands( "up ip route flush table cache" );
+    }
+
+    private void addPostConfigurationScript()
+    {
+        if ( this.remote == null ) {
+            logger.warn( "null remote settings, ignoring post configuration script" );
+            return;
+        }
+
+        String script = this.remote.getPostConfigurationScript();
+        
+        if (( script != null ) && ( script.trim().length() > 0 )) {
+            appendCommands( "up if [ -r " + POST_SCRIPT + " ]; then sh " + POST_SCRIPT + "; fi" );
+        }
     }
 
     /* A helper to append commands that can't fail */

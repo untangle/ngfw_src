@@ -48,6 +48,9 @@ public class MaintenanceCompoundSettings implements CompoundSettings {
     public MCasingJPanel[] getCasingJPanels(){ return casingJPanels; }
 
     public void save() throws Exception {
+        /* RBS: !!! It is important that the remote settings are saved before the 
+         * the network settings, if they are not, the post configuration script
+         * may or may not be executed. */
 	Util.getNetworkManager().setRemoteSettings(remoteSettings);
 	Util.getNetworkManager().setNetworkSettings(networkSettings);
 
