@@ -125,7 +125,7 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel
 	if( isTrapEnabled )
             trapEnabledRadioButton.setSelected(true);
         else
-            trapEnabledRadioButton.setSelected(true);
+            trapDisabledRadioButton.setSelected(true);
         
 	// TRAP COMMUNITY //////
 	String trapCommunity = snmpSettings.getTrapCommunity();
