@@ -726,7 +726,7 @@ public class NetworkManagerImpl implements NetworkManager
     private void saveDynamicDnsSettings( DynamicDNSSettings newSettings )
     {
         DataSaver<DynamicDNSSettings> saver = 
-            new DynamicDnsSettingsDataSaver( MvvmContextFactory.context());
+            new DynamicDnsSettingsDataSaver( MvvmContextFactory.context(), newSettings );
         
         /* Have to reuse ids in order to avoid settings proliferation.
          * reusing ids doesn't seem to work (or at least it didn't for ovpn.  have
@@ -844,16 +844,24 @@ class ServicesSettingsDataSaver extends DataSaver<ServicesSettingsImpl>
 
 class DynamicDnsSettingsDataSaver extends DataSaver<DynamicDNSSettings>
 {
-    public DynamicDnsSettingsDataSaver( MvvmLocalContext local ) 
+    private final DynamicDNSSettings newData;
+    public DynamicDnsSettingsDataSaver( MvvmLocalContext local, DynamicDNSSettings newData ) 
     {
         super( local );
+        this.newData = newData;
     }
 
     protected void preSave( Session s )
     {
-        Query q = s.createQuery( "from DynamicDNSSettings" );
+        Query q = s.createQuery( "from DynamicDNSSettings ds where ds.id != :id" );
+        
+        /* Don't delete the new settings object */
+        Long settingsId = newData.getId();
+
+        q.setParameter( "id", (( settingsId != null ) ? settingsId : 0 ));
         for ( Iterator iter = q.iterate() ; iter.hasNext() ; ) {
             DynamicDNSSettings settings = (DynamicDNSSettings)iter.next();
+
             s.delete( settings );
         }
     }

@@ -62,7 +62,7 @@ public class DynamicDNSSettings implements Serializable
      * column="settings_id"
      * generator-class="native"
      */
-    private Long getId()
+    Long getId()
     {
         return id;
     }
