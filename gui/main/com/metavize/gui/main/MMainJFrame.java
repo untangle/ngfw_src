@@ -53,11 +53,10 @@ public class MMainJFrame extends javax.swing.JFrame {
         java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         setBounds((screenSize.width-1024)/2, (screenSize.height-768)/2, 1024, 768);
 
-        PolicyStateMachine policyStateMachine = new PolicyStateMachine(mTabbedPane,rackJComboBox,Util.getMRackJPanel(),
+        PolicyStateMachine policyStateMachine = new PolicyStateMachine(mTabbedPane,Util.getMRackJPanel(),
                                                                        toolboxJScrollPane,policyToolboxJPanel,serviceToolboxJPanel,
                                                                        storeScrollJPanel,metavizeJButton,
                                                                        Util.getMPipelineJPanel().getJScrollPane());
-        rackJComboBox.addActionListener(policyStateMachine);
         metavizeJButton.addActionListener(policyStateMachine);
 
         // UPDATE/UPGRADE
@@ -124,7 +123,6 @@ public class MMainJFrame extends javax.swing.JFrame {
                 maintenanceJButton = new javax.swing.JButton();
                 aboutJButton = new javax.swing.JButton();
                 configurationSpacerJPanel1 = new javax.swing.JPanel();
-                rackJComboBox = new javax.swing.JComboBox();
                 upgradeJButton = new javax.swing.JButton();
                 upgradeJButton1 = new javax.swing.JButton();
                 mPipelineJPanel = new com.metavize.gui.pipeline.MPipelineJPanel();
@@ -469,23 +467,6 @@ public class MMainJFrame extends javax.swing.JFrame {
                 gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 10);
                 controlsJPanel.add(mTabbedPane, gridBagConstraints);
 
-                rackJComboBox.setFont(new java.awt.Font("Dialog", 0, 12));
-                rackJComboBox.setMaximumRowCount(17);
-                rackJComboBox.setFocusable(false);
-                rackJComboBox.setMinimumSize(new java.awt.Dimension(160, 24));
-                rackJComboBox.setPreferredSize(new java.awt.Dimension(160, 24));
-                rackJComboBox.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                rackJComboBoxActionPerformed(evt);
-                        }
-                });
-
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 2;
-                gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
-                controlsJPanel.add(rackJComboBox, gridBagConstraints);
-
                 upgradeJButton.setFont(new java.awt.Font("Default", 0, 12));
                 upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/upgrade/IconAvailable32x32.png")));
                 upgradeJButton.setText("<html><center>Upgrade<br>(1)</center></html>");
@@ -591,10 +572,6 @@ public class MMainJFrame extends javax.swing.JFrame {
             emailJButton.setEnabled(true);
         }
     }//GEN-LAST:event_emailJButtonActionPerformed
-
-    private void rackJComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rackJComboBoxActionPerformed
-        //System.err.println("action performed");
-    }//GEN-LAST:event_rackJComboBoxActionPerformed
 
     private void metavizeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_metavizeJButtonActionPerformed
     }//GEN-LAST:event_metavizeJButtonActionPerformed
@@ -721,7 +698,6 @@ public class MMainJFrame extends javax.swing.JFrame {
         private javax.swing.JButton metavizeJButton;
         private javax.swing.JButton networkJButton;
         private javax.swing.JPanel policyToolboxJPanel;
-        private javax.swing.JComboBox rackJComboBox;
         private javax.swing.JButton remoteJButton;
         private javax.swing.JPanel serviceToolboxJPanel;
         private javax.swing.JPanel storeJPanel;
