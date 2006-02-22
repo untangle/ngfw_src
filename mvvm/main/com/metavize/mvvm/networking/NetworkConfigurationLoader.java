@@ -427,7 +427,7 @@ class NetworkConfigurationLoader
             if ( MvvmContextFactory.context().state().equals( MvvmLocalContext.MvvmState.LOADED )) {
                 /* This isn't a problem at startup, because the app manager uses the property also */
                 /* this fails the first time because the tomcat manager isn't initialized yet */
-                logger.info( "unable to rebind port at startup" + e );
+                logger.info( "unable to rebind port at startup: " + e );
             } else {
                 logger.warn( "unable to rebind https port", e );
             }

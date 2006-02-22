@@ -324,7 +324,10 @@ class NetworkUtilPriv extends NetworkUtil
             /* This is pretty bad */
             logger.warn( "Configuration has an empty address[" + host + "] is netmask [" + netmask + "]" );
         } else {
-            networkList.add( IPNetworkRule.makeInstance( host, netmask ));
+            /* Only add this address if DHCP is not enabled */
+            if ( !configuration.isDhcpEnabled()) {
+                networkList.add( IPNetworkRule.makeInstance( host, netmask ));
+            }
         }
 
         for ( InterfaceAlias alias : configuration.getAliasList()) {

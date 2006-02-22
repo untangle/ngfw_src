@@ -49,7 +49,7 @@ function fixDefaultRules()
     fixDefaultRule ${DEFAULT_RULE_PRIORITY} ${DEFAULT_TABLE}
 
     ## Add in the rule for the metavize table
-    fixDefaultRule ${METAVIZE_MAIN_PRIORITY} ${METAVIZE_MAIN_TABLE} 
+    # fixDefaultRule ${METAVIZE_MAIN_PRIORITY} ${METAVIZE_MAIN_TABLE} 
 }
 
 function fixDefaultRule()

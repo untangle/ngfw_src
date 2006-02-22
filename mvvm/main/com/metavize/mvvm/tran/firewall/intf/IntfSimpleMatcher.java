@@ -43,7 +43,7 @@ public final class IntfSimpleMatcher extends IntfDBMatcher
     
     public String toString()
     {
-        if ( isAll ) return ParsingConstants.MARKER_ALL;
+        if ( isAll ) return ParsingConstants.MARKER_ANY;
         return ParsingConstants.MARKER_NOTHING;
     }
     

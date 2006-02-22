@@ -130,7 +130,7 @@ public final class IntfSetMatcher extends IntfDBMatcher
     {
         ImmutableBitSet i = new ImmutableBitSet( intfSet );
         IntfSetMatcher cache = CACHE.get( i );
-        if ( cache == null ) System.out.println( "creating new set" );
+        // if ( cache == null ) System.out.println( "creating new set" );
         if ( cache == null ) CACHE.put( i, cache = new IntfSetMatcher( i, user, database ));
 
         return cache;

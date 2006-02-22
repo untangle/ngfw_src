@@ -58,6 +58,34 @@ public class IPNetwork implements Serializable
         return this.user;
     }
 
+    public boolean equals( Object o )
+    {
+        if (!( o instanceof IPNetwork )) return false;
+
+        IPNetwork ip = (IPNetwork)o;
+        
+        /* All items are null, true */
+        if ( ip.network == null && this.network == null &&
+             ip.netmask == null && this.netmask == null ) return true;
+
+        /* One item is null and the other is not, return true */
+        if ( ip.network == null && this.network != null ) return false;
+        if ( ip.netmask == null && this.netmask != null ) return false;
+
+        if ( !ip.network.equals( this.network )) return false;
+        if ( !ip.netmask.equals( this.netmask )) return false;
+        
+        return true;
+    }
+
+    public int hashCode()
+    {
+        int result = 17;
+        result = 37 * result + (( this.network == null ) ? 23 : this.network.hashCode());
+        result = 37 * result + (( this.netmask == null ) ? 23 : this.netmask.hashCode());
+        return result;
+    }
+
     public static IPNetwork parse( String value ) throws ParseException
     {
         value = value.trim();

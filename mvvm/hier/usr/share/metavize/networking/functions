@@ -119,14 +119,6 @@ function generateAddresses() {
     ifconfig | grep -A 4 $1 | awk '/inet/ { print $2 "/" $4 }' | sed -e 's/addr://' -e 's/Mask://' | grep -v "^$" | joinLines
 }
 
-function unconfigureInterfaces() {
-    local l_t
-    for l_t in `ifconfig -a | grep '^[^ ]' | awk '{print $1}' | grep -v ''`; do
-        echo "Unconfiguringing interface '${l_t}'"
-        ifconfig ${l_t} 0.0.0.0 down
-    done
-}
-
 function getAllInterfaces() {
     ls ${SYSFS_INTERFACE_PATH} | grep -v '\(lo\|dummy\|tun\)'
 }
@@ -236,6 +228,14 @@ function deconfigureAllInterfaces() {
     for l_interface in ${l_interfaceList}; do
         ifconfig ${l_interface} 0.0.0.0 -promisc down
     done
+
+    l_interfaceList=`ifconfig -a | \grep '^[^ ]' | awk '{ print $1 }' | \grep  '\(br\|eth\)'`
+    echo "Deconfiguring all interfaces, second pass: ${l_interfaceList}"
+    ## This is a safety measure to delete aliases.
+    for l_interface in ${l_interfaceList} ; do 
+        ifconfig ${l_interface} 0.0.0.0 -promisc down
+    done
+    
 
     ## Just in case
     ifconfig lo 127.0.0.1 netmask 255.0.0.0

@@ -185,15 +185,22 @@ public class NetworkManagerImpl implements NetworkManager
         writeConfiguration( newSettings );
         
         /* Actually load the new settings */
-        
+        if ( this.saveSettings ) {
+            try {
+                ScriptRunner.getInstance().exec( NET_CONFIGURE_SCRIPT );
+            } catch ( Exception e ) {
+                /* XXXXXXX not totally sure what to do here, kind of boned */
+                logger.warn( "Error setting up network", e );
+            }
+        } else {
+            logger.warn( "Not loading new network settings because networking is disabled" );
+        }
+                
         /* Save the configuration to the database */
         saveNetworkSettings( nup.toSettings( newSettings ));
         
         /* Have to update the remote settings */
-        updateRemoteSettings();
-
-        /* call the listeners */
-        callNetworkListeners();
+        updateAddress();
     }
 
     public RemoteSettings getRemoteSettings()
@@ -285,14 +292,28 @@ public class NetworkManagerImpl implements NetworkManager
         nup.writeDDNSConfiguration(newSettings, getHostname());
     }
 
-    public synchronized void disableNetworkSpaces()
+    public synchronized void disableNetworkSpaces() throws NetworkException
     {
-        
+        try {
+            NetworkSpacesSettings nss = getNetworkSettings();
+            nss.setIsEnabled( false );
+            setNetworkSettings( nss );
+        } catch ( Exception e ) {
+            logger.error( "Unable to enable network settings", e );
+            throw new NetworkException( "Unable to turn on network sharing", e );
+        }
     }
 
-    public synchronized void enableNetworkSpaces()
+    public synchronized void enableNetworkSpaces() throws NetworkException
     {
-        
+        try {
+            NetworkSpacesSettings nss = getNetworkSettings();
+            nss.setIsEnabled( true );
+            setNetworkSettings( nss );
+        } catch ( Exception e ) {
+            logger.error( "Error enabling network spaces", e );
+            throw new NetworkException( "Unable to turn on network spaces" );
+        }
     }
 
     /* Get the external HTTPS port */
@@ -423,13 +444,16 @@ public class NetworkManagerImpl implements NetworkManager
     /* Listener functions */
     private void callNetworkListeners()
     {
+        logger.debug( "Calling network listeners." );
         for ( NetworkSettingsListener listener : this.networkListeners ) {
+            logger.debug( "Calling listener: " + listener );
             try {
                 listener.event( this.networkSettings );
             } catch ( Exception e ) {
                 logger.error( "Exception calling listener", e );
             }
         }
+        logger.debug( "Done calling network listeners." );
     }
 
     public void registerListener( NetworkSettingsListener networkListener )
@@ -534,7 +558,7 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         updateAddress();
-
+        
         // Register the built-in listeners
         registerListener(new DynamicDNSListener());
     }    

@@ -282,27 +282,26 @@ public class NatImpl extends AbstractTransform implements Nat
         MvvmLocalContext context = MvvmContextFactory.context();
         MvvmLocalContext.MvvmState state = context.state();
         NetworkManagerImpl networkManager = getNetworkManager();
+
+        /* Enable the network settings */
+        if ( state.equals( MvvmLocalContext.MvvmState.RUNNING )) {
+            logger.debug( "enabling network spaces settings because user powered on nat." );
+            
+            try {
+                networkManager.enableNetworkSpaces();
+            } catch ( Exception e ) {
+                throw new TransformStartException( "Unable to enable network spaces", e );
+            }
+        } else {
+            logger.debug( "not enabling network spaces settings at startup" );
+        }
         
         NetworkSpacesInternalSettings networkSettings = getNetworkSettings();
         ServicesInternalSettings servicesSettings = getServicesSettings();
-
-        /* Have to configure DHCP before the handler */
-        // ??????
-//         try {
-//             if ( !state.equals( MvvmLocalContext.MvvmState.LOADED ))  {
-//                 logger.debug( "Enabling services since user turned on network spaces." );
-                
-//             }
-//         } catch ( NetworkException e ) {
-//             logger.error( "Unable to configure DHCP/DNS server", e );
-//             throw new TransformStartException( "Unable to configure DHCP/DNS server" );
-//         }
         
         try {
             configureDhcpMonitor( servicesSettings.getIsDhcpEnabled());
             this.handler.configure( networkSettings );
-
-            // !!!! Pushed into the networking package dhcpManager.startDnsMasq();
             networkManager.startServices();
         } catch( TransformException e ) {
             logger.error( "Could not configure the handler.", e );
@@ -333,7 +332,7 @@ public class NatImpl extends AbstractTransform implements Nat
         NetworkManagerImpl networkManager = (NetworkManagerImpl)context.networkManager();
         
         /* Only stop the services if the box isn't going down (the user turned off the appliance) */
-        if ( !state.equals( MvvmLocalContext.MvvmState.DESTROYED ))  {
+        if ( state.equals( MvvmLocalContext.MvvmState.RUNNING ))  {
             logger.debug( "Disabling services since user turned off network spaces." );
             networkManager.stopServices();
         }
@@ -347,9 +346,13 @@ public class NatImpl extends AbstractTransform implements Nat
 
         /* Deconfigure the network spaces */
         /* Only stop the services if the box isn't going down (the user turned off the appliance) */
-        if ( !state.equals( MvvmLocalContext.MvvmState.DESTROYED )) {
+        if ( state.equals( MvvmLocalContext.MvvmState.RUNNING )) {
             logger.debug( "Disabling network spaces since user turned off network spaces." );
-            networkManager.disableNetworkSpaces();
+            try {
+                networkManager.disableNetworkSpaces();
+            } catch ( Exception e ) {
+                logger.error( "Unable to enable network spaces", e );
+            }
         }
 
         eventLogger.stop();
@@ -361,9 +364,16 @@ public class NatImpl extends AbstractTransform implements Nat
         getNetworkManager().unregisterListener( this.listener );
     }
 
+    @Override
     public void reconfigure() throws TransformException
     {
-        logger.info("Reconfigure()");
+        /* This  has been moved into networkSettingsEvent which is called automatically
+         * whenever the network settings change */
+    }
+
+    public void networkSettingsEvent( ) throws TransformException
+    {
+        logger.info("networkSettingsEvent");
 
         /* ????, what goes here. Configure the handler */
         
@@ -378,8 +388,10 @@ public class NatImpl extends AbstractTransform implements Nat
             this.handler.configure( networkSettings );
         } else {
             nm.stopServices();
+            this.handler.deconfigure();
         }
     }
+
 
     private void updateToCurrent( NatSettings settings )
     {
@@ -455,15 +467,17 @@ public class NatImpl extends AbstractTransform implements Nat
                     public void run()
                     {
                         if ( logger.isDebugEnabled()) logger.debug( "network settings changed:" + settings );
-                        
-                        
+                        try {
+                            networkSettingsEvent();
+                        } catch( TransformException e ) {
+                            logger.error( "Unable to reconfigure the NAT transform" );
+                        }
                     }
                 };
         }
 
         public void event( NetworkSpacesInternalSettings settings )
         {
-            
             this.settings = settings;
             tl.run( go );
         }

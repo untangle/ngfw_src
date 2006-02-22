@@ -324,6 +324,8 @@ class NatEventHandler extends AbstractEventHandler
         for ( RedirectInternal internal : settings.getRedirectList()) {
             if ( internal.getIsEnabled()) {
                 RedirectMatcher redirect = new RedirectMatcher( internal );
+
+                logger.debug( "Adding redirect: redirect" );
                 redirectMatcherList.add( redirect );
                 
                 overrideList.add( makeInterfaceAddressRedirect( internal ));
@@ -352,7 +354,7 @@ class NatEventHandler extends AbstractEventHandler
         networkManager.subscribeLocalOutside( true );
     }
 
-    /* Not sure which this should ever throw an exception */
+    /* Not sure if this should ever throw an exception */
     void deconfigure()
     {
         MvvmContextFactory.context().networkManager().subscribeLocalOutside( false );
@@ -657,16 +659,7 @@ class NatMatcher
 
     boolean isMatch( IPNewSessionRequest request, Protocol protocol )
     {
-
-        boolean isMatch = this.matcher.isMatch( request, protocol );
-
-        // System.out.println( "" + this.matcher.isEnabled() + "," + this.matcher.isMatchProtocol( protocol ));
-        // System.out.println( "address" + this.matcher.isMatchAddress( request.clientAddr(), request.serverAddr()));
-        // System.out.println( "port" + this.matcher.isMatchPort( request.clientPort(), request.serverPort()));
-        System.out.println( "intf" + this.matcher.isMatchIntf( request.clientIntf(), request.serverIntf()));
-                    
-        return isMatch;
-        
+        return this.matcher.isMatch( request, protocol );        
     }
     
     /* Create a matcher for handling traffic to be NATd */
@@ -698,7 +691,7 @@ class NatMatcher
                                           "for a NAT matcher", e );
         }
 
-        System.out.println( "client: " + clientIPMatcher + " server: " + serverIntfMatcher );
+        // System.out.println( "client: " + clientIPMatcher + " server: " + serverIntfMatcher );
         RedirectMatcher matcher = new RedirectMatcher( true, false,  ProtocolMatcher.MATCHER_ALL,
                                                        clientIntfMatcher, serverIntfMatcher,
                                                        clientIPMatcher, imf.getAllMatcher(),

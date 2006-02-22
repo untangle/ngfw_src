@@ -31,7 +31,7 @@ public final class PortSimpleMatcher
             
             public String toString()
             {
-                return ParsingConstants.MARKER_ALL;
+                return ParsingConstants.MARKER_ANY;
             }
         };
 
