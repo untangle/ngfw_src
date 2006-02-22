@@ -11,6 +11,7 @@
 
 package com.metavize.gui.widgets.separator;
 
+import javax.swing.border.*;
 import javax.swing.*;
 import java.awt.*;
 
@@ -22,9 +23,26 @@ public class Separator extends JLabel {
     private static Color foregroundTextColor;
     private static Font foregroundTextFont;
 
-    public Separator(){
+    private JComboBox jComboBox;
+
+    public Separator(boolean showComboBox){
 	init();
+	if(showComboBox){
+	    setLayout(new GridBagLayout());
+	    jComboBox = new JComboBox();
+	    jComboBox.setFocusable(false);
+	    jComboBox.setBackground(new Color(173,173,173));
+	    jComboBox.setForeground(new Color(129,129,129));
+	    jComboBox.setFont(new Font("Arial", 0, 12));
+	    jComboBox.setMinimumSize(new Dimension(200,24));
+	    jComboBox.setMaximumSize(new Dimension(200,24));
+	    jComboBox.setPreferredSize(new Dimension(200,24));
+	    GridBagConstraints comboBoxConstraints = new GridBagConstraints(0,0,1,1,1d,1d,GridBagConstraints.EAST,GridBagConstraints.NONE, new Insets(0,0,0,50),0,0);
+	    add(jComboBox, comboBoxConstraints);
+	}
     }
+
+    public JComboBox getJComboBox(){ return jComboBox; }
 
     private void init(){
 	if( backgroundImageIcon == null ){
@@ -42,8 +60,8 @@ public class Separator extends JLabel {
 	repaint();
     }
 
-    public void paint(Graphics g){
-	super.paint(g);
+    public void paintComponent(Graphics g){
+	super.paintComponent(g);
 	if( foregroundText.length() > 0 ){
 	    //g.drawImage(arrowImageIcon.getImage(), 67, 20, (java.awt.image.ImageObserver)null);
 	    g.drawImage(arrowImageIcon.getImage(), 60, 15, (java.awt.image.ImageObserver)null);
@@ -56,4 +74,13 @@ public class Separator extends JLabel {
 	    g.drawString(foregroundText, 88, 32);
 	}
     }
+
+    private class SeparatorEditor extends javax.swing.plaf.metal.MetalComboBoxEditor {
+	public SeparatorEditor(){
+	    super();
+	    //editor.setBorder(new LineBorder(new Color(130,130,130), 1));
+	    editor.setBorder(null);
+	}
+    }
+
 }
