@@ -24,7 +24,7 @@ public final class SetupState implements Serializable
     private static final Map<String,SetupState>  NAME_TO_SETUP = new HashMap<String,SetupState>();
 
     /* The settings have not been upgraded yet. */
-    static final SetupState NETWORK_SHARING  = new SetupState( 1, "deprecated" );
+    public static final SetupState NETWORK_SHARING  = new SetupState( 1, "deprecated" );
         
     /* The user hasn't selected basic or advanced. */
     public static final SetupState UNCONFIGURED  = new SetupState( 2, "Unconfigured" );

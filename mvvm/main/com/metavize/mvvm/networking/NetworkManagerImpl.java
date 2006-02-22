@@ -535,7 +535,7 @@ public class NetworkManagerImpl implements NetworkManager
         if ( this.ddnsSettings == null ) {
             DynamicDNSSettings ddns = new DynamicDNSSettings();
             ddns.setEnabled( false );
-            setDynamicDnsSettings( ddns );
+            saveDynamicDnsSettings( ddns );
         }
         
         NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
