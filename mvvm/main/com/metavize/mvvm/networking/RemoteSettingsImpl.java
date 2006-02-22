@@ -60,7 +60,7 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
     private IPaddr outsideNetwork = NetworkUtil.DEF_OUTSIDE_NETWORK;
     private IPaddr outsideNetmask = NetworkUtil.DEF_OUTSIDE_NETMASK;
     
-    private String hostname = "";
+    private String hostname = NetworkUtil.DEFAULT_HOSTNAME;
     private boolean isHostnamePublic = false;
     private String publicAddress;
 
@@ -217,12 +217,16 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
     /** The hostname for the box(this is the hostname that goes into certificates). */
     public String getHostname()
     {
+        if ( this.hostname == null || ( this.hostname.trim().length() == 0 )) 
+            this.hostname = NetworkUtil.DEFAULT_HOSTNAME;
         return this.hostname;
     }
 
     public void setHostname( String newValue )
     {
         /* ??? empty strings, null, etc */
+        if ( newValue == null || ( newValue.trim().length() == 0 )) newValue = NetworkUtil.DEFAULT_HOSTNAME;
+
         this.hostname = newValue;
     }
     

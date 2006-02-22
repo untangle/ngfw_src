@@ -521,11 +521,18 @@ public class NetworkManagerImpl implements NetworkManager
     /**** private methods ***/
     private void initPriv() throws NetworkException, ValidateException
     {
-        /* !!!! Load settings */
-
         String disableSaveSettings = System.getProperty( "bunnicula.devel.nonetworking" );
 
         if ( Boolean.valueOf( disableSaveSettings ) == true ) this.saveSettings = false;
+
+        loadAllSettings();
+
+        /* Create new dynamic dns settings, only if they are not set */
+        if ( this.ddnsSettings == null ) {
+            DynamicDNSSettings ddns = new DynamicDNSSettings();
+            ddns.setEnabled( false );
+            setDynamicDnsSettings( ddns );
+        }
         
         NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
                 
@@ -537,7 +544,6 @@ public class NetworkManagerImpl implements NetworkManager
             
             /* Save these settings */
             NetworkSpacesInternalSettings internal = nup.toInternal( configuration );
-            
 
             if ( logger.isDebugEnabled()) {
                 logger.debug( "Loaded the configuration: \n" + configuration );
@@ -550,13 +556,13 @@ public class NetworkManagerImpl implements NetworkManager
             /* Save the remote settings */
             setRemoteSettings( configuration );
 
-            /* Get new settings for the services */
-            setServicesSettings( nup.getDefaultServicesSettings());
+            /* Attempt to load the services settings */
+            this.servicesSettings = loadServicesSettings();
 
-            /* Create new dynamic dns settings */
-            DynamicDNSSettings ddns = new DynamicDNSSettings();
-            ddns.setEnabled( false );
-            setDynamicDnsSettings( ddns );
+            if ( this.servicesSettings == null ) {
+                /* Get new settings for the services */
+                setServicesSettings( nup.getDefaultServicesSettings());
+            }
         }
 
         updateAddress();
@@ -615,7 +621,7 @@ public class NetworkManagerImpl implements NetworkManager
         try {
             this.networkSettings = loadNetworkSettings();
         } catch ( Exception e ) {
-            logger.error( "Error loading network settings, setting to null to be initialized later" );
+            logger.error( "Error loading network settings, setting to null to be initialized later", e );
             this.networkSettings = null;
         }
 
@@ -720,7 +726,7 @@ public class NetworkManagerImpl implements NetworkManager
     private void saveDynamicDnsSettings( DynamicDNSSettings newSettings )
     {
         DataSaver<DynamicDNSSettings> saver = 
-            new DataSaver<DynamicDNSSettings>( MvvmContextFactory.context());
+            new DynamicDnsSettingsDataSaver( MvvmContextFactory.context());
         
         /* Have to reuse ids in order to avoid settings proliferation.
          * reusing ids doesn't seem to work (or at least it didn't for ovpn.  have
@@ -835,3 +841,21 @@ class ServicesSettingsDataSaver extends DataSaver<ServicesSettingsImpl>
         }
     }
 }
+
+class DynamicDnsSettingsDataSaver extends DataSaver<DynamicDNSSettings>
+{
+    public DynamicDnsSettingsDataSaver( MvvmLocalContext local ) 
+    {
+        super( local );
+    }
+
+    protected void preSave( Session s )
+    {
+        Query q = s.createQuery( "from DynamicDNSSettings" );
+        for ( Iterator iter = q.iterate() ; iter.hasNext() ; ) {
+            DynamicDNSSettings settings = (DynamicDNSSettings)iter.next();
+            s.delete( settings );
+        }
+    }
+}
+

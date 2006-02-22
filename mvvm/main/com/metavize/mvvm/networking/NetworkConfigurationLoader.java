@@ -237,20 +237,25 @@ class NetworkConfigurationLoader
                     } else if ( str.startsWith( FLAG_HTTPS_RES )) {
                         remote.isOutsideAccessRestricted( parseBooleanFlag( str, FLAG_HTTPS_RES ));
                     } else if ( str.startsWith( FLAG_OUT_NET )) {
-                        host = str.substring( FLAG_OUT_NET.length() + 1 );
+                        host = removeQuotes( str.substring( FLAG_OUT_NET.length() + 1 ));
                     } else if ( str.startsWith( FLAG_OUT_MASK )) {
-                        mask = str.substring( FLAG_OUT_MASK.length() + 1 );
+                        mask = removeQuotes( str.substring( FLAG_OUT_MASK.length() + 1 ));
                     } else if ( str.startsWith( FLAG_EXCEPTION )) {
                         remote.isExceptionReportingEnabled( parseBooleanFlag( str, FLAG_EXCEPTION ));
+                    } else if ( str.startsWith( FLAG_HOSTNAME )) {
+                        String hostname = removeQuotes( str.substring( FLAG_HOSTNAME.length() + 1 ));
+                        if ( hostname.length() > 0 ) remote.setHostname( hostname );
+                        else remote.setHostname( null );
+                    } else if ( str.startsWith( FLAG_PUBLIC_ADDRESS )) {
+                        String publicAddress = removeQuotes( str.substring( FLAG_PUBLIC_ADDRESS.length() + 1 ));
+                        if ( publicAddress.length() > 0 ) remote.setPublicAddress( publicAddress );
+                        else remote.setPublicAddress( null );
+                        remote.setPublicAddress( publicAddress );
                     } else if ( str.startsWith( FLAG_POST_FUNC )) {
                         /* Nothing to do here, this is just here to indicate that a 
                          * post configuration function exists */
                     } else if ( str.equals( DECL_POST_CONF )) {
                         parsePostConfigurationScript( remote, in );
-                    } else if ( str.equals( FLAG_HOSTNAME )) {
-                        remote.setHostname( str.substring( FLAG_HOSTNAME.length() + 1 ));
-                    } else if ( str.equals( FLAG_PUBLIC_ADDRESS )) {
-                        remote.setPublicAddress( str.substring( FLAG_PUBLIC_ADDRESS.length() + 1 ));
                     } else {
                         logger.info( "Unknown line: '" + str + "'" );
                     }
@@ -338,13 +343,18 @@ class NetworkConfigurationLoader
         remote.isSshEnabled( sshd.exists());        
     }
 
-    private Boolean parseBooleanFlag( String nameValuePair, String name )
+    private boolean parseBooleanFlag( String nameValuePair, String name )
     {
-        if ( nameValuePair.length() < name.length() + 1 )
-            return null;
+        if ( nameValuePair.length() < name.length() + 1 ) return false;
 
-        nameValuePair = nameValuePair.substring( name.length() + 1 );
+        nameValuePair = removeQuotes( nameValuePair.substring( name.length() + 1 ));
         return Boolean.parseBoolean( nameValuePair );
+    }
+
+    private String removeQuotes( String value )
+    {
+        if ( value == null ) return "";
+        return value.replace( '"', ' ' ).trim();
     }
 
     /* Save methods */

@@ -30,11 +30,13 @@ import com.metavize.mvvm.tran.Equivalence;
 import com.metavize.mvvm.tran.Validatable;
 import com.metavize.mvvm.tran.ValidateException;
 
+import com.metavize.mvvm.networking.NetworkUtil;
+
 public class NetworkingConfigurationImpl implements Serializable, NetworkingConfiguration, Equivalence
 {
     // private static final long serialVersionUID = 172494253701617361L;
 
-    public static final String  DEFAULT_HOSTNAME = "edgeguard";
+    public static final String  DEFAULT_HOSTNAME = NetworkUtil.DEFAULT_HOSTNAME;
     
     public static final boolean DEF_IS_DHCP_EN            = false;
     public static final boolean DEF_IS_INSIDE_INSECURE_EN = true;
@@ -133,13 +135,13 @@ public class NetworkingConfigurationImpl implements Serializable, NetworkingConf
      */
     public void hostname( String hostname )
     {
-	// do some shizzle 'n checks here
-	this.hostname = hostname;
+        setHostname( hostname );
     }
 
     /* This is from the interface, this is the non-deprecated method */
     public void setHostname( String hostname )
     {
+        if ( hostname == null || ( hostname.trim().length() == 0 )) hostname = DEFAULT_HOSTNAME;
 	// do some shizzle 'n checks here
 	this.hostname = hostname;
     }
@@ -157,12 +159,13 @@ public class NetworkingConfigurationImpl implements Serializable, NetworkingConf
 
     public String hostname()
     {
-	return hostname;
+        return getHostname();
     }
 
     /* This is from the interface, this is the non-deprecated method */
     public String getHostname()
     {
+        if ( this.hostname == null || ( this.hostname.trim().length() == 0 )) this.hostname = DEFAULT_HOSTNAME;
         return this.hostname;
     }
 
