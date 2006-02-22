@@ -36,15 +36,14 @@ public class NetworkUtil
     public static final IPaddr DEFAULT_DHCP_END;
 
     /* ??? which one */
-    public static final String DEFAULT_HOSTNAME = "mv-edgeguard";
-    // public static final String DEFAULT_HOSTNAME = "edgeguard";
+    public static final String DEFAULT_HOSTNAME = "edgeguard.local.domain";
     
     public static int DEFAULT_LEASE_TIME_SEC = 4 * 60 * 60;
 
     public static final String DEFAULT_SPACE_NAME_PRIMARY = "public";
     public static final String DEFAULT_SPACE_NAME_NAT     = "private";
 
-    public static final int     DEF_HTTPS_PORT = 443;
+    public static final int    DEF_HTTPS_PORT = 443;
     
 
     /* Package protected so that NetworkUtilPriv can work */

@@ -523,7 +523,11 @@ public class NetworkManagerImpl implements NetworkManager
     {
         String disableSaveSettings = System.getProperty( "bunnicula.devel.nonetworking" );
 
-        if ( Boolean.valueOf( disableSaveSettings ) == true ) this.saveSettings = false;
+        /* Do not save settings if requested */
+        if ( Boolean.valueOf( disableSaveSettings ) == true ) {
+            this.saveSettings = false;
+            networkConfigurationLoader.disableSaveSettings();
+        }
 
         loadAllSettings();
 
@@ -760,8 +764,7 @@ public class NetworkManagerImpl implements NetworkManager
         this.servicesSettings = NetworkUtilPriv.getPrivInstance().
             toInternal( this.networkSettings, dbSettings, dbSettings );
     }
-
-
+    
     /* Create a networking manager, this is a first come first serve
      * basis.  The first class to create the network manager gets a
      * networking manager, all other classes get AccessException.  Done

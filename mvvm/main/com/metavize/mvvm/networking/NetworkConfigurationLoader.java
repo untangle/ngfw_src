@@ -66,6 +66,7 @@ class NetworkConfigurationLoader
 
     private static final String SSH_ENABLE_SCRIPT  = BUNNICULA_BASE + "/ssh_enable.sh";
     private static final String SSH_DISABLE_SCRIPT = BUNNICULA_BASE + "/ssh_disable.sh";
+    private static final String HOSTNAME_SCRIPT    = BUNNICULA_BASE + "/networking/save-hostname";
     private static final String DHCP_RENEW_SCRIPT  = BUNNICULA_BASE + "/networking/dhcp-renew";
 
     private static final String SSHD_PID_FILE     = "/var/run/sshd.pid";
@@ -95,6 +96,8 @@ class NetworkConfigurationLoader
     private final Logger logger = Logger.getLogger( this.getClass());
 
     private static final List<InterfaceData> EMPTY_INTF_DATA_LIST = Collections.emptyList();
+
+    private boolean saveSettings = true;
 
     private NetworkConfigurationLoader()
     {
@@ -181,6 +184,17 @@ class NetworkConfigurationLoader
         
         basic.gateway( new IPaddr((Inet4Address)Netcap.getGateway()));
     }
+
+    void disableSaveSettings()
+    {
+        this.saveSettings = false;
+    }
+
+    void enableSaveSettings()
+    {
+        this.saveSettings = true;
+    }
+
 
     private void loadDhcp( BasicNetworkSettings basic )
     {
@@ -366,6 +380,13 @@ class NetworkConfigurationLoader
         } catch ( Exception e ) {
             logger.error( "Exception saving https port", e );
         }
+        
+        try {
+            saveHostname( remote );
+        } catch ( Exception e ) {
+            logger.error( "Exception saving hostname", e );
+        }
+
         saveFlags( remote );
         saveSsh( remote );
     }
@@ -474,6 +495,14 @@ class NetworkConfigurationLoader
             logger.error( "Unable to configure ssh", ex );
         }
     }
+
+    private void saveHostname( RemoteInternalSettings remote ) throws Exception
+    {
+        if ( !this.saveSettings ) logger.warn( "not saving hostname as requested" );
+        
+        ScriptRunner.getInstance().exec( HOSTNAME_SCRIPT, remote.getHostname().toString());
+    }
+
 
     static NetworkConfigurationLoader getInstance()
     {
