@@ -9,12 +9,12 @@
           }
 
 .dialog { position: relative;
-                background-color: red;
-                width: 256px;
-                height: 256px;
-                left: -2px;
-                top: -2px;
-                }
+          background-color: white;
+          width: 256px;
+          height: 256px;
+          left: -2px;
+          top: -2px;
+          }
 
 .dialog-titlebar { background-color: purple;
                    font-weight: bold;
