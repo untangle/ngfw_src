@@ -19,7 +19,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -56,7 +55,6 @@ class ToolboxManagerImpl implements ToolboxManager
     static final URL TOOLBOX_URL;
 
     private static final Object LOCK = new Object();
-    private static final MackageDesc[] MACKAGE_DESC_PROTO = new MackageDesc[0];
 
     private static final Logger logger = Logger
         .getLogger(ToolboxManagerImpl.class);
@@ -80,7 +78,7 @@ class ToolboxManagerImpl implements ToolboxManager
     private final Map<LoginSession, MessageQueueImpl<ToolboxMessage>> messageQueues
         = new WeakHashMap<LoginSession, MessageQueueImpl<ToolboxMessage>>();
 
-    private volatile Map packageMap;
+    private volatile Map<String, MackageDesc> packageMap;
     private volatile MackageDesc[] available;
     private volatile MackageDesc[] installed;
     private volatile MackageDesc[] uninstalled;
@@ -159,7 +157,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
     public MackageDesc mackageDesc(String name)
     {
-        return (MackageDesc)packageMap.get(name);
+        return packageMap.get(name);
     }
 
     public List<InstallProgress> getProgress(long key)
@@ -432,15 +430,13 @@ class ToolboxManagerImpl implements ToolboxManager
     {
         packageMap = parsePkgs();
 
-        List availList = new ArrayList(packageMap.size());
-        List instList = new ArrayList(packageMap.size());
-        List uninstList = new ArrayList(packageMap.size());
-        List curList = new ArrayList(packageMap.size());
-        List upList = new ArrayList(packageMap.size());
+        List<MackageDesc> availList = new ArrayList<MackageDesc>(packageMap.size());
+        List<MackageDesc> instList = new ArrayList<MackageDesc>(packageMap.size());
+        List<MackageDesc> uninstList = new ArrayList<MackageDesc>(packageMap.size());
+        List<MackageDesc> curList = new ArrayList<MackageDesc>(packageMap.size());
+        List<MackageDesc> upList = new ArrayList<MackageDesc>(packageMap.size());
 
-        for (Iterator i = packageMap.values().iterator(); i.hasNext(); ) {
-            MackageDesc md = (MackageDesc)i.next();
-
+        for (MackageDesc md : packageMap.values()) {
             availList.add(md);
 
             if (null == md.getInstalledVersion()) {
@@ -463,26 +459,26 @@ class ToolboxManagerImpl implements ToolboxManager
             }
         }
 
-        available = (MackageDesc[])availList.toArray(MACKAGE_DESC_PROTO);
-        installed = (MackageDesc[])instList.toArray(MACKAGE_DESC_PROTO);
-        uninstalled = (MackageDesc[])uninstList.toArray(MACKAGE_DESC_PROTO);
-        upgradable = (MackageDesc[])upList.toArray(MACKAGE_DESC_PROTO);
-        upToDate = (MackageDesc[])curList.toArray(MACKAGE_DESC_PROTO);
+        available = availList.toArray(new MackageDesc[availList.size()]);
+        installed = instList.toArray(new MackageDesc[instList.size()]);
+        uninstalled = uninstList.toArray(new MackageDesc[uninstList.size()]);
+        upgradable = upList.toArray(new MackageDesc[upList.size()]);
+        upToDate = curList.toArray(new MackageDesc[curList.size()]);
     }
 
     // XXX we need to hold a lock while updating
 
-    private Map parsePkgs()
+    private Map<String, MackageDesc> parsePkgs()
     {
-        Map instList = parseInstalled();
-        Map pkgs = parseAvailable(instList);
+        Map<String, String> instList = parseInstalled();
+        Map<String, MackageDesc> pkgs = parseAvailable(instList);
 
         return pkgs;
     }
 
-    private Map parseAvailable(Map instList)
+    private Map<String, MackageDesc> parseAvailable(Map<String, String> instList)
     {
-        Map pkgs;
+        Map<String, MackageDesc> pkgs;
 
         try {
             Process p = MvvmContextFactory.context().exec("mkg available");
@@ -494,13 +490,15 @@ class ToolboxManagerImpl implements ToolboxManager
         return pkgs;
     }
 
-    private Map readPkgList(InputStream is, Map instList) throws IOException
+    private Map<String, MackageDesc> readPkgList(InputStream is,
+                                                 Map<String, String> instList)
+        throws IOException
     {
-        Map pkgs = new HashMap();
+        Map<String, MackageDesc> pkgs = new HashMap<String, MackageDesc>();
 
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
-        Map m = new HashMap();
+        Map<String, String> m = new HashMap<String, String>();
         StringBuilder key = new StringBuilder();
         StringBuilder value = new StringBuilder();
         String line;
@@ -523,10 +521,10 @@ class ToolboxManagerImpl implements ToolboxManager
                 if (!m.containsKey("package")) { continue; }
 
 
-                String name = (String)m.get("package");
+                String name = m.get("package");
                 boolean isTransform = name.endsWith("-transform");
 
-                MackageDesc md = new MackageDesc(m, (String)instList.get(name));
+                MackageDesc md = new MackageDesc(m, instList.get(name));
 
                 logger.debug("Added available mackage: " + name);
                 pkgs.put(name, md);
@@ -558,9 +556,9 @@ class ToolboxManagerImpl implements ToolboxManager
         return pkgs;
     }
 
-    private Map parseInstalled()
+    private Map<String, String> parseInstalled()
     {
-        Map instList;
+        Map<String, String> instList;
 
         try {
             Process p = MvvmContextFactory.context().exec("mkg installed");
@@ -572,9 +570,9 @@ class ToolboxManagerImpl implements ToolboxManager
         return instList;
     }
 
-    private Map readInstalledList(InputStream is) throws IOException
+    private Map<String, String> readInstalledList(InputStream is) throws IOException
     {
-        Map m = new HashMap();
+        Map<String, String> m = new HashMap();
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
         String line;
         while (null != (line = br.readLine())) {
