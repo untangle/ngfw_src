@@ -145,7 +145,7 @@ public class PolicyStateMachine implements ActionListener {
         serviceRackJPanel.setLayout(new GridBagLayout());
 	// SEPARATORS
 	serviceSeparator = new Separator(false);
-        serviceSeparator.setForegroundText("Core");
+        serviceSeparator.setForegroundText("Networking");
         rackSeparator = new Separator(true);
 	rackSeparator.setForegroundText("Security");
         // MISC REFERENCES
