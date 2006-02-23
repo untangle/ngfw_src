@@ -318,7 +318,7 @@ public class NatImpl extends AbstractTransform implements Nat
                      * to turn on network spaces at startup. */
                     NatBasicSettings defaultSettings = 
                         this.settingsManager.getDefaultSettings( this.getTid());
-                    setNatSettings( settings );
+                    setNatSettings( defaultSettings );
                 } catch ( Exception e ) {
                     logger.error( "Unable to set wizard nat settings", e );
                 }
