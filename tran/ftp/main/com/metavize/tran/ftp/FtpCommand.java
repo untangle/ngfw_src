@@ -102,6 +102,7 @@ public class FtpCommand implements Token
 
     public int getEstimatedSize()
     {
-        return function.toString().length() + argument.length();
+        return (null == function ? 0 : function.toString().length())
+            + (null == argument ? 0 : argument.length());
     }
 }
