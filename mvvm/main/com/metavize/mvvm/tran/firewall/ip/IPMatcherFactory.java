@@ -44,6 +44,16 @@ public class IPMatcherFactory
         return IPInternalMatcher.getExternalMatcher();
     }
 
+    public final IPDBMatcher getLocalMatcher()
+    {
+        return IPLocalMatcher.getInstance();
+    }
+    
+    public final void setLocalAddresses( InetAddress ... externalAddressArray )
+    {
+        IPLocalMatcher.getInstance().setAddresses( externalAddressArray );
+    }
+
     public final IPDBMatcher getAllMatcher()
     {
         return IPSimpleMatcher.getAllMatcher();
@@ -63,7 +73,6 @@ public class IPMatcherFactory
     {
         return IPSingleMatcher.makeInstance( address );
     }
-
 
     public final IPDBMatcher makeSubnetMatcher( IPaddr network, IPaddr netmask )
     {

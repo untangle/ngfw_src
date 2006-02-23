@@ -299,27 +299,29 @@ class NatEventHandler extends AbstractEventHandler
 
         /* First deal with all of the NATd spaces */
         for ( NetworkSpaceInternal space : settings.getNetworkSpaceList()) {
+            /* When settings are disabled, ignore everything but the primary space or
+             * if the space is just disabled. */
+            if (( !settings.getIsEnabled() && space.getIndex() != 0 ) || !space.getIsEnabled()) continue;
+            
+            if ( space.getIsDmzHostEnabled()) {
+                logger.debug( "Inserting new dmz host matcher: " + space );
+                dmzHostMatchers.add( DmzMatcher.makeDmzMatcher( space, settings ));
+            }
+            
             if ( !space.getIsNatEnabled()) continue;
 
             /* Create a NAT matcher for this space */
             for ( IPNetwork networkRule : (List<IPNetwork>)space.getNetworkList()) {
                 natMatchers.add( NatMatcher.makeNatMatcher( networkRule, space ));
                 isNatEnabled = true;
-            }
-            
-            if ( space.getIsDmzHostEnabled()) {
-                dmzHostMatchers.add( DmzMatcher.makeDmzMatcher( space ));
-            }
+            }            
         }
         
         /* Save all of the objects at once */
-        this.natMatchers     = natMatchers;
-        this.dmzHostMatchers = dmzHostMatchers;
 
         /* Empty out the list */
         List<RedirectMatcher> redirectMatcherList = new LinkedList<RedirectMatcher>();
 
-        int index = 1;
         /* Update all of the rules */
         for ( RedirectInternal internal : settings.getRedirectList()) {
             if ( internal.getIsEnabled()) {
@@ -331,8 +333,15 @@ class NatEventHandler extends AbstractEventHandler
                 overrideList.add( makeInterfaceAddressRedirect( internal ));
             }
         }
+        
+        /* Add the DMZ overrides first */
+        for ( DmzMatcher dmzMatcher : dmzHostMatchers ) overrideList.add( dmzMatcher.getInterfaceRedirect());
+        
+        /* Last add the NAT overrides */
+        for ( NatMatcher natMatcher : natMatchers ) overrideList.add( natMatcher.getInterfaceRedirect());
 
-        /* This override has to go after the rules */
+        /* These overrides have to go after the rules */
+        
 //         if ( settings.getDmzEnabled() || settings.getNatEnabled()) {
 //             /* Create a new redirect to redirect all traffic destined
 //              * to the outside interface to the inside.  This handles sessions
@@ -350,6 +359,8 @@ class NatEventHandler extends AbstractEventHandler
         
         /* Set the redirect list at the end(avoid concurrency issues) */
         this.redirectList = redirectMatcherList;
+        this.natMatchers     = natMatchers;
+        this.dmzHostMatchers = dmzHostMatchers;
         argonManager.setInterfaceOverrideList( overrideList );
         networkManager.subscribeLocalOutside( true );
     }
@@ -483,26 +494,31 @@ class NatEventHandler extends AbstractEventHandler
      */
     private boolean handleDmzHost( IPNewSessionRequest request, Protocol protocol )
     {
-        
-        if ( dmzHost.isMatch( request, protocol )) {
-            dmzHost.redirect( request );
+        for ( DmzMatcher matcher : dmzHostMatchers ) {
+            if ( logger.isDebugEnabled()) logger.debug( "testing dmz matcher" );
+            
+            if ( matcher.isMatch( request, protocol )) {
+                if ( logger.isDebugEnabled()) logger.debug( "dmz match" ); //  DELME
 
-            /* Increment the DMZ counter */
-            transform.incrementCount( DMZ_COUNTER ); // DMZ COUNTER
+                /* Increment the DMZ counter */
+                transform.incrementCount( DMZ_COUNTER ); // DMZ COUNTER
 
-            if ( isDmzLoggingEnabled ) {
-                NatAttachment attachment = (NatAttachment)request.attachment();
-                if ( attachment == null ) {
-                    logger.error( "null attachment to a NAT session" );
-                } else {
-                    attachment.eventToLog(new RedirectEvent( request.pipelineEndpoints()));
+                matcher.redirect( request );
+
+                if ( matcher.getIsLoggingEnabled()) {
+                    NatAttachment attachment = (NatAttachment)request.attachment();
+                    
+                    if ( attachment == null ) {
+                        logger.error( "null attachment to a NAT session" );
+                    } else {
+                        attachment.eventToLog(new RedirectEvent( request.pipelineEndpoints()));
+                    }
                 }
+                transform.statisticManager.incrDmzSessions();
+                return true;
             }
-
-            transform.statisticManager.incrDmzSessions();
-
-            return true;
         }
+
         return false;
     }
 
@@ -628,12 +644,15 @@ class NatMatcher
     private final RedirectMatcher matcher;
     private final NetworkSpaceInternal space;
     private InetAddress natAddress;
+    private final InterfaceRedirect interfaceRedirect;
 
-    NatMatcher( RedirectMatcher matcher, NetworkSpaceInternal space, InetAddress natAddress )
+    NatMatcher( RedirectMatcher matcher, NetworkSpaceInternal space, InetAddress natAddress,
+                InterfaceRedirect interfaceRedirect )
     {
         this.matcher    = matcher;
         this.space      = space;
         this.natAddress = natAddress;
+        this.interfaceRedirect = interfaceRedirect;
     }
 
     RedirectMatcher getMatcher()
@@ -659,7 +678,13 @@ class NatMatcher
 
     boolean isMatch( IPNewSessionRequest request, Protocol protocol )
     {
+
         return this.matcher.isMatch( request, protocol );        
+    }
+
+    InterfaceRedirect getInterfaceRedirect()
+    {
+        return this.interfaceRedirect;
     }
     
     /* Create a matcher for handling traffic to be NATd */
@@ -698,7 +723,18 @@ class NatMatcher
                                                        pmf.getAllMatcher(), pmf.getAllMatcher(),
                                                        false, null, -1 );
 
-        return new NatMatcher( matcher, space, space.getNatAddress().getAddr());
+        InetAddress natAddress = space.getNatAddress().getAddr();
+
+        /* build the interface redirect for nat traffic that is coming back (eg for FTP */
+        /* This just redirects it to the first interface in the nat space, this way it gets through */
+        InterfaceRedirect redirect =
+            new InterfaceStaticRedirect( ProtocolMatcher.MATCHER_ALL,
+                                         serverIntfMatcher, intfMatcherFactory.getAllMatcher(),
+                                         imf.getAllMatcher(), imf.makeSingleMatcher( natAddress ),
+                                         pmf.getAllMatcher(), pmf.getAllMatcher(),
+                                         intfArray[0] );
+
+        return new NatMatcher( matcher, space, natAddress, redirect );
     }
 }
 
@@ -706,11 +742,13 @@ class DmzMatcher
 {
     private final RedirectMatcher matcher;
     private final NetworkSpaceInternal space;
+    private final InterfaceRedirect interfaceRedirect;
 
-    DmzMatcher( RedirectMatcher matcher, NetworkSpaceInternal space )
+    DmzMatcher( RedirectMatcher matcher, NetworkSpaceInternal space, InterfaceRedirect interfaceRedirect )
     {
         this.matcher = matcher;
         this.space   = space;
+        this.interfaceRedirect = interfaceRedirect;
     }
 
     RedirectMatcher getMatcher()
@@ -725,7 +763,17 @@ class DmzMatcher
     
     boolean isMatch( IPNewSessionRequest request, Protocol protocol )
     {
+        System.out.println( "" + matcher.isEnabled() + "," + matcher.isMatchProtocol( protocol ));
+        System.out.println( "address" + matcher.isMatchAddress( request.clientAddr(), request.serverAddr()));
+        System.out.println( "port" + matcher.isMatchPort( request.clientPort(), request.serverPort()));
+        System.out.println( "intf" + matcher.isMatchIntf( request.clientIntf(), request.serverIntf()));
+
         return matcher.isMatch( request, protocol );
+    }
+
+    boolean getIsLoggingEnabled()
+    {
+        return this.matcher.getIsLoggingEnabled();
     }
 
     void redirect( IPNewSessionRequest request )
@@ -733,25 +781,48 @@ class DmzMatcher
         matcher.redirect( request );
     }
 
+    InterfaceRedirect getInterfaceRedirect()
+    {
+        return this.interfaceRedirect;
+    }
+
     /* Create a matcher for handling DMZ traffic */
-    static DmzMatcher makeDmzMatcher( NetworkSpaceInternal space ) throws TransformException
+    static DmzMatcher makeDmzMatcher( NetworkSpaceInternal space, NetworkSpacesInternalSettings settings ) 
+        throws TransformException
     {
         IntfMatcherFactory intfMatcherFactory = IntfMatcherFactory.getInstance();
         IPMatcherFactory imf = IPMatcherFactory.getInstance();
         PortMatcherFactory pmf = PortMatcherFactory.getInstance();
 
-        IPMatcher serverIPMatcher = imf.makeSingleMatcher( space.getNatAddress());
+        IPMatcher serverIPMatcher = imf.makeSingleMatcher( space.getPrimaryAddress().getNetwork().getAddr());
 
         List<InterfaceInternal> interfaceList = space.getInterfaceList();
+
+        boolean hasAllInterfaces = ( interfaceList.size() == settings.getInterfaceList().size());
+        
         byte intfArray[] = new byte[interfaceList.size()];
+        
         int c = 0;
-        for ( InterfaceInternal intf : interfaceList ) intfArray[c] = intf.getArgonIntf();
+        for ( InterfaceInternal intf : interfaceList ) {
+            byte argonIntf = intf.getArgonIntf();
+            
+            /* Don't add the internal interface if the network space has all of the interface.
+             * this is special cased to handle the situtation where dmz is enabled, but nat is
+             * not, unusual, but possible */
+            /* This only works because presently there is only one situation where this can
+             * occur, in basic mode */
+            if ( hasAllInterfaces && argonIntf == IntfConstants.INTERNAL_INTF ) {
+                argonIntf = IntfConstants.EXTERNAL_INTF;
+            } else {
+                intfArray[c++] = argonIntf;
+            }
+        }
 
         IntfMatcher clientIntfMatcher, serverIntfMatcher;
 
         try {
-            clientIntfMatcher = intfMatcherFactory.makeInverseMatcher( intfArray );
-            serverIntfMatcher = intfMatcherFactory.makeSetMatcher( intfArray );
+            clientIntfMatcher = intfMatcherFactory.makeSetMatcher( intfArray );
+            serverIntfMatcher = intfMatcherFactory.makeInverseMatcher( intfArray );
         } catch ( ParseException e ) {
             throw new TransformException( "Unable to create the interface matchers", e );
         }
@@ -762,14 +833,22 @@ class DmzMatcher
         if (( space.getDmzHost() != null ) && !space.getDmzHost().isEmpty()) {
             dmzHost = space.getDmzHost().getAddr();
         }
-        
+                
         RedirectMatcher matcher = new RedirectMatcher( true, space.getIsDmzHostLoggingEnabled(),
                                                        ProtocolMatcher.MATCHER_ALL,
                                                        clientIntfMatcher, serverIntfMatcher,
                                                        imf.getAllMatcher(), serverIPMatcher,
                                                        pmf.getAllMatcher(), pmf.getAllMatcher(),
-                                                       false, dmzHost, -1 );
+                                                       true, dmzHost, -1 );
+
+        /* build the interface redirect for dmz traffic */
+        InterfaceRedirect redirect =
+            new InterfaceAddressRedirect( ProtocolMatcher.MATCHER_ALL,
+                                          clientIntfMatcher, serverIntfMatcher,
+                                          imf.getAllMatcher(), serverIPMatcher,
+                                          pmf.getAllMatcher(), pmf.getAllMatcher(),
+                                          dmzHost );
         
-        return new DmzMatcher( matcher, space );
+        return new DmzMatcher( matcher, space, redirect );
     }
 }

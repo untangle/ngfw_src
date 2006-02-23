@@ -335,11 +335,12 @@ class DhcpManager
              */
             /* Bind to the inside interface if using Nat */
             String intfName = settings.getInterfaceName();
-            if ( intfName != null ) {
-                comment( sb, "Bind to the inside interface" );
-                sb.append( FLAG_DNS_BIND_INTERFACES + "\n" );
-                sb.append( FLAG_DNS_INTERFACE + "=" + intfName + "\n\n" );
-            }
+            // This is handled by the iptables rules.
+            // if ( intfName != null ) {
+            // comment( sb, "Bind to the inside interface" );
+            // sb.append( FLAG_DNS_BIND_INTERFACES + "\n" );
+            // sb.append( FLAG_DNS_INTERFACE + "=" + intfName + "\n\n" );
+            // }
 
             /* Configure all of the hosts */
             List<DhcpLeaseInternal> list = settings.getDhcpLeaseList();

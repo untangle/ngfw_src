@@ -11,6 +11,8 @@
 
 package com.metavize.mvvm.networking;
 
+import java.net.InetAddress;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -38,6 +40,8 @@ import com.metavize.mvvm.argon.ArgonException;
 
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.TransformManager;
+import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
+
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.ValidateException;
 import com.metavize.mvvm.tran.script.ScriptWriter;
@@ -493,7 +497,7 @@ public class NetworkManagerImpl implements NetworkManager
             Netcap.getInstance().updateAddress();
 
             this.networkSettings = NetworkUtilPriv.getPrivInstance().updateDhcpAddresses( previous );
-            
+
             updateRemoteSettings();
             
             callNetworkListeners();
@@ -676,6 +680,9 @@ public class NetworkManagerImpl implements NetworkManager
                 setServicesSettings( nup.getDefaultServicesSettings());
             }
         }
+
+        /* Done before so this gets called on the first update */
+        registerListener(new IPMatcherListener());
 
         updateAddress();
         
@@ -914,6 +921,20 @@ public class NetworkManagerImpl implements NetworkManager
         public void event( RemoteInternalSettings settings )
         {
             doDDNSUpdate();
+        }
+    }
+
+    class IPMatcherListener implements NetworkSettingsListener
+    {
+        public void event( NetworkSpacesInternalSettings settings )
+        {
+            List<NetworkSpaceInternal> networkSpaceList = settings.getNetworkSpaceList();
+            NetworkSpaceInternal primary = networkSpaceList.get( 0 );
+            IPMatcherFactory ipmf = IPMatcherFactory.getInstance();
+            
+            IPaddr address = primary.getPrimaryAddress().getNetwork();
+            logger.debug( "Setting local address to: " + address );
+            ipmf.setLocalAddresses( address.getAddr());
         }
     }
 

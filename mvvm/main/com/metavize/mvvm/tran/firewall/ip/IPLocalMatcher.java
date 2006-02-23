@@ -24,7 +24,7 @@ public final class IPLocalMatcher extends IPDBMatcher
     private static final IPLocalMatcher INSTANCE = new IPLocalMatcher();
     private static final String MARKER_LOCAL[] = { "local", "edgeguard" };
     
-    private IPDBMatcher matcher = IPSimpleMatcher.getNilMatcher();
+    private static IPDBMatcher matcher = IPSimpleMatcher.getNilMatcher();
 
     public boolean isMatch( InetAddress address )
     {
@@ -45,11 +45,11 @@ public final class IPLocalMatcher extends IPDBMatcher
 
     /* Set the addresses of the outside interface */
     public void setAddresses( InetAddress ... externalAddressArray )
-    {        
+    {
         if ( externalAddressArray == null ) {
-            this.matcher = IPSimpleMatcher.getNilMatcher();
+            matcher = IPSimpleMatcher.getNilMatcher();
         } else {
-            this.matcher = IPSetMatcher.makeInstance( externalAddressArray );
+            matcher = IPSetMatcher.makeInstance( externalAddressArray );
         }
     }
 
