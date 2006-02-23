@@ -54,22 +54,21 @@ public class InitialSetupWizard extends MWizardJDialog {
     
     protected void wizardFinishedAbnormal(int currentPage){
 	
-	MTwoButtonJDialog dialog = MTwoButtonJDialog.factory(this, "Setup Wizard", "If you exit now, some of your settings may not be saved properly.  You should continue, if possible.", "Setup Wizard Warning", "Warning");
-	
-	if( dialog.isProceeding() )
+	MTwoButtonJDialog dialog = MTwoButtonJDialog.factory(this, "Setup Wizard", "If you exit now, " +
+								 "some of your settings may not be saved properly.  " +
+								 "You should continue, if possible.  ", "Setup Wizard Warning", "Warning");	    
+	if( dialog.isProceeding() ){
+	    if( currentPage <= 3 ){ // NOT REGISTERED, MUST DO WIZARD AGAIN
+		new MOneButtonJDialog(this, MESSAGE_DIALOG_TITLE, MESSAGE_NOT_REGISTERED);
+	    }
+	    if( currentPage >= 4 )
+		isRegistered = true;
+	    cleanupConnection();
 	    super.wizardFinishedAbnormal(currentPage);
-			/*
-        if( currentPage <= 3 ){ // NOT REGISTERED, MUST DO WIZARD AGAIN
-            new MOneButtonJDialog(this, MESSAGE_DIALOG_TITLE, MESSAGE_NOT_REGISTERED);
-        }
-        else if( currentPage <= 8 ){ // REGISTERED
-            new MOneButtonJDialog(this, MESSAGE_DIALOG_TITLE, MESSAGE_NOT_CONFIGURED);
-        }
-	if( currentPage >= 4 )
-	    isRegistered = true;
-        cleanupConnection();
-	super.wizardFinishedAbnormal(currentPage);
-			 **/
+	}
+	else{
+	    return;
+	}
     }
 
     protected void wizardFinishedNormal(){
