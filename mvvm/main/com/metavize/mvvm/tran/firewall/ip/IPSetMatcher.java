@@ -66,9 +66,12 @@ public final class IPSetMatcher extends IPDBMatcher
 
     public static IPDBMatcher makeInstance( Set<InetAddress> addressSet ) 
     {
-        if ( addressSet == null ) throw new NullPointerException( "Null address set" );
-
         IPMatcherUtil imu = IPMatcherUtil.getInstance();
+        
+        if ( addressSet == null ) {
+            
+        }
+        
         
         String user = "";
 
@@ -78,7 +81,7 @@ public final class IPSetMatcher extends IPDBMatcher
         }
 
         /* XXX This should make a copy of the set */
-        addressSet = Collections.unmodifiableSet( addressSet );
+        addressSet = Collections.unmodifiableSet( new HashSet<InetAddress>( addressSet ));
     
         return new IPSetMatcher( addressSet, user );
     }

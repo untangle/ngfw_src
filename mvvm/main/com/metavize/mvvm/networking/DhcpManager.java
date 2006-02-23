@@ -135,7 +135,7 @@ class DhcpManager
             Process p = Runtime.getRuntime().exec( DNS_MASQ_CMD_RESTART );
             code = p.waitFor();
         } catch ( Exception e ) {
-            throw new NetworkException( "Unable to reload DNS masq configuration", e );
+            throw new NetworkException( "Unable to reload Start DNS masq server", e );
         }
 
         if ( code != 0 ) {

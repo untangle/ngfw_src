@@ -258,7 +258,7 @@ public class NetworkManagerImpl implements NetworkManager
         saveServicesSettings( new ServicesSettingsImpl( dhcp, dns ));
 
         this.dhcpManager.configure( this.servicesSettings );
-        // !!!!!! this.dhcpManager.startDnsMasq();
+        this.dhcpManager.startDnsMasq();
     }
 
     public ServicesInternalSettings getServicesInternalSettings()
@@ -269,7 +269,7 @@ public class NetworkManagerImpl implements NetworkManager
     public synchronized void startServices() throws NetworkException
     {
         this.dhcpManager.configure( servicesSettings );
-        // !!!!!!! this.dhcpManager.startDnsMasq();
+        this.dhcpManager.startDnsMasq();
     }
 
     public synchronized void stopServices()
@@ -780,19 +780,31 @@ public class NetworkManagerImpl implements NetworkManager
     private void saveServicesSettings( ServicesSettingsImpl newSettings )
         throws NetworkException
     {
+        NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
+
         DataSaver<ServicesSettingsImpl> saver = 
             new ServicesSettingsDataSaver( MvvmContextFactory.context());
 
-        ServicesSettingsImpl dbSettings = saver.saveData( newSettings );
-        
-        /* No database settings */
         if ( this.networkSettings == null ) {
-            logger.error( "Unable to save the network settings." );
+            logger.error( "Unable to update the services settings, because the network settings are null." );
             return;
         }
+
+        /* Convert to internal first, and then use the internal to swap out to database */
+        ServicesInternalSettings newInternal = 
+            nup.toInternal( this.networkSettings, newSettings, newSettings );
         
-        this.servicesSettings = NetworkUtilPriv.getPrivInstance().
-            toInternal( this.networkSettings, dbSettings, dbSettings );
+        newSettings = new ServicesSettingsImpl( newInternal );
+        
+        newSettings = saver.saveData( newSettings );
+        
+        /* No database settings */        
+        if ( newSettings == null ) {
+            logger.error( "Unable to save the services settings to the databse." );
+            return;
+        }
+
+        this.servicesSettings = newInternal;
     }
     
     /* Create a networking manager, this is a first come first serve

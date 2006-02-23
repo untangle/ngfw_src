@@ -11,9 +11,11 @@
 
 package com.metavize.mvvm.tran.firewall.intf;
 
+import java.io.Serializable;
+
 import java.util.BitSet;
 
-final class ImmutableBitSet
+final class ImmutableBitSet implements Serializable
 {
     private final BitSet bitSet;
     

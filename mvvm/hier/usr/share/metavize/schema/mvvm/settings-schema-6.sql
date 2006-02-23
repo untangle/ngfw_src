@@ -500,20 +500,20 @@ ALTER TABLE settings.ipmaddr_dir_entries
 --       FOREIGN KEY (rule_id) REFERENCES redirect_rule;
 
 -- -- Services settings
--- ALTER TABLE mvvm_dhcp_lease_list
---       ADD CONSTRAINT fk_mvvm_lease_services
---       FOREIGN KEY (setting_id) REFERENCES mvvm_network_services;
+ALTER TABLE mvvm_dhcp_lease_list
+      ADD CONSTRAINT fk_mvvm_lease_services
+      FOREIGN KEY (setting_id) REFERENCES mvvm_network_services;
 
--- ALTER TABLE mvvm_dhcp_lease_list
---       ADD CONSTRAINT fk_mvvm_lease_lease
---       FOREIGN KEY (rule_id) REFERENCES mvvm_dhcp_lease_rule;
+ALTER TABLE mvvm_dhcp_lease_list
+      ADD CONSTRAINT fk_mvvm_lease_lease
+      FOREIGN KEY (rule_id) REFERENCES mvvm_dhcp_lease_rule;
 
--- ALTER TABLE mvvm_dns_host_list
---       ADD CONSTRAINT fk_mvvm_dns_services
---       FOREIGN KEY (setting_id) REFERENCES mvvm_network_services;
+ALTER TABLE mvvm_dns_host_list
+      ADD CONSTRAINT fk_mvvm_dns_services
+      FOREIGN KEY (setting_id) REFERENCES mvvm_network_services;
 
--- ALTER TABLE mvvm_dns_host_list
---       ADD CONSTRAINT fk_mvvm_dns_dns
---       FOREIGN KEY (rule_id) REFERENCES mvvm_dns_static_host_rule;
+ALTER TABLE mvvm_dns_host_list
+      ADD CONSTRAINT fk_mvvm_dns_dns
+      FOREIGN KEY (rule_id) REFERENCES mvvm_dns_static_host_rule;
 
 

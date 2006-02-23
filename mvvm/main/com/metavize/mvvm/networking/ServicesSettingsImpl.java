@@ -16,8 +16,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.LinkedList;
 
-import com.metavize.mvvm.networking.internal.ServicesInternalSettings;
-import com.metavize.mvvm.networking.internal.ServicesInternalSettings;
+/* XXXXXXXXXXXXX This is no good because it can pull in the internal classes */
 import com.metavize.mvvm.networking.internal.ServicesInternalSettings;
 
 import com.metavize.mvvm.tran.IPaddr;

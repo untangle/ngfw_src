@@ -23,6 +23,9 @@ public final class SetupState implements Serializable
     private static final Map<Integer,SetupState> TYPE_TO_SETUP = new HashMap<Integer,SetupState>();
     private static final Map<String,SetupState>  NAME_TO_SETUP = new HashMap<String,SetupState>();
 
+    /* The settings have been configured through the wizard */
+    public static final SetupState WIZARD  = new SetupState( 0, "wizard-unconfigured" );
+
     /* The settings have not been upgraded yet. */
     public static final SetupState NETWORK_SHARING  = new SetupState( 1, "deprecated" );
         

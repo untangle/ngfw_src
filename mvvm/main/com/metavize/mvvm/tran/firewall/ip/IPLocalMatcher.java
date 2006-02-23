@@ -25,7 +25,6 @@ public final class IPLocalMatcher extends IPDBMatcher
     private static final String MARKER_LOCAL[] = { "local", "edgeguard" };
     
     private IPDBMatcher matcher = IPSimpleMatcher.getNilMatcher();
-    private InetAddress externalAddress = null;
 
     public boolean isMatch( InetAddress address )
     {
@@ -44,22 +43,14 @@ public final class IPLocalMatcher extends IPDBMatcher
         return MARKER_LOCAL[0];
     }
 
-    public void setAddress( InetAddress externalAddress )
-    {
-        if ( externalAddress == null ) {
+    /* Set the addresses of the outside interface */
+    public void setAddresses( InetAddress ... externalAddressArray )
+    {        
+        if ( externalAddressArray == null ) {
             this.matcher = IPSimpleMatcher.getNilMatcher();
-            this.externalAddress = null;
         } else {
-            this.matcher = IPSingleMatcher.makeInstance( externalAddress );
-            this.externalAddress = externalAddress;
+            this.matcher = IPSetMatcher.makeInstance( externalAddressArray );
         }
-    }
-
-    /* XXX This is cheating and dirty, there should be a cache elsewhere, a little baton
-     * that transforms can hold onto. */
-    public InetAddress getExternalAddress()
-    {
-        return this.externalAddress;
     }
 
     public static IPLocalMatcher getInstance()

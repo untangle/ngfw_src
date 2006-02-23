@@ -51,6 +51,8 @@ import com.metavize.mvvm.tran.TransformState;
 import com.metavize.mvvm.tran.TransformStopException;
 import com.metavize.mvvm.tran.TransformContextSwitcher;
 
+import com.metavize.mvvm.util.DataSaver;
+import com.metavize.mvvm.util.DataLoader;
 
 import com.metavize.tran.token.TokenAdaptor;
 
@@ -65,12 +67,18 @@ public class NatImpl extends AbstractTransform implements Nat
      * having the NetworkSettingsListener class */
     private final SettingsListener listener;
 
+    /* Indicate whether or not the transform is starting */
+
     private final SoloPipeSpec natPipeSpec;
     private final SoloPipeSpec natFtpPipeSpec;
 
     private final PipeSpec[] pipeSpecs;
 
     private final EventLogger<LogEvent> eventLogger;
+
+    /** Used to turn on network spaces if the appliances is on, otherwise, network
+     * spaces are not turned on at startup. */
+    private boolean isUpgrade = false;
 
     private final Logger logger = Logger.getLogger( NatImpl.class );
 
@@ -273,6 +281,49 @@ public class NatImpl extends AbstractTransform implements Nat
     {
         /* Register a listener, this should hang out until the transform is removed dies. */
         getNetworkManager().registerListener( this.listener );
+
+        /* Check if the settings have been upgraded yet */
+        DataLoader<NatSettingsImpl> natLoader = new DataLoader<NatSettingsImpl>( "NatSettingsImpl",
+                                                                                 getTransformContext());
+        
+        NatSettingsImpl settings = natLoader.loadData();
+
+        if ( settings == null ) {
+            
+        } else {
+            /* In deprecated, mode, update and save new settings */
+            SetupState state = settings.getSetupState();
+            if ( state.equals( SetupState.NETWORK_SHARING )) {
+                logger.info( "Settings are in the deprecated mode, upgrading settings" );
+
+                /* Change to basic mode */
+                settings.setSetupState( SetupState.BASIC );
+                
+                /* Save the new Settings */
+                try {
+                    setNatSettings( settings );
+                } catch ( Exception e ) {
+                    logger.error( "Unable to set upgrade nat settings", e );
+                }
+
+                /* Save the settings to the database */
+                DataSaver<NatSettingsImpl> dataSaver = new DataSaver<NatSettingsImpl>( getTransformContext());
+                dataSaver.saveData( settings );
+
+                /* Indicate to enable network spaces when then devices powers on */
+                isUpgrade = true;
+            } else if ( state.equals( SetupState.WIZARD )) {
+                logger.info( "Settings are not setup yet, using defaults" );
+                try { 
+                    setNatSettings( this.settingsManager.getDefaultSettings( this.getTid()));
+                } catch ( Exception e ) {
+                    logger.error( "Unable to set wizard nat settings", e );
+                }
+            }  else {
+                logger.info( "Settings are in [" + settings.getSetupState() +"]  mode, ignoring." );
+                             
+            }
+        }
     }
 
     protected void preStart() throws TransformStartException
@@ -284,7 +335,7 @@ public class NatImpl extends AbstractTransform implements Nat
         NetworkManagerImpl networkManager = getNetworkManager();
 
         /* Enable the network settings */
-        if ( state.equals( MvvmLocalContext.MvvmState.RUNNING )) {
+        if ( state.equals( MvvmLocalContext.MvvmState.RUNNING ) || isUpgrade ) {
             logger.debug( "enabling network spaces settings because user powered on nat." );
             
             try {
@@ -292,6 +343,8 @@ public class NatImpl extends AbstractTransform implements Nat
             } catch ( Exception e ) {
                 throw new TransformStartException( "Unable to enable network spaces", e );
             }
+
+            isUpgrade = false;
         } else {
             logger.debug( "not enabling network spaces settings at startup" );
         }
@@ -360,7 +413,7 @@ public class NatImpl extends AbstractTransform implements Nat
 
     @Override protected void postDestroy() throws TransformException
     {
-        /* Register a listener, this should hang out until the transform is removed dies. */
+        /* Deregister the network settings listener */
         getNetworkManager().unregisterListener( this.listener );
     }
 

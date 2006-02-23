@@ -46,33 +46,12 @@ CREATE TABLE settings.mvvm_ddns_settings (
     PRIMARY KEY (settings_id));
 
 -- com.metavize.mvvm.networking.DhcpLeaseRule -- 3.2
-CREATE TABLE settings.mvvm_dhcp_lease_rule (
-    rule_id        INT8 NOT NULL,
-    mac_address    TEXT,
-    hostname       TEXT,
-    static_address INET,
-    is_resolve_mac BOOL,
-    name           TEXT,
-    category       TEXT,
-    description    TEXT,
-    live           BOOL,
-    alert          BOOL,
-    log            BOOL,
-    PRIMARY KEY    (rule_id));
+-- moved from dhcp_lease_rule to mvvm_dhcp_lease_rule
+ALTER TABLE settings.dhcp_lease_rule RENAME TO mvvm_dhcp_lease_rule;
 
 -- com.metavize.mvvm.networking.DnsStaticHostRule -- 3.2
-CREATE TABLE settings.mvvm_dns_static_host_rule (
-    rule_id        INT8 NOT NULL,
-    hostname_list  TEXT,
-    static_address INET,
-    name           TEXT,
-    category       TEXT,
-    description    TEXT,
-    live           BOOL,
-    alert          BOOL,
-    log            BOOL,
-    PRIMARY KEY    (rule_id));
-
+-- moved from dns_static_host_rule to mvvm_dns_static_host_rule
+ALTER TABLE settings.dns_static_host_rule RENAME TO mvvm_dns_static_host_rule;
 
 -- com.metavize.mvvm.networking.Interface -- 3.2
 CREATE TABLE settings.mvvm_network_intf (
@@ -144,25 +123,8 @@ CREATE TABLE settings.mvvm_network_space (
     PRIMARY KEY          (rule_id));
 
 -- com.metavize.mvvm.networking.RedirectRule -- 3.2
-CREATE TABLE settings.mvvm_redirect_rule (
-    rule_id          INT8 NOT NULL,
-    is_dst_redirect  BOOL,
-    redirect_port    INT4,
-    redirect_addr    INET,
-    src_intf_matcher TEXT,
-    dst_intf_matcher TEXT,
-    protocol_matcher TEXT,
-    src_ip_matcher   TEXT, 
-    dst_ip_matcher   TEXT,
-    src_port_matcher TEXT,
-    dst_port_matcher TEXT,
-    name             TEXT,
-    category         TEXT,
-    description      TEXT,
-    live             BOOL,
-    alert            BOOL,
-    log              BOOL,
-    primary key      (rule_id));
+-- (moved to the mvvm from nat)
+ALTER TABLE  settings.redirect_rule RENAME TO mvvm_redirect_rule;
 
 -- Table linking network settings to redirects -- 3.2x
 CREATE TABLE settings.mvvm_redirects (
@@ -226,19 +188,19 @@ CREATE TABLE mvvm_network_services (
 --       FOREIGN KEY (rule_id) REFERENCES redirect_rule;
 
 -- -- Services settings
--- ALTER TABLE mvvm_dhcp_leases 
---       ADD CONSTRAINT fk_mvvm_lease_services
---       FOREIGN KEY (setting_id) REFERENCES mvvm_network_services;
+ALTER TABLE mvvm_dhcp_leases 
+      ADD CONSTRAINT fk_mvvm_lease_services
+      FOREIGN KEY (setting_id) REFERENCES mvvm_network_services;
 
--- ALTER TABLE mvvm_dhcp_leases
---       ADD CONSTRAINT fk_mvvm_lease_lease
---       FOREIGN KEY (rule_id) REFERENCES mvvm_dhcp_lease_rule;
+ALTER TABLE mvvm_dhcp_leases
+      ADD CONSTRAINT fk_mvvm_lease_lease
+      FOREIGN KEY (rule_id) REFERENCES mvvm_dhcp_lease_rule;
 
--- ALTER TABLE mvvm_dns_hosts 
---       ADD CONSTRAINT fk_mvvm_dns_services
---       FOREIGN KEY (setting_id) REFERENCES mvvm_network_services;
+ALTER TABLE mvvm_dns_hosts 
+      ADD CONSTRAINT fk_mvvm_dns_services
+      FOREIGN KEY (setting_id) REFERENCES mvvm_network_services;
 
--- ALTER TABLE mvvm_dns_hosts
---       ADD CONSTRAINT fk_mvvm_dns_dns
---       FOREIGN KEY (rule_id) REFERENCES mvvm_dns_static_host_rule;
+ALTER TABLE mvvm_dns_hosts
+      ADD CONSTRAINT fk_mvvm_dns_dns
+      FOREIGN KEY (rule_id) REFERENCES mvvm_dns_static_host_rule;
 

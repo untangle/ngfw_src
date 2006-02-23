@@ -455,7 +455,7 @@ class NetworkConfigurationLoader
         try {
             MvvmContextFactory.context().appServerManager().rebindExternalHttpsPort( httpsPort );
         } catch ( Exception e ) {
-            if ( MvvmContextFactory.context().state().equals( MvvmLocalContext.MvvmState.LOADED )) {
+            if ( !MvvmContextFactory.context().state().equals( MvvmLocalContext.MvvmState.RUNNING )) {
                 /* This isn't a problem at startup, because the app manager uses the property also */
                 /* this fails the first time because the tomcat manager isn't initialized yet */
                 logger.info( "unable to rebind port at startup: " + e );
