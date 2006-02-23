@@ -274,6 +274,15 @@ public class NetworkManagerImpl implements NetworkManager
         return this.servicesSettings;
     }
 
+    public void updateLeases( DhcpServerSettings settings )
+    {
+        if ( settings.getDhcpEnabled()) {
+            this.dhcpManager.loadLeases( settings );
+        } else {
+            this.dhcpManager.fleeceLeases( settings );
+        }
+    }
+
     public synchronized void startServices() throws NetworkException
     {
         this.dhcpManager.configure( servicesSettings );
@@ -866,6 +875,9 @@ public class NetworkManagerImpl implements NetworkManager
         throws NetworkException
     {
         NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
+        
+        /* Fleece the leases before saving */
+        this.dhcpManager.fleeceLeases( newSettings );
 
         DataSaver<ServicesSettingsImpl> saver = 
             new ServicesSettingsDataSaver( MvvmContextFactory.context());

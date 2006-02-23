@@ -293,6 +293,7 @@ class SettingsManager
             Interface intf = iter.next();
             if ( intf.getArgonIntf() == IntfConstants.EXTERNAL_INTF ) iter.remove();
         }
+
         return new NatAdvancedSettingsImpl( network, new ServicesSettingsImpl( services ));
     }
 
@@ -458,7 +459,7 @@ class SettingsManager
             
             redirectList.add( tmp );
 
-            RedirectRule tmp = new RedirectRule( false, ProtocolMatcher.MATCHER_ALL,
+            tmp = new RedirectRule( false, ProtocolMatcher.MATCHER_ALL,
                                     imf.getExternalMatcher(), imf.getAllMatcher(),
                                     ipmf.getAllMatcher(), ipmf.getAllMatcher(),
                                     pmf.getAllMatcher(), pmf.makeRangeMatcher( 6000, 10000 ),

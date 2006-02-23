@@ -99,7 +99,7 @@ class DhcpManager
     {
         NetworkManager nm = MvvmContextFactory.context().networkManager();
         
-        if ( settings.getIsEnabled()) {
+        if ( !settings.getIsEnabled()) {
             logger.debug( "Services are currently disabled, deconfiguring dns masq" );
             deconfigure();
             return;

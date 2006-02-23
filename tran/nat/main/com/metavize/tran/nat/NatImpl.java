@@ -123,9 +123,15 @@ public class NatImpl extends AbstractTransform implements Nat
         ServicesInternalSettings servicesInternal = nm.getServicesInternalSettings();
         
         if ( state.equals( SetupState.BASIC )) {
-            return settingsManager.toBasicSettings( this.getTid(), networkInternal, servicesInternal );
+            NatCommonSettings common = settingsManager.
+                toBasicSettings( this.getTid(), networkInternal, servicesInternal );
+            
+            nm.updateLeases( common );
+            return common;
         } else if ( state.equals( SetupState.ADVANCED )) {
-            return settingsManager.toAdvancedSettings( network, servicesInternal );
+            NatCommonSettings common = settingsManager.toAdvancedSettings( network, servicesInternal );
+            nm.updateLeases( common );
+            return common;
         }
         
         logger.error( "Invalid state: [" + state + "] using basic" );
