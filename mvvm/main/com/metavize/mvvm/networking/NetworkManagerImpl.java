@@ -12,6 +12,7 @@
 package com.metavize.mvvm.networking;
 
 import java.util.Set;
+import java.util.List;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -31,6 +32,9 @@ import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.argon.ArgonException;
 
+import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.TransformManager;
+import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.ValidateException;
 import com.metavize.mvvm.tran.script.ScriptWriter;
 import com.metavize.mvvm.tran.script.ScriptRunner;
@@ -374,6 +378,32 @@ public class NetworkManagerImpl implements NetworkManager
     {
         return this.remote.getCurrentPublicAddress();
     }
+
+    public void setWizardNatEnabled(IPaddr address, IPaddr netmask)
+    {
+	try{
+	    // XXX robert do this beyatch do it do it do it
+	}
+	catch(Exception e){
+	    logger.warn( "Error setting up NAT in wizard", e );
+	}
+    }
+
+    public void setWizardNatDisabled()
+    {
+	try{
+	    TransformManager transformManager = MvvmContextFactory.context().transformManager();
+	    List<Tid> tidList = transformManager.transformInstances("nat-transform");
+	    if( tidList != null ){
+		for( Tid tid : tidList )
+		    transformManager.destroy(tid);
+	    }
+	}
+	catch(Exception e){
+	    logger.warn( "Error removing NAT in wizard", e );
+	}
+    }
+
     
     public synchronized void updateAddress()
     {

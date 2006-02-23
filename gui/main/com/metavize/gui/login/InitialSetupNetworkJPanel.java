@@ -162,7 +162,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
 
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
-	    InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving Network Settings... (This may take up to one minute)");
+	    InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving External Address...");
             try{
                 NetworkingConfiguration networkingConfiguration = Util.getNetworkingManager().get();
                 networkingConfiguration.isDhcpEnabled( isDhcpEnabled );
@@ -180,7 +180,8 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
             }
             catch(Exception e){
 		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(-1l);
-                throw e;
+		Util.handleExceptionNoRestart("Error sending data", e);
+                throw new Exception("A network communication error occurred.  Please retry.");
             }
         }
         
@@ -398,7 +399,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
         public javax.swing.JTextField dnsPrimaryJTextField;
         public javax.swing.JTextField dnsSecondaryJTextField;
         private javax.swing.JPanel hostnameJPanel;
-        private javax.swing.JTextField hostnameJTextField;
+        public javax.swing.JTextField hostnameJTextField;
         private javax.swing.JLabel jLabel1;
         private javax.swing.JLabel jLabel10;
         private javax.swing.JLabel jLabel2;

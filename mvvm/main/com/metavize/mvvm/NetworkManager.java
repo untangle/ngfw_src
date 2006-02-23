@@ -11,6 +11,7 @@
 
 package com.metavize.mvvm;
 
+import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.networking.BasicNetworkSettings;
 import com.metavize.mvvm.networking.DhcpStatus;
 import com.metavize.mvvm.networking.NetworkException;
@@ -81,4 +82,8 @@ public interface NetworkManager
 
     /* Get the public URL of the box */
     public String getPublicAddress();
+
+    /* Allow the setup wizard to setup NAT properly, or disable it. */
+    public void setWizardNatEnabled(IPaddr address, IPaddr netmask);
+    public void setWizardNatDisabled();
 }

@@ -26,6 +26,8 @@ public class InitialSetupWizard extends MWizardJDialog {
     private boolean isRegistered = false;
     
     private static final String MESSAGE_DIALOG_TITLE   = "Setup Wizard Warning";
+	private static final String MESSAGE_NOT_FINISHED = "You must complete the Setup Wizard before exiting.";
+	
     private static final String MESSAGE_NOT_REGISTERED = "You have not registered your EdgeGuard.  Please run the Setup Wizard again.";
     private static final String MESSAGE_NOT_CONFIGURED = "You have registered your EdgeGuard, but you have not configured other " +
 	"necessary settings.  You may do this in the Config Panel after logging in.  Your default login/password is: admin/passwd";
@@ -42,16 +44,17 @@ public class InitialSetupWizard extends MWizardJDialog {
         addWizardPageJPanel(new InitialSetupLicenseJPanel(),         "2. License Agreement", false, false);
         addWizardPageJPanel(new InitialSetupContactJPanel(),         "3. Contact Information", false, false);
         addWizardPageJPanel(new InitialSetupKeyJPanel(),             "4. Activation Key", false, true);
-        addWizardPageJPanel(new InitialSetupTimezoneJPanel(),        "5. Timezone", true, true);
-        addWizardPageJPanel(new InitialSetupNetworkJPanel(),         "6. External Network", false, true);
-		//addWizardPageJPanel(new InitialSetupNetworkJPanel(),         "7. Internal Network", false, true);
+        addWizardPageJPanel(new InitialSetupRoutingJPanel(),         "5. Routing", true, true);
+        addWizardPageJPanel(new InitialSetupNetworkJPanel(),         "6. External Address", false, true);
         addWizardPageJPanel(new InitialSetupConnectivityJPanel(),    "7. Connectivity Test", false, true);
         addWizardPageJPanel(new InitialSetupEmailJPanel(),           "8. Email Settings", false, true);
-        addWizardPageJPanel(new InitialSetupPasswordJPanel(),        "9. Admin Settings", false, true);        
+        addWizardPageJPanel(new InitialSetupPasswordJPanel(),        "9. Admin Account & Time", false, true);        
         addWizardPageJPanel(new InitialSetupCongratulationsJPanel(), "10. Finished!", true, true);
     }
     
     protected void wizardFinishedAbnormal(int currentPage){
+			new MOneButtonJDialog(this, MESSAGE_DIALOG_TITLE, MESSAGE_NOT_FINISHED);
+			/*
         if( currentPage <= 3 ){ // NOT REGISTERED, MUST DO WIZARD AGAIN
             new MOneButtonJDialog(this, MESSAGE_DIALOG_TITLE, MESSAGE_NOT_REGISTERED);
         }
@@ -62,6 +65,7 @@ public class InitialSetupWizard extends MWizardJDialog {
 	    isRegistered = true;
         cleanupConnection();
 	super.wizardFinishedAbnormal(currentPage);
+			 **/
     }
 
     protected void wizardFinishedNormal(){

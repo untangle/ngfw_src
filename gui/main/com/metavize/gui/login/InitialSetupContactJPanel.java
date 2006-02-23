@@ -126,7 +126,8 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
 	    }
 	    catch(Exception e){
 		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(-1l);
-		throw e;
+		Util.handleExceptionNoRestart("Error sending data", e);
+		throw new Exception("A network communication error occurred.  Please retry.");
 	    }
 	}
     }

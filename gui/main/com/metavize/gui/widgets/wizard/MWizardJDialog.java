@@ -217,7 +217,7 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
 
                 getContentPane().setLayout(new java.awt.GridBagLayout());
 
-                setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+                setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
                 setResizable(false);
                 titleJPanel.setLayout(new javax.swing.BoxLayout(titleJPanel, javax.swing.BoxLayout.Y_AXIS));
 
