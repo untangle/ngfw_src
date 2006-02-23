@@ -31,6 +31,13 @@ public class MackageDesc implements Serializable
     public static final int CASING_TYPE = 2;
     public static final int TRANSFORM_BASE_TYPE = 3;
 
+    public static final int RACK_TYPE_BUNDLE   = 0; // used for store positioning, not the actual rack
+    public static final int RACK_TYPE_SERVICE  = 1;
+    public static final int RACK_TYPE_UTIL     = 2;
+    public static final int RACK_TYPE_SECURITY = 3;
+    public static final int RACK_TYPE_CORE     = 4;
+    public static final int RACK_TYPE_UNKNOWN  = 5;
+
     private final String name;
     private final String displayName;
     private final int type;
@@ -45,7 +52,12 @@ public class MackageDesc implements Serializable
     private final byte[] orgIcon;
     private final byte[] descIcon;
     private final int viewPosition;
+    private       int rackType;
+    private final boolean isBundle;
     private final boolean isService;
+    private final boolean isUtil;
+    private final boolean isSecurity;
+    private final boolean isCore;
 
     public MackageDesc(Map<String, String> m, String installedVersion)
     {
@@ -79,6 +91,16 @@ public class MackageDesc implements Serializable
         String v = m.get("view-position");
         viewPosition = null == v ? UNKNOWN_POSITION : Integer.parseInt(v);
 
+
+	// rack type init
+	rackType = RACK_TYPE_UNKNOWN;
+
+        // bundle or not
+	v = m.get("is-bundle");
+	isBundle = (v != null && Boolean.parseBoolean(v));
+	if(isBundle)
+	    rackType = RACK_TYPE_BUNDLE;
+
         // service or not
         if (isCasing) {
             isService = true;
@@ -86,6 +108,26 @@ public class MackageDesc implements Serializable
             v = m.get("is-service");
             isService = (v != null && Boolean.parseBoolean(v));
         }
+	if(isService)
+	    rackType = RACK_TYPE_SERVICE;
+
+        // util or not
+	v = m.get("is-util");
+	isUtil = (v != null && Boolean.parseBoolean(v));
+	if(isUtil)
+	    rackType = RACK_TYPE_UTIL;
+
+        // security or not
+	v = m.get("is-security");
+	isSecurity = (v != null && Boolean.parseBoolean(v));
+	if(isSecurity)
+	    rackType = RACK_TYPE_SECURITY;
+
+        // core or not
+	v = m.get("is-core");
+	isCore = (v != null && Boolean.parseBoolean(v));
+	if(isCore)
+	    rackType = RACK_TYPE_CORE;
 
         // size
         v = m.get("size");
@@ -215,6 +257,36 @@ public class MackageDesc implements Serializable
     {
         return isService;
     }
+
+    public boolean isUtil()
+    {
+        return isUtil;
+    }
+
+    public boolean isSecurity()
+    {
+        return isSecurity;
+    }
+
+    public boolean isCore()
+    {
+        return isCore;
+    }
+
+    public int getRackType()
+    {
+        if( rackType == RACK_TYPE_SERVICE )
+	    return RACK_TYPE_SERVICE;
+	else if( rackType == RACK_TYPE_UTIL )
+	    return RACK_TYPE_UTIL;
+	else if( rackType == RACK_TYPE_SECURITY )
+	    return RACK_TYPE_SECURITY;
+	else if( rackType == RACK_TYPE_CORE )
+	    return RACK_TYPE_CORE;
+	else
+	    return RACK_TYPE_UNKNOWN;
+    }
+
 
     // private methods --------------------------------------------------------
 

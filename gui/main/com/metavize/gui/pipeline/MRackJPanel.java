@@ -49,13 +49,13 @@ public class MRackJPanel extends JPanel {
 						 new Insets(0,0,0,0), 0, 0);
 	*/
         rackTopConstraints = new GridBagConstraints(0, 0, 1, 1, 0d, 0d,
-						    GridBagConstraints.CENTER, GridBagConstraints.NONE,
+						    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
 						    new Insets(0,0,1 + HALF_U_HEIGHT*RACK_BUFFER_TOP,12), 0, 0);
         rackMiddleConstraints = new GridBagConstraints(0, 1, 1, 1, 0d, 0d,
 						       GridBagConstraints.NORTH, GridBagConstraints.NONE,
 						       new Insets(0,0,0,12), 0, 0);
-        rackBottomConstraints = new GridBagConstraints(0, 3, 1, 1, 0d, 1d,
-						       GridBagConstraints.CENTER, GridBagConstraints.VERTICAL,
+        rackBottomConstraints = new GridBagConstraints(0, 6, 1, 1, 0d, 1d,
+						       GridBagConstraints.CENTER, GridBagConstraints.BOTH,
 						       new Insets(1 + 1 + HALF_U_HEIGHT*RACK_BUFFER_BOT,0,0,12), 0, 0);
 
         // RackBottom = new ImageIcon( getClass().getResource("/com/metavize/gui/pipeline/BottomRack718x39.png") );
@@ -66,16 +66,16 @@ public class MRackJPanel extends JPanel {
         RackRightShort = new ImageIcon( getClass().getResource("/com/metavize/gui/pipeline/RightRack59x1.png") );
 
         rackTopJLabel = new JLabel();
-        rackTopJLabel.setOpaque(true);
-	rackTopJLabel.setBackground(Color.RED);
+        rackTopJLabel.setOpaque(false);
+	rackTopJLabel.setBackground(new Color(200,200,200,200));
         rackTopJLabel.setHorizontalAlignment(SwingConstants.CENTER);
         rackTopJLabel.setVerticalAlignment(SwingConstants.BOTTOM);
         //rackTopJLabel.setIcon(RackTop);
         //rackTopJLabel.setVisible(false);
         //rackTopJLabel.add(Box.createVerticalStrut(39));
         rackBottomJLabel = new JLabel();
-        rackBottomJLabel.setOpaque(true);
-	rackBottomJLabel.setBackground(Color.RED);
+        rackBottomJLabel.setOpaque(false);
+	rackBottomJLabel.setBackground(new Color(200,200,200,200));
         rackBottomJLabel.setHorizontalAlignment(SwingConstants.CENTER);
         rackBottomJLabel.setVerticalAlignment(SwingConstants.TOP);
         //rackBottomJLabel.setIcon(RackBottom);
@@ -84,7 +84,7 @@ public class MRackJPanel extends JPanel {
 
         this.setLayout(new GridBagLayout());
         this.add(rackTopJLabel, rackTopConstraints);
-        this.add(Box.createRigidArea(new Dimension(718, 1+HALF_U_HEIGHT*MIN_RACK_HEIGHT)), rackMiddleConstraints);
+	//        this.add(Box.createRigidArea(new Dimension(718, 1+HALF_U_HEIGHT*MIN_RACK_HEIGHT)), rackMiddleConstraints);
         this.add(rackBottomJLabel, rackBottomConstraints);
 
 	Util.setMRackJPanel(this);

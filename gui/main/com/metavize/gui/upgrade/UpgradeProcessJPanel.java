@@ -195,10 +195,7 @@ public class UpgradeProcessJPanel extends JPanel
         public void run() {
             try{
                 // DISABLE ALL GRAPHS SO NO EXCEPTIONS ARE CAUSED
-                Map<Policy,Map<ButtonKey,MTransformJPanel>> policyRackMap = Util.getPolicyStateMachine().getPolicyRackMap();
-                for( Policy policy : policyRackMap.keySet() )
-                    for( MTransformJPanel mTransformJPanel : policyRackMap.get(policy).values() )
-                        mTransformJPanel.mTransformDisplayJPanel().setUpdateGraph(false);
+		Util.getPolicyStateMachine().stopAllGraphs();
                 Util.getStatsCache().kill();
 
                 // DO THE DOWNLOAD AND INSTALL

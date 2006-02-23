@@ -53,10 +53,9 @@ public class MMainJFrame extends javax.swing.JFrame {
         java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         setBounds((screenSize.width-1024)/2, (screenSize.height-768)/2, 1024, 768);
 
-        PolicyStateMachine policyStateMachine = new PolicyStateMachine(mTabbedPane,Util.getMRackJPanel(),
-                                                                       toolboxJScrollPane,policyToolboxJPanel,serviceToolboxJPanel,
-                                                                       storeScrollJPanel,metavizeJButton,
-                                                                       Util.getMPipelineJPanel().getJScrollPane());
+        PolicyStateMachine policyStateMachine = new PolicyStateMachine(mTabbedPane,Util.getMRackJPanel(),toolboxJScrollPane,
+								       utilToolboxJPanel,policyToolboxJPanel,coreToolboxJPanel,
+								       storeScrollJPanel,Util.getMPipelineJPanel().getJScrollPane());
         metavizeJButton.addActionListener(policyStateMachine);
 
         // UPDATE/UPGRADE
@@ -109,8 +108,9 @@ public class MMainJFrame extends javax.swing.JFrame {
                 toolboxJPanel = new javax.swing.JPanel();
                 toolboxJScrollPane = new javax.swing.JScrollPane();
                 toolboxScrollJPanel = new javax.swing.JPanel();
+                utilToolboxJPanel = new javax.swing.JPanel();
                 policyToolboxJPanel = new javax.swing.JPanel();
-                serviceToolboxJPanel = new javax.swing.JPanel();
+                coreToolboxJPanel = new javax.swing.JPanel();
                 toolboxSpacerJPanel = new javax.swing.JPanel();
                 jLabel1 = new javax.swing.JLabel();
                 configurationJPanel = new javax.swing.JPanel();
@@ -235,23 +235,34 @@ public class MMainJFrame extends javax.swing.JFrame {
 
                 toolboxScrollJPanel.setFocusable(false);
                 toolboxScrollJPanel.setOpaque(false);
-                policyToolboxJPanel.setLayout(new javax.swing.BoxLayout(policyToolboxJPanel, javax.swing.BoxLayout.Y_AXIS));
+                utilToolboxJPanel.setLayout(new java.awt.GridLayout(1, 1));
 
+                utilToolboxJPanel.setFocusable(false);
+                utilToolboxJPanel.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
                 gridBagConstraints.weightx = 1.0;
-                toolboxScrollJPanel.add(policyToolboxJPanel, gridBagConstraints);
+                toolboxScrollJPanel.add(utilToolboxJPanel, gridBagConstraints);
 
-                serviceToolboxJPanel.setLayout(new java.awt.GridLayout(1, 1));
+                policyToolboxJPanel.setLayout(new javax.swing.BoxLayout(policyToolboxJPanel, javax.swing.BoxLayout.Y_AXIS));
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 1;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
                 gridBagConstraints.weightx = 1.0;
-                toolboxScrollJPanel.add(serviceToolboxJPanel, gridBagConstraints);
+                toolboxScrollJPanel.add(policyToolboxJPanel, gridBagConstraints);
+
+                coreToolboxJPanel.setLayout(new java.awt.GridLayout(1, 1));
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 2;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                toolboxScrollJPanel.add(coreToolboxJPanel, gridBagConstraints);
 
                 toolboxSpacerJPanel.setFocusable(false);
                 toolboxSpacerJPanel.setMinimumSize(new java.awt.Dimension(0, 0));
@@ -689,6 +700,7 @@ public class MMainJFrame extends javax.swing.JFrame {
         private javax.swing.JScrollPane configurationJScrollPane;
         private javax.swing.JPanel configurationSpacerJPanel1;
         private javax.swing.JPanel controlsJPanel;
+        private javax.swing.JPanel coreToolboxJPanel;
         private javax.swing.JButton emailJButton;
         private javax.swing.JLabel jLabel1;
         private javax.swing.JPanel jPanel8;
@@ -699,7 +711,6 @@ public class MMainJFrame extends javax.swing.JFrame {
         private javax.swing.JButton networkJButton;
         private javax.swing.JPanel policyToolboxJPanel;
         private javax.swing.JButton remoteJButton;
-        private javax.swing.JPanel serviceToolboxJPanel;
         private javax.swing.JPanel storeJPanel;
         private javax.swing.JScrollPane storeJScrollPane;
         private javax.swing.JPanel storeScrollJPanel;
@@ -710,6 +721,7 @@ public class MMainJFrame extends javax.swing.JFrame {
         private javax.swing.JPanel toolboxSpacerJPanel;
         private javax.swing.JButton upgradeJButton;
         private javax.swing.JButton upgradeJButton1;
+        private javax.swing.JPanel utilToolboxJPanel;
         // End of variables declaration//GEN-END:variables
 
 

@@ -565,12 +565,13 @@ class TransformManagerImpl implements TransformManager
         URL[] resUrls = tbm.resources(transformName);
 
         MackageDesc mackageDesc = tbm.mackageDesc(transformName);
-        if (mackageDesc.isService() && tid.getPolicy() != null) {
-            throw new DeployException("Cannot specify a policy for a service: "
+        if ((mackageDesc.isService() || mackageDesc.isUtil() || mackageDesc.isCore())
+	    && tid.getPolicy() != null) {
+            throw new DeployException("Cannot specify a policy for a service/util/core: "
                                       + transformName);
         }
-        if (!mackageDesc.isService() && tid.getPolicy() == null)
-            throw new DeployException("Cannot have null policy for a non-service: "
+        if (mackageDesc.isSecurity() && tid.getPolicy() == null)
+            throw new DeployException("Cannot have null policy for a security: "
                                       + transformName);
 
         logger.info("initializing transform desc for: " + transformName);
@@ -694,7 +695,7 @@ class TransformManagerImpl implements TransformManager
         MackageDesc mackageDesc = tbm.mackageDesc(transformName);
         if (mackageDesc == null)
             throw new DeployException("Transform named " + transformName + " not found");
-        if (mackageDesc.isService())
+        if (!mackageDesc.isSecurity())
             return null;
         else
             return MvvmContextFactory.context().policyManager().getDefaultPolicy();

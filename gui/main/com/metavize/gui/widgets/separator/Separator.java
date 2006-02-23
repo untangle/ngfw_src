@@ -11,6 +11,8 @@
 
 package com.metavize.gui.widgets.separator;
 
+import com.incors.plaf.kunststoff.*;
+
 import javax.swing.border.*;
 import javax.swing.*;
 import java.awt.*;
@@ -32,7 +34,7 @@ public class Separator extends JLabel {
 	    jComboBox = new JComboBox();
 	    jComboBox.setFocusable(false);
 	    jComboBox.setBackground(new Color(173,173,173));
-	    jComboBox.setForeground(new Color(129,129,129));
+	    jComboBox.setForeground(new Color(119,119,119));
 	    jComboBox.setFont(new Font("Arial", 0, 12));
 	    jComboBox.setMinimumSize(new Dimension(200,24));
 	    jComboBox.setMaximumSize(new Dimension(200,24));
@@ -75,12 +77,9 @@ public class Separator extends JLabel {
 	}
     }
 
-    private class SeparatorEditor extends javax.swing.plaf.metal.MetalComboBoxEditor {
-	public SeparatorEditor(){
-	    super();
-	    //editor.setBorder(new LineBorder(new Color(130,130,130), 1));
-	    editor.setBorder(null);
-	}
-    }
+
+    
+
 
 }
+

@@ -52,52 +52,59 @@ import com.metavize.mvvm.tran.*;
 public class PolicyStateMachine implements ActionListener {
 
     // MVVM DATA MODELS (USED ONLY DURING INIT) //////
-    private Map<String,MackageDesc> installedMackageMap;
-    private Map<Policy,List<Tid>> policyTidMap;
-    private Map<Policy,Map<String,Object>> policyNameMap;
-    private List<Tid> serviceTidList;
-    private Map<String,Object> serviceNameMap;
+    private List<Tid>                       utilTidList;
+    private Map<String,Object>              utilNameMap;
+    private Map<Policy,List<Tid>>           policyTidMap;
+    private Map<Policy,Map<String,Object>>  policyNameMap;
+    private List<Tid>                       nonPolicyTidList;
+    private Map<String,Object>              nonPolicyNameMap;
     // GUI DATA MODELS /////////
-    private Map<ButtonKey,MTransformJButton> storeMap;
+    private Map<ButtonKey,MTransformJButton>             storeMap;
+    private Map<ButtonKey,MTransformJButton>             utilToolboxMap;
+    private Map<ButtonKey,MTransformJPanel>              utilRackMap;
     private Map<Policy,Map<ButtonKey,MTransformJButton>> policyToolboxMap;
-    private Map<Policy,Map<ButtonKey,MTransformJPanel>> policyRackMap;
-    public  Map<Policy,Map<ButtonKey,MTransformJPanel>> getPolicyRackMap(){ return policyRackMap; }
-    private Map<ButtonKey,MTransformJButton> serviceToolboxMap;
-    private Map<ButtonKey,MTransformJPanel> serviceRackMap;
+    private Map<Policy,Map<ButtonKey,MTransformJPanel>>  policyRackMap;
+    private Map<ButtonKey,MTransformJButton>             coreToolboxMap;
+    private Map<ButtonKey,MTransformJPanel>              coreRackMap;
     // GUI VIEW MODELS //////////
-    private JPanel storeJPanel;
-    private JScrollPane toolboxJScrollPane;
-    private JPanel policyToolboxSocketJPanel;
-    private JScrollPane rackJScrollPane;
-    private JPanel rackViewJPanel;
+    private JScrollPane        toolboxJScrollPane;
+    private JScrollPane        rackJScrollPane;
+    private JPanel             rackViewJPanel;
+    private JPanel             storeJPanel;
+    private JPanel             utilToolboxSocketJPanel;
+    private JPanel             utilToolboxJPanel;
+    private JPanel             utilRackJPanel;
+    private JPanel             policyToolboxSocketJPanel;
     private Map<Policy,JPanel> policyToolboxJPanelMap;
     private Map<Policy,JPanel> policyRackJPanelMap;
-    private JPanel serviceToolboxSocketJPanel;
-    private JPanel serviceToolboxJPanel;
-    private JPanel serviceRackJPanel;
+    private JPanel             coreToolboxSocketJPanel;
+    private JPanel             coreToolboxJPanel;
+    private JPanel             coreRackJPanel;
     // MISC REFERENCES ////////
-    private JButton policyManagerJButton;
-    private JTabbedPane actionJTabbedPane;
-    private JComboBox viewSelector;
-    private Policy selectedPolicy;
-    private JPanel selectedRackJPanel;
-    private int lastToolboxScrollPosition = -1;
+    private JTabbedPane         actionJTabbedPane;
+    private JComboBox           viewSelector;
+    private Policy              selectedPolicy;
+    private JPanel              selectedPolicyRackJPanel;
+    private int                 lastToolboxScrollPosition = -1;
     private Map<Policy,Integer> lastRackScrollPosition;
     private volatile static int applianceLoadProgress;
     // THREAD QUEUES & THREADS /////////
     BlockingQueue<MTransformJButton> purchaseBlockingQueue;
-    StoreModelThread storeModelThread;
+    StoreModelThread                 storeModelThread;
     // CONSTANTS /////////////
     private GridBagConstraints buttonGridBagConstraints;
     private GridBagConstraints storeProgressGridBagConstraints;
     private GridBagConstraints storeSpacerGridBagConstraints;
     private GridBagConstraints applianceGridBagConstraints;
-    private GridBagConstraints rackGridBagConstraints;
-    private GridBagConstraints rackSeparatorGridBagConstraints;
-    private GridBagConstraints serviceGridBagConstraints;
-    private GridBagConstraints serviceSeparatorGridBagConstraints;
-    private Separator serviceSeparator;
-    private Separator rackSeparator;
+    private GridBagConstraints utilGridBagConstraints;
+    private GridBagConstraints utilSeparatorGridBagConstraints;
+    private GridBagConstraints policyGridBagConstraints;
+    private GridBagConstraints policySeparatorGridBagConstraints;
+    private GridBagConstraints coreGridBagConstraints;
+    private GridBagConstraints coreSeparatorGridBagConstraints;
+    private Separator utilSeparator;
+    private Separator policySeparator;    
+    private Separator coreSeparator;
     private static final String POLICY_MANAGER_SEPARATOR = "____________";
     private static final String POLICY_MANAGER_OPTION = "Show Policy Manager";
     private static final int CONCURRENT_LOAD_MAX = 1;
@@ -112,45 +119,56 @@ public class PolicyStateMachine implements ActionListener {
     private static final int INSTALL_FINAL_PAUSE_MILLIS = 1000;
     private static final int INSTALL_CHECK_TIMEOUT_MILLIS = 3*60*1000; // (3 minutes)
 
-    public PolicyStateMachine(JTabbedPane actionJTabbedPane, JPanel rackViewJPanel,
-                              JScrollPane toolboxJScrollPane, JPanel policyToolboxSocketJPanel, JPanel serviceToolboxSocketJPanel,
-                              JPanel storeJPanel, JButton policyManagerJButton, JScrollPane rackJScrollPane) {
+    public PolicyStateMachine(JTabbedPane actionJTabbedPane, JPanel rackViewJPanel, JScrollPane toolboxJScrollPane,
+			      JPanel utilToolboxSocketJPanel, JPanel policyToolboxSocketJPanel, JPanel coreToolboxSocketJPanel,
+                              JPanel storeJPanel, JScrollPane rackJScrollPane) {
         // MVVM DATA MODELS
-        installedMackageMap = new HashMap<String,MackageDesc>();
+        utilTidList = new Vector<Tid>();
+        utilNameMap = new HashMap<String,Object>();
         policyTidMap = new LinkedHashMap<Policy,List<Tid>>(); // Linked so view selector order is consistent (initially)
         policyNameMap = new HashMap<Policy,Map<String,Object>>();
-        serviceTidList = new Vector<Tid>();
-        serviceNameMap = new HashMap<String,Object>();
+        nonPolicyTidList = new Vector<Tid>();
+        nonPolicyNameMap = new HashMap<String,Object>();
         // GUI DATA MODELS
         storeMap = new TreeMap<ButtonKey,MTransformJButton>();
+        utilToolboxMap = new TreeMap<ButtonKey,MTransformJButton>();
+        utilRackMap = new TreeMap<ButtonKey,MTransformJPanel>();
         policyToolboxMap = new HashMap<Policy,Map<ButtonKey,MTransformJButton>>();
         policyRackMap = new HashMap<Policy,Map<ButtonKey,MTransformJPanel>>();
-        serviceToolboxMap = new TreeMap<ButtonKey,MTransformJButton>();
-        serviceRackMap = new TreeMap<ButtonKey,MTransformJPanel>();
+        coreToolboxMap = new TreeMap<ButtonKey,MTransformJButton>();
+        coreRackMap = new TreeMap<ButtonKey,MTransformJPanel>();
         // GUI VIEW MODELS
         this.rackViewJPanel = rackViewJPanel;
         this.toolboxJScrollPane = toolboxJScrollPane;
+        this.utilToolboxSocketJPanel = utilToolboxSocketJPanel;
         this.policyToolboxSocketJPanel = policyToolboxSocketJPanel;
-        this.serviceToolboxSocketJPanel = serviceToolboxSocketJPanel;
+        this.coreToolboxSocketJPanel = coreToolboxSocketJPanel;
         this.storeJPanel = storeJPanel;
-        this.policyManagerJButton = policyManagerJButton;
         this.rackJScrollPane = rackJScrollPane;
+        utilToolboxJPanel = new JPanel();
+        utilRackJPanel = new JPanel();
         policyToolboxJPanelMap = new HashMap<Policy,JPanel>();
         policyRackJPanelMap = new HashMap<Policy,JPanel>();
-        serviceToolboxJPanel = new JPanel();
-        serviceRackJPanel = new JPanel();
-        serviceToolboxJPanel.setOpaque(false);
-        serviceRackJPanel.setOpaque(false);
-        serviceToolboxJPanel.setLayout(new GridBagLayout());
-        serviceRackJPanel.setLayout(new GridBagLayout());
+        coreToolboxJPanel = new JPanel();
+        coreRackJPanel = new JPanel();
+        utilToolboxJPanel.setOpaque(false);
+        utilRackJPanel.setOpaque(false);
+        coreToolboxJPanel.setOpaque(false);
+        coreRackJPanel.setOpaque(false);
+        utilToolboxJPanel.setLayout(new GridBagLayout());
+        utilRackJPanel.setLayout(new GridBagLayout());
+        coreToolboxJPanel.setLayout(new GridBagLayout());
+        coreRackJPanel.setLayout(new GridBagLayout());
 	// SEPARATORS
-	serviceSeparator = new Separator(false);
-        serviceSeparator.setForegroundText("Networking");
-        rackSeparator = new Separator(true);
-	rackSeparator.setForegroundText("Security");
+	utilSeparator = new Separator(false);
+        utilSeparator.setForegroundText("Services & Utilities");
+        policySeparator = new Separator(true);
+	policySeparator.setForegroundText("Security");
+	coreSeparator = new Separator(false);
+        coreSeparator.setForegroundText("Networking");
         // MISC REFERENCES
         this.actionJTabbedPane = actionJTabbedPane;
-        this.viewSelector = rackSeparator.getJComboBox();
+        this.viewSelector = policySeparator.getJComboBox();
 	viewSelector.addActionListener(this);
         lastRackScrollPosition = new HashMap<Policy,Integer>();
         // THREAD QUEUES & THREADS /////////
@@ -173,18 +191,26 @@ public class PolicyStateMachine implements ActionListener {
         applianceGridBagConstraints = new GridBagConstraints(0, GridBagConstraints.RELATIVE, 1, 1, 0d, 0d,
                                                              GridBagConstraints.CENTER, GridBagConstraints.NONE,
                                                              new Insets(1,0,0,0), 0, 0);
-        rackGridBagConstraints = new GridBagConstraints(0, 1, 1, 1, 0d, 0d,
-                                                        GridBagConstraints.NORTH, GridBagConstraints.NONE,
-                                                        new Insets(0,0,0,12), 0, 0);
-        rackSeparatorGridBagConstraints = new GridBagConstraints(0, 0, 1, 1, 0d, 0d,
-                                                                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                                                                 new Insets(51,0,0,12), 0, 0);
-        serviceGridBagConstraints = new GridBagConstraints(0, 2, 1, 1, 0d, 0d,
-                                                           GridBagConstraints.NORTH, GridBagConstraints.NONE,
-                                                           new Insets(51,0,0,12), 0, 0);
-        serviceSeparatorGridBagConstraints = new GridBagConstraints(0, 2, 1, 1, 0d, 0d,
+
+
+        utilSeparatorGridBagConstraints = new GridBagConstraints(0, 2, 1, 1, 0d, 0d,
+                                                                 GridBagConstraints.NORTH, GridBagConstraints.NONE,
+                                                                 new Insets(1,0,101,12), 0, 0);
+        utilGridBagConstraints = new GridBagConstraints(0, 2, 1, 1, 0d, 0d,
+                                                        GridBagConstraints.SOUTH, GridBagConstraints.NONE,
+                                                        new Insets(51,0,0,12), 0, 0);
+        policySeparatorGridBagConstraints = new GridBagConstraints(0, 3, 1, 1, 0d, 0d,
+                                                                 GridBagConstraints.NORTH, GridBagConstraints.NONE,
+                                                                 new Insets(1,0,101,12), 0, 0);
+        policyGridBagConstraints = new GridBagConstraints(0, 3, 1, 1, 0d, 0d,
+                                                        GridBagConstraints.SOUTH, GridBagConstraints.NONE,
+                                                        new Insets(51,0,0,12), 0, 0);
+        coreSeparatorGridBagConstraints = new GridBagConstraints(0, 4, 1, 1, 0d, 0d,
                                                                     GridBagConstraints.NORTH, GridBagConstraints.NONE,
-                                                                    new Insets(1,0,0,12), 0, 0);
+                                                                    new Insets(1,0,101,12), 0, 0);
+        coreGridBagConstraints = new GridBagConstraints(0, 4, 1, 1, 0d, 0d,
+                                                           GridBagConstraints.SOUTH, GridBagConstraints.NONE,
+                                                           new Insets(51,0,0,12), 0, 0);
 
         loadSemaphore = new Semaphore(CONCURRENT_LOAD_MAX);
         try{
@@ -217,9 +243,6 @@ public class PolicyStateMachine implements ActionListener {
         if( actionEvent.getSource().equals(viewSelector) ){
             handleViewSelector();
         }
-        //else if(actionEvent.getSource().equals(policyManagerJButton)){
-        //    handlePolicyManagerJButton();
-        //}
     }
     private void handleViewSelector(){
         Policy newPolicy;
@@ -251,9 +274,13 @@ public class PolicyStateMachine implements ActionListener {
         policyToolboxSocketJPanel.removeAll();
         policyToolboxSocketJPanel.add( newPolicyToolboxJPanel );
         newPolicyToolboxJPanel.revalidate();
-        if( serviceToolboxSocketJPanel.getComponentCount() == 0 ){
-            serviceToolboxSocketJPanel.add( serviceToolboxJPanel );
-            serviceToolboxJPanel.revalidate();
+        if( utilToolboxSocketJPanel.getComponentCount() == 0 ){
+            utilToolboxSocketJPanel.add( utilToolboxJPanel );
+            utilToolboxJPanel.revalidate();
+        }
+        if( coreToolboxSocketJPanel.getComponentCount() == 0 ){
+            coreToolboxSocketJPanel.add( coreToolboxJPanel );
+            coreToolboxJPanel.revalidate();
         }
         toolboxJScrollPane.repaint();
         if( lastToolboxScrollPosition >= 0 )
@@ -262,25 +289,43 @@ public class PolicyStateMachine implements ActionListener {
         // RACK VIEW AND SCROLL POSITION
         lastRackScrollPosition.put(selectedPolicy, rackJScrollPane.getVerticalScrollBar().getValue());
         JPanel newPolicyRackJPanel = policyRackJPanelMap.get(newPolicy);
-        if( selectedRackJPanel != null ){ // not the first rack viewed
-            rackViewJPanel.remove( selectedRackJPanel );
+	// DETERMINE IF THERE ARE ANY SECURITY APPLIANCES
+	boolean allEmpty = true;
+	for( Policy policy : policyRackMap.keySet() ){
+	    if(policyRackMap.get(policy).size()>0){
+		allEmpty = false;
+		break;
+	    }
+	}
+        if( selectedPolicyRackJPanel != null ){ // not the first rack viewed
+            rackViewJPanel.remove( selectedPolicyRackJPanel );
+	    if( !allEmpty )
+		rackViewJPanel.add( newPolicyRackJPanel, policyGridBagConstraints );
         }
         else{ // the first rack viewed
-            // ADD SERVICES AND SEPARATOR
-            rackViewJPanel.add( serviceRackJPanel, serviceGridBagConstraints );
-            if( !serviceRackMap.isEmpty() ){
-                rackViewJPanel.add( serviceSeparator, serviceSeparatorGridBagConstraints );
+            // ADD CORE AND SEPARATOR
+            if( !utilRackMap.isEmpty() ){
+		rackViewJPanel.add( utilRackJPanel, utilGridBagConstraints );
+                rackViewJPanel.add( utilSeparator, utilSeparatorGridBagConstraints );
             }
-            rackViewJPanel.add( rackSeparator, rackSeparatorGridBagConstraints );
-            serviceRackJPanel.revalidate();
+	    // ADD SECURITY AND SEPARATOR
+	    if( !allEmpty ){
+		rackViewJPanel.add( policySeparator, policySeparatorGridBagConstraints );
+		rackViewJPanel.add( newPolicyRackJPanel, policyGridBagConstraints );
+	    }
+            // ADD CORE AND SEPARATOR
+            if( !coreRackMap.isEmpty() ){
+		rackViewJPanel.add( coreRackJPanel, coreGridBagConstraints );
+                rackViewJPanel.add( coreSeparator, coreSeparatorGridBagConstraints );
+            }
+            coreRackJPanel.revalidate();
         }
-        // ADD POLICY
-        rackViewJPanel.add( newPolicyRackJPanel, rackGridBagConstraints );
         //rackSeparator.setForegroundText( newPolicy.getName() );
         newPolicyRackJPanel.revalidate();
+	rackViewJPanel.revalidate();
         rackViewJPanel.repaint();
         rackJScrollPane.getVerticalScrollBar().setValue( lastRackScrollPosition.get(newPolicy) );
-        selectedRackJPanel = newPolicyRackJPanel;
+        selectedPolicyRackJPanel = newPolicyRackJPanel;
         selectedPolicy = newPolicy;
     }
     ///////////////////////////////////////////////////////
@@ -382,7 +427,7 @@ public class PolicyStateMachine implements ActionListener {
             this.policy = policy;
             this.mTransformJButton = mTransformJButton;
             setContextClassLoader( Util.getClassLoader() );
-            setName("MVCLIENT-MoveFromToolboxToRackThread: " + mTransformJButton.getDisplayName() + " -> " + (mTransformJButton.getMackageDesc().isService()?"services":policy.getName()));
+            setName("MVCLIENT-MoveFromToolboxToRackThread: " + mTransformJButton.getDisplayName() );
             mTransformJButton.setDeployingView();
             focusInToolbox(mTransformJButton, false);
             start();
@@ -394,7 +439,7 @@ public class PolicyStateMachine implements ActionListener {
                 // CREATE APPLIANCE
                 TransformContext transformContext = Util.getTransformManager().transformContext( tid );
                 MTransformJPanel mTransformJPanel = MTransformJPanel.instantiate(transformContext);
-                // DEPLOY APPLIANCE TO CURRENT POLICY RACK (OR SERVICE RACK)
+                // DEPLOY APPLIANCE TO CURRENT POLICY RACK (OR CORE RACK)
                 addToRack(policy, mTransformJPanel,true);
                 // FOCUS AND HIGHLIGHT IN CURRENT RACK
                 focusInRack(mTransformJPanel);
@@ -431,12 +476,16 @@ public class PolicyStateMachine implements ActionListener {
             this.policy = policy;
             this.mTransformJPanel = mTransformJPanel;
             this.buttonKey = new ButtonKey(mTransformJPanel);
-            if( mTransformJPanel.getMackageDesc().isService() )
-                this.mTransformJButton = serviceToolboxMap.get(buttonKey);
-            else
+	    if(mTransformJPanel.getMackageDesc().isService() || mTransformJPanel.getMackageDesc().isUtil())
+		this.mTransformJButton = utilToolboxMap.get(buttonKey);
+            else if(mTransformJPanel.getMackageDesc().isSecurity())
                 this.mTransformJButton = policyToolboxMap.get(policy).get(buttonKey);
+	    else if(mTransformJPanel.getMackageDesc().isCore() )
+                this.mTransformJButton = coreToolboxMap.get(buttonKey);
+	    else
+		this.mTransformJButton = null;
             setContextClassLoader( Util.getClassLoader() );
-            setName("MVCLIENT-MoveFromRackToToolboxThread: " + mTransformJPanel.getMackageDesc().getDisplayName() + " -> " + (mTransformJPanel.getMackageDesc().isService()?"service":policy.getName()));
+            setName("MVCLIENT-MoveFromRackToToolboxThread: " + mTransformJPanel.getMackageDesc().getDisplayName() );
             mTransformJPanel.setRemovingView(false);
             start();
         }
@@ -463,10 +512,14 @@ public class PolicyStateMachine implements ActionListener {
             }
             // VIEW: DEPLOYABLE
             MTransformJButton targetMTransformJButton;
-            if( mTransformJPanel.getMackageDesc().isService() )
-                targetMTransformJButton = serviceToolboxMap.get(buttonKey);
-            else
+            if( mTransformJPanel.getMackageDesc().isUtil() || mTransformJPanel.getMackageDesc().isService() )
+                targetMTransformJButton = utilToolboxMap.get(buttonKey);
+            else if( mTransformJPanel.getMackageDesc().isSecurity() )
                 targetMTransformJButton = policyToolboxMap.get(policy).get(buttonKey);
+	    else if( mTransformJButton.getMackageDesc().isCore() )
+		targetMTransformJButton = coreToolboxMap.get(buttonKey);
+	    else
+		targetMTransformJButton = null;
             targetMTransformJButton.setDeployableView();
             focusInToolbox(targetMTransformJButton, true);
         }
@@ -482,10 +535,10 @@ public class PolicyStateMachine implements ActionListener {
 	    setContextClassLoader( Util.getClassLoader() );
 	    setName("MVCLIENT-MoveFromToolboxToStoreThread: " + mTransformJButton.getDisplayName() );
 	    // DECIDE IF WE CAN REMOVE
-	    if( mTransformJButton.getMackageDesc().isService() ){
+	    if( mTransformJButton.getMackageDesc().isUtil() || mTransformJButton.getMackageDesc().isService() ){
 		buttonVector.add(mTransformJButton);
 	    }
-	    else{
+	    else if(mTransformJButton.getMackageDesc().isSecurity()){
 		for( Map.Entry<Policy,Map<ButtonKey,MTransformJButton>> policyToolboxMapEntry : policyToolboxMap.entrySet() ){
 		    Map<ButtonKey,MTransformJButton> toolboxMap = policyToolboxMapEntry.getValue();
 		    if( toolboxMap.containsKey(buttonKey) && toolboxMap.get(buttonKey).isEnabled() ){
@@ -502,6 +555,9 @@ public class PolicyStateMachine implements ActionListener {
 		    }
 		}
 	    }
+	    else if(mTransformJButton.getMackageDesc().isCore()){
+		buttonVector.add(mTransformJButton);
+	    }		
 	    for( MTransformJButton button : buttonVector )
 		button.setRemovingFromToolboxView();
 	    start();
@@ -649,7 +705,6 @@ public class PolicyStateMachine implements ActionListener {
                 List<MackageDesc> purchasedMackageDescs = computeNewMackageDescs(currentUninstalledMackages, originalUninstalledMackages);
                 for( MackageDesc purchasedMackageDesc : purchasedMackageDescs ){
                     if( isMackageStoreItem(purchasedMackageDesc) ){
-                        System.err.println("PURCHASED: " + purchasedMackageDesc.getName());
                         removeFromStore(purchasedMackageDesc);
                     }
                 }
@@ -659,15 +714,18 @@ public class PolicyStateMachine implements ActionListener {
                 List<MackageDesc> newMackageDescs = computeNewMackageDescs(originalInstalledMackages, currentInstalledMackages);
                 for( MackageDesc newMackageDesc : newMackageDescs ){
                     if( !isMackageStoreItem(newMackageDesc) ){
-                        System.err.println("INSTALLED: " + newMackageDesc.getName());
                         MTransformJButton newMTransformJButton = new MTransformJButton(newMackageDesc);
-                        if( newMTransformJButton.getMackageDesc().isService() ){
+                        if( newMTransformJButton.getMackageDesc().isUtil() || newMTransformJButton.getMackageDesc().isService()){
                             addToToolbox(null,newMTransformJButton.getMackageDesc(),false,false);
                         }
-                        else{
+                        else if(newMTransformJButton.getMackageDesc().isSecurity()){
                             for( Policy policy : policyToolboxMap.keySet() )
                                 addToToolbox(policy,newMTransformJButton.getMackageDesc(),false,false);
                         }
+			else if( newMTransformJButton.getMackageDesc().isCore() ){
+                            addToToolbox(null,newMTransformJButton.getMackageDesc(),false,false);
+                        }
+
                         revalidateToolboxes();
                         // FOCUS AND HIGHLIGHT IN CURRENT TOOLBOX
                         focusInToolbox(newMTransformJButton, true);
@@ -708,11 +766,11 @@ public class PolicyStateMachine implements ActionListener {
     // INIT API ////////////////////////////////////////////
     ////////////////////////////////////////////////////////
     private void initMvvmModel() throws Exception {
-        for( MackageDesc mackageDesc : Util.getToolboxManager().installed() )
-            installedMackageMap.put(mackageDesc.getName(),mackageDesc);
+	// SECURITY
         for( Policy policy : Util.getPolicyManager().getPolicies() )
             policyTidMap.put( policy, Util.getTransformManager().transformInstances(policy) );
-        serviceTidList = Util.getTransformManager().transformInstances((Policy)null);
+	// NON-SECURITY (CORE & UTIL & SERVICES)
+        nonPolicyTidList = Util.getTransformManager().transformInstances((Policy)null);
         // NAME MAPS FOR QUICK LOOKUP
         for( Policy policy : policyTidMap.keySet() ){
             Map<String,Object> nameMap = new HashMap<String,Object>();
@@ -721,8 +779,8 @@ public class PolicyStateMachine implements ActionListener {
                 nameMap.put(tid.getTransformName(),null);
             }
         }
-        for( Tid tid : serviceTidList )
-            serviceNameMap.put(tid.getTransformName(),null);
+        for( Tid tid : nonPolicyTidList )
+            nonPolicyNameMap.put(tid.getTransformName(),null);
     }
 
     public void updateStoreModel(){ storeModelThread.updateStoreModel(); }
@@ -745,8 +803,6 @@ public class PolicyStateMachine implements ActionListener {
             notify();
         }
         public void run(){
-            // POLL MVVM FOR PURCHASES
-
             // MAIN STORE EVENT LOOP
             while(true){
                 try{
@@ -831,15 +887,28 @@ public class PolicyStateMachine implements ActionListener {
     private void initToolboxModel(final JProgressBar progressBar){
         // BUILD THE MODEL
         Map<String,MackageDesc> installedMackageMap = new HashMap<String,MackageDesc>();
-        for( MackageDesc mackageDesc : Util.getToolboxManager().installed() )
+        for( MackageDesc mackageDesc : Util.getToolboxManager().installed() ){
             installedMackageMap.put(mackageDesc.getName(),mackageDesc);
+	}
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
             progressBar.setValue(64);
             progressBar.setString("Populating Toolbox...");
         }});
         int progress = 0;
-        final float overallFinal = (float) (installedMackageMap.size() * (policyTidMap.size()+1)); // +1 for services
-        // APPLIANCES
+        final float overallFinal = (float) (installedMackageMap.size() * (policyTidMap.size()+2)); // +1 for cores, +1 for util&serv
+        // UTIL & SERVICE
+        for( MackageDesc mackageDesc : installedMackageMap.values() ){
+            if( mackageDesc.isUtil() || mackageDesc.isService() ){
+                boolean isDeployed = nonPolicyNameMap.containsKey(mackageDesc.getName());
+                addToToolbox(null,mackageDesc,isDeployed,false);
+            }
+            progress++;
+            final float progressFinal = (float) progress;
+            SwingUtilities.invokeLater( new Runnable(){ public void run(){
+                progressBar.setValue(64 + (int) (32f*progressFinal/overallFinal) );
+            }});
+        }
+        // SECURITY
         for( Policy policy : policyTidMap.keySet() ){
             JPanel toolboxJPanel = new JPanel();
             toolboxJPanel.setLayout(new GridBagLayout());
@@ -847,7 +916,7 @@ public class PolicyStateMachine implements ActionListener {
             policyToolboxJPanelMap.put(policy, toolboxJPanel);
             policyToolboxMap.put(policy, new TreeMap<ButtonKey,MTransformJButton>());
             for( MackageDesc mackageDesc : installedMackageMap.values() ){
-                if( !mackageDesc.isService() ){
+                if( mackageDesc.isSecurity() ){
                     boolean isDeployed = policyNameMap.get(policy).containsKey(mackageDesc.getName());
                     addToToolbox(policy,mackageDesc,isDeployed,false);
                 }
@@ -858,10 +927,10 @@ public class PolicyStateMachine implements ActionListener {
                 progressBar.setValue(64 + (int) (32f*progressFinal/overallFinal) );
             }});
         }
-        // SERVICES
+        // CORE
         for( MackageDesc mackageDesc : installedMackageMap.values() ){
-            if( mackageDesc.isService() ){
-                boolean isDeployed = serviceNameMap.containsKey(mackageDesc.getName());
+            if( mackageDesc.isCore() ){
+                boolean isDeployed = nonPolicyNameMap.containsKey(mackageDesc.getName());
                 addToToolbox(null,mackageDesc,isDeployed,false);
             }
             progress++;
@@ -887,8 +956,8 @@ public class PolicyStateMachine implements ActionListener {
         int overall = 0;
         for( Policy policy : policyTidMap.keySet() )
             overall += policyTidMap.get(policy).size();
-        overall += serviceTidList.size();
-        // APPLIANCES
+        overall += nonPolicyTidList.size();
+        // SECURITY
         for( Policy policy : policyTidMap.keySet() ){
             lastRackScrollPosition.put(policy,0);
             JPanel rackJPanel = new JPanel();
@@ -900,9 +969,9 @@ public class PolicyStateMachine implements ActionListener {
                 new LoadApplianceThread(policy,tid,overall,progressBar);
             }
         }
-        // SERVICES
+        // NON-SECURITY
         applianceLoadProgress = 0;
-        for( Tid tid : serviceTidList ){
+        for( Tid tid : nonPolicyTidList ){
             new LoadApplianceThread(null,tid,overall,progressBar);
         }
         try{
@@ -989,17 +1058,17 @@ public class PolicyStateMachine implements ActionListener {
     }
     private void removeFromToolbox(final MackageDesc mackageDesc){
         final ButtonKey buttonKey = new ButtonKey(mackageDesc);
-        SwingUtilities.invokeLater( new Runnable() { public void run() {
-            if( mackageDesc.isService() ){
-                int position = ((TreeMap)serviceToolboxMap).headMap(buttonKey).size();
-                MTransformJButton mTransformJButton = serviceToolboxMap.get(buttonKey);
+        SwingUtilities.invokeLater( new Runnable() { public void run() {	    
+            if( mackageDesc.isUtil() || mackageDesc.isService() ){
+                int position = ((TreeMap)utilToolboxMap).headMap(buttonKey).size();
+                MTransformJButton mTransformJButton = utilToolboxMap.get(buttonKey);
                 for( ActionListener actionListener : mTransformJButton.getActionListeners() )
                     mTransformJButton.removeActionListener(actionListener);
-                serviceToolboxMap.remove(buttonKey);
-                serviceToolboxJPanel.remove(position);
-                serviceToolboxJPanel.revalidate();
+                utilToolboxMap.remove(buttonKey);
+                utilToolboxJPanel.remove(position);
+                utilToolboxJPanel.revalidate();
             }
-            else{
+            else if(mackageDesc.isSecurity() ){
                 for( Policy policy : policyToolboxMap.keySet() ){
                     Map<ButtonKey,MTransformJButton> toolboxMap = policyToolboxMap.get(policy);
                     int position = ((TreeMap)toolboxMap).headMap(buttonKey).size();
@@ -1012,24 +1081,35 @@ public class PolicyStateMachine implements ActionListener {
                     toolboxJPanel.revalidate();
                 }
             }
+            else if( mackageDesc.isCore() ){
+                int position = ((TreeMap)coreToolboxMap).headMap(buttonKey).size();
+                MTransformJButton mTransformJButton = coreToolboxMap.get(buttonKey);
+                for( ActionListener actionListener : mTransformJButton.getActionListeners() )
+                    mTransformJButton.removeActionListener(actionListener);
+                coreToolboxMap.remove(buttonKey);
+                coreToolboxJPanel.remove(position);
+                coreToolboxJPanel.revalidate();
+            }
         }});
     }
     private void removeFromRack(final Policy policy, final MTransformJPanel mTransformJPanel){
         final ButtonKey buttonKey = new ButtonKey(mTransformJPanel);
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
-            if( mTransformJPanel.getMackageDesc().isService() ){
+            if( mTransformJPanel.getMackageDesc().isUtil() || mTransformJPanel.getMackageDesc().isService() ){
                 // REMOVE FROM RACK MODEL
-                serviceRackMap.remove(buttonKey);
+                utilRackMap.remove(buttonKey);
                 // REMOVE FROM RACK VIEW
-                serviceRackJPanel.remove(mTransformJPanel);
-                serviceRackJPanel.revalidate();
-                // DEAL WITH SPACER
-                if( serviceRackMap.isEmpty() ){
-                    rackViewJPanel.remove( serviceSeparator );
+                utilRackJPanel.remove(mTransformJPanel);
+                utilRackJPanel.revalidate();
+                // DEAL WITH SPACER AND JPANEL
+                if( utilRackMap.isEmpty() ){
+                    rackViewJPanel.remove( utilSeparator );
+                    rackViewJPanel.remove( utilRackJPanel );
+		    rackViewJPanel.revalidate();
                     rackViewJPanel.repaint();
                 }
             }
-            else{
+            else if(mTransformJPanel.getMackageDesc().isSecurity()){
                 JPanel rackJPanel = policyRackJPanelMap.get(policy);
                 // REMOVE FROM RACK MODEL
                 policyRackMap.get(policy).remove(buttonKey);
@@ -1041,13 +1121,31 @@ public class PolicyStateMachine implements ActionListener {
 			break;
 		    }
 		}
-		// REMOVE SEPARATOR IF ALL EMPTY
-		if( allEmpty ){
-		    
-		}		    
                 // REMOVE FROM RACK VIEW
                 rackJPanel.remove(mTransformJPanel);
                 rackJPanel.revalidate();
+		// REMOVE SEPARATOR IF ALL EMPTY (AND SET TO THE INITIAL VALUE)
+		if( allEmpty ){
+		    viewSelector.setSelectedIndex(0);
+		    rackViewJPanel.remove( policySeparator );
+		    rackViewJPanel.remove( policyRackJPanelMap.get(policy) );
+		    rackViewJPanel.revalidate();
+		    rackViewJPanel.repaint();		    
+		}		    
+            }
+            else if( mTransformJPanel.getMackageDesc().isCore() ){
+                // REMOVE FROM RACK MODEL
+                coreRackMap.remove(buttonKey);
+                // REMOVE FROM RACK VIEW
+                coreRackJPanel.remove(mTransformJPanel);
+                coreRackJPanel.revalidate();
+                // DEAL WITH SPACER AND JPANEL
+                if( coreRackMap.isEmpty() ){
+                    rackViewJPanel.remove( coreSeparator );
+                    rackViewJPanel.remove( coreRackJPanel );
+		    rackViewJPanel.revalidate();
+                    rackViewJPanel.repaint();
+                }
             }
         }});
     }
@@ -1080,13 +1178,13 @@ public class PolicyStateMachine implements ActionListener {
             if(doRevalidate)
                 storeJPanel.revalidate();
         }});
-        //System.err.println("Added to store: " + mackageDesc.getDisplayName());
     }
     private void revalidateToolboxes(){
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
-            serviceToolboxJPanel.revalidate();
+            utilToolboxJPanel.revalidate();
             for(JPanel toolboxJPanel : policyToolboxJPanelMap.values())
                 toolboxJPanel.revalidate();
+            coreToolboxJPanel.revalidate();
         }});
     }
     private void addToToolbox(final Policy policy, final MackageDesc mackageDesc, final boolean isDeployed, final boolean doRevalidate){
@@ -1102,17 +1200,17 @@ public class PolicyStateMachine implements ActionListener {
         else
             mTransformJButton.setDeployableView();
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
-            if( mackageDesc.isService() ){
+            if( mackageDesc.isUtil() || mackageDesc.isService() ){
                 // UPDATE GUI DATA MODEL
-                serviceToolboxMap.put(buttonKey,mTransformJButton);
+                utilToolboxMap.put(buttonKey,mTransformJButton);
                 mTransformJButton.addActionListener( new ToolboxActionListener(null,mTransformJButton) );
                 // UPDATE GUI VIEW MODEL
-                int position = ((TreeMap)serviceToolboxMap).headMap(buttonKey).size();
-                serviceToolboxJPanel.add(mTransformJButton, buttonGridBagConstraints, position);
+                int position = ((TreeMap)utilToolboxMap).headMap(buttonKey).size();
+                utilToolboxJPanel.add(mTransformJButton, buttonGridBagConstraints, position);
                 if(doRevalidate)
-                    serviceToolboxJPanel.revalidate();
+                    utilToolboxJPanel.revalidate();
             }
-            else{
+            else if(mackageDesc.isSecurity()){
                 // UPDATE GUI DATA MODEL
                 Map<ButtonKey,MTransformJButton> toolboxMap = policyToolboxMap.get(policy);
                 toolboxMap.put(buttonKey,mTransformJButton);
@@ -1124,34 +1222,66 @@ public class PolicyStateMachine implements ActionListener {
                 if(doRevalidate)
                     toolboxJPanel.revalidate();
             }
+            else if( mackageDesc.isCore() ){
+                // UPDATE GUI DATA MODEL
+                coreToolboxMap.put(buttonKey,mTransformJButton);
+                mTransformJButton.addActionListener( new ToolboxActionListener(null,mTransformJButton) );
+                // UPDATE GUI VIEW MODEL
+                int position = ((TreeMap)coreToolboxMap).headMap(buttonKey).size();
+                coreToolboxJPanel.add(mTransformJButton, buttonGridBagConstraints, position);
+                if(doRevalidate)
+                    coreToolboxJPanel.revalidate();
+            }
         }});
-        System.err.println("Added to toolbox (" + (mackageDesc.isService()?"service":policy.getName()) + "): " + mackageDesc.getDisplayName() + " deployed: " + isDeployed);
     }
     private void revalidateRacks(){
         SwingUtilities.invokeLater( new Runnable() { public void run() {
-            serviceRackJPanel.revalidate();
+            utilRackJPanel.revalidate();
             for( JPanel rackJPanel : policyRackJPanelMap.values() )
                 rackJPanel.revalidate();
+            coreRackJPanel.revalidate();
         }});
     }
     private void addToRack(final Policy policy, final MTransformJPanel mTransformJPanel, final boolean doRevalidate){
         final ButtonKey buttonKey = new ButtonKey(mTransformJPanel);
         SwingUtilities.invokeLater( new Runnable() { public void run() {
-            if( mTransformJPanel.getMackageDesc().isService() ){
+            if( mTransformJPanel.getMackageDesc().isUtil() || mTransformJPanel.getMackageDesc().isService()){
                 // DEAL WITH SPACER
-                if( serviceRackMap.isEmpty() ){
-                    rackViewJPanel.add( serviceSeparator, serviceSeparatorGridBagConstraints );
+                if( utilRackMap.isEmpty() ){
+                    rackViewJPanel.add( utilSeparator, utilSeparatorGridBagConstraints );
+                    rackViewJPanel.add( utilRackJPanel, utilGridBagConstraints );
+		    rackViewJPanel.revalidate();
                     rackViewJPanel.repaint();
                 }
                 // ADD TO RACK MODEL
-                serviceRackMap.put(buttonKey,mTransformJPanel);
+                utilRackMap.put(buttonKey,mTransformJPanel);
                 // UPDATE GUI VIEW MODEL
-                int position = ((TreeMap)serviceRackMap).headMap(buttonKey).size();
-                serviceRackJPanel.add(mTransformJPanel, applianceGridBagConstraints, position);
+                int position = ((TreeMap)utilRackMap).headMap(buttonKey).size();
+                utilRackJPanel.add(mTransformJPanel, applianceGridBagConstraints, position);
                 if(doRevalidate)
-                    serviceRackJPanel.revalidate();
+                    utilRackJPanel.revalidate();
             }
-            else{
+	    else if( mTransformJPanel.getMackageDesc().isSecurity()) {
+		// SEE IF ALL POLICIES ARE EMPTY
+		boolean allEmpty = true;
+		for( Policy policy : policyRackMap.keySet() ){
+		    if(policyRackMap.get(policy).size()>0){
+			allEmpty = false;
+			break;
+		    }
+		}
+		// DEAL WITH SPACER
+		if( allEmpty ){
+		    rackViewJPanel.add( policySeparator, policySeparatorGridBagConstraints );
+		    JPanel rackJPanel = policyRackJPanelMap.get(policy);
+		    if( !rackJPanel.isAncestorOf(rackViewJPanel) && doRevalidate ){ // XXX doRevalidate is a nasty hack to make sure this only goes off after init
+			rackViewJPanel.add( rackJPanel, policyGridBagConstraints );
+		    }
+		    //Policy currentPolicy = (Policy) viewSelector.getSelectedItem();
+		    //rackViewJPanel.add( policyRackJPanelMap.get(currentPolicy), rackGridBagConstraints );
+		}
+		rackViewJPanel.revalidate();
+		rackViewJPanel.repaint();		
                 // ADD TO RACK MODEL
                 policyRackMap.get(policy).put(buttonKey,mTransformJPanel);
                 // UPDATE GUI VIEW MODEL
@@ -1161,8 +1291,23 @@ public class PolicyStateMachine implements ActionListener {
                 if(doRevalidate)
                     rackJPanel.revalidate();
             }
+            else if( mTransformJPanel.getMackageDesc().isCore() ){
+                // DEAL WITH SPACER
+                if( coreRackMap.isEmpty() ){
+                    rackViewJPanel.add( coreSeparator, coreSeparatorGridBagConstraints );
+                    rackViewJPanel.add( coreRackJPanel, coreGridBagConstraints );
+		    rackViewJPanel.revalidate();
+                    rackViewJPanel.repaint();
+                }
+                // ADD TO RACK MODEL
+                coreRackMap.put(buttonKey,mTransformJPanel);
+                // UPDATE GUI VIEW MODEL
+                int position = ((TreeMap)coreRackMap).headMap(buttonKey).size();
+                coreRackJPanel.add(mTransformJPanel, applianceGridBagConstraints, position);
+                if(doRevalidate)
+                    coreRackJPanel.revalidate();
+            }
         }});
-        System.err.println("Added to rack (" + (mTransformJPanel.getMackageDesc().isService()?"service":policy.getName()) + "): " + mTransformJPanel.getMackageDesc().getDisplayName() );
     }
     ///////////////////////////////////////
     // ADD API ////////////////////////////
@@ -1219,7 +1364,13 @@ public class PolicyStateMachine implements ActionListener {
             this.listCellRenderer = listCellRenderer;
         }
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean hasFocus){
-            return listCellRenderer.getListCellRendererComponent(list, (value instanceof Policy?((Policy)value).getName():value.toString()), index, isSelected, hasFocus);
+	    String text = (value instanceof Policy?((Policy)value).getName():value.toString());
+	    Component renderComponent = listCellRenderer.getListCellRendererComponent(list, text, index, isSelected, hasFocus);
+	    renderComponent.setForeground(Color.BLACK);
+
+	    //((JLabel)renderComponent).setBorder(new javax.swing.border.LineBorder(new Color(130,130,130), 1));
+
+	    return renderComponent;
         }
     }
     private class StoreActionListener implements java.awt.event.ActionListener {
@@ -1230,17 +1381,6 @@ public class PolicyStateMachine implements ActionListener {
         public void actionPerformed(java.awt.event.ActionEvent evt){
             if( Util.getIsDemo() )
                 return;
-            // THE OLD SCHOOL WAY OF PURCHASING
-	    /*
-            if( (evt.getModifiers() & ActionEvent.SHIFT_MASK) > 0){
-                mTransformJButton.setEnabled(false);
-                StoreJDialog storeJDialog = new StoreJDialog(mTransformJButton);
-                storeJDialog.setVisible(true);
-                if( storeJDialog.getPurchasedMTransformJButton() == null ){
-                    mTransformJButton.setEnabled(true);
-                }
-		}*/
-            // THE NEW SHITE
 	    try{
 		String authNonce = Util.getAdminManager().generateAuthNonce();
 		URL newURL = new URL( Util.getServerCodeBase(), "../store/storeitem.php?name="
@@ -1278,6 +1418,15 @@ public class PolicyStateMachine implements ActionListener {
 
     //////////////////////////////////////
     // PRIVATE CLASSES AND UTILS /////////
+    public void stopAllGraphs(){
+	for( ButtonKey key : utilRackMap.keySet() )
+	    utilRackMap.get(key).mTransformDisplayJPanel().setUpdateGraph(false);
+	for( Policy policy : policyRackMap.keySet() )
+	    for( MTransformJPanel appliance : policyRackMap.get(policy).values() )
+		appliance.mTransformDisplayJPanel().setUpdateGraph(false);
+	for( ButtonKey key : coreRackMap.keySet() )
+	    coreRackMap.get(key).mTransformDisplayJPanel().setUpdateGraph(false);
+    }
     private void focusInRack(final MTransformJPanel mTransformJPanel){
         SwingUtilities.invokeLater( new Runnable() { public void run() {
             rackJScrollPane.getViewport().validate();
@@ -1294,8 +1443,8 @@ public class PolicyStateMachine implements ActionListener {
         SwingUtilities.invokeLater( new Runnable() { public void run() {
             MTransformJButton focusMTransformJButton;
             ButtonKey buttonKey = new ButtonKey(mTransformJButton);
-            if( mTransformJButton.getMackageDesc().isService() ){
-                focusMTransformJButton = serviceToolboxMap.get(buttonKey);
+            if( mTransformJButton.getMackageDesc().isCore() ){
+                focusMTransformJButton = coreToolboxMap.get(buttonKey);
             }
             else{
                 focusMTransformJButton = policyToolboxMap.get(selectedPolicy).get(buttonKey);
