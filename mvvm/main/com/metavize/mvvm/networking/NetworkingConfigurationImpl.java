@@ -29,6 +29,7 @@ import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.Equivalence;
 import com.metavize.mvvm.tran.Validatable;
 import com.metavize.mvvm.tran.ValidateException;
+import com.metavize.mvvm.tran.ParseException;
 
 import com.metavize.mvvm.networking.NetworkUtil;
 
@@ -54,13 +55,13 @@ public class NetworkingConfigurationImpl implements Serializable, NetworkingConf
      */
     private boolean isDhcpEnabled = DEF_IS_DHCP_EN;
 
-    public static final int DEF_HTTPS_PORT = 443;
+    public static final int DEF_HTTPS_PORT = NetworkUtil.DEF_HTTPS_PORT;
 
     /**
      * Hostname, Host and Netmask of the EdgeGuard GSP
      */
     private String hostname = DEFAULT_HOSTNAME;
-    private String publicAddress = null;
+    
     private IPaddr publicIPaddr = null;
     private int publicPort = 0;
     private boolean isHostnamePublic = false;
@@ -174,12 +175,12 @@ public class NetworkingConfigurationImpl implements Serializable, NetworkingConf
     /** @return the public url for the box, this is the address (may be hostname or ip address) */
     public String getPublicAddress()
     {
-        return this.publicAddress;
+        return NetworkUtil.getInstance().generatePublicAddress( getPublicIPaddr(), getPublicPort());
     }
 
-    public void setPublicAddress( String newValue )
+    public void setPublicAddress( String newValue ) throws ParseException
     {
-        this.publicAddress = newValue;
+        NetworkUtil.getInstance().parsePublicAddress( this, newValue );
     }
 
     /** @return the public url for the box, this is the address (may be hostname or ip address) */
@@ -207,9 +208,8 @@ public class NetworkingConfigurationImpl implements Serializable, NetworkingConf
     /* Return true if the current settings have a public address */
     public boolean hasPublicAddress()
     {
-        return (this.publicAddress != null ) && (this.publicAddress.length() > 0);
+        return (( this.publicIPaddr != null ) &&  !this.publicIPaddr.isEmpty());                
     }
-
 
     /**
      * Set the host with an IP addr

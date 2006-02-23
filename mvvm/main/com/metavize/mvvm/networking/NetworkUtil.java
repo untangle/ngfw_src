@@ -44,7 +44,9 @@ public class NetworkUtil
     public static final String DEFAULT_SPACE_NAME_NAT     = "private";
 
     public static final int    DEF_HTTPS_PORT = 443;
-    
+
+    private static final String PUBLIC_ADDRESS_EXCEPTION = 
+        "A public address is an ip address, optionally followed by a port.  (EG 1.2.3.4:445 or 1.2.3.4)";
 
     /* Package protected so that NetworkUtilPriv can work */
     NetworkUtil()
@@ -191,7 +193,39 @@ public class NetworkUtil
         } catch ( ParseException e ) {
             throw new NetworkException( "Unable to convert the netmask " + netmask + " into a cidr suffix" );
         }
-    }    
+    }
+    
+    public String generatePublicAddress( IPaddr publicAddress, int publicPort )
+    {
+        if ( publicAddress == null || publicAddress.isEmpty()) return "";
+                
+        if ( publicPort == DEF_HTTPS_PORT ) return publicAddress.toString();
+
+        return publicAddress.toString() + ":" + publicPort;
+    }
+
+    public void parsePublicAddress( RemoteSettings remote, String newValue ) throws ParseException
+    {
+        try {          
+            String valueArray[] = newValue.split( ":" );
+            if ( valueArray.length == 1 ) {
+                IPaddr address = IPaddr.parse( valueArray[0] );
+                remote.setPublicIPaddr( address );
+                remote.setPublicPort( DEF_HTTPS_PORT );
+                return;
+            } else if ( valueArray.length == 2 ) {
+                IPaddr address = IPaddr.parse( valueArray[0] );
+                int port = Integer.parseInt( valueArray[1] );
+                remote.setPublicIPaddr( address );
+                remote.setPublicPort( port );
+                return;
+            } 
+        } catch ( Exception e ) {
+            throw new ParseException( PUBLIC_ADDRESS_EXCEPTION );
+        }
+
+        throw new ParseException( PUBLIC_ADDRESS_EXCEPTION );
+    }
 
     public static NetworkUtil getInstance()
     {

@@ -40,7 +40,7 @@ public final class SetupState implements Serializable
 
     private static final SetupState ENUMERATION[] =
     {
-        NETWORK_SHARING, UNCONFIGURED, BASIC, ADVANCED
+        WIZARD, NETWORK_SHARING, UNCONFIGURED, BASIC, ADVANCED
     };
 
     private final int type;

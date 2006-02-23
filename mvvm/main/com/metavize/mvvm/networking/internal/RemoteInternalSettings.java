@@ -55,7 +55,8 @@ public class RemoteInternalSettings
     
     /* These are the values that are stored in the database */
     private final String hostname;
-    private final String publicAddress;
+    private final IPaddr publicAddress;
+    private final int    publicPort;
     private final boolean isHostnamePublic;
     private final int publicHttpsPort;
     
@@ -74,7 +75,8 @@ public class RemoteInternalSettings
         this.outsideNetmask = remote.outsideNetmask();
         this.postConfigurationScript = remote.getPostConfigurationScript();
         this.hostname       = remote.getHostname();
-        this.publicAddress  = remote.getPublicAddress();
+        this.publicAddress  = remote.getPublicIPaddr();
+        this.publicPort     = remote.getPublicPort();
         this.publicHttpsPort = remote.httpsPort();
         this.currentPublicAddress = realPublicAddress;
         this.isHostnamePublic = remote.getIsHostnamePublic();
@@ -151,9 +153,20 @@ public class RemoteInternalSettings
     /** @return the public url for the box, this is the address (may be hostname or ip address) */
     public String getPublicAddress()
     {
-        return this.publicAddress;
-    }        
+        return NetworkUtil.getInstance().generatePublicAddress( getPublicIPaddr(), getPublicPort());
+    }      
 
+    /** @return the public url for the box, this is the address (may be hostname or ip address) */
+    public IPaddr getPublicIPaddr()
+    {
+        return this.publicAddress;
+    }
+
+    public int getPublicPort()
+    {
+        return this.publicPort;
+    }
+  
     public String getCurrentPublicAddress()
     {
         return this.currentPublicAddress;
@@ -173,7 +186,8 @@ public class RemoteInternalSettings
         rs.outsideNetmask( outsideNetmask());
         rs.setPostConfigurationScript( getPostConfigurationScript());
         rs.setHostname( getHostname());
-        rs.setPublicAddress( getPublicAddress());
+        rs.setPublicIPaddr( getPublicIPaddr());
+        rs.setPublicPort( getPublicPort());
         rs.httpsPort( getPublicHttpsPort());
         rs.setIsHostnamePublic( getIsHostnamePublic());
 

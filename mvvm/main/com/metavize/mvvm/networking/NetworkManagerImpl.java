@@ -11,10 +11,12 @@
 
 package com.metavize.mvvm.networking;
 
-import java.util.Set;
-import java.util.List;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -22,6 +24,8 @@ import org.hibernate.Session;
 import org.hibernate.Query;
 
 import com.metavize.jnetcap.Netcap;
+
+import com.metavize.mvvm.IntfConstants;
 
 import com.metavize.mvvm.NetworkManager;
 import com.metavize.mvvm.IntfEnum;
@@ -380,18 +384,92 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     public void setWizardNatEnabled(IPaddr address, IPaddr netmask)
-    {
+    {        
 	try{
-	    // XXX robert do this beyatch do it do it do it
+            logger.debug( "enabling nat as requested by setup wizard: " + address + "/" + netmask );
+
+            NetworkSpacesSettings newSettings = getNetworkSettings();
+            
+            List<NetworkSpace> networkSpaceList = newSettings.getNetworkSpaceList();
+
+            List<IPNetworkRule> networkList = new LinkedList<IPNetworkRule>();
+
+            networkList.add( IPNetworkRule.makeInstance( address, netmask ));
+
+            NetworkSpace primary = networkSpaceList.get( 0 );
+            NetworkSpace natSpace = null;
+            
+            if ( networkSpaceList.size() == 1 ) { 
+                /* Only one space, have to create the second space */
+                
+                /* Space is enabled, dhcp is disabled, traffic is forward, nat is enabled.
+                 * nat address is null, dmz is all disabled. */
+                natSpace = new NetworkSpace( true, networkList,
+                                             false, true, NetworkSpace.DEFAULT_MTU, true, 
+                                             null, false, false, NetworkUtil.EMPTY_IPADDR );
+                networkSpaceList.add( natSpace );
+            } else {
+                natSpace = networkSpaceList.get( 1 );
+            }
+            
+            /* Disable the nat address, and set the nat space */
+            natSpace.setName( NetworkUtil.DEFAULT_SPACE_NAME_NAT );
+            natSpace.setIsNatEnabled( true );
+            natSpace.setNetworkList( networkList );
+            natSpace.setNatAddress( null );
+            natSpace.setNatSpace( primary );
+
+            primary.setNatAddress( null );
+            primary.setNatSpace( null );
+            primary.setIsNatEnabled( false );
+            
+            List<Interface> interfaceList = newSettings.getInterfaceList();
+            boolean foundInternal = false;
+            for ( Interface intf : interfaceList ) { 
+                if ( intf.getArgonIntf() == IntfConstants.INTERNAL_INTF ) {
+                    intf.setNetworkSpace( natSpace );
+                    foundInternal = true;
+                } else {
+                    intf.setNetworkSpace( primary );
+                }
+            }
+
+            if ( !foundInternal ) {
+                logger.warn( "Unable to find internal interface in list, creating a new interface list" );
+                interfaceList = new LinkedList<Interface>();
+
+                byte argonIntfArray[] = IntfConverter.getInstance().argonIntfArray();
+                Arrays.sort( argonIntfArray );
+                for ( byte argonIntf : argonIntfArray ) {
+                    /* The VPN interface doesn't belong to a network space */
+                    if ( argonIntf == IntfConstants.VPN_INTF ) continue;
+                    
+                    /* Add each interface to the list */
+                    Interface intf =  new Interface( argonIntf, EthernetMedia.AUTO_NEGOTIATE, true );
+                    intf.setName( IntfConstants.toName( argonIntf ));
+                    if ( argonIntf == IntfConstants.INTERNAL_INTF ) {
+                        intf.setNetworkSpace( natSpace );
+                    } else {
+                        intf.setNetworkSpace( primary );
+                    }
+                    
+                    interfaceList.add( intf );
+                }
+            }
+            newSettings.setInterfaceList( interfaceList );
+            newSettings.setNetworkSpaceList( networkSpaceList );
+            
+            setNetworkSettings( newSettings );
 	}
 	catch(Exception e){
-	    logger.warn( "Error setting up NAT in wizard", e );
+	    logger.error( "Error setting up NAT in wizard", e );
 	}
     }
 
     public void setWizardNatDisabled()
     {
 	try{
+            logger.debug( "disabling nat as requested by setup wizard: " );
 	    TransformManager transformManager = MvvmContextFactory.context().transformManager();
 	    List<Tid> tidList = transformManager.transformInstances("nat-transform");
 	    if( tidList != null ){

@@ -12,6 +12,7 @@
 package com.metavize.mvvm.networking;
 
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.ParseException;
 
 public interface RemoteSettings
 {
@@ -87,7 +88,8 @@ public interface RemoteSettings
     /** @return the public url for the box, this is the address (may be hostname or ip address) */
     public String getPublicAddress();
 
-    public void setPublicAddress( String newValue );
+    /* Set the public address as a string */
+    public void setPublicAddress( String newValue ) throws ParseException;
 
     /** @return the public url for the box, this is the address (may be hostname or ip address) */
     public IPaddr getPublicIPaddr();

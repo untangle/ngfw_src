@@ -20,6 +20,7 @@ import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.Equivalence;
 import com.metavize.mvvm.tran.Validatable;
 import com.metavize.mvvm.tran.ValidateException;
+import com.metavize.mvvm.tran.ParseException;
 
 public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equivalence
 {
@@ -34,7 +35,7 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
     /* Post configuration script is empty */
     public static final String DEF_POST_CONFIGURATION = "";
     
-    public static final int DEF_HTTPS_PORT = 443;
+    public static final int DEF_HTTPS_PORT = NetworkUtil.DEF_HTTPS_PORT;
 
     /**
      * True if SSH remote debugging is enabled.
@@ -62,9 +63,8 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
     
     private String hostname = NetworkUtil.DEFAULT_HOSTNAME;
     private boolean isHostnamePublic = false;
-    private String publicAddress;
     private IPaddr publicIPaddr;
-    private int publicPort;
+    private int publicPort = -1;
     
     private int httpsPort = DEF_HTTPS_PORT;
 
@@ -246,12 +246,12 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
     /** @return the public url for the box, this is the address (may be hostname or ip address) */
     public String getPublicAddress()
     {
-        return this.publicAddress;
+        return NetworkUtil.getInstance().generatePublicAddress( getPublicIPaddr(), getPublicPort());
     }
 
-    public void setPublicAddress( String newValue )
+    public void setPublicAddress( String newValue ) throws ParseException
     {
-        this.publicAddress = newValue;
+        NetworkUtil.getInstance().parsePublicAddress( this, newValue );
     }
 
     /** @return the public url for the box, this is the address (may be hostname or ip address) */
@@ -268,18 +268,21 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
     /** @return the public url for the box, this is the address (may be hostname or ip address) */
     public int getPublicPort()
     {
+        if ( this.publicPort < 0 || this.publicPort > 0xFFFF ) this.publicPort = DEF_HTTPS_PORT;
+
         return this.publicPort;
     }
 
     public void setPublicPort( int newValue )
     {
+        if ( newValue < 0 || newValue > 0xFFFF ) newValue = DEF_HTTPS_PORT;
         this.publicPort = newValue;
     }
 
     /* Return true if the current settings have a public address */
     public boolean hasPublicAddress()
     {
-        return (this.publicAddress != null ) && (this.publicAddress.length() > 0 );
+        return (( this.publicIPaddr != null ) &&  !this.publicIPaddr.isEmpty());
     }
 
     @Override
