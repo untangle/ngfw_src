@@ -53,7 +53,11 @@ public class InitialSetupWizard extends MWizardJDialog {
     }
     
     protected void wizardFinishedAbnormal(int currentPage){
-			new MOneButtonJDialog(this, MESSAGE_DIALOG_TITLE, MESSAGE_NOT_FINISHED);
+	
+	MTwoButtonJDialog dialog = MTwoButtonJDialog.factory(this, "Setup Wizard", "If you exit now, some of your settings may not be saved properly.  You should continue, if possible.", "Setup Wizard Warning", "Warning");
+	
+	if( dialog.isProceeding() )
+	    super.wizardFinishedAbnormal(currentPage);
 			/*
         if( currentPage <= 3 ){ // NOT REGISTERED, MUST DO WIZARD AGAIN
             new MOneButtonJDialog(this, MESSAGE_DIALOG_TITLE, MESSAGE_NOT_REGISTERED);
