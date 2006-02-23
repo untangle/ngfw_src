@@ -242,8 +242,11 @@ public class NetworkManagerImpl implements NetworkManager
         if ( logger.isDebugEnabled()) logger.debug( "Loaded remote settings: " + this.remote );
 
         /* Have to do this too, because the hostname may have changed */
-        updateServicesSettings();
-
+        try {
+            updateServicesSettings();
+        } catch ( Exception e ) {
+            logger.warn( "Error updating services settings, continuing", e );
+        }
 
         callRemoteListeners();
     }
@@ -562,7 +565,13 @@ public class NetworkManagerImpl implements NetworkManager
 
     private void updateServicesSettings() throws NetworkException
     {
+        if ( this.servicesSettings == null || this.networkSettings == null ) {
+            logger.info( "Ignoring services settings update, null settings" );
+            return;
+        }
+        
         logger.debug( "Updating the services settings, network settings changed" );
+
         /* Update the services settings with the new addresses from network settings, and then
          * reload the services. */
         this.servicesSettings = 
@@ -616,6 +625,11 @@ public class NetworkManagerImpl implements NetworkManager
     /* Remote settings */
     private void callRemoteListeners()
     {
+        if ( this.remote == null ) {
+            logger.info( "null remote settings, not calling listeners" );
+            return;
+        }
+
         for ( RemoteSettingsListener listener : this.remoteListeners ) {
             try {
                 listener.event( this.remote );

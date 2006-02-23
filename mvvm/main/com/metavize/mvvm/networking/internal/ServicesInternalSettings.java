@@ -251,6 +251,9 @@ public class ServicesInternalSettings
                       IPaddr defaultRoute, IPaddr netmask, List<IPaddr> dnsServerList,
                       String interfaceName, IPaddr serviceAddress )
     {
+        /* If the previous server settings are null, then return new null settings */
+        if ( server == null ) return null;
+
         boolean isDhcpEnabled   = server.getIsDhcpEnabled();
         IPaddr dhcpStartAddress = server.getDhcpStartAddress();
         IPaddr dhcpEndAddress   = server.getDhcpEndAddress();

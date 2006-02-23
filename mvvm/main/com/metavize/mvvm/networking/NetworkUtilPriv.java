@@ -621,7 +621,7 @@ class NetworkUtilPriv extends NetworkUtil
 
         /* Otherwise return the primary address of the primary space and the HTTPS port */
         if ( primaryAddress == null ) {
-            logger.warn( "Network settings are unitialized, using hostname as fallback" );
+            logger.warn( "Network settings are unitialized, using hostname as fallback for public address" );
             if ( hostname == null || ( hostname.trim().length() == 0 )) return NetworkUtil.DEFAULT_HOSTNAME;
             else return hostname;
         } else {
