@@ -399,13 +399,18 @@ class OpenVpnManager
             sw.appendVariable( FLAG_CLI_IFCONFIG, "" + localEndpoint + " " + remoteEndpoint );
 
             /*
-              //This has been commented-out until Bug1228 is fixed
-
-              if(client.getGroup().isUseDNS()) {
-                String dnsServerName = networkSpaces.getEffectiveDNSStuff();//TO BE WRITTEN BY BUG 1228
-                sw.appendVariable( "push", "dhcp-option DNS " + dnsServerName);
-              }
+            -(from rbscott to bscott, 2/23/06)-
+            
+            on the drive home i realized that using the address of the box is  actually a poor choice for vpn.  the problem is, if the user doesn't  export that host, then the client will not be able to see it, we  could auto export it, but that is a little naughty in my mind.  A  better choice is to actually just use the address of the vpn server  for the group that the client is in.  This is always visible to all  clients, because it is their routing entry into the VPN.
+            
+            To get this value, get the VpnGroup the client is in, and then call  getAddress on it.  This will give you the address that all of the  clients in that group can use. 
             */
+            
+            if(client.getGroup().isUseDNS()) {
+              String dnsServerName = client.getGroup().getAddress().toString();
+              sw.appendVariable( "push", "dhcp-option DNS " + dnsServerName);
+            }
+
 
             sw.writeFile( OPENVPN_CCD_DIR + "/" + name );
         }
