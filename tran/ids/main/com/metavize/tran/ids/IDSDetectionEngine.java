@@ -125,8 +125,7 @@ public class IDSDetectionEngine {
         } catch (ParseException e) {
             log.warn("Could not parse rule: ", e);
         } catch (Exception e) {
-            log.error("Some sort of really bad exception: ", e);
-            log.error("For rule: " + rule);
+            log.error("Exception updating rule " + rule.getSid(), e);
         }
     }
 

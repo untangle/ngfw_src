@@ -80,7 +80,8 @@ public abstract class IDSOption {
                 optionConstructor = optionDefinition.getConstructor(twoArgsClass);
                 option = (IDSOption) createObject(optionConstructor, twoOptionArgs);
             }
-            option.negationFlag = flag;
+            if (option != null)
+                option.negationFlag = flag;
         } catch (ClassNotFoundException e) {
             log.info("Could not load option(ClassNotFound): " + optionName + ", ignoring rule: " + signature.rule().getText());
             signature.remove(true);
@@ -101,7 +102,7 @@ public abstract class IDSOption {
         } catch (IllegalArgumentException e) {
             log.error("Could not create object(IllegalArgumentException): ", e);
         } catch (InvocationTargetException e) {
-            log.error("Could not create object(InvocationTargetException): ", e);
+            log.error("Could not create object(InvocationTargetException): ", e.getTargetException());
         }
         return object;
     }
