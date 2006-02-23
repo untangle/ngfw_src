@@ -415,13 +415,16 @@ class DhcpManager
         if ( hostname.indexOf( "." ) > 0 ) {
             String unqualified = hostname.substring( 0, hostname.indexOf( "." ));
             hostname = unqualified + " " + hostname;
-        }
-        
-        sb.append( "127.0.0.1\t" + hostname + "\n" );
+        }               
 
         IPaddr servicesAddress = settings.getServiceAddress();
         if ( servicesAddress != null && !servicesAddress.isEmpty()) {
             sb.append( servicesAddress.toString() + "\t" + hostname + "\n" );
+        } else {
+            // Having 127.0.0.1 is problematic because dnsmasq will serve 127.0.0.1
+            // and the server adddress as its address.
+            // the address
+            sb.append( "127.0.0.1\t" + hostname + "\n" );
         }
         sb.append( "\n" );
 

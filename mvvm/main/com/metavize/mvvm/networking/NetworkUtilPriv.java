@@ -475,7 +475,8 @@ class NetworkUtilPriv extends NetworkUtil
         }
 
         return ServicesInternalSettings.
-            makeInstance( services, defaultRoute, netmask, dnsServerList, interfaceName, primary.getNetwork());
+            makeInstance( settings.getIsEnabled(), services, defaultRoute, netmask, dnsServerList, 
+                          interfaceName, primary.getNetwork());
 
     }
     

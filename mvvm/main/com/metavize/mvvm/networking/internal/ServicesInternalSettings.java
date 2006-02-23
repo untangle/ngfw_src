@@ -247,7 +247,7 @@ public class ServicesInternalSettings
     }
 
     public static ServicesInternalSettings 
-        makeInstance( ServicesInternalSettings server,
+        makeInstance( boolean isEnabled, ServicesInternalSettings server,
                       IPaddr defaultRoute, IPaddr netmask, List<IPaddr> dnsServerList,
                       String interfaceName, IPaddr serviceAddress )
     {
@@ -274,7 +274,7 @@ public class ServicesInternalSettings
 
         if ( serviceAddress == null ) serviceAddress = NetworkUtil.BOGUS_DHCP_ADDRESS;
 
-        return new ServicesInternalSettings( server.isEnabled, 
+        return new ServicesInternalSettings( isEnabled, 
                                              isDhcpEnabled, dhcpStartAddress, dhcpEndAddress,
                                              leaseTime, leaseList, isDnsEnabled, local, hostList,
                                              defaultRoute, netmask, dnsServerList, interfaceName,

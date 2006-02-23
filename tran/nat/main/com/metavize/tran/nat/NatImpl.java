@@ -301,9 +301,6 @@ public class NatImpl extends AbstractTransform implements Nat
             SetupState state = settings.getSetupState();
             if ( state.equals( SetupState.NETWORK_SHARING )) {
                 logger.info( "Settings are in the deprecated mode, upgrading settings" );
-
-                /* Change to basic mode */
-                settings.setSetupState( SetupState.BASIC );
                 
                 /* Save the new Settings */
                 try {
@@ -312,23 +309,36 @@ public class NatImpl extends AbstractTransform implements Nat
                     logger.error( "Unable to set upgrade nat settings", e );
                 }
 
-                /* Save the settings to the database */
-                DataSaver<NatSettingsImpl> dataSaver = new DataSaver<NatSettingsImpl>( getTransformContext());
-                dataSaver.saveData( settings );
-
                 /* Indicate to enable network spaces when then devices powers on */
                 isUpgrade = true;
             } else if ( state.equals( SetupState.WIZARD )) {
                 logger.info( "Settings are not setup yet, using defaults" );
-                try { 
-                    setNatSettings( this.settingsManager.getDefaultSettings( this.getTid()));
+                try {                     
+                    /* Get the default settings, save them, and indicate
+                     * to turn on network spaces at startup. */
+                    NatBasicSettings defaultSettings = 
+                        this.settingsManager.getDefaultSettings( this.getTid());
+                    setNatSettings( settings );
                 } catch ( Exception e ) {
                     logger.error( "Unable to set wizard nat settings", e );
                 }
+                
+                /* Indicate to enable network spaces when then devices powers on */
+                isUpgrade = true;
             }  else {
                 logger.info( "Settings are in [" + settings.getSetupState() +"]  mode, ignoring." );
-                             
+                
             }
+            
+            /* If upgrading change the setting to basic mode, this just means they
+             * won't be upgraded again.*/
+            if ( isUpgrade ) {
+                /* Change to basic mode */
+                settings.setSetupState( SetupState.BASIC );
+                DataSaver<NatSettingsImpl> dataSaver = new DataSaver<NatSettingsImpl>( getTransformContext());
+                dataSaver.saveData( settings );
+            }
+
         }
     }
 
@@ -342,7 +352,7 @@ public class NatImpl extends AbstractTransform implements Nat
 
         /* Enable the network settings */
         if ( state.equals( MvvmLocalContext.MvvmState.RUNNING ) || isUpgrade ) {
-            logger.debug( "enabling network spaces settings because user powered on nat." );
+            logger.debug( "enabling network spaces settings because user powered on nat or upgrade." );
             
             try {
                 networkManager.enableNetworkSpaces();
