@@ -16,7 +16,7 @@ import com.metavize.mvvm.logging.SimpleEventFilter;
 
 public class BoxBackupFilterAllFilter implements SimpleEventFilter<BoxBackupEvent>
 {
-    private static final RepositoryDesc REPO_DESC = new RepositoryDesc("Protocol Events");
+    private static final RepositoryDesc REPO_DESC = new RepositoryDesc("Backup Events");
 
     private static final String WARM_QUERY
         = "FROM BoxBackupEvent evt ORDER BY evt.timeStamp DESC";
