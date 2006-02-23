@@ -151,13 +151,18 @@ public class SmtpNotifyMessageGenerator
       return false;
     }
 
-    //TODO bscott Fix this w/ a real property
+    //
+    String fromAsString = "postmaster@local.domain";
+    if(sender.getMailSettings() != null &&
+      sender.getMailSettings().getFromAddress() != null) {
+      fromAsString = sender.getMailSettings().getFromAddress();
+    }
     EmailAddress from = null;
     try {
-      from = new EmailAddress("postmaster@local.domain");
+      from = new EmailAddress(fromAsString);
     }
     catch(Exception ex) {
-      m_logger.error("Error parsing a fixed address ?!?", ex);
+      m_logger.error("Error parsing address \"" + fromAsString + "\"", ex);
       return false;
     }
 
