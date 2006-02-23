@@ -44,8 +44,8 @@ public class InitialSetupWizard extends MWizardJDialog {
         addWizardPageJPanel(new InitialSetupLicenseJPanel(),         "2. License Agreement", false, false);
         addWizardPageJPanel(new InitialSetupContactJPanel(),         "3. Contact Information", false, false);
         addWizardPageJPanel(new InitialSetupKeyJPanel(),             "4. Activation Key", false, true);
-        addWizardPageJPanel(new InitialSetupRoutingJPanel(),         "5. Routing", true, true);
-        addWizardPageJPanel(new InitialSetupNetworkJPanel(),         "6. External Address", false, true);
+        addWizardPageJPanel(new InitialSetupNetworkJPanel(),         "6. External Address", true, true);
+        addWizardPageJPanel(new InitialSetupRoutingJPanel(),         "5. Routing", false, true);
         addWizardPageJPanel(new InitialSetupConnectivityJPanel(),    "7. Connectivity Test", false, true);
         addWizardPageJPanel(new InitialSetupEmailJPanel(),           "8. Email Settings", false, true);
         addWizardPageJPanel(new InitialSetupPasswordJPanel(),        "9. Admin Account & Time", false, true);        
