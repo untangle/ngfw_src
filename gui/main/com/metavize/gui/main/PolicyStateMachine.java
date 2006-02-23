@@ -1443,12 +1443,17 @@ public class PolicyStateMachine implements ActionListener {
         SwingUtilities.invokeLater( new Runnable() { public void run() {
             MTransformJButton focusMTransformJButton;
             ButtonKey buttonKey = new ButtonKey(mTransformJButton);
-            if( mTransformJButton.getMackageDesc().isCore() ){
-                focusMTransformJButton = coreToolboxMap.get(buttonKey);
+            if( mTransformJButton.getMackageDesc().isUtil() || mTransformJButton.getMackageDesc().isService() ){
+                focusMTransformJButton = utilToolboxMap.get(buttonKey);
             }
-            else{
+            else if( mTransformJButton.getMackageDesc().isSecurity() ){
                 focusMTransformJButton = policyToolboxMap.get(selectedPolicy).get(buttonKey);
             }
+            else if( mTransformJButton.getMackageDesc().isCore() ){
+                focusMTransformJButton = coreToolboxMap.get(buttonKey);
+            }
+	    else
+		focusMTransformJButton = null;
             actionJTabbedPane.setSelectedIndex(1);
             toolboxJScrollPane.getViewport().validate();
             Rectangle scrollRect = SwingUtilities.convertRectangle(focusMTransformJButton.getParent(),
