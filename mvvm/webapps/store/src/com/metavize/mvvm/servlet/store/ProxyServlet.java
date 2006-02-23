@@ -46,7 +46,7 @@ public class ProxyServlet extends HttpServlet
         STORE_HOST = null == s ? "store.metavize.com" : s;
         s = System.getProperty("mvvm.store.uri");
         URI_BASE = null == s ? "/" : s;
-        BASE_URL = "http://" + STORE_HOST + URI_BASE;
+        BASE_URL = "https://" + STORE_HOST + URI_BASE;
     }
 
     private final Logger logger = Logger.getLogger(getClass());
