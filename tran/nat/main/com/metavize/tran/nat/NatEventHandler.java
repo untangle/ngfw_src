@@ -95,6 +95,9 @@ class NatEventHandler extends AbstractEventHandler
     /* All of the other rules */
     /* Use an empty list rather than null */
     private List<RedirectMatcher> redirectList = new LinkedList<RedirectMatcher>();
+    
+    /* A list of all of the traffic blockers */
+    private List<TrafficForwardingBlocker> trafficBlockers = new LinkedList<TrafficForwardingBlocker>();
 
     /* tracks the open TCP ports for NAT */
     private final PortList tcpPortList;
@@ -143,7 +146,18 @@ class NatEventHandler extends AbstractEventHandler
         NatAttachment attachment = new NatAttachment();
 
         request.attach( attachment );
+        
+        for ( TrafficForwardingBlocker blocker : trafficBlockers ) {
+            if ( blocker.isMatch( request )) {
 
+                transform.incrementCount( BLOCK_COUNTER ); // BLOCK COUNTER
+                
+                /* XXX How should the session be rejected */
+                request.rejectSilently();
+                return;
+            }
+        }
+        
         /* Check for NAT, Redirects or DMZ */
         try {
             if (logger.isInfoEnabled())
@@ -186,7 +200,7 @@ class NatEventHandler extends AbstractEventHandler
             /* If nat is on, and this session wasn't natted, redirected or dmzed, it
              * must be rejected */
             if ( isNatEnabled ) {
-                /* !!!!  This must get more interesting */
+                /* !!!!!!  This must get more interesting */
                 /* Increment the block counter */
                 transform.incrementCount( BLOCK_COUNTER ); // BLOCK COUNTER
 
@@ -297,12 +311,23 @@ class NatEventHandler extends AbstractEventHandler
         /* Create a list of the DMZ host matchers */
         List<DmzMatcher> dmzHostMatchers = new LinkedList<DmzMatcher>();
 
+        /* Create a list to block traffic from being forwarded */
+        List<TrafficForwardingBlocker> trafficBlockers = new LinkedList<TrafficForwardingBlocker>();
+
         /* First deal with all of the NATd spaces */
         for ( NetworkSpaceInternal space : settings.getNetworkSpaceList()) {
             /* When settings are disabled, ignore everything but the primary space or
              * if the space is just disabled. */
             if (( !settings.getIsEnabled() && space.getIndex() != 0 ) || !space.getIsEnabled()) continue;
             
+            if ( !space.getIsTrafficForwarded()) {
+                try {
+                    trafficBlockers.add( TrafficForwardingBlocker.makeInstance( space ));
+                } catch ( TransformException e ) {
+                    logger.warn( "unable to create a traffic blocker", e );
+                }
+            }
+
             if ( space.getIsDmzHostEnabled()) {
                 logger.debug( "Inserting new dmz host matcher: " + space );
                 dmzHostMatchers.add( DmzMatcher.makeDmzMatcher( space, settings ));
@@ -339,28 +364,12 @@ class NatEventHandler extends AbstractEventHandler
         
         /* Last add the NAT overrides */
         for ( NatMatcher natMatcher : natMatchers ) overrideList.add( natMatcher.getInterfaceRedirect());
-
-        /* These overrides have to go after the rules */
-        
-//         if ( settings.getDmzEnabled() || settings.getNatEnabled()) {
-//             /* Create a new redirect to redirect all traffic destined
-//              * to the outside interface to the inside.  This handles sessions
-//              * both sessions that are managed for FTP and sessions that are for
-//              * the DMZ. */
-//             InterfaceRedirect redirect =
-//                 new InterfaceStaticRedirect( ProtocolMatcher.MATCHER_ALL,
-//                                              IntfMatcher.getNotInside(), IntfMatcher.getAll(),
-//                                              IPMatcher.MATCHER_ALL, localHostMatcher,
-//                                              PortMatcher.MATCHER_ALL, PortMatcher.MATCHER_ALL,
-//                                              IntfConstants.INTERNAL_INTF );
-
-//             overrideList.add( redirect );
-//         }
         
         /* Set the redirect list at the end(avoid concurrency issues) */
         this.redirectList = redirectMatcherList;
         this.natMatchers     = natMatchers;
         this.dmzHostMatchers = dmzHostMatchers;
+        this.trafficBlockers = trafficBlockers;
         argonManager.setInterfaceOverrideList( overrideList );
         networkManager.subscribeLocalOutside( true );
     }
@@ -639,6 +648,47 @@ class NatEventHandler extends AbstractEventHandler
     }
 }
 
+class TrafficForwardingBlocker
+{
+    IntfMatcher client;
+    IntfMatcher server;
+    
+    TrafficForwardingBlocker( IntfMatcher client, IntfMatcher server )
+    {
+        this.client = client;
+        this.server = server;
+    }
+
+    boolean isMatch( IPNewSessionRequest request )
+    {
+        /* This is bi-directional */
+        return ( this.client.isMatch( request.clientIntf()) && this.server.isMatch( request.serverIntf()) ||
+                 this.client.isMatch( request.serverIntf()) && this.server.isMatch( request.clientIntf()));
+    }
+    
+    static TrafficForwardingBlocker makeInstance( NetworkSpaceInternal space ) throws TransformException
+    {
+        List<InterfaceInternal> interfaceList = space.getInterfaceList();
+        IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
+        
+        byte intfArray[] = new byte[interfaceList.size()];
+        
+        int c = 0;
+        for ( InterfaceInternal intf : interfaceList ) intfArray[c++] = intf.getArgonIntf();
+
+        IntfMatcher clientIntfMatcher, serverIntfMatcher;
+
+        try {
+            clientIntfMatcher = imf.makeSetMatcher( intfArray );
+            serverIntfMatcher = imf.makeInverseMatcher( intfArray );
+        } catch ( ParseException e ) {
+            throw new TransformException( "Unable to create the interface matchers", e );
+        }
+        
+        return new TrafficForwardingBlocker( clientIntfMatcher, serverIntfMatcher );
+    }
+}
+
 class NatMatcher
 {
     private final RedirectMatcher matcher;
@@ -763,11 +813,6 @@ class DmzMatcher
     
     boolean isMatch( IPNewSessionRequest request, Protocol protocol )
     {
-        System.out.println( "" + matcher.isEnabled() + "," + matcher.isMatchProtocol( protocol ));
-        System.out.println( "address" + matcher.isMatchAddress( request.clientAddr(), request.serverAddr()));
-        System.out.println( "port" + matcher.isMatchPort( request.clientPort(), request.serverPort()));
-        System.out.println( "intf" + matcher.isMatchIntf( request.clientIntf(), request.serverIntf()));
-
         return matcher.isMatch( request, protocol );
     }
 

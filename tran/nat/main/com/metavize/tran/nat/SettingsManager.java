@@ -385,7 +385,7 @@ class SettingsManager
             
             RedirectRule dmz = new RedirectRule( true, ProtocolMatcher.MATCHER_ALL,
                                                  imf.getExternalMatcher(), imf.getAllMatcher(),
-                                                 ipmf.getAllMatcher(), ipmf.makeSingleMatcher( local ),
+                                                 ipmf.getAllMatcher(), ipmf.getLocalMatcher(),
                                                  pmf.getAllMatcher(), pmf.getAllMatcher(),
                                                  true, primary.getDmzHost(), -1 );
 
@@ -448,15 +448,15 @@ class SettingsManager
             settings.setDmzAddress( NatUtil.DEFAULT_DMZ_ADDRESS );
             
             // !!!! Need the local matcher
-//            RedirectRule tmp = new RedirectRule( false, ProtocolMatcher.MATCHER_ALL,
-//                                                  imf.getExternalMatcher(), imf.getAllMatcher(),
-//                                                  ipmf.getAllMatcher(), ipmf.getLocalMatcher(),
-//                                                  pmf.getAllMatcher(), pmf.makeSingleMatcher( 8080 ),
-//                                                  true, IPaddr.parse( "192.168.1.16" ), 80 );
-//             tmp.setDescription( "Redirect incoming traffic to EdgeGuard port 8080 to port 80 on 192.168.1.16" );
-//             tmp.setLog( true );
+            RedirectRule tmp = new RedirectRule( false, ProtocolMatcher.MATCHER_ALL,
+                                                 imf.getExternalMatcher(), imf.getAllMatcher(),
+                                                 ipmf.getAllMatcher(), ipmf.getLocalMatcher(),
+                                                 pmf.getAllMatcher(), pmf.makeSingleMatcher( 8080 ),
+                                                 true, IPaddr.parse( "192.168.1.16" ), 80 );
+            tmp.setDescription( "Redirect incoming traffic to EdgeGuard port 8080 to port 80 on 192.168.1.16" );
+            tmp.setLog( true );
             
-//             redirectList.add( tmp );
+            redirectList.add( tmp );
 
             RedirectRule tmp = new RedirectRule( false, ProtocolMatcher.MATCHER_ALL,
                                     imf.getExternalMatcher(), imf.getAllMatcher(),
