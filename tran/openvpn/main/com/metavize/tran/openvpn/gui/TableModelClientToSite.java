@@ -88,7 +88,6 @@ public class TableModelClientToSite extends MSortedTableModel<Object>{
             newElem = (VpnClient) rowVector.elementAt(7);
 	    newElem.setLive( (Boolean) rowVector.elementAt(2) );
 	    
-	    KeyButtonRunnable keyButtonRunnable = (KeyButtonRunnable) rowVector.elementAt(5);
 	    String rowState = (String) rowVector.elementAt( getStateModelIndex() );
 	    String proposedName = (String) rowVector.elementAt(3);
 	    if( rowState.equals(ROW_CHANGED) && !proposedName.equals(newElem.getName()) ){
