@@ -77,6 +77,7 @@ class RemoteAdminTableModel extends MSortedTableModel<RemoteCompoundSettings> {
     public void prevalidate(RemoteCompoundSettings remoteCompoundSettings, Vector<Vector> tableVector) throws Exception {
         loginHashtable.clear();
 	boolean oneValidAccount = false;
+	boolean oneWritableAccount = false;
         int rowIndex = 0;
 
         // go through all the rows and perform some tests
@@ -86,6 +87,7 @@ class RemoteAdminTableModel extends MSortedTableModel<RemoteCompoundSettings> {
             char[] newPasswd = ((MPasswordField)tempUser.elementAt(5)).getPassword();
             char[] newConfPasswd  = ((MPasswordField)tempUser.elementAt(6)).getPassword();
             char[] proceedPasswd  = ((MPasswordField)tempUser.elementAt(7)).getPassword();
+	    boolean readOnly = (Boolean) tempUser.elementAt(8);
             String loginName = (String) tempUser.elementAt(3);
 	    String state = (String) tempUser.elementAt(0);
 
@@ -119,7 +121,8 @@ class RemoteAdminTableModel extends MSortedTableModel<RemoteCompoundSettings> {
 	    else{
 		// record if the row was not removed, that way we know we had at least one valid account
                 oneValidAccount = true;
-
+		if( !readOnly )
+		    oneWritableAccount = true;
 	    }
 
             // verify that all of the original and proceed passwords are the same for any non-saved (changed) row
@@ -140,6 +143,10 @@ class RemoteAdminTableModel extends MSortedTableModel<RemoteCompoundSettings> {
 	    throw new Exception("There must always be at least one valid account.");
         }
 
+	// verify that there was at least one non-read-only account
+	if(!oneWritableAccount){
+	    throw new Exception("There must always be at least one non-read-only (writable) account.");
+	}
     }
     
     public void generateSettings(RemoteCompoundSettings remoteCompoundSettings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
