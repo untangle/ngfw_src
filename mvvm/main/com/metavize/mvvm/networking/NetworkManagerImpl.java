@@ -241,6 +241,10 @@ public class NetworkManagerImpl implements NetworkManager
         
         if ( logger.isDebugEnabled()) logger.debug( "Loaded remote settings: " + this.remote );
 
+        /* Have to do this too, because the hostname may have changed */
+        updateServicesSettings();
+
+
         callRemoteListeners();
     }
 
@@ -508,6 +512,9 @@ public class NetworkManagerImpl implements NetworkManager
             this.networkSettings = NetworkUtilPriv.getPrivInstance().updateDhcpAddresses( previous );
 
             updateRemoteSettings();
+
+            /* Have to do this too, because the ip address may have changed */
+            updateServicesSettings();
             
             callNetworkListeners();
         } catch ( Exception e ) {
@@ -552,6 +559,23 @@ public class NetworkManagerImpl implements NetworkManager
 
         setRemoteSettings( this.remote.toSettings());
     }
+
+    private void updateServicesSettings() throws NetworkException
+    {
+        logger.debug( "Updating the services settings, network settings changed" );
+        /* Update the services settings with the new addresses from network settings, and then
+         * reload the services. */
+        this.servicesSettings = 
+            NetworkUtilPriv.getPrivInstance().update( this.networkSettings, this.servicesSettings );
+
+        try {
+            this.dhcpManager.configure( this.servicesSettings );
+            this.dhcpManager.startDnsMasq();
+        } catch ( NetworkException e ) {
+            logger.error( "Unable to reconfigure dhcp manager, continuing.", e );
+        }
+    }
+
     
     public void isShutdown()
     {

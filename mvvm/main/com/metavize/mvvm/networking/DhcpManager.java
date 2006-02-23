@@ -46,6 +46,7 @@ class DhcpManager
     private static final String FLAG_DHCP_HOST        = "dhcp-host";
     private static final String FLAG_DHCP_OPTION      = "dhcp-option";
     private static final String FLAG_DNS_LOCAL_DOMAIN = "domain";
+    private static final String FLAG_DNS_LOCALIZE     = "localise-queries";
 
     private static final String FLAG_DHCP_GATEWAY     = "3";
     private static final String FLAG_DHCP_NETMASK     = "1";
@@ -387,7 +388,10 @@ class DhcpManager
                 comment( sb, "Local domain name is empty, using " + NetworkUtil.LOCAL_DOMAIN_DEFAULT );
                 localDomain = NetworkUtil.LOCAL_DOMAIN_DEFAULT;
             }
-
+            
+            /* This flag is used to return address based on the subnet */
+            sb.append( FLAG_DNS_LOCALIZE + "\n" );
+            
             sb.append( FLAG_DNS_LOCAL_DOMAIN + "=" + localDomain + "\n\n" );
         }
 
@@ -406,7 +410,19 @@ class DhcpManager
         }
 
         String hostname = getHostName();
-        sb.append( "127.0.0.1\t" + hostname );
+
+        /* Add both the unqualified and the qualified domain */
+        if ( hostname.indexOf( "." ) > 0 ) {
+            String unqualified = hostname.substring( 0, hostname.indexOf( "." ));
+            hostname = unqualified + " " + hostname;
+        }
+        
+        sb.append( "127.0.0.1\t" + hostname + "\n" );
+
+        IPaddr servicesAddress = settings.getServiceAddress();
+        if ( servicesAddress != null && !servicesAddress.isEmpty()) {
+            sb.append( servicesAddress.toString() + "\t" + hostname + "\n" );
+        }
         sb.append( "\n" );
 
         if ( settings.getIsDnsEnabled()) {

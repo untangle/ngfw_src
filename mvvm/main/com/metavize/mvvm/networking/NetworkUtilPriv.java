@@ -385,7 +385,7 @@ class NetworkUtilPriv extends NetworkUtil
 
         return ServicesInternalSettings.
             makeInstance( settings.getIsEnabled(), dhcp, dns, defaultRoute, netmask, dnsServerList, 
-                          interfaceName );
+                          interfaceName, primary.getNetwork());
     }
 
     /** Used when update address is called.  This only updates the dhcp address */
@@ -447,7 +447,7 @@ class NetworkUtilPriv extends NetworkUtil
 
     /* Used when the network settings change, but the dns masq settings haven't */
     ServicesInternalSettings update( NetworkSpacesInternalSettings settings, 
-                                     ServicesInternalSettings server )
+                                     ServicesInternalSettings services )
     {
         NetworkSpaceInternal serviceSpace = settings.getServiceSpace();
 
@@ -475,7 +475,7 @@ class NetworkUtilPriv extends NetworkUtil
         }
 
         return ServicesInternalSettings.
-            makeInstance( server, defaultRoute, netmask, dnsServerList, interfaceName );
+            makeInstance( services, defaultRoute, netmask, dnsServerList, interfaceName, primary.getNetwork());
 
     }
     
