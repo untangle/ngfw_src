@@ -448,12 +448,17 @@ class ToolboxManagerImpl implements ToolboxManager
             } else {
                 instList.add(md);
 
-                String instVer = md.getInstalledVersion();
-                String availVer = md.getAvailableVersion();
-                if (instVer.equals(availVer)) {
+                if (md.getName().endsWith("-storeitem")) {
+                    // store items always up to date
                     curList.add(md);
                 } else {
-                    upList.add(md);
+                    String instVer = md.getInstalledVersion();
+                    String availVer = md.getAvailableVersion();
+                    if (instVer.equals(availVer)) {
+                        curList.add(md);
+                    } else {
+                        upList.add(md);
+                    }
                 }
             }
         }
