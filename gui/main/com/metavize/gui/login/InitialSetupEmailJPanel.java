@@ -152,7 +152,7 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
 
                 jPanel1.setOpaque(false);
                 jLabel8.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel8.setText("Hostname:");
+                jLabel8.setText("SMTP Email Server:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;

@@ -20,6 +20,8 @@ import java.awt.Color;
 
 public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
     
+    private static final String INIT_ADDRESS = "192.188.1.1";
+    private static final String INIT_NETMASK = "255.255.255.0";
 		
     public InitialSetupRoutingJPanel() {
         initComponents();
@@ -29,11 +31,15 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
 
     public void initialFocus(){
 	natEnabledJRadioButton.requestFocus();
+	addressJTextField.setText(INIT_ADDRESS);
+	netmaskJTextField.setText(INIT_NETMASK);
     }
 
     
     public static boolean getNatEnabled(){ return natEnabled; }
-    private static boolean natEnabled;
+    private static boolean natEnabled = true;
+    public static boolean getNatChanged(){ return natChanged; }
+    private static boolean natChanged = false;
     public static IPaddr getAddress(){ return natAddress; }
     private static IPaddr natAddress;
     public static IPaddr getNetmask(){ return natNetmask; }
@@ -68,6 +74,11 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
 		    return;
 		}
 
+		// CHANGED
+		if( !addressJTextField.getText().trim().equals(INIT_ADDRESS) )
+		    natChanged = true;
+		if( !netmaskJTextField.getText().trim().equals(INIT_NETMASK) )
+		    natChanged = true;
 	    }
 	}});
 
@@ -89,6 +100,7 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
                 addressJTextField = new javax.swing.JTextField();
                 netmaskJLabel = new javax.swing.JLabel();
                 netmaskJTextField = new javax.swing.JTextField();
+                jLabel4 = new javax.swing.JLabel();
 
                 setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -123,7 +135,7 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
                         }
                 });
 
-                add(natDisabledJRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 160, -1, -1));
+                add(natDisabledJRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 180, -1, -1));
 
                 staticIPJPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -136,6 +148,7 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 staticIPJPanel.add(addressJLabel, gridBagConstraints);
 
+                addressJTextField.setText("192.168.1.1");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
                 gridBagConstraints.gridy = 0;
@@ -152,6 +165,7 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 staticIPJPanel.add(netmaskJLabel, gridBagConstraints);
 
+                netmaskJTextField.setText("255.255.255.0");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
                 gridBagConstraints.gridy = 1;
@@ -160,7 +174,11 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
                 gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
                 staticIPJPanel.add(netmaskJTextField, gridBagConstraints);
 
-                add(staticIPJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 80, 240, 60));
+                add(staticIPJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 100, 240, 60));
+
+                jLabel4.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel4.setText("<html>What is EdgeGuard's address on the internal network?</html>");
+                add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 85, -1, -1));
 
         }//GEN-END:initComponents
 
@@ -185,6 +203,7 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
         public javax.swing.JTextField addressJTextField;
         private javax.swing.JLabel jLabel2;
         private javax.swing.JLabel jLabel3;
+        private javax.swing.JLabel jLabel4;
         private javax.swing.ButtonGroup natButtonGroup;
         private javax.swing.JRadioButton natDisabledJRadioButton;
         private javax.swing.JRadioButton natEnabledJRadioButton;

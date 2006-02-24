@@ -92,13 +92,20 @@ public class InitialSetupPasswordJPanel extends MWizardPageJPanel {
 			user.setClearPassword(password);
 		Util.getAdminManager().setAdminSettings(adminSettings);
 		Util.getAdminManager().setTimeZone( TimeZone.getTimeZone(timezone) );
-		if( InitialSetupRoutingJPanel.getNatEnabled() ){
-		    Util.getNetworkManager().setWizardNatEnabled(InitialSetupRoutingJPanel.getAddress(),
-								 InitialSetupRoutingJPanel.getNetmask());
+		
+		try{
+		    if( InitialSetupRoutingJPanel.getNatEnabled() ){
+			Util.getNetworkManager().setWizardNatEnabled(InitialSetupRoutingJPanel.getAddress(),
+								     InitialSetupRoutingJPanel.getNetmask());
+		    }
+		    else{
+			Util.getNetworkManager().setWizardNatDisabled();
+		    }
 		}
-		else{
-		    Util.getNetworkManager().setWizardNatDisabled();
+		catch(Exception f){
+		    Util.handleExceptionNoRestart("Normal termination:",f);
 		}
+		
 		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);
 	    }
 	    catch(Exception e){

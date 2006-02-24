@@ -196,17 +196,17 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                 dhcpEnabledRadioButton = new javax.swing.JRadioButton();
                 dhcpDisabledRadioButton = new javax.swing.JRadioButton();
                 staticIPJPanel = new javax.swing.JPanel();
-                jLabel1 = new javax.swing.JLabel();
+                dhcpIPaddrJLabel = new javax.swing.JLabel();
                 dhcpIPaddrJTextField = new javax.swing.JTextField();
-                jLabel7 = new javax.swing.JLabel();
+                dhcpNetmaskJLabel = new javax.swing.JLabel();
                 dhcpNetmaskJTextField = new javax.swing.JTextField();
-                jLabel5 = new javax.swing.JLabel();
+                dhcpRouteJLabel = new javax.swing.JLabel();
                 dhcpRouteJTextField = new javax.swing.JTextField();
-                jLabel6 = new javax.swing.JLabel();
+                dnsPrimaryJLabel = new javax.swing.JLabel();
                 dnsPrimaryJTextField = new javax.swing.JTextField();
-                jLabel8 = new javax.swing.JLabel();
+                dnsSecondaryJLabel = new javax.swing.JLabel();
                 dnsSecondaryJTextField = new javax.swing.JTextField();
-                jLabel9 = new javax.swing.JLabel();
+                optionalJLabel = new javax.swing.JLabel();
                 jSeparator1 = new javax.swing.JSeparator();
                 jLabel4 = new javax.swing.JLabel();
                 jLabel3 = new javax.swing.JLabel();
@@ -218,7 +218,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
 
                 setOpaque(false);
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html>Please specify how EdgeGuard will get its network settings.</html>");
+                jLabel2.setText("<html>How should EdgeGuard will get its external network settings?</html>");
                 add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 120, -1, -1));
 
                 buttonGroup1.add(dhcpEnabledRadioButton);
@@ -250,13 +250,13 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                 staticIPJPanel.setLayout(new java.awt.GridBagLayout());
 
                 staticIPJPanel.setOpaque(false);
-                jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel1.setText("IP Address:");
+                dhcpIPaddrJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                dhcpIPaddrJLabel.setText("IP Address:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                staticIPJPanel.add(jLabel1, gridBagConstraints);
+                staticIPJPanel.add(dhcpIPaddrJLabel, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
@@ -266,13 +266,13 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                 gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
                 staticIPJPanel.add(dhcpIPaddrJTextField, gridBagConstraints);
 
-                jLabel7.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel7.setText("Netmask:");
+                dhcpNetmaskJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                dhcpNetmaskJLabel.setText("Netmask:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 1;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                staticIPJPanel.add(jLabel7, gridBagConstraints);
+                staticIPJPanel.add(dhcpNetmaskJLabel, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
@@ -282,13 +282,13 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                 gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
                 staticIPJPanel.add(dhcpNetmaskJTextField, gridBagConstraints);
 
-                jLabel5.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel5.setText("Default Route / Gateway:");
+                dhcpRouteJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                dhcpRouteJLabel.setText("Default Route / Gateway:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 2;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                staticIPJPanel.add(jLabel5, gridBagConstraints);
+                staticIPJPanel.add(dhcpRouteJLabel, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
@@ -298,13 +298,13 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                 gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
                 staticIPJPanel.add(dhcpRouteJTextField, gridBagConstraints);
 
-                jLabel6.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel6.setText("Primary DNS:");
+                dnsPrimaryJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                dnsPrimaryJLabel.setText("Primary DNS:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 3;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                staticIPJPanel.add(jLabel6, gridBagConstraints);
+                staticIPJPanel.add(dnsPrimaryJLabel, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
@@ -314,13 +314,13 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                 gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
                 staticIPJPanel.add(dnsPrimaryJTextField, gridBagConstraints);
 
-                jLabel8.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel8.setText("Secondary DNS:");
+                dnsSecondaryJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                dnsSecondaryJLabel.setText("Secondary DNS:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 4;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                staticIPJPanel.add(jLabel8, gridBagConstraints);
+                staticIPJPanel.add(dnsSecondaryJLabel, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
@@ -330,13 +330,13 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                 gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
                 staticIPJPanel.add(dnsSecondaryJTextField, gridBagConstraints);
 
-                jLabel9.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel9.setText(" (Optional)");
+                optionalJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                optionalJLabel.setText(" (Optional)");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 2;
                 gridBagConstraints.gridy = 4;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                staticIPJPanel.add(jLabel9, gridBagConstraints);
+                staticIPJPanel.add(optionalJLabel, gridBagConstraints);
 
                 add(staticIPJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 180, 350, 130));
 
@@ -361,7 +361,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 hostnameJPanel.add(jLabel10, gridBagConstraints);
 
-                hostnameJTextField.setText("edgeguard.somedomain.com");
+                hostnameJTextField.setText("edgeguard.local.domain");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
                 gridBagConstraints.gridy = 0;
@@ -387,30 +387,36 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
         dhcpRouteJTextField.setEnabled( !enabled );
         dnsPrimaryJTextField.setEnabled( !enabled );
         dnsSecondaryJTextField.setEnabled( !enabled );
+		dhcpIPaddrJLabel.setEnabled( !enabled );
+        dhcpNetmaskJLabel.setEnabled( !enabled );
+        dhcpRouteJLabel.setEnabled( !enabled );
+        dnsPrimaryJLabel.setEnabled( !enabled );
+        dnsSecondaryJLabel.setEnabled( !enabled );
+		optionalJLabel.setEnabled( !enabled );
     }
     
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.ButtonGroup buttonGroup1;
         public javax.swing.JRadioButton dhcpDisabledRadioButton;
         public javax.swing.JRadioButton dhcpEnabledRadioButton;
+        private javax.swing.JLabel dhcpIPaddrJLabel;
         public javax.swing.JTextField dhcpIPaddrJTextField;
+        private javax.swing.JLabel dhcpNetmaskJLabel;
         public javax.swing.JTextField dhcpNetmaskJTextField;
+        private javax.swing.JLabel dhcpRouteJLabel;
         public javax.swing.JTextField dhcpRouteJTextField;
+        private javax.swing.JLabel dnsPrimaryJLabel;
         public javax.swing.JTextField dnsPrimaryJTextField;
+        private javax.swing.JLabel dnsSecondaryJLabel;
         public javax.swing.JTextField dnsSecondaryJTextField;
         private javax.swing.JPanel hostnameJPanel;
         public javax.swing.JTextField hostnameJTextField;
-        private javax.swing.JLabel jLabel1;
         private javax.swing.JLabel jLabel10;
         private javax.swing.JLabel jLabel2;
         private javax.swing.JLabel jLabel3;
         private javax.swing.JLabel jLabel4;
-        private javax.swing.JLabel jLabel5;
-        private javax.swing.JLabel jLabel6;
-        private javax.swing.JLabel jLabel7;
-        private javax.swing.JLabel jLabel8;
-        private javax.swing.JLabel jLabel9;
         private javax.swing.JSeparator jSeparator1;
+        private javax.swing.JLabel optionalJLabel;
         private javax.swing.JPanel staticIPJPanel;
         // End of variables declaration//GEN-END:variables
     

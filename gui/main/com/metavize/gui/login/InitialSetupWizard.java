@@ -52,8 +52,7 @@ public class InitialSetupWizard extends MWizardJDialog {
         addWizardPageJPanel(new InitialSetupCongratulationsJPanel(), "10. Finished!", true, true);
     }
     
-    protected void wizardFinishedAbnormal(int currentPage){
-	
+    protected void wizardFinishedAbnormal(int currentPage){	
 	MTwoButtonJDialog dialog = MTwoButtonJDialog.factory(this, "Setup Wizard", "If you exit now, " +
 								 "some of your settings may not be saved properly.  " +
 								 "You should continue, if possible.  ", "Setup Wizard Warning", "Warning");	    
@@ -63,7 +62,8 @@ public class InitialSetupWizard extends MWizardJDialog {
 	    }
 	    if( currentPage >= 4 )
 		isRegistered = true;
-	    cleanupConnection();
+	    if(InitialSetupRoutingJPanel.getNatEnabled() && !InitialSetupRoutingJPanel.getNatChanged())
+		cleanupConnection();
 	    super.wizardFinishedAbnormal(currentPage);
 	}
 	else{
@@ -73,7 +73,10 @@ public class InitialSetupWizard extends MWizardJDialog {
 
     protected void wizardFinishedNormal(){
 	isRegistered = true;
-        cleanupConnection();
+	
+	if(InitialSetupRoutingJPanel.getNatEnabled() && !InitialSetupRoutingJPanel.getNatChanged())
+	    cleanupConnection();
+	
 	super.wizardFinishedNormal();
     }
     private void cleanupConnection(){
