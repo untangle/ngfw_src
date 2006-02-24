@@ -295,10 +295,7 @@ class NatEventHandler extends AbstractEventHandler
 
     void configure( NetworkSpacesInternalSettings settings )
         throws TransformException
-    {
-        /* !!!! This is going to have to be updated */
-        // IPMatcher localHostMatcher = IPMatcherFactory.getInstance().getLocalMatcher();
-        
+    {        
         ArgonManager argonManager = MvvmContextFactory.context().argonManager();
         NetworkManager networkManager = MvvmContextFactory.context().networkManager();
 
@@ -695,14 +692,20 @@ class NatMatcher
     private final NetworkSpaceInternal space;
     private InetAddress natAddress;
     private final InterfaceRedirect interfaceRedirect;
+    
+    private final IntfMatcher vpnClientMatcher;
+    private final IntfMatcher vpnServerMatcher;
 
     NatMatcher( RedirectMatcher matcher, NetworkSpaceInternal space, InetAddress natAddress,
-                InterfaceRedirect interfaceRedirect )
+                InterfaceRedirect interfaceRedirect, IntfMatcher vpnClientMatcher, 
+                IntfMatcher vpnServerMatcher )
     {
         this.matcher    = matcher;
         this.space      = space;
         this.natAddress = natAddress;
         this.interfaceRedirect = interfaceRedirect;
+        this.vpnClientMatcher = vpnClientMatcher;
+        this.vpnServerMatcher = vpnServerMatcher;
     }
 
     RedirectMatcher getMatcher()
@@ -728,8 +731,10 @@ class NatMatcher
 
     boolean isMatch( IPNewSessionRequest request, Protocol protocol )
     {
-
-        return this.matcher.isMatch( request, protocol );        
+        /* If the matcher matchers, or this fits the profile of a VPN session, NAT it */
+        return this.matcher.isMatch( request, protocol ) || 
+            ( vpnClientMatcher.isMatch( request.clientIntf()) && 
+              vpnServerMatcher.isMatch( request.serverIntf()));
     }
 
     InterfaceRedirect getInterfaceRedirect()
@@ -749,21 +754,41 @@ class NatMatcher
         
         List<InterfaceInternal> interfaceList = space.getInterfaceList();
         byte intfArray[] = new byte[interfaceList.size()];
-        int c = 0;
-        for ( InterfaceInternal intf : interfaceList ) intfArray[c++] = intf.getArgonIntf();
+        byte dstIntfArray[] = new byte[interfaceList.size() + 1 ];
 
+        /* actually not the destination interface, but the inverse of the destination interfaces */
+        dstIntfArray[0] = IntfConstants.VPN_INTF;
+
+        IntfMatcher vpnClientMatcher = intfMatcherFactory.getNilMatcher();
+        IntfMatcher vpnServerMatcher = intfMatcherFactory.getNilMatcher();
+
+        /* This is used to detect vpn sessions */
+        boolean hasInternal = false;
         
-        /* XXX !!! RBS, i think the server interface should not be all */
-        IntfMatcher clientIntfMatcher, serverIntfMatcher;
-        try {
-            clientIntfMatcher = intfMatcherFactory.makeSetMatcher( intfArray );
+        int c = 0;
+        for ( InterfaceInternal intf : interfaceList ) {
+            byte argonIntf = intf.getArgonIntf();
+            intfArray[c] = argonIntf;
+            dstIntfArray[c+1] = argonIntf;
             
-            /* All interfaces but VPN */
-            serverIntfMatcher = intfMatcherFactory.makeInverseMatcher( IntfConstants.VPN_INTF );
+            if ( argonIntf == IntfConstants.INTERNAL_INTF ) hasInternal = true;
+            c++;
+        }
+        
+        IntfMatcher clientIntfMatcher, serverIntfMatcher;
+
+        try {
+            clientIntfMatcher = intfMatcherFactory.makeSetMatcher( intfArray );            
+            serverIntfMatcher = intfMatcherFactory.makeInverseMatcher( dstIntfArray );
             // serverIntfMatcher = intfMatcherFactory.getAllMatcher();
         } catch ( ParseException e ) {
             throw new TransformException( "Unable to create the client or server interface matcher " +
                                           "for a NAT matcher", e );
+        }
+
+        if ( hasInternal ) {
+            vpnClientMatcher = intfMatcherFactory.getVpnMatcher();
+            vpnServerMatcher = serverIntfMatcher;
         }
 
         // System.out.println( "client: " + clientIPMatcher + " server: " + serverIntfMatcher );
@@ -784,7 +809,7 @@ class NatMatcher
                                          pmf.getAllMatcher(), pmf.getAllMatcher(),
                                          intfArray[0] );
 
-        return new NatMatcher( matcher, space, natAddress, redirect );
+        return new NatMatcher( matcher, space, natAddress, redirect, vpnClientMatcher, vpnServerMatcher );
     }
 }
 
@@ -877,6 +902,10 @@ class DmzMatcher
         /* XXX !!!! if this is null, this shouldn't create a DMZ matcher */
         if (( space.getDmzHost() != null ) && !space.getDmzHost().isEmpty()) {
             dmzHost = space.getDmzHost().getAddr();
+        } else {
+            /* DMz host is not set, don't match any traffic */
+            clientIntfMatcher = intfMatcherFactory.getNilMatcher();
+            serverIntfMatcher = intfMatcherFactory.getNilMatcher();
         }
                 
         RedirectMatcher matcher = new RedirectMatcher( true, space.getIsDmzHostLoggingEnabled(),
