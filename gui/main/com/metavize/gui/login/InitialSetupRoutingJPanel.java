@@ -20,7 +20,7 @@ import java.awt.Color;
 
 public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
     
-    private static final String INIT_ADDRESS = "192.188.1.1";
+    private static final String INIT_ADDRESS = "192.168.1.1";
     private static final String INIT_NETMASK = "255.255.255.0";
 		
     public InitialSetupRoutingJPanel() {
