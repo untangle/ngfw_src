@@ -420,6 +420,9 @@ public class NetworkIPJPanel extends javax.swing.JPanel
 
                 hostnameJPanel.setLayout(new java.awt.GridBagLayout());
 
+                hostnameJPanel.setMaximumSize(new java.awt.Dimension(350, 23));
+                hostnameJPanel.setMinimumSize(new java.awt.Dimension(350, 23));
+                hostnameJPanel.setPreferredSize(new java.awt.Dimension(350, 23));
                 hostnameJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
                 hostnameJLabel.setText("Hostname:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
@@ -444,8 +447,7 @@ public class NetworkIPJPanel extends javax.swing.JPanel
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
-                gridBagConstraints.ipadx = 150;
-                gridBagConstraints.insets = new java.awt.Insets(10, 23, 10, 0);
+                gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 0);
                 dhcpJPanel.add(hostnameJPanel, gridBagConstraints);
 
                 jSeparator4.setForeground(new java.awt.Color(200, 200, 200));

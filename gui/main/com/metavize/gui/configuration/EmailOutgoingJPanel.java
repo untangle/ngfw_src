@@ -162,7 +162,7 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
                 restrictIPJPanel.setLayout(new java.awt.GridBagLayout());
 
                 jLabel5.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel5.setText("Hostname:");
+                jLabel5.setText("SMTP Email Server:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
