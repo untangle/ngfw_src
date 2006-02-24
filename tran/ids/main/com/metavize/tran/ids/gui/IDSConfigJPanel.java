@@ -137,6 +137,8 @@ class IDSTableModel extends MSortedTableModel<Object>{
 	    UrlButtonRunnable urlButtonRunnable = new UrlButtonRunnable("true");
 	    if( (newElem.getURL() == null) || (newElem.getURL().length() == 0) )
 		urlButtonRunnable.setEnabled(false);
+	    else
+		urlButtonRunnable.setEnabled(true);
 	    urlButtonRunnable.setUrl( newElem.getURL() );
 	    tempRow.add( urlButtonRunnable );
             tempRow.add( newElem.getURL() );
