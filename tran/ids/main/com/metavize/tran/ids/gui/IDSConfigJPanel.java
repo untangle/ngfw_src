@@ -57,7 +57,7 @@ class IDSTableModel extends MSortedTableModel<Object>{
     private static final int C6_MW = 180; /* description */
     private static final int C7_MW = 55;  /* SID */
     private static final int C8_MW = 100; /* Launch Browser button */
-    private static final int C9_MW = 120; /* info url */
+    private static final int C9_MW = 100; /* info url */
     private static final int C10_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW + C8_MW + C9_MW), 120); /* signature */
 
     
