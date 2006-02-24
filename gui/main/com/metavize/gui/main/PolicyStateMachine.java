@@ -193,10 +193,10 @@ public class PolicyStateMachine implements ActionListener {
                                                              new Insets(1,0,0,0), 0, 0);
 
 
-        utilSeparatorGridBagConstraints = new GridBagConstraints(0, 2, 1, 1, 0d, 0d,
+        utilSeparatorGridBagConstraints = new GridBagConstraints(0, 5, 1, 1, 0d, 0d,
                                                                  GridBagConstraints.NORTH, GridBagConstraints.NONE,
                                                                  new Insets(1,0,101,12), 0, 0);
-        utilGridBagConstraints = new GridBagConstraints(0, 2, 1, 1, 0d, 0d,
+        utilGridBagConstraints = new GridBagConstraints(0, 5, 1, 1, 0d, 0d,
                                                         GridBagConstraints.SOUTH, GridBagConstraints.NONE,
                                                         new Insets(51,0,0,12), 0, 0);
         policySeparatorGridBagConstraints = new GridBagConstraints(0, 3, 1, 1, 0d, 0d,
@@ -709,7 +709,10 @@ public class PolicyStateMachine implements ActionListener {
                     }
                 }
 		// BRING MAIN WINDOW TO FRONT
-		Util.getMMainJFrame().toFront();
+                SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		    Util.getMMainJFrame().setVisible(true);
+		    Util.getMMainJFrame().toFront();
+		}});
                 // ADD TO TOOLBOX
                 List<MackageDesc> newMackageDescs = computeNewMackageDescs(originalInstalledMackages, currentInstalledMackages);
                 for( MackageDesc newMackageDesc : newMackageDescs ){
