@@ -289,7 +289,6 @@ class ToolboxManagerImpl implements ToolboxManager
 
     public void requestInstall(String mackageName)
     {
-        System.out.println("REQUESTED: " + mackageName);
         synchronized (messageQueues) {
             MackageInstallRequest mir = new MackageInstallRequest(mackageName);
             for (MessageQueueImpl<ToolboxMessage> mq : messageQueues.values()) {
