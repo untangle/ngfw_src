@@ -86,7 +86,7 @@ class IDSTableModel extends MSortedTableModel<Object>{
 	IDSRule newElem = null;
 
 	for( Vector rowVector : tableVector ){            
-	    newElem = (IDSRule) rowVector.elementAt(10);
+	    newElem = (IDSRule) rowVector.elementAt(11);
             newElem.setLive( (Boolean) rowVector.elementAt(2) );
             newElem.setLog( (Boolean) rowVector.elementAt(3) );
             newElem.setCategory( (String) rowVector.elementAt(4) );
@@ -125,7 +125,7 @@ class IDSTableModel extends MSortedTableModel<Object>{
 
 	for( IDSRule newElem : rules ){
 	    rowIndex++;
-            tempRow = new Vector(11);
+            tempRow = new Vector(12);
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );
             tempRow.add( newElem.isLive() );
@@ -135,7 +135,7 @@ class IDSTableModel extends MSortedTableModel<Object>{
             tempRow.add( newElem.getDescription() );
             tempRow.add( newElem.getSid() );
 	    UrlButtonRunnable urlButtonRunnable = new UrlButtonRunnable("true");
-	    if( newElem.getURL().length() == 0 )
+	    if( (newElem.getURL() == null) || (newElem.getURL().length() == 0) )
 		urlButtonRunnable.setEnabled(false);
 	    urlButtonRunnable.setUrl( newElem.getURL() );
 	    tempRow.add( urlButtonRunnable );
