@@ -140,13 +140,23 @@ public class NetworkUtil
                                                  " from a DHCP server." );
                 }
 
-                if ( space.getNatSpace() == null ) {
+                NetworkSpace natSpace = space.getNatSpace();
+                if ( natSpace == null ) {
                     throw new ValidateException( "The network space '" + space.getName() +
                                                  "' running NAT must have a NAT space" );
                 }
+
+                if ( natSpace.getBusinessPapers() == space.getBusinessPapers()) {
+                    throw new ValidateException( "The network space '" + space.getName() +
+                                                 "' running NAT must mapped to a different space" );
+                }
+
+                if ( !natSpace.isLive() ) {
+                    throw new ValidateException( "The network space '" + space.getName() +
+                                                 "' running NAT must mapped to an enabled NAT space" );
+                }
             }
         }
-       
 
         IPaddr dmzHost = space.getDmzHost();
         if ( space.getIsDmzHostEnabled() && (( dmzHost == null ) || dmzHost.isEmpty())) {

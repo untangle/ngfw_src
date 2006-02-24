@@ -187,7 +187,7 @@ public class NetworkManagerImpl implements NetworkManager
     {
         NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
         try {
-            nup.updateDhcpAddresses( newSettings );
+            newSettings = nup.updateDhcpAddresses( newSettings );
         } catch ( Exception e ) {
             logger.error( "Unable to update dhcp addresses", e );
         }
@@ -212,7 +212,11 @@ public class NetworkManagerImpl implements NetworkManager
         }
                 
         /* Save the configuration to the database */
-        saveNetworkSettings( nup.toSettings( newSettings ));
+        try {
+            saveNetworkSettings( nup.toSettings( newSettings ));
+        } catch ( Exception e ) {
+            logger.error( "Unable to save settings, updating address anyway", e );
+        }
         
         /* Have to update the remote settings */
         updateAddress();

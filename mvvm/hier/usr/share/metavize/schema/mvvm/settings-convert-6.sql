@@ -108,6 +108,7 @@ CREATE TABLE settings.mvvm_network_space (
     is_dhcp_enabled      BOOL,
     is_nat_enabled       BOOL,
     nat_address          INET,
+    nat_space            INT8,
     dmz_host_enabled     BOOL,
     dmz_host             INET,
     dmz_host_logging     BOOL,

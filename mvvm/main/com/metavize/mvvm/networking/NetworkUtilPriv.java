@@ -196,7 +196,6 @@ class NetworkUtilPriv extends NetworkUtil
 
             SpaceInfo info = new SpaceInfo( networkSpace, deviceName, index, 
                                             networkSpaceIntfList, primaryAddress );
-
             spaceToInfoMap.put( networkSpace, info );
             if ( index == SPACE_INDEX_BASE ) primarySpaceInfo = info;
             index++;
@@ -210,7 +209,14 @@ class NetworkUtilPriv extends NetworkUtil
         /** Set the NAT addresses on the second iteration, this is when the primary 
          * address has been set on all of the spaces. */
         for ( SpaceInfo info :  spaceToInfoMap.values()) {
-            setNatAddress( info, spaceToInfoMap );
+            try {
+                setNatAddress( info, spaceToInfoMap );
+            } catch ( NetworkException e ) {
+                /* This is kind of dirty, but it is better than network configuration failing */
+                logger.error( "unable to set the nat address on a space, disabling nat", e );
+                NetworkSpace space = info.getNetworkSpace();
+                if ( space != null ) space.setIsNatEnabled( false );
+            }
             
             NetworkSpaceInternal nwi = makeNetworkSpaceInternal( info );
             
@@ -560,7 +566,7 @@ class NetworkUtilPriv extends NetworkUtil
 
             int natSpaceIndex = si.getNatSpaceIndex();
             
-            if ( natSpaceIndex > 0 && ( natSpaceIndex <= networkSpaceList.size())) {
+            if ( natSpaceIndex >= 0 && ( natSpaceIndex <= networkSpaceList.size())) {
                 space.setNatSpace( networkSpaceList.get( natSpaceIndex ));
             } else {
                 space.setNatSpace( null );
@@ -708,30 +714,38 @@ class NetworkUtilPriv extends NetworkUtil
         if ( natSpace == space ) {
             throw new NetworkException( "Network space " + info.getIndex() + " is natted to itself" );
         }
-        
-        if ( natSpace == null ) natAddress = space.getNatAddress();
-        else {
-            if ( space.isLive() && !natSpace.isLive()) {
-                throw new NetworkException( "An enabled space cannot NAT to a disabled space." );
-            }
 
-            if ( spaceToInfoMap.get( natSpace ) == null ) {
-                throw new NetworkException( "Network space " + info.getIndex() + " is not nattd to an " + 
-                                            "unlisted network space" );
-            }
-            
-            SpaceInfo i   = spaceToInfoMap.get( natSpace );
-            natAddress    = i.getPrimaryAddress().getNetwork();
-            natSpaceIndex = i.getIndex();
+        if ( natSpace == null ) {
+            throw new NetworkException( "An enabled space [" + space.getName() + 
+                                        "] running nat must have a nat space" );
         }
+
+        if ( space.isLive() && !natSpace.isLive()) {
+            throw new NetworkException( "An enabled space cannot NAT to a disabled space." );
+        }
+        
+        if ( spaceToInfoMap.get( natSpace ) == null ) {
+            throw new NetworkException( "Network space " + info.getIndex() + " is not nattd to an " + 
+                                        "unlisted network space" );
+        }
+        
+        /* Grab the info for the nat space */
+        SpaceInfo i   = spaceToInfoMap.get( natSpace );
+        
+        /* By default use the primary address of the nat space */
+        natAddress    = i.getPrimaryAddress().getNetwork();
+        
+        /* If the nat address is set, use the nat address */
+        if ( space.getNatAddress() != null ) natAddress = space.getNatAddress();
+        natSpaceIndex = i.getIndex();
         
         if ( natAddress == null || natAddress.isEmpty()) {
-            logger.error( "Requesting NAT on a space that doesn't have an IP address" );
-            /* !!!!!!!! Handle this */
+            logger.error( "Requesting NAT on a space that doesn't have an IP address, disabling NAT" );
+            space.setIsNatEnabled( false );
+        } else {
+            info.setNatAddress( natAddress );
+            info.setNatSpaceIndex( natSpaceIndex );
         }
-
-        info.setNatAddress( natAddress );
-        info.setNatSpaceIndex( natSpaceIndex );
     }
     
 

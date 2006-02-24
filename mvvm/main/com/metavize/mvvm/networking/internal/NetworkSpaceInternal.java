@@ -65,6 +65,10 @@ public class NetworkSpaceInternal
 
     /* The index of the space the NAT address came from or -1, if it is static */
     private final int natSpaceIndex;
+
+    /* The value of the nat address (this is the less interesting value, the value that is
+     * stored inside of the database) */
+    private final IPaddr natDBAddress;
     
     /* DMZ settings */
     /* True if DMZ host is enabled. */
@@ -143,6 +147,9 @@ public class NetworkSpaceInternal
 
         /* Set the space index */
         this.natSpaceIndex = natSpaceIndex;
+        
+        /* Set the value for the database (may be null) */
+        this.natDBAddress = networkSpace.getNatAddress();
 
         /* indicate whether or not dmz host is enabled */
         this.isDmzHostEnabled = networkSpace.getIsDmzHostEnabled();
@@ -279,7 +286,7 @@ public class NetworkSpaceInternal
         /* Create a copy of the network list, since the current list is not modifiable */
         NetworkSpace s = new NetworkSpace( getIsEnabled(), getNetworkRuleList(), getIsDhcpEnabled(),
                                            getIsTrafficForwarded(), getMtu(),
-                                           getIsNatEnabled(), getNatAddress(),
+                                           getIsNatEnabled(), this.natDBAddress,
                                            getIsDmzHostEnabled(), getIsDmzHostLoggingEnabled(), getDmzHost());
 
         s.setName( getName());

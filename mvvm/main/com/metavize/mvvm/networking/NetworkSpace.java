@@ -218,6 +218,8 @@ public class NetworkSpace extends Rule
         this.natAddress = address;
     }
 
+    /** XXX Should this have cascade="all" because this is typically inside of the NetworkSettings object, 
+     * which also saves the list of network spaces. */
     /**
      * The network space to NAT to.  If this is non-null, then NAT will use the primary
      * address of the selected network space as the NAT address.  This cannot point
@@ -228,8 +230,6 @@ public class NetworkSpace extends Rule
      * class="com.metavize.mvvm.networking.NetworkSpace"
      * column="nat_space"
      */
-    /** XXX Should this have cascade="all" because this is typically inside of the NetworkSettings object, 
-     * which also saves the list of network spaces. */
     public NetworkSpace getNatSpace()
     {
         return this.natSpace;

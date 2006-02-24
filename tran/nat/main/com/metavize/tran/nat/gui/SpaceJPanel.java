@@ -129,9 +129,17 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
 	    if( !(o instanceof NattedPair) || (o==null))
 		return false;
 	    NattedPair other = (NattedPair) o;
-	    return Util.isEqual(networkSpace,other.getNetworkSpace())
+	    return isEqual(networkSpace,other.getNetworkSpace())
 		&& Util.isEqual(networkAddress,other.getNetworkAddress());
 	}
+
+        public boolean isEqual( NetworkSpace a, NetworkSpace b )
+        {
+            if (( a == null ) != ( b == null )) return false;
+            if ( a == null ) return true;
+            return ( a.getBusinessPapers() == b.getBusinessPapers());
+       }
+        
 	public boolean isEmpty(){
 	    return (networkSpace==null) && (networkAddress==null);
 	}
@@ -149,9 +157,21 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
 	nattedJComboBox.removeAllItems();
 	for(NetworkSpace networkSpace : networkSpacesSettings.getNetworkSpaceList() ) {
 	    if( networkSpace.getBusinessPapers() != initNetworkSpace.getBusinessPapers() ){
+                
+                boolean isFirst = true;
+                
+                /* If DHCP is enabled, add an address with no address */
+                if (networkSpace.getIsDhcpEnabled()) {
+                    NattedPair nattedPair = new NattedPair(networkSpace,null);
+                    isFirst = false;
+                }
+
 		for( IPNetworkRule address : (List<IPNetworkRule>) networkSpace.getNetworkList() ){
-		    NattedPair nattedPair = new NattedPair(networkSpace,address.getNetwork());
+                    NattedPair nattedPair;
+                    if (isFirst) nattedPair = new NattedPair(networkSpace,null);
+                    else         nattedPair = new NattedPair(networkSpace,address.getNetwork());
 		    nattedJComboBox.addItem( nattedPair );
+                    isFirst = false;
 		}
 	    }
 	}
