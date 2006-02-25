@@ -22,8 +22,8 @@ import java.util.TimeZone;
 public class InitialSetupPasswordJPanel extends MWizardPageJPanel {
     
     private static final String EXCEPTION_PASSWORD_MISSING = "The password must be filled in before proceeding.";
-    private static final String EXCEPTION_RETYPE_PASSWORD_MISSING = "The retype password must be filled in before proceeding.";
-    private static final String EXCEPTION_PASSWORD_MISMATCH = "Your password and retype password do not match.  They must match before proceeding.";
+    private static final String EXCEPTION_RETYPE_PASSWORD_MISSING = "The confirmation password must be filled in before proceeding.";
+    private static final String EXCEPTION_PASSWORD_MISMATCH = "Your password and confirmation password do not match.  They must match before proceeding.";
 
 	private final String[] timezones = {"US/Eastern (GMT-5)", "US/Central (GMT-6)", "US/Mountain (GMT-7)", "US/Pacific (GMT-8)", "US/Alaska (GMT-9)", "US/Hawaii (GMT-10)"};
 	
