@@ -757,7 +757,7 @@ Description: The Metavize Rogue Protocol Control
 Package: nat-transform
 Architecture: any
 Depends: mvvm, dnsmasq, ftp-casing
-XB-Display-Name: Network Sharing
+XB-Display-Name: Router
 XB-Website: http://www.metavize.com/networksharing.html
 XB-View-Position: 1000
 XB-Is-Core: true
@@ -845,8 +845,8 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
  jV2HqI3cgHe4BtKqxdZ9QVriCq0JdRBkKKPzYVf2kmdOIz57AnivI8PHQYmKIjd+r4u0YpKU
  zYu28/m48eumeSM2sZU0C0mzhm1HVVVisRiaplFeXv71g9wrRRzHIZVKkUqlBkfjLq5wOcej
  +/fvv9Ix0wA4V/LlOA7/GQCfi3hGQX94NwAAAABJRU5ErkJggg==
-Description: The Metavize Network Sharing Software Appliance
- The Metavize Network Sharing Software Appliance Transform
+Description: The Metavize Router Software Appliance
+ The Metavize Router Software Appliance Transform
 
 Package: firewall-transform
 Architecture: any
