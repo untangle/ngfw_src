@@ -115,7 +115,7 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
                 natButtonGroup.add(natEnabledJRadioButton);
                 natEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 natEnabledJRadioButton.setSelected(true);
-                natEnabledJRadioButton.setText("<html><b>Router</b> (NAT Enabled) This is the default setting.</html>");
+                natEnabledJRadioButton.setText("<html><b>Router</b> (NAT) This is the default setting.</html>");
                 natEnabledJRadioButton.setOpaque(false);
                 natEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -127,7 +127,7 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
 
                 natButtonGroup.add(natDisabledJRadioButton);
                 natDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                natDisabledJRadioButton.setText("<html><b>Bridge</b> (NAT Disabled)</html>");
+                natDisabledJRadioButton.setText("<html><b>Transparent Bridge</b></html>");
                 natDisabledJRadioButton.setOpaque(false);
                 natDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
