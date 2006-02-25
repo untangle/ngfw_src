@@ -79,19 +79,35 @@ public class InitialSetupLicenseJPanel extends MWizardPageJPanel implements Adju
     
 
         private void initComponents() {//GEN-BEGIN:initComponents
+                java.awt.GridBagConstraints gridBagConstraints;
+
                 acceptButtonGroup = new javax.swing.ButtonGroup();
+                contentJPanel = new javax.swing.JPanel();
+                jLabel2 = new javax.swing.JLabel();
                 contentJScrollPane = new javax.swing.JScrollPane();
                 jPanel1 = new javax.swing.JPanel();
                 contentJEditorPane = new javax.swing.JEditorPane();
                 actionJPanel = new javax.swing.JPanel();
                 acceptJRadioButton = new javax.swing.JRadioButton();
                 declineJRadioButton = new javax.swing.JRadioButton();
-                jLabel2 = new javax.swing.JLabel();
-                jLabel3 = new javax.swing.JLabel();
+                backgroundJPabel = new javax.swing.JLabel();
 
-                setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+                setLayout(new java.awt.GridBagLayout());
 
                 setOpaque(false);
+                contentJPanel.setLayout(new java.awt.GridBagLayout());
+
+                contentJPanel.setOpaque(false);
+                jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel2.setText("<html>Please read and accept the following license agreement before proceeding.<br>  <b><font color=\"#FF0000\">You must scroll to the bottom before you can accept.</font></b></html>");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                contentJPanel.add(jLabel2, gridBagConstraints);
+
                 contentJScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
                 contentJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
                 contentJScrollPane.setFocusable(false);
@@ -123,14 +139,31 @@ public class InitialSetupLicenseJPanel extends MWizardPageJPanel implements Adju
 
                 contentJScrollPane.setViewportView(jPanel1);
 
-                add(contentJScrollPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(7, 80, 460, 260));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 15, 15);
+                contentJPanel.add(contentJScrollPane, gridBagConstraints);
 
-                jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html>Please read and accept the following license agreement before<br>proceeding.  <b><font color=\"#FF0000\">You must scroll to the bottom before you can accept.</font></b></html>");
-                add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, -1, -1));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                add(contentJPanel, gridBagConstraints);
 
-                jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
-                add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(-130, 230, -1, -1));
+                backgroundJPabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+                gridBagConstraints.weightx = 1.0;
+                add(backgroundJPabel, gridBagConstraints);
 
         }//GEN-END:initComponents
     
@@ -139,11 +172,12 @@ public class InitialSetupLicenseJPanel extends MWizardPageJPanel implements Adju
         private javax.swing.ButtonGroup acceptButtonGroup;
         private javax.swing.JRadioButton acceptJRadioButton;
         private javax.swing.JPanel actionJPanel;
+        private javax.swing.JLabel backgroundJPabel;
         private javax.swing.JEditorPane contentJEditorPane;
+        private javax.swing.JPanel contentJPanel;
         private javax.swing.JScrollPane contentJScrollPane;
         private javax.swing.JRadioButton declineJRadioButton;
         private javax.swing.JLabel jLabel2;
-        private javax.swing.JLabel jLabel3;
         private javax.swing.JPanel jPanel1;
         // End of variables declaration//GEN-END:variables
     

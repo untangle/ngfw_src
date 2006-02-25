@@ -91,31 +91,39 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
                 java.awt.GridBagConstraints gridBagConstraints;
 
                 natButtonGroup = new javax.swing.ButtonGroup();
+                contentJPanel = new javax.swing.JPanel();
                 jLabel2 = new javax.swing.JLabel();
-                jLabel3 = new javax.swing.JLabel();
                 natEnabledJRadioButton = new javax.swing.JRadioButton();
-                natDisabledJRadioButton = new javax.swing.JRadioButton();
+                questionJLabel = new javax.swing.JLabel();
                 staticIPJPanel = new javax.swing.JPanel();
                 addressJLabel = new javax.swing.JLabel();
                 addressJTextField = new javax.swing.JTextField();
                 netmaskJLabel = new javax.swing.JLabel();
                 netmaskJTextField = new javax.swing.JTextField();
-                jLabel4 = new javax.swing.JLabel();
+                natDisabledJRadioButton = new javax.swing.JRadioButton();
+                backgroundJPabel = new javax.swing.JLabel();
 
-                setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+                setLayout(new java.awt.GridBagLayout());
 
                 setOpaque(false);
+                contentJPanel.setLayout(new java.awt.GridBagLayout());
+
+                contentJPanel.setOpaque(false);
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel2.setText("<html>How would you like to use your EdgeGuard?</html>");
-                add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, 375, -1));
-
-                jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
-                add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(-130, 230, -1, -1));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                contentJPanel.add(jLabel2, gridBagConstraints);
 
                 natButtonGroup.add(natEnabledJRadioButton);
                 natEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 natEnabledJRadioButton.setSelected(true);
-                natEnabledJRadioButton.setText("<html><b>Router</b> (NAT) This is the default setting.</html>");
+                natEnabledJRadioButton.setText("<html><b>Router</b> (NAT Enabled) This is the default setting.</html>");
                 natEnabledJRadioButton.setOpaque(false);
                 natEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -123,23 +131,26 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
                         }
                 });
 
-                add(natEnabledJRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 60, -1, -1));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                contentJPanel.add(natEnabledJRadioButton, gridBagConstraints);
 
-                natButtonGroup.add(natDisabledJRadioButton);
-                natDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                natDisabledJRadioButton.setText("<html><b>Transparent Bridge</b></html>");
-                natDisabledJRadioButton.setOpaque(false);
-                natDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                natDisabledJRadioButtonActionPerformed(evt);
-                        }
-                });
-
-                add(natDisabledJRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 180, -1, -1));
+                questionJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                questionJLabel.setText("What is EdgeGuard's address on the internal network?");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+                gridBagConstraints.insets = new java.awt.Insets(0, 50, 0, 25);
+                contentJPanel.add(questionJLabel, gridBagConstraints);
 
                 staticIPJPanel.setLayout(new java.awt.GridBagLayout());
 
+                staticIPJPanel.setMinimumSize(new java.awt.Dimension(250, 46));
                 staticIPJPanel.setOpaque(false);
+                staticIPJPanel.setPreferredSize(new java.awt.Dimension(250, 46));
                 addressJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
                 addressJLabel.setText("IP Address:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
@@ -174,11 +185,46 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
                 gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
                 staticIPJPanel.add(netmaskJTextField, gridBagConstraints);
 
-                add(staticIPJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 100, 240, 60));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.weightx = 1.0;
+                contentJPanel.add(staticIPJPanel, gridBagConstraints);
 
-                jLabel4.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel4.setText("<html>What is EdgeGuard's address on the internal network?</html>");
-                add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 85, -1, -1));
+                natButtonGroup.add(natDisabledJRadioButton);
+                natDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                natDisabledJRadioButton.setText("<html><b>Transparent Bridge</b> (NAT Disabled)</html>");
+                natDisabledJRadioButton.setOpaque(false);
+                natDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                natDisabledJRadioButtonActionPerformed(evt);
+                        }
+                });
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                contentJPanel.add(natDisabledJRadioButton, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                add(contentJPanel, gridBagConstraints);
+
+                backgroundJPabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+                gridBagConstraints.weightx = 1.0;
+                add(backgroundJPabel, gridBagConstraints);
 
         }//GEN-END:initComponents
 
@@ -196,19 +242,21 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
 	addressJLabel.setEnabled(enabled);
 	netmaskJTextField.setEnabled(enabled);
 	netmaskJLabel.setEnabled(enabled);
+	questionJLabel.setEnabled(enabled);
     }
     
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JLabel addressJLabel;
         public javax.swing.JTextField addressJTextField;
+        private javax.swing.JLabel backgroundJPabel;
+        private javax.swing.JPanel contentJPanel;
         private javax.swing.JLabel jLabel2;
-        private javax.swing.JLabel jLabel3;
-        private javax.swing.JLabel jLabel4;
         private javax.swing.ButtonGroup natButtonGroup;
         private javax.swing.JRadioButton natDisabledJRadioButton;
         private javax.swing.JRadioButton natEnabledJRadioButton;
         private javax.swing.JLabel netmaskJLabel;
         public javax.swing.JTextField netmaskJTextField;
+        private javax.swing.JLabel questionJLabel;
         private javax.swing.JPanel staticIPJPanel;
         // End of variables declaration//GEN-END:variables
     

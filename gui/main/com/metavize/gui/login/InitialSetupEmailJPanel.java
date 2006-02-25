@@ -121,6 +121,7 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
                 java.awt.GridBagConstraints gridBagConstraints;
 
                 buttonGroup1 = new javax.swing.ButtonGroup();
+                contentJPanel = new javax.swing.JPanel();
                 jLabel2 = new javax.swing.JLabel();
                 jPanel1 = new javax.swing.JPanel();
                 jLabel8 = new javax.swing.JLabel();
@@ -131,22 +132,34 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
                 smtpLoginJTextField = new javax.swing.JTextField();
                 jLabel16 = new javax.swing.JLabel();
                 smtpPasswordJPasswordField = new javax.swing.JPasswordField();
+                jLabel1 = new javax.swing.JLabel();
+                jLabel5 = new javax.swing.JLabel();
+                jSeparator1 = new javax.swing.JSeparator();
+                jLabel3 = new javax.swing.JLabel();
                 jPanel2 = new javax.swing.JPanel();
                 jLabel12 = new javax.swing.JLabel();
                 addressJTextField = new javax.swing.JTextField();
-                jLabel3 = new javax.swing.JLabel();
-                jLabel1 = new javax.swing.JLabel();
+                jSeparator2 = new javax.swing.JSeparator();
+                jPanel3 = new javax.swing.JPanel();
                 connectivityTestJButton = new javax.swing.JButton();
                 jLabel11 = new javax.swing.JLabel();
-                jLabel5 = new javax.swing.JLabel();
-                jLabel4 = new javax.swing.JLabel();
+                backgroundJPabel = new javax.swing.JLabel();
 
-                setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+                setLayout(new java.awt.GridBagLayout());
 
                 setOpaque(false);
+                contentJPanel.setLayout(new java.awt.GridBagLayout());
+
+                contentJPanel.setOpaque(false);
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html>Please choose an email server (SMTP) which EdgeGuard will use to send emails, reports, etc.  <b>This information is optional.</b></html>");
-                add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, 400, -1));
+                jLabel2.setText("<html>Which email server (SMTP) should EdgeGuard use to send emails, reports, etc?<br><b>This information is optional.</b></html>");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                contentJPanel.add(jLabel2, gridBagConstraints);
 
                 jPanel1.setLayout(new java.awt.GridBagLayout());
 
@@ -217,11 +230,55 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
                 gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
                 jPanel1.add(smtpPasswordJPasswordField, gridBagConstraints);
 
-                add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 60, 340, 110));
+                jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel1.setText("(optional)");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 2;
+                gridBagConstraints.gridy = 2;
+                gridBagConstraints.gridwidth = 3;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+                gridBagConstraints.insets = new java.awt.Insets(0, 5, 5, 0);
+                jPanel1.add(jLabel1, gridBagConstraints);
+
+                jLabel5.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel5.setText("(optional)");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 2;
+                gridBagConstraints.gridy = 3;
+                gridBagConstraints.gridwidth = 3;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+                gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+                jPanel1.add(jLabel5, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                contentJPanel.add(jPanel1, gridBagConstraints);
+
+                jSeparator1.setForeground(new java.awt.Color(156, 156, 156));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                contentJPanel.add(jSeparator1, gridBagConstraints);
+
+                jLabel3.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel3.setText("<html>Please choose the \"From Address\" of emails sent from EdgeGuard.</html>");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                contentJPanel.add(jLabel3, gridBagConstraints);
 
                 jPanel2.setLayout(new java.awt.GridBagLayout());
 
+                jPanel2.setMinimumSize(new java.awt.Dimension(350, 19));
                 jPanel2.setOpaque(false);
+                jPanel2.setPreferredSize(new java.awt.Dimension(350, 19));
                 jLabel12.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel12.setText("From Address:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
@@ -239,16 +296,23 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
                 gridBagConstraints.weightx = 1.0;
                 jPanel2.add(addressJTextField, gridBagConstraints);
 
-                add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(58, 200, 375, 30));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                contentJPanel.add(jPanel2, gridBagConstraints);
 
-                jLabel3.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel3.setText("<html>Please choose the \"From Address\" of emails sent from EdgeGuard.</html>");
-                add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 180, -1, -1));
+                jSeparator2.setForeground(new java.awt.Color(156, 156, 156));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                contentJPanel.add(jSeparator2, gridBagConstraints);
 
-                jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel1.setText("(optional)");
-                add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 121, -1, -1));
+                jPanel3.setLayout(new java.awt.GridBagLayout());
 
+                jPanel3.setOpaque(false);
                 connectivityTestJButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 connectivityTestJButton.setText("Run Connectivity Test");
                 connectivityTestJButton.addActionListener(new java.awt.event.ActionListener() {
@@ -257,19 +321,48 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
                         }
                 });
 
-                add(connectivityTestJButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 275, -1, -1));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 6;
+                gridBagConstraints.weighty = 1.0;
+                jPanel3.add(connectivityTestJButton, gridBagConstraints);
 
                 jLabel11.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel11.setText("<html>The <b>Connectivity Test is optional</b>, but it can tell you if your mail settings  above are correct, by sending you an email.</html>");
-                add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 265, 250, -1));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 6;
+                gridBagConstraints.gridwidth = 8;
+                gridBagConstraints.gridheight = 2;
+                gridBagConstraints.ipadx = 172;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 0);
+                jPanel3.add(jLabel11, gridBagConstraints);
 
-                jLabel5.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel5.setText("(optional)");
-                add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 143, -1, -1));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                contentJPanel.add(jPanel3, gridBagConstraints);
 
-                jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
-                jLabel4.setEnabled(false);
-                add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(-130, 230, -1, -1));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                add(contentJPanel, gridBagConstraints);
+
+                backgroundJPabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+                gridBagConstraints.weightx = 1.0;
+                add(backgroundJPabel, gridBagConstraints);
 
         }//GEN-END:initComponents
 
@@ -302,8 +395,10 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
     
         // Variables declaration - do not modify//GEN-BEGIN:variables
         public javax.swing.JTextField addressJTextField;
+        private javax.swing.JLabel backgroundJPabel;
         private javax.swing.ButtonGroup buttonGroup1;
         private javax.swing.JButton connectivityTestJButton;
+        private javax.swing.JPanel contentJPanel;
         public javax.swing.JTextField hostJTextField;
         private javax.swing.JLabel jLabel1;
         private javax.swing.JLabel jLabel10;
@@ -313,11 +408,13 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
         private javax.swing.JLabel jLabel16;
         private javax.swing.JLabel jLabel2;
         private javax.swing.JLabel jLabel3;
-        private javax.swing.JLabel jLabel4;
         private javax.swing.JLabel jLabel5;
         private javax.swing.JLabel jLabel8;
         private javax.swing.JPanel jPanel1;
         private javax.swing.JPanel jPanel2;
+        private javax.swing.JPanel jPanel3;
+        private javax.swing.JSeparator jSeparator1;
+        private javax.swing.JSeparator jSeparator2;
         private javax.swing.JSpinner portJSpinner;
         public javax.swing.JTextField smtpLoginJTextField;
         private javax.swing.JPasswordField smtpPasswordJPasswordField;

@@ -82,36 +82,84 @@ public class InitialSetupKeyJPanel extends MWizardPageJPanel {
     
 
         private void initComponents() {//GEN-BEGIN:initComponents
-                jLabel2 = new javax.swing.JLabel();
-                keyJTextField = new javax.swing.JTextField();
-                jLabel16 = new javax.swing.JLabel();
-                jLabel3 = new javax.swing.JLabel();
+                java.awt.GridBagConstraints gridBagConstraints;
 
-                setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+                contentJPanel = new javax.swing.JPanel();
+                jLabel2 = new javax.swing.JLabel();
+                jPanel1 = new javax.swing.JPanel();
+                jLabel16 = new javax.swing.JLabel();
+                keyJTextField = new javax.swing.JTextField();
+                backgroundJPabel = new javax.swing.JLabel();
+
+                setLayout(new java.awt.GridBagLayout());
 
                 setOpaque(false);
+                contentJPanel.setLayout(new java.awt.GridBagLayout());
+
+                contentJPanel.setOpaque(false);
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel2.setText("<html>Please enter the 16-digit EdgeGuard activation key. (With or without dashes) The key can be found on the side of your EdgeGuard appliance, and also on your QuickStart Guide.<br><b>This information is required.</b></html>");
-                add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, 400, -1));
+                jLabel2.setMinimumSize(null);
+                jLabel2.setPreferredSize(null);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                contentJPanel.add(jLabel2, gridBagConstraints);
 
-                keyJTextField.setColumns(19);
-                add(keyJTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(85, 118, -1, -1));
+                jPanel1.setLayout(new java.awt.GridBagLayout());
 
+                jPanel1.setMinimumSize(new java.awt.Dimension(275, 19));
+                jPanel1.setOpaque(false);
+                jPanel1.setPreferredSize(new java.awt.Dimension(275, 19));
                 jLabel16.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
                 jLabel16.setText("Key:");
-                add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 120, -1, -1));
+                jPanel1.add(jLabel16, new java.awt.GridBagConstraints());
 
-                jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
-                add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(-130, 230, -1, -1));
+                keyJTextField.setColumns(19);
+                keyJTextField.setMinimumSize(null);
+                keyJTextField.setPreferredSize(null);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                jPanel1.add(keyJTextField, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(30, 0, 0, 0);
+                contentJPanel.add(jPanel1, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                add(contentJPanel, gridBagConstraints);
+
+                backgroundJPabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+                add(backgroundJPabel, gridBagConstraints);
 
         }//GEN-END:initComponents
     
     
         // Variables declaration - do not modify//GEN-BEGIN:variables
+        private javax.swing.JLabel backgroundJPabel;
+        private javax.swing.JPanel contentJPanel;
         private javax.swing.JLabel jLabel16;
         private javax.swing.JLabel jLabel2;
-        private javax.swing.JLabel jLabel3;
+        private javax.swing.JPanel jPanel1;
         private javax.swing.JTextField keyJTextField;
         // End of variables declaration//GEN-END:variables
     

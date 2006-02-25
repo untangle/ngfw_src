@@ -22,33 +22,67 @@ public class InitialSetupCongratulationsJPanel extends MWizardPageJPanel {
     }
 
 
-    private void initComponents() {//GEN-BEGIN:initComponents
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
+        private void initComponents() {//GEN-BEGIN:initComponents
+                java.awt.GridBagConstraints gridBagConstraints;
 
-        setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+                contentJPanel = new javax.swing.JPanel();
+                jLabel1 = new javax.swing.JLabel();
+                jLabel2 = new javax.swing.JLabel();
+                backgroundJPabel = new javax.swing.JLabel();
 
-        setOpaque(false);
-        jLabel1.setFont(new java.awt.Font("Dialog", 1, 18));
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("<html>Congratulations!<br>Your EdgeGuard is configured.<br><br>Press \"Finish\" to open<br>a login window.</html>");
-        add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, -1, -1));
+                setLayout(new java.awt.GridBagLayout());
 
-        jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-        jLabel2.setText("<html>Use your newly created \"admin\" account with the<br>password you have chosen to login to EdgeGuard.</html>");
-        add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 180, -1, -1));
+                setOpaque(false);
+                contentJPanel.setLayout(new java.awt.GridBagLayout());
 
-        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
-        add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(-130, 230, -1, -1));
+                contentJPanel.setOpaque(false);
+                jLabel1.setFont(new java.awt.Font("Dialog", 1, 18));
+                jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+                jLabel1.setText("<html>Congratulations!<br>Your EdgeGuard is configured.<br><br>Press \"Finish\" to open a login window.</html>");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                contentJPanel.add(jLabel1, gridBagConstraints);
 
-    }//GEN-END:initComponents
+                jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel2.setText("<html>Use your newly created \"admin\" account with the<br>password you have chosen to login to EdgeGuard.</html>");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                contentJPanel.add(jLabel2, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                add(contentJPanel, gridBagConstraints);
+
+                backgroundJPabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+                gridBagConstraints.weightx = 1.0;
+                add(backgroundJPabel, gridBagConstraints);
+
+        }//GEN-END:initComponents
     
     
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    // End of variables declaration//GEN-END:variables
+        // Variables declaration - do not modify//GEN-BEGIN:variables
+        private javax.swing.JLabel backgroundJPabel;
+        private javax.swing.JPanel contentJPanel;
+        private javax.swing.JLabel jLabel1;
+        private javax.swing.JLabel jLabel2;
+        // End of variables declaration//GEN-END:variables
     
 }

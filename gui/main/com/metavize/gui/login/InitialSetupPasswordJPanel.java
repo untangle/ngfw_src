@@ -120,6 +120,7 @@ public class InitialSetupPasswordJPanel extends MWizardPageJPanel {
         private void initComponents() {//GEN-BEGIN:initComponents
                 java.awt.GridBagConstraints gridBagConstraints;
 
+                contentJPanel = new javax.swing.JPanel();
                 jLabel2 = new javax.swing.JLabel();
                 jPanel1 = new javax.swing.JPanel();
                 jLabel1 = new javax.swing.JLabel();
@@ -128,17 +129,28 @@ public class InitialSetupPasswordJPanel extends MWizardPageJPanel {
                 jLabel12 = new javax.swing.JLabel();
                 passwordJPasswordField = new javax.swing.JPasswordField();
                 retypePasswordJPasswordField = new javax.swing.JPasswordField();
-                jLabel5 = new javax.swing.JLabel();
+                jSeparator1 = new javax.swing.JSeparator();
                 jLabel6 = new javax.swing.JLabel();
+                jPanel2 = new javax.swing.JPanel();
                 jLabel7 = new javax.swing.JLabel();
                 timezoneJComboBox = new javax.swing.JComboBox();
+                backgroundJPabel = new javax.swing.JLabel();
 
-                setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+                setLayout(new java.awt.GridBagLayout());
 
                 setOpaque(false);
+                contentJPanel.setLayout(new java.awt.GridBagLayout());
+
+                contentJPanel.setOpaque(false);
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html>Please choose a password for the first account.  This account is known as the \"admin\" account.</html>");
-                add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, 360, -1));
+                jLabel2.setText("<html>Please choose a password for the first account.<br>This account is known as the \"admin\" account.</html>");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                contentJPanel.add(jLabel2, gridBagConstraints);
 
                 jPanel1.setLayout(new java.awt.GridBagLayout());
 
@@ -184,35 +196,93 @@ public class InitialSetupPasswordJPanel extends MWizardPageJPanel {
                 gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
                 jPanel1.add(retypePasswordJPasswordField, gridBagConstraints);
 
-                add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 70, -1, -1));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                contentJPanel.add(jPanel1, gridBagConstraints);
 
-                jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
-                add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(-130, 230, -1, -1));
+                jSeparator1.setForeground(new java.awt.Color(156, 156, 156));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                contentJPanel.add(jSeparator1, gridBagConstraints);
 
                 jLabel6.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel6.setText("<html>Please choose the timezone your EdgeGuard is operating in.<br>This is necessary for report generation and logging purposes.</html>");
-                add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 150, -1, -1));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                contentJPanel.add(jLabel6, gridBagConstraints);
 
+                jPanel2.setLayout(new java.awt.GridBagLayout());
+
+                jPanel2.setOpaque(false);
                 jLabel7.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel7.setText("Timezone:");
-                add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 200, -1, -1));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                jPanel2.add(jLabel7, gridBagConstraints);
 
                 timezoneJComboBox.setFont(new java.awt.Font("Dialog", 0, 12));
-                add(timezoneJComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(115, 195, 260, -1));
+                timezoneJComboBox.setMinimumSize(new java.awt.Dimension(200, 24));
+                timezoneJComboBox.setPreferredSize(new java.awt.Dimension(200, 24));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+                gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 0);
+                jPanel2.add(timezoneJComboBox, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
+                contentJPanel.add(jPanel2, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                add(contentJPanel, gridBagConstraints);
+
+                backgroundJPabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+                gridBagConstraints.weightx = 1.0;
+                add(backgroundJPabel, gridBagConstraints);
 
         }//GEN-END:initComponents
     
     
         // Variables declaration - do not modify//GEN-BEGIN:variables
+        private javax.swing.JLabel backgroundJPabel;
+        private javax.swing.JPanel contentJPanel;
         private javax.swing.JLabel jLabel1;
         private javax.swing.JLabel jLabel12;
         private javax.swing.JLabel jLabel2;
         private javax.swing.JLabel jLabel3;
         private javax.swing.JLabel jLabel4;
-        private javax.swing.JLabel jLabel5;
         private javax.swing.JLabel jLabel6;
         private javax.swing.JLabel jLabel7;
         private javax.swing.JPanel jPanel1;
+        private javax.swing.JPanel jPanel2;
+        private javax.swing.JSeparator jSeparator1;
         private javax.swing.JPasswordField passwordJPasswordField;
         private javax.swing.JPasswordField retypePasswordJPasswordField;
         private javax.swing.JComboBox timezoneJComboBox;

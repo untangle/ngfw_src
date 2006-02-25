@@ -136,8 +136,8 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
         private void initComponents() {//GEN-BEGIN:initComponents
                 java.awt.GridBagConstraints gridBagConstraints;
 
+                contentJPanel = new javax.swing.JPanel();
                 jLabel2 = new javax.swing.JLabel();
-                jLabel16 = new javax.swing.JLabel();
                 jPanel1 = new javax.swing.JPanel();
                 jLabel17 = new javax.swing.JLabel();
                 companyJTextField = new javax.swing.JTextField();
@@ -163,21 +163,26 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
                 jLabel28 = new javax.swing.JLabel();
                 jLabel29 = new javax.swing.JLabel();
                 jLabel30 = new javax.swing.JLabel();
+                jLabel16 = new javax.swing.JLabel();
                 countJTextField = new javax.swing.JTextField();
                 jLabel31 = new javax.swing.JLabel();
-                jLabel3 = new javax.swing.JLabel();
+                backgroundJPabel = new javax.swing.JLabel();
 
-                setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+                setLayout(new java.awt.GridBagLayout());
 
                 setOpaque(false);
-                jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html>Please take a moment to register yourself as the operator of the EdgeGuard.  <b>This information is required.</b></html>");
-                add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, 400, -1));
+                contentJPanel.setLayout(new java.awt.GridBagLayout());
 
-                jLabel16.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-                jLabel16.setText("<html>Number of computers<br>protected by EdgeGuard:</html>");
-                add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 290, -1, -1));
+                contentJPanel.setOpaque(false);
+                jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel2.setText("<html>Please take a moment to register yourself as the operator of the EdgeGuard.<br>  <b>This information is required.</b></html>");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                contentJPanel.add(jLabel2, gridBagConstraints);
 
                 jPanel1.setLayout(new java.awt.GridBagLayout());
 
@@ -357,18 +362,58 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
                 gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
                 jPanel1.add(jLabel30, gridBagConstraints);
 
-                add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 70, 350, 210));
+                jLabel16.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+                jLabel16.setText("<html>Number of computers<br>protected by EdgeGuard:</html>");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 10;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+                gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
+                jPanel1.add(jLabel16, gridBagConstraints);
 
                 countJTextField.setColumns(15);
-                add(countJTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(188, 302, 90, -1));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 10;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+                jPanel1.add(countJTextField, gridBagConstraints);
 
                 jLabel31.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel31.setText("(required)");
-                add(jLabel31, new org.netbeans.lib.awtextra.AbsoluteConstraints(283, 304, -1, -1));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 2;
+                gridBagConstraints.gridy = 10;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+                gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+                jPanel1.add(jLabel31, gridBagConstraints);
 
-                jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
-                jLabel3.setEnabled(false);
-                add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(-130, 230, -1, -1));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                contentJPanel.add(jPanel1, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                add(contentJPanel, gridBagConstraints);
+
+                backgroundJPabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+                gridBagConstraints.weightx = 1.0;
+                add(backgroundJPabel, gridBagConstraints);
 
         }//GEN-END:initComponents
     
@@ -376,8 +421,10 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JTextField address1JTextField;
         private javax.swing.JTextField address2JTextField;
+        private javax.swing.JLabel backgroundJPabel;
         private javax.swing.JTextField cityJTextField;
         private javax.swing.JTextField companyJTextField;
+        private javax.swing.JPanel contentJPanel;
         private javax.swing.JTextField countJTextField;
         private javax.swing.JTextField emailJTextField;
         private javax.swing.JTextField firstNameJTextField;
@@ -396,7 +443,6 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
         private javax.swing.JLabel jLabel27;
         private javax.swing.JLabel jLabel28;
         private javax.swing.JLabel jLabel29;
-        private javax.swing.JLabel jLabel3;
         private javax.swing.JLabel jLabel30;
         private javax.swing.JLabel jLabel31;
         private javax.swing.JPanel jPanel1;

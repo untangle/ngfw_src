@@ -20,6 +20,7 @@ import com.metavize.mvvm.client.MvvmRemoteContextFactory;
 import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Frame;
+import java.awt.Dimension;
 
 public class InitialSetupWizard extends MWizardJDialog {
 
@@ -36,6 +37,8 @@ public class InitialSetupWizard extends MWizardJDialog {
     private static Object sharedData;
     public static Object getSharedData(){ return sharedData; }
     public static void setSharedData(Object data){ sharedData = data; }
+
+    protected Dimension getContentJPanelPreferredSize(){ return new Dimension(535,480); }
     
     public InitialSetupWizard() {
 	setModal(true);

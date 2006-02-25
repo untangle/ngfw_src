@@ -192,6 +192,12 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                 java.awt.GridBagConstraints gridBagConstraints;
 
                 buttonGroup1 = new javax.swing.ButtonGroup();
+                contentJPanel = new javax.swing.JPanel();
+                jLabel4 = new javax.swing.JLabel();
+                hostnameJPanel = new javax.swing.JPanel();
+                jLabel10 = new javax.swing.JLabel();
+                hostnameJTextField = new javax.swing.JTextField();
+                jSeparator1 = new javax.swing.JSeparator();
                 jLabel2 = new javax.swing.JLabel();
                 dhcpEnabledRadioButton = new javax.swing.JRadioButton();
                 dhcpDisabledRadioButton = new javax.swing.JRadioButton();
@@ -207,19 +213,70 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                 dnsSecondaryJLabel = new javax.swing.JLabel();
                 dnsSecondaryJTextField = new javax.swing.JTextField();
                 optionalJLabel = new javax.swing.JLabel();
-                jSeparator1 = new javax.swing.JSeparator();
-                jLabel4 = new javax.swing.JLabel();
-                jLabel3 = new javax.swing.JLabel();
-                hostnameJPanel = new javax.swing.JPanel();
-                jLabel10 = new javax.swing.JLabel();
-                hostnameJTextField = new javax.swing.JTextField();
+                backgroundJPabel = new javax.swing.JLabel();
 
-                setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+                setLayout(new java.awt.GridBagLayout());
 
                 setOpaque(false);
+                contentJPanel.setLayout(new java.awt.GridBagLayout());
+
+                contentJPanel.setOpaque(false);
+                jLabel4.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel4.setText("<html>Please specify EdgeGuard's hostname on your network.</html>");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                contentJPanel.add(jLabel4, gridBagConstraints);
+
+                hostnameJPanel.setLayout(new java.awt.GridBagLayout());
+
+                hostnameJPanel.setMinimumSize(new java.awt.Dimension(300, 23));
+                hostnameJPanel.setOpaque(false);
+                hostnameJPanel.setPreferredSize(new java.awt.Dimension(300, 23));
+                jLabel10.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel10.setText("Hostname:");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                hostnameJPanel.add(jLabel10, gridBagConstraints);
+
+                hostnameJTextField.setText("edgeguard.local.domain");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
+                hostnameJPanel.add(hostnameJTextField, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                contentJPanel.add(hostnameJPanel, gridBagConstraints);
+
+                jSeparator1.setForeground(new java.awt.Color(156, 156, 156));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                contentJPanel.add(jSeparator1, gridBagConstraints);
+
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel2.setText("<html>How should EdgeGuard will get its external network settings?</html>");
-                add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 120, -1, -1));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                contentJPanel.add(jLabel2, gridBagConstraints);
 
                 buttonGroup1.add(dhcpEnabledRadioButton);
                 dhcpEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -233,7 +290,13 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                         }
                 });
 
-                add(dhcpEnabledRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 140, -1, -1));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                contentJPanel.add(dhcpEnabledRadioButton, gridBagConstraints);
 
                 buttonGroup1.add(dhcpDisabledRadioButton);
                 dhcpDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -245,11 +308,20 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                         }
                 });
 
-                add(dhcpDisabledRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 160, -1, -1));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 15);
+                contentJPanel.add(dhcpDisabledRadioButton, gridBagConstraints);
 
                 staticIPJPanel.setLayout(new java.awt.GridBagLayout());
 
+                staticIPJPanel.setMaximumSize(new java.awt.Dimension(400, 115));
+                staticIPJPanel.setMinimumSize(new java.awt.Dimension(400, 115));
                 staticIPJPanel.setOpaque(false);
+                staticIPJPanel.setPreferredSize(new java.awt.Dimension(400, 115));
                 dhcpIPaddrJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
                 dhcpIPaddrJLabel.setText("IP Address:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
@@ -338,39 +410,30 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 staticIPJPanel.add(optionalJLabel, gridBagConstraints);
 
-                add(staticIPJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 180, 350, 130));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 15);
+                contentJPanel.add(staticIPJPanel, gridBagConstraints);
 
-                add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 100, 350, -1));
-
-                jLabel4.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel4.setText("<html>Please specify EdgeGuard's hostname on your network.</html>");
-                add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, -1, -1));
-
-                jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
-                jLabel3.setEnabled(false);
-                add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(-130, 230, -1, -1));
-
-                hostnameJPanel.setLayout(new java.awt.GridBagLayout());
-
-                hostnameJPanel.setOpaque(false);
-                jLabel10.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel10.setText("Hostname:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                hostnameJPanel.add(jLabel10, gridBagConstraints);
-
-                hostnameJTextField.setText("edgeguard.local.domain");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
                 gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
-                hostnameJPanel.add(hostnameJTextField, gridBagConstraints);
+                gridBagConstraints.weighty = 1.0;
+                add(contentJPanel, gridBagConstraints);
 
-                add(hostnameJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(65, 50, 325, -1));
+                backgroundJPabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+                gridBagConstraints.weightx = 1.0;
+                add(backgroundJPabel, gridBagConstraints);
 
         }//GEN-END:initComponents
 
@@ -396,7 +459,9 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
     }
     
         // Variables declaration - do not modify//GEN-BEGIN:variables
+        private javax.swing.JLabel backgroundJPabel;
         private javax.swing.ButtonGroup buttonGroup1;
+        private javax.swing.JPanel contentJPanel;
         public javax.swing.JRadioButton dhcpDisabledRadioButton;
         public javax.swing.JRadioButton dhcpEnabledRadioButton;
         private javax.swing.JLabel dhcpIPaddrJLabel;
@@ -413,7 +478,6 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
         public javax.swing.JTextField hostnameJTextField;
         private javax.swing.JLabel jLabel10;
         private javax.swing.JLabel jLabel2;
-        private javax.swing.JLabel jLabel3;
         private javax.swing.JLabel jLabel4;
         private javax.swing.JSeparator jSeparator1;
         private javax.swing.JLabel optionalJLabel;

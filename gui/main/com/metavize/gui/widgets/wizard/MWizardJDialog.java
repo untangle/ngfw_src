@@ -27,6 +27,7 @@ import javax.swing.*;
 import javax.swing.text.*;
 import javax.swing.table.*;
 import javax.swing.event.*;
+import java.awt.Dimension;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.*;
@@ -53,7 +54,7 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
     // LABEL SPECS ////
     protected Font NORMAL_FONT = new Font("Default", 0, 16);
     protected Font BOLD_FONT = new Font("Default", 1, 16);
-    protected int FONT_SPACING = 10;
+    protected int  FONT_SPACING = 10;
     
     // WIZARD STATE //////
     protected int currentPage = 0;
@@ -65,6 +66,9 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
     // INFINITE PROGRESS INDICATOR //
     private static InfiniteProgressJComponent infiniteProgressJComponent = new InfiniteProgressJComponent();
     public static InfiniteProgressJComponent getInfiniteProgressJComponent(){ return infiniteProgressJComponent; }
+
+    // RENDERING HINTS //
+    private RenderingHints hints;
 
     public MWizardJDialog(Dialog parentDialog, boolean isModal){
 	super(parentDialog, isModal);
@@ -80,6 +84,14 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
 	super();
 	init(null);
     }
+
+    /*
+    public void paint(Graphics g){
+	Graphics2D g2 = (Graphics2D) g;
+	g2.setRenderingHints(hints);
+	super.paint(g);
+    }
+    */
 
     protected void init(Window parentWindow){
 	setGlassPane(infiniteProgressJComponent);
@@ -100,6 +112,11 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
 	ICON_COMPLETED = new ImageIcon( getClass().getResource("/com/metavize/gui/widgets/wizard/IconCompleteState14x14.png") );
 	ICON_CURRENT = ICON_COMPLETED; //new ImageIcon( getClass().getResource("/com/metavize/gui/widgets/wizard/IconCurrentState14x14.png") );
 	ICON_UNCOMPLETED = new ImageIcon( getClass().getResource("/com/metavize/gui/widgets/wizard/IconUncompleteState14x14.png") );
+
+	hints = new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+	hints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	hints.put(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+	hints.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
     }
 
     protected Dimension getTitleJPanelPreferredSize(){ return new Dimension(250,360); }
