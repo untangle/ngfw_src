@@ -39,14 +39,10 @@ public class NetworkAliasJPanel extends MEditTableJPanel{
 	super.setAuxJPanelEnabled(true);
         
 	// add a basic description
-	JLabel descriptionJLabel = new JLabel("<html><b>If your EdgeGuard is Routing</b> (NAT is being used within the "
-					      + "Network Sharing appliance), then you can use Network Aliases to make EdgeGuard "
-					      + "accept traffic destined to any number of public IP addresses.  You can then "
-					      + "redirect that traffic to hosts on your internal network."
-					      + "<br><br>"
-					      + "<b>If your EdgeGuard is Bridging</b> (NAT is not being used within the Network "
-					      + "Sharing appliance), then you can use Network Aliases to make EdgeGuard bridge "
-					      + "subnets outside of its own bridged subnet.</html>");
+	JLabel descriptionJLabel = new JLabel("<html>Aliases give more IP addresses to your EdgeGuard. This is useful"
+                                          + "if you wish to bridge more than one subnet as a <b>Transparent Bridge</b>."
+                                          + "This is also useful if you wish to assign more external IP addresses to"
+                                          + "redirect to machines on the internal network (<b>NAT</b>).");
 	descriptionJLabel.setFont(new Font("Default", 0, 12));
 	auxJPanel.setLayout(new BorderLayout());
 	auxJPanel.add(descriptionJLabel);
