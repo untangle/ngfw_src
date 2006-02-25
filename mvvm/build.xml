@@ -33,8 +33,6 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
                    install.thirdparty, install.reports"/>
   <target name="pkg.clean" depends="clean.nuke"/>
 
-
-
   <target name="gensrc.servlets">
     <!-- We need fork to avoid class duplication bug in ant -->
     <java classname="org.apache.jasper.JspC"
@@ -698,7 +696,6 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <fileset refid="log4j.jarset"/>
       <fileset refid="postgresql.jarset"/>
     </copy>
-
 
     <!-- java endorsed directory -->
 

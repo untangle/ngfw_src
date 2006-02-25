@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -33,8 +33,9 @@ public class HttpInvokerStub implements InvocationHandler, Serializable
 
     private static ClassLoader classLoader;
 
+    private static transient int timeout = -1;
+
     private final URL url;
-    private final int timeout;
     private final LoginSession loginSession;
     private final Integer targetId;
 
@@ -44,7 +45,9 @@ public class HttpInvokerStub implements InvocationHandler, Serializable
                            Integer targetId)
     {
         this.url = url;
-        this.timeout = timeout;
+        if (0 > timeout) {
+            this.timeout = timeout;
+        }
         this.loginSession = loginSession;
         this.targetId = targetId;
     }
@@ -55,10 +58,19 @@ public class HttpInvokerStub implements InvocationHandler, Serializable
         this.loginSession = null;
         this.targetId = null;
         this.url = url;
-        this.timeout = timeout;
+        if (0 > timeout) {
+            this.timeout = timeout;
+        }
         if (classLoader != null) {
             this.classLoader = classLoader;
         }
+    }
+
+    // static methods ---------------------------------------------------------
+
+    public static void setTimeout(int timeout)
+    {
+        HttpInvokerStub.timeout = timeout;
     }
 
     // public methods ---------------------------------------------------------

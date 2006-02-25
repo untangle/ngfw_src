@@ -142,6 +142,11 @@ class AdminManagerImpl implements AdminManager
         return HttpInvoker.invoker().getLoginSessions();
     }
 
+    public void logout()
+    {
+        HttpInvoker.invoker().logoutActiveLogin();
+    }
+
     public LoginSession whoAmI()
     {
         return HttpInvoker.invoker().getActiveLogin();

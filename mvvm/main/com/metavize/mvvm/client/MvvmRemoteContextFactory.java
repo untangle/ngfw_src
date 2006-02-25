@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -85,7 +85,8 @@ public class MvvmRemoteContextFactory
      * @exception MvvmConnectException when an MvvmLogin object cannot
      *    be accessed at given <code>host</code>
      */
-    public boolean isActivated(String host, int port, int timeout, boolean secure)
+    public boolean isActivated(String host, int port, int timeout,
+                               boolean secure)
         throws MvvmConnectException
     {
         URL url = makeURL(host, port, secure);
@@ -146,8 +147,9 @@ public class MvvmRemoteContextFactory
      * @exception MultipleLoginsException when there is already an
      * interactive login and force is false.
      */
-    public MvvmRemoteContext interactiveLogin(String host, int port, String username,
-                                              String password, int timeout,
+    public MvvmRemoteContext interactiveLogin(String host, int port,
+                                              String username, String password,
+                                              int timeout,
                                               ClassLoader classLoader,
                                               boolean secure, boolean force)
         throws MvvmConnectException, FailedLoginException,
@@ -181,14 +183,17 @@ public class MvvmRemoteContextFactory
      * @exception FailedLoginException if the key isn't kosher or the
      * product has already been activated
      */
-    public MvvmRemoteContext activationLogin(String host, String key, int timeout, ClassLoader classLoader, boolean secure)
+    public MvvmRemoteContext activationLogin(String host, String key,
+                                             int timeout,
+                                             ClassLoader classLoader,
+                                             boolean secure)
         throws MvvmConnectException, FailedLoginException
     {
         return activationLogin( host, 0, key, timeout, classLoader, secure );
     }
 
     /**
-     * Activates the EdgeGuard using the given key. 
+     * Activates the EdgeGuard using the given key.
      *
      * @param host the host of the Mvvm.
      * @param port the the port the server is on.
@@ -199,9 +204,13 @@ public class MvvmRemoteContextFactory
      * @return a <code>MvvmRemoteContext</code> value
      * @exception MvvmConnectException when an MvvmLogin object cannot
      *    be accessed at given <code>host</code> and <code>port</code>.
-     * @exception FailedLoginException if the key isn't kosher or the product has already been activated
+     * @exception FailedLoginException if the key isn't kosher or the
+     *    product has already been activated
      */
-    public MvvmRemoteContext activationLogin(String host, int port, String key, int timeout, ClassLoader classLoader, boolean secure)
+    public MvvmRemoteContext activationLogin(String host, int port, String key,
+                                             int timeout,
+                                             ClassLoader classLoader,
+                                             boolean secure)
         throws MvvmConnectException, FailedLoginException
     {
         URL url = makeURL(host, port, secure);
@@ -215,24 +224,6 @@ public class MvvmRemoteContextFactory
         }
 
         return remoteContext;
-    }
-
-    /** Utility to create a URL based on the host, port and whether or not it is secure
-     * @param host the host of the Mvvm.
-     * @param port the the port the server is on.
-     * @param secure use a SSL connection.
-     * @return the remote URL.
-     * @exception MvvmConnectException if an error occurs, this should never occur.
-     */
-    private URL makeURL(String host, int port, boolean secure)
-        throws MvvmConnectException
-    {
-        try {
-            if ( port <= 0 ) return new URL(secure ? "https" : "http", host, "/http-invoker");
-            else             return new URL(secure ? "https" : "http", host, port, "/http-invoker");
-        } catch (MalformedURLException exn) { /* shouldn't happen */
-            throw new MvvmConnectException( exn );
-        }
     }
 
     /**
@@ -270,6 +261,11 @@ public class MvvmRemoteContextFactory
         return remoteContext;
     }
 
+    public void setTimeout(int timeout)
+    {
+        HttpInvokerStub.setTimeout(timeout);
+    }
+
     public void logout()
     {
         synchronized (this) {
@@ -303,6 +299,26 @@ public class MvvmRemoteContextFactory
             return (MvvmLogin)his.invoke(null, null, null);
         } catch (Exception exn) {
             throw new RuntimeException(exn); // XXX
+        }
+    }
+
+    /**
+     * Utility to create a URL based on the host, port and whether or
+     * not it is secure
+     * @param host the host of the Mvvm.
+     * @param port the the port the server is on.
+     * @param secure use a SSL connection.
+     * @return the remote URL.
+     * @exception MvvmConnectException if an error occurs, this should never occur.
+     */
+    private URL makeURL(String host, int port, boolean secure)
+        throws MvvmConnectException
+    {
+        try {
+            if ( port <= 0 ) return new URL(secure ? "https" : "http", host, "/http-invoker");
+            else             return new URL(secure ? "https" : "http", host, port, "/http-invoker");
+        } catch (MalformedURLException exn) { /* shouldn't happen */
+            throw new MvvmConnectException( exn );
         }
     }
 }

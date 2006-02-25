@@ -44,6 +44,18 @@
   </servlet-mapping>
 
   <servlet>
+    <servlet-name>FileSaver</servlet-name>
+    <servlet-class>
+      com.metavize.tran.exploder.browser.FileSaver
+    </servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>FileSaver</servlet-name>
+    <url-pattern>/put/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
     <servlet-name>CommandRunner</servlet-name>
     <servlet-class>
       com.metavize.tran.exploder.browser.CommandRunner

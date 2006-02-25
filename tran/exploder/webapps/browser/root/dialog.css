@@ -21,6 +21,13 @@
                    padding: 2px;
                    }
 
+.dialog-exit { background-color: pink;
+               font-weight: bold;
+               padding: 2px;
+               width: 15px;
+               height: 15px;
+               }
+
 #click-blocker { position: absolute;
                  z-index: 1;
                  top: 0;

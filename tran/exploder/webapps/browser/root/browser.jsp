@@ -17,7 +17,7 @@
 <body>
 
 <div id="toolbar">
-<input type="button" value="upload" onclick="uploadFile()"/>
+<input type="button" value="upload" onclick="testDialog()"/>
 </div>
 
 <!-- <iframe id="toolbar" src="toolbar.jsp"> -->

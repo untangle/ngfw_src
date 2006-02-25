@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -148,7 +148,7 @@ class HttpInvoker extends InvokerBase
                 return;
             }
 
-            if (logger.isDebugEnabled()) 
+            if (logger.isDebugEnabled())
                 logger.debug("Invoking " + target.getClass() + "." + methodName);
 
             Method method = targetDesc.getMethod(methodName);
@@ -284,10 +284,14 @@ class HttpInvoker extends InvokerBase
         return logins.keySet().toArray(new LoginSession[0]);
     }
 
-    // Note -- thread local value returned.
     LoginSession getActiveLogin()
     {
         return activeLogin.get();
+    }
+
+    void logoutActiveLogin()
+    {
+        activeLogin.remove();
     }
 
     // private classes --------------------------------------------------------
