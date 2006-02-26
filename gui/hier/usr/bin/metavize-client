@@ -14,9 +14,8 @@ JAVA_HOME=${JAVA_HOME:-/opt/java}
 
 export JAVA_HOME
 
-if [ $# != 1 -o x$1 = "xlocalhost" ] ; then
-    # the SSL key has a canonical name of $(hostname)
-    HOST="$(hostname)"
+if [ $# != 1 ] ; then
+    HOST="localhost"
 else
     HOST="$1"
 fi
