@@ -10,8 +10,12 @@ afterReconfigure() {
     # Gotta wait a little whlie for the bridge to reconfigure
     sleep 5
 
-    /etc/init.d/ntpdate restart
-    /etc/init.d/ntp-server restart
+    if [ -x /etc/init.d/ntpdate ]; then
+        /etc/init.d/ntpdate restart
+    fi
+    if [ -x /etc/init.d/ntp-server ]; then
+        /etc/init.d/ntp-server restart
+    fi
 
     if [ -f "$REGINFO" ]; then
         if [ ! -f "$REGDONE" -o "$REGDONE" -ot "$REGINFO" ]; then
