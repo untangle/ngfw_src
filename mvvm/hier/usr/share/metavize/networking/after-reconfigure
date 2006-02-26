@@ -11,6 +11,7 @@ afterReconfigure() {
     sleep 5
 
     /etc/init.d/ntpdate restart
+    /etc/init.d/ntp-server restart
 
     if [ -f "$REGINFO" ]; then
         if [ ! -f "$REGDONE" -o "$REGDONE" -ot "$REGINFO" ]; then
