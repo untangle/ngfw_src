@@ -31,7 +31,7 @@ import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.ValidateException;
 
-public class NatAdvancedSettingsImpl implements NatAdvancedSettings
+public class NatAdvancedSettingsImpl implements NatAdvancedSettings, Serializable
 {
     // !!!! private static final long serialVersionUID = 4349679825783697834L;
     private final NetworkSpacesSettings networkSpacesSettings;

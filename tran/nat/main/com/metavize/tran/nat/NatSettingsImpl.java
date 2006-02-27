@@ -37,7 +37,7 @@ import com.metavize.mvvm.tran.ValidateException;
  * @hibernate.class
  * table="tr_nat_settings"
  */
-public class NatSettingsImpl implements NatSettings
+public class NatSettingsImpl implements NatSettings, Serializable
 {
     // !!!! private static final long serialVersionUID = 4349679825783697834L;
 
