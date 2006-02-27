@@ -64,12 +64,13 @@ public class ServerRoutingWizardGroupsJPanel extends MWizardPageJPanel {
 		rowIndex++;
 		newElem = new VpnGroup();
 		newElem.setLive( (Boolean) rowVector.elementAt(2) );
-		newElem.setName( (String) rowVector.elementAt(3) );
-		try{ newElem.setAddress( IPaddr.parse((String) rowVector.elementAt(4)) ); }
+		newElem.setUseDNS( (Boolean) rowVector.elementAt(3) );
+		newElem.setName( (String) rowVector.elementAt(4) );
+		try{ newElem.setAddress( IPaddr.parse((String) rowVector.elementAt(5)) ); }
 		catch(Exception e){ exception = new Exception("Invalid \"IP address\" in row: " + rowIndex); return; }
-		try{ newElem.setNetmask( IPaddr.parse((String) rowVector.elementAt(5)) ); }
+		try{ newElem.setNetmask( IPaddr.parse((String) rowVector.elementAt(6)) ); }
 		catch(Exception e){ exception = new Exception("Invalid \"netmask\" in row: " + rowIndex); return; }
-		newElem.setDescription( (String) rowVector.elementAt(6) );
+		newElem.setDescription( (String) rowVector.elementAt(7) );
 		elemList.add(newElem);
 	    }	
 		

@@ -128,8 +128,11 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	    lastConfigState = configState;
 	vpnServerAddress = vpnTransform.getVpnServerAddress();
 	KeyButtonRunnable.setVpnTransform( vpnTransform );
-	if( !lastConfigState.equals(configState) )
-	    generateGui();
+	if( !lastConfigState.equals(configState) ){
+	    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+		generateGui();
+	    }});
+	}
 	super.refreshAll();
 	lastConfigState = configState;
     }
