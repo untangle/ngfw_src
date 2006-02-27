@@ -80,18 +80,18 @@ public class DhcpMap
         " CASE WHEN (lease.event_type = 0) THEN 0 ELSE 3 END AS event_type " +
         " FROM tr_nat_evt_dhcp_abs_leases AS glue, tr_nat_evt_dhcp_abs AS evt, dhcp_abs_lease AS lease " +
         " WHERE glue.event_id=evt.event_id AND glue.lease_id = lease.event_id " + 
-        "  AND (( ? <= evt.time_stamp and evt.time_stamp <= ? ) or " +
-        " (( ? <= lease.end_of_lease and lease.end_of_lease <= ? ))) order by evt.time_stamp";
+        "  AND (( ? <= evt.time_stamp and evt.time_stamp <= ? ) OR " +
+        " (( ? <= lease.end_of_lease and lease.end_of_lease <= ? ))) ORDER BY evt.time_stamp";
 
     private static final String RELATIVE_QUERY =
         "SELECT evt.time_stamp, evt.end_of_lease, evt.ip, evt.hostname, evt.event_type " +
-        "FROM tr_nat_evt_dhcp AS evt WHERE ( ? <= evt.time_stamp and evt.time_stamp <= ? ) OR " +
-        " ( ? <= evt.end_of_lease AND evt.end_of_lease <= ? ) order by evt.time_stamp";
+        "FROM tr_nat_evt_dhcp AS evt WHERE ( ? <= evt.time_stamp AND evt.time_stamp <= ? ) OR " +
+        " ( ? <= evt.end_of_lease AND evt.end_of_lease <= ? ) ORDER BY evt.time_stamp";
 
     private static final String STATIC_HOST_QUERY =
         "SELECT hostname_list, static_address " + 
-        " FROM dns_static_host_rule as rule,tr_nat_dns_hosts as list,tr_nat_settings as settings " + 
-        " where ( rule.rule_id=list.rule_id ) and ( settings.settings_id=list.setting_id )";
+        " FROM mvvm_dns_static_host_rule AS rule,tr_nat_dns_hosts AS list,tr_nat_settings AS settings " + 
+        " WHERE ( rule.rule_id=list.rule_id ) AND ( settings.settings_id=list.setting_id )";
 
     private static final String MANUAL_MAP_QUERY =
         "SELECT addr, name " + 
