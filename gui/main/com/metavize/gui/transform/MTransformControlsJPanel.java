@@ -252,7 +252,9 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
 
 
     public void refreshGui(){
-	reloadJButton.doClick();
+	SwingUtilities.invokeLater( new Runnable(){ public void run(){
+	    reloadJButton.doClick();
+	}});
     }
 
     public void refreshAll() throws Exception {
