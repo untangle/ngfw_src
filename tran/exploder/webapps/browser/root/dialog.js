@@ -19,13 +19,10 @@ function Dialog(title)
    var md = s.appendChild(document.createElement("div"));
    Element.addClassName(md, "dialog");
 
-   var titlebar = md.appendChild(document.createElement("div"));
-   Element.addClassName(titlebar, "dialog-titlebar");
-   titlebar.appendChild(document.createTextNode(title));
-   var exit = titlebar.appendChild(document.createElement("div"));
-   Element.addClassName(exit, "dialog-close");
-
-   exit.onclick = function() { this.Dialog.setVisible(false); }
+   var titlebar = new TitleBar(md, title);
+   with (this) {
+      titlebar.onClose = function() { setVisible(false); };
+   }
 
    //md.appendChild(content);
    md.appendChild(document.createTextNode("HOLY CRAP"));
@@ -40,7 +37,7 @@ Dialog.prototype.setVisible = function(visible)
          var b = document.getElementsByTagName("body")[0];
          b.appendChild(this.div);
       } else {
-         this.div.parentNode.removeChild(dialog);
+         this.div.parentNode.removeChild(this.div);
       }
 
       this.clickBlocker.setVisible(visible);
@@ -49,6 +46,35 @@ Dialog.prototype.setVisible = function(visible)
    this.visible = visible;
 }
 
+// TitleBar
+
+function TitleBar(parent, title)
+{
+   this.parent = parent;
+
+   var elem = parent.appendChild(document.createElement("table"));
+   Element.addClassName(elem, "titlebar");
+
+   var tr = elem.appendChild(document.createElement("tr"));
+
+   var td = tr.appendChild(document.createElement("td"));
+   this.titleText = td.appendChild(document.createTextNode(title));
+
+   td = tr.appendChild(document.createElement("td"));
+   Element.addClassName(td, "titlebar-close");
+   var close = td.appendChild(document.createElement("img"));
+   close.src = "close.gif";
+   with (this) {
+      close.onclick = function() { onClose(); };
+   }
+}
+
+TitleBar.prototype.setTitle = function(title)
+{
+   this.titleText.textContent = title;
+}
+
+TitleBar.prototype.onClose = function() { alert("OH NO!"); }
 
 // ClickBlocker
 

@@ -16,17 +16,16 @@
           top: -2px;
           }
 
-.dialog-titlebar { background-color: purple;
-                   font-weight: bold;
-                   padding: 2px;
-                   }
+/* titlebar */
 
-.dialog-close { background-color: pink;
-               font-weight: bold;
-               padding: 2px;
-               width: 15px;
-               height: 15px;
-               }
+.titlebar { width: 100%;
+            background-color: purple;
+            font-weight: bold;
+            padding: 2px;
+            }
+
+.titlebar-close { text-align: right; }
+
 
 #click-blocker { position: absolute;
                  z-index: 1;
