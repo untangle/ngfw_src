@@ -2,20 +2,25 @@
 <%@ page language="java" import="com.metavize.mvvm.*, com.metavize.mvvm.client.*, com.metavize.mvvm.security.Tid, com.metavize.mvvm.tran.*, com.metavize.mvvm.tapi.*, com.metavize.mvvm.util.SessionUtil, org.apache.log4j.helpers.AbsoluteTimeDateFormat, java.util.Properties, java.net.URL, java.io.*, java.util.Vector, java.util.Collections, java.util.Comparator, javax.naming.*" %>
 
 <%
-
-	// ENUMERATE THE DIRECTORIES IN REPORTS
+	// ENUMERATE THE ARCHIVE REPORT DIRECTORIES
+        // note that these directory names are in form of 'YYYY-MM-DD'
 	String path = System.getProperty("bunnicula.home") + "/web/reports";
 	File mvvmReportsFile = new File(path);
 	Vector<File> directories = new Vector<File>();
 	File[] allFiles = mvvmReportsFile.listFiles();
-	for( File file : allFiles ){
-		if( file.isDirectory()
-		    && (file.getName().charAt(4) == '-')
-		    && (file.getName().charAt(7) == '-') )
-			directories.add(file);
-	}
+        String filenameTemplate = "YYYY-MM-DD";
+        String filename;
+        for( File file : allFiles ){
+            if(true == file.isDirectory()) {
+                filename = file.getName();
+                if (filename.length() == filenameTemplate.length() &&
+                    filename.charAt(4) == filenameTemplate.charAt(4) &&
+                    filename.charAt(7) == filenameTemplate.charAt(7))
+                    directories.add(file);
+            }
+        }
 
-	// ORDER THE DIRECTORIES
+	// ORDER THE ARCHIVE REPORT DIRECTORIES
 	Comparator<File> directoryComparator = new Comparator<File>(){
 		public int compare(File f1, File f2){ 
 			String n1 = f1.getName();
@@ -47,8 +52,6 @@
 		public boolean equals(Object o){ return true; }
 		};
 	Collections.sort(directories, directoryComparator);
-	
-
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -177,8 +180,6 @@ h4 {
 
 
 <BODY>
-
-
     <center>
       <table border="0" cellpadding="0" cellspacing="0" width="904">
 
@@ -269,4 +270,3 @@ h4 {
 
 </BODY>
 </HTML>
-
