@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -14,6 +14,7 @@ package com.metavize.mvvm.engine;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,7 +22,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.metavize.mvvm.security.LoginSession;
-import java.net.URL;
 
 
 class TargetDesc
@@ -52,7 +52,7 @@ class TargetDesc
         }
         this.methods = Collections.unmodifiableMap(ms);
 
-        HttpInvokerStub his = new HttpInvokerStub(url, timeout, ls, targetId);
+        HttpInvokerStub his = new HttpInvokerStub(url, ls, targetId);
         this.proxy = Proxy.newProxyInstance(cl, ifaces, his);
     }
 

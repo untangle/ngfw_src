@@ -289,9 +289,11 @@ public class MvvmRemoteContextFactory
 
     private MvvmLogin mvvmLogin(URL url, int timeout, ClassLoader classLoader)
     {
+        HttpInvokerStub.setTimeout(timeout);
+
         // Note -- this login session is completely ignored by the server
         // (which it must be since it's made on the client).
-        HttpInvokerStub his = new HttpInvokerStub(url, timeout, classLoader);
+        HttpInvokerStub his = new HttpInvokerStub(url, classLoader);
 
         MvvmLogin mvvmLogin;
         try {
@@ -315,8 +317,11 @@ public class MvvmRemoteContextFactory
         throws MvvmConnectException
     {
         try {
-            if ( port <= 0 ) return new URL(secure ? "https" : "http", host, "/http-invoker");
-            else             return new URL(secure ? "https" : "http", host, port, "/http-invoker");
+            if (port <= 0) {
+                return new URL(secure ? "https" : "http", host, "/http-invoker");
+            } else {
+                return new URL(secure ? "https" : "http", host, port, "/http-invoker");
+            }
         } catch (MalformedURLException exn) { /* shouldn't happen */
             throw new MvvmConnectException( exn );
         }

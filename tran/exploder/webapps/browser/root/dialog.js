@@ -25,6 +25,8 @@ function Dialog(title)
    var exit = titlebar.appendChild(document.createElement("div"));
    Element.addClassName(exit, "dialog-close");
 
+   exit.onclick = function() { this.Dialog.setVisible(false); }
+
    //md.appendChild(content);
    md.appendChild(document.createTextNode("HOLY CRAP"));
 

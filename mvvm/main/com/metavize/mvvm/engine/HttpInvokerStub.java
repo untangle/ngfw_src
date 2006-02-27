@@ -33,7 +33,7 @@ public class HttpInvokerStub implements InvocationHandler, Serializable
 
     private static ClassLoader classLoader;
 
-    private static transient int timeout = -1;
+    private static int timeout = 0;
 
     private final URL url;
     private final LoginSession loginSession;
@@ -41,26 +41,20 @@ public class HttpInvokerStub implements InvocationHandler, Serializable
 
     // constructors -----------------------------------------------------------
 
-    public HttpInvokerStub(URL url, int timeout, LoginSession loginSession,
+    public HttpInvokerStub(URL url, LoginSession loginSession,
                            Integer targetId)
     {
         this.url = url;
-        if (0 > timeout) {
-            this.timeout = timeout;
-        }
         this.loginSession = loginSession;
         this.targetId = targetId;
     }
 
 
-    public HttpInvokerStub(URL url, int timeout, ClassLoader classLoader)
+    public HttpInvokerStub(URL url, ClassLoader classLoader)
     {
         this.loginSession = null;
         this.targetId = null;
         this.url = url;
-        if (0 > timeout) {
-            this.timeout = timeout;
-        }
         if (classLoader != null) {
             this.classLoader = classLoader;
         }
