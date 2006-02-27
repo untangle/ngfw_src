@@ -109,12 +109,13 @@ class DirectoryTableModel extends MSortedTableModel<Object>{
 
 	for( IPMaddrRule newElem : entries ){
 	    rowIndex++;
-            tempRow = new Vector(5);
+            tempRow = new Vector(6);
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );
             tempRow.add( newElem.getIpMaddr().toString() );
 	    tempRow.add( newElem.getName() );
             tempRow.add( newElem.getDescription() );
+	    tempRow.add( newElem );
             allRows.add( tempRow );
         }
         return allRows;
