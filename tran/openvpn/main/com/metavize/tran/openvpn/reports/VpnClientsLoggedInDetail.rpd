@@ -25,7 +25,7 @@ SELECT start_time, \
   FROM tr_openvpn_connect_evt \
   WHERE start_time >= $P{startTime} \
      AND start_time < $P{endTime} \
-  ORDER BY client_name ASC
+  ORDER BY start_time DESC
 
 TOPLEFT.label=Timestamp
 TOPLMID.label=Logged Off

@@ -19,7 +19,7 @@ SELECT time_stamp, \
   FROM tr_openvpn_distr_evt \
   WHERE time_stamp >= $P{startTime} \
     AND time_stamp < $P{endTime} \
-  ORDER BY client_name ASC
+  ORDER BY time_stamp DESC
 
 TOPLEFT.label=Timestamp
 TOPLMID.label=
