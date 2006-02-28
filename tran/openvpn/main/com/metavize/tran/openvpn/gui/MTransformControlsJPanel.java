@@ -53,6 +53,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	    // WIZARD/STATUS
 	    WizardJPanel wizardJPanel = new WizardJPanel( vpnTransform, this );
 	    addTab( WIZARD_NAME, null, wizardJPanel );
+	    addRefreshable( WIZARD_NAME, wizardJPanel );
 
 	    // BUTTON CONTROLS
 	    super.saveJButton.setVisible(false);
@@ -64,6 +65,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	    // WIZARD/STATUS
 	    WizardJPanel wizardJPanel = new WizardJPanel( vpnTransform, this );
 	    addTab( WIZARD_NAME, null, wizardJPanel );
+	    addRefreshable( WIZARD_NAME, wizardJPanel );
 
 	    // EVENT LOG ///////
 	    LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
@@ -75,6 +77,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 
 	    // WIZARD/STATUS
 	    WizardJPanel wizardJPanel = new WizardJPanel( vpnTransform, this );
+	    addRefreshable( WIZARD_NAME, wizardJPanel );
 
 	    // EXPORTS
 	    ConfigExportsJPanel configExportsJPanel = new ConfigExportsJPanel();
@@ -100,7 +103,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	    addRefreshable( POOLS_NAME, configAddressGroupsJPanel );
 	    configAddressGroupsJPanel.setSettingsChangedListener(this);
 
-            // DONE TO REARRANGE THE DISPLAY ORDER indepently of the SAVE ORDER
+            // DONE TO REARRANGE THE DISPLAY ORDER indepently of the SAVE/REFRESH ORDER
 	    addTab( WIZARD_NAME, null, wizardJPanel );
 	    addTab( EXPORTS_NAME, null, configExportsJPanel );
 	    JTabbedPane clientsAndSitesJTabbedPane = addTabbedPane(CLIENTS_AND_SITES_NAME, null);
