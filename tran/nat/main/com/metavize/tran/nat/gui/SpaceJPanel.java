@@ -45,6 +45,16 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
     
     public void doSave(Object settings, boolean validateOnly) throws Exception {
 
+	// DETERMINE IF THE SPACE WAS REMOVED
+	NetworkSpacesSettings networkSpacesSettings = (NetworkSpacesSettings) settings;
+	NetworkSpace thisNetworkSpace = null;
+	List<NetworkSpace> networkSpaceList = (List<NetworkSpace>) networkSpacesSettings.getNetworkSpaceList();
+	for(NetworkSpace networkSpace : networkSpaceList )
+	    if( networkSpace.getBusinessPapers() == initNetworkSpace.getBusinessPapers() )
+		thisNetworkSpace = networkSpace;
+	if( thisNetworkSpace == null )
+	    return;
+
         // NAT ENABLED ///////////
         boolean natEnabled = natEnabledJRadioButton.isSelected();
 
@@ -81,15 +91,6 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
         
         // SAVE THE VALUES ////////////////////////////////////
 	if( !validateOnly ){
-	    NetworkSpacesSettings networkSpacesSettings = (NetworkSpacesSettings) settings;
-	    NetworkSpace thisNetworkSpace = null;
-	    List<NetworkSpace> networkSpaceList = (List<NetworkSpace>) networkSpacesSettings.getNetworkSpaceList();
-	    for(NetworkSpace networkSpace : networkSpaceList )
-		if( networkSpace.getBusinessPapers() == initNetworkSpace.getBusinessPapers() )
-		    thisNetworkSpace = networkSpace;
-	    if( thisNetworkSpace == null )
-		throw new Exception("network space not found during save: " + initNetworkSpace.getName());
-
 	    thisNetworkSpace.setIsNatEnabled(natEnabled);
 	    if( natEnabled ){
 		thisNetworkSpace.setNatSpace(natSpace);
