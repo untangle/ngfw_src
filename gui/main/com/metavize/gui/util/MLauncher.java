@@ -53,7 +53,7 @@ public class MLauncher {
         Util.setClassLoader( mUrlClassLoader );
 	
         // SET THE REPAINT OPTIONS
-        // RepaintManager.setCurrentManager( new DebugRepaintManager() );
+        //RepaintManager.setCurrentManager( new DebugRepaintManager() );
 	try{
 	    Toolkit.getDefaultToolkit().setDynamicLayout(true);
 	}
@@ -98,7 +98,7 @@ public class MLauncher {
         }
 
         // LOGIN
-	if( isActivated || (!isActivated && isRegistered) )
+	if( isActivated || (!isActivated && isRegistered && InitialSetupRoutingJPanel.getNatEnabled() && !InitialSetupRoutingJPanel.getNatChanged()) )
 	    new MLoginJFrame(args);
 	else
 	    Util.exit(0);

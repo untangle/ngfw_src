@@ -14,6 +14,8 @@ package com.metavize.gui.login;
 import com.metavize.gui.widgets.wizard.*;
 import com.metavize.gui.util.Util;
 import com.metavize.mvvm.security.*;
+import com.metavize.mvvm.client.MvvmRemoteContextFactory;
+
 import java.util.Set;
 import javax.swing.SwingUtilities;
 import java.awt.Color;
@@ -85,6 +87,8 @@ public class InitialSetupPasswordJPanel extends MWizardPageJPanel {
         if( !validateOnly ){
 	    try{
 		InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving Final Configuration...");
+		
+		// SEND FINAL SETTINGS
 		AdminSettings adminSettings = Util.getAdminManager().getAdminSettings();
 		Set<User> users = (Set<User>) adminSettings.getUsers();
 		for( User user : users )
@@ -92,8 +96,10 @@ public class InitialSetupPasswordJPanel extends MWizardPageJPanel {
 			user.setClearPassword(password);
 		Util.getAdminManager().setAdminSettings(adminSettings);
 		Util.getAdminManager().setTimeZone( TimeZone.getTimeZone(timezone) );
-		
+
+		// UPDATE NAT CONFIG
 		try{
+		    MvvmRemoteContextFactory.factory().setTimeout(10);
 		    if( InitialSetupRoutingJPanel.getNatEnabled() ){
 			Util.getNetworkManager().setWizardNatEnabled(InitialSetupRoutingJPanel.getAddress(),
 								     InitialSetupRoutingJPanel.getNetmask());

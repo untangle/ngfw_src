@@ -13,6 +13,7 @@ package com.metavize.gui.configuration;
 
 import com.metavize.gui.util.Util;
 import com.metavize.mvvm.*;
+import com.metavize.mvvm.client.MvvmRemoteContextFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -186,7 +187,10 @@ public class NetworkConnectivityTestJDialog extends javax.swing.JDialog implemen
             
             ConnectivityTester.Status status = null;
             try{
-                status = Util.getMvvmContext().getConnectivityTester().getStatus();
+		int initialTimeout = MvvmRemoteContextFactory.factory().getTimeout();
+		MvvmRemoteContextFactory.factory().setTimeout(60);
+                status = Util.getMvvmContext().getConnectivityTester().getStatus();		
+		MvvmRemoteContextFactory.factory().setTimeout(initialTimeout);
             }
             catch(Exception e){
                 Util.handleExceptionNoRestart("Error running connectivity tester", e);

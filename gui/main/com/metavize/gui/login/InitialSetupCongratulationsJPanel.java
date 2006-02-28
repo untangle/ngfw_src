@@ -16,8 +16,16 @@ import com.metavize.gui.util.Util;
 import com.metavize.mvvm.client.MvvmRemoteContextFactory;
 
 public class InitialSetupCongratulationsJPanel extends MWizardPageJPanel {
+
+    private String finalString;
     
     public InitialSetupCongratulationsJPanel() {
+
+	if( InitialSetupRoutingJPanel.getNatEnabled() && !InitialSetupRoutingJPanel.getNatChanged() )
+	    finalString = "<html>Press \"Finish\" to open a Login window.</html>";
+	else
+	    finalString = "<html><font color=\"#FF0000\">The address of EdgeGuard has been changed.  Please redirect your browser to the new address.</font></html>";
+
         initComponents();
     }
 
@@ -27,6 +35,7 @@ public class InitialSetupCongratulationsJPanel extends MWizardPageJPanel {
 
                 contentJPanel = new javax.swing.JPanel();
                 jLabel1 = new javax.swing.JLabel();
+                jLabel3 = new javax.swing.JLabel();
                 jLabel2 = new javax.swing.JLabel();
                 backgroundJPabel = new javax.swing.JLabel();
 
@@ -38,7 +47,7 @@ public class InitialSetupCongratulationsJPanel extends MWizardPageJPanel {
                 contentJPanel.setOpaque(false);
                 jLabel1.setFont(new java.awt.Font("Dialog", 1, 18));
                 jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                jLabel1.setText("<html>Congratulations!<br>Your EdgeGuard is configured.<br><br>Press \"Finish\" to open a login window.</html>");
+                jLabel1.setText("<html>Congratulations!<br>Your EdgeGuard is configured.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
@@ -47,11 +56,23 @@ public class InitialSetupCongratulationsJPanel extends MWizardPageJPanel {
                 gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
                 contentJPanel.add(jLabel1, gridBagConstraints);
 
+                jLabel3.setFont(new java.awt.Font("Dialog", 1, 18));
+                jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+                jLabel3.setText(finalString);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                contentJPanel.add(jLabel3, gridBagConstraints);
+
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel2.setText("<html>Use your newly created \"admin\" account with the<br>password you have chosen to login to EdgeGuard.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 1;
+                gridBagConstraints.gridy = 2;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.weighty = 1.0;
@@ -83,6 +104,7 @@ public class InitialSetupCongratulationsJPanel extends MWizardPageJPanel {
         private javax.swing.JPanel contentJPanel;
         private javax.swing.JLabel jLabel1;
         private javax.swing.JLabel jLabel2;
+        private javax.swing.JLabel jLabel3;
         // End of variables declaration//GEN-END:variables
     
 }
