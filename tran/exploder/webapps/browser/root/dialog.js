@@ -70,7 +70,7 @@ function TitleBar(parent, title)
    var close = td.appendChild(document.createElement("img"));
    close.src = "close.gif";
    with (this) {
-      close.onclick = function() { onClose(); };
+      close.onclick = function() { if (onClose) { onClose(); } };
    }
 }
 
@@ -79,7 +79,7 @@ TitleBar.prototype = {
          this.titleText.textContent = title;
       },
 
-      onClose: function() { alert("OH NO!"); }
+      onClose: null
 }
 
 // ClickBlocker
