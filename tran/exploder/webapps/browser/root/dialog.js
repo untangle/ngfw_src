@@ -1,13 +1,15 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-// Dialog
+// test
 
 function testDialog()
 {
    var dialog = new Dialog("Test Dialog", document.createTextNode("HOLY CRAP"));
    dialog.setVisible(true);
 }
+
+// Dialog
 
 function Dialog(title, content)
 {
@@ -29,20 +31,21 @@ function Dialog(title, content)
    this.clickBlocker = new ClickBlocker();
 }
 
-Dialog.prototype.setVisible = function(visible)
-{
-   if (visible != this.visible) {
-      if (visible) {
-         var b = document.getElementsByTagName("body")[0];
-         b.appendChild(this.div);
-      } else {
-         this.div.parentNode.removeChild(this.div);
+Dialog.prototype = {
+   setVisible: function(visible) {
+      if (visible != this.visible) {
+         if (visible) {
+            var b = document.getElementsByTagName("body")[0];
+            b.appendChild(this.div);
+         } else {
+            this.div.parentNode.removeChild(this.div);
+         }
+
+         this.clickBlocker.setVisible(visible);
       }
 
-      this.clickBlocker.setVisible(visible);
+      this.visible = visible;
    }
-
-   this.visible = visible;
 }
 
 // TitleBar
@@ -71,12 +74,13 @@ function TitleBar(parent, title)
    }
 }
 
-TitleBar.prototype.setTitle = function(title)
-{
-   this.titleText.textContent = title;
-}
+TitleBar.prototype = {
+      setTitle: function(title) {
+         this.titleText.textContent = title;
+      },
 
-TitleBar.prototype.onClose = function() { alert("OH NO!"); }
+      onClose: function() { alert("OH NO!"); }
+}
 
 // ClickBlocker
 
@@ -87,18 +91,19 @@ function ClickBlocker()
    this.visible = false;
 }
 
-ClickBlocker.prototype.setVisible = function(visible)
-{
-   if (visible != this.visible) {
-      if (visible) {
-         var b = document.getElementsByTagName("body")[0];
-         b.appendChild(this.div);
-      } else {
-         this.div.parentNode.removeChild(this.div);
+ClickBlocker.prototype = {
+   setVisible: function(visible) {
+      if (visible != this.visible) {
+         if (visible) {
+            var b = document.getElementsByTagName("body")[0];
+            b.appendChild(this.div);
+         } else {
+            this.div.parentNode.removeChild(this.div);
+         }
       }
-   }
 
-   this.visible = visible;
+      this.visible = visible;
+   }
 }
 
 // Old
