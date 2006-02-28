@@ -85,15 +85,16 @@ FileDialog.prototype.init = function(title, message)
    Element.addClassName(iframe, "hidden-target");
    iframe.name = "hidden-target";
 
-   var file = form.appendChild(document.createElement("input"));
-   file.type = "file"
-   file.name = "file";
+   var file = document.createElement("input");
+   file.type = "file";
+   form.appendChild(file);
 
-   var input = form.appendChild(document.createElement("input"));
+   var input = document.createElement("input");
    input.type = "button";
    input.value = "Upload";
+   form.appendChild(input);
 
-   // XXX close when done
+   // XXX close when do
 
    FileDialog.superclass.init.call(this, title, panel);
 }
