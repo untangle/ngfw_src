@@ -96,6 +96,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 	    parentJTabbedPane.addTab(name, icon, newJScrollPane);
 	else
 	    addTab(name, icon, newJScrollPane);
+	newJScrollPane.getVerticalScrollBar().setUnitIncrement(5);
 	return newJScrollPane;
     }
     //////////////////////////////////////

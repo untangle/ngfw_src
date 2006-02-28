@@ -177,6 +177,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
 	    addTab(index, name, icon, newJScrollPane);
 	SwingUtilities.invokeLater( new Runnable(){ public void run(){
 	    newJScrollPane.getVerticalScrollBar().setValue(0);
+	    newJScrollPane.getVerticalScrollBar().setUnitIncrement(5);
 	}});
 	return newJScrollPane;
     }
