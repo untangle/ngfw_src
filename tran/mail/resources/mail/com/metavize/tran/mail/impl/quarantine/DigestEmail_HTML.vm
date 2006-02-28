@@ -634,14 +634,12 @@ hr {
                               <a href="$linkgenerator.generatePurgeLink($record.getMailID())">Delete</a>&nbsp;|
                               &nbsp;<a href="$linkgenerator.generateRescueLink($record.getMailID())">Release</a></td>
                             <td>$jsEscaper.escapeJS($record.getMailSummary().Sender)</td>
-                            <!-- Before the whole new conditional block -->
                             <td>
                             #if ($record.getMailSummary().hasAttachments())
                               <img src="$image_root/with_attach.png"/>
                             #end
                             </td>
-                            <!-- After the whole new conditional block -->
-                            <td>$record.getMailSummary().QuarantineDetail</td>
+                            <td>$record.getMailSummary().FormattedQuarantineDetail</td>
                             <td>$jsEscaper.escapeJS($record.getMailSummary().Subject)</td>
                           </tr>
                           #set ($isEven = $isEven + 1)

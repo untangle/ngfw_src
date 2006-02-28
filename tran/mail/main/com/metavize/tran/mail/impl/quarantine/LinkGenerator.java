@@ -28,7 +28,7 @@ public class LinkGenerator {
   LinkGenerator(String base,
     String authTkn) {
     StringBuilder sb = new StringBuilder();
-    sb.append("http://");
+    sb.append("https://");
     sb.append(base);
     sb.append("/quarantine/manageuser?");
     sb.append(WebConstants.AUTH_TOKEN_RP);

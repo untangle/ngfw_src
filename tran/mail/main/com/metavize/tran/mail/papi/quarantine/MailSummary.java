@@ -81,6 +81,22 @@ public final class MailSummary
     m_quarantineDetail = det;
   }
 
+  public String getFormattedQuarantineDetail() {
+    //Attempts to convert to a formatted float.  If this fails (i.e.
+    //it isn't a number) then just return the detail.
+    try {
+      float f = Float.parseFloat(m_quarantineDetail);
+      return String.format("%03.1f", f);
+    }
+    catch(Exception ex) {
+      return m_quarantineDetail;
+    }
+  }
+
+  public void setFormattedQuarantineDetail(String detail) {
+    m_quarantineDetail = detail;
+  }
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
