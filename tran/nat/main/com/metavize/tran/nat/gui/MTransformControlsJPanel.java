@@ -76,6 +76,9 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     private RoutingJPanel routingJPanel;
 
     private void generateSpecificGui(){
+	
+	boolean businessPapers = false;
+
 	if(SetupState.BASIC.equals(setupState)){
 	    // REMOVE ADVANCED STUFF IF IT WAS THERE //
 	    if(spacesJTabbedPane != null){
@@ -150,18 +153,16 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	    if( interfaceMapJPanel == null ){
 		interfaceMapJPanel = new InterfaceMapJPanel();
 		spacesJTabbedPane.addTab(NAME_INTERFACE_MAP, null, interfaceMapJPanel);
-		addSavable(NAME_INTERFACE_MAP, interfaceMapJPanel);
-		addRefreshable(NAME_INTERFACE_MAP, interfaceMapJPanel);
 		interfaceMapJPanel.setSettingsChangedListener(this);
+		businessPapers = true;
 	    }
 
 	    // SPACE LIST //
 	    if( spaceListJPanel == null ){
 		spaceListJPanel = new SpaceListJPanel();
 		spacesJTabbedPane.addTab(NAME_SPACE_LIST, null, spaceListJPanel);
-		addSavable(NAME_SPACE_LIST, spaceListJPanel);
-		addRefreshable(NAME_SPACE_LIST, spaceListJPanel);
 		spaceListJPanel.setSettingsChangedListener(this);
+		businessPapers = true;
 	    }
 
 	    // SPACES //
@@ -194,6 +195,18 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 							  null, spaceJComponent, false, true) );
 		addSavable( networkSpace.getName() + " (" + NAME_SPACE + ")", (Savable)spaceJComponent);
 		addRefreshable( networkSpace.getName() + " (" + NAME_SPACE + ")", (Refreshable)spaceJComponent);
+	    }
+
+	    // INTERFACE MAP //
+	    if( businessPapers ){
+		addSavable(NAME_INTERFACE_MAP, interfaceMapJPanel);
+		addRefreshable(NAME_INTERFACE_MAP, interfaceMapJPanel);
+	    }
+
+	    // SPACE LIST //
+	    if( businessPapers ){
+		addSavable(NAME_SPACE_LIST, spaceListJPanel);
+		addRefreshable(NAME_SPACE_LIST, spaceListJPanel);
 	    }
 
 	    // ROUTING //
