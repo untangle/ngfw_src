@@ -84,7 +84,7 @@ public class LogJPanel extends MLogTableJPanel {
 
                 event = new Vector(6);
 		event.add( requestLog.getStart() );
-		event.add( requestLog.getEnd() );
+		event.add( (requestLog.getEnd()==null?new Date(0):requestLog.getEnd()) );
 		event.add( requestLog.getClientName() );
 		event.add( requestLog.getAddress().toString() + ":" + requestLog.getPort() );
 		event.add( requestLog.getBytesTx()/1024l );
