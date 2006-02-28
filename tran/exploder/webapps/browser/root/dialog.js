@@ -5,7 +5,7 @@
 
 function testDialog()
 {
-   var dialog = new Dialog("Test Dialog", document.createTextNode("HOLY CRAP"));
+   var dialog = new FileDialog("Test Dialog", "HOLY CRAP");
    dialog.setVisible(true);
 }
 
@@ -13,25 +13,31 @@ function testDialog()
 
 function Dialog(title, content)
 {
-   this.div = document.createElement("div");
-
-   var s = this.div.appendChild(document.createElement("div"));
-   Element.addClassName(s, "shadow");
-
-   var md = s.appendChild(document.createElement("div"));
-   Element.addClassName(md, "dialog");
-
-   var titlebar = new TitleBar(md, title);
-   with (this) {
-      titlebar.onClose = function() { setVisible(false); };
+   if (title) {
+      this.init(title, content);
    }
-
-   md.appendChild(content);
-
-   this.clickBlocker = new ClickBlocker();
 }
 
 Dialog.prototype = {
+   init: function(title, content) {
+      this.div = document.createElement("div");
+
+      var s = this.div.appendChild(document.createElement("div"));
+      Element.addClassName(s, "shadow");
+
+      var md = s.appendChild(document.createElement("div"));
+      Element.addClassName(md, "dialog");
+
+      var titlebar = new TitleBar(md, title);
+      with (this) {
+         titlebar.onClose = function() { setVisible(false); };
+      }
+
+      md.appendChild(content);
+
+      this.clickBlocker = new ClickBlocker();
+   },
+
    setVisible: function(visible) {
       if (visible != this.visible) {
          if (visible) {
@@ -46,6 +52,50 @@ Dialog.prototype = {
 
       this.visible = visible;
    }
+}
+
+// FileDialog
+
+FileDialog.prototype = new Dialog();
+FileDialog.prototype.constructor = FileDialog;
+FileDialog.superclass = Dialog.prototype;
+
+function FileDialog(title, message)
+{
+   if (title) {
+      this.init(title, message);
+   }
+}
+
+FileDialog.prototype.init = function(title, message)
+{
+   var panel = document.createElement("div");
+
+   var label = panel.appendChild(document.createElement("div"));
+   Element.addClassName(label, "label");
+   label.appendChild(document.createTextNode(message));
+
+   var form = panel.appendChild(document.createElement("form"));
+   form.action = "put"
+   form.method = "post";
+   form.enctype = "multipart/form-data";
+   form.target = "hidden-target";
+
+   var iframe = form.appendChild(document.createElement("iframe"));
+   Element.addClassName(iframe, "hidden-target");
+   iframe.name = "hidden-target";
+
+   var file = form.appendChild(document.createElement("input"));
+   file.type = "file"
+   file.name = "file";
+
+   var input = form.appendChild(document.createElement("input"));
+   input.type = "button";
+   input.value = "Upload";
+
+   // XXX close when done
+
+   FileDialog.superclass.init.call(this, title, panel);
 }
 
 // TitleBar
@@ -105,29 +155,3 @@ ClickBlocker.prototype = {
       this.visible = visible;
    }
 }
-
-// Old
-
-function uploadFile(url)
-{
-   var form = document.createElement("form");
-   form.action = "put"
-   form.method = "post";
-   form.enctype = "multipart/form-data";
-   form.target = "hidden-target";
-
-   var iframe = form.appendChild(document.createElement("iframe"));
-   iframe.name = "hidden-target";
-
-   var file = form.appendChild(document.createElement("input"));
-   file.type = "file"
-   file.name = "file";
-
-   input = form.appendChild(document.createElement("input"));
-   input.type = "button";
-   input.value = "Upload";
-   input.onclick = function() { alert("KAKA: " + file.value); dialog.close(); }
-
-   var dialog = modalDialog("Upload File", form);
-}
-

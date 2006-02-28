@@ -1,3 +1,7 @@
+.hidden-target { display: none; }
+
+.label { font-weight: bold }
+
 .shadow {
           position: absolute;
           z-index: 2;
