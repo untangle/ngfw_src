@@ -72,7 +72,6 @@ class DhcpManager
     private static final String DNS_MASQ_CMD_STOP     = DNS_MASQ_CMD + " stop";
 
     private static final String HOST_FILE             = "/etc/hosts";
-    private static final String HOST_NAME_FILE        = "/etc/hostname";
     private static final String[] HOST_FILE_START     = new String[] {
         HEADER,
         "127.0.0.1  localhost"
@@ -409,7 +408,7 @@ class DhcpManager
             sb.append( HOST_FILE_START[c] + "\n" );
         }
 
-        String hostname = getHostName();
+        String hostname = NetworkUtilPriv.getPrivInstance().loadHostname();
 
         /* Add both the unqualified and the qualified domain */
         if ( hostname.indexOf( "." ) > 0 ) {
@@ -450,35 +449,6 @@ class DhcpManager
         }
 
         writeFile( sb, HOST_FILE );
-    }
-
-    /* Get the hostname of the box */
-    private String getHostName()
-    {
-        String hostname = NetworkUtil.DEFAULT_HOSTNAME;
-
-        BufferedReader in = null;
-
-        /* Open up the interfaces file */
-        try {
-            in = new BufferedReader(new FileReader( HOST_NAME_FILE ));
-            String str;
-            str = in.readLine().trim();
-            /* Try to parse the hostname, throws an exception if it fails */
-            HostName.parse( str );
-            hostname = str;
-        } catch ( Exception ex ) {
-            /* Go to the default */
-            hostname = NetworkUtil.DEFAULT_HOSTNAME;
-        }
-
-        try {
-            if ( in != null ) in.close();
-        } catch ( Exception e ) {
-            logger.error( "Error closing file: " + e );
-        }
-
-        return hostname;
     }
 
     /**

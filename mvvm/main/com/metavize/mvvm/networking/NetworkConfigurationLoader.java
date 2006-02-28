@@ -130,6 +130,7 @@ class NetworkConfigurationLoader
     void loadRemoteSettings( RemoteSettings remote )
     {
         loadFlags( remote );
+        loadHostname( remote );
         loadHttpsPort( remote );
         loadSshFlag( remote );
     }
@@ -198,7 +199,6 @@ class NetworkConfigurationLoader
     {
         this.saveSettings = true;
     }
-
 
     private void loadDhcp( BasicNetworkSettings basic )
     {
@@ -320,6 +320,18 @@ class NetworkConfigurationLoader
             }
         } else {
             remote.setIsPublicAddressEnabled( false );
+        }
+    }
+
+    private void loadHostname( RemoteSettings remote )
+    {
+        String hostname = NetworkUtilPriv.getPrivInstance().loadHostname();
+        
+        if ( hostname != null && !NetworkUtil.DEFAULT_HOSTNAME.equals( hostname )) {
+            remote.setHostname( hostname );
+        } else {
+            remote.setIsHostnamePublic( false );
+            remote.setHostname( null );
         }
     }
 
@@ -462,9 +474,12 @@ class NetworkConfigurationLoader
             sw.appendVariable( FLAG_POST_FUNC, POST_FUNC_NAME );
         }
 
-        if ( remote.getHostname() != null ) {
+        String hostname = remote.getHostname();
+        /* The hostname itself is stored inside of /etc/hostname in saveHostname() */
+        if ( hostname != null && !NetworkUtil.DEFAULT_HOSTNAME.equals( hostname )) {
             sw.appendVariable( FLAG_IS_HOSTNAME_PUBLIC, "" + remote.getIsHostnamePublic());
-            sw.appendVariable( FLAG_HOSTNAME, remote.getHostname());
+        } else {
+            sw.appendVariable( FLAG_IS_HOSTNAME_PUBLIC, "" + false );
         }
         
         /* Append whether or not the public address is enabled */

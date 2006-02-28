@@ -36,6 +36,7 @@ import com.metavize.mvvm.argon.ArgonException;
 import com.metavize.mvvm.argon.IntfConverter;
 
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.ValidateException;
 
 import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
@@ -52,6 +53,8 @@ class NetworkUtilPriv extends NetworkUtil
     private static final Logger logger = Logger.getLogger( NetworkUtilPriv.class );
 
     private static final NetworkUtilPriv INSTANCE = new NetworkUtilPriv();
+
+    private static final String HOST_NAME_FILE        = "/etc/hostname";
 
     private static final int DDCLIENT_UPDATE_INTERVAL = 300; // Seconds (5 minutes)
     private static final String DDCLIENT_CMD          = "/etc/init.d/ddclient ";
@@ -689,6 +692,37 @@ class NetworkUtilPriv extends NetworkUtil
 
         return dnsServers;
     }
+
+    
+    /* Get the hostname of the box from the /etc/hostname file */
+    String loadHostname()
+    {
+        String hostname = NetworkUtil.DEFAULT_HOSTNAME;
+
+        BufferedReader in = null;
+
+        /* Open up the interfaces file */
+        try {
+            in = new BufferedReader(new FileReader( HOST_NAME_FILE ));
+            String str;
+            str = in.readLine().trim();
+            /* Try to parse the hostname, throws an exception if it fails */
+            HostName.parse( str );
+            hostname = str;
+        } catch ( Exception ex ) {
+            /* Go to the default */
+            hostname = NetworkUtil.DEFAULT_HOSTNAME;
+        }
+
+        try {
+            if ( in != null ) in.close();
+        } catch ( Exception e ) {
+            logger.error( "Error closing file: " + e );
+        }
+
+        return hostname;
+    }
+
 
     /************* PRIVATE **********/
     private SpaceInfo makeBasicNetworkSpace( BasicNetworkSettings basicNetworkSettings, 
