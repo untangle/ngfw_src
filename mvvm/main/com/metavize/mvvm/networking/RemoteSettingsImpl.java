@@ -203,17 +203,17 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
     public int httpsPort()
     {
         /* Make sure it is a valid port */
-        if ( this.httpsPort == 0 || this.httpsPort > 0xFFFF || httpsPort == 80 ) {
+        if (( this.httpsPort == 0 ) || ( this.httpsPort > 0xFFFF ) || ( httpsPort == 80 )) {
             this.httpsPort = DEF_HTTPS_PORT;
         }
-
+        
         return this.httpsPort;
     }
 
     public void httpsPort( int httpsPort )
     {
         /* Make sure that it is a valid port */
-        if ( httpsPort == 0 || httpsPort > 0xFFFF || httpsPort == 80 ) httpsPort = DEF_HTTPS_PORT;
+        if (( httpsPort == 0 ) || ( httpsPort > 0xFFFF ) || ( httpsPort == 80 )) httpsPort = DEF_HTTPS_PORT;
         
         this.httpsPort = httpsPort;
     }

@@ -234,9 +234,7 @@ public class NetworkManagerImpl implements NetworkManager
         if ( logger.isDebugEnabled()) logger.debug( "Loaded remote settings: " + newSettings );
         NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
 
-        String pa = nup.getPublicAddress( this.networkSettings, newSettings, this.ddnsSettings );
-
-        this.remote = new RemoteInternalSettings( newSettings, pa );
+        this.remote = nup.makeRemoteInternal( this.networkSettings, newSettings, this.ddnsSettings );
         
         saveRemoteSettings( this.remote );
 
@@ -558,8 +556,8 @@ public class NetworkManagerImpl implements NetworkManager
         int publicPort = -1;
 
         if ( this.remote != null ) {
-            publicAddress = this.remote.getPublicIPaddr();
-            publicPort    = this.remote.getPublicPort();
+            publicAddress = this.remote.getCurrentPublicIPaddr();
+            publicPort    = this.remote.getCurrentPublicPort();
         }
 
         /* Set the public address */
@@ -824,9 +822,7 @@ public class NetworkManagerImpl implements NetworkManager
         networkConfigurationLoader.loadRemoteSettings( remote );
 
         NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
-        String pa = nup.getPublicAddress( this.networkSettings, remote, this.ddnsSettings );
-
-        return new RemoteInternalSettings( remote, pa );
+        return nup.makeRemoteInternal( this.networkSettings, remote, this.ddnsSettings );
     }
 
     private NetworkSpacesInternalSettings loadNetworkSettings() throws NetworkException, ValidateException

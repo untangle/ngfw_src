@@ -63,10 +63,13 @@ public class RemoteInternalSettings
     private final boolean isHostnamePublic;
     private final int publicHttpsPort;
     
-    /* These are the computed values, and change with time */
+    /* These are computed values, and change with time */
+    private final IPaddr currentPublicIPaddr;
+    private final int    currentPublicPort;
     private final String currentPublicAddress;
         
-    public RemoteInternalSettings( RemoteSettings remote, String realPublicAddress )
+    public RemoteInternalSettings( RemoteSettings remote, IPaddr currentPublicIPaddr,
+                                   int currentPublicPort, String realPublicAddress )
     {
         this.isSshEnabled  = remote.isSshEnabled();
         this.isExceptionReportingEnabled = remote.isExceptionReportingEnabled();
@@ -78,12 +81,14 @@ public class RemoteInternalSettings
         this.outsideNetmask = remote.outsideNetmask();
         this.postConfigurationScript = remote.getPostConfigurationScript();
         this.hostname       = remote.getHostname();
+        this.isHostnamePublic = remote.getIsHostnamePublic();
         this.isPublicAddressEnabled = remote.getIsPublicAddressEnabled();
         this.publicAddress  = remote.getPublicIPaddr();
         this.publicPort     = remote.getPublicPort();
         this.publicHttpsPort = remote.httpsPort();
+        this.currentPublicIPaddr = currentPublicIPaddr;
+        this.currentPublicPort   = currentPublicPort;
         this.currentPublicAddress = realPublicAddress;
-        this.isHostnamePublic = remote.getIsHostnamePublic();
     }
 
     /* Set the post configuration script */
@@ -180,6 +185,17 @@ public class RemoteInternalSettings
     {
         return this.currentPublicAddress;
     }
+
+    /** @return the public url for the box, this is the address (may be hostname or ip address) */
+    public IPaddr getCurrentPublicIPaddr()
+    {
+        return this.currentPublicIPaddr;
+    }
+
+    public int getCurrentPublicPort()
+    {
+        return this.currentPublicPort;
+    }
     
     public RemoteSettingsImpl toSettings()
     {
@@ -195,11 +211,11 @@ public class RemoteInternalSettings
         rs.outsideNetmask( outsideNetmask());
         rs.setPostConfigurationScript( getPostConfigurationScript());
         rs.setHostname( getHostname());
+        rs.setIsHostnamePublic( getIsHostnamePublic());
         rs.setIsPublicAddressEnabled( getIsPublicAddressEnabled());
         rs.setPublicIPaddr( getPublicIPaddr());
         rs.setPublicPort( getPublicPort());
         rs.httpsPort( getPublicHttpsPort());
-        rs.setIsHostnamePublic( getIsHostnamePublic());
 
         return rs;
     }
@@ -218,7 +234,9 @@ public class RemoteInternalSettings
         sb.append( "\nHTTPS:       " + getPublicHttpsPort());
         sb.append( "\npublic:      " + getIsPublicAddressEnabled() + " " + getCurrentPublicAddress() + 
                    " / " + getPublicAddress());
-        sb.append( "\nhostname:    " + getHostname());
+        sb.append( "\npublic:      " + getCurrentPublicIPaddr() + ":" + getCurrentPublicPort());
+                   
+       sb.append( "\nhostname:    " + getHostname());
 
         return sb.toString();
     }

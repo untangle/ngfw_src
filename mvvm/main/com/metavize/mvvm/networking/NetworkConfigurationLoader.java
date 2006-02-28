@@ -39,6 +39,8 @@ import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
 
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.ParseException;
+
 import com.metavize.mvvm.tran.script.ScriptWriter;
 import com.metavize.mvvm.tran.script.ScriptRunner;
 
@@ -86,6 +88,7 @@ class NetworkConfigurationLoader
     /* Functionm declaration for the post configuration function */
     private static final String DECL_POST_CONF    = "function " + POST_FUNC_NAME + "() {";
     
+    private static final String FLAG_IS_HOSTNAME_PUBLIC = "MVVM_IS_HOSTNAME_EN";
     private static final String FLAG_HOSTNAME          = "MVVM_HOSTNAME";
     private static final String FLAG_PUBLIC_ADDRESS_EN = "MVVM_PUBLIC_ADDRESS_EN";
     private static final String FLAG_PUBLIC_ADDRESS    = "MVVM_PUBLIC_ADDRESS";
@@ -232,6 +235,8 @@ class NetworkConfigurationLoader
     {
         String host = null;
         String mask = null;
+        String hostname = null;
+        String publicAddress = null;
         
         /* Open up the interfaces file */
         try {
@@ -257,16 +262,14 @@ class NetworkConfigurationLoader
                         mask = removeQuotes( str.substring( FLAG_OUT_MASK.length() + 1 ));
                     } else if ( str.startsWith( FLAG_EXCEPTION )) {
                         remote.isExceptionReportingEnabled( parseBooleanFlag( str, FLAG_EXCEPTION ));
+                    } else if ( str.startsWith( FLAG_IS_HOSTNAME_PUBLIC )) {
+                        remote.setIsHostnamePublic( parseBooleanFlag( str, FLAG_IS_HOSTNAME_PUBLIC ));
                     } else if ( str.startsWith( FLAG_HOSTNAME )) {
-                        String hostname = removeQuotes( str.substring( FLAG_HOSTNAME.length() + 1 ));
-                        if ( hostname.length() > 0 ) remote.setHostname( hostname );
-                        else remote.setHostname( null );
+                        hostname = removeQuotes( str.substring( FLAG_HOSTNAME.length() + 1 ));
                     } else if ( str.startsWith( FLAG_PUBLIC_ADDRESS_EN )) {
                         remote.setIsPublicAddressEnabled( parseBooleanFlag( str, FLAG_PUBLIC_ADDRESS_EN ));
                     } else if ( str.startsWith( FLAG_PUBLIC_ADDRESS )) {
-                        String publicAddress = removeQuotes( str.substring( FLAG_PUBLIC_ADDRESS.length() + 1 ));
-                        if ( publicAddress.length() > 0 ) remote.setPublicAddress( publicAddress );
-                        else remote.setPublicAddress( null );
+                        publicAddress = removeQuotes( str.substring( FLAG_PUBLIC_ADDRESS.length() + 1 ));
                     } else if ( str.startsWith( FLAG_POST_FUNC )) {
                         /* Nothing to do here, this is just here to indicate that a 
                          * post configuration function exists */
@@ -297,6 +300,27 @@ class NetworkConfigurationLoader
             logger.error( "Error parsing outside host or netmask", ex );
         }
 
+        /* Handle the hostname */
+        if ( hostname != null && ( hostname.length() > 0 )) {
+            /* Do not alter the value of is hostname public */
+            remote.setHostname( hostname );
+        } else {
+            remote.setIsHostnamePublic( false );
+            remote.setHostname( null );
+        }
+        
+        /* Handle the public address */
+        if (( publicAddress != null ) && ( publicAddress.length() > 0 )) {
+            /* Do not alter the value of the public address flag */
+            try {
+                remote.setPublicAddress( publicAddress );
+            } catch ( ParseException e ) {
+                logger.warn( "Unable to parse the public address: " + publicAddress );
+                remote.setIsPublicAddressEnabled( false );
+            }
+        } else {
+            remote.setIsPublicAddressEnabled( false );
+        }
     }
 
     /* Parse the input stream until it reaches the end of the function */
@@ -439,6 +463,7 @@ class NetworkConfigurationLoader
         }
 
         if ( remote.getHostname() != null ) {
+            sw.appendVariable( FLAG_IS_HOSTNAME_PUBLIC, "" + remote.getIsHostnamePublic());
             sw.appendVariable( FLAG_HOSTNAME, remote.getHostname());
         }
         

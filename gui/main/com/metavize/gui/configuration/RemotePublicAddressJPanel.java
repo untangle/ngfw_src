@@ -73,7 +73,7 @@ public class RemotePublicAddressJPanel extends javax.swing.JPanel
 	RemoteSettings remoteSettings = remoteCompoundSettings.getNetworkingConfiguration();
         
 	// PUBLIC ADDRESS ENABLED /////
-	isPublicAddressEnabledCurrent = remoteSettings.hasPublicAddress();
+	isPublicAddressEnabledCurrent = remoteSettings.getIsPublicAddressEnabled();
         
 	setEnabledDependency( isPublicAddressEnabledCurrent );
 	if( isPublicAddressEnabledCurrent )

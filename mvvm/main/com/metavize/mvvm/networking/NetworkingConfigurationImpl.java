@@ -57,6 +57,9 @@ public class NetworkingConfigurationImpl implements Serializable, NetworkingConf
 
     public static final int DEF_HTTPS_PORT = NetworkUtil.DEF_HTTPS_PORT;
 
+    /* True if the hostname is publicy resolvable */
+    private boolean isHostnamePublic = false;
+
     /**
      * Hostname, Host and Netmask of the EdgeGuard GSP
      */
@@ -65,7 +68,6 @@ public class NetworkingConfigurationImpl implements Serializable, NetworkingConf
     private boolean isPublicAddressEnabled = false;
     private IPaddr publicIPaddr = null;
     private int publicPort = 0;
-    private boolean isHostnamePublic = false;
 
     private IPaddr host     = NetworkUtil.EMPTY_IPADDR;
     private IPaddr netmask  = NetworkUtil.EMPTY_IPADDR;

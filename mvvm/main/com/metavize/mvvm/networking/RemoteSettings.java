@@ -85,6 +85,9 @@ public interface RemoteSettings
     /* Returns if the hostname for this box is publicly resolvable to this box */
     public boolean getIsHostnamePublic();
 
+    /* Set if the hostname for this box is publicly resolvable to this box */
+    public void setIsHostnamePublic( boolean newValue );
+
     /* True if the public address should be used */
     public boolean getIsPublicAddressEnabled();
 

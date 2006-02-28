@@ -42,6 +42,7 @@ import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
 import com.metavize.mvvm.networking.internal.NetworkSpaceInternal;
 import com.metavize.mvvm.networking.internal.RouteInternal;
 import com.metavize.mvvm.networking.internal.RedirectInternal;
+import com.metavize.mvvm.networking.internal.RemoteInternalSettings;
 import com.metavize.mvvm.networking.internal.InterfaceInternal;
 import com.metavize.mvvm.networking.internal.ServicesInternalSettings;
 
@@ -601,9 +602,13 @@ class NetworkUtilPriv extends NetworkUtil
         return settings;
     }
 
-    String getPublicAddress( NetworkSpacesInternalSettings network, RemoteSettings remote,
-                             DynamicDNSSettings ddns )
+    RemoteInternalSettings makeRemoteInternal( NetworkSpacesInternalSettings network, RemoteSettings remote,
+                                               DynamicDNSSettings ddns  )
     {
+        String publicAddress;
+        IPaddr publicIPaddr = NetworkUtil.BOGUS_DHCP_ADDRESS;
+        int publicPort  = NetworkUtil.DEF_HTTPS_PORT;
+        
         /* assumes at least one space */
         IPaddr primaryAddress = null;
 
@@ -611,34 +616,51 @@ class NetworkUtilPriv extends NetworkUtil
             logger.warn( "Null network settings, may be unable to initialize the public address" );
         } else {
             NetworkSpaceInternal primary = network.getNetworkSpaceList().get( 0 );
-            
             primaryAddress = primary.getPrimaryAddress().getNetwork();
         }
 
         /* Has public address */
         boolean hpa = remote.getIsPublicAddressEnabled();
-
-        String publicAddress = remote.getPublicAddress();
-        if ( hpa && publicAddress != null && ( publicAddress.trim().length() > 0 )) return publicAddress;
-        
-        String hostname = remote.getHostname();
-        
-        /* Here is where a some validation is required. */
-        if ( hostname != null && ( hostname.trim().length() > 0 )) {
-            /* If using dynamic dns, assume the hostname is valid */
-            if ((( ddns != null ) && ddns.isEnabled()) || remote.getIsHostnamePublic()) return hostname;
-        }
-
-        /* Otherwise return the primary address of the primary space and the HTTPS port */
-        if ( primaryAddress == null ) {
-            logger.warn( "Network settings are unitialized, using hostname as fallback for public address" );
-            if ( hostname == null || ( hostname.trim().length() == 0 )) return NetworkUtil.DEFAULT_HOSTNAME;
-            else return hostname;
+        publicAddress = remote.getPublicAddress();
+        if ( hpa && ( publicAddress != null ) && ( publicAddress.trim().length() > 0 )) {
+            publicIPaddr = remote.getPublicIPaddr();
+            publicPort   = remote.getPublicPort();
         } else {
-            return primaryAddress.toString() + ":" + remote.httpsPort();
-        }
-    }
+            String hostname = remote.getHostname();
+        
+            /* Here is where a some validation is required. */
+            boolean isHostnamePublic = remote.getIsHostnamePublic();
 
+            /* If ddns is non-null, enable the hostname if ddns is enabled */
+            if ( ddns != null ) isHostnamePublic = isHostnamePublic || ddns.isEnabled();
+            if ( isHostnamePublic && ( hostname != null ) && ( hostname.trim().length() > 0 )) {
+                publicAddress = hostname;
+                publicPort = remote.httpsPort();
+                publicIPaddr = primaryAddress;
+                
+                if ( publicPort != NetworkUtil.DEF_HTTPS_PORT ) publicAddress += ":" + publicPort;
+            } else if (( primaryAddress == null ) || ( primaryAddress.isEmpty())) {
+                logger.warn( "Network settings are unitialized, using hostname as fallback for " +
+                             "public address" );
+                publicAddress = hostname;
+                
+                if ( hostname == null || ( hostname.trim().length() == 0 )) {
+                    publicAddress = NetworkUtil.DEFAULT_HOSTNAME;
+                    publicPort    = NetworkUtil.DEF_HTTPS_PORT;
+                    publicIPaddr  = NetworkUtil.BOGUS_DHCP_ADDRESS;
+                }
+            } else {
+                publicPort    = remote.httpsPort();
+                publicIPaddr  = primaryAddress;
+                publicAddress = publicIPaddr.toString();
+                if ( publicPort != NetworkUtil.DEF_HTTPS_PORT ) publicAddress += ":" + publicPort;
+            }
+        }
+
+        /* Otherwise return the primary address of the primary space and the HTTPS port */        
+        return new RemoteInternalSettings( remote, publicIPaddr, publicPort, publicAddress );
+    }
+    
     List<IPaddr> getDnsServers()
     {
         List<IPaddr> dnsServers = new LinkedList<IPaddr>();
