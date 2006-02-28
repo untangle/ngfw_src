@@ -1,6 +1,6 @@
 TARGET_DIR=../resources/spyware/com/metavize/tran/spyware
 
-all:
+all: clean build
 	cp ./urlblacklist.txt $(TARGET_DIR)
 
 	cp ./cookie-diff-* $(TARGET_DIR) || true
