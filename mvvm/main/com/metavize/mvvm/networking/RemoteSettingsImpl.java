@@ -63,6 +63,8 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
     
     private String hostname = NetworkUtil.DEFAULT_HOSTNAME;
     private boolean isHostnamePublic = false;
+    
+    private boolean isPublicAddressEnabled = false;
     private IPaddr publicIPaddr;
     private int publicPort = -1;
     
@@ -241,6 +243,16 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
     public void setIsHostnamePublic( boolean newValue )
     {
         this.isHostnamePublic = newValue;
+    }
+
+    public boolean getIsPublicAddressEnabled()
+    {
+        return this.isPublicAddressEnabled;
+    }
+
+    public void setIsPublicAddressEnabled( boolean newValue )
+    {
+        this.isPublicAddressEnabled = newValue;
     }
 
     /** @return the public url for the box, this is the address (may be hostname or ip address) */

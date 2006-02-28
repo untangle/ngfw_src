@@ -36,30 +36,31 @@ public class RemotePublicAddressJPanel extends javax.swing.JPanel
 
     public void doSave(RemoteCompoundSettings remoteCompoundSettings, boolean validateOnly) throws Exception {
 
-        // DYNAMIC DNS ENABLED //////////
+        // PUBLIC ADDRESS ENABLED //////////
 	boolean isPublicAddressEnabled = enabledJRadioButton.isSelected();
 
 	IPaddr address = null;
 	int port = 0;
-	if( isPublicAddressEnabled ){
-	    // ADDRESS //
-	    try{ address = IPaddr.parse(addressJTextField.getText()); }
-	    catch(Exception e){
-		addressJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
-		throw new Exception(EXCEPTION_NO_ADDRESS);
-	    }
-	    
-	    // PORT //
-	    port = (Integer) portJSpinner.getValue();
-	}
+        
+        // ADDRESS //
+        try{ address = IPaddr.parse(addressJTextField.getText()); }
+        catch(Exception e){
+            /* Only throw an expception if it is enabled */
+            if ( isPublicAddressEnabled ) {
+                addressJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+                throw new Exception(EXCEPTION_NO_ADDRESS);
+            }
+        }
+        // PORT //
+        port = (Integer) portJSpinner.getValue();
 		
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
 	    RemoteSettings remoteSettings = remoteCompoundSettings.getNetworkingConfiguration();
-	    if( isPublicAddressEnabled ){
-		remoteSettings.setPublicIPaddr( address );
-		remoteSettings.setPublicPort( port );
-	    }
+            remoteSettings.setIsPublicAddressEnabled( isPublicAddressEnabled );
+            
+            if ( address != null ) remoteSettings.setPublicIPaddr( address );
+            if ( 0 < port && port < 0xFFFF ) remoteSettings.setPublicPort( port );
         }
     }
 
@@ -73,22 +74,21 @@ public class RemotePublicAddressJPanel extends javax.swing.JPanel
         
 	// PUBLIC ADDRESS ENABLED /////
 	isPublicAddressEnabledCurrent = remoteSettings.hasPublicAddress();
+        
 	setEnabledDependency( isPublicAddressEnabledCurrent );
 	if( isPublicAddressEnabledCurrent )
             enabledJRadioButton.setSelected(true);
         else
             disabledJRadioButton.setSelected(true);
 
-	if( isPublicAddressEnabledCurrent ){
-	    // ADDRESS //
-	    addressCurrent = remoteSettings.getPublicIPaddr();
-	    addressJTextField.setText(addressCurrent.toString());
-	    addressJTextField.setBackground(Color.WHITE);
-	    
-	    // PORT //
-	    portCurrent = remoteSettings.getPublicPort();
-	    portJSpinner.setValue(portCurrent);
-	}
+        // ADDRESS //
+        addressCurrent = remoteSettings.getPublicIPaddr();
+        addressJTextField.setText(addressCurrent.toString());
+        addressJTextField.setBackground(Color.WHITE);
+	
+        // PORT //
+        portCurrent = remoteSettings.getPublicPort();
+        portJSpinner.setValue(portCurrent);
     }
     
     

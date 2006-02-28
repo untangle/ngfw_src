@@ -321,6 +321,15 @@ function antisubscribeRules() {
     ## Determine whether or not to antisubscribe to local traffic
     antisubscribeLocalTraffic ${FLAG_OUTSIDE_INTF} ${ANTISUBSCRIBE_LOCAL_OUTSIDE}
     antisubscribeLocalTraffic ${FLAG_INSIDE_INTF}  ${ANTISUBSCRIBE_LOCAL_INSIDE}
+    
+    ## This rule will often be unecessary, but it is there just in case.
+    ## if the public address is ever different than the box address, these are different.
+    if [ -n ${HTTPS_PUBLIC_ADDR} ]  && [ -n ${HTTPS_PUBLIC_PORT} ]; then
+        ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -p tcp -m mark --mark 0/${MARK_ANTISUB} \
+            --destination ${HTTPS_PUBLIC_ADDR} \
+            --destination-port ${HTTPS_PUBLIC_PORT} \
+            -j MARK --set-mark ${MARK_ANTISUB}
+    fi
 
     ## Antisubscribe to the locally requested traffic
     for c_portList in ${ANTISUBSCRIBES_LOCAL_TCP_PORTS}; do
@@ -425,6 +434,14 @@ function interceptRules() {
 ## Divert all of the UDP traffic
     if [ "${UDP_DIVERT_PORT}x" != "x" ]; then
         ${IPTABLES} -t mangle -A ${CHAIN_INTERCEPT} -p udp -j DIVERT --to-port ${UDP_DIVERT_PORT}
+    fi
+
+## Redirect all traffic to the public address to the mvvm
+    if [ -n ${HTTPS_PUBLIC_ADDR} ]  && [ -n ${HTTPS_PUBLIC_PORT} ]; then
+        ${IPTABLES} -t nat -A PREROUTING -p tcp \
+            --destination ${HTTPS_PUBLIC_ADDR} \
+            --destination-port ${HTTPS_PUBLIC_PORT} \
+            -j REDIRECT --to-ports ${HTTPS_PORT}
     fi
 
 ## Redirect all of the TCP traffic that is not antisubscribed

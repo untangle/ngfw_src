@@ -55,6 +55,9 @@ public class RemoteInternalSettings
     
     /* These are the values that are stored in the database */
     private final String hostname;
+
+    /* Only really used to persist the state */
+    private final boolean isPublicAddressEnabled;
     private final IPaddr publicAddress;
     private final int    publicPort;
     private final boolean isHostnamePublic;
@@ -75,6 +78,7 @@ public class RemoteInternalSettings
         this.outsideNetmask = remote.outsideNetmask();
         this.postConfigurationScript = remote.getPostConfigurationScript();
         this.hostname       = remote.getHostname();
+        this.isPublicAddressEnabled = remote.getIsPublicAddressEnabled();
         this.publicAddress  = remote.getPublicIPaddr();
         this.publicPort     = remote.getPublicPort();
         this.publicHttpsPort = remote.httpsPort();
@@ -150,6 +154,11 @@ public class RemoteInternalSettings
         return this.isHostnamePublic;
     }
 
+    public boolean getIsPublicAddressEnabled()
+    {
+        return this.isPublicAddressEnabled;
+    }
+
     /** @return the public url for the box, this is the address (may be hostname or ip address) */
     public String getPublicAddress()
     {
@@ -186,6 +195,7 @@ public class RemoteInternalSettings
         rs.outsideNetmask( outsideNetmask());
         rs.setPostConfigurationScript( getPostConfigurationScript());
         rs.setHostname( getHostname());
+        rs.setIsPublicAddressEnabled( getIsPublicAddressEnabled());
         rs.setPublicIPaddr( getPublicIPaddr());
         rs.setPublicPort( getPublicPort());
         rs.httpsPort( getPublicHttpsPort());
@@ -206,7 +216,8 @@ public class RemoteInternalSettings
         sb.append( "\nrestriced:   " + isOutsideAccessRestricted());
         sb.append( "\nrestriction: " + outsideNetwork() + "/" + outsideNetmask());
         sb.append( "\nHTTPS:       " + getPublicHttpsPort());
-        sb.append( "\npublic:      " + getCurrentPublicAddress() + " / " + getPublicAddress());
+        sb.append( "\npublic:      " + getIsPublicAddressEnabled() + " " + getCurrentPublicAddress() + 
+                   " / " + getPublicAddress());
         sb.append( "\nhostname:    " + getHostname());
 
         return sb.toString();

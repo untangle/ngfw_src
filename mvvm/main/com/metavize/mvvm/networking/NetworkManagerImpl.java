@@ -553,6 +553,18 @@ public class NetworkManagerImpl implements NetworkManager
     /* Update all of the iptables rules and the inside address database */
     private void generateRules() throws NetworkException
     {
+        /* Disable the public address and port by default */
+        IPaddr publicAddress = null;
+        int publicPort = -1;
+
+        if ( this.remote != null ) {
+            publicAddress = this.remote.getPublicIPaddr();
+            publicPort    = this.remote.getPublicPort();
+        }
+
+        /* Set the public address */
+        this.ruleManager.setPublicAddress( publicAddress, publicPort );
+
         this.ruleManager.generateIptablesRules();
     }
 

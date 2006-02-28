@@ -86,8 +86,9 @@ class NetworkConfigurationLoader
     /* Functionm declaration for the post configuration function */
     private static final String DECL_POST_CONF    = "function " + POST_FUNC_NAME + "() {";
     
-    private static final String FLAG_HOSTNAME       = "MVVM_HOSTNAME";
-    private static final String FLAG_PUBLIC_ADDRESS = "MVVM_PUBLIC_ADDRESS";
+    private static final String FLAG_HOSTNAME          = "MVVM_HOSTNAME";
+    private static final String FLAG_PUBLIC_ADDRESS_EN = "MVVM_PUBLIC_ADDRESS_EN";
+    private static final String FLAG_PUBLIC_ADDRESS    = "MVVM_PUBLIC_ADDRESS";
 
     /* Property to determine the secondary https port */
     private static final String PROPERTY_HTTPS_PORT = "mvvm.https.port";
@@ -260,11 +261,12 @@ class NetworkConfigurationLoader
                         String hostname = removeQuotes( str.substring( FLAG_HOSTNAME.length() + 1 ));
                         if ( hostname.length() > 0 ) remote.setHostname( hostname );
                         else remote.setHostname( null );
+                    } else if ( str.startsWith( FLAG_PUBLIC_ADDRESS_EN )) {
+                        remote.setIsPublicAddressEnabled( parseBooleanFlag( str, FLAG_PUBLIC_ADDRESS_EN ));
                     } else if ( str.startsWith( FLAG_PUBLIC_ADDRESS )) {
                         String publicAddress = removeQuotes( str.substring( FLAG_PUBLIC_ADDRESS.length() + 1 ));
                         if ( publicAddress.length() > 0 ) remote.setPublicAddress( publicAddress );
                         else remote.setPublicAddress( null );
-                        remote.setPublicAddress( publicAddress );
                     } else if ( str.startsWith( FLAG_POST_FUNC )) {
                         /* Nothing to do here, this is just here to indicate that a 
                          * post configuration function exists */
@@ -439,6 +441,9 @@ class NetworkConfigurationLoader
         if ( remote.getHostname() != null ) {
             sw.appendVariable( FLAG_HOSTNAME, remote.getHostname());
         }
+        
+        /* Append whether or not the public address is enabled */
+        sw.appendVariable( FLAG_PUBLIC_ADDRESS_EN, "" + remote.getIsPublicAddressEnabled());
         
         if ( remote.getPublicAddress() != null ) {
             sw.appendVariable( FLAG_PUBLIC_ADDRESS, remote.getPublicAddress());

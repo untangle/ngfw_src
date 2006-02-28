@@ -62,6 +62,7 @@ public class NetworkingConfigurationImpl implements Serializable, NetworkingConf
      */
     private String hostname = DEFAULT_HOSTNAME;
     
+    private boolean isPublicAddressEnabled = false;
     private IPaddr publicIPaddr = null;
     private int publicPort = 0;
     private boolean isHostnamePublic = false;
@@ -170,6 +171,16 @@ public class NetworkingConfigurationImpl implements Serializable, NetworkingConf
     {
         if ( this.hostname == null || ( this.hostname.trim().length() == 0 )) this.hostname = DEFAULT_HOSTNAME;
         return this.hostname;
+    }
+
+    public boolean getIsPublicAddressEnabled()
+    {
+        return this.isPublicAddressEnabled;
+    }
+
+    public void setIsPublicAddressEnabled( boolean newValue )
+    {
+        this.isPublicAddressEnabled = newValue;
     }
 
     /** @return the public url for the box, this is the address (may be hostname or ip address) */

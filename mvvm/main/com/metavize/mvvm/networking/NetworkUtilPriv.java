@@ -615,15 +615,18 @@ class NetworkUtilPriv extends NetworkUtil
             primaryAddress = primary.getPrimaryAddress().getNetwork();
         }
 
+        /* Has public address */
+        boolean hpa = remote.getIsPublicAddressEnabled();
+
         String publicAddress = remote.getPublicAddress();
-        if ( publicAddress != null && ( publicAddress.trim().length() > 0 )) return publicAddress;
+        if ( hpa && publicAddress != null && ( publicAddress.trim().length() > 0 )) return publicAddress;
         
         String hostname = remote.getHostname();
         
         /* Here is where a some validation is required. */
         if ( hostname != null && ( hostname.trim().length() > 0 )) {
             /* If using dynamic dns, assume the hostname is valid */
-            if (( ddns != null ) && ddns.isEnabled() || remote.getIsHostnamePublic()) return hostname;
+            if ((( ddns != null ) && ddns.isEnabled()) || remote.getIsHostnamePublic()) return hostname;
         }
 
         /* Otherwise return the primary address of the primary space and the HTTPS port */
