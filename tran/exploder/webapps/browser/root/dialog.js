@@ -5,11 +5,11 @@
 
 function testDialog()
 {
-   var dialog = new Dialog("Test Dialog");
+   var dialog = new Dialog("Test Dialog", document.createTextNode("HOLY CRAP"));
    dialog.setVisible(true);
 }
 
-function Dialog(title)
+function Dialog(title, content)
 {
    this.div = document.createElement("div");
 
@@ -24,8 +24,7 @@ function Dialog(title)
       titlebar.onClose = function() { setVisible(false); };
    }
 
-   //md.appendChild(content);
-   md.appendChild(document.createTextNode("HOLY CRAP"));
+   md.appendChild(content);
 
    this.clickBlocker = new ClickBlocker();
 }
@@ -55,13 +54,16 @@ function TitleBar(parent, title)
    var elem = parent.appendChild(document.createElement("table"));
    Element.addClassName(elem, "titlebar");
 
-   var tr = elem.appendChild(document.createElement("tr"));
+   var tbody = elem.appendChild(document.createElement("tbody"));
+
+   var tr = tbody.appendChild(document.createElement("tr"));
 
    var td = tr.appendChild(document.createElement("td"));
    this.titleText = td.appendChild(document.createTextNode(title));
 
    td = tr.appendChild(document.createElement("td"));
    Element.addClassName(td, "titlebar-close");
+
    var close = td.appendChild(document.createElement("img"));
    close.src = "close.gif";
    with (this) {
