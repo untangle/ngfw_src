@@ -821,6 +821,7 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
             status = (status + 4) % 3 - 1; // signed mod, returning {-1, 0, 1}
             setSortingStatus(modelColumn, status);
 
+	    /*
 	    if( viewRow != -1 ){
 		int newRow = MSortedTableModel.this.getRowViewToModelIndex(modelRow);
 		tableHeader.getTable().clearSelection();
@@ -828,6 +829,7 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
 		Rectangle selectionRect = tableHeader.getTable().getCellRect(newRow, 0, true);
 		tableHeader.getTable().scrollRectToVisible(selectionRect);
 	    }
+	    */
 
         }
     }
