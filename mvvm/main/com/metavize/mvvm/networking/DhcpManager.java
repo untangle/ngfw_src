@@ -33,9 +33,11 @@ import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.ParseException;
 import com.metavize.mvvm.tran.firewall.MACAddress;
 
-import com.metavize.mvvm.networking.internal.ServicesInternalSettings;
 import com.metavize.mvvm.networking.internal.DhcpLeaseInternal;
 import com.metavize.mvvm.networking.internal.DnsStaticHostInternal;
+import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
+import com.metavize.mvvm.networking.internal.NetworkSpaceInternal;
+import com.metavize.mvvm.networking.internal.ServicesInternalSettings;
 
 class DhcpManager
 {
@@ -97,7 +99,7 @@ class DhcpManager
 
     void configure( ServicesInternalSettings settings ) throws NetworkException
     {
-        NetworkManager nm = MvvmContextFactory.context().networkManager();
+        NetworkManagerImpl nm = (NetworkManagerImpl)MvvmContextFactory.context().networkManager();
         
         if ( !settings.getIsEnabled()) {
             logger.debug( "Services are currently disabled, deconfiguring dns masq" );
@@ -107,7 +109,7 @@ class DhcpManager
 
         try {
             writeConfiguration( settings );
-            writeHosts( settings );
+            writeHosts( settings, nm.getNetworkInternalSettings());
         } catch ( Exception e ) {
             throw new NetworkException( "Unable to reload DNS masq configuration", e );
         }
@@ -400,7 +402,7 @@ class DhcpManager
     /**
      * Save the file /etc/hosts
      */
-    private void writeHosts( ServicesInternalSettings settings )
+    private void writeHosts( ServicesInternalSettings settings, NetworkSpacesInternalSettings nsis )
     {
         StringBuilder sb = new StringBuilder();
 
@@ -414,9 +416,17 @@ class DhcpManager
         if ( hostname.indexOf( "." ) > 0 ) {
             String unqualified = hostname.substring( 0, hostname.indexOf( "." ));
             hostname = unqualified + " " + hostname;
-        }               
+        }
 
-        IPaddr servicesAddress = settings.getServiceAddress();
+        IPaddr servicesAddress = null;
+
+        if ( nsis != null ) {
+            List<NetworkSpaceInternal> networkSpaceList = nsis.getNetworkSpaceList();
+            if ( networkSpaceList.size() > 0 ) {
+                servicesAddress = networkSpaceList.get( 0 ).getPrimaryAddress().getNetwork();
+            }
+        }
+        
         if ( servicesAddress != null && !servicesAddress.isEmpty()) {
             sb.append( servicesAddress.toString() + "\t" + hostname + "\n" );
         } else {
