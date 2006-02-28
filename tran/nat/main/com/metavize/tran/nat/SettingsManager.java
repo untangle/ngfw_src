@@ -294,7 +294,7 @@ class SettingsManager
             if ( intf.getArgonIntf() == IntfConstants.EXTERNAL_INTF ) iter.remove();
         }
 
-        return new NatAdvancedSettingsImpl( network, new ServicesSettingsImpl( services ));
+        return new NatAdvancedSettingsImpl( network, services.toSettings());
     }
 
     NatBasicSettings toBasicSettings( Tid tid,

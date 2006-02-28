@@ -16,9 +16,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.LinkedList;
 
-/* XXXXXXXXXXXXX This is no good because it can pull in the internal classes */
-import com.metavize.mvvm.networking.internal.ServicesInternalSettings;
-
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.HostName;
 
@@ -32,6 +29,9 @@ import com.metavize.mvvm.tran.HostName;
  */
 public class ServicesSettingsImpl implements ServicesSettings, Serializable
 {
+
+    // !!! serialver
+
     private Long id;
 
     /* Is dhcp enabled */
@@ -52,19 +52,6 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
 
     public ServicesSettingsImpl()
     {
-    }
-
-    public ServicesSettingsImpl( ServicesInternalSettings internal )
-    {
-        this.dhcpEnabled       = internal.getIsDhcpEnabled();
-        this.dhcpStartAddress  = internal.getDhcpStartAddress();
-        this.dhcpEndAddress    = internal.getDhcpEndAddress();
-        this.dhcpLeaseTime     = internal.getDhcpLeaseTime();        
-        this.dhcpLeaseList     = internal.getDhcpLeaseRuleList();
-
-        this.dnsEnabled        = internal.getIsDnsEnabled();
-        this.dnsLocalDomain    = internal.getDnsLocalDomain();
-        this.dnsStaticHostList = internal.getDnsStaticHostRuleList();
     }
 
     public ServicesSettingsImpl( DhcpServerSettings dhcp, DnsServerSettings dns )

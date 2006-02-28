@@ -18,13 +18,12 @@ import java.util.LinkedList;
 import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.IPaddr;
 
-import com.metavize.mvvm.networking.NetworkUtil;
 import com.metavize.mvvm.networking.DhcpServerSettings;
 import com.metavize.mvvm.networking.DnsServerSettings;
 import com.metavize.mvvm.networking.DnsStaticHostRule;
 import com.metavize.mvvm.networking.DhcpLeaseRule;
-
-
+import com.metavize.mvvm.networking.NetworkUtil;
+import com.metavize.mvvm.networking.ServicesSettingsImpl;
 
 /** These are the settings for the DNS/DHCP server */
 public class ServicesInternalSettings
@@ -209,6 +208,25 @@ public class ServicesInternalSettings
     public IPaddr getServiceAddress()
     {
         return this.serviceAddress;
+    }
+
+    public ServicesSettingsImpl toSettings()
+    {
+        ServicesSettingsImpl settings = new ServicesSettingsImpl();
+
+        /* Dhcp settings */
+        settings.setDhcpEnabled( getIsDhcpEnabled());
+        settings.setDhcpStartAddress( getDhcpStartAddress());
+        settings.setDhcpEndAddress( getDhcpEndAddress());
+        settings.setDhcpLeaseTime( getDhcpLeaseTime());
+        settings.setDhcpLeaseList( getDhcpLeaseRuleList()); /* This returns a mutable copy */
+
+        /* dns settings */
+        settings.setDnsEnabled( getIsDnsEnabled());
+        settings.setDnsLocalDomain( getDnsLocalDomain());
+        settings.setDnsStaticHostList( getDnsStaticHostRuleList()); /* This returns a copy */
+
+        return settings;
     }
 
     public static ServicesInternalSettings 

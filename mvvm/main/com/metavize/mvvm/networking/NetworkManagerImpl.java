@@ -945,7 +945,7 @@ public class NetworkManagerImpl implements NetworkManager
         ServicesInternalSettings newInternal = 
             nup.toInternal( this.networkSettings, newSettings, newSettings );
         
-        newSettings = new ServicesSettingsImpl( newInternal );
+        newSettings = newInternal.toSettings();
         
         newSettings = saver.saveData( newSettings );
         
