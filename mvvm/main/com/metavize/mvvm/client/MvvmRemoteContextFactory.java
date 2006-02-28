@@ -71,7 +71,7 @@ public class MvvmRemoteContextFactory
     public boolean isActivated(String host, int timeout, boolean secure)
         throws MvvmConnectException
     {
-        return this.isActivated(host, 0, timeout, secure );
+        return isActivated(host, 0, timeout, secure );
     }
 
     /**
@@ -264,6 +264,11 @@ public class MvvmRemoteContextFactory
     public void setTimeout(int timeout)
     {
         HttpInvokerStub.setTimeout(timeout);
+    }
+
+    public int getTimeout()
+    {
+        return HttpInvokerStub.getTimeout();
     }
 
     public void logout()

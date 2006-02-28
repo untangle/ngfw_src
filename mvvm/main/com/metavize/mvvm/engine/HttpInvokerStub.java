@@ -67,6 +67,11 @@ public class HttpInvokerStub implements InvocationHandler, Serializable
         HttpInvokerStub.timeout = timeout;
     }
 
+    public static int getTimeout()
+    {
+        return timeout;
+    }
+
     // public methods ---------------------------------------------------------
 
     public LoginSession getLoginSession()
