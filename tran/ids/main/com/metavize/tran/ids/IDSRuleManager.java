@@ -18,8 +18,6 @@ import java.util.Map;
 import java.util.regex.*;
 
 import com.metavize.mvvm.argon.SessionEndpoints;
-import com.metavize.mvvm.tran.IPaddr;
-import com.metavize.mvvm.tran.PortRange;
 import com.metavize.mvvm.tran.ParseException;
 import org.apache.log4j.Logger;
 
@@ -52,12 +50,15 @@ public class IDSRuleManager {
 
     private static Pattern variablePattern = Pattern.compile("\\$[^ \n\r\t]+");
 
-    private IDSDetectionEngine engine;
+    private final IDSTransformImpl ids;
+    private final IDSDetectionEngine engine;
 
     private static final Logger logger = Logger.getLogger(IDSRuleManager.class);
 
-    public IDSRuleManager(IDSDetectionEngine engine) {
-        this.engine = engine;
+    public IDSRuleManager(IDSTransformImpl ids)
+    {
+        this.ids = ids;
+        this.engine = ids.getEngine();
     }
 
     public void onReconfigure() {
@@ -111,7 +112,7 @@ public class IDSRuleManager {
         if (header == null)
             throw new ParseException("Unable to parse header of rule " + ruleParts[0]);
 
-        IDSRuleSignature signature = IDSStringParser.parseSignature(ruleParts[1], rule.getAction(), rule, false);
+        IDSRuleSignature signature = IDSStringParser.parseSignature(ids, ruleParts[1], rule.getAction(), rule, false);
         signature.setToString(ruleParts[1]);
 
         if(!signature.remove() && !rule.disabled()) {
@@ -176,7 +177,7 @@ public class IDSRuleManager {
                 logger.debug("Ignoring rule with bad header: " + text);
                 return null;
             }
-            IDSRuleSignature signature  = IDSStringParser.parseSignature(ruleParts[1], rule.getAction(), rule, true);
+            IDSRuleSignature signature  = IDSStringParser.parseSignature(ids, ruleParts[1], rule.getAction(), rule, true);
 
             if(signature.remove()) {
                 logger.debug("Ignoring rule with bad sig: " + text);

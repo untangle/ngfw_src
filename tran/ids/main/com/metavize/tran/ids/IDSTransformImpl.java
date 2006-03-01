@@ -107,7 +107,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         settings.setImmutableVariables(IDSRuleManager.immutableVariables);
 
         logger.info("Loading Rules...");
-        IDSRuleManager manager = new IDSRuleManager(engine); // A fake one for now.  XXX
+        IDSRuleManager manager = new IDSRuleManager(this); // A fake one for now.  XXX
         List<IDSRule> ruleList = FileLoader.loadAllRuleFiles(manager);
 
         settings.setMaxChunks(engine.getMaxChunks());

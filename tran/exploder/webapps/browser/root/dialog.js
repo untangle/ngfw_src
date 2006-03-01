@@ -1,6 +1,11 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
+function uploadComplete()
+{
+   alert("FUCKELS");
+}
+
 // test
 
 function testDialog()
@@ -90,13 +95,15 @@ FileDialog.prototype.init = function(title, message)
    form.appendChild(file);
 
    var input = document.createElement("input");
-   input.type = "button";
+   input.type = "submit";
    input.value = "Upload";
    form.appendChild(input);
 
    // XXX close when do
 
    FileDialog.superclass.init.call(this, title, panel);
+
+   uploadComplete = function() { this.setVisible(false); }
 }
 
 // TitleBar

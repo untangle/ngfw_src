@@ -15,6 +15,7 @@ import java.lang.reflect.*;
 import java.util.regex.PatternSyntaxException;
 
 import com.metavize.mvvm.tapi.event.*;
+import com.metavize.tran.ids.IDSDetectionEngine;
 import com.metavize.tran.ids.IDSRuleSignature;
 import com.metavize.tran.ids.IDSSessionInfo;
 import org.apache.log4j.Logger;
@@ -40,8 +41,8 @@ public abstract class IDSOption {
         return true;
     }
 
-    public static IDSOption buildOption(IDSRuleSignature signature, String optionName, String params,
-                                        boolean initializeSettingsTime) {
+    public static IDSOption buildOption(IDSDetectionEngine engine, IDSRuleSignature signature, String optionName,
+                                        String params, boolean initializeSettingsTime) {
 
         boolean flag = false;
         if(params.charAt(0) == '!')  {
@@ -52,8 +53,12 @@ public abstract class IDSOption {
         if(params.charAt(0) == '\"' && params.charAt(params.length()-1) == '\"')
             params = params.substring(1,params.length()-1);
 
+        // XXX get rid of this reflection
+
         IDSOption option = null;
         Class optionDefinition;
+        Class[] fourArgsClass = new Class[] { IDSDetectionEngine.class, IDSRuleSignature.class, String.class, Boolean.TYPE };
+        Object[] fourOptionArgs = new Object[] { engine, signature, params, initializeSettingsTime };
         Class[] threeArgsClass = new Class[] { IDSRuleSignature.class, String.class, Boolean.TYPE };
         Object[] threeOptionArgs = new Object[] { signature, params, initializeSettingsTime };
         Class[] twoArgsClass = new Class[] { IDSRuleSignature.class, String.class };
@@ -73,12 +78,18 @@ public abstract class IDSOption {
             // initializeSettingsTime).
             optionDefinition = Class.forName("com.metavize.tran.ids.options."+optionName+"Option");
 
+            // XXX remove reflection
             try {
-                optionConstructor = optionDefinition.getConstructor(threeArgsClass);
-                option = (IDSOption) createObject(optionConstructor, threeOptionArgs);
-            } catch (NoSuchMethodException e) {
-                optionConstructor = optionDefinition.getConstructor(twoArgsClass);
-                option = (IDSOption) createObject(optionConstructor, twoOptionArgs);
+                optionConstructor = optionDefinition.getConstructor(fourArgsClass);
+                option = (IDSOption) createObject(optionConstructor, fourOptionArgs);
+            } catch (NoSuchMethodException exn) {
+                try {
+                    optionConstructor = optionDefinition.getConstructor(threeArgsClass);
+                    option = (IDSOption) createObject(optionConstructor, threeOptionArgs);
+                } catch (NoSuchMethodException e) {
+                    optionConstructor = optionDefinition.getConstructor(twoArgsClass);
+                    option = (IDSOption) createObject(optionConstructor, twoOptionArgs);
+                }
             }
             if (option != null)
                 option.negationFlag = flag;

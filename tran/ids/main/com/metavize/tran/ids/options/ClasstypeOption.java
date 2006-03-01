@@ -11,12 +11,10 @@
 
 package com.metavize.tran.ids.options;
 
-import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.event.*;
 import com.metavize.tran.ids.IDSDetectionEngine;
 import com.metavize.tran.ids.IDSRule;
 import com.metavize.tran.ids.IDSRuleSignature;
-import com.metavize.tran.ids.IDSTransformImpl;
 import com.metavize.tran.ids.RuleClassification;
 import org.apache.log4j.Logger;
 
@@ -28,11 +26,8 @@ public class ClasstypeOption extends IDSOption {
 
     private static final Logger logger = Logger.getLogger(ClasstypeOption.class);
 
-    public ClasstypeOption(IDSRuleSignature signature, String params, boolean initializeSettingsTime) {
+    public ClasstypeOption(IDSDetectionEngine engine, IDSRuleSignature signature, String params, boolean initializeSettingsTime) {
         super(signature, params);
-
-        IDSTransformImpl transform = (IDSTransformImpl)MvvmContextFactory.context().transformManager().threadContext().transform();
-        IDSDetectionEngine engine = transform.getEngine();
 
         RuleClassification rc = engine.getClassification(params);
         if (rc == null) {

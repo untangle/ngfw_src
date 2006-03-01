@@ -24,6 +24,7 @@
 
 .titlebar { width: 100%;
             background-color: purple;
+            color: white;
             font-weight: bold;
             padding: 2px;
             }

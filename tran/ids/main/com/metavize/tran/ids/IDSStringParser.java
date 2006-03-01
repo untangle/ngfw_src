@@ -44,8 +44,8 @@ public class IDSStringParser {
         return parts;
     }
 
-    public static IDSRuleSignature parseSignature(String signatureString, int action, IDSRule rule, boolean initializeSettingsTime) throws ParseException {
-        IDSRuleSignature returnSignature = new IDSRuleSignature(action, rule);
+    public static IDSRuleSignature parseSignature(IDSTransformImpl ids, String signatureString, int action, IDSRule rule, boolean initializeSettingsTime) throws ParseException {
+        IDSRuleSignature returnSignature = new IDSRuleSignature(ids, action, rule);
 
         String replaceChar = ""+0xff42;
         signatureString = signatureString.replaceAll("\\\\;",replaceChar);

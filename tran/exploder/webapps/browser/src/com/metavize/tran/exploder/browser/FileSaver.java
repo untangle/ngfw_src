@@ -11,6 +11,7 @@
 
 package com.metavize.tran.exploder.browser;
 
+import java.io.IOException;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -34,10 +35,6 @@ public class FileSaver extends HttpServlet
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException
     {
-        try {
-            Thread.sleep(10000);
-        } catch (Exception exn) { }
-
         String ct = req.getContentType();
         System.out.println("CT: " + ct);
         if (null != ct && ct.startsWith("multipart/form-data")) {
@@ -51,6 +48,12 @@ public class FileSaver extends HttpServlet
             } catch (FileUploadException exn) {
                 logger.warn("could not get upload", exn);
             }
+        }
+
+        try {
+            resp.getWriter().println("<html><body onload=\"uploadComplete()\"></body></html>");
+        } catch (IOException exn) {
+            throw new ServletException("could not write response", exn);
         }
     }
 

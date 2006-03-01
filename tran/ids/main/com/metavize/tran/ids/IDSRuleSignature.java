@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Vector;
 
-import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.IPSession;
 import com.metavize.mvvm.tapi.event.*;
 import com.metavize.mvvm.tran.Transform;
@@ -39,19 +38,23 @@ public class IDSRuleSignature {
 
     private static HashMap<IDSRule,long[]> ruleTimes = new HashMap<IDSRule,long[]>();
 
-    private List<IDSOption> options = new Vector<IDSOption>();
+    private final IDSTransformImpl ids;
+    private final int action;
+    private final IDSRule rule;
 
-    private IDSRule rule;
+    // XXX Vector
+    private final List<IDSOption> options = new Vector<IDSOption>();
+
     private String toString = "Starting..";
     private String message = "No message set";
     private String classification = "Rule is not classified";
     private String url = "Rule is not documented";
-    private int action;
     private boolean removeFlag = false;
 
     private static final Logger log = Logger.getLogger(IDSRuleSignature.class);
 
-    public IDSRuleSignature(int action, IDSRule rule) {
+    public IDSRuleSignature(IDSTransformImpl ids, int action, IDSRule rule) {
+        this.ids = ids;
         this.action = action;
         this.rule = rule;
     }
@@ -74,7 +77,7 @@ public class IDSRuleSignature {
                 return;
         }
 
-        IDSOption option = IDSOption.buildOption(this,optionName,params, initializeSettingsTime);
+        IDSOption option = IDSOption.buildOption(ids.getEngine(),this,optionName,params, initializeSettingsTime);
         if(option != null && option.runnable())
             options.add(option);
         else if(option == null) {
@@ -186,7 +189,6 @@ public class IDSRuleSignature {
         }
 
         // XXX this is not a good way to get a reference to the transform
-        IDSTransformImpl ids = (IDSTransformImpl)MvvmContextFactory.context().transformManager().threadContext().transform();
         IDSDetectionEngine engine = ids.getEngine();
 
         boolean blocked = false;
