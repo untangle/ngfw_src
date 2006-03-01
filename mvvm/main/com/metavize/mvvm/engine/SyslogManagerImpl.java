@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -17,10 +17,14 @@ import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 
+import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.LoggingSettings;
 import com.metavize.mvvm.logging.SyslogManager;
 import com.metavize.mvvm.logging.SyslogPriority;
+import com.metavize.mvvm.networking.NetworkManagerImpl;
+import com.metavize.mvvm.networking.NetworkSettingsListener;
+import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
 import org.apache.log4j.Logger;
 
 class SyslogManagerImpl implements SyslogManager
@@ -34,10 +38,19 @@ class SyslogManagerImpl implements SyslogManager
 
     private volatile int facility;
     private volatile SyslogPriority threshold;
+    private volatile String hostname;
 
     private SyslogManagerImpl()
     {
         syslogSenders = new ThreadLocal<SyslogSender>();
+        final NetworkManagerImpl nmi = MvvmContextFactory.context().networkManager();
+        nmi.registerListener(new NetworkSettingsListener() {
+                public void event(NetworkSpacesInternalSettings s)
+                {
+                    hostname = nmi.getHostname();
+                }
+            });
+        hostname = nmi.getHostname();
     }
 
     // static factories -------------------------------------------------------
@@ -107,10 +120,11 @@ class SyslogManagerImpl implements SyslogManager
 
         public void sendSyslog(LogEvent e, String tag)
         {
-            DatagramPacket p = sb.makePacket(e, facility, "mv-edgeguard", tag);
-
             synchronized (SyslogManagerImpl.this) {
                 if (null != syslogSocket && threshold.inThreshold(e)) {
+                    DatagramPacket p = sb.makePacket(e, facility,
+                                                     hostname,
+                                                     tag);
                     try {
                         syslogSocket.send(p);
                     } catch (IOException exn) {

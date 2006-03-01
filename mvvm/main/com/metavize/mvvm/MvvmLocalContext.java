@@ -21,6 +21,7 @@ import com.metavize.mvvm.addrbook.AddressBook;
 import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.LoggingManager;
 import com.metavize.mvvm.logging.SyslogManager;
+import com.metavize.mvvm.networking.NetworkManagerImpl;
 import com.metavize.mvvm.policy.PolicyManager;
 import com.metavize.mvvm.security.AdminManager;
 import com.metavize.mvvm.tapi.MPipeManager;
@@ -140,7 +141,8 @@ public interface MvvmLocalContext
 
     NetworkingManager networkingManager();
 
-    NetworkManager networkManager();
+    // XXX has stuff for local use, should probably be renamed w/o 'Impl'
+    NetworkManagerImpl networkManager();
 
     ReportingManager reportingManager();
 
