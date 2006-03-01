@@ -127,14 +127,17 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
 	for( Vector rowVector : tableVector ){
 	    rowIndex++;
             newElem = (UserPolicyRule) rowVector.elementAt(11);
-	    if( newElem.getClientIntf() == newElem.getServerIntf() )
-		throw new Exception("In row: " + rowIndex + ". The \"client interface\" cannot match the \"server interface\"");
+
 	    Policy policy = policyNames.get((String) ((ComboBoxModel)rowVector.elementAt(2)).getSelectedItem());
             newElem.setPolicy( policy );
 	    boolean isInbound = ((String) ((ComboBoxModel)rowVector.elementAt(2)).getSelectedItem()).contains(INBOUND_STRING);
             newElem.setInbound( isInbound );
 	    newElem.setClientIntf( intfEnum.getIntfNum((String)((ComboBoxModel)rowVector.elementAt(3)).getSelectedItem()) );
 	    newElem.setServerIntf( intfEnum.getIntfNum((String)((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem()) );
+            
+            if( newElem.getClientIntf() == newElem.getServerIntf() )
+		throw new Exception("In row: " + rowIndex + ". The \"client interface\" cannot match the \"server interface\"");
+            
 	    try{ newElem.setProtocol( ProtocolMatcher.parse(((ComboBoxModel) rowVector.elementAt(5)).getSelectedItem().toString()) ); }
 	    catch(Exception e){ throw new Exception("Invalid \"protocol\" in row: " + rowIndex); }	   
 	    try{ newElem.setClientAddr( ipmf.parse((String) rowVector.elementAt(6)) ); }
