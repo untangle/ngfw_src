@@ -51,14 +51,22 @@ public class IDSRuleManager {
     private static Pattern variablePattern = Pattern.compile("\\$[^ \n\r\t]+");
 
     private final IDSTransformImpl ids;
-    private final IDSDetectionEngine engine;
 
     private static final Logger logger = Logger.getLogger(IDSRuleManager.class);
 
     public IDSRuleManager(IDSTransformImpl ids)
     {
         this.ids = ids;
-        this.engine = ids.getEngine();
+        // note the sequence of constructor calls:
+        //   IDSTransformImpl -> IDSDetectionEngine -> IDSRuleManager
+        // - IDSRuleManager cannot retrieve the IDSDetectionEngine object
+        //   from IDSTransformImpl here
+        //   (IDSTransformImpl is creating an IDSDetectionEngine object and
+        //    thus, in the process of creating this IDSRuleManager object too
+        //    so IDSTransformImpl does not have an IDSDetectionEngine object
+        //    to return to this IDSRuleManager object right now)
+        // - IDSRuleManager must wait for IDSTransformImpl to create and save
+        //   an IDSDetectionEngine object
     }
 
     public void onReconfigure() {
@@ -254,6 +262,7 @@ public class IDSRuleManager {
 
         Matcher match = variablePattern.matcher(string);
         if(match.find()) {
+            IDSDetectionEngine engine = ids.getEngine();
             List<IDSVariable> varList, imVarList;
             if(engine.getSettings() == null) {
                 imVarList = immutableVariables;
