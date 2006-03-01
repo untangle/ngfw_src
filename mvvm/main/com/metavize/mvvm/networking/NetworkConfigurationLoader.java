@@ -543,11 +543,13 @@ class NetworkConfigurationLoader
 
     private void saveHostname( RemoteInternalSettings remote ) throws Exception
     {
-        if ( !this.saveSettings ) logger.warn( "not saving hostname as requested" );
+        if ( !this.saveSettings ) {
+            logger.warn( "not saving hostname as requested" );
+            return;
+        }
         
         ScriptRunner.getInstance().exec( HOSTNAME_SCRIPT, remote.getHostname().toString());
     }
-
 
     static NetworkConfigurationLoader getInstance()
     {

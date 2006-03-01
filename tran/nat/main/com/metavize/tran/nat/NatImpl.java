@@ -328,7 +328,6 @@ public class NatImpl extends AbstractTransform implements Nat
                 isUpgrade = true;
             }  else {
                 logger.info( "Settings are in [" + settings.getSetupState() +"]  mode, ignoring." );
-                
             }
             
             /* If upgrading change the setting to basic mode, this just means they
@@ -339,7 +338,6 @@ public class NatImpl extends AbstractTransform implements Nat
                 DataSaver<NatSettingsImpl> dataSaver = new DataSaver<NatSettingsImpl>( getTransformContext());
                 dataSaver.saveData( settings );
             }
-
         }
     }
 
