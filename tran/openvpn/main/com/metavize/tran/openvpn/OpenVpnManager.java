@@ -180,7 +180,7 @@ class OpenVpnManager
             MvvmContextFactory.context().networkManager().updateAddress();
         } catch ( ArgonException e ) {
             throw new TransformException( e );
-        } catch ( NetworkException e ) {
+        } catch ( Exception e ) {
             throw new TransformException( e );
         }
     }
@@ -200,7 +200,7 @@ class OpenVpnManager
             // 
             // am.disableInternalBridgeIntf( MvvmContextFactory.context().networkingManager().get());
             MvvmContextFactory.context().networkManager().updateAddress();
-        } catch ( NetworkException e ) {
+        } catch ( Exception e ) {
             throw new TransformException( e );
         }
     }
