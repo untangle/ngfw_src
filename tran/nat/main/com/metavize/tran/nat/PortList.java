@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -50,8 +50,11 @@ class PortList {
 
     synchronized int getNextPort()
     {
+        int d = nextPort - start;
+
         for (int i = 0; i < range; i++) {
-            nextPort = (nextPort + i) % range;
+            d = (d + i) % range;
+            nextPort = start + d;
             if (!usedPortSet.get(nextPort)) {
                 usedPortSet.set(nextPort);
                 return nextPort++;
