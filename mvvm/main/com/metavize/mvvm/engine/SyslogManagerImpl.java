@@ -43,14 +43,6 @@ class SyslogManagerImpl implements SyslogManager
     private SyslogManagerImpl()
     {
         syslogSenders = new ThreadLocal<SyslogSender>();
-        final NetworkManagerImpl nmi = MvvmContextFactory.context().networkManager();
-        nmi.registerListener(new NetworkSettingsListener() {
-                public void event(NetworkSpacesInternalSettings s)
-                {
-                    hostname = nmi.getHostname();
-                }
-            });
-        hostname = nmi.getHostname();
     }
 
     // static factories -------------------------------------------------------
@@ -80,6 +72,19 @@ class SyslogManagerImpl implements SyslogManager
     }
 
     // package protected methods ----------------------------------------------
+
+    void postInit()
+    {
+        final NetworkManagerImpl nmi = MvvmContextFactory.context().networkManager();
+
+        nmi.registerListener(new NetworkSettingsListener() {
+                public void event(NetworkSpacesInternalSettings s)
+                {
+                    hostname = nmi.getHostname();
+                }
+            });
+        hostname = nmi.getHostname();
+    }
 
     void reconfigure(LoggingSettings loggingSettings)
     {

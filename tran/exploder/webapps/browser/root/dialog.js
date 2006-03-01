@@ -1,11 +1,6 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-function uploadComplete()
-{
-   alert("FUCKELS");
-}
-
 // test
 
 function testDialog()
@@ -74,6 +69,8 @@ function FileDialog(title, message)
 
 FileDialog.prototype.init = function(title, message)
 {
+   var id = new String(random());
+
    var panel = document.createElement("div");
 
    var label = panel.appendChild(document.createElement("div"));
@@ -85,6 +82,10 @@ FileDialog.prototype.init = function(title, message)
    form.method = "post";
    form.enctype = "multipart/form-data";
    form.target = "hidden-target";
+
+   var hidden = document.createElement("input");
+   hidden.type = "hidden";
+   hidden.value = id;
 
    var iframe = form.appendChild(document.createElement("iframe"));
    Element.addClassName(iframe, "hidden-target");
@@ -100,10 +101,9 @@ FileDialog.prototype.init = function(title, message)
    form.appendChild(input);
 
    // XXX close when do
-
    FileDialog.superclass.init.call(this, title, panel);
 
-   uploadComplete = function() { this.setVisible(false); }
+   FileDialog[id].uploadComplete = function() { this.setVisible(false); }
 }
 
 // TitleBar

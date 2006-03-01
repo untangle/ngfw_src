@@ -34,9 +34,6 @@ import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformManager;
 import com.metavize.mvvm.util.TransactionRunner;
 import com.metavize.mvvm.util.TransactionWork;
-import com.metavize.tran.util.IOUtil;
-import com.metavize.mvvm.networking.NetworkManagerImpl;
-import com.metavize.mvvm.NetworkManager;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
@@ -456,6 +453,8 @@ public class MvvmContextImpl extends MvvmContextBase
     @Override
         protected void postInit()
     {
+        syslogManager.postInit();
+
         // Mailsender can now query the hostname
         mailSender.postInit();
 
