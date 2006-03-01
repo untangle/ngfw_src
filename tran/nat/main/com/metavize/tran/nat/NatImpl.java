@@ -301,6 +301,7 @@ public class NatImpl extends AbstractTransform implements Nat
             SetupState state = settings.getSetupState();
             if ( state.equals( SetupState.NETWORK_SHARING )) {
                 logger.info( "Settings are in the deprecated mode, upgrading settings" );
+                settings.setSetupState( SetupState.BASIC );
                 
                 /* Save the new Settings */
                 try {
