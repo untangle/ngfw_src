@@ -78,4 +78,14 @@ class PortList {
         }
         usedPortSet.clear(port);
     }
+
+    public static void main(String[] args)
+    {
+        PortList pl = new PortList(100, 200);
+
+        for (int i = 0; i < 200; i++) {
+            int p = pl.getNextPort();
+            pl.releasePort(p);
+        }
+    }
 }
