@@ -15,6 +15,10 @@ import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+
+import java.net.InetAddress;
+import java.net.Inet4Address;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -317,6 +321,81 @@ class DhcpManager
                 iter.remove();
             }
         }
+    }
+
+
+    ServicesSettings updateDhcpRange( ServicesInternalSettings services, IPaddr address, IPaddr netmask )
+    {
+        ServicesSettings servicesSettings = services.toSettings();
+
+        if ( address == null || netmask == null || address.isEmpty() || netmask.isEmpty()) {
+            logger.info( "empty address or netmask, continuing." );
+            return servicesSettings;
+        }
+        
+        /* Convert to an array of bytes, to calculate the start/end address */
+        byte addressArray[] = address.getAddr().getAddress();
+        byte netmaskArray[] = netmask.getAddr().getAddress();
+        
+        if (( netmaskArray[3] & 0x3F ) != 0 ) {
+            logger.info( "Netmask is too restricting, ignoring settings change" );
+            return servicesSettings;
+        }
+        
+        byte startArray[] = new byte[4];
+        byte endArray[] = new byte[4];
+        System.arraycopy( addressArray, 0, startArray, 0, NetworkUtilPriv.IP_ADDR_SIZE_BYTES );
+        System.arraycopy( addressArray, 0, endArray, 0, NetworkUtilPriv.IP_ADDR_SIZE_BYTES );
+        
+        /* The ideal case */
+        if ( netmaskArray[3] == 0 ) {
+            if (( addressArray[3] < 100 ) || ( addressArray[3] > 200 )) {
+                startArray[3] = 100;
+                endArray[3]   = (byte)200;
+            } else {
+                startArray[3] = 16;
+                endArray[3]   = 99;
+            }
+        } else {
+            int min = byteToInt( netmaskArray[3] & addressArray[3] );
+            int max = byteToInt( min | ( ~netmaskArray[3] ));
+                        
+            int startValue = byteToInt( addressArray[3] );
+
+            /* Address is in the first half */
+            if ( startValue < (( min + max ) / 2 ))  startValue = (( min + max ) / 2 ) + 4;
+            else                                     startValue = min + 4;
+
+            int endValue = startValue + (( max - min ) / 2 ) - 16;
+            System.out.println( "startValue: " + startValue + " endValue " + endValue );
+            startArray[3] = (byte)startValue;
+            endArray[3]   = (byte)endValue;
+        }
+        
+        try {
+            IPaddr start = new IPaddr((Inet4Address)InetAddress.getByAddress( startArray ));
+            IPaddr end   = new IPaddr((Inet4Address)InetAddress.getByAddress( endArray ));
+            servicesSettings.setDhcpStartAndEndAddress( start, end );
+        } catch ( Exception e ) {
+            logger.warn( "Exception creating IP addr, ignoring settings change", e );
+        }
+        
+        return servicesSettings;
+    }
+    
+    private int byteToInt ( byte val ) 
+    {
+        int num = val;
+        if ( num < 0 ) num = num & 0x7F + 0x80;
+        return num;
+    }
+    
+    private int byteToInt ( int val ) 
+    {
+        int num = val;
+        
+        if ( num < 0 ) num = num & 0x7F + 0x80;
+        return num;
     }
 
     private void writeConfiguration( ServicesInternalSettings settings )

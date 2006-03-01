@@ -482,6 +482,13 @@ public class NetworkManagerImpl implements NetworkManager
             newSettings.setNetworkSpaceList( networkSpaceList );
             
             setNetworkSettings( newSettings );
+
+            /* Update the DHCP settings */
+            if ( this.servicesSettings != null ) {
+                setServicesSettings( dhcpManager.updateDhcpRange( this.servicesSettings, address, netmask ));
+            } else {
+                logger.warn( "null services settings during wizard setup, not updating the DHCP range" );
+            }
 	}
 	catch(Exception e){
 	    logger.error( "Error setting up NAT in wizard", e );

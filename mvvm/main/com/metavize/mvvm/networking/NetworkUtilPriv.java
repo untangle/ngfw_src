@@ -11,15 +11,15 @@
 
 package com.metavize.mvvm.networking;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.HashMap;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
 
 import org.apache.log4j.Logger;
 
@@ -78,6 +78,9 @@ class NetworkUtilPriv extends NetworkUtil
 
     /* Index of the first network space */
     public static final int SPACE_INDEX_BASE = 0;
+
+    /* Size of an ip addr byte array */
+    public static final int IP_ADDR_SIZE_BYTES = 4;
 
     private NetworkUtilPriv()
     {
@@ -371,6 +374,8 @@ class NetworkUtilPriv extends NetworkUtil
     {
         NetworkSpaceInternal serviceSpace = settings.getServiceSpace();
 
+        boolean isEnabled = settings.getIsEnabled();
+
         IPaddr defaultRoute;
         IPaddr netmask;
         List<IPaddr> dnsServerList = new LinkedList<IPaddr>();
@@ -380,7 +385,14 @@ class NetworkUtilPriv extends NetworkUtil
         if ( serviceSpace.getIsNatEnabled()) {
             defaultRoute = primary.getNetwork();
             netmask = primary.getNetmask();
-            dnsServerList.add( defaultRoute );
+            /* Only add the default route if dns is enabled */
+            if ( dns.getDnsEnabled() && isEnabled) {
+                dnsServerList.add( defaultRoute );
+            } else {
+                /* Otherwise, dhcp would serve the addresses the box uses for DNS */
+                if ( !settings.getDns1().isEmpty()) dnsServerList.add( settings.getDns1());
+                if ( !settings.getDns2().isEmpty()) dnsServerList.add( settings.getDns2());
+            }
             interfaceName = serviceSpace.getDeviceName();
         } else {
             /* This might be incorrect to assume the default route of the box */
@@ -394,7 +406,7 @@ class NetworkUtilPriv extends NetworkUtil
         }
 
         return ServicesInternalSettings.
-            makeInstance( settings.getIsEnabled(), dhcp, dns, defaultRoute, netmask, dnsServerList, 
+            makeInstance( isEnabled, dhcp, dns, defaultRoute, netmask, dnsServerList, 
                           interfaceName, primary.getNetwork());
     }
 
@@ -807,7 +819,6 @@ class NetworkUtilPriv extends NetworkUtil
         }
     }
     
-
     // Writes out the new ddclient config files when the ddns settings change.
     void writeDDNSConfiguration(DynamicDNSSettings settings, String hostName, String externalInterfaceName)
     {
@@ -904,7 +915,6 @@ class NetworkUtilPriv extends NetworkUtil
     {
         return INSTANCE;
     }
-    
 }
 
 
