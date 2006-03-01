@@ -83,7 +83,11 @@ public class RemotePublicAddressJPanel extends javax.swing.JPanel
 
         // ADDRESS //
         addressCurrent = remoteSettings.getPublicIPaddr();
-        addressJTextField.setText(addressCurrent.toString());
+        if ( addressCurrent == null ) {
+            addressJTextField.setText("");
+        } else {
+            addressJTextField.setText(addressCurrent.toString());
+        }
         addressJTextField.setBackground(Color.WHITE);
 	
         // PORT //
