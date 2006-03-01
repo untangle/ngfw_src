@@ -163,9 +163,9 @@ public class PolicyStateMachine implements ActionListener {
 	utilSeparator = new Separator(false);
         utilSeparator.setForegroundText("Services & Utilities");
         policySeparator = new Separator(true);
-	policySeparator.setForegroundText("Security");
+	policySeparator.setForegroundText(" ");
 	coreSeparator = new Separator(false);
-        coreSeparator.setForegroundText("Networking");
+        coreSeparator.setForegroundText("Services");
         // MISC REFERENCES
         this.actionJTabbedPane = actionJTabbedPane;
         this.viewSelector = policySeparator.getJComboBox();

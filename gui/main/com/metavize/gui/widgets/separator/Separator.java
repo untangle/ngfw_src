@@ -34,12 +34,12 @@ public class Separator extends JLabel {
 	    jComboBox = new JComboBox();
 	    jComboBox.setFocusable(false);
 	    jComboBox.setBackground(new Color(173,173,173));
-	    jComboBox.setForeground(new Color(119,119,119));
-	    jComboBox.setFont(new Font("Arial", 0, 12));
-	    jComboBox.setMinimumSize(new Dimension(200,24));
-	    jComboBox.setMaximumSize(new Dimension(200,24));
-	    jComboBox.setPreferredSize(new Dimension(200,24));
-	    GridBagConstraints comboBoxConstraints = new GridBagConstraints(0,0,1,1,1d,1d,GridBagConstraints.EAST,GridBagConstraints.NONE, new Insets(0,0,0,50),0,0);
+	    jComboBox.setForeground(new Color(129,129,129));
+	    jComboBox.setFont(new Font("Arial", Font.PLAIN, 20));
+	    jComboBox.setMinimumSize(new Dimension(200,30));
+	    jComboBox.setMaximumSize(new Dimension(200,30));
+	    jComboBox.setPreferredSize(new Dimension(200,30));
+	    GridBagConstraints comboBoxConstraints = new GridBagConstraints(0,0,1,1,1d,1d,GridBagConstraints.WEST,GridBagConstraints.NONE, new Insets(0,84,0,0),0,0);
 	    add(jComboBox, comboBoxConstraints);
 	}
     }
