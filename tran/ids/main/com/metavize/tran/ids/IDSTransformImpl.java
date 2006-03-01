@@ -135,7 +135,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         getTransformContext().runTransaction(tw);
     }
 
-    protected void postInit(String args[]) throws TransformException {
+    protected void postInit(String args[]) {
         logger.info("Post init");
         queryDBForSettings();
 
@@ -143,13 +143,6 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         if (IDSTransformImpl.this.settings == null) {
             logger.warn("No settings found.  Creating anew.");
             initializeSettings();
-        }
-
-        try {
-            reconfigure();
-        }
-        catch (Exception e) {
-            throw new TransformException(e);
         }
     }
 
@@ -160,6 +153,13 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
             IDSTest test = new IDSTest();
             if(!test.runTest())
                 throw new TransformStartException("IDS Test failed"); // */
+        }
+
+        try {
+            reconfigure();
+        }
+        catch (Exception e) {
+            throw new TransformStartException(e);
         }
 
         eventLogger.start();
