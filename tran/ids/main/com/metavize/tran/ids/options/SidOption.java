@@ -11,10 +11,17 @@
 
 package com.metavize.tran.ids.options;
 
+import java.nio.ByteBuffer;
 import org.apache.log4j.Logger;
 
+import com.metavize.tran.ids.IDSDetectionEngine;
 import com.metavize.tran.ids.IDSRule;
 import com.metavize.tran.ids.IDSRuleSignature;
+import com.metavize.tran.ids.IDSTransformImpl;
+import com.metavize.tran.ids.RuleClassification;
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.tapi.event.*;
+
 
 public class SidOption extends IDSOption {
 
