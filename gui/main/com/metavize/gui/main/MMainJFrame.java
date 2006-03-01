@@ -427,7 +427,7 @@ public class MMainJFrame extends javax.swing.JFrame {
 
                 aboutJButton.setFont(new java.awt.Font("Arial", 0, 12));
                 aboutJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
-                aboutJButton.setText("<html>EdgeGuard Info</html>");
+                aboutJButton.setText("<html>Setup Info</html>");
                 aboutJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
                 aboutJButton.setDoubleBuffered(true);
                 aboutJButton.setFocusPainted(false);

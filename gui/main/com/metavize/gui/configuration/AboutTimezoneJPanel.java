@@ -22,20 +22,20 @@ import java.awt.*;
 import javax.swing.*;
 import java.util.TimeZone;
 
-public class NetworkTimezoneJPanel extends javax.swing.JPanel
-    implements Savable<NetworkCompoundSettings>, Refreshable<NetworkCompoundSettings> {
+public class AboutTimezoneJPanel extends javax.swing.JPanel
+    implements Savable<AboutCompoundSettings>, Refreshable<AboutCompoundSettings> {
 
 	private final String[] timezones = {"US/Eastern (GMT-5)", "US/Central (GMT-6)", "US/Mountain (GMT-7)", "US/Pacific (GMT-8)", "US/Alaska (GMT-9)", "US/Hawaii (GMT-10)"};
 	
     
-    public NetworkTimezoneJPanel() {
+    public AboutTimezoneJPanel() {
         initComponents();
 	for(String timezone : timezones){
 	    timezoneJComboBox.addItem(timezone);
 	}
     }
 
-    public void doSave(NetworkCompoundSettings networkCompoundSettings, boolean validateOnly) throws Exception {
+    public void doSave(AboutCompoundSettings aboutCompoundSettings, boolean validateOnly) throws Exception {
 
 	// TIMEZONE ///////
 	String timezone = (String) timezoneJComboBox.getSelectedItem();
@@ -43,15 +43,15 @@ public class NetworkTimezoneJPanel extends javax.swing.JPanel
 
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
-	    networkCompoundSettings.setTimeZone( TimeZone.getTimeZone(timezone) );
+	    aboutCompoundSettings.setTimeZone( TimeZone.getTimeZone(timezone) );
         }
 
     }
 
-    public void doRefresh(NetworkCompoundSettings networkCompoundSettings){
+    public void doRefresh(AboutCompoundSettings aboutCompoundSettings){
 	
 	// TIMEZONE ////
-	String timezone = networkCompoundSettings.getTimeZone().getID();
+	String timezone = aboutCompoundSettings.getTimeZone().getID();
 	for( String tz : timezones ){
 	    if( tz.startsWith(timezone) ){
 		timezone = tz;

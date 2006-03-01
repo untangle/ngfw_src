@@ -29,8 +29,8 @@ public class NetworkJDialog extends MConfigJDialog {
     private static final String NAME_NETWORKING_CONFIG = "Networking Config";
     private static final String NAME_NETWORK_SETTINGS  = "External Address";
     private static final String NAME_ALIAS_PANEL       = "External Address Aliases";
-    private static final String NAME_DYNAMIC_DNS       = "Dynamic DNS";
-    private static final String NAME_TIMEZONE_PANEL    = "Timezone";
+    private static final String NAME_HOSTNAME          = "Hostname";
+
 
     public NetworkJDialog( ) {
         this.setTitle(NAME_NETWORKING_CONFIG);
@@ -54,17 +54,11 @@ public class NetworkJDialog extends MConfigJDialog {
 	addSavable(NAME_ALIAS_PANEL, aliasJPanel );
 	addRefreshable(NAME_ALIAS_PANEL, aliasJPanel );
 
-	// DYNAMIC DNS //////
-        NetworkDynamicDNSJPanel dynamicDNSJPanel = new NetworkDynamicDNSJPanel();
-	addScrollableTab(null, NAME_DYNAMIC_DNS, null, dynamicDNSJPanel, false, true);
-	addSavable(NAME_DYNAMIC_DNS, dynamicDNSJPanel);
-	addRefreshable(NAME_DYNAMIC_DNS, dynamicDNSJPanel);
-
-	// TIME ZONE //////
-        NetworkTimezoneJPanel timezoneJPanel = new NetworkTimezoneJPanel();
-	addScrollableTab(null, NAME_TIMEZONE_PANEL, null, timezoneJPanel, false, true);
-	addSavable(NAME_TIMEZONE_PANEL, timezoneJPanel);
-	addRefreshable(NAME_TIMEZONE_PANEL, timezoneJPanel);
+	// HOSTNAME //////
+        NetworkHostnameJPanel hostnameJPanel = new NetworkHostnameJPanel();
+	addScrollableTab(null, NAME_HOSTNAME, null, hostnameJPanel, false, true);
+	addSavable(NAME_HOSTNAME, hostnameJPanel);
+	addRefreshable(NAME_HOSTNAME, hostnameJPanel);
     }   
 
     protected void saveAll() throws Exception {

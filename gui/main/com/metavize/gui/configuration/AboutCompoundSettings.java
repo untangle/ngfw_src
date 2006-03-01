@@ -16,6 +16,7 @@ import com.metavize.gui.transform.CompoundSettings;
 import com.metavize.mvvm.security.RegistrationInfo;
 import com.metavize.mvvm.toolbox.MackageDesc;
 
+import java.util.TimeZone;
 import java.net.URL;
 
 public class AboutCompoundSettings implements CompoundSettings {
@@ -37,8 +38,14 @@ public class AboutCompoundSettings implements CompoundSettings {
     private String aboutText = "<br><br><b>Readme:</b> http://www.metavize.com/egquickstart<br><br><b>Website: </b>http://www.metavize.com";
     public String getAboutText(){ return aboutText; }
     
+	// TIMEZONE //
+    private TimeZone timeZone;
+    public TimeZone getTimeZone(){ return timeZone; }
+    public void setTimeZone(TimeZone tzIn){ timeZone = tzIn; };
+	
     public void save() throws Exception {
 	Util.getAdminManager().setRegistrationInfo(registrationInfo);
+		Util.getAdminManager().setTimeZone(timeZone);
     }
 
     public void refresh() throws Exception {
@@ -50,6 +57,7 @@ public class AboutCompoundSettings implements CompoundSettings {
 	    installedVersion = mackageDesc.getInstalledVersion();
 
 	licenseURL = Util.getClassLoader().getResource("License.txt");
+		timeZone = Util.getAdminManager().getTimeZone();
     }
 
     public void validate() throws Exception {

@@ -23,13 +23,14 @@ import com.metavize.mvvm.tran.*;
 import java.awt.*;
 import javax.swing.JDialog;
 
-public class NetworkDynamicDNSJPanel extends javax.swing.JPanel
+public class NetworkHostnameJPanel extends javax.swing.JPanel
     implements Savable<NetworkCompoundSettings>, Refreshable<NetworkCompoundSettings> {
-
+    
+    private static final String EXCEPTION_HOSTNAME = "Invalid \"Hostname\" specified.";
     private static final String EXCEPTION_NO_LOGIN = "You must provide a login name.";
     private static final String EXCEPTION_NO_PASSWORD = "You must provide a password.";
 
-    public NetworkDynamicDNSJPanel() {
+    public NetworkHostnameJPanel() {
         initComponents();
 	for(String provider : DynamicDNSSettings.getProviderEnumeration()){
 	    providerJComboBox.addItem(provider);
@@ -38,6 +39,21 @@ public class NetworkDynamicDNSJPanel extends javax.swing.JPanel
 
     public void doSave(NetworkCompoundSettings networkCompoundSettings, boolean validateOnly) throws Exception {
 
+	// HOSTNAME ///////
+	String hostname = null;
+        hostnameJTextField.setBackground( Color.WHITE );
+	try{
+	    hostname = hostnameJTextField.getText().trim();
+	}
+	catch(Exception e){
+	    hostnameJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+	    throw new Exception(EXCEPTION_HOSTNAME);
+	}
+
+	// HOSTNAME IS PUBLIC //
+	boolean hostnameIsPublic;
+	hostnameIsPublic = publicJCheckBox.isSelected();
+	
         // DYNAMIC DNS ENABLED //////////
 	boolean isDynamicDNSEnabled = enabledJRadioButton.isSelected();
 
@@ -65,6 +81,9 @@ public class NetworkDynamicDNSJPanel extends javax.swing.JPanel
 		
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
+	    RemoteSettings remoteSettings = networkCompoundSettings.getRemoteSettings();
+	    remoteSettings.setIsHostnamePublic(hostnameIsPublic);
+	    
 	    DynamicDNSSettings dynamicDNSSettings = networkCompoundSettings.getDynamicDNSSettings();
 	    dynamicDNSSettings.setEnabled(isDynamicDNSEnabled);
 	    if( isDynamicDNSEnabled ){
@@ -75,13 +94,29 @@ public class NetworkDynamicDNSJPanel extends javax.swing.JPanel
         }
     }
 
-
+    
+    String hostnameCurrent;
+    boolean isHostnamePublicCurrent;
     boolean isDynamicDNSEnabledCurrent;
     String providerCurrent;
     String loginCurrent;
     String passwordCurrent;
 
     public void doRefresh(NetworkCompoundSettings networkCompoundSettings){
+
+	NetworkingConfiguration networkingConfiguration = networkCompoundSettings.getNetworkingConfiguration();
+			
+	// HOSTNAME /////////
+	hostnameCurrent = networkingConfiguration.hostname();
+	hostnameJTextField.setText( hostnameCurrent );
+	hostnameJTextField.setBackground( Color.WHITE );
+
+	RemoteSettings remoteSettings = networkCompoundSettings.getRemoteSettings();
+
+	// IS HOSTNAME PUBLIC
+	isHostnamePublicCurrent = remoteSettings.getIsHostnamePublic();
+	publicJCheckBox.setSelected(isHostnamePublicCurrent);
+			
         DynamicDNSSettings dynamicDNSSettings = networkCompoundSettings.getDynamicDNSSettings();
         
 	// DYNAMIC DNS ENABLED /////
@@ -112,7 +147,15 @@ public class NetworkDynamicDNSJPanel extends javax.swing.JPanel
                 java.awt.GridBagConstraints gridBagConstraints;
 
                 dnsButtonGroup = new javax.swing.ButtonGroup();
-                dhcpJPanel = new javax.swing.JPanel();
+                hostnameJPanel = new javax.swing.JPanel();
+                jLabel10 = new javax.swing.JLabel();
+                hostnameJPanel1 = new javax.swing.JPanel();
+                hostnameJLabel = new javax.swing.JLabel();
+                hostnameJTextField = new javax.swing.JTextField();
+                jSeparator4 = new javax.swing.JSeparator();
+                jLabel11 = new javax.swing.JLabel();
+                publicJCheckBox = new javax.swing.JCheckBox();
+                dynamicDNSJPanel = new javax.swing.JPanel();
                 jLabel9 = new javax.swing.JLabel();
                 disabledJRadioButton = new javax.swing.JRadioButton();
                 enabledJRadioButton = new javax.swing.JRadioButton();
@@ -126,22 +169,92 @@ public class NetworkDynamicDNSJPanel extends javax.swing.JPanel
 
                 setLayout(new java.awt.GridBagLayout());
 
-                setMaximumSize(new java.awt.Dimension(563, 195));
-                setMinimumSize(new java.awt.Dimension(563, 195));
-                setPreferredSize(new java.awt.Dimension(563, 195));
-                dhcpJPanel.setLayout(new java.awt.GridBagLayout());
+                setMaximumSize(new java.awt.Dimension(563, 435));
+                setMinimumSize(new java.awt.Dimension(563, 435));
+                setPreferredSize(new java.awt.Dimension(563, 435));
+                hostnameJPanel.setLayout(new java.awt.GridBagLayout());
 
-                dhcpJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Dynamic DNS", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+                hostnameJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Hostname", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+                jLabel10.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel10.setText("<html>The Hostname is the name that EdgeGuard will be known as on your network.</html>");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 10);
+                hostnameJPanel.add(jLabel10, gridBagConstraints);
+
+                hostnameJPanel1.setLayout(new java.awt.GridBagLayout());
+
+                hostnameJPanel1.setMaximumSize(new java.awt.Dimension(350, 23));
+                hostnameJPanel1.setMinimumSize(new java.awt.Dimension(350, 23));
+                hostnameJPanel1.setPreferredSize(new java.awt.Dimension(350, 23));
+                hostnameJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                hostnameJLabel.setText("Hostname:");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                hostnameJPanel1.add(hostnameJLabel, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
+                hostnameJPanel1.add(hostnameJTextField, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 0);
+                hostnameJPanel.add(hostnameJPanel1, gridBagConstraints);
+
+                jSeparator4.setForeground(new java.awt.Color(200, 200, 200));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                hostnameJPanel.add(jSeparator4, gridBagConstraints);
+
+                jLabel11.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel11.setText("<html>If your Hostname is publicly resolvable (the name resolves to an IP address from anywhere on the Internet), then EdgeGuard can make use of its hostname when generating emails, etc.  This will make contacting EdgeGuard easier.  (If you enable Dynamic DNS, then your hostname is automatically publicly resolvable.)</html>");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
+                hostnameJPanel.add(jLabel11, gridBagConstraints);
+
+                publicJCheckBox.setText("Hostname is publicly resolvable");
+                publicJCheckBox.setFocusPainted(false);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.insets = new java.awt.Insets(10, 50, 10, 10);
+                hostnameJPanel.add(publicJCheckBox, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
+                add(hostnameJPanel, gridBagConstraints);
+
+                dynamicDNSJPanel.setLayout(new java.awt.GridBagLayout());
+
+                dynamicDNSJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Dynamic DNS", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
                 jLabel9.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel9.setText("<html> By using a Dynamic DNS service provider, EdgeGuard can have a specific hostname assigned to a dynamically changing public IP address.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
-                dhcpJPanel.add(jLabel9, gridBagConstraints);
+                gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 10);
+                dynamicDNSJPanel.add(jLabel9, gridBagConstraints);
 
                 dnsButtonGroup.add(disabledJRadioButton);
                 disabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -158,7 +271,8 @@ public class NetworkDynamicDNSJPanel extends javax.swing.JPanel
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
                 gridBagConstraints.weightx = 1.0;
-                dhcpJPanel.add(disabledJRadioButton, gridBagConstraints);
+                gridBagConstraints.insets = new java.awt.Insets(0, 50, 0, 0);
+                dynamicDNSJPanel.add(disabledJRadioButton, gridBagConstraints);
 
                 dnsButtonGroup.add(enabledJRadioButton);
                 enabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -174,7 +288,8 @@ public class NetworkDynamicDNSJPanel extends javax.swing.JPanel
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
                 gridBagConstraints.weightx = 1.0;
-                dhcpJPanel.add(enabledJRadioButton, gridBagConstraints);
+                gridBagConstraints.insets = new java.awt.Insets(0, 50, 0, 0);
+                dynamicDNSJPanel.add(enabledJRadioButton, gridBagConstraints);
 
                 staticIPJPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -259,7 +374,7 @@ public class NetworkDynamicDNSJPanel extends javax.swing.JPanel
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.ipadx = 150;
                 gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 0);
-                dhcpJPanel.add(staticIPJPanel, gridBagConstraints);
+                dynamicDNSJPanel.add(staticIPJPanel, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -268,7 +383,7 @@ public class NetworkDynamicDNSJPanel extends javax.swing.JPanel
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.weighty = 1.0;
                 gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
-                add(dhcpJPanel, gridBagConstraints);
+                add(dynamicDNSJPanel, gridBagConstraints);
 
         }//GEN-END:initComponents
 
@@ -295,21 +410,33 @@ public class NetworkDynamicDNSJPanel extends javax.swing.JPanel
 	providerJComboBox.setEnabled(enabled);
 	loginJTextField.setEnabled(enabled);
 	passwordJPasswordField.setEnabled(enabled);
+	if(enabled){
+	    publicJCheckBox.setSelected(true);
+	}
+	publicJCheckBox.setEnabled(!enabled);
     }
 
     
         // Variables declaration - do not modify//GEN-BEGIN:variables
-        private javax.swing.JPanel dhcpJPanel;
         public javax.swing.JRadioButton disabledJRadioButton;
         private javax.swing.ButtonGroup dnsButtonGroup;
+        private javax.swing.JPanel dynamicDNSJPanel;
         public javax.swing.JRadioButton enabledJRadioButton;
+        private javax.swing.JLabel hostnameJLabel;
+        private javax.swing.JPanel hostnameJPanel;
+        private javax.swing.JPanel hostnameJPanel1;
+        public javax.swing.JTextField hostnameJTextField;
+        private javax.swing.JLabel jLabel10;
+        private javax.swing.JLabel jLabel11;
         private javax.swing.JLabel jLabel9;
+        private javax.swing.JSeparator jSeparator4;
         private javax.swing.JLabel loginJLabel;
-        private javax.swing.JTextField loginJTextField;
+        public javax.swing.JTextField loginJTextField;
         private javax.swing.JLabel passwordJLabel;
         private javax.swing.JPasswordField passwordJPasswordField;
         private javax.swing.JComboBox providerJComboBox;
         private javax.swing.JLabel providerJLabel;
+        private javax.swing.JCheckBox publicJCheckBox;
         private javax.swing.JPanel staticIPJPanel;
         // End of variables declaration//GEN-END:variables
     

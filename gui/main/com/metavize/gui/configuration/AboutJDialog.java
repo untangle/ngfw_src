@@ -29,11 +29,11 @@ import com.metavize.gui.transform.Refreshable;
 
 public class AboutJDialog extends MConfigJDialog {
 
-    private static final String NAME_ABOUT_CONFIG      = "EdgeGuard Info";
+    private static final String NAME_ABOUT_CONFIG      = "Setup Info";
     private static final String NAME_ABOUT_INFO        = "Version/Revision";
     private static final String NAME_LICENSE_INFO      = "License Agreement";
     private static final String NAME_REGISTRATION_INFO = "Registration";
-
+    private static final String NAME_TIMEZONE_PANEL    = "Timezone";
 
 
     public AboutJDialog( ) {
@@ -59,6 +59,13 @@ public class AboutJDialog extends MConfigJDialog {
 	addScrollableTab(null, NAME_REGISTRATION_INFO, null, aboutRegistrationJPanel, false, true);
 	addSavable(NAME_REGISTRATION_INFO, aboutRegistrationJPanel);
 	addRefreshable(NAME_REGISTRATION_INFO, aboutRegistrationJPanel);
+	
+	
+	// TIME ZONE //////
+        AboutTimezoneJPanel timezoneJPanel = new AboutTimezoneJPanel();
+	addScrollableTab(null, NAME_TIMEZONE_PANEL, null, timezoneJPanel, false, true);
+	addSavable(NAME_TIMEZONE_PANEL, timezoneJPanel);
+	addRefreshable(NAME_TIMEZONE_PANEL, timezoneJPanel);
     }
     
     private class AboutLicenseJEditorPane extends JEditorPane

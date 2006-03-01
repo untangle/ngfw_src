@@ -30,7 +30,6 @@ public class NetworkIPJPanel extends javax.swing.JPanel
     private static final String EXCEPTION_DHCP_GATEWAY = "Invalid \"Default Route\" manually specified.";
     private static final String EXCEPTION_DHCP_DNS_1 = "Invalid \"Primary DNS\" maually specified.";
     private static final String EXCEPTION_DHCP_DNS_2 = "Invalid \"Secondary DNS\" manually specified.";
-    private static final String EXCEPTION_HOSTNAME = "Invalid \"Hostname\" specified.";
     private static final String EMPTY_DNS2 = "";
 
     private MConfigJDialog mConfigJDialog;
@@ -122,17 +121,6 @@ public class NetworkIPJPanel extends javax.swing.JPanel
 		throw new Exception(EXCEPTION_DHCP_DNS_2);
             }
         }
-
-	// HOSTNAME ///////
-	String hostname = null;
-        hostnameJTextField.setBackground( Color.WHITE );
-	try{
-	    hostname = hostnameJTextField.getText().trim();
-	}
-	catch(Exception e){
-	    hostnameJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
-	    throw new Exception(EXCEPTION_HOSTNAME);
-	}
 	
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){	    
@@ -145,7 +133,6 @@ public class NetworkIPJPanel extends javax.swing.JPanel
 		networkingConfiguration.dns1( dns1 );
 		networkingConfiguration.dns2( dns2 );
 	    }
-            networkingConfiguration.hostname( hostname );
         }
     }
 
@@ -156,7 +143,6 @@ public class NetworkIPJPanel extends javax.swing.JPanel
     String dhcpRouteCurrent;
     String dnsPrimaryCurrent;
     String dnsSecondaryCurrent;
-    String hostnameCurrent;
 
     public void doRefresh(NetworkCompoundSettings networkCompoundSettings){
         NetworkingConfiguration networkingConfiguration = networkCompoundSettings.getNetworkingConfiguration();
@@ -200,11 +186,6 @@ public class NetworkIPJPanel extends javax.swing.JPanel
         }
 	dnsSecondaryJTextField.setBackground( Color.WHITE );
 
-	// HOSTNAME /////////
-	hostnameCurrent = networkingConfiguration.hostname();
-	hostnameJTextField.setText( hostnameCurrent );
-	hostnameJTextField.setBackground( Color.WHITE );
-
 	// ENABLE BUTTONS
 	connectivityTestJButton.setEnabled(true); // dhcp lease is take care of above	
     }
@@ -220,6 +201,7 @@ public class NetworkIPJPanel extends javax.swing.JPanel
                 restrictAdminButtonGroup = new javax.swing.ButtonGroup();
                 sshButtonGroup = new javax.swing.ButtonGroup();
                 dhcpJPanel = new javax.swing.JPanel();
+                jLabel11 = new javax.swing.JLabel();
                 dhcpEnabledRadioButton = new javax.swing.JRadioButton();
                 dhcpDisabledRadioButton = new javax.swing.JRadioButton();
                 staticIPJPanel = new javax.swing.JPanel();
@@ -234,10 +216,6 @@ public class NetworkIPJPanel extends javax.swing.JPanel
                 dnsSecondaryJLabel = new javax.swing.JLabel();
                 dnsSecondaryJTextField = new javax.swing.JTextField();
                 optionalJLabel = new javax.swing.JLabel();
-                jSeparator2 = new javax.swing.JSeparator();
-                hostnameJPanel = new javax.swing.JPanel();
-                hostnameJLabel = new javax.swing.JLabel();
-                hostnameJTextField = new javax.swing.JTextField();
                 jSeparator4 = new javax.swing.JSeparator();
                 jLabel9 = new javax.swing.JLabel();
                 renewDhcpLeaseJButton = new javax.swing.JButton();
@@ -247,15 +225,25 @@ public class NetworkIPJPanel extends javax.swing.JPanel
 
                 setLayout(new java.awt.GridBagLayout());
 
-                setMaximumSize(new java.awt.Dimension(563, 482));
-                setMinimumSize(new java.awt.Dimension(563, 482));
-                setPreferredSize(new java.awt.Dimension(563, 482));
+                setMaximumSize(new java.awt.Dimension(563, 470));
+                setMinimumSize(new java.awt.Dimension(563, 470));
+                setPreferredSize(new java.awt.Dimension(563, 470));
                 dhcpJPanel.setLayout(new java.awt.GridBagLayout());
 
                 dhcpJPanel.setBorder(new javax.swing.border.TitledBorder(null, "External IP Settings", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+                jLabel11.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel11.setText("<html>The External IP Settings are used to configure EdgeGuard's \"External\" network interface to communicate with the Internet or some other external network.</html>");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
+                dhcpJPanel.add(jLabel11, gridBagConstraints);
+
                 dhcpButtonGroup.add(dhcpEnabledRadioButton);
                 dhcpEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                dhcpEnabledRadioButton.setText("<html><b>Automatically Set</b>  EdgeGuard's external IP settings from the network's DHCP server.  The settings are shown in the fields below.</html>");
+                dhcpEnabledRadioButton.setText("<html><b>Automatically Set</b>  using the network's DHCP server.</html>");
                 dhcpEnabledRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set EdgeGuard's IP address from the network's DHCP server.</html>");
                 dhcpEnabledRadioButton.setFocusPainted(false);
                 dhcpEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
@@ -268,11 +256,12 @@ public class NetworkIPJPanel extends javax.swing.JPanel
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
                 gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 50, 0, 0);
                 dhcpJPanel.add(dhcpEnabledRadioButton, gridBagConstraints);
 
                 dhcpButtonGroup.add(dhcpDisabledRadioButton);
                 dhcpDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                dhcpDisabledRadioButton.setText("<html><b>Manually Set</b> EdgeGuard's external IP settings through the fields below.</html>");
+                dhcpDisabledRadioButton.setText("<html><b>Manually Set</b> using  the fields below.</html>");
                 dhcpDisabledRadioButton.setFocusPainted(false);
                 dhcpDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -284,6 +273,7 @@ public class NetworkIPJPanel extends javax.swing.JPanel
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
                 gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 50, 0, 0);
                 dhcpJPanel.add(dhcpDisabledRadioButton, gridBagConstraints);
 
                 staticIPJPanel.setLayout(new java.awt.GridBagLayout());
@@ -412,44 +402,6 @@ public class NetworkIPJPanel extends javax.swing.JPanel
                 gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 0);
                 dhcpJPanel.add(staticIPJPanel, gridBagConstraints);
 
-                jSeparator2.setForeground(new java.awt.Color(200, 200, 200));
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                dhcpJPanel.add(jSeparator2, gridBagConstraints);
-
-                hostnameJPanel.setLayout(new java.awt.GridBagLayout());
-
-                hostnameJPanel.setMaximumSize(new java.awt.Dimension(350, 23));
-                hostnameJPanel.setMinimumSize(new java.awt.Dimension(350, 23));
-                hostnameJPanel.setPreferredSize(new java.awt.Dimension(350, 23));
-                hostnameJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                hostnameJLabel.setText("Hostname:");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                hostnameJPanel.add(hostnameJLabel, gridBagConstraints);
-
-                hostnameJTextField.addCaretListener(new javax.swing.event.CaretListener() {
-                        public void caretUpdate(javax.swing.event.CaretEvent evt) {
-                                hostnameJTextFieldCaretUpdate(evt);
-                        }
-                });
-
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
-                hostnameJPanel.add(hostnameJTextField, gridBagConstraints);
-
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 0);
-                dhcpJPanel.add(hostnameJPanel, gridBagConstraints);
-
                 jSeparator4.setForeground(new java.awt.Color(200, 200, 200));
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -476,7 +428,7 @@ public class NetworkIPJPanel extends javax.swing.JPanel
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 10, 0);
                 dhcpJPanel.add(renewDhcpLeaseJButton, gridBagConstraints);
 
                 jSeparator3.setForeground(new java.awt.Color(200, 200, 200));
@@ -505,7 +457,7 @@ public class NetworkIPJPanel extends javax.swing.JPanel
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 10, 0);
                 dhcpJPanel.add(connectivityTestJButton, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
@@ -518,11 +470,6 @@ public class NetworkIPJPanel extends javax.swing.JPanel
                 add(dhcpJPanel, gridBagConstraints);
 
         }//GEN-END:initComponents
-
-    private void hostnameJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_hostnameJTextFieldCaretUpdate
-	if( !hostnameJTextField.getText().trim().equals(hostnameCurrent) )
-	    connectivityTestJButton.setEnabled(false);
-    }//GEN-LAST:event_hostnameJTextFieldCaretUpdate
     
     private void dnsSecondaryJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_dnsSecondaryJTextFieldCaretUpdate
 	if( !dnsSecondaryJTextField.getText().trim().equals(dnsSecondaryCurrent) )
@@ -611,13 +558,10 @@ public class NetworkIPJPanel extends javax.swing.JPanel
         private javax.swing.JLabel dnsSecondaryJLabel;
         public javax.swing.JTextField dnsSecondaryJTextField;
         private javax.swing.ButtonGroup externalAdminButtonGroup;
-        private javax.swing.JLabel hostnameJLabel;
-        private javax.swing.JPanel hostnameJPanel;
-        public javax.swing.JTextField hostnameJTextField;
         private javax.swing.ButtonGroup internalAdminButtonGroup;
         private javax.swing.JLabel jLabel10;
+        private javax.swing.JLabel jLabel11;
         private javax.swing.JLabel jLabel9;
-        private javax.swing.JSeparator jSeparator2;
         private javax.swing.JSeparator jSeparator3;
         private javax.swing.JSeparator jSeparator4;
         private javax.swing.JLabel optionalJLabel;
