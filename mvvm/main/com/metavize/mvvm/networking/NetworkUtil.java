@@ -237,6 +237,16 @@ public class NetworkUtil
         throw new ParseException( PUBLIC_ADDRESS_EXCEPTION );
     }
 
+    // Used by UI at wizard time to provide an initial value for public hostname checkbox.
+    public boolean isHostnameLikelyPublic(String hostName)
+    {
+        if (!hostName.contains("."))
+            return false;
+        if (hostName.endsWith(".domain"))
+            return false;
+        return true;
+    }
+
     public static NetworkUtil getInstance()
     {
         return INSTANCE;
