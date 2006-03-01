@@ -19,6 +19,11 @@ grep -sq lang= /boot/grub/menu.lst && sed -i -e "s|\( tz=[^ ]*\)\? lang=| tz=$ZO
 # Restart system daemons that depend on timezone
 /etc/init.d/ntpdate restart 2>&1 > /dev/null &
 /etc/init.d/sysklogd restart
+# Must restart spamd whenever syslogd restarts, bug in perl...
+if [ -x /etc/init.d/spamassassin ]; then
+    /etc/init.d/spamassassin restart
+fi    
+
 /etc/init.d/cron restart
 
 exit 0
