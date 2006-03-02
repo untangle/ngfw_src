@@ -29,7 +29,7 @@ public final class SetupState implements Serializable
     /* The settings have not been upgraded yet. */
     public static final SetupState NETWORK_SHARING  = new SetupState( 1, "deprecated" );
         
-    /* The user hasn't selected basic or advanced. */
+    /* The user hasn't selected basic or advanced. (unsupported state) */
     public static final SetupState UNCONFIGURED  = new SetupState( 2, "Unconfigured" );
         
     /* The user wants a simple interface */
@@ -37,10 +37,20 @@ public final class SetupState implements Serializable
     
     /* The user is ambitious, and wants to take full advantage of network spaces. */
     public static final SetupState ADVANCED = new SetupState( 4, "Advanced" );
+    
+    private static final int RESTORE_MASK = 0x100;
+
+    /* Basic settings are in the database, but haven't been written to the /etc/network interfaces yet */
+    static final SetupState BASIC_RESTORE  =
+        new SetupState( BASIC.type | RESTORE_MASK, "Basic Restore" );
+    
+    /* Advanced settings are in the database, but haven't been written to the /etc/network interfaces yet */
+    static final SetupState ADVANCED_RESTORE  =
+        new SetupState( ADVANCED.type | RESTORE_MASK, "Advanved Restore" );
 
     private static final SetupState ENUMERATION[] =
     {
-        WIZARD, NETWORK_SHARING, UNCONFIGURED, BASIC, ADVANCED
+        WIZARD, NETWORK_SHARING, UNCONFIGURED, BASIC, ADVANCED, BASIC_RESTORE, ADVANCED_RESTORE
     };
 
     private final int type;
@@ -60,6 +70,11 @@ public final class SetupState implements Serializable
     public String getName()
     {
         return this.name;
+    }
+
+    boolean isRestore()
+    {
+        return ( this.type & RESTORE_MASK ) == RESTORE_MASK;
     }
 
     public String toString()

@@ -747,6 +747,24 @@ public class NetworkManagerImpl implements NetworkManager
                 /* Get new settings for the services */
                 setServicesSettings( nup.getDefaultServicesSettings());
             }
+        } else if ( this.networkSettings.getSetupState().isRestore()) {
+            logger.debug( "Settings need to be restored, configuring box." );
+            NetworkSpacesSettingsImpl restoredSettings = nup.toSettings( this.networkSettings );
+            
+            SetupState state = this.networkSettings.getSetupState();
+            
+            if ( SetupState.ADVANCED_RESTORE.equals( state )) {
+                restoredSettings.setSetupState( SetupState.ADVANCED );
+            } else {
+                restoredSettings.setSetupState( SetupState.BASIC );
+            }
+            
+            
+            try {
+                setNetworkSettings( restoredSettings );
+            } catch ( Exception e ) {
+                logger.error( "Unable to reload network settings, continuing", e );
+            }
         }
 
         /* Done before so this gets called on the first update */
