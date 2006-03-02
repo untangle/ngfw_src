@@ -38,7 +38,7 @@
          JOIN pl_endp endp ON endp.event_id = evt.pl_endp_id
          JOIN pl_stats stats ON endp.event_id = stats.pl_endp_id
   WHERE evt.time_stamp >= $P{startTime} AND evt.time_stamp < $P{endTime} AND NOT evt.is_dmz
-  GROUP BY rule_id, RULE
+  GROUP BY RULE
   ORDER BY DATA_TRANSFERRED DESC, RULE ASC
   LIMIT 15]]></queryString>
     <field name="RULE" class="java.lang.String"/>
