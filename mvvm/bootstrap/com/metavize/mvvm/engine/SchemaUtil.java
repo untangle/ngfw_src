@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -13,6 +13,8 @@ package com.metavize.mvvm.engine;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -26,6 +28,8 @@ public class SchemaUtil
 {
     private static final Logger logger = Logger.getLogger(SchemaUtil.class);
 
+    private static final Set<String> CONVERTS = new HashSet<String>();
+
     // static methods ---------------------------------------------------------
 
     /**
@@ -38,6 +42,16 @@ public class SchemaUtil
      */
     public static void initSchema(String type, String component)
     {
+        String key = type + "," + component;
+
+        synchronized (CONVERTS) {
+            if (CONVERTS.contains(key)) {
+                return;
+            } else {
+                CONVERTS.add(key);
+            }
+        }
+
         try {
             ProcessBuilder pb = new ProcessBuilder("mvnice", "update-schema", type, component);
             Process p = pb.start();
@@ -56,6 +70,10 @@ public class SchemaUtil
 
         } catch (IOException exn) {
             logger.warn("error in update-schema", exn);
+        } finally {
+            synchronized (CONVERTS) {
+                CONVERTS.remove(key);
+            }
         }
     }
 }
