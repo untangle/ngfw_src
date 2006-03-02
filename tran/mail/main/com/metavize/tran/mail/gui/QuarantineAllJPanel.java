@@ -33,7 +33,7 @@ import java.awt.event.*;
 import com.metavize.gui.widgets.editTable.*;
 
 public class QuarantineAllJPanel extends javax.swing.JPanel
-    implements Refreshable<EmailCompoundSettings>, ComponentListener {
+    implements Refreshable<MailTransformCompoundSettings>, ComponentListener {
 
     private static final Color TABLE_BACKGROUND_COLOR = new Color(213, 213, 226);
     private QuarantineAllTableModel quarantineAllTableModel;
@@ -52,9 +52,9 @@ public class QuarantineAllJPanel extends javax.swing.JPanel
         setTableModel( quarantineAllTableModel );
     }
 
-    public void doRefresh(EmailCompoundSettings emailCompoundSettings){
-	mailTransformCompoundSettings = (MailTransformCompoundSettings) emailCompoundSettings.getMailTransformCompoundSettings();
-	quarantineAllTableModel.doRefresh(emailCompoundSettings);
+    public void doRefresh(MailTransformCompoundSettings mailTransformCompoundSettings){
+	this.mailTransformCompoundSettings = mailTransformCompoundSettings;
+	quarantineAllTableModel.doRefresh(mailTransformCompoundSettings);
     }
     
     public void setTableModel(MSortedTableModel mSortedTableModel){
@@ -315,7 +315,7 @@ public class QuarantineAllJPanel extends javax.swing.JPanel
 
 
 
-class QuarantineAllTableModel extends MSortedTableModel<EmailCompoundSettings> {
+class QuarantineAllTableModel extends MSortedTableModel<MailTransformCompoundSettings> {
 
     private static final StringConstants sc = StringConstants.getInstance();
     
@@ -336,12 +336,12 @@ class QuarantineAllTableModel extends MSortedTableModel<EmailCompoundSettings> {
 
 
    
-    public void generateSettings(EmailCompoundSettings emailCompoundSettings,
+    public void generateSettings(MailTransformCompoundSettings mailTransformCompoundSettings,
 				 Vector<Vector> tableVector, boolean validateOnly) throws Exception { }
 
-    public Vector<Vector> generateRows(EmailCompoundSettings emailCompoundSettings) {
+    public Vector<Vector> generateRows(MailTransformCompoundSettings mailTransformCompoundSettings) {
         
-        java.util.List<Inbox> inboxes = ((MailTransformCompoundSettings)emailCompoundSettings.getMailTransformCompoundSettings()).getInboxList();
+        java.util.List<Inbox> inboxes = mailTransformCompoundSettings.getInboxList();
         Vector<Vector> allRows = new Vector<Vector>(inboxes.size());
 	Vector tempRow = null;
         int rowIndex = 0;
