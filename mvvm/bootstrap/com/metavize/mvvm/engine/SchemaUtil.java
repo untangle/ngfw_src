@@ -45,10 +45,12 @@ public class SchemaUtil
         String key = type + "," + component;
 
         synchronized (CONVERTS) {
-            if (CONVERTS.contains(key)) {
-                return;
-            } else {
-                CONVERTS.add(key);
+            while (CONVERTS.contains(key)) {
+                try {
+                    CONVERTS.wait();
+                } catch (InterruptedException exn) {
+                    // XXX doesn't happen, need a destroy method
+                }
             }
         }
 
@@ -73,6 +75,7 @@ public class SchemaUtil
         } finally {
             synchronized (CONVERTS) {
                 CONVERTS.remove(key);
+                CONVERTS.notifyAll();
             }
         }
     }
