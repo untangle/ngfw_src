@@ -83,6 +83,7 @@ public class NetworkHostnameJPanel extends javax.swing.JPanel
 	if( !validateOnly ){
 	    RemoteSettings remoteSettings = networkCompoundSettings.getRemoteSettings();
 	    remoteSettings.setIsHostnamePublic(hostnameIsPublic);
+            remoteSettings.setHostname(hostname);
 	    
 	    DynamicDNSSettings dynamicDNSSettings = networkCompoundSettings.getDynamicDNSSettings();
 	    dynamicDNSSettings.setEnabled(isDynamicDNSEnabled);

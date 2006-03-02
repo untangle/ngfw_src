@@ -26,7 +26,8 @@ DEFAULT_TABLE="default"
 METAVIZE_MAIN_TABLE="${RT_TABLE_NAME_PREFIX}main"
 METAVIZE_MAIN_PRIORITY=${RULE_PRIORITY_BASE}999
 
-TABLE_COUNT=6
+## Not using tables until 3.3
+TABLE_COUNT=0
 
 ############################
 ## Functions
@@ -84,6 +85,8 @@ function flushRoutingTables()
 ############################
 ## Start of script
 ############################
+
+echo "flushing interfaces" `date`
 
 ## Destroy all of the current bridges
 deleteAllBridges
