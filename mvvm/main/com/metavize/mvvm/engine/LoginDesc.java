@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -76,6 +76,11 @@ class LoginDesc
         }
 
         return targetDesc;
+    }
+
+    LoginSession getLoginSession()
+    {
+        return loginSession;
     }
 
     TargetDesc getTargetDesc(int targetId)

@@ -67,8 +67,15 @@ public class MessageClient
                 ToolboxMessageVisitor tmv = toolboxMessageVisitor;
 
                 if (null != tmv) {
-                    for (ToolboxMessage msg : toolQ.getMessages()) {
-                        msg.accept(toolboxMessageVisitor);
+                    try {
+                        for (ToolboxMessage msg : toolQ.getMessages()) {
+                            msg.accept(tmv);
+                        }
+                    } catch (InvocationException exn) {
+                        System.err.println("invocation exn: " + exn);
+                        exn.printStackTrace();
+                        toolQ = mvvmContext.toolboxManager().subscribe();
+                        continue;
                     }
                 }
 
