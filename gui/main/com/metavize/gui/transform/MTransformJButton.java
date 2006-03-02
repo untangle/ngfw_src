@@ -98,6 +98,9 @@ public class MTransformJButton extends JButton {
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         add(nameJLabel, gridBagConstraints);
 
+	try{ ((JComponent)nameJLabel).putClientProperty(com.sun.java.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY, new Boolean(true)); }
+	catch(Exception e){}
+
         //status progressbar
         statusJProgressBar = new JProgressBar();
         statusJProgressBar.setBorderPainted(true);

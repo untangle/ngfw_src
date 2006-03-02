@@ -13,6 +13,7 @@ package com.metavize.gui.util;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
@@ -535,6 +536,18 @@ public class Util {
 
 
     // GENERAL UTIL ////////////////////////////////
+    public static void setAAClientProperty(Component parentComponent, boolean isAAEnabled){
+	if( parentComponent instanceof JComponent ){
+	    try{ ((JComponent)parentComponent).putClientProperty(com.sun.java.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY, new Boolean(isAAEnabled)); }
+	    catch(Exception e){}
+	}
+	
+	if( parentComponent instanceof Container ){
+	    for( Component component : ((Container)parentComponent).getComponents() ){
+		setAAClientProperty(component, isAAEnabled);
+	    }
+	}
+    }
     public static int chooseMax(int iValue, int iMinValue){
         if(iValue >= iMinValue){ return iValue;	}
         else { return iMinValue; }

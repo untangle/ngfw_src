@@ -168,6 +168,8 @@ public class MTransformJPanel extends javax.swing.JPanel {
 
         // SETUP COLORS and name
         descriptionTextJLabel.setText( getMackageDesc().getDisplayName() );
+	try{ ((JComponent)descriptionTextJLabel).putClientProperty(com.sun.java.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY, new Boolean(true)); }
+	catch(Exception e){}
 
         // SETUP STATE
         mStateMachine = new MStateMachine(this);
