@@ -135,7 +135,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         getTransformContext().runTransaction(tw);
     }
 
-    protected void postInit(String args[]) {
+    protected void postInit(String args[]) throws TransformException {
         logger.info("Post init");
         queryDBForSettings();
 
@@ -149,7 +149,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
             reconfigure();
         }
         catch (Exception e) {
-            throw new TransformStartException(e);
+            throw new TransformException(e);
         }
 
     }
