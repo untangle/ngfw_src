@@ -53,6 +53,20 @@ ALTER TABLE settings.dhcp_lease_rule RENAME TO mvvm_dhcp_lease_rule;
 -- moved from dns_static_host_rule to mvvm_dns_static_host_rule
 ALTER TABLE settings.dns_static_host_rule RENAME TO mvvm_dns_static_host_rule;
 
+-- com.metavize.mvvm.networking.ServicesSettingsImpl.dhcpLeaseList -- 3.2
+CREATE TABLE settings.mvvm_dhcp_lease_list (
+       setting_id   INT8 NOT NULL,
+       rule_id      INT8 NOT NULL,
+       position     INT4 NOT NULL,
+       PRIMARY KEY  (setting_id, position));
+
+-- com.metavize.mvvm.networking.ServicesSettingsImpl.dnsStaticHostList -- 3.2
+CREATE TABLE settings.mvvm_dns_host_list (
+       setting_id   INT8 NOT NULL,
+       rule_id      INT8 NOT NULL,
+       position     INT4 NOT NULL,
+       PRIMARY KEY  (setting_id, position));
+
 -- com.metavize.mvvm.networking.Interface -- 3.2
 CREATE TABLE settings.mvvm_network_intf (
     rule_id        INT8 NOT NULL,
@@ -145,7 +159,7 @@ CREATE TABLE settings.mvvm_network_settings (
     PRIMARY KEY (settings_id));
 
 -- com.metavize.mvvm.networking.ServicesSettingsImpl -- 3.2
-CREATE TABLE mvvm_network_services (
+CREATE TABLE settings.mvvm_network_services (
        settings_id        INT8 NOT NULL,
        is_dhcp_enabled    BOOL,
        dhcp_start_address INET,
@@ -189,19 +203,19 @@ CREATE TABLE mvvm_network_services (
 --       FOREIGN KEY (rule_id) REFERENCES redirect_rule;
 
 -- -- Services settings
-ALTER TABLE mvvm_dhcp_leases 
+ALTER TABLE settings.mvvm_dhcp_lease_list
       ADD CONSTRAINT fk_mvvm_lease_services
-      FOREIGN KEY (setting_id) REFERENCES mvvm_network_services;
+      FOREIGN KEY (setting_id) REFERENCES settings.mvvm_network_services;
 
-ALTER TABLE mvvm_dhcp_leases
+ALTER TABLE settings.mvvm_dhcp_lease_list
       ADD CONSTRAINT fk_mvvm_lease_lease
-      FOREIGN KEY (rule_id) REFERENCES mvvm_dhcp_lease_rule;
+      FOREIGN KEY (rule_id) REFERENCES settings.mvvm_dhcp_lease_rule;
 
-ALTER TABLE mvvm_dns_hosts 
+ALTER TABLE settings.mvvm_dns_hosts 
       ADD CONSTRAINT fk_mvvm_dns_services
-      FOREIGN KEY (setting_id) REFERENCES mvvm_network_services;
+      FOREIGN KEY (setting_id) REFERENCES settings.mvvm_network_services;
 
-ALTER TABLE mvvm_dns_hosts
+ALTER TABLE settings.mvvm_dns_hosts
       ADD CONSTRAINT fk_mvvm_dns_dns
-      FOREIGN KEY (rule_id) REFERENCES mvvm_dns_static_host_rule;
+      FOREIGN KEY (rule_id) REFERENCES settings.mvvm_dns_static_host_rule;
 

@@ -38,7 +38,7 @@ public final class SetupState implements Serializable
     /* The user is ambitious, and wants to take full advantage of network spaces. */
     public static final SetupState ADVANCED = new SetupState( 4, "Advanced" );
     
-    private static final int RESTORE_MASK = 0x100;
+    private static final int RESTORE_MASK = 0x40;
 
     /* Basic settings are in the database, but haven't been written to the /etc/network interfaces yet */
     static final SetupState BASIC_RESTORE  =
