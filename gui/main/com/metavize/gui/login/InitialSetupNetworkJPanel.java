@@ -18,6 +18,7 @@ import com.metavize.gui.util.Util;
 import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.mvvm.NetworkingManager;
 import com.metavize.mvvm.NetworkingConfiguration;
+import com.metavize.mvvm.networking.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -174,6 +175,12 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                     networkingConfiguration.dns2( dns2 );
                 }
 		networkingConfiguration.hostname( hostnameString );
+
+		boolean isPublic = NetworkUtil.isHostnameLikelyPublic( hostnameString );
+		RemoteSettings remoteSettings = Util.getNetworkManager().getRemoteSettings();
+		remoteSettings.setIsHostnamePublic(isPublic);
+		Util.getNetworkManager().setRemoteSettings(remoteSettings);
+
 		InitialSetupWizard.setSharedData( hostnameString );
                 Util.getNetworkingManager().set(networkingConfiguration);
 		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);

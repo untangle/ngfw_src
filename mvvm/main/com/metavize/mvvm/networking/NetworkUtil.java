@@ -238,7 +238,7 @@ public class NetworkUtil
     }
 
     // Used by UI at wizard time to provide an initial value for public hostname checkbox.
-    public boolean isHostnameLikelyPublic(String hostName)
+    public static boolean isHostnameLikelyPublic(String hostName)
     {
         if (!hostName.contains("."))
             return false;
