@@ -144,6 +144,14 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
             logger.warn("No settings found.  Creating anew.");
             initializeSettings();
         }
+
+        try {
+            reconfigure();
+        }
+        catch (Exception e) {
+            throw new TransformStartException(e);
+        }
+
     }
 
     protected void preStart() throws TransformStartException {
@@ -153,13 +161,6 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
             IDSTest test = new IDSTest();
             if(!test.runTest())
                 throw new TransformStartException("IDS Test failed"); // */
-        }
-
-        try {
-            reconfigure();
-        }
-        catch (Exception e) {
-            throw new TransformStartException(e);
         }
 
         eventLogger.start();
