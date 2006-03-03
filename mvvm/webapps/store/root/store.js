@@ -24,7 +24,7 @@ function installButton(pkg)
       var a = div.appendChild(document.createElement("a"));
       a.appendChild(document.createTextNode("install"));
       a.onclick = function() { requestInstall(pkg); };
-      a.setAttribute("href", "javascript:void(self.close());");
+      //a.setAttribute("href", "javascript:void(self.close());");
    }
 }
 
