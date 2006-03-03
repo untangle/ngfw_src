@@ -79,7 +79,7 @@ FileDialog.prototype.init = function(title, message)
    var form = panel.appendChild(document.createElement("form"));
    form.action = "put"
    form.method = "post";
-   form.enctype = "multipart/form-data";
+   form.enctype = form.encoding = "multipart/form-data";
    form.target = "hidden-target";
 
    var iframe = makeHiddenIFrame(form, "hidden-target");
