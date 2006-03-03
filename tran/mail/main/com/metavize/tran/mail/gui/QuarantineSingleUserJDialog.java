@@ -31,21 +31,25 @@ import javax.swing.*;
 
 
 
-public class QuarantineUserJDialog extends MConfigJDialog {
+public class QuarantineSingleUserJDialog extends MConfigJDialog {
 
     private static final String NAME_ALL_ACCOUNTS    = "Email Quarantine Details for: ";
 
     private String account;
         
-    public QuarantineUserJDialog(Dialog topLevelDialog, MailTransformCompoundSettings mailTransformCompoundSettings, String account) {
+    public QuarantineSingleUserJDialog(Dialog topLevelDialog, MailTransformCompoundSettings mailTransformCompoundSettings, String account) {
 	super(topLevelDialog);
 	compoundSettings = mailTransformCompoundSettings;
         this.account = account;
+	INSTANCE = this;
     }
 
     protected Dimension getMinSize(){
 	return new Dimension(640, 550);
     }
+
+    private static QuarantineSingleUserJDialog INSTANCE;
+    public static QuarantineSingleUserJDialog instance(){ return INSTANCE; }
     
     protected void generateGui(){
         this.setTitle(NAME_ALL_ACCOUNTS + account);
@@ -53,9 +57,9 @@ public class QuarantineUserJDialog extends MConfigJDialog {
         saveJButton.setVisible(false);
 
         // ALL ACCOUNTS //////
-	QuarantineAllJPanel quarantineAllJPanel = new QuarantineAllJPanel();
-	addRefreshable(NAME_ALL_ACCOUNTS, quarantineAllJPanel);
-        addTab(NAME_ALL_ACCOUNTS + account, null, quarantineAllJPanel);
+	QuarantineSingleUserJPanel quarantineSingleUserJPanel = new QuarantineSingleUserJPanel(account);
+	addRefreshable(NAME_ALL_ACCOUNTS, quarantineSingleUserJPanel);
+        addTab(NAME_ALL_ACCOUNTS + account, null, quarantineSingleUserJPanel);
     }
 
     protected void refreshAll() throws Exception {

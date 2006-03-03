@@ -13,6 +13,8 @@ package com.metavize.tran.mail.gui;
 
 import com.metavize.gui.widgets.coloredTable.*;
 import com.metavize.gui.widgets.dialogs.*;
+import com.metavize.gui.configuration.EmailCompoundSettings;
+import com.metavize.gui.configuration.EmailJDialog;
 import com.metavize.gui.transform.*;
 import com.metavize.gui.util.*;
 
@@ -31,33 +33,29 @@ import java.awt.*;
 import java.awt.event.*;
 import com.metavize.gui.widgets.editTable.*;
 
-public class QuarantineUserJPanel extends javax.swing.JPanel
-    implements Refreshable<MailTransformCompoundSettings>, ComponentListener {
+public class QuarantineAllUsersJPanel extends javax.swing.JPanel
+    implements Refreshable<EmailCompoundSettings>, ComponentListener {
 
     private static final Color TABLE_BACKGROUND_COLOR = new Color(213, 213, 226);
-    private QuarantineUserTableModel quarantineUserTableModel;
+    private QuarantineAllTableModel quarantineAllTableModel;
     private MailTransformCompoundSettings mailTransformCompoundSettings;
-    private String account;
     
-    public QuarantineUserJPanel(String account) {
-        this.account = account;
-        
+    public QuarantineAllUsersJPanel() {
         // INIT GUI & CUSTOM INIT
         initComponents();
         entryJScrollPane.getViewport().setOpaque(true);
         entryJScrollPane.getViewport().setBackground(TABLE_BACKGROUND_COLOR);
         entryJScrollPane.setViewportBorder(new MatteBorder(2, 2, 2, 1, TABLE_BACKGROUND_COLOR));
-        addComponentListener(QuarantineUserJPanel.this);
+        addComponentListener(QuarantineAllUsersJPanel.this);
         
         // create actual table model
-        quarantineUserTableModel = new QuarantineUserTableModel(account);
-        setTableModel( quarantineUserTableModel );
-        
+        quarantineAllTableModel = new QuarantineAllTableModel();
+        setTableModel( quarantineAllTableModel );
     }
 
-    public void doRefresh(MailTransformCompoundSettings mailTransformCompoundSettings){
-	this.mailTransformCompoundSettings = mailTransformCompoundSettings;
-	quarantineUserTableModel.doRefresh(mailTransformCompoundSettings);
+    public void doRefresh(EmailCompoundSettings emailCompoundSettings){
+	mailTransformCompoundSettings = (MailTransformCompoundSettings) emailCompoundSettings.getMailTransformCompoundSettings();
+	quarantineAllTableModel.doRefresh(mailTransformCompoundSettings);
     }
     
     public void setTableModel(MSortedTableModel mSortedTableModel){
@@ -91,6 +89,7 @@ public class QuarantineUserJPanel extends javax.swing.JPanel
         eventJPanel = new javax.swing.JPanel();
         purgeJButton = new javax.swing.JButton();
         releaseJButton = new javax.swing.JButton();
+        detailJButton = new javax.swing.JButton();
         entryJScrollPane = new javax.swing.JScrollPane();
         entryJTable = new MColoredJTable();
 
@@ -146,7 +145,29 @@ public class QuarantineUserJPanel extends javax.swing.JPanel
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
         eventJPanel.add(releaseJButton, gridBagConstraints);
+
+        detailJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        detailJButton.setText("<html><b>Show</b> detail</html>");
+        detailJButton.setDoubleBuffered(true);
+        detailJButton.setFocusPainted(false);
+        detailJButton.setFocusable(false);
+        detailJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        detailJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        detailJButton.setMaximumSize(new java.awt.Dimension(125, 25));
+        detailJButton.setMinimumSize(new java.awt.Dimension(125, 25));
+        detailJButton.setPreferredSize(new java.awt.Dimension(125, 25));
+        detailJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                detailJButtonActionPerformed(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        eventJPanel.add(detailJButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -179,45 +200,59 @@ public class QuarantineUserJPanel extends javax.swing.JPanel
 
     }//GEN-END:initComponents
 
+    private void detailJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_detailJButtonActionPerformed
+        int[] selectedModelRows = getSelectedModelRows();
+        if( selectedModelRows.length == 0 )
+                return;
+        
+        // show detail dialog
+        Vector<Vector> dataVector = quarantineAllTableModel.getDataVector();
+        String account = (String) dataVector.elementAt(selectedModelRows[0]).elementAt(2);
+        (new QuarantineSingleUserJDialog((Dialog)getTopLevelAncestor(), mailTransformCompoundSettings, account)).setVisible(true);
+        
+        // refresh
+	EmailJDialog.instance().reassignInfiniteProgressJComponent(); // XXX hackorama
+	EmailJDialog.instance().refreshGui();
+        //quarantineAllTableModel.doRefresh(mailTransformCompoundSettings);
+    }//GEN-LAST:event_detailJButtonActionPerformed
+
     private void releaseJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_releaseJButtonActionPerformed
         int[] selectedModelRows = getSelectedModelRows();
         if( selectedModelRows.length == 0 )
                 return;
         
         // release
-        Vector<Vector> dataVector = quarantineUserTableModel.getDataVector();
-        String[] emails = new String[selectedModelRows.length];
-        for( int i=0; i<selectedModelRows.length; i++){
-            emails[i] = (String) dataVector.elementAt(selectedModelRows[i]).elementAt(2);
-        }
-	new ReleaseAndPurgeThread(account,emails,true);
+        Vector<String> accounts = new Vector<String>();;
+        Vector<Vector> dataVector = quarantineAllTableModel.getDataVector();
+        for( int i : selectedModelRows ){
+	    accounts.add( (String) dataVector.elementAt(i).elementAt(2) );
+	}
+	new ReleaseAndPurgeThread(accounts,true);
     }//GEN-LAST:event_releaseJButtonActionPerformed
-    
+
     private void purgeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_purgeJButtonActionPerformed
         int[] selectedModelRows = getSelectedModelRows();
         if( selectedModelRows.length == 0 )
                 return;
 
-	QuarantinePurgeProceedDialog purgeProceedDialog = new QuarantinePurgeProceedDialog( (Dialog) this.getTopLevelAncestor() );
-	if( !purgeProceedDialog.isProceeding() )
+	QuarantinePurgeProceedDialog quarantinePurgeProceedDialog = new QuarantinePurgeProceedDialog( (Dialog) this.getTopLevelAncestor() );
+	if( !quarantinePurgeProceedDialog.isProceeding() )
 	    return;
         
         // purge
-        Vector<Vector> dataVector = quarantineUserTableModel.getDataVector();
-        String[] emails = new String[selectedModelRows.length];
-        for( int i=0; i<selectedModelRows.length; i++){
-            emails[i] = (String) dataVector.elementAt(selectedModelRows[i]).elementAt(2);
-        }
-	new ReleaseAndPurgeThread(account,emails,false);
+        Vector<String> accounts = new Vector<String>();
+        Vector<Vector> dataVector = quarantineAllTableModel.getDataVector();
+        for( int i : selectedModelRows ){
+	    accounts.add( (String) dataVector.elementAt(i).elementAt(2) );
+	}
+	new ReleaseAndPurgeThread(accounts,false);
     }//GEN-LAST:event_purgeJButtonActionPerformed
 
     private class ReleaseAndPurgeThread extends Thread {
-	private String[] emails;
-	private String account;
+	private Vector<String> accounts;
 	private boolean doRelease;
-	public ReleaseAndPurgeThread(String account, String[] emails, boolean doRelease){
-	    this.account = account;
-	    this.emails = emails;
+	public ReleaseAndPurgeThread(Vector<String> accounts, boolean doRelease){
+	    this.accounts = accounts;
 	    this.doRelease = doRelease;
 	    setDaemon(true);
 	    if( doRelease )
@@ -229,32 +264,33 @@ public class QuarantineUserJPanel extends javax.swing.JPanel
 	public void run(){
 	    // DO RESCUE
             try{
-		if( doRelease ){
-		    mailTransformCompoundSettings.getQuarantineMaintenanceView().rescue(account,emails);
-		}
-		else{
-		    mailTransformCompoundSettings.getQuarantineMaintenanceView().purge(account,emails);
-		}
+		for( String account : accounts )
+		    if( doRelease ){
+			mailTransformCompoundSettings.getQuarantineMaintenanceView().rescueInbox(account);
+		    }
+		    else{
+			mailTransformCompoundSettings.getQuarantineMaintenanceView().deleteInbox(account);
+		    }
             }
             catch(Exception e){
 		if( doRelease ){
 		    Util.handleExceptionNoRestart("Error releasing inbox", e);
-		    new MOneButtonJDialog((Dialog)QuarantineUserJPanel.this.getTopLevelAncestor(), "Quarantine Release Warning", "An account could not be released.");
+		    new MOneButtonJDialog((Dialog)QuarantineAllUsersJPanel.this.getTopLevelAncestor(), "Quarantine Release Warning", "An account could not be released.");
 		}
 		else{
 		    Util.handleExceptionNoRestart("Error purging inbox", e);
-		    new MOneButtonJDialog((Dialog)QuarantineUserJPanel.this.getTopLevelAncestor(), "Quarantine Purge Warning", "An account could not be purged.");		    
+		    new MOneButtonJDialog((Dialog)QuarantineAllUsersJPanel.this.getTopLevelAncestor(), "Quarantine Purge Warning", "An account could not be purged.");		    
 		}
 	    }
 	    // DO REFRESH
 	    MConfigJDialog.getInfiniteProgressJComponent().setTextLater("Refreshing...");
 	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		quarantineUserTableModel.doRefresh(null);
+		quarantineAllTableModel.doRefresh(mailTransformCompoundSettings);
 	    }});
 	    MConfigJDialog.getInfiniteProgressJComponent().stopLater(1500l);
         }
     }
-
+    
     private int[] getSelectedModelRows(){
         int[] selectedViewRows = entryJTable.getSelectedRows();
         if( (selectedViewRows==null) || (selectedViewRows.length==0) || (selectedViewRows[0]==-1) )
@@ -270,39 +306,34 @@ public class QuarantineUserJPanel extends javax.swing.JPanel
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel contentJPanel;
+    private javax.swing.JButton detailJButton;
     protected javax.swing.JScrollPane entryJScrollPane;
     protected javax.swing.JTable entryJTable;
     private javax.swing.JPanel eventJPanel;
     private javax.swing.JButton purgeJButton;
     private javax.swing.JButton releaseJButton;
     // End of variables declaration//GEN-END:variables
-    
+
 }
 
 
 
-class QuarantineUserTableModel extends MSortedTableModel<MailTransformCompoundSettings> {
+class QuarantineAllTableModel extends MSortedTableModel<MailTransformCompoundSettings> {
 
-    private String account;
     private static final StringConstants sc = StringConstants.getInstance();
     
-    public QuarantineUserTableModel(String account){
-        this.account = account;
+    public QuarantineAllTableModel(){
     }
     
     public TableColumnModel getTableColumnModel(){
 
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #   min  rsz    edit   remv   desc   typ               def
-        addTableColumn( tableColumnModel,  0,  Util.STATUS_MIN_WIDTH, false, false, true,  false, String.class,     null, sc.TITLE_STATUS );
-	addTableColumn( tableColumnModel,  1,  Util.LINENO_MIN_WIDTH, false, false, false, false, Integer.class,    null, sc.TITLE_INDEX );
-        addTableColumn( tableColumnModel,  2, 150, true,  false,  true,  false, String.class, null, sc.html("MailID") );
-        addTableColumn( tableColumnModel,  3, 150, true,  false,  false, false, String.class, null, sc.html("Date") );
-        addTableColumn( tableColumnModel,  4, 150, true,  false,  false, false, String.class, null, sc.html("Sender") );
-        addTableColumn( tableColumnModel,  5, 150, true,  false,  false, true,  String.class, null, sc.html("Subject") );
-        addTableColumn( tableColumnModel,  6,  85, true,  false,  false, false, Long.class,   null, sc.html("Size (kB)") );
-        addTableColumn( tableColumnModel,  7,  85, true,  false,  false, false, String.class, null, sc.html("Category") );
-        addTableColumn( tableColumnModel,  8,  85, true,  false,  false, false, String.class, null, sc.html("Detail") );
+        addTableColumn( tableColumnModel,  0,  Util.STATUS_MIN_WIDTH, false, false, true, false, String.class,     null, sc.TITLE_STATUS );
+	addTableColumn( tableColumnModel,  1,  Util.LINENO_MIN_WIDTH, false, false, true, false, Integer.class,    null, sc.TITLE_INDEX );
+        addTableColumn( tableColumnModel,  2, 300, true,  false,  false, true,  String.class, null, sc.html("Account Address") );
+        addTableColumn( tableColumnModel,  3,  85, true,  false,  false, false, Integer.class, null, sc.html("Message<br>Count") );
+        addTableColumn( tableColumnModel,  4,  85, true,  false,  false, false, Long.class,    null, sc.html("Data Size<br>(kB)") );
         return tableColumnModel;
     }
 
@@ -313,28 +344,21 @@ class QuarantineUserTableModel extends MSortedTableModel<MailTransformCompoundSe
 
     public Vector<Vector> generateRows(MailTransformCompoundSettings mailTransformCompoundSettings) {
         
-        InboxIndex inboxIndex = mailTransformCompoundSettings.getInboxIndex();
-        Vector<Vector> allRows = new Vector<Vector>(inboxIndex.size());
+        java.util.List<Inbox> inboxes = mailTransformCompoundSettings.getInboxList();
+        Vector<Vector> allRows = new Vector<Vector>(inboxes.size());
 	Vector tempRow = null;
-        MailSummary mailSummary = null;
         int rowIndex = 0;
 
-	for( InboxRecord inboxRecord : inboxIndex ){
+	for( Inbox inbox : inboxes ){
 	    rowIndex++;
-            tempRow = new Vector(8);
-            mailSummary = inboxRecord.getMailSummary();
+            tempRow = new Vector(5);
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );
-            tempRow.add( inboxRecord.getMailID() );
-            tempRow.add( new Date(inboxRecord.getInternDate()) );
-            tempRow.add( mailSummary.getSender() );
-            tempRow.add( mailSummary.getSubject() );            
-            tempRow.add( Long.toString(inboxRecord.getSize()/1024l) );
-            tempRow.add( mailSummary.getQuarantineCategory() );   
-            tempRow.add( mailSummary.getQuarantineDetail() );   
+            tempRow.add( inbox.getAddress() );
+            tempRow.add( Integer.toString(inbox.getNumMails()) );
+            tempRow.add( Long.toString(inbox.getTotalSz()/1024l) );
             allRows.add( tempRow );
         }
-        
         return allRows;
 
     }
