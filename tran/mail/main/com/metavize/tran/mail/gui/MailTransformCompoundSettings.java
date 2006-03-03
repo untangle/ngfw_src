@@ -116,7 +116,7 @@ public class MailTransformCompoundSettings implements CompoundSettings {
 	if(safelistComponent == null)
 	    safelistComponent = Util.getSettingsComponent("com.metavize.tran.mail.gui.WhitelistAllJPanel", "mail-casing");
 	if(quarantineReleaseAndPurgeComponent == null)
-	    quarantineReleaseAndPurgeComponent = Util.getSettingsComponent("com.metavize.tran.mail.gui.QuarantineAllJPanel", "mail-casing");
+	    quarantineReleaseAndPurgeComponent = Util.getSettingsComponent("com.metavize.tran.mail.gui.QuarantineAllUsersJPanel", "mail-casing");
 	if(quarantinableAddressesComponent == null)
 	    quarantinableAddressesComponent = Util.getSettingsComponent("com.metavize.tran.mail.gui.QuarantinableAddressesJPanel", "mail-casing");
 	if(quarantinableForwardsComponent == null)
