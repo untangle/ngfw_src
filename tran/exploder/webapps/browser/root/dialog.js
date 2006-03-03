@@ -168,7 +168,7 @@ function makeHiddenIFrame(parent, name)
    parent.innerHTML += '\<iframe id="' + name + '" name="' + name
       + '" style="display: none"><\/iframe>';
 
-   var children = parent.chilsvndNodes;
+   var children = parent.childNodes;
    for (var i = 0; i < children.length; i++) {
       var c = children[i];
       if (c.id == name) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,7 +11,6 @@
 
 package com.metavize.mvvm.networking;
 
-import java.net.InetAddress;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -20,42 +19,29 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
-
-import org.hibernate.Session;
-import org.hibernate.Query;
-
 import com.metavize.jnetcap.Netcap;
-
 import com.metavize.mvvm.IntfConstants;
-
-import com.metavize.mvvm.NetworkManager;
-import com.metavize.mvvm.IntfEnum;
-import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
-
-import com.metavize.mvvm.argon.IntfConverter;
+import com.metavize.mvvm.NetworkManager;
+import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.argon.ArgonException;
-
-import com.metavize.mvvm.tran.IPaddr;
-import com.metavize.mvvm.tran.TransformManager;
-import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
-
-import com.metavize.mvvm.security.Tid;
-import com.metavize.mvvm.tran.ValidateException;
-import com.metavize.mvvm.tran.script.ScriptWriter;
-import com.metavize.mvvm.tran.script.ScriptRunner;
-
-import com.metavize.mvvm.networking.internal.ServicesInternalSettings;
+import com.metavize.mvvm.argon.IntfConverter;
+import com.metavize.mvvm.networking.internal.NetworkSpaceInternal;
 import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
 import com.metavize.mvvm.networking.internal.RemoteInternalSettings;
-import com.metavize.mvvm.networking.internal.NetworkSpaceInternal;
-import com.metavize.mvvm.networking.internal.RouteInternal;
-import com.metavize.mvvm.networking.internal.InterfaceInternal;
-
+import com.metavize.mvvm.networking.internal.ServicesInternalSettings;
+import com.metavize.mvvm.security.Tid;
+import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.TransformManager;
+import com.metavize.mvvm.tran.ValidateException;
+import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
+import com.metavize.mvvm.tran.script.ScriptRunner;
 import com.metavize.mvvm.util.DataLoader;
 import com.metavize.mvvm.util.DataSaver;
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 
 /* XXX This shouldn't be public */
@@ -65,7 +51,7 @@ public class NetworkManagerImpl implements NetworkManager
 
     static final String ETC_INTERFACES_FILE = "/etc/network/interfaces";
     static final String ETC_RESOLV_FILE = "/etc/resolv.conf";
-    
+
     private static final Logger logger = Logger.getLogger( NetworkManagerImpl.class );
 
     static final String BUNNICULA_BASE = System.getProperty( "bunnicula.home" );
@@ -73,7 +59,7 @@ public class NetworkManagerImpl implements NetworkManager
 
     /* Script to run whenever the interfaces should be reconfigured */
     private static final String NET_CONFIGURE_SCRIPT = BUNNICULA_BASE + "/networking/configure";
-    
+
     /* Script to run whenever the iptables should be updated */
     private static final String IPTABLES_SCRIPT      = BUNNICULA_BASE + "/networking/rule-generator";
 
@@ -83,10 +69,10 @@ public class NetworkManagerImpl implements NetworkManager
     /* Script to run after reconfiguration (from NetworkSettings Listener) */
     private static final String AFTER_RECONFIGURE_SCRIPT = BUNNICULA_BASE + "/networking/after-reconfigure";
 
-    /* A flag for devel environments, used to determine whether or not 
+    /* A flag for devel environments, used to determine whether or not
      * the etc files actually are written, this enables/disables reconfiguring networking */
     private boolean saveSettings = true;
-    
+
     /* Inidicates whether or not the networking manager has been initialized */
     private boolean isInitialized = false;
 
@@ -144,7 +130,7 @@ public class NetworkManagerImpl implements NetworkManager
             logger.error( "Attempt to reinitialize the networking manager", new Exception());
             return;
         }
-        
+
         try {
             initPriv();
         } catch ( Exception e ) {
@@ -161,7 +147,7 @@ public class NetworkManagerImpl implements NetworkManager
         return NetworkUtilPriv.getPrivInstance().
             toConfiguration( this.networkSettings, this.remote.toSettings());
     }
-    
+
     public synchronized void setNetworkingConfiguration( NetworkingConfiguration configuration )
         throws NetworkException, ValidateException
     {
@@ -179,7 +165,7 @@ public class NetworkManagerImpl implements NetworkManager
         throws NetworkException, ValidateException
     {
         logger.debug( "Loading the new network settings: " + settings );
-        setNetworkSettings( NetworkUtilPriv.getPrivInstance().toInternal( settings ));        
+        setNetworkSettings( NetworkUtilPriv.getPrivInstance().toInternal( settings ));
     }
 
     private synchronized void setNetworkSettings( NetworkSpacesInternalSettings newSettings )
@@ -198,7 +184,7 @@ public class NetworkManagerImpl implements NetworkManager
 
         /* Write the settings */
         writeConfiguration( newSettings );
-        
+
         /* Actually load the new settings */
         if ( this.saveSettings ) {
             try {
@@ -210,14 +196,14 @@ public class NetworkManagerImpl implements NetworkManager
         } else {
             logger.warn( "Not loading new network settings because networking is disabled" );
         }
-                
+
         /* Save the configuration to the database */
         try {
             saveNetworkSettings( nup.toSettings( newSettings ));
         } catch ( Exception e ) {
             logger.error( "Unable to save settings, updating address anyway", e );
         }
-        
+
         /* Have to update the remote settings */
         updateAddress();
     }
@@ -235,12 +221,12 @@ public class NetworkManagerImpl implements NetworkManager
         NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
 
         this.remote = nup.makeRemoteInternal( this.networkSettings, newSettings, this.ddnsSettings );
-        
+
         saveRemoteSettings( this.remote );
 
         /* Update the rules */
         generateRules();
-        
+
         if ( logger.isDebugEnabled()) logger.debug( "Loaded remote settings: " + this.remote );
 
         /* Have to do this too, because the hostname may have changed */
@@ -257,7 +243,7 @@ public class NetworkManagerImpl implements NetworkManager
     {
         return this.networkSettings;
     }
-    
+
     /* XXXX This is kind of busted since you can't change the services on/off switch from here */
     /* XXXX This is just kind of busted because it passes the same argument twice */
     public synchronized void setServicesSettings( ServicesSettings servicesSettings )
@@ -312,10 +298,10 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         logger.debug( "getting ddns settings: " + this.ddnsSettings );
-        
+
         return this.ddnsSettings;
     }
-            
+
     public synchronized void setDynamicDnsSettings( DynamicDNSSettings newSettings )
     {
         logger.debug( "Saving new ddns settings: " + newSettings );
@@ -353,12 +339,12 @@ public class NetworkManagerImpl implements NetworkManager
     {
         return this.remote.getPublicHttpsPort();
     }
-    
+
     /* Renew the DHCP address and return a new network settings with the updated address */
     public synchronized NetworkingConfiguration renewDhcpLease() throws NetworkException
     {
         renewDhcpLease( 0 );
-        
+
         return getNetworkingConfiguration();
     }
 
@@ -371,9 +357,9 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         boolean isPrimary = ( index == 0 );
-        
+
         NetworkSpaceInternal space = this.networkSettings.getNetworkSpaceList().get( index );
-        
+
         if ( !space.getIsDhcpEnabled()) {
             throw new NetworkException( "DHCP is not enabled on this network space." );
         }
@@ -381,12 +367,12 @@ public class NetworkManagerImpl implements NetworkManager
         /* Renew the address */
         try {
             String flags = "";
-            
+
             if ( !isPrimary ) flags = InterfacesScriptWriter.DHCP_FLAG_ADDRESS_ONLY;
-            
-            ScriptRunner.getInstance().exec( DHCP_RENEW_SCRIPT, space.getDeviceName(), 
+
+            ScriptRunner.getInstance().exec( DHCP_RENEW_SCRIPT, space.getDeviceName(),
                                              String.valueOf( space.getIndex()), flags );
-        } catch ( Exception e ) { 
+        } catch ( Exception e ) {
             logger.warn( "Error renewing DHCP address", e );
             throw new NetworkException( "Unable to renew the DHCP lease" );
         }
@@ -406,11 +392,11 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     public void setWizardNatEnabled(IPaddr address, IPaddr netmask)
-    {        
-	try{
+    {
+        try{
             boolean hasChanged = true;
-            
-            if ( NetworkUtil.DEFAULT_NAT_ADDRESS.equals( address ) && 
+
+            if ( NetworkUtil.DEFAULT_NAT_ADDRESS.equals( address ) &&
                  NetworkUtil.DEFAULT_NAT_NETMASK.equals( netmask )) {
                 hasChanged = false;
             }
@@ -418,7 +404,7 @@ public class NetworkManagerImpl implements NetworkManager
             logger.debug( "enabling nat as requested by setup wizard: " + address + "/" + netmask );
 
             NetworkSpacesSettings newSettings = getNetworkSettings();
-            
+
             List<NetworkSpace> networkSpaceList = newSettings.getNetworkSpaceList();
 
             List<IPNetworkRule> networkList = new LinkedList<IPNetworkRule>();
@@ -427,20 +413,20 @@ public class NetworkManagerImpl implements NetworkManager
 
             NetworkSpace primary = networkSpaceList.get( 0 );
             NetworkSpace natSpace = null;
-            
-            if ( networkSpaceList.size() == 1 ) { 
+
+            if ( networkSpaceList.size() == 1 ) {
                 /* Only one space, have to create the second space */
-                
+
                 /* Space is enabled, dhcp is disabled, traffic is forward, nat is enabled.
                  * nat address is null, dmz is all disabled. */
                 natSpace = new NetworkSpace( true, networkList,
-                                             false, true, NetworkSpace.DEFAULT_MTU, true, 
+                                             false, true, NetworkSpace.DEFAULT_MTU, true,
                                              null, false, false, NetworkUtil.EMPTY_IPADDR );
                 networkSpaceList.add( natSpace );
             } else {
                 natSpace = networkSpaceList.get( 1 );
             }
-            
+
             /* Disable the nat address, and set the nat space */
             natSpace.setName( NetworkUtil.DEFAULT_SPACE_NAME_NAT );
             natSpace.setIsNatEnabled( true );
@@ -451,10 +437,10 @@ public class NetworkManagerImpl implements NetworkManager
             primary.setNatAddress( null );
             primary.setNatSpace( null );
             primary.setIsNatEnabled( false );
-            
+
             List<Interface> interfaceList = newSettings.getInterfaceList();
             boolean foundInternal = false;
-            for ( Interface intf : interfaceList ) { 
+            for ( Interface intf : interfaceList ) {
                 if ( intf.getArgonIntf() == IntfConstants.INTERNAL_INTF ) {
                     intf.setNetworkSpace( natSpace );
                     foundInternal = true;
@@ -472,7 +458,7 @@ public class NetworkManagerImpl implements NetworkManager
                 for ( byte argonIntf : argonIntfArray ) {
                     /* The VPN interface doesn't belong to a network space */
                     if ( argonIntf == IntfConstants.VPN_INTF ) continue;
-                    
+
                     /* Add each interface to the list */
                     Interface intf =  new Interface( argonIntf, EthernetMedia.AUTO_NEGOTIATE, true );
                     intf.setName( IntfConstants.toName( argonIntf ));
@@ -481,7 +467,7 @@ public class NetworkManagerImpl implements NetworkManager
                     } else {
                         intf.setNetworkSpace( primary );
                     }
-                    
+
                     interfaceList.add( intf );
                 }
             }
@@ -489,9 +475,9 @@ public class NetworkManagerImpl implements NetworkManager
             newSettings.setNetworkSpaceList( networkSpaceList );
 
             if ( !hasChanged ) {
-                /* XXXXXXXXXXXXXXXX AMREAD insert the things */
+                MvvmContextFactory.context().adminManager().logout();
             }
-            
+
             setNetworkSettings( newSettings );
 
             /* Update the DHCP settings */
@@ -500,36 +486,36 @@ public class NetworkManagerImpl implements NetworkManager
             } else {
                 logger.warn( "null services settings during wizard setup, not updating the DHCP range" );
             }
-	}
-	catch(Exception e){
-	    logger.error( "Error setting up NAT in wizard", e );
-	}
+        }
+        catch(Exception e){
+            logger.error( "Error setting up NAT in wizard", e );
+        }
     }
 
     public void setWizardNatDisabled()
     {
-        /* XXXXXXXXXXXXXXXX AMREAD insert the things */
+        MvvmContextFactory.context().adminManager().logout();
 
-	try{
+        try{
             logger.debug( "disabling nat as requested by setup wizard: " );
-	    TransformManager transformManager = MvvmContextFactory.context().transformManager();
-	    List<Tid> tidList = transformManager.transformInstances("nat-transform");
-	    if( tidList != null ){
-		for( Tid tid : tidList )
-		    transformManager.destroy(tid);
-	    }
-	}
-	catch(Exception e){
-	    logger.warn( "Error removing NAT in wizard", e );
-	}
+            TransformManager transformManager = MvvmContextFactory.context().transformManager();
+            List<Tid> tidList = transformManager.transformInstances("nat-transform");
+            if( tidList != null ){
+                for( Tid tid : tidList )
+                    transformManager.destroy(tid);
+            }
+        }
+        catch(Exception e){
+            logger.warn( "Error removing NAT in wizard", e );
+        }
     }
 
-    
+
     public synchronized void updateAddress()
     {
         /* Get the new address for any dhcp spaces */
         NetworkSpacesInternalSettings previous = this.networkSettings;
-        
+
         try {
             /* Update the netcap address */
             Netcap.getInstance().updateAddress();
@@ -540,7 +526,7 @@ public class NetworkManagerImpl implements NetworkManager
 
             /* Have to do this too, because the ip address may have changed */
             updateServicesSettings();
-            
+
             callNetworkListeners();
         } catch ( Exception e ) {
             logger.error( "Exception updating address, reverting to previous settings", e );
@@ -552,10 +538,10 @@ public class NetworkManagerImpl implements NetworkManager
     {
         this.ruleManager.dhcpEnableForwarding( false );
     }
-    
+
     public void enableDhcpForwarding()
     {
-         this.ruleManager.dhcpEnableForwarding( true );
+        this.ruleManager.dhcpEnableForwarding( true );
     }
 
     /* This relic really should go away.  In production environments, none of the
@@ -565,9 +551,9 @@ public class NetworkManagerImpl implements NetworkManager
     {
         this.ruleManager.subscribeLocalOutside( newValue );
     }
-    
+
     /** Public (private, only in impl) methods  */
-    
+
     /* Update all of the iptables rules and the inside address database */
     private void generateRules() throws NetworkException
     {
@@ -603,12 +589,12 @@ public class NetworkManagerImpl implements NetworkManager
             logger.info( "Ignoring services settings update, null settings" );
             return;
         }
-        
+
         logger.debug( "Updating the services settings, network settings changed" );
 
         /* Update the services settings with the new addresses from network settings, and then
          * reload the services. */
-        this.servicesSettings = 
+        this.servicesSettings =
             NetworkUtilPriv.getPrivInstance().update( this.networkSettings, this.servicesSettings );
 
         try {
@@ -619,13 +605,13 @@ public class NetworkManagerImpl implements NetworkManager
         }
     }
 
-    
+
     public void isShutdown()
     {
         this.isShutdown = true;
         this.ruleManager.isShutdown();
     }
-    
+
     public void flushIPTables() throws NetworkException
     {
         this.ruleManager.destroyIptablesRules();
@@ -688,7 +674,7 @@ public class NetworkManagerImpl implements NetworkManager
     {
         logger.error( "interface enum listeners are unsupported.", new Exception());
         if ( true || !true ) return;
-        
+
         for ( IntfEnumListener listener : this.intfEnumListeners ) {
             try {
                 listener.event( null );
@@ -730,15 +716,15 @@ public class NetworkManagerImpl implements NetworkManager
             ddns.setEnabled( false );
             saveDynamicDnsSettings( ddns );
         }
-        
+
         NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
-                
+
         /* If there are no settings, get the settings from the database */
         if ( this.networkSettings == null ) {
             /* Need to create new settings, (The method setNetworkingConfiguration assumes that
              * settings is already set, and cannot be used here) */
             NetworkingConfiguration configuration = networkConfigurationLoader.getNetworkingConfiguration();
-            
+
             /* Save these settings */
             NetworkSpacesInternalSettings internal = nup.toInternal( configuration );
 
@@ -746,10 +732,10 @@ public class NetworkManagerImpl implements NetworkManager
                 logger.debug( "Loaded the configuration: \n" + configuration );
                 logger.debug( "Converted to: \n" + internal );
             }
-            
+
             /* Save the network settings */
             setNetworkSettings( internal );
-            
+
             /* Save the remote settings */
             setRemoteSettings( configuration );
 
@@ -763,16 +749,16 @@ public class NetworkManagerImpl implements NetworkManager
         } else if ( this.networkSettings.getSetupState().isRestore()) {
             logger.debug( "Settings need to be restored, configuring box." );
             NetworkSpacesSettingsImpl restoredSettings = nup.toSettings( this.networkSettings );
-            
+
             SetupState state = this.networkSettings.getSetupState();
-            
+
             if ( SetupState.ADVANCED_RESTORE.equals( state )) {
                 restoredSettings.setSetupState( SetupState.ADVANCED );
             } else {
                 restoredSettings.setSetupState( SetupState.BASIC );
             }
-            
-            
+
+
             try {
                 setNetworkSettings( restoredSettings );
             } catch ( Exception e ) {
@@ -784,12 +770,12 @@ public class NetworkManagerImpl implements NetworkManager
         registerListener(new IPMatcherListener());
 
         updateAddress();
-        
+
         // Register the built-in listeners
         registerListener(new DynamicDNSListener());
         registerListener(new AfterReconfigureScriptListener());
-    }    
-    
+    }
+
     /* Methods for writing the configuration files */
     private void writeConfiguration( NetworkSpacesInternalSettings newSettings ) throws NetworkException
     {
@@ -806,7 +792,7 @@ public class NetworkManagerImpl implements NetworkManager
         }
     }
 
-    private void writeEtcFiles( NetworkSpacesInternalSettings newSettings ) 
+    private void writeEtcFiles( NetworkSpacesInternalSettings newSettings )
         throws NetworkException, ArgonException
     {
         writeInterfaces( newSettings );
@@ -849,7 +835,7 @@ public class NetworkManagerImpl implements NetworkManager
 
         /* Load the services settings */
         if ( this.networkSettings != null ) this.servicesSettings = loadServicesSettings();
-        
+
         if ( logger.isDebugEnabled()) logger.debug( "Loaded remote settings: " + this.remote );
     }
 
@@ -865,35 +851,35 @@ public class NetworkManagerImpl implements NetworkManager
 
     private NetworkSpacesInternalSettings loadNetworkSettings() throws NetworkException, ValidateException
     {
-        DataLoader<NetworkSpacesSettingsImpl> loader = 
-            new DataLoader<NetworkSpacesSettingsImpl>( "NetworkSpacesSettingsImpl", 
+        DataLoader<NetworkSpacesSettingsImpl> loader =
+            new DataLoader<NetworkSpacesSettingsImpl>( "NetworkSpacesSettingsImpl",
                                                        MvvmContextFactory.context());
         NetworkSpacesSettings dbSettings = loader.loadData();
-        
+
         /* No database settings */
         if ( dbSettings == null ) {
             logger.info( "There are no network database settings" );
             return null;
         }
-        
+
         return NetworkUtilPriv.getPrivInstance().toInternal( dbSettings );
     }
 
     private DynamicDNSSettings loadDynamicDnsSettings()
     {
-        DataLoader<DynamicDNSSettings> loader = 
+        DataLoader<DynamicDNSSettings> loader =
             new DataLoader<DynamicDNSSettings>( "DynamicDNSSettings", MvvmContextFactory.context());
-        
+
         return loader.loadData();
     }
-    
+
     private ServicesInternalSettings loadServicesSettings()
     {
-        DataLoader<ServicesSettingsImpl> loader = 
+        DataLoader<ServicesSettingsImpl> loader =
             new DataLoader<ServicesSettingsImpl>( "ServicesSettingsImpl", MvvmContextFactory.context());
-        
+
         ServicesSettingsImpl dbSettings = loader.loadData();
-        
+
         if ( dbSettings == null ) {
             logger.info( "There are no services settings" );
             return null;
@@ -907,24 +893,24 @@ public class NetworkManagerImpl implements NetworkManager
 
         return NetworkUtilPriv.getPrivInstance().toInternal( this.networkSettings, dbSettings, dbSettings );
     }
-    
+
     private void saveNetworkSettings( NetworkSpacesSettingsImpl newSettings )
         throws NetworkException, ValidateException
     {
-        DataSaver<NetworkSpacesSettingsImpl> saver = 
+        DataSaver<NetworkSpacesSettingsImpl> saver =
             new NetworkSettingsDataSaver(MvvmContextFactory.context());
-        
+
         NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
 
-        /* Convert the settings to internal before saving 
+        /* Convert the settings to internal before saving
          * them.  Settings should be legit if they can be converted to internal
          * by converting them first, and then converting them out, this guarantees
          * that valid settings are always saved */
-        NetworkSpacesInternalSettings nssi = nup.toInternal( newSettings );        
+        NetworkSpacesInternalSettings nssi = nup.toInternal( newSettings );
         newSettings = nup.toSettings( nssi );
-        
+
         NetworkSpacesSettings dbSettings = saver.saveData( newSettings );
-        
+
         /* No database settings */
         if ( dbSettings == null ) {
             logger.error( "Unable to save the network settings." );
@@ -941,9 +927,9 @@ public class NetworkManagerImpl implements NetworkManager
 
     private void saveDynamicDnsSettings( DynamicDNSSettings newSettings )
     {
-        DataSaver<DynamicDNSSettings> saver = 
+        DataSaver<DynamicDNSSettings> saver =
             new DynamicDnsSettingsDataSaver( MvvmContextFactory.context(), newSettings );
-        
+
         /* Have to reuse ids in order to avoid settings proliferation.
          * reusing ids doesn't seem to work (or at least it didn't for ovpn.  have
          * fortunately, hibernate does have a delete method
@@ -955,7 +941,7 @@ public class NetworkManagerImpl implements NetworkManager
             logger.error( "Unable to save the dynamic dns settings." );
             return;
         }
-        
+
         this.ddnsSettings = newSettings;
     }
 
@@ -963,11 +949,11 @@ public class NetworkManagerImpl implements NetworkManager
         throws NetworkException
     {
         NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
-        
+
         /* Fleece the leases before saving */
         this.dhcpManager.fleeceLeases( newSettings );
 
-        DataSaver<ServicesSettingsImpl> saver = 
+        DataSaver<ServicesSettingsImpl> saver =
             new ServicesSettingsDataSaver( MvvmContextFactory.context());
 
         if ( this.networkSettings == null ) {
@@ -976,14 +962,14 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         /* Convert to internal first, and then use the internal to swap out to database */
-        ServicesInternalSettings newInternal = 
+        ServicesInternalSettings newInternal =
             nup.toInternal( this.networkSettings, newSettings, newSettings );
-        
+
         newSettings = newInternal.toSettings();
-        
+
         newSettings = saver.saveData( newSettings );
-        
-        /* No database settings */        
+
+        /* No database settings */
         if ( newSettings == null ) {
             logger.error( "Unable to save the services settings to the databse." );
             return;
@@ -991,7 +977,7 @@ public class NetworkManagerImpl implements NetworkManager
 
         this.servicesSettings = newInternal;
     }
-    
+
     /* Create a networking manager, this is a first come first serve
      * basis.  The first class to create the network manager gets a
      * networking manager, all other classes get AccessException.  Done
@@ -1004,7 +990,7 @@ public class NetworkManagerImpl implements NetworkManager
         if ( INSTANCE != null ) return INSTANCE;
 
         INSTANCE = new NetworkManagerImpl();
-        
+
         return INSTANCE;
     }
 
@@ -1031,7 +1017,7 @@ public class NetworkManagerImpl implements NetworkManager
             List<NetworkSpaceInternal> networkSpaceList = settings.getNetworkSpaceList();
             NetworkSpaceInternal primary = networkSpaceList.get( 0 );
             IPMatcherFactory ipmf = IPMatcherFactory.getInstance();
-            
+
             IPaddr address = primary.getPrimaryAddress().getNetwork();
             logger.debug( "Setting local address to: " + address );
             ipmf.setLocalAddresses( address.getAddr());
@@ -1045,7 +1031,7 @@ public class NetworkManagerImpl implements NetworkManager
             /* Run the script */
             try {
                 ScriptRunner.getInstance().exec( AFTER_RECONFIGURE_SCRIPT );
-            } catch ( Exception e ) { 
+            } catch ( Exception e ) {
                 logger.error( "Error running after reconfigure script", e );
             }
         }
@@ -1054,7 +1040,7 @@ public class NetworkManagerImpl implements NetworkManager
 
 class NetworkSettingsDataSaver extends DataSaver<NetworkSpacesSettingsImpl>
 {
-    public NetworkSettingsDataSaver( MvvmLocalContext local ) 
+    public NetworkSettingsDataSaver( MvvmLocalContext local )
     {
         super( local );
     }
@@ -1065,13 +1051,13 @@ class NetworkSettingsDataSaver extends DataSaver<NetworkSpacesSettingsImpl>
         for ( Iterator iter = q.iterate() ; iter.hasNext() ; ) {
             NetworkSpacesSettingsImpl settings = (NetworkSpacesSettingsImpl)iter.next();
             s.delete( settings );
-        }        
+        }
     }
 }
 
 class ServicesSettingsDataSaver extends DataSaver<ServicesSettingsImpl>
 {
-    public ServicesSettingsDataSaver( MvvmLocalContext local ) 
+    public ServicesSettingsDataSaver( MvvmLocalContext local )
     {
         super( local );
     }
@@ -1089,7 +1075,7 @@ class ServicesSettingsDataSaver extends DataSaver<ServicesSettingsImpl>
 class DynamicDnsSettingsDataSaver extends DataSaver<DynamicDNSSettings>
 {
     private final DynamicDNSSettings newData;
-    public DynamicDnsSettingsDataSaver( MvvmLocalContext local, DynamicDNSSettings newData ) 
+    public DynamicDnsSettingsDataSaver( MvvmLocalContext local, DynamicDNSSettings newData )
     {
         super( local );
         this.newData = newData;
@@ -1098,7 +1084,7 @@ class DynamicDnsSettingsDataSaver extends DataSaver<DynamicDNSSettings>
     protected void preSave( Session s )
     {
         Query q = s.createQuery( "from DynamicDNSSettings ds where ds.id != :id" );
-        
+
         /* Don't delete the new settings object */
         Long settingsId = newData.getId();
 
