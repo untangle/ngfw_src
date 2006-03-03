@@ -1,0 +1,56 @@
+#!/bin/sh
+
+exec >> @MVVM_LOG@/dhcp-auto-renew.log 2>&1
+
+INTERFACE=$1
+
+BOGUS_ADDRESS_BASE="169.254.210.50"
+BOGUS_NETMASK="255.255.0.0"
+
+MCLI="@PREFIX@/usr/bin/mcli"
+
+## One deficiency with this script, it will not work if the interface to update has been changed.
+
+## Explanation, ps aux to list all processes, use $0 to find all instances of this script
+## use grep -v to remove the searches, and use $$ to remove instances of the sub-shell that
+## that is created by using backticks.
+COUNT=`ps aux | grep $0 | grep -v grep | grep -v $$ | wc -l`
+echo "[DEBUG] there are presently ${COUNT} processes running"
+
+if [ "${COUNT}" -gt 1  ]; then
+    echo "[DEBUG] not reloading because, process is already running"
+    exit
+fi
+
+if [ -z "${INTERFACE}" ]; then
+    echo "[WARN] Interface was not specified, exiting"
+    exit
+fi
+
+## Retry until pump passes.
+while true ; do
+    echo "[DEBUG] "`date`" pump failed, restarting pump in 30 seconds" 
+    sleep 30
+
+    ## only pump the interface if pump is still running( pump stops if the
+    ## user changes it to static ip.
+    if [ -z "`pidof pump`" ]; then 
+        echo "[DEBUG] pump exited, quitting dhcp renew"
+        exit
+    fi
+        
+    ## Pump the interface, and exit if it passes
+    pump -i ${INTERFACE} && exit
+    
+    ## If it fails, bring the interface up with a bogus address
+    ifconfig ${INTERFACE} ${BOGUS_ADDRESS_BASE} netmask ${BOGUS_NETMASK}
+    
+    ## Run mcli update address
+    if [ ! -f ${MCLI} ] ; then 
+        echo "[WARN] ${MCLI} is missing" 
+    else
+        ${MCLI} updateAddress
+    fi
+done
+
+

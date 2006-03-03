@@ -44,9 +44,10 @@ class InterfacesScriptWriter extends ScriptWriter
         "auto lo\n" +
         "iface lo inet loopback\n\n";
     
-    private static final String BUNNICULA_BASE = System.getProperty( "bunnicula.home" );
-    private static final String FLUSH_CONFIG   = BUNNICULA_BASE + "/networking/flush-interfaces";
-    private static final String POST_SCRIPT    = BUNNICULA_BASE + "/networking/post-script";
+    private static final String BUNNICULA_BASE  = System.getProperty( "bunnicula.home" );
+    private static final String FLUSH_CONFIG    = BUNNICULA_BASE + "/networking/flush-interfaces";
+    private static final String POST_SCRIPT     = BUNNICULA_BASE + "/networking/post-script";
+    private static final String DHCP_AUTO_RENEW = BUNNICULA_BASE + "/networking/dhcp-auto-renew";
 
     private static final String DHCP_BOGUS_ADDRESS = "169.254.210.5";
 
@@ -119,13 +120,25 @@ class InterfacesScriptWriter extends ScriptWriter
                 
                 EthernetMedia media = intf.getEthernetMedia();
                 
-                
                 if ( media.isAuto()) {
                     appendCommands( "up ethtool -s " + dev + " autoneg on" );
                 } else {
                     appendCommands( "up ethtool -s " + dev + " autoneg off" + " speed " + media.getSpeed() + 
                                     " duplex " + media.getDuplex());
                 }
+            }
+        } else {
+            if ( interfaceList.size() > 0 ) {
+                InterfaceInternal intf = interfaceList.get( 0 );
+                EthernetMedia media = intf.getEthernetMedia();
+                if ( media.isAuto()) {
+                    appendCommands( "up ethtool -s " + name + " autoneg on" );
+                } else {
+                    appendCommands( "up ethtool -s " + name + " autoneg off" + " speed " + media.getSpeed() + 
+                                    " duplex " + media.getDuplex());
+                }
+            } else {
+                logger.warn( "Interface list for space" + space.getIndex() + " has no interfaces" );
             }
         }
         
@@ -139,9 +152,20 @@ class InterfacesScriptWriter extends ScriptWriter
              * /etc/resolv.conf should not be updated. */
             if ( !isFirst ) flags = DHCP_FLAG_ADDRESS_ONLY;
 
-            String command = "up pump " + flags + " -i " + name + 
-                " || ifconfig " + name + " " + DHCP_BOGUS_ADDRESS + space.getIndex() + 
-                " netmask 255.255.255.0"; 
+            String command = "up ";
+            
+            if ( isBridge ) {
+                /* Give some time for the bridge to come alive */
+                command += "sleep 5;  ";
+            }
+
+            command += "pump " + flags + " -i " + name + " || ";
+            command += " (  ifconfig " + name + " " + DHCP_BOGUS_ADDRESS + space.getIndex() + 
+                " netmask 255.255.0.0; ";
+            /* Don't need to check if it exists, because if it doesn't 
+             * the || true at the end will catch it.  Make sure to background
+             * this since it can block */
+            command += " nohup sh " + DHCP_AUTO_RENEW + " " + name + " & )";
             
             appendCommands( command );
             appendCommands( "up ifconfig " + name + " mtu " + mtu );

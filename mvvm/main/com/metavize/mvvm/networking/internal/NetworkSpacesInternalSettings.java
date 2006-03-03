@@ -174,12 +174,14 @@ public class NetworkSpacesInternalSettings
         /* Set the service space to either the first network space, or the first network space
          * that is running nat */
         NetworkSpaceInternal serviceSpace = networkSpaceList.get( 0 );
-        for ( NetworkSpaceInternal space : networkSpaceList ) {
-            if ( space.getIsNatEnabled()) {
-                serviceSpace = space;
-                break;
+        if ( isEnabled ) {
+            for ( NetworkSpaceInternal space : networkSpaceList ) {
+                if ( space.getIsNatEnabled()) {
+                    serviceSpace = space;
+                    break;
+                }
             }
-        }        
+        }
 
         return new 
             NetworkSpacesInternalSettings( setupState, isEnabled, 

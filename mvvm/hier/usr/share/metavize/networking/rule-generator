@@ -470,6 +470,8 @@ function uturnRules() {
 ###############################################################
 ######### Start of script #####################################
 ###############################################################
+echo "[DEBUG:`date`] Generating iptables rules"
+
 generateConfiguration
 
 flush

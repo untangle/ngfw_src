@@ -220,9 +220,11 @@ class NetworkUtilPriv extends NetworkUtil
                 setNatAddress( info, spaceToInfoMap );
             } catch ( NetworkException e ) {
                 /* This is kind of dirty, but it is better than network configuration failing */
-                logger.error( "unable to set the nat address on a space, disabling nat", e );
+                logger.error( "unable to set the nat address on a space, disabling NAT.", e );
                 NetworkSpace space = info.getNetworkSpace();
-                if ( space != null ) space.setIsNatEnabled( false );
+                if ( space != null ) {
+                    space.setIsNatEnabled( false);
+                }
             }
             
             NetworkSpaceInternal nwi = makeNetworkSpaceInternal( info );
@@ -441,7 +443,7 @@ class NetworkUtilPriv extends NetworkUtil
             InterfaceData data = externalIntfDataList.get( 0 );
             status = new DhcpStatus( data.getAddress(), data.getNetmask());
         } catch( Exception e ) {
-            logger.warn( "Error updating DHCP address, setting to bogus address", e );
+            logger.warn( "Error updating DHCP address", e );
         }
         
         logger.debug( "Updating the primary address for the space '" + space.getName() + "'" );
@@ -811,8 +813,11 @@ class NetworkUtilPriv extends NetworkUtil
         natSpaceIndex = i.getIndex();
         
         if ( natAddress == null || natAddress.isEmpty()) {
-            logger.error( "Requesting NAT on a space that doesn't have an IP address, disabling NAT" );
-            space.setIsNatEnabled( false );
+            logger.info( "Requesting NAT on a space that doesn't have an address, NATing to bogus address" );
+
+            /* Very dirty */
+            info.setNatAddress( NetworkUtil.BOGUS_DHCP_ADDRESS );
+            info.setNatSpaceIndex( natSpaceIndex );
         } else {
             info.setNatAddress( natAddress );
             info.setNatSpaceIndex( natSpaceIndex );
