@@ -35,30 +35,18 @@ public class FileSaver extends HttpServlet
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException
     {
-        String id = null;
-
         FileItemFactory factory = new DiskFileItemFactory();
         ServletFileUpload upload = new ServletFileUpload(factory);
         try {
             List<FileItem> items = (List<FileItem>)upload.parseRequest(req);
             for (FileItem fi : items) {
-                if (fi.isFormField()) {
-                    String fieldName = fi.getFieldName();
-                    if (fieldName.equals("id")) {
-                        id = fi.getString();
-                    }
-                } else {
-                    System.out.println("FN: " + fi.getFieldName());
+                if (!fi.isFormField()) {
+                    String name = fi.getName();
+                    System.out.println("FN: " + name);
                 }
             }
         } catch (FileUploadException exn) {
             logger.warn("could not get upload", exn);
-        }
-
-        System.out.println("ID: " + id);
-
-        if (null == id) {
-            logger.warn("no dialog id");
         }
 
         try {

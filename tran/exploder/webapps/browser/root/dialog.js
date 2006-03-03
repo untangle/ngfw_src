@@ -72,22 +72,20 @@ FileDialog.prototype.init = function(title, message)
    var panel = document.createElement("div");
    Element.addClassName(panel, "panel");
 
-   var label = panel.appendChild(document.createElement("div"));
-   Element.addClassName(label, "label");
-   label.appendChild(document.createTextNode(message));
+   var iframe = makeHiddenIFrame(panel, "hidden-target");
+   with (this) {
+      iframe.uploadComplete = function() {
+         setTimeout(function() { setVisible(false); }, 1000);
+      };
+   }
+
+   var label = new Label(panel, message);
 
    var form = panel.appendChild(document.createElement("form"));
    form.action = "put"
    form.method = "post";
    form.enctype = form.encoding = "multipart/form-data";
    form.target = "hidden-target";
-
-   var iframe = makeHiddenIFrame(form, "hidden-target");
-   with (this) {
-      iframe.uploadComplete = function() {
-         setTimeout(function() { setVisible(false); }, 1000);
-      };
-   }
 
    var file = document.createElement("input");
    file.type = "file";
@@ -100,8 +98,8 @@ FileDialog.prototype.init = function(title, message)
    form.appendChild(input);
 
    form.onsubmit = function() {
-      file.disabled = true;
-      input.disabled = true;
+      form.style.display = "none";
+      label.setText("uploading file...");
    }
 
    // XXX close when do
@@ -140,6 +138,22 @@ TitleBar.prototype = {
       },
 
       onClose: null
+}
+
+// Label
+
+function Label(parent, text)
+{
+   this.label = parent.appendChild(document.createElement("div"));
+   Element.addClassName(this.label, "label");
+   this.labelText = this.label.appendChild(document.createTextNode(text));
+}
+
+Label.prototype = {
+   setText: function(text) {
+      this.label.removeChild(this.labelText);
+      this.labelText = this.label.appendChild(document.createTextNode(text));
+   }
 }
 
 // ClickBlocker
