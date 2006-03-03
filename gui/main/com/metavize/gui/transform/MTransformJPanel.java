@@ -92,7 +92,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
             }
         }
         powerOnHintJLabel = new CycleJLabel(powerOnImageIcons, HELPER_POWER_ON_BLINK, true, true);
-        setPowerOnHintVisible(transformContext.neverStarted());
+        setPowerOnHintVisible(transform.neverStarted());
 
         // INIT GUI
         initComponents();
