@@ -51,8 +51,8 @@ class InterfaceModel extends MSortedTableModel<MaintenanceCompoundSettings>{
     private static final int  C1_MW = Util.LINENO_MIN_WIDTH; /* # */
     private static final int  C2_MW = 120;  /* network interface */
     private static final int  C3_MW = 150;  /* mode */
-    private static final int  C4_MW = 65;   /* block ping */
-    private static final int  C5_MW = 150;  /* status */
+    //    private static final int  C4_MW = 65;   /* block ping */
+    //    private static final int  C5_MW = 150;  /* status */
     
     
     public TableColumnModel getTableColumnModel(){
@@ -63,9 +63,9 @@ class InterfaceModel extends MSortedTableModel<MaintenanceCompoundSettings>{
         addTableColumn( tableColumnModel,  1,  C1_MW, false, false, false, false, Integer.class, null, sc.TITLE_INDEX );
         addTableColumn( tableColumnModel,  2,  C2_MW, false, false, false, false, String.class, null, sc.html("network<br>interface") );
         addTableColumn( tableColumnModel,  3,  C3_MW, false, true,  false, false, ComboBoxModel.class, null, sc.html("mode") );
-        addTableColumn( tableColumnModel,  4,  C4_MW, false, true,  false, false, Boolean.class, null, sc.html("block<br>ping") );
-        addTableColumn( tableColumnModel,  5,  C5_MW, true,  false, false, true,  String.class,  null, sc.html("status") );
-        addTableColumn( tableColumnModel,  6, 10,     false, false, true,  false, Interface.class, null, "");
+	//        addTableColumn( tableColumnModel,  4,  C4_MW, false, true,  false, false, Boolean.class, null, sc.html("block<br>ping") );
+	//        addTableColumn( tableColumnModel,  5,  C5_MW, true,  false, false, true,  String.class,  null, sc.html("status") );
+        addTableColumn( tableColumnModel,  4, 10,     false, false, true,  false, Interface.class, null, "");
         return tableColumnModel;
     }
     
@@ -80,7 +80,7 @@ class InterfaceModel extends MSortedTableModel<MaintenanceCompoundSettings>{
 	    rowIndex++;
             newElem = (Interface) rowVector.elementAt(6);
 	    newElem.setEthernetMedia( (EthernetMedia) ((ComboBoxModel)rowVector.elementAt(3)).getSelectedItem() );
-	    newElem.setIsPingable( (Boolean) rowVector.elementAt(4) );
+	    //newElem.setIsPingable( (Boolean) rowVector.elementAt(4) );
             elemList.add(newElem);
         }
         
@@ -101,13 +101,13 @@ class InterfaceModel extends MSortedTableModel<MaintenanceCompoundSettings>{
 
         for( Interface intf : interfaceList ){
 	    rowIndex++;
-	    tempRow = new Vector(7);
+	    tempRow = new Vector(5);
 	    tempRow.add( super.ROW_SAVED );
 	    tempRow.add( rowIndex );
             tempRow.add( intf.getName() );
 	    tempRow.add( super.generateComboBoxModel( EthernetMedia.getEnumeration(), intf.getEthernetMedia()) );
-            tempRow.add( intf.getIsPingable() );
-	    tempRow.add( intf.getCurrentMedia() );
+            //tempRow.add( intf.getIsPingable() );
+	    //tempRow.add( intf.getCurrentMedia() );
 	    tempRow.add( intf );
 	    allRows.add( tempRow );
         }
