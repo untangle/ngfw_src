@@ -99,6 +99,11 @@ FileDialog.prototype.init = function(title, message)
    input.value = "Upload";
    form.appendChild(input);
 
+   form.onsubmit = function() {
+      file.disabled = true;
+      input.disabled = true;
+   }
+
    // XXX close when do
    FileDialog.superclass.init.call(this, title, panel);
 }
