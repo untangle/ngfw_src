@@ -219,7 +219,7 @@ public class NetworkHostnameJPanel extends javax.swing.JPanel
                 hostnameJPanel.add(jSeparator4, gridBagConstraints);
 
                 jLabel11.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel11.setText("<html>If your Hostname is publicly resolvable (the name resolves to an IP address from anywhere on the Internet), then EdgeGuard can make use of its hostname when generating emails, etc.  This will make contacting EdgeGuard easier.  (If you enable Dynamic DNS, then your hostname is automatically publicly resolvable.)</html>");
+                jLabel11.setText("<html>If your hostname resolves publicly (the name resolves to an IP address from anywhere on the Internet), then EdgeGuard can make use of its hostname when generating emails, etc.  This will make contacting EdgeGuard easier.  (If you enable Dynamic DNS, then your hostname automatically resolves publicly.)</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -228,7 +228,7 @@ public class NetworkHostnameJPanel extends javax.swing.JPanel
                 gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
                 hostnameJPanel.add(jLabel11, gridBagConstraints);
 
-                publicJCheckBox.setText("Hostname is publicly resolvable");
+                publicJCheckBox.setText("Hostname resolves publicly");
                 publicJCheckBox.setFocusPainted(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
