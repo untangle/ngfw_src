@@ -98,9 +98,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
         // SETUP EXPAND DIALOG
 	if(greyBackgroundImageIcon == null)
 	    greyBackgroundImageIcon = new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/images/DarkGreyBackground1600x100.png"));
-        expandJDialog = new JDialog( Util.getMMainJFrame(), 
-				     mTransformJPanel.getMackageDesc().getDisplayName()
-				     + " (expanded settings window)", true);
+        expandJDialog = new JDialog( Util.getMMainJFrame(), true);
         expandJDialog.setSize(MIN_SIZE);
 	expandJDialog.addComponentListener( new ComponentAdapter() { public void componentResized(ComponentEvent evt) {
 	    dialogResized();
@@ -246,8 +244,8 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
 	    }
 	}        
 	// SEND SETTINGS TO SERVER
-	mTransformJPanel.getTransformContext().transform().setSettings( settings );
-	mTransformJPanel.getTransformContext().transform().reconfigure();
+	mTransformJPanel.getTransform().setSettings( settings );
+	mTransformJPanel.getTransform().reconfigure();
 	setSaveSettingsHintVisible(false);
     }
 
@@ -259,7 +257,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
     }
 
     public void refreshAll() throws Exception {
-	settings = mTransformJPanel.getTransformContext().transform().getSettings();
+	settings = mTransformJPanel.getTransform().getSettings();
     }
 
     void populateAll() throws Exception {
@@ -489,6 +487,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
 								 Util.getMMainJFrame().getWidth()-EXPAND_INSET,
 								 Util.getMMainJFrame().getHeight()-EXPAND_INSET) );
 	    expandJButton.setIcon(Util.getButtonCollapseSettings());
+	    expandJDialog.setTitle( mTransformJPanel.getTransformDesc().getDisplayName() + " (expanded settings window)");
             expandJDialog.setVisible(true);
 
             // cleanup after new window is closed

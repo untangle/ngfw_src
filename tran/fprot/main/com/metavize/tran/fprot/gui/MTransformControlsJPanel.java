@@ -24,8 +24,8 @@ import javax.swing.border.EmptyBorder;
 
 public class MTransformControlsJPanel extends com.metavize.tran.virus.gui.MTransformControlsJPanel{
         
-    public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
-        super(mTransformJPanel);
+    public MTransformControlsJPanel(MTransformJPanel mTransformJPanel, TransformDesc transformDesc) {
+        super(mTransformJPanel, transformDesc);
     }
     
 }

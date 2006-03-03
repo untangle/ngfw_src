@@ -24,8 +24,8 @@ import java.util.*;
 
 public class MTransformJPanel extends com.metavize.tran.spam.gui.MTransformJPanel{
 
-    public MTransformJPanel(TransformContext transformContext) {
-        super(transformContext);
+    public MTransformJPanel(TransformContext transformContext, TransformDesc transformDesc) {
+        super(transformContext, transformDesc);
     }
 
 }

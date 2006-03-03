@@ -27,8 +27,8 @@ public class MTransformJPanel extends com.metavize.tran.virus.gui.MTransformJPan
 
 
 
-    public MTransformJPanel(TransformContext transformContext) {
-        super(transformContext);
+    public MTransformJPanel(TransformContext transformContext, TransformDesc transformDesc) {
+        super(transformContext, transformDesc);
     }
 
 

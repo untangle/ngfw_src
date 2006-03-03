@@ -70,4 +70,6 @@ public interface TransformContext
     TransformState getRunState();
 
     TransformStats getStats();
+    
+    boolean neverStarted();
 }

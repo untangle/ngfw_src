@@ -17,7 +17,6 @@ import javax.swing.*;
 import com.metavize.gui.util.*;
 import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.mvvm.*;
-import com.metavize.mvvm.toolbox.MackageDesc;
 import com.metavize.mvvm.tran.*;
 
 public class MStateMachine implements java.awt.event.ActionListener {
@@ -31,8 +30,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
     private MTransformJPanel mTransformJPanel;
     private MTransformControlsJPanel mTransformControlsJPanel;
     private MTransformDisplayJPanel mTransformDisplayJPanel;
-    private TransformContext transformContext;
-    private MackageDesc mackageDesc;
+    private Transform transform;
 
     // helpers
     String transformName;
@@ -43,15 +41,14 @@ public class MStateMachine implements java.awt.event.ActionListener {
         this.mTransformControlsJPanel = mTransformJPanel.mTransformControlsJPanel();
         this.mTransformDisplayJPanel = mTransformJPanel.mTransformDisplayJPanel();
         this.powerJToggleButton = mTransformJPanel.powerJToggleButton();
-        this.transformContext = mTransformJPanel.getTransformContext();
-        this.mackageDesc = mTransformJPanel.getMackageDesc();
+        this.transform = mTransformJPanel.getTransform();
         this.stateJLabel = mTransformJPanel.stateJLabel();
         this.saveJButton = mTransformControlsJPanel.saveJButton();
         this.reloadJButton = mTransformControlsJPanel.reloadJButton();
         this.removeJButton = mTransformControlsJPanel.removeJButton();
 
-        transformName = mackageDesc.getName();
-        displayName = mackageDesc.getDisplayName();
+        transformName = mTransformJPanel.getTransformDesc().getName();
+        displayName = mTransformJPanel.getTransformDesc().getDisplayName();
 
         new RefreshStateThread();
     }
@@ -143,9 +140,8 @@ public class MStateMachine implements java.awt.event.ActionListener {
     // ACTION THREADS //////////////////////////
     class SaveThread extends Thread{
         public SaveThread(){
-            super("MVCLIENT-MStateMachine.SaveThread: " + mackageDesc.getDisplayName());
+            super("MVCLIENT-MStateMachine.SaveThread: " + displayName);
 	    setDaemon(true);
-            /*saveJButton.setIcon(Util.getButtonSaving()); */
             setProcessingView(false);
 	    mTransformControlsJPanel.getInfiniteProgressJComponent().start("Saving...");
             start();
@@ -162,8 +158,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
                 catch(Exception g){
                     Util.handleExceptionNoRestart("Error doing save", g);
                     setProblemView(true);
-		    SaveFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(),
-					       mackageDesc.getDisplayName() );
+		    SaveFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(), displayName );
                 }
             }
 	    /*
@@ -181,8 +176,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
                 catch(Exception g){
                     Util.handleExceptionNoRestart("Error doing save", g);
                     setProblemView(true);
-		    SaveFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(),
-					       mackageDesc.getDisplayName() );
+		    SaveFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(), displayName );
                 }
             }
         }
@@ -192,7 +186,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
 
     class RefreshThread extends Thread{
         public RefreshThread(){
-            super("MVCLIENT-MStateMachine.RefreshThread: " + mackageDesc.getDisplayName());
+            super("MVCLIENT-MStateMachine.RefreshThread: " + displayName );
 	    setDaemon(true);
             /* reloadJButton.setIcon(Util.getButtonReloading()); */
             setProcessingView(false);
@@ -211,8 +205,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
                 catch(Exception f){
                     Util.handleExceptionNoRestart("Error doing refresh", f);
                     setProblemView(true);		
-		    RefreshFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(),
-						  mackageDesc.getDisplayName() );
+		    RefreshFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(), displayName );
                 }
             }
 	    /*
@@ -231,8 +224,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
                 catch(Exception f){
                     Util.handleExceptionNoRestart("Error doing refresh", f);
                     setProblemView(true);		
-		    RefreshFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(),
-						  mackageDesc.getDisplayName() );
+		    RefreshFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(), displayName );
                 }
 	    }
 		
@@ -242,7 +234,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
     class PowerThread extends Thread{
         private final boolean powerOn;
         public PowerThread(){
-            super("MVCLIENT-MStateMachine.PowerThread: " + mackageDesc.getDisplayName());
+            super("MVCLIENT-MStateMachine.PowerThread: " + displayName );
 	    setDaemon(true);
             powerOn = powerJToggleButton.isSelected();
             if( powerOn )
@@ -255,10 +247,10 @@ public class MStateMachine implements java.awt.event.ActionListener {
         public void run(){
             try{
                 if(powerOn){
-                    transformContext.transform().start();
+                    transform.start();
                 }
                 else
-                    transformContext.transform().stop();
+                    transform.stop();
 
                 if( powerOn )
                     setOnView(true);
@@ -341,7 +333,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
 
     // STATE REFRESHING //////////////////////////
     private void refreshState(boolean doLater){
-        TransformState transformState = transformContext.transform().getRunState();
+        TransformState transformState = transform.getRunState();
         if( TransformState.RUNNING.equals( transformState ) )
             setOnView(doLater);
         else if( TransformState.INITIALIZED.equals( transformState ) )
@@ -352,7 +344,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
 
     class RefreshStateThread extends Thread{
         public RefreshStateThread(){
-            super("MVCLIENT-MStateMachine.RefreshStateThread: " + mackageDesc.getDisplayName());
+            super("MVCLIENT-MStateMachine.RefreshStateThread: " + displayName );
             this.start();
         }
         public void run(){

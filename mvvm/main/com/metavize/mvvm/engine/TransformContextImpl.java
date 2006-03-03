@@ -240,6 +240,11 @@ class TransformContextImpl implements TransformContext
         return classLoader;
     }
 
+    public boolean neverStarted()
+    {
+	return transform.neverStarted();
+    }
+
     // package private methods ------------------------------------------------
 
     TransformPersistentState getPersistentState()

@@ -264,7 +264,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	addRefreshable(NAME_ADVANCED, advancedJPanel);
 
 	// EVENT LOG //
-        LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
+        LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransform(), this);
         addTab(NAME_LOG, null, logJPanel);
 	addShutdownable(NAME_LOG, logJPanel);
 
@@ -274,7 +274,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     public void refreshAll() throws Exception {
 	super.refreshAll();
 	setupState = ((NatCommonSettings)settings).getSetupState();
-	natTransform = (Nat) mTransformJPanel.getTransformContext().transform();
+	natTransform = (Nat) mTransformJPanel.getTransform();
 	if(SetupState.ADVANCED.equals( setupState )){
 	    networkSpaceList = ((NetworkSpacesSettings)settings).getNetworkSpaceList();
 	}

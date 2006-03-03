@@ -53,7 +53,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	imapConfigJPanel.setSettingsChangedListener(this);
 
 	// EVENT LOG /////
-	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
+	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransform(), this);
 	addTab(NAME_LOG, null, logJPanel);
 	addShutdownable(NAME_LOG, logJPanel);
     }

@@ -107,7 +107,7 @@ public class PolicyStateMachine implements ActionListener {
     private Separator coreSeparator;
     private static final String POLICY_MANAGER_SEPARATOR = "____________";
     private static final String POLICY_MANAGER_OPTION = "Show Policy Manager";
-    private static final int CONCURRENT_LOAD_MAX = 1;
+    private static final int CONCURRENT_LOAD_MAX = 2;
     private static Semaphore loadSemaphore;
     // STORE DELAYS //////////////////
     private static final long STORE_UPDATE_CHECK_SLEEP = 24l*60l*60l*1000l;
@@ -438,7 +438,8 @@ public class PolicyStateMachine implements ActionListener {
                 Tid tid = Util.getTransformManager().instantiate(mTransformJButton.getName(),policy);
                 // CREATE APPLIANCE
                 TransformContext transformContext = Util.getTransformManager().transformContext( tid );
-                MTransformJPanel mTransformJPanel = MTransformJPanel.instantiate(transformContext);
+		TransformDesc transformDesc = transformContext.getTransformDesc();
+                MTransformJPanel mTransformJPanel = MTransformJPanel.instantiate(transformContext, transformDesc, policy);
                 // DEPLOY APPLIANCE TO CURRENT POLICY RACK (OR CORE RACK)
                 addToRack(policy, mTransformJPanel,true);
                 // FOCUS AND HIGHLIGHT IN CURRENT RACK
@@ -771,9 +772,9 @@ public class PolicyStateMachine implements ActionListener {
     private void initMvvmModel() throws Exception {
 	// SECURITY
         for( Policy policy : Util.getPolicyManager().getPolicies() )
-            policyTidMap.put( policy, Util.getTransformManager().transformInstances(policy) );
+            policyTidMap.put( policy, Util.getTransformManager().transformInstancesVisible(policy) );
 	// NON-SECURITY (CORE & UTIL & SERVICES)
-        nonPolicyTidList = Util.getTransformManager().transformInstances((Policy)null);
+        nonPolicyTidList = Util.getTransformManager().transformInstancesVisible((Policy)null);
         // NAME MAPS FOR QUICK LOOKUP
         for( Policy policy : policyTidMap.keySet() ){
             Map<String,Object> nameMap = new HashMap<String,Object>();
@@ -890,7 +891,7 @@ public class PolicyStateMachine implements ActionListener {
     private void initToolboxModel(final JProgressBar progressBar){
         // BUILD THE MODEL
         Map<String,MackageDesc> installedMackageMap = new HashMap<String,MackageDesc>();
-        for( MackageDesc mackageDesc : Util.getToolboxManager().installed() ){
+        for( MackageDesc mackageDesc : Util.getToolboxManager().installedVisible() ){
             installedMackageMap.put(mackageDesc.getName(),mackageDesc);
 	}
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
@@ -1007,13 +1008,11 @@ public class PolicyStateMachine implements ActionListener {
 	    try{
 		loadSemaphore.acquire();
 		// GET THE TRANSFORM CONTEXT AND MACKAGE DESC
-		TransformContext transformContext = Util.getTransformManager().transformContext( tid );
-		MackageDesc mackageDesc = transformContext.getMackageDesc();
-		if( isMackageVisible(mackageDesc) ){
-		    // CONSTRUCT AND ADD THE APPLIANCE
-                    MTransformJPanel mTransformJPanel = MTransformJPanel.instantiate(transformContext);
-                    addToRack(policy,mTransformJPanel,false);
-                }
+		TransformContext transformContext = Util.getTransformManager().transformContext(tid);
+		TransformDesc transformDesc = transformContext.getTransformDesc();
+		// CONSTRUCT AND ADD THE APPLIANCE
+		MTransformJPanel mTransformJPanel = MTransformJPanel.instantiate(transformContext,transformDesc,policy);
+		addToRack(policy,mTransformJPanel,false);
 	    }
 	    catch(Exception e){
 		try{ Util.handleExceptionWithRestart("Error instantiating appliance: " + tid, e); }
@@ -1319,36 +1318,48 @@ public class PolicyStateMachine implements ActionListener {
     // Private CLASSES & UTILS /////////////////////
     ////////////////////////////////////////////////
     public synchronized MCasingJPanel[] loadAllCasings(boolean generateGuis){
-        final String casingNames[] = {"http-casing", "mail-casing", "ftp-casing"};
-        Vector<MCasingJPanel> mCasingJPanels = new Vector<MCasingJPanel>();
-        List<Tid> casingInstances = null;
-        TransformContext transformContext = null;
-        TransformDesc transformDesc = null;
-        String casingGuiClassName = null;
-        Class casingGuiClass = null;
-        Constructor casingGuiConstructor = null;
-        MCasingJPanel mCasingJPanel = null;
-        for(String casingName : casingNames){
-            try{
-                casingInstances = Util.getTransformManager().transformInstances(casingName);
-                if( casingInstances.size() == 0 )
-                    continue;
-                transformContext = Util.getTransformManager().transformContext(casingInstances.get(0));
-                transformDesc = transformContext.getTransformDesc();
-                casingGuiClassName = transformDesc.getGuiClassName();
-                casingGuiClass = Util.getClassLoader().loadClass( casingGuiClassName, transformDesc );
-                if(generateGuis){
-                    casingGuiConstructor = casingGuiClass.getConstructor(new Class[]{});
-                    mCasingJPanel = (MCasingJPanel) casingGuiConstructor.newInstance(new Object[]{});
-                    mCasingJPanels.add(mCasingJPanel);
-                }
-            }
-            catch(Exception e){
-                Util.handleExceptionNoRestart("Error loading all casings: " + casingName, e);
-            }
-        }
-        return mCasingJPanels.toArray( new MCasingJPanel[0] );
+	if( generateGuis )
+	    return doIt(true);
+	else{
+	    (new Thread(new DoItRunnable())).start();
+	    return null;
+	}
     }
+    private class DoItRunnable implements Runnable {
+	public void run(){ doIt(false); }
+    }
+    private MCasingJPanel[] doIt(boolean generateGuis){
+	final String casingNames[] = {"http-casing", "mail-casing", "ftp-casing"};
+	Vector<MCasingJPanel> mCasingJPanels = new Vector<MCasingJPanel>();
+	List<Tid> casingInstances = null;
+	TransformContext transformContext = null;
+	TransformDesc transformDesc = null;
+	String casingGuiClassName = null;
+	Class casingGuiClass = null;
+	Constructor casingGuiConstructor = null;
+	MCasingJPanel mCasingJPanel = null;
+	for(String casingName : casingNames){
+	    try{
+		casingInstances = Util.getTransformManager().transformInstances(casingName);
+		if( casingInstances.size() == 0 )
+		    continue;
+		transformContext = Util.getTransformManager().transformContext(casingInstances.get(0));
+		transformDesc = transformContext.getTransformDesc();
+		casingGuiClassName = transformDesc.getGuiClassName();
+		casingGuiClass = Util.getClassLoader().loadClass( casingGuiClassName, transformDesc );
+		if(generateGuis){
+		    casingGuiConstructor = casingGuiClass.getConstructor(new Class[]{});
+		    mCasingJPanel = (MCasingJPanel) casingGuiConstructor.newInstance(new Object[]{});
+		    mCasingJPanels.add(mCasingJPanel);
+		}
+	    }
+	    catch(Exception e){
+		Util.handleExceptionNoRestart("Error loading all casings: " + casingName, e);
+	    }
+	}
+	return mCasingJPanels.toArray( new MCasingJPanel[0] );
+    }
+
     private boolean isMackageVisible(MackageDesc mackageDesc){
         if( mackageDesc.getViewPosition() < 0 )
             return false;

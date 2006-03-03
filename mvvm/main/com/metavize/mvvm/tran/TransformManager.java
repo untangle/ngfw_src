@@ -49,6 +49,14 @@ public interface TransformManager
     List<Tid> transformInstances(Policy policy);
 
     /**
+     * Transform instances by policy, the visible ones only, for the GUI.
+     *
+     * @param policy policy of transform.
+     * @return tids of corresponding transforms.
+     */
+    List<Tid> transformInstancesVisible(Policy policy);
+
+    /**
      * Transform instances by name policy.
      *
      * @param name name of transform.

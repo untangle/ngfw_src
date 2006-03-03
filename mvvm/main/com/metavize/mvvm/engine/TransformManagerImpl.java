@@ -28,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.metavize.mvvm.MvvmContextFactory;
@@ -187,6 +188,17 @@ class TransformManagerImpl implements TransformManager
         }
 
         return l;
+    }
+
+    public List<Tid> transformInstancesVisible(Policy policy)
+    {
+	List<Tid> transformInstances = transformInstances(policy);
+	Vector<Tid> visibleVector = new Vector<Tid>();
+	for( Tid tid : transformInstances ){
+	    if( transformContext(tid).getMackageDesc().getViewPosition() >= 0 )
+		visibleVector.add(tid);
+	}
+	return (List<Tid>) visibleVector;
     }
 
     public TransformContext transformContext(Tid tid)

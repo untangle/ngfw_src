@@ -30,13 +30,17 @@ public class MTransformJPanel extends javax.swing.JPanel {
 
     // MVVM MODEL
     protected TransformContext transformContext;
-    public TransformContext getTransformContext(){ return transformContext; }
+    protected Transform transform;
+    public Transform getTransform(){ return transform; }
+    protected TransformDesc transformDesc;
+    public TransformDesc getTransformDesc(){ return transformDesc; }
     protected MackageDesc mackageDesc;
     public MackageDesc getMackageDesc(){ return mackageDesc; }
     protected Tid tid;
     public Tid getTid(){ return tid; }
     protected Policy policy;
     public Policy getPolicy(){ return policy; }
+    private void setPolicy(Policy policy){ this.policy = policy; }
 
     // GUI VIEW MODEL
     private MTransformControlsJPanel mTransformControlsJPanel; protected MTransformControlsJPanel mTransformControlsJPanel(){ return mTransformControlsJPanel; }
@@ -55,20 +59,21 @@ public class MTransformJPanel extends javax.swing.JPanel {
     private static Dimension maxDimension, minDimension;
     private static final int HELPER_POWER_ON_BLINK = 200;
 
-    public static MTransformJPanel instantiate(TransformContext transformContext) throws Exception {
-        TransformDesc transformDesc = transformContext.getTransformDesc();
+    public static MTransformJPanel instantiate(TransformContext transformContext, TransformDesc transformDesc, Policy policy) throws Exception {
         Class guiClass = Util.getClassLoader().loadClass( transformDesc.getGuiClassName(), transformDesc );
-        Constructor guiConstructor = guiClass.getConstructor( new Class[]{TransformContext.class} );
-        MTransformJPanel mTransformJPanel = (MTransformJPanel) guiConstructor.newInstance(new Object[]{transformContext});
+        Constructor guiConstructor = guiClass.getConstructor( new Class[]{TransformContext.class, TransformDesc.class} );
+        MTransformJPanel mTransformJPanel = (MTransformJPanel) guiConstructor.newInstance(new Object[]{transformContext, transformDesc});
+	mTransformJPanel.setPolicy(policy);
         return mTransformJPanel;
     }
 
-    public MTransformJPanel(TransformContext transformContext) {
+    public MTransformJPanel(TransformContext transformContext, TransformDesc transformDesc) { // this should not be instantiated
         setDoubleBuffered(true);
         this.transformContext = transformContext;
-        this.mackageDesc = transformContext.getMackageDesc();
-        this.tid = transformContext.getTid();
-        this.policy = tid.getPolicy();
+	this.transformDesc = transformDesc;
+	transform = transformContext.transform();
+	mackageDesc = transformDesc.getMackageDesc();
+	tid = transformDesc.getTid();
         controlsLoaded = false;
         showControlsThread = new ShowControlsThread();
 
@@ -87,7 +92,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
             }
         }
         powerOnHintJLabel = new CycleJLabel(powerOnImageIcons, HELPER_POWER_ON_BLINK, true, true);
-        setPowerOnHintVisible(transformContext.transform().neverStarted());
+        setPowerOnHintVisible(transformContext.neverStarted());
 
         // INIT GUI
         initComponents();
@@ -127,9 +132,9 @@ public class MTransformJPanel extends javax.swing.JPanel {
         }
 
         // DYNAMICALLY LOAD ICONS
-        String name = null;
+	String name = null;
         try{
-            name = getMackageDesc().getName();
+            name = transformDesc.getName();
             name = name.substring(0, name.indexOf('-'));
 
             descriptionIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/tran/"
@@ -139,9 +144,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
                                                                                                         + name
                                                                                                         + "/gui/IconOrg42x42.png")));
         }
-        catch(Exception e){
-            Util.handleExceptionNoRestart("Error adding icons: " + name , e);
-        }
+        catch(Exception e){ Util.handleExceptionNoRestart("Error adding icons: " + name , e); }
 
         // SIZES
         if(maxDimension == null)
@@ -167,9 +170,9 @@ public class MTransformJPanel extends javax.swing.JPanel {
 
 
         // SETUP COLORS and name
-        descriptionTextJLabel.setText( getMackageDesc().getDisplayName() );
 	try{ ((JComponent)descriptionTextJLabel).putClientProperty(com.sun.java.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY, new Boolean(true)); }
 	catch(Exception e){}
+	descriptionTextJLabel.setText( transformDesc.getDisplayName() );
 
         // SETUP STATE
         mStateMachine = new MStateMachine(this);
@@ -377,7 +380,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
 				catch(Exception f){
 				    Util.handleExceptionNoRestart("Error showing settings", f);
 				    RefreshFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(),
-								  mackageDesc.getDisplayName());
+								  transformDesc.getDisplayName());
 				}
 			    }
                             MTransformJPanel.this.controlsLoaded = true;

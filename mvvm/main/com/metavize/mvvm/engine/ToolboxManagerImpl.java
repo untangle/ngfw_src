@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Vector;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -129,6 +130,17 @@ class ToolboxManagerImpl implements ToolboxManager
         MackageDesc[] retVal = new MackageDesc[installed.length];
         System.arraycopy(installed, 0, retVal, 0, retVal.length);
         return retVal;
+    }
+
+    public MackageDesc[] installedVisible()
+    {
+        MackageDesc[] installed = installed();
+	Vector<MackageDesc> visibleVector = new Vector<MackageDesc>();
+	for( MackageDesc mackageDesc : installed ){
+	    if( mackageDesc.getViewPosition() >= 0 )
+		visibleVector.add(mackageDesc);
+	}
+        return visibleVector.toArray(new MackageDesc[0]);
     }
 
     public MackageDesc[] uninstalled()

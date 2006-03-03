@@ -68,7 +68,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	    addRefreshable( WIZARD_NAME, wizardJPanel );
 
 	    // EVENT LOG ///////
-	    LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
+	    LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransform(), this);
 	    addTab(NAME_LOG, null, logJPanel);
 	    addShutdownable(NAME_LOG, logJPanel);
 	}
@@ -112,7 +112,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	    clientsAndSitesJTabbedPane.addTab( SITE_TO_SITE_NAME, null, configSiteToSiteJPanel );
 
 	    // EVENT LOG ///////
-	    LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransformContext().transform(), this);
+	    LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransform(), this);
 	    addTab(NAME_LOG, null, logJPanel);
 	    addShutdownable(NAME_LOG, logJPanel);	    
 	}
@@ -125,7 +125,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     }
 
     public void refreshAll() throws Exception {	
-	vpnTransform = (VpnTransform) mTransformJPanel.getTransformContext().transform();
+	vpnTransform = (VpnTransform) mTransformJPanel.getTransform();
 	configState = vpnTransform.getConfigState();
 	if( lastConfigState == null )
 	    lastConfigState = configState;

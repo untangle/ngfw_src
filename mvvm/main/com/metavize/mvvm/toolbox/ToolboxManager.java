@@ -42,6 +42,13 @@ public interface ToolboxManager
     MackageDesc[] installed();
 
     /**
+     * All installed mackages, which are visible within the GUI
+     *
+     * @return a <code>MackageDesc[]</code> value
+     */
+    MackageDesc[] installedVisible();
+
+    /**
      * Mackages available but not installed.
      *
      * @return a <code>MackageDesc[]</code> value

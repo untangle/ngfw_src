@@ -13,6 +13,7 @@ package com.metavize.tran.clamphish.gui;
 
 import com.metavize.gui.transform.*;
 import com.metavize.mvvm.tran.TransformContext;
+import com.metavize.mvvm.tran.TransformDesc;
 
 
 
@@ -20,8 +21,8 @@ public class MTransformJPanel extends com.metavize.gui.transform.MTransformJPane
     
     
     
-    public MTransformJPanel(TransformContext transformContext) {
-        super(transformContext);
+    public MTransformJPanel(TransformContext transformContext, TransformDesc transformDesc) {
+        super(transformContext, transformDesc);
     } 
     
 

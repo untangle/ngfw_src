@@ -438,7 +438,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         double activityTotal;
 
         public UpdateGraphThread(){
-            super("MVCLIENT-UpdateGraphThread: " + MTransformDisplayJPanel.this.mTransformJPanel.getMackageDesc().getDisplayName());
+            super("MVCLIENT-UpdateGraphThread" + MTransformDisplayJPanel.this.mTransformJPanel.getTransformDesc().getDisplayName());
             this.setDaemon(true);
             Util.addKillableThread(this);
             resetCounters();
