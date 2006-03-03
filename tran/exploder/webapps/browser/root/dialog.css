@@ -1,5 +1,3 @@
-.hidden-target { display: none; }
-
 .label { font-weight: bold }
 
 .shadow {
@@ -19,6 +17,8 @@
           left: -2px;
           top: -2px;
           }
+
+.panel { padding: 5px; }
 
 /* titlebar */
 

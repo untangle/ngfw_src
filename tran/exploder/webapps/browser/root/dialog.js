@@ -69,9 +69,8 @@ function FileDialog(title, message)
 
 FileDialog.prototype.init = function(title, message)
 {
-   var id = new String(random());
-
    var panel = document.createElement("div");
+   Element.addClassName(panel, "panel");
 
    var label = panel.appendChild(document.createElement("div"));
    Element.addClassName(label, "label");
@@ -83,16 +82,16 @@ FileDialog.prototype.init = function(title, message)
    form.enctype = "multipart/form-data";
    form.target = "hidden-target";
 
-   var hidden = document.createElement("input");
-   hidden.type = "hidden";
-   hidden.value = id;
-
-   var iframe = form.appendChild(document.createElement("iframe"));
-   Element.addClassName(iframe, "hidden-target");
-   iframe.name = "hidden-target";
+   var iframe = makeHiddenIFrame(form, "hidden-target");
+   with (this) {
+      iframe.uploadComplete = function() {
+         setTimeout(function() { setVisible(false); }, 1000);
+      };
+   }
 
    var file = document.createElement("input");
    file.type = "file";
+   file.name = "file";
    form.appendChild(file);
 
    var input = document.createElement("input");
@@ -102,8 +101,6 @@ FileDialog.prototype.init = function(title, message)
 
    // XXX close when do
    FileDialog.superclass.init.call(this, title, panel);
-
-   FileDialog[id].uploadComplete = function() { this.setVisible(false); }
 }
 
 // TitleBar
@@ -161,5 +158,21 @@ ClickBlocker.prototype = {
       }
 
       this.visible = visible;
+   }
+}
+
+// util
+
+function makeHiddenIFrame(parent, name)
+{
+   parent.innerHTML += '\<iframe id="' + name + '" name="' + name
+      + '" style="display: none"><\/iframe>';
+
+   var children = parent.chilsvndNodes;
+   for (var i = 0; i < children.length; i++) {
+      var c = children[i];
+      if (c.id == name) {
+         return c;
+      }
    }
 }
