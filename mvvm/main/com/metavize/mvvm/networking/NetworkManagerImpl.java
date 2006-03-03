@@ -508,9 +508,7 @@ public class NetworkManagerImpl implements NetworkManager
 
     public void setWizardNatDisabled()
     {
-        if ( !hasChanged ) {
-            /* XXXXXXXXXXXXXXXX AMREAD insert the things */
-        }
+        /* XXXXXXXXXXXXXXXX AMREAD insert the things */
 
 	try{
             logger.debug( "disabling nat as requested by setup wizard: " );
