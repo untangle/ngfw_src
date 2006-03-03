@@ -36,7 +36,7 @@ class NatUtil
         } catch( Exception e ) {
             System.err.println( "Unable to initialize one of the ip addrs" );
             e.printStackTrace();
-            natAddress = natNetmask = dmz = null;
+            dmz = null;
         }
         
         DEFAULT_DMZ_ADDRESS = dmz;
