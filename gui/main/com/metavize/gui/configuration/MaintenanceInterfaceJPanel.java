@@ -78,7 +78,7 @@ class InterfaceModel extends MSortedTableModel<MaintenanceCompoundSettings>{
 
         for( Vector rowVector : tableVector ){
 	    rowIndex++;
-            newElem = (Interface) rowVector.elementAt(6);
+            newElem = (Interface) rowVector.elementAt(4);
 	    newElem.setEthernetMedia( (EthernetMedia) ((ComboBoxModel)rowVector.elementAt(3)).getSelectedItem() );
 	    //newElem.setIsPingable( (Boolean) rowVector.elementAt(4) );
             elemList.add(newElem);
