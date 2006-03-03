@@ -50,6 +50,9 @@ public class AboutCompoundSettings implements CompoundSettings {
 
     public void refresh() throws Exception {
 	registrationInfo = Util.getAdminManager().getRegistrationInfo();
+	if( registrationInfo == null ){ // for upgrading pre 3.2 boxes
+	    registrationInfo = new RegistrationInfo();
+	}
 	MackageDesc mackageDesc = Util.getToolboxManager().mackageDesc("mvvm");
 	if( mackageDesc == null )
 	    installedVersion = "unknown";
