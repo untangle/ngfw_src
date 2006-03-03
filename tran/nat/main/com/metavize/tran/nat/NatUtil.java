@@ -16,8 +16,8 @@ import com.metavize.mvvm.networking.NetworkUtil;
 
 class NatUtil
 {
-    static final IPaddr DEFAULT_NAT_ADDRESS;
-    static final IPaddr DEFAULT_NAT_NETMASK;
+    static final IPaddr DEFAULT_NAT_ADDRESS = NetworkUtil.DEFAULT_NAT_ADDRESS;
+    static final IPaddr DEFAULT_NAT_NETMASK = NetworkUtil.DEFAULT_NAT_NETMASK;
     
     static final IPaddr DEFAULT_DMZ_ADDRESS;
     
@@ -29,11 +29,9 @@ class NatUtil
     
     static
     {
-        IPaddr natAddress, natNetmask, dmz;
+        IPaddr dmz;
 
         try {
-            natAddress = IPaddr.parse( "192.168.1.1" );
-            natNetmask = IPaddr.parse( "255.255.255.0" );
             dmz        = IPaddr.parse( "192.168.1.2" );
         } catch( Exception e ) {
             System.err.println( "Unable to initialize one of the ip addrs" );
@@ -41,8 +39,6 @@ class NatUtil
             natAddress = natNetmask = dmz = null;
         }
         
-        DEFAULT_NAT_ADDRESS = natAddress;
-        DEFAULT_NAT_NETMASK = natNetmask;
         DEFAULT_DMZ_ADDRESS = dmz;
     }
 }

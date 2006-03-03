@@ -35,6 +35,9 @@ public class NetworkUtil
     public static final IPaddr DEFAULT_DHCP_START;
     public static final IPaddr DEFAULT_DHCP_END;
 
+    public static final IPaddr DEFAULT_NAT_ADDRESS;
+    public static final IPaddr DEFAULT_NAT_NETMASK;
+
     /* ??? which one */
     public static final String DEFAULT_HOSTNAME = "edgeguard.local.domain";
     
@@ -262,6 +265,9 @@ public class NetworkUtil
         IPaddr dhcpStart      = null;
         IPaddr dhcpEnd        = null;
 
+        IPaddr natAddress     = null;
+        IPaddr natNetmask     = null;
+
         HostName h;
 
         try {
@@ -273,11 +279,15 @@ public class NetworkUtil
 
             dhcpStart      = IPaddr.parse( "192.168.1.100" );
             dhcpEnd        = IPaddr.parse( "192.168.1.200" );
+
+            natAddress = IPaddr.parse( "192.168.1.1" );
+            natNetmask = IPaddr.parse( "255.255.255.0" );
         } catch( Exception e ) {
             System.err.println( "this should never happen: " + e );
             emptyAddr = null;
             dhcpStart = dhcpEnd = null;
             bogusAddress = bogusNetmask = null;
+            natAddress = natNetmask = null;
             /* THIS SHOULD NEVER HAPPEN */
         }
 
@@ -297,6 +307,9 @@ public class NetworkUtil
 
         BOGUS_DHCP_ADDRESS  = bogusAddress;
         BOGUS_DHCP_NETMASK  = bogusNetmask;
+
+        DEFAULT_NAT_ADDRESS = natAddress;
+        DEFAULT_NAT_NETMASK = natNetmask;
 
         LOCAL_DOMAIN_DEFAULT = h;
     }

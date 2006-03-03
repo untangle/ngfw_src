@@ -2,6 +2,9 @@
 
 exec >> @MVVM_LOG@/dhcp-auto-renew.log 2>&1
 
+## This file is pointed to by mvvm-pump.sh, so if the file is renamed, or moved, then 
+## it has to be done there as well.
+
 INTERFACE=$1
 
 BOGUS_ADDRESS_BASE="169.254.210.50"

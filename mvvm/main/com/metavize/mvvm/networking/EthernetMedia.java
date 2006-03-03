@@ -18,7 +18,7 @@ import java.util.HashMap;
 
 import com.metavize.mvvm.tran.ParseException;
 
-public class EthernetMedia implements Serializable
+public class EthernetMedia implements Serializable, Comparable
 {
     private static final String NAME_AUTO_NEGOTIATE = "Auto-Negotiate";
     /* These are the strings used by ethtool */
@@ -90,6 +90,21 @@ public class EthernetMedia implements Serializable
     public String toString()
     {
         return this.name;
+    }
+
+    public int compareTo( Object o )
+    {
+        EthernetMedia other = (EthernetMedia)o;
+
+        int oper1 = getType();
+        int oper2 = other.getType();
+
+        if (oper1 < oper2)
+            return -1;
+        else if (oper1 > oper2)
+            return 1;
+        else
+            return 0;
     }
 
     boolean isAuto()

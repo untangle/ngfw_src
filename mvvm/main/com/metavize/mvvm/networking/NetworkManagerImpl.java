@@ -408,6 +408,13 @@ public class NetworkManagerImpl implements NetworkManager
     public void setWizardNatEnabled(IPaddr address, IPaddr netmask)
     {        
 	try{
+            boolean hasChanged = true;
+            
+            if ( NetworkUtil.DEFAULT_NAT_ADDRESS.equals( address ) && 
+                 NetworkUtil.DEFAULT_NAT_NETMASK.equals( netmask )) {
+                hasChanged = false;
+            }
+
             logger.debug( "enabling nat as requested by setup wizard: " + address + "/" + netmask );
 
             NetworkSpacesSettings newSettings = getNetworkSettings();
@@ -480,6 +487,10 @@ public class NetworkManagerImpl implements NetworkManager
             }
             newSettings.setInterfaceList( interfaceList );
             newSettings.setNetworkSpaceList( networkSpaceList );
+
+            if ( !hasChanged ) {
+                /* XXXXXXXXXXXXXXXX AMREAD insert the things */
+            }
             
             setNetworkSettings( newSettings );
 
@@ -497,6 +508,10 @@ public class NetworkManagerImpl implements NetworkManager
 
     public void setWizardNatDisabled()
     {
+        if ( !hasChanged ) {
+            /* XXXXXXXXXXXXXXXX AMREAD insert the things */
+        }
+
 	try{
             logger.debug( "disabling nat as requested by setup wizard: " );
 	    TransformManager transformManager = MvvmContextFactory.context().transformManager();
