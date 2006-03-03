@@ -216,7 +216,6 @@ public class NetworkManagerImpl implements NetworkManager
     public synchronized void setRemoteSettings( RemoteSettings newSettings )
         throws NetworkException
     {
-        /* XXXXXXXXX Implement me */
         if ( logger.isDebugEnabled()) logger.debug( "Loaded remote settings: " + newSettings );
         NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
 

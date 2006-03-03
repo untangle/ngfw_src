@@ -177,9 +177,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
 		networkingConfiguration.hostname( hostnameString );
 
 		boolean isPublic = NetworkUtil.isHostnameLikelyPublic( hostnameString );
-		RemoteSettings remoteSettings = Util.getNetworkManager().getRemoteSettings();
-		remoteSettings.setIsHostnamePublic(isPublic);
-		Util.getNetworkManager().setRemoteSettings(remoteSettings);
+                networkingConfiguration.setIsHostnamePublic(isPublic);
 
 		InitialSetupWizard.setSharedData( hostnameString );
                 Util.getNetworkingManager().set(networkingConfiguration);
