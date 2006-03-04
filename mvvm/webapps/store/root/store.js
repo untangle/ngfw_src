@@ -24,7 +24,6 @@ function installButton(pkg)
       var a = div.appendChild(document.createElement("a"));
       a.appendChild(document.createTextNode("install"));
       a.onclick = function() { requestInstall(pkg); };
-      //a.setAttribute("href", "javascript:void(self.close());");
    }
 }
 
@@ -35,6 +34,7 @@ function requestInstall(pkg)
                        parameters: "mackage=" + pkg,
                        onComplete: function() {
                           window.location.href = "thankyou.php";
+                          window.close();
                        }
                     });
    setInstallStatus(pkg, "installing");
