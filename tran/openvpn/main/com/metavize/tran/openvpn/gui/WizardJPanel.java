@@ -11,6 +11,7 @@
 
 package com.metavize.tran.openvpn.gui;
 
+import com.metavize.gui.util.Util;
 import com.metavize.gui.transform.Refreshable;
 
 import java.awt.Window;
@@ -198,12 +199,16 @@ public class WizardJPanel extends javax.swing.JPanel implements Refreshable<Obje
         }//GEN-END:initComponents
 
     private void serverRoutingJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverRoutingJButtonActionPerformed
+	if( Util.getIsDemo() )
+	    return;
         serverRoutingJButton.setEnabled(false);
 	ServerRoutingWizard.factory((Window)this.getTopLevelAncestor(),vpnTransform,mTransformControlsJPanel).setVisible(true);
 	serverRoutingJButton.setEnabled(true);
     }//GEN-LAST:event_serverRoutingJButtonActionPerformed
 
     private void clientJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clientJButtonActionPerformed
+	if( Util.getIsDemo() )
+	    return;
 	clientJButton.setEnabled(false);
 	ClientWizard.factory((Window)this.getTopLevelAncestor(),vpnTransform,mTransformControlsJPanel).setVisible(true);
 	clientJButton.setEnabled(true);

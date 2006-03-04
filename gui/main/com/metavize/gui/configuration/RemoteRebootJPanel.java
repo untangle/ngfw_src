@@ -50,7 +50,8 @@ public class RemoteRebootJPanel extends JPanel implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent ae){
-
+	if( Util.getIsDemo() )
+	    return;
 	MTwoButtonJDialog warningJDialog = MTwoButtonJDialog.factory((Window)this.getTopLevelAncestor(), "",
 				  "You are about to manually reboot EdgeGuard.  This will interrupt normal network operations" +
 				  " until EdgeGuard is finished automatically restarting.  This may take up to several minutes to complete.",

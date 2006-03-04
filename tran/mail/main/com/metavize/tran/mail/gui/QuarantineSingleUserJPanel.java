@@ -180,6 +180,8 @@ public class QuarantineSingleUserJPanel extends javax.swing.JPanel
     }//GEN-END:initComponents
 
     private void releaseJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_releaseJButtonActionPerformed
+	if( Util.getIsDemo() )
+	    return;
         int[] selectedModelRows = getSelectedModelRows();
         if( selectedModelRows.length == 0 )
                 return;
@@ -194,6 +196,8 @@ public class QuarantineSingleUserJPanel extends javax.swing.JPanel
     }//GEN-LAST:event_releaseJButtonActionPerformed
     
     private void purgeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_purgeJButtonActionPerformed
+	if( Util.getIsDemo() )
+	    return;
         int[] selectedModelRows = getSelectedModelRows();
         if( selectedModelRows.length == 0 )
                 return;

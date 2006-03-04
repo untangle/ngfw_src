@@ -377,6 +377,8 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
     }//GEN-LAST:event_addressJTextFieldCaretUpdate
     
     private void connectivityTestJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectivityTestJButtonActionPerformed
+	if( Util.getIsDemo() )
+	    return;
 	try{
 	    EmailConnectivityTestJDialog connectivityJDialog = new EmailConnectivityTestJDialog((JDialog)this.getTopLevelAncestor());
 	    connectivityJDialog.setVisible(true);

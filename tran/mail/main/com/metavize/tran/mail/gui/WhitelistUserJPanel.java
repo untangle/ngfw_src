@@ -156,6 +156,8 @@ public class WhitelistUserJPanel extends javax.swing.JPanel
     }//GEN-END:initComponents
 
     private void removeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeJButtonActionPerformed
+	if( Util.getIsDemo() )
+	    return;
         int[] selectedModelRows = getSelectedModelRows();
         if( selectedModelRows.length == 0 )
                 return;

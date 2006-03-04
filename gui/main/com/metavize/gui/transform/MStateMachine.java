@@ -54,12 +54,21 @@ public class MStateMachine implements java.awt.event.ActionListener {
     }
 
 
+    Boolean readOnlyPowerState = null;
     // ACTION MULTIPLEXER ///////////////////////////////
     public void actionPerformed(java.awt.event.ActionEvent evt) {
         Object source = evt.getSource();
 
-        if( Util.getIsDemo() && !source.equals(reloadJButton) )
+        if( Util.getIsDemo() && !source.equals(reloadJButton) ){
+	    if( source.equals(powerJToggleButton) ){
+		if( readOnlyPowerState == null ){
+		    readOnlyPowerState = new Boolean(!powerJToggleButton.isSelected());
+		}
+		if( powerJToggleButton.isSelected() != readOnlyPowerState )
+		    powerJToggleButton.setSelected(readOnlyPowerState);
+	    }
             return;
+	}
         try{
             if( source.equals(saveJButton) ){
                 if( transformName.equals("nat-transform") ){
@@ -304,15 +313,6 @@ public class MStateMachine implements java.awt.event.ActionListener {
 
         Runnable runnable = new Runnable(){
                 public void run(){
-                    /* mTransformControlsJPanel.setAllEnabled( allControlsEnabled );
-                    saveJButton.setEnabled( saveEnabled );
-                    reloadJButton.setEnabled( refreshEnabled );
-                    removeJButton.setEnabled( removeEnabled ); */
-                    if( Util.getIsDemo() )
-                        powerJToggleButton.setEnabled(false);
-                    else
-                        powerJToggleButton.setEnabled( powerEnabled );
-
                     if( powerOn != null){
                         boolean wasEnabled = powerJToggleButton.isEnabled();
                         powerJToggleButton.setEnabled(false);

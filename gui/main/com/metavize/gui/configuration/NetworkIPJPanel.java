@@ -497,6 +497,8 @@ public class NetworkIPJPanel extends javax.swing.JPanel
     }//GEN-LAST:event_dhcpIPaddrJTextFieldCaretUpdate
     
     private void connectivityTestJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectivityTestJButtonActionPerformed
+	if( Util.getIsDemo() )
+	    return;
         try{
 	    NetworkConnectivityTestJDialog connectivityJDialog = new NetworkConnectivityTestJDialog((JDialog)this.getTopLevelAncestor());
 	    connectivityJDialog.setVisible(true);

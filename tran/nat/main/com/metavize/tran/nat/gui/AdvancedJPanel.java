@@ -200,6 +200,8 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
         }//GEN-END:initComponents
 
     private void standardJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_standardJButtonActionPerformed
+	if( Util.getIsDemo() )
+	    return;
         standardJButton.setEnabled(false);
 	MTwoButtonJDialog proceedJDialog = MTwoButtonJDialog.factory((Window)getTopLevelAncestor(), "Network Sharing", "Proceeding will cause your currently saved Network Sharing settings to be rest and lost.", "Network Sharing Warning", "Network Sharing Warning");
 	if( proceedJDialog.isProceeding() )
@@ -208,6 +210,8 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
     }//GEN-LAST:event_standardJButtonActionPerformed
     
     private void advancedJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_advancedJButtonActionPerformed
+	if( Util.getIsDemo() )
+	    return;
 	advancedJButton.setEnabled(false);
 	MTwoButtonJDialog proceedJDialog = MTwoButtonJDialog.factory((Window)getTopLevelAncestor(), "Network Sharing", "You should only use this mode if Standard Mode is not capable of handling your network configuration, and you are an experienced administrator.", "Network Sharing Warning", "Network Sharing Warning");
 	if( proceedJDialog.isProceeding() )

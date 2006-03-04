@@ -11,6 +11,7 @@
 
 package com.metavize.gui.configuration;
 
+import com.metavize.gui.util.Util;
 import com.metavize.gui.widgets.dialogs.MConfigJDialog;
 
 import java.awt.Window;
@@ -166,18 +167,24 @@ public class RemoteCertGenJPanel extends javax.swing.JPanel {
         }//GEN-END:initComponents
 
     private void importCSRJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importCSRJButtonActionPerformed
+	if( Util.getIsDemo() )
+	    return;
 	importCSRJButton.setEnabled(false);
 	RemoteCertImportTrustedJDialog.factory((Window)this.getTopLevelAncestor(), mConfigJDialog).setVisible(true);
 	importCSRJButton.setEnabled(true);
     }//GEN-LAST:event_importCSRJButtonActionPerformed
     
     private void selfSignedJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selfSignedJButtonActionPerformed
+	if( Util.getIsDemo() )
+	    return;
 	selfSignedJButton.setEnabled(false);
 	RemoteCertGenSelfSignedJDialog.factory((Window)this.getTopLevelAncestor(),mConfigJDialog).setVisible(true);
 	selfSignedJButton.setEnabled(true);
     }//GEN-LAST:event_selfSignedJButtonActionPerformed
     
     private void generateCSRJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generateCSRJButtonActionPerformed
+	if( Util.getIsDemo() )
+	    return;
 	generateCSRJButton.setEnabled(false);
 	RemoteCertGenTrustedJDialog.factory((Window)this.getTopLevelAncestor()).setVisible(true);
 	generateCSRJButton.setEnabled(true);
