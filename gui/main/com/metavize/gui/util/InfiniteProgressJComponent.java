@@ -116,6 +116,7 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
     public JProgressBar getProgressBar(){
 	if(jProgressBar == null){
 	    jProgressBar = new JProgressBar();
+	    jProgressBar.setStringPainted(true);
 	    jProgressBar.setForeground(new Color(68,91,255));
 	    add(jProgressBar, progressBarGridBagConstraints);	    
 	}
@@ -124,6 +125,9 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
 
     public void setProgressBarVisible(boolean isVisible){
 	getProgressBar().setVisible(isVisible);
+	getProgressBar().setIndeterminate(false);
+	getProgressBar().setValue(0);
+	getProgressBar().setString("");	
     }
 
 
