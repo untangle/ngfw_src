@@ -29,10 +29,10 @@ public class MURLClassLoader extends URLClassLoader {
             for (URL url : existingURLs)
                 if (url.equals(marURL))
                     return;
-            System.out.println("Adding " + marURL + " to class path");
+            //System.out.println("Adding " + marURL + " to class path");
             addURL(marURL);
 	} catch(Exception e){
-            System.err.println("Couldn't do it:" + e.getMessage());
+            //System.err.println("Couldn't do it:" + e.getMessage());
             e.printStackTrace();
             //System.err.println("  |--> Couldn't add mar: " + marName);
         }
