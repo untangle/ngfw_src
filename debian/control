@@ -12,7 +12,7 @@ XB-Display-Name: File Transfer
 XB-Website: http://www.metavize.com
 XB-Is-Service: true
 Description: The Metavize File Transfer/FTP Decoder
- The Metavize File Transfer/FTP Decoder Casing
+ The Metavize File Transfer/FTP Decoder
 
 Package: http-casing
 Architecture: any
@@ -21,7 +21,7 @@ XB-Display-Name: Web
 XB-Website: http://www.metavize.com
 XB-Is-Service: true
 Description: The Metavize Web/HTTP Decoder
- The Metavize Web/HTTP Decoder Casing
+ The Metavize Web/HTTP Decoder
 
 Package: mail-casing
 Architecture: any
@@ -33,7 +33,7 @@ XB-Display-Name: Email
 XB-Website: http://www.metavize.com
 XB-Is-Service: true
 Description: The Metavize Email Decoder
- The Metavize Email Decoder Casing
+ The Metavize Email Decoder
 
 Package: airgap-transform
 Architecture: any
@@ -143,8 +143,8 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  FOZQpQiJxRPB/uif9lTkHh8l3OVBhq6xsyXQZCqNVKoHdjK1teO8zkSuNnHn52axVkyy44wF
  jP5/n47IHTnb+aVRzChGFcieTBYZDm8iFwJtMEo9mv5bf//NdiRq+Es9wwm3yLXAooahnnuZ
  QdxsLPxXDxw5/j7RBinaTy/EXwisAmjbSWR6+zAwlMNjj38ieCD2fwIMANZG+Ft4BQz8AAAA
-Description: The Metavize Attack Shield
- The Metavize Attack Shield Transform
+Description: The Metavize Attack Shield Software Appliance
+ The Metavize Attack Shield Software Appliance
 
 Package: spyware-transform
 Architecture: any
@@ -230,8 +230,8 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  IgWqMjYrOOHvOAJkMSxsqyn4gHedmazBrqiqgfBwxU6jaj76SDWsX69qOa2q2FilgoNVcVaW+Y9k
  73LcRSZkLGKH/REnyfG0lONnPR/5uuRksvDJPrb/abw/B5zrN+guuOXxZRNDd9Zq1QnYEOXj71ey
  +PfGcHg3h7iLr16RWb+Q1R/2aQ8mqjheqF8wvO3WUPf+R4ABACEcfkAFMtTiAAAAAElFTkSuQmCC
-Description: The Metavize Spyware Blocker
- The Metavize Spyware Blocker Transform
+Description: The Metavize Spyware Blocker Software Appliance
+ The Metavize Spyware Blocker Software Appliance
 
 Package: httpblocker-transform
 Architecture: any
@@ -328,8 +328,8 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  hv5ibZAOJB+Ky44vFgGhHLnryrk0ZtNIVGdIWXk5HptioXw44eddESL+/vgzcoWKcn5hoPbA
  +1nH0ufnBbLGWduFUqXpn6ZVni9WNfB/TqKdLXQoddk5/ipGzKowLKETWaMN5ivbxR/E/ifA
  ACBNCbEqfhTsAAAAAElFTkSuQmCC
-Description: The Metavize Web Content Control
- The Metavize Web Content Control Transform
+Description: The Metavize Web Content Control Software Appliance
+ The Metavize Web Content Control Software Appliance
 
 Package: hauri-transform
 Architecture: any
@@ -442,8 +442,8 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  bo4dB1m4/4mJCZqZmTkOure3Rw3Moe3tbdrf36epqamhgXK/DDo/P08LCws0NzfXelcoFJTJ
  t7a2iKH5xJlHJgYQTXoFZcjFxUUlDK3e8ZE4m35tbY0cx1GAw4BMUgKhGBh4DPkrH9WzEs1O
  4vuVlZXPTaVhwzLg7OwsLS0t0fLyMq2vryvO/wQYAP5qirM6mBOTAAAAAElFTkSuQmCC
-Description: The Hauri AntiVirus Scanner
- The Hauri AntiVirus Scanner Transform
+Description: The Hauri AntiVirus Scanner Software Appliance
+ The Hauri AntiVirus Scanner Software Appliance
 
 Package: kav-transform
 Architecture: any
@@ -523,8 +523,8 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  bo4dB1m4/4mJCZqZmTkOure3Rw3Moe3tbdrf36epqamhgXK/DDo/P08LCws0NzfXelcoFJTJ
  t7a2iKH5xJlHJgYQTXoFZcjFxUUlDK3e8ZE4m35tbY0cx1GAw4BMUgKhGBh4DPkrH9WzEs1O
  4vuVlZXPTaVhwzLg7OwsLS0t0fLyMq2vryvO/wQYAP5qirM6mBOTAAAAAElFTkSuQmCC
-Description: The Kaspersky AntiVirus Scanner
- The Kaspersky AntiVirus Scanner Transform
+Description: The Kaspersky AntiVirus Scanner Software Appliance
+ The Kaspersky AntiVirus Scanner Software Appliance
 
 Package: clam-transform
 Architecture: any
@@ -629,8 +629,8 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  bo4dB1m4/4mJCZqZmTkOure3Rw3Moe3tbdrf36epqamhgXK/DDo/P08LCws0NzfXelcoFJTJ
  t7a2iKH5xJlHJgYQTXoFZcjFxUUlDK3e8ZE4m35tbY0cx1GAw4BMUgKhGBh4DPkrH9WzEs1O
  4vuVlZXPTaVhwzLg7OwsLS0t0fLyMq2vryvO/wQYAP5qirM6mBOTAAAAAElFTkSuQmCC
-Description: The Clam AntiVirus Scanner
- The Clam AntiVirus Scanner Transform
+Description: The Clam AntiVirus Scanner Software Appliance
+ The Clam AntiVirus Scanner Software Appliance
 
 Package: protofilter-transform
 Architecture: any
@@ -751,8 +751,8 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  9r+JrLqHcb1/5G+RYmXTPJWlGb3b6BYmf2bKnUk5+TGE7vzZn3kmWHTz5s1//icarfhpzE82
  2tifbwr1VLtn9G935xN+znHG/arjXPYPRVt53HzZvynJzzTaKFBpwLTxwIsWGlcGHRei85f/
  /qR+EPs/AQYALpz0b9lClG4AAAAASUVORK5CYII=
-Description: The Metavize Rogue Protocol Control
- The Metavize Rogue Protocol Control Transform
+Description: The Metavize Rogue Protocol Control Software Appliance
+ The Metavize Rogue Protocol Control Software Appliance
 
 Package: nat-transform
 Architecture: any
@@ -846,7 +846,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
  zYu28/m48eumeSM2sZU0C0mzhm1HVVVisRiaplFeXv71g9wrRRzHIZVKkUqlBkfjLq5wOcej
  +/fvv9Ix0wA4V/LlOA7/GQCfi3hGQX94NwAAAABJRU5ErkJggg==
 Description: The Metavize Router Software Appliance
- The Metavize Router Software Appliance Transform
+ The Metavize Router Software Appliance
 
 Package: firewall-transform
 Architecture: any
@@ -933,7 +933,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
  zc2FabY4d/MK1zzQlDRpVyz53X379hnAfCLf07SOhrSOXtye9ILVeHNzM//v50Axw74c1xjD
  fwYAMCLoUqhkh6IAAAAASUVORK5CYII=
 Description: The Metavize Firewall Software Appliance
- The Metavize Firewall Software Appliance Transform
+ The Metavize Firewall Software Appliance
 
 Package: spamassassin-transform
 Architecture: any
@@ -1048,7 +1048,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  7ecbjiWKg52kQksZPHS58yyBNmiZiJP+/Re/svPTyfv0y81tv46IkqxIuSdiaPf5D4YGWh7D
  zpbjLtD367cmAc5kRUrTokJw339vj/xB7P8FGACNK2N4xeErDQAAAABJRU5ErkJggg==
 Description: The Metavize SpamGuard Software Appliance
- The Metavize SpamGuard Software Appliance Transform
+ The Metavize SpamGuard Software Appliance
 
 Package: clamphish-transform
 Architecture: any
@@ -1177,7 +1177,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
  k2CFwI0uw5UGmqYjhJgEO3kPJb3c0CFdxgf60NxeIoGxv9v3NzTIj0BpAdTEYcMHgTVS/M8A
  nY2oOxX/HXgAAAAASUVORK5CYII=
 Description: The Metavize PhishNet Software Appliance
- The Metavize PhishNet Software Appliance Transform
+ The Metavize PhishNet Software Appliance
 
 Package: test-transform
 Architecture: any
@@ -1319,7 +1319,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
  E9ORyFBgWpqgJbAcTRReOMoIhCGIDAGhxnAgkGBYAkMYpG2HrmyCrkSaf79yEVc/9Kj4/wMA
  IXmY0MNCBksAAAAASUVORK5CYII=
 Description: The Metavize Test Software Appliance
- The Metavize Test Software Appliance Transform
+ The Metavize Test Software Appliance
 
 Package: openvpn-transform
 Architecture: any
@@ -1423,7 +1423,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
  p9MbC7m3s67neaFcbRjGLbJ4cIQI3Na9vwzq41aZ3W2cWq1GrVa7VRr/dUfwokDY+r8et1j0
  xIkT/LaPNzYtgL8l0/d9/mcAXb1X7pR/ZiwAAAAASUVORK5CYII=
 Description: The Metavize OpenVPN Software Appliance
- The Metavize OpenVPN Software Appliance Transform
+ The Metavize OpenVPN Software Appliance
 
 Package: exploder-transform
 Architecture: any
@@ -1573,8 +1573,8 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
  gsfHQOjn+g6B3IjyCiLKankOYogxYlRxroN4C9+u6Nol3m0Ivh3SMIYO77MjbVPK5v9f/vAv
  dt1hz+oW0X4R2L/+xQ72f/+aKQFxz7/f+fpfFP00yKQAP7JF/ft5GLHDLCq9/aj7R7+mbO3J
  3QCjv/Lrm/0vGAYPf3Cgs7LEXqJSDBdeyxQVZw9vy/8MAIKemQqNP8+BAAAAAElFTkSuQmCC
-Description: The Metavize Intrusion Prevention Appliance
- The Metavize Intrusion Prevention Appliance Transform
+Description: The Metavize Intrusion Prevention Software Appliance
+ The Metavize Intrusion Prevention Software Appliance
 
 Package: reporting-transform
 Architecture: any
@@ -1660,7 +1660,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  Gwe/++1vGj/fcKBvrfF6FVHvq8rfvQzlN83+/j9Ov3D2DdYAKX9oYI1fKPoxJMDBwSCGhg9j
  9KkxvPWjn6ofxP4nwAB2T5Rklk6b3gAAAABJRU5ErkJggg==
 Description: The Metavize Report Generator
- The Metavize Report Generator Transform
+ The Metavize Report Generator
 
 Package: boxbackup-transform
 Architecture: any
@@ -1705,7 +1705,7 @@ XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgA
  8nGFmxnhMCc3z5UMphpUaaheH7dcekhSiBaTtJjj9FTobQMk7NcvPuOWYZUqsX6h584NjCAU
  EbkSc5Cnbep3I3KVG9fVAkKJHCJ6XAomArd/GoB/CjAAcIcK11SEGzIAAAAASUVORK5CYII=
 Description: The 24-Hour Box Backup Service
- The 24-Hour Box Backup Service Transform
+ The 24-Hour Box Backup Service
 
 Package: virus-base
 Architecture: any
@@ -1713,7 +1713,7 @@ Depends: mvvm
 XB-Display-Name: AntiVirus Base
 XB-Website: http://www.metavize.com
 Description: The Metavize AntiVirus Base
- The Metavize Base AntiVirus Transform
+ The Metavize Base AntiVirus Scanner
 
 Package: spam-base
 Architecture: any
@@ -1721,7 +1721,7 @@ Depends: mvvm
 XB-Display-Name: AntiSpam Base
 XB-Website: http://www.metavize.com
 Description: The Metavize SpamGuard Base
- The Metavize Base SpamGuard Transform
+ The Metavize Base SpamGuard Scanner
 
 Package: metavize-client
 Architecture: any
@@ -1799,8 +1799,8 @@ Conflicts: mvvm (<< 3.0.0-39)
 Replaces: mvvm (<< 3.0.0-39)
 XB-Display-Name: Metavize Server Thirdparty Libraries
 XB-Website: http://www.metavize.com
-Description: The third party libraries needed for the MVVM
- The third party libraries needed for the MVVM Transform
+Description: The third party libraries needed for the EdgeGuard
+ The third party libraries needed for EdgeGuard
 
 Package: mvvm
 Architecture: any
@@ -1869,5 +1869,5 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMg
  Rn8jUL2jDkb0Yh8fPPOvznpAoloLKep19N9/1ORUg8xUZ98P+tZvdm/5WQNVNVXnEPeADytp
  qeI2NTVV5rnD3YvTGFJGFIie2kybsf7rTv7Gs/NrHv4jv4mJCcoq9ceyNmt2bXSr+sK1/2fC
  8fFxQUGBTa+YTKarqyt2YDQa1b8XvsYI+rvZxM+Vb07/kf0SvX2q/d/bXwIMAJ+e3tKQEpgP
-Description: The Metavize Virtual Machine (MVVM)
- The Metavize Virtual Machine Container for your EdgeGuard
+Description: The Metavize Virtual Machine
+ The Metavize Virtual Machine needed for EdgeGuard
