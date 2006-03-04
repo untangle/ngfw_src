@@ -31,6 +31,7 @@ import javax.swing.border.*;
 
 import com.metavize.tran.nat.*;
 import com.metavize.mvvm.networking.*;
+import com.metavize.mvvm.client.MvvmRemoteContextFactory;
 
 public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransformControlsJPanel{
 
@@ -269,6 +270,15 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	addShutdownable(NAME_LOG, logJPanel);
 
 	baseGuiBuilt = true;
+    }
+
+    public void saveAll() throws Exception {
+	if( !(new SaveProceedDialog( mTransformJPanel.getTransformDesc().getDisplayName() )).isProceeding() )
+	    return;
+	int previousTimeout = MvvmRemoteContextFactory.factory().getTimeout();
+	MvvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_SECONDS);		
+	super.saveAll();
+	MvvmRemoteContextFactory.factory().setTimeout(previousTimeout);		
     }
 
     public void refreshAll() throws Exception {

@@ -100,6 +100,9 @@ public class Util {
     public static final long LOGIN_RETRY_SLEEP = 3000l;
     ///////////////////////////////
 
+    // NETWORKING ////////////////
+    public static final int RECONFIGURE_NETWORK_TIMEOUT_SECONDS = 60;
+    //////////////////////////////
 
     // SERVER PROXIES ///////////////
     private static MvvmRemoteContext mvvmContext;

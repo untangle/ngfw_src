@@ -216,7 +216,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
     public abstract void generateGui();
 
     private Exception saveException;
-    void saveAll() throws Exception {
+    public void saveAll() throws Exception {
 	// GENERATE AND VALIDATE ALL SETTINGS
 	final String transformName = mTransformJPanel.getMackageDesc().getDisplayName();
 	for( Map.Entry<String, Savable> savableMapEntry : savableMap.entrySet() ){

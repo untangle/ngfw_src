@@ -71,18 +71,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
 	}
         try{
             if( source.equals(saveJButton) ){
-                if( transformName.equals("nat-transform") ){
-                    /* saveJButton.setEnabled(false); */
-                    if( (new SaveProceedDialog( displayName )).isProceeding() ){
-                        new SaveThread();
-                    }
-                    else{
-                        /* saveJButton.setEnabled(true); */
-                    }
-                }
-                else{
-                    new SaveThread();
-                }
+		new SaveThread();
             }
             else if( source.equals(reloadJButton) ){
                 new RefreshThread();

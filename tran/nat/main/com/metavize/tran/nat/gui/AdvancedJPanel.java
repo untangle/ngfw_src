@@ -16,6 +16,7 @@ import com.metavize.gui.transform.*;
 import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.tran.nat.*;
 import com.metavize.mvvm.networking.*;
+import com.metavize.mvvm.client.MvvmRemoteContextFactory;
 
 import java.awt.Window;
 import javax.swing.*;
@@ -243,10 +244,13 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
 
 	    try{
 		Nat natTransform = com.metavize.tran.nat.gui.MTransformControlsJPanel.getNatTransform();
+		int previousTimeout = MvvmRemoteContextFactory.factory().getTimeout();
+		MvvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_SECONDS);		
 		if( isAdvanced )
 		    natTransform.switchToAdvanced();
 		else
 		    natTransform.resetBasic();
+		MvvmRemoteContextFactory.factory().setTimeout(previousTimeout);		
 	    }
 	    catch(Exception e){
 		try{ Util.handleExceptionWithRestart("Error reconfiguring", e); }

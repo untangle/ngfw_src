@@ -15,6 +15,7 @@ import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.util.*;
 
+import com.metavize.mvvm.client.MvvmRemoteContextFactory;
 import com.metavize.mvvm.NetworkingConfiguration;
 
 import java.awt.*;
@@ -65,8 +66,11 @@ public class NetworkJDialog extends MConfigJDialog {
 	// ASK THE USER IF HE REALLY WANTS TO SAVE SETTINGS //
         NetworkSaveSettingsProceedJDialog networkSaveSettingsProceedJDialog = new NetworkSaveSettingsProceedJDialog(this);
         boolean isProceeding = networkSaveSettingsProceedJDialog.isProceeding();
-        if( isProceeding ){ 
+        if( isProceeding ){
+	    int previousTimeout = MvvmRemoteContextFactory.factory().getTimeout();
+	    MvvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_SECONDS);
             super.saveAll();
+	    MvvmRemoteContextFactory.factory().setTimeout(previousTimeout);
 	    // UPDATE STORE
 	    Util.getPolicyStateMachine().updateStoreModel();
         }
