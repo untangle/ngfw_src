@@ -52,6 +52,14 @@ public class UpgradeProcessJPanel extends JPanel
 
     public void doRefresh(UpgradeCompoundSettings upgradeCompoundSettings){
 	upgradeTableModel.doRefresh(upgradeCompoundSettings);
+	if( Util.isArrayEmpty(upgradeCompoundSettings.getUpgradableMackageDescs()) ){
+	    upgradeJButton.setEnabled(false);
+	    mEditTableJPanel.setDetailMessage("No Upgrades Available");
+	}
+	else{
+	    upgradeJButton.setEnabled(true);
+	    mEditTableJPanel.setDetailMessage("no selection...");
+	}
     }
 
 

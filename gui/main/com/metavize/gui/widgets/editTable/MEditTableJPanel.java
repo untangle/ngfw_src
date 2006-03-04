@@ -176,6 +176,10 @@ public class MEditTableJPanel extends javax.swing.JPanel
         return mColoredJTable;
     }
         
+    public void setDetailMessage(String message){
+	detailJTextArea.setText(message);
+    }
+    
     public void valueChanged(ListSelectionEvent e) {
 	int selectedViewRows[] = mColoredJTable.getSelectedRows();
         if( (selectedViewRows==null) || (selectedViewRows.length==0) || (selectedViewRows[0]==-1) ){
