@@ -35,6 +35,8 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
 
     private static final String BACKUP_EXTENSION = ".egbackup";
     
+    private InfiniteProgressJComponent infiniteProgressJComponent = new InfiniteProgressJComponent();
+    private static final long MIN_PROGRESS_MILLIS = 1000l;
 
     public BackupJDialog() {
         super(Util.getMMainJFrame());
@@ -46,8 +48,7 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
 							this.getHeight()) );
         
         this.addWindowListener(this);
-
-
+	this.setGlassPane(infiniteProgressJComponent);
     }
 
     public void dataChangedInvalid(Object reference){}
@@ -66,19 +67,16 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 jLabel1 = new javax.swing.JLabel();
                 actionJPanel = new javax.swing.JPanel();
                 backupHardDiskJButton = new javax.swing.JButton();
-                backupHardDiskJProgressBar = new javax.swing.JProgressBar();
                 backupUsbKeyJPanel = new javax.swing.JPanel();
                 contentJPanel1 = new javax.swing.JPanel();
                 jLabel2 = new javax.swing.JLabel();
                 actionJPanel1 = new javax.swing.JPanel();
                 backupUSBKeyJButton = new javax.swing.JButton();
-                backupUSBKeyJProgressBar = new javax.swing.JProgressBar();
                 backupLocalFileJPanel = new javax.swing.JPanel();
                 contentJPanel3 = new javax.swing.JPanel();
                 jLabel4 = new javax.swing.JLabel();
                 actionJPanel2 = new javax.swing.JPanel();
                 backupFileJButton = new javax.swing.JButton();
-                backupFileJProgressBar = new javax.swing.JProgressBar();
                 restoreJTabbedPane = new javax.swing.JTabbedPane();
                 restoreHDAndUSBJPanel = new javax.swing.JPanel();
                 contentJPanel2 = new javax.swing.JPanel();
@@ -88,7 +86,6 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 jLabel5 = new javax.swing.JLabel();
                 actionJPanel3 = new javax.swing.JPanel();
                 restoreFileJButton = new javax.swing.JButton();
-                restoreFileJProgressBar = new javax.swing.JProgressBar();
                 backgroundJLabel = new com.metavize.gui.widgets.MTiledIconLabel();
 
                 getContentPane().setLayout(new java.awt.GridBagLayout());
@@ -170,24 +167,6 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 gridBagConstraints.insets = new java.awt.Insets(0, 0, 15, 0);
                 actionJPanel.add(backupHardDiskJButton, gridBagConstraints);
 
-                backupHardDiskJProgressBar.setFont(new java.awt.Font("Default", 0, 10));
-                backupHardDiskJProgressBar.setForeground(new java.awt.Color(68, 91, 255));
-                backupHardDiskJProgressBar.setDoubleBuffered(true);
-                backupHardDiskJProgressBar.setFocusable(false);
-                backupHardDiskJProgressBar.setMinimumSize(new java.awt.Dimension(10, 15));
-                backupHardDiskJProgressBar.setPreferredSize(new java.awt.Dimension(148, 15));
-                backupHardDiskJProgressBar.setString("");
-                backupHardDiskJProgressBar.setStringPainted(true);
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 1;
-                gridBagConstraints.gridwidth = 2;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 15);
-                actionJPanel.add(backupHardDiskJProgressBar, gridBagConstraints);
-
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 1;
@@ -243,24 +222,6 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 gridBagConstraints.weightx = 0.5;
                 gridBagConstraints.insets = new java.awt.Insets(0, 0, 15, 0);
                 actionJPanel1.add(backupUSBKeyJButton, gridBagConstraints);
-
-                backupUSBKeyJProgressBar.setFont(new java.awt.Font("Default", 0, 10));
-                backupUSBKeyJProgressBar.setForeground(new java.awt.Color(68, 91, 255));
-                backupUSBKeyJProgressBar.setDoubleBuffered(true);
-                backupUSBKeyJProgressBar.setFocusable(false);
-                backupUSBKeyJProgressBar.setMinimumSize(new java.awt.Dimension(10, 15));
-                backupUSBKeyJProgressBar.setPreferredSize(new java.awt.Dimension(148, 15));
-                backupUSBKeyJProgressBar.setString("");
-                backupUSBKeyJProgressBar.setStringPainted(true);
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 1;
-                gridBagConstraints.gridwidth = 2;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 15);
-                actionJPanel1.add(backupUSBKeyJProgressBar, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -318,24 +279,6 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 gridBagConstraints.weightx = 0.5;
                 gridBagConstraints.insets = new java.awt.Insets(0, 0, 15, 0);
                 actionJPanel2.add(backupFileJButton, gridBagConstraints);
-
-                backupFileJProgressBar.setFont(new java.awt.Font("Default", 0, 10));
-                backupFileJProgressBar.setForeground(new java.awt.Color(68, 91, 255));
-                backupFileJProgressBar.setDoubleBuffered(true);
-                backupFileJProgressBar.setFocusable(false);
-                backupFileJProgressBar.setMinimumSize(new java.awt.Dimension(10, 15));
-                backupFileJProgressBar.setPreferredSize(new java.awt.Dimension(148, 15));
-                backupFileJProgressBar.setString("");
-                backupFileJProgressBar.setStringPainted(true);
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 1;
-                gridBagConstraints.gridwidth = 2;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 15);
-                actionJPanel2.add(backupFileJProgressBar, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -423,24 +366,6 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 gridBagConstraints.insets = new java.awt.Insets(0, 0, 15, 0);
                 actionJPanel3.add(restoreFileJButton, gridBagConstraints);
 
-                restoreFileJProgressBar.setFont(new java.awt.Font("Default", 0, 10));
-                restoreFileJProgressBar.setForeground(new java.awt.Color(68, 91, 255));
-                restoreFileJProgressBar.setDoubleBuffered(true);
-                restoreFileJProgressBar.setFocusable(false);
-                restoreFileJProgressBar.setMinimumSize(new java.awt.Dimension(10, 15));
-                restoreFileJProgressBar.setPreferredSize(new java.awt.Dimension(148, 15));
-                restoreFileJProgressBar.setString("");
-                restoreFileJProgressBar.setStringPainted(true);
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 1;
-                gridBagConstraints.gridwidth = 2;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 15);
-                actionJPanel3.add(restoreFileJProgressBar, gridBagConstraints);
-
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 1;
@@ -504,29 +429,22 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
 
     private class BackupThread extends Thread {
         private int type;
-		private JProgressBar activeJProgressBar;
 	private String successString;
 	private String failedString;
         public BackupThread(int type){
 	    super("MVCLIENT-BackupThread");
 	    setDaemon(true);
             this.type = type;
-	    backupUSBKeyJButton.setEnabled(false);
-	    backupHardDiskJButton.setEnabled(false);
-	    backupFileJButton.setEnabled(false);
-	    restoreFileJButton.setEnabled(false);
+	    infiniteProgressJComponent.start("Backing Up...");
 	    if(type==0){
-		activeJProgressBar = backupHardDiskJProgressBar;
 		successString = "Success:  The Hard Disk backup procedure completed.";
 		failedString = "Error:  The Hard Disk backup procedure failed.  Contact support for further direction.";
 	    }
 	    else if(type==1){
-		activeJProgressBar = backupUSBKeyJProgressBar;
 		successString = "Success:  The USB Key backup procedure completed.";
 		failedString = "Error:  The USB Key backup procedure failed.  Contact support for further direction.";
 	    }
 	    else{
-		activeJProgressBar = backupFileJProgressBar;	
 		successString = "Success:  The local file backup procedure completed.";	
 		failedString = "Error:  The local file backup procedure failed.  Please try again.";
 	    }
@@ -534,12 +452,6 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
         }
         public void run() {
             try{
-                SwingUtilities.invokeLater( new Runnable() { public void run() {
-		    activeJProgressBar.setValue(0);
-		    activeJProgressBar.setString("");
-		    activeJProgressBar.setIndeterminate(true);
-		} } );
-		
 		// PERFORM THE BACKUP
                 if(type==0)
                     Util.getMvvmContext().localBackup();
@@ -584,66 +496,39 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
 			IOUtil.bytesToFile(backup, file);
 		    }
 		    else{
-			return;
+			return; // user cancelled operation
 		    }
 
-		}		
-		if(type!=2){
-		    SwingUtilities.invokeLater( new Runnable() { public void run() {
-			activeJProgressBar.setString( successString );
-			activeJProgressBar.setIndeterminate(false);
-			activeJProgressBar.setValue(100);
-		    } } );
 		}
+
+		infiniteProgressJComponent.setTextLater("Backup Success");	
+		new MOneButtonJDialog("Backup Success", successString);
 	    }
             catch(Exception e){
                 Util.handleExceptionNoRestart("Error backing up", e);
-                try{
-		    SwingUtilities.invokeAndWait( new Runnable() { public void run() {
-			activeJProgressBar.setString( failedString );
-		    } } );
-                }
-                catch(Exception f){}
+		infiniteProgressJComponent.setTextLater("Restore Failure");
+		new MOneButtonJDialog("Backup Failure", failedString);		
             }
             finally{
-		SwingUtilities.invokeLater( new Runnable() {public void run() {
-		    activeJProgressBar.setIndeterminate(false);
-		    backupUSBKeyJButton.setEnabled(true);
-		    backupHardDiskJButton.setEnabled(true);
-		    backupFileJButton.setEnabled(true);
-		    restoreFileJButton.setEnabled(true);
-		} } );
+		infiniteProgressJComponent.stopLater(MIN_PROGRESS_MILLIS);
 	    }
 	}       	
     }
 
 
     private class RestoreThread extends Thread {
-	private JProgressBar activeJProgressBar;
 	private String successString;
 	private String failedString;
         public RestoreThread(){
 	    super("MVCLIENT-RestoreThread");
 	    setDaemon(true);
-	    backupUSBKeyJButton.setEnabled(false);
-	    backupHardDiskJButton.setEnabled(false);
-	    backupFileJButton.setEnabled(false);
-	    restoreFileJButton.setEnabled(false);
-
-	    activeJProgressBar = restoreFileJProgressBar;
 	    successString = "Success:  The Local File restore procedure completed.";
 	    failedString = "Error:  The Local File restore procedure failed.  Contact support for further direction.";
-
+	    infiniteProgressJComponent.start("Restoring...");
 	    this.start();
         }
         public void run() {
             try{
-                SwingUtilities.invokeLater( new Runnable() { public void run() {
-		    activeJProgressBar.setValue(0);
-		    activeJProgressBar.setString("");
-		    activeJProgressBar.setIndeterminate(true);
-		} } );
-		
 		// PERFORM THE RESTORE
 		JFileChooser chooser = new JFileChooser();
 		chooser.addChoosableFileFilter(new BackupFileFilter());
@@ -664,32 +549,19 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
 		    
 		}		
 		else{
-		    return;
+		    return; // user cancelled operation
 		}
 
-		SwingUtilities.invokeLater( new Runnable() { public void run() {
-		    activeJProgressBar.setString( successString );
-		    activeJProgressBar.setIndeterminate(false);
-		    activeJProgressBar.setValue(100);
-		} } );
-		
+		infiniteProgressJComponent.setTextLater("Restore Success");
+		new MOneButtonJDialog("Restore Success", successString);
 	    }
             catch(Exception e){
                 Util.handleExceptionNoRestart("Error restoring", e);
-                try{
-		    SwingUtilities.invokeAndWait( new Runnable() { public void run() {
-			activeJProgressBar.setString( failedString );
-		    } } );
-                }
-                catch(Exception f){}
+		infiniteProgressJComponent.setTextLater("Restore Failure");
+		new MOneButtonJDialog("Restore Failure", failedString);
             }
             finally{
-		SwingUtilities.invokeLater( new Runnable() {public void run() {
-		    activeJProgressBar.setIndeterminate(false);
-		    backupUSBKeyJButton.setEnabled(true);
-		    backupHardDiskJButton.setEnabled(true);
-		    backupFileJButton.setEnabled(true);
-		} } );
+		new RestartDialog();
 	    }
 	}       	
     }
@@ -735,14 +607,11 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
         private javax.swing.JPanel actionJPanel3;
         private javax.swing.JLabel backgroundJLabel;
         protected javax.swing.JButton backupFileJButton;
-        protected javax.swing.JProgressBar backupFileJProgressBar;
         protected javax.swing.JButton backupHardDiskJButton;
         private javax.swing.JPanel backupHardDiskJPanel;
-        protected javax.swing.JProgressBar backupHardDiskJProgressBar;
         private javax.swing.JTabbedPane backupJTabbedPane;
         private javax.swing.JPanel backupLocalFileJPanel;
         protected javax.swing.JButton backupUSBKeyJButton;
-        protected javax.swing.JProgressBar backupUSBKeyJProgressBar;
         private javax.swing.JPanel backupUsbKeyJPanel;
         private javax.swing.ButtonGroup buttonGroup1;
         private javax.swing.JButton closeJButton;
@@ -758,7 +627,6 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
         private javax.swing.JLabel jLabel5;
         private javax.swing.JTabbedPane jTabbedPane;
         protected javax.swing.JButton restoreFileJButton;
-        protected javax.swing.JProgressBar restoreFileJProgressBar;
         private javax.swing.JPanel restoreHDAndUSBJPanel;
         private javax.swing.JTabbedPane restoreJTabbedPane;
         private javax.swing.JPanel restoreLocalFileJPanel;

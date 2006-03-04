@@ -226,8 +226,8 @@ public class UpgradeProcessJPanel extends JPanel
 
                 if( visitor.isSuccessful() ){
                     // LET THE USER KNOW WERE FINISHED NORMALLY
-		    MConfigJDialog.getInfiniteProgressJComponent().setTextLater("Upgrade Successful!");
-		    MConfigJDialog.getInfiniteProgressJComponent().stopLater(DOWNLOAD_FINAL_SLEEP_MILLIS);
+		    MConfigJDialog.getInfiniteProgressJComponent().setTextLater("Upgrade Success");
+		    new MOneButtonJDialog("Upgrade Success", "The upgrade procedure finished successfully.");
                 }
                 else{
                     throw new Exception();
@@ -235,8 +235,8 @@ public class UpgradeProcessJPanel extends JPanel
             }
             catch(Exception e){
                 Util.handleExceptionNoRestart("Termination of upgrade:", e);
-                // LET THE USER KNOW WERE FINISHED ABNORMALLY
-		MConfigJDialog.getInfiniteProgressJComponent().setTextLater("Error.  Please contact Metavize.");
+		MConfigJDialog.getInfiniteProgressJComponent().setTextLater("Upgrade Failure");
+		new MOneButtonJDialog("Upgrade Failure", "The upgrade procedure did not finish properly.  Please contact Metavize technical support.");
             }
             finally{
                 new RestartDialog();
