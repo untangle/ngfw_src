@@ -330,7 +330,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 
     private class SaveAllThread extends Thread{
         public SaveAllThread(){
-	    super("MVCLIENT-MConfigJDialog.SaveAllThread");
+	    super("MVCLIENT-ConfigSaveAllThread");
 	    setDaemon(true);
 	    infiniteProgressJComponent.start("Saving...");
             start();
@@ -359,7 +359,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
     private class RefreshAllThread extends Thread{
 	private boolean doGenerateGui;
         public RefreshAllThread(boolean doGenerateGui){
-	    super("MVCLIENT-MConfigJDialog.RefreshAllThread");
+	    super("MVCLIENT-ConfigRefreshAllThread");
 	    setDaemon(true);
 	    this.doGenerateGui = doGenerateGui;
 	    // START INFINITE PROGRESS

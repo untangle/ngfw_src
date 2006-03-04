@@ -149,7 +149,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
     // ACTION THREADS //////////////////////////
     class SaveThread extends Thread{
         public SaveThread(){
-            super("MVCLIENT-MStateMachine.SaveThread: " + displayName);
+            super("MVCLIENT-StateMachineSaveThread: " + displayName);
 	    setDaemon(true);
             setProcessingView(false);
 	    mTransformControlsJPanel.getInfiniteProgressJComponent().start("Saving...");
@@ -195,7 +195,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
 
     class RefreshThread extends Thread{
         public RefreshThread(){
-            super("MVCLIENT-MStateMachine.RefreshThread: " + displayName );
+            super("MVCLIENT-StateMachineRefreshThread: " + displayName );
 	    setDaemon(true);
             /* reloadJButton.setIcon(Util.getButtonReloading()); */
             setProcessingView(false);
@@ -243,7 +243,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
     class PowerThread extends Thread{
         private final boolean powerOn;
         public PowerThread(){
-            super("MVCLIENT-MStateMachine.PowerThread: " + displayName );
+            super("MVCLIENT-StateMachinePowerThread: " + displayName );
 	    setDaemon(true);
             powerOn = powerJToggleButton.isSelected();
             if( powerOn )
@@ -344,7 +344,8 @@ public class MStateMachine implements java.awt.event.ActionListener {
 
     class RefreshStateThread extends Thread{
         public RefreshStateThread(){
-            super("MVCLIENT-MStateMachine.RefreshStateThread: " + displayName );
+            super("MVCLIENT-StateMachineRefreshStateThread: " + displayName );
+	    setDaemon(true);
             this.start();
         }
         public void run(){

@@ -372,6 +372,7 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
 
 		private class ConnectivityThread extends Thread{
 				public ConnectivityThread(){
+				    super("MVCLIENT-EmailConnectivityThread");
 						setDaemon(true);
 						connectivityTestJButton.setEnabled(false);
 						start();

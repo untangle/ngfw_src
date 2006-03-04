@@ -260,7 +260,8 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
     class RefreshThread extends Thread implements ActionListener {
         private boolean isAutoRefresh;
         public RefreshThread(boolean isAutoRefresh){
-            super("MVCLIENT-MLogTableJPanel.RefreshThread: " + logTransform.getTransformDesc().getDisplayName());
+            super("MVCLIENT-LogRefreshThread: " + logTransform.getTransformDesc().getDisplayName());
+	    setDaemon(true);
             setContextClassLoader(Util.getClassLoader());
             this.isAutoRefresh = isAutoRefresh;
             if( !isAutoRefresh // a button was pressed, stop other streaming

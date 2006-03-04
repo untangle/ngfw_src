@@ -46,6 +46,8 @@ final public class NetworkDhcpRenewDialog extends MOneButtonProgressJDialog {
         
     private class DhcpLeaseRenewThread extends Thread {
         public DhcpLeaseRenewThread(){
+	    super("MVCLIENT-DhcpLeaseRenewThread");
+	    setDaemon(true);
             NetworkDhcpRenewDialog.this.jProgressBar.setValue(0);
             NetworkDhcpRenewDialog.this.jProgressBar.setIndeterminate(true);
             NetworkDhcpRenewDialog.this.jProgressBar.setString("Renewing DHCP lease...");

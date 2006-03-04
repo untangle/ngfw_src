@@ -165,6 +165,7 @@ public class RemoteCertImportTrustedJDialog extends javax.swing.JDialog implemen
 
     private class ProceedThread extends Thread {
 	public ProceedThread(){
+	    super("MVCLIENT-CertImportThread");
 	    setDaemon(true);
 	    jProgressBar.setIndeterminate(true);
 	    jProgressBar.setString("Importing Certificate");

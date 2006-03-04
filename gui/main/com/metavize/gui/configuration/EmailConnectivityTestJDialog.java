@@ -170,6 +170,7 @@ public class EmailConnectivityTestJDialog extends javax.swing.JDialog implements
     
     private class ConnectivityCheckThread extends Thread {
         public ConnectivityCheckThread(){
+	    super("MVCLIENT-EmailConnectivityCheckThread");
             this.setDaemon(true);
 	    this.setContextClassLoader(Util.getClassLoader());
 	    if( emailAddressJTextField.getText().length() == 0){

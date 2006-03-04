@@ -267,6 +267,7 @@ public class RemoteCertGenSelfSignedJDialog extends javax.swing.JDialog implemen
 
     private class CertGenerateThread extends Thread {
     public CertGenerateThread(){
+	super("MVCLIENT-CertGenerateThread");
         setDaemon(true);
         jProgressBar.setIndeterminate(true);
         jProgressBar.setString("Generating Certificate");

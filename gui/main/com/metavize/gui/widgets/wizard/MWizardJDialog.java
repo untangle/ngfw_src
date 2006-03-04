@@ -366,6 +366,7 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
 
     private class PreviousPageThread extends Thread{
 	public PreviousPageThread(){
+	    super("MVCLIENT-WizardPreviousPageThread");
 	    setDaemon(true);
 	    updateButtonState(true);
 	    start();
@@ -406,6 +407,7 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
 	
     private class NextPageThread extends Thread{
         public NextPageThread(){
+	    super("MVCLIENT-WizardNextPageThread");
             setDaemon(true);
 	    updateButtonState(true);
             start();

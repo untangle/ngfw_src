@@ -177,6 +177,7 @@ public class NetworkConnectivityTestJDialog extends javax.swing.JDialog implemen
     
     private class ConnectivityCheckThread extends Thread {
         public ConnectivityCheckThread(){
+	    super("MVCLIENT-ConnectivityCheckThread");
             this.setDaemon(true);
 	    this.setContextClassLoader(Util.getClassLoader());
             jProgressBar.setIndeterminate(true);

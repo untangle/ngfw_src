@@ -509,6 +509,7 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
 	private String failedString;
         public BackupThread(int type){
 	    super("MVCLIENT-BackupThread");
+	    setDaemon(true);
             this.type = type;
 	    backupUSBKeyJButton.setEnabled(false);
 	    backupHardDiskJButton.setEnabled(false);
@@ -623,6 +624,7 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
 	private String failedString;
         public RestoreThread(){
 	    super("MVCLIENT-RestoreThread");
+	    setDaemon(true);
 	    backupUSBKeyJButton.setEnabled(false);
 	    backupHardDiskJButton.setEnabled(false);
 	    backupFileJButton.setEnabled(false);

@@ -530,6 +530,7 @@ public class PolicyStateMachine implements ActionListener {
 	private MTransformJButton mTransformJButton;
 	private Vector<MTransformJButton> buttonVector;
 	public MoveFromToolboxToStoreThread(final MTransformJButton mTransformJButton){
+	    setDaemon(true);
 	    this.mTransformJButton = mTransformJButton;
 	    ButtonKey buttonKey = new ButtonKey(mTransformJButton);
 	    buttonVector = new Vector<MTransformJButton>();
@@ -793,6 +794,7 @@ public class PolicyStateMachine implements ActionListener {
         private volatile boolean doUpdate = false;
         public StoreModelThread(){
             setDaemon(true);
+	    setName("MVCLIENT-UpdateStoreModelThread");
             storeProgressBar = new JProgressBar();
             storeProgressBar.setStringPainted(true);
             storeProgressBar.setForeground(new java.awt.Color(68, 91, 255));
