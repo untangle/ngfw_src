@@ -20,7 +20,7 @@ import com.metavize.mvvm.tran.*;
 
 import javax.swing.SpinnerNumberModel;
 import java.awt.*;
-
+import javax.swing.JSpinner;
 
 public class RemoteRestrictionJPanel extends javax.swing.JPanel
     implements Savable<RemoteCompoundSettings>, Refreshable<RemoteCompoundSettings> {
@@ -31,7 +31,7 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
     
     public RemoteRestrictionJPanel() {
         initComponents();
-	externalAdminPortJSpinner.setModel(new SpinnerNumberModel(0,0,65535,1));
+	Util.setPortView(externalAdminPortJSpinner, 443);
     }
 
     public void doSave(RemoteCompoundSettings remoteCompoundSettings, boolean validateOnly) throws Exception {

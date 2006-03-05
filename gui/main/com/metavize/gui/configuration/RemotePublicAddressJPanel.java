@@ -23,6 +23,7 @@ import com.metavize.mvvm.tran.*;
 import java.awt.*;
 import javax.swing.JDialog;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.JSpinner;
 
 public class RemotePublicAddressJPanel extends javax.swing.JPanel
     implements Savable<RemoteCompoundSettings>, Refreshable<RemoteCompoundSettings> {
@@ -31,7 +32,7 @@ public class RemotePublicAddressJPanel extends javax.swing.JPanel
 
     public RemotePublicAddressJPanel() {
         initComponents();
-	portJSpinner.setModel(new SpinnerNumberModel(443,0,65535,1));
+	Util.setPortView(portJSpinner, 443);
     }
 
     public void doSave(RemoteCompoundSettings remoteCompoundSettings, boolean validateOnly) throws Exception {

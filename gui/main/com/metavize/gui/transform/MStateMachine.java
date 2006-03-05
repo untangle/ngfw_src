@@ -71,6 +71,8 @@ public class MStateMachine implements java.awt.event.ActionListener {
 	}
         try{
             if( source.equals(saveJButton) ){
+		if( !mTransformControlsJPanel.shouldSave() )
+		    return;
 		new SaveThread();
             }
             else if( source.equals(reloadJButton) ){

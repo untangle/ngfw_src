@@ -92,7 +92,7 @@
           <Font name="Dialog" size="12" style="0"/>
         </Property>
         <Property name="horizontalAlignment" type="int" value="0"/>
-        <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;center&gt;&#xa;These settings are critical to the proper operation of EdgeGuard&lt;br&gt;&#xa;and must be set correctly.&lt;br&gt;&#xa;&lt;br&gt;&#xa;Would you like to save your settings?&#xa;&lt;/center&gt;&lt;/html&gt;"/>
+        <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;center&gt;&#xa;These settings are critical to the proper operation of EdgeGuard&lt;br&gt;&#xa;and must be set correctly.&lt;br&gt;&#xa;&lt;b&gt;Your GUI may be logged out.&lt;/b&gt;&lt;br&gt;&#xa;&lt;br&gt;&#xa;Would you like to save your settings?&#xa;&lt;/center&gt;&lt;/html&gt;"/>
         <Property name="doubleBuffered" type="boolean" value="true"/>
       </Properties>
       <Constraints>

@@ -101,6 +101,8 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
     }
     //////////////////////////////////////
 
+    protected boolean shouldSave(){ return true; }
+
     private Exception saveException;
     protected void saveAll() throws Exception {
 	// GATHER ALL SETTINGS AND VALIDATE INDIVIDUALLY
@@ -294,6 +296,8 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 
     private void saveJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveJButtonActionPerformed
 	if( Util.getIsDemo() )
+	    return;
+	if( !shouldSave() )
 	    return;
         new SaveAllThread();
     }//GEN-LAST:event_saveJButtonActionPerformed

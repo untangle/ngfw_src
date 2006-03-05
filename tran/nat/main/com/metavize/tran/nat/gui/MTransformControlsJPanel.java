@@ -272,9 +272,11 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	baseGuiBuilt = true;
     }
 
+    public boolean shouldSave(){
+	return new SaveProceedDialog( mTransformJPanel.getTransformDesc().getDisplayName() ).isProceeding();
+    }
+
     public void saveAll() throws Exception {
-	if( !(new SaveProceedDialog( mTransformJPanel.getTransformDesc().getDisplayName() )).isProceeding() )
-	    return;
 	int previousTimeout = MvvmRemoteContextFactory.factory().getTimeout();
 	MvvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_SECONDS);		
 	super.saveAll();

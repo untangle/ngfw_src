@@ -204,7 +204,7 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
 	if( Util.getIsDemo() )
 	    return;
         standardJButton.setEnabled(false);
-	MTwoButtonJDialog proceedJDialog = MTwoButtonJDialog.factory((Window)getTopLevelAncestor(), "Network Sharing", "Proceeding will cause your currently saved Network Sharing settings to be rest and lost.", "Network Sharing Warning", "Network Sharing Warning");
+	MTwoButtonJDialog proceedJDialog = MTwoButtonJDialog.factory((Window)getTopLevelAncestor(), "Router", "Proceeding will cause your currently saved settings to be reset to defaults.<br><b>Your GUI may be logged out.</b>", "Router Warning", "Router Warning");
 	if( proceedJDialog.isProceeding() )
 	    new NatModeResetThread(false);
 	standardJButton.setEnabled(true);
@@ -214,7 +214,7 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
 	if( Util.getIsDemo() )
 	    return;
 	advancedJButton.setEnabled(false);
-	MTwoButtonJDialog proceedJDialog = MTwoButtonJDialog.factory((Window)getTopLevelAncestor(), "Network Sharing", "You should only use this mode if Standard Mode is not capable of handling your network configuration, and you are an experienced administrator.", "Network Sharing Warning", "Network Sharing Warning");
+	MTwoButtonJDialog proceedJDialog = MTwoButtonJDialog.factory((Window)getTopLevelAncestor(), "Router", "You should only use this mode if Standard Mode can not handle your network configuration.<br><b>Your current settings will automatically be converted, but you can not go back to Standard Mode without losing your converted settings.  </b>", "Router Warning", "Router Warning");
 	if( proceedJDialog.isProceeding() )
 	    new NatModeResetThread(true);
 	advancedJButton.setEnabled(true);
@@ -257,8 +257,8 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
 		catch(Exception f){
 		    Util.handleExceptionNoRestart("Error reconfiguring", f);
 		    MOneButtonJDialog.factory((Window)getTopLevelAncestor(),
-					      "Network Sharing", "An error has occurred, please retry.",
-					      "Network Sharing Warning", "Warning");
+					      "Router", "An error has occurred, please retry.",
+					      "Router Warning", "Warning");
 		}
 	    }
 	    mTransformControlsJPanel.getInfiniteProgressJComponent().stopLater(3000l);

@@ -30,7 +30,7 @@ public class RemoteSyslogJPanel extends javax.swing.JPanel
     
     public RemoteSyslogJPanel() {
         initComponents();
-	portJSpinner.setModel(new SpinnerNumberModel(0,0,65535,1));
+	Util.setPortView(portJSpinner, 514);
         for( SyslogFacility syslogFacility : SyslogFacility.values() )
             facilityJComboBox.addItem(syslogFacility.getFacilityName());
         for( SyslogPriority syslogPriority : SyslogPriority.values() )

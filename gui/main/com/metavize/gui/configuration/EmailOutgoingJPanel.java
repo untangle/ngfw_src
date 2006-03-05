@@ -32,7 +32,7 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
     
     public EmailOutgoingJPanel() {
         initComponents();
-	portJSpinner.setModel(new SpinnerNumberModel(0,0,65535,1));
+	Util.setPortView(portJSpinner, 25);
     }
 
     public void doSave(EmailCompoundSettings emailCompoundSettings, boolean validateOnly) throws Exception {

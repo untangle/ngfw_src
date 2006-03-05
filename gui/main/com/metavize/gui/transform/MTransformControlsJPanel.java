@@ -212,6 +212,8 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
             }
         }
     }
+
+    protected boolean shouldSave(){ return true; }
     
     public abstract void generateGui();
 

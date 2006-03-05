@@ -35,7 +35,7 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
     
     public InitialSetupEmailJPanel() {
         initComponents();
-	portJSpinner.setModel(new SpinnerNumberModel(25,0,65535,1));
+	Util.setPortView(portJSpinner, 25);
     }
     
     public void initialFocus(){			

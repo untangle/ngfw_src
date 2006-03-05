@@ -62,18 +62,18 @@ public class NetworkJDialog extends MConfigJDialog {
 	addRefreshable(NAME_HOSTNAME, hostnameJPanel);
     }   
 
-    protected void saveAll() throws Exception {
-	// ASK THE USER IF HE REALLY WANTS TO SAVE SETTINGS //
+    protected boolean shouldSave(){
         NetworkSaveSettingsProceedJDialog networkSaveSettingsProceedJDialog = new NetworkSaveSettingsProceedJDialog(this);
-        boolean isProceeding = networkSaveSettingsProceedJDialog.isProceeding();
-        if( isProceeding ){
-	    int previousTimeout = MvvmRemoteContextFactory.factory().getTimeout();
-	    MvvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_SECONDS);
-            super.saveAll();
-	    MvvmRemoteContextFactory.factory().setTimeout(previousTimeout);
-	    // UPDATE STORE
-	    Util.getPolicyStateMachine().updateStoreModel();
-        }
+        return networkSaveSettingsProceedJDialog.isProceeding();	
+    }
+
+    protected void saveAll() throws Exception {
+	int previousTimeout = MvvmRemoteContextFactory.factory().getTimeout();
+	MvvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_SECONDS);
+	super.saveAll();
+	MvvmRemoteContextFactory.factory().setTimeout(previousTimeout);
+	// UPDATE STORE
+	Util.getPolicyStateMachine().updateStoreModel();
     }
 
 }

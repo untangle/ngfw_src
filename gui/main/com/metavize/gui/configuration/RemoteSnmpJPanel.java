@@ -31,7 +31,7 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel
     
     public RemoteSnmpJPanel() {
         initComponents();
-	trapPortJSpinner.setModel(new SpinnerNumberModel(0,0,65535,1));
+	Util.setPortView(trapPortJSpinner, 162);
     }
 
     public void doSave(RemoteCompoundSettings remoteCompoundSettings, boolean validateOnly) throws Exception {

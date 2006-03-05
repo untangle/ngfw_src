@@ -539,6 +539,10 @@ public class Util {
 
 
     // GENERAL UTIL ////////////////////////////////
+    public static void setPortView(JSpinner jSpinner, int defaultValue){
+	jSpinner.setModel(new SpinnerNumberModel(defaultValue,0,65535,1));
+	((JSpinner.NumberEditor)jSpinner.getEditor()).getFormat().setGroupingUsed(false);
+    }
     public static void setAAClientProperty(Component parentComponent, boolean isAAEnabled){
 	if( parentComponent instanceof JComponent ){
 	    try{ ((JComponent)parentComponent).putClientProperty(com.sun.java.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY, new Boolean(isAAEnabled)); }
