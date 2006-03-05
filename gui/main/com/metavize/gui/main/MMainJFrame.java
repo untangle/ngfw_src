@@ -72,7 +72,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                         upgradeJButton.setEnabled(true);
                     }
                     else if( count >= 1 ){
-                        upgradeJButton.setText("<html><center><b>Upgrade<br>(" + count + ")</b></center></html>");
+                        upgradeJButton.setText("<html><center><b>Upgrade</b></center></html>");
                         upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/upgrade/IconAvailable32x32.png")));
                         upgradeJButton.setEnabled(true);
                     }
