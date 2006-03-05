@@ -146,7 +146,12 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
     };
     public static final Comparator COMBOBOXMODEL_COMPARATOR = new Comparator() {
         public int compare(Object o1, Object o2) {
-            return ((String)((ComboBoxModel) o1).getSelectedItem()).compareTo( (String) ((ComboBoxModel)o2).getSelectedItem()  );
+	    Object selectedObject1 = ((ComboBoxModel)o1).getSelectedItem();
+	    Object selectedObject2 = ((ComboBoxModel)o2).getSelectedItem();
+	    if( (selectedObject1 instanceof Comparable) && (selectedObject2 instanceof Comparable) )
+		return ((Comparable)selectedObject1).compareTo(selectedObject2);
+	    else
+		return selectedObject1.toString().compareTo(selectedObject2.toString());
         }
     };
     public void setColumnComparator(Class type, Comparator comparator) {
