@@ -729,7 +729,6 @@ a.as-us.falkag.net
 a.boom.ro
 a.flashpoint.bm
 a.lvt.ru
-a.networkworld.com
 a.playlistmag.com
 a.softpedia.com
 a.targetsaver.com
@@ -13940,7 +13939,6 @@ network.stripplayer.com
 network.vizit.us
 network74.net
 networkadsite.com
-networkworld.com
 netyellowpages.info
 netzany.com
 netzie.com
