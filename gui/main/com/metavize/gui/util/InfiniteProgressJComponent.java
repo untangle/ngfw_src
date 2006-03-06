@@ -45,7 +45,7 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
     protected float   shield      = 0.70f;
     protected String  text        = "";
     protected int     barsCount   = 12;
-    protected int     gradLength  = 7;
+    protected int     gradLength  = 6;
     protected float   fps         = 4.0f;
     protected Timer   actionTimer = null;
     protected volatile boolean started = false;
