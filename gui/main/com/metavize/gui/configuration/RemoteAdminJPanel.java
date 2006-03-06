@@ -152,7 +152,6 @@ class RemoteAdminTableModel extends MSortedTableModel<RemoteCompoundSettings> {
     public void generateSettings(RemoteCompoundSettings remoteCompoundSettings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
 	Set allRows = new LinkedHashSet(tableVector.size());
 	User newElem = null;
-	Util.printMessage("STATUS: STARTING SAVING of accounts");
 	int rowIndex = 0;
         for( Vector rowVector : tableVector ){
 	    rowIndex++;
