@@ -154,13 +154,18 @@ public class AppServerManagerImpl
         dn.add("OU", OU);
 
         regenCert(dn, ((365*5)+1));
-
-        m_tomcatManager.setSecurityInfo("conf/keystore", KS_STORE_PASS, effectiveHostname);
       }
     }
     catch(Exception ex) {
       m_logger.error("Exception updating KeyStore", ex);
-    }  
+    }
+
+    try {
+      m_tomcatManager.setSecurityInfo("conf/keystore", KS_STORE_PASS, effectiveHostname);
+    }
+    catch(Exception ex) {
+      m_logger.error("Exception passing cert parameters to Tomcat", ex);
+    } 
 
 //    System.out.println("***DEBUG*** [AppServerManagerImpl][postInit()]");
     try {
