@@ -81,7 +81,7 @@ public class LogJPanel extends MLogTableJPanel {
 
             for( VirusEvent log : logList ){
                 event = new Vector(7);
-                event.add( Util.getLogDateFormat().format(log.getTimeStamp()) );
+                event.add( log.getTimeStamp() );
                 event.add( log.getActionName() );
                 PipelineEndpoints pe = log.getPipelineEndpoints();
                 event.add( null == pe ? "" : (pe.getCClientAddr().getHostAddress() + ":" + Integer.toString(pe.getCClientPort())) );

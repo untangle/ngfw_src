@@ -56,7 +56,7 @@ public class LogJPanel extends MLogTableJPanel {
 
             for ( ShieldRejectionLogEntry log : logList ) {
                 event = new Vector(7);
-                event.add( Util.getLogDateFormat().format( log.getCreateDate() ));
+                event.add( log.getCreateDate() );
                 event.add( log.getClient() );
                 event.add( log.getClientIntf() );
                 event.add( log.getReputation() );

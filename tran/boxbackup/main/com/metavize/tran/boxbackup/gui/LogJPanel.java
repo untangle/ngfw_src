@@ -79,7 +79,7 @@ public class LogJPanel extends MLogTableJPanel {
 
             for( BoxBackupEvent requestLog : requestLogList ){
 		event = new Vector(2);
-		event.add( Util.getLogDateFormat().format( requestLog.getTimeStamp() ));
+		event.add( requestLog.getTimeStamp() );
 		event.add( "backup" );
 		event.add( requestLog.isSuccess() ? "success" : "failed" );
 		event.add( requestLog.isSuccess() ? "no details" : requestLog.getDetail() );

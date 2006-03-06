@@ -91,7 +91,7 @@ public class LogJPanel extends MLogTableJPanel {
                 PipelineEndpoints pe = null == rl ? null : rl.getPipelineEndpoints();
 
                 event = new Vector(7);
-                event.add( Util.getLogDateFormat().format(requestLog.getTimeStamp()) );
+                event.add( requestLog.getTimeStamp() );
                 Action a = requestLog.getAction();
                 event.add( null == a ? "none" : a.toString() );
                 event.add( null == pe ? "" : (pe.getCClientAddr().getHostAddress() + ":" + pe.getCClientPort()));

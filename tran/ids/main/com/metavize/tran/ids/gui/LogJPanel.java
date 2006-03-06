@@ -84,7 +84,7 @@ public class LogJPanel extends MLogTableJPanel {
                 PipelineEndpoints pe = log.getPipelineEndpoints();
 
                 event = new Vector(6);
-                event.add( Util.getLogDateFormat().format( log.getTimeStamp() ));
+                event.add( log.getTimeStamp() );
                 event.add( log.isBlocked() ? "block" : "pass" );
                 event.add( null == pe ? "" : (pe.getCClientAddr().getHostAddress() + ":" + Integer.toString(pe.getCClientPort())));
                 event.add( "#" + log.getRuleSid() + ": " + log.getMessage() );

@@ -84,7 +84,7 @@ public class LogJPanel extends MLogTableJPanel {
 
             for( SpamEvent requestLog : requestLogList ){
                 event = new Vector(9);
-                event.add( Util.getLogDateFormat().format(requestLog.getTimeStamp()) );
+                event.add( requestLog.getTimeStamp() );
                 event.add( requestLog.getActionName() );
                 event.add( requestLog.getClientAddr() + ":" + (Integer.toString(requestLog.getClientPort())));
                 event.add( requestLog.getSubject() );

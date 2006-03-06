@@ -84,7 +84,7 @@ public class LogJPanel extends MLogTableJPanel {
             for( ProtoFilterLogEvent log : logList ){
                 PipelineEndpoints pe = log.getPipelineEndpoints();
                 event = new Vector(7);
-		event.add( Util.getLogDateFormat().format(log.getTimeStamp()) );
+		event.add( log.getTimeStamp() );
                 event.add( log.isBlocked() ? "blocked" : "passed" );
                 event.add( null == pe ? "" : (pe.getCClientAddr().getHostAddress() + ":" + pe.getCClientPort()));
                 event.add( log.getProtocol() );

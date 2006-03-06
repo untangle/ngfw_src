@@ -77,7 +77,7 @@ class AddressTableModel extends MSortedTableModel<Object>{
         addTableColumn( tableColumnModel,  3,  C3_MW, true,  true,  false, false, String.class, "1.2.3.4", sc.html("target static<br>IP address") );
         addTableColumn( tableColumnModel,  4,  C4_MW, true,  false, false, false, String.class, "", sc.html("current<br>IP address") );
         addTableColumn( tableColumnModel,  5,  C5_MW, true,  false, false, false, String.class, "", sc.html("current<br>hostname") );
-        addTableColumn( tableColumnModel,  6,  C6_MW, true,  false, false, false, String.class, "", sc.html("current<br>lease end") );
+        addTableColumn( tableColumnModel,  6,  C6_MW, true,  false, false, false, Date.class,   "", sc.html("current<br>lease end") );
         addTableColumn( tableColumnModel,  7,  C7_MW, true,  true,  false, false, String.class, sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY);
         addTableColumn( tableColumnModel,  8,  C8_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
         addTableColumn( tableColumnModel,  9,  10,    false, false, true,  false, DhcpLeaseRule.class, null, "");
@@ -127,7 +127,7 @@ class AddressTableModel extends MSortedTableModel<Object>{
 	    tempRow.add( leaseRule.getStaticAddress().toString() );
 	    tempRow.add( leaseRule.getCurrentAddress().toString() );
 	    tempRow.add( leaseRule.getHostname() );
-	    tempRow.add( leaseRule.getEndOfLease().toString() );
+	    tempRow.add( leaseRule.getEndOfLease() );
 	    tempRow.add( leaseRule.getCategory() );
 	    tempRow.add( leaseRule.getDescription() );
 	    tempRow.add( leaseRule );
