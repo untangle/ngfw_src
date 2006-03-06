@@ -45,6 +45,7 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
     protected float   shield      = 0.70f;
     protected String  text        = "";
     protected int     barsCount   = 12;
+    protected int     gradLength  = 7;
     protected float   fps         = 4.0f;
     protected Timer   actionTimer = null;
     protected volatile boolean started = false;
@@ -212,8 +213,17 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
 
 	    if( paintContent ){
 		for (int i = 0; i < ticker.length; i++){
-		    int channel = 224 - 128 / (i + 1);
-		    g2.setColor(new Color(channel, channel, channel, alphaLevel));
+		    float scale;
+		    if( i < gradLength )
+			scale = (float)i / (float)(gradLength); 
+		    else
+			scale = (float)(gradLength-1) / (float)(gradLength); 
+		    int channelR = 68 + (int)(187f * scale);
+		    int channelG = 91 + (int)(164f * scale);
+		    int channelB = 255;
+		    g2.setColor(new Color(channelR, channelG, channelB, alphaLevel));
+		    //int channel = 224 - 128 / (i + 1);
+		    //g2.setColor(new Color(channel, channel, channel, alphaLevel));
 		    g2.fill(ticker[i]);
 		    
 		    Rectangle2D bounds = ticker[i].getBounds2D();
@@ -258,6 +268,9 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
         Area tick = new Area(body);
         tick.add(new Area(head));
         tick.add(new Area(tail));
+
+	AffineTransform rotateTransform = AffineTransform.getRotateInstance(Math.toRadians(15));
+	tick.transform(rotateTransform);
 
         return tick;
     }

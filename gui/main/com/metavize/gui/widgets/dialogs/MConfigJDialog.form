@@ -78,6 +78,7 @@
         <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Refresh&lt;/b&gt; Settings&lt;/html&gt;"/>
         <Property name="doubleBuffered" type="boolean" value="true"/>
         <Property name="focusPainted" type="boolean" value="false"/>
+        <Property name="focusable" type="boolean" value="false"/>
         <Property name="horizontalTextPosition" type="int" value="0"/>
         <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
           <Insets value="[2, 2, 2, 2]"/>
@@ -112,6 +113,7 @@
         <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Save&lt;/b&gt; Settings&lt;/html&gt;"/>
         <Property name="doubleBuffered" type="boolean" value="true"/>
         <Property name="focusPainted" type="boolean" value="false"/>
+        <Property name="focusable" type="boolean" value="false"/>
         <Property name="horizontalTextPosition" type="int" value="0"/>
         <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
           <Insets value="[2, 2, 2, 2]"/>

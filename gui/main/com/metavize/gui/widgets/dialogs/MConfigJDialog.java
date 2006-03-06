@@ -238,6 +238,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 reloadJButton.setText("<html><b>Refresh</b> Settings</html>");
                 reloadJButton.setDoubleBuffered(true);
                 reloadJButton.setFocusPainted(false);
+                reloadJButton.setFocusable(false);
                 reloadJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 reloadJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
                 reloadJButton.setMaximumSize(new java.awt.Dimension(120, 25));
@@ -261,6 +262,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 saveJButton.setText("<html><b>Save</b> Settings</html>");
                 saveJButton.setDoubleBuffered(true);
                 saveJButton.setFocusPainted(false);
+                saveJButton.setFocusable(false);
                 saveJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 saveJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
                 saveJButton.setMaximumSize(new java.awt.Dimension(78, 25));
