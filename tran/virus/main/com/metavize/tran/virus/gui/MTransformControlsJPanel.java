@@ -52,19 +52,19 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	addRefreshable(NAME_WEB + " " + NAME_WEB_SOURCES, httpConfigJPanel);
 	httpConfigJPanel.setSettingsChangedListener(this);
 	
-	// WEB MIME ///////////
-	MIMEConfigJPanel mimeConfigJPanel = new MIMEConfigJPanel();
-        httpJTabbedPane.addTab(NAME_WEB_MIME, null, mimeConfigJPanel);
-	addSavable(NAME_WEB + " " + NAME_WEB_MIME, mimeConfigJPanel);
-	addRefreshable(NAME_WEB + " " + NAME_WEB_MIME, mimeConfigJPanel);
-	mimeConfigJPanel.setSettingsChangedListener(this);
-
 	// WEB EXTENSIONS ///////
 	ExtensionsConfigJPanel extensionsConfigJPanel = new ExtensionsConfigJPanel();
         httpJTabbedPane.addTab(NAME_WEB_EXTENSIONS, null, extensionsConfigJPanel);
 	addSavable(NAME_WEB + " " + NAME_WEB_EXTENSIONS, extensionsConfigJPanel);
         addRefreshable(NAME_WEB + " " + NAME_WEB_EXTENSIONS, extensionsConfigJPanel);
 	extensionsConfigJPanel.setSettingsChangedListener(this);
+
+	// WEB MIME ///////////
+	MIMEConfigJPanel mimeConfigJPanel = new MIMEConfigJPanel();
+        httpJTabbedPane.addTab(NAME_WEB_MIME, null, mimeConfigJPanel);
+	addSavable(NAME_WEB + " " + NAME_WEB_MIME, mimeConfigJPanel);
+	addRefreshable(NAME_WEB + " " + NAME_WEB_MIME, mimeConfigJPanel);
+	mimeConfigJPanel.setSettingsChangedListener(this);
 
 	// EMAIL //////////////////
 	JTabbedPane emailJTabbedPane = addTabbedPane(NAME_EMAIL, null);
