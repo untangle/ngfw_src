@@ -180,6 +180,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         chartPanel.setOpaque(true);
         chartPanel.setMinimumDrawHeight(20);
         chartPanel.setMinimumDrawWidth(20);
+        chartPanel.setMouseZoomable(false);
 
         return chartPanel;
     }
@@ -246,6 +247,8 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         chartPanel.setOpaque(true);
         chartPanel.setMinimumDrawHeight(20);
         chartPanel.setMinimumDrawWidth(20);
+        chartPanel.setMouseZoomable(false);
+
         return chartPanel;
     }
 
