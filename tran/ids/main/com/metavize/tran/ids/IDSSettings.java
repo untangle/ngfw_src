@@ -118,8 +118,8 @@ public class IDSSettings implements Serializable {
      * column="VARIABLE_ID"
      */
 
-     public List getImmutableVariables() { return this.immutableVariables; }
-     public void setImmutableVariables(List variables) { this.immutableVariables = variables; }
+    public List getImmutableVariables() { return this.immutableVariables; }
+    public void setImmutableVariables(List variables) { this.immutableVariables = variables; }
 
 
 }

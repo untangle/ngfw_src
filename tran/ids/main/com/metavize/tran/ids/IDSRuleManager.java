@@ -28,31 +28,16 @@ public class IDSRuleManager {
     public static final boolean TO_SERVER = true;
     public static final boolean TO_CLIENT = false;
 
-    public static List<IDSVariable> immutableVariables = new ArrayList<IDSVariable>();
-    static {
-        immutableVariables.add(new IDSVariable("$EXTERNAL_NET",IDSStringParser.EXTERNAL_IP,"Magic EXTERNAL_NET token"));
-        immutableVariables.add(new IDSVariable("$HOME_NET",IDSStringParser.HOME_IP,"Magic HOME_NET token"));
-    }
-    public static List<IDSVariable> defaultVariables = new ArrayList<IDSVariable>();
-    static {
-        defaultVariables.add(new IDSVariable("$HTTP_SERVERS", "$HOME_NET","Addresses of possible local HTTP servers"));
-        defaultVariables.add(new IDSVariable("$HTTP_PORTS", "80","Port that HTTP servers run on"));
-        defaultVariables.add(new IDSVariable("$SSH_PORTS", "22","Port that SSH servers run on"));
-        defaultVariables.add(new IDSVariable("$SMTP_SERVERS", "$HOME_NET","Addresses of possible local SMTP servers"));
-        defaultVariables.add(new IDSVariable("$TELNET_SERVERS", "$HOME_NET","Addresses of possible local telnet servers"));
-        defaultVariables.add(new IDSVariable("$SQL_SERVERS", "!any","Addresses of local SQL servers"));
-        defaultVariables.add(new IDSVariable("$ORACLE_PORTS", "1521","Port that Oracle servers run on"));
-        defaultVariables.add(new IDSVariable("$AIM_SERVERS", "[64.12.24.0/24,64.12.25.0/24,64.12.26.14/24,64.12.28.0/24,64.12.29.0/24,64.12.161.0/24,64.12.163.0/24,205.188.5.0/24,205.188.9.0/24]","Addresses of possible AOL Instant Messaging servers"));
-    }
+    private static final Pattern variablePattern = Pattern.compile("\\$[^ \n\r\t]+");
 
-    private List<IDSRuleHeader> knownHeaders = new ArrayList<IDSRuleHeader>();
-    private Map<Long,IDSRule> knownRules = new HashMap<Long,IDSRule>();
-
-    private static Pattern variablePattern = Pattern.compile("\\$[^ \n\r\t]+");
+    private final List<IDSRuleHeader> knownHeaders = new ArrayList<IDSRuleHeader>();
+    private final Map<Long,IDSRule> knownRules = new HashMap<Long,IDSRule>();
 
     private final IDSTransformImpl ids;
 
-    private static final Logger logger = Logger.getLogger(IDSRuleManager.class);
+    private final Logger logger = Logger.getLogger(IDSRuleManager.class);
+
+    // constructors -----------------------------------------------------------
 
     public IDSRuleManager(IDSTransformImpl ids)
     {
@@ -68,6 +53,34 @@ public class IDSRuleManager {
         // - IDSRuleManager must wait for IDSTransformImpl to create and save
         //   an IDSDetectionEngine object
     }
+
+    // static methods ---------------------------------------------------------
+
+    public static List<IDSVariable> getImmutableVariables()
+    {
+        List<IDSVariable> l = new ArrayList<IDSVariable>();
+        l.add(new IDSVariable("$EXTERNAL_NET",IDSStringParser.EXTERNAL_IP,"Magic EXTERNAL_NET token"));
+        l.add(new IDSVariable("$HOME_NET",IDSStringParser.HOME_IP,"Magic HOME_NET token"));
+
+        return l;
+    }
+
+    public static List<IDSVariable> getDefaultVariables()
+    {
+        List<IDSVariable> l = new ArrayList<IDSVariable>();
+        l.add(new IDSVariable("$HTTP_SERVERS", "$HOME_NET","Addresses of possible local HTTP servers"));
+        l.add(new IDSVariable("$HTTP_PORTS", "80","Port that HTTP servers run on"));
+        l.add(new IDSVariable("$SSH_PORTS", "22","Port that SSH servers run on"));
+        l.add(new IDSVariable("$SMTP_SERVERS", "$HOME_NET","Addresses of possible local SMTP servers"));
+        l.add(new IDSVariable("$TELNET_SERVERS", "$HOME_NET","Addresses of possible local telnet servers"));
+        l.add(new IDSVariable("$SQL_SERVERS", "!any","Addresses of local SQL servers"));
+        l.add(new IDSVariable("$ORACLE_PORTS", "1521","Port that Oracle servers run on"));
+        l.add(new IDSVariable("$AIM_SERVERS", "[64.12.24.0/24,64.12.25.0/24,64.12.26.14/24,64.12.28.0/24,64.12.29.0/24,64.12.161.0/24,64.12.163.0/24,205.188.5.0/24,205.188.9.0/24]","Addresses of possible AOL Instant Messaging servers"));
+
+        return l;
+    }
+
+    // public methods ---------------------------------------------------------
 
     public void onReconfigure() {
         for(IDSRule rule : knownRules.values()) {
@@ -264,9 +277,10 @@ public class IDSRuleManager {
         if(match.find()) {
             IDSDetectionEngine engine = ids.getEngine();
             List<IDSVariable> varList, imVarList;
-            if(engine.getSettings() == null) {
-                imVarList = immutableVariables;
-                varList = defaultVariables;
+            if(engine.getSettings() == null) { // XXX when is this?
+                logger.warn("engine.getSettings() is null");
+                imVarList = getImmutableVariables();
+                varList = getDefaultVariables();
             } else {
                 imVarList = (List<IDSVariable>) engine.getSettings().getImmutableVariables();
                 varList = (List<IDSVariable>) engine.getSettings().getVariables();
