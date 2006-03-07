@@ -1,6 +1,6 @@
 /var/log/mvvm/console.log {
 rotate 9
-size 100k
+size 500k
 compress
 notifempty
 copytruncate
@@ -8,7 +8,7 @@ copytruncate
 
 /var/log/mvvm/apt.log {
 rotate 9
-size 100k
+size 500k
 compress
 notifempty
 copytruncate
@@ -16,7 +16,7 @@ copytruncate
 
 /var/log/mvvm/schema.log {
 rotate 9
-size 100k
+size 500k
 compress
 notifempty
 copytruncate
@@ -24,7 +24,7 @@ copytruncate
 
 /var/log/mvvm/wrapper.log {
 rotate 2
-daily
+size 500k
 compress
 notifempty
 copytruncate
@@ -32,7 +32,7 @@ copytruncate
 
 /var/log/mvvm/gc.log {
 rotate 9
-size daily
+size 500k
 compress
 notifempty
 copytruncate
@@ -40,7 +40,7 @@ copytruncate
 
 /var/log/mvvm/iptables.log {
 rotate 9
-size daily
+size 500k
 compress
 notifempty
 copytruncate
