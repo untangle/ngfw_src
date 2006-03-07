@@ -10,7 +10,17 @@
 
 <!ENTITY using_adminui SYSTEM "content/usingadminui/using_adminui.xml">
 
+
+<!-- Config Tab -->
 <!ENTITY config_tab SYSTEM "content/configtab/config_tab.xml">
+<!ENTITY config_tab_accounts SYSTEM "content/configtab/accounts.xml">
+<!ENTITY config_tab_network SYSTEM "content/configtab/network.xml">
+<!ENTITY config_tab_remoteadmin SYSTEM "content/configtab/remoteadmin.xml">
+<!ENTITY config_tab_backuprestore SYSTEM "content/configtab/backuprestore.xml">
+<!ENTITY config_tab_protocol SYSTEM "content/configtab/protocol.xml">
+<!ENTITY config_tab_quarantine  SYSTEM "content/configtab/quarantine.xml">
+<!ENTITY config_tab_support SYSTEM "content/configtab/support.xml">
+<!ENTITY config_tab_qa SYSTEM "content/configtab/qa.xml">
 
 <!ENTITY policy_manager SYSTEM "content/policymngr/policy_manager.xml">
 

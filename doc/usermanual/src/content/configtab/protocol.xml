@@ -1,0 +1,100 @@
+
+  <!-- ========================================================= -->  
+  <sect1 id="config_tab_protocol_settings">
+    <title>Protocol Settings</title>
+    <para>
+      The Protocol Settings panel contains advanced properties for Web, Email and <glossterm linkend="gloss_ftp">FTP</glossterm> traffic.  These will be discussed in <xref linkend="config_tab_protocol_settings_web"/>, <xref linkend="config_tab_protocol_settings_email"/>, and <xref linkend="config_tab_protocol_settings_ftp"/> respectively.
+      <warning>
+        <para>
+          Administrators should not change any Protocol Settings unless instructed to by a member of Metavize support or one of their authorized representatives.
+        </para>
+      </warning>
+    </para>
+
+
+
+
+    <!-- ................................................... -->
+    <sect2 id="config_tab_protocol_settings_web">
+      <title>Web</title>
+      <para>
+        The Web tab of the Protocol Settings tab is seen in  <xref linkend="config_tab_protocol_settings_web_figure"/>.
+        <warning>
+          <para>
+            Administrators should not change the Web tab unless instructed to by a member of Metavize support or one of their authorized representatives.
+          </para>
+        </warning>        
+      </para>
+      <figure id="config_tab_protocol_settings_web_figure">
+        <title>Web Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/configtab/config_tab_protocol_web.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        The Web tab of the Protocol Settings panel is divided into four sections.  The first, <guilabel>Web Override</guilabel> disables processing of all <glossterm linkend="gloss_http">HTTP</glossterm> traffic for <emphasis>all Software Appliances</emphasis>.  This should normally be set to <guilabel>Enable Processing</guilabel> unless under special circumstances (for example, you are a software company debugging your own web-enabled products).
+      </para>
+      <para>
+        <guilabel>Long URIs</guilabel> (see <glossterm linkend="gloss_uri">URIs</glossterm>) and <guilabel>Long Headers</guilabel> control the &eg; behavior with abnormal web traffic.  The default settings accommodate most standard web traffic.
+      </para>
+      <para>
+        <guilabel>Non-HTTP Blocking</guilabel> is used to control the &eg; behavior for non-http traffic over <glossterm linkend="gloss_port">port 80</glossterm>.  The default behavior is to allow such traffic.  Selecting the <guilabel>Stop</guilabel> option may prevent applications such as peer-to-peer file sharing or networked games from operating correctly.  Note that <quote>normal</quote> web traffic (from a browser to a web server) is not effected by this setting.
+      </para>
+    </sect2>
+
+    <!-- ................................................... -->
+    <sect2 id="config_tab_protocol_settings_email">
+      <title>Email</title>
+      <para>
+        The Email tab of the Protocol Settings panel can be seen in <xref linkend="config_tab_protocol_settings_email_figure"/>.
+        <warning>
+          <para>
+            Administrators should not change the Email tab unless instructed to by a member of Metavize support or one of their authorized representatives.
+          </para>
+        </warning>         
+      </para>
+      <figure id="config_tab_protocol_settings_email_figure">
+        <title>Email Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/configtab/config_tab_protocol_email.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        The Email tab is divided into two sections, <guilabel>Email Overrides</guilabel> and <guilabel>Email Timeouts</guilabel>.  Each section can control settings for the three supported email protocols, <glossterm linkend="gloss_smtp">SMTP</glossterm>, <glossterm linkend="gloss_pop">POP</glossterm>, and <glossterm linkend="gloss_imap">IMAP</glossterm>.
+      </para>
+      <para>
+        <guilabel>Email Overrides</guilabel> lets Administrators turn off scanning for a given email protocol.  This applies <emphasis>to all Software Appliances</emphasis>.  For example, disabling SMTP would affect SPAM, Virus and Phish scanning.
+      </para>
+      <para>
+        The <guilabel>Email Timeouts</guilabel> section instructs the &eg; as to the maximum time it has for scanning.  If a given email takes more than this time to process, scanning is aborted and the mail passed to the client.  Note that setting this value too small risks passing contaminated content, and setting it too large risks timeouts in client programs (with user complaints to follow).
+        <note>
+          <para>
+            Default values are 30 seconds.  This is a large value relative to expected mail traffic, and should satisfy most normal installations.
+          </para>
+        </note>
+      </para>
+    </sect2>
+
+    <!-- ................................................... -->
+    <sect2 id="config_tab_protocol_settings_ftp">
+      <title>File Transfer</title>
+      <para>
+        The File Transfer (<glossterm linkend="gloss_ftp">FTP</glossterm>) tab is seen in <xref linkend="config_tab_protocol_settings_ftp_figure"/>.
+      </para>
+      <figure id="config_tab_protocol_settings_ftp_figure">
+        <title>File Transfer Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/configtab/config_tab_protocol_ftp.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        From this tab, Administrators can turn on/off scanning of FTP traffic by selecting either <guilabel>Enable Processing</guilabel> or <guilabel>Disable Processing</guilabel>, respectively.  If disabled, no software appliances within the &eg; will scan FTP traffic.
+      </para>
+    </sect2>        
+  </sect1> 

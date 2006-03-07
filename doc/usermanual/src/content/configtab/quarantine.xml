@@ -1,0 +1,190 @@
+
+  <!-- ========================================================= -->  
+  <sect1 id="config_tab_quarantine">
+    <title>Quarantine</title>
+    <para>
+      The &eg; has the ability to store emails suspected of containing unwanted content.  This store can then be reviewed to ensure no emails were mistakenly labeled as unwanted (sometimes called a <quote>false positive</quote>).  This facility is called the Quarantine.  The decision to quarantine emails is made in each Software Appliance (for example, <link linkend="spamassassin_tran">SpamGuard</link> or <link linkend="clamphish_tran">PhishNet</link>).
+    </para>
+    <para>
+      This section discusses the Quarantine facility within &eg;.  It begins with an overview, as discussed in <xref linkend="config_tab_quarantine_overview"/>.  Also discussed are Administrative interfaces to manage mails quarantined for individual email addresses in <xref linkend="config_tab_quarantine_releasepurge"/>.
+      <note>
+        <para>
+          The Quarantine facility sends emails to individuals within the protected network.  It may also be accessed by Administrators.  To avoid confusion, we will use the term <quote>end user</quote> to refer to a person within the protected network who receives email.  End users may interact with the Quarantine system via a web interface.  Although end users can purge/release their own emails, they lack privileges to launch the &eg; Administrative Interface.
+        </para>
+        <para>
+          We will use the proper noun <quote>Administrator</quote> when discussing an Administrative User interacting with the &eg; Administrative Interface to control quarantined emails for many users.
+        </para>
+      </note>
+    </para>
+    <!-- ................................................... -->
+    <sect2 id="config_tab_quarantine_overview">
+      <title>Quarantine and Passlist Overview</title>
+      <para>
+        The Quarantine facility of &eg; will store emails suspected of containing unwanted content (for example, <glossterm linkend="gloss_spam">SPAM</glossterm> or <glossterm linkend="gloss_phishing">phishing</glossterm>).  This storage is done on a per-email address basis.  For example, if <constant>escott@yourcompany.com</constant> receives three SPAM emails in a day, those three emails are quarantined for <constant>escott</constant>.  The collection of emails for a given address is said to be an <quote>inbox</quote>.
+      </para>
+      <para>
+        The &eg; quarantine system has been designed so end-users can maintain their own inbox.  They do so via a daily <quote>digest email</quote> which summarizes any quarantined emails.  Users can then release emails (causing them to be sent to their email clients), or delete them.  
+      </para>
+      <para>
+        The daily digest emails are delivered in <glossterm linkend="gloss_htmp">HTML</glossterm> format, such that they contain links to a web server.  The web server is housed within the &eg;.  In this way, the digest emails allow for direct communication with end-users to maintain their inboxes.
+        <note>
+          <para>
+            Some users will choose not to act on (ignore) their digest emails.  If a user ignores their inbox for many days (and receives many spams), their inbox will grow.  This is not a concern, as the &eg; automatically deletes emails after a fixed period of time.  This period is configurable, as discussed in <xref linkend="config_tab_quarantine_general"/>
+          </para>
+        </note>
+        While interacting with their inbox, users may also choose to declare that a given sender does <emphasis>not</emphasis> send unwanted email.  This is used to instruct the &eg; to never consider emails from a given sender to be unsolicited.  The set of these <quote>good</quote> senders is said to be the <quote>passlist</quote> for a given user.  From the web interface, end users can maintain their passlist.
+        <note>
+          <para>
+            Use of passlists by end users is optional.  Should a given end user choose not to populate their passlist, there is no negative effect on the overall &eg; system.
+          </para>
+        </note>
+      </para>
+    </sect2>
+    <!-- ................................................... -->
+    <sect2 id="config_tab_quarantine_releasepurge">
+      <title>Quarantine Release/Purge</title>
+      <para>
+        As discussed in <xref linkend="config_tab_quarantine_overview"/>, end users normally maintain their own inboxes.  However, there may be special circumstances when Administrators are called upon to maintain end-user inboxes.  This is performed through the administrative release/purge interface, as seen in <xref linkend="config_tab_quarantine_releasepurge_figure"/>.
+      </para>
+      <figure id="config_tab_quarantine_releasepurge_figure">
+        <title>Quarantine Release/Purge Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/configtab/config_tab_quarantine_releasepurge.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        The interface for administrative release/purge interface is presented as a table, with each row corresponding to an end user's inbox.  By highlighting on a given row, Administrators can perform one of three actions defined by the buttons at the bottom of the panel.
+
+        <variablelist>
+          <varlistentry>
+            <term><guilabel>Purge selected</guilabel></term>
+            <listitem>
+              <para>
+                The <guilabel>Purge selected</guilabel> button causes all emails within a given inbox to be deleted.  This is the same as an end-user triggering a delete of all emails from the web application.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>Release selected</guilabel></term>
+            <listitem>
+              <para>
+                The <guilabel>Release selected</guilabel> button causes all emails within a given inbox to be sent to the email address of the inbox.  This is the same as an end-user triggering a release of all emails from the web application.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>Show detail</guilabel></term>
+            <listitem>
+              <para>
+                The <guilabel>Show detail</guilabel> button triggers a detailed view of the contents of a given inbox.  Administrators can then purge/release individual mails from that account.
+              </para>
+            </listitem>
+          </varlistentry>                    
+        </variablelist>
+      </para>
+      <para>
+        Selecting the <guilabel>Show detail</guilabel> button brings up a full listing of emails in a given user's inbox, as seen in <xref linkend="config_tab_quarantine_releasepurge_detail_figure"/>.
+      </para>
+      <figure id="config_tab_quarantine_releasepurge_detail_figure">
+        <title>Quarantine Details Window</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/configtab/config_tab_quarantine_releasepurge_detail.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>        
+      <para>
+        Individual mails may be purged (deleted) or released by highlighting rows and pushing the <guilabel>Purge Selected</guilabel> or <guilabel>Release Selected</guilabel> buttons respectively.
+      </para>  
+
+    </sect2>
+
+
+    <!-- ................................................... -->
+    <sect2 id="config_tab_quarantine_passlist">
+      <title>Quarantine Pass List</title>
+      <para>
+        As discussed in <xref linkend="config_tab_quarantine_overview"/>, end users may maintain their own list of email senders who are known <emphasis>not</emphasis> to send unwanted email.  This is called the <quote>passlist</quote>.  Administrators can optionally view/change passlists for end users.  The interface for this functionality is shown in <xref linkend="config_tab_quarantine_passlist_figure"/>.
+      </para>
+      <figure id="config_tab_quarantine_passlist_figure">
+        <title>Quarantine Pass List Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/configtab/config_tab_quarantine_passlist.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        The interface for administrative release/purge interface is presented as a table, with each row corresponding to an end user's passlist.  By highlighting on a given row, Administrators can perform one of two actions defined by the buttons at the bottom of the panel.
+
+        <variablelist>
+          <varlistentry>
+            <term><guilabel>Remove selected</guilabel></term>
+            <listitem>
+              <para>
+                The <guilabel>Remove selected</guilabel> button causes all addresses within the given passlist to be deleted.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>Show detail</guilabel></term>
+            <listitem>
+              <para>
+                The <guilabel>Show detail</guilabel> button triggers a detailed view of the contents of a given passlist.  Administrators can then delete individual entries from that list.
+              </para>
+            </listitem>
+          </varlistentry>                    
+        </variablelist>
+      </para>
+      
+    </sect2>
+
+    <!-- ................................................... -->
+    <sect2 id="config_tab_quarantine_general">
+      <title>General Settings</title>
+      <para>
+        The General Settings tab, as seen in <xref linkend="config_tab_quarantine_general_figure"/>, provides administrative access to overall Quarantine properties.
+      </para>
+      <figure id="config_tab_quarantine_general_figure">
+        <title>General Settings Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/configtab/config_tab_quarantine_general.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        There are three settings on the General Settings Tab.  Their meaning is as follows.
+
+        <variablelist>
+          <varlistentry>
+            <term><guilabel>Maximum Holding Time</guilabel></term>
+            <listitem>
+              <para>
+                This is the maximum time (in days) that a given email can be maintained within an inbox.  If the mail is not purged/released within this time, the mail will be automatically deleted by &eg;.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>Digest From Address</guilabel></term>
+            <listitem>
+              <para>
+                This is the <constant>From</constant> as it appears on digest emails sent to end users.
+              </para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><guilabel>Digest Sending Time</guilabel></term>
+            <listitem>
+              <para>
+                This is the time of day when the daily digest emails are sent.
+              </para>
+            </listitem>
+          </varlistentry>                     
+        </variablelist>
+      </para>
+    </sect2>
+    
+  </sect1> 
