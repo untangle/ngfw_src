@@ -187,7 +187,9 @@ class NetworkConfigurationLoader
 
         basic.setAliasList( interfaceAliasList );
         
-        basic.gateway( new IPaddr((Inet4Address)Netcap.getGateway()));
+        Inet4Address gateway = (Inet4Address)Netcap.getGateway();
+        if ( gateway == null ) basic.gateway( NetworkUtil.EMPTY_IPADDR );
+        else                   basic.gateway( new IPaddr( gateway ));
     }
 
     void disableSaveSettings()

@@ -193,7 +193,7 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
     
     public void setDefaultRoute( IPaddr newValue )
     {
-        if ( newValue == null ) newValue = NetworkUtil.EMPTY_IPADDR;
+        if ( newValue == null || newValue.isEmpty()) newValue = NetworkUtil.EMPTY_IPADDR;
         this.defaultRoute = newValue;
     }
 
@@ -243,7 +243,7 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
 
     public void setDns1( IPaddr newValue )
     {
-        if ( newValue == null ) newValue = NetworkUtil.EMPTY_IPADDR;
+        if ( newValue == null || newValue.isEmpty()) newValue = NetworkUtil.EMPTY_IPADDR;
         this.dns1 = newValue;
     }
     
@@ -265,7 +265,7 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
 
     public void setDns2( IPaddr newValue )
     {
-        if ( newValue == null ) newValue = NetworkUtil.EMPTY_IPADDR;
+        if ( newValue == null || newValue.isEmpty()) newValue = NetworkUtil.EMPTY_IPADDR;
         this.dns2 = newValue;
     }
 
