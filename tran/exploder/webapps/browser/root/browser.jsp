@@ -17,12 +17,10 @@
 <body>
 
 <div id="toolbar">
-<input type="button" value="upload" onclick="testDialog()"/>
+<input type="button" value="delete" onclick="deleteSelection()"/>
+<input type="button" value="refresh" onclick="refreshDetails()"/>
+<input id="upload-button" type="button" value="upload" onclick="testDialog()"/>
 </div>
-
-<!-- <iframe id="toolbar" src="toolbar.jsp"> -->
-<!-- iframe support required. -->
-<!-- </iframe> -->
 
 <div id="summary">
 <CENTER><B>SUMMARY</B></CENTER>

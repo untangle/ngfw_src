@@ -41,7 +41,7 @@ public class FileSaver extends HttpServlet
             List<FileItem> items = (List<FileItem>)upload.parseRequest(req);
             for (FileItem fi : items) {
                 if (!fi.isFormField()) {
-                    String name = fi.getName();
+                    String name = basename(fi.getName());
                     System.out.println("FN: " + name);
                 }
             }
@@ -60,5 +60,26 @@ public class FileSaver extends HttpServlet
     public void init() throws ServletException
     {
         logger = Logger.getLogger(getClass());
+    }
+
+    // private methods --------------------------------------------------------
+
+    private String basename(String s)
+    {
+        while (s.endsWith("/") || s.endsWith("\\")) {
+            s = s.substring(0, s.length() - 1);
+        }
+
+        int i = s.lastIndexOf('/');
+        if (0 <= i) {
+            s = s.substring(i + 1, s.length());
+        }
+
+        i = s.lastIndexOf('\\');
+        if (0 <= i) {
+            s = s.substring(i + 1, s.length());
+        }
+
+        return s;
     }
 }

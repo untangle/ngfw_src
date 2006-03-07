@@ -60,14 +60,14 @@ FileDialog.prototype = new Dialog();
 FileDialog.prototype.constructor = FileDialog;
 FileDialog.superclass = Dialog.prototype;
 
-function FileDialog(title, message)
+function FileDialog(title, message, target)
 {
    if (title) {
-      this.init(title, message);
+      this.init(title, message, target);
    }
 }
 
-FileDialog.prototype.init = function(title, message)
+FileDialog.prototype.init = function(title, message, target)
 {
    var panel = document.createElement("div");
    Element.addClassName(panel, "panel");
@@ -96,6 +96,12 @@ FileDialog.prototype.init = function(title, message)
    input.type = "submit";
    input.value = "Upload";
    form.appendChild(input);
+
+   var hidden = document.createElement("input");
+   input.type = "hidden";
+   input.name = "target";
+   input.value = target;
+   form.appendChild(hidden);
 
    form.onsubmit = function() {
       form.style.display = "none";
