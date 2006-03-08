@@ -2,3 +2,7 @@ get rid of crt rules:
 for i in *.rules; do
   grep -v "sid:[4-9][0-9][0-9][0-9]|sid:3[5-9][0-9][0-9]|sid:34[7-9][0-9]|sid:346[5-9]" $i > safe/$i
 done
+
+analyze dump output:
+
+cat /tmp/df|awk '{ print $2 / $1 , $3 }' | sort -nr -k 1|head            
