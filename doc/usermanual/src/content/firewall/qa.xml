@@ -1,0 +1,20 @@
+      <qandaentry>
+        <question>
+          <para>We currently have <constant>XYZ</constant> firewall, which lets us do port mapping.  I don't see that feature in your Firewall.  Will you be adding it, or is there an alternative?</para>
+        </question>
+        <answer>
+          <para>
+            Port mapping (redirection) is a feature of the Network Sharing appliance, discussed in <xref linkend="nat_tran"/>.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question>
+          <para>I want to lock-down my network but for a few exceptions.  What is the best way to do this?</para>
+        </question>
+        <answer>
+          <para>
+            You can set the default behavior to <constant>block</constant>, as discussed in <xref linkend="firewall_tran_general"/>.  Then, create a few rules to <constant>pass</constant> as discussed in <xref linkend="firewall_tran_blockpass"/>.
+          </para>
+        </answer>
+      </qandaentry>

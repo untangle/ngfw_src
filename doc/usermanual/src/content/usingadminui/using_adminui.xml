@@ -211,38 +211,9 @@
   <sect1 id="using_adminui_qaX">
     <title>Frequently Asked Questions</title>
     <qandaset>  
-      <qandaentry>
-        <question>
-          <para>
-            I am not using Internet Explorer.  How can I get the required Java technology to run the Administrative Console?
-          </para>
-        </question>
-        <answer>
-          <para>
-            The Java Web Start technology for non-Internet Explorer (and non-windows) platforms can be downloaded free of change from Sun Microsystems at <ulink  url="http://java.sun.com/products/javawebstart/index.jsp"><constant>http://java.sun.com/products/javawebstart/index.jsp</constant></ulink>.
-          </para>
-        </answer>
-      </qandaentry>
-      <qandaentry>
-        <question>
-          <para>Why does it take so long to load the Administrative Interface in my browser?</para>
-        </question>
-        <answer>
-          <para>
-            The first time the Administrative Interface is launched, it downloads several files.  These files are then cached (left) on the machine to reduce startle time on subsequent restarts.
-          </para>
-        </answer>
-      </qandaentry>
-      <qandaentry>
-        <question>
-          <para>I received a message indicating I was logged off by the system by another user.  What happened?</para>
-        </question>
-        <answer>
-          <para>
-            To ensure that two Administrators do not mistakenly attempt to change the same items at the same time, only one Administrator may be logged into the &eg; at a time.  When a second Administrator attempts to log in, they may cause the other Administrator to be logged off.  Note that the second Administrator is offered the chance to not do this when logging in.
-          </para>
-        </answer>
-      </qandaentry>           
+
+      &using_adminui_qa;
+    
     </qandaset>
   </sect1>  
   

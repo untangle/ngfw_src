@@ -70,16 +70,9 @@
   <sect1 id="upgrade_manager_qa">
     <title>Frequently Asked Questions</title>
     <qandaset>  
-      <qandaentry>
-        <question>
-          <para>Which should I use - manual or automatic upgrades?</para>
-        </question>
-        <answer>
-          <para>
-            It all depends on your preference.  For example, some organizations configure desktop Virus Scanning software to automatically update, while others prefer to perform this manually.  
-          </para>
-        </answer>
-      </qandaentry>
+
+      &upgrade_manager_qa;
+    
     </qandaset>
   </sect1>    
 

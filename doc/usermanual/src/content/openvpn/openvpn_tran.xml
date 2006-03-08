@@ -806,29 +806,8 @@
   <sect1 id="vpn_tran_qa">
     <title>Frequently Asked Questions</title>
     <qandaset>
-      <qandaentry>
-        <question>
-          <para>If a user or site loses their secure key, how do I disable the old key and issue new ones?</para>
-        </question>
-        <answer>
-          <para>
-            Removing a user from the Vpn Site (<xref linkend="openvpn_tran_adminui_serverscreens_vpnsites"/>) or Vpn Client (see <xref linkend="openvpn_tran_adminui_serverscreens_vpnclients"/>) list revokes their certificate, this will permanently invalidate the key that was previously issued to the user.  In order to disable and old key, first remove the user or site from the Vpn Client or Vpn Site panel respectively, and then save settings.  Create a new user or site with the same parameters.  After saving the settings, push the <guilabel>Distribute Key</guilabel> button to send the user their new key.
-          </para>
-        </answer>
-      </qandaentry>
 
-      <!-- =========================================================== -->
-
-      <qandaentry>
-        <question>
-          <para>Can I administer an &eg; over a VPN connection?</para>
-        </question>
-        <answer>
-          <para>
-            In order to administer the &eg;, the internal address of the system must be included in one of the Exported hosts networks (see <xref linkend="openvpn_tran_overview_terms"/>).  There can either be a single entry that contains the IP Address with a <constant>255.255.255.255</constant> netmask(eg <constant>192.168.1.1/255.255.255.255</constant>), or an entry containing a network that includes the IP address (eg <constant>192.168.1.0/255.255.255.0</constant>).
-          </para>
-        </answer>
-      </qandaentry>      
+      &openvpn_tran_qa;
       
     </qandaset>
   </sect1>    

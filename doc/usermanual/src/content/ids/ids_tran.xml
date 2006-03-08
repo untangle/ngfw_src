@@ -145,26 +145,9 @@
   <sect1 id="ids_tran_qaXXX">
     <title>Frequently Asked Questions</title>
     <qandaset>  
-      <qandaentry>
-        <question>
-          <para>In the Event Logs for the Intrusion Prevention Appliance, I see references to an attack on  <constant>XYZ</constant> mail server, yet we do not run <constant>XYZ</constant> server.  Why is this?</para>
-        </question>
-        <answer>
-          <para>
-            Attackers often try to exploit known holes regardless if the system is running such a server.  They just try everything in the hopes of finding an unprotected system.
-          </para>
-        </answer>
-      </qandaentry>
-      <qandaentry>
-        <question>
-          <para>How is the Intrusion Prevention Appliance different from <link linkend="protofilter_tran">Rogue Protocol Control</link>?</para>
-        </question>
-        <answer>
-          <para>
-            Although both are based on signatures, the Rogue Protocol Control appliance blocks applications which, although potentially time wasting or otherwise unwanted, are not attempting to do harm to your internal network.
-          </para>
-        </answer>
-      </qandaentry>      
+
+      &ids_tran_qa;
+    
     </qandaset>
   </sect1>  
 

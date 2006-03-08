@@ -1,0 +1,30 @@
+      <qandaentry>
+        <question>
+          <para>Why is blocking (or quarantining) of emails when spam detected not always an option?</para>
+        </question>
+        <answer>
+          <para>
+            Only the SMTP protocol allows the &eg; to block mails.  The details of the POP and IMAP protocols prevent them from being blocked or quarantined.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question>
+          <para>When configuring my &eg; to <guilabel>mark</guilabel> spam received over IMAP, the subject of the mails changes to <quote><userinput>[SPAM]...</userinput></quote> only after I click on the message.  Why?</para>
+        </question>
+        <answer>
+          <para>
+            Most IMAP clients first fetch summary information about emails (subject, sender) so the end user can see a preview list of messages.  Only when the user selects (clicks on) the message is the actual content of the message retrieved from the server.  It is then that the &eg; is able to scan the message.  Unfortunately, some email clients do not detect the change in subject and update their preview list.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question>
+          <para>Why is Subject (or sender) blank for some emails in the Event Log?</para>
+        </question>
+        <answer>
+          <para>
+            Not all emails (especially spam emails) have subjects.  Some spammers also use tricks to cause there to be no detectable sender.
+          </para>
+        </answer>
+      </qandaentry>   

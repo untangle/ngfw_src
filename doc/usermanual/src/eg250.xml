@@ -8,7 +8,9 @@
 
 <!ENTITY getting_started SYSTEM "content/gettingstarted/getting_started.xml">
 
+<!-- Overall UI usage and metaphore -->
 <!ENTITY using_adminui SYSTEM "content/usingadminui/using_adminui.xml">
+<!ENTITY using_adminui_qa SYSTEM "content/usingadminui/qa.xml">
 
 
 <!-- Config Tab -->
@@ -22,35 +24,66 @@
 <!ENTITY config_tab_support SYSTEM "content/configtab/support.xml">
 <!ENTITY config_tab_qa SYSTEM "content/configtab/qa.xml">
 
+
+<!-- Policies -->
 <!ENTITY policy_manager SYSTEM "content/policymngr/policy_manager.xml">
+<!ENTITY policy_manager_qa SYSTEM "content/policymngr/qa.xml">
 
+<!-- Upgrades -->
 <!ENTITY upgrade_manager SYSTEM "content/upgrademngr/upgrade_manager.xml">
+<!ENTITY upgrade_manager_qa SYSTEM "content/upgrademngr/qa.xml">
 
+<!-- Reporting -->
 <!ENTITY reporting_tran SYSTEM "content/reporting/reporting_tran.xml">
+<!ENTITY reporting_tran_qa SYSTEM "content/reporting/qa.xml">
 
+<!-- Airgap Transform -->
 <!ENTITY airgap_tran SYSTEM "content/airgap/airgap_tran.xml">
+<!ENTITY airgap_tran_qa SYSTEM "content/airgap/qa.xml">
 
+<!-- NAT -->
 <!ENTITY nat_tran SYSTEM "content/nat/nat_tran.xml">
+<!ENTITY nat_tran_qa SYSTEM "content/nat/qa.xml">
 
+<!-- OpenVPN -->
 <!ENTITY openvpn_tran SYSTEM "content/openvpn/openvpn_tran.xml">
+<!ENTITY openvpn_tran_qa SYSTEM "content/openvpn/qa.xml">
 
+<!-- IDS -->
 <!ENTITY ids_tran SYSTEM "content/ids/ids_tran.xml">
+<!ENTITY ids_tran_qa SYSTEM "content/ids/qa.xml">
 
+<!-- Firewall -->
 <!ENTITY firewall_tran SYSTEM "content/firewall/firewall_tran.xml">
+<!ENTITY firewall_tran_qa SYSTEM "content/firewall/qa.xml">
 
+<!-- Protofilter -->
 <!ENTITY protofilter_tran SYSTEM "content/protofilter/protofilter_tran.xml">
+<!ENTITY protofilter_tran_qa SYSTEM "content/protofilter/qa.xml">
 
+<!-- Clam Transform -->
 <!ENTITY clam_tran SYSTEM "content/clam/clam_tran.xml">
+<!ENTITY clam_tran_qa SYSTEM "content/clam/qa.xml">
 
+<!-- Hauri -->
 <!ENTITY hauri_tran SYSTEM "content/hauri/hauri_tran.xml">
+<!ENTITY hauri_tran_qa SYSTEM "content/hauri/qa.xml">
 
+<!-- Http blocker -->
 <!ENTITY httpblocker_tran SYSTEM "content/httpblocker/httpblocker_tran.xml">
+<!ENTITY httpblocker_tran_qa SYSTEM "content/httpblocker/qa.xml">
 
+<!-- Spyware -->
 <!ENTITY spyware_tran SYSTEM "content/spyware/spyware_tran.xml">
+<!ENTITY spyware_tran_qa SYSTEM "content/spyware/qa.xml">
 
+<!-- Clamphish -->
 <!ENTITY clamphish_tran SYSTEM "content/clamphish/clamphish_tran.xml">
+<!ENTITY clamphish_tran_qa SYSTEM "content/clamphish/qa.xml">
 
+<!-- Spamassassin -->
 <!ENTITY spamassassin_tran SYSTEM "content/spamassassin/spamassassin_tran.xml">
+<!ENTITY spamassassin_tran_qa SYSTEM "content/spamassassin/qa.xml">
 
 <!ENTITY appendix_q_a SYSTEM "content/appendix/appendix_q_a.xml">
 

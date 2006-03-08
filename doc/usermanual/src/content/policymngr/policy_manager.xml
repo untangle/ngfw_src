@@ -320,44 +320,8 @@
     <title>Frequently Asked Questions</title>
     <qandaset>
 
-      <!-- ******************************************* -->
-      <qandaentry>
-        <question>
-          <para>Why can't I add/remove entries from the <guilabel>Default Policies</guilabel> tab?</para>
-        </question>
-        <answer>
-          <para>
-            The default policies ensure that all possible traffic is handled by a Virtual Rack.  Deleting one of these entries without a corresponding entry in the <guilabel>Custom Policies</guilabel> tab would cause the &eg; not to know how to handle some types of traffic.
-          </para>
-        </answer>
-      </qandaentry>    
-    
-      <!-- ******************************************* -->
-      <qandaentry>
-        <question>
-          <para>I only want to scan inbound email traffic, not outbound.  Do I need to create a new Virtual Rack and Policies?</para>
-        </question>
-        <answer>
-          <para>
-            No.  Many Software Appliances (including all of those which scan email) let you directly configure behaviors for <constant>inbound</constant> vs. <constant>outbound</constant> traffic.
-          </para>
-        </answer>
-      </qandaentry>
+      &policy_manager_qa;
 
-      <!-- ******************************************* -->
-      <qandaentry>
-        <question>
-          <para>We are using the &eg; with its VPN Software Appliance.  Do I need to configure extra Virtual Racks for the VPN users?</para>
-        </question>
-        <answer>
-          <para>
-            You do not have to create extra Virtual Racks/Policies in order to use VPN.  The <constant>VPN</constant> interface is, by default, inside the <constant>external</constant> and <constant>DNZ</constant> interfaces, but outside of the <constant>internal</constant> interface.  The single <constant>Default Rack</constant> is correct for most deployments.
-          </para>
-          <para>
-            One situation where you would need to do so if you want to scan traffic  <emphasis>differently</emphasis> for different VPN users.  If you consider all VPN users are equivalent, just route the Policies dealing with the VPN interface to <constant>Default Rack</constant>.
-          </para>
-        </answer>
-      </qandaentry>      
     </qandaset>
   </sect1>    
 

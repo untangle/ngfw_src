@@ -202,16 +202,9 @@
   <sect1 id="airgap_tran_qa">
     <title>Frequently Asked Questions</title>
     <qandaset>  
-      <qandaentry>
-        <question>
-          <para>If I have a single <quote>big</quote> machine (database, file server, print server, etc) and another smaller server.  Will my <quote>big</quote> machine develop a bad reputation?</para>
-        </question>
-        <answer>
-          <para>
-            The reputation for the <quote>big</quote> machine will be larger than the small machine.  In a normal deployment this should not be a concern, as the &eg; should not be limited in its overall resources.  If slowdown under heavy load is a concern, the <quote>big</quote> machine can have its reputation calculated differently as discussed in <xref linkend="airgap_tran_exceptionlist"/>.
-          </para>
-        </answer>
-      </qandaentry>
+
+      &airgap_tran_qa;
+      
     </qandaset>
   </sect1>    
 

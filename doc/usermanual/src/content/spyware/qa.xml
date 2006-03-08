@@ -1,0 +1,24 @@
+      <qandaentry>
+        <question>
+          <para>
+            My users complained that they cannot connect to <constant>somesite.com</constant>, and it keeps showing up in my Event Log as blocked.  How can I stop <constant>somesite.com</constant> from being blocked?
+          </para>
+        </question>
+        <answer>
+          <para>
+            You can add a rule to the Pass List for <constant>somesite.com</constant>, as described in <xref linkend="spyware_tran_adminui_passlist"/>.
+          </para>
+        </answer>
+      </qandaentry>
+      <qandaentry>
+        <question>
+          <para>
+            While I agree that ActiveX is something I would like to keep out of my network, one of our business partner's sites requires ActiveX.  How should I configure my system.
+          </para>
+        </question>
+        <answer>
+          <para>
+            To block all but a select set of ActiveX, first disable all ActiveX controls as described in <xref linkend="spyware_tran_adminui_generalsettings"/>.  Then, add your business partner's domain to the Pass List as described in <xref linkend="spyware_tran_adminui_passlist"/>.
+          </para>
+        </answer>
+      </qandaentry> 
