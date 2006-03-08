@@ -3,109 +3,110 @@
   <title>Q and A</title>
 
 <!--  <qandaset defaultlabel='qanda'> -->
-  <qandaset>  
+  <qandaset>
+
+  
     <qandadiv>
-      <title>Something</title>
-      <qandaentry>
-        <question>
-          <para>Really, why</para>
-        </question>
-        <answer>
-          <para>Because</para>
-          <para>Miers never served as a judge and her critics said her background as an attorney, a former head of the Texas State Bar Association and as a Dallas city council member provided few clues to her judicial philosophy.</para>
-          <para>Democrats and Republicans on the Senate Judiciary Committee had asked for documents she had worked on as the White House's top lawyer. The president refused, calling the request "a red line I'm not willing to cross." (Full story)</para>
-          <para>In a letter to the president on Thursday, Miers said she was concerned that she would be called upon to testify about her service as White House counsel, which she said would jeopardize the independence of the Executive branch.</para>
-        </answer>
-      </qandaentry>
-      <qandaentry>
-        <question>
-          <para>One more time... why?</para>
-        </question>
-        <answer>
-          <para>Because</para>
-          <para>Miers never served as a judge and her critics said her background as an attorney, a former head of the Texas State Bar Association and as a Dallas city council member provided few clues to her judicial philosophy.</para>
-          <para>Democrats and Republicans on the Senate Judiciary Committee had asked for documents she had worked on as the White House's top lawyer. The president refused, calling the request "a red line I'm not willing to cross." (Full story)</para>
-          <para>In a letter to the president on Thursday, Miers said she was concerned that she would be called upon to testify about her service as White House counsel, which she said would jeopardize the independence of the Executive branch.</para>
-        </answer>
-      </qandaentry>            
+      <title>Using the Administrative Interface</title>
+      &using_adminui_qa;
+    </qandadiv>
+
+    <qandadiv>
+      <title>Config Tab</title>
+      &config_tab_qa;
+    </qandadiv>
+
+    <qandadiv>
+      <title>Policy Manager</title>
+      &policy_manager_qa;
+    </qandadiv>
+
+    
+    <qandadiv>
+      <title>Upgrades</title>
+        &upgrade_manager_qa;
     </qandadiv>
 
 
     <qandadiv>
-      <title>Further Information</title>
-      <qandaentry>
-        <question>
-          <para>Why</para>
-        </question>
-        <answer>
-          <para>Because</para>
-          <para>Miers never served as a judge and her critics said her background as an attorney, a former head of the Texas State Bar Association and as a Dallas city council member provided few clues to her judicial philosophy.</para>
-          <para>Democrats and Republicans on the Senate Judiciary Committee had asked for documents she had worked on as the White House's top lawyer. The president refused, calling the request "a red line I'm not willing to cross." (Full story)</para>
-          <para>In a letter to the president on Thursday, Miers said she was concerned that she would be called upon to testify about her service as White House counsel, which she said would jeopardize the independence of the Executive branch.</para>
-        </answer>
-      </qandaentry>
-      <qandaentry>
-        <question>
-          <para>Really, why</para>
-        </question>
-        <answer>
-          <para>Because</para>
-          <para>Miers never served as a judge and her critics said her background as an attorney, a former head of the Texas State Bar Association and as a Dallas city council member provided few clues to her judicial philosophy.</para>
-          <para>Democrats and Republicans on the Senate Judiciary Committee had asked for documents she had worked on as the White House's top lawyer. The president refused, calling the request "a red line I'm not willing to cross." (Full story)</para>
-          <para>In a letter to the president on Thursday, Miers said she was concerned that she would be called upon to testify about her service as White House counsel, which she said would jeopardize the independence of the Executive branch.</para>
-        </answer>
-      </qandaentry>
-      <qandaentry>
-        <question>
-          <para>One more time... why?</para>
-        </question>
-        <answer>
-          <para>Because</para>
-          <para>Miers never served as a judge and her critics said her background as an attorney, a former head of the Texas State Bar Association and as a Dallas city council member provided few clues to her judicial philosophy.</para>
-          <para>Democrats and Republicans on the Senate Judiciary Committee had asked for documents she had worked on as the White House's top lawyer. The president refused, calling the request "a red line I'm not willing to cross." (Full story)</para>
-          <para>In a letter to the president on Thursday, Miers said she was concerned that she would be called upon to testify about her service as White House counsel, which she said would jeopardize the independence of the Executive branch.</para>
-        </answer>
-      </qandaentry>            
+      <title>EdgeReports Appliance</title>
+        &reporting_tran_qa;
+    </qandadiv>
+
+
+    <qandadiv>
+      <title>Attack Shield Appliance</title>
+        &airgap_tran_qa;
+    </qandadiv>
+
+
+    <qandadiv>
+      <title>Network Sharing Appliance</title>
+        &nat_tran_qa;
+    </qandadiv>
+
+
+    <qandadiv>
+      <title>Open VPN Appliance</title>
+        &openvpn_tran_qa;
+    </qandadiv>
+
+
+    <qandadiv>
+      <title>Intrusion Prevention Appliance</title>
+        &ids_tran_qa;
+    </qandadiv>
+
+
+    <qandadiv>
+      <title>Firewall Appliance</title>
+        &firewall_tran_qa;
+    </qandadiv>
+
+
+    <qandadiv>
+      <title>Rogue Protocol Control Appliance</title>
+        &protofilter_tran_qa;
+    </qandadiv>
+
+
+    <qandadiv>
+      <title>Clam Anti-Virus Appliance</title>
+        &clam_tran_qa;
+    </qandadiv>
+
+
+    <qandadiv>
+      <title>Hauri Anti-Virus Appliance</title>
+        &hauri_tran_qa;
+    </qandadiv>
+
+
+    <qandadiv>
+      <title>Web Content Control Appliance</title>
+        &httpblocker_tran_qa;
+    </qandadiv>
+
+
+    <qandadiv>
+      <title>Spyware Blocker Appliance</title>
+        &spyware_tran_qa;
+    </qandadiv>
+
+
+    <qandadiv>
+      <title>Phish Net Appliance</title>
+        &clamphish_tran_qa;
+    </qandadiv>
+
+
+    <qandadiv>
+      <title>SpamGuard Appliance</title>
+        &spamassassin_tran_qa;
     </qandadiv>
 
 
 
-    <qandadiv>
-      <title>Really out there</title>
-      <qandaentry>
-        <question>
-          <para>Why</para>
-        </question>
-        <answer>
-          <para>Because</para>
-          <para>Miers never served as a judge and her critics said her background as an attorney, a former head of the Texas State Bar Association and as a Dallas city council member provided few clues to her judicial philosophy.</para>
-          <para>Democrats and Republicans on the Senate Judiciary Committee had asked for documents she had worked on as the White House's top lawyer. The president refused, calling the request "a red line I'm not willing to cross." (Full story)</para>
-          <para>In a letter to the president on Thursday, Miers said she was concerned that she would be called upon to testify about her service as White House counsel, which she said would jeopardize the independence of the Executive branch.</para>
-        </answer>
-      </qandaentry>
-      <qandaentry>
-        <question>
-          <para>Really, why</para>
-        </question>
-        <answer>
-          <para>Because</para>
-          <para>Miers never served as a judge and her critics said her background as an attorney, a former head of the Texas State Bar Association and as a Dallas city council member provided few clues to her judicial philosophy.</para>
-          <para>Democrats and Republicans on the Senate Judiciary Committee had asked for documents she had worked on as the White House's top lawyer. The president refused, calling the request "a red line I'm not willing to cross." (Full story)</para>
-          <para>In a letter to the president on Thursday, Miers said she was concerned that she would be called upon to testify about her service as White House counsel, which she said would jeopardize the independence of the Executive branch.</para>
-        </answer>
-      </qandaentry>
-      <qandaentry>
-        <question>
-          <para>One more time... why?</para>
-        </question>
-        <answer>
-          <para>Because</para>
-          <para>Miers never served as a judge and her critics said her background as an attorney, a former head of the Texas State Bar Association and as a Dallas city council member provided few clues to her judicial philosophy.</para>
-          <para>Democrats and Republicans on the Senate Judiciary Committee had asked for documents she had worked on as the White House's top lawyer. The president refused, calling the request "a red line I'm not willing to cross." (Full story)</para>
-          <para>In a letter to the president on Thursday, Miers said she was concerned that she would be called upon to testify about her service as White House counsel, which she said would jeopardize the independence of the Executive branch.</para>
-        </answer>
-      </qandaentry>            
-    </qandadiv>        
     
   </qandaset>
 </appendix>
