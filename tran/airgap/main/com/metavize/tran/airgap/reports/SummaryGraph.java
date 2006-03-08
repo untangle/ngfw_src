@@ -11,15 +11,17 @@
 
 package com.metavize.tran.airgap.reports;
 
+import com.metavize.mvvm.reporting.*;
+
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.sql.*;
 import java.util.*;
-
-import com.metavize.mvvm.reporting.*;
 import net.sf.jasperreports.engine.JRDefaultScriptlet;
 import net.sf.jasperreports.engine.JRScriptletException;
 import org.jfree.chart.*;
 import org.jfree.chart.plot.*;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.time.Minute;
@@ -44,17 +46,17 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 
     // Produces a single line graph of one series
     public SummaryGraph(String chartTitle, boolean doOutgoingSessions, boolean doIncomingSessions,
-                                   boolean countOutgoingBytes, boolean countIncomingBytes,
-                                   String seriesTitle)
+                        boolean countOutgoingBytes, boolean countIncomingBytes,
+                        String seriesTitle)
     {
         this.chartTitle = chartTitle;
     }
 
     // Produces a three series line graph of incoming, outgoing, total.
     public SummaryGraph(String charTitle,
-                                   boolean doOutgoingSessions, boolean doIncomingSessions,
-                                   String seriesATitle, String seriesBTitle,
-                                   String seriesCTitle, String rangeTitle)
+                        boolean doOutgoingSessions, boolean doIncomingSessions,
+                        String seriesATitle, String seriesBTitle,
+                        String seriesCTitle, String rangeTitle)
     {
         this.chartTitle = chartTitle;
 	this.seriesATitle = seriesATitle;
@@ -65,6 +67,10 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 
     protected JFreeChart doChart(Connection con) throws JRScriptletException, SQLException
     {
+        final int seriesA = 0; // datasetA (primary, first)
+        final int seriesB = 1; // datasetB
+        final int seriesC = 2; // datasetC
+
         TimeSeries datasetA = new TimeSeries(seriesATitle, Minute.class);
         TimeSeries datasetB = new TimeSeries(seriesBTitle, Minute.class);
         TimeSeries datasetC = new TimeSeries(seriesCTitle, Minute.class);
@@ -124,7 +130,6 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 	    long countB = rs.getLong(3);
 	    long countC = rs.getLong(4);
 
-	    
 	    // ALLOCATE COUNT TO EACH MINUTE WE WERE ALIVE EQUALLY
 	    long eventStart = (eventDate.getTime() / MINUTE_INTERVAL) * MINUTE_INTERVAL;
 	    long realStart = eventStart < startMinuteInMillis ? (long) 0 : eventStart - startMinuteInMillis;
@@ -177,23 +182,23 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 	System.out.println("=====================");
 
         TimeSeriesCollection tsc = new TimeSeriesCollection();
-	tsc.addSeries(datasetC);
-	tsc.addSeries(datasetB);
 	tsc.addSeries(datasetA);
+	tsc.addSeries(datasetB);
+	tsc.addSeries(datasetC);
 
-	JFreeChart timeSeriesChart = ChartFactory.createTimeSeriesChart(chartTitle,
-									timeAxisLabel,
-									valueAxisLabel,
-									tsc,
-									true,
-									true,
-									false);
-	XYPlot plot = timeSeriesChart.getXYPlot();
-	plot.getRenderer().setSeriesPaint(0, new Color(255, 0, 0));
-	plot.getRenderer().setSeriesPaint(1, new Color(255, 155, 0));
-	plot.getRenderer().setSeriesPaint(2, new Color(0, 255, 0));
-	return timeSeriesChart;
-
-
+        JFreeChart jfChart =
+            ChartFactory.createTimeSeriesChart(chartTitle,
+                                               timeAxisLabel, valueAxisLabel,
+                                               tsc,
+                                               true, true, false);
+        XYPlot xyPlot = (XYPlot) jfChart.getPlot();
+        XYItemRenderer xyIRenderer = xyPlot.getRenderer();
+        xyIRenderer.setSeriesStroke(seriesA, new BasicStroke(1.3f));
+        xyIRenderer.setSeriesPaint(seriesA, Color.green);
+        xyIRenderer.setSeriesStroke(seriesB, new BasicStroke(1.3f));
+        xyIRenderer.setSeriesPaint(seriesB, Color.blue);
+        xyIRenderer.setSeriesStroke(seriesC, new BasicStroke(1.3f));
+        xyIRenderer.setSeriesPaint(seriesC, Color.red);
+        return jfChart;
     }
 }

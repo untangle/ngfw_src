@@ -11,14 +11,18 @@
 
 package com.metavize.tran.clamphish.reports;
 
+import com.metavize.mvvm.reporting.*;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.sql.*;
 import java.util.*;
-
-import com.metavize.mvvm.reporting.*;
 import net.sf.jasperreports.engine.JRDefaultScriptlet;
 import net.sf.jasperreports.engine.JRScriptletException;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.time.Minute;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -63,6 +67,10 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 
     protected JFreeChart doChart(Connection con) throws JRScriptletException, SQLException
     {
+        //final int seriesA = 2; // datasetA
+        final int seriesB = 0; // datasetB (primary, first)
+        final int seriesC = 1; // datasetC
+
         //TimeSeries datasetA = new TimeSeries(seriesATitle, Minute.class);
         TimeSeries datasetB = new TimeSeries(seriesBTitle, Minute.class);
         TimeSeries datasetC = new TimeSeries(seriesCTitle, Minute.class);
@@ -231,9 +239,19 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         tsc.addSeries(datasetB);
         tsc.addSeries(datasetC);
 
-        return ChartFactory.createTimeSeriesChart(chartTitle,
-                                                  timeAxisLabel, valueAxisLabel,
-                                                  tsc,
-                                                  true, true, false);
+        JFreeChart jfChart =
+            ChartFactory.createTimeSeriesChart(chartTitle,
+                                               timeAxisLabel, valueAxisLabel,
+                                               tsc,
+                                               true, true, false);
+        XYPlot xyPlot = (XYPlot) jfChart.getPlot();
+        XYItemRenderer xyIRenderer = xyPlot.getRenderer();
+        //xyIRenderer.setSeriesStroke(seriesA, new BasicStroke(1.3f));
+        //xyIRenderer.setSeriesPaint(seriesA, Color.blue);
+        xyIRenderer.setSeriesStroke(seriesB, new BasicStroke(1.3f));
+        xyIRenderer.setSeriesPaint(seriesB, Color.red);
+        xyIRenderer.setSeriesStroke(seriesC, new BasicStroke(1.3f));
+        xyIRenderer.setSeriesPaint(seriesC, Color.green);
+        return jfChart;
     }
 }
