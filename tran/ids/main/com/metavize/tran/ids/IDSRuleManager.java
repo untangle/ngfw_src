@@ -211,6 +211,7 @@ public class IDSRuleManager {
                 if (beginMsg.equalsIgnoreCase(BLEEDING_PREFIX))
                     msg = msg.substring(BLEEDING_PREFIX.length()).trim();
             }
+            signature.setMessage(msg);
             // remove the category since it's redundant
             int catlen = category.length();
             if (msg.length() > catlen) {
