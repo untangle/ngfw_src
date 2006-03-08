@@ -84,6 +84,7 @@ public class Reporter
             String outputBaseDirName = "/tmp";
             int daysToKeep = 90;
             boolean toMidnight = true;
+            boolean doDHCPMap = false;
             int i;
             for (i = 0; i < args.length; i++) {
                 if (args[i].equals("-o")) {
@@ -94,6 +95,8 @@ public class Reporter
                         daysToKeep = 1;
                 } else if (args[i].equals("-n")) {
                     toMidnight = false;
+                } else if (args[i].equals("-m")) {
+                    doDHCPMap = true;
                 } else {
                     break;      // Into the mars
                 }
@@ -103,9 +106,12 @@ public class Reporter
             System.arraycopy(args, i, mars, 0, numMars);
             File outputBaseDir = new File(outputBaseDirName);
             Reporter reporter = new Reporter(outputBaseDir, toMidnight);
-            reporter.prepare(conn);
-            reporter.generateNewReports(conn, mars);
-            reporter.purgeOldReports(conn, daysToKeep);
+            if (doDHCPMap) {
+                reporter.prepare(conn);
+            } else {
+                reporter.generateNewReports(conn, mars);
+                reporter.purgeOldReports(conn, daysToKeep);
+            }
 
         } catch (ClassNotFoundException exn) {
             logger.error("Could not load the Postgres JDBC driver");

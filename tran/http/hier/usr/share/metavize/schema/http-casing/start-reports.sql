@@ -3,7 +3,7 @@
 CREATE SCHEMA reports;
 
 CREATE TABLE reports.webpages AS
-  SELECT evt.request_id, COALESCE(NULLIF(name, ''), HOST(c_client_addr)) AS hname, c_client_addr, c_server_addr, c_server_port, host, resp.content_length, resp.time_stamp
+  SELECT evt.request_id, COALESCE(NULLIF(name, ''), HOST(c_client_addr)) AS hname, c_client_addr, c_server_addr, c_server_port, host, resp.content_length, evt.time_stamp
     FROM tr_http_evt_req evt
       JOIN tr_http_req_line line USING (request_id)
       LEFT OUTER JOIN tr_http_evt_resp resp USING (request_id)
