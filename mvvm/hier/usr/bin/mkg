@@ -99,10 +99,10 @@ if [ -z $prefix ] ; then
                 | awk '{ if ($2) printf("%s %s\n",$1,$2) }'
         #RET=$? return code ignored
     elif [ "$1" = "available" ] ; then
-        pkgs=$(apt-cache search '.-storeitem$|.-transform$|.-casing$|^virus-base$|^spam-base$|^mvvm$|^metavize-client$'\
+        pkgs=$(apt-cache search '.-storeitem$|.-transform$|.-casing$|^virus-base$|^spam-base$|^mvvm$|^metavize-client$' 2>/dev/null \
             | cut -d ' ' -f 1)
         for pkg in $pkgs; do
-            apt-cache show --no-all-versions $pkg
+            apt-cache show --no-all-versions $pkg 2>/dev/null
             #RET=$? return code ignored
         done
     elif [ "$1" = "install" ] ; then
@@ -112,7 +112,7 @@ if [ -z $prefix ] ; then
 
         # XXX the way i create mackage name is wrong:
         aptlist=$(mktemp)
-        apt-get install $INST_OPTS --print-uris "$2" \
+        apt-get install $INST_OPTS --print-uris "$2" 2>/dev/null \
             | awk " /^'http:\\/\\// { print \$0 } " >$aptlist
         download $aptlist
 
@@ -132,7 +132,7 @@ if [ -z $prefix ] ; then
         aptlog "start $stamp"  "apt-get upgrade $UPGD_OPTS"
 
         aptlist=$(mktemp)
-        apt-get dist-upgrade $UPGD_OPTS --print-uris \
+        apt-get dist-upgrade $UPGD_OPTS --print-uris 2>/dev/null \
             | awk " /^'http:\\/\\// { print \$0 } " >$aptlist
         download $aptlist
 

@@ -494,8 +494,9 @@ class ToolboxManagerImpl implements ToolboxManager
         try {
             Process p = MvvmContextFactory.context().exec("mkg available");
             pkgs = readPkgList(p.getInputStream(), instList);
-        } catch (IOException exn) {
-            throw new RuntimeException(exn); // XXX
+        } catch (Exception exn) {
+            logger.fatal("Unable to parse mkg available list, proceeding with empty list", exn);
+            return new HashMap<String, MackageDesc>();
         }
 
         return pkgs;
