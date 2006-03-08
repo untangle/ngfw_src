@@ -1,6 +1,51 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
+function Browser(url)
+{
+   this.tree = new YAHOO.widget.TreeView("tree");
+
+   this.tree.setDynamicLoad(function(node, onCompleteCallback) {
+      var url = node.data.url;
+
+      var callback = {
+         success: function(o) {
+            var dom = o.responseXML.documentElement;
+            var dirs = dom.getElementsByTagName("dir");
+
+            for (var i = 0; i < dirs.length; i++) {
+               var c = dirs[i];
+               var name = c.getAttribute("name");
+               new YAHOO.widget.TextNode(new SmbNode(url, name), node, false);
+            }
+
+            onCompleteCallback();
+         }
+      }
+
+      YAHOO.util.Connect.asyncRequest("GET", "ls?url=" + url + "&type=dir",
+                                      callback, null);
+   });
+
+   var r = this.tree.getRoot();
+   new YAHOO.widget.TextNode(new SmbNode(url), r, false);
+
+   this.tree.draw();
+}
+
+function SmbNode(path, name)
+{
+   if (name) {
+      this.url = path + name;
+      this.label = name;
+   } else {
+      this.url = path;
+      this.label = path;
+   }
+}
+
+// old crap -------------------------------------------------------------------
+
 var openImg = new Image();
 openImg.src = "open.gif";
 var closedImg = new Image();
@@ -236,21 +281,6 @@ function isFetchable(target)
    return 0 == target.childNodes.length;
 }
 
-function parseDomFromString(text)
-{
-   return Try.these(function()
-                    {
-                       return new DOMParser().parseFromString(text, 'text/xml');
-                    },
-                    function()
-                    {
-                       var xmlDom = new ActiveXObject("Microsoft.XMLDOM");
-                       xmlDom.async = "false";
-                       xmlDom.loadXML(text);
-                       return xmlDom;
-                    });
-}
-
 function formatDate(unixTime)
 {
    date = new Date();
@@ -282,3 +312,19 @@ function removeChildren(node)
       node.removeChild(node.firstChild);
    }
 }
+
+function parseDomFromString(text)
+{
+   return Try.these(function()
+                    {
+                       return new DOMParser().parseFromString(text, 'text/xml');
+                    },
+                    function()
+                    {
+                       var xmlDom = new ActiveXObject("Microsoft.XMLDOM");
+                       xmlDom.async = "false";
+                       xmlDom.loadXML(text);
+                       return xmlDom;
+                    });
+}
+
