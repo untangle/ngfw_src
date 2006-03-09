@@ -34,7 +34,7 @@
     <sect2 id="clam_tran_adminui_web">
       <title>Web</title>
       <para>
-        The Web tab lets administrators modify settings related for web (<glossterm linkend="gloss_http">HTTP</glossterm>) traffic.  The first tab, covered in <xref linkend="clam_tran_adminui_web_http"/>, lets administrators choose either inbound or outbound traffic to scan for viruses.  The next tab, covered in <xref linkend="clam_tran_adminui_web_mime"/>, lets administrators choose the <glossterm linkend="gloss_mime_type">MIME types</glossterm> to scan.  The last tab, discussed in <xref linkend="clam_tran_adminui_web_fileext"/>, lets administrators choose the file types to scan.
+        The Web tab lets administrators modify settings related for web (<glossterm linkend="gloss_http">HTTP</glossterm>) traffic.  The first tab, covered in <xref linkend="clam_tran_adminui_web_http"/>, lets administrators choose either inbound or outbound traffic to scan for viruses. The next tab, covered in <xref linkend="clam_tran_adminui_web_fileext"/>, lets administrators choose the file types to scan. The last tab, discussed in <xref linkend="clam_tran_adminui_web_mime"/>, lets administrators choose the <glossterm linkend="gloss_mime_type">MIME types</glossterm> to scan.
       </para>
 
       <!-- ======================================== -->
@@ -56,6 +56,27 @@
         </para>
       </sect3>
 
+
+      <!-- ======================================== -->
+      <sect3 id="clam_tran_adminui_web_fileext">
+        <title>File Extension List</title>
+        <para>
+          The File Extensions List, as shown in <xref linkend="hauri_tran_adminui_web_fileext_figure"/>, allows Administrators to choose the files to scan for viruses, based on its filename extension (e.g. .exe).
+        </para>
+        <figure id="clam_tran_adminui_web_fileext_figure">
+          <title>File Extension List Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/clam/clam_web_fileext.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          As shown in <xref linkend="clam_tran_adminui_web_fileext_figure"/>, many common filename extensions are already on the list.  File types known to carry viruses have been pre-configured for scanning.  To scan files with a specific filename extension, check its <guilabel>scan</guilabel> box and push the <guilabel>Save Settings</guilabel> button.
+        </para>            
+      </sect3>
+
+
       <!-- ======================================== -->
       <sect3 id="clam_tran_adminui_web_mime">
         <title>MIME Type List</title>
@@ -76,26 +97,7 @@
         <para>
           To scan a particular MIME Type, check its <guilabel>scan</guilabel> box and push the <guilabel>Save Settings</guilabel> button.  To add a new MIME type to the list, push the add (plus) button to the left, enter the MIME specification, and push the <guilabel>Save Settings</guilabel> button.
         </para>             
-      </sect3>
-
-      <!-- ======================================== -->
-      <sect3 id="clam_tran_adminui_web_fileext">
-        <title>File Extension List</title>
-        <para>
-          The File Extensions List, as shown in <xref linkend="hauri_tran_adminui_web_fileext_figure"/>, allows Administrators to choose the files to scan for viruses, based on its filename extension (e.g. .exe).
-        </para>
-        <figure id="clam_tran_adminui_web_fileext_figure">
-          <title>File Extension List Tab</title>
-          <mediaobject>
-            <imageobject>
-              <imagedata fileref="figure/clam/clam_web_fileext.png" />
-            </imageobject>
-          </mediaobject>
-        </figure>
-        <para>
-          As shown in <xref linkend="clam_tran_adminui_web_fileext_figure"/>, many common filename extensions are already on the list.  File types known to carry viruses have been pre-configured for scanning.  To scan files with a specific filename extension, check its <guilabel>scan</guilabel> box and push the <guilabel>Save Settings</guilabel> button.
-        </para>            
-      </sect3>      
+      </sect3>         
        
     </sect2>
 

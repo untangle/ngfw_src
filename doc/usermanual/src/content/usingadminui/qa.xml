@@ -16,7 +16,7 @@
         </question>
         <answer>
           <para>
-            The first time the Administrative Interface is launched, it downloads several files.  These files are then cached (left) on the machine to reduce startle time on subsequent restarts.
+            The first time the Administrative Interface is launched, it downloads several files.  These files are then cached (left) on the machine to reduce start time on subsequent restarts.
           </para>
         </answer>
       </qandaentry>

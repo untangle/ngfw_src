@@ -35,7 +35,7 @@
     <sect2 id="hauri_tran_adminui_web">
       <title>Web</title>
       <para>
-        The Web tab lets administrators modify settings for web (<glossterm linkend="gloss_http">HTTP</glossterm>) traffic.  The first tab, covered in <xref linkend="hauri_tran_adminui_web_http"/>, lets administrators choose either inbound/outbound traffic to be scanned for viruses.  The next tab, covered in <xref linkend="hauri_tran_adminui_web_mime"/>, lets administrators choose the <glossterm linkend="gloss_mime_type">MIME types</glossterm> to scan.  The last tab, discussed in <xref linkend="hauri_tran_adminui_web_fileext"/>, lets administrators choose the file types to scan.
+        The Web tab lets administrators modify settings for web (<glossterm linkend="gloss_http">HTTP</glossterm>) traffic.  The first tab, covered in <xref linkend="hauri_tran_adminui_web_http"/>, lets administrators choose either inbound/outbound traffic to be scanned for viruses.  The next tab, covered in <xref linkend="hauri_tran_adminui_web_fileext"/>, lets administrators choose the file types to scan.  The last tab, discussed in <xref linkend="hauri_tran_adminui_web_mime"/>, lets administrators choose the <glossterm linkend="gloss_mime_type">MIME types</glossterm> to scan.
       </para>
 
       <!-- ======================================== -->
@@ -55,6 +55,26 @@
         <para>
           There are two directions for scanning, <constant>incoming documents</constant> and <constant>outgoing documents</constant>.  Each can be enabled by checking its <guilabel>scan</guilabel> box.  Note that <constant>incoming documents</constant> means that the client (browser) is within the protected network and is being served by web servers outside of the protected network.
         </para>
+      </sect3>
+
+
+      <!-- ======================================== -->
+      <sect3 id="hauri_tran_adminui_web_fileext">
+        <title>File Extension List</title>
+        <para>
+          The File Extensions List, as shown in <xref linkend="hauri_tran_adminui_web_fileext_figure"/>, allows Administrators to choose the files to scan for viruses, based on its filename extension (e.g. .exe).
+        </para>
+        <figure id="hauri_tran_adminui_web_fileext_figure">
+          <title>File Extension List Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/hauri/hauri_web_fileext.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          As shown in <xref linkend="hauri_tran_adminui_web_fileext_figure"/>, many common filename extensions are already on the list.  File types known to carry viruses have been pre-configured for scanning.  To scan files with a specific filename extension, check its <guilabel>scan</guilabel> box and push the <guilabel>Save Settings</guilabel> button.
+        </para>            
       </sect3>
 
       <!-- ======================================== -->
@@ -77,26 +97,7 @@
         <para>
           To scan a particular MIME Type, check its <guilabel>scan</guilabel> box and push the <guilabel>Save Settings</guilabel> button.  To add a new MIME type to the list, push the add (plus) button to the left, enter the MIME specification, and push the <guilabel>Save Settings</guilabel> button.
         </para>             
-      </sect3>
-
-      <!-- ======================================== -->
-      <sect3 id="hauri_tran_adminui_web_fileext">
-        <title>File Extension List</title>
-        <para>
-          The File Extensions List, as shown in <xref linkend="hauri_tran_adminui_web_fileext_figure"/>, allows Administrators to choose the files to scan for viruses, based on its filename extension (e.g. .exe).
-        </para>
-        <figure id="hauri_tran_adminui_web_fileext_figure">
-          <title>File Extension List Tab</title>
-          <mediaobject>
-            <imageobject>
-              <imagedata fileref="figure/hauri/hauri_web_fileext.png" />
-            </imageobject>
-          </mediaobject>
-        </figure>
-        <para>
-          As shown in <xref linkend="hauri_tran_adminui_web_fileext_figure"/>, many common filename extensions are already on the list.  File types known to carry viruses have been pre-configured for scanning.  To scan files with a specific filename extension, check its <guilabel>scan</guilabel> box and push the <guilabel>Save Settings</guilabel> button.
-        </para>            
-      </sect3>      
+      </sect3>       
        
     </sect2>
 

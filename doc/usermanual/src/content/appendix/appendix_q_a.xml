@@ -2,8 +2,7 @@
 <appendix id="appendix_q_a">
   <title>Q and A</title>
 
-<!--  <qandaset defaultlabel='qanda'> -->
-  <qandaset>
+  <qandaset defaultlabel='qanda'>
 
   
     <qandadiv>

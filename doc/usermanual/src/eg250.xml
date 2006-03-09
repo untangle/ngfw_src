@@ -85,6 +85,10 @@
 <!ENTITY spamassassin_tran SYSTEM "content/spamassassin/spamassassin_tran.xml">
 <!ENTITY spamassassin_tran_qa SYSTEM "content/spamassassin/qa.xml">
 
+<!-- Boxbackup -->
+<!ENTITY boxbackup_tran SYSTEM "content/boxbackup/boxbackup_tran.xml">
+<!ENTITY boxbackup_tran_qa SYSTEM "content/boxbackup/qa.xml">
+
 <!ENTITY appendix_q_a SYSTEM "content/appendix/appendix_q_a.xml">
 
 <!ENTITY appendix_changes SYSTEM "content/appendix/appendix_changes.xml">
@@ -116,7 +120,7 @@
 
     <publishername>Metavize</publishername>
 
-    <date>Sep 1 2005</date>
+    <date>Mar 8 2006</date>
 
     <legalnotice>
       <para>
@@ -171,6 +175,8 @@
   &airgap_tran;
   
   &reporting_tran;
+
+  &boxbackup_tran;
 
   &appendix_syntax;
 

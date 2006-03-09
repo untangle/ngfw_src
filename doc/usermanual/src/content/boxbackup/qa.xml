@@ -1,0 +1,10 @@
+      <qandaentry>
+        <question>
+          <para>How do I know if my &eg; is performing backups?</para>
+        </question>
+        <answer>
+          <para>
+            You can use the event log, as discussed in <xref linkend="boxbackup_tran_adminui_events"/>
+          </para>
+        </answer>
+      </qandaentry>

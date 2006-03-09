@@ -58,7 +58,7 @@
     </mediaobject>
   </figure>
   <para>
-    The initial <guilabel>Login</guilabel> is <constant>admin</constant> and the initial <guilabel>Password</guilabel> is <constant>passwd</constant>.  Please make a note that you should change this default password (as described in <xref linkend="config_tab_accounts"/>).  If all goes correctly, you should see initial Administrative Interface screen as shown in <xref linkend="using_adminui_empty_rack"/>.
+    The initial <guilabel>Login</guilabel> is <constant>admin</constant> and the initial <guilabel>Password</guilabel> is <constant>passwd</constant>.  <emphasis>Please make a note that you should change this default password (as described in <xref linkend="config_tab_accounts"/>)</emphasis>.  If all goes correctly, you should see the initial Administrative Interface screen as shown in <xref linkend="using_adminui_empty_rack"/>.
   </para>
   <figure id="using_adminui_empty_rack">
     <title>Initial Screen</title>
@@ -135,16 +135,16 @@
   <sect1 id="using_adminui_appliances">
     <title>Software Appliances</title>
     <para>
-      One of the unique features of the &eg; is the ability to add and remove Software Appliances to fit the needs of your deployment.  Each Software Appliance had a dedicated task to enhance your network, and can be installed/configured independently of other appliances.
+      One of the unique features of the &eg; is the ability to add and remove Software Appliances to fit the needs of your deployment.  Each Software Appliance has a dedicated function to enhance your network, and can be installed/configured independently of other appliances.
     </para>
     <para>
       Although Software Appliances act independently, they share many common interface characteristics.  They are all installed by clicking on the appliance from the <guilabel>Toolbox</guilabel>.  This causes an appliance to be installed into the rack to the right.
       <note>
         <para>
-          The system will prevent you from installing the same type of appliance into the same rack twice.
+          The system will prevent you from installing the same type of appliance into the same rack more than.
         </para>
       </note>
-      Once installed, each appliance shows its faceplate.  An example faceplate is shown in <xref linkend="using_adminui_appliances_faceplate"/>.
+      Once installed, each appliance shows its faceplate.  A sample faceplate is shown in <xref linkend="using_adminui_appliances_faceplate"/>.
     </para>
     <figure id="using_adminui_appliances_faceplate">
       <title>Appliance Faceplate</title>
