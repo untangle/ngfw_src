@@ -6548,7 +6548,6 @@ dl.contextplus.net
 dl.coolonlineoffers.com
 dl.dna.wildtangent.com
 dl.grokster.com
-dl.lygo.com
 dl.searchforit.com
 dl.surfenhance.com
 dl.surfsidekick.com
@@ -12368,7 +12367,6 @@ lycos-eu.imrworldwide.com
 lycos.247realmedia.com
 lycos.realmedia.com
 lycoscollect.realmedia.com
-lygo.com
 lyndaleigh.com
 lynxtrack.com
 lyred.com
