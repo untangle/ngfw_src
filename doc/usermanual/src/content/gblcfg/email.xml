@@ -1,0 +1,147 @@
+  <!-- ========================================================= -->  
+  <sect1 id="gblcfg_tab_email">
+    <title>Email</title>
+    <para>
+      XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    </para>
+
+    <!-- ====================================================== -->
+    <sect2 id="gblcfg_tab_email_outgoingsvr">
+      <title>Outgoing Server</title>
+      <para>
+        The Outgoing Server Tab, as seen in <xref linkend="gblcfg_tab_email_outgoingsvr_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+      </para>
+      <figure id="gblcfg_tab_email_outgoingsvr_figure">
+        <title>Outgoing Server Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/gblcfg/gblcfg_tab_email_outgoingsvr.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      </para>
+    </sect2>
+
+
+    <!-- ====================================================== -->
+    <sect2 id="gblcfg_tab_email_safelist">
+      <title>From-Safe List</title>
+      <para>
+        The From-Safe List Tab, as seen in <xref linkend="gblcfg_tab_email_safelist_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+      </para>
+      <figure id="gblcfg_tab_email_safelist_figure">
+        <title>From-Safe List Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/gblcfg/gblcfg_tab_email_safelist.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      </para>
+    </sect2>    
+
+
+    <!-- ====================================================== -->
+    <sect2 id="gblcfg_tab_email_quarantine">
+      <title>Quarantine</title>
+      <para>
+        The Quarantine Tab, as seen in <xref linkend="gblcfg_tab_email_quarantine_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+      </para>
+      <figure id="gblcfg_tab_email_quarantine_figure">
+        <title>Quarantine Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/gblcfg/gblcfg_tab_email_quarantine.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      </para>
+
+      <!-- ........................................................ -->
+      <sect3 id="gblcfg_tab_email_quarantine_releasepurge">
+        <title>Release And Purge</title>
+        <para>
+          The Release And Purge Tab, as seen in <xref linkend="gblcfg_tab_email_quarantine_releasepurge_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        </para>
+        <figure id="gblcfg_tab_email_quarantine_releasepurge_figure">
+          <title>Restrictions Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/gblcfg/gblcfg_tab_email_quarantine_releasepurge.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        </para>
+      </sect3>
+
+
+      <!-- ........................................................ -->
+      <sect3 id="gblcfg_tab_email_quarantine_quaraddrs">
+        <title>Quarantinable Addresses</title>
+        <para>
+          The Quarantinable Addresses Tab, as seen in <xref linkend="gblcfg_tab_email_quarantine_quaraddrs_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        </para>
+        <figure id="gblcfg_tab_email_quarantine_quaraddrs_figure">
+          <title>Quarantinable Addresses Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/gblcfg/gblcfg_tab_email_quarantine_quaraddrs.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        </para>
+      </sect3>
+
+
+      <!-- ........................................................ -->
+      <sect3 id="gblcfg_tab_email_quarantine_quarfwds">
+        <title>Quarantinable Forwards</title>
+        <para>
+          The Quarantinable Forwards Tab, as seen in <xref linkend="gblcfg_tab_email_quarantine_quarfwds_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        </para>
+        <figure id="gblcfg_tab_email_quarantine_quarfwds_figure">
+          <title>Quarantinable Forwards Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/gblcfg/gblcfg_tab_email_quarantine_quarfwds.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        </para>
+      </sect3>
+
+
+      <!-- ........................................................ -->
+      <sect3 id="gblcfg_tab_email_quarantine_general">
+        <title>General Settings</title>
+        <para>
+          The General Settings Tab, as seen in <xref linkend="gblcfg_tab_email_quarantine_general_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        </para>
+        <figure id="gblcfg_tab_email_quarantine_general_figure">
+          <title>General Settings Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/gblcfg/gblcfg_tab_email_quarantine_general.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        </para>
+      </sect3>             
+
+    </sect2>
+
+  </sect1>

@@ -1,0 +1,90 @@
+  <!-- ========================================================= -->  
+  <sect1 id="gblcfg_tab_setupinfo">
+    <title>Setup Info</title>
+    <para>
+      XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    </para>
+
+    <!-- ====================================================== -->
+    <sect2 id="gblcfg_tab_setupinfo_version">
+      <title>Version and Revision</title>
+      <para>
+        The Version and Revision Tab, as seen in <xref linkend="gblcfg_tab_setupinfo_version_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+      </para>
+      <figure id="gblcfg_tab_setupinfo_version_figure">
+        <title>Version and Revision Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/gblcfg/gblcfg_tab_setupinfo_version.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      </para>
+
+    </sect2>
+
+    <!-- ====================================================== -->
+    <sect2 id="gblcfg_tab_setupinfo_license">
+      <title>License</title>
+      <para>
+        The License Tab, as seen in <xref linkend="gblcfg_tab_setupinfo_license_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+      </para>
+      <figure id="gblcfg_tab_setupinfo_license_figure">
+        <title>License Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/gblcfg/gblcfg_tab_setupinfo_license.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      </para>
+
+    </sect2>
+
+
+    <!-- ====================================================== -->
+    <sect2 id="gblcfg_tab_setupinfo_registration">
+      <title>Registration</title>
+      <para>
+        The Registration Tab, as seen in <xref linkend="gblcfg_tab_setupinfo_registration_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+      </para>
+      <figure id="gblcfg_tab_setupinfo_registration_figure">
+        <title>Registration Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/gblcfg/gblcfg_tab_setupinfo_registration.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      </para>
+
+    </sect2>
+
+
+    <!-- ====================================================== -->
+    <sect2 id="gblcfg_tab_setupinfo_timezone">
+      <title>Timezone</title>
+      <para>
+        The Timezone Tab, as seen in <xref linkend="gblcfg_tab_setupinfo_timezone_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+      </para>
+      <figure id="gblcfg_tab_setupinfo_timezone_figure">
+        <title>Timezone Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/gblcfg/gblcfg_tab_setupinfo_timezone.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      </para>
+
+    </sect2>       
+
+  </sect1>

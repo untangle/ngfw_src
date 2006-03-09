@@ -1,0 +1,283 @@
+  <!-- ========================================================= -->  
+  <sect1 id="gblcfg_tab_remoteadmin">
+    <title>Remote Admin</title>
+    <para>
+      XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    </para>
+
+    <!-- ====================================================== -->
+    <sect2 id="gblcfg_tab_remoteadmin_accounts">
+      <title>Admin Accounts</title>
+      <para>
+        The Admin Accounts Tab, as seen in <xref linkend="gblcfg_tab_remoteadmin_accounts_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+      </para>
+      <figure id="gblcfg_tab_remoteadmin_accounts_figure">
+        <title>Admin Accounts Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/gblcfg/gblcfg_tab_remoteadmin_accounts.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      </para>
+    </sect2>
+
+
+    <!-- ====================================================== -->
+    <sect2 id="gblcfg_tab_remoteadmin_access">
+      <title>Access</title>
+      <para>
+        The Access Tab, as seen in <xref linkend="gblcfg_tab_remoteadmin_access_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+      </para>
+      <figure id="gblcfg_tab_remoteadmin_access_figure">
+        <title>Access Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/gblcfg/gblcfg_tab_remoteadmin_access.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      </para>
+
+      <!-- ........................................................ -->
+      <sect3 id="gblcfg_tab_remoteadmin_access_restrictions">
+        <title>Restrictions</title>
+        <para>
+          The Restrictions Tab, as seen in <xref linkend="gblcfg_tab_remoteadmin_access_restrictions_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        </para>
+        <figure id="gblcfg_tab_remoteadmin_access_restrictions_figure">
+          <title>Restrictions Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/gblcfg/gblcfg_tab_remoteadmin_access_restrictions.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        </para>
+      </sect3>
+
+
+      <!-- ........................................................ -->
+      <sect3 id="gblcfg_tab_remoteadmin_access_pubaddr">
+        <title>Public Address</title>
+        <para>
+          The Public Address Tab, as seen in <xref linkend="gblcfg_tab_remoteadmin_access_pubaddr_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        </para>
+        <figure id="gblcfg_tab_remoteadmin_access_pubaddr_figure">
+          <title>Public Address Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/gblcfg/gblcfg_tab_remoteadmin_access_pubaddr.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        </para>
+      </sect3>      
+      
+    </sect2>
+
+    <!-- ====================================================== -->
+    <sect2 id="gblcfg_tab_remoteadmin_certs">
+      <title>Certificates</title>
+      <para>
+        The Certificates Tab, as seen in <xref linkend="gblcfg_tab_remoteadmin_certs_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+      </para>
+      <figure id="gblcfg_tab_remoteadmin_certs_figure">
+        <title>Certificates Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/gblcfg/gblcfg_tab_remoteadmin_certs.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      </para>
+
+      <!-- ........................................................ -->
+      <sect3 id="gblcfg_tab_remoteadmin_certs_status">
+        <title>Status</title>
+        <para>
+          The Status Tab, as seen in <xref linkend="gblcfg_tab_remoteadmin_certs_status_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        </para>
+        <figure id="gblcfg_tab_remoteadmin_certs_status_figure">
+          <title>Status Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/gblcfg/gblcfg_tab_remoteadmin_certs_status.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        </para>
+      </sect3>
+
+      <!-- ........................................................ -->
+      <sect3 id="gblcfg_tab_remoteadmin_certs_generation">
+        <title>Generation</title>
+        <para>
+          The Generation Tab, as seen in <xref linkend="gblcfg_tab_remoteadmin_certs_generation_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        </para>
+        <figure id="gblcfg_tab_remoteadmin_certs_generation_figure">
+          <title>Generation Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/gblcfg/gblcfg_tab_remoteadmin_certs_generation.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        </para>        
+
+        <!-- ........................................................ -->
+        <sect4 id="gblcfg_tab_remoteadmin_certs_generation_selfsigned">
+          <title>Generate Self Signed Certificate</title>
+          <para>
+            The Generate Self Signed Certificate Window, as seen in <xref linkend="gblcfg_tab_remoteadmin_certs_generation_selfsigned_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+          </para>
+          <figure id="gblcfg_tab_remoteadmin_certs_generation_selfsigned_figure">
+            <title>Generate Self Signed Certificate Window</title>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="figure/gblcfg/gblcfg_tab_remoteadmin_certs_generation_selfsigned.png" />
+              </imageobject>
+            </mediaobject>
+          </figure>
+          <para>
+            XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+          </para>
+        </sect4>
+
+
+        <!-- ........................................................ -->
+        <sect4 id="gblcfg_tab_remoteadmin_certs_generation_csr">
+          <title>Generate Certificate Signature Request</title>
+          <para>
+            The Generate Certificate Signature Request Window, as seen in <xref linkend="gblcfg_tab_remoteadmin_certs_generation_csr_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+          </para>
+          <figure id="gblcfg_tab_remoteadmin_certs_generation_csr_figure">
+            <title>Generate Certificate Signature Request Window</title>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="figure/gblcfg/gblcfg_tab_remoteadmin_certs_generation_csr.png" />
+              </imageobject>
+            </mediaobject>
+          </figure>
+          <para>
+            XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+          </para>
+        </sect4>
+
+
+        <!-- ........................................................ -->
+        <sect4 id="gblcfg_tab_remoteadmin_certs_generation_import">
+          <title>Import Signed Certificate</title>
+          <para>
+            The Import Signed Certificate Window, as seen in <xref linkend="gblcfg_tab_remoteadmin_certs_generation_import_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+          </para>
+          <figure id="gblcfg_tab_remoteadmin_certs_generation_import_figure">
+            <title>Import Signed Certificate Window</title>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="figure/gblcfg/gblcfg_tab_remoteadmin_certs_generation_import.png" />
+              </imageobject>
+            </mediaobject>
+          </figure>
+          <para>
+            XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+          </para>
+        </sect4>                 
+        
+      </sect3>
+      
+    </sect2>
+
+    <!-- ====================================================== -->
+    <sect2 id="gblcfg_tab_remoteadmin_monitoring">
+      <title>Monitoring</title>
+      <para>
+        The Monitoring Tab, as seen in <xref linkend="gblcfg_tab_remoteadmin_monitoring_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+      </para>
+      <figure id="gblcfg_tab_remoteadmin_monitoring_figure">
+        <title>Monitoring Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/gblcfg/gblcfg_tab_remoteadmin_monitoring.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        XXXXXX
+      </para>
+
+      <!-- ........................................................ -->
+      <sect3 id="gblcfg_tab_remoteadmin_monitoring_snmp">
+        <title>SNMP</title>
+        <para>
+          The SNMP Tab, as seen in <xref linkend="gblcfg_tab_remoteadmin_monitoring_snmp_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        </para>
+        <figure id="gblcfg_tab_remoteadmin_monitoring_snmp_figure">
+          <title>SNMP Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/gblcfg/gblcfg_tab_remoteadmin_monitoring_snmp.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        </para>
+      </sect3>
+
+
+      <!-- ........................................................ -->
+      <sect3 id="gblcfg_tab_remoteadmin_monitoring_syslog">
+        <title>Syslog</title>
+        <para>
+          The Syslog Tab, as seen in <xref linkend="gblcfg_tab_remoteadmin_monitoring_syslog_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        </para>
+        <figure id="gblcfg_tab_remoteadmin_monitoring_syslog_figure">
+          <title>Syslog Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/gblcfg/gblcfg_tab_remoteadmin_monitoring_syslog.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        </para>
+      </sect3>           
+      
+    </sect2>
+
+    <!-- ====================================================== -->
+    <sect2 id="gblcfg_tab_remoteadmin_reboot">
+      <title>Manual Reboot</title>
+      <para>
+        The Manual Reboot Tab, as seen in <xref linkend="gblcfg_tab_remoteadmin_reboot_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+      </para>
+      <figure id="gblcfg_tab_remoteadmin_reboot_figure">
+        <title>Manual Reboot Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/gblcfg/gblcfg_tab_remoteadmin_reboot.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        XXXXXX
+      </para>
+    </sect2> 
+        
+  </sect1>

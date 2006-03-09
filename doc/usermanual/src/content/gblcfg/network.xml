@@ -1,0 +1,68 @@
+  
+
+  <!-- ========================================================= -->  
+  <sect1 id="gblcfg_tab_networking">
+    <title>Networking</title>
+    <para>
+      XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    </para>
+
+    <!-- ====================================================== -->
+    <sect2 id="gblcfg_tab_networking_extaddrs">
+      <title>External Addresses</title>
+      <para>
+        The External Addresses Tab, as seen in <xref linkend="gblcfg_tab_networking_extaddrs_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+      </para>
+      <figure id="gblcfg_tab_networking_extaddrs_figure">
+        <title>External Addresses</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/gblcfg/gblcfg_tab_networking_extaddrs.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      </para>
+    </sect2>
+
+    <!-- ====================================================== -->
+    <sect2 id="gblcfg_tab_networking_extaddraliases">
+      <title>External Address Aliases</title>
+      <para>
+        The External Address Aliases tab, as seen in <xref linkend="gblcfg_tab_networking_extaddraliases_figure"/>, XXXXXXXXXXXXXXXXXXXXXXXXXXX.
+      </para>
+      <figure id="gblcfg_tab_networking_extaddraliases_figure">
+        <title>External Address Aliases Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/gblcfg/gblcfg_tab_networking_extaddraliases.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx
+      </para>
+    </sect2>
+
+
+    <!-- ====================================================== -->
+    <sect2 id="gblcfg_tab_networking_hostname">
+      <title>Hostname</title>
+      <para>
+        The Hostname Tab, as seen in <xref linkend="gblcfg_tab_networking_hostname_figure"/>, XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.
+      </para>
+      <figure id="gblcfg_tab_networking_hostname_figure">
+        <title>Hostname Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/gblcfg/gblcfg_tab_networking_hostname.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx
+      </para>
+    </sect2>     
+    
+  </sect1> 

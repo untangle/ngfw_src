@@ -1,0 +1,130 @@
+  <!-- ========================================================= -->  
+  <sect1 id="gblcfg_tab_support">
+    <title>Support</title>
+    <para>
+      XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    </para>
+
+    <!-- ====================================================== -->
+    <sect2 id="gblcfg_tab_support_accessrest">
+      <title>Access Restrictions</title>
+      <para>
+        The Access Restrictions Tab, as seen in <xref linkend="gblcfg_tab_support_accessrest_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+      </para>
+      <figure id="gblcfg_tab_support_accessrest_figure">
+        <title>Access Restrictions Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/gblcfg/gblcfg_tab_support_accessrest.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      </para>
+
+    </sect2>
+
+
+    <!-- ====================================================== -->
+    <sect2 id="gblcfg_tab_support_protocoloverride">
+      <title>Manual Protocol Overrides</title>
+      <para>
+        The Manual Protocol Overrides Tab, as seen in <xref linkend="gblcfg_tab_support_protocoloverride_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+      </para>
+      <figure id="gblcfg_tab_support_protocoloverride_figure">
+        <title>Manual Protocol Overrides Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/gblcfg/gblcfg_tab_support_protocoloverride.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      </para>
+
+      <!-- ........................................................ -->
+      <sect3 id="gblcfg_tab_support_protocoloverride_http">
+        <title>HTTP Settings</title>
+        <para>
+          The HTTP Settings Tab, as seen in <xref linkend="gblcfg_tab_support_protocoloverride_http_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        </para>
+        <figure id="gblcfg_tab_support_protocoloverride_http_figure">
+          <title>HTTP Settings Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/gblcfg/gblcfg_tab_support_protocoloverride_http.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        </para>
+      </sect3>
+
+
+      <!-- ........................................................ -->
+      <sect3 id="gblcfg_tab_support_protocoloverride_mail">
+        <title>Mail Settings</title>
+        <para>
+          The Mail Settings Tab, as seen in <xref linkend="gblcfg_tab_support_protocoloverride_mail_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        </para>
+        <figure id="gblcfg_tab_support_protocoloverride_mail_figure">
+          <title>Mail Settings Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/gblcfg/gblcfg_tab_support_protocoloverride_mail.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        </para>
+      </sect3>
+
+
+      <!-- ........................................................ -->
+      <sect3 id="gblcfg_tab_support_protocoloverride_ftp">
+        <title>FTP Settings</title>
+        <para>
+          The FTP Settings Tab, as seen in <xref linkend="gblcfg_tab_support_protocoloverride_ftp_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        </para>
+        <figure id="gblcfg_tab_support_protocoloverride_ftp_figure">
+          <title>FTP Settings Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/gblcfg/gblcfg_tab_support_protocoloverride_ftp.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        </para>
+      </sect3>            
+      
+    </sect2>
+
+
+    <!-- ====================================================== -->
+    <sect2 id="gblcfg_tab_support_networkintfcs">
+      <title>Network Interfaces</title>
+      <para>
+        The Network Interfaces Tab, as seen in <xref linkend="gblcfg_tab_support_networkintfcs_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+      </para>
+      <figure id="gblcfg_tab_support_networkintfcs_figure">
+        <title>Network Interfaces Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/gblcfg/gblcfg_tab_support_networkintfcs.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      </para>
+
+    </sect2>    
+     
+
+  </sect1>

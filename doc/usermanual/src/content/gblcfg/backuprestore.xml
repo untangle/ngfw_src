@@ -1,0 +1,148 @@
+  <!-- ========================================================= -->  
+  <sect1 id="gblcfg_tab_backuprestore">
+    <title>Backup and Restore</title>
+    <para>
+      XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    </para>
+
+    <!-- ====================================================== -->
+    <sect2 id="gblcfg_tab_backuprestore_backup">
+      <title>Backup</title>
+      <para>
+        The Backup Tab, as seen in <xref linkend="gblcfg_tab_backuprestore_backup_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+      </para>
+      <figure id="gblcfg_tab_backuprestore_backup_figure">
+        <title>Backup Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/gblcfg/gblcfg_tab_backuprestore_backup.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      </para>
+
+
+      <!-- ........................................................ -->
+      <sect3 id="gblcfg_tab_backuprestore_backup_harddisk">
+        <title>To Hard Disk</title>
+        <para>
+          The To Hard Disk Tab, as seen in <xref linkend="gblcfg_tab_backuprestore_backup_harddisk_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        </para>
+        <figure id="gblcfg_tab_backuprestore_backup_harddisk_figure">
+          <title>To Hard Disk Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/gblcfg/gblcfg_tab_backuprestore_backup_harddisk.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        </para>
+      </sect3>
+
+
+      <!-- ........................................................ -->
+      <sect3 id="gblcfg_tab_backuprestore_backup_usb">
+        <title>To USB Key</title>
+        <para>
+          The To USB Key Tab, as seen in <xref linkend="gblcfg_tab_backuprestore_backup_usb_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        </para>
+        <figure id="gblcfg_tab_backuprestore_backup_usb_figure">
+          <title>To USB Key Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/gblcfg/gblcfg_tab_backuprestore_backup_usb.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        </para>
+      </sect3>
+
+
+      <!-- ........................................................ -->
+      <sect3 id="gblcfg_tab_backuprestore_backup_localfile">
+        <title>To Local File</title>
+        <para>
+          The To Local File Tab, as seen in <xref linkend="gblcfg_tab_backuprestore_backup_localfile_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        </para>
+        <figure id="gblcfg_tab_backuprestore_backup_localfile_figure">
+          <title>To Local File Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/gblcfg/gblcfg_tab_backuprestore_backup_localfile.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        </para>
+      </sect3>              
+      
+    </sect2>
+
+
+    <!-- ====================================================== -->
+    <sect2 id="gblcfg_tab_backuprestore_restore">
+      <title>Restore</title>
+      <para>
+        The Restore Tab, as seen in <xref linkend="gblcfg_tab_backuprestore_restore_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+      </para>
+      <figure id="gblcfg_tab_backuprestore_restore_figure">
+        <title>Restore Tab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figure/gblcfg/gblcfg_tab_backuprestore_restore.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      </para>
+
+      <!-- ........................................................ -->
+      <sect3 id="gblcfg_tab_backuprestore_restore_hdandusb">
+        <title>From Hard Disk and USB Key</title>
+        <para>
+          The From Hard Disk and USB Key Tab, as seen in <xref linkend="gblcfg_tab_backuprestore_restore_hdandusb_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        </para>
+        <figure id="gblcfg_tab_backuprestore_restore_hdandusb_figure">
+          <title>From Hard Disk and USB Key Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/gblcfg/gblcfg_tab_backuprestore_restore_hdandusb.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        </para>
+      </sect3>
+
+
+      <!-- ........................................................ -->
+      <sect3 id="gblcfg_tab_backuprestore_restore_localfile">
+        <title>From Local File</title>
+        <para>
+          The From Local File Tab, as seen in <xref linkend="gblcfg_tab_backuprestore_restore_localfile_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        </para>
+        <figure id="gblcfg_tab_backuprestore_restore_localfile_figure">
+          <title>From Local File Tab</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/gblcfg/gblcfg_tab_backuprestore_restore_localfile.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        </para>
+      </sect3>        
+      
+    </sect2>    
+
+  </sect1>
