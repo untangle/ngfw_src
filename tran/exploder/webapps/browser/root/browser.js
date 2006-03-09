@@ -35,12 +35,18 @@ function Browser(url)
 
 function SmbNode(path, name)
 {
+   this.href = "javascript:alert('HAHA')";
+
    if (name) {
       this.url = path + name;
       this.label = name;
    } else {
       this.url = path;
       this.label = path;
+   }
+
+   if (this.label.length - 1 == this.label.lastIndexOf("/")) {
+      this.label = this.label.substring(0, this.label.length - 1);
    }
 }
 
