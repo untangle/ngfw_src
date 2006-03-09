@@ -37,6 +37,8 @@ class InterfacesScriptWriter extends ScriptWriter
     private final NetworkSpacesInternalSettings settings;
     private final RemoteInternalSettings remote;
 
+    private boolean isDhcpEnabled = false;
+
     private static final String INTERFACE_HEADER = 
         COMMENT + METAVIZE_HEADER +
         COMMENT + " network interfaces\n\n" +
@@ -70,7 +72,11 @@ class InterfacesScriptWriter extends ScriptWriter
             if ( !space.getIsEnabled()) continue;
             
             /* Add a seperator betwixt each active space */
-            if ( !isFirst ) appendLine( "" );
+            if ( isFirst ) {
+                if ( space.getIsDhcpEnabled()) isDhcpEnabled = true;
+            } else {
+                appendLine( "" );
+            }            
 
             addNetworkSpace( space, isFirst );
             isFirst = false;
@@ -224,8 +230,8 @@ class InterfacesScriptWriter extends ScriptWriter
         }
         
         /* Add the default route last */
-        if (( defaultRoute != null ) && ( !defaultRoute.isEmpty())) {
-            appendCommands( "up ip route add to default via " + settings.getDefaultRoute());
+        if ( !isDhcpEnabled && ( defaultRoute != null ) && ( !defaultRoute.isEmpty())) {
+            appendCommands( "up ip route add to default via " + defaultRoute );
         }
         
         appendCommands( "up ip route flush table cache" );

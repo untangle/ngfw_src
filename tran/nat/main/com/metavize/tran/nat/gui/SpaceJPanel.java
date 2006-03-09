@@ -164,6 +164,7 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
                 /* If DHCP is enabled, add an address with no address */
                 if (networkSpace.getIsDhcpEnabled()) {
                     NattedPair nattedPair = new NattedPair(networkSpace,null);
+                    nattedJComboBox.addItem( nattedPair );
                     isFirst = false;
                 }
 

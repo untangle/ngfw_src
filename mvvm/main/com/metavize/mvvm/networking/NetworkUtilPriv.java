@@ -14,6 +14,8 @@ package com.metavize.mvvm.networking;
 import java.io.BufferedReader;
 import java.io.FileReader;
 
+import java.net.Inet4Address;
+
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Iterator;
@@ -442,6 +444,27 @@ class NetworkUtilPriv extends NetworkUtil
             
             InterfaceData data = externalIntfDataList.get( 0 );
             status = new DhcpStatus( data.getAddress(), data.getNetmask());
+            
+            /* Update the dns servers */
+            List<IPaddr> dnsServers = getDnsServers();
+            
+            switch( dnsServers.size()) {
+            default:
+            case 2:
+                settings.setDns2( dnsServers.get( 1 ));
+                
+            case 1:
+                settings.setDns1( dnsServers.get( 0 ));
+                break;
+
+            case 0:
+                logger.info( "DHCP didn't set any DNS servers" );
+            }
+
+            /* Update the default route */
+            Inet4Address gateway = (Inet4Address)Netcap.getGateway();
+            if ( gateway == null ) settings.setDefaultRoute( NetworkUtil.EMPTY_IPADDR );
+            else                   settings.setDefaultRoute( new IPaddr( gateway ));
         } catch( Exception e ) {
             logger.warn( "Error updating DHCP address", e );
         }
@@ -767,7 +790,7 @@ class NetworkUtilPriv extends NetworkUtil
         
         if ( primaryAddress == null || primaryAddress.equals( IPNetwork.getEmptyNetwork())) {
             /* XXX This is where it would handle the empty ip network */
-            logger.error( "Network space " + index + " doesn't have a primary address" );
+            logger.warn( "Network space " + index + " doesn't have a primary address" );
         }
 
         return ( primaryAddress == null ) ? IPNetwork.getEmptyNetwork() : primaryAddress;

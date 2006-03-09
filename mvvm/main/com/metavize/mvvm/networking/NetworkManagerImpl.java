@@ -795,7 +795,19 @@ public class NetworkManagerImpl implements NetworkManager
         throws NetworkException, ArgonException
     {
         writeInterfaces( newSettings );
-        writeResolvConf( newSettings );
+
+        List<NetworkSpaceInternal> networkSpaceList = newSettings.getNetworkSpaceList();
+        
+        boolean resolvConf = true;
+
+        if ( networkSpaceList == null || networkSpaceList.size() == 0 ) {
+            logger.warn( "no network spaces" );
+        } else if ( networkSpaceList.get( 0 ).getIsDhcpEnabled()) {
+            /* Don't write the resolv conf if dhcp is enabled on the first space. */
+            resolvConf = false;
+        }
+        
+        if ( resolvConf ) writeResolvConf( newSettings );
     }
 
     /* This is for /etc/network/interfaces interfaces */
