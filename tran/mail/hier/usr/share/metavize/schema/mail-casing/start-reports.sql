@@ -2,6 +2,9 @@
 
 CREATE SCHEMA reports;
 
+DROP TABLE reports.emails;
+DROP TABLE reports.emails_smtp;
+
 -- POP/IMAP emails
 CREATE TABLE reports.emails AS
   SELECT msg.id as msg_id, subject, server_type, recip_addr.addr AS recip_addr, recip_addr.kind AS recip_kind, from_addr.addr AS from_addr, c_client_addr, s_server_addr
