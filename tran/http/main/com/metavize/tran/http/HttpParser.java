@@ -401,7 +401,7 @@ public class HttpParser extends AbstractParser
 
                         if (null != rl) {
                             HttpResponseEvent evt = new HttpResponseEvent
-                                (rl, mimeType, contentLength);
+                                (rl, mimeType, lengthCounter);
 
                             casing.getTransform().log(evt);
                         }
@@ -409,7 +409,7 @@ public class HttpParser extends AbstractParser
                         HttpRequestEvent evt = requestLineToken
                             .getRequestLine()
                             .getHttpRequestEvent();
-                        evt.setContentLength(contentLength);
+                        evt.setContentLength(lengthCounter);
 
                         if (null == evt.getRequestLine()) {
                             logger.warn("null request for: "
