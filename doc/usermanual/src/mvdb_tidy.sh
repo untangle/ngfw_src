@@ -36,3 +36,5 @@ echo "ENDOF Stuff in content without corresponding figure"
 rm $TEMPFILE
 rm $CONTENT_FILE
 rm $FIGURES_FILE
+
+#grep -f configtab/outRefs.txt -R --include *.xml --exclude config_*.xml . | sed '/\.\/configtab/ d' > configRefs.txt

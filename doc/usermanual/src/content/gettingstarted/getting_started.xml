@@ -71,7 +71,7 @@
   <sect1 id="getting_started_installation_interfaces">
       <title>Interfaces</title>
       <para id="getting_started_interfaces"  xreflabel="Network Interfaces">
-	The &eg; has several interfaces. The internal, external and DMZ interfaces do not need separate IP addresses or IP address spaces. In the default configuration they are all bridged and share the same IP address and address space. Traffic is transparently captured and forwarded to the correct interface. If multiple address spaces are bridged you can specify "aliases" in the network settings <xref linkend="config_tab_network_networkaliases"/>.  
+	The &eg; has several interfaces. The internal, external and DMZ interfaces do not need separate IP addresses or IP address spaces. In the default configuration they are all bridged and share the same IP address and address space. Traffic is transparently captured and forwarded to the correct interface. If multiple address spaces are bridged you can specify "aliases" in the network settings <xref linkend="gblcfg_tab_networking_extaddraliases"/>.  
       </para>
       
       <para id="getting_started_internalip" xreflabel="Internal IP Address">

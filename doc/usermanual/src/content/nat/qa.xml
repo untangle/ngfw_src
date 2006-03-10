@@ -154,7 +154,7 @@
         </question>
         <answer>
           <para>
-            Yes, DHCP can be enabled if NAT is disabled.  The DHCP start and end range (see <xref linkend="nat_tran_dhcp_settings"/>) must fall into the network specified in the Network Settings panel  (see <xref linkend="config_tab_network_settings"/>).
+            Yes, DHCP can be enabled if NAT is disabled.  The DHCP start and end range (see <xref linkend="nat_tran_dhcp_settings"/>) must fall into the network specified in the Networking panel  (see <xref linkend="gblcfg_tab_networking"/>).
           </para>
         </answer>
       </qandaentry>

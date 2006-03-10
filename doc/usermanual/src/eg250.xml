@@ -15,6 +15,7 @@
 
 <!-- THIS IS DEPRICATED -->
 <!-- Config Tab -->
+<!--
 <!ENTITY config_tab SYSTEM "content/configtab/config_tab.xml">
 <!ENTITY config_tab_accounts SYSTEM "content/configtab/accounts.xml">
 <!ENTITY config_tab_network SYSTEM "content/configtab/network.xml">
@@ -24,6 +25,7 @@
 <!ENTITY config_tab_quarantine  SYSTEM "content/configtab/quarantine.xml">
 <!ENTITY config_tab_support SYSTEM "content/configtab/support.xml">
 <!ENTITY config_tab_qa SYSTEM "content/configtab/qa.xml">
+-->
 
 
 <!-- Global configuration (Gblcfg) -->
@@ -159,7 +161,9 @@
   &gblcfg_tab;
 
   <!-- TODO This is depricated -->
+<!--  
   &config_tab;
+-->  
 
   &policy_manager;
 

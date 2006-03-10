@@ -30,28 +30,27 @@
     <sect2 id="gblcfg_tab_support_protocoloverride">
       <title>Manual Protocol Overrides</title>
       <para>
-        The Manual Protocol Overrides Tab, as seen in <xref linkend="gblcfg_tab_support_protocoloverride_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
-      </para>
-      <figure id="gblcfg_tab_support_protocoloverride_figure">
-        <title>Manual Protocol Overrides Tab</title>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="figure/gblcfg/gblcfg_tab_support_protocoloverride.png" />
-          </imageobject>
-        </mediaobject>
-      </figure>
-      <para>
-        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        The Manual Protocol Overrides tab contains advanced properties for Web, Email and <glossterm linkend="gloss_ftp">FTP</glossterm> traffic.  These will be discussed in <xref linkend="gblcfg_tab_support_protocoloverride_http"/>, <xref linkend="gblcfg_tab_support_protocoloverride_mail"/>, and <xref linkend="gblcfg_tab_support_protocoloverride_ftp"/> respectively.
+        <warning>
+          <para>
+            Administrators should not change any Protocol Settings unless instructed to by a member of Metavize support or one of their authorized representatives.
+          </para>
+        </warning>
       </para>
 
-      <!-- ........................................................ -->
+      <!-- ................................................... -->
       <sect3 id="gblcfg_tab_support_protocoloverride_http">
         <title>HTTP Settings</title>
         <para>
-          The HTTP Settings Tab, as seen in <xref linkend="gblcfg_tab_support_protocoloverride_http_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+          The HTTP Settings tab of the Manual Protocol Override tab is seen in  <xref linkend="gblcfg_tab_support_protocoloverride_http_figure"/>.
+          <warning>
+            <para>
+              Administrators should not change the HTTP Settings tab unless instructed to by a member of Metavize support or one of their authorized representatives.
+            </para>
+          </warning>        
         </para>
         <figure id="gblcfg_tab_support_protocoloverride_http_figure">
-          <title>HTTP Settings Tab</title>
+          <title>Web Tab</title>
           <mediaobject>
             <imageobject>
               <imagedata fileref="figure/gblcfg/gblcfg_tab_support_protocoloverride_http.png" />
@@ -59,16 +58,26 @@
           </mediaobject>
         </figure>
         <para>
-          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+          The HTTP Settings tab of the Manual Protocol Override tab is divided into four sections.  The first, <guilabel>Web Override</guilabel> disables processing of all <glossterm linkend="gloss_http">HTTP</glossterm> traffic for <emphasis>all Software Appliances</emphasis>.  This should normally be set to <guilabel>Enable Processing</guilabel> unless under special circumstances (for example, you are a software company debugging your own web-enabled products).
+        </para>
+        <para>
+          <guilabel>Long URIs</guilabel> (see <glossterm linkend="gloss_uri">URIs</glossterm>) and <guilabel>Long Headers</guilabel> control the &eg; behavior with abnormal web traffic.  The default settings accommodate most standard web traffic.
+        </para>
+        <para>
+          <guilabel>Non-HTTP Blocking</guilabel> is used to control the &eg; behavior for non-http traffic over <glossterm linkend="gloss_port">port 80</glossterm>.  The default behavior is to allow such traffic.  Selecting the <guilabel>Stop</guilabel> option may prevent applications such as peer-to-peer file sharing or networked games from operating correctly.  Note that <quote>normal</quote> web traffic (from a browser to a web server) is not effected by this setting.
         </para>
       </sect3>
 
-
-      <!-- ........................................................ -->
+      <!-- ................................................... -->
       <sect3 id="gblcfg_tab_support_protocoloverride_mail">
         <title>Mail Settings</title>
         <para>
-          The Mail Settings Tab, as seen in <xref linkend="gblcfg_tab_support_protocoloverride_mail_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+          The Mail Settings tab of the Manual Protocol OVerride Tab can be seen in <xref linkend="gblcfg_tab_support_protocoloverride_mail_figure"/>.
+          <warning>
+            <para>
+              Administrators should not change the Mail Settings tab unless instructed to by a member of Metavize support or one of their authorized representatives.
+            </para>
+          </warning>         
         </para>
         <figure id="gblcfg_tab_support_protocoloverride_mail_figure">
           <title>Mail Settings Tab</title>
@@ -79,19 +88,30 @@
           </mediaobject>
         </figure>
         <para>
-          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+          The Mail Settings tab is divided into two sections, <guilabel>Email Overrides</guilabel> and <guilabel>Email Timeouts</guilabel>.  Each section can control settings for the three supported email protocols, <glossterm linkend="gloss_smtp">SMTP</glossterm>, <glossterm linkend="gloss_pop">POP</glossterm>, and <glossterm linkend="gloss_imap">IMAP</glossterm>.
+        </para>
+        <para>
+          <guilabel>Email Overrides</guilabel> lets Administrators turn off scanning for a given email protocol.  This applies <emphasis>to all Software Appliances</emphasis>.  For example, disabling SMTP would affect SPAM, Virus and Phish scanning.
+        </para>
+        <para>
+          The <guilabel>Email Timeouts</guilabel> section instructs the &eg; as to the maximum time it has for scanning.  If a given email takes more than this time to process, scanning is aborted and the mail passed to the client.  Note that setting this value too small risks passing contaminated content, and setting it too large risks timeouts in client programs (with user complaints to follow).
+          <note>
+            <para>
+              Default values are 30 seconds.  This is a large value relative to expected mail traffic, and should satisfy most normal installations.
+            </para>
+          </note>
         </para>
       </sect3>
 
 
-      <!-- ........................................................ -->
+      <!-- ................................................... -->
       <sect3 id="gblcfg_tab_support_protocoloverride_ftp">
-        <title>FTP Settings</title>
+        <title>File Transfer</title>
         <para>
-          The FTP Settings Tab, as seen in <xref linkend="gblcfg_tab_support_protocoloverride_ftp_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+          The File Transfer (<glossterm linkend="gloss_ftp">FTP</glossterm>) tab is seen in <xref linkend="gblcfg_tab_support_protocoloverride_ftp_figure"/>.
         </para>
         <figure id="gblcfg_tab_support_protocoloverride_ftp_figure">
-          <title>FTP Settings Tab</title>
+          <title>File Transfer Tab</title>
           <mediaobject>
             <imageobject>
               <imagedata fileref="figure/gblcfg/gblcfg_tab_support_protocoloverride_ftp.png" />
@@ -99,9 +119,9 @@
           </mediaobject>
         </figure>
         <para>
-          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+          From this tab, Administrators can turn on/off scanning of FTP traffic by selecting either <guilabel>Enable Processing</guilabel> or <guilabel>Disable Processing</guilabel>, respectively.  If disabled, no software appliances within the &eg; will scan FTP traffic.
         </para>
-      </sect3>            
+      </sect3> 
       
     </sect2>
 
@@ -110,7 +130,7 @@
     <sect2 id="gblcfg_tab_support_networkintfcs">
       <title>Network Interfaces</title>
       <para>
-        The Network Interfaces Tab, as seen in <xref linkend="gblcfg_tab_support_networkintfcs_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        The Network Interfaces Tab, as seen in <xref linkend="gblcfg_tab_support_networkintfcs_figure"/>, allows administrators to configure the behavior of the ethernet ports on the &eg; machine.
       </para>
       <figure id="gblcfg_tab_support_networkintfcs_figure">
         <title>Network Interfaces Tab</title>
@@ -121,7 +141,10 @@
         </mediaobject>
       </figure>
       <para>
-        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        When interfacing with old hardware, it may be nessecary to downgrade a given port from its default <guilabel>Auto-Negotiate</guilabel> setting to a more limiting setting.
+      </para>
+      <para>
+        Networking hardware which requires transfer rate limitation (100/10 Mbps) or which cannot auto-negotiate has not been readily available for several years.  It is unlikely that Administrators will have to modify these settings.
       </para>
 
     </sect2>    

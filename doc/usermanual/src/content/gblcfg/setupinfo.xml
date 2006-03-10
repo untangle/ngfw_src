@@ -2,14 +2,14 @@
   <sect1 id="gblcfg_tab_setupinfo">
     <title>Setup Info</title>
     <para>
-      XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      The Setup Info panel contains information entered during the initial startup of the &eg; machine.
     </para>
 
     <!-- ====================================================== -->
     <sect2 id="gblcfg_tab_setupinfo_version">
       <title>Version and Revision</title>
       <para>
-        The Version and Revision Tab, as seen in <xref linkend="gblcfg_tab_setupinfo_version_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        The Version and Revision Tab, as seen in <xref linkend="gblcfg_tab_setupinfo_version_figure"/>, lists the internal Metavize versions of the product.
       </para>
       <figure id="gblcfg_tab_setupinfo_version_figure">
         <title>Version and Revision Tab</title>
@@ -20,7 +20,7 @@
         </mediaobject>
       </figure>
       <para>
-        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        As the product is updated (see <xref linkend="upgrade_manager"/>), this value will change.  
       </para>
 
     </sect2>
@@ -29,7 +29,7 @@
     <sect2 id="gblcfg_tab_setupinfo_license">
       <title>License</title>
       <para>
-        The License Tab, as seen in <xref linkend="gblcfg_tab_setupinfo_license_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        The License Tab, as seen in <xref linkend="gblcfg_tab_setupinfo_license_figure"/>, presents the License Agreement acknowledged as your &eg; was first started.
       </para>
       <figure id="gblcfg_tab_setupinfo_license_figure">
         <title>License Tab</title>
@@ -40,7 +40,7 @@
         </mediaobject>
       </figure>
       <para>
-        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        There are no actions which can be taken from this screen.
       </para>
 
     </sect2>
@@ -50,7 +50,7 @@
     <sect2 id="gblcfg_tab_setupinfo_registration">
       <title>Registration</title>
       <para>
-        The Registration Tab, as seen in <xref linkend="gblcfg_tab_setupinfo_registration_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        The Registration Tab, as seen in <xref linkend="gblcfg_tab_setupinfo_registration_figure"/>, contains the information entered when the &eg; was first started.
       </para>
       <figure id="gblcfg_tab_setupinfo_registration_figure">
         <title>Registration Tab</title>
@@ -61,7 +61,7 @@
         </mediaobject>
       </figure>
       <para>
-        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        The Registration Tab may be used to simply review this information, or to update the data with Metavize.
       </para>
 
     </sect2>
@@ -71,7 +71,7 @@
     <sect2 id="gblcfg_tab_setupinfo_timezone">
       <title>Timezone</title>
       <para>
-        The Timezone Tab, as seen in <xref linkend="gblcfg_tab_setupinfo_timezone_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        The Timezone for your &eg; is set as seen in <xref linkend="gblcfg_tab_setupinfo_timezone_figure"/>.
       </para>
       <figure id="gblcfg_tab_setupinfo_timezone_figure">
         <title>Timezone Tab</title>
@@ -82,9 +82,8 @@
         </mediaobject>
       </figure>
       <para>
-        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        Administrators should select the timezone where the &eg; is deployed.
       </para>
-
-    </sect2>       
+    </sect2> 
 
   </sect1>

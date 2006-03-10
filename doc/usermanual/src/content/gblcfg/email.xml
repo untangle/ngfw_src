@@ -9,7 +9,7 @@
     <sect2 id="gblcfg_tab_email_outgoingsvr">
       <title>Outgoing Server</title>
       <para>
-        The Outgoing Server Tab, as seen in <xref linkend="gblcfg_tab_email_outgoingsvr_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        The Outgoing Server tab, as seen in <xref linkend="gblcfg_tab_email_outgoingsvr_figure"/>, lets administrators control how &eg; sends emails.
       </para>
       <figure id="gblcfg_tab_email_outgoingsvr_figure">
         <title>Outgoing Server Tab</title>
@@ -20,7 +20,16 @@
         </mediaobject>
       </figure>
       <para>
-        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        The &eg; sends emails for several reasons.  Various Software Appliances (for example, <link linkend="clam_tran">Virus Scanning</link>) will send end-users emails informing them of malicious payloads such as viruses.  The <link linkend="gblcfg_tab_email_quarantine">Quarantine</link> feature sends users a daily digest of the spams they received, and the <link linkend="reporting_tran">EdgeGuard Reports Appliance</link> sends daily summary reports to administrators about their &eg; activity.
+      </para>
+      <para>
+        The interface for configuring the email settings (as seen in <xref linkend="gblcfg_tab_email_outgoingsvr_figure"/>) requires two properties for normal mail traffic.  The first property, <guilabel>Hostname</guilabel>, is the name of your <glossterm linkend="gloss_smtp">SMTP</glossterm> mail server (e.g. <constant>mail.mycompany.com</constant> or <constant>4.79.181.14</constant>).  The second property is <guilabel>port</guilabel>.  The standard port for sending email via SMTP is <constant>25</constant>.  You should only change this setting if you know your mail server is using a non-standard port.
+      </para>
+      <para>
+        For sites using authenticated SMTP (SMTP which requires a username and password), the <guilabel>Authentication Login</guilabel> and <guilabel>Authentication Password</guilabel> fields should be set.  Otherwise, these can be safely left blank.
+      </para>
+      <para>
+        The final property, <guilabel>From Address</guilabel>, provides a <quote>FROM</quote> value for emails sent from &eg;.  
       </para>
     </sect2>
 
@@ -29,7 +38,7 @@
     <sect2 id="gblcfg_tab_email_safelist">
       <title>From-Safe List</title>
       <para>
-        The From-Safe List Tab, as seen in <xref linkend="gblcfg_tab_email_safelist_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        The From-Safe List Tab, as seen in <xref linkend="gblcfg_tab_email_safelist_figure"/>, lets Administrators review the <glossterm linkend="gloss_safelist">safelist</glossterm> maintained by each user.
       </para>
       <figure id="gblcfg_tab_email_safelist_figure">
         <title>From-Safe List Tab</title>
@@ -40,7 +49,10 @@
         </mediaobject>
       </figure>
       <para>
-        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        Users populate their safelist based on mails which were incorrectly quarantined (see <xref linkend="gblcfg_tab_email_quarantine"/>).  As seen in <xref linkend="gblcfg_tab_email_safelist_figure"/>, administrators may browse and modify the safelists of individual users.
+      </para>
+      <para>
+        Note that if a user has not elected to place any addresses into their safelist, their <quote> account</quote> will not appear in this screen.
       </para>
     </sect2>    
 

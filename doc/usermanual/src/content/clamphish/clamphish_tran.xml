@@ -93,7 +93,7 @@
                     </listitem>
                     <listitem>
                       <para>
-                        <constant>quarantine message</constant> causes the message to be <glossterm linkend="gloss_quarantine">quarantined</glossterm>.  For more information on the operation of this feature, please refer to <xref linkend="config_tab_quarantine"/>
+                        <constant>quarantine message</constant> causes the message to be <glossterm linkend="gloss_quarantine">quarantined</glossterm>.  For more information on the operation of this feature, please refer to <xref linkend="gblcfg_tab_email_quarantine"/>
                       </para>
                     </listitem>                    
                   </itemizedlist>

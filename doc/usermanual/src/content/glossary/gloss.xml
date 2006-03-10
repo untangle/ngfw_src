@@ -547,6 +547,15 @@ Place new terms under the appropriate alphabetical location.
   <glossdiv>
     <title>S</title>
 
+    <glossentry id="gloss_safelist">
+      <glossterm>Safelist</glossterm>
+      <glossdef>
+        <para>
+          A safelist is a general concept found throughout the &eg; system.  Where a given Software Appliance may block traffic, a safelist provides a special <quote>bypass</quote> for known acceptable content.  For example, individual users may have their own safelists of email addresses which (regardless of content) will never be considered spam.
+        </para>
+      </glossdef>
+    </glossentry>       
+
 
     <glossentry id="gloss_smtp">
       <glossterm>Simple Mail Transfer Protocol</glossterm>
