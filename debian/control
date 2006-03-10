@@ -940,7 +940,7 @@ Architecture: any
 Depends: mvvm, spam-base, spamc-mv, mail-casing, spamassassin-storeitem
 XB-Display-Name: SpamGuard
 XB-Website: http://www.metavize.com/spam.html
-XB-View-Position: 1
+XB-View-Position: 15
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVHja5Fh7bBzFGZ+ZnX3d
@@ -1055,7 +1055,7 @@ Architecture: any
 Depends: mvvm, spam-base, clamav-mv, mail-casing, clamphish-storeitem
 XB-Display-Name: PhishNet
 XB-Website: http://www.metavize.com/phishnet.html
-XB-View-Position: 10
+XB-View-Position: 17
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVHja5Fh7bBzFGZ+ZnX3d
