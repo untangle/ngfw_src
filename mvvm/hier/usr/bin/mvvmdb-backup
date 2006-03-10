@@ -34,13 +34,17 @@ datestamp=$(date '+%Y%m%d%H%M')
 [ $? -eq 0 ] || exit 1
 
 tar zcf $outdir/files-$datestamp.tar.gz --ignore-failed-read -C @PREFIX@/ \
-    etc/network/interfaces \
-    etc/resolv.conf \
-    usr/share/metavize/conf/networking.sh \
-    usr/share/metavize/conf/keystore \
-    usr/share/metavize/conf/shield.cfg \
-    usr/share/metavize/conf/openvpn \
-    etc/openvpn
+        etc/hostname \
+        etc/network/interfaces \
+        etc/openvpn \
+        etc/resolv.conf \
+        usr/share/metavize/conf/argon.properties \
+        usr/share/metavize/conf/keystore \
+        usr/share/metavize/conf/mvvm.networking.properties \
+        usr/share/metavize/conf/networking.sh \
+        usr/share/metavize/conf/openvpn/misc \
+        usr/share/metavize/conf/openvpn/pki \
+        usr/share/metavize/conf/timezone
 
 [ $? -eq 0 ] || exit 1    
 
