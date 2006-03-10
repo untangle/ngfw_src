@@ -59,12 +59,12 @@ function doHelp() {
 function createBackup() {
   debug "Creating Backup in " $1
   backup-mv $1
-#  pushd $1 2>&1 > /dev/null
+#  pushd $1 > /dev/null 2>&1
 #  datestamp=$(date '+%Y%m%d%H%M')
 #  echo "FOO" > mvvmdb-$datestamp.gz
 #  echo "MOO" > files-$datestamp.tar.gz
 #  echo "DOO" > installed-$datestamp
-#  popd 2>&1 > /dev/null
+#  popd > /dev/null 2>&1 
   DUMP_EXIT=$?
   debug "Done creating backup with return code $DUMP_EXIT"
   return $DUMP_EXIT
@@ -75,7 +75,7 @@ function createBackup() {
 # 2 = dir with backups
 function tarBackupFiles() {
   debug "Taring files in $2 into tar $1"
-  pushd $2 2>&1 > /dev/null 
+  pushd $2 > /dev/null 2>&1 
   tar -cf $1 .
   popd > /dev/null 2>&1
   TAR_EXIT=$?
