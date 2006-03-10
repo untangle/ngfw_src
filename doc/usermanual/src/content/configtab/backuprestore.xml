@@ -67,7 +67,7 @@
       <para>
         <note>
           <para>
-            As <xref linkend="config_tab_backuprestore_restore_figure"/> is a large, the remainder of screen images will be trimmed for better presentation.
+            As <xref linkend="config_tab_backuprestore_restore_figure"/> is a large picture, the remainder of screen images will be trimmed for better presentation.
           </para>
         </note>
         After selecting <guilabel>EdgeGuard Recovery</guilabel> from the <guilabel>Advanced</guilabel> menu, a confirmation screen will appear as seen in <xref linkend="config_tab_backuprestore_restore_figure_s1"/>.

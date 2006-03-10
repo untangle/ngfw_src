@@ -2,17 +2,23 @@
   <sect1 id="gblcfg_tab_support">
     <title>Support</title>
     <para>
-      XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      The Support panel is used when working with Metavize Support or one of their authorized representatives.
+      <warning>
+        <para>
+          Administrators should not change any properties of the Support panel unless instructed to by a member of Metavize support or one of their authorized representatives.
+        </para>
+      </warning>
     </para>
 
     <!-- ====================================================== -->
     <sect2 id="gblcfg_tab_support_accessrest">
       <title>Access Restrictions</title>
       <para>
-        The Access Restrictions Tab, as seen in <xref linkend="gblcfg_tab_support_accessrest_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        The Access Restrictions tab, as seen in <xref linkend="gblcfg_tab_support_accessrest_figure"/>, can enable Metavize Support or one of their authorized representatives to greater assist in troubleshooting.
       </para>
+  
       <figure id="gblcfg_tab_support_accessrest_figure">
-        <title>Access Restrictions Tab</title>
+        <title>Access Restrictions</title>
         <mediaobject>
           <imageobject>
             <imagedata fileref="figure/gblcfg/gblcfg_tab_support_accessrest.png" />
@@ -20,10 +26,17 @@
         </mediaobject>
       </figure>
       <para>
-        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        There are two ways in which Metavize support can assist in troubleshooting.  The first is to access the &eg; remotely via a secure protocol (<glossterm linkend="gloss_ssh">SSH</glossterm>).  This is enabled by selecting <guilabel>Allow</guilabel>, and disabled by selecting <guilabel>Disallow</guilabel>.
+        <note>
+          <para>
+            By default, SSH access is disabled.
+          </para>
+        </note>
       </para>
-
-    </sect2>
+      <para>
+        Administrators can also choose to have their &eg; send internal log messages to Metavize Support in the event of unexpected conditions.  These logs are internal to the product, and not only assist in troubleshooting but help Metavize produce a better product.  To enable such emails to be sent to Metavize support, check the box labeled <guilabel>Report</guilabel>.
+      </para>
+    </sect2> 
 
 
     <!-- ====================================================== -->

@@ -2,36 +2,24 @@
   <sect1 id="gblcfg_tab_backuprestore">
     <title>Backup and Restore</title>
     <para>
-      XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    The Backup and Restore panel allows Administrators to save a copy of the configuration of their &eg; (see <xref linkend="gblcfg_tab_backuprestore_backup"/>), and later restore (see <xref linkend="gblcfg_tab_backuprestore_restore"/>) that configuration.
     </para>
 
     <!-- ====================================================== -->
     <sect2 id="gblcfg_tab_backuprestore_backup">
       <title>Backup</title>
       <para>
-        The Backup Tab, as seen in <xref linkend="gblcfg_tab_backuprestore_backup_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        Backups save a copy of your current configuration, for later restoration.  Backups can be made to the &eg;'s hard drive, USB key, or to a local file as discussed in <xref linkend="gblcfg_tab_backuprestore_backup_harddisk"/>, <xref linkend="gblcfg_tab_backuprestore_backup_usb"/>,  and <xref linkend="gblcfg_tab_backuprestore_backup_localfile"/> respectively.
       </para>
-      <figure id="gblcfg_tab_backuprestore_backup_figure">
-        <title>Backup Tab</title>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="figure/gblcfg/gblcfg_tab_backuprestore_backup.png" />
-          </imageobject>
-        </mediaobject>
-      </figure>
-      <para>
-        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-      </para>
-
 
       <!-- ........................................................ -->
       <sect3 id="gblcfg_tab_backuprestore_backup_harddisk">
-        <title>To Hard Disk</title>
+        <title>Backup to Hard Disk</title>
         <para>
-          The To Hard Disk Tab, as seen in <xref linkend="gblcfg_tab_backuprestore_backup_harddisk_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+          The interface for performing backups to the &eg;'s hard disk is seen in <xref linkend="gblcfg_tab_backuprestore_backup_harddisk_figure"/>.
         </para>
         <figure id="gblcfg_tab_backuprestore_backup_harddisk_figure">
-          <title>To Hard Disk Tab</title>
+          <title>Backup to Hard Disk Tab</title>
           <mediaobject>
             <imageobject>
               <imagedata fileref="figure/gblcfg/gblcfg_tab_backuprestore_backup_harddisk.png" />
@@ -39,19 +27,19 @@
           </mediaobject>
         </figure>
         <para>
-          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+          Note that to restore from a backup, please refer to <xref linkend="gblcfg_tab_backuprestore_restore"/>.
         </para>
       </sect3>
 
 
       <!-- ........................................................ -->
       <sect3 id="gblcfg_tab_backuprestore_backup_usb">
-        <title>To USB Key</title>
+        <title>Backup to USB Key</title>
         <para>
-          The To USB Key Tab, as seen in <xref linkend="gblcfg_tab_backuprestore_backup_usb_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+          The interface for performing backups to a USB key is seen in <xref linkend="gblcfg_tab_backuprestore_backup_usb_figure"/>.
         </para>
         <figure id="gblcfg_tab_backuprestore_backup_usb_figure">
-          <title>To USB Key Tab</title>
+          <title>Backup to USB Key Tab</title>
           <mediaobject>
             <imageobject>
               <imagedata fileref="figure/gblcfg/gblcfg_tab_backuprestore_backup_usb.png" />
@@ -59,7 +47,7 @@
           </mediaobject>
         </figure>
         <para>
-          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+          Error messages will result if the USB key is not present, or is not formatted correctly.  Note that to restore from a backup, please refer to <xref linkend="gblcfg_tab_backuprestore_restore"/>.
         </para>
       </sect3>
 
@@ -68,7 +56,12 @@
       <sect3 id="gblcfg_tab_backuprestore_backup_localfile">
         <title>To Local File</title>
         <para>
-          The To Local File Tab, as seen in <xref linkend="gblcfg_tab_backuprestore_backup_localfile_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+          The To Local File Tab, as seen in <xref linkend="gblcfg_tab_backuprestore_backup_localfile_figure"/>, enables administrators to save a copy of their current configuration to the local machine.
+          <note>
+            <para>
+              The term <quote>local</quote> means <quote>the machine on which you are running the Administrative Console</quote>.
+            </para>
+          </note>
         </para>
         <figure id="gblcfg_tab_backuprestore_backup_localfile_figure">
           <title>To Local File Tab</title>
@@ -79,7 +72,12 @@
           </mediaobject>
         </figure>
         <para>
-          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+          The back is a single file (with the extension <constant>.egbackup</constant>) which can be saved anywhere on the local machine.  To initiate a backup, push the <guilabel>Backup to file</guilabel>.
+          <tip>
+            <para>
+              The backup file must have the extension <constant>.egbackup</constant>, but the rest of the name does not matter.  Choose file names that reflect the reason for the back such as <constant>BeforeOfficeMoveDowntown.egbackup</constant> or <constant>edgeguard_8_1_04.egbackup</constant>.
+            </para>
+          </tip>          
         </para>
       </sect3>              
       
@@ -90,45 +88,150 @@
     <sect2 id="gblcfg_tab_backuprestore_restore">
       <title>Restore</title>
       <para>
-        The Restore Tab, as seen in <xref linkend="gblcfg_tab_backuprestore_restore_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
-      </para>
-      <figure id="gblcfg_tab_backuprestore_restore_figure">
-        <title>Restore Tab</title>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="figure/gblcfg/gblcfg_tab_backuprestore_restore.png" />
-          </imageobject>
-        </mediaobject>
-      </figure>
-      <para>
-        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        The Restore tab contains options to restore the configuration of an &eg; from a previous backup.  Restoration can be made from the &eg;'s hard drive/USB key, or from a local file as discussed in <xref linkend="gblcfg_tab_backuprestore_restore_hdandusb"/>  and <xref linkend="gblcfg_tab_backuprestore_restore_localfile"/> respectively.
       </para>
 
       <!-- ........................................................ -->
       <sect3 id="gblcfg_tab_backuprestore_restore_hdandusb">
         <title>From Hard Disk and USB Key</title>
         <para>
-          The From Hard Disk and USB Key Tab, as seen in <xref linkend="gblcfg_tab_backuprestore_restore_hdandusb_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+          To restore from Hard Disk or USB key, an Administrator <emphasis>must</emphasis> be connected directly to the &eg; machine via keyboard, video and mouse.  The remainder of these instructions assume that the operator is directly connected in such a manner.
+        </para>
+        <para>
+          When connected directly to the &eg;, all that is visible is a screen with the Metavize logo.  Actions are accesses by right mouse clicking anywhere on this initial screen.  Right clicking reveals a menu, and the restore functionality is located under the <guilabel>Advanced</guilabel> option.  The default screen and menu selection are shown in <xref linkend="gblcfg_tab_backuprestore_restore_hdandusb_figure"/>.
         </para>
         <figure id="gblcfg_tab_backuprestore_restore_hdandusb_figure">
-          <title>From Hard Disk and USB Key Tab</title>
+          <title>Launching the Restore Application</title>
           <mediaobject>
             <imageobject>
-              <imagedata fileref="figure/gblcfg/gblcfg_tab_backuprestore_restore_hdandusb.png" />
+              <imagedata fileref="figure/gblcfg/gblcfg_tab_backuprestore_restore_hdandusb_full_console.png" />
             </imageobject>
           </mediaobject>
         </figure>
         <para>
-          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+          <note>
+            <para>
+              As <xref linkend="gblcfg_tab_backuprestore_restore_hdandusb_figure"/> is a large image, the remainder of screen images will be trimmed for better presentation.
+            </para>
+          </note>
+          After selecting <guilabel>EdgeGuard Recovery</guilabel> from the <guilabel>Advanced</guilabel> menu, a confirmation screen will appear as seen in <xref linkend="gblcfg_tab_backuprestore_restore_hdandusb_figure_s1"/>.
         </para>
-      </sect3>
+  
+        <!-- ...................................... -->
+        <figure id="gblcfg_tab_backuprestore_restore_hdandusb_figure_s1">
+          <title>Confirmation Screen</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/gblcfg/gblcfg_tab_backuprestore_restore_hdandusb_s1.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          Select <guilabel>Yes</guilabel> to continue with the restore.  The next screen offers a few options.  Select <guilabel>Backup &amp; Restore</guilabel>, after which the screen should appear as seen in <xref linkend="gblcfg_tab_backuprestore_restore_hdandusb_figure_s2"/>.
+        </para>
+  
+  
+        <!-- ...................................... -->
+        <figure id="gblcfg_tab_backuprestore_restore_hdandusb_figure_s2">
+          <title>Action Selection Screen</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/gblcfg/gblcfg_tab_backuprestore_restore_hdandusb_s2.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          The next screen offers the option of restoring from <guilabel>Local Hard Drive</guilabel> or <guilabel>USB Key</guilabel>.  The remainder of these examples assume <guilabel>USB Key</guilabel>, although the process is similar for both techniques.
+        </para>
+  
+  
+        <!-- ...................................... -->
+        <figure id="gblcfg_tab_backuprestore_restore_hdandusb_figure_s3">
+          <title>Restore Method Screen</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/gblcfg/gblcfg_tab_backuprestore_restore_hdandusb_s3.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          After selecting <guilabel>USB Key</guilabel>, you must insert the USB key (which contains the backed-up data, as discussed in <xref linkend="gblcfg_tab_backuprestore_backup_usb"/>).  Once the USB key has been inserted into the machine, click the <guilabel>OK</guilabel> button.
+        </para>
+  
+  
+        <!-- ...................................... -->
+        <figure id="gblcfg_tab_backuprestore_restore_hdandusb_figure_s4">
+          <title>Insert USB Screen</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/gblcfg/gblcfg_tab_backuprestore_restore_hdandusb_s4.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          If you have performed backup multiple times, there are data for each backup on the USB key.  The system will ask which backup you wish to restore from, as seen in <xref linkend="gblcfg_tab_backuprestore_restore_hdandusb_figure_s5"/>.
+        </para>      
+  
+  
+  
+        <!-- ...................................... -->
+        <figure id="gblcfg_tab_backuprestore_restore_hdandusb_figure_s5">
+          <title>Backup Image Selection Screen</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/gblcfg/gblcfg_tab_backuprestore_restore_hdandusb_s5.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          Note that the names of each backup are the date/time which the backup was performed.  After selecting the backup data, click the OK button.  This starts the restore process, as seen in <xref linkend="gblcfg_tab_backuprestore_restore_hdandusb_figure_s6"/>.
+        </para>      
+        <para>
+          While performing the restore, the window will display many messages.  These are just informational, and may be ignored.
+          <caution>
+            <para>
+              Restore may take some time.  Please be patient and do <emphasis>not</emphasis> power off the machine while restore is taking place
+            </para>
+          </caution>
+  
+        </para>
+  
+  
+        <!-- ...................................... -->
+        <figure id="gblcfg_tab_backuprestore_restore_hdandusb_figure_s6">
+          <title>Restoration Progress Screen</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/gblcfg/gblcfg_tab_backuprestore_restore_hdandusb_s6.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          When complete, the system will inform the Administrator via a screen as seen in <xref linkend="gblcfg_tab_backuprestore_restore_hdandusb_figure_s7"/>.
+        </para>
+  
+  
+        <!-- ...................................... -->
+        <figure id="gblcfg_tab_backuprestore_restore_hdandusb_figure_s7">
+          <title>Completion Notification Screen</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/gblcfg/gblcfg_tab_backuprestore_restore_hdandusb_s7.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>
+          Administrators may exit all menus and return to the console desktop.
+        </para>      
+        
+      </sect3> 
 
 
       <!-- ........................................................ -->
       <sect3 id="gblcfg_tab_backuprestore_restore_localfile">
         <title>From Local File</title>
         <para>
-          The From Local File Tab, as seen in <xref linkend="gblcfg_tab_backuprestore_restore_localfile_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+          The From Local File Tab, as seen in <xref linkend="gblcfg_tab_backuprestore_restore_localfile_figure"/>, is the reverse step of backing up to a file as discussed in <xref linkend="gblcfg_tab_backuprestore_backup_localfile"/>.
         </para>
         <figure id="gblcfg_tab_backuprestore_restore_localfile_figure">
           <title>From Local File Tab</title>
@@ -139,7 +242,12 @@
           </mediaobject>
         </figure>
         <para>
-          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+          To restore from a local file, that file <emphasis>must</emphasis> be available from the machine running the Administrative Console.  To begin a restoration, push the <guilabel>Restore from file</guilabel> button.  This will let the Administrator choose the file (ending in <constant>.egbackup</constant>) to restore-from.  Once selected, a final confirmation screen will be presented before restore begins.
+          <note>
+            <para>
+              Restoring from a local file requires the system to restart.  The Administrative Console will also exit.  
+            </para>
+          </note>
         </para>
       </sect3>        
       
