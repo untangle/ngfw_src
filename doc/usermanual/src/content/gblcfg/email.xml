@@ -119,8 +119,9 @@
       <sect3 id="gblcfg_tab_email_quarantine_quarfwds">
         <title>Quarantinable Forwards</title>
         <para>
-          The Quarantinable Forwards Tab, as seen in <xref linkend="gblcfg_tab_email_quarantine_quarfwds_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+          The Quarantinable Forwards Tab, as seen in <xref linkend="gblcfg_tab_email_quarantine_quarfwds_figure"/>, provides a mechanism to quarantine emails destined for one address to another.
         </para>
+
         <figure id="gblcfg_tab_email_quarantine_quarfwds_figure">
           <title>Quarantinable Forwards Tab</title>
           <mediaobject>
@@ -130,8 +131,37 @@
           </mediaobject>
         </figure>
         <para>
-          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+          The Quarantinable Forwards feature was added to accomidate distribution lists which receive spam.  Consider the list <constant>sales@yourcompany.com</constant>.  There may be a team of 5 sales professionals who read the emails on this list.  When a spam is sent to <constant>sales@yourcompany.com</constant>, all 5 members of the list would receive quarantine digests.
         </para>
+        <para>
+          Having 5 people maintain the same quarantine inbox may become confusing.  To avoid this confusion, Administrators can cause emails being quarantined for one address to be routed to another.  For example, if the <constant>sales@yourcompany.com</constant> list goes to Emma, Joey, Jun, Aaron, and Cho, the administrator can declare that unwanted email going to <constant>sales@yourcompany.com</constant> be placed in the inbox <constant>emma@yourcompany.com</constant>.
+        </para>
+        <para>
+          To add a new forward to the list, push the add (plus) button to the right.  A new row is added to the screen.  The meaning of each entry is as follows:
+          
+          <variablelist id="gblcfg_tab_email_quarantine_quarfwds_columns">
+            <varlistentry>
+              <term><guilabel>distribution list address</guilabel></term>
+              <listitem>
+                <para>
+                  The address receiving unwanted email to be re-routed to another inbox.  Although technically this does not have to be a distribution list, this is the normal usage.  In the previous example, this would be <constant>sales@yourcompany.com</constant>.
+                </para>
+              </listitem>
+            </varlistentry>
+            
+            <varlistentry>
+              <term><guilabel>send to address</guilabel></term>
+              <listitem>
+                <para>
+                  The email address corresponding to the inbox to sequester the email.  In the previous example, this would be <constant>emma@yourcompany.com</constant>.
+                </para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+        </para>
+        <para>
+          Although perhaps a subtle point, the release behavior with Quarantine Forwards does <emphasis>not</emphasis> continue the forwarding.  With our previous example, if an email quarantined for <constant>sales@yourcompany.com</constant> is released by Emma, it will be received by Emma <emphasis>as well as </emphasis> Joey, Jun, Aaron, and Cho.
+        </para>   
       </sect3>
 
 
@@ -139,7 +169,7 @@
       <sect3 id="gblcfg_tab_email_quarantine_general">
         <title>General Settings</title>
         <para>
-          The General Settings Tab, as seen in <xref linkend="gblcfg_tab_email_quarantine_general_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+          The General Settings tab, as seen in <xref linkend="gblcfg_tab_email_quarantine_general_figure"/>, provides administrative access to overall Quarantine properties.
         </para>
         <figure id="gblcfg_tab_email_quarantine_general_figure">
           <title>General Settings Tab</title>
@@ -150,9 +180,36 @@
           </mediaobject>
         </figure>
         <para>
-          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+          There are three settings on the General Settings Tab.  Their meaning is as follows.
+  
+          <variablelist>
+            <varlistentry>
+              <term><guilabel>Maximum Holding Time</guilabel></term>
+              <listitem>
+                <para>
+                  This is the maximum time (in days) that a given email can be maintained within an inbox.  If the mail is not purged/released within this time, the mail will be automatically deleted by &eg;.
+                </para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term><guilabel>Digest From Address</guilabel></term>
+              <listitem>
+                <para>
+                  This is the <constant>From</constant> as it appears on digest emails sent to end users.
+                </para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term><guilabel>Digest Sending Time</guilabel></term>
+              <listitem>
+                <para>
+                  This is the time of day when the daily digest emails are sent.
+                </para>
+              </listitem>
+            </varlistentry>                     
+          </variablelist>
         </para>
-      </sect3>             
+      </sect3>
 
     </sect2>
 
