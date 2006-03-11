@@ -1,4 +1,6 @@
 <%@ page language="java" import="jcifs.smb.*" %>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 <%@ taglib prefix="browser" uri="WEB-INF/browser.tld" %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -7,33 +9,29 @@
 
 <head>
 <title>HippieSoft.com(tm) Exploder(r)</title>
+<style type="text/css">
+<!--
+@import url(img/dwtimgs.css);
+-->
+</style>
 <link rel="stylesheet" type="text/css" href="browser.css"/>
-<link rel="stylesheet" type="text/css" href="dialog.css"/>
-<link rel="stylesheet" type="text/css" href="tree.css"/>
-<script type="text/javascript" src="prototype-1.3.1.js"></script>
-<script type="text/javascript" src="dialog.js"></script>
+
+<jsp:include page="Messages.jsp"/>
+<jsp:include page="Ajax.jsp"/>
+
 <script type="text/javascript" src="browser.js"></script>
-<script type="text/javascript" src="YAHOO.js"></script>
-<script type="text/javascript" src="connection.js"></script>
-<script type="text/javascript" src="treeview.js"></script>
+
 </head>
 
-<body onload="new Browser('smb://bebe/')">
-
-<div id="toolbar">
-<input type="button" value="delete" onclick="deleteSelection()"/>
-<input type="button" value="refresh" onclick="refreshDetails()"/>
-<input id="upload-button" type="button" value="upload" onclick="testDialog()"/>
-</div>
-
-<div id="summary">
-<CENTER><B>SUMMARY</B></CENTER>
-</div>
-
-<div id="tree">
-</div>
-
-<div id="detail"></div>
-
+<body>
+<noscript><p><b>Javascript must be enabled to use this.</b></p></noscript>
+<script language="JavaScript">
+function launch() {
+DBG = new AjxDebug(AjxDebug.NONE, null, false);
+Browser.run();
+}
+AjxCore.addOnloadListener(launch);
+</script>
 </body>
+
 </html>

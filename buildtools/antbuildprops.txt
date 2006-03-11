@@ -8,6 +8,7 @@ XMLDIFF_HOME=/opt/xmldiff
 
 # You shouldn't need to change anything past here.
 
+AJAXTK_HOME=../../downloads/output/Ajax
 ANTCONTRIB_HOME=../../downloads/output/ant-contrib-1.0b2
 ANTCPPTASKS_HOME=../../downloads/output/cpptasks-1.0b3
 ANTPACK200_HOME=../../downloads/ant-pack200

@@ -17,6 +17,56 @@
 
 <web-app>
 
+  <!-- Zimbra stuff -->
+
+  <context-param>
+    <param-name>
+      javax.servlet.jsp.jstl.fmt.fallbackLocale
+    </param-name>
+    <param-value>
+      en
+    </param-value>
+  </context-param>
+  <context-param>
+     <param-name>admin.allowed.ports</param-name>
+     <param-value>7071</param-value>
+  </context-param>
+
+
+  <!-- The protocol mode can be one of three modes - mixed, http, or https -->
+  <env-entry>
+      <env-entry-name>protocolMode</env-entry-name>
+      <env-entry-value>http</env-entry-value>
+      <env-entry-type>java.lang.String</env-entry-type>
+  </env-entry>
+  <!--
+    * The http and httpsPort need to be in sync with the webserver
+    * or the proxy - these are the ports that will be used in redirects
+    -->
+  <env-entry>
+      <env-entry-name>httpsPort</env-entry-name>
+      <env-entry-value>443</env-entry-value>
+      <env-entry-type>java.lang.String</env-entry-type>
+  </env-entry>
+
+  <env-entry>
+      <env-entry-name>httpPort</env-entry-name>
+      <env-entry-value>80</env-entry-value>
+      <env-entry-type>java.lang.String</env-entry-type>
+  </env-entry>
+
+  <servlet>
+    <servlet-name>Properties2Javascript</servlet-name>
+    <servlet-class>com.zimbra.webClient.servlet.Props2JsServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>Properties2Javascript</servlet-name>
+    <url-pattern>/js/msgs/*</url-pattern>
+  </servlet-mapping>
+
+  <!-- Metavize stuff -->
+
   <display-name>Exploder</display-name>
 
   <servlet>

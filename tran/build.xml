@@ -464,12 +464,30 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
   <target name="install.exploder">
     <mkdir dir="${dist.mvvm.web}/browser/WEB-INF/lib"/>
+
     <copy todir="${dist.mvvm.web}/browser/WEB-INF/lib">
       <fileset refid="log4j.jarset"/>
       <fileset refid="mvvm-client.jarset"/>
       <fileset refid="jcifs.jarset"/>
       <fileset refid="commons-fileupload.jarset"/>
       <fileset refid="commons-io.jarset"/>
+      <fileset refid="ajaxtk.thirdparty.jarset"/>
+    </copy>
+
+    <copy todir="${dist.mvvm.web}/browser/WEB-INF/classes">
+      <fileset dir="${AJAXTK_HOME}/build/classes"/>
+    </copy>
+
+    <mkdir dir="${dist.mvvm.web}/browser/WEB-INF/tlds"/>
+
+    <copy todir="${dist.mvvm.web}/browser/WEB-INF/tlds">
+      <fileset dir="${AJAXTK_HOME}/WebRoot/WEB-INF/tlds"/>
+    </copy>
+
+    <mkdir dir="${dist.mvvm.web}/browser/js"/>
+
+    <copy todir="${dist.mvvm.web}/browser/js">
+      <fileset dir="${AJAXTK_HOME}/WebRoot/js"/>
     </copy>
   </target>
 
@@ -839,9 +857,16 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
       <classpath refid="mvvm.thirdparty.classpath"/>
       <classpath refid="tomcat.thirdparty.classpath"/>
+      <classpath refid="ajaxtk.thirdparty.classpath"/>
     </javac>
 
     <mkdir dir="${build.gensrc}/browser/"/>
+
+    <copy todir="${dist.mvvm.web}/browser">
+      <fileset dir="${AJAXTK_HOME}/build/WebRoot/examples">
+        <include name="*.jsp"/>
+      </fileset>
+    </copy>
 
     <java classname="org.apache.jasper.JspC"
           fork="true"
@@ -857,6 +882,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <classpath path="${java.home}/../lib/tools.jar"/>
       <classpath refid="tomcat.thirdparty.classpath"/>
       <classpath refid="mvvm.thirdparty.classpath"/>
+      <classpath refid="ajaxtk.thirdparty.classpath"/>
     </java>
 
     <echo message="Adding JSP servlet mappings to web.xml"/>

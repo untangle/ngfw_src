@@ -278,6 +278,12 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
     <fileset refid="httpclient.jarset"/>
   </path>
 
+  <fileset id="ajaxtk.thirdparty.jarset" dir="${AJAXTK_HOME}/jars"/>
+
+  <path id="ajaxtk.thirdparty.classpath">
+    <fileset refid="ajaxtk.thirdparty.jarset"/>
+  </path>
+
   <fileset id="bcel.jarset" dir="${BCEL_HOME}">
     <include name="bcel-5.1.jar"/>
   </fileset>
