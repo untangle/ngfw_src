@@ -1,31 +1,17 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-function SmbNode(path, name)
-{
-   if (name) {
-      this.url = path + name;
-      this.label = name;
-   } else {
-      this.url = path;
-      this.label = path;
-   }
-
-   if (this.label.length - 1 == this.label.lastIndexOf("/")) {
-      this.label = this.label.substring(0, this.label.length - 1);
-   }
-}
-
 function Browser(parent) {
    this.tree = new DwtTree(parent, null, null, DwtControl.ABSOLUTE_STYLE);
-   this.tree.setBounds(0, 0, Dwt.DEFAULT, "100%");
+   this.tree.setBounds(0, 0, "150px", "100%");
+   this.tree.setScrollStyle(DwtControl.SCROLL);
    this.addItems();
    this.tree.addSelectionListener(new AjxListener(this, this.treeListener));
+   this.tree.reparentHtmlElement("tree-panel");
    this.tree.zShow(true);
 }
 
-Browser.run =
-function() {
+Browser.run = function() {
    var shell = new DwtShell("MainShell");
    new Browser(shell);
 }
