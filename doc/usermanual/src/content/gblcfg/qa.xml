@@ -2,11 +2,11 @@
       <!-- ************************************************************** -->
       <qandaentry>
         <question>
-          <para>Where are the questions?</para>
+          <para>If an unwanted email (spam, phishing, etc) is received for an email address which is not <link linkend="gblcfg_tab_email_quarantine_quaraddrs">Quarantinable</link> but my rules are set to quarantine - what happens?</para>
         </question>
         <answer>
           <para>
-            We need to write them (TODO).
+            The Quarantinable Addresses rules take precidence over the actions for email rules.  In this situation, the email would be marked rather than quarantined.
           </para>
         </answer>
       </qandaentry>

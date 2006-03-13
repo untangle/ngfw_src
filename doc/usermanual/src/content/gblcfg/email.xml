@@ -2,7 +2,7 @@
   <sect1 id="gblcfg_tab_email">
     <title>Email</title>
     <para>
-      XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      The Email section of the Config tab controls all common email-related behavior in the &eg;.  It begins with the properties defining how the &eg; sends emails (reports, Quarantine Digests, etc) as discussed in <xref linkend="gblcfg_tab_email_outgoingsvr"/>.  Next, configuration of common safelists is discussed in <xref linkend="gblcfg_tab_email_safelist"/>.  The final tab, discussed in <xref linkend="gblcfg_tab_email_quarantine"/>, explains the configuration and maintenence of the quarantine subsystem.
     </para>
 
     <!-- ====================================================== -->
@@ -61,28 +61,53 @@
     <sect2 id="gblcfg_tab_email_quarantine">
       <title>Quarantine</title>
       <para>
-        The Quarantine Tab, as seen in <xref linkend="gblcfg_tab_email_quarantine_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        The &eg; has the ability to store emails suspected of containing unwanted content.  This store can then be reviewed to ensure no emails were mistakenly labeled as unwanted (sometimes called a <quote>false positive</quote>).  This facility is called the Quarantine.  The decision to quarantine emails is made in each Software Appliance (for example, <link linkend="spamassassin_tran">SpamGuard</link> or <link linkend="clamphish_tran">PhishNet</link>).
       </para>
-      <figure id="gblcfg_tab_email_quarantine_figure">
-        <title>Quarantine Tab</title>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="figure/gblcfg/gblcfg_tab_email_quarantine.png" />
-          </imageobject>
-        </mediaobject>
-      </figure>
       <para>
-        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        This section discusses the Quarantine facility within &eg;.  It begins with an overview, as discussed in <xref linkend="gblcfg_tab_email_quarantine_overview"/>.  Also discussed are Administrative interfaces to manage mails quarantined for individual email addresses in <xref linkend="gblcfg_tab_email_quarantine_releasepurge"/>.
+        <note>
+          <para>
+            The Quarantine facility sends emails to individuals within the protected network.  It may also be accessed by Administrators.  To avoid confusion, we will use the term <quote>end user</quote> to refer to a person within the protected network who receives email.  End users may interact with the Quarantine system via a web interface.  Although end users can purge/release their own emails, they lack privileges to launch the &eg; Administrative Interface.
+          </para>
+          <para>
+            We will use the proper noun <quote>Administrator</quote> when discussing an Administrative User interacting with the &eg; Administrative Interface to control quarantined emails for many users.
+          </para>
+        </note>
       </para>
 
       <!-- ........................................................ -->
-      <sect3 id="gblcfg_tab_email_quarantine_releasepurge">
-        <title>Release And Purge</title>
+      <sect3 id="gblcfg_tab_email_quarantine_overview">
+        <title>Quarantine and Safelist Overview</title>
         <para>
-          The Release And Purge Tab, as seen in <xref linkend="gblcfg_tab_email_quarantine_releasepurge_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+          The Quarantine facility of &eg; will store emails suspected of containing unwanted content (for example, <glossterm linkend="gloss_spam">SPAM</glossterm> or <glossterm linkend="gloss_phishing">phishing</glossterm>).  This storage is done on a per-email address basis.  For example, if <constant>escott@yourcompany.com</constant> receives three SPAM emails in a day, those three emails are quarantined for <constant>escott</constant>.  The collection of emails for a given address is said to be an <quote>inbox</quote>.
+        </para>
+        <para>
+          The &eg; quarantine system has been designed so end-users can maintain their own inbox.  They do so via a daily <quote>digest email</quote> which summarizes any quarantined emails.  Users can then release emails (causing them to be sent to their email clients), or delete them.  
+        </para>
+        <para>
+          The daily digest emails are delivered in <glossterm linkend="gloss_htmp">HTML</glossterm> format, such that they contain links to a web server.  The web server is housed within the &eg;.  In this way, the digest emails allow for direct communication with end-users to maintain their inboxes.
+          <note>
+            <para>
+              Some users will choose not to act on (ignore) their digest emails.  If a user ignores their inbox for many days (and receives many spams), their inbox will grow.  This is not a concern, as the &eg; automatically deletes emails after a fixed period of time.  This period is configurable, as discussed in <xref linkend="gblcfg_tab_email_quarantine_general"/>
+            </para>
+          </note>
+          While interacting with their inbox, users may also choose to declare that a given sender does <emphasis>not</emphasis> send unwanted email.  This is used to instruct the &eg; to never consider emails from a given sender to be unsolicited.  The set of these <quote>good</quote> senders is said to be the <quote>safelist</quote> for a given user.  From the web interface, end users can maintain their safelist.
+          <note>
+            <para>
+              Use of safelist by end users is optional.  Should a given end user choose not to populate their safelist, there is no negative effect on the overall &eg; system.
+            </para>
+          </note>
+        </para>
+      </sect3>            
+      
+      <!-- ........................................................ -->
+      <sect3 id="gblcfg_tab_email_quarantine_releasepurge">
+        <title>Quarantine Release and Purge</title>
+        <para>
+          As discussed in <xref linkend="gblcfg_tab_email_quarantine"/>, end users normally maintain their own inboxes.  However, there may be special circumstances when Administrators are called upon to maintain end-user inboxes.  This is performed through the administrative release/purge interface, as seen in <xref linkend="gblcfg_tab_email_quarantine_releasepurge_figure"/>.
         </para>
         <figure id="gblcfg_tab_email_quarantine_releasepurge_figure">
-          <title>Restrictions Tab</title>
+          <title>Quarantine Release and Purge Tab</title>
           <mediaobject>
             <imageobject>
               <imagedata fileref="figure/gblcfg/gblcfg_tab_email_quarantine_releasepurge.png" />
@@ -90,8 +115,49 @@
           </mediaobject>
         </figure>
         <para>
-          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+          The interface for administrative release and purge interface is presented as a table, with each row corresponding to an end user's inbox.  By highlighting on a given row, Administrators can perform one of three actions defined by the buttons at the bottom of the panel.
+  
+          <variablelist>
+            <varlistentry>
+              <term><guilabel>Purge selected</guilabel></term>
+              <listitem>
+                <para>
+                  The <guilabel>Purge selected</guilabel> button causes all emails within a given inbox to be deleted.  This is the same as an end-user triggering a delete of all emails from the web application.
+                </para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term><guilabel>Release selected</guilabel></term>
+              <listitem>
+                <para>
+                  The <guilabel>Release selected</guilabel> button causes all emails within a given inbox to be sent to the email address of the inbox.  This is the same as an end-user triggering a release of all emails from the web application.
+                </para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term><guilabel>Show detail</guilabel></term>
+              <listitem>
+                <para>
+                  The <guilabel>Show detail</guilabel> button triggers a detailed view of the contents of a given inbox.  Administrators can then purge/release individual mails from that account.
+                </para>
+              </listitem>
+            </varlistentry>                    
+          </variablelist>
         </para>
+        <para>
+          Selecting the <guilabel>Show detail</guilabel> button brings up a full listing of emails in a given user's inbox, as seen in <xref linkend="gblcfg_tab_email_quarantine_releasepurge_detail_figure"/>.
+        </para>
+        <figure id="gblcfg_tab_email_quarantine_releasepurge_detail_figure">
+          <title>Quarantine Details Window</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figure/gblcfg/gblcfg_tab_email_quarantine_releasepurge_detail.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>        
+        <para>
+          Individual mails may be purged (deleted) or released by highlighting rows and pushing the <guilabel>Purge Selected</guilabel> or <guilabel>Release Selected</guilabel> buttons respectively.
+        </para>  
       </sect3>
 
 
@@ -99,7 +165,7 @@
       <sect3 id="gblcfg_tab_email_quarantine_quaraddrs">
         <title>Quarantinable Addresses</title>
         <para>
-          The Quarantinable Addresses Tab, as seen in <xref linkend="gblcfg_tab_email_quarantine_quaraddrs_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+          The Quarantinable Addresses Tab, as seen in <xref linkend="gblcfg_tab_email_quarantine_quaraddrs_figure"/>, is used by Administrators to define which email addresses should use the quarantine feature.
         </para>
         <figure id="gblcfg_tab_email_quarantine_quaraddrs_figure">
           <title>Quarantinable Addresses Tab</title>
@@ -110,7 +176,10 @@
           </mediaobject>
         </figure>
         <para>
-          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+          The Quarantinable Addresses feature is used to prevent quarantine inboxes (and corresponding digest emails) from being generated but for a defined set of addresses.  
+        </para>
+        <para>
+          To add a new Quarantinable Address to the list, push the add (plus) button to the right.  A new row is added to the screen.  The field of most importance is <guilabel>quarantineable address</guilabel>.  This defines an address which can use the quarantine feature.  For example, a list with only <constant>emma@yourcompany.com</constant> will prevent emails for <constant>fred@yourcompany.com</constant> from being quarantined.  Note that the star ("*") symbol may be used as a wildcard.  For example, <constant>*@yourcompany.com</constant> will permit any email address at <constant>yourcompany.com</constant> to use the quarantine feature.  Wildcards may also appear on the right of the at ("@") symbol.  For example, the address <constant>*@*.yourschool.com</constant> will allow any email ending in <constant>@faculty.yourschool.com</constant> and <constant>@students.yourschool.com</constant> to use the quarantine feature.
         </para>
       </sect3>
 
