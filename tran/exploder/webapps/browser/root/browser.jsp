@@ -19,19 +19,24 @@
 <jsp:include page="Messages.jsp"/>
 <jsp:include page="Ajax.jsp"/>
 
-<script type="text/javascript" src="browser.js"></script>
+<script type="text/javascript" src="Browser.js"></script>
+<script type="text/javascript" src="DirTree.js"></script>
+<script type="text/javascript" src="DetailPanel.js"></script>
 
 </head>
 
 <body>
-<noscript><p><b>Javascript must be enabled to use this.</b></p></noscript>
+
+<noscript><p><b>Please enable JavaScript to use this application</b></p></noscript>
+
 <script language="JavaScript">
 function launch() {
 DBG = new AjxDebug(AjxDebug.NONE, null, false);
-Browser.run();
+new Browser();
 }
 AjxCore.addOnloadListener(launch);
 </script>
+
 </body>
 
 </html>
