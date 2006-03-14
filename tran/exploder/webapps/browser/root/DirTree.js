@@ -5,9 +5,8 @@ function DirTree(parent, className, posStyle) {
    if (0 == arguments.length) {
       return;
    }
-   className = className || "DirTree";
-   //DwtTree.call(this, parent, DwtTree.SINGLE_STYLE, className, posStyle);
-   DwtTree.call(this, parent, null, null, DwtControl.ABSOLUTE_STYLE)
+   var className = className || "DirTree";
+   DwtTree.call(this, parent, DwtTree.SINGLE_STYLE, className, posStyle);
 
    this.addItems();
    this.addSelectionListener(new AjxListener(this, this.treeListener));

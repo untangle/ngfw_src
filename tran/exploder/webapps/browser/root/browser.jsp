@@ -32,7 +32,9 @@
 <script language="JavaScript">
 function launch() {
 DBG = new AjxDebug(AjxDebug.NONE, null, false);
-new Browser();
+
+var shell = new DwtShell("MainShell");
+new Browser(shell);
 }
 AjxCore.addOnloadListener(launch);
 </script>
