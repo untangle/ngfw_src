@@ -430,7 +430,7 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
             }
             catch(Exception e){		
                 Util.handleExceptionNoRestart("Error validating: ", e);
-                new MOneButtonJDialog(MWizardJDialog.this, "Wizard", e.getMessage());
+                MOneButtonJDialog.factory(MWizardJDialog.this, "", e.getMessage(), "Wizard", "");
 		changePage &= false;
             }
 	    // SEND LEAVING EVENT TO CURRENT PAGE

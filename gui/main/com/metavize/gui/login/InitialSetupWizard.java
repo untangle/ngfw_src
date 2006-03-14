@@ -61,7 +61,7 @@ public class InitialSetupWizard extends MWizardJDialog {
 								 "You should continue, if possible.  ", "Setup Wizard Warning", "Warning");	    
 	if( dialog.isProceeding() ){
 	    if( currentPage <= 3 ){ // NOT REGISTERED, MUST DO WIZARD AGAIN
-		new MOneButtonJDialog(this, MESSAGE_DIALOG_TITLE, MESSAGE_NOT_REGISTERED);
+		MOneButtonJDialog.factory(this, "", MESSAGE_NOT_REGISTERED, MESSAGE_DIALOG_TITLE, "");
 	    }
 	    if( currentPage >= 4 )
 		isRegistered = true;

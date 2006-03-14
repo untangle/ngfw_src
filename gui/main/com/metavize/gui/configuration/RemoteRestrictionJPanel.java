@@ -167,9 +167,9 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
 
                 setLayout(new java.awt.GridBagLayout());
 
-                setMaximumSize(new java.awt.Dimension(563, 380));
-                setMinimumSize(new java.awt.Dimension(563, 380));
-                setPreferredSize(new java.awt.Dimension(563, 380));
+                setMaximumSize(new java.awt.Dimension(550, 380));
+                setMinimumSize(new java.awt.Dimension(550, 380));
+                setPreferredSize(new java.awt.Dimension(550, 380));
                 externalRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
                 externalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "External Remote Administration", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
@@ -199,6 +199,7 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
                 externalRemoteJPanel.add(externalAdminPortJLabel, gridBagConstraints);
 
                 externalAdminPortJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
+                externalAdminPortJSpinner.setFocusable(false);
                 externalAdminPortJSpinner.setMaximumSize(new java.awt.Dimension(100, 20));
                 externalAdminPortJSpinner.setMinimumSize(new java.awt.Dimension(100, 20));
                 externalAdminPortJSpinner.setPreferredSize(new java.awt.Dimension(100, 20));

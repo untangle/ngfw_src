@@ -181,6 +181,7 @@ public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 natEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 natEnabledJRadioButton.setText("Enabled");
                 natEnabledJRadioButton.setFocusPainted(false);
+                natEnabledJRadioButton.setFocusable(false);
                 natEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 natEnabledJRadioButtonActionPerformed(evt);
@@ -198,6 +199,7 @@ public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 natDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 natDisabledJRadioButton.setText("Disabled");
                 natDisabledJRadioButton.setFocusPainted(false);
+                natDisabledJRadioButton.setFocusable(false);
                 natDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 natDisabledJRadioButtonActionPerformed(evt);
@@ -260,6 +262,7 @@ public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 restrictIPJPanel.add(jLabel5, gridBagConstraints);
 
+                internalAddressIPaddrJTextField.setFocusable(false);
                 internalAddressIPaddrJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
                 internalAddressIPaddrJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
                 internalAddressIPaddrJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
@@ -284,6 +287,7 @@ public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 restrictIPJPanel.add(jLabel8, gridBagConstraints);
 
+                internalSubnetIPaddrJTextField.setFocusable(false);
                 internalSubnetIPaddrJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
                 internalSubnetIPaddrJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
                 internalSubnetIPaddrJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
@@ -339,7 +343,7 @@ public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 internalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "External Address (Public Address)", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
                 jTextArea1.setEditable(false);
                 jTextArea1.setLineWrap(true);
-                jTextArea1.setText("The external address is EdgeGuard's address on the external network.  This is specified through the \"Network Settings\" Config Panel.");
+                jTextArea1.setText("The external address is EdgeGuard's address on the external network.  This is specified through the \"Networking\" Config Panel.");
                 jTextArea1.setWrapStyleWord(true);
                 jTextArea1.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();

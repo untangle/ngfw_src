@@ -52,7 +52,7 @@ public class QuarantineSingleUserJPanel extends javax.swing.JPanel
         // create actual table model
         quarantineUserTableModel = new QuarantineUserTableModel(account);
         setTableModel( quarantineUserTableModel );
-        
+        quarantineUserTableModel.setSortingStatus(3, quarantineUserTableModel.ASCENDING);
     }
 
     public void doRefresh(MailTransformCompoundSettings mailTransformCompoundSettings){
@@ -244,11 +244,15 @@ public class QuarantineSingleUserJPanel extends javax.swing.JPanel
             catch(Exception e){
 		if( doRelease ){
 		    Util.handleExceptionNoRestart("Error releasing inbox", e);
-		    new MOneButtonJDialog((Dialog)QuarantineSingleUserJPanel.this.getTopLevelAncestor(), "Quarantine Release Warning", "An account could not be released.");
+		    MOneButtonJDialog.factory(QuarantineSingleUserJPanel.this.getTopLevelAncestor(), "",
+					      "An account could not be released.",
+					      "Quarantine Release Warning","");
 		}
 		else{
 		    Util.handleExceptionNoRestart("Error purging inbox", e);
-		    new MOneButtonJDialog((Dialog)QuarantineSingleUserJPanel.this.getTopLevelAncestor(), "Quarantine Purge Warning", "An account could not be purged.");		    
+		    MOneButtonJDialog.factory(QuarantineSingleUserJPanel.this.getTopLevelAncestor(), "",
+					      "An account could not be purged.",
+					      "Quarantine Purge Warning","");		    
 		}
 	    }
 	    // DO REFRESH
@@ -300,7 +304,7 @@ class QuarantineUserTableModel extends MSortedTableModel<MailTransformCompoundSe
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #   min  rsz    edit   remv   desc   typ               def
         addTableColumn( tableColumnModel,  0,  Util.STATUS_MIN_WIDTH, false, false, true,  false, String.class,     null, sc.TITLE_STATUS );
-	addTableColumn( tableColumnModel,  1,  Util.LINENO_MIN_WIDTH, false, false, false, false, Integer.class,    null, sc.TITLE_INDEX );
+	addTableColumn( tableColumnModel,  1,  Util.LINENO_MIN_WIDTH, false, false, true,  false, Integer.class,    null, sc.TITLE_INDEX );
         addTableColumn( tableColumnModel,  2, 150, true,  false,  true,  false, String.class, null, sc.html("MailID") );
         addTableColumn( tableColumnModel,  3, 150, true,  false,  false, false, String.class, null, sc.html("Date") );
         addTableColumn( tableColumnModel,  4, 150, true,  false,  false, false, String.class, null, sc.html("Sender") );

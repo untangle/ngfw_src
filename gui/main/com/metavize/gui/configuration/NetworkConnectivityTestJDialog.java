@@ -189,7 +189,7 @@ public class NetworkConnectivityTestJDialog extends javax.swing.JDialog implemen
             ConnectivityTester.Status status = null;
             try{
 		int initialTimeout = MvvmRemoteContextFactory.factory().getTimeout();
-		MvvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_SECONDS);
+		MvvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_MILLIS);
                 status = Util.getMvvmContext().getConnectivityTester().getStatus();		
 		MvvmRemoteContextFactory.factory().setTimeout(initialTimeout);
             }

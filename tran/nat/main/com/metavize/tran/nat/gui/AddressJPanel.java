@@ -59,7 +59,7 @@ class AddressTableModel extends MSortedTableModel<Object>{
     private static final int  C3_MW = 130;  /* current static target IP */
     private static final int  C4_MW = 130;  /* current IP */
     private static final int  C5_MW = 100;  /* hostname */
-    private static final int  C6_MW = 100;  /* current lease end */
+    private static final int  C6_MW = 150;  /* current lease end */
     private static final int  C7_MW = 120;  /* category */
     
     private final int C8_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW), 120); /* description */

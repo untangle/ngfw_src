@@ -151,6 +151,7 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 dmzEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 dmzEnabledJRadioButton.setText("Enabled");
                 dmzEnabledJRadioButton.setFocusPainted(false);
+                dmzEnabledJRadioButton.setFocusable(false);
                 dmzEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 dmzEnabledJRadioButtonActionPerformed(evt);
@@ -168,6 +169,7 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 dmzDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 dmzDisabledJRadioButton.setText("Disabled");
                 dmzDisabledJRadioButton.setFocusPainted(false);
+                dmzDisabledJRadioButton.setFocusable(false);
                 dmzDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 dmzDisabledJRadioButtonActionPerformed(evt);
@@ -217,6 +219,7 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 restrictIPJPanel.add(jLabel5, gridBagConstraints);
 
+                targetAddressIPaddrJTextField.setFocusable(false);
                 targetAddressIPaddrJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
                 targetAddressIPaddrJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
                 targetAddressIPaddrJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
@@ -282,6 +285,7 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 dmzLogEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 dmzLogEnabledJRadioButton.setText("Enabled");
                 dmzLogEnabledJRadioButton.setFocusPainted(false);
+                dmzLogEnabledJRadioButton.setFocusable(false);
                 dmzLogEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 dmzLogEnabledJRadioButtonActionPerformed(evt);
@@ -299,6 +303,7 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 dmzLogDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 dmzLogDisabledJRadioButton.setText("Disabled");
                 dmzLogDisabledJRadioButton.setFocusPainted(false);
+                dmzLogDisabledJRadioButton.setFocusable(false);
                 dmzLogDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 dmzLogDisabledJRadioButtonActionPerformed(evt);

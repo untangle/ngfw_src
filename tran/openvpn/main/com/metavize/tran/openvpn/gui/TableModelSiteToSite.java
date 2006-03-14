@@ -35,7 +35,7 @@ public class TableModelSiteToSite extends MSortedTableModel<Object>{
     private static final int C2_MW = 65;  /* enabled */
     private static final int C3_MW = 70;  /* isEdgeGuard */
     private static final int C4_MW = 150; /* name */
-    private static final int C5_MW = 120; /* group */
+    private static final int C5_MW = 150; /* group */
     private static final int C6_MW = 120; /* network address */
     private static final int C7_MW = 120; /* netmask */
     private static final int C8_MW = 120; /* action */

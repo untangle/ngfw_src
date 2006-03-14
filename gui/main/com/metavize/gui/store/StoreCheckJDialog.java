@@ -13,19 +13,24 @@ package com.metavize.gui.store;
 
 import javax.swing.*;
 
+import java.awt.Container;
+import java.awt.Frame;
+import java.awt.Dialog;
+import java.awt.Window;
+
 import com.metavize.gui.util.Util;
 import com.metavize.mvvm.*;
 import com.metavize.mvvm.toolbox.MackageDesc;
 
 public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
 
-    /** Creates new form ProceedJDialog */
-    public StoreCheckJDialog() {
-        super(Util.getMMainJFrame(), true);
+
+    public StoreCheckJDialog(Frame parentFrame) {
+        super(parentFrame, true);
         initComponents();
         this.addWindowListener(this);
-
         this.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), this.getWidth(), this.getHeight()) );
+	setVisible(true);
     }
 
     public void setVisible(boolean isVisible){
@@ -161,6 +166,7 @@ public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.e
             super("MVCLIENT-UpgradeCheckThread");
             this.setDaemon(true);
             this.setContextClassLoader(Util.getClassLoader());
+	    Util.setUpgradeCount(Util.UPGRADE_CHECKING);
             this.start();
         }
         public void run() {
@@ -199,6 +205,7 @@ public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.e
                     StoreCheckJDialog.this.jProgressBar.setIndeterminate(false);
                     StoreCheckJDialog.this.jProgressBar.setString("Upgrades check problem.  Please try again later.");
                 }});
+		Util.setUpgradeCount(Util.UPGRADE_UNAVAILABLE);
             }
 
         }

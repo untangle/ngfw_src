@@ -152,6 +152,7 @@ public class DhcpJPanel extends javax.swing.JPanel implements Savable<Object>, R
                 dhcpEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 dhcpEnabledJRadioButton.setText("Enabled");
                 dhcpEnabledJRadioButton.setFocusPainted(false);
+                dhcpEnabledJRadioButton.setFocusable(false);
                 dhcpEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 dhcpEnabledJRadioButtonActionPerformed(evt);
@@ -169,6 +170,7 @@ public class DhcpJPanel extends javax.swing.JPanel implements Savable<Object>, R
                 dhcpDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 dhcpDisabledJRadioButton.setText("Disabled");
                 dhcpDisabledJRadioButton.setFocusPainted(false);
+                dhcpDisabledJRadioButton.setFocusable(false);
                 dhcpDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 dhcpDisabledJRadioButtonActionPerformed(evt);
@@ -231,6 +233,7 @@ public class DhcpJPanel extends javax.swing.JPanel implements Savable<Object>, R
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 restrictIPJPanel.add(jLabel5, gridBagConstraints);
 
+                startAddressIPaddrJTextField.setFocusable(false);
                 startAddressIPaddrJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
                 startAddressIPaddrJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
                 startAddressIPaddrJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
@@ -255,6 +258,7 @@ public class DhcpJPanel extends javax.swing.JPanel implements Savable<Object>, R
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 restrictIPJPanel.add(jLabel8, gridBagConstraints);
 
+                endAddressIPaddrJTextField.setFocusable(false);
                 endAddressIPaddrJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
                 endAddressIPaddrJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
                 endAddressIPaddrJTextField.setPreferredSize(new java.awt.Dimension(150, 19));

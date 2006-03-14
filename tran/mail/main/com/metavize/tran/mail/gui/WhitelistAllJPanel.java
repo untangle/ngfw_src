@@ -51,7 +51,7 @@ public class WhitelistAllJPanel extends javax.swing.JPanel
         // create actual table model
         whitelistAllTableModel = new WhitelistAllTableModel();
         setTableModel( whitelistAllTableModel );
-        
+        whitelistAllTableModel.setSortingStatus(2, whitelistAllTableModel.ASCENDING);
     }
 
     public void doRefresh(EmailCompoundSettings emailCompoundSettings){
@@ -259,8 +259,8 @@ class WhitelistAllTableModel extends MSortedTableModel<EmailCompoundSettings> {
         //                                 #   min  rsz    edit   remv   desc   typ               def
         addTableColumn( tableColumnModel,  0,  Util.STATUS_MIN_WIDTH, false, false, true, false, String.class,     null, sc.TITLE_STATUS );
 	addTableColumn( tableColumnModel,  1,  Util.LINENO_MIN_WIDTH, false, false, true, false, Integer.class,    null, sc.TITLE_INDEX );
-        addTableColumn( tableColumnModel,  2, 300, true,  false,  false, true,  String.class, null, sc.html("Account Address") );
-        addTableColumn( tableColumnModel,  3,  85, true,  false,  false, false, Integer.class, null, sc.html("Safe List<br>Size") );
+        addTableColumn( tableColumnModel,  2, 300, true,  false,  false, true,  String.class, null, sc.html("account address") );
+        addTableColumn( tableColumnModel,  3,  85, true,  false,  false, false, Integer.class, null, sc.html("safe list<br>size") );
         return tableColumnModel;
     }
 

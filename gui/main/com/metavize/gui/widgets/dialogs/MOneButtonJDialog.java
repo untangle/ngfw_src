@@ -11,6 +11,7 @@
 
 package com.metavize.gui.widgets.dialogs;
 
+import java.awt.Container;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.Window;
@@ -19,11 +20,24 @@ import com.metavize.gui.util.Util;
 
 public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
 
+    /*
     public MOneButtonJDialog() {
         super( (Util.getMMainJFrame()!=null?Util.getMMainJFrame():Util.getMLoginJFrame() ),
                (Util.getMMainJFrame()!=null?true:false) );
         init(null);
     }
+    */
+
+    /*
+    public MOneButtonJDialog(String applianceName, String warning) {
+        super( (Util.getMMainJFrame()!=null?Util.getMMainJFrame():Util.getMLoginJFrame() ),
+               (Util.getMMainJFrame()!=null?true:false) );
+        init(null);
+        this.setTitle(applianceName + " Warning");
+        messageJLabel.setText("<html><center>" + warning + "</center></html>");
+        this.setVisible(true);
+    }
+    */
 
     public MOneButtonJDialog(Dialog parentDialog) {
         super(parentDialog, true);
@@ -33,6 +47,10 @@ public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.e
     public MOneButtonJDialog(Frame parentFrame) {
         super(parentFrame, true);
         init(parentFrame);
+    }
+
+    public static MOneButtonJDialog factory(Container topLevelContainer, String applianceName, String warning, String title, String subtitle){
+	return factory( (Window)topLevelContainer, applianceName, warning, title, subtitle);
     }
 
     public static MOneButtonJDialog factory(Window topLevelWindow, String applianceName, String warning, String title, String subtitle){
@@ -62,6 +80,7 @@ public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.e
         this.setVisible(true);
     }
 
+    /*
     public MOneButtonJDialog(Dialog topLevelDialog, String applianceName, String warning){
         super(topLevelDialog, true);
         init(topLevelDialog);
@@ -69,15 +88,8 @@ public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.e
         messageJLabel.setText("<html><center>" + warning + "</center></html>");
         this.setVisible(true);
     }
+    */
 
-    public MOneButtonJDialog(String applianceName, String warning) {
-        super( (Util.getMMainJFrame()!=null?Util.getMMainJFrame():Util.getMLoginJFrame() ),
-               (Util.getMMainJFrame()!=null?true:false) );
-        init(null);
-        this.setTitle(applianceName + " Warning");
-        messageJLabel.setText("<html><center>" + warning + "</center></html>");
-        this.setVisible(true);
-    }
 
     private void init(Window window){
         initComponents();

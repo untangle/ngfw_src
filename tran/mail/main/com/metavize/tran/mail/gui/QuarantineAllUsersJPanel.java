@@ -51,6 +51,7 @@ public class QuarantineAllUsersJPanel extends javax.swing.JPanel
         // create actual table model
         quarantineAllTableModel = new QuarantineAllTableModel();
         setTableModel( quarantineAllTableModel );
+	quarantineAllTableModel.setSortingStatus(2, quarantineAllTableModel.ASCENDING);
     }
 
     public void doRefresh(EmailCompoundSettings emailCompoundSettings){
@@ -279,11 +280,15 @@ public class QuarantineAllUsersJPanel extends javax.swing.JPanel
             catch(Exception e){
 		if( doRelease ){
 		    Util.handleExceptionNoRestart("Error releasing inbox", e);
-		    new MOneButtonJDialog((Dialog)QuarantineAllUsersJPanel.this.getTopLevelAncestor(), "Quarantine Release Warning", "An account could not be released.");
+		    MOneButtonJDialog.factory(QuarantineAllUsersJPanel.this.getTopLevelAncestor(), "",
+					      "An account could not be released.",
+					      "Quarantine Release Warning", "");
 		}
 		else{
 		    Util.handleExceptionNoRestart("Error purging inbox", e);
-		    new MOneButtonJDialog((Dialog)QuarantineAllUsersJPanel.this.getTopLevelAncestor(), "Quarantine Purge Warning", "An account could not be purged.");		    
+		    MOneButtonJDialog.factory(QuarantineAllUsersJPanel.this.getTopLevelAncestor(), "",
+					      "An account could not be purged.",
+					      "Quarantine Purge Warning", "");		    
 		}
 	    }
 	    // DO REFRESH
@@ -335,9 +340,9 @@ class QuarantineAllTableModel extends MSortedTableModel<MailTransformCompoundSet
         //                                 #   min  rsz    edit   remv   desc   typ               def
         addTableColumn( tableColumnModel,  0,  Util.STATUS_MIN_WIDTH, false, false, true, false, String.class,     null, sc.TITLE_STATUS );
 	addTableColumn( tableColumnModel,  1,  Util.LINENO_MIN_WIDTH, false, false, true, false, Integer.class,    null, sc.TITLE_INDEX );
-        addTableColumn( tableColumnModel,  2, 300, true,  false,  false, true,  String.class, null, sc.html("Account Address") );
-        addTableColumn( tableColumnModel,  3,  85, true,  false,  false, false, Integer.class, null, sc.html("Message<br>Count") );
-        addTableColumn( tableColumnModel,  4,  85, true,  false,  false, false, Long.class,    null, sc.html("Data Size<br>(kB)") );
+        addTableColumn( tableColumnModel,  2, 300, true,  false,  false, true,  String.class, null, sc.html("account address") );
+        addTableColumn( tableColumnModel,  3,  85, true,  false,  false, false, Integer.class, null, sc.html("message<br>count") );
+        addTableColumn( tableColumnModel,  4,  85, true,  false,  false, false, Long.class,    null, sc.html("data size<br>(kB)") );
         return tableColumnModel;
     }
 

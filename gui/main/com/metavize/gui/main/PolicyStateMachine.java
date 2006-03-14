@@ -174,6 +174,7 @@ public class PolicyStateMachine implements ActionListener {
         // THREAD QUEUES & THREADS /////////
         purchaseBlockingQueue = new ArrayBlockingQueue<MTransformJButton>(1000);
         new MoveFromStoreToToolboxThread();
+	actionJTabbedPane.setSelectedIndex(0);
         storeModelThread = new StoreModelThread();
         MessageClient msgClient = new MessageClient(Util.getMvvmContext());
         msgClient.setToolboxMessageVisitor(new StoreMessageVisitor());
@@ -227,12 +228,6 @@ public class PolicyStateMachine implements ActionListener {
             try{ Util.handleExceptionWithRestart("Error instantiating policy model", e); }
             catch(Exception f){ Util.handleExceptionNoRestart("Error instantiating policy model", f); }
         }
-
-        // CHOOSE A DEFAULT ACTIONBAR POSITION
-        if( storeMap.size() > 0 )
-            actionJTabbedPane.setSelectedIndex(0);
-        else
-            actionJTabbedPane.setSelectedIndex(1);
 
         Util.setPolicyStateMachine(this);
     }
@@ -452,10 +447,11 @@ public class PolicyStateMachine implements ActionListener {
                 catch(Exception f){
                     Util.handleExceptionNoRestart("Error moving from toolbox to rack", f);
                     mTransformJButton.setFailedDeployView();
-                    new MOneButtonJDialog(mTransformJButton.getDisplayName(),
-                                          "A problem occurred while installing to the rack:<br>"
-                                          + mTransformJButton.getDisplayName()
-                                          + "<br>Please contact Metavize support.");
+                    MOneButtonJDialog.factory( Util.getMMainJFrame(), "",					       
+					       "A problem occurred while installing to the rack:<br>"
+					       + mTransformJButton.getDisplayName()
+					       + "<br>Please contact Metavize support.",
+					       mTransformJButton.getDisplayName() + " Warning", "");
                     return;
                 }
             }
@@ -504,10 +500,11 @@ public class PolicyStateMachine implements ActionListener {
                     Util.handleExceptionNoRestart("Error moving from rack to toolbox", f);
                     mTransformJPanel.setProblemView(true);
                     mTransformJButton.setFailedRemoveFromRackView();
-                    new MOneButtonJDialog(mTransformJPanel.getMackageDesc().getDisplayName(),
-                                          "A problem occurred while removing from the rack:<br>"
-                                          + mTransformJPanel.getMackageDesc().getDisplayName()
-                                          + "<br>Please contact Metavize support.");
+                    MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
+					      "A problem occurred while removing from the rack:<br>"
+					      + mTransformJPanel.getMackageDesc().getDisplayName()
+					      + "<br>Please contact Metavize support.",
+					      mTransformJPanel.getMackageDesc().getDisplayName() + " Warning", "");
                     return;
                 }
             }
@@ -547,12 +544,13 @@ public class PolicyStateMachine implements ActionListener {
 			buttonVector.add( toolboxMap.get(buttonKey) );
 		    }
 		    else{
-			new MOneButtonJDialog(mTransformJButton.getDisplayName(),
-					      mTransformJButton.getDisplayName()
-					      + " cannot be removed from the toolbox because it is being"
-					      + " used by the following policy rack:<br><b>"
-					      + policyToolboxMapEntry.getKey().getName()
-					      + "</b><br><br>You must remove the appliance from all policy racks first.");
+			MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
+						  mTransformJButton.getDisplayName()
+						  + " cannot be removed from the toolbox because it is being"
+						  + " used by the following policy rack:<br><b>"
+						  + policyToolboxMapEntry.getKey().getName()
+						  + "</b><br><br>You must remove the appliance from all policy racks first.",
+						  mTransformJButton.getDisplayName() + " Warning", "");
 			return;
 		    }
 		}
@@ -578,10 +576,11 @@ public class PolicyStateMachine implements ActionListener {
 		catch(Exception f){
 		    Util.handleExceptionNoRestart("Error moving from toolbox to store", f);
 		    mTransformJButton.setFailedRemoveFromToolboxView();
-		    new MOneButtonJDialog(mTransformJButton.getDisplayName(),
-					  "A problem occurred while removing from the toolbox:<br>"
-					  + mTransformJButton.getDisplayName()
-					  + "<br>Please contact Metavize support.");
+		    MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
+					      "A problem occurred while removing from the toolbox:<br>"
+					      + mTransformJButton.getDisplayName()
+					      + "<br>Please contact Metavize support.",
+					      mTransformJButton.getDisplayName() + " Warning", "");
 		    return;
 		}
 	    }
@@ -718,7 +717,7 @@ public class PolicyStateMachine implements ActionListener {
                 // ADD TO TOOLBOX
                 List<MackageDesc> newMackageDescs = computeNewMackageDescs(originalInstalledMackages, currentInstalledMackages);
                 for( MackageDesc newMackageDesc : newMackageDescs ){
-                    if( !isMackageStoreItem(newMackageDesc) ){
+                    if( !isMackageStoreItem(newMackageDesc) && isMackageVisible(newMackageDesc) ){
                         MTransformJButton newMTransformJButton = new MTransformJButton(newMackageDesc);
                         if( newMTransformJButton.getMackageDesc().isUtil() || newMTransformJButton.getMackageDesc().isService()){
                             addToToolbox(null,newMTransformJButton.getMackageDesc(),false,false);
@@ -745,10 +744,11 @@ public class PolicyStateMachine implements ActionListener {
                     Util.handleExceptionNoRestart("Error purchasing:", f);
                     mTransformJButton.setFailedProcureView();
                     SwingUtilities.invokeLater( new Runnable(){ public void run(){
-                        new MOneButtonJDialog(mTransformJButton.getDisplayName(),
-                                              "A problem occurred while purchasing:<br>"
-                                              + mTransformJButton.getDisplayName()
-                                              + "<br>Please try again or contact Metavize for assistance.");
+                        MOneButtonJDialog.factory(Util.getMMainJFrame(), "",						  
+						  "A problem occurred while purchasing:<br>"
+						  + mTransformJButton.getDisplayName()
+						  + "<br>Please try again or contact Metavize for assistance.",
+						  mTransformJButton.getDisplayName() + " Warning", "");
                     }});
                 }
             }
@@ -792,6 +792,7 @@ public class PolicyStateMachine implements ActionListener {
     private class StoreModelThread extends Thread {
         private JProgressBar storeProgressBar;
         private volatile boolean doUpdate = false;
+	private volatile boolean firstRun = true;
         public StoreModelThread(){
             setDaemon(true);
 	    setName("MVCLIENT-UpdateStoreModelThread");
@@ -814,6 +815,7 @@ public class PolicyStateMachine implements ActionListener {
                 try{
                     initStoreModel();
                     synchronized(this){
+			firstRun = false;
                         if( doUpdate )
                             doUpdate = false;
                         else
@@ -856,6 +858,8 @@ public class PolicyStateMachine implements ActionListener {
                     storeProgressBar.setValue(0);
                     storeProgressBar.setIndeterminate(false);
                     storeProgressBar.setString("No Connection");
+		    if(firstRun)
+			actionJTabbedPane.setSelectedIndex(0);
                 }});
             }
             else{
@@ -865,6 +869,8 @@ public class PolicyStateMachine implements ActionListener {
                         storeProgressBar.setValue(0);
                         storeProgressBar.setIndeterminate(false);
                         storeProgressBar.setString("No New Items");
+			if(firstRun)
+			    actionJTabbedPane.setSelectedIndex(1);			
                     }});
                 }
                 else{
@@ -876,6 +882,8 @@ public class PolicyStateMachine implements ActionListener {
                         storeJPanel.add(storeSpacerJPanel, storeSpacerGridBagConstraints, 0);
                         storeJPanel.revalidate();
                         storeJPanel.repaint();
+			if(firstRun)
+			    actionJTabbedPane.setSelectedIndex(0);
                     }});
                     for( MackageDesc mackageDesc : storeItemsAvailable ){
                         addToStore(mackageDesc,false);
@@ -1397,6 +1405,11 @@ public class PolicyStateMachine implements ActionListener {
         public void actionPerformed(java.awt.event.ActionEvent evt){
             if( Util.getIsDemo() )
                 return;
+	    if( Util.mustCheckUpgrades() ){
+		new StoreCheckJDialog( Util.getMMainJFrame() );
+	    }
+	    if( Util.getUpgradeCount() != 0 )
+		return;
 	    try{
 		String authNonce = Util.getAdminManager().generateAuthNonce();
 		URL newURL = new URL( Util.getServerCodeBase(), "../store/storeitem.php?name="
@@ -1405,9 +1418,10 @@ public class PolicyStateMachine implements ActionListener {
 	    }
 	    catch(Exception f){
 		Util.handleExceptionNoRestart("error launching browser for Store", f);
-		new MOneButtonJDialog("Metavize Store Warning",
-				      "A problem occurred while trying to access Store."
-				      + "<br>Please contact Metavize support.");
+		MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
+					  "A problem occurred while trying to access Store."
+					  + "<br>Please contact Metavize support.",
+					  "Metavize Store Warning", "");
 	    }
 
         }
@@ -1468,8 +1482,12 @@ public class PolicyStateMachine implements ActionListener {
             else if( mTransformJButton.getMackageDesc().isCore() ){
                 focusMTransformJButton = coreToolboxMap.get(buttonKey);
             }
-	    else
+	    else{
 		focusMTransformJButton = null;
+	    }
+	    if( focusMTransformJButton == null )
+		System.err.println("--> (warning): " + mTransformJButton.getMackageDesc().getName() );
+
             actionJTabbedPane.setSelectedIndex(1);
             toolboxJScrollPane.getViewport().validate();
             Rectangle scrollRect = SwingUtilities.convertRectangle(focusMTransformJButton.getParent(),

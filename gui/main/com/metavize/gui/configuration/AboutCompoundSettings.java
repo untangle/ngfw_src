@@ -45,7 +45,7 @@ public class AboutCompoundSettings implements CompoundSettings {
 	
     public void save() throws Exception {
 	Util.getAdminManager().setRegistrationInfo(registrationInfo);
-		Util.getAdminManager().setTimeZone(timeZone);
+	Util.getAdminManager().setTimeZone(timeZone);
     }
 
     public void refresh() throws Exception {
@@ -58,9 +58,9 @@ public class AboutCompoundSettings implements CompoundSettings {
 	    installedVersion = "unknown";
 	else
 	    installedVersion = mackageDesc.getInstalledVersion();
-
+	
 	licenseURL = Util.getClassLoader().getResource("License.txt");
-		timeZone = Util.getAdminManager().getTimeZone();
+	timeZone = Util.getAdminManager().getTimeZone();
     }
 
     public void validate() throws Exception {

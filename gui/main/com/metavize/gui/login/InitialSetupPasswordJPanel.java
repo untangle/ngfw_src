@@ -99,12 +99,14 @@ public class InitialSetupPasswordJPanel extends MWizardPageJPanel {
 
 		// UPDATE NAT CONFIG
 		try{
-		    MvvmRemoteContextFactory.factory().setTimeout(10);
 		    if( InitialSetupRoutingJPanel.getNatEnabled() ){
+			if( InitialSetupRoutingJPanel.getNatChanged() )
+			    MvvmRemoteContextFactory.factory().setTimeout(Util.DISCONNECT_NETWORK_TIMEOUT_MILLIS);
 			Util.getNetworkManager().setWizardNatEnabled(InitialSetupRoutingJPanel.getAddress(),
 								     InitialSetupRoutingJPanel.getNetmask());
 		    }
 		    else{
+			MvvmRemoteContextFactory.factory().setTimeout(Util.DISCONNECT_NETWORK_TIMEOUT_MILLIS);
 			Util.getNetworkManager().setWizardNatDisabled();
 		    }
 		}

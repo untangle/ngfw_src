@@ -63,8 +63,8 @@ class RedirectTableModel extends MSortedTableModel<Object>{
     private static final int  C2_MW = 75;   /* redirect */
     private static final int  C3_MW = 55;   /* log */
     private static final int  C4_MW = 100;  /* traffic type */
-    private static final int  C5_MW = 120;  /* source interface */
-    private static final int  C6_MW = 120;  /* destination interface */
+    private static final int  C5_MW = 135;  /* source interface */
+    private static final int  C6_MW = 135;  /* destination interface */
     private static final int  C7_MW = 130;  /* source address */
     private static final int  C8_MW = 130;  /* destination address */
     private static final int  C9_MW = 110;  /* source port */

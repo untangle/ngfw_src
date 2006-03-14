@@ -69,9 +69,9 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel<Main
 
         setLayout(new java.awt.GridBagLayout());
 
-        setMaximumSize(new java.awt.Dimension(563, 120));
-        setMinimumSize(new java.awt.Dimension(563, 120));
-        setPreferredSize(new java.awt.Dimension(563, 120));
+        setMaximumSize(new java.awt.Dimension(550, 120));
+        setMinimumSize(new java.awt.Dimension(550, 120));
+        setPreferredSize(new java.awt.Dimension(550, 120));
         ftpJPanel.setLayout(new java.awt.GridBagLayout());
 
         ftpJPanel.setBorder(new javax.swing.border.TitledBorder(null, "File Transfer Override", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));

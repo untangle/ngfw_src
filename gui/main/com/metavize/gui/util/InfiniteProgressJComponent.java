@@ -14,6 +14,7 @@ package com.metavize.gui.util;
 import java.awt.Insets;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Graphics;
@@ -119,6 +120,9 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
 	    jProgressBar = new JProgressBar();
 	    jProgressBar.setStringPainted(true);
 	    jProgressBar.setForeground(new Color(68,91,255));
+	    jProgressBar.setMaximumSize(new Dimension(16000,16));
+	    jProgressBar.setMinimumSize(new Dimension(10,16));
+	    jProgressBar.setPreferredSize(new Dimension(400,16));
 	    add(jProgressBar, progressBarGridBagConstraints);	    
 	}
 	return jProgressBar;

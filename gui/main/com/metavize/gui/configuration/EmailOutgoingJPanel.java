@@ -169,9 +169,9 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 restrictIPJPanel.add(jLabel5, gridBagConstraints);
 
-                hostJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
-                hostJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
-                hostJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
+                hostJTextField.setMaximumSize(new java.awt.Dimension(200, 19));
+                hostJTextField.setMinimumSize(new java.awt.Dimension(200, 19));
+                hostJTextField.setPreferredSize(new java.awt.Dimension(200, 19));
                 hostJTextField.addCaretListener(new javax.swing.event.CaretListener() {
                         public void caretUpdate(javax.swing.event.CaretEvent evt) {
                                 hostJTextFieldCaretUpdate(evt);

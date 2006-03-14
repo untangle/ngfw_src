@@ -245,7 +245,7 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
 	    try{
 		Nat natTransform = com.metavize.tran.nat.gui.MTransformControlsJPanel.getNatTransform();
 		int previousTimeout = MvvmRemoteContextFactory.factory().getTimeout();
-		MvvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_SECONDS);		
+		MvvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_MILLIS);		
 		if( isAdvanced )
 		    natTransform.switchToAdvanced();
 		else

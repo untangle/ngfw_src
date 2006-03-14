@@ -70,6 +70,7 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Enabled"/>
                 <Property name="focusPainted" type="boolean" value="false"/>
+                <Property name="focusable" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="natEnabledJRadioButtonActionPerformed"/>
@@ -93,6 +94,7 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Disabled"/>
                 <Property name="focusPainted" type="boolean" value="false"/>
+                <Property name="focusable" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="natDisabledJRadioButtonActionPerformed"/>
@@ -179,6 +181,7 @@
             </Component>
             <Component class="javax.swing.JTextField" name="internalAddressIPaddrJTextField">
               <Properties>
+                <Property name="focusable" type="boolean" value="false"/>
                 <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[150, 19]"/>
                 </Property>
@@ -216,6 +219,7 @@
             </Component>
             <Component class="javax.swing.JTextField" name="internalSubnetIPaddrJTextField">
               <Properties>
+                <Property name="focusable" type="boolean" value="false"/>
                 <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[150, 19]"/>
                 </Property>
@@ -296,7 +300,7 @@
           <Properties>
             <Property name="editable" type="boolean" value="false"/>
             <Property name="lineWrap" type="boolean" value="true"/>
-            <Property name="text" type="java.lang.String" value="The external address is EdgeGuard&apos;s address on the external network.  This is specified through the &quot;Network Settings&quot; Config Panel."/>
+            <Property name="text" type="java.lang.String" value="The external address is EdgeGuard&apos;s address on the external network.  This is specified through the &quot;Networking&quot; Config Panel."/>
             <Property name="wrapStyleWord" type="boolean" value="true"/>
             <Property name="opaque" type="boolean" value="false"/>
           </Properties>

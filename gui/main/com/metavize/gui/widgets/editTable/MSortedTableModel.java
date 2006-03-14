@@ -411,9 +411,12 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
                 defaultValue = defaultValueIterator.next();
                 newClass = (Class) classTypeIterator.next();
                 
-                if(newClass == ComboBoxModel.class){
+                if( newClass == ComboBoxModel.class ){
 		    newField = copyComboBoxModel( (ComboBoxModel) defaultValue );
                 }
+                else if( newClass == Date.class ){
+		    newField = new Date(0l);  // rendered as a blank
+		}
                 else{
                     try{
 			if(defaultValue != null){
@@ -608,8 +611,19 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
 	return (Class) classTypeVector.elementAt(modelCol);
     }
     public boolean isCellEditable(int modelRow, int modelCol) {
-	if( alwaysSelectable )
-	    return true;
+	if( alwaysSelectable ){
+	    Class targetClass = (Class) classTypeVector.elementAt(modelCol);
+	    if( targetClass == Integer.class )
+		return false;
+	    else if( targetClass == Long.class )
+		return false;
+	    else if( targetClass == Float.class )
+		return false;
+	    else if( targetClass == Double.class )
+		return false;
+	    else
+		return true;
+	}
 	else
 	    return ((Boolean)editableVector.elementAt(modelCol)).booleanValue();
     }

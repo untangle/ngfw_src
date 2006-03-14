@@ -29,7 +29,7 @@ import java.text.*;
 public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
 
 
-    private static Date activeDate = new Date(0);
+    private static Date activeDate = new Date(0l);
     
         private static ImageIcon addImageIcon;
         private static ImageIcon changedImageIcon;
@@ -275,9 +275,10 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
 		renderJLabel.setIcon(null);
 		renderJLabel.setHorizontalAlignment(JTextField.LEFT);
 		if( tempDate.equals(activeDate) )
-		    renderJLabel.setText("active");
-		else
-		    renderJLabel.setText( Util.getLogDateFormat().format((Date)value) );
+		    renderJLabel.setText("");
+		else{
+		    renderJLabel.setText( Util.getLogDateFormat().format(tempDate) );
+		}
 		renderJComponent = renderJLabel;
 
 	    }

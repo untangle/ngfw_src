@@ -273,6 +273,11 @@ public class MackageDesc implements Serializable
         return isCore;
     }
 
+    public boolean isBundle()
+    {
+        return isBundle;
+    }
+
     public int getRackType()
     {
         if( rackType == RACK_TYPE_SERVICE )
@@ -283,6 +288,8 @@ public class MackageDesc implements Serializable
 	    return RACK_TYPE_SECURITY;
 	else if( rackType == RACK_TYPE_CORE )
 	    return RACK_TYPE_CORE;
+	else if( rackType == RACK_TYPE_BUNDLE )
+	    return RACK_TYPE_BUNDLE;
 	else
 	    return RACK_TYPE_UNKNOWN;
     }

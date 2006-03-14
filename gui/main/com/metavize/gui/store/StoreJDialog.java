@@ -311,7 +311,7 @@ public class StoreJDialog extends javax.swing.JDialog implements java.awt.event.
 
         // UPGRADE CHECK ///////
         if( Util.mustCheckUpgrades() ){
-            StoreCheckJDialog storeCheckJDialog = new StoreCheckJDialog();
+            StoreCheckJDialog storeCheckJDialog = new StoreCheckJDialog( Util.getMMainJFrame() );
             storeCheckJDialog.setVisible(true);
             if( Util.getUpgradeCount() != 0 ){
                 StoreJDialog.this.setVisible(false);

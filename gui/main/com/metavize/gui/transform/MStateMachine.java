@@ -305,10 +305,11 @@ public class MStateMachine implements java.awt.event.ActionListener {
         Runnable runnable = new Runnable(){
                 public void run(){
                     if( powerOn != null){
-                        boolean wasEnabled = powerJToggleButton.isEnabled();
-                        powerJToggleButton.setEnabled(false);
+                        //boolean wasEnabled = powerJToggleButton.isEnabled();
+                        //powerJToggleButton.setEnabled(false);
                         powerJToggleButton.setSelected( powerOn );
-                        powerJToggleButton.setEnabled(wasEnabled);
+                        powerJToggleButton.setEnabled(true);
+                        //powerJToggleButton.setEnabled(wasEnabled);
                     }
                     mTransformDisplayJPanel.setUpdateGraph( updateGraph );
                     stateJLabel.setViewState( ledState );

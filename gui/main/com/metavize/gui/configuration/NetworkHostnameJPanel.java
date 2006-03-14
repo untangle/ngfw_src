@@ -294,6 +294,9 @@ public class NetworkHostnameJPanel extends javax.swing.JPanel
 
                 staticIPJPanel.setLayout(new java.awt.GridBagLayout());
 
+                staticIPJPanel.setMaximumSize(new java.awt.Dimension(250, 76));
+                staticIPJPanel.setMinimumSize(new java.awt.Dimension(250, 76));
+                staticIPJPanel.setPreferredSize(new java.awt.Dimension(250, 76));
                 providerJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
                 providerJLabel.setText("Provider: ");
                 gridBagConstraints = new java.awt.GridBagConstraints();
@@ -373,7 +376,6 @@ public class NetworkHostnameJPanel extends javax.swing.JPanel
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
-                gridBagConstraints.ipadx = 150;
                 gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 0);
                 dynamicDNSJPanel.add(staticIPJPanel, gridBagConstraints);
 

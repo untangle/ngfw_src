@@ -92,7 +92,7 @@ public class MessageClient
             if (null != thread) {
                 logger.warn("MessageClient already running");
             } else {
-                thread = new Thread(this);
+                thread = new Thread(this, "MV-MessageClient");
                 thread.setDaemon(true);
                 thread.start();
             }

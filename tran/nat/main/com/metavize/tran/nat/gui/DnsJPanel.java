@@ -130,6 +130,7 @@ public class DnsJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 dnsMasqEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 dnsMasqEnabledJRadioButton.setText("Enabled");
                 dnsMasqEnabledJRadioButton.setFocusPainted(false);
+                dnsMasqEnabledJRadioButton.setFocusable(false);
                 dnsMasqEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 dnsMasqEnabledJRadioButtonActionPerformed(evt);
@@ -147,6 +148,7 @@ public class DnsJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 dnsMasqDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 dnsMasqDisabledJRadioButton.setText("Disabled");
                 dnsMasqDisabledJRadioButton.setFocusPainted(false);
+                dnsMasqDisabledJRadioButton.setFocusable(false);
                 dnsMasqDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 dnsMasqDisabledJRadioButtonActionPerformed(evt);
@@ -209,6 +211,7 @@ public class DnsJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 suffixJPanel.add(jLabel5, gridBagConstraints);
 
+                suffixJTextField.setFocusable(false);
                 suffixJTextField.setMaximumSize(new java.awt.Dimension(250, 19));
                 suffixJTextField.setMinimumSize(new java.awt.Dimension(250, 19));
                 suffixJTextField.setPreferredSize(new java.awt.Dimension(250, 19));

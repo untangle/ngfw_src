@@ -101,7 +101,8 @@ public class Util {
     ///////////////////////////////
 
     // NETWORKING ////////////////
-    public static final int RECONFIGURE_NETWORK_TIMEOUT_SECONDS = 60;
+    public static final int RECONFIGURE_NETWORK_TIMEOUT_MILLIS = 60*1000;
+    public static final int DISCONNECT_NETWORK_TIMEOUT_MILLIS = 15*1000;
     //////////////////////////////
 
     // SERVER PROXIES ///////////////

@@ -19,7 +19,8 @@ import javax.swing.SwingUtilities;
 import java.awt.Color;
 import javax.swing.*;
 
-public class AboutRegistrationJPanel extends JPanel implements Savable, Refreshable {
+public class AboutRegistrationJPanel extends JPanel
+    implements Savable<AboutCompoundSettings>, Refreshable<AboutCompoundSettings> {
 
     private static final String EXCEPTION_COMPANY_MISSING = "You must fill out the company name.";
     private static final String EXCEPTION_FIRST_NAME_MISSING = "You must fill out your first name.";
@@ -35,7 +36,7 @@ public class AboutRegistrationJPanel extends JPanel implements Savable, Refresha
 
     Exception exception;
     
-    public void doSave(Object settings, boolean validateOnly) throws Exception {
+    public void doSave(AboutCompoundSettings aboutCompoundSettings, boolean validateOnly) throws Exception {
 
     String company;
     String firstName;
@@ -114,17 +115,14 @@ public class AboutRegistrationJPanel extends JPanel implements Savable, Refresha
 	    registrationInfo.setState(state);
 	    registrationInfo.setZipcode(zipcode);
 	    registrationInfo.setPhone(phone);
-            Util.getAdminManager().setRegistrationInfo(registrationInfo);            
+            aboutCompoundSettings.setRegistrationInfo(registrationInfo);            
         }
     }
     
 
-	    public void doRefresh(Object settings){
-				RegistrationInfo registrationInfo = Util.getAdminManager().getRegistrationInfo();
-				if(registrationInfo == null) // IT WAS NOT SET YET
-						return;
-				
-
+    public void doRefresh(AboutCompoundSettings aboutCompoundSettings){
+	RegistrationInfo registrationInfo = aboutCompoundSettings.getRegistrationInfo();
+	
 	// COMPANY NAME /////
 	String company = registrationInfo.getCompanyName();
 	companyJTextField.setText( company );
@@ -184,7 +182,7 @@ public class AboutRegistrationJPanel extends JPanel implements Savable, Refresha
         private void initComponents() {//GEN-BEGIN:initComponents
                 java.awt.GridBagConstraints gridBagConstraints;
 
-                jLabel16 = new javax.swing.JLabel();
+                jPanel2 = new javax.swing.JPanel();
                 jPanel1 = new javax.swing.JPanel();
                 jLabel17 = new javax.swing.JLabel();
                 companyJTextField = new javax.swing.JTextField();
@@ -210,17 +208,15 @@ public class AboutRegistrationJPanel extends JPanel implements Savable, Refresha
                 jLabel28 = new javax.swing.JLabel();
                 jLabel29 = new javax.swing.JLabel();
                 jLabel30 = new javax.swing.JLabel();
+                jLabel16 = new javax.swing.JLabel();
                 countJTextField = new javax.swing.JTextField();
                 jLabel31 = new javax.swing.JLabel();
 
-                setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+                setLayout(new java.awt.GridBagLayout());
 
-                setOpaque(false);
-                jLabel16.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-                jLabel16.setText("<html>Number of computers<br>protected by EdgeGuard:</html>");
-                add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 290, -1, -1));
+                jPanel2.setLayout(new java.awt.GridBagLayout());
 
+                jPanel2.setBorder(new javax.swing.border.TitledBorder(null, "Registration", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
                 jPanel1.setLayout(new java.awt.GridBagLayout());
 
                 jPanel1.setOpaque(false);
@@ -242,6 +238,7 @@ public class AboutRegistrationJPanel extends JPanel implements Savable, Refresha
                 jLabel18.setText("First Name:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 jPanel1.add(jLabel18, gridBagConstraints);
 
@@ -398,14 +395,48 @@ public class AboutRegistrationJPanel extends JPanel implements Savable, Refresha
                 gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
                 jPanel1.add(jLabel30, gridBagConstraints);
 
-                add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 70, 350, 210));
+                jLabel16.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+                jLabel16.setText("<html>Number of computers<br>protected by EdgeGuard:</html>");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 10;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+                gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
+                jPanel1.add(jLabel16, gridBagConstraints);
 
                 countJTextField.setColumns(15);
-                add(countJTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(188, 302, 90, -1));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 10;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+                jPanel1.add(countJTextField, gridBagConstraints);
 
                 jLabel31.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel31.setText("(required)");
-                add(jLabel31, new org.netbeans.lib.awtextra.AbsoluteConstraints(283, 304, -1, -1));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 2;
+                gridBagConstraints.gridy = 10;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+                gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+                jPanel1.add(jLabel31, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 10, 0);
+                jPanel2.add(jPanel1, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
+                add(jPanel2, gridBagConstraints);
 
         }//GEN-END:initComponents
     
@@ -435,6 +466,7 @@ public class AboutRegistrationJPanel extends JPanel implements Savable, Refresha
         private javax.swing.JLabel jLabel30;
         private javax.swing.JLabel jLabel31;
         private javax.swing.JPanel jPanel1;
+        private javax.swing.JPanel jPanel2;
         private javax.swing.JTextField lastNameJTextField;
         private javax.swing.JTextField phoneJTextField;
         private javax.swing.JTextField stateJTextField;

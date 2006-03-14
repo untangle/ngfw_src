@@ -112,7 +112,6 @@ public class MMainJFrame extends javax.swing.JFrame {
                 coreToolboxJPanel = new javax.swing.JPanel();
                 utilToolboxJPanel = new javax.swing.JPanel();
                 toolboxSpacerJPanel = new javax.swing.JPanel();
-                jLabel1 = new javax.swing.JLabel();
                 configurationJPanel = new javax.swing.JPanel();
                 configurationJScrollPane = new javax.swing.JScrollPane();
                 jPanel8 = new javax.swing.JPanel();
@@ -283,14 +282,6 @@ public class MMainJFrame extends javax.swing.JFrame {
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.weighty = 1.0;
                 toolboxJPanel.add(toolboxJScrollPane, gridBagConstraints);
-
-                jLabel1.setFont(new java.awt.Font("Dialog", 0, 10));
-                jLabel1.setFocusable(false);
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 2;
-                gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 0);
-                toolboxJPanel.add(jLabel1, gridBagConstraints);
 
                 mTabbedPane.addTab("Toolbox", toolboxJPanel);
 
@@ -702,7 +693,6 @@ public class MMainJFrame extends javax.swing.JFrame {
         private javax.swing.JPanel controlsJPanel;
         private javax.swing.JPanel coreToolboxJPanel;
         private javax.swing.JButton emailJButton;
-        private javax.swing.JLabel jLabel1;
         private javax.swing.JPanel jPanel8;
         private javax.swing.JPanel mPipelineJPanel;
         private javax.swing.JTabbedPane mTabbedPane;

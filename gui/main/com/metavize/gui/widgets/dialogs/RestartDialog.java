@@ -13,13 +13,36 @@ package com.metavize.gui.widgets.dialogs;
 
 import com.metavize.gui.util.Util;
 
+import java.awt.Window;
+import java.awt.Container;
+import java.awt.Frame;
+import java.awt.Dialog;
+
 final public class RestartDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
 
-    public RestartDialog() {
-        super(Util.getMMainJFrame(), true);
-        initComponents();
+    public static RestartDialog factory(Container parentContainer){
+	if(parentContainer instanceof Dialog)
+	    return new RestartDialog((Dialog)parentContainer);
+	else if(parentContainer instanceof Frame)
+	    return new RestartDialog((Frame)parentContainer);
+	else
+	    return null;
+    }
+
+    private RestartDialog(Dialog parentDialog) {
+        super(parentDialog, true);
+	init(parentDialog);
+    }
+
+    private RestartDialog(Frame parentFrame){
+	super(parentFrame, true);
+	init(parentFrame);
+    }
+
+    private void init(Window parentWindow){
+	initComponents();
         this.addWindowListener(this);
-        this.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), this.getWidth(), this.getHeight()) );
+        this.setBounds( Util.generateCenteredBounds(parentWindow.getBounds(), this.getWidth(), this.getHeight()) );
         this.setVisible(true);
     }
 

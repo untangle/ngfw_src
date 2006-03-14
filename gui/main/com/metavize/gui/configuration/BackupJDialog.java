@@ -49,6 +49,15 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
         
         this.addWindowListener(this);
 	this.setGlassPane(infiniteProgressJComponent);
+
+	if( Util.isLocal() ){
+	    backupFileJButton.setEnabled(false);
+	    restoreFileJButton.setEnabled(false);
+	}
+	else{
+	    localBackupDisabledJLabel.setVisible(false);
+	    localRestoreDisabledJLabel.setVisible(false);
+	}
     }
 
     public void dataChangedInvalid(Object reference){}
@@ -75,6 +84,7 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 backupLocalFileJPanel = new javax.swing.JPanel();
                 contentJPanel3 = new javax.swing.JPanel();
                 jLabel4 = new javax.swing.JLabel();
+                localBackupDisabledJLabel = new javax.swing.JLabel();
                 actionJPanel2 = new javax.swing.JPanel();
                 backupFileJButton = new javax.swing.JButton();
                 restoreJTabbedPane = new javax.swing.JTabbedPane();
@@ -84,6 +94,7 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 restoreLocalFileJPanel = new javax.swing.JPanel();
                 contentJPanel4 = new javax.swing.JPanel();
                 jLabel5 = new javax.swing.JLabel();
+                localRestoreDisabledJLabel = new javax.swing.JLabel();
                 actionJPanel3 = new javax.swing.JPanel();
                 restoreFileJButton = new javax.swing.JButton();
                 backgroundJLabel = new com.metavize.gui.widgets.MTiledIconLabel();
@@ -241,10 +252,20 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 jLabel4.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel4.setText("<html> You can backup your current system configuration to a file on your local computer for later restoration, in the event that you would like to replace new settings with your current settings.  The file name will end with \".egbackup\"<br> <br> After backing up your current system configuration to a file, you can then restore that configuration through this dialog by going to \"Restore\" -> \"From Local File\".</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.weighty = 1.0;
                 contentJPanel3.add(jLabel4, gridBagConstraints);
+
+                localBackupDisabledJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                localBackupDisabledJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+                localBackupDisabledJLabel.setText("<html><center><b>This feature is only enabled when running the client remotely.</b></center></html>");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weighty = 1.0;
+                contentJPanel3.add(localBackupDisabledJLabel, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -327,10 +348,20 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 jLabel5.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel5.setText("<html> You can restore a previous system configuration from a backup file on your local computer.  The backup file name ends with \".egbackup\"</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.weighty = 1.0;
                 contentJPanel4.add(jLabel5, gridBagConstraints);
+
+                localRestoreDisabledJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                localRestoreDisabledJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+                localRestoreDisabledJLabel.setText("<html><center><b>This feature is only enabled when running the client remotely.</b></center></html>");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weighty = 1.0;
+                contentJPanel4.add(localRestoreDisabledJLabel, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -488,7 +519,9 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
 
 			if(!file.createNewFile()){
 			    // TELL HIM HE CANT WRITE HERE
-			    new MOneButtonJDialog("Save Backup File", "The file cannot be written in that location.");
+			    MOneButtonJDialog.factory(BackupJDialog.this, "",
+						      "The file cannot be written in that location.",
+						      "Save Backup File Warning", "");
 			    throw new Exception();
 			}
 
@@ -502,12 +535,16 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
 		}
 
 		infiniteProgressJComponent.setTextLater("Backup Success");	
-		new MOneButtonJDialog("Backup Success", successString);
+		MOneButtonJDialog.factory(BackupJDialog.this, "",
+					  successString,
+					  "Backup Success", "");
 	    }
             catch(Exception e){
                 Util.handleExceptionNoRestart("Error backing up", e);
 		infiniteProgressJComponent.setTextLater("Restore Failure");
-		new MOneButtonJDialog("Backup Failure", failedString);		
+		MOneButtonJDialog.factory(BackupJDialog.this, "",
+					  failedString,
+					  "Backup Failure Warning", "");
             }
             finally{
 		infiniteProgressJComponent.stopLater(MIN_PROGRESS_MILLIS);
@@ -537,7 +574,9 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
 		    File file = chooser.getSelectedFile();
 
 		    if(!file.canRead()){
-			new MOneButtonJDialog("Restore Backup File", "The file in that location cannot be read.");
+			MOneButtonJDialog.factory(BackupJDialog.this, "",
+						  "The file in that location cannot be read.",
+						  "Restore Backup File Warning", "");
 			throw new Exception();			
 		    }
 
@@ -545,23 +584,28 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
 		    byte[] backup = IOUtil.fileToBytes(file);
 
 		    // RESTORE THE BACKUP DATA
-		    Util.getMvvmContext().restoreBackup(backup);
-		    
+		    Util.getMvvmContext().restoreBackup(backup);		    
 		}		
 		else{
 		    return; // user cancelled operation
 		}
 
 		infiniteProgressJComponent.setTextLater("Restore Success");
-		new MOneButtonJDialog("Restore Success", successString);
+		MOneButtonJDialog.factory(BackupJDialog.this, "",
+					  successString,
+					  "Restore Success", "");
+		RestartDialog.factory(BackupJDialog.this);
 	    }
             catch(Exception e){
                 Util.handleExceptionNoRestart("Error restoring", e);
 		infiniteProgressJComponent.setTextLater("Restore Failure");
-		new MOneButtonJDialog("Restore Failure", failedString);
+		MOneButtonJDialog.factory(BackupJDialog.this, "",
+					  failedString,
+					  "Restore Failure Warning", "");
+		RestartDialog.factory(BackupJDialog.this);
             }
             finally{
-		new RestartDialog();
+		infiniteProgressJComponent.stopLater(MIN_PROGRESS_MILLIS);
 	    }
 	}       	
     }
@@ -626,6 +670,8 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
         private javax.swing.JLabel jLabel4;
         private javax.swing.JLabel jLabel5;
         private javax.swing.JTabbedPane jTabbedPane;
+        private javax.swing.JLabel localBackupDisabledJLabel;
+        private javax.swing.JLabel localRestoreDisabledJLabel;
         protected javax.swing.JButton restoreFileJButton;
         private javax.swing.JPanel restoreHDAndUSBJPanel;
         private javax.swing.JTabbedPane restoreJTabbedPane;

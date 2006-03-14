@@ -71,6 +71,10 @@ public class InitialSetupKeyJPanel extends MWizardPageJPanel {
 		    InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);
 		}
 	    }
+	    catch(javax.security.auth.login.FailedLoginException fle){
+		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(-1l);
+		throw new Exception("That key is not valid.  Please type in a valid key.");
+	    }
 	    catch(Exception e){
 		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(-1l);
 		Util.handleExceptionNoRestart("Error sending data", e);

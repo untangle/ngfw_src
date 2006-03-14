@@ -62,7 +62,7 @@ public class StatsCache
         public void start()
         {
             synchronized (this) {
-                Thread t = new Thread(this, "StatsCache");
+                Thread t = new Thread(this, "MVCLIENT-StatsCache");
                 t.setDaemon(true);
                 t.start();
                 Util.addKillableThread(this);

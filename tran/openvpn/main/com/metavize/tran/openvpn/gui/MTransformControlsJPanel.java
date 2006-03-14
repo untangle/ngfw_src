@@ -24,8 +24,8 @@ import javax.swing.*;
 public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransformControlsJPanel{
     
     private static final String WIZARD_NAME = "Status & Wizard";
-    private static final String EXPORTS_NAME = "Exported Hosts & Networks";
-    private static final String CLIENTS_AND_SITES_NAME = "VPN Clients & Sites";
+    private static final String EXPORTS_NAME = "Exported Hosts/Networks";
+    private static final String CLIENTS_AND_SITES_NAME = "VPN Clients/Sites";
     private static final String POOLS_NAME = "Address Pools";
     private static final String CLIENT_TO_SITE_NAME = "VPN Clients";
     private static final String SITE_TO_SITE_NAME = "VPN Sites";

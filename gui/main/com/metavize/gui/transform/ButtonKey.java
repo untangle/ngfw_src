@@ -19,10 +19,6 @@ public class ButtonKey implements Comparable<ButtonKey> {
     private String applianceName;
     private int viewPosition;
     private int rackType;
-    private boolean isService;
-    private boolean isUtil;
-    private boolean isSecurity;
-    private boolean isCore;
 
     public ButtonKey(MTransformJButton mTransformJButton){
         init(mTransformJButton.getName(), mTransformJButton.getViewPosition(), mTransformJButton.getMackageDesc().getRackType());

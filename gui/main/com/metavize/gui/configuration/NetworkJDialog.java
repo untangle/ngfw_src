@@ -69,7 +69,7 @@ public class NetworkJDialog extends MConfigJDialog {
 
     protected void saveAll() throws Exception {
 	int previousTimeout = MvvmRemoteContextFactory.factory().getTimeout();
-	MvvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_SECONDS);
+	MvvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_MILLIS);
 	super.saveAll();
 	MvvmRemoteContextFactory.factory().setTimeout(previousTimeout);
 	// UPDATE STORE

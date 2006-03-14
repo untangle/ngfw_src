@@ -35,10 +35,12 @@ public class MLoginJFrame extends javax.swing.JFrame {
 
         // PARSE ARGS
         boolean isEgdemo=false;
+	/*
         if( args.length == 0 )
             Util.printMessage("[no args]");
         for( String arg : args )
             Util.printMessage("[arg: " + arg + "]");
+	*/
         for( String arg : args ) // isLocal
             if( arg.equals("local") ){
                 Util.setLocal(true);
@@ -46,10 +48,12 @@ public class MLoginJFrame extends javax.swing.JFrame {
             }
 
         // PRINT THE LOCATION OF THE CLIENT
+	/*
         if( Util.isLocal() )
             Util.printMessage("[Running on localhost]");
         else
             Util.printMessage("[Running remotely]");
+	*/
 
         // CREATE AND SHOW THE LOGIN
         SwingUtilities.invokeLater( new Runnable(){ public void run(){

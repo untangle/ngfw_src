@@ -347,6 +347,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
     private Exception generateGuiException;
     private class ShowControlsThread extends Thread {
         public ShowControlsThread(){
+	    super("MVCLIENT-ShowControlsThread: " + MTransformJPanel.this.transformDesc.getDisplayName());
             setDaemon(true);
             start();
         }

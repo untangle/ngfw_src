@@ -69,7 +69,7 @@ public class ServerRoutingWizard extends MWizardJDialog {
    
     protected void wizardFinishedAbnormal(int currentPage){
 	if( currentPage <= 5 ){
-	    new MOneButtonJDialog(this, MESSAGE_DIALOG_TITLE, MESSAGE_CLIENT_NOT_CONFIGURED);
+	    MOneButtonJDialog.factory(this, "", MESSAGE_CLIENT_NOT_CONFIGURED, MESSAGE_DIALOG_TITLE, "");
 	    super.wizardFinishedAbnormal(currentPage);
 	}
 	else
