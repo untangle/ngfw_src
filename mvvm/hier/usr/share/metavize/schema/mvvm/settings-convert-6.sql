@@ -50,7 +50,7 @@ CREATE TABLE settings.mvvm_ddns_settings (
 -- ALTER TABLE settings.dhcp_lease_rule RENAME TO mvvm_dhcp_lease_rule;
 
 CREATE TABLE settings.mvvm_dhcp_lease_rule AS
-    SELECT rule_id, mac_address::text, hostname::text, static_address, is_resolved_mac,
+    SELECT rule_id, mac_address::text, hostname::text, static_address, is_resolve_mac,
            name::text, category::text, description::text, live, alert, log
            FROM settings.dhcp_lease_rule;
 
