@@ -9,7 +9,7 @@
     <sect2 id="gblcfg_tab_email_outgoingsvr">
       <title>Outgoing Server</title>
       <para>
-        The Outgoing Server tab, as seen in <xref linkend="gblcfg_tab_email_outgoingsvr_figure"/>, lets administrators control how &eg; sends emails.
+        The Outgoing Server tab, as seen in <xref linkend="gblcfg_tab_email_outgoingsvr_figure"/>, lets administrators control how the &eg; sends emails.
       </para>
       <figure id="gblcfg_tab_email_outgoingsvr_figure">
         <title>Outgoing Server Tab</title>
@@ -29,7 +29,7 @@
         For sites using authenticated SMTP (SMTP which requires a username and password), the <guilabel>Authentication Login</guilabel> and <guilabel>Authentication Password</guilabel> fields should be set.  Otherwise, these can be safely left blank.
       </para>
       <para>
-        The final property, <guilabel>From Address</guilabel>, provides a <quote>FROM</quote> value for emails sent from &eg;.  
+        The final property, <guilabel>From Address</guilabel>, provides a <quote>FROM</quote> value for emails sent from the &eg;.  
       </para>
     </sect2>
 
@@ -79,7 +79,7 @@
       <sect3 id="gblcfg_tab_email_quarantine_overview">
         <title>Quarantine and Safelist Overview</title>
         <para>
-          The Quarantine facility of &eg; will store emails suspected of containing unwanted content (for example, <glossterm linkend="gloss_spam">SPAM</glossterm> or <glossterm linkend="gloss_phishing">phishing</glossterm>).  This storage is done on a per-email address basis.  For example, if <constant>escott@yourcompany.com</constant> receives three SPAM emails in a day, those three emails are quarantined for <constant>escott</constant>.  The collection of emails for a given address is said to be an <quote>inbox</quote>.
+          The Quarantine facility of the &eg; will store emails suspected of containing unwanted content (for example, <glossterm linkend="gloss_spam">SPAM</glossterm> or <glossterm linkend="gloss_phishing">phishing</glossterm>).  This storage is done on a per-email address basis.  For example, if <constant>escott@yourcompany.com</constant> receives three SPAM emails in a day, those three emails are quarantined for <constant>escott</constant>.  The collection of emails for a given address is said to be an <quote>inbox</quote>.
         </para>
         <para>
           The &eg; quarantine system has been designed so end-users can maintain their own inbox.  They do so via a daily <quote>digest email</quote> which summarizes any quarantined emails.  Users can then release emails (causing them to be sent to their email clients), or delete them.  

@@ -143,7 +143,7 @@
     <sect2 id="gblcfg_tab_support_networkintfcs">
       <title>Network Interfaces</title>
       <para>
-        The Network Interfaces Tab, as seen in <xref linkend="gblcfg_tab_support_networkintfcs_figure"/>, allows administrators to configure the behavior of the ethernet ports on the &eg; machine.
+        The Network Interfaces Tab, as seen in <xref linkend="gblcfg_tab_support_networkintfcs_figure"/>, allows administrators to configure the behavior of the ethernet ports on the &eg;.
       </para>
       <figure id="gblcfg_tab_support_networkintfcs_figure">
         <title>Network Interfaces Tab</title>

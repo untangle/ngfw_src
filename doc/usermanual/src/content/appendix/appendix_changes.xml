@@ -2,6 +2,81 @@
 <appendix id="appendix_changes">
   <title>Change History</title>
 
+
+  <sect1 id="appendix_changes_31_32">
+    <title>Changes Between 3.1 and 3.2</title>
+
+    <bridgehead renderas="sect2">Enhancements</bridgehead>
+
+    <itemizedlist>
+      <title>New Appliances</title>
+      <listitem>
+        <para>
+          <emphasis>24 hour box thing</emphasis>
+        </para>
+      </listitem>
+    </itemizedlist>
+    
+    <itemizedlist>
+      <title>UI - General</title>
+      <listitem>
+        <para>
+          Blaaa
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Blaaa
+        </para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <title>Setup</title>
+      <listitem>
+        <para>
+          Blaaa
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Blaaa
+        </para>
+      </listitem>
+    </itemizedlist>
+
+
+    <bridgehead renderas="sect2">Bug Fixes</bridgehead>
+
+    <itemizedlist>
+      <title>UI</title>
+      <listitem>
+        <para>
+          Blaaa
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Blaaa
+        </para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <title>HTTPS</title>
+      <listitem>
+        <para>
+          Blaaa
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Blaaa
+        </para>
+      </listitem>
+    </itemizedlist>        
+  </sect1>
+    
   <sect1 id="appendix_changes_30_31">
     <title>Changes Between 3.0 and 3.1</title>
     

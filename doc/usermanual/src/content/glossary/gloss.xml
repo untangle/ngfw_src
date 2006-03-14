@@ -139,6 +139,19 @@ Place new terms under the appropriate alphabetical location.
       </glossdef>
     </glossentry>
 
+    <glossentry id="gloss_dyndns">
+      <glossterm>Dynamic DNS</glossterm>
+      <glossdef>
+        <para>
+          Dynamic DNS is a system for allowing an Internet domain name to be assigned to a computer with a varying IP address. This makes it possible for other sites on the Internet to establish connections to the machine without needing to track the IP address themselves. A common use is for running server software on a computer that has a dynamic IP address, as is the case with many consumer internet service providers.
+        </para>
+        <para>
+          (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
+        </para>
+      </glossdef>
+    </glossentry>    
+
+    
 
 
     <glossentry id="gloss_dmz">
@@ -152,7 +165,24 @@ Place new terms under the appropriate alphabetical location.
           (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
         </para>        
       </glossdef>
-    </glossentry>     
+    </glossentry>
+
+
+
+    <glossentry id="gloss_digitalcert">
+      <glossterm>Digital Certificate</glossterm>
+      <glossdef>
+        <para>
+          In cryptography, a public key certificate (or identity certificate) is a certificate which uses a digital signature to bind together a public key with an identity - information such as the name of a person or an organization, their address, and so forth. The certificate can be used to verify that a public key belongs to an individual.
+        </para>
+        <para>          
+          In a typical public key infrastructure (PKI) scheme, the signature will be of a certificate authority (CA). In a web of trust scheme, the signature is of either the user (a self-signed certificate) or other users ("endorsements"). In either case, the signatures on a certificate are attestations by the certificate signer that the identity information and the public key belong together.
+        </para>
+        <para>
+          (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
+        </para>        
+      </glossdef>
+    </glossentry>       
           
   </glossdiv>
 
@@ -668,6 +698,30 @@ Place new terms under the appropriate alphabetical location.
     </glossentry>
 
 
+
+    <glossentry id="gloss_ssl">
+      <glossterm>Secure Sockets Layer</glossterm>
+      <acronym>SSL</acronym>
+      <glossdef>
+        <para>
+          Secure Sockets Layer (SSL) and Transport Layer Security (TLS), its successor, are cryptographic protocols which provide secure communications on the Internet. 
+        </para>
+        <para>
+          (Definition from <ulink  url="http://en.wikipedia.org">Wikipedia</ulink>)
+        </para>         
+      </glossdef>
+    </glossentry>    
+
+
+
+             
+  </glossdiv>
+
+<!-- ============== T ================ -->
+  
+  <glossdiv>
+    <title>T</title>
+
     <glossentry id="gloss_trap">
       <glossterm>Simple Network Management Protocol Trap</glossterm>
       <abbrev>Trap</abbrev>
@@ -676,14 +730,7 @@ Place new terms under the appropriate alphabetical location.
           A message, defined by the SNMP protocol, sent by a networked device to a monitoring system.  Traps are used to convey lifecycle events as well as conditions which warrant further investigation.
         </para>
       </glossdef>
-    </glossentry>
-             
-  </glossdiv>
-
-<!-- ============== T ================ -->
-  
-  <glossdiv>
-    <title>T</title>
+    </glossentry>    
 
 
     <glossentry id="gloss_tcp">

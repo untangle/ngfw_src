@@ -126,25 +126,83 @@
     <sect2 id="gblcfg_tab_remoteadmin_certs">
       <title>Certificates</title>
       <para>
-        The Certificates Tab, as seen in <xref linkend="gblcfg_tab_remoteadmin_certs_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        The Certificates Tab controls the <glossterm linkend="gloss_digitalcert">Digital Certificate</glossterm> (<quote>cert</quote>) used by the &eg; when using <glossterm linkend="gloss_ssl">SSL</glossterm>.  Without a properly installed and signed cert, users who browse to the &eg; will receive warning messages from their browser.  Note that the Administrative Console, as well as the Quarantine features use SSL for user interaction.
       </para>
-      <figure id="gblcfg_tab_remoteadmin_certs_figure">
-        <title>Certificates Tab</title>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="figure/gblcfg/gblcfg_tab_remoteadmin_certs.png" />
-          </imageobject>
-        </mediaobject>
-      </figure>
+      <bridgehead renderas="sect3">Background on Certificates</bridgehead>
       <para>
-        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        Although a complete discussion of Digital Certificates is beyond the scope of this document, some background and terminology are warranted.  Digital Certificates are used by a web server to identify itself.  For example, if you visit Amazon.com to purchase a book you are using SSL when you enter your credit card number.  Two things take place as you perform this transaction.  First, SSL encrypts your web session to prevent any malicious parties from intercepting your personal information.  Secondly, your browser requested Amazon.com's Digital Certificate to make sure you were in fact visiting <quote>amazon.com</quote>.
+      </para>
+      <para>
+        This second step is called server authentication.  Your browser knows that you typed <quote>www.amazon.com</quote>, and expects the web server to return a certificate which declares <quote>this is 'www.amazon.com'</quote>.  Since a Digital Certificate is easy to create (you could use the &eg; Administrative Console to create a certificate for <quote>www.amazon.com</quote>), your browser must also make sure the certificate is authentic.  This is done by examing the <emphasis>signature</emphasis> on the certificate against a list of known <quote>certificate authorities</quote>.
+      </para>
+      <para>
+        All browsers come with a list of dozens of certificate authorities, along with information to validate when those authorities sign web server certificates.  In our example with Amazon.com, the digital certificate for <quote>www.amazon.com</quote> is signed by a Certificate Authority named <quote>Verisign</quote>.  When Amazon presented its certificate to your browser, your browser went through the following steps:
+        <orderedlist>
+          <listitem>
+            <para>
+              Visited a web site with the address <quote>www.amazon.com</quote> and requested its digital certificate.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Examined the returned certificate and found that it claimed to be for a site called <quote>www.amazon.com</quote>.  If the address you entered into your browser did not match the name of the certificate, the browser would have issued a warning that the name of the certificate does not match the visited site.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Found that this certificate was signed by an authority called <quote>Verisign</quote>.  The browser then went through its list of pre installed Certificate Authorities and found and entry for Verisign.  Otherwise, the browser would have issued a warning that the certificate was signed by an unknown authority.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Verified the signature on Amazon's certificate was in fact the signature of Verisign.  Otherwise, the browser would have issued a warning that the signature was invalid.
+            </para>
+          </listitem>
+          
+        </orderedlist>
+      </para>
+      <para>
+        Unlike the steps listed above with Amazon, a new &eg; installation will cause the browser to issue warnings.  This is due to the fact that the Digital Certificate used by the &eg; is not signed by a known Certificate Authority.  The initial (default) certificate is in fact a <emphasis>self-signed</emphasis> certificate (which is equivilant to <quote>not signed by anyone known to the browser</quote>).
+      </para>
+
+      <bridgehead renderas="sect3">Obtaining a Digital Certificate</bridgehead>
+      <para>
+        To prevent browser warnings, two things are required.  First is that the name of the &eg; must be known to the internet.  This is called the hostname of the machine, configuration of which is disscussed in <xref linkend="gblcfg_tab_networking"/>.
+      </para>
+      <para>
+        The second required step is to obtain a cert from a well-known certificate authority.  There are many certificate authorities which charge varrying fees for a digital certificate.  Examples of popular certificate authorities include <ulink url="http://www.verisign.com">Verisign</ulink> and <ulink url="http://www.thwate.com"> Thwate</ulink>.
+      </para>
+      <para>
+        To obtain a valid, signed certificate from a certificate authority, the following steps must be followed.
+        <orderedlist>
+          <listitem>
+            <para>
+              A self-signed certificate must be created (see <xref linkend="gblcfg_tab_remoteadmin_certs_generation_selfsigned"/>).  This certificate includes not only the name of the &eg; machine, but information about the owning organization (name, location, etc).  The initial self-signed certificate created by a new &eg; deployment lacks much of this information.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              A Certificate Signature Request (CSR) must be created (see <xref linkend="gblcfg_tab_remoteadmin_certs_generation_csr"/>).  This is a standard digital document accepted by all certificate authorities as the initial step in the process of obtaining a digital certificate.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              The CSR must be presented to a certificate authority along with any payments for the signature service.  The certificate authority may also request additional information to verify that you <quote>own</quote> the web site for-which you are requesting the certificate.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              After performing verifications, the certificate authority returns a signed digital certificate for your &eg;.  This certificate can then be installed (<quote>imported</quote>) into the &eg;, as discussed in <xref linkend="gblcfg_tab_remoteadmin_certs_generation_import"/>.
+            </para>
+          </listitem>
+        </orderedlist>
       </para>
 
       <!-- ........................................................ -->
       <sect3 id="gblcfg_tab_remoteadmin_certs_status">
         <title>Status</title>
         <para>
-          The Status Tab, as seen in <xref linkend="gblcfg_tab_remoteadmin_certs_status_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+          The Status Tab, as seen in <xref linkend="gblcfg_tab_remoteadmin_certs_status_figure"/>, displays information about the currently installed <glossterm linkend="gloss_digitalcert">Digital Certificate</glossterm>.
         </para>
         <figure id="gblcfg_tab_remoteadmin_certs_status_figure">
           <title>Status Tab</title>
@@ -155,7 +213,7 @@
           </mediaobject>
         </figure>
         <para>
-          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+          The status screen displays information such as the lifetime and Distinguished Name (<quote>DN</quote>) of the certificate.  Note that the initial certificate for a &eg; lacks much information (and should be replaced, as discussed in <xref linkend="gblcfg_tab_remoteadmin_certs_generation"/>).
         </para>
       </sect3>
 
@@ -163,25 +221,14 @@
       <sect3 id="gblcfg_tab_remoteadmin_certs_generation">
         <title>Generation</title>
         <para>
-          The Generation Tab, as seen in <xref linkend="gblcfg_tab_remoteadmin_certs_generation_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+          The Generation Tab contains 
         </para>
-        <figure id="gblcfg_tab_remoteadmin_certs_generation_figure">
-          <title>Generation Tab</title>
-          <mediaobject>
-            <imageobject>
-              <imagedata fileref="figure/gblcfg/gblcfg_tab_remoteadmin_certs_generation.png" />
-            </imageobject>
-          </mediaobject>
-        </figure>
-        <para>
-          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-        </para>        
 
         <!-- ........................................................ -->
         <sect4 id="gblcfg_tab_remoteadmin_certs_generation_selfsigned">
           <title>Generate Self Signed Certificate</title>
           <para>
-            The Generate Self Signed Certificate Window, as seen in <xref linkend="gblcfg_tab_remoteadmin_certs_generation_selfsigned_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+            The Generate Self Signed Certificate Window, as seen in <xref linkend="gblcfg_tab_remoteadmin_certs_generation_selfsigned_figure"/>, is used by Administrators to generate a new self-signed digital certificate..
           </para>
           <figure id="gblcfg_tab_remoteadmin_certs_generation_selfsigned_figure">
             <title>Generate Self Signed Certificate Window</title>
@@ -192,8 +239,8 @@
             </mediaobject>
           </figure>
           <para>
-            XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-          </para>
+            All information on this form must be filled-in, except the <guilabel>Hostname</guilabel> which is automatically obtained from the hostname of the &eg; (see <xref linkend="gblcfg_tab_networking_hostname"/>).
+          </para> 
         </sect4>
 
 
@@ -244,28 +291,17 @@
     <sect2 id="gblcfg_tab_remoteadmin_monitoring">
       <title>Monitoring</title>
       <para>
-        The Monitoring Tab, as seen in <xref linkend="gblcfg_tab_remoteadmin_monitoring_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
-      </para>
-      <figure id="gblcfg_tab_remoteadmin_monitoring_figure">
-        <title>Monitoring Tab</title>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="figure/gblcfg/gblcfg_tab_remoteadmin_monitoring.png" />
-          </imageobject>
-        </mediaobject>
-      </figure>
-      <para>
-        XXXXXX
+        The Monitoring Tab lets the Administrator configure <glossterm linkend="gloss_snmp">SNMP</glossterm> (see <xref linkend="gblcfg_tab_remoteadmin_monitoring_snmp"/> as well as <glossterm linkend="gloss_syslog">Syslog</glossterm> (as discussed in <xref linkend="gblcfg_tab_remoteadmin_monitoring_syslog"/>) support.
       </para>
 
       <!-- ........................................................ -->
       <sect3 id="gblcfg_tab_remoteadmin_monitoring_snmp">
-        <title>SNMP</title>
+        <title>SNMP Monitoring</title>
         <para>
-          The SNMP Tab, as seen in <xref linkend="gblcfg_tab_remoteadmin_monitoring_snmp_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+          The <glossterm linkend="gloss_snmp">SNMP</glossterm> Monitoring tab, as seen in <xref linkend="gblcfg_tab_remoteadmin_monitoring_snmp_figure"/>, controls how the &eg; uses SNMP.
         </para>
         <figure id="gblcfg_tab_remoteadmin_monitoring_snmp_figure">
-          <title>SNMP Tab</title>
+          <title>SNMP Monitoring Tab</title>
           <mediaobject>
             <imageobject>
               <imagedata fileref="figure/gblcfg/gblcfg_tab_remoteadmin_monitoring_snmp.png" />
@@ -273,29 +309,54 @@
           </mediaobject>
         </figure>
         <para>
-          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+          The &eg; is able to respond to read-only SNMP queries.  It exports MIB-II (see RFC 1213), as well as (optionally) sends <glossterm linkend="gloss_trap">traps</glossterm>.  To enable the &eg; to field SNMP queries, select the <guilabel>Enable SNMP Monitoring</guilabel> option as seen in <xref linkend="gblcfg_tab_remoteadmin_monitoring_snmp_figure"/>.
+        </para>
+        <para>
+          If <guilabel>Enable SNMP Monitoring</guilabel> is selected, three additional pieces of information should be provided.  The first is the <guilabel>Community</guilabel>, which is used in SNMP v1 to authenticate queries.
+          <warning>
+            <para>
+              Be sure to change the default community value when enabling this feature
+            </para>
+          </warning>
+          The next two fields are <guilabel>System Contact</guilabel> and <guilabel>System Location</guilabel>.  Although not required for normal operation, they greatly assist in troubleshooting.  They should be populated with contact information and the physical location of the &eg; (respectively).
+        </para>
+        <para>
+          The &eg; can also be configured to send warm and cold start traps.  To enable the sending of traps, select <guilabel>Enable Traps</guilabel> at the bottom of the SNMP Monitoring tab.  You must then provide a host/port (via the <guilabel>Host</guilabel> and <guilabel>Port</guilabel> respectively).  The field <guilabel>Community</guilabel> must be populated with the community string for the trap-receiving server.
+          <note>
+            <para>
+              Not all SNMP trap receiver tools require a community string.  If your tool does not require a community string, the <guilabel>Community</guilabel> field can be left blank.
+            </para>
+          </note>
         </para>
       </sect3>
 
 
       <!-- ........................................................ -->
       <sect3 id="gblcfg_tab_remoteadmin_monitoring_syslog">
-        <title>Syslog</title>
+        <title>Syslog Monitoring</title>
         <para>
-          The Syslog Tab, as seen in <xref linkend="gblcfg_tab_remoteadmin_monitoring_syslog_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+          Syslog Monitoring, as seen in <xref linkend="gblcfg_tab_remoteadmin_monitoring_syslog_figure"/>, allows Administrators to redirect information from the &eg; to a <glossterm linkend="gloss_syslog">Syslog</glossterm> server.
         </para>
         <figure id="gblcfg_tab_remoteadmin_monitoring_syslog_figure">
-          <title>Syslog Tab</title>
+          <title>Syslog Monitoring Tab</title>
           <mediaobject>
             <imageobject>
               <imagedata fileref="figure/gblcfg/gblcfg_tab_remoteadmin_monitoring_syslog.png" />
             </imageobject>
           </mediaobject>
         </figure>
+  
         <para>
-          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+          From the Syslog Monitoring tab, Administrators can enable/disable their &eg; from sending Syslog messages via selecting either <guilabel>Disable Syslog Monitoring</guilabel> or <guilabel>Enable Syslog Monitoring</guilabel>.  If <guilabel>Enable Syslog Monitoring</guilabel> is selected, further information is required for this feature to function.
         </para>
-      </sect3>           
+        <para>
+          The <guilabel>Host</guilabel> field is the name of the server running a Syslog server.  This server should be configured to allow remote submission of Syslog messages.  The next field is <guilabel>Port</guilabel>, and should only be changed from the standard port (512) should the Syslog server be listening on a non-standard port.
+        </para>
+        <para>
+          <guilabel>Facility</guilabel> is the Syslog facility for which the &eg; messages will be submitted.  The <guilabel>Facility</guilabel> contains all standard Syslog values for <constant>facility</constant>.  <guilabel>Threshold</guilabel> is the minimum Syslog threshold, such that &eg; will not send messages below this level.  Note that &eg; sends messages at the <constant>informational</constant>, <constant>notice</constant> and <constant>warning</constant> levels.  In general, messages indicating traffic was inspected and found not to contain questionable content is sent as <constant>informational</constant>.  Inspected traffic which required &eg; to take action (for example, blocking a restricted web page) is sent as <constant>notice</constant>.  The exception to this last case is for viruses found, which are sent as <constant>warning</constant> messages.
+        </para>
+        
+      </sect3> 
       
     </sect2>
 
@@ -303,7 +364,7 @@
     <sect2 id="gblcfg_tab_remoteadmin_reboot">
       <title>Manual Reboot</title>
       <para>
-        The Manual Reboot Tab, as seen in <xref linkend="gblcfg_tab_remoteadmin_reboot_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        The Manual Reboot Tab, as seen in <xref linkend="gblcfg_tab_remoteadmin_reboot_figure"/>, provides the ability for Administrators to reboot their &eg; system without physical access to the machine.
       </para>
       <figure id="gblcfg_tab_remoteadmin_reboot_figure">
         <title>Manual Reboot Tab</title>
@@ -314,7 +375,7 @@
         </mediaobject>
       </figure>
       <para>
-        XXXXXX
+        To reboot, push the <guilabel>Reboot EdgeGuard</guilabel> button.
       </para>
     </sect2> 
         

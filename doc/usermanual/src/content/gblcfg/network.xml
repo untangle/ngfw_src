@@ -4,17 +4,17 @@
   <sect1 id="gblcfg_tab_networking">
     <title>Networking</title>
     <para>
-      XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      The Networking panel controls commonn properties related to the &eg;'s presence on its various network interfaces.
     </para>
 
     <!-- ====================================================== -->
     <sect2 id="gblcfg_tab_networking_extaddrs">
       <title>External Addresses</title>
       <para>
-        The External Addresses Tab, as seen in <xref linkend="gblcfg_tab_networking_extaddrs_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+        The External Addresses Tab, as seen in <xref linkend="gblcfg_tab_networking_extaddrs_figure"/>, lets administrators control how their &eg; appears to the outside (non-protected) network.
       </para>
       <figure id="gblcfg_tab_networking_extaddrs_figure">
-        <title>External Addresses</title>
+        <title>External Addresses Tab</title>
         <mediaobject>
           <imageobject>
             <imagedata fileref="figure/gblcfg/gblcfg_tab_networking_extaddrs.png" />
@@ -22,15 +22,24 @@
         </mediaobject>
       </figure>
       <para>
-        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        The &eg; can be set-up to either have a <glossterm linkend="gloss_static_ip">static</glossterm> or dynamic IP address.  For a static IP, administrators must configure the network settings as they would for any system on the network.  Dynamic addresses are obtained from <glossterm linkend="gloss_dhcp">DHCP</glossterm>.
+      </para>
+      <para>
+        The interface for configuring these external settings is divided into three sections.  The first section determines if the &eg; is using a static or dynamic address.  To choose between these options, the administrator selects either <guilabel>Automatically Set</guilabel> or <guilabel>Manually Set</guilabel>.  If <guilabel>Automatically Set</guilabel> is selected, the &eg; will use DHCP to obtain network settings and display them in the boxes below.  If <guilabel>Manually Set</guilabel> is selected, the administrator must manually set the <glossterm linkend="gloss_ip_addr">IP Address</glossterm>, <glossterm linkend="gloss_netmask">Netmask</glossterm>, <glossterm linkend="gloss_default_route">Default Route</glossterm> (sometimes referred to as <quote>gateway</quote>), as well as a primary <glossterm linkend="gloss_dns">DNS</glossterm> server and a secondary DNS server (optional).
+      </para>
+      <para>
+        Should <guilabel>Automatically Set</guilabel> be selected, then administrators can optionally request a renewal of their <glossterm linkend="gloss_dhcp_lease">DHCP Lease</glossterm> via the <guilabel>Renew DHCP Lease</guilabel> button.  This is the second section as seen in <xref linkend="gblcfg_tab_networking_extaddrs_figure"/>.
+      </para>
+      <para>
+        Whether <guilabel>Automatically Set</guilabel> or <guilabel>Manually Set</guilabel> is selected for the external interface, the <guilabel>Run Connectivity Test</guilabel> button can be used to perform a test of these settings.  This is the third section as seen in <xref linkend="gblcfg_tab_networking_extaddrs_figure"/>.  Activating the test will then report its findings (success/failure).
       </para>
     </sect2>
 
     <!-- ====================================================== -->
     <sect2 id="gblcfg_tab_networking_extaddraliases">
-      <title>External Address Aliases</title>
+      <title>External Address Aliasess</title>
       <para>
-        The External Address Aliases tab, as seen in <xref linkend="gblcfg_tab_networking_extaddraliases_figure"/>, XXXXXXXXXXXXXXXXXXXXXXXXXXX.
+        The External Address Aliases tab, as seen in, <xref linkend="gblcfg_tab_networking_extaddraliases_figure"/>, is for complex &eg; deployments.
       </para>
       <figure id="gblcfg_tab_networking_extaddraliases_figure">
         <title>External Address Aliases Tab</title>
@@ -41,16 +50,19 @@
         </mediaobject>
       </figure>
       <para>
-        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx
+        Use of this feature depends on if the &eg; is providing <glossterm linkend="gloss_nat">NAT</glossterm> services to the internal (protected) network.  If running NAT (see <xref linkend="nat_tran"/>), then this feature can be used to receive traffic for more than just the network of the &eg;'s external interface.
       </para>
-    </sect2>
+      <para>
+        If your &eg; is not running NAT (sometimes called <quote>bridge</quote> mode), then each addition to the External Address Aliases will allow &eg; to route traffic for networks other than that defined by its external IP address.
+      </para>
+    </sect2>  
 
 
     <!-- ====================================================== -->
     <sect2 id="gblcfg_tab_networking_hostname">
       <title>Hostname</title>
       <para>
-        The Hostname Tab, as seen in <xref linkend="gblcfg_tab_networking_hostname_figure"/>, XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.
+        The Hostname Tab, as seen in <xref linkend="gblcfg_tab_networking_hostname_figure"/>, configures how the &eg; may be addresses other than by <glossterm linkend="gloss_ip_addr">IP address</glossterm>.
       </para>
       <figure id="gblcfg_tab_networking_hostname_figure">
         <title>Hostname Tab</title>
@@ -61,7 +73,16 @@
         </mediaobject>
       </figure>
       <para>
-        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx
+        The Hostname tab is divided into two sections, <guilabel>Hostname</guilabel> and <guilabel>Dynamic DNS</guilabel>.  The <guilabel>Hostname</guilabel> section lets the Administrator define the hostname of the <glossterm linkend="gloss_hostname">hostname</glossterm> of the &eg;.  The optional <guilabel>Hostname resolves publicly</guilabel> instructs the &eg; that users on the Internet can use this hostname when connecting to the machine.  This is useful when using features such as VPN (see <xref linkend="openvpn_tran"/>) or Quarantine Digests (see <xref linkend="gblcfg_tab_email_quarantine"/>) which must embed URLs to contact the machine.  When <guilabel>Hostname resolves publicly</guilabel> is checked, such URL will use the hostname rather than IP address of the &eg;.
+        <note>
+          <para>
+            Note that the hostname entered in this screen is used for generation of the digital certificate for the &eg; (see <xref linkend="gblcfg_tab_remoteadmin_certs"/>).
+          </para>
+        </note>        
+      </para>
+        
+      <para>
+        The <guilabel>Dynamic DNS</guilabel> tab lets Administrators leverage one of several <glossterm linkend="gloss_dyndns">dynamic DNS</glossterm> providers such that the hostname of their &eg; will be accessible from the internet.
       </para>
     </sect2>     
     

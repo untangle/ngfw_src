@@ -95,7 +95,7 @@
       <sect3 id="gblcfg_tab_backuprestore_restore_hdandusb">
         <title>From Hard Disk and USB Key</title>
         <para>
-          To restore from Hard Disk or USB key, an Administrator <emphasis>must</emphasis> be connected directly to the &eg; machine via keyboard, video and mouse.  The remainder of these instructions assume that the operator is directly connected in such a manner.
+          To restore from Hard Disk or USB key, an Administrator <emphasis>must</emphasis> be connected directly to the &eg; via keyboard, video and mouse.  The remainder of these instructions assume that the operator is directly connected in such a manner.
         </para>
         <para>
           When connected directly to the &eg;, all that is visible is a screen with the Metavize logo.  Actions are accesses by right mouse clicking anywhere on this initial screen.  Right clicking reveals a menu, and the restore functionality is located under the <guilabel>Advanced</guilabel> option.  The default screen and menu selection are shown in <xref linkend="gblcfg_tab_backuprestore_restore_hdandusb_figure"/>.
