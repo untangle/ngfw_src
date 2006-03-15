@@ -67,25 +67,14 @@
     <sect2 id="gblcfg_tab_remoteadmin_access">
       <title>Access</title>
       <para>
-        The Access Tab, as seen in <xref linkend="gblcfg_tab_remoteadmin_access_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
-      </para>
-      <figure id="gblcfg_tab_remoteadmin_access_figure">
-        <title>Access Tab</title>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="figure/gblcfg/gblcfg_tab_remoteadmin_access.png" />
-          </imageobject>
-        </mediaobject>
-      </figure>
-      <para>
-        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        The Access Tab controls how Administrators may use the Administrative Console to view and change the &eg;.
       </para>
 
       <!-- ........................................................ -->
       <sect3 id="gblcfg_tab_remoteadmin_access_restrictions">
         <title>Restrictions</title>
         <para>
-          The Restrictions Tab, as seen in <xref linkend="gblcfg_tab_remoteadmin_access_restrictions_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+          The Restrictions tab, as seen in <xref linkend="gblcfg_tab_remoteadmin_access_restrictions_figure"/>, lets Administrators control how the Administrative Interface can be used.
         </para>
         <figure id="gblcfg_tab_remoteadmin_access_restrictions_figure">
           <title>Restrictions Tab</title>
@@ -96,8 +85,29 @@
           </mediaobject>
         </figure>
         <para>
-          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+          <emphasis>External</emphasis> administration is defined as someone accessing the Administrative Interface from outside the protected network.  <emphasis>Internal</emphasis> administration is someone accessing the Administrative Interface from within the protected network.  Someone from the <glossterm linkend="gloss_dmz">DMZ</glossterm> is considered <emphasis>external</emphasis>.
+          <note>
+            <para>
+              The current external IP address can be found from the <link linkend="gblcfg_tab_networking_extaddrs">Network Settings</link> panel.  If the &eg; is running <glossterm linkend="gloss_nat">NAT</glossterm>, the internal IP can be found from the NAT settings as explained in <xref linkend="nat_tran"/>.  If the system is not running NAT, then the internal IP is the same as the external IP.
+            </para>
+          </note>
+          We will now discuss the details of configuring the &eg; for external and internal administration.
         </para>
+        <simplesect>
+          <title><guilabel>External Remote Administration</guilabel></title>
+          <para>
+            External administration can be enabled/disabled by selecting either the <guilabel>Allow</guilabel> or <guilabel>Deny</guilabel> options within the External Remote Administration section.  Note that if enabled, <emphasis>all administration traffic is passed over a secure (SSL) connection</emphasis>.
+          </para>
+          <para>
+            If administration from outside the protected network is enabled, Administrators can also choose to restrict administration from a select set of machines.  This restriction is set by first selecting <guilabel>Restrict</guilabel> then populating the <glossterm linkend="gloss_ip_addr"><guilabel>IP Address</guilabel></glossterm> and <glossterm linkend="gloss_netmask"><guilabel>Netmask</guilabel></glossterm> fields.
+          </para>
+        </simplesect>
+        <simplesect>
+          <title><guilabel>Internal Remote Administration</guilabel></title>
+          <para>
+            Internal administration can be configured to require an encrypted (SSL) connection or not.  To require an SSL connection, select the <guilabel>Disallow</guilabel> option under <guilabel>Internal Remote Administration</guilabel>.  Note that secure remote administration is <emphasis>always</emphasis> enabled from the internal network.
+          </para>
+        </simplesect>
       </sect3>
 
 
@@ -221,7 +231,7 @@
       <sect3 id="gblcfg_tab_remoteadmin_certs_generation">
         <title>Generation</title>
         <para>
-          The Generation Tab contains 
+          The Generation Tab contains buttons to follow the required steps to ontain a working digital certificate for an &eg;: creating a self-signed certificate, generating a certificate signature request, and importing the signed certificate into the &eg;.
         </para>
 
         <!-- ........................................................ -->
@@ -248,7 +258,7 @@
         <sect4 id="gblcfg_tab_remoteadmin_certs_generation_csr">
           <title>Generate Certificate Signature Request</title>
           <para>
-            The Generate Certificate Signature Request Window, as seen in <xref linkend="gblcfg_tab_remoteadmin_certs_generation_csr_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+            The Generate Certificate Signature Request (CSR) Window, as seen in <xref linkend="gblcfg_tab_remoteadmin_certs_generation_csr_figure"/>, will produce a CSR based on the current certificate information (see <xref linkend="gblcfg_tab_remoteadmin_certs_generation_selfsigned"/>);
           </para>
           <figure id="gblcfg_tab_remoteadmin_certs_generation_csr_figure">
             <title>Generate Certificate Signature Request Window</title>
@@ -259,7 +269,12 @@
             </mediaobject>
           </figure>
           <para>
-            XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+            To use, push the <guilabel>proceed</guilabel> button as seen in <xref linkend="gblcfg_tab_remoteadmin_certs_generation_csr_figure"/>.  This will fill-in the window with several lines of text starting with <constant>-----BEGIN NEW CERTIFICATE REQUEST-----</constant>.  You should cut and paste this text into the form provided by your certificate authority.
+            <tip>
+              <para>
+                Many certificate authorities offer different types of certificates.  For the &eg;, an "SSL" or "Web Server" certificate should be purchased.
+              </para>
+            </tip>
           </para>
         </sect4>
 
@@ -268,7 +283,7 @@
         <sect4 id="gblcfg_tab_remoteadmin_certs_generation_import">
           <title>Import Signed Certificate</title>
           <para>
-            The Import Signed Certificate Window, as seen in <xref linkend="gblcfg_tab_remoteadmin_certs_generation_import_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+            The Import Signed Certificate Window, as seen in <xref linkend="gblcfg_tab_remoteadmin_certs_generation_import_figure"/> is used to enter the signed certificate returned from the certificate authority.
           </para>
           <figure id="gblcfg_tab_remoteadmin_certs_generation_import_figure">
             <title>Import Signed Certificate Window</title>
@@ -279,7 +294,15 @@
             </mediaobject>
           </figure>
           <para>
-            XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+            The certificate itself will either be emailed or received in a web browser.  Like the process of creating the CSR, importing the certificate requires one to cut-and-paste text into a window (as shown in <xref linkend="gblcfg_tab_remoteadmin_certs_generation_import_figure"/>).
+          </para>
+          <para>
+            Some CAs may also return a second <quote>intermediate</quote> certificate.  If your CA has provided such a certificate, it may be pasted into the bottom window as seen in <xref linkend="gblcfg_tab_remoteadmin_certs_generation_import_figure"/>.
+            <note>
+              <para>
+                If there is no intermediate certificate provided by your CA, this field may be left blank.
+              </para>
+            </note>
           </para>
         </sect4>                 
         
