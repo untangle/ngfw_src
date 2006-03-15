@@ -19,6 +19,7 @@
 <jsp:include page="Messages.jsp"/>
 <jsp:include page="Ajax.jsp"/>
 
+<script type="text/javascript" src="CifsNode.js"></script>
 <script type="text/javascript" src="Browser.js"></script>
 <script type="text/javascript" src="DirTree.js"></script>
 <script type="text/javascript" src="DetailPanel.js"></script>

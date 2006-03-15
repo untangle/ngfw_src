@@ -7,16 +7,27 @@ function Browser(shell) {
    }
 
    try {
-   DwtComposite.call(this, shell, "Browser", DwtComposite.ABSOLUTE_STYLE);
+      DwtComposite.call(this, shell, "Browser", DwtComposite.ABSOLUTE_STYLE);
 
-   this.dirTree = new DirTree(this, null, DwtControl.ABSOLUTE_STYLE);
-   this.sash = new DwtSash(this, DwtSash.HORIZONTAL_STYLE, null, 5);
-   this.detailPanel = new DetailPanel(this, null, DwtControl.ABSOLUTE_STYLE);
+      this.dirTree = new DirTree(this, null, DwtControl.ABSOLUTE_STYLE);
+      this.sash = new DwtSash(this, DwtSash.HORIZONTAL_STYLE, null, 5);
+      this.detailPanel = new DetailPanel(this, null, DwtControl.ABSOLUTE_STYLE);
 
-   this.layout();
+      var v = new AjxVector();
+      v.add(new CifsNode("MEOW"));
+      v.add(new CifsNode("RUFF"));
+
+      this.detailPanel.set(v);
+      this.detailPanel.setUI(0);
+
+      this.layout();
 
    } catch (exn) {
-      alert("exn: msg: " + exn.msg + " code: " + exn.code + " method: " + exn.method + " detail: " + exn.detail);
+      if (exn.dump) {
+         alert(exn.dump());
+      } else {
+         alert(exn);
+      }
    }
 }
 
@@ -36,4 +47,3 @@ Browser.prototype.layout = function() {
 
    this.zShow(true);
 }
-
