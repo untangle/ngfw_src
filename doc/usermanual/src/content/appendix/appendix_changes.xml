@@ -9,72 +9,445 @@
     <bridgehead renderas="sect2">Enhancements</bridgehead>
 
     <itemizedlist>
-      <title>New Appliances</title>
+      <title>New Appliance: 24-hour Replacement Service</title>
       <listitem>
         <para>
-          <emphasis>24 hour box thing</emphasis>
+  This is a new software appliance that automatically backs up your EdgeGuard's
+  configuration to Metavize's datacenter every day.  If your box
+  fails, just contact Metavize support and we'll ship you a replacement within
+  24 hours.  The replacement will be preconfigured to your exact
+  configuration as of the previous day.  Just plug it in and you're good to go.
         </para>
       </listitem>
     </itemizedlist>
     
     <itemizedlist>
-      <title>UI - General</title>
+      <title>Network Sharing advances to a Router</title>
       <listitem>
         <para>
-          Blaaa
+  The 'Router' Appliance, previously known as 'Network Sharing', now has an advanced
+  mode which provides more fine tuned configuration of your network.  The standard
+  mode is unchanged, with the exception of an "Advanced" tab that lets you switch to
+  and from advanced mode.  This is presently a one way operation, all settings are
+  reset when switching from advanced to basic mode. 
         </para>
       </listitem>
       <listitem>
         <para>
-          Blaaa
+ In advanced mode, each physical interface is mapped to one "Network Space".  A
+  Network Space defines the network of hosts connected to each interface.  The
+  external interface is always assigned to the "Public Space" which is configured
+  using the 'Networking' panel in the Config tab.  In Advanced Mode it is possible
+  to configure more elaborate configurations such as sharing independent public IP
+  address for the the Internal and DMZ interface, bridging the Internal and DMZ
+  interface, and modifying the Maximum Transmission Unit(MTU) for each Network Space.
+  Advanced mode also incorporates a panel for configuring static routing for the network.
         </para>
       </listitem>
     </itemizedlist>
 
     <itemizedlist>
-      <title>Setup</title>
+      <title>Quarantine</title>
       <listitem>
         <para>
-          Blaaa
+          <emphasis>Digest Emails</emphasis>
+        </para>
+        <para>
+  Quarantined emails may now be redirected to another email address.  This allows, for
+  example, users to redirect Spam sent to a distribution list to
+  the owner of that list.  This way the distribution list will not receive
+  the quarantine digest, but rather the owner will receive them as a part of their
+  existing digest.
+        </para>
+        <para>
+  When viewing your inbox you can now sort the view by subject, sender, or score, in
+  addition to the default sort of newest first.  You may also control how many messages
+  are shows in each page of the inbox.
+        </para>
+        <para>
+  The message digest now indicates for each message if there is an attachment.
+        </para>
+        <para>
+  Message digest emails are now viewable when outside the EdgeGuard, and the links work
+  from outside as well.
+        </para>
+        <para>
+  The message digest is no longer sent each day if no new emails were quarantined since the
+  previous day.
         </para>
       </listitem>
       <listitem>
         <para>
-          Blaaa
+          <emphasis>Configuration</emphasis>
+        </para>
+        <para>
+  Quarantinable addresses may now be controlled.  This allows the administrator to prevent
+  quarantines being created for undesired addresses.
+        </para>
+        <para>
+  The quarantine safe-list is now applied to POP/IMAP emails as well.
         </para>
       </listitem>
     </itemizedlist>
 
+    <itemizedlist>
+      <title>Setup Wizard</title>
+      <listitem>
+        <para>
+  The initial setup wizard now allows the user to choose between a Routed or
+  Bridged configuration for the box.  In the Routed case they may choose an
+  internal IP address and netmask.
+        </para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <title>UI - General</title>
+      <listitem>
+        <para>
+  A visual hint is added when a new appliance is installed lets the user know that it
+  must be turned on in order to function. Once the appliance has ever been
+  turned on, the hint is no longer displayed.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+  A visual hint is added for saving settings. Once any setting is changed, a hint is
+  displayed to let the user know that the settings must be saved to take
+  effect. The hint is removed once settings are saved or if they are restored to
+  their previous values with the 'reload settings' button.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+  The administration UI starts up much faster than before.  Interactivity is also
+  improved -- long running operations show progress meters to let the user know that
+  an operation is ongoing.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+  Most table cells in the UI now allow copy/paste.
+        </para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <title>Store</title>
+      <listitem>
+        <para>
+  The 'Standard Bundle' is now available to allow purchasing all standard appliances
+  with two clicks.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+  The Metavize Store now uses a web browser for access.  There is now a kiosk browser
+  on the appliance itself, so that the store (as well as help, reports, etc) can be
+  accessed from the UI running locally on the appliance.
+        </para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <title>EdgeReport</title>
+      <listitem>
+        <para>
+  When the 'Launch Web Browser' UI button is used to launch a web browser window to
+  view the reports, it no longer asks the user to login again in order to view the
+  reports.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+  The visual style of the subreports now matches the main summary report.
+        </para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <title>Backup and Restore</title>
+      <listitem>
+        <para>
+  EdgeGuard configuration settings may now be backed-up and restored
+  to the user's local filesystem, as well as the previous choices of USB
+  key and the EdgeGuard box itself.
+        </para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <title>Email Sending</title>
+      <listitem>
+        <para>
+  The EdgeGuard now runs a local outgoing-only mail server.  This is used to send out
+  Quarantine, Report, Notification, and OpenVPN emails.  This makes the use of an external SMTP
+  server optional.  When an external SMTP server is used, the local mail server 
+  allows emails to be received even if the external server is temporarily unavailable.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+  There is now a connectivity test available for email.  This allows sending a test email
+  to verify that outgoing emails are working.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+  There is now a global setting for the 'From' address for all outgoing emails (Quarantine,
+  Report, Notificaiton, OpenVPN).
+        </para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <title>Networking Environment</title>
+      <listitem>
+        <para>
+  The EdgeGuard now has a settable hostname.  This may be set in the wizard
+  or later via the Config/Networking/Hostname panel.  This hostname is served
+  up by the Router's DNS server if it is enabled.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+  Network interfaces may now have their port speed configured manually. (eg:
+  hardwired at 100Mb) This is useful in environments where autonegotiation
+  leads to problems with buggy third-party networking equipment.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+  Dynamic DNS is now supported.  This allows those without a permanent IP address, or
+  without a public DNS server, to automatically update their hostname to one of
+  three Dynamic DNS services: dyndns.org, easydns.com, and zoneedit.com.
+        </para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <title>HTTPS Access</title>
+      <listitem>
+        <para>
+  Since EdgeGuard now has a hostname, it generates HTTPS self-signed certificates using
+  that hostname.  It is also able to generate a Certificate Signature Request, which may
+  then be used to purchase a public Certificate from Verisign, Thawte, etc.  This allows
+  users to connect to EdgeGuard without getting a browser warning about the certificate.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+  Emails sent out with a link back to EdgeGuard in them (Quarantine, OpenVPN) now use
+  EdgeGuard's hostname in the link if the hostname is publicly resolvable.  A checkbox
+  in the Config/Networking panel allows to user to specify whether the hostname is
+  publicly resolvable.
+        </para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <title>General Configuration</title>
+      <listitem>
+        <para>
+  The main Config panel has been reorganized to simplify administration.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+  User Registration information may now be updated from the UI (as well as provided
+  in the initial setup wizard as in 3.1).
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+  Read-only administration accounts may now be created.  This allows administrators to
+  give users read-only access to the administration UI.  Read-only accounts may view
+  anything, including reports, but may not change any configuration setting, install or
+  deinstall a software appliance, or purchase an appliance from the store.
+        </para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <title>IPS</title>
+      <listitem>
+        <para>
+  Many more rules have been added; older false positives have been removed.  Over 2,600
+  rules are now built-in.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+  There is now a button in the UI to show documentation for those rules that have web
+  page references.  The classification of each rule is also now shown (eg: Attempted
+  Denial of Service, Attempted Administrator Privilege Gain).
+        </para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <title>OpenVPN</title>
+      <listitem>
+        <para>
+  OpenVPN now allows DNS to be exported; this setting is available on a per-address-pool
+  basis.  This allows all client DNS requests to come to the EdgeGuard for resolution,
+  enabling local names to work for remote VPN clients.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+  OpenVPN now has an event log panel.  This allows viewing both active and historical
+  VPN sessions, to see which clients are using the VPN, when, and from where.
+        </para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <title>Web Control</title>
+      <listitem>
+        <para>
+  The event log now support more queries, to separately show blocked, passlisted,
+  or all web traffic
+        </para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <title>Troubleshooting</title>
+      <listitem>
+        <para>
+  The EdgeGuard may now be rebooted from the administration UI.  Previously this was only
+  possible locally via right-button-menu.
+        </para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <title>Local Administration</title>
+      <listitem>
+        <para>
+  There is now a kiosk version of Firefox available on the EdgeGuard.  This allows Reports,
+  Help, and the store to be accessed via the adminstration UI running locally on the
+  EdgeGuard.
+        </para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <title>Recovery Console</title>
+      <listitem>
+        <para>
+  A password recovery facility has been added to the EdgeGuard Recovery Console (accessable
+  locally on the appliance).  This allows administrators to reset the administrator account
+  to the factory default without losing any other configuration.
+        </para>
+      </listitem>
+    </itemizedlist>        
 
     <bridgehead renderas="sect2">Bug Fixes</bridgehead>
 
     <itemizedlist>
-      <title>UI</title>
+      <title>UI - General</title>
       <listitem>
         <para>
-          Blaaa
+  The traffic graphs on each appliance now show correct byte counts.
         </para>
       </listitem>
       <listitem>
         <para>
-          Blaaa
+  EdgeGuard will try to refresh the store panel any time the network settings change.
+  If the network cannot be contacted, the store panel will indicate such. 
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+  The box may be administered from inside using the outside address/hostname via HTTPS.
         </para>
       </listitem>
     </itemizedlist>
 
     <itemizedlist>
-      <title>HTTPS</title>
+      <title>Networking Environment</title>
       <listitem>
         <para>
-          Blaaa
+  If the EdgeGuard is getting its address dynamically via an external DHCP
+  server, and the DHCP server goes down, EdgeGuard will keep trying to renew
+  its address once the DHCP server comes back up.
         </para>
       </listitem>
       <listitem>
         <para>
-          Blaaa
+  Network IP aliases may now be removed.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+  Network connectivity test UI now indicates to the user that they must save their new
+  settings before running the test.
+        </para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <title>Rogue Protocol Control</title>
+      <listitem>
+        <para>
+  The eDonkey2000 rule, which was giving false positives, has been removed.  New rules
+  have been added for several streaming media, video game, and voice over IP protocols.
         </para>
       </listitem>
     </itemizedlist>        
+
+    <itemizedlist>
+      <title>EdgeReport</title>
+      <listitem>
+        <para>
+  The IPS report now has a summary graph.  Spyware report now shows summary of clean
+  vs potential spyware accesses.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+  Report generation is now faster, and happens earlier in the morning.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+  The OpenVPN summary report now includes subreports on both clients logged in and
+  client key distributions.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+  Several report cleanup issues: zero sizes in web content control summary, spam/phish daily
+  incidents showing more than one day, spam summary counts not including quarantined,
+        </para>
+      </listitem>
+    </itemizedlist>        
+
+    <itemizedlist>
+      <title>Backup and Restore</title>
+      <listitem>
+        <para>
+  OpenVPN now backs up and restores correctly, preventing the need to distribute new
+  user keys after restoring. 
+        </para>
+      </listitem>
+    </itemizedlist>        
+
+
+    <bridgehead renderas="sect2">Known Issues</bridgehead>
+
+    <itemizedlist>
+      <title>Router - DHCP Static Map</title>
+      <listitem>
+        <para>
+  When upgrading, existing DHCP static host mappings may be erased.
+        </para>
+      </listitem>
+    </itemizedlist>
+
+
   </sect1>
     
   <sect1 id="appendix_changes_30_31">
