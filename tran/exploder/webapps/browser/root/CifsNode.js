@@ -4,7 +4,7 @@
 function CifsNode(name, size, lastModified) {
    this.name = name;
    this.size = size;
-   this.lastModified = lastModified;
+   this.lastModified = new Date(lastModified);
 }
 
 CifsNode.prototype = {
