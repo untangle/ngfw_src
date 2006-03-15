@@ -78,7 +78,6 @@ public class ProxyServlet extends HttpServlet
             sos.write(sb.toString().getBytes());
             copyStream(req.getInputStream(), sos);
 
-
             StatusLine sl = readStatusLine(sis);
             resp.setStatus(sl.getStatusCode(), sl.getReasonPhrase());
 

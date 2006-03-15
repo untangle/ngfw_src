@@ -24,6 +24,31 @@ function DetailPanel(parent, className, posStyle) {
 DetailPanel.prototype = new DwtListView();
 DetailPanel.prototype.constructor = DetailPanel;
 
+// public methods -------------------------------------------------------------
+
+DetailPanel.prototype.setListingXml = function(dom)
+{
+   var root = dom.getElementsByTagName("root")[0];
+   this._path = root.getAttribute("path");
+   var children = root.childNodes;
+
+   var listing = new AjxVector();
+
+   for (var i = 0; i < children.length; i++) {
+      var child = children[i];
+      var tagName = child.tagName;
+      if ("dir" == tagName || "file" == tagName) {
+         listing.add(new CifsNode(child.getAttribute("name"),
+                                  child.getAttribute("size"),
+                                  child.getAttribute("mtime")));
+      }
+   }
+
+   this.set(listing);
+}
+
+// internal methods -----------------------------------------------------------
+
 DetailPanel.prototype._createItemHtml = function(item) {
 
    var div = document.createElement("div");

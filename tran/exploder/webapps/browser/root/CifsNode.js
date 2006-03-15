@@ -1,10 +1,10 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-function CifsNode(name) {
+function CifsNode(name, size, lastModified) {
    this.name = name;
-   this.size = 100;
-   this.lastModified = "Yesterday";
+   this.size = size;
+   this.lastModified = lastModified;
 }
 
 CifsNode.prototype = {

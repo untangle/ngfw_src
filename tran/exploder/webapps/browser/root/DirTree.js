@@ -53,12 +53,11 @@ DirTree.prototype.treeListener = function(ev) {
                var tn = new DwtTreeItem(item, null, n.label, "Folder");
                tn.setData("smbNode", n);
             }
-
             item.setExpanded(true);
          }
 
          AjxRpc.invoke(null, "ls?url=" + url + "&type=dir", null,
-                       new AjxCallback(this, cb, { kaka: "poo" } ), true);
+                       new AjxCallback(this, cb, new Object()), true);
 
          item.setData("expanded", true);
       }

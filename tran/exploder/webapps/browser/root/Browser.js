@@ -10,8 +10,11 @@ function Browser(shell) {
       DwtComposite.call(this, shell, "Browser", DwtComposite.ABSOLUTE_STYLE);
 
       this.dirTree = new DirTree(this, null, DwtControl.ABSOLUTE_STYLE);
+      this.dirTree.addSelectionListener(new AjxListener(this, this._dirTreeListener));
+
       this.sash = new DwtSash(this, DwtSash.HORIZONTAL_STYLE, null, 5);
       this.detailPanel = new DetailPanel(this, null, DwtControl.ABSOLUTE_STYLE);
+
 
       var v = new AjxVector();
       v.add(new CifsNode("MEOW"));
@@ -47,3 +50,36 @@ Browser.prototype.layout = function() {
 
    this.zShow(true);
 }
+
+Browser.prototype._dirTreeListener = function(ev) {
+   switch (ev.detail) {
+      case DwtTree.ITEM_SELECTED:
+      var item = ev.item;
+      var n = item.getData("smbNode");
+      var url = n.url;
+
+      var cb = function(obj, results) {
+         this.detailPanel.setListingXml(results.xml);
+         this.detailPanel.setUI(0);
+      }
+
+      AjxRpc.invoke(null, "ls?url=" + url + "&type=full", null,
+                    new AjxCallback(this, cb, new Object()), true);
+      break;
+
+      case DwtTree.ITEM_DESELECTED:
+      break;
+
+      case DwtTree.ITEM_CHECKED:
+      break;
+
+      case DwtTree.ITEM_ACTIONED:
+      break;
+
+      case DwtTree.ITEM_DBL_CLICKED:
+      break;
+
+      default:
+   }
+}
+
