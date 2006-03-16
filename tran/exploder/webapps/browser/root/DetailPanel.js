@@ -11,7 +11,7 @@ function DetailPanel(parent, className, posStyle) {
    var hi = new DwtListHeaderItem("name", "Name", null, 200, false, true, true);
    hi.memberName = "name";
    header[i++] = hi;
-   hi = new DwtListHeaderItem("size", "Size", null, 200, false, true, true);
+   hi = new DwtListHeaderItem("size", "Size", null, 100, false, true, true);
    hi.memberName = "size";
    header[i++] = hi;
    hi = new DwtListHeaderItem("lastModified", "Last Modified", null, 200, false, true, true);

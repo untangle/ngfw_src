@@ -7,23 +7,28 @@ function Browser(shell) {
    }
 
 /*    try { */
-      DwtComposite.call(this, shell, "Browser", DwtComposite.ABSOLUTE_STYLE);
 
-      this.dirTree = new DirTree(this, null, DwtControl.ABSOLUTE_STYLE);
-      this.dirTree.addSelectionListener(new AjxListener(this, this._dirTreeListener));
+   shell.addControlListener(new AjxListener(this, this._shellListener));
 
-      this.sash = new DwtSash(this, DwtSash.HORIZONTAL_STYLE, null, 5);
-      this.detailPanel = new DetailPanel(this, null, DwtControl.ABSOLUTE_STYLE);
+   DwtComposite.call(this, shell, "Browser", DwtComposite.ABSOLUTE_STYLE);
 
+   this.dirTree = new DirTree(this, null, DwtControl.ABSOLUTE_STYLE);
+   this.dirTree.setScrollStyle(DwtControl.SCROLL);
+   this.dirTree.addSelectionListener(new AjxListener(this, this._dirTreeListener));
+   this.dirTree.zShow(true);
 
-      var v = new AjxVector();
-      v.add(new CifsNode("MEOW"));
-      v.add(new CifsNode("RUFF"));
+   this.sash = new DwtSash(this, DwtSash.HORIZONTAL_STYLE, null, 3);
+   this.sash.zShow(true);
 
-      this.detailPanel.set(v);
-      this.detailPanel.setUI(0);
+   this.detailPanel = new DetailPanel(this, null, DwtControl.ABSOLUTE_STYLE);
+   this.detailPanel.setUI(0);
+   this.detailPanel.zShow(true);
 
-      this.layout();
+   var size = shell.getSize();
+   this.layout(size.x, size.y);
+
+   this.zShow(true);
+
 
 /*    } catch (exn) { */
 /*       if (exn.dump) { */
@@ -37,18 +42,21 @@ function Browser(shell) {
 Browser.prototype = new DwtComposite();
 Browser.prototype.constructor = Browser;
 
-Browser.prototype.layout = function() {
-   this.dirTree.setBounds(0, 0, 150, "100%");
-   this.dirTree.setScrollStyle(DwtControl.SCROLL);
-   this.dirTree.zShow(true);
+Browser.prototype.layout = function(width, height) {
+   var x = 0;
+   var y = 0;
 
-   this.sash.setBounds(155, 0, 3, "100%");
-   this.sash.zShow(true);
+   DBG.println(AjxDebug.DBG1, "dirTree: " + x + '/' + y + '/' + 200 + '/' + height);
+   this.dirTree.setBounds(x, y, 200, height);
+   x += this.dirTree.getSize().x;
 
-   this.detailPanel.setBounds(160, 0, 700, "100%");
-   this.detailPanel.zShow(true);
+   DBG.println(AjxDebug.DBG1, "sash: " + x + '/' + y + '/' + 2 + '/' + height);
+   this.sash.setBounds(x, y, 2, height);
+   x += this.sash.getSize().x;
 
-   this.zShow(true);
+   DBG.println(AjxDebug.DBG1, "detailPanel: " + x + '/' + y + '/' + (width - x) + '/' + height);
+   this.detailPanel.setBounds(x, y, width - x, height);
+   x += this.detailPanel.getSize().x;
 }
 
 Browser.prototype._dirTreeListener = function(ev) {
@@ -83,3 +91,9 @@ Browser.prototype._dirTreeListener = function(ev) {
    }
 }
 
+Browser.prototype._shellListener = function(ev)
+{
+   if (ev.oldWidth != ev.newWidth || ev.oldHeight != ev.newHeight) {
+      this.layout(ev.newWidth, ev.newHeight);
+   }
+}

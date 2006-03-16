@@ -34,7 +34,7 @@
 
 <script language="JavaScript">
 function launch() {
-DBG = new AjxDebug(AjxDebug.NONE, null, false);
+DBG = new AjxDebug(AjxDebug.DBG1, null, false);
 
 var shell = new DwtShell("MainShell");
 new Browser(shell);
