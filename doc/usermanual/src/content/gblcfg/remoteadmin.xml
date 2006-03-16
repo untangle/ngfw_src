@@ -2,7 +2,7 @@
   <sect1 id="gblcfg_tab_remoteadmin">
     <title>Remote Admin</title>
     <para>
-      XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      The Remote Admin tab provides control over the process and rules for administering the &eg;.  It is divided into 5 sub tabs.  The first, as discussed in <xref linkend="gblcfg_tab_remoteadmin_accounts"/>, is used to create accounts which can administer the &eg;.  The next section, covered in <xref linkend="gblcfg_tab_remoteadmin_access"/>, is used to control access to the Administrative Console from a network level.  The third tab, as seen in <xref linkend="gblcfg_tab_remoteadmin_certs"/>, is used to control the Digital Certificate used when accessing the &eg; via Secure Sockets Layer (<glossterm linkend="gloss_ssl">SSL</glossterm>).  The fourth tab, discussed in <xref linkend="gblcfg_tab_remoteadmin_monitoring"/>, is used to configure industry standard monitoring protocols such as <glossterm linkend="gloss_snmp">SNMP</glossterm> and <glossterm linkend="gloss_syslog">Syslog</glossterm>.  The final tab allows administrators to reboot their &eg;, as discussed in <xref linkend="gblcfg_tab_remoteadmin_reboot"/>.
     </para>
 
     <!-- ========================================================= -->  
@@ -115,7 +115,7 @@
       <sect3 id="gblcfg_tab_remoteadmin_access_pubaddr">
         <title>Public Address</title>
         <para>
-          The Public Address Tab, as seen in <xref linkend="gblcfg_tab_remoteadmin_access_pubaddr_figure"/>, XXXXXXXXXXXXXXXXXXXXXXX.
+          The Public Address Tab, as seen in <xref linkend="gblcfg_tab_remoteadmin_access_pubaddr_figure"/>, should only be used under special circumstances.  Those circumstances involve a different address used for access from the Internet vs. the address of the external interface of the &eg;.
         </para>
         <figure id="gblcfg_tab_remoteadmin_access_pubaddr_figure">
           <title>Public Address Tab</title>
@@ -126,7 +126,15 @@
           </mediaobject>
         </figure>
         <para>
-          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+          Although redundant, an &eg; can be deployed behind a router or other network device which performs redirection.  For example, such a device may redirect all traffic on its IP address for port 443 to the &eg; on port 8443.
+        </para>
+        <para>
+          In such a scenario, the address of the &eg; is not the address used by people on the general Internet.  From outside the corporate network, an Administrator could not reach the &eg;.  To address this situation, the Public Address tab should be used.  Enter the IP address and port which will be used for Internet access to the &eg;.
+          <note>
+            <para>
+              The port which is required for external access is 443.  It is permissable to use a value other than 443 as the value for <guilabel>port</guilabel> on the &eg;, but the device performing redirection should honor 443 as the external mapping.
+            </para>
+          </note>
         </para>
       </sect3>      
       

@@ -12,22 +12,6 @@
 <!ENTITY using_adminui SYSTEM "content/usingadminui/using_adminui.xml">
 <!ENTITY using_adminui_qa SYSTEM "content/usingadminui/qa.xml">
 
-
-<!-- THIS IS DEPRICATED -->
-<!-- Config Tab -->
-<!--
-<!ENTITY config_tab SYSTEM "content/configtab/config_tab.xml">
-<!ENTITY config_tab_accounts SYSTEM "content/configtab/accounts.xml">
-<!ENTITY config_tab_network SYSTEM "content/configtab/network.xml">
-<!ENTITY config_tab_remoteadmin SYSTEM "content/configtab/remoteadmin.xml">
-<!ENTITY config_tab_backuprestore SYSTEM "content/configtab/backuprestore.xml">
-<!ENTITY config_tab_protocol SYSTEM "content/configtab/protocol.xml">
-<!ENTITY config_tab_quarantine  SYSTEM "content/configtab/quarantine.xml">
-<!ENTITY config_tab_support SYSTEM "content/configtab/support.xml">
-<!ENTITY config_tab_qa SYSTEM "content/configtab/qa.xml">
--->
-
-
 <!-- Global configuration (Gblcfg) -->
 <!ENTITY gblcfg_tab SYSTEM "content/gblcfg/gblcfg_tab.xml">
 <!ENTITY gblcfg_tab_networking SYSTEM "content/gblcfg/network.xml">
@@ -37,7 +21,6 @@
 <!ENTITY gblcfg_tab_support SYSTEM "content/gblcfg/support.xml">
 <!ENTITY gblcfg_tab_setupinfo SYSTEM "content/gblcfg/setupinfo.xml">
 <!ENTITY gblcfg_tab_qa SYSTEM "content/gblcfg/qa.xml">
-
 
 <!-- Policies -->
 <!ENTITY policy_manager SYSTEM "content/policymngr/policy_manager.xml">
@@ -159,11 +142,6 @@
   &using_adminui;
 
   &gblcfg_tab;
-
-  <!-- TODO This is depricated -->
-<!--  
-  &config_tab;
--->  
 
   &policy_manager;
 
