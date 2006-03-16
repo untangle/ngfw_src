@@ -38,7 +38,7 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
 	    standardJButton.setEnabled(true);
 	}
 	else if( SetupState.BASIC.equals(setupState) ){
-	    statusJLabel.setText("Standard (NAT & DMZ)");
+	    statusJLabel.setText("Standard (NAT & DMZ Host)");
 	    advancedJButton.setEnabled(true);
 	    standardJButton.setEnabled(false);
 	}
