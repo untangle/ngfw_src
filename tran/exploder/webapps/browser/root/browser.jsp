@@ -16,7 +16,9 @@
 </style>
 <link rel="stylesheet" type="text/css" href="browser.css"/>
 
-<jsp:include page="Messages.jsp"/>
+<script type="text/javascript" src="I18nMsg.js"></script>
+<script type="text/javascript" src="AjxMsg.js"></script>
+
 <jsp:include page="Ajax.jsp"/>
 
 <script type="text/javascript" src="CifsNode.js"></script>

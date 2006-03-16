@@ -6,7 +6,7 @@ function Browser(shell) {
       return;
    }
 
-   try {
+/*    try { */
       DwtComposite.call(this, shell, "Browser", DwtComposite.ABSOLUTE_STYLE);
 
       this.dirTree = new DirTree(this, null, DwtControl.ABSOLUTE_STYLE);
@@ -25,13 +25,13 @@ function Browser(shell) {
 
       this.layout();
 
-   } catch (exn) {
-      if (exn.dump) {
-         alert(exn.dump());
-      } else {
-         alert(exn);
-      }
-   }
+/*    } catch (exn) { */
+/*       if (exn.dump) { */
+/*          alert(exn.dump()); */
+/*       } else { */
+/*          alert(exn); */
+/*       } */
+/*    } */
 }
 
 Browser.prototype = new DwtComposite();
@@ -45,7 +45,7 @@ Browser.prototype.layout = function() {
    this.sash.setBounds(155, 0, 3, "100%");
    this.sash.zShow(true);
 
-   this.detailPanel.setBounds(160, 0, 300, "100%");
+   this.detailPanel.setBounds(160, 0, 700, "100%");
    this.detailPanel.zShow(true);
 
    this.zShow(true);

@@ -4,7 +4,14 @@
 function CifsNode(name, size, lastModified) {
    this.name = name;
    this.size = size;
-   this.lastModified = new Date(lastModified);
+   if (0 < lastModified) {
+      var date = new Date();
+      date.setTime(lastModified);
+      var formatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.MEDIUM, AjxDateFormat.SHORT);
+      this.lastModified = formatter.format(date);
+   } else {
+      this.lastModified = "";
+   }
 }
 
 CifsNode.prototype = {
