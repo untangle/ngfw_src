@@ -88,12 +88,12 @@ public class LogJPanel extends MLogTableJPanel
 
                 event = new Vector(8);
                 event.add( null == pe ? "" : pe.getCreateDate() );
-                event.add( log.getIsDmz() ? "dmz" : "redirect" );
+                event.add( log.getIsDmz() ? "dmz host" : "redirect" );
                 event.add( null == pe ? "" : pe.getProtocolName());
                 event.add( null == pe ? "" : pe.getCClientAddr().getHostAddress() );
                 event.add( null == pe ? "" : pe.getCServerAddr().getHostAddress() );
                 event.add( null == pe ? "" : pe.getSServerAddr().getHostAddress() );
-                event.add( log.getIsDmz() ? "Destined to DMZ" : ("Redirect Rule #" + log.getRuleIndex()));
+                event.add( log.getIsDmz() ? "Destined to DMZ Host" : ("Redirect Rule #" + log.getRuleIndex()));
                 String clientIntf = ( null == pe ? "" : convertIntf( pe.getClientIntf()));
                 String serverIntf = ( null == pe ? "" : convertIntf( pe.getServerIntf()));
                 event.add( clientIntf );
