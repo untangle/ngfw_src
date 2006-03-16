@@ -63,6 +63,11 @@ class TargetDesc
         return targetRef.get();
     }
 
+    WeakReference getTargetRef()
+    {
+        return targetRef;
+    }
+
     Method getMethod(String methodName)
     {
         return methods.get(methodName);

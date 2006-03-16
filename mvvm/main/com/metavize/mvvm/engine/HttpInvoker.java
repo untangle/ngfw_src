@@ -118,7 +118,8 @@ class HttpInvoker extends InvokerBase
                     pos.writeObject(proxy);
                     return;
                 } else {                     /* logout */
-                    logins.remove(loginSession);
+                    LoginDesc ld = logins.remove(loginSession);
+                    ld.destroy(targetReaper);
                     pos.writeObject(null);
                     return;
                 }
@@ -258,7 +259,8 @@ class HttpInvoker extends InvokerBase
                         if (!loginSession.isSystem() && null != loginDesc) {
                             Date lastAccess = loginDesc.getLastAccess();
                             if (cutoff.after(lastAccess)) {
-                                logins.remove(loginSession);
+                                LoginDesc ld = logins.remove(loginSession);
+                                ld.destroy(targetReaper);
                             }
                         }
                     }

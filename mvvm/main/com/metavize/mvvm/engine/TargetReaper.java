@@ -78,4 +78,9 @@ class TargetReaper implements Runnable
         }
         return targetRef;
     }
+
+    void removeReference(WeakReference ref)
+    {
+        actions.remove(ref);
+    }
 }

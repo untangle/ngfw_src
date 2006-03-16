@@ -57,13 +57,7 @@ class LoginDesc
             if (null == targetDesc) {
                 final int targetId = ++lastId;
 
-                Runnable r = new Runnable()
-                    {
-                        public void run()
-                        {
-                            targets.remove(targetId);
-                        }
-                    };
+                Runnable r = new ExpireTarget(targets, targetId);
 
                 WeakReference tRef = targetReaper.makeReference(target, r);
 
@@ -115,5 +109,32 @@ class LoginDesc
     Date getLastAccess()
     {
         return lastAccess;
+    }
+
+    void destroy(TargetReaper targetReaper)
+    {
+        for (TargetDesc td : targets.values()) {
+            targetReaper.removeReference(td.getTargetRef());
+        }
+    }
+
+    // inner classes ----------------------------------------------------------
+
+    private static class ExpireTarget implements Runnable
+    {
+        private final Map<Integer, TargetDesc> targets;
+        private final int targetId;
+
+        ExpireTarget(Map<Integer, TargetDesc> targets, int targetId)
+        {
+            this.targets = targets;
+            this.targetId = targetId;
+        }
+
+        public void run()
+        {
+            System.out.println("EXPIRE: " + targetId);
+            targets.remove(targetId);
+        }
     }
 }
