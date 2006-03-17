@@ -611,6 +611,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
         <include name="mvvm-client.jar"/>
       </fileset>
       <fileset refid="httpclient.jarset"/>
+      <fileset refid="commons-codec.jarset"/>
     </copy>
 
     <mkdir dir="${dist.mvvm.web}/store/WEB-INF/classes"/>

@@ -15,6 +15,7 @@ ANTPACK200_HOME=../../downloads/ant-pack200
 BCEL_HOME=../../downloads/output/bcel-5.1
 C3P0_HOME=../../downloads/output/c3p0-0.9.0.4
 COMMONS_BEANUTILS_HOME=../../downloads/output/commons-beanutils-1.7.0
+COMMONS_CODEC_HOME=../../downloads/output/commons-codec-1.3
 COMMONS_DIGESTER_HOME=../../downloads/output/commons-digester-1.7
 COMMONS_FILEUPLOAD_HOME=../../downloads/output/commons-fileupload-1.1
 COMMONS_IO_HOME=../../downloads/output/commons-io-1.1

@@ -22,7 +22,6 @@ import org.apache.catalina.Engine;
 import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Pipeline;
-import org.apache.catalina.Valve;
 import org.apache.catalina.core.StandardDefaultContext;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.logger.FileLogger;
@@ -170,7 +169,9 @@ public class TomcatManager {
             ctx.setManager(mgr);
             if (isAdminOnly) {
                 Pipeline pipe = ctx.getPipeline();
-                pipe.addValve(new MvvmAuthenticator());
+                MvvmAuthenticator auth = new MvvmAuthenticator();
+                auth.setDisableProxyCaching(false);
+                pipe.addValve(auth);
             }
             baseHost.addChild(ctx);
             return true;

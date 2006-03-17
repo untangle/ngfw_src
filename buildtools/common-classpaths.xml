@@ -278,6 +278,14 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
     <fileset refid="httpclient.jarset"/>
   </path>
 
+  <fileset id="commons-codec.jarset" dir="${COMMONS_CODEC_HOME}">
+    <include name="commons-codec-1.3.jar"/>
+  </fileset>
+
+  <path id="commons-codec.classpath">
+    <fileset refid="commons-codec.jarset"/>
+  </path>
+
   <fileset id="ajaxtk.thirdparty.jarset" dir="${AJAXTK_HOME}/jars"/>
 
   <path id="ajaxtk.thirdparty.classpath">
