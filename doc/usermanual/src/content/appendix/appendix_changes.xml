@@ -501,7 +501,7 @@
   
         <listitem>
           <para>
-            The &eg; has been enhanced to now sequester, or <emphasis>quarantine</emphasis> emails categorized as unwanted (phishing, SPAM) by various Software Appliances.  End users are able to manage their quarantine of emails (review, release, delete) as well as declare certain senders "safe" via a self-service <emphasis>pass list</emphasis> feature.
+            The &eg; has been enhanced to now sequester, or <emphasis>quarantine</emphasis> emails categorized as unwanted (phishing, Spam) by various Software Appliances.  End users are able to manage their quarantine of emails (review, release, delete) as well as declare certain senders "safe" via a self-service <emphasis>pass list</emphasis> feature.
           </para>
         </listitem>
       </varlistentry>    

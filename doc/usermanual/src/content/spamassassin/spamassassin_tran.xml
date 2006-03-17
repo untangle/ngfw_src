@@ -75,14 +75,14 @@
               </listitem>
             </varlistentry>
             <varlistentry>
-              <term><guilabel>action if SPAM detected</guilabel></term>
+              <term><guilabel>action if Spam detected</guilabel></term>
               <listitem>
                 <para>
                   This controls what actions &eg; should take on the message itself, should the message be determined to be spam.  There are four possible values.
                   <itemizedlist>
                     <listitem>
                       <para>
-                        <constant>mark message</constant> causes the email message to have its subject changed to start with the phrase <quote><userinput>[SPAM]...</userinput></quote>.  Users can then set-up email client filter rules to cause such messages to be placed in special folders.
+                        <constant>mark message</constant> causes the email message to have its subject changed to start with the phrase <quote><userinput>[Spam]...</userinput></quote>.  Users can then set-up email client filter rules to cause such messages to be placed in special folders.
                       </para>
                     </listitem>
                     <listitem>
@@ -106,7 +106,7 @@
             </varlistentry>
 
             <varlistentry>
-              <term><guilabel>notification if SPAM detected</guilabel></term>
+              <term><guilabel>notification if Spam detected</guilabel></term>
               <listitem>
                 <para>
                   This controls any notifications.  Notifications are net-new emails, stating that a spam message was detected at your &eg;.  There are two possible values.
@@ -183,14 +183,14 @@
             </listitem>
           </varlistentry>
           <varlistentry>
-            <term><guilabel>action if SPAM detected</guilabel></term>
+            <term><guilabel>action if Spam detected</guilabel></term>
             <listitem>
               <para>
                 This controls what actions &eg; should take on the message itself, should the message be determined to be spam.  There are two possible values.
                 <itemizedlist>
                   <listitem>
                     <para>
-                      <constant>mark message</constant> causes the email message to have its subject changed to start with the phrase <quote><userinput>[SPAM]...</userinput></quote>.  Users can then set-up email client filter rules to cause such messages to be placed in special folders.
+                      <constant>mark message</constant> causes the email message to have its subject changed to start with the phrase <quote><userinput>[Spam]...</userinput></quote>.  Users can then set-up email client filter rules to cause such messages to be placed in special folders.
                     </para>
                   </listitem>
                   <listitem>
@@ -255,14 +255,14 @@
             </listitem>
           </varlistentry>
           <varlistentry>
-            <term><guilabel>action if SPAM detected</guilabel></term>
+            <term><guilabel>action if Spam detected</guilabel></term>
             <listitem>
               <para>
                 This controls what actions &eg; should take on the message itself, should the message be determined to be spam.  There are four possible values.
                 <itemizedlist>
                   <listitem>
                     <para>
-                      <constant>mark message</constant> causes the email message to have its subject changed to start with the phrase <quote><userinput>[SPAM]...</userinput></quote>.  Users can then set-up email client filter rules to cause such messages to be placed in special folders.
+                      <constant>mark message</constant> causes the email message to have its subject changed to start with the phrase <quote><userinput>[Spam]...</userinput></quote>.  Users can then set-up email client filter rules to cause such messages to be placed in special folders.
                     </para>
                   </listitem>
                   <listitem>
@@ -347,7 +347,7 @@
             </listitem>
           </varlistentry>
           <varlistentry>
-            <term><guilabel>SPAM score</guilabel></term>
+            <term><guilabel>Spam score</guilabel></term>
             <listitem>
               <para>
               This is the score applied to the email by the spam scanner.  Higher values indicate <quote>more likely to be spam</quote>.

@@ -10,7 +10,7 @@
       </qandaentry>
       <qandaentry>
         <question>
-          <para>When configuring my &eg; to <guilabel>mark</guilabel> spam received over IMAP, the subject of the mails changes to <quote><userinput>[SPAM]...</userinput></quote> only after I click on the message.  Why?</para>
+          <para>When configuring my &eg; to <guilabel>mark</guilabel> spam received over IMAP, the subject of the mails changes to <quote><userinput>[Spam]...</userinput></quote> only after I click on the message.  Why?</para>
         </question>
         <answer>
           <para>

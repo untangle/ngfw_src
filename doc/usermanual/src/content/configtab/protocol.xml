@@ -67,7 +67,7 @@
         The Email tab is divided into two sections, <guilabel>Email Overrides</guilabel> and <guilabel>Email Timeouts</guilabel>.  Each section can control settings for the three supported email protocols, <glossterm linkend="gloss_smtp">SMTP</glossterm>, <glossterm linkend="gloss_pop">POP</glossterm>, and <glossterm linkend="gloss_imap">IMAP</glossterm>.
       </para>
       <para>
-        <guilabel>Email Overrides</guilabel> lets Administrators turn off scanning for a given email protocol.  This applies <emphasis>to all Software Appliances</emphasis>.  For example, disabling SMTP would affect SPAM, Virus and Phish scanning.
+        <guilabel>Email Overrides</guilabel> lets Administrators turn off scanning for a given email protocol.  This applies <emphasis>to all Software Appliances</emphasis>.  For example, disabling SMTP would affect Spam, Virus and Phish scanning.
       </para>
       <para>
         The <guilabel>Email Timeouts</guilabel> section instructs the &eg; as to the maximum time it has for scanning.  If a given email takes more than this time to process, scanning is aborted and the mail passed to the client.  Note that setting this value too small risks passing contaminated content, and setting it too large risks timeouts in client programs (with user complaints to follow).

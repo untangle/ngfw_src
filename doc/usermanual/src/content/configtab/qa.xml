@@ -28,14 +28,14 @@
       <!-- ************************************************************** -->
       <qandaentry>
         <question>
-          <para>Someone left our company, but we still receives emails.  Since some of those emails are SPAM, how can I prevent their inbox from growing forever?</para>
+          <para>Someone left our company, but we still receives emails.  Since some of those emails are Spam, how can I prevent their inbox from growing forever?</para>
         </question>
         <answer>
           <para>
             The &eg; does not know valid from invalid email addresses within your domain.  The easiest way to prevent emails for an ex-employee is to configure your mail server to reject those mails.
           </para>
           <para>
-            If causing emails to be rejected is not an option (for example, emails from business partners are still being received and must be reviewed during the transition) then SPAM emails can simply be ignored.  Recall that the system automatically deletes emails from inboxes after a fixed period (see <xref linkend="config_tab_quarantine_general"/> for more details on this setting).  Note that once emails for that user cease, the inbox will automatically be deleted after two months of inactivity.  
+            If causing emails to be rejected is not an option (for example, emails from business partners are still being received and must be reviewed during the transition) then Spam emails can simply be ignored.  Recall that the system automatically deletes emails from inboxes after a fixed period (see <xref linkend="config_tab_quarantine_general"/> for more details on this setting).  Note that once emails for that user cease, the inbox will automatically be deleted after two months of inactivity.  
           </para>
         </answer>
       </qandaentry>      
@@ -44,7 +44,7 @@
       <!-- ************************************************************** -->   
       <qandaentry>
         <question>
-          <para>Looking at the Quarantine interface, I cannot find how to cause SPAM-suspect emails to be quarantined.  How do I configure this?</para>
+          <para>Looking at the Quarantine interface, I cannot find how to cause Spam-suspect emails to be quarantined.  How do I configure this?</para>
         </question>
         <answer>
           <para>

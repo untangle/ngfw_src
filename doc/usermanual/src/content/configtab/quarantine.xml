@@ -20,7 +20,7 @@
     <sect2 id="config_tab_quarantine_overview">
       <title>Quarantine and Passlist Overview</title>
       <para>
-        The Quarantine facility of &eg; will store emails suspected of containing unwanted content (for example, <glossterm linkend="gloss_spam">SPAM</glossterm> or <glossterm linkend="gloss_phishing">phishing</glossterm>).  This storage is done on a per-email address basis.  For example, if <constant>escott@yourcompany.com</constant> receives three SPAM emails in a day, those three emails are quarantined for <constant>escott</constant>.  The collection of emails for a given address is said to be an <quote>inbox</quote>.
+        The Quarantine facility of &eg; will store emails suspected of containing unwanted content (for example, <glossterm linkend="gloss_spam">Spam</glossterm> or <glossterm linkend="gloss_phishing">phishing</glossterm>).  This storage is done on a per-email address basis.  For example, if <constant>escott@yourcompany.com</constant> receives three Spam emails in a day, those three emails are quarantined for <constant>escott</constant>.  The collection of emails for a given address is said to be an <quote>inbox</quote>.
       </para>
       <para>
         The &eg; quarantine system has been designed so end-users can maintain their own inbox.  They do so via a daily <quote>digest email</quote> which summarizes any quarantined emails.  Users can then release emails (causing them to be sent to their email clients), or delete them.  
