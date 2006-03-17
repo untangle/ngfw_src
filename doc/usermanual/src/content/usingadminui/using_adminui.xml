@@ -58,7 +58,7 @@
     </mediaobject>
   </figure>
   <para>
-    The initial <guilabel>Login</guilabel> is <constant>admin</constant> and the initial <guilabel>Password</guilabel> is <constant>passwd</constant>.  <emphasis>Please make a note that you should change this default password (as described in <xref linkend="gblcfg_tab_remoteadmin_accounts"/>)</emphasis>.  If all goes correctly, you should see the initial Administrative Interface screen as shown in <xref linkend="using_adminui_empty_rack"/>.
+    The username and password were set during the initial Installation Wizard.  If all goes correctly, you should see the initial Administrative Interface screen as shown in <xref linkend="using_adminui_empty_rack"/>.
   </para>
   <figure id="using_adminui_empty_rack">
     <title>Initial Screen</title>

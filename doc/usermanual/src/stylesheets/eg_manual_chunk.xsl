@@ -49,7 +49,7 @@
 
 <!--<xsl:param name="chunk.section.depth">1</xsl:param>-->
 <!--<xsl:param name="chunk.section.depth">2</xsl:param>-->
-<xsl:param name="chunk.section.depth">3</xsl:param>
+<xsl:param name="chunk.section.depth">4</xsl:param>
 <!--<xsl:param name="chunk.section.depth">4</xsl:param>-->
 <!--<xsl:param name="chunk.section.depth">5</xsl:param>-->
 
