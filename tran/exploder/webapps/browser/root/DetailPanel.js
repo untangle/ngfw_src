@@ -19,6 +19,8 @@ function DetailPanel(parent, className, posStyle) {
    header[i++] = hi;
 
    DwtListView.call(this, parent, className, posStyle, header, true);
+
+   this.addSelectionListener(new AjxListener(this, this._selectionListener));
 }
 
 DetailPanel.prototype = new DwtListView();
@@ -92,4 +94,13 @@ DetailPanel.prototype._createItemHtml = function(item) {
 
    div.innerHTML = htmlArr.join("");
    return div;
+}
+
+DetailPanel.prototype._selectionListener = function(ev)
+{
+   switch (ev.detail) {
+      case DwtListView.ITEM_DBL_CLICKED:
+      alert("DOUBLE CLICKED: " + ev.item);
+      break;
+   }
 }
