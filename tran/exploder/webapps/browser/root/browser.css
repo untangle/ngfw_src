@@ -329,3 +329,48 @@ DIV.vSpace {
 }
 
 .DwtSash { background-color: rgb(37,87,173); }
+
+/* Row display and highlighting */
+.Row, .Row-selected, .Row-matched, .Row-matched-drag,
+.Row-drag, .Row-selected-drag, .Row-selected-right {
+    border-bottom: 1px solid rgb(198, 197, 215);
+}
+
+.Row-selected, .Row-selected-drag {
+  background-color: rgb(37, 87, 173);
+  color: white;
+}
+.Row-matched, .Row-matched-dnd { background-color: rgb(255, 247, 176); }
+.Row-selected-right, .Row-drag, .Row-matched-drag { background-color: #AFAFAF; }
+
+.Row-selected table, .Row-selected-drag table, .Row-drag table,
+.Row-matched-drag table, .Row-selected-right table {
+    color: white;
+}
+
+.Row table, .Row-selected table, .Row-matched table, .Row-matched-drag table, .Row-dnd table,
+.Row-selected-drag table, .Row-drag table, .Row-selected-right table {
+    table-layout: fixed;
+}
+
+.Row td, .Row div, .Row-selected td, .Row-matched td, .Row-dnd td, .Row-selected-drag td,
+.Row-drag td, .Row-matched-drag td, .Row-selected-right td {
+    vertical-align: top;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.Row td.Flag, .Row td.Attach, .Row td.Tag, .Row td.Icon,
+.Row-dnd td.Flag, .Row-dnd td.Attach, .Row-dnd td.Tag, .Row-dnd td.Icon,
+.Row-selected-drag td.Flag, .Row-selected-drag td.Attach, .Row-selected-drag td.Tag, .Row-selected-drag td.Icon,
+.Row-matched-drag td.Flag, .Row-matched-drag td.Attach, .Row-matched-drag td.Tag, .Row-matched-drag td.Icon,
+.Row-drag td.Flag, .Row-drag td.Attach,.Row-drag td.Tag, .Row-drag td.Icon {
+    text-align: center;
+}
+
+.nobreak {
+    white-space: nowrap;
+    overflow: hidden;
+}
+
