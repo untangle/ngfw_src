@@ -6,11 +6,13 @@ function Browser(shell) {
       return;
    }
 
+   this.shell = shell;
+
 /*    try { */
 
-   shell.addControlListener(new AjxListener(this, this._shellListener));
+   this.shell.addControlListener(new AjxListener(this, this._shellListener));
 
-   DwtComposite.call(this, shell, "Browser", DwtComposite.ABSOLUTE_STYLE);
+   DwtComposite.call(this, this.shell, "Browser", DwtComposite.ABSOLUTE_STYLE);
 
    this.dirTree = new DirTree(this, null, DwtControl.ABSOLUTE_STYLE);
    this.dirTree.setScrollStyle(DwtControl.SCROLL);
@@ -18,14 +20,15 @@ function Browser(shell) {
    this.dirTree.zShow(true);
 
    this.sash = new DwtSash(this, DwtSash.HORIZONTAL_STYLE, null, 3);
+   this.sashPos = 200;
+   this.sash.registerCallback(this._sashCallback, this);
    this.sash.zShow(true);
 
    this.detailPanel = new DetailPanel(this, null, DwtControl.ABSOLUTE_STYLE);
    this.detailPanel.setUI(0);
    this.detailPanel.zShow(true);
 
-   var size = shell.getSize();
-   this.layout(size.x, size.y);
+   this.layout();
 
    this.zShow(true);
 
@@ -42,19 +45,22 @@ function Browser(shell) {
 Browser.prototype = new DwtComposite();
 Browser.prototype.constructor = Browser;
 
-Browser.prototype.layout = function(width, height) {
+Browser.prototype.layout = function(ignoreSash) {
+   var size = this.shell.getSize();
+   var width = size.x;
+   var height = size.y;
+
    var x = 0;
    var y = 0;
 
-   DBG.println(AjxDebug.DBG1, "dirTree: " + x + '/' + y + '/' + 200 + '/' + height);
-   this.dirTree.setBounds(x, y, 200, height);
+   this.dirTree.setBounds(x, y, this.sashPos, height);
    x += this.dirTree.getSize().x;
 
-   DBG.println(AjxDebug.DBG1, "sash: " + x + '/' + y + '/' + 2 + '/' + height);
-   this.sash.setBounds(x, y, 2, height);
+   if (!ignoreSash) {
+      this.sash.setBounds(x, y, 2, height);
+   }
    x += this.sash.getSize().x;
 
-   DBG.println(AjxDebug.DBG1, "detailPanel: " + x + '/' + y + '/' + (width - x) + '/' + height);
    this.detailPanel.setBounds(x, y, width - x, height);
    x += this.detailPanel.getSize().x;
 }
@@ -94,6 +100,24 @@ Browser.prototype._dirTreeListener = function(ev) {
 Browser.prototype._shellListener = function(ev)
 {
    if (ev.oldWidth != ev.newWidth || ev.oldHeight != ev.newHeight) {
-      this.layout(ev.newWidth, ev.newHeight);
+      this.layout();
    }
+}
+
+Browser.prototype._sashCallback = function(d)
+{
+   var oldPos = this.sashPos;
+
+   this.sashPos += d;
+   if (0 > this.sashPos) {
+      this.sashPos = 0;
+   }
+
+   if (this.shell.getSize().x < this.sashPos) {
+      this.sashPos = x;
+   }
+
+   this.layout(true);
+
+   return this.sashPos - oldPos;
 }

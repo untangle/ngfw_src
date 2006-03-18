@@ -36,7 +36,7 @@
 function launch() {
 DBG = new AjxDebug(AjxDebug.DBG1, null, false);
 
-var shell = new DwtShell("MainShell");
+var shell = new DwtShell("MainShell", false);
 new Browser(shell);
 }
 AjxCore.addOnloadListener(launch);
