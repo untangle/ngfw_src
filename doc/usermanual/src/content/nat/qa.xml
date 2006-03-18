@@ -167,7 +167,7 @@
         </question>
         <answer>
           <para>
-            Configuring a DMZ Host redirects all of the traffic destined to the external IP address of the EdgeGuard Appliance to the <guilabel>Target Address</guilabel>.  The "DMZ" interface is a port on the edgeguard Appliance.  The EdgeGuard acts as a network switch between the <constant>External</constant> and <constant>DMZ</constant> interfaces.  If you have multiple public IP address, then servers that must be accessed publicly and locally can be placed on the <constant>DMZ</constant> interface.  If you only have one public IP address, then using the DMZ host feature is one way to make a machine on the internal network appear like a public server for your network.
+            Configuring a DMZ Host redirects all of the traffic destined to the external IP address of the &eg; to the <guilabel>Target Address</guilabel>.  The "DMZ" interface is a port on the &eg;.  The &eg; acts as a network switch between the <constant>External</constant> and <constant>DMZ</constant> interfaces.  If you have multiple public IP address, then servers that must be accessed publicly and locally can be placed on the <constant>DMZ</constant> interface.  If you only have one public IP address, then using the DMZ host feature is one way to make a machine on the internal network appear like a public server for your network.
           </para>
         </answer>
       </qandaentry>   
