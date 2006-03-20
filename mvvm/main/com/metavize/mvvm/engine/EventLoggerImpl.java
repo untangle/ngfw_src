@@ -322,12 +322,14 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
 
             LogEvent e = ed.getLogEvent();
 
-            logQueue.add(e);
+            if (e.isPersistent()) {
+                logQueue.add(e);
 
-            try {
-                syslogManager.sendSyslog(e, tag);
-            } catch (Exception exn) { // never say die
-                logger.warn("failed to send syslog", exn);
+                try {
+                    syslogManager.sendSyslog(e, tag);
+                } catch (Exception exn) { // never say die
+                    logger.warn("failed to send syslog", exn);
+                }
             }
 
             ed.getEventLogger().doLog(e);
@@ -344,9 +346,7 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
                         for (Iterator<LogEvent> i = logQueue.iterator();
                              i.hasNext(); ) {
                             LogEvent e = i.next();
-                            if (e.isPersistent()) {
-                                s.saveOrUpdate(e);
-                            }
+                            s.saveOrUpdate(e);
                             i.remove();
                         }
 
