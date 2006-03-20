@@ -32,7 +32,7 @@
     <para>
       The Administrative Interface for the Router Appliance has seven tabs.
       The first two tabs are unique to the configuration mode of the Router Appliance.
-      In Standard Mode, the first two tabs are the NAT and DMZ tabs.
+      In Standard Mode, the first two tabs are the <glossterm linkend="gloss_nat">NAT</glossterm> and <glossterm linkend="gloss_dmz">DMZ</glossterm> tabs.
       In Advanced Mode, the first two tabs are the Net Spaces and Routing tabs.
       <note>
         <para>
@@ -649,7 +649,7 @@
       </para>
       <note>
         <para>
-          The Net Spaces tab replaces the NAT tab (see <xref linkend="nat_tran_nat"/>) when the Advanced Mode feature of the Router Appliance is selected.
+          The Net Spaces tab replaces the NAT tab (see <xref linkend="nat_tran_nat"/>) when the Router Appliance is switched from Standard Mode to Advanced Mode.
         </para>
       </note>
 
@@ -795,7 +795,7 @@
       </para>
       <note>
         <para>
-          The Routing tab replaces the <glossterm linkend="gloss_dmz">DMZ</glossterm> tab (see <xref linkend="nat_tran_dmzhost"/>) when the Advanced Mode feature of the Router Appliance is selected.
+          The Routing tab replaces the <glossterm linkend="gloss_dmz">DMZ</glossterm> tab (see <xref linkend="nat_tran_dmzhost"/>) when the Router Appliance is switched from Standard Mode to Advanced Mode.
         </para>
       </note>
       <para>
