@@ -273,8 +273,13 @@ class NatEventHandler extends AbstractEventHandler
             releasePid = attachment.releasePort();
 
             if ( pid != releasePid ) {
-                logger.error( "Mismatch on the attached port and the session port " +
-                              pid + "!=" + releasePid );
+                /* 3-20-2006. This can happen when a PING session gets redirected.  The port
+                 * doesn't go on the redirect pidList, but of course the session
+                 * still has a pid. */
+                /* Changing to a warning from an error, figure out a more permanent
+                 * solution later */
+                logger.warn( "Mismatch on the attached port and the session port " +
+                             pid + "!=" + releasePid );
                 return;
             }
 
