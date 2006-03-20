@@ -1,7 +1,8 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-function CifsNode(name, size, lastModified) {
+function CifsNode(type, name, size, lastModified) {
+   this.type = type;
    this.name = name;
    this.size = size;
    if (0 < lastModified) {

@@ -98,6 +98,8 @@ class Util
                 logger.error( "Error connecting to the openvpn transform", e );
                 request.setAttribute( REASON_ATTR, "Error connnecting to the openvpn transform " + e );
                 return null;
+            } finally {
+                MvvmRemoteContextFactory.factory().logout();
             }
 
             if ( null == commonName ) {

@@ -185,3 +185,5 @@ if (!( isIndex || isDownload)) isIndex = true;
     <br/>
   </body>
 </html>
+
+<% MvvmRemoteContextFactory.factory().logout(); %>

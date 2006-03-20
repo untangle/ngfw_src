@@ -40,7 +40,8 @@ DetailPanel.prototype.setListingXml = function(dom)
       var child = children[i];
       var tagName = child.tagName;
       if ("dir" == tagName || "file" == tagName) {
-         listing.add(new CifsNode(child.getAttribute("name"),
+         listing.add(new CifsNode(tagName,
+                                  child.getAttribute("name"),
                                   child.getAttribute("size"),
                                   child.getAttribute("mtime")));
       }
@@ -100,7 +101,12 @@ DetailPanel.prototype._selectionListener = function(ev)
 {
    switch (ev.detail) {
       case DwtListView.ITEM_DBL_CLICKED:
-      alert("DOUBLE CLICKED: " + ev.item);
+      var item = ev.item;
+      if (item.type = "dir") {
+
+      } else {
+         alert("DOUBLE CLICKED: " + ev.item);
+      }
       break;
    }
 }

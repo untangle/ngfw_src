@@ -247,4 +247,5 @@ to a new location.</u></p>
 
 <%
     }
+    MvvmRemoteContextFactory.factory().logout();
 %>
