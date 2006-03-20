@@ -307,6 +307,8 @@ function rawRules() {
 }
 
 function antisubscribeRules() {
+    local t_mark
+
     ## flush the antisubscribe chain
     ${IPTABLES} -t mangle -F ${CHAIN_ANTISUB}
 
@@ -321,11 +323,19 @@ function antisubscribeRules() {
     ## Determine whether or not to antisubscribe to local traffic
     antisubscribeLocalTraffic ${FLAG_OUTSIDE_INTF} ${ANTISUBSCRIBE_LOCAL_OUTSIDE}
     antisubscribeLocalTraffic ${FLAG_INSIDE_INTF}  ${ANTISUBSCRIBE_LOCAL_INSIDE}
+
+    ## Determine if the antisubscribe needs to be restricted
+    if [ "${MVVM_ALLOW_OUT_HTTPS}x" != "truex" ]; then
+        ## Otherwise, only antisubscribe to those packets with the inside mark.
+        t_mark="${MARK_INSIDE_INTF}/$(( ${MARK_ANTISUB} | ${MARK_INSIDE_INTF} ))"
+    else
+        t_mark=0/${MARK_ANTISUB}
+    fi
     
     ## This rule will often be unecessary, but it is there just in case.
-    ## if the public address is ever different than the box address, these are different.
+    ## if the public address is ever different than the box address, these are different.    
     if [ -n ${HTTPS_PUBLIC_ADDR} ]  && [ -n ${HTTPS_PUBLIC_PORT} ]; then
-        ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -p tcp -m mark --mark 0/${MARK_ANTISUB} \
+        ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -p tcp -m mark --mark ${t_mark} \
             --destination ${HTTPS_PUBLIC_ADDR} \
             --destination-port ${HTTPS_PUBLIC_PORT} \
             -j MARK --set-mark ${MARK_ANTISUB}
