@@ -48,6 +48,8 @@ public class SyslogBuilderImpl implements SyslogBuilder
 
     public void addField(String key, String value)
     {
+        if (null == value)
+            value = "";
         int s = key.length() + (first ? 0 : 2) + 1;
         if (sb.remaining() <= s) {
             logger.error("could not fit field key: '" + key
