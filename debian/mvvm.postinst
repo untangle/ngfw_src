@@ -55,6 +55,18 @@ if [ -d /usr/sbin/mv ]; then
     grep -sq panic= /boot/grub/menu.lst || sed -i -e "s|nodhcp|nodhcp panic=5|" /boot/grub/menu.lst
 fi
 
+# Be very careful with this one.
+CHECKROOTSH=/etc/init.d/checkroot.sh
+SYSVINITVER=
+SYSVINITPKG="`dpkg --get-selections sysvinit | egrep 'install$' | awk '{print $1}'`"
+if [ ! -z "$SYSVINITPKG" ] ; then
+    SYSVINITVER=`dpkg-query -W "$SYSVINITPKG" | awk '{ if ($2) print $2; }'`
+    if [ "2:2.84-188" = "$SYSVINITVER" ] ; then
+        grep -sq -e '-gt 1' $CHECKROOTSH && sed -i -e 's|-gt 1|-gt 3|' -e 's|reboot -f|reboot -f\n    elif [ $? -ge 2 ]\n    then\n      reboot -f|' $CHECKROOTSH
+    fi
+fi
+
+
 # right permissions for all those dirs
 /bin/chown -R $USER:$GROUP ${MVVM_LOGDIR} ${MVVM_CACHEDIR}
 /bin/chmod 775 ${MVVM_LOGDIR} ${MVVM_CACHEDIR}
