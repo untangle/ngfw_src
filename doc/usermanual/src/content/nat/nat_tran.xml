@@ -192,7 +192,7 @@
         </para>
         <para>
           When a machine connects to the internal network, by default, the DHCP feature assigns an arbitrary IP address to the machine from the IP address pool.
-          Generally, this arbitratry IP address assignment is acceptable behavior.
+          Generally, this arbitrary IP address assignment is acceptable behavior.
           In limited cases, however, a machine must receive the same IP address every time that it connects.
           When the administrator needs to override the default IP address assignment behavior, the administrator adds an entry to the DHCP Address Map and the DHCP feature will ensure that the specified machine will always be assigned the same IP address.
         </para>
@@ -560,7 +560,7 @@
         <para>
           To create a hostname translation rule, push the add (plus) button as seen in <xref linkend="nat_tran_dnsfwd_addrmap_figure"/>.
           This creates a new row in the DNS Address Map table.
-          The adminstrator must then specify values for the <guilabel>translate this hostname</guilabel> and <guilabel>into this IP address</guilabel> fields.
+          The administrator must then specify values for the <guilabel>translate this hostname</guilabel> and <guilabel>into this IP address</guilabel> fields.
         </para>
         <para>
           The complete list of fields for a hostname translation rule is as follows.

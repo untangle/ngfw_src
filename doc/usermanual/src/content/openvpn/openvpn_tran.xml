@@ -99,7 +99,7 @@
   <sect1 id="openvpn_tran_adminui">
     <title>Administrative Interface</title>
     <para>
-      XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+      The Administrative interface for the OpenVPN appliance presents a wizard interface (see <xref linkend="openvpn_tran_adminui_wizards"/>) for initial configuration.  Once configured, the OpenVPN appliance may be maintained as per the discussion in <xref linkend="openvpn_tran_adminui_serverscreens"/>.
     </para>
 
     <!-- ========================================== -->

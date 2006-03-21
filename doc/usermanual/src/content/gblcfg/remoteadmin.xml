@@ -132,7 +132,7 @@
           In such a scenario, the address of the &eg; is not the address used by people on the general Internet.  From outside the corporate network, an Administrator could not reach the &eg;.  To address this situation, the Public Address tab should be used.  Enter the IP address and port which will be used for Internet access to the &eg;.
           <note>
             <para>
-              The port which is required for external access is 443.  It is permissable to use a value other than 443 as the value for <guilabel>port</guilabel> on the &eg;, but the device performing redirection should honor 443 as the external mapping.
+              The port which is required for external access is 443.  It is permissible to use a value other than 443 as the value for <guilabel>port</guilabel> on the &eg;, but the device performing redirection should honor 443 as the external mapping.
             </para>
           </note>
         </para>
@@ -151,7 +151,7 @@
         Although a complete discussion of Digital Certificates is beyond the scope of this document, some background and terminology are warranted.  Digital Certificates are used by a web server to identify itself.  For example, if you visit Amazon.com to purchase a book you are using SSL when you enter your credit card number.  Two things take place as you perform this transaction.  First, SSL encrypts your web session to prevent any malicious parties from intercepting your personal information.  Secondly, your browser requested Amazon.com's Digital Certificate to make sure you were in fact visiting <quote>amazon.com</quote>.
       </para>
       <para>
-        This second step is called server authentication.  Your browser knows that you typed <quote>www.amazon.com</quote>, and expects the web server to return a certificate which declares <quote>this is 'www.amazon.com'</quote>.  Since a Digital Certificate is easy to create (you could use the &eg; Administrative Console to create a certificate for <quote>www.amazon.com</quote>), your browser must also make sure the certificate is authentic.  This is done by examing the <emphasis>signature</emphasis> on the certificate against a list of known <quote>certificate authorities</quote>.
+        This second step is called server authentication.  Your browser knows that you typed <quote>www.amazon.com</quote>, and expects the web server to return a certificate which declares <quote>this is 'www.amazon.com'</quote>.  Since a Digital Certificate is easy to create (you could use the &eg; Administrative Console to create a certificate for <quote>www.amazon.com</quote>), your browser must also make sure the certificate is authentic.  This is done by examining the <emphasis>signature</emphasis> on the certificate against a list of known <quote>certificate authorities</quote>.
       </para>
       <para>
         All browsers come with a list of dozens of certificate authorities, along with information to validate when those authorities sign web server certificates.  In our example with Amazon.com, the digital certificate for <quote>www.amazon.com</quote> is signed by a Certificate Authority named <quote>Verisign</quote>.  When Amazon presented its certificate to your browser, your browser went through the following steps:
@@ -180,15 +180,15 @@
         </orderedlist>
       </para>
       <para>
-        Unlike the steps listed above with Amazon, a new &eg; installation will cause the browser to issue warnings.  This is due to the fact that the Digital Certificate used by the &eg; is not signed by a known Certificate Authority.  The initial (default) certificate is in fact a <emphasis>self-signed</emphasis> certificate (which is equivilant to <quote>not signed by anyone known to the browser</quote>).
+        Unlike the steps listed above with Amazon, a new &eg; installation will cause the browser to issue warnings.  This is due to the fact that the Digital Certificate used by the &eg; is not signed by a known Certificate Authority.  The initial (default) certificate is in fact a <emphasis>self-signed</emphasis> certificate (which is equivalent to <quote>not signed by anyone known to the browser</quote>).
       </para>
 
       <bridgehead renderas="sect3">Obtaining a Digital Certificate</bridgehead>
       <para>
-        To prevent browser warnings, two things are required.  First is that the name of the &eg; must be known to the internet.  This is called the hostname of the machine, configuration of which is disscussed in <xref linkend="gblcfg_tab_networking"/>.
+        To prevent browser warnings, two things are required.  First is that the name of the &eg; must be known to the Internet.  This is called the hostname of the machine, configuration of which is discussed in <xref linkend="gblcfg_tab_networking"/>.
       </para>
       <para>
-        The second required step is to obtain a cert from a well-known certificate authority.  There are many certificate authorities which charge varrying fees for a digital certificate.  Examples of popular certificate authorities include <ulink url="http://www.verisign.com">Verisign</ulink> and <ulink url="http://www.thwate.com"> Thwate</ulink>.
+        The second required step is to obtain a cert from a well-known certificate authority.  There are many certificate authorities which charge varying fees for a digital certificate.  Examples of popular certificate authorities include <ulink url="http://www.verisign.com">Verisign</ulink> and <ulink url="http://www.thwate.com"> Thwate</ulink>.
       </para>
       <para>
         To obtain a valid, signed certificate from a certificate authority, the following steps must be followed.
@@ -239,7 +239,7 @@
       <sect3 id="gblcfg_tab_remoteadmin_certs_generation">
         <title>Generation</title>
         <para>
-          The Generation Tab contains buttons to follow the required steps to ontain a working digital certificate for an &eg;: creating a self-signed certificate, generating a certificate signature request, and importing the signed certificate into the &eg;.
+          The Generation Tab contains buttons to follow the required steps to obtain a working digital certificate for an &eg;: creating a self-signed certificate, generating a certificate signature request, and importing the signed certificate into the &eg;.
         </para>
 
         <!-- ........................................................ -->

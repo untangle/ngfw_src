@@ -4,7 +4,7 @@
   <sect1 id="gblcfg_tab_networking">
     <title>Networking</title>
     <para>
-      The Networking panel controls commonn properties related to the &eg;'s presence on its various network interfaces.
+      The Networking panel controls common properties related to the &eg;'s presence on its various network interfaces.
     </para>
 
     <!-- ====================================================== -->
@@ -37,7 +37,7 @@
 
     <!-- ====================================================== -->
     <sect2 id="gblcfg_tab_networking_extaddraliases">
-      <title>External Address Aliasess</title>
+      <title>External Address Aliases</title>
       <para>
         The External Address Aliases tab, as seen in, <xref linkend="gblcfg_tab_networking_extaddraliases_figure"/>, is for complex &eg; deployments.
       </para>
@@ -82,7 +82,7 @@
       </para>
         
       <para>
-        The <guilabel>Dynamic DNS</guilabel> tab lets Administrators leverage one of several <glossterm linkend="gloss_dyndns">dynamic DNS</glossterm> providers such that the hostname of their &eg; will be accessible from the internet.
+        The <guilabel>Dynamic DNS</guilabel> tab lets Administrators leverage one of several <glossterm linkend="gloss_dyndns">dynamic DNS</glossterm> providers such that the hostname of their &eg; will be accessible from the Internet.
       </para>
     </sect2>     
     

@@ -2,7 +2,7 @@
   <sect1 id="gblcfg_tab_email">
     <title>Email</title>
     <para>
-      The Email section of the Config tab controls all common email-related behavior in the &eg;.  It begins with the properties defining how the &eg; sends emails (reports, Quarantine Digests, etc) as discussed in <xref linkend="gblcfg_tab_email_outgoingsvr"/>.  Next, configuration of common safelists is discussed in <xref linkend="gblcfg_tab_email_safelist"/>.  The final tab, discussed in <xref linkend="gblcfg_tab_email_quarantine"/>, explains the configuration and maintenence of the quarantine subsystem.
+      The Email section of the Config tab controls all common email-related behavior in the &eg;.  It begins with the properties defining how the &eg; sends emails (reports, Quarantine Digests, etc) as discussed in <xref linkend="gblcfg_tab_email_outgoingsvr"/>.  Next, configuration of common safelists is discussed in <xref linkend="gblcfg_tab_email_safelist"/>.  The final tab, discussed in <xref linkend="gblcfg_tab_email_quarantine"/>, explains the configuration and maintenance of the quarantine subsystem.
     </para>
 
     <!-- ====================================================== -->
@@ -200,7 +200,7 @@
           </mediaobject>
         </figure>
         <para>
-          The Quarantinable Forwards feature was added to accomidate distribution lists which receive spam.  Consider the list <constant>sales@yourcompany.com</constant>.  There may be a team of 5 sales professionals who read the emails on this list.  When a spam is sent to <constant>sales@yourcompany.com</constant>, all 5 members of the list would receive quarantine digests.
+          The Quarantinable Forwards feature was added to accommodate distribution lists which receive spam.  Consider the list <constant>sales@yourcompany.com</constant>.  There may be a team of 5 sales professionals who read the emails on this list.  When a spam is sent to <constant>sales@yourcompany.com</constant>, all 5 members of the list would receive quarantine digests.
         </para>
         <para>
           Having 5 people maintain the same quarantine inbox may become confusing.  To avoid this confusion, Administrators can cause emails being quarantined for one address to be routed to another.  For example, if the <constant>sales@yourcompany.com</constant> list goes to Emma, Joey, Jun, Aaron, and Cho, the administrator can declare that unwanted email going to <constant>sales@yourcompany.com</constant> be placed in the inbox <constant>emma@yourcompany.com</constant>.

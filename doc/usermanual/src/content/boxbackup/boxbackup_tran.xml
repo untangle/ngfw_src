@@ -21,7 +21,7 @@
     <title>Administrative Interface</title>
 
     <para>
-      Unlike many of the other software appliances within &eg;, there is little administration associated with the 24 Hour Replacement Appliance.  The only administrative screen shows the times when backups occured, as discussed in <xref linkend="boxbackup_tran_adminui_events"/>.
+      Unlike many of the other software appliances within &eg;, there is little administration associated with the 24 Hour Replacement Appliance.  The only administrative screen shows the times when backups occurred, as discussed in <xref linkend="boxbackup_tran_adminui_events"/>.
     </para>
 
     <!-- ================================================================= -->

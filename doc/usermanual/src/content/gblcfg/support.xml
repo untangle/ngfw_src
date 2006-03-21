@@ -85,7 +85,7 @@
       <sect3 id="gblcfg_tab_support_protocoloverride_mail">
         <title>Mail Settings</title>
         <para>
-          The Mail Settings tab of the Manual Protocol OVerride Tab can be seen in <xref linkend="gblcfg_tab_support_protocoloverride_mail_figure"/>.
+          The Mail Settings tab of the Manual Protocol Override Tab can be seen in <xref linkend="gblcfg_tab_support_protocoloverride_mail_figure"/>.
           <warning>
             <para>
               Administrators should not change the Mail Settings tab unless instructed to by a member of Metavize support or one of their authorized representatives.
@@ -154,7 +154,7 @@
         </mediaobject>
       </figure>
       <para>
-        When interfacing with old hardware, it may be nessecary to downgrade a given port from its default <guilabel>Auto-Negotiate</guilabel> setting to a more limiting setting.
+        When interfacing with old hardware, it may be necessary to downgrade a given port from its default <guilabel>Auto-Negotiate</guilabel> setting to a more limiting setting.
       </para>
       <para>
         Networking hardware which requires transfer rate limitation (100/10 Mbps) or which cannot auto-negotiate has not been readily available for several years.  It is unlikely that Administrators will have to modify these settings.

@@ -13,9 +13,9 @@
       <listitem>
         <para>
   This is a new software appliance that automatically backs up your EdgeGuard's
-  configuration to Metavize's datacenter every day.  If your box
+  configuration to Metavize's data center every day.  If your box
   fails, just contact Metavize support and we'll ship you a replacement within
-  24 hours.  The replacement will be preconfigured to your exact
+  24 hours.  The replacement will be pre-configured to your exact
   configuration as of the previous day.  Just plug it in and you're good to go.
         </para>
       </listitem>
@@ -195,7 +195,7 @@
       <listitem>
         <para>
   There is now a global setting for the 'From' address for all outgoing emails (Quarantine,
-  Report, Notificaiton, OpenVPN).
+  Report, Notification, OpenVPN).
         </para>
       </listitem>
     </itemizedlist>
@@ -212,7 +212,7 @@
       <listitem>
         <para>
   Network interfaces may now have their port speed configured manually. (eg:
-  hardwired at 100Mb) This is useful in environments where autonegotiation
+  hardwired at 100Mb) This is useful in environments where auto negotiation
   leads to problems with buggy third-party networking equipment.
         </para>
       </listitem>
@@ -327,7 +327,7 @@
       <listitem>
         <para>
   There is now a kiosk version of Firefox available on the EdgeGuard.  This allows Reports,
-  Help, and the store to be accessed via the adminstration UI running locally on the
+  Help, and the store to be accessed via the administration UI running locally on the
   EdgeGuard.
         </para>
       </listitem>
@@ -337,7 +337,7 @@
       <title>Recovery Console</title>
       <listitem>
         <para>
-  A password recovery facility has been added to the EdgeGuard Recovery Console (accessable
+  A password recovery facility has been added to the EdgeGuard Recovery Console (accessible
   locally on the appliance).  This allows administrators to reset the administrator account
   to the factory default without losing any other configuration.
         </para>

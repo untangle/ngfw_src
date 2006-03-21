@@ -1,10 +1,10 @@
       <qandaentry>
         <question>
-          <para>If I am running NAT, how can I provide access to a webserver connected to the internal network?</para>
+          <para>If I am running NAT, how can I provide access to a web server connected to the internal network?</para>
         </question>
         <answer>
           <para>
-            Create a redirect rule for all incoming traffic on port 80 to your webserver.  If the webserver is assigned the address 192.168.1.16, the rule should contain:
+            Create a redirect rule for all incoming traffic on port 80 to your web server.  If the web server is assigned the address 192.168.1.16, the rule should contain:
 
             <table frame="topbot" pgwide="0">
               <title>Internal Web Server Settings Example</title>
@@ -114,7 +114,7 @@
                     </entry>
                     <entry>
                       <para>
-                        <constant>192.168.1.16</constant> (the address of the webserver)
+                        <constant>192.168.1.16</constant> (the address of the web server)
                       </para>
                     </entry>
                   </row>
@@ -142,7 +142,7 @@
               </tgroup>
             </table>            
 
-            If the webserver is using DHCP it should be assigned a static address in the "Address Map" tab in the "DHCP" panel.  Find the webserver under the "Address Map".  Enter the desired IP Address into the "target static IP Address" field.    
+            If the web server is using DHCP it should be assigned a static address in the "Address Map" tab in the "DHCP" panel.  Find the web server under the "Address Map".  Enter the desired IP Address into the "target static IP Address" field.    
           </para>
         </answer>        
       </qandaentry>

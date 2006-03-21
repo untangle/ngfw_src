@@ -6,7 +6,7 @@
         </question>
         <answer>
           <para>
-            The Quarantinable Addresses rules take precidence over the actions for email rules.  In this situation, the email would be marked rather than quarantined.
+            The Quarantinable Addresses rules take precedence over the actions for email rules.  In this situation, the email would be marked rather than quarantined.
           </para>
         </answer>
       </qandaentry>

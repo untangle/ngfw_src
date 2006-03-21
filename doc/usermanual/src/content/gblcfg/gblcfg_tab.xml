@@ -3,7 +3,7 @@
   <title>Global Configuration</title>
 
   <para>
-    XXXXXXXXXXXXXXXXXXXXXXXXX
+    The <guilabel>Config</guilabel> tab shown in <xref linkend="gblcfg_tab_gblcfg_tab_figure"/> is the last tab to the left on the left panel of the Administrative Interface.  
   </para>
 
   <figure id="gblcfg_tab_gblcfg_tab_figure">
@@ -16,7 +16,7 @@
     </mediaobject>
   </figure>    
   <para>
-    The <guilabel>Config</guilabel> tab shown in <xref linkend="gblcfg_tab_gblcfg_tab_figure"/> is the last tab to the left on the left panel of the Administrative Interface.  Each of the options within the <guilabel>Config</guilabel> Tab will now be discussed in more detail.
+    Each of the options within the <guilabel>Config</guilabel> Tab will now be discussed in more detail.
   </para>
 
 
