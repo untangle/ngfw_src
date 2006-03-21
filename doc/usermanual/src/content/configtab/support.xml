@@ -27,3 +27,4 @@
       Administrators can also choose to have their &eg; send internal log messages to Metavize Support in the event of unexpected conditions.  These logs are internal to the product, and not only assist in troubleshooting but help Metavize produce a better product.  To enable such emails to be sent to Metavize support, check the box labeled <guilabel>Report</guilabel>.
     </para>
   </sect1> 
+
