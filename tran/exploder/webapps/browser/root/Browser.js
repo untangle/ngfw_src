@@ -16,7 +16,7 @@ function Browser(shell) {
 
    this.dirTree = new DirTree(this, null, DwtControl.ABSOLUTE_STYLE);
    this.dirTree.setScrollStyle(DwtControl.SCROLL);
-   this.dirTree.addSelectionListener(new AjxListener(this, this._dirTreeListener));
+   this.dirTree.addSelectionListener(new AjxListener(this, this._dirTreeSelectionListener));
    this.dirTree.zShow(true);
 
    this.sash = new DwtSash(this, DwtSash.HORIZONTAL_STYLE, null, 3);
@@ -27,6 +27,7 @@ function Browser(shell) {
    this.detailPanel = new DetailPanel(this, null, DwtControl.ABSOLUTE_STYLE);
    this.detailPanel.setUI(0);
    this.detailPanel.zShow(true);
+   this.detailPanel.addStateChangeListener(new AjxListener(this, this._detailChangeListener));
 
    this.layout();
 
@@ -65,20 +66,17 @@ Browser.prototype.layout = function(ignoreSash) {
    x += this.detailPanel.getSize().x;
 }
 
-Browser.prototype._dirTreeListener = function(ev) {
+Browser.prototype._detailChangeListener = function(ev) {
+   this.dirTree.expandNode(this.detailPanel.url);
+}
+
+Browser.prototype._dirTreeSelectionListener = function(ev) {
    switch (ev.detail) {
       case DwtTree.ITEM_SELECTED:
-      var item = ev.item;
-      var n = item.getData("smbNode");
+      var n = ev.item.getData("cifsNode");
       var url = n.url;
 
-      var cb = function(obj, results) {
-         this.detailPanel.setListingXml(results.xml);
-         this.detailPanel.setUI(0);
-      }
-
-      AjxRpc.invoke(null, "ls?url=" + url + "&type=full", null,
-                    new AjxCallback(this, cb, new Object()), true);
+      this.detailPanel.displayListing(url);
       break;
 
       case DwtTree.ITEM_DESELECTED:

@@ -1,10 +1,15 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-function CifsNode(type, name, size, lastModified) {
-   this.type = type;
+CifsNode.FILE = "file"
+CifsNode.DIR = "dir"
+
+function CifsNode(parent, name, type, size, lastModified) {
+   this.parent = parent;
    this.name = name;
-   this.size = size;
+   this.type = type || CifsNode.DIR;
+   this.size = size || 0;
+
    if (0 < lastModified) {
       var date = new Date();
       date.setTime(lastModified);
@@ -12,6 +17,14 @@ function CifsNode(type, name, size, lastModified) {
       this.lastModified = formatter.format(date);
    } else {
       this.lastModified = "";
+   }
+
+   this.url = (parent || "") + name;
+
+   if (this.name.length - 1 == this.name.lastIndexOf("/")) {
+      this.label = this.name.substring(0, this.name.length - 1);
+   } else {
+      this.label = this.name;
    }
 }
 

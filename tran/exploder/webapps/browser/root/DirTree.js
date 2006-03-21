@@ -8,11 +8,13 @@ function DirTree(parent, className, posStyle) {
    DwtTree.call(this, parent, DwtTree.SINGLE_STYLE, className, posStyle);
 
    this.addItems();
-   this.addSelectionListener(new AjxListener(this, this.treeListener));
+   this.addSelectionListener(new AjxListener(this, this._treeListener));
 }
 
 DirTree.prototype = new DwtTree();
 DwtTree.prototype.constructor = DirTree;
+
+// public methods -------------------------------------------------------------
 
 DirTree.prototype.addItems = function() {
    var ds = this.dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
@@ -20,47 +22,74 @@ DirTree.prototype.addItems = function() {
    var dt = new DwtDropTarget(DwtTreeItem);
    dt.addDropListener(new AjxListener(this, this.dropListener));
 
-   var n = new SmbNode("smb://bebe/");
+   var n = new CifsNode(null, "smb://bebe/");
 
    var root = new DwtTreeItem(this);
    root.setText(n.label);
    root.setImage("Folder"); // XXX Make Server icon
-   root.setData("smbNode", n);
+   root.setData("cifsNode", n);
    root.setDropTarget(dt);
    root.setToolTipContent("SMB Server");
 
    root.setExpanded(false);
 }
 
-DirTree.prototype.treeListener = function(ev) {
+DirTree.prototype.expandNode = function(url)
+{
+   this._expandNode(this, url);
+}
+
+// internal methods -----------------------------------------------------------
+
+DirTree.prototype._expandNode = function(node, url)
+{
+   var children = node.getItems();
+   for (var i = 0; i < children.length; i++) {
+      var cifsNode = children[i].getData("cifsNode");
+      var substr = url.substr(0, cifsNode.url.length);
+      if (substr == cifsNode.url) {
+         this._populateNode(children[i]);
+         this._expandNode(children[i], url);
+         break;
+      }
+   }
+}
+
+DirTree.prototype._populateNode = function(item)
+{
+   if (!item.getData("expanded")) {
+      var n = item.getData("cifsNode");
+      var url = n.url;
+
+      var cb = function(obj, results) {
+         var dom = results.xml;
+         var dirs = dom.getElementsByTagName("dir");
+
+         for (var i = 0; i < dirs.length; i++) {
+            var c = dirs[i];
+            var name = c.getAttribute("name");
+            var n = new CifsNode(url, name);
+            var tn = new DwtTreeItem(item, null, n.label, "Folder");
+            tn.setData("cifsNode", n);
+         }
+         item.setExpanded(true);
+      }
+
+      AjxRpc.invoke(null, "ls?url=" + url + "&type=dir", null,
+                    new AjxCallback(this, cb, new Object()), true);
+
+      item.setData("expanded", true);
+   } else {
+      item.setExpanded(true);
+   }
+}
+
+DirTree.prototype._treeListener = function(ev) {
    var action = "";
    switch (ev.detail) {
       case DwtTree.ITEM_SELECTED:
 
-      if (!ev.item.getData("expanded")) {
-         var item = ev.item;
-         var n = item.getData("smbNode");
-         var url = n.url;
-
-         var cb = function(obj, results) {
-            var dom = results.xml;
-            var dirs = dom.getElementsByTagName("dir");
-
-            for (var i = 0; i < dirs.length; i++) {
-               var c = dirs[i];
-               var name = c.getAttribute("name");
-               var n = new SmbNode(url, name);
-               var tn = new DwtTreeItem(item, null, n.label, "Folder");
-               tn.setData("smbNode", n);
-            }
-            item.setExpanded(true);
-         }
-
-         AjxRpc.invoke(null, "ls?url=" + url + "&type=dir", null,
-                       new AjxCallback(this, cb, new Object()), true);
-
-         item.setData("expanded", true);
-      }
+      this._populateNode(ev.item);
 
       break;
 
@@ -83,18 +112,3 @@ DirTree.prototype.treeListener = function(ev) {
 DirTree.prototype.dragListener = function(ev) { }
 
 DirTree.prototype.dropListener = function(ev) { }
-
-function SmbNode(path, name)
-{
-   if (name) {
-      this.url = path + name;
-      this.label = name;
-   } else {
-      this.url = path;
-      this.label = path;
-   }
-
-   if (this.label.length - 1 == this.label.lastIndexOf("/")) {
-      this.label = this.label.substring(0, this.label.length - 1);
-   }
-}

@@ -9,7 +9,7 @@ function DetailPanel(parent, className, posStyle) {
    var header = [];
    var i = 0;
    var hi = new DwtListHeaderItem("name", "Name", null, 200, false, true, true);
-   hi.memberName = "name";
+   hi.memberName = "label";
    header[i++] = hi;
    hi = new DwtListHeaderItem("size", "Size", null, 100, false, true, true);
    hi.memberName = "size";
@@ -28,10 +28,24 @@ DetailPanel.prototype.constructor = DetailPanel;
 
 // public methods -------------------------------------------------------------
 
-DetailPanel.prototype.setListingXml = function(dom)
+DetailPanel.prototype.displayListing = function(url)
+{
+   var cb = function(obj, results) {
+      // XXX expand tree node
+      this._setListingXml(results.xml);
+      this.setUI(0);
+   }
+
+   AjxRpc.invoke(null, "ls?url=" + url + "&type=full", null,
+                 new AjxCallback(this, cb, new Object()), true);
+}
+
+// internal methods -----------------------------------------------------------
+
+DetailPanel.prototype._setListingXml = function(dom)
 {
    var root = dom.getElementsByTagName("root")[0];
-   this._path = root.getAttribute("path");
+   this.url = root.getAttribute("path");
    var children = root.childNodes;
 
    var listing = new AjxVector();
@@ -40,8 +54,9 @@ DetailPanel.prototype.setListingXml = function(dom)
       var child = children[i];
       var tagName = child.tagName;
       if ("dir" == tagName || "file" == tagName) {
-         listing.add(new CifsNode(tagName,
+         listing.add(new CifsNode(this.url,
                                   child.getAttribute("name"),
+                                  tagName,
                                   child.getAttribute("size"),
                                   child.getAttribute("mtime")));
       }
@@ -49,8 +64,6 @@ DetailPanel.prototype.setListingXml = function(dom)
 
    this.set(listing);
 }
-
-// internal methods -----------------------------------------------------------
 
 DetailPanel.prototype._createItemHtml = function(item) {
 
@@ -103,9 +116,9 @@ DetailPanel.prototype._selectionListener = function(ev)
       case DwtListView.ITEM_DBL_CLICKED:
       var item = ev.item;
       if (item.type = "dir") {
-
+         this.displayListing(item.url);
       } else {
-         alert("DOUBLE CLICKED: " + ev.item);
+         alert("DOUBLE CLICKED: " + item);
       }
       break;
    }
