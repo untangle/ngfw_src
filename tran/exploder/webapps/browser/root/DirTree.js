@@ -46,8 +46,18 @@ DirTree.prototype._expandNode = function(node, url)
    var children = node.getItems();
    for (var i = 0; i < children.length; i++) {
       var cifsNode = children[i].getData("cifsNode");
-      var substr = url.substr(0, cifsNode.url.length);
-      if (substr == cifsNode.url) {
+
+      var childUrl = cifsNode.url;
+      var matches = true;
+
+      for (var j = 0; j < childUrl.length; j++) {
+         if (childUrl.charAt(j) != url.charAt(j)) {
+            matches = false;
+            break;
+         }
+      }
+
+      if (matches) {
          this._populateNode(children[i]);
          this._expandNode(children[i], url);
          break;
@@ -72,6 +82,7 @@ DirTree.prototype._populateNode = function(item)
             var tn = new DwtTreeItem(item, null, n.label, "Folder");
             tn.setData("cifsNode", n);
          }
+         this.setSelection(item, true);
          item.setExpanded(true);
       }
 
@@ -80,6 +91,7 @@ DirTree.prototype._populateNode = function(item)
 
       item.setData("expanded", true);
    } else {
+      this.setSelection(item, true);
       item.setExpanded(true);
    }
 }
