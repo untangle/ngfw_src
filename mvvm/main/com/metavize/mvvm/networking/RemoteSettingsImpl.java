@@ -364,7 +364,7 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
         sb.append( "\nrestriction: " + outsideNetwork() + "/" + outsideNetmask());
         sb.append( "\nHTTPS:       " + httpsPort());
         sb.append( "\npublic:      " + getPublicAddress());
-        sb.append( "\nhostname:    " + getHostname());
+        sb.append( "\nhostname:    " + getHostname() + " [" + getIsHostnamePublic() + "]" );
         
         return sb.toString();
     }

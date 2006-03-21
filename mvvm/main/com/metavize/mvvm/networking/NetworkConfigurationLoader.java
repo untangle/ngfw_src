@@ -237,7 +237,6 @@ class NetworkConfigurationLoader
     {
         String host = null;
         String mask = null;
-        String hostname = null;
         String publicAddress = null;
         
         /* Open up the interfaces file */
@@ -266,8 +265,6 @@ class NetworkConfigurationLoader
                         remote.isExceptionReportingEnabled( parseBooleanFlag( str, FLAG_EXCEPTION ));
                     } else if ( str.startsWith( FLAG_IS_HOSTNAME_PUBLIC )) {
                         remote.setIsHostnamePublic( parseBooleanFlag( str, FLAG_IS_HOSTNAME_PUBLIC ));
-                    } else if ( str.startsWith( FLAG_HOSTNAME )) {
-                        hostname = removeQuotes( str.substring( FLAG_HOSTNAME.length() + 1 ));
                     } else if ( str.startsWith( FLAG_PUBLIC_ADDRESS_EN )) {
                         remote.setIsPublicAddressEnabled( parseBooleanFlag( str, FLAG_PUBLIC_ADDRESS_EN ));
                     } else if ( str.startsWith( FLAG_PUBLIC_ADDRESS )) {
@@ -300,15 +297,6 @@ class NetworkConfigurationLoader
             }
         } catch ( Exception ex ) {
             logger.error( "Error parsing outside host or netmask", ex );
-        }
-
-        /* Handle the hostname */
-        if ( hostname != null && ( hostname.length() > 0 )) {
-            /* Do not alter the value of is hostname public */
-            remote.setHostname( hostname );
-        } else {
-            remote.setIsHostnamePublic( false );
-            remote.setHostname( null );
         }
         
         /* Handle the public address */

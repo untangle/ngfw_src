@@ -235,8 +235,8 @@ public class RemoteInternalSettings
         sb.append( "\npublic:      " + getIsPublicAddressEnabled() + " " + getCurrentPublicAddress() + 
                    " / " + getPublicAddress());
         sb.append( "\npublic:      " + getCurrentPublicIPaddr() + ":" + getCurrentPublicPort());
-                   
-       sb.append( "\nhostname:    " + getHostname());
+
+        sb.append( "\nhostname:    " + getHostname() + " [" + getIsHostnamePublic() + "]" );
 
         return sb.toString();
     }
