@@ -6,13 +6,20 @@ function Browser(shell) {
       return;
    }
 
-   this.shell = shell;
+   this._shell = shell;
 
 /*    try { */
 
-   this.shell.addControlListener(new AjxListener(this, this._shellListener));
+   this._shell.addControlListener(new AjxListener(this, this._shellListener));
 
-   DwtComposite.call(this, this.shell, "Browser", DwtComposite.ABSOLUTE_STYLE);
+   DwtComposite.call(this, this._shell, "Browser", DwtComposite.ABSOLUTE_STYLE);
+
+   this.toolbar = new DwtToolBar(this, "ToolBar", DwtControl.ABSOLUTE_STYLE, 2);
+   var b = new DwtButton(this.toolbar, DwtButton.ALIGN_CENTER);
+   b.setText("Upload");
+   b.addSelectionListener(new AjxListener(this, this._uploadButtonListener));
+
+   this.toolbar.zShow(true);
 
    this.dirTree = new DirTree(this, null, DwtControl.ABSOLUTE_STYLE);
    this.dirTree.setScrollStyle(DwtControl.SCROLL);
@@ -47,12 +54,17 @@ Browser.prototype = new DwtComposite();
 Browser.prototype.constructor = Browser;
 
 Browser.prototype.layout = function(ignoreSash) {
-   var size = this.shell.getSize();
+   var size = this._shell.getSize();
    var width = size.x;
    var height = size.y;
 
    var x = 0;
    var y = 0;
+
+   this.toolbar.setLocation(0, 0);
+   //this.toolbar.setBounds(0, 0, width, 25);
+   var size = this.toolbar.getSize();
+   y += size.y;
 
    this.dirTree.setBounds(x, y, this.sashPos, height);
    x += this.dirTree.getSize().x;
@@ -65,6 +77,8 @@ Browser.prototype.layout = function(ignoreSash) {
    this.detailPanel.setBounds(x, y, width - x, height);
    x += this.detailPanel.getSize().x;
 }
+
+// internal methods -----------------------------------------------------------
 
 Browser.prototype._detailChangeListener = function(ev) {
    this.dirTree.expandNode(this.detailPanel.url);
@@ -95,6 +109,13 @@ Browser.prototype._dirTreeSelectionListener = function(ev) {
    }
 }
 
+Browser.prototype._uploadButtonListener = function(ev)
+{
+   var dialog = new FileUploadDialog(this._shell);
+
+   dialog.popup();
+}
+
 Browser.prototype._shellListener = function(ev)
 {
    if (ev.oldWidth != ev.newWidth || ev.oldHeight != ev.newHeight) {
@@ -111,7 +132,7 @@ Browser.prototype._sashCallback = function(d)
       this.sashPos = 0;
    }
 
-   if (this.shell.getSize().x < this.sashPos) {
+   if (this._shell.getSize().x < this.sashPos) {
       this.sashPos = x;
    }
 

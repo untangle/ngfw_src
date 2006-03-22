@@ -14,6 +14,8 @@
 @import url(img/dwtimgs.css);
 -->
 </style>
+<link rel="stylesheet" type="text/css" href="common.css"/>
+<link rel="stylesheet" type="text/css" href="dwt.css"/>
 <link rel="stylesheet" type="text/css" href="browser.css"/>
 
 <script type="text/javascript" src="I18nMsg.js"></script>
@@ -25,6 +27,7 @@
 <script type="text/javascript" src="Browser.js"></script>
 <script type="text/javascript" src="DirTree.js"></script>
 <script type="text/javascript" src="DetailPanel.js"></script>
+<script type="text/javascript" src="FileUploadDialog.js"></script>
 
 </head>
 
