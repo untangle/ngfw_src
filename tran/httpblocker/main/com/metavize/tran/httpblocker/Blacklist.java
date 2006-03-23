@@ -117,7 +117,8 @@ class Blacklist
     {
         URI uri = requestLine.getRequestUri().normalize();
 
-        String path = uri.getPath().toLowerCase();
+        String path = uri.getPath();
+        path = null == path ? "" : uri.getPath().toLowerCase();
 
         String host = uri.getHost();
         if (null == host) {
