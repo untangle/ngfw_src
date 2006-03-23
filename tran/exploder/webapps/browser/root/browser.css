@@ -1,3 +1,8 @@
 /* Copyright (c) 2006 Metavize Inc. */
 /* All rights reserved.             */
 
+.ToolBar {
+    background-color: rgb(198, 197, 215);
+    width: 100%;
+    filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFF0F0F0,endColorStr=#FF9997B5);
+}
