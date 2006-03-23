@@ -27,6 +27,7 @@
 <script type="text/javascript" src="Browser.js"></script>
 <script type="text/javascript" src="DirTree.js"></script>
 <script type="text/javascript" src="DetailPanel.js"></script>
+<script type="text/javascript" src="FileUploadPanel.js"></script>
 <script type="text/javascript" src="FileUploadDialog.js"></script>
 
 </head>
@@ -37,7 +38,7 @@
 
 <script language="JavaScript">
 function launch() {
-DBG = new AjxDebug(AjxDebug.DBG1, null, false);
+DBG = new AjxDebug(AjxDebug.NONE, null, false);
 
 var shell = new DwtShell("MainShell", false);
 new Browser(shell);
