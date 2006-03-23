@@ -9,8 +9,8 @@ EXTRA_PARAM_2.type=java.lang.String
 
 FIELD_1.name=time_stamp
 FIELD_1.type=Timestamp
-FIELD_2.name=score
-FIELD_2.type=Float
+FIELD_2.name=subject
+FIELD_2.type=String
 FIELD_3.name=user_nm
 FIELD_3.type=String
 FIELD_4.name=from_addr
@@ -23,12 +23,13 @@ FIELD_7.name=action
 FIELD_7.type=String
 
 QUERY=\
-SELECT evt.time_stamp, score, recip_addr AS user_nm, \
+SELECT evt.time_stamp, subject, recip_addr AS user_nm, \
        LOWER(from_addr) AS from_addr, is_spam, \
        s_server_addr AS ip_addr, action \
   FROM reports.emails msg \
        JOIN tr_spam_evt evt USING (msg_id) \
-  WHERE (evt.time_stamp >= $P{startTime} \
+  WHERE (evt.is_spam \
+    AND evt.time_stamp >= $P{startTime} \
     AND evt.time_stamp < $P{endTime} \
     AND evt.vendor_name = $P{spamVendor}) \
   ORDER BY evt.time_stamp DESC
@@ -36,17 +37,17 @@ SELECT evt.time_stamp, score, recip_addr AS user_nm, \
 TOPLEFT.label=Timestamp
 TOPLMID.label=Spam?
 BOTLMID.label=Action
-TOPRMID.label=Msg sender
+TOPRMID.label=Subject
 BOTRMID.label=User account
 TOPRIGHT.label=Source IP
-BOTRIGHT.label=Spam Score
+BOTRIGHT.label=Msg sender
 
 TOPLEFT.expr=$F{time_stamp}
 TOPLMID.expr=$F{is_spam}.booleanValue() ? "SPAM" : ""
 BOTLMID.expr=$F{is_spam}.booleanValue() ? ($F{action}.charAt(0) == 'P' ? "pass message" : $F{action}.charAt(0) == 'M' ? "mark message" : "pass message") : "pass message"
-TOPRMID.expr=$F{from_addr}
+TOPRMID.expr=$F{subject}
 BOTRMID.expr=$F{user_nm} == null ? "unknown" : $F{user_nm}
 TOPRIGHT.expr=$F{ip_addr}
-BOTRIGHT.expr=$F{score}
+BOTRIGHT.expr=$F{from_addr}
 
-BOTRIGHT.type=java.lang.Float
+BOTRIGHT.type=java.lang.String
