@@ -1,6 +1,6 @@
 reports/NatMaster.jasper:Network_Sharing--Summary:Summary
 reports/NatRedirectDetail.jasper:Network_Sharing--Redirect_Events:Redirect Events
-reports/NatDmzDetail.jasper:Network_Sharing--DMZ_Events:DMZ Events
+reports/NatDmzDetail.jasper:Network_Sharing--DMZ_Events:DMZ Host Events
 reports/NatDhcpDetail.jasper:Network_Sharing--DHCP_Events:DHCP Events
 com.metavize.tran.nat.reports.NatSummarizer:summarizer:Summarizer
 com.metavize.tran.nat.reports.SummaryGraph:summaryGraph:Network_Sharing--Summary_Graph

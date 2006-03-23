@@ -97,7 +97,7 @@ public class NatSummarizer extends BaseSummarizer {
 	addEntry("&nbsp;","&nbsp;");
 
         addEntry("NAT outbound sessions created", Util.trimNumber("",totalOutboundSessionsCreated));
-        addEntry("DMZ inbound redirections", Util.trimNumber("",dmzRedirections) );
+        addEntry("DMZ Host inbound redirections", Util.trimNumber("",dmzRedirections) );
 
         // XXXX
         String tranName = "Network Sharing";

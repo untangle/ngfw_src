@@ -72,7 +72,7 @@
                     <textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
                         <font fontName="SansSerif" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
                     </textElement>
-                <text><![CDATA[Top 15 DMZ Requesters]]></text>
+                <text><![CDATA[Top 15 DMZ Host Requesters]]></text>
                 </staticText>
             </band>
         </title>
