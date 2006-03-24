@@ -40,10 +40,10 @@ public class NetworkHostnameJPanel extends javax.swing.JPanel
     public void doSave(NetworkCompoundSettings networkCompoundSettings, boolean validateOnly) throws Exception {
 
 	// HOSTNAME ///////
-	String hostname = null;
+	HostName hostname = null;
         hostnameJTextField.setBackground( Color.WHITE );
 	try{
-	    hostname = hostnameJTextField.getText().trim();
+	    hostname = HostName.parse( hostnameJTextField.getText().trim());
 	}
 	catch(Exception e){
 	    hostnameJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
@@ -108,7 +108,7 @@ public class NetworkHostnameJPanel extends javax.swing.JPanel
 	NetworkingConfiguration networkingConfiguration = networkCompoundSettings.getNetworkingConfiguration();
 			
 	// HOSTNAME /////////
-	hostnameCurrent = networkingConfiguration.hostname();
+	hostnameCurrent = networkingConfiguration.hostname().toString();
 	hostnameJTextField.setText( hostnameCurrent );
 	hostnameJTextField.setBackground( Color.WHITE );
 

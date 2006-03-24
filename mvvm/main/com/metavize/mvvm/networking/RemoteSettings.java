@@ -12,6 +12,7 @@
 package com.metavize.mvvm.networking;
 
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.ParseException;
 
 public interface RemoteSettings
@@ -78,9 +79,9 @@ public interface RemoteSettings
     public void httpsPort( int httpsPort );
 
     /** The hostname for the box(this is the hostname that goes into certificates). */
-    public String getHostname();
+    public HostName getHostname();
 
-    public void setHostname( String newValue );
+    public void setHostname( HostName newValue );
 
     /* Returns if the hostname for this box is publicly resolvable to this box */
     public boolean getIsHostnamePublic();

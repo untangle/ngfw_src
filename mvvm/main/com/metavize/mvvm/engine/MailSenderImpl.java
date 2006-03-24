@@ -240,7 +240,7 @@ class MailSenderImpl implements MailSender
         if (masqmail_dir.isDirectory()) {
             StringBuilder sb = new StringBuilder();
 
-            String hostName = MvvmContextFactory.context().networkingManager().get().hostname();
+            String hostName = MvvmContextFactory.context().networkingManager().get().hostname().toString();
             if (hostName == null) {
                 logger.warn("null hostname, using mv-edgeguard");
                 hostName = "mv-edgeguard";

@@ -489,13 +489,11 @@ class DhcpManager
             sb.append( HOST_FILE_START[c] + "\n" );
         }
 
-        String hostname = NetworkUtilPriv.getPrivInstance().loadHostname();
+        HostName hostname = NetworkUtilPriv.getPrivInstance().loadHostname();
+        String boxHostname = hostname.toString();
 
         /* Add both the unqualified and the qualified domain */
-        if ( hostname.indexOf( "." ) > 0 ) {
-            String unqualified = hostname.substring( 0, hostname.indexOf( "." ));
-            hostname = unqualified + " " + hostname;
-        }
+        if ( hostname.isQualified()) boxHostname = boxHostname + " " + hostname.unqualified();
 
         IPaddr servicesAddress = null;
 
@@ -507,12 +505,12 @@ class DhcpManager
         }
         
         if ( servicesAddress != null && !servicesAddress.isEmpty()) {
-            sb.append( servicesAddress.toString() + "\t" + hostname + "\n" );
+            sb.append( servicesAddress.toString() + "\t" + boxHostname + "\n" );
         } else {
             // Having 127.0.0.1 is problematic because dnsmasq will serve 127.0.0.1
             // and the server adddress as its address.
             // the address
-            sb.append( "127.0.0.1\t" + hostname + "\n" );
+            sb.append( "127.0.0.1\t" + boxHostname + "\n" );
         }
         sb.append( "\n" );
 

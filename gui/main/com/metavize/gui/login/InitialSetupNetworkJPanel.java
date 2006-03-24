@@ -14,6 +14,7 @@ package com.metavize.gui.login;
 import com.metavize.gui.widgets.wizard.*;
 import java.util.Arrays;
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.HostName;
 import com.metavize.gui.util.Util;
 import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.mvvm.NetworkingManager;
@@ -54,6 +55,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
     String dns2String;
     IPaddr dns2;
     String hostnameString;
+    HostName hostname;
     Exception exception;
     
     MProgressJDialog mProgressJDialog;
@@ -147,8 +149,10 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
 	    }
 		
 		try{
-		    if( hostnameString.length() == 0 )
+                    if( hostnameString.length() == 0 )
 			throw new Exception();
+
+                    hostname = HostName.parse( hostnameString );
 		}
 		catch(Exception e){
 		    hostnameJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
@@ -174,12 +178,12 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                     networkingConfiguration.dns1( dns1 );
                     networkingConfiguration.dns2( dns2 );
                 }
-		networkingConfiguration.hostname( hostnameString );
+		networkingConfiguration.hostname( hostname );
 
-		boolean isPublic = NetworkUtil.isHostnameLikelyPublic( hostnameString );
+		boolean isPublic = NetworkUtil.isHostnameLikelyPublic( hostname.toString());
                 networkingConfiguration.setIsHostnamePublic(isPublic);
 
-		InitialSetupWizard.setSharedData( hostnameString );
+		InitialSetupWizard.setSharedData( hostname.toString());
                 Util.getNetworkingManager().set(networkingConfiguration);
 		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);
             }

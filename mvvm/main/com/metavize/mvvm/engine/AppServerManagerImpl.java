@@ -183,7 +183,7 @@ public class AppServerManagerImpl
         public void event( RemoteInternalSettings settings ) {
           String existingAlias = m_tomcatManager.getKeyAlias();
           String currentHostname =
-            MvvmContextImpl.getInstance().networkManager().getHostname();
+              MvvmContextImpl.getInstance().networkManager().getHostname().toString();
           if(existingAlias == null ||
             !(existingAlias.equals(currentHostname))) {
             hostnameChanged(currentHostname);
@@ -381,7 +381,7 @@ public class AppServerManagerImpl
 
 
   private String getFQDN() {
-    return MvvmContextFactory.context().networkManager().getHostname();
+      return MvvmContextFactory.context().networkManager().getHostname().toString();
   }
   
 }

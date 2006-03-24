@@ -33,6 +33,7 @@ import com.metavize.mvvm.networking.internal.RemoteInternalSettings;
 import com.metavize.mvvm.networking.internal.ServicesInternalSettings;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.TransformManager;
 import com.metavize.mvvm.tran.ValidateException;
 import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
@@ -380,7 +381,7 @@ public class NetworkManagerImpl implements NetworkManager
         updateAddress();
     }
 
-    public String getHostname()
+    public HostName getHostname()
     {
         return this.remote.getHostname();
     }

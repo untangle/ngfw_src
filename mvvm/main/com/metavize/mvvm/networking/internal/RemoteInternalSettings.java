@@ -18,6 +18,7 @@ import com.metavize.mvvm.networking.RemoteSettings;
 import com.metavize.mvvm.networking.RemoteSettingsImpl;
 
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.Equivalence;
 import com.metavize.mvvm.tran.Validatable;
 import com.metavize.mvvm.tran.ValidateException;
@@ -54,7 +55,7 @@ public class RemoteInternalSettings
     private final String postConfigurationScript;
     
     /* These are the values that are stored in the database */
-    private final String hostname;
+    private final HostName hostname;
 
     /* Only really used to persist the state */
     private final boolean isPublicAddressEnabled;
@@ -149,7 +150,7 @@ public class RemoteInternalSettings
     }
 
     /** The hostname for the box(this is the hostname that goes into certificates). */
-    public String getHostname()
+    public HostName getHostname()
     {
         return this.hostname;
     }

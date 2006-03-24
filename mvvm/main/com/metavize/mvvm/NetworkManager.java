@@ -11,14 +11,16 @@
 
 package com.metavize.mvvm;
 
+import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.IPaddr;
+
 import com.metavize.mvvm.networking.BasicNetworkSettings;
 import com.metavize.mvvm.networking.DhcpStatus;
+import com.metavize.mvvm.networking.DynamicDNSSettings;
 import com.metavize.mvvm.networking.NetworkException;
 import com.metavize.mvvm.networking.NetworkSpacesSettings;
 import com.metavize.mvvm.networking.NetworkSpacesSettingsImpl;
 import com.metavize.mvvm.networking.RemoteSettings;
-import com.metavize.mvvm.networking.DynamicDNSSettings;
 
 import com.metavize.mvvm.tran.ValidateException;
 
@@ -78,7 +80,7 @@ public interface NetworkManager
     public int getPublicHttpsPort();
 
     /* Get the hostname of the box */
-    public String getHostname();
+    public HostName getHostname();
 
     /* Get the public URL of the box */
     public String getPublicAddress();

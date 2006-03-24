@@ -27,9 +27,10 @@ import com.metavize.mvvm.NetworkingConfiguration;
 
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.Equivalence;
+import com.metavize.mvvm.tran.HostName;
+import com.metavize.mvvm.tran.ParseException;
 import com.metavize.mvvm.tran.Validatable;
 import com.metavize.mvvm.tran.ValidateException;
-import com.metavize.mvvm.tran.ParseException;
 
 import com.metavize.mvvm.networking.NetworkUtil;
 
@@ -37,7 +38,7 @@ public class NetworkingConfigurationImpl implements Serializable, NetworkingConf
 {
     // private static final long serialVersionUID = 172494253701617361L;
 
-    public static final String  DEFAULT_HOSTNAME = NetworkUtil.DEFAULT_HOSTNAME;
+    public static final HostName  DEFAULT_HOSTNAME = NetworkUtil.DEFAULT_HOSTNAME;
     
     public static final boolean DEF_IS_DHCP_EN            = false;
     public static final boolean DEF_IS_INSIDE_INSECURE_EN = true;
@@ -63,7 +64,7 @@ public class NetworkingConfigurationImpl implements Serializable, NetworkingConf
     /**
      * Hostname, Host and Netmask of the EdgeGuard GSP
      */
-    private String hostname = DEFAULT_HOSTNAME;
+    private HostName hostname = DEFAULT_HOSTNAME;
     
     private boolean isPublicAddressEnabled = false;
     private IPaddr publicIPaddr = null;
@@ -139,15 +140,15 @@ public class NetworkingConfigurationImpl implements Serializable, NetworkingConf
     /**
      * Set the hostname with a string, this method is deprecated.
      */
-    public void hostname( String hostname )
+    public void hostname( HostName hostname )
     {
         setHostname( hostname );
     }
 
     /* This is from the interface, this is the non-deprecated method */
-    public void setHostname( String hostname )
+    public void setHostname( HostName hostname )
     {
-        if ( hostname == null || ( hostname.trim().length() == 0 )) hostname = DEFAULT_HOSTNAME;
+        if ( hostname == null ) hostname = DEFAULT_HOSTNAME;
 	// do some shizzle 'n checks here
 	this.hostname = hostname;
     }
@@ -163,15 +164,15 @@ public class NetworkingConfigurationImpl implements Serializable, NetworkingConf
         this.isHostnamePublic = newValue;
     }
 
-    public String hostname()
+    public HostName hostname()
     {
         return getHostname();
     }
 
     /* This is from the interface, this is the non-deprecated method */
-    public String getHostname()
+    public HostName getHostname()
     {
-        if ( this.hostname == null || ( this.hostname.trim().length() == 0 )) this.hostname = DEFAULT_HOSTNAME;
+        if ( this.hostname == null ) this.hostname = DEFAULT_HOSTNAME;
         return this.hostname;
     }
 

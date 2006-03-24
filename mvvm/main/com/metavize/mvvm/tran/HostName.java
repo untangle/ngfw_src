@@ -52,6 +52,17 @@ public class HostName implements Serializable {
         return ( hostName.indexOf( "." ) > 0 );
     }
 
+    public HostName unqualified()
+    {
+        int index = hostName.indexOf( "." ); 
+
+        /* If the hostname is qualified, then return the substring, otherwise, return
+         * the hostname itself */
+        if ( index > 0 ) return new HostName( hostName.substring( 0, index ));
+        
+        return this;
+    }
+
     public boolean isReserved()
     {
         return ( RESERVED_HOSTNAME_LIST.contains( hostName ));

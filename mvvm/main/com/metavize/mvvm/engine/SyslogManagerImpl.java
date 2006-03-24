@@ -80,10 +80,10 @@ class SyslogManagerImpl implements SyslogManager
         nmi.registerListener(new NetworkSettingsListener() {
                 public void event(NetworkSpacesInternalSettings s)
                 {
-                    hostname = nmi.getHostname();
+                    hostname = nmi.getHostname().toString();
                 }
             });
-        hostname = nmi.getHostname();
+        hostname = nmi.getHostname().toString();
     }
 
     void reconfigure(LoggingSettings loggingSettings)

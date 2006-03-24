@@ -38,6 +38,7 @@ import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
 
+import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.ParseException;
 
@@ -315,9 +316,9 @@ class NetworkConfigurationLoader
 
     private void loadHostname( RemoteSettings remote )
     {
-        String hostname = NetworkUtilPriv.getPrivInstance().loadHostname();
+        HostName hostname = NetworkUtilPriv.getPrivInstance().loadHostname();
         
-        if ( hostname != null && !NetworkUtil.DEFAULT_HOSTNAME.equals( hostname )) {
+        if ( hostname != null && !hostname.isEmpty() && !NetworkUtil.DEFAULT_HOSTNAME.equals( hostname )) {
             remote.setHostname( hostname );
         } else {
             remote.setIsHostnamePublic( false );
@@ -464,7 +465,7 @@ class NetworkConfigurationLoader
             sw.appendVariable( FLAG_POST_FUNC, POST_FUNC_NAME );
         }
 
-        String hostname = remote.getHostname();
+        HostName hostname = remote.getHostname();
         /* The hostname itself is stored inside of /etc/hostname in saveHostname() */
         if ( hostname != null && !NetworkUtil.DEFAULT_HOSTNAME.equals( hostname )) {
             sw.appendVariable( FLAG_IS_HOSTNAME_PUBLIC, "" + remote.getIsHostnamePublic());

@@ -14,6 +14,7 @@ package com.metavize.mvvm.networking;
 import java.util.List;
 
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.InterfaceAlias;
 
 public interface BasicNetworkSettings
@@ -25,10 +26,10 @@ public interface BasicNetworkSettings
     public void isDhcpEnabled( boolean newValue );
 
     /* Get the hostname of the box */
-    public String hostname();
+    public HostName hostname();
 
     /* Set the hostname of the box */
-    public void hostname( String newValue );
+    public void hostname( HostName newValue );
 
     /* Get the address of the box */
     public IPaddr host();

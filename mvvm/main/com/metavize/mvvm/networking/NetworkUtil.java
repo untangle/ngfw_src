@@ -39,7 +39,7 @@ public class NetworkUtil
     public static final IPaddr DEFAULT_NAT_NETMASK;
 
     /* ??? which one */
-    public static final String DEFAULT_HOSTNAME = "edgeguard.local.domain";
+    public static final HostName DEFAULT_HOSTNAME;
     
     public static int DEFAULT_LEASE_TIME_SEC = 4 * 60 * 60;
 
@@ -268,7 +268,7 @@ public class NetworkUtil
         IPaddr natAddress     = null;
         IPaddr natNetmask     = null;
 
-        HostName h;
+        HostName h, l;
 
         try {
             emptyAddr      = IPaddr.parse( "0.0.0.0" );
@@ -293,10 +293,12 @@ public class NetworkUtil
 
         try {
             h = HostName.parse( "local.domain" );
+            l = HostName.parse( "edgeguard.local.domain" );
         } catch ( ParseException e ) {
             /* This should never happen */
             System.err.println( "Unable to initialize LOCAL_DOMAIN_DEFAULT: " + e );
             h = null;
+            l = null;
         }
         EMPTY_IPADDR        = emptyAddr;
         DEF_OUTSIDE_NETWORK = outsideNetwork;
@@ -312,5 +314,6 @@ public class NetworkUtil
         DEFAULT_NAT_NETMASK = natNetmask;
 
         LOCAL_DOMAIN_DEFAULT = h;
+        DEFAULT_HOSTNAME = l;
     }
 }

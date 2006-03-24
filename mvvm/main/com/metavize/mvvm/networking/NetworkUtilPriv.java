@@ -666,15 +666,16 @@ class NetworkUtilPriv extends NetworkUtil
             publicIPaddr = remote.getPublicIPaddr();
             publicPort   = remote.getPublicPort();
         } else {
-            String hostname = remote.getHostname();
+            HostName hostname = remote.getHostname();
         
             /* Here is where a some validation is required. */
             boolean isHostnamePublic = remote.getIsHostnamePublic();
 
             /* If ddns is non-null, enable the hostname if ddns is enabled */
             if ( ddns != null ) isHostnamePublic = isHostnamePublic || ddns.isEnabled();
-            if ( isHostnamePublic && ( hostname != null ) && ( hostname.trim().length() > 0 )) {
-                publicAddress = hostname;
+
+            if ( isHostnamePublic && ( hostname != null )) {
+                publicAddress = hostname.toString();
                 publicPort = remote.httpsPort();
                 publicIPaddr = primaryAddress;
                 
@@ -682,10 +683,10 @@ class NetworkUtilPriv extends NetworkUtil
             } else if (( primaryAddress == null ) || ( primaryAddress.isEmpty())) {
                 logger.warn( "Network settings are unitialized, using hostname as fallback for " +
                              "public address" );
-                publicAddress = hostname;
+                publicAddress = hostname.toString();
                 
-                if ( hostname == null || ( hostname.trim().length() == 0 )) {
-                    publicAddress = NetworkUtil.DEFAULT_HOSTNAME;
+                if ( hostname == null ) {
+                    publicAddress = NetworkUtil.DEFAULT_HOSTNAME.toString();
                     publicPort    = NetworkUtil.DEF_HTTPS_PORT;
                     publicIPaddr  = NetworkUtil.BOGUS_DHCP_ADDRESS;
                 }
@@ -732,9 +733,9 @@ class NetworkUtilPriv extends NetworkUtil
 
     
     /* Get the hostname of the box from the /etc/hostname file */
-    String loadHostname()
+    HostName loadHostname()
     {
-        String hostname = NetworkUtil.DEFAULT_HOSTNAME;
+        HostName hostname = NetworkUtil.DEFAULT_HOSTNAME;
 
         BufferedReader in = null;
 
@@ -743,9 +744,9 @@ class NetworkUtilPriv extends NetworkUtil
             in = new BufferedReader(new FileReader( HOST_NAME_FILE ));
             String str;
             str = in.readLine().trim();
+
             /* Try to parse the hostname, throws an exception if it fails */
-            HostName.parse( str );
-            hostname = str;
+            hostname = HostName.parse( str );
         } catch ( Exception ex ) {
             /* Go to the default */
             hostname = NetworkUtil.DEFAULT_HOSTNAME;
@@ -848,7 +849,7 @@ class NetworkUtilPriv extends NetworkUtil
     }
     
     // Writes out the new ddclient config files when the ddns settings change.
-    void writeDDNSConfiguration(DynamicDNSSettings settings, String hostName, String externalInterfaceName)
+    void writeDDNSConfiguration(DynamicDNSSettings settings, HostName hostName, String externalInterfaceName )
     {
         StringBuilder sb = new StringBuilder();
         boolean enabled = settings.isEnabled();

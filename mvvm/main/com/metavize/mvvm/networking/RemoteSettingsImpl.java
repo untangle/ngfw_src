@@ -18,9 +18,10 @@ import java.net.InetAddress;
 
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.Equivalence;
+import com.metavize.mvvm.tran.HostName;
+import com.metavize.mvvm.tran.ParseException;
 import com.metavize.mvvm.tran.Validatable;
 import com.metavize.mvvm.tran.ValidateException;
-import com.metavize.mvvm.tran.ParseException;
 
 public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equivalence
 {
@@ -61,7 +62,7 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
     private IPaddr outsideNetwork = NetworkUtil.DEF_OUTSIDE_NETWORK;
     private IPaddr outsideNetmask = NetworkUtil.DEF_OUTSIDE_NETMASK;
     
-    private String hostname = NetworkUtil.DEFAULT_HOSTNAME;
+    private HostName hostname = NetworkUtil.DEFAULT_HOSTNAME;
     private boolean isHostnamePublic = false;
     
     private boolean isPublicAddressEnabled = false;
@@ -219,17 +220,16 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
     }
 
     /** The hostname for the box(this is the hostname that goes into certificates). */
-    public String getHostname()
+    public HostName getHostname()
     {
-        if ( this.hostname == null || ( this.hostname.trim().length() == 0 )) 
-            this.hostname = NetworkUtil.DEFAULT_HOSTNAME;
+        if ( this.hostname == null ) this.hostname = NetworkUtil.DEFAULT_HOSTNAME;
+            
         return this.hostname;
     }
-
-    public void setHostname( String newValue )
+    
+    public void setHostname( HostName newValue )
     {
-        /* ??? empty strings, null, etc */
-        if ( newValue == null || ( newValue.trim().length() == 0 )) newValue = NetworkUtil.DEFAULT_HOSTNAME;
+        if ( newValue == null ) newValue = NetworkUtil.DEFAULT_HOSTNAME;
 
         this.hostname = newValue;
     }
