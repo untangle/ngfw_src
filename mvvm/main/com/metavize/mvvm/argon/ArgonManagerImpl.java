@@ -122,24 +122,6 @@ public class ArgonManagerImpl implements ArgonManager
     {
         return IntfConverter.getInstance().argonIntfToString( IntfConverter.OUTSIDE );
     }
-
-    public InetAddress getOutsideAddress()
-    {
-        if ( this.outsideIntfDataList.size() < 1 ) return null;
-        return outsideIntfDataList.get( 0 ).getAddress();
-    }
-
-    public InetAddress getOutsideNetmask()
-    {
-        if ( this.outsideIntfDataList.size() < 1 ) return null;
-        return outsideIntfDataList.get( 0 ).getNetmask();
-    }
-
-    public List<InterfaceData> getOutsideAliasList()
-    {
-        if ( this.outsideIntfDataList.size() < 2 ) return EMPTY_INTF_DATA_LIST;
-        return Collections.unmodifiableList( outsideIntfDataList.subList( 1, outsideIntfDataList.size()));
-    }
         
     /* Set the interface override list. */
     public void setInterfaceOverrideList( List<InterfaceRedirect> overrideList )
