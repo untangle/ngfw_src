@@ -220,6 +220,6 @@ void netcap_tcp_session_debug(netcap_session_t* netcap_sess, int level, char *ms
     }
 
     debug_nodate(level, "%s :: (%s:%-5i -> %s:%-5i)\n", msg, 
-                 unet_inet_ntoa( netcap_sess->cli.cli.host.s_addr ), netcap_sess->cli.cli.port,
+                 unet_next_inet_ntoa( netcap_sess->cli.cli.host.s_addr ), netcap_sess->cli.cli.port,
                  unet_next_inet_ntoa( netcap_sess->srv.srv.host.s_addr ), netcap_sess->srv.srv.port );
 }

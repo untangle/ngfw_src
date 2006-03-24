@@ -578,7 +578,7 @@ int netcap_shield_bless_users( netcap_shield_bless_array_t* nodes )
         for ( c = 0 ; c < nodes->count ; c++ ) {
             netcap_shield_bless_t* item = &nodes->d[c];
             debug( NC_SHIELD_DEBUG_LOW, "Divider[%d] settings %s %g\n", c,
-                   unet_inet_ntoa( item->address.s_addr ), item->divider );
+                   unet_next_inet_ntoa( item->address.s_addr ), item->divider );
             if ( _set_node_settings( item->divider, &item->address, &item->netmask ) < 0 ) {
                 return errlog( ERR_CRITICAL, "netcap_shield_set_settings\n" );
             }
@@ -621,7 +621,7 @@ static int _set_node_settings ( double divider, struct in_addr* ip, struct in_ad
 
     if ( netmask->s_addr != 0xFFFFFFFF ) {
         errlog( ERR_WARNING, "Netmask[%s] is not implemented for shield settings\n", 
-                unet_inet_ntoa( ip->s_addr ));
+                unet_next_inet_ntoa( ip->s_addr ));
     }
 
     if ( new_netcap_trie_insert_and_get( &_shield.trie, ip, NULL, &line ) < 0 ) {

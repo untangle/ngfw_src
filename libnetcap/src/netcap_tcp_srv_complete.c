@@ -349,7 +349,7 @@ static int _srv_start_connection( netcap_session_t* netcap_sess, struct sockaddr
     do {
         if ( flags & SRV_COMPLETE_NONLOCAL_BIND ) {
             debug( 8,"TCP: (%10u) Binding %i to %s:%i\n", netcap_sess->session_id, newsocket,
-                   unet_inet_ntoa( src_addr.sin_addr.s_addr ), ntohs( src_addr.sin_port ));
+                   unet_next_inet_ntoa( src_addr.sin_addr.s_addr ), ntohs( src_addr.sin_port ));
             if ( bind( newsocket, (struct sockaddr*)&src_addr, sizeof(src_addr)) < 0 ) {
                 ret = perrlog( "bind" ); 
                 break;
@@ -368,11 +368,13 @@ static int _srv_start_connection( netcap_session_t* netcap_sess, struct sockaddr
         }
         
         debug( 6, "TCP: (%10u) Connect %i to %s:%i\n", netcap_sess->session_id, newsocket,
-               unet_inet_ntoa( dst_addr->sin_addr.s_addr ), ntohs( dst_addr->sin_port ));
+               unet_next_inet_ntoa( dst_addr->sin_addr.s_addr ), ntohs( dst_addr->sin_port ));
     
         if ( connect( newsocket, (struct sockaddr*)dst_addr, sizeof(struct sockaddr_in)) < 0 ) {
             if ( errno == EHOSTUNREACH ) {
-                errlog(ERR_WARNING,"connect(%s) failed: %s\n",unet_inet_ntoa( dst_addr->sin_addr.s_addr ),errstr);
+                errlog( ERR_WARNING,"connect(%s) failed: %s\n", 
+                        unet_next_inet_ntoa( dst_addr->sin_addr.s_addr ), errstr );
+
                 ret = -1;
                 netcap_sess->dead_tcp.exit_type = TCP_CLI_DEAD_ICMP;
                 netcap_sess->dead_tcp.type      = ICMP_DEST_UNREACH;
@@ -380,10 +382,10 @@ static int _srv_start_connection( netcap_session_t* netcap_sess, struct sockaddr
             } else if ( errno == ENETUNREACH ) {
                 if ( netcap_interface_is_broadcast( dst_addr->sin_addr.s_addr, 0 )) {
                     debug( 4, "connect to (%s) failed from tcp broadcast: %s\n",
-                           unet_inet_ntoa( dst_addr->sin_addr.s_addr ), errstr );
+                           unet_next_inet_ntoa( dst_addr->sin_addr.s_addr ), errstr );
                 } else {
                     errlog( ERR_WARNING, "connect to (%s) failed: %s\n",
-                            unet_inet_ntoa( dst_addr->sin_addr.s_addr ), errstr );
+                            unet_next_inet_ntoa( dst_addr->sin_addr.s_addr ), errstr );
                 }
                 
                 ret = -1;
@@ -394,8 +396,8 @@ static int _srv_start_connection( netcap_session_t* netcap_sess, struct sockaddr
                 /* nothing to do here */
             } else {
                 ret = errlog( ERR_CRITICAL, "connect: %s : (%s:%d -> %s:%d)\n", errstr,
-                              unet_inet_ntoa( src_addr.sin_addr.s_addr ), ntohs( src_addr.sin_port ),
-                              unet_inet_ntoa( dst_addr->sin_addr.s_addr ), ntohs( dst_addr->sin_port ));
+                              unet_next_inet_ntoa( src_addr.sin_addr.s_addr ), ntohs( src_addr.sin_port ),
+                              unet_next_inet_ntoa( dst_addr->sin_addr.s_addr ), ntohs( dst_addr->sin_port ));
             }
         }
     } while ( 0 );

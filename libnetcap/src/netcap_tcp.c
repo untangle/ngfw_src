@@ -608,8 +608,8 @@ static netcap_session_t* _netcap_get_or_create_sess ( int* created_flag,
                                           
     
 #if 0
-    debug(2,"LOOKUP: (%s:%i ->",unet_inet_ntoa(cli_addr),cli_port);
-    debug_nodate(2," %s:%i seq:%i) -> ",unet_inet_ntoa(srv_addr),srv_port,seq);
+    debug(2,"LOOKUP: (%s:%i ->",unet_next_inet_ntoa(cli_addr),cli_port);
+    debug_nodate(2," %s:%i seq:%i) -> ",unet_next_inet_ntoa(srv_addr),srv_port,seq);
     if (sess)
         debug_nodate(2,"FOUND\n");
     else

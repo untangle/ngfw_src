@@ -112,7 +112,7 @@ char* netcap_session_srv_tuple_print ( netcap_session_t* sess )
     if (( tls = _tls_get()) == NULL ) return errlog_null( ERR_CRITICAL, "_tls_get\n" );
 
     snprintf( tls->output_buf, sizeof( tls->output_buf ), "(%s:%-5i)",
-              unet_inet_ntoa( sess->srv.srv.host.s_addr ), sess->srv.srv.port );
+              unet_next_inet_ntoa( sess->srv.srv.host.s_addr ), sess->srv.srv.port );
 
     return tls->output_buf;
 }
@@ -126,7 +126,7 @@ char* netcap_session_cli_tuple_print ( netcap_session_t* sess )
     if (( tls = _tls_get()) == NULL ) return errlog_null( ERR_CRITICAL, "_tls_get\n" );
 
     snprintf( tls->output_buf, sizeof( tls->output_buf ), "(%s:%-5i)",
-              unet_inet_ntoa( sess->cli.cli.host.s_addr ), sess->cli.cli.port );
+              unet_next_inet_ntoa( sess->cli.cli.host.s_addr ), sess->cli.cli.port );
     
     return tls->output_buf;
 }

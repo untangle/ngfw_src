@@ -332,7 +332,7 @@ static int _arp_dst_intf ( netcap_intf_db_t* db, netcap_intf_t* intf, netcap_int
         }
         
         if ( ret == NETCAP_ARP_NOERROR ) {
-            debug( 10, "ROUTE: Unable to resolve the MAC address %s\n", unet_inet_ntoa( next_hop.s_addr ));
+            debug( 10, "ROUTE: Unable to resolve the MAC address %s\n", unet_next_inet_ntoa( next_hop.s_addr ));
             return NETCAP_ARP_NOERROR;
         }
         
@@ -503,7 +503,7 @@ static int  _out_interface     ( int* index, struct in_addr* src_ip, struct in_a
     
     if (( *index = ioctl( _netcap_arp.sock, SIOCFINDEV, &args )) < 0) {
         /* XXX Fix for net unreachable */
-        return errlog( ERR_CRITICAL, "SIOCFINDEV[%s] %s.\n", unet_inet_ntoa( dst_ip->s_addr ), errstr );
+        return errlog( ERR_CRITICAL, "SIOCFINDEV[%s] %s.\n", unet_next_inet_ntoa( dst_ip->s_addr ), errstr );
     }
 
     /* If the next hop is on the local network, (eg. the next hop is the destination), 
@@ -549,7 +549,7 @@ static int  _fake_connect      ( struct in_addr* src_ip, struct in_addr* dst_ip,
         }
         
         if ( connect( fake_fd, (struct sockaddr*)&dst_addr, sizeof( dst_addr )) < 0 ) {
-            return errlog( ERR_CRITICAL, "connect[%s] %s.\n", unet_inet_ntoa( dst_ip->s_addr ), errstr );
+            return errlog( ERR_CRITICAL, "connect[%s] %s.\n", unet_next_inet_ntoa( dst_ip->s_addr ), errstr );
         }
         
         if ( getsockname( fake_fd, (struct sockaddr*)&dst_addr, &addr_len ) < 0 ) {
@@ -601,7 +601,7 @@ static int  _get_arp_entry     ( struct in_addr* ip, struct ether_addr* mac, net
         /* This only fails if a socket has never been opened to this IP address.
          * Must also check that the address returned a zero MAC address */
         if ( errno == ENXIO ) {
-            debug( 11, "ROUTE: Ethernet address for %s was not found\n", unet_inet_ntoa( ip->s_addr ));
+            debug( 11, "ROUTE: Ethernet address for %s was not found\n", unet_next_inet_ntoa( ip->s_addr ));
             return NETCAP_ARP_NOERROR;
         }
 
@@ -610,7 +610,7 @@ static int  _get_arp_entry     ( struct in_addr* ip, struct ether_addr* mac, net
 
     /* Returning an all zero MAC address indicates that the MAC was not found */
     if ( memcmp( &request.arp_ha.sa_data, &_netcap_arp.zero_mac, sizeof( struct ether_addr )) == 0 ) {
-        debug( 11, "ROUTE: Ethernet address for %s was not found\n", unet_inet_ntoa( ip->s_addr ));
+        debug( 11, "ROUTE: Ethernet address for %s was not found\n", unet_next_inet_ntoa( ip->s_addr ));
         return NETCAP_ARP_NOERROR;
     }
 
