@@ -7,7 +7,6 @@ function DirTree(parent, className, posStyle) {
    }
    DwtTree.call(this, parent, DwtTree.SINGLE_STYLE, className, posStyle);
 
-   this.addItems();
    this.addSelectionListener(new AjxListener(this, this._treeListener));
 }
 
@@ -16,13 +15,14 @@ DwtTree.prototype.constructor = DirTree;
 
 // public methods -------------------------------------------------------------
 
-DirTree.prototype.addItems = function() {
+DirTree.prototype.setRoot = function(url)
+{
    var ds = this.dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
    ds.addDragListener(new AjxListener(this, this.dragListener));
    var dt = new DwtDropTarget(DwtTreeItem);
    dt.addDropListener(new AjxListener(this, this.dropListener));
 
-   var n = new CifsNode(null, "smb://bebe/");
+   var n = new CifsNode(null, url);
 
    var root = new DwtTreeItem(this);
    root.setText(n.label);
@@ -34,8 +34,13 @@ DirTree.prototype.addItems = function() {
    root.setExpanded(false);
 }
 
-DirTree.prototype.expandNode = function(url)
+DirTree.prototype.chdir = function(url)
 {
+   if (this.cwd == url) {
+      return;
+   }
+   this.cwd = url;
+
    this._expandNode(this, url);
 }
 

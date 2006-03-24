@@ -41,7 +41,7 @@ function launch() {
 DBG = new AjxDebug(AjxDebug.NONE, null, false);
 
 var shell = new DwtShell("MainShell", false);
-new Browser(shell);
+new Browser(shell, "smb://bebe/");
 }
 AjxCore.addOnloadListener(launch);
 </script>

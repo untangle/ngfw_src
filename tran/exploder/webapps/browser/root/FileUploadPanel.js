@@ -7,13 +7,13 @@ FileUploadPanel.UPLOAD_COMPLETE = "UPLOAD_COMPLETE";
 
 // constructors ---------------------------------------------------------------
 
-function FileUploadPanel(parent, className, posStyle)
+function FileUploadPanel(parent, url, dest)
 {
    if (0 == arguments.length) {
       return;
    }
 
-   DwtComposite.call(this, parent, className || "FileUploadPanel", posStyle);
+   DwtComposite.call(this, parent, "FileUploadPanel");
 
    var htmlElem = this.getHtmlElement();
 
@@ -29,10 +29,14 @@ function FileUploadPanel(parent, className, posStyle)
 
          setTimeout(nl, 1000);
       };
+
+      iFrame.uploadFailure = function(msg) {
+         alert("XXX OOPIES!");
+      }
    }
 
    this.form = document.createElement("form");
-   this.form.action = "put" // XXX make a param
+   this.form.action = url;
    this.form.method = "post";
    this.form.enctype = this.form.encoding = "multipart/form-data";
    this.form.target = id;
@@ -43,6 +47,12 @@ function FileUploadPanel(parent, className, posStyle)
    file.type = "file";
    file.name = "file";
    this.form.appendChild(file);
+
+   var hidden = document.createElement("input");
+   hidden.type = "hidden";
+   hidden.name = "dest";
+   hidden.value = dest;
+   this.form.appendChild(hidden);
 
    this.getHtmlElement().appendChild(this.form);
 }

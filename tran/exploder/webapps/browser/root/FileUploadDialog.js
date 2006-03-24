@@ -1,7 +1,7 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-function FileUploadDialog(parent)
+function FileUploadDialog(parent, url, dest)
 {
    if (arguments.length == 0) {
       return;
@@ -11,7 +11,7 @@ function FileUploadDialog(parent)
 
    DwtDialog.call(this, parent, className, "Upload File");
 
-   var panel = new FileUploadPanel(this);
+   var panel = new FileUploadPanel(this, url, dest);
 
    var cb = function() {
       this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
@@ -19,11 +19,29 @@ function FileUploadDialog(parent)
    }
    this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, cb));
 
-   var ul = function() { this.popdown(); }
-   panel.addUploadCompleteListener(new AjxListener(this, ul));
+   panel.addUploadCompleteListener(new AjxListener(this, this._uploadCompleteListener));
 
    this.setView(panel);
 }
 
 FileUploadDialog.prototype = new DwtDialog();
 FileUploadDialog.prototype.constructor = FileUploadDialog;
+
+// public methods -------------------------------------------------------------
+
+FileUploadDialog.prototype.addUploadCompleteListener = function(listener)
+{
+   this.addListener(FileUploadPanel.UPLOAD_COMPLETE, listener);
+}
+
+FileUploadDialog.prototype.removeUploadCompleteListener = function(listener)
+{
+   this.removeListener(FileUploadPanel.UPLOAD_COMPLETE, listener);
+}
+
+// internal methods -----------------------------------------------------------
+
+FileUploadDialog.prototype._uploadCompleteListener = function(evt)
+{
+   this.notifyListeners(FileUploadPanel.UPLOAD_COMPLETE, evt);
+}

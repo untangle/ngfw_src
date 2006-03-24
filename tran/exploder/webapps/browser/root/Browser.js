@@ -1,7 +1,7 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-function Browser(shell) {
+function Browser(shell, url) {
    if (0 == arguments.length) {
       return;
    }
@@ -22,6 +22,7 @@ function Browser(shell) {
    this.toolbar.zShow(true);
 
    this.dirTree = new DirTree(this, null, DwtControl.ABSOLUTE_STYLE);
+   this.dirTree.setRoot(url);
    this.dirTree.setScrollStyle(DwtControl.SCROLL);
    this.dirTree.addSelectionListener(new AjxListener(this, this._dirTreeSelectionListener));
    this.dirTree.zShow(true);
@@ -34,9 +35,11 @@ function Browser(shell) {
    this.detailPanel = new DetailPanel(this, null, DwtControl.ABSOLUTE_STYLE);
    this.detailPanel.setUI(0);
    this.detailPanel.zShow(true);
-   this.detailPanel.addStateChangeListener(new AjxListener(this, this._detailChangeListener));
+   this.detailPanel.addSelectionListener(new AjxListener(this, this._detailSelectionListener));
 
    this.layout();
+
+   this.chdir(url, false);
 
    this.zShow(true);
 
@@ -53,6 +56,21 @@ function Browser(shell) {
 Browser.prototype = new DwtComposite();
 Browser.prototype.constructor = Browser;
 
+// public methods -------------------------------------------------------------
+
+Browser.prototype.chdir = function(url, expandTree, expandDetail)
+{
+   this.cwd = url;
+
+   if (undefined == expandTree || expandTree) {
+      this.dirTree.chdir(url);
+   }
+
+   if (undefined == expandDetail || expandDetail) {
+      this.detailPanel.chdir(url);
+   }
+}
+
 Browser.prototype.layout = function(ignoreSash) {
    var size = this._shell.getSize();
    var width = size.x;
@@ -62,7 +80,6 @@ Browser.prototype.layout = function(ignoreSash) {
    var y = 0;
 
    this.toolbar.setLocation(0, 0);
-   //this.toolbar.setBounds(0, 0, width, 25);
    var size = this.toolbar.getSize();
    y += size.y;
 
@@ -78,19 +95,26 @@ Browser.prototype.layout = function(ignoreSash) {
    x += this.detailPanel.getSize().x;
 }
 
-// internal methods -----------------------------------------------------------
+// listeners ------------------------------------------------------------------
 
-Browser.prototype._detailChangeListener = function(ev) {
-   this.dirTree.expandNode(this.detailPanel.url);
+Browser.prototype._detailSelectionListener = function(ev) {
+   switch (ev.detail) {
+      case DwtListView.ITEM_DBL_CLICKED:
+      var item = ev.item;
+      if (item.type = "dir") {
+         this.chdir(item.url);
+      } else {
+         alert("DOUBLE CLICKED: " + item);
+      }
+      break;
+   }
 }
 
 Browser.prototype._dirTreeSelectionListener = function(ev) {
    switch (ev.detail) {
       case DwtTree.ITEM_SELECTED:
       var n = ev.item.getData("cifsNode");
-      var url = n.url;
-
-      this.detailPanel.displayListing(url);
+      this.chdir(n.url);
       break;
 
       case DwtTree.ITEM_DESELECTED:
@@ -111,7 +135,14 @@ Browser.prototype._dirTreeSelectionListener = function(ev) {
 
 Browser.prototype._uploadButtonListener = function(ev)
 {
-   var dialog = new FileUploadDialog(this._shell);
+   var dialog = new FileUploadDialog(this._shell, "put", this.cwd);
+
+   var cb = function(evt) {
+      dialog.popdown();
+      this.detailPanel.refresh();
+   }
+
+   dialog.addUploadCompleteListener(new AjxListener(this, cb));
 
    dialog.popup();
 }

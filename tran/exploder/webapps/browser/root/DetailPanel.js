@@ -19,8 +19,6 @@ function DetailPanel(parent, className, posStyle) {
    header[i++] = hi;
 
    DwtListView.call(this, parent, className, posStyle, header, true);
-
-   this.addSelectionListener(new AjxListener(this, this._selectionListener));
 }
 
 DetailPanel.prototype = new DwtListView();
@@ -28,15 +26,25 @@ DetailPanel.prototype.constructor = DetailPanel;
 
 // public methods -------------------------------------------------------------
 
-DetailPanel.prototype.displayListing = function(url)
+DetailPanel.prototype.chdir = function(url)
+{
+   if (this.cwd == url) {
+      return;
+   }
+
+   this.cwd = url;
+
+   this.refresh();
+}
+
+DetailPanel.prototype.refresh = function()
 {
    var cb = function(obj, results) {
-      // XXX expand tree node
       this._setListingXml(results.xml);
       this.setUI(0);
    }
 
-   AjxRpc.invoke(null, "ls?url=" + url + "&type=full", null,
+   AjxRpc.invoke(null, "ls?url=" + this.cwd + "&type=full", null,
                  new AjxCallback(this, cb, new Object()), true);
 }
 
@@ -108,18 +116,4 @@ DetailPanel.prototype._createItemHtml = function(item) {
 
    div.innerHTML = htmlArr.join("");
    return div;
-}
-
-DetailPanel.prototype._selectionListener = function(ev)
-{
-   switch (ev.detail) {
-      case DwtListView.ITEM_DBL_CLICKED:
-      var item = ev.item;
-      if (item.type = "dir") {
-         this.displayListing(item.url);
-      } else {
-         alert("DOUBLE CLICKED: " + item);
-      }
-      break;
-   }
 }
