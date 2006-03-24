@@ -13,12 +13,7 @@ function Browser(shell, url) {
    this._shell.addControlListener(new AjxListener(this, this._shellListener));
 
    DwtComposite.call(this, this._shell, "Browser", DwtComposite.ABSOLUTE_STYLE);
-
-   this.toolbar = new DwtToolBar(this, "ToolBar", DwtControl.ABSOLUTE_STYLE, 2);
-   var b = new DwtButton(this.toolbar, DwtButton.ALIGN_CENTER);
-   b.setText("Upload");
-   b.addSelectionListener(new AjxListener(this, this._uploadButtonListener));
-
+   this.toolbar = this._makeToolbar();
    this.toolbar.zShow(true);
 
    this.dirTree = new DirTree(this, null, DwtControl.ABSOLUTE_STYLE);
@@ -95,6 +90,24 @@ Browser.prototype.layout = function(ignoreSash) {
    x += this.detailPanel.getSize().x;
 }
 
+// internal methods -----------------------------------------------------------
+
+Browser.prototype._makeToolbar = function() {
+   var toolbar = new DwtToolBar(this, "ToolBar", DwtControl.ABSOLUTE_STYLE, 2);
+
+   var b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
+   b.setText("Upload");
+   b.setToolTipContent("Upload files to share");
+   b.addSelectionListener(new AjxListener(this, this._uploadButtonListener));
+
+   b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
+   b.setText("Delete");
+   b.setToolTipContent("Delete selected files");
+   b.addSelectionListener(new AjxListener(this, this._deleteButtonListener));
+
+   return toolbar;
+}
+
 // listeners ------------------------------------------------------------------
 
 Browser.prototype._detailSelectionListener = function(ev) {
@@ -145,6 +158,26 @@ Browser.prototype._uploadButtonListener = function(ev)
    dialog.addUploadCompleteListener(new AjxListener(this, cb));
 
    dialog.popup();
+}
+
+Browser.prototype._deleteButtonListener = function(ev)
+{
+   var sel = this.detailPanel.getSelection();
+   if (0 == sel.length) {
+      return;
+   }
+
+   var url = "exec?command=delete";
+
+   for (var i = 0; i < sel.length; i++) {
+      url += "&file=" + sel[i].url;
+   }
+
+   var cb = function(obj, results) {
+      this.detailPanel.refresh();
+   }
+
+   AjxRpc.invoke(null, url, null, new AjxCallback(this, cb, { }), false);
 }
 
 Browser.prototype._shellListener = function(ev)
