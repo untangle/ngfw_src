@@ -33,6 +33,9 @@ public class FtpReply implements Token
     private final int replyCode;
     private final String message;
 
+    public final static int PASV = 227;
+    public final static int EPSV = 229;
+
     public FtpReply(int replyCode, String message)
     {
         this.replyCode = replyCode;
@@ -65,19 +68,30 @@ public class FtpReply implements Token
         String msg = "Entering Passive Mode ("
             + FtpUtil.unparsePort(socketAddress) + ").";
 
-        return makeReply(227, msg);
+        return makeReply(PASV, msg);
     }
 
     // business methods ------------------------------------------------------
 
     public InetSocketAddress getSocketAddress() throws ParseException
     {
-        if (227 == replyCode) {
-            int b = message.indexOf('(');
-            int e = message.indexOf(')', b);
-            String addrStr = message.substring(b + 1, e);
-            return FtpUtil.parsePort(addrStr);
-        } else {
+        switch(replyCode) {
+        case PASV:
+            /* fallthrough */
+        case EPSV:
+            {
+                int b = message.indexOf('(');
+                int e = message.indexOf(')', b);
+                if ((b < 0) || (e < 0)) 
+                    throw new ParseException("Missing parenthesis in passive command.");
+                String addrStr = message.substring(b + 1, e);
+                if (PASV  == replyCode) {
+                    return FtpUtil.parsePort(addrStr);
+                } else {
+                    return FtpUtil.parseExtendedPasvReply(addrStr);
+                }
+            }
+        default:
             return null;
         }
     }

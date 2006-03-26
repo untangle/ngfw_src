@@ -742,6 +742,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <include name="com/metavize/tran/ftp/FtpCommand.class"/>
         <include name="com/metavize/tran/ftp/FtpFunction.class"/>
         <include name="com/metavize/tran/ftp/FtpReply.class"/>
+        <include name="com/metavize/tran/ftp/FtpEpsvReply.class"/>
         <include name="com/metavize/tran/ftp/FtpStateMachine.class"/>
         <include name="com/metavize/tran/ftp/FtpUtil.class"/>
       </fileset>

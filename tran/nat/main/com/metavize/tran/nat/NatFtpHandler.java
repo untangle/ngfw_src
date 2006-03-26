@@ -18,6 +18,7 @@ import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.ftp.FtpCommand;
 import com.metavize.tran.ftp.FtpFunction;
 import com.metavize.tran.ftp.FtpReply;
+import com.metavize.tran.ftp.FtpEpsvReply;
 import com.metavize.tran.ftp.FtpStateMachine;
 import com.metavize.tran.token.ParseException;
 import com.metavize.tran.token.Token;
@@ -27,8 +28,6 @@ import org.apache.log4j.Logger;
 
 class NatFtpHandler extends FtpStateMachine
 {
-    private static final int PASV_REPLY = 227;
-
     private final Logger logger = Logger.getLogger( this.getClass());
     private final NatImpl transform;
     private final NatSessionManager sessionManager;
@@ -56,7 +55,7 @@ class NatFtpHandler extends FtpStateMachine
     }
 
     @Override
-    protected TokenResult doCommand(FtpCommand command) throws TokenException
+    protected TokenResult doCommand( FtpCommand command ) throws TokenException
     {
         FtpFunction function = command.getFunction();
 
@@ -115,8 +114,11 @@ class NatFtpHandler extends FtpStateMachine
         } else {
             /* XXX Should have a setting to disable port commands */
             switch ( replyCode ) {
-            case PASV_REPLY:
+            case FtpReply.PASV:
                 return pasvReply( reply );
+                
+            case FtpReply.EPSV:
+                return epsvReply( reply );
 
             default:
             }
@@ -144,10 +146,14 @@ class NatFtpHandler extends FtpStateMachine
         getSession().shutdownClient();
     }
 
-
-
     /* XXX May need to block all connections from port 20 */
     private TokenResult portCommand( FtpCommand command ) throws TokenException
+    {
+        return handlePortCommand( command );
+    }
+
+    /* Handle a port command, this is the helper for both extended and normal commands */
+    private TokenResult handlePortCommand( FtpCommand command ) throws TokenException
     {
         InetSocketAddress addr;
 
@@ -161,12 +167,12 @@ class NatFtpHandler extends FtpStateMachine
         try {
             addr = command.getSocketAddress();
         } catch ( ParseException e ) {
-            logger.warn( "Error parsing port command" + e );
+            logger.info( "Error parsing port command" + e );
             return SYNTAX_REPLY;
         }
 
         if ( addr == null ) {
-            logger.warn( "Error parsing port command(null socketaddress)" );
+            logger.info( "Error parsing port command(null socketaddress)" );
             return SYNTAX_REPLY;
         }
 
@@ -212,16 +218,25 @@ class NatFtpHandler extends FtpStateMachine
             if (logger.isDebugEnabled()) {
                 logger.debug( "Mangling PORT command to address: " + addr );
             }
+            
+            FtpFunction function = command.getFunction();
 
-            command = FtpCommand.portCommand( addr );
+            if ( FtpFunction.EPRT.equals( function )) {
+                command = FtpCommand.extendedPortCommand( addr );
+            } else if ( FtpFunction.PORT.equals( function )) {
+                command = FtpCommand.portCommand( addr );
+            } else {
+                logger.error( "Unkown port command: " + function );
+                return SYNTAX_REPLY;
+            }
         } else if ( sessionData.isServerRedirect()) {
             /* 1. Tell the event handler to redirect the session from the server. */
             //////////////////////////sessionManager.redirectServerSession( sessionData, session );
         }
 
-
         return new TokenResult( null, new Token[] { command } );
     }
+
 
     private TokenResult portReply( FtpReply reply ) throws TokenException
     {
@@ -230,12 +245,13 @@ class NatFtpHandler extends FtpStateMachine
 
     private TokenResult eprtCommand( FtpCommand command ) throws TokenException
     {
-        return new TokenResult( null, new Token[] { command } );
+        logger.debug( "Handling extended port command" );
+        return handlePortCommand( command );
     }
 
     private TokenResult eprtReply( FtpReply reply ) throws TokenException
     {
-        return TokenResult.NONE;
+        return new TokenResult( new Token[] { reply }, null );
     }
 
     private TokenResult pasvCommand( FtpCommand command ) throws TokenException
@@ -260,14 +276,14 @@ class NatFtpHandler extends FtpStateMachine
             throw new TokenException( "Error getting socket address", e );
         }
 
-        if ( addr == null ) {
+        if ( null == addr ) {
             throw new TokenException( "Error getting socket address" );
         }
 
         /* Verify that the server is going to the same place */
         InetAddress ip;
         if (( ip = addr.getAddress()) == null ) {
-            throw new TokenException( "wildard address" );
+            throw new TokenException( "wildcard address" );
         }
 
         if ( sessionData.isServerRedirect()) {
@@ -305,11 +321,30 @@ class NatFtpHandler extends FtpStateMachine
     {
         return new TokenResult( null, new Token[] { command } );
     }
-
+    
     private TokenResult epsvReply( FtpReply reply ) throws TokenException
     {
-        return new TokenResult( new Token[] { reply }, null );
+        InetSocketAddress addr;
+        try {
+            addr = reply.getSocketAddress();
+        } catch ( ParseException e ) {
+            throw new TokenException( "Error getting socket address", e );
+        }
 
+        if ( null == addr ) {
+            throw new TokenException( "Error getting socket address" );
+        }
+        
+        /* Create a new socket address with the original server address.
+         * extended passive mode doesn't specify the address, so in order to catch
+         * the data session, NAT creates a new extended passive reply which keeps a
+         * separate copy of the InetSocketAddress.
+         */
+        addr = new InetSocketAddress( sessionData.originalServerAddr(), addr.getPort());
+        
+        /* Nothing has to be done here, the server address isn't sent with extended
+         * passive replies, so redirects don't really matter */
+        return new TokenResult( new Token[] { FtpEpsvReply.makeEpsvReply( addr ) }, null );
     }
 
     private boolean updateSessionData()

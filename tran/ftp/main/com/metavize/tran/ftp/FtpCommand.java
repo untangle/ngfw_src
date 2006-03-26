@@ -50,7 +50,10 @@ public class FtpCommand implements Token
     {
         if (FtpFunction.PORT == function) {
             return FtpUtil.parsePort(argument);
+        } else if (FtpFunction.EPRT==function) {
+            return FtpUtil.parseExtendedPort(argument);
         } else {
+
             return null;
         }
     }
@@ -62,6 +65,14 @@ public class FtpCommand implements Token
         String cmd = FtpUtil.unparsePort(socketAddress);
         return new FtpCommand(FtpFunction.PORT, cmd);
     }
+
+    public static FtpCommand extendedPortCommand(InetSocketAddress socketAddress)
+    {
+        String cmd = FtpUtil.unparseExtendedPort(socketAddress);
+        return new FtpCommand(FtpFunction.EPRT, cmd);
+    }
+
+
 
     // bean methods -----------------------------------------------------------
 
