@@ -8,8 +8,6 @@ function Browser(shell, url) {
 
    this._shell = shell;
 
-/*    try { */
-
    this._shell.addControlListener(new AjxListener(this, this._shellListener));
 
    DwtComposite.call(this, this._shell, "Browser", DwtComposite.ABSOLUTE_STYLE);
@@ -37,15 +35,6 @@ function Browser(shell, url) {
    this.chdir(url, false);
 
    this.zShow(true);
-
-
-/*    } catch (exn) { */
-/*       if (exn.dump) { */
-/*          alert(exn.dump()); */
-/*       } else { */
-/*          alert(exn); */
-/*       } */
-/*    } */
 }
 
 Browser.prototype = new DwtComposite();
@@ -64,6 +53,12 @@ Browser.prototype.chdir = function(url, expandTree, expandDetail)
    if (undefined == expandDetail || expandDetail) {
       this.detailPanel.chdir(url);
    }
+}
+
+Browser.prototype.refresh = function()
+{
+   this.dirTree.refresh();
+   this.detailPanel.refresh();
 }
 
 Browser.prototype.layout = function(ignoreSash) {
@@ -96,6 +91,11 @@ Browser.prototype._makeToolbar = function() {
    var toolbar = new DwtToolBar(this, "ToolBar", DwtControl.ABSOLUTE_STYLE, 2);
 
    var b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
+   b.setText("Refresh");
+   b.setToolTipContent("Display latest contents");
+   b.addSelectionListener(new AjxListener(this, this._refreshButtonListener));
+
+   b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
    b.setText("Upload");
    b.setToolTipContent("Upload files to share");
    b.addSelectionListener(new AjxListener(this, this._uploadButtonListener));
@@ -144,6 +144,11 @@ Browser.prototype._dirTreeSelectionListener = function(ev) {
 
       default:
    }
+}
+
+Browser.prototype._refreshButtonListener = function(ev)
+{
+   this.refresh();
 }
 
 Browser.prototype._uploadButtonListener = function(ev)

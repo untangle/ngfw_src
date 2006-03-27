@@ -19,6 +19,11 @@ function DetailPanel(parent, className, posStyle) {
    header[i++] = hi;
 
    DwtListView.call(this, parent, className, posStyle, header, true);
+
+   // dragon drop
+   this._dragSource = new DwtDragSource(Dwt.DND_DROP_MOVE);
+   this._dragSource.addDragListener(new AjxListener(this, this._dragListener));
+   this.setDragSource(this._dragSource);
 }
 
 DetailPanel.prototype = new DwtListView();
@@ -116,4 +121,48 @@ DetailPanel.prototype._createItemHtml = function(item) {
 
    div.innerHTML = htmlArr.join("");
    return div;
+}
+
+// DwtControl methods ---------------------------------------------------------
+
+DetailPanel.prototype._getDnDIcon = function(dragOp)
+{
+   var icon = document.createElement("div");
+   Dwt.setPosition(icon, Dwt.ABSOLUTE_STYLE);
+
+   icon.innerHTML += "<B>ICON HERE</B>";
+
+   this.shell.getHtmlElement().appendChild(icon);
+   Dwt.setZIndex(icon, Dwt.Z_DND);
+   return icon;
+}
+
+DetailPanel.prototype._setDnDIconState = function(dropAllowed) {
+   this._dndIcon.innerHTML = "<B>" + (dropAllowed ? "allowed" : "not allowed") + "</B>";
+
+   this._dndIcon.className = dropAllowed
+      ? this._dndIcon._origClassName + " DropAllowed"
+      : this._dndIcon._origClassName + " DropNotAllowed";
+}
+
+
+// Listeners ------------------------------------------------------------------
+
+DetailPanel.prototype._dragListener = function(ev)
+{
+}
+
+DetailPanel.prototype._dropListener = function(ev)
+{
+   switch (ev.action) {
+      case DwtDropEvent.DRAG_ENTER:
+      break;
+      case DwtDropEvent.DRAG_LEAVE:
+      break;
+      case DwtDropEvent.DRAG_OP_CHANGED:
+      break;
+      case DwtDropEvent.DRAG_DROP:
+      alert(ev);
+      break;
+   }
 }

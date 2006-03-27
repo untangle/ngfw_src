@@ -8,6 +8,12 @@ function DirTree(parent, className, posStyle) {
    DwtTree.call(this, parent, DwtTree.SINGLE_STYLE, className, posStyle);
 
    this.addSelectionListener(new AjxListener(this, this._treeListener));
+
+   // dragon drop
+   this._dragSource = new DwtDragSource(Dwt.DND_DROP_MOVE);
+   this._dragSource.addDragListener(new AjxListener(this, this._dragListener));
+   this._dropTarget = new DwtDropTarget(CifsNode);
+   this._dropTarget.addDropListener(new AjxListener(this, this._dropListener));
 }
 
 DirTree.prototype = new DwtTree();
@@ -17,10 +23,7 @@ DwtTree.prototype.constructor = DirTree;
 
 DirTree.prototype.setRoot = function(url)
 {
-   var ds = this.dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
-   ds.addDragListener(new AjxListener(this, this.dragListener));
-   var dt = new DwtDropTarget(DwtTreeItem);
-   dt.addDropListener(new AjxListener(this, this.dropListener));
+   this.cwd = url;
 
    var n = new CifsNode(null, url);
 
@@ -28,8 +31,6 @@ DirTree.prototype.setRoot = function(url)
    root.setText(n.label);
    root.setImage("Folder"); // XXX Make Server icon
    root.setData("cifsNode", n);
-   root.setDropTarget(dt);
-   root.setToolTipContent("SMB Server");
 
    root.setExpanded(false);
 }
@@ -42,6 +43,12 @@ DirTree.prototype.chdir = function(url)
    this.cwd = url;
 
    this._expandNode(this, url);
+}
+
+DirTree.prototype.refresh = function(url)
+{
+   // XXX walk tree, validating nodes
+   // if this.cwd no longer valid, reset it to closest parent
 }
 
 // internal methods -----------------------------------------------------------
@@ -86,6 +93,8 @@ DirTree.prototype._populateNode = function(item)
             var n = new CifsNode(url, name);
             var tn = new DwtTreeItem(item, null, n.label, "Folder");
             tn.setData("cifsNode", n);
+            tn.setDragSource(this._dragSource);
+            tn.setDropTarget(this._dropTarget);
          }
          this.setSelection(item, true);
          item.setExpanded(true);
@@ -126,6 +135,47 @@ DirTree.prototype._treeListener = function(ev) {
    }
 }
 
-DirTree.prototype.dragListener = function(ev) { }
+DirTree.prototype._dragListener = function(ev)
+{
+}
 
-DirTree.prototype.dropListener = function(ev) { }
+DirTree.prototype._dropListener = function(ev)
+{
+   var targetControl = ev.targetControl;
+
+   switch (ev.action) {
+      case DwtDropEvent.DRAG_ENTER:
+
+      targetControl.dropSelected = true;
+
+      DBG.println("DRAG_ENTER: " + targetControl.getData("cifsNode"));
+
+      var act = new AjxTimedAction(this, this._hoverExpand,
+                                   { targetControl: targetControl });
+      AjxTimedAction.scheduleAction(act, 1000);
+      break;
+
+      case DwtDropEvent.DRAG_LEAVE:
+      DBG.println("DRAG_LEAVE: " + targetControl.getData("cifsNode"));
+      targetControl.dropSelected = false;
+      break;
+
+      case DwtDropEvent.DRAG_OP_CHANGED:
+      break;
+      case DwtDropEvent.DRAG_DROP:
+      // XXX
+      break;
+   }
+}
+
+DirTree.prototype._hoverExpand = function(state)
+{
+   var targetControl = state.targetControl;
+   DBG.println("_hoverExpand: " + targetControl.getData("cifsNode")
+               + " DS: " + targetControl.dropSelected);
+
+   if (targetControl.dropSelected) {
+      DBG.println("_hoverExpand populating: " + targetControl.getData("cifsNode"));
+      this._populateNode(targetControl);
+   }
+}
