@@ -278,7 +278,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
     /* Kill all sessions when starting or stopping this transform */
     protected SessionMatcher sessionMatcher()
     {
-        return SessionMatcherFactory.getAllInstance();
+        return SessionMatcherFactory.makePolicyInstance( getPolicy());
     }
 
     // XXX soon to be deprecated ----------------------------------------------

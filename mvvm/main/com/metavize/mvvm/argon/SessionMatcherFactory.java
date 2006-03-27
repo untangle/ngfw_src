@@ -11,6 +11,8 @@
 
 package com.metavize.mvvm.argon;
 
+import com.metavize.mvvm.policy.Policy;
+
 public class SessionMatcherFactory
 {
     private SessionMatcherFactory()
@@ -18,32 +20,32 @@ public class SessionMatcherFactory
     }
 
     static final SessionMatcher NULL_MATCHER = new SessionMatcher() {
-            public boolean isMatch( IPSessionDesc session ) 
+            public boolean isMatch( Policy policy, IPSessionDesc client, IPSessionDesc server ) 
             {
                 return false;
             }
         };
 
     static final SessionMatcher ALL_MATCHER = new SessionMatcher() {
-            public boolean isMatch( IPSessionDesc session ) 
+            public boolean isMatch( Policy policy, IPSessionDesc client, IPSessionDesc server ) 
             {
                 return true;
             }
         };
 
     static final SessionMatcher TCP_MATCHER = new SessionMatcher() {
-            public boolean isMatch( IPSessionDesc session ) 
+            public boolean isMatch( Policy policy, IPSessionDesc client, IPSessionDesc server ) 
             {
-                return ( session.protocol() == IPSessionDesc.IPPROTO_TCP ) ? true : false;
+                return ( client.protocol() == IPSessionDesc.IPPROTO_TCP ) ? true : false;
             }
         };
     
 
     static final SessionMatcher UDP_MATCHER = new SessionMatcher() {
-            public boolean isMatch( IPSessionDesc session ) 
+            public boolean isMatch( Policy policy, IPSessionDesc client, IPSessionDesc server ) 
             {
                 
-                return ( session.protocol() == IPSessionDesc.IPPROTO_UDP ) ? true : false;
+                return ( client.protocol() == IPSessionDesc.IPPROTO_UDP ) ? true : false;
             }
         };
 
@@ -65,6 +67,19 @@ public class SessionMatcherFactory
     public static SessionMatcher getUdpInstance()
     {
         return UDP_MATCHER;
+    }
+
+    public static SessionMatcher makePolicyInstance( final Policy policy )
+    {
+        /* null policy is a service, use an all matcher */
+        if ( null == policy ) return getAllInstance();
+
+        return new SessionMatcher() {
+            public boolean isMatch( Policy sessionPolicy, IPSessionDesc client, IPSessionDesc server ) 
+            {
+                return ( policy.equals( sessionPolicy ));
+            }
+        };
     }
 
 }

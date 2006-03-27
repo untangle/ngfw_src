@@ -24,6 +24,7 @@ import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.EventLoggerFactory;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.logging.SimpleEventFilter;
+import com.metavize.mvvm.policy.Policy;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
@@ -103,28 +104,54 @@ public abstract class VirusTransformImpl extends AbstractTransform
 
     private VirusSettings settings;
 
-    private static final SessionMatcher VIRUS_SESSION_MATCHER = new SessionMatcher() {
+    /* This can't be static because it uses policy which is per transform */
+    private final SessionMatcher VIRUS_SESSION_MATCHER = new SessionMatcher() {
             /* Kill all sessions on ports 20, 21 and 80 */
-            public boolean isMatch(com.metavize.mvvm.argon.IPSessionDesc session)
+            public boolean isMatch(Policy sessionPolicy,
+                                   com.metavize.mvvm.argon.IPSessionDesc client,
+                                   com.metavize.mvvm.argon.IPSessionDesc server)
             {
                 /* Don't kill any UDP Sessions */
-                if (session.protocol() == com.metavize.mvvm.argon.IPSessionDesc.IPPROTO_UDP) {
+                if (client.protocol() == com.metavize.mvvm.argon.IPSessionDesc.IPPROTO_UDP) {
                     return false;
                 }
 
-                int clientPort = session.clientPort();
-                int serverPort = session.serverPort();
-
-                /* FTP responds on port 20, server is on 21, HTTP server is on 80 */
-                if (clientPort == 20 || serverPort == 21 || serverPort == 80 || serverPort == 20) {
-                    return true;
+                /* handle sessions with a null policy */
+                Policy policy = getPolicy();
+                if (null != sessionPolicy && null != policy && !sessionPolicy.equals( policy )) {
+                    return false;
                 }
 
+                if (testClientPort(client.clientPort()) || testServerPort(client.serverPort()) ||
+                    testClientPort(client.clientPort()) || testServerPort(server.serverPort())) {
+                    return true;
+                }
+                
+                return false;
+            }
+
+            /* This would all be faster as a set */
+            private boolean testClientPort( int clientPort )
+            {
+                /* FTP responds on port 20 */
+                if (clientPort == 20) {
+                    return true;
+                }
+                return false;
+            }
+
+            private boolean testServerPort( int serverPort )
+            {
+                /* FTP server is on 21, HTTP server is on 80 */
+                if (serverPort == 21 || serverPort == 80 || serverPort == 20) {
+                    return true;
+                }
+                
                 /* email SMTP (25) / POP3 (110) / IMAP (143) */
                 if (serverPort == 25 || serverPort == 110 || serverPort == 143) {
                     return true;
                 }
-
+                
                 return false;
             }
         };

@@ -26,6 +26,7 @@ import com.metavize.jvector.Sink;
 import com.metavize.jvector.Source;
 import com.metavize.jvector.Vector;
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.policy.Policy;
 import com.metavize.mvvm.policy.PolicyRule;
 import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.mvvm.tapi.PipelineFoundry;
@@ -61,6 +62,8 @@ abstract class ArgonHook implements Runnable
 
     protected IPSessionDesc clientSide = null;
     protected IPSessionDesc serverSide = null;
+
+    protected Policy policy = null;
 
     protected static final PipelineFoundry pipelineFoundry = MvvmContextFactory.context().pipelineFoundry();
 
@@ -152,6 +155,7 @@ abstract class ArgonHook implements Runnable
             if (serverActionCompleted && clientActionCompleted) {
                 PolicyRule pr = pipelineDesc.getPolicyRule();
                 endpoints.completeEndpoints(clientSide, serverSide, pr.getPolicy(), pr.isInbound());
+                this.policy = pr.getPolicy();
                 pipelineFoundry.registerEndpoints(endpoints);
             } else {
                 // Null them out here so we don't log the pl_stats below.
@@ -181,7 +185,7 @@ abstract class ArgonHook implements Runnable
                     buildPipeline();
 
                     /* Insert the vector */
-                    activeVectrons.put( vector, clientSide );
+                    activeVectrons.put( vector, sessionGlobalState );
 
                     /* Set the timeout for the vectoring machine */
                     vector.timeout( timeout());

@@ -11,9 +11,11 @@
 
 package com.metavize.mvvm.argon;
 
+import com.metavize.mvvm.policy.Policy;
+
 public interface SessionMatcher
 {
     /**
      * Tells if the session matches */
-    boolean isMatch( IPSessionDesc session );    
+    boolean isMatch( Policy policy, IPSessionDesc clientSide, IPSessionDesc serverSide );
 }

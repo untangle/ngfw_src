@@ -19,13 +19,15 @@ import org.apache.log4j.Logger;
 
 import com.metavize.jvector.Vector;
 
+import com.metavize.mvvm.policy.Policy;
+
 public class VectronTable
 {
     /* Debugging */
     private static final Logger logger = Logger.getLogger( VectronTable.class );
     private static final VectronTable INSTANCE = new VectronTable();
 
-    private final Map<Vector,IPSessionDesc> activeVectrons = new HashMap<Vector,IPSessionDesc>();
+    private final Map<Vector,SessionGlobalState> activeVectrons = new HashMap<Vector,SessionGlobalState>();
     private boolean isAlive = true;
 
     /* Singleton */
@@ -38,7 +40,7 @@ public class VectronTable
      * @param  vectron - The vectron to add.
      * @return - True if the item did not already exist 
      */
-    public synchronized boolean put( Vector vectron, IPSessionDesc session )
+    public synchronized boolean put( Vector vectron, SessionGlobalState session )
     {
         return ( activeVectrons.put( vectron, session ) == null ) ? true : false;
     }
@@ -106,13 +108,15 @@ public class VectronTable
         
         /* XXXX THIS IS INCREDIBLY INEFFICIENT AND LOCKS THE CREATION OF NEW SESSIONS */
         for ( Iterator iter = activeVectrons.entrySet().iterator() ; iter.hasNext() ; ) {
-            Map.Entry<Vector,IPSessionDesc> e = (Map.Entry<Vector,IPSessionDesc>)iter.next();
+            Map.Entry<Vector,SessionGlobalState> e = (Map.Entry<Vector,SessionGlobalState>)iter.next();
             boolean isMatch;
 
-            IPSessionDesc session = e.getValue();
+            SessionGlobalState session = e.getValue();
             Vector vectron  = e.getKey();
+            
+            ArgonHook argonHook = session.argonHook();
 
-            isMatch = matcher.isMatch( session );
+            isMatch = matcher.isMatch( argonHook.policy, argonHook.clientSide, argonHook.serverSide );
 
             if ( isDebugEnabled )
                 logger.debug( "Tested session: " + session + " id: " + session.id() + 
