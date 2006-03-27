@@ -43,7 +43,7 @@ DirTree.prototype.chdir = function(url)
    }
    this.cwd = url;
 
-   this._expandNode(this, url);
+   this._expandNode(url, this);
 }
 
 DirTree.prototype.refresh = function(url)
@@ -54,45 +54,66 @@ DirTree.prototype.refresh = function(url)
 
 // internal methods -----------------------------------------------------------
 
-DirTree.prototype._expandNode = function(node, url)
+DirTree.prototype._expandNode = function(url, node)
 {
+   DBG.println("_expandNode url: " + url + " node: " + node);
+
+   var match;
+
    var children = node.getItems();
    for (var i = 0; i < children.length; i++) {
-      var cifsNode = children[i].getData("cifsNode");
+      var child = children[i];
+      var cifsNode = child.getData("cifsNode");
 
       var childUrl = cifsNode.url;
       var matches = true;
 
-      for (var j = 0; j < childUrl.length; j++) {
-         if (childUrl.charAt(j) != url.charAt(j)) {
-            matches = false;
-            break;
+      if (childUrl.length > url.length) {
+         matches = false;
+      } else {
+         for (var j = 0; j < childUrl.length; j++) {
+            if (childUrl.charAt(j) != url.charAt(j)) {
+               matches = false;
+               break;
+            }
          }
       }
 
       if (matches) {
-         // XXX XXX XXX
-         this._populate(children[i]);
-         this._expandNode(children[i], url); // XXX async
+         DBG.println("found match: " + childUrl);
+         match = child;
          break;
+      } else {
+         DBG.println("not matches: " + childUrl);
+      }
+   }
+
+   if (match) {
+      if (childUrl.length == url.length) {
+         DBG.println("SET EXPANDED: " + childUrl);
+         this.setSelection(child, true);
+      } else {
+         this._populate(match, new AjxCallback(this, this._expandNode, url));
       }
    }
 }
 
-DirTree.prototype._populate = function(item)
+DirTree.prototype._populate = function(item, cb)
 {
    var n = item.getData("cifsNode");
-   DBG.println("_populate: " + n);
+   DBG.println("_populate: " + n + " CB: " + cb);
 
    if (!item.getData("populated")) {
       item.setData("populated", true);
 
       var url = n.url;
 
-      var obj = { parent: item, parentUrl: url };
+      var obj = { parent: item, parentUrl: url, cb: cb };
 
       AjxRpc.invoke(null, "ls?url=" + url + "&type=dir", null,
                     new AjxCallback(this, this._populateCallback, obj), true);
+   } else {
+      cb.run(item);
    }
 }
 
@@ -105,10 +126,17 @@ DirTree.prototype._populateCallback = function(obj, results)
       var c = dirs[i];
       var name = c.getAttribute("name");
       var n = new CifsNode(obj.parentUrl, name);
-      var tn = new DwtTreeItem(obj.parent, null, n.label, "Folder");
+      var tn = new DwtTreeItem(obj.parent, null, n.label, "folder");
       tn.setData("cifsNode", n);
       tn.setDragSource(this._dragSource);
       tn.setDropTarget(this._dropTarget);
+   }
+
+   if (obj.cb) {
+      DBG.println("calling CB");
+      obj.cb.run(obj.parent);
+   } else {
+      DBG.println("no CB!");
    }
 }
 
