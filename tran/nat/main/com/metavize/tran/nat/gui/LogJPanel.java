@@ -94,8 +94,13 @@ public class LogJPanel extends MLogTableJPanel
                 event.add( null == pe ? "" : pe.getCServerAddr().getHostAddress() );
                 event.add( null == pe ? "" : pe.getSServerAddr().getHostAddress() );
                 event.add( log.getIsDmz() ? "Destined to DMZ Host" : ("Redirect Rule #" + log.getRuleIndex()));
-                String clientIntf = ( null == pe ? "" : convertIntf( pe.getClientIntf()));
-                String serverIntf = ( null == pe ? "" : convertIntf( pe.getServerIntf()));
+                /* This does't use the IntfEnum because there may be interfaces that
+                 * are no longer avaiable.  EG. Someone installs VPN, accumulates events,
+                 * and then uninstalls VPN.  The Interface will no longer be in the enum
+                 * but the event will still be here. 
+                 */
+                String clientIntf = ( null == pe ? "" : IntfConstants.toName( pe.getClientIntf()));
+                String serverIntf = ( null == pe ? "" : IntfConstants.toName( pe.getServerIntf()));
                 event.add( clientIntf );
                 event.add( serverIntf );
                 allEvents.add( event );
@@ -104,19 +109,5 @@ public class LogJPanel extends MLogTableJPanel
             return allEvents;
         }
 
-    }
-
-    /* This function shouldn't be here */
-    public String convertIntf( byte intf )
-    {
-        switch ( intf ) {
-        case IntfConstants.EXTERNAL_INTF: return IntfConstants.EXTERNAL;
-        case IntfConstants.INTERNAL_INTF: return IntfConstants.INTERNAL;
-        case IntfConstants.DMZ_INTF:      return IntfConstants.DMZ;
-        case IntfConstants.VPN_INTF:      return IntfConstants.VPN;
-        }
-
-        
-        return "";
     }
 }
