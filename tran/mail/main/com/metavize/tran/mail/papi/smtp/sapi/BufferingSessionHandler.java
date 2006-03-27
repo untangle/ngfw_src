@@ -357,7 +357,7 @@ public abstract class BufferingSessionHandler
 
   
     void receivedToken(Token token) {
-      add("----Received Token " + token.getClass().getName() + "--------");
+      add("----Received Token " + token + "--------");
     }
     void receivedResponse(Response resp) {
       add("----Received Response " + resp.getCode() + "--------");

@@ -153,6 +153,10 @@ public class Command
     return bbToString(buf);
   }
 
+  public String toString() {
+    return toDebugString();
+  }
+
   /**
    * Converts the given String to a CommandType.  Note that
    * the type may come back as "UNKNOWN".
