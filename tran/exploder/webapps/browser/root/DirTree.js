@@ -7,7 +7,8 @@ function DirTree(parent, className, posStyle) {
    }
    DwtTree.call(this, parent, DwtTree.SINGLE_STYLE, className, posStyle);
 
-   this.addSelectionListener(new AjxListener(this, this._treeListener));
+   this.addSelectionListener(new AjxListener(this, this._treeSelectionListener));
+   this.addTreeListener(new AjxListener(this, this._treeListener));
 
    // dragon drop
    this._dragSource = new DwtDragSource(Dwt.DND_DROP_MOVE);
@@ -32,7 +33,7 @@ DirTree.prototype.setRoot = function(url)
    root.setImage("Folder"); // XXX Make Server icon
    root.setData("cifsNode", n);
 
-   root.setExpanded(false);
+   this._populate(root);
 }
 
 DirTree.prototype.chdir = function(url)
@@ -70,53 +71,65 @@ DirTree.prototype._expandNode = function(node, url)
       }
 
       if (matches) {
-         this._populateNode(children[i]);
-         this._expandNode(children[i], url);
+         // XXX XXX XXX
+         this._populate(children[i]);
+         this._expandNode(children[i], url); // XXX async
          break;
       }
    }
 }
 
-DirTree.prototype._populateNode = function(item)
+DirTree.prototype._populate = function(item)
 {
-   if (!item.getData("expanded")) {
-      var n = item.getData("cifsNode");
+   var n = item.getData("cifsNode");
+   DBG.println("_populate: " + n);
+
+   if (!item.getData("populated")) {
+      item.setData("populated", true);
+
       var url = n.url;
 
-      var cb = function(obj, results) {
-         var dom = results.xml;
-         var dirs = dom.getElementsByTagName("dir");
-
-         for (var i = 0; i < dirs.length; i++) {
-            var c = dirs[i];
-            var name = c.getAttribute("name");
-            var n = new CifsNode(url, name);
-            var tn = new DwtTreeItem(item, null, n.label, "Folder");
-            tn.setData("cifsNode", n);
-            tn.setDragSource(this._dragSource);
-            tn.setDropTarget(this._dropTarget);
-         }
-         this.setSelection(item, true);
-         item.setExpanded(true);
-      }
+      var obj = { parent: item, parentUrl: url };
 
       AjxRpc.invoke(null, "ls?url=" + url + "&type=dir", null,
-                    new AjxCallback(this, cb, new Object()), true);
-
-      item.setData("expanded", true);
-   } else {
-      this.setSelection(item, true);
-      item.setExpanded(true);
+                    new AjxCallback(this, this._populateCallback, obj), true);
    }
 }
 
-DirTree.prototype._treeListener = function(ev) {
-   var action = "";
-   switch (ev.detail) {
+DirTree.prototype._populateCallback = function(obj, results)
+{
+   var dom = results.xml;
+   var dirs = dom.getElementsByTagName("dir");
+
+   for (var i = 0; i < dirs.length; i++) {
+      var c = dirs[i];
+      var name = c.getAttribute("name");
+      var n = new CifsNode(obj.parentUrl, name);
+      var tn = new DwtTreeItem(obj.parent, null, n.label, "Folder");
+      tn.setData("cifsNode", n);
+      tn.setDragSource(this._dragSource);
+      tn.setDropTarget(this._dropTarget);
+   }
+}
+
+DirTree.prototype._treeListener = function(evt)
+{
+   switch (evt.detail) {
+      case DwtTree.ITEM_EXPANDED:
+      var children = evt.item.getItems();
+      for (var i = 0; i < children.length; i++) {
+         this._populate(children[i]);
+      }
+      break;
+
+      case DwtTree.ITEM_COLLAPSED:
+      break;
+   }
+}
+
+DirTree.prototype._treeSelectionListener = function(evt) {
+   switch (evt.detail) {
       case DwtTree.ITEM_SELECTED:
-
-      this._populateNode(ev.item);
-
       break;
 
       case DwtTree.ITEM_DESELECTED:
@@ -135,15 +148,15 @@ DirTree.prototype._treeListener = function(ev) {
    }
 }
 
-DirTree.prototype._dragListener = function(ev)
+DirTree.prototype._dragListener = function(evt)
 {
 }
 
-DirTree.prototype._dropListener = function(ev)
+DirTree.prototype._dropListener = function(evt)
 {
-   var targetControl = ev.targetControl;
+   var targetControl = evt.targetControl;
 
-   switch (ev.action) {
+   switch (evt.action) {
       case DwtDropEvent.DRAG_ENTER:
 
       targetControl.dropSelected = true;
@@ -175,7 +188,8 @@ DirTree.prototype._hoverExpand = function(state)
                + " DS: " + targetControl.dropSelected);
 
    if (targetControl.dropSelected) {
-      DBG.println("_hoverExpand populating: " + targetControl.getData("cifsNode"));
-      this._populateNode(targetControl);
+      DBG.println("_hoverExpand expanding: " + targetControl.getData("cifsNode"));
+      targetControl.setExpanded(true);
+
    }
 }
