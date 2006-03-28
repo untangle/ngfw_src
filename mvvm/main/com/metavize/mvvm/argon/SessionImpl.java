@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 
 import com.metavize.jnetcap.NetcapSession;
 
+import com.metavize.jvector.Vector;
 import com.metavize.jvector.IncomingSocketQueue;
 import com.metavize.jvector.OutgoingSocketQueue;
 import com.metavize.jvector.ShutdownCrumb;
@@ -43,7 +44,9 @@ public abstract class SessionImpl implements Session
 
     protected final boolean isVectored;
 
-    protected PipelineListener listener;
+    /* Using the null pipeline listener just in case so null doesn't
+     * have to be checked everywhere */
+    protected PipelineListener listener = NULL_PIPELINE_LISTENER;
 
     /* NULL Pipeline listener used once an argon agent dies */
     /* This allows the agent to be stopped without waiting for the entire pipeline to stop.
@@ -258,25 +261,27 @@ public abstract class SessionImpl implements Session
      */
     public void killSession()
     {
-        try {            
-            clientIncomingSocketQueue.kill();
-            clientOutgoingSocketQueue.kill();
-            
-            serverIncomingSocketQueue.kill();
-            serverOutgoingSocketQueue.kill();
+        try { 
+            if ( clientIncomingSocketQueue != null ) clientIncomingSocketQueue.kill();
+            if ( clientOutgoingSocketQueue != null ) clientOutgoingSocketQueue.kill();
+            if ( serverIncomingSocketQueue != null ) serverIncomingSocketQueue.kill();
+            if ( serverOutgoingSocketQueue != null ) serverOutgoingSocketQueue.kill();
             
             /* Call the raze method */
-            listener.raze();
+            if ( this.listener != null ) this.listener.raze();
         } catch ( Exception ex ) {
             logger.warn( "Error while killing a session", ex );
         }
         
         /* Replace the listener with a NULL Listener */
-        listener = NULL_PIPELINE_LISTENER;
+        this.listener = NULL_PIPELINE_LISTENER;
 
         try {
+            Vector vector = sessionGlobalState.argonHook.vector;
+            
             /* Last send the kill signal to the vectoring machine */
-            sessionGlobalState.argonHook.vector.shutdown();
+            if ( vector != null ) vector.shutdown();
+            else logger.info( "kill session called before vectoring started, ignoring vectoring." );
         } catch ( Exception ex ) {
             logger.warn( "Error while killing a session", ex );
         }
@@ -285,7 +290,7 @@ public abstract class SessionImpl implements Session
     public void complete()
     {
         try {
-            listener.complete();
+            this.listener.complete();
         } catch ( Exception ex ) {
             logger.warn( "Error while completing a session", ex );
         }
@@ -313,7 +318,7 @@ public abstract class SessionImpl implements Session
      */
     public void raze()
     {
-        listener.raze();
+        if ( this.listener != null ) this.listener.raze();
 
         /* Raze the incoming and outgoing socket queues */
         if ( clientIncomingSocketQueue != null ) clientIncomingSocketQueue.raze();
