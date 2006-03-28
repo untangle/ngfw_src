@@ -88,8 +88,7 @@ abstract class ArgonHook implements Runnable
 
             if ( logger.isDebugEnabled()) {
                 logger.debug( "New thread for session id: " + netcapSession().id() + 
-                              " " + sessionGlobalState );
-                              
+                              " " + sessionGlobalState );                              
             }
 
             /* Update the server interface with the current server address */

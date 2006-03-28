@@ -312,14 +312,19 @@ static int _arp_dst_intf ( netcap_intf_db_t* db, netcap_intf_t* intf, netcap_int
     struct in_addr next_hop;
     netcap_intf_info_t* intf_info;
 
+    /* Indicate the interface is unknown in case there is an error */
+    *intf = NC_INTF_UNK;
+
     if ( _out_interface( &intf_index, src_ip, dst_ip, &next_hop ) < 0 ) {
         return errlog( ERR_CRITICAL, "_out_interface\n" );
     }
+
+    /* unable to determine the destination interface(but not an error eg default route unset), return. */    
+    if ( intf_index < 0 ) return 0;
+
     if (( intf_info = netcap_intf_db_index_to_info( db, intf_index )) == NULL ) {
         return errlog( ERR_CRITICAL, "netcap_intf_db_index_to_info %d\n", intf_index );
     }
-
-    *intf = NC_INTF_UNK;
 
     if ( intf_info->bridge_info != NULL ) {
         int ret;
@@ -502,7 +507,17 @@ static int  _out_interface     ( int* index, struct in_addr* src_ip, struct in_a
     args.addr = dst_ip->s_addr;
     
     if (( *index = ioctl( _netcap_arp.sock, SIOCFINDEV, &args )) < 0) {
-        /* XXX Fix for net unreachable */
+        switch ( errno ) {
+        case ENETUNREACH:
+            debug( 10, "ROUTE: Destination IP is not reachable\n" );
+            *index = -1;
+            return 0;
+
+            /* Ignore all other error codes */
+        default:
+            break;
+        }
+
         return errlog( ERR_CRITICAL, "SIOCFINDEV[%s] %s.\n", unet_next_inet_ntoa( dst_ip->s_addr ), errstr );
     }
 
