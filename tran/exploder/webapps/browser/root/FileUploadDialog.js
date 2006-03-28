@@ -43,5 +43,7 @@ FileUploadDialog.prototype.removeUploadCompleteListener = function(listener)
 
 FileUploadDialog.prototype._uploadCompleteListener = function(evt)
 {
+   evt.dialog = this;
+
    this.notifyListeners(FileUploadPanel.UPLOAD_COMPLETE, evt);
 }

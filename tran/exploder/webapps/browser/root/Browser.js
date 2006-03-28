@@ -14,10 +14,15 @@ function Browser(shell, url) {
    this.toolbar = this._makeToolbar();
    this.toolbar.zShow(true);
 
-   this.dirTree = new DirTree(this, null, DwtControl.ABSOLUTE_STYLE);
+   var dragSource = new DwtDragSource(Dwt.DND_DROP_MOVE);
+   dragSource.addDragListener(new AjxListener(this, this._treeDragListener));
+   var dropTarget = new DwtDropTarget(CifsNode);
+   dropTarget.addDropListener(new AjxListener(this, this._treeDropListener));
+   this.dirTree = new DirTree(this, null, DwtControl.ABSOLUTE_STYLE,
+                              dragSource, dropTarget);
    this.dirTree.setRoot(url);
    this.dirTree.setScrollStyle(DwtControl.SCROLL);
-   this.dirTree.addSelectionListener(new AjxListener(this, this._dirTreeSelectionListener));
+   this.dirTree.addSelectionListener(new AjxListener(this, this._dirSelectionListener));
    this.dirTree.zShow(true);
 
    this.sash = new DwtSash(this, DwtSash.HORIZONTAL_STYLE, null, 3);
@@ -25,10 +30,16 @@ function Browser(shell, url) {
    this.sash.registerCallback(this._sashCallback, this);
    this.sash.zShow(true);
 
+   dragSource = new DwtDragSource(Dwt.DND_DROP_MOVE);
+   dragSource.addDragListener(new AjxListener(this, this._detailDragListener));
+   dropTarget = new DwtDropTarget(CifsNode);
+   dropTarget.addDropListener(new AjxListener(this, this._detailDropListener));
    this.detailPanel = new DetailPanel(this, null, DwtControl.ABSOLUTE_STYLE);
    this.detailPanel.setUI(0);
    this.detailPanel.zShow(true);
    this.detailPanel.addSelectionListener(new AjxListener(this, this._detailSelectionListener));
+   this.detailPanel.setDragSource(dragSource);
+   this.detailPanel.setDropTarget(dropTarget);
 
    this.layout();
 
@@ -39,6 +50,10 @@ function Browser(shell, url) {
 
 Browser.prototype = new DwtComposite();
 Browser.prototype.constructor = Browser;
+
+// fields ---------------------------------------------------------------------
+
+Browser.CIFS_NODE = "cifsNode";
 
 // public methods -------------------------------------------------------------
 
@@ -53,6 +68,19 @@ Browser.prototype.chdir = function(url, expandTree, expandDetail)
    if (undefined == expandDetail || expandDetail) {
       this.detailPanel.chdir(url);
    }
+}
+
+Browser.prototype.mv = function(src, dest)
+{
+   var url = "exec?command=mv";
+   for (var i = 0; i < src.length; i++) {
+      url += "&src=" + src[i].url; // XXX does this get escaped ?
+   }
+
+   url += "&dest=" + dest.url; // XXX does this get escaped ?
+
+   // XXX handle error
+   AjxRpc.invoke(null, url, null, new AjxCallback(this, this.refresh, { }), false);
 }
 
 Browser.prototype.refresh = function()
@@ -85,7 +113,7 @@ Browser.prototype.layout = function(ignoreSash) {
    x += this.detailPanel.getSize().x;
 }
 
-// internal methods -----------------------------------------------------------
+// init -----------------------------------------------------------------------
 
 Browser.prototype._makeToolbar = function() {
    var toolbar = new DwtToolBar(this, "ToolBar", DwtControl.ABSOLUTE_STYLE, 2);
@@ -123,10 +151,12 @@ Browser.prototype._detailSelectionListener = function(ev) {
    }
 }
 
-Browser.prototype._dirTreeSelectionListener = function(ev) {
+// toolbar buttons ------------------------------------------------------------
+
+Browser.prototype._dirSelectionListener = function(ev) {
    switch (ev.detail) {
       case DwtTree.ITEM_SELECTED:
-      var n = ev.item.getData("cifsNode");
+      var n = ev.item.getData(Browser.CIFS_NODE);
       this.chdir(n.url);
       break;
 
@@ -155,14 +185,15 @@ Browser.prototype._uploadButtonListener = function(ev)
 {
    var dialog = new FileUploadDialog(this._shell, "put", this.cwd);
 
-   var cb = function(evt) {
-      dialog.popdown();
-      this.detailPanel.refresh();
-   }
-
-   dialog.addUploadCompleteListener(new AjxListener(this, cb));
+   dialog.addUploadCompleteListener(new AjxListener(this, this._uploadCompleteListener));
 
    dialog.popup();
+}
+
+Browser.prototype._uploadCompleteListener = function(evt)
+{
+   evt.dialog.popdown();
+   this.refresh();
 }
 
 Browser.prototype._deleteButtonListener = function(ev)
@@ -178,12 +209,11 @@ Browser.prototype._deleteButtonListener = function(ev)
       url += "&file=" + sel[i].url;
    }
 
-   var cb = function(obj, results) {
-      this.detailPanel.refresh();
-   }
-
-   AjxRpc.invoke(null, url, null, new AjxCallback(this, cb, { }), false);
+   AjxRpc.invoke(null, url, null, new AjxCallback(this, this.refresh, { }),
+                 false);
 }
+
+// shell ----------------------------------------------------------------------
 
 Browser.prototype._shellListener = function(ev)
 {
@@ -191,6 +221,8 @@ Browser.prototype._shellListener = function(ev)
       this.layout();
    }
 }
+
+// sash -----------------------------------------------------------------------
 
 Browser.prototype._sashCallback = function(d)
 {
@@ -208,4 +240,68 @@ Browser.prototype._sashCallback = function(d)
    this.layout(true);
 
    return this.sashPos - oldPos;
+}
+
+// dnd ------------------------------------------------------------------------
+
+Browser.prototype._treeDragListener = function(evt)
+{
+
+}
+
+Browser.prototype._treeDropListener = function(evt)
+{
+   var targetControl = evt.targetControl;
+
+   switch (evt.action) {
+      case DwtDropEvent.DRAG_ENTER:
+      break;
+
+      case DwtDropEvent.DRAG_LEAVE:
+      break;
+
+      case DwtDropEvent.DRAG_OP_CHANGED:
+      break;
+
+      case DwtDropEvent.DRAG_DROP:
+      var dest = evt.targetControl.getData(Browser.CIFS_NODE);
+      var src = evt.srcData;
+      this.mv(src, dest);
+      break;
+   }
+}
+
+Browser.prototype._detailDragListener = function(evt)
+{
+   switch (evt.action) {
+      case DwtDragEvent.DRAG_START:
+      break;
+
+      case DwtDragEvent.SET_DATA:
+      evt.srcData = evt.srcControl.getDnDSelection();
+      break;
+
+      case DwtDragEvent.DRAG_END:
+      break;
+   }
+}
+
+Browser.prototype._detailDropListener = function(evt)
+{
+   var targetControl = evt.targetControl;
+
+   switch (evt.action) {
+      case DwtDropEvent.DRAG_ENTER:
+      break;
+
+      case DwtDropEvent.DRAG_LEAVE:
+      break;
+
+      case DwtDropEvent.DRAG_OP_CHANGED:
+      break;
+
+      case DwtDropEvent.DRAG_DROP:
+      alert("DROP: " + evt.srcData);
+      break;
+   }
 }

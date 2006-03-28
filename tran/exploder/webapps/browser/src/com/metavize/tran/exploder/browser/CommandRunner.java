@@ -44,8 +44,10 @@ public class CommandRunner extends HttpServlet
 
         String cmd = req.getParameter("command");
 
-        if (cmd.equals("delete")) {
-            delete(req, auth);
+        if (cmd.equals("rm")) {
+            rm(req, auth);
+        } else if (cmd.equals("mv")) {
+            mv(req, auth);
         } else {
             throw new ServletException("bad command: " + cmd);
         }
@@ -56,8 +58,8 @@ public class CommandRunner extends HttpServlet
         logger = Logger.getLogger(getClass());
     }
 
-    private void delete(HttpServletRequest req,
-                        NtlmPasswordAuthentication auth)
+    private void rm(HttpServletRequest req,
+                    NtlmPasswordAuthentication auth)
     {
         String[] files = req.getParameterValues("file");
 
@@ -68,6 +70,26 @@ public class CommandRunner extends HttpServlet
                 logger.warn("could not delete: " + f, exn);
             } catch (MalformedURLException exn) {
                 logger.warn("bad url: " + f, exn);
+            }
+        }
+    }
+
+    private void mv(HttpServletRequest req, NtlmPasswordAuthentication auth)
+    {
+        String[] s = req.getParameterValues("src");
+        String d = req.getParameter("dest");
+
+        for (String f : s) {
+            try {
+                SmbFile src = new SmbFile(f, auth);
+                SmbFile dest = new SmbFile(d + src.getName(), auth);
+                src.renameTo(dest);
+            } catch (SmbException exn) {
+                // XXX report errors to client
+                logger.warn("could not move: " + f, exn);
+            } catch (MalformedURLException exn) {
+                // XXX report errors to client
+                logger.warn("bad url", exn);
             }
         }
     }
