@@ -14,6 +14,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.LinkedList;
 
+import com.metavize.mvvm.tran.AddressValidator;
+import com.metavize.mvvm.tran.AddressRange;
 import com.metavize.mvvm.tran.Validatable;
 import com.metavize.mvvm.tran.ValidateException;
 

@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.metavize.tran.openvpn;
+package com.metavize.mvvm.tran;
 
 import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 
-class AddressRange implements Comparable<AddressRange>
+public class AddressRange implements Comparable<AddressRange>
 {
     private static final Logger logger = Logger.getLogger( AddressRange.class );
 
@@ -56,12 +56,12 @@ class AddressRange implements Comparable<AddressRange>
         return this.isIllegal;
     }
 
-    static AddressRange makeNetwork( InetAddress network, InetAddress netmask )
+    public static AddressRange makeNetwork( InetAddress network, InetAddress netmask )
     {
         return makeNetwork( network, netmask, false );
     }
 
-    static AddressRange makeNetwork( InetAddress network, InetAddress netmask, boolean isIllegal )
+    public static AddressRange makeNetwork( InetAddress network, InetAddress netmask, boolean isIllegal )
     {
         long networkLong = toLong( network );
         long netmaskLong = toLong( netmask );
@@ -82,12 +82,12 @@ class AddressRange implements Comparable<AddressRange>
                                  isIllegal );
     }
 
-    static AddressRange makeRange( InetAddress start, InetAddress end )
+    public static AddressRange makeRange( InetAddress start, InetAddress end )
     {
         return makeRange( start, end, false );
     }
         
-    static AddressRange makeRange( InetAddress start, InetAddress end, boolean isIllegal )
+    public static AddressRange makeRange( InetAddress start, InetAddress end, boolean isIllegal )
     {
         long startLong = toLong( start );
         long endLong = toLong( end );

@@ -18,6 +18,8 @@ import java.util.HashSet;
 
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.HostName;
+import com.metavize.mvvm.tran.AddressRange;
+import com.metavize.mvvm.tran.AddressValidator;
 import com.metavize.mvvm.tran.ValidateException;
 import com.metavize.mvvm.tran.ParseException;
 
@@ -137,6 +139,16 @@ public class NetworkUtil
                 throw new ValidateException( "A network space should either have at least one address,"+
                                              " or use DHCP." );
             }
+
+            List<AddressRange> addressRangeList = new LinkedList<AddressRange>();
+            
+            for ( IPNetworkRule network : networkList ) {
+                addressRangeList.add( makeAddressRange( network ));
+            }
+            
+            /* Check for overlap in the network addresses */
+            // !!!! waiting till able to test. new AddressValidator().validate( addressRangeList );
+            
             if ( space.getIsNatEnabled()) {
                 if ( isDhcpEnabled ) {
                     throw new ValidateException( "A network space running NAT should not get its address" +
@@ -238,6 +250,12 @@ public class NetworkUtil
         }
 
         throw new ParseException( PUBLIC_ADDRESS_EXCEPTION );
+    }
+
+    /* Convert an IP Network to an AddressRange, used in validation */
+    public AddressRange makeAddressRange( IPNetworkRule network )
+    {
+        return AddressRange.makeNetwork( network.getNetwork().getAddr(), network.getNetmask().getAddr());
     }
 
     // Used by UI at wizard time to provide an initial value for public hostname checkbox.

@@ -17,6 +17,8 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.HashSet;
 
+import com.metavize.mvvm.tran.AddressValidator;
+import com.metavize.mvvm.tran.AddressRange;
 import com.metavize.mvvm.tran.Validatable;
 import com.metavize.mvvm.tran.ValidateException;
 
