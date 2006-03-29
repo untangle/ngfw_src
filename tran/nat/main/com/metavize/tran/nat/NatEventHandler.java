@@ -272,27 +272,18 @@ class NatEventHandler extends AbstractEventHandler
 
             releasePid = attachment.releasePort();
 
-            if ( pid != releasePid ) {
-                /* 3-20-2006. This can happen when a PING session gets redirected.  The port
-                 * doesn't go on the redirect pidList, but of course the session
-                 * still has a pid. */
-                /* Changing to a warning from an error, figure out a more permanent
-                 * solution later */
-                logger.warn( "Mismatch on the attached port and the session port " +
-                             pid + "!=" + releasePid );
-                return;
-            }
-
-            if ( releasePid != 0 ) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug( "ICMP: Releasing pid: " + releasePid );
-                }
-
+            if ( releasePid == 0 ) {
+                if ( logger.isDebugEnabled()) logger.debug( "Ignoring non-natted PID: " + pid );
+            } else if ( pid != releasePid ) {
+                /* This is now an error, because the releasePid should be zero if it is not
+                 * to be released */
+                logger.error( "Mismatch on the attached PID and the session PID " +
+                              pid + "!=" + releasePid );
+            } else {
+                if ( logger.isDebugEnabled()) logger.debug( "ICMP: Releasing pid: " + releasePid );
+                
                 icmpPidList.releasePort( releasePid );
-            } else if (logger.isDebugEnabled()) {
-                logger.debug( "Ignoring non-natted pid: " + pid );
             }
-
         } else {
             cleanupSession( Protocol.UDP, udpsession );
         }
