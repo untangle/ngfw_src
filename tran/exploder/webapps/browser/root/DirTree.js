@@ -7,6 +7,7 @@ function DirTree(parent, className, posStyle, dragSource, dropTarget) {
    }
    DwtTree.call(this, parent, DwtTree.SINGLE_STYLE, className, posStyle);
 
+   this.addSelectionListener(new AjxListener(this, this._selectionListener));
    this.addTreeListener(new AjxListener(this, this._treeListener));
 
    this._dragSource = dragSource;
@@ -102,7 +103,9 @@ DirTree.prototype._populate = function(item, cb)
       AjxRpc.invoke(null, "ls?url=" + url + "&type=dir", null,
                     new AjxCallback(this, this._populateCallback, obj), true);
    } else {
-      cb.run(item);
+      if (cb) {
+         cb.run(item);
+      }
    }
 }
 
@@ -127,7 +130,6 @@ DirTree.prototype._populateCallback = function(obj, results)
 
    if (obj.cb) {
       obj.cb.run(obj.parent);
-   } else {
    }
 }
 
@@ -142,6 +144,27 @@ DirTree.prototype._treeListener = function(evt)
       break;
 
       case DwtTree.ITEM_COLLAPSED:
+      break;
+   }
+}
+
+DirTree.prototype._selectionListener = function(evt)
+{
+   switch (evt.detail) {
+      case DwtTree.ITEM_SELECTED:
+      break;
+
+      case DwtTree.ITEM_DESELECTED:
+      break;
+
+      case DwtTree.ITEM_CHECKED:
+      break;
+
+      case DwtTree.ITEM_ACTIONED:
+      break;
+
+      case DwtTree.ITEM_DBL_CLICKED:
+      evt.item.setExpanded(!evt.item.getExpanded());
       break;
    }
 }
