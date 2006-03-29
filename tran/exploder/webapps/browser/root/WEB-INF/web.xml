@@ -117,6 +117,18 @@
     <url-pattern>/exec/*</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>ImageResizer</servlet-name>
+    <servlet-class>
+      com.metavize.tran.exploder.browser.ImageResizer
+    </servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>ImageResizer</servlet-name>
+    <url-pattern>/resize/*</url-pattern>
+  </servlet-mapping>
+
   @JSP_PRE_COMPILED_SERVLETS@
 
 </web-app>

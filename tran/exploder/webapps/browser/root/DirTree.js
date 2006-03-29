@@ -23,7 +23,7 @@ DirTree.prototype.setRoot = function(url)
 {
    this.cwd = url;
 
-   var n = new CifsNode(null, url);
+   var n = new CifsNode(null, url, true);
 
    var root = new DwtTreeItem(this);
    root.setText(n.label);
@@ -117,7 +117,7 @@ DirTree.prototype._populateCallback = function(obj, results)
    for (var i = 0; i < dirs.length; i++) {
       var c = dirs[i];
       var name = c.getAttribute("name");
-      var n = new CifsNode(obj.parentUrl, name);
+      var n = new CifsNode(obj.parentUrl, name, true);
       var tn = new DwtTreeItem(obj.parent, null, n.label, "folder");
       tn.setData(Browser.CIFS_NODE, n);
       if (this._dragSource) {

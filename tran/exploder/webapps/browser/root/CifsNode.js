@@ -4,11 +4,12 @@
 CifsNode.FILE = "file"
 CifsNode.DIR = "dir"
 
-function CifsNode(parent, name, type, size, lastModified) {
+function CifsNode(parent, name, isDirectory, size, lastModified, contentType) {
    this.parent = parent;
    this.name = name;
-   this.type = type || CifsNode.DIR;
+   this.isDirectory = isDirectory || false;
    this.size = size || 0;
+   this.contentType = contentType;
 
    if (0 < lastModified) {
       var date = new Date();

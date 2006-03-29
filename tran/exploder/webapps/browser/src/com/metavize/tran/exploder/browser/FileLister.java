@@ -146,6 +146,8 @@ public class FileLister extends HttpServlet
                 boolean readable = f.canRead();
                 boolean writable = f.canWrite();
                 boolean hidden = f.isHidden();
+                String contentType = f.isDirectory() ? ""
+                    : mimeMap.getContentType(name);
 
                 os.println("  <" + tag + " "
                            + "name='" + name + "' "
@@ -154,7 +156,8 @@ public class FileLister extends HttpServlet
                            + "size='" + length + "' "
                            + "readable='" + readable + "' "
                            + "writable='" + writable + "' "
-                           + "hidden='" + hidden + "'/>");
+                           + "hidden='" + hidden + "' "
+                           + "content-type='" + contentType + "'/>");
              }
         } catch (SmbException exn) {
             throw new ServletException("could not list directory", exn);

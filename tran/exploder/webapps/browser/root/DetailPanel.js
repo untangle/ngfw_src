@@ -8,13 +8,13 @@ function DetailPanel(parent, className, posStyle) {
 
    var header = [];
    var i = 0;
-   var hi = new DwtListHeaderItem("name", "Name", null, 200, false, true, true);
+   var hi = new DwtListHeaderItem("name", "Name", null, 200, true, true, true);
    hi.memberName = "label";
    header[i++] = hi;
-   hi = new DwtListHeaderItem("size", "Size", null, 100, false, true, true);
+   hi = new DwtListHeaderItem("size", "Size", null, 100, true, true, true);
    hi.memberName = "size";
    header[i++] = hi;
-   hi = new DwtListHeaderItem("lastModified", "Last Modified", null, 200, false, true, true);
+   hi = new DwtListHeaderItem("lastModified", "Last Modified", null, 200, true, true, true);
    hi.memberName = "lastModified";
    header[i++] = hi;
 
@@ -41,7 +41,7 @@ DetailPanel.prototype.refresh = function()
 {
    var cb = function(obj, results) {
       this._setListingXml(results.xml);
-      this.setUI(0);
+      this.setUI(1);
    }
 
    AjxRpc.invoke(null, "ls?url=" + this.cwd + "&type=full", null,
@@ -64,21 +64,24 @@ DetailPanel.prototype._setListingXml = function(dom)
       if ("dir" == tagName || "file" == tagName) {
          listing.add(new CifsNode(this.url,
                                   child.getAttribute("name"),
-                                  tagName,
+                                  "dir" == tagName,
                                   child.getAttribute("size"),
-                                  child.getAttribute("mtime")));
+                                  child.getAttribute("mtime"),
+                                  child.getAttribute("content-type")));
       }
    }
 
    this.set(listing);
 }
 
+// DwtListView methods --------------------------------------------------------
+
 DetailPanel.prototype._createItemHtml = function(item) {
 
    var div = document.createElement("div");
    var base = "Row";
    div._styleClass = base;
-   div._selectedStyleClass = [base, DwtCssStyle.SELECTED].join("-");   // Row-selected
+   div._selectedStyleClass = [base, DwtCssStyle.SELECTED].join("-");
 
    this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
    div.className = div._styleClass;
@@ -118,6 +121,24 @@ DetailPanel.prototype._createItemHtml = function(item) {
    return div;
 }
 
+DetailPanel.prototype._sortColumn = function(col, asc)
+{
+   this._lastSortCol = col;
+   this._lastSortAsc = asc;
+
+   var fn = function(a, b) {
+      av = a[col.memberName];
+      bv = b[col.memberName];
+
+      return (asc ? 1 : -1) * (a < b ? -1 : (a > b ? 1 : 0));
+   }
+
+   this.getList().sort(fn);
+   delete fn;
+
+   this.setUI(0);
+}
+
 // DwtControl methods ---------------------------------------------------------
 
 DetailPanel.prototype._getDnDIcon = function(dragOp)
@@ -146,4 +167,24 @@ DetailPanel.prototype._setDnDIconState = function(dropAllowed) {
    this._dndIcon.className = dropAllowed
       ? this._dndIcon._origClassName + " DropAllowed"
       : this._dndIcon._origClassName + " DropNotAllowed";
+}
+
+DetailPanel.prototype._mouseOverAction = function(ev, div)
+{
+   DwtListView.prototype._mouseOverAction.call(this, ev, div);
+
+   if (div._type == DwtListView.TYPE_LIST_ITEM){
+      var item = this.getItemFromElement(div);
+
+      if ("image/jpeg" == item.contentType) {
+         AjxRpc.invoke(null, "resize?url=" + item.url, null,
+                       new AjxCallback(this, this._setThumbnailTooltip,
+                                       { item: item }), true);
+      }
+   }
+}
+
+DetailPanel.prototype._setThumbnailTooltip = function(obj, results)
+{
+   this.setToolTipContent("<B>content-type:</B> " + obj.item.contentType);
 }

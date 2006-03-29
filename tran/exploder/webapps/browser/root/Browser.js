@@ -35,7 +35,7 @@ function Browser(shell, url) {
    dropTarget = new DwtDropTarget(CifsNode);
    dropTarget.addDropListener(new AjxListener(this, this._detailDropListener));
    this.detailPanel = new DetailPanel(this, null, DwtControl.ABSOLUTE_STYLE);
-   this.detailPanel.setUI(0);
+   this.detailPanel.setUI();
    this.detailPanel.zShow(true);
    this.detailPanel.addSelectionListener(new AjxListener(this, this._detailSelectionListener));
    this.detailPanel.setDragSource(dragSource);
