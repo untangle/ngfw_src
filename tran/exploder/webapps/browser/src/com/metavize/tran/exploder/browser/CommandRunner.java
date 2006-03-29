@@ -48,6 +48,8 @@ public class CommandRunner extends HttpServlet
             rm(req, auth);
         } else if (cmd.equals("mv")) {
             mv(req, auth);
+        } else if (cmd.equals("cp")) {
+            cp(req, auth);
         } else {
             throw new ServletException("bad command: " + cmd);
         }
@@ -84,6 +86,26 @@ public class CommandRunner extends HttpServlet
                 SmbFile src = new SmbFile(f, auth);
                 SmbFile dest = new SmbFile(d + src.getName(), auth);
                 src.renameTo(dest);
+            } catch (SmbException exn) {
+                // XXX report errors to client
+                logger.warn("could not move: " + f, exn);
+            } catch (MalformedURLException exn) {
+                // XXX report errors to client
+                logger.warn("bad url", exn);
+            }
+        }
+    }
+
+    private void cp(HttpServletRequest req, NtlmPasswordAuthentication auth)
+    {
+        String[] s = req.getParameterValues("src");
+        String d = req.getParameter("dest");
+
+        for (String f : s) {
+            try {
+                SmbFile src = new SmbFile(f, auth);
+                SmbFile dest = new SmbFile(d + src.getName(), auth);
+                src.copyTo(dest);
             } catch (SmbException exn) {
                 // XXX report errors to client
                 logger.warn("could not move: " + f, exn);

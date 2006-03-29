@@ -14,7 +14,7 @@ function Browser(shell, url) {
    this.toolbar = this._makeToolbar();
    this.toolbar.zShow(true);
 
-   var dragSource = new DwtDragSource(Dwt.DND_DROP_MOVE);
+   var dragSource = new DwtDragSource(Dwt.DND_DROP_MOVE | Dwt.DND_DROP_COPY);
    dragSource.addDragListener(new AjxListener(this, this._treeDragListener));
    var dropTarget = new DwtDropTarget(CifsNode);
    dropTarget.addDropListener(new AjxListener(this, this._treeDropListener));
@@ -30,7 +30,7 @@ function Browser(shell, url) {
    this.sash.registerCallback(this._sashCallback, this);
    this.sash.zShow(true);
 
-   dragSource = new DwtDragSource(Dwt.DND_DROP_MOVE);
+   dragSource = new DwtDragSource(Dwt.DND_DROP_MOVE | Dwt.DND_DROP_COPY);
    dragSource.addDragListener(new AjxListener(this, this._detailDragListener));
    dropTarget = new DwtDropTarget(CifsNode);
    dropTarget.addDropListener(new AjxListener(this, this._detailDropListener));
@@ -72,12 +72,15 @@ Browser.prototype.chdir = function(url, expandTree, expandDetail)
 
 Browser.prototype.mv = function(src, dest)
 {
-   var url = "exec?command=mv";
-   for (var i = 0; i < src.length; i++) {
-      url += "&src=" + src[i].url; // XXX does this get escaped ?
-   }
+   var url = Browser._mkSrcDestCommand("mv", src, dest)
 
-   url += "&dest=" + dest.url; // XXX does this get escaped ?
+   // XXX handle error
+   AjxRpc.invoke(null, url, null, new AjxCallback(this, this.refresh, { }), false);
+}
+
+Browser.prototype.cp = function(src, dest)
+{
+   var url = Browser._mkSrcDestCommand("cp", src, dest)
 
    // XXX handle error
    AjxRpc.invoke(null, url, null, new AjxCallback(this, this.refresh, { }), false);
@@ -203,7 +206,7 @@ Browser.prototype._deleteButtonListener = function(ev)
       return;
    }
 
-   var url = "exec?command=delete";
+   var url = "exec?command=rm";
 
    for (var i = 0; i < sel.length; i++) {
       url += "&file=" + sel[i].url;
@@ -261,12 +264,22 @@ Browser.prototype._treeDropListener = function(evt)
       break;
 
       case DwtDropEvent.DRAG_OP_CHANGED:
+      window.status = "OP CHANGED!";
       break;
 
       case DwtDropEvent.DRAG_DROP:
       var dest = evt.targetControl.getData(Browser.CIFS_NODE);
       var src = evt.srcData;
-      this.mv(src, dest);
+
+      switch (evt.operation) {
+         case Dwt.DND_DROP_COPY:
+         this.cp(src, dest);
+         break;
+
+         case Dwt.DND_DROP_MOVE:
+         this.mv(src, dest);
+         break;
+      }
       break;
    }
 }
@@ -298,10 +311,26 @@ Browser.prototype._detailDropListener = function(evt)
       break;
 
       case DwtDropEvent.DRAG_OP_CHANGED:
+      window.status = "OP CHANGED!";
       break;
 
       case DwtDropEvent.DRAG_DROP:
       alert("DROP: " + evt.srcData);
       break;
    }
+}
+
+// util -----------------------------------------------------------------------
+
+Browser._mkSrcDestCommand = function(command, src, dest)
+{
+   var url = "exec?command=" + command;
+
+   for (var i = 0; i < src.length; i++) {
+      url += "&src=" + src[i].url; // XXX does this get escaped ?
+   }
+
+   url += "&dest=" + dest.url; // XXX does this get escaped ?
+
+   return url;
 }
