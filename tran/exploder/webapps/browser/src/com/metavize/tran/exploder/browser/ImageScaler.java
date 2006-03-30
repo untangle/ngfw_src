@@ -33,7 +33,7 @@ import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbFile;
 import org.apache.log4j.Logger;
 
-public class ImageResizer extends HttpServlet
+public class ImageScaler extends HttpServlet
 {
     private static final String MIME_TYPES_PATH = "/etc/mime.types";
     private static final String OUTPUT_CONTENT_TYPE = "image/png";
@@ -59,7 +59,7 @@ public class ImageResizer extends HttpServlet
         String url = req.getParameter("url");
         try {
             BufferedImage bi = readImage(url, auth);
-            bi = resizeImage(bi);
+            bi = scaleImage(bi);
             writeImage(bi, resp);
         } catch (MalformedURLException exn) {
             logger.warn("bad url: " + url, exn);
@@ -68,7 +68,7 @@ public class ImageResizer extends HttpServlet
             logger.warn("could not read: " + url, exn);
             // XXX report to client
         } catch (IOException exn) {
-            logger.warn("could not resize image: " + url, exn);
+            logger.warn("could not scale image: " + url, exn);
             // XXX report to client
         }
     }
@@ -105,7 +105,7 @@ public class ImageResizer extends HttpServlet
         return ir.read(0);
     }
 
-    private BufferedImage resizeImage(BufferedImage bi)
+    private BufferedImage scaleImage(BufferedImage bi)
     {
         int h = bi.getHeight();
         int w = bi.getWidth();

@@ -173,20 +173,11 @@ DetailPanel.prototype._mouseOverAction = function(ev, div)
 {
    DwtListView.prototype._mouseOverAction.call(this, ev, div);
 
-   if (div._type == DwtListView.TYPE_LIST_ITEM){
-      var item = this.getItemFromElement(div);
+   var item = this.getItemFromElement(div);
 
+   if (div._type == DwtListView.TYPE_LIST_ITEM) {
       if ("image/jpeg" == item.contentType) {
-         // XXX cache!!!!???
-         AjxRpc.invoke(null, "resize?url=" + item.url, null,
-                       new AjxCallback(this, this._setThumbnailTooltip,
-                                       { item: item }), true);
+         this.setToolTipContent("<img src='scale?url=" + item.url + "'/>");
       }
    }
-}
-
-DetailPanel.prototype._setThumbnailTooltip = function(obj, results)
-{
-   // XXX cache!!!!???
-   this.setToolTipContent("<B>content-type:</B> " + obj.item.contentType);
 }

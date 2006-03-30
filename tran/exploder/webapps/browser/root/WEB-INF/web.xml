@@ -118,15 +118,15 @@
   </servlet-mapping>
 
   <servlet>
-    <servlet-name>ImageResizer</servlet-name>
+    <servlet-name>ImageScaler</servlet-name>
     <servlet-class>
-      com.metavize.tran.exploder.browser.ImageResizer
+      com.metavize.tran.exploder.browser.ImageScaler
     </servlet-class>
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>ImageResizer</servlet-name>
-    <url-pattern>/resize/*</url-pattern>
+    <servlet-name>ImageScaler</servlet-name>
+    <url-pattern>/scale/*</url-pattern>
   </servlet-mapping>
 
   @JSP_PRE_COMPILED_SERVLETS@
