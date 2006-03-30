@@ -232,7 +232,10 @@ public class HeadersParser {
       headerHolder.add(newField);   
       m_logger.debug("Added HeaderField with name \"" + newField.getName() + "\"");       
     }
-    
+
+    allLines.clear();
+    allLines = null;
+
     return fieldFactory.createHeaders(streamSource,
       startPos,
       (int) (stream.position() - startPos),
