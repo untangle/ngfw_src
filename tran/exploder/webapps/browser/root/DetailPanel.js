@@ -19,6 +19,8 @@ function DetailPanel(parent, className, posStyle) {
    header[i++] = hi;
 
    DwtListView.call(this, parent, className, posStyle, header, true);
+
+   this._hoverListener = new AjxListener(this, this._hoverHandler);
 }
 
 DetailPanel.prototype = new DwtListView();
@@ -175,27 +177,46 @@ DetailPanel.prototype._mouseOverAction = function(ev, div)
    this._mouseOverItem = item;
 
    if (div._type == DwtListView.TYPE_LIST_ITEM) {
+      //this.setToolTipContent("ITEM: " + item);
+
       if (item.tooltip) {
-         this._refreshTooltip();
-      } else if (this._hasPreview(item.contentType)) {
-         var resizeUrl = "scale?url=" + item.url;
-
-         var image = new Image();
-         with (this) {
-            image.onload = function() {
-               item.tooltip = "<img src='" + resizeUrl + "'/>"
-               _refreshTooltip();
-            }
+         this.setToolTipContent(item.tooltip);
+      } else {
+         var shell = DwtShell.getShell(window);
+         var manager = shell.getHoverMgr();
+         if ((this != manager.getHoverObject() || !manager.isHovering()) && !DwtMenu.menuShowing()) {
+            manager.reset();
+            manager.setHoverObject(this);
+            manager.setHoverOverData(item);
+            manager.setHoverOverDelay(DwtToolTip.TOOLTIP_DELAY);
+            manager.setHoverOverListener(this._hoverListener);
+            var mouseEv = DwtShell.mouseEvent;
+            manager.hoverOver(mouseEv.docX, mouseEv.docY);
          }
-
-         image.src = resizeUrl;
       }
    }
 }
 
-DetailPanel.prototype._mouseOutAction = function(ev, div)
+DetailPanel.prototype._mouseOutAction = function(evt, div)
 {
    this._mouseOverItem = null;
+}
+
+DetailPanel.prototype._hoverHandler = function(evt)
+{
+   var item = this._mouseOverItem;
+
+   if (this._hasPreview(item.contentType)) {
+      var resizeUrl = "scale?url=" + item.url;
+      item.image = new Image();
+      with (this) {
+         item.image.onload = function() {
+            item.tooltip = "<img src='" + resizeUrl + "'/>";
+            _refreshTooltip(evt);
+         }
+      }
+      item.image.src = resizeUrl;
+   }
 }
 
 DetailPanel.prototype._hasPreview = function(mimeType)
@@ -210,11 +231,20 @@ DetailPanel.prototype._hasPreview = function(mimeType)
    }
 }
 
-DetailPanel.prototype._refreshTooltip = function()
+DetailPanel.prototype._refreshTooltip = function(evt)
 {
    var item = this._mouseOverItem;
    if (item && item.tooltip) {
       this.setToolTipContent(item.tooltip);
    // XXX if not shown but hovering, popup tooltip
+
+      var shell = DwtShell.getShell(window);
+      var tooltip = shell.getToolTip();
+      tooltip.setContent(item.tooltip);
+      tooltip.popup(evt.x, evt.y);
+      DBG.println("LAST X: " + this._lastTooltipX);
+/*       this._lastTooltipX = event.x; */
+/*       this._lastTooltipY = event.y; */
+      this._tooltipClosed = false;
    }
 }
