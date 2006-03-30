@@ -13,9 +13,7 @@ package com.metavize.tran.exploder.browser;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.net.URLDecoder;
 import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -45,17 +43,7 @@ public class FileGetter extends HttpServlet
     {
         HttpSession s = req.getSession();
 
-        int l = req.getContextPath().length() + req.getServletPath().length() + 1;
-
-        String url = null;
-
-        try {
-            url = URLDecoder.decode(req.getRequestURI(), "UTF-8");
-        } catch (UnsupportedEncodingException exn) {
-            throw new ServletException("could not decode UTF-8", exn);
-        }
-
-        url = url.substring(l, url.length());
+        String url = req.getParameter("url");
 
         // XXX auth
         NtlmPasswordAuthentication auth = (NtlmPasswordAuthentication)s.getAttribute("ntlmPasswordAuthentication");

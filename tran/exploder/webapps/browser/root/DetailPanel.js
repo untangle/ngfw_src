@@ -206,7 +206,7 @@ DetailPanel.prototype._hoverHandler = function(evt)
 {
    var item = this._mouseOverItem;
 
-   if (this._hasPreview(item.contentType)) {
+   if (item && this._hasPreview(item.contentType)) {
       var resizeUrl = "scale?url=" + item.url;
       item.image = new Image();
       with (this) {
@@ -242,9 +242,6 @@ DetailPanel.prototype._refreshTooltip = function(evt)
       var tooltip = shell.getToolTip();
       tooltip.setContent(item.tooltip);
       tooltip.popup(evt.x, evt.y);
-      DBG.println("LAST X: " + this._lastTooltipX);
-/*       this._lastTooltipX = event.x; */
-/*       this._lastTooltipY = event.y; */
       this._tooltipClosed = false;
    }
 }

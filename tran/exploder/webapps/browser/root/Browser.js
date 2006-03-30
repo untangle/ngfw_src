@@ -145,10 +145,11 @@ Browser.prototype._detailSelectionListener = function(ev) {
    switch (ev.detail) {
       case DwtListView.ITEM_DBL_CLICKED:
       var item = ev.item;
-      if (item.type = "dir") {
+      if (item.isDirectory) {
+         DBG.println("IS DIR");
          this.chdir(item.url);
       } else {
-         alert("DOUBLE CLICKED: " + item);
+         AjxWindowOpener.open("get?url=" + item.url);
       }
       break;
    }
