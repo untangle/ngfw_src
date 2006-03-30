@@ -177,6 +177,7 @@ DetailPanel.prototype._mouseOverAction = function(ev, div)
       var item = this.getItemFromElement(div);
 
       if ("image/jpeg" == item.contentType) {
+         // XXX cache!!!!???
          AjxRpc.invoke(null, "resize?url=" + item.url, null,
                        new AjxCallback(this, this._setThumbnailTooltip,
                                        { item: item }), true);
@@ -186,5 +187,6 @@ DetailPanel.prototype._mouseOverAction = function(ev, div)
 
 DetailPanel.prototype._setThumbnailTooltip = function(obj, results)
 {
+   // XXX cache!!!!???
    this.setToolTipContent("<B>content-type:</B> " + obj.item.contentType);
 }
