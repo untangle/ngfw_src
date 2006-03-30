@@ -38,8 +38,8 @@ public class ImageScaler extends HttpServlet
     private static final String MIME_TYPES_PATH = "/etc/mime.types";
     private static final String OUTPUT_CONTENT_TYPE = "image/png";
 
-    private static final int MAX_HEIGHT = 100;
-    private static final int MAX_WIDTH = 100;
+    private static final int MAX_HEIGHT = 150;
+    private static final int MAX_WIDTH = 150;
 
     private Logger logger;
     private MimetypesFileTypeMap mimeMap;
@@ -63,13 +63,13 @@ public class ImageScaler extends HttpServlet
             writeImage(bi, resp);
         } catch (MalformedURLException exn) {
             logger.warn("bad url: " + url, exn);
-            // XXX report to client
+            resp.setStatus(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE);
         } catch (IllegalArgumentException exn) {
             logger.warn("could not read: " + url, exn);
-            // XXX report to client
+            resp.setStatus(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE);
         } catch (IOException exn) {
             logger.warn("could not scale image: " + url, exn);
-            // XXX report to client
+            resp.setStatus(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE);
         }
     }
 

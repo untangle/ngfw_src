@@ -171,13 +171,50 @@ DetailPanel.prototype._setDnDIconState = function(dropAllowed) {
 
 DetailPanel.prototype._mouseOverAction = function(ev, div)
 {
-   DwtListView.prototype._mouseOverAction.call(this, ev, div);
-
    var item = this.getItemFromElement(div);
+   this._mouseOverItem = item;
 
    if (div._type == DwtListView.TYPE_LIST_ITEM) {
-      if ("image/jpeg" == item.contentType) {
-         this.setToolTipContent("<img src='scale?url=" + item.url + "'/>");
+      if (item.tooltip) {
+         this._refreshTooltip();
+      } else if (this._hasPreview(item.contentType)) {
+         var resizeUrl = "scale?url=" + item.url;
+
+         var image = new Image();
+         with (this) {
+            image.onload = function() {
+               item.tooltip = "<img src='" + resizeUrl + "'/>"
+               _refreshTooltip();
+            }
+         }
+
+         image.src = resizeUrl;
       }
+   }
+}
+
+DetailPanel.prototype._mouseOutAction = function(ev, div)
+{
+   this._mouseOverItem = null;
+}
+
+DetailPanel.prototype._hasPreview = function(mimeType)
+{
+   var s = mimeType.split('/');
+   if ("image" == s[0]) {
+      var sub = s[1];
+      // XXX get more complete list
+      return "gif" == sub || "jpeg" == sub || "png" == sub;
+   } else {
+      return false;
+   }
+}
+
+DetailPanel.prototype._refreshTooltip = function()
+{
+   var item = this._mouseOverItem;
+   if (item && item.tooltip) {
+      this.setToolTipContent(item.tooltip);
+   // XXX if not shown but hovering, popup tooltip
    }
 }
