@@ -459,13 +459,18 @@ public class MIMEAccumulator {
       return m_mimeMessage;
     }
     catch(com.metavize.tran.mime.HeaderParseException hpe) {
-      m_logger.warn("Error parsing headers of subsection", hpe);
+      m_logger.warn("Error parsing headers of MIME subsection", hpe);
       try{mimeIn.close();}catch(Exception ignore){}
       return null;
-    }    
+    }
+    catch(com.metavize.tran.mime.InvalidHeaderDataException ihde) {
+      m_logger.warn("Invalid headers found in MIME subsection", ihde);
+      try{mimeIn.close();}catch(Exception ignore){}
+      return null;
+    }
     catch(Exception ex) {
       try{mimeIn.close();}catch(Exception ignore){}
-      m_logger.error("Error parsing MIME", ex);
+      m_logger.error("Error parsing MIME body", ex);
       return null;
     }
   }

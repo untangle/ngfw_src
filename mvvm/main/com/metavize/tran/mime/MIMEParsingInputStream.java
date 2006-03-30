@@ -672,6 +672,4 @@ public class MIMEParsingInputStream extends InputStream {
     System.out.println("boundaryLen: " + br.boundaryLen);
     System.out.println("Position: " + stream.position());    
   }
-  
-     
 }

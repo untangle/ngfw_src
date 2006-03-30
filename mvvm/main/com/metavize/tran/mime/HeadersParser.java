@@ -9,12 +9,13 @@
   * $Id:$
   */
 package com.metavize.tran.mime;
+
 import java.util.*;
-import org.apache.log4j.Logger;
 import java.io.*;
-import static com.metavize.tran.util.ASCIIUtil.*;
 import java.nio.*;
 
+import static com.metavize.tran.util.ASCIIUtil.*;
+import org.apache.log4j.Logger;
 
 /**
  * Class to parse headers.
@@ -26,7 +27,6 @@ import java.nio.*;
  */
 public class HeadersParser {
   private final Logger m_logger = Logger.getLogger(HeadersParser.class);  
-  
 
   /**
    * When concluded, the Stream will be advanced beyond the
@@ -43,24 +43,25 @@ public class HeadersParser {
     m_logger.debug("Begin Parsing Headers");
     
     int startPos = (int) stream.position();//TODO: bscott Someday w/ big emails this cast will haunt me.
-      
+
     List<HeaderField> headersInOrder = new ArrayList<HeaderField>();
     Map<LCString, List<HeaderField>> headersByName = new HashMap<LCString, List<HeaderField>>();
-    
-    //These members are reset each time we encounter
-    //a new header
+
+    List<Line> allLines = new ArrayList<Line>();
+
+    //These members are reset each time we encounter a new header
     List<Line> currentLines = null;
     int valueStartOffset = 0;
     String headerName = null;
-    
-    
     int linesRead = 0;
-    
+
     try {
-      
+      Line line;
+      ByteBuffer bb;
+
       while(true) {
         //Assume this is either a blank line, or the start of a header
-        Line line = stream.readLine(policy.getMaxHeaderLineLen());
+        line = stream.readLine(policy.getMaxHeaderLineLen());
  //       m_logger.debug("(read line) \"" + bbToString(line.getBuffer()) + "\"");        
         if(line == null) {
           break;
@@ -68,15 +69,16 @@ public class HeadersParser {
         
         //Check for policy violation
         if(linesRead++ > policy.getMaxHeaderLines()) {
-          //XXXX bscott I think this exception should be some "policy vioilation"
+          //XXXX bscott I think this exception should be some "policy violation"
           //            or "attack suspected" exception.
           throw new InvalidHeaderDataException("Number of header lines exceeded: \"" + 
-            policy.getMaxHeaderLines() + "\"");
+            policy.getMaxHeaderLines() + "\", \n\"" +
+            Line.linesToString((Line[]) allLines.toArray(new Line[allLines.size()]), 0, false) + "\"");
         }
         
         //Get the byte buffer for this line.  Check if it
         //is blank, starts with LWS, or is "normal".
-        ByteBuffer bb = line.getBuffer(false);
+        bb = line.getBuffer(false);
         
         if(bb.remaining() == 0) {
           //Blank line.  This terminates the set of headers.  Note if there 
@@ -104,13 +106,13 @@ public class HeadersParser {
               else {
                 m_logger.warn("Encountered a LWS line in headers.  Append " + 
                   "to previous header as-per policy (line " + linesRead + ")");
+                allLines.add(line);
                 currentLines.add(line);
               }
               continue;//Redundant
             }
           }//ENDOF All Blank Line
           else {//BEGIN Not all Blank line
-           
             eatWhitespace(bb, false);
          
             if(currentLines == null) {//BEGIN First Line not all LWS
@@ -132,6 +134,10 @@ public class HeadersParser {
                   m_logger.warn("As per policy, starting Headers with ill-formed " + 
                     "first line: \"" + bbToString(line.getBuffer(false)) + 
                     "\" (line " + linesRead + ")");
+
+                  allLines.add(line);
+
+                  //Start a new header
                   currentLines = new ArrayList<Line>();
                   currentLines.add(line);
                   valueStartOffset = bb.position();
@@ -148,8 +154,8 @@ public class HeadersParser {
               }
             }//ENDOF First Line not all LWS  
             else {
-              //Append this fold to the current 
-              currentLines.add(line);
+              allLines.add(line);
+              currentLines.add(line); //Append this fold to the current 
               continue;//redundant
             }
           }//ENDOF Not all Blank line
@@ -171,7 +177,7 @@ public class HeadersParser {
             m_logger.debug("Added HeaderField with name \"" + newField.getName() + "\"");
             currentLines = null;
           }
-          //Reead the header name
+          //Read the header name
           headerName = HeaderFieldFactory.readHeaderFieldName(bb);
           if(headerName == null) {
             //Edge case.  We either ignore this line alltogether,
@@ -197,6 +203,8 @@ public class HeadersParser {
             break;
           }
           else {
+            allLines.add(line);
+
             //Start a new header
             currentLines = new ArrayList<Line>();
             currentLines.add(line);
@@ -230,7 +238,5 @@ public class HeadersParser {
       (int) (stream.position() - startPos),
       headersInOrder,
       headersByName);
-      
   }
-  
 }
