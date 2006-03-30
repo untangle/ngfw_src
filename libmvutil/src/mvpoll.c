@@ -366,7 +366,7 @@ int  mvpoll_key_raze (mvpoll_key_t* key)
  */
 static int _mvpoll_collect_events ( mvpoll_t* mvp, mvpoll_event_t* event, int maxevent, int timeout )
 {
-    int if_rdy;
+    int if_rdy = 0;
     int evcount,step,evstep=0;
     int maxkeys = list_length(&mvp->keys);  /* FIXME are fd's in keys? */
     struct epoll_event localevent[maxkeys+1]; /* +1 for mailbox */

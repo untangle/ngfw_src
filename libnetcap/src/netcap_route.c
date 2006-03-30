@@ -504,6 +504,7 @@ static int  _out_interface     ( int* index, struct in_addr* src_ip, struct in_a
         char name[IFNAMSIZ];
     } args;
     
+    bzero( &args, sizeof( args ));
     args.addr = dst_ip->s_addr;
     
     if (( *index = ioctl( _netcap_arp.sock, SIOCFINDEV, &args )) < 0) {

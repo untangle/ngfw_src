@@ -515,6 +515,7 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     }
 
     /* Setup the destination */
+    memset(&dst, 0, sizeof(dst));
     memcpy( &dst.sin_addr, &pkt->dst.host , sizeof(struct in_addr) );
     dst.sin_port = htons( pkt->dst.port );
     dst.sin_family = AF_INET;

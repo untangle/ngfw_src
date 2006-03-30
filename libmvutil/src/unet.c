@@ -450,6 +450,7 @@ char*   unet_next_inet_ntoa( in_addr_t addr )
     if (( tls = _tls_get()) == NULL ) return errlog_null( ERR_CRITICAL, "_tls_get\n" );
 
     struct in_addr i;
+    memset(&i, 0, sizeof(i));
     i.s_addr = addr;
 
     if ( tls->current >= NTOA_BUF_COUNT ) {

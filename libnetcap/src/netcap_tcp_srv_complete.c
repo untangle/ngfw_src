@@ -188,7 +188,8 @@ static int _srv_wait_complete( int ep_fd, netcap_session_t* netcap_sess, struct 
     
     debug( 8, "TCP: (%10u) Completing connection %i to %s\n", netcap_sess->session_id, sock,
            netcap_session_srv_endp_print( netcap_sess ));
-    
+
+    bzero(&ev, sizeof(ev));      /* Cleanup valgrind */
     ev.events  = EPOLLOUT;
     ev.data.fd = sock;
     

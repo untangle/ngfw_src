@@ -652,6 +652,7 @@ static int  _netcap_icmp_send( char *data, int data_len, netcap_pkt_t* pkt, int 
     }
 
     /* Setup the destination */
+    memset(&dst, 0, sizeof(dst));
     memcpy( &dst.sin_addr, &pkt->dst.host, sizeof(struct in_addr));
     dst.sin_port = 0; /* ICMP does not use ports */
     dst.sin_family = AF_INET;
