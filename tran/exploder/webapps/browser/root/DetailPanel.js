@@ -179,7 +179,7 @@ DetailPanel.prototype._mouseOverAction = function(ev, div)
       if (item.tooltip) {
          this.setToolTipContent(item.tooltip);
       } else if (this._hasPreview(item.contentType)) {
-         item.tooltip = "<div class='PreviewDiv'><img class='PreviewImg' src='scale?url=" + item.url + "'/></div>"
+         item.tooltip = "<div class='PreviewDiv'><img src='scale?url=" + item.url + "'/></div>"
          this.setToolTipContent(item.tooltip);
       }
    }
