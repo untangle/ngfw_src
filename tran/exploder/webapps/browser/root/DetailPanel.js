@@ -19,8 +19,6 @@ function DetailPanel(parent, className, posStyle) {
    header[i++] = hi;
 
    DwtListView.call(this, parent, className, posStyle, header, true);
-
-   this._hoverListener = new AjxListener(this, this._hoverHandler);
 }
 
 DetailPanel.prototype = new DwtListView();
@@ -152,11 +150,11 @@ DetailPanel.prototype._getDnDIcon = function(dragOp)
 
    switch (dragOp) {
       case Dwt.DND_DROP_COPY:
-      icon.innerHTML += "copy"
+      icon.innerHTML += "copy";
       break;
 
       case Dwt.DND_DROP_MOVE:
-      icon.innerHTML += "move"
+      icon.innerHTML += "move";
       break;
    }
 
@@ -173,51 +171,26 @@ DetailPanel.prototype._setDnDIconState = function(dropAllowed) {
 
 DetailPanel.prototype._mouseOverAction = function(ev, div)
 {
+   DBG.println("_mouseOverAction");
    var item = this.getItemFromElement(div);
    this._mouseOverItem = item;
 
    if (div._type == DwtListView.TYPE_LIST_ITEM) {
-      //this.setToolTipContent("ITEM: " + item);
-
       if (item.tooltip) {
          this.setToolTipContent(item.tooltip);
-      } else {
-         var shell = DwtShell.getShell(window);
-         var manager = shell.getHoverMgr();
-         if ((this != manager.getHoverObject() || !manager.isHovering()) && !DwtMenu.menuShowing()) {
-            manager.reset();
-            manager.setHoverObject(this);
-            manager.setHoverOverData(item);
-            manager.setHoverOverDelay(DwtToolTip.TOOLTIP_DELAY);
-            manager.setHoverOverListener(this._hoverListener);
-            var mouseEv = DwtShell.mouseEvent;
-            manager.hoverOver(mouseEv.docX, mouseEv.docY);
-         }
+      } else if (this._hasPreview(item.contentType)) {
+         item.tooltip = "<div class='PreviewDiv'><img class='PreviewImg' src='scale?url=" + item.url + "'/></div>"
+         this.setToolTipContent(item.tooltip);
       }
    }
 }
 
-DetailPanel.prototype._mouseOutAction = function(evt, div)
+DwtListView.prototype._mouseOutAction = function(mouseEv, div)
 {
    this._mouseOverItem = null;
 }
 
-DetailPanel.prototype._hoverHandler = function(evt)
-{
-   var item = this._mouseOverItem;
-
-   if (item && this._hasPreview(item.contentType)) {
-      var resizeUrl = "scale?url=" + item.url;
-      item.image = new Image();
-      with (this) {
-         item.image.onload = function() {
-            item.tooltip = "<img src='" + resizeUrl + "'/>";
-            _refreshTooltip(evt);
-         }
-      }
-      item.image.src = resizeUrl;
-   }
-}
+// util -----------------------------------------------------------------------
 
 DetailPanel.prototype._hasPreview = function(mimeType)
 {
@@ -228,20 +201,5 @@ DetailPanel.prototype._hasPreview = function(mimeType)
       return "gif" == sub || "jpeg" == sub || "png" == sub;
    } else {
       return false;
-   }
-}
-
-DetailPanel.prototype._refreshTooltip = function(evt)
-{
-   var item = this._mouseOverItem;
-   if (item && item.tooltip) {
-      this.setToolTipContent(item.tooltip);
-   // XXX if not shown but hovering, popup tooltip
-
-      var shell = DwtShell.getShell(window);
-      var tooltip = shell.getToolTip();
-      tooltip.setContent(item.tooltip);
-      tooltip.popup(evt.x, evt.y);
-      this._tooltipClosed = false;
    }
 }
