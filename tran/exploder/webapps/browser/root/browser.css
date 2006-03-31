@@ -8,6 +8,7 @@
 }
 
 .PreviewDiv {
+    display: table/table-cell
     height: 150px;
     width: 150px;
     vertical-align: middle;
