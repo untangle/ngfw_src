@@ -8,8 +8,12 @@ IPTABLES="/sbin/iptables"
 
 RT_TABLE_NAME_PREFIX="metavize-"
 
-## DHCP auto renew script, used to kill any processes lingering around
-DHCP_AUTO_RENEW="dhcp-auto-renew"
+## Expecte bridge configuration.
+BRIDGE_CFG_FILE=@MVVM_CONF@/bridge_cfg
+
+## DHCP auto renew script, used to automatically renew the DHCP address
+## if the DHCP server respond.
+DHCP_AUTO_RENEW=@MVVM_HOME@/dhcp-auto-renew
 
 ## All of the custom rules start in the 16,000 range.
 RULE_PRIORITY_BASE=16
@@ -183,7 +187,7 @@ function pumpInterface() {
     ${LOG_DEBUG} "Pumping interface ${t_interface}, index ${t_intfIndex}"
 
     if [ -z "${t_interface}" ] || [ -z "${t_intfIndex}" ]; then
-        echo "Interface or interface index is empty"
+        echo "Interface or interface index is empty, not pumping"
         return
     fi
 
@@ -231,20 +235,51 @@ function deleteAllBridges() {
     done
 }
 
+## Prints out anything if the bridges are not configured.
+## Designed this way so errors print a message which triggers
+## bridges being reconfigured.
+function areBridgesUnconfigured() {
+    if [ ! -f "${BRIDGE_CFG_FILE}" ]; then
+        echo "true";
+        return;
+    fi
+    
+    ## Remove any empty lines
+    sed -i '/^$/d' ${BRIDGE_CFG_FILE}
+
+    ## Sort the file, it works in place because it loads the data into memory.
+    sort ${BRIDGE_CFG_FILE} -o ${BRIDGE_CFG_FILE}
+
+    ## Dump out a description of the bridge
+    {
+        ## Dump all of the interfaces and the bridge they are in.
+        find ${SYSFS_INTERFACE_PATH} -path '*/brif/*';
+        
+        ## Dump all of the interfaces, excluding the interfaces that are not
+        ## interesting
+        find ${SYSFS_INTERFACE_PATH} -maxdepth 1 -mindepth 1 | grep -v '\(lo\|dummy\|tun\|br\|tap\)'
+        
+        ## Remove the prefixes and jibberish
+    } |  sed -e "s|${SYSFS_INTERFACE_PATH}/||g" -e 's|/brif/| |' | sort |
+    
+    ## Compare the bridge status file and the output, if they don't match (diff returns 1, echo true).
+    diff -q - ${BRIDGE_CFG_FILE} > /dev/null || echo "true"
+}
+
 function deconfigureAllInterfaces() {
     killPump
     local l_interface
     local l_interfaceList=`getAllInterfaces`
     echo "Deconfiguring all interfaces: ${l_interfaceList}"
     for l_interface in ${l_interfaceList}; do
-        ifconfig ${l_interface} 0.0.0.0 -promisc down
+        ifconfig ${l_interface} 0.0.0.0 -promisc
     done
 
     l_interfaceList=`ifconfig -a | \grep '^[^ ]' | awk '{ print $1 }' | \grep  '\(br\|eth\)'`
     echo "Deconfiguring all interfaces, second pass: ${l_interfaceList}"
     ## This is a safety measure to delete aliases.
     for l_interface in ${l_interfaceList} ; do 
-        ifconfig ${l_interface} 0.0.0.0 -promisc down
+        ifconfig ${l_interface} 0.0.0.0 -promisc
     done
     
 

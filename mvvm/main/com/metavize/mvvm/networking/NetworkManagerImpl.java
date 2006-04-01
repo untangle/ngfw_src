@@ -70,6 +70,10 @@ public class NetworkManagerImpl implements NetworkManager
     /* Script to run after reconfiguration (from NetworkSettings Listener) */
     private static final String AFTER_RECONFIGURE_SCRIPT = BUNNICULA_BASE + "/networking/after-reconfigure";
 
+    /* Write the expected bridge configuration here, if it is in place, then
+     * bridges are not regenerated each time the network is saved */
+    private static final String BRIDGE_CFG_FILE = BUNNICULA_CONF + "/bridge_cfg";
+
     /* A flag for devel environments, used to determine whether or not
      * the etc files actually are written, this enables/disables reconfiguring networking */
     private boolean saveSettings = true;
@@ -819,6 +823,10 @@ public class NetworkManagerImpl implements NetworkManager
         InterfacesScriptWriter isw = new InterfacesScriptWriter( newSettings, this.remote );
         isw.addNetworkSettings();
         isw.writeFile( ETC_INTERFACES_FILE );
+
+        BridgeConfigurationWriter bcw = new BridgeConfigurationWriter( newSettings );
+        bcw.addBridgeConfiguration();
+        bcw.writeFile( BRIDGE_CFG_FILE );
     }
 
     private void writeResolvConf( NetworkSpacesInternalSettings newSettings )

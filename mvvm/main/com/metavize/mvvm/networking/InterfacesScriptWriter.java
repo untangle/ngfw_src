@@ -47,6 +47,7 @@ class InterfacesScriptWriter extends ScriptWriter
         "iface lo inet loopback\n\n";
     
     private static final String BUNNICULA_BASE  = System.getProperty( "bunnicula.home" );
+    private static final String BUNNICULA_CONF  = System.getProperty( "bunnicula.conf" );
     private static final String FLUSH_CONFIG    = BUNNICULA_BASE + "/networking/flush-interfaces";
     private static final String POST_SCRIPT     = BUNNICULA_BASE + "/networking/post-script";
     private static final String DHCP_AUTO_RENEW = BUNNICULA_BASE + "/networking/dhcp-auto-renew";
@@ -126,10 +127,17 @@ class InterfacesScriptWriter extends ScriptWriter
                 
                 EthernetMedia media = intf.getEthernetMedia();
                 
+                String check = "ethtool " + dev + " | ";
+                
                 if ( media.isAuto()) {
-                    appendCommands( "up ethtool -s " + dev + " autoneg on" );
+                    check += " grep -i -e 'auto-negotiation: on' | wc -l | grep -q 1 || ";
+                    appendCommands( "up " + check + " ethtool -s " + dev + " autoneg on" );
                 } else {
-                    appendCommands( "up ethtool -s " + dev + " autoneg off" + " speed " + media.getSpeed() + 
+                    /* The m is after speed so there isn't a false positive of 10 finding 100 */
+                    check += " grep -i -e 'auto-negotiation: off\\|speed: " + media.getSpeed() + 
+                        "m\\|duplex: " + media.getDuplex() + "' | wc -l | grep -q 3 || ";
+                    appendCommands( "up " + check + " ethtool -s " + dev + 
+                                    " autoneg off" + " speed " + media.getSpeed() + 
                                     " duplex " + media.getDuplex());
                 }
             }

@@ -89,7 +89,11 @@ function flushRoutingTables()
 echo "flushing interfaces" `date`
 
 ## Destroy all of the current bridges
-deleteAllBridges
+if [ -n "`areBridgesUnconfigured`" ]; then
+    deleteAllBridges
+else
+    echo "Not deleting bridges, bridges already configured."
+fi
 
 ## Deconfigure all interfaces
 deconfigureAllInterfaces
