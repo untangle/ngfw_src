@@ -485,6 +485,7 @@ public class Util {
     }
 
     public static void handleExceptionWithRestart(String output, Exception e) throws Exception {
+	System.err.println(output);
         e.printStackTrace();
         Throwable throwableRef = e;
 
