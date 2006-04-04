@@ -49,8 +49,6 @@ DirTree.prototype.chdir = function(url)
 
 DirTree.prototype.refresh = function(url)
 {
-   var selection = this.getSelection()[0];
-
    var unpopulateQueue = [ ];
 
    var children = this.getItems();
@@ -73,11 +71,8 @@ DirTree.prototype.refresh = function(url)
    }
 
    for (var i = 0; i < reexpandQueue.length; i++) {
-      reexpandQueue[i].setExpanded(false);
-      reexpandQueue[i].setExpanded(true);
+      this._populate(reexpandQueue[i]);
    }
-
-   this.setSelection(selection);
 }
 
 // internal methods -----------------------------------------------------------
