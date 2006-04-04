@@ -225,7 +225,7 @@ class OpenVpnManager
         sw.appendLines( SERVER_DEFAULTS );
 
         /* May want to expose this in the GUI */
-        sw.appendVariable( FLAG_PORT, String.valueOf( VpnSettings.DEFAULT_PUBLIC_PORT );
+        sw.appendVariable( FLAG_PORT, String.valueOf( VpnSettings.DEFAULT_PUBLIC_PORT ));
 
         /* Bridging or routing */
         if ( settings.isBridgeMode()) {
