@@ -16,6 +16,9 @@ afterReconfigure() {
     if [ -x /etc/init.d/ntp-server ]; then
         /etc/init.d/ntp-server restart
     fi
+    if [ -x /etc/init.d/spamassassin ]; then
+        /etc/init.d/spamassassin restart
+    fi
 
     if [ -f "$REGINFO" ]; then
         if [ ! -f "$REGDONE" -o "$REGDONE" -ot "$REGINFO" ]; then
