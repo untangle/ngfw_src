@@ -308,6 +308,7 @@ function rawRules() {
 
 function antisubscribeRules() {
     local t_mark
+    local pingList=${MVVM_PING_LIST}
 
     ## flush the antisubscribe chain
     ${IPTABLES} -t mangle -F ${CHAIN_ANTISUB}
@@ -319,6 +320,16 @@ function antisubscribeRules() {
     ## Antisubscribe to localhost
     ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -m mark --mark 0/${MARK_ANTISUB} \
         --source 127.0.0.0/8 --destination 127.0.0.0/8 -j MARK --set-mark ${MARK_ANTISUB}
+
+    ## Antisubscribe to ping where necessary, if it isn't set, 
+    ## Antisubscribe on all interfaces. (default is a little janky.)
+
+    ## If unset, then use default
+    if [ "x${MVVM_PING_EN}" != "xtrue" ]; then
+        pingList="1 2 3"
+    fi
+
+    antisubscribeLocalPing ${pingList}
 
     ## Determine whether or not to antisubscribe to local traffic
     antisubscribeLocalTraffic ${FLAG_OUTSIDE_INTF} ${ANTISUBSCRIBE_LOCAL_OUTSIDE}
@@ -423,9 +434,38 @@ function antisubscribeLocalTraffic() {
         t_mark=$(( ${t_mark} | ${MARK_LOCAL} ))
         t_markMask=$(( ${MARK_ANTISUB} | ${MARK_LOCAL} | ${t_mask} ))
 
-        ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -m mark --mark ${t_mark}/${t_markMask} \
-            -j MARK --set-mark ${MARK_ANTISUB}
+        ## Antisubscribe to all traffic but ICMP.
+        ## Ping is regulated uses antisubscribeLocalPing.
+        ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} ! -p icmp -m mark \
+            --mark ${t_mark}/${t_markMask} -j MARK --set-mark ${MARK_ANTISUB}
     fi
+}
+
+## Antisubscribe to PING for an interface()
+## params:
+## t_intfArray: List of interfaces to respond to PING on, these are the argon interfaces.
+function antisubscribeLocalPing() {
+    local t_intfList=$*
+    local t_intf
+    local t_mark
+    local t_mask
+    
+    for t_intf in ${t_intfList} ; do
+        ## Validate the index
+        if [ -z "`isValidIntfIndex ${t_intf}`" ]; then 
+            echo "'${t_intf}' is not a valid interface, continuing"
+            continue ; 
+        fi
+        
+        ## Search for packets coming in on the interface, headed locally.
+        t_mark=$(( ${t_intf} | ${MARK_LOCAL} ))
+        t_markMask=$(( ${t_intf} | ${MARK_ANTISUB} | ${MARK_LOCAL} ))
+        
+        ## Antisubscribe to all echo-requests coming in on the right interface.
+        ## replies are outgoing and handled by conntrack.
+        ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -p icmp --icmp-type echo-request \
+            -m mark --mark ${t_mark}/${t_markMask} -j MARK --set-mark ${MARK_ANTISUB}
+    done
 }
 
 ## intercept everything and then use antisubscribes to not intercept certain packets

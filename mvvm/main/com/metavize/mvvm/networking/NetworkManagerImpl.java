@@ -184,8 +184,6 @@ public class NetworkManagerImpl implements NetworkManager
         }
 
         logger.debug( "Loading the new network settings: " + newSettings );
-        /* XXXX implement me */
-        // throw new IllegalStateException( "implement me" );
 
         /* Write the settings */
         writeConfiguration( newSettings );
@@ -525,6 +523,10 @@ public class NetworkManagerImpl implements NetworkManager
             Netcap.getInstance().updateAddress();
 
             this.networkSettings = NetworkUtilPriv.getPrivInstance().updateDhcpAddresses( previous );
+
+            /* Update the interface list for the iptables rules (this
+             * affects the antisubscribes for PING) */
+            ruleManager.setInterfaceList( this.networkSettings.getInterfaceList());
 
             updateRemoteSettings();
 
@@ -936,7 +938,7 @@ public class NetworkManagerImpl implements NetworkManager
             logger.error( "Unable to save the network settings." );
             return;
         }
-
+        
         this.networkSettings = nssi;
     }
 

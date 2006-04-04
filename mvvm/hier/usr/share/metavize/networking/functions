@@ -179,6 +179,32 @@ function isPumpRunning() {
     fi
 }
 
+function isInteger() {
+    local t_integer=$1
+    
+    if [ -z "${t_integer}" ]; then return; fi
+    
+    ## If the number is equal or not equal to zero, it is an integer
+    ## non-integers return false for both statements.
+    if [ 0 -ne "${t_integer}" -o 0 -eq "${t_integer}" ] > /dev/null ; then
+        echo "true"
+    fi
+}
+## Echos a non-empty value if this is a number
+function isValidIntfIndex() {
+    local t_intf=$1
+
+    ## First check if it is a number
+    if [ -z "`isInteger ${t_intf}`" ]; then
+        return
+    fi
+    
+    ## Interface is from 1 to 16
+    if [ 0 -lt "${t_intf}" -a "${t_intf}" -lt 16 ]; then
+        echo "true"
+    fi
+}
+
 function pumpInterface() {
     local t_interface=$1
     local t_intfIndex=$2

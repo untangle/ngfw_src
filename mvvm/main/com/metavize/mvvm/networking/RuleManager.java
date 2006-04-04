@@ -16,13 +16,18 @@ import java.io.FileWriter;
 import java.io.FileNotFoundException;
 import java.io.BufferedWriter;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 import com.metavize.jnetcap.Netcap;
 import com.metavize.jnetcap.JNetcapException;
 import com.metavize.jnetcap.PortRange;
 
+import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.tran.IPaddr;
+
+import com.metavize.mvvm.networking.internal.InterfaceInternal;
 
 public class RuleManager
 {
@@ -35,6 +40,10 @@ public class RuleManager
     private static final String DHCP_BLOCK_FORWARD_FLAG      = "DHCP_BLOCK_FORWARDING";
     private static final String PUBLIC_ADDR_FLAG             = "HTTPS_PUBLIC_ADDR";
     private static final String PUBLIC_PORT_FLAG             = "HTTPS_PUBLIC_PORT";
+
+    /* Set to the index of the interfaces where ping should be enabled. */
+    private static final String PING_ANTISUBSCRIBE_FLAG      = "MVVM_PING_EN";
+    private static final String PING_ANTISUBSCRIBE_LIST      = "MVVM_PING_LIST";
 
     private static RuleManager INSTANCE = null;
 
@@ -55,6 +64,12 @@ public class RuleManager
     private int publicPort = -1;
 
     private boolean isShutdown = false;
+
+    /* Set to true in order to use the value specified in the interface list */
+    private boolean pingInterfaceEnable = false;
+
+    /* List of the interfaces where ping is enabled */
+    private String pingInterfaceList = "";
 
     /* Call the script to generate all of the iptables rules */
     synchronized void generateIptablesRules() throws NetworkException
@@ -118,6 +133,28 @@ public class RuleManager
         this.publicPort    = port;
     }
 
+    /* Just used to setup the antisubscribes */
+    void setInterfaceList( List<InterfaceInternal> interfaceList )
+    {
+        String pingAntisubscribeList = "";
+        
+        IntfConverter ic = IntfConverter.getInstance();
+
+        for ( InterfaceInternal intf : interfaceList ) {
+            try {
+                if ( intf.isPingable()) {
+                    byte netcapIntf = ic.toNetcap( intf.getArgonIntf());
+                    pingAntisubscribeList = pingAntisubscribeList + " " + netcapIntf;
+                }
+            } catch ( Exception e ) {
+                logger.error( "Invalid argon interface: ", e );
+            }
+        }
+        
+        pingInterfaceEnable = true;
+        pingInterfaceList   = pingAntisubscribeList.trim();
+    }
+
     synchronized void isShutdown()
     {
         this.isShutdown = true;
@@ -144,6 +181,11 @@ public class RuleManager
                 sb.append( PUBLIC_PORT_FLAG         + "=" + publicPort + "\n" );
             }
             sb.append( DHCP_BLOCK_FORWARD_FLAG      + "=" + !dhcpEnableForwarding  + "\n\n" );
+
+            if ( pingInterfaceEnable ) {
+                sb.append( PING_ANTISUBSCRIBE_FLAG    + "=true\n"  );
+                sb.append( PING_ANTISUBSCRIBE_LIST    + "=\"" + pingInterfaceList + "\"\n" );
+            }
             
             writeFile( sb, MVVM_TMP_FILE );
         } catch ( JNetcapException e ) {
