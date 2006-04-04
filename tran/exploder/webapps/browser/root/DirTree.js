@@ -56,22 +56,15 @@ DirTree.prototype.refresh = function(url)
       unpopulateQueue.push(children[i]);
    }
 
-   var reexpandQueue = [ ];
-
    while (0 < unpopulateQueue.length) {
       var item = unpopulateQueue.pop();
-      if (item.getExpanded()) {
-         reexpandQueue.push(item);
+      if (item.getData(DirTree._POPULATED)) {
+         this._populate(item, null, true);
       }
-      item.setData(DirTree._POPULATED, null);
       var children = item.getItems();
       for (var i = 0; i < children.length; i++) {
          unpopulateQueue.push(children[i]);
       }
-   }
-
-   for (var i = 0; i < reexpandQueue.length; i++) {
-      this._populate(reexpandQueue[i]);
    }
 }
 
@@ -115,11 +108,11 @@ DirTree.prototype._expandNode = function(url, node)
    }
 }
 
-DirTree.prototype._populate = function(item, cb)
+DirTree.prototype._populate = function(item, cb, repopulate)
 {
    var n = item.getData(Browser.CIFS_NODE);
 
-   if (!item.getData(DirTree._POPULATED)) {
+   if (repopulate || !item.getData(DirTree._POPULATED)) {
       item.setData(DirTree._POPULATED, true);
 
       var url = n.url;
