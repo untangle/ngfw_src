@@ -50,6 +50,8 @@ public class CommandRunner extends HttpServlet
             mv(req, auth);
         } else if (cmd.equals("cp")) {
             cp(req, auth);
+        } else if (cmd.equals("mkdir")) {
+            mkdir(req, auth);
         } else {
             throw new ServletException("bad command: " + cmd);
         }
@@ -113,6 +115,20 @@ public class CommandRunner extends HttpServlet
                 // XXX report errors to client
                 logger.warn("bad url", exn);
             }
+        }
+    }
+
+    private void mkdir(HttpServletRequest req, NtlmPasswordAuthentication auth)
+    {
+        String url = req.getParameter("url");
+
+        try {
+            new SmbFile(url, auth).mkdir();
+        } catch (MalformedURLException exn) {
+            // XXX
+            logger.warn("bad url:" + url, exn);
+        } catch (SmbException exn) {
+            logger.warn("could not make directory" + url, exn);
         }
     }
 }

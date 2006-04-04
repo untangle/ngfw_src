@@ -459,7 +459,7 @@ DIV.vSpace {
 .overviewHeader {
     border: 1px solid;
     border-color: #E0E0E0 #555555 #555555 #E0E0E0;
-    background-image:url(/zimbra/skins/steel/images/tree_header_bg.gif);
+   background-image:url(/zimbra/skins/steel/images/tree_header_bg.gif);
     padding-top:1px;
     margin-left:2px;
     margin-bottom:2px;

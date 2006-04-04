@@ -100,9 +100,9 @@ public class FileLister extends HttpServlet
             if (f.isDirectory()) {
                 listDirectory(f, filter, os);
             } else {
-                // XXX send back file data? from this servlet? in xml???
-                System.out.println("CONTENT-TYPE: " + mimeMap.getContentType(f.getName()));
-                os.println("A FILE");
+                logger.warn("not a directory: " + url);
+                // XXX notify client
+                return;
             }
         } catch (IOException exn) {
             throw new ServletException("could not emit listing", exn);

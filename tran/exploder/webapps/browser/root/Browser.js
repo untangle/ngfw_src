@@ -145,6 +145,11 @@ Browser.prototype._makeToolbar = function() {
    b.setToolTipContent("Delete selected files");
    b.addSelectionListener(new AjxListener(this, this._deleteButtonListener));
 
+   b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
+   b.setText("New Folder");
+   b.setToolTipContent("Create a new folder");
+   b.addSelectionListener(new AjxListener(this, this._mkdirButtonListener));
+
    return toolbar;
 }
 
@@ -235,6 +240,31 @@ Browser.prototype._deleteButtonListener = function(ev)
 
    AjxRpc.invoke(null, url, null, new AjxCallback(this, this.refresh, { }),
                  false);
+}
+
+Browser.prototype._mkdirButtonListener = function(ev)
+{
+   var dialog = new MkdirDialog(this._shell, this._cwd);
+
+   var cb = function() {
+      var dir = dialog.getDir();
+
+      if (dir) {
+         var url = "exec?command=mkdir&url=" + dir;
+
+         var mkdirCb = function() {
+            dialog.popdown();
+            this.refresh();
+         }
+
+         AjxRpc.invoke(null, url, null, new AjxCallback(this, mkdirCb, { }),
+                       false);
+      }
+   }
+
+   dialog.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, cb));
+
+   dialog.popup();
 }
 
 // shell ----------------------------------------------------------------------

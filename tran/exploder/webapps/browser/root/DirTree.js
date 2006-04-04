@@ -17,6 +17,10 @@ function DirTree(parent, className, posStyle, dragSource, dropTarget) {
 DirTree.prototype = new DwtTree();
 DwtTree.prototype.constructor = DirTree;
 
+// fields ---------------------------------------------------------------------
+
+DirTree._POPULATED = "populated";
+
 // public methods -------------------------------------------------------------
 
 DirTree.prototype.setRoot = function(url)
@@ -45,8 +49,35 @@ DirTree.prototype.chdir = function(url)
 
 DirTree.prototype.refresh = function(url)
 {
-   // XXX walk tree, validating nodes
-   // if this.cwd no longer valid, reset it to closest parent
+   var selection = this.getSelection()[0];
+
+   var unpopulateQueue = [ ];
+
+   var children = this.getItems();
+   for (var i = 0; i < children.length; i++) {
+      unpopulateQueue.push(children[i]);
+   }
+
+   var reexpandQueue = [ ];
+
+   while (0 < unpopulateQueue.length) {
+      var item = unpopulateQueue.pop();
+      if (item.getExpanded()) {
+         reexpandQueue.push(item);
+      }
+      item.setData(DirTree._POPULATED, null);
+      var children = item.getItems();
+      for (var i = 0; i < children.length; i++) {
+         unpopulateQueue.push(children[i]);
+      }
+   }
+
+   for (var i = 0; i < reexpandQueue.length; i++) {
+      reexpandQueue[i].setExpanded(false);
+      reexpandQueue[i].setExpanded(true);
+   }
+
+   this.setSelection(selection);
 }
 
 // internal methods -----------------------------------------------------------
@@ -93,15 +124,15 @@ DirTree.prototype._populate = function(item, cb)
 {
    var n = item.getData(Browser.CIFS_NODE);
 
-   if (!item.getData("populated")) {
-      item.setData("populated", true);
+   if (!item.getData(DirTree._POPULATED)) {
+      item.setData(DirTree._POPULATED, true);
 
       var url = n.url;
 
       var obj = { parent: item, parentUrl: url, cb: cb };
 
       AjxRpc.invoke(null, "ls?url=" + url + "&type=dir", null,
-                    new AjxCallback(this, this._populateCallback, obj), true);
+                     new AjxCallback(this, this._populateCallback, obj), true);
    } else {
       if (cb) {
          cb.run(item);
@@ -114,18 +145,35 @@ DirTree.prototype._populateCallback = function(obj, results)
    var dom = results.xml;
    var dirs = dom.getElementsByTagName("dir");
 
+   var current = { };
+
+   var children = obj.parent.getItems();
+   for (var i = 0; i < children.length; i++) {
+      var n = children[i].getData(Browser.CIFS_NODE);
+      current[n.name] = children[i];
+   }
+
    for (var i = 0; i < dirs.length; i++) {
       var c = dirs[i];
       var name = c.getAttribute("name");
-      var n = new CifsNode(obj.parentUrl, name, true);
-      var tn = new DwtTreeItem(obj.parent, null, n.label, "folder");
-      tn.setData(Browser.CIFS_NODE, n);
-      if (this._dragSource) {
-         tn.setDragSource(this._dragSource);
+      if (current[name]) {
+         delete current[name];
+      } else {
+         var n = new CifsNode(obj.parentUrl, name, true);
+         var tn = new DwtTreeItem(obj.parent, null, n.label, "folder");
+         tn.setData(Browser.CIFS_NODE, n);
+         if (this._dragSource) {
+            tn.setDragSource(this._dragSource);
+         }
+         if (this._dropTarget) {
+            tn.setDropTarget(this._dropTarget);
+         }
       }
-      if (this._dropTarget) {
-         tn.setDropTarget(this._dropTarget);
-      }
+   }
+
+   for (var i in current) {
+      var old = current[i];
+      obj.parent.removeChild(old);
    }
 
    if (obj.cb) {

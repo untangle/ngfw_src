@@ -39,6 +39,7 @@ DetailPanel.prototype.chdir = function(url)
 
 DetailPanel.prototype.refresh = function()
 {
+   DBG.println("REFRESH");
    var cb = function(obj, results) {
       this._setListingXml(results.xml);
       this.setUI(1);
@@ -171,7 +172,6 @@ DetailPanel.prototype._setDnDIconState = function(dropAllowed) {
 
 DetailPanel.prototype._mouseOverAction = function(ev, div)
 {
-   DBG.println("_mouseOverAction");
    var item = this.getItemFromElement(div);
    this._mouseOverItem = item;
 
