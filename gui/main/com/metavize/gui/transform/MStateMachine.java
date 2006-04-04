@@ -154,27 +154,20 @@ public class MStateMachine implements java.awt.event.ActionListener {
             }
             catch(Exception e){
                 try{ Util.handleExceptionWithRestart("Error doing save", e); }
-		catch(ValidationException f){ refreshState(true); }
-                catch(Exception g){
-                    Util.handleExceptionNoRestart("Error doing save", g);
+                catch(Exception f){
+                    Util.handleExceptionNoRestart("Error doing save", f);
                     setProblemView(true);
 		    SaveFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(), displayName );
                 }
             }
-	    /*
-	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		saveJButton.setIcon(Util.getButtonSaveSettings());
-	    }});
-	    */
+
 	    mTransformControlsJPanel.getInfiniteProgressJComponent().stopLater(MTransformControlsJPanel.MIN_PROGRESS_MILLIS);
-            try{
-                refreshState(true);
-            }
+
+            try{ refreshState(true); }
             catch(Exception e){
                 try{ Util.handleExceptionWithRestart("Error doing save", e); }
-		catch(ValidationException f){ refreshState(true); }
-                catch(Exception g){
-                    Util.handleExceptionNoRestart("Error doing save", g);
+                catch(Exception f){
+                    Util.handleExceptionNoRestart("Error doing save", f);
                     setProblemView(true);
 		    SaveFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(), displayName );
                 }
@@ -188,7 +181,6 @@ public class MStateMachine implements java.awt.event.ActionListener {
         public RefreshThread(){
             super("MVCLIENT-StateMachineRefreshThread: " + displayName );
 	    setDaemon(true);
-            /* reloadJButton.setIcon(Util.getButtonReloading()); */
             setProcessingView(false);
 	    mTransformControlsJPanel.getInfiniteProgressJComponent().start("Reloading...");
             start();
@@ -199,28 +191,19 @@ public class MStateMachine implements java.awt.event.ActionListener {
                 mTransformControlsJPanel.populateAll();
             }
             catch(Exception e){
-                try{
-                    Util.handleExceptionWithRestart("Error doing refresh", e);
-                }
+                try{ Util.handleExceptionWithRestart("Error doing refresh", e); }
                 catch(Exception f){
                     Util.handleExceptionNoRestart("Error doing refresh", f);
                     setProblemView(true);		
 		    RefreshFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(), displayName );
                 }
             }
-	    /*
-	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		reloadJButton.setIcon(Util.getButtonReloadSettings());
-	    }});
-	    */
+
 	    mTransformControlsJPanel.getInfiniteProgressJComponent().stopLater(MTransformControlsJPanel.MIN_PROGRESS_MILLIS);
-	    try{
-		refreshState(true);
-	    }
+
+	    try{ refreshState(true); }
 	    catch(Exception e){
-		try{
-                    Util.handleExceptionWithRestart("Error doing refresh", e);
-                }
+		try{ Util.handleExceptionWithRestart("Error doing refresh", e); }
                 catch(Exception f){
                     Util.handleExceptionNoRestart("Error doing refresh", f);
                     setProblemView(true);		
@@ -305,11 +288,8 @@ public class MStateMachine implements java.awt.event.ActionListener {
         Runnable runnable = new Runnable(){
                 public void run(){
                     if( powerOn != null){
-                        //boolean wasEnabled = powerJToggleButton.isEnabled();
-                        //powerJToggleButton.setEnabled(false);
                         powerJToggleButton.setSelected( powerOn );
                         powerJToggleButton.setEnabled(true);
-                        //powerJToggleButton.setEnabled(wasEnabled);
                     }
                     mTransformDisplayJPanel.setUpdateGraph( updateGraph );
                     stateJLabel.setViewState( ledState );
@@ -324,7 +304,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
 
 
     // STATE REFRESHING //////////////////////////
-    private void refreshState(boolean doLater){
+    private void refreshState(boolean doLater) throws Exception {
         TransformState transformState = transform.getRunState();
         if( TransformState.RUNNING.equals( transformState ) )
             setOnView(doLater);
@@ -341,15 +321,11 @@ public class MStateMachine implements java.awt.event.ActionListener {
             this.start();
         }
         public void run(){
-            try{
-                refreshState(true);
-            }
+            try{ refreshState(true); }
             catch(Exception e){
-                try{
-                    Util.handleExceptionWithRestart("Error refreshing state", e);
-                }
+                try{ Util.handleExceptionWithRestart("Error refreshing state", e); }
                 catch(Exception f){
-                    Util.handleExceptionNoRestart("Error refreshing state: ", f);
+                    Util.handleExceptionNoRestart("Error refreshing state", f);
                     setProblemView(true);
                 }
             }
