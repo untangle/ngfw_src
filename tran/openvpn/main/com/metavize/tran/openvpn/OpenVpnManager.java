@@ -50,7 +50,6 @@ class OpenVpnManager
 
     /* XXX Have to expose this in the GUI */
     private static final String FLAG_PORT        = "port";
-    private static final int    DEFAULT_PORT     = 1194;
 
     private static final String FLAG_PROTOCOL    = "proto";
     private static final String DEFAULT_PROTOCOL = "udp";
@@ -226,7 +225,7 @@ class OpenVpnManager
         sw.appendLines( SERVER_DEFAULTS );
 
         /* May want to expose this in the GUI */
-        sw.appendVariable( FLAG_PORT, String.valueOf( DEFAULT_PORT ));
+        sw.appendVariable( FLAG_PORT, String.valueOf( VpnSettings.DEFAULT_PUBLIC_PORT );
 
         /* Bridging or routing */
         if ( settings.isBridgeMode()) {
@@ -362,9 +361,7 @@ class OpenVpnManager
         
         publicAddress = publicAddress.trim();
 
-        /* XXXXXX This needs some global address and possibly the port, possibly an address
-           from the settings */
-        sw.appendVariable( FLAG_REMOTE, publicAddress + " " + DEFAULT_PORT );
+        sw.appendVariable( FLAG_REMOTE, publicAddress + " " + settings.getPublicPort());
 
         sw.writeFile( CLIENT_CONF_FILE_BASE + name + "." + extension );
     }

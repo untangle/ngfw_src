@@ -32,7 +32,7 @@ import com.metavize.mvvm.tran.ValidateException;
  */
 public class VpnSettings implements Serializable, Validatable
 {
-    // XXX SERIALVER private static final long serialVersionUID = 1032713361795879615L;
+    static public final long serialVersionUID = -7623287947661641339L;
 
     static private final int KEY_SIZE_ENUMERATION[] = new int[] 
         { 
@@ -41,7 +41,9 @@ public class VpnSettings implements Serializable, Validatable
             2048
         };
 
-    static private final int KEY_SIZE_DEFAULT       = KEY_SIZE_ENUMERATION[4];
+    static private final int KEY_SIZE_DEFAULT    = KEY_SIZE_ENUMERATION[4];
+    static private final int DEFAULT_PUBLIC_PORT = 1194;
+
     
     private Long id;
     private Tid tid;
@@ -64,6 +66,9 @@ public class VpnSettings implements Serializable, Validatable
     private List groupList;
     private List clientList;
     private List siteList;
+
+    /* This is the port to put into config files */
+    private int publicPort = DEFAULT_PUBLIC_PORT;
 
     /* Certificate information */
     private String  domain = "";
@@ -354,6 +359,25 @@ public class VpnSettings implements Serializable, Validatable
     public void setMaxClients( int maxClients )
     {
         this.maxClients = maxClients;
+    }
+
+
+    /**
+     * @return Public port where the user can connect to OpenVPN from,
+     *         defaults to 1194.
+     * @hibernate.property
+     * column="public_port"
+     */
+    public int getPublicPort()
+    {
+        if ( this.publicPort < 0 || this.publicPort > 0xFFFF ) this.publicPort = DEFAULT_PUBLIC_PORT;
+        return this.publicPort;
+    }
+    
+    public void setPublicPort( int newValue )
+    {
+        if ( newValue < 0 || newValue > 0xFFFF ) newValue = DEFAULT_PUBLIC_PORT;
+        this.publicPort = newValue;
     }
     
     /* Certificate information */    
