@@ -12,6 +12,7 @@ function MkdirDialog(parent, url)
    DwtDialog.call(this, parent, className, "Make Folder");
 
    this._panel = new MkdirPanel(this, url);
+   this.addListener(DwtEvent.ONFOCUS, new AjxListener(this, this._focusListener));
 
    this.setView(this._panel);
 }
@@ -46,6 +47,11 @@ MkdirDialog.prototype._uploadCompleteListener = function(evt)
    this.notifyListeners(FileUploadPanel.UPLOAD_COMPLETE, evt);
 }
 
+MkdirDialog.prototype._focusListener = function(ev)
+{
+   this._panel.focus();
+}
+
 // MkdirPanel -----------------------------------------------------------------
 
 function MkdirPanel(parent, url)
@@ -72,4 +78,9 @@ MkdirPanel.prototype.getDir = function()
 {
    // XXX resolve absolute vs relative paths
    return this._url + this._field.getValue();
+}
+
+MkdirPanel.prototype.focus = function()
+{
+   this._field.focus();
 }

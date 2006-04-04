@@ -39,7 +39,6 @@ DetailPanel.prototype.chdir = function(url)
 
 DetailPanel.prototype.refresh = function()
 {
-   DBG.println("REFRESH");
    var cb = function(obj, results) {
       this._setListingXml(results.xml);
       this.setUI(1);
