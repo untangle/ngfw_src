@@ -71,10 +71,15 @@ public class MessageClient
                         for (ToolboxMessage msg : toolQ.getMessages()) {
                             msg.accept(tmv);
                         }
-                    } catch (InvocationException exn) {
-                        System.err.println("invocation exn: " + exn);
-                        exn.printStackTrace();
-                        toolQ = mvvmContext.toolboxManager().subscribe();
+                    } catch (InvocationException exn1) {
+                        System.err.println("invocation exn: " + exn1);
+                        exn1.printStackTrace();
+			try {
+			    toolQ = mvvmContext.toolboxManager().subscribe();
+			} catch (Exception exn2) {
+			    System.err.println("invocation exn: " + exn2);
+			    exn2.printStackTrace();
+			}
                         continue;
                     }
                 }
