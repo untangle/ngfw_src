@@ -262,7 +262,9 @@ Browser.prototype._mkdirButtonListener = function(ev)
       }
    }
 
-   dialog.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, cb));
+   var l = new AjxListener(this, cb);
+   dialog.setButtonListener(DwtDialog.OK_BUTTON, l);
+   dialog.addListener(DwtEvent.ENTER, l);
 
    dialog.popup();
 }
