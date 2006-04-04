@@ -25,7 +25,10 @@ public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Re
     private static final String EXCEPTION_INTERNAL_ADDRESS = "The Internal IP address must be a valid IP address.";
     private static final String EXCEPTION_INTERNAL_SUBNET = "The Internal Subnet must be a valid IP address.";
 
-    public NatJPanel() {
+    private MTransformControlsJPanel mTransformControlsJPanel;
+
+    public NatJPanel(MTransformControlsJPanel mTransformControlsJPanel) {
+	this.mTransformControlsJPanel = mTransformControlsJPanel;
         initComponents();
     }
         
@@ -112,11 +115,11 @@ public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Re
 	internalNetworkJLabel.setText( natInternalNetworkCurrent );
         
         // EXTERNAL ADDRESS ///////
-	natExternalAddressCurrent = Util.getMvvmContext().networkingManager().get().host().toString();
+	natExternalAddressCurrent = mTransformControlsJPanel.getHost().toString();
 	externalAddressJLabel.setText( natExternalAddressCurrent );
         
         // DHCP ///////
-	isDhcpEnabledCurrent = Util.getMvvmContext().networkingManager().get().isDhcpEnabled();
+	isDhcpEnabledCurrent = mTransformControlsJPanel.getDhcpEnabled();
 	if( isDhcpEnabledCurrent )
 	    externalMethodJLabel.setText("Dynamic via DHCP");
 	else
@@ -262,7 +265,6 @@ public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 restrictIPJPanel.add(jLabel5, gridBagConstraints);
 
-                internalAddressIPaddrJTextField.setFocusable(false);
                 internalAddressIPaddrJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
                 internalAddressIPaddrJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
                 internalAddressIPaddrJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
@@ -287,7 +289,6 @@ public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 restrictIPJPanel.add(jLabel8, gridBagConstraints);
 
-                internalSubnetIPaddrJTextField.setFocusable(false);
                 internalSubnetIPaddrJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
                 internalSubnetIPaddrJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
                 internalSubnetIPaddrJTextField.setPreferredSize(new java.awt.Dimension(150, 19));

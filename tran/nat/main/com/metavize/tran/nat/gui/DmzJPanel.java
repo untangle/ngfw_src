@@ -219,7 +219,6 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 restrictIPJPanel.add(jLabel5, gridBagConstraints);
 
-                targetAddressIPaddrJTextField.setFocusable(false);
                 targetAddressIPaddrJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
                 targetAddressIPaddrJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
                 targetAddressIPaddrJTextField.setPreferredSize(new java.awt.Dimension(150, 19));

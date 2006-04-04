@@ -29,6 +29,7 @@ import javax.swing.table.*;
 import javax.swing.event.*;
 import javax.swing.border.*;
 
+import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.tran.nat.*;
 import com.metavize.mvvm.networking.*;
 import com.metavize.mvvm.client.MvvmRemoteContextFactory;
@@ -55,17 +56,12 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     protected Dimension MIN_SIZE = new Dimension(640, 480);
     protected Dimension MAX_SIZE = new Dimension(640, 1200);
         
-    public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
-        super(mTransformJPanel);
-    }
-
     private boolean baseGuiBuilt = false;
 
     private static Nat natTransform;
     public static Nat getNatTransform(){ return natTransform; }
     private SetupState setupState;
     private List<NetworkSpace> networkSpaceList;    
-
 
     private Component natScrollable;    
     private Component dmzScrollable;
@@ -75,6 +71,15 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     private List<String> spaceNameList;
     private List<Component> spaceScrollableList;
     private RoutingJPanel routingJPanel;
+
+    private IPaddr host;
+    private boolean dhcpEnabled;
+    public IPaddr getHost(){ return host; }
+    public boolean getDhcpEnabled(){ return dhcpEnabled; }
+
+    public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
+        super(mTransformJPanel);
+    }
 
     private void generateSpecificGui(){
 	
@@ -112,7 +117,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 
 	    // NAT ///////////////
 	    if( natScrollable == null ){
-		NatJPanel natJPanel = new NatJPanel();
+		NatJPanel natJPanel = new NatJPanel(this);
 		natScrollable = addScrollableTab(0, null, NAME_NAT, null, natJPanel, false, true);
 		addSavable(NAME_NAT, natJPanel);
 		addRefreshable(NAME_NAT, natJPanel);
@@ -284,6 +289,9 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     }
 
     public void refreshAll() throws Exception {
+	BasicNetworkSettings basicNetworkSettings = Util.getNetworkingManager().get();
+	host = basicNetworkSettings.host();
+	dhcpEnabled = basicNetworkSettings.isDhcpEnabled();
 	super.refreshAll();
 	setupState = ((NatCommonSettings)settings).getSetupState();
 	natTransform = (Nat) mTransformJPanel.getTransform();

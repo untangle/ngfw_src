@@ -147,7 +147,6 @@ public class PrimarySpaceJPanel extends javax.swing.JPanel implements Savable<Ob
                 jPanel4.add(jLabel6, gridBagConstraints);
 
                 mtuJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
-                mtuJSpinner.setFocusable(false);
                 mtuJSpinner.setMaximumSize(new java.awt.Dimension(100, 20));
                 mtuJSpinner.setMinimumSize(new java.awt.Dimension(100, 20));
                 mtuJSpinner.setPreferredSize(new java.awt.Dimension(100, 20));

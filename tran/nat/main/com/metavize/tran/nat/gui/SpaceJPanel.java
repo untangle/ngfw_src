@@ -396,7 +396,6 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
                 jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
                 aliasJTextArea.setLineWrap(true);
                 aliasJTextArea.setWrapStyleWord(true);
-                aliasJTextArea.setFocusable(false);
                 aliasJTextArea.addCaretListener(new javax.swing.event.CaretListener() {
                         public void caretUpdate(javax.swing.event.CaretEvent evt) {
                                 aliasJTextAreaCaretUpdate(evt);
@@ -526,7 +525,6 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
                 jPanel4.add(jLabel6, gridBagConstraints);
 
                 mtuJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
-                mtuJSpinner.setFocusable(false);
                 mtuJSpinner.setMaximumSize(new java.awt.Dimension(100, 20));
                 mtuJSpinner.setMinimumSize(new java.awt.Dimension(100, 20));
                 mtuJSpinner.setPreferredSize(new java.awt.Dimension(100, 20));

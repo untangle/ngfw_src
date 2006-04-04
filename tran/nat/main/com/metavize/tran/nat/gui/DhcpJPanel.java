@@ -233,7 +233,6 @@ public class DhcpJPanel extends javax.swing.JPanel implements Savable<Object>, R
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 restrictIPJPanel.add(jLabel5, gridBagConstraints);
 
-                startAddressIPaddrJTextField.setFocusable(false);
                 startAddressIPaddrJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
                 startAddressIPaddrJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
                 startAddressIPaddrJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
@@ -258,7 +257,6 @@ public class DhcpJPanel extends javax.swing.JPanel implements Savable<Object>, R
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 restrictIPJPanel.add(jLabel8, gridBagConstraints);
 
-                endAddressIPaddrJTextField.setFocusable(false);
                 endAddressIPaddrJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
                 endAddressIPaddrJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
                 endAddressIPaddrJTextField.setPreferredSize(new java.awt.Dimension(150, 19));

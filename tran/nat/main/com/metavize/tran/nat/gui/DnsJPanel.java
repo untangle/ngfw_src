@@ -211,7 +211,6 @@ public class DnsJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 suffixJPanel.add(jLabel5, gridBagConstraints);
 
-                suffixJTextField.setFocusable(false);
                 suffixJTextField.setMaximumSize(new java.awt.Dimension(250, 19));
                 suffixJTextField.setMinimumSize(new java.awt.Dimension(250, 19));
                 suffixJTextField.setPreferredSize(new java.awt.Dimension(250, 19));

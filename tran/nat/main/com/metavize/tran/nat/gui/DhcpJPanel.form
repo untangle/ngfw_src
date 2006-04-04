@@ -183,7 +183,6 @@
             </Component>
             <Component class="javax.swing.JTextField" name="startAddressIPaddrJTextField">
               <Properties>
-                <Property name="focusable" type="boolean" value="false"/>
                 <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[150, 19]"/>
                 </Property>
@@ -221,7 +220,6 @@
             </Component>
             <Component class="javax.swing.JTextField" name="endAddressIPaddrJTextField">
               <Properties>
-                <Property name="focusable" type="boolean" value="false"/>
                 <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[150, 19]"/>
                 </Property>
