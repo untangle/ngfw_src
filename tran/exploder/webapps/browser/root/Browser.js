@@ -192,7 +192,7 @@ Browser.prototype._detailSelectionListener = function(ev) {
          DBG.println("IS DIR");
          this.chdir(item.url);
       } else {
-         AjxWindowOpener.open("get?url=" + item.url);
+         AjxWindowOpener.open("get/" + item.url);
       }
       break;
    }
