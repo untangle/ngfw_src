@@ -49,7 +49,8 @@ public class LogMailer implements Runnable
 
     private String from;
     private String subject;
-
+    private SystemStatus sysstat;
+    
     private long lastSendTime = 0;
 
     private volatile Thread thread;
@@ -60,6 +61,7 @@ public class LogMailer implements Runnable
     private LogMailer()
     {
         loggers = new HashMap<Tid, SMTPAppender>();
+        this.sysstat = new SystemStatus();
         thread = new Thread(this);
         thread.start();
     }
@@ -188,28 +190,12 @@ public class LogMailer implements Runnable
 
     private void doSend(String subjectBase, String bodyBase, List<MimeBodyPart> parts) {
         NetworkingConfiguration netConf = MvvmContextFactory.context().networkingManager().get();
-        StringBuilder sb = new StringBuilder(bodyBase);
-        sb.append("\n\nDHCP is ");
-        if (netConf.isDhcpEnabled())
-            sb.append("enabled");
-        else
-            sb.append("disabled");
-        sb.append("\nhost is ");
         String host = netConf.host().toString();
-        sb.append(host);
-        sb.append("\nnetmask is ");
-        sb.append(netConf.netmask().toString());
-        sb.append("\ngateway is ");
-        sb.append(netConf.gateway().toString());
-        sb.append("\ndns1 is ");
-        sb.append(netConf.dns1().toString());
-        sb.append("\ndns2 is ");
-        sb.append(netConf.dns2().toString());
 
-        String bodyText = sb.toString();
+        String bodyText = sysstat.systemStatus();
         String version = Version.getVersion();
 
-        sb = new StringBuilder(subjectBase);
+        StringBuilder sb = new StringBuilder(subjectBase);
         sb.append(" (");
         sb.append(host);
         sb.append(")");
