@@ -121,7 +121,7 @@ public class SystemStatus
              */
             sb.append("========================================================\n");
             input = new BufferedReader(new FileReader("/proc/loadavg"));
-            while((line = input.readLine())) {
+            while ((line = input.readLine()) != null) {
                 sb.append("LOAD: "+line+"\n");
             }
 
@@ -130,7 +130,7 @@ public class SystemStatus
              */
             sb.append("========================================================\n");
             input = new BufferedReader(new FileReader("/proc/meminfo"));
-            while((line = input.readLine())) {
+            while ((line = input.readLine()) != null) {
                 sb.append("MEM: "+line+"\n");
             }
 
