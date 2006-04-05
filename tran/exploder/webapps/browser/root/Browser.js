@@ -161,8 +161,26 @@ Browser.prototype._makeAddressBar = function() {
 
    this._addressField = new DwtInputField({ parent: toolbar, size: 50 });
 
+   with (this) {
+      this._addressField.getInputElement().onkeyup = function(ev) {
+         DwtInputField._keyUpHdlr(ev);
+
+         var keyEv = DwtShell.keyEvent;
+         keyEv.setFromDhtmlEvent(ev);
+         if (DwtKeyEvent.KEY_RETURN == keyEv.keyCode) {
+            var val = keyEv.dwtObj.getValue();
+            if (val.charAt(val.length - 1) != '/') {
+               val += '/';
+            }
+            chdir(val);
+         }
+      };
+   }
+
    return toolbar;
 }
+
+Browser.prototype.toString = function() { return "BROWSER"; }
 
 // listeners ------------------------------------------------------------------
 
