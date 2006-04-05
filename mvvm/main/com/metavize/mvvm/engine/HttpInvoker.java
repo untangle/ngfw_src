@@ -119,8 +119,12 @@ class HttpInvoker extends InvokerBase
                     return;
                 } else {                     /* logout */
                     LoginDesc ld = logins.remove(loginSession);
-                    ld.destroy(targetReaper);
-                    pos.writeObject(null);
+                    if (null == ld) {
+                        logger.warn("null LoginDesc for: " + loginSession);
+                    } else {
+                        ld.destroy(targetReaper);
+                        pos.writeObject(null);
+                    }
                     return;
                 }
             }

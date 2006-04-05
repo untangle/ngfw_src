@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -70,7 +70,8 @@ public class LoginSession implements Serializable
     public String toString()
     {
         return (null == mvvmPrincipal ? "nobody" : mvvmPrincipal.getName())
-            + " " + sessionId + " login type: " + loginType;
+            + " " + sessionId + " login type: " + loginType
+            + " clientAddr: " + clientAddr;
     }
 
     @Override
