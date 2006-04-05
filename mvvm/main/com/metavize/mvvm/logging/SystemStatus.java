@@ -121,7 +121,7 @@ public class SystemStatus
              */
             sb.append("========================================================\n");
             input = new BufferedReader(new FileReader("/proc/loadavg"));
-            for ( i=0 ; i<8 && ((line = input.readLine()) != null) ; i++ ) {
+            while((line = input.readLine())) {
                 sb.append("LOAD: "+line+"\n");
             }
 
