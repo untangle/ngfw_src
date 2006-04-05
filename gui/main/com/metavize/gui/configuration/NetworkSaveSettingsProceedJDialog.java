@@ -89,7 +89,7 @@ final public class NetworkSaveSettingsProceedJDialog extends javax.swing.JDialog
 
                 messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
                 messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                messageJLabel.setText("<html><center>\nThese settings are critical to the proper operation of EdgeGuard<br>\nand must be set correctly.<br>\n<b>Your GUI may be logged out.</b><br>\n<br>\nWould you like to save your settings?\n</center></html>");
+                messageJLabel.setText("<html><center>\nThese settings are critical to the proper operation of EdgeGuard<br>\nand must be set correctly.<br>\n<b>You may be logged out.</b><br>\n<br>\nWould you like to save your settings?\n</center></html>");
                 messageJLabel.setDoubleBuffered(true);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
