@@ -370,7 +370,7 @@ public class NetworkManagerImpl implements NetworkManager
         try {
             String flags = "";
 
-            if ( !isPrimary ) flags = InterfacesScriptWriter.DHCP_FLAG_ADDRESS_ONLY;
+            // if ( !isPrimary ) flags = InterfacesScriptWriter.DHCP_FLAG_ADDRESS_ONLY;
 
             ScriptRunner.getInstance().exec( DHCP_RENEW_SCRIPT, space.getDeviceName(),
                                              String.valueOf( space.getIndex()), flags );

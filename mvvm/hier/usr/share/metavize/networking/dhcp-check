@@ -4,5 +4,5 @@ exec >> @MVVM_LOG@/iptables.log 2>&1
 
 ## Return 1 if DHCP is enabled.
 
-if [ -n "`pidof pump`" ]; then exit 1 ; fi
+if [ -n "`pidof dhclient`" ]; then exit 1 ; fi
 exit 0

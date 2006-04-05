@@ -4,13 +4,13 @@ exec >> @MVVM_LOG@/iptables.log 2>&1
 
 FUNCTIONS_FILE=@MVVM_HOME@/networking/functions
 
-## Interface to pump is the first argument.
+## Interface to renew is the first argument.
 intf=$1
 
 ## Interface index (used to assign an address if DHCP fails is)
 intfIndex=$2
 
-## The flags to pass to pump, use this to disable updating the resolv.conf and gateway
+## The flags to pass to dhclient
 flags=$3
 
 if [ -r ${FUNCTIONS_FILE} ]; then
@@ -20,6 +20,6 @@ else
     exit -1
 fi
 
-pumpInterface ${intf} ${intfIndex} ${flags}
+dhcpInterface ${intf} ${intfIndex} ${flags}
 
 true

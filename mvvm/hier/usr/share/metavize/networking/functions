@@ -1,7 +1,5 @@
 #!/bin/sh
 
-PUMP_FLAG="pump"
-
 ## A few constants
 IPTABLES="/sbin/iptables"
 #IPTABLES=iptablesDbg
@@ -10,10 +8,6 @@ RT_TABLE_NAME_PREFIX="metavize-"
 
 ## Expecte bridge configuration.
 BRIDGE_CFG_FILE=@MVVM_CONF@/bridge_cfg
-
-## DHCP auto renew script, used to automatically renew the DHCP address
-## if the DHCP server respond.
-DHCP_AUTO_RENEW=@MVVM_HOME@/dhcp-auto-renew
 
 ## All of the custom rules start in the 16,000 range.
 RULE_PRIORITY_BASE=16
@@ -38,7 +32,7 @@ CHAIN_ANTISUB="antisub"
 CHAIN_INTERCEPT="intercept"
 CHAINS_ORDER="${CHAIN_MARKINTF} ${CHAIN_GUARDS} ${CHAIN_ANTISUB} ${CHAIN_INTERCEPT}"
 
-## Invalid address and netmask used when pump fails.
+## Invalid address and netmask used when dhcp loading fails.
 BOGUS_ADDRESS_BASE="169.254.210.5"
 BOGUS_NETMASK="255.255.0.0"
 
@@ -173,9 +167,10 @@ function getBridgeNetmasks() {
     getNetmasks `getBridge $1`
 }
 
-function isPumpRunning() {
+## $1 is the interface to check for.
+function isDhcpRunning() {
     if [ -n $1 ]; then
-        ps aux | grep pump | grep $1 | grep -v grep
+        ps aux | grep dhclient | grep $1 | grep -v grep
     fi
 }
 
@@ -190,6 +185,7 @@ function isInteger() {
         echo "true"
     fi
 }
+
 ## Echos a non-empty value if this is a number
 function isValidIntfIndex() {
     local t_intf=$1
@@ -205,37 +201,36 @@ function isValidIntfIndex() {
     fi
 }
 
-function pumpInterface() {
+function dhcpInterface() {
     local t_interface=$1
     local t_intfIndex=$2
     local t_fakeAddress="${BOGUS_ADDRESS_BASE}${t_intfIndex}"
 
-    ${LOG_DEBUG} "Pumping interface ${t_interface}, index ${t_intfIndex}"
+    ${LOG_DEBUG} "Renewing interface ${t_interface}, index ${t_intfIndex}"
 
     if [ -z "${t_interface}" ] || [ -z "${t_intfIndex}" ]; then
-        echo "Interface or interface index is empty, not pumping"
+        echo "[ERROR]: Interface or interface index is empty"
         return
     fi
 
-    pump -i ${t_interface}
+    killall dhclient
+    sleep .5
+    killall -KILL dhclient
+
+    dhclient ${t_interface}
 
     if [ $? != 0 ]; then
-        echo "Unable to pump interface ${t_interface}, going to fake address: ${t_fakeAddress}"
+        echo "Unable to update interface ${t_interface}, going to fake address: ${t_fakeAddress}"
         ifconfig ${t_interface} ${t_fakeAddress} netmask ${BOGUS_NETMASK}
     fi
 }
 
-function killPump() {
-    echo "[DEBUG] Killing pump"
+function killDhcp() {
+    echo "[DEBUG] Killing dhcp"
 
-    ## PID of the DHCP auto renew command
-    local l_renew=`ps aux | grep dhcp-auto-renew | grep -v grep | awk '{ print $2 }'`
-
-    killall -KILL pump
-    
-    if [ -n "${l_renew}" ]; then
-        kill ${l_renew}
-    fi
+    killall dhclient
+    sleep .5
+    killall -KILL dhclient
 }
 
 function bridgeContainsInterface() {
@@ -293,7 +288,7 @@ function areBridgesUnconfigured() {
 }
 
 function deconfigureAllInterfaces() {
-    killPump
+    killDhcp
     local l_interface
     local l_interfaceList=`getAllInterfaces`
     echo "Deconfiguring all interfaces: ${l_interfaceList}"

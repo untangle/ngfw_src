@@ -50,12 +50,13 @@ class InterfacesScriptWriter extends ScriptWriter
     private static final String BUNNICULA_CONF  = System.getProperty( "bunnicula.conf" );
     private static final String FLUSH_CONFIG    = BUNNICULA_BASE + "/networking/flush-interfaces";
     private static final String POST_SCRIPT     = BUNNICULA_BASE + "/networking/post-script";
-    private static final String DHCP_AUTO_RENEW = BUNNICULA_BASE + "/networking/dhcp-auto-renew";
 
     private static final String DHCP_BOGUS_ADDRESS = "169.254.210.5";
 
     /* String used to indicate that pump should only update the address of the interface */
-    static final String DHCP_FLAG_ADDRESS_ONLY = " --no-gateway --no-resolvconf ";
+    /* XXX this isn't presently supported, checking the options for dhclient. */
+    // static final String DHCP_FLAG_ADDRESS_ONLY = " --no-gateway --no-resolvconf ";
+    /* XXX */
 
     InterfacesScriptWriter( NetworkSpacesInternalSettings settings, RemoteInternalSettings remote )
     {
@@ -164,7 +165,9 @@ class InterfacesScriptWriter extends ScriptWriter
             
             /* If this is not the primary space, then the gateway and
              * /etc/resolv.conf should not be updated. */
-            if ( !isFirst ) flags = DHCP_FLAG_ADDRESS_ONLY;
+            /* XXXX Presently not supported, I believe dhclient only works
+             * with one call for all of them */
+            // if ( !isFirst ) flags = DHCP_FLAG_ADDRESS_ONLY;
 
             String command = "up ";
             
@@ -173,13 +176,7 @@ class InterfacesScriptWriter extends ScriptWriter
                 command += "sleep 5;  ";
             }
 
-            command += "pump " + flags + " -i " + name + " || ";
-            command += " (  ifconfig " + name + " " + DHCP_BOGUS_ADDRESS + space.getIndex() + 
-                " netmask 255.255.0.0; ";
-            /* Don't need to check if it exists, because if it doesn't 
-             * the || true at the end will catch it.  Make sure to background
-             * this since it can block */
-            command += " nohup sh " + DHCP_AUTO_RENEW + " " + name + " & )";
+            command += " dhclient " + flags + " " + name;
             
             appendCommands( command );
             appendCommands( "up ifconfig " + name + " mtu " + mtu );
