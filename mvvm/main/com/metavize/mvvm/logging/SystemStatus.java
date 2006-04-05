@@ -22,12 +22,16 @@ import com.metavize.mvvm.tran.Transform;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformDesc;
 import com.metavize.mvvm.tran.TransformManager;
+import com.metavize.mvvm.argon.VectronTable;
+
 import org.apache.log4j.Logger;
+
     
 public class SystemStatus
 {
     private static final Logger logger = Logger.getLogger(LogMailer.class);
 
+    private static final String SPACER = "========================================================\n";
     
     public String staticConf = null;
     
@@ -71,7 +75,7 @@ public class SystemStatus
             /**
              * Uname info
              */
-            sb.append("========================================================\n");
+            sb.append(SPACER);
             proc = MvvmContextFactory.context().exec("/bin/uname -a");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
@@ -82,7 +86,7 @@ public class SystemStatus
             /**
              * lspci
              */
-            sb.append("========================================================\n");
+            sb.append(SPACER);
             proc = MvvmContextFactory.context().exec("/usr/bin/lspci");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
@@ -93,7 +97,7 @@ public class SystemStatus
             /**
              * /proc/cpuinfo
              */
-            sb.append("========================================================\n");
+            sb.append(SPACER);
             input = new BufferedReader(new FileReader("/proc/cpuinfo"));
             for ( i=0 ; i<8 && ((line = input.readLine()) != null) ; i++ ) {
                 sb.append(line+"\n");
@@ -119,7 +123,7 @@ public class SystemStatus
             /**
              * /proc/loadavg
              */
-            sb.append("========================================================\n");
+            sb.append(SPACER);
             input = new BufferedReader(new FileReader("/proc/loadavg"));
             while ((line = input.readLine()) != null) {
                 sb.append("LOAD: "+line+"\n");
@@ -128,7 +132,7 @@ public class SystemStatus
             /**
              * /proc/meminfo
              */
-            sb.append("========================================================\n");
+            sb.append(SPACER);
             input = new BufferedReader(new FileReader("/proc/meminfo"));
             while ((line = input.readLine()) != null) {
                 sb.append("MEM: "+line+"\n");
@@ -137,7 +141,7 @@ public class SystemStatus
             /**
              * df
              */
-            sb.append("========================================================\n");
+            sb.append(SPACER);
             proc = MvvmContextFactory.context().exec("/bin/df -h");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
@@ -148,7 +152,7 @@ public class SystemStatus
             /**
              * ps aux
              */
-            sb.append("========================================================\n");
+            sb.append(SPACER);
             proc = MvvmContextFactory.context().exec("/bin/ps --sort -rss aux");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             for ( i=0 ; (line = input.readLine()) != null ; i++ ) {
@@ -177,7 +181,7 @@ public class SystemStatus
             /**
              * Network Config
              */
-            sb.append("========================================================\n");
+            sb.append(SPACER);
             NetworkSpacesInternalSettings netConf = ((NetworkManagerImpl) MvvmContextFactory.context().networkManager()).getNetworkInternalSettings();
             sb.append(netConf.toString());
             sb.append("\n");
@@ -185,7 +189,7 @@ public class SystemStatus
             /**
              * Transform Config
              */
-            sb.append("========================================================\n");
+            sb.append(SPACER);
             TransformManager tm = MvvmContextFactory.context().transformManager();
             for (Tid t : tm.transformInstances()) {
                 TransformContext tctx = tm.transformContext(t);
@@ -206,10 +210,11 @@ public class SystemStatus
             /**
              * Session Count
              */
-            sb.append("========================================================\n");
-            sb.append("Session Count: Unimplemented\n");
-            /* FIXME */
-
+            sb.append(SPACER);
+            sb.append("Estimated Sesssion Count: ");
+            sb.append(VectronTable.getInstance().count());
+            sb.append("\n");
+            /* Insert anything else here */
         }
         catch (Exception e) {
             logger.error("Exception: ", e);
