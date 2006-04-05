@@ -63,7 +63,18 @@ abstract public class VirusScannerLauncher implements Runnable
 
         if (this.result == null) {
             logger.warn("Timer expired, killing process, assuming clean");
-            this.scanProcess.destroy();
+
+            /**
+             * This is debugging information for bug 948
+             */
+            if (this.scanProcess == null) {
+                logger.warn("ScannerLauncher Thread Status: " + thread.getState());
+                logger.warn("ScannerLauncher Thread isAlive: " + thread.isAlive());
+                logger.error("Virus process (" + getClass() + ") failed to launch.");
+            } else {
+                this.scanProcess.destroy();
+            }
+            
             return VirusScannerResult.ERROR;
         } else {
             return this.result;

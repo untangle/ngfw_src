@@ -112,11 +112,20 @@ public class ClamScannerLauncher extends VirusScannerLauncher
                     }
                 }
             }
+            catch (java.io.IOException e) {
+                /**
+                 * This is only a warning because this happens when the process is killed because
+                 * the timer expires
+                 */
+                logger.warn("Scan Exception: ", e);
+                scanProcess.destroy();
+                this.result = VirusScannerResult.CLEAN;
+                return;
+            }
             catch (Exception e) {
                 logger.error("Scan Exception: ", e);
                 scanProcess.destroy();
                 this.result = VirusScannerResult.CLEAN;
-                synchronized (this) {this.notifyAll();}
                 return;
             }
 
@@ -138,7 +147,6 @@ public class ClamScannerLauncher extends VirusScannerLauncher
             case 0:
                 logger.info("clamdscan: clean");
                 this.result = VirusScannerResult.CLEAN;
-                synchronized (this) {this.notifyAll();}
                 return;
 
                 /**
@@ -148,20 +156,17 @@ public class ClamScannerLauncher extends VirusScannerLauncher
                 if (virusName == null) {
                     logger.error("clamdscan: missing \"FOUND\" string (exit code 1)");
                     this.result = VirusScannerResult.ERROR;
-                    synchronized (this) {this.notifyAll();}
                     return;
                 } else {
                     for (i=0 ; i<invalidVirusNames.length ; i++) {
                         if (virusName.equalsIgnoreCase(invalidVirusNames[i])) {
                             logger.warn("clamdscan: " + invalidVirusNames[i]);
                             this.result = VirusScannerResult.CLEAN;
-                            synchronized (this) {this.notifyAll();}
                             return;
                         }
                     }
                     logger.info("clamdscan: infected (" + virusName + ")");
                     this.result = new VirusScannerResult(false,virusName,false);
-                    synchronized (this) {this.notifyAll();}
                     return;
                 }
 
@@ -171,7 +176,6 @@ public class ClamScannerLauncher extends VirusScannerLauncher
             case 143:
                 logger.warn("clamdscan prematurely killed");
                 this.result = VirusScannerResult.ERROR;
-                synchronized (this) {this.notifyAll();}
                 return;
 
                 /**
@@ -195,21 +199,26 @@ public class ClamScannerLauncher extends VirusScannerLauncher
                              " \nfirstLine output: " + firstLine +
                              " \nerror     output: " + errorOut);
                 this.result = VirusScannerResult.ERROR;
-                synchronized (this) {this.notifyAll();}
                 return;
             }
         }
         catch (java.io.IOException e) {
             logger.error("clamdscan scan exception: ", e);
             this.result = VirusScannerResult.ERROR;
-            synchronized (this) {this.notifyAll();}
             return;
         }
         catch (java.lang.InterruptedException e) {
             logger.warn("clamdscan interrupted: ", e);
             this.result = VirusScannerResult.ERROR;
-            synchronized (this) {this.notifyAll();}
             return;
+        }
+        catch (Exception e) {
+            logger.warn("clamdscan exception: ", e);
+            this.result = VirusScannerResult.ERROR;
+            return;
+        }
+        finally {
+            synchronized (this) {this.notifyAll();}
         }
     }
 }

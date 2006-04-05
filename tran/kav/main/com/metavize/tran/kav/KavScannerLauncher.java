@@ -83,11 +83,20 @@ public class KavScannerLauncher extends VirusScannerLauncher
                     logger.debug("kavclient output: " + wholeOutput.toString());
                 }
             }
+            catch (java.io.IOException e) {
+                /**
+                 * This is only a warning because this happens when the process is killed because
+                 * the timer expires
+                 */
+                logger.warn("Scan Exception: ", e);
+                scanProcess.destroy();
+                this.result = VirusScannerResult.CLEAN;
+                return;
+            }
             catch (Exception e) {
                 logger.error("Scan Exception: ", e);
                 this.scanProcess.destroy();
                 this.result = VirusScannerResult.CLEAN;
-                synchronized (this) {this.notifyAll();}
                 return;
             }
 
@@ -107,48 +116,48 @@ public class KavScannerLauncher extends VirusScannerLauncher
             case 0:
                 logger.info("kavclient: clean");
                 this.result = VirusScannerResult.CLEAN;
-                synchronized (this) {this.notifyAll();}
                 return;
             case 1:
                 if (virusName == null) {
                     logger.error("kavclient: infected (unknown)");
                     this.result = VirusScannerResult.ERROR;
-                    synchronized (this) {this.notifyAll();}
                     return;
                 } else {
                     logger.info("kavclient: infected (" + virusName + ")");
                     this.result = new VirusScannerResult(false, virusName, false);
-                    synchronized (this) {this.notifyAll();}
                     return;
                 }
             case 2:
                 logger.warn("kavclient exit code error: " + wholeOutput.toString());
                 this.result = VirusScannerResult.ERROR;
-                synchronized (this) {this.notifyAll();}
                 return;
             case 255:
                 logger.error("kavclient exit code error: " + wholeOutput.toString());
                 this.result = VirusScannerResult.ERROR;
-                synchronized (this) {this.notifyAll();}
                 return;
             default:
                 logger.error("kavclient exit code error code: " + i + ", error: " + wholeOutput.toString());
                 this.result = VirusScannerResult.ERROR;
-                synchronized (this) {this.notifyAll();}
                 return;
             }
         }
         catch (java.io.IOException e) {
             logger.error("kavclient scan exception: ", e);
             this.result = VirusScannerResult.ERROR;
-            synchronized (this) {this.notifyAll();}
             return;
         }
         catch (java.lang.InterruptedException e) {
             logger.warn("kavclient interrupted: ", e);
             this.result = VirusScannerResult.ERROR;
-            synchronized (this) {this.notifyAll();}
             return;
+        }
+        catch (Exception e) {
+            logger.warn("kavclient exception: ", e);
+            this.result = VirusScannerResult.ERROR;
+            return;
+        }
+        finally {
+            synchronized (this) {this.notifyAll();}
         }
     }
 }
