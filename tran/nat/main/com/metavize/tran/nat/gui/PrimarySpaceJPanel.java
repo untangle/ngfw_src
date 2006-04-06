@@ -24,13 +24,15 @@ import javax.swing.*;
 
 
 public class PrimarySpaceJPanel extends javax.swing.JPanel implements Savable<Object>, Refreshable<Object> {
+
+    private static final String EXCEPTION_MTU = "The MTU must be an integer value between "
+	+ NetworkSpace.MIN_MTU + " and " + NetworkSpace.MAX_MTU + ".";
     
     private NetworkSpace initNetworkSpace;
 
     public PrimarySpaceJPanel(NetworkSpace networkSpace) {
 	initNetworkSpace = networkSpace;
         initComponents();
-	mtuJSpinner.setModel(new SpinnerNumberModel(NetworkSpace.DEFAULT_MTU, NetworkSpace.MIN_MTU, NetworkSpace.MAX_MTU, 1));
     }
         
     // SETTINGS CHANGE NOTIFICATION /////////
@@ -43,7 +45,18 @@ public class PrimarySpaceJPanel extends javax.swing.JPanel implements Savable<Ob
     public void doSave(Object settings, boolean validateOnly) throws Exception {
 
 	// MTU //
-	int mtu = (Integer) mtuJSpinner.getValue();
+	int mtu;
+	try{ 
+	    mtu = Integer.parseInt(mtuJTextField.getText());
+	    if( mtu < NetworkSpace.MIN_MTU )
+		throw new Exception();
+	    else if( mtu > NetworkSpace.MAX_MTU )
+		throw new Exception();
+	}
+	catch(Exception e){
+	    mtuJTextField.setBackground(Util.INVALID_BACKGROUND_COLOR);
+	    throw new Exception(EXCEPTION_MTU);
+	}
         
         // SAVE THE VALUES ////////////////////////////////////
 	if( !validateOnly ){
@@ -74,8 +87,8 @@ public class PrimarySpaceJPanel extends javax.swing.JPanel implements Savable<Ob
 
 	// MTU //
 	mtuCurrent = thisNetworkSpace.getMtu();
-	mtuJSpinner.setValue(mtuCurrent);
-                        
+	mtuJTextField.setText(Integer.toString(mtuCurrent));
+	mtuJTextField.setBackground(Color.WHITE);
     }
 
         
@@ -93,7 +106,7 @@ public class PrimarySpaceJPanel extends javax.swing.JPanel implements Savable<Ob
                 jLabel5 = new javax.swing.JLabel();
                 jPanel4 = new javax.swing.JPanel();
                 jLabel6 = new javax.swing.JLabel();
-                mtuJSpinner = new javax.swing.JSpinner();
+                mtuJTextField = new javax.swing.JTextField();
 
                 setLayout(new java.awt.GridBagLayout());
 
@@ -146,20 +159,13 @@ public class PrimarySpaceJPanel extends javax.swing.JPanel implements Savable<Ob
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 jPanel4.add(jLabel6, gridBagConstraints);
 
-                mtuJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
-                mtuJSpinner.setMaximumSize(new java.awt.Dimension(100, 20));
-                mtuJSpinner.setMinimumSize(new java.awt.Dimension(100, 20));
-                mtuJSpinner.setPreferredSize(new java.awt.Dimension(100, 20));
-                mtuJSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
-                        public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                                mtuJSpinnerStateChanged(evt);
-                        }
-                });
-
+                mtuJTextField.setMaximumSize(new java.awt.Dimension(100, 20));
+                mtuJTextField.setMinimumSize(new java.awt.Dimension(100, 20));
+                mtuJTextField.setPreferredSize(new java.awt.Dimension(100, 20));
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
                 gridBagConstraints.gridy = 0;
-                jPanel4.add(mtuJSpinner, gridBagConstraints);
+                jPanel4.add(mtuJTextField, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -177,12 +183,7 @@ public class PrimarySpaceJPanel extends javax.swing.JPanel implements Savable<Ob
                 add(mtuJPanel, gridBagConstraints);
 
         }//GEN-END:initComponents
-        
-    private void mtuJSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_mtuJSpinnerStateChanged
-	if( !mtuJSpinner.getValue().equals(mtuCurrent) && (settingsChangedListener != null) )
-	    settingsChangedListener.settingsChanged(this);
-    }//GEN-LAST:event_mtuJSpinnerStateChanged
-                
+                        
             
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.ButtonGroup forwardingButtonGroup;
@@ -191,7 +192,7 @@ public class PrimarySpaceJPanel extends javax.swing.JPanel implements Savable<Ob
         private javax.swing.JPanel jPanel4;
         private javax.swing.JTextArea jTextArea2;
         private javax.swing.JPanel mtuJPanel;
-        private javax.swing.JSpinner mtuJSpinner;
+        private javax.swing.JTextField mtuJTextField;
         private javax.swing.ButtonGroup natButtonGroup;
         private javax.swing.JPanel natJPanel;
         // End of variables declaration//GEN-END:variables

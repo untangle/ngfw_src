@@ -73,7 +73,13 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel
 	}
 
 	// TRAP PORT /////
-	int trapPort = (Integer) trapPortJSpinner.getValue();
+	int trapPort = 0;
+	try{ trapPortJSpinner.commitEdit(); }
+	catch(Exception e){ 
+	    ((JSpinner.DefaultEditor)trapPortJSpinner.getEditor()).getTextField().setBackground(Util.INVALID_BACKGROUND_COLOR);
+	    throw new Exception(Util.EXCEPTION_PORT_RANGE);
+	}
+        trapPort = (Integer) trapPortJSpinner.getValue();
 
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
@@ -140,7 +146,8 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel
         // TRAP PORT //////
 	int trapPort = snmpSettings.getTrapPort();
 	trapPortJSpinner.setValue( trapPort );
-        	
+	((JSpinner.DefaultEditor)trapPortJSpinner.getEditor()).getTextField().setText(Integer.toString(trapPort));    	
+	((JSpinner.DefaultEditor)trapPortJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);        	
     }
     
     

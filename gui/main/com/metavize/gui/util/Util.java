@@ -50,6 +50,8 @@ import com.metavize.mvvm.tran.*;
 
 public class Util {
 
+    public static final String EXCEPTION_PORT_RANGE = "The port must be an integer number between 1 and 65535.";
+
     private Util(){}
 
     public static void initialize(){

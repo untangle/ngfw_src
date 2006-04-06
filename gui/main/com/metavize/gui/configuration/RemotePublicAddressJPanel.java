@@ -39,11 +39,9 @@ public class RemotePublicAddressJPanel extends javax.swing.JPanel
 
         // PUBLIC ADDRESS ENABLED //////////
 	boolean isPublicAddressEnabled = enabledJRadioButton.isSelected();
-
-	IPaddr address = null;
-	int port = 0;
         
         // ADDRESS //
+	IPaddr address = null;
         try{ address = IPaddr.parse(addressJTextField.getText()); }
         catch(Exception e){
             /* Only throw an expception if it is enabled */
@@ -52,7 +50,14 @@ public class RemotePublicAddressJPanel extends javax.swing.JPanel
                 throw new Exception(EXCEPTION_NO_ADDRESS);
             }
         }
+
         // PORT //
+	int port = 0;
+	try{ portJSpinner.commitEdit(); }
+	catch(Exception e){ 
+	    ((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Util.INVALID_BACKGROUND_COLOR);
+	    throw new Exception(Util.EXCEPTION_PORT_RANGE);
+	}
         port = (Integer) portJSpinner.getValue();
 		
 	// SAVE SETTINGS ////////////
@@ -94,6 +99,8 @@ public class RemotePublicAddressJPanel extends javax.swing.JPanel
         // PORT //
         portCurrent = remoteSettings.getPublicPort();
         portJSpinner.setValue(portCurrent);
+	((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setText(Integer.toString(portCurrent));
+	((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
     }
     
     

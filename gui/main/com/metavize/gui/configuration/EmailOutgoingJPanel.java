@@ -42,7 +42,13 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
 	hostJTextField.setBackground( Color.WHITE );
 
 	// PORT //////
-	int port = (Integer) portJSpinner.getValue();
+	int port = 0;
+	try{ portJSpinner.commitEdit(); }
+	catch(Exception e){ 
+	    ((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Util.INVALID_BACKGROUND_COLOR);
+	    throw new Exception(Util.EXCEPTION_PORT_RANGE);
+	}
+        port = (Integer) portJSpinner.getValue();
 
 	// SMTP LOGIN /////
 	String login = smtpLoginJTextField.getText();
@@ -107,6 +113,8 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
 	// PORT /////
 	portCurrent = mailSettings.getSmtpPort();
 	portJSpinner.setValue( portCurrent );
+	((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setText(Integer.toString(portCurrent));
+	((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
 
 	// LOGIN //////
 	loginCurrent = mailSettings.getAuthUser();

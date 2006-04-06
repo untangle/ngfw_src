@@ -42,7 +42,12 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
 	// OUTSIDE PORT //////
 	int httpsPort = 0;
 	if( isOutsideAccessEnabled ){
-			httpsPort = (Integer) externalAdminPortJSpinner.getValue();
+	    try{ externalAdminPortJSpinner.commitEdit(); }
+	    catch(Exception e){ 
+		((JSpinner.DefaultEditor)externalAdminPortJSpinner.getEditor()).getTextField().setBackground(Util.INVALID_BACKGROUND_COLOR);
+		throw new Exception(Util.EXCEPTION_PORT_RANGE);
+	    }
+	    httpsPort = (Integer) externalAdminPortJSpinner.getValue();
 	}
 
 	// OUTSIDE ACCESS RESTRICTED ///////
@@ -110,6 +115,8 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
 	// PORT ///
 	int httpsPort = networkingConfiguration.httpsPort();
 	externalAdminPortJSpinner.setValue( httpsPort );
+	((JSpinner.DefaultEditor)externalAdminPortJSpinner.getEditor()).getTextField().setText(Integer.toString(httpsPort));
+	((JSpinner.DefaultEditor)externalAdminPortJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
 	
 	// OUTSIDE ACCESS RESTRICTED /////
 	boolean isOutsideAccessRestricted = networkingConfiguration.isOutsideAccessRestricted();

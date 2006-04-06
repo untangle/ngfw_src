@@ -26,6 +26,10 @@ import javax.swing.*;
 
 public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel<MaintenanceCompoundSettings> {
 
+    private static final String EXCEPTION_TIMEOUT_RANGE = "The timeout must be between " 
+	+ MailTransformSettings.TIMEOUT_MIN/1000l
+	+ " and " + MailTransformSettings.TIMEOUT_MAX/1000l + ".";
+
     public MCasingJPanel() {
         initComponents();
         
@@ -66,12 +70,67 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel<Main
         boolean isImapEnabled = imapEnabledRadioButton.isSelected();
         
         // EMAIL TIMEOUTS //////////
-        long smtpInboundTimeout = ((Long) smtpInboundJSpinner.getValue()) * 1000l;
-        long smtpOutboundTimeout = ((Long) smtpOutboundJSpinner.getValue()) * 1000l;
-        long popInboundTimeout = ((Long) popInboundJSpinner.getValue()) * 1000l;
-        long popOutboundTimeout = ((Long) popOutboundJSpinner.getValue()) * 1000l;
-        long imapInboundTimeout = ((Long) imapInboundJSpinner.getValue()) * 1000l;
-        long imapOutboundTimeout = ((Long) imapOutboundJSpinner.getValue()) * 1000l;
+	long smtpInboundTimeout;
+	try{
+	    smtpInboundJSpinner.commitEdit();
+	    smtpInboundTimeout = ((Long) smtpInboundJSpinner.getValue()) * 1000l;
+	}
+	catch(Exception e){
+	    ((JSpinner.DefaultEditor)smtpInboundJSpinner.getEditor()).getTextField().setBackground(Util.INVALID_BACKGROUND_COLOR);
+	    throw new Exception(EXCEPTION_TIMEOUT_RANGE);
+	}
+
+	long smtpOutboundTimeout;
+	try{
+	    smtpOutboundJSpinner.commitEdit();
+	    smtpOutboundTimeout = ((Long) smtpOutboundJSpinner.getValue()) * 1000l;
+	}
+	catch(Exception e){
+	    ((JSpinner.DefaultEditor)smtpOutboundJSpinner.getEditor()).getTextField().setBackground(Util.INVALID_BACKGROUND_COLOR);
+	    throw new Exception(EXCEPTION_TIMEOUT_RANGE);
+	}
+
+	long popInboundTimeout;
+	try{
+	    popInboundJSpinner.commitEdit();
+	    popInboundTimeout = ((Long) popInboundJSpinner.getValue()) * 1000l;
+	}
+	catch(Exception e){
+	    ((JSpinner.DefaultEditor)popInboundJSpinner.getEditor()).getTextField().setBackground(Util.INVALID_BACKGROUND_COLOR);
+	    throw new Exception(EXCEPTION_TIMEOUT_RANGE);
+	}
+
+	long popOutboundTimeout;
+	try{
+	    popOutboundJSpinner.commitEdit();
+	    popOutboundTimeout = ((Long) popOutboundJSpinner.getValue()) * 1000l;
+	}
+	catch(Exception e){
+	    ((JSpinner.DefaultEditor)popOutboundJSpinner.getEditor()).getTextField().setBackground(Util.INVALID_BACKGROUND_COLOR);
+	    throw new Exception(EXCEPTION_TIMEOUT_RANGE);
+	}
+
+	long imapInboundTimeout;
+	try{
+	    imapInboundJSpinner.commitEdit();
+	    imapInboundTimeout = ((Long) imapInboundJSpinner.getValue()) * 1000l;
+	}
+	catch(Exception e){
+	    ((JSpinner.DefaultEditor)imapInboundJSpinner.getEditor()).getTextField().setBackground(Util.INVALID_BACKGROUND_COLOR);
+	    throw new Exception(EXCEPTION_TIMEOUT_RANGE);
+	}
+
+	long imapOutboundTimeout;
+	try{
+	    imapOutboundJSpinner.commitEdit();
+	    imapOutboundTimeout = ((Long) imapOutboundJSpinner.getValue()) * 1000l;
+	}
+	catch(Exception e){
+	    ((JSpinner.DefaultEditor)imapOutboundJSpinner.getEditor()).getTextField().setBackground(Util.INVALID_BACKGROUND_COLOR);
+	    throw new Exception(EXCEPTION_TIMEOUT_RANGE);
+	}
+
+
         
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
@@ -117,11 +176,22 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel<Main
         
         // EMAIL TIMEOUT /////////////
         smtpInboundJSpinner.setValue( (Long) (mailTransformSettings.getSmtpInboundTimeout()/1000l) );
+	((JSpinner.DefaultEditor)smtpInboundJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+
         smtpOutboundJSpinner.setValue( (Long) (mailTransformSettings.getSmtpOutboundTimeout()/1000l) );
+	((JSpinner.DefaultEditor)smtpOutboundJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+
         popInboundJSpinner.setValue( (Long) (mailTransformSettings.getPopInboundTimeout()/1000l) );
+	((JSpinner.DefaultEditor)popInboundJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+
         popOutboundJSpinner.setValue( (Long) (mailTransformSettings.getPopOutboundTimeout()/1000l) );
+	((JSpinner.DefaultEditor)popOutboundJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+
         imapInboundJSpinner.setValue( (Long) (mailTransformSettings.getImapInboundTimeout()/1000l) );
+	((JSpinner.DefaultEditor)imapInboundJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+
         imapOutboundJSpinner.setValue( (Long) (mailTransformSettings.getImapOutboundTimeout()/1000l) );
+	((JSpinner.DefaultEditor)imapOutboundJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
     }
     
     

@@ -28,6 +28,9 @@ import javax.swing.*;
 
 public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel<MaintenanceCompoundSettings> {
 
+    private static final String EXCEPTION_URI_LENGTH = "The Max URI length must be between " 
+	+ HttpSettings.MIN_URI_LENGTH
+	+ " and " + HttpSettings.MAX_URI_LENGTH + ".";
     
     public MCasingJPanel() {
         initComponents();
@@ -53,6 +56,11 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel<Main
         
         // LONG URIS //////////////
         boolean blockLongUris = longUriDisabledRadioButton.isSelected();
+	try{ maxUriJSpinner.commitEdit(); }
+	catch(Exception e){
+	    ((JSpinner.DefaultEditor)maxUriJSpinner.getEditor()).getTextField().setBackground(Util.INVALID_BACKGROUND_COLOR);
+	    throw new Exception(EXCEPTION_URI_LENGTH);
+	}
         int maxUriLength = (Integer) maxUriJSpinner.getValue();
         
         // LONG HEADERS //////////////
@@ -94,6 +102,7 @@ public class MCasingJPanel extends com.metavize.gui.transform.MCasingJPanel<Main
         
         int maxUriLength = httpSettings.getMaxUriLength();
         maxUriJSpinner.setValue( (Integer) maxUriLength );
+	((JSpinner.DefaultEditor)maxUriJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
 
         // LONG HEADERS ////////////
         boolean blockLongHeaders = httpSettings.getBlockLongHeaders();

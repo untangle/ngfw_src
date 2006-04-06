@@ -43,7 +43,13 @@ public class RemoteSyslogJPanel extends javax.swing.JPanel
 	boolean isSyslogEnabled = syslogEnabledRadioButton.isSelected();
 
         // PORT /////
-	int port = (Integer) portJSpinner.getValue();
+	int port = 0;
+	try{ portJSpinner.commitEdit(); }
+	catch(Exception e){ 
+	    ((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Util.INVALID_BACKGROUND_COLOR);
+	    throw new Exception(Util.EXCEPTION_PORT_RANGE);
+	}
+        port = (Integer) portJSpinner.getValue();
 
         // HOST /////
 	String host = hostJTextField.getText();
@@ -95,6 +101,8 @@ public class RemoteSyslogJPanel extends javax.swing.JPanel
         // PORT /////
 	int port = loggingSettings.getSyslogPort();
 	portJSpinner.setValue( port );
+	((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setText(Integer.toString(port));
+	((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
         
         // FACILITY /////
         SyslogFacility syslogFacility = loggingSettings.getSyslogFacility();
