@@ -59,9 +59,7 @@ public class MessageClient
         public void run()
         {
             Thread t = Thread.currentThread();
-
-            MessageQueue<ToolboxMessage> toolQ = mvvmContext.toolboxManager()
-                .subscribe();
+            MessageQueue<ToolboxMessage> toolQ = mvvmContext.toolboxManager().subscribe();
 
             while (thread == t) {
                 ToolboxMessageVisitor tmv = toolboxMessageVisitor;
@@ -74,12 +72,7 @@ public class MessageClient
                     } catch (InvocationException exn1) {
                         System.err.println("invocation exn: " + exn1);
                         exn1.printStackTrace();
-			try {
-			    toolQ = mvvmContext.toolboxManager().subscribe();
-			} catch (Exception exn2) {
-			    System.err.println("invocation exn: " + exn2);
-			    exn2.printStackTrace();
-			}
+			toolQ = mvvmContext.toolboxManager().subscribe();
                         continue;
                     }
                 }
