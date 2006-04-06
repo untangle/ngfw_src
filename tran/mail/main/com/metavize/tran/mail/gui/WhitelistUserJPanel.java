@@ -51,7 +51,8 @@ public class WhitelistUserJPanel extends javax.swing.JPanel
         
         // create actual table model
         whitelistUserTableModel = new WhitelistUserTableModel();
-        setTableModel( whitelistUserTableModel );        
+        setTableModel( whitelistUserTableModel );
+        whitelistUserTableModel.setSortingStatus(2, whitelistUserTableModel.ASCENDING);
     }
 
     public void doRefresh(MailTransformCompoundSettings mailTransformCompoundSettings){

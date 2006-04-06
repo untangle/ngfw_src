@@ -306,7 +306,7 @@ class QuarantineUserTableModel extends MSortedTableModel<MailTransformCompoundSe
         addTableColumn( tableColumnModel,  0,  Util.STATUS_MIN_WIDTH, false, false, true,  false, String.class,     null, sc.TITLE_STATUS );
 	addTableColumn( tableColumnModel,  1,  Util.LINENO_MIN_WIDTH, false, false, true,  false, Integer.class,    null, sc.TITLE_INDEX );
         addTableColumn( tableColumnModel,  2, 150, true,  false,  true,  false, String.class, null, sc.html("MailID") );
-        addTableColumn( tableColumnModel,  3, 150, true,  false,  false, false, String.class, null, sc.html("Date") );
+        addTableColumn( tableColumnModel,  3, 150, true,  false,  false, false, Date.class,   null, sc.html("Date") );
         addTableColumn( tableColumnModel,  4, 150, true,  false,  false, false, String.class, null, sc.html("Sender") );
         addTableColumn( tableColumnModel,  5, 150, true,  false,  false, true,  String.class, null, sc.html("Subject") );
         addTableColumn( tableColumnModel,  6,  85, true,  false,  false, false, Long.class,   null, sc.html("Size (kB)") );
