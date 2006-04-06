@@ -57,4 +57,8 @@ public class VirusSmtpFactory
 
 
   }
+
+    public void handleNewSessionRequest(TCPNewSessionRequest tsr)
+    {
+    }
 }

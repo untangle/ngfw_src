@@ -11,6 +11,7 @@
 
 package com.metavize.tran.ids;
 
+import com.metavize.mvvm.tapi.TCPNewSessionRequest;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.token.TokenHandler;
 import com.metavize.tran.token.TokenHandlerFactory;
@@ -24,6 +25,10 @@ public class IDSHttpFactory implements TokenHandlerFactory {
 
     public TokenHandler tokenHandler(TCPSession session) {
         return new IDSHttpHandler(session, transform);
+    }
+
+    public void handleNewSessionRequest(TCPNewSessionRequest tsr)
+    {
     }
 }
 

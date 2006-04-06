@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,20 +11,10 @@
 
 package com.metavize.tran.nat;
 
+import com.metavize.mvvm.tapi.TCPNewSessionRequest;
+import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.token.TokenHandler;
 import com.metavize.tran.token.TokenHandlerFactory;
-import com.metavize.mvvm.tapi.TCPSession;
-
-import com.metavize.tran.token.Token;
-import com.metavize.tran.token.TokenException;
-import com.metavize.tran.token.TokenResult;
-
-import com.metavize.tran.ftp.FtpCommand;
-import com.metavize.tran.ftp.FtpFunction;
-import com.metavize.tran.ftp.FtpCommand;
-import com.metavize.tran.ftp.FtpReply;
-import com.metavize.tran.ftp.FtpStateMachine;
-
 
 public class NatFtpFactory implements TokenHandlerFactory
 {
@@ -38,5 +28,9 @@ public class NatFtpFactory implements TokenHandlerFactory
     public TokenHandler tokenHandler( TCPSession session )
     {
         return new NatFtpHandler( session, transform);
-    }    
+    }
+
+    public void handleNewSessionRequest(TCPNewSessionRequest tsr)
+    {
+    }
 }

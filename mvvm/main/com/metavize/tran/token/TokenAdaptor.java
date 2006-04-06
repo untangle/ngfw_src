@@ -23,7 +23,6 @@ import com.metavize.mvvm.tapi.MPipeException;
 import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.tapi.PipelineFoundry;
 import com.metavize.mvvm.tapi.Session;
-import com.metavize.mvvm.tapi.TCPNewSessionRequest;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.mvvm.tapi.event.IPDataResult;
 import com.metavize.mvvm.tapi.event.IPSessionEvent;
@@ -60,7 +59,7 @@ public class TokenAdaptor extends AbstractEventHandler
     public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent e)
         throws MPipeException
     {
-        TCPNewSessionRequest sr = e.sessionRequest();
+        handlerFactory.handleNewSessionRequest(e.sessionRequest());
     }
 
     @Override

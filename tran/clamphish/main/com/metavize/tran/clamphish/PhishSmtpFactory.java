@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,18 +11,18 @@
 
 package com.metavize.tran.clamphish;
 
+import com.metavize.mvvm.tapi.TCPNewSessionRequest;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.mail.papi.MailExport;
 import com.metavize.tran.mail.papi.MailExportFactory;
 import com.metavize.tran.mail.papi.MailTransformSettings;
+import com.metavize.tran.mail.papi.quarantine.QuarantineTransformView;
+import com.metavize.tran.mail.papi.safelist.SafelistTransformView;
 import com.metavize.tran.mail.papi.smtp.sapi.Session;
 import com.metavize.tran.spam.SpamSMTPConfig;
 import com.metavize.tran.token.TokenHandler;
 import com.metavize.tran.token.TokenHandlerFactory;
-import com.metavize.tran.mail.papi.quarantine.QuarantineTransformView;
-import com.metavize.tran.mail.papi.safelist.SafelistTransformView;
 import org.apache.log4j.Logger;
-
 
 public class PhishSmtpFactory
   implements TokenHandlerFactory {
@@ -30,7 +30,7 @@ public class PhishSmtpFactory
   private MailExport m_mailExport;
   private ClamPhishTransform m_phishImpl;
   private QuarantineTransformView m_quarantine;
-  private SafelistTransformView m_safelist;  
+  private SafelistTransformView m_safelist;
   private static final Logger m_logger =
     Logger.getLogger(PhishSmtpFactory.class);
 
@@ -66,4 +66,8 @@ public class PhishSmtpFactory
         m_quarantine,
         m_safelist));
   }
+
+    public void handleNewSessionRequest(TCPNewSessionRequest tsr)
+    {
+    }
 }

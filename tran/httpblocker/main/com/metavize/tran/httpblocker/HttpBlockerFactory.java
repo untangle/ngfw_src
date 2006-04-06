@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,6 +11,7 @@
 
 package com.metavize.tran.httpblocker;
 
+import com.metavize.mvvm.tapi.TCPNewSessionRequest;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.token.TokenHandler;
 import com.metavize.tran.token.TokenHandlerFactory;
@@ -35,6 +36,10 @@ public class HttpBlockerFactory implements TokenHandlerFactory
     public boolean isTokenSession(TCPSession se)
     {
         return true;
+    }
+
+    public void handleNewSessionRequest(TCPNewSessionRequest tsr)
+    {
     }
 
     public TokenHandler tokenHandler(TCPSession session)

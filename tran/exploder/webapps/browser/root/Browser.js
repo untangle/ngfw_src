@@ -44,6 +44,9 @@ function Browser(shell, url) {
    this._detailPanel.setDragSource(dragSource);
    this._detailPanel.setDropTarget(dropTarget);
 
+   this._actionMenu = this._makeActionMenu()
+   this._detailPanel.addActionListener(new AjxListener(this, this._listActionListener));
+
    this.layout();
 
    this.chdir(url, false);
@@ -180,7 +183,15 @@ Browser.prototype._makeAddressBar = function() {
    return toolbar;
 }
 
-Browser.prototype.toString = function() { return "BROWSER"; }
+Browser.prototype._makeActionMenu = function()
+{
+   var actionMenu = new DwtMenu(this._detailPanel, DwtMenu.POPUP_STYLE);
+
+   var i = new DwtMenuItem(actionMenu, DwtMenuItem.NO_STYLE);
+   i.setText("Menu Item");
+
+   return actionMenu;
+}
 
 // listeners ------------------------------------------------------------------
 
@@ -222,6 +233,11 @@ Browser.prototype._dirSelectionListener = function(ev) {
       default:
    }
 }
+
+Browser.prototype._listActionListener = function (ev) {
+    this._actionMenu.popup(0, ev.docX, ev.docY);
+}
+
 
 Browser.prototype._refreshButtonListener = function(ev)
 {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,8 +12,10 @@
 package com.metavize.tran.token;
 
 import com.metavize.mvvm.tapi.TCPSession;
+import com.metavize.mvvm.tapi.TCPNewSessionRequest;
 
 public interface TokenHandlerFactory
 {
+    void handleNewSessionRequest(TCPNewSessionRequest tsr);
     TokenHandler tokenHandler(TCPSession s);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,6 +11,7 @@
 
 package com.metavize.tran.spam;
 
+import com.metavize.mvvm.tapi.TCPNewSessionRequest;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.mail.papi.MailExport;
 import com.metavize.tran.mail.papi.MailExportFactory;
@@ -63,4 +64,8 @@ public class SpamImapFactory
           config,
           m_safelist));
   }
+
+    public void handleNewSessionRequest(TCPNewSessionRequest tsr)
+    {
+    }
 }
