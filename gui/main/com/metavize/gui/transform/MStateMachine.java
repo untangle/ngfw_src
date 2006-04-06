@@ -152,6 +152,9 @@ public class MStateMachine implements java.awt.event.ActionListener {
                 mTransformControlsJPanel.refreshAll();
                 mTransformControlsJPanel.populateAll();
             }
+	    catch(ValidationException v){
+		// this was handled with a dialog at a lower level
+	    }
             catch(Exception e){
                 try{ Util.handleExceptionWithRestart("Error doing save", e); }
                 catch(Exception f){

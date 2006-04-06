@@ -379,6 +379,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 reloadJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/Button_Reload_Settings_106x17.png")));
                 reloadJButton.setDoubleBuffered(true);
                 reloadJButton.setFocusPainted(false);
+                reloadJButton.setFocusable(false);
                 reloadJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 reloadJButton.setIconTextGap(0);
                 reloadJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
@@ -402,6 +403,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 saveJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/Button_Save_Settings_106x17.png")));
                 saveJButton.setDoubleBuffered(true);
                 saveJButton.setFocusPainted(false);
+                saveJButton.setFocusable(false);
                 saveJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 saveJButton.setIconTextGap(0);
                 saveJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
