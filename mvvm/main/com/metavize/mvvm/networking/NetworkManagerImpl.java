@@ -169,8 +169,34 @@ public class NetworkManagerImpl implements NetworkManager
     public synchronized void setNetworkSettings( NetworkSpacesSettings settings )
         throws NetworkException, ValidateException
     {
+        setNetworkSettings( settings, true );
+    }
+
+    /**
+     * @params:
+     * @param: settings - Network settings to save.
+     * @param: configure - Set to true in order to configure the new settings, this is the default
+     *                   - and is really only used as false by the router..
+     */
+    public synchronized void setNetworkSettings( NetworkSpacesSettings settings, boolean configure )
+        throws NetworkException, ValidateException
+    {
         logger.debug( "Loading the new network settings: " + settings );
-        setNetworkSettings( NetworkUtilPriv.getPrivInstance().toInternal( settings ));
+
+        NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
+        NetworkSpacesInternalSettings internal = nup.toInternal( settings );
+        
+        /* If the saving is disable, then don't actually reconfigured,
+         * just save the settings to the database. */
+        if ( configure ) {
+            setNetworkSettings( internal );
+        } else {
+            logger.info( "Configuring network settings disabled, only writing to database" );
+
+            /* In order to save it has to be an Impl, convert from
+             * internal and then back out again to get an impl */
+            saveNetworkSettings( nup.toSettings( internal ));
+        }
     }
 
     private synchronized void setNetworkSettings( NetworkSpacesInternalSettings newSettings )
@@ -254,6 +280,9 @@ public class NetworkManagerImpl implements NetworkManager
         setServicesSettings( servicesSettings, servicesSettings );
     }
 
+    /**
+     * RBS: 04/05/2006: Don't really need a function that takes a seperate DNS and DHCP settings object
+     */
     public synchronized void setServicesSettings( DhcpServerSettings dhcp, DnsServerSettings dns )
         throws NetworkException
     {
@@ -319,8 +348,8 @@ public class NetworkManagerImpl implements NetworkManager
             nss.setIsEnabled( false );
             setNetworkSettings( nss );
         } catch ( Exception e ) {
-            logger.error( "Unable to enable network settings", e );
-            throw new NetworkException( "Unable to turn on network sharing", e );
+            logger.error( "Unable to disable network settings", e );
+            throw new NetworkException( "Unable to turn off network sharing", e );
         }
     }
 
@@ -916,6 +945,13 @@ public class NetworkManagerImpl implements NetworkManager
         return NetworkUtilPriv.getPrivInstance().toInternal( this.networkSettings, dbSettings, dbSettings );
     }
 
+    /**
+     * RBS: 04/05/2006: After rereading this, it is a little redundant code. 
+     * the only caller to this function has internal settings and then converts
+     * them to settings in order to call this function.  It would make more sense
+     * to pass in the internal, and convert those to settings rather than going
+     * back and forth twice.
+     */
     private void saveNetworkSettings( NetworkSpacesSettingsImpl newSettings )
         throws NetworkException, ValidateException
     {

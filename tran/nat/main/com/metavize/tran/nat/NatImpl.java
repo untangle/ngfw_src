@@ -178,12 +178,15 @@ public class NatImpl extends AbstractTransform implements Nat
             throw e;
         }
 
-        /* This isn't necessary, (the state should carry over), but just in case. */
-        newNetworkSettings.setIsEnabled( getRunState() == TransformState.RUNNING );
+        boolean isEnabled = ( getRunState() == TransformState.RUNNING );
+        /* This isn't necessary, (the state should carry over), but
+         * just in case. */
+        newNetworkSettings.setIsEnabled( isEnabled );
         
         try {
-            /* Have to reconfigure the network before configure the services settings */
-            networkManager.setNetworkSettings( newNetworkSettings );
+            /* Have to reconfigure the network before configure the
+             * services settings */
+            networkManager.setNetworkSettings( newNetworkSettings, isEnabled );
             networkManager.setServicesSettings( settings );
         } catch ( Exception e ) {
             logger.error( "Could not reconfigure the network", e );
@@ -202,7 +205,8 @@ public class NatImpl extends AbstractTransform implements Nat
         NetworkSpacesSettings newSettings = 
             this.settingsManager.resetToBasic( getTid(), nm.getNetworkSettings());
         
-        nm.setNetworkSettings( newSettings );
+        /* Only reconfigure if the transform is enabled */
+        nm.setNetworkSettings( newSettings, getRunState() == TransformState.RUNNING );
     }
     
     /* Convert the basic settings to advanced Network Spaces */
@@ -213,7 +217,8 @@ public class NatImpl extends AbstractTransform implements Nat
         
         NetworkSpacesSettings newSettings = this.settingsManager.basicToAdvanced( nm.getNetworkSettings());
         
-        nm.setNetworkSettings( newSettings );
+        /* Only reconfigure if the transform is enabled */
+        nm.setNetworkSettings( newSettings, getRunState() == TransformState.RUNNING );
     }
     
     public SetupState getSetupState()
