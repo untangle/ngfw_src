@@ -87,19 +87,6 @@ class EmailTableModel extends MSortedTableModel<Object>{
 	    elemList.append(newElem);
         }
 
-	// WARN USER IF THERE IS NO EMAIL SERVER CONFIGURED
-	if( tableVector.size() > 0){
-	    MailSettings mailSettings = Util.getAdminManager().getMailSettings();
-	    String smtpHost = mailSettings.getSmtpHost();
-	    if( (smtpHost==null) || (smtpHost.length()==0) ){
-		MOneButtonJDialog.factory((Window)emailConfigJPanel.getTopLevelAncestor(),
-				      "EdgeReport",
-				      "<html>Your Email Reports Recipients have been saved, however, your outgoing email server is not configured.  You must configure it in <b>System Config -> Email</b> before you will receive email reports.</html>",
-				      "EdgeReport Confirmation",
-				      "Confirmation:");
-	    }
-	}
-
 	// SAVE SETTINGS /////
 	if( !validateOnly ){
 	    MailSettings mailSettings = Util.getAdminManager().getMailSettings();
