@@ -25,6 +25,8 @@ import java.awt.Window;
 import java.net.*;
 import java.text.*;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import javax.jnlp.*;
@@ -50,13 +52,10 @@ public class Util {
 
     private Util(){}
 
-    private static boolean isInitialized;
     public static void initialize(){
-	if(isInitialized)
-	    return;
-	else
-	    isInitialized = true;
-        daemonThreadVector = new Vector<Killable>();
+        shutdownableMap = new HashMap<String,Shutdownable>();
+	statsCache = new StatsCache();
+	addShutdownable("StatsCache", statsCache);
         logDateFormat = new SimpleDateFormat("EEE, MMM d HH:mm:ss");
         log = new Vector();
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -145,11 +144,7 @@ public class Util {
     public static ToolboxManager getToolboxManager(){ return toolboxManager; }
     public static TransformManager getTransformManager(){ return transformManager; }
     public static AdminManager getAdminManager(){ return adminManager; }
-    public static StatsCache getStatsCache(){
-        if( statsCache == null )
-            statsCache = new StatsCache();
-        return statsCache;
-    }
+    public static StatsCache getStatsCache(){ return statsCache; }
     public static NetworkingManager getNetworkingManager(){ return networkingManager; }
     public static NetworkManager getNetworkManager(){ return networkManager; }
     public static PolicyManager getPolicyManager(){ return policyManager; }
@@ -344,24 +339,19 @@ public class Util {
 
 
     // EXITING AND SHUTDOWN ///////////////////
-    private static boolean killThreads = false;
-    private static Vector<Killable> daemonThreadVector;
-
-    public static boolean getKillThreads(){
-        return killThreads;
-    }
+    private static Map<String,Shutdownable> shutdownableMap;
     public static void exit(int i){
-        killThreads = true;
         System.exit(i);
     }
-    public static void addKillableThread(Killable killable){
-        daemonThreadVector.add(killable);
+    public static void addShutdownable(String name, Shutdownable shutdownable){
+        shutdownableMap.put(name, shutdownable);
     }
-    public static void killDaemonThreads(){
-        for( Killable killable : daemonThreadVector ){
-            killable.kill();
+    public static void doShutdown(){
+        for( Map.Entry<String,Shutdownable> shutdownableEntry : shutdownableMap.entrySet() ){
+	    System.err.println("Shutting down: " + shutdownableEntry.getKey());
+            shutdownableEntry.getValue().doShutdown();
         }
-        daemonThreadVector.clear();
+        shutdownableMap.clear();
     }
     ////////////////////////////////////////////
 
@@ -476,7 +466,7 @@ public class Util {
     private static final boolean PRINT_MESSAGES = true;
     private static Vector log;
 
-    public static void handleExceptionNoRestart(String output, Exception e){
+    public synchronized static void handleExceptionNoRestart(String output, Exception e){
         printMessage(output);
         if(PRINT_MESSAGES)
             e.printStackTrace(System.err);
@@ -484,45 +474,50 @@ public class Util {
         log.add(e.getStackTrace());
     }
 
-    public static void handleExceptionWithRestart(String output, Exception e) throws Exception {
+    public synchronized static void handleExceptionWithRestart(String output, Exception e) throws Exception {
 	System.err.println(output);
         e.printStackTrace();
         Throwable throwableRef = e;
 
         while( throwableRef != null){
             if( throwableRef instanceof InvocationConnectionException ){
-                killDaemonThreads();
+		doShutdown();
                 mLoginJFrame.resetLogin("Server communication failure.  Re-login.");
                 mLoginJFrame.reshowLogin();
+		MvvmRemoteContextFactory.factory().logout();
                 return;
             }
             else if( throwableRef instanceof InvocationTargetExpiredException ){
-                killDaemonThreads();
+		doShutdown();
                 mLoginJFrame.resetLogin("Server synchronization failure.  Re-login.");
                 mLoginJFrame.reshowLogin();
+		MvvmRemoteContextFactory.factory().logout();
                 return;
             }
             else if( throwableRef instanceof com.metavize.mvvm.client.LoginExpiredException ){
-                killDaemonThreads();
+		doShutdown();
                 mLoginJFrame.resetLogin("Login expired.  Re-login.");
                 mLoginJFrame.reshowLogin();
+		MvvmRemoteContextFactory.factory().logout();
                 return;
             }
             else if(    (throwableRef instanceof ConnectException)
                         || (throwableRef instanceof SocketException)
                         || (throwableRef instanceof SocketTimeoutException) ){
-                killDaemonThreads();
+                doShutdown();
                 mLoginJFrame.resetLogin("Server connection failure.  Re-login.");
                 mLoginJFrame.reshowLogin();
+		MvvmRemoteContextFactory.factory().logout();
                 return;
             }
             else if( throwableRef instanceof LoginStolenException ){
                 String loginName = ((LoginStolenException)throwableRef).getThief().getMvvmPrincipal().getName();
                 String loginAddress = ((LoginStolenException)throwableRef).getThief().getClientAddr().getHostAddress();
                 new LoginStolenJDialog(loginName, loginAddress);
-                killDaemonThreads();
+		doShutdown();
                 mLoginJFrame.resetLogin("Login ended by: " + loginName + " at " + loginAddress);
                 mLoginJFrame.reshowLogin();
+		MvvmRemoteContextFactory.factory().logout();
                 return;
             }
             throwableRef = throwableRef.getCause();

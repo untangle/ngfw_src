@@ -39,12 +39,12 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
     private Map<String, Savable> savableMap = new LinkedHashMap(5);
     protected void addSavable(String name, Savable savable){ savableMap.put(name, savable); }
     protected void removeSavable(String savableKey){ savableMap.remove(savableKey); }
-    private Map<String, Shutdownable> shutdownableMap = new LinkedHashMap(1);
-    protected void addShutdownable(String name, Shutdownable shutdownable){ shutdownableMap.put(name, shutdownable); }
     protected Object settings;
     private InfiniteProgressJComponent infiniteProgressJComponent = new InfiniteProgressJComponent();
     public  InfiniteProgressJComponent getInfiniteProgressJComponent(){ return infiniteProgressJComponent; }
     public static final long MIN_PROGRESS_MILLIS = 1500;
+    public void addShutdownable(String name, Shutdownable shutdownable){ mTransformJPanel.addShutdownable(name, shutdownable); }
+    public void removeShutdownable(String shutdownableKey){ mTransformJPanel.removeShutdownable(shutdownableKey); }
     ///////////////////////////////
     
     // EXPANDING/CONTACTING //////
@@ -118,9 +118,6 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
 
     public void doShutdown(){
 	collapseControlPanel();
-	for(Map.Entry<String,Shutdownable> shutdownable : shutdownableMap.entrySet()){
-	    shutdownable.getValue().doShutdown();
-	}
     }
     
     private void dialogResized(){
@@ -147,7 +144,11 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
 
     // TABBED PANE ////////
     public JTabbedPane getMTabbedPane(){ return mTabbedPane; }
-    protected void removeTab(Component c){ mTabbedPane.remove(c); }
+    protected void removeTab(String s){
+	int index = mTabbedPane.indexOfTab(s);
+	if(index >= 0)
+	    mTabbedPane.remove(index);
+    }
     protected void addTab(String title, Icon icon, Component component){ addTab(mTabbedPane.getTabCount(), title, icon, component); }
     protected void addTab(int index, String title, Icon icon, Component component){ mTabbedPane.insertTab(title, icon, component, null, index); }
     protected JTabbedPane addTabbedPane(String name, Icon icon){ return addTabbedPane(mTabbedPane.getTabCount(), name, icon); }
@@ -178,12 +179,6 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
 	    newJScrollPane.getVerticalScrollBar().setUnitIncrement(5);
 	}});
 	return newJScrollPane;
-    }
-    protected void removeAllTabs(){
-	mTabbedPane.removeAll();
-	refreshableMap.clear();
-	savableMap.clear();
-	shutdownableMap.clear();
     }
     /////////////////////////
 

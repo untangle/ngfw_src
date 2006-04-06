@@ -48,7 +48,7 @@ public class MLauncher {
         UIManager.getLookAndFeelDefaults().put("ClassLoader", mUrlClassLoader);
         Thread.currentThread().setContextClassLoader(mUrlClassLoader);
 
-	// INITIALIZE UTIL
+	// SET CLASSLOADER
 	Util.initialize();
         Util.setClassLoader( mUrlClassLoader );
 	

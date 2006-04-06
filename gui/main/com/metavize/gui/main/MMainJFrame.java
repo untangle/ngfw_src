@@ -716,19 +716,17 @@ public class MMainJFrame extends javax.swing.JFrame {
 
 
 
-    private class UpdateCheckThread extends Thread implements Killable {
-        // KILLABLE //////
-        private volatile boolean killed;
-        public void kill(){ this.killed = true; }
-        //////////////////
-
+    private class UpdateCheckThread extends Thread implements Shutdownable {
         public UpdateCheckThread(){
             super("MVCLIENT-UpdateCheckThread");
             this.setDaemon(true);
-            Util.addKillableThread(this);
+            Util.addShutdownable("UpdateCheckThread", this);
             this.setContextClassLoader(Util.getClassLoader());
             this.start();
         }
+	public void doShutdown(){
+	    interrupt();
+	}
         public void run() {
             MackageDesc[] mackageDescs;
 
@@ -743,9 +741,6 @@ public class MMainJFrame extends javax.swing.JFrame {
 
             while(true){
                 try{
-                    if(killed)
-                        return;
-
                     // CHECK FOR UPGRADES
                     updateJButton(Util.UPGRADE_CHECKING);
                     mackageDescs = Util.getToolboxManager().upgradable();

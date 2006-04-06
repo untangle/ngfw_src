@@ -35,25 +35,11 @@ public class MLoginJFrame extends javax.swing.JFrame {
 
         // PARSE ARGS
         boolean isEgdemo=false;
-	/*
-        if( args.length == 0 )
-            Util.printMessage("[no args]");
-        for( String arg : args )
-            Util.printMessage("[arg: " + arg + "]");
-	*/
         for( String arg : args ) // isLocal
             if( arg.equals("local") ){
                 Util.setLocal(true);
                 break;
             }
-
-        // PRINT THE LOCATION OF THE CLIENT
-	/*
-        if( Util.isLocal() )
-            Util.printMessage("[Running on localhost]");
-        else
-            Util.printMessage("[Running remotely]");
-	*/
 
         // CREATE AND SHOW THE LOGIN
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
@@ -109,6 +95,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
     public void reshowLogin(){
 	if(isVisible())
 	    return;
+	Util.initialize();
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
 	    if(mMainJFrame != null){
 		mMainJFrame.setVisible(false);
@@ -120,7 +107,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
 	    MLoginJFrame.this.setVisible(true);
         }});
 	setInputsEnabled(true);
-	//dropdownLoginTask.start(true);
     }
 
 
@@ -489,8 +475,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
             // ATTEMPT TO LOG IN
             int retryLogin = 0;
             while( true ){
-                if( Util.getKillThreads() )
-                    return;
                 retryLogin++;
                 try{
 
@@ -596,9 +580,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
             // ATTEMPT TO LOAD CLIENT
             int retryClient = 0;
             while( true ){
-                if( Util.getKillThreads() )
-                    return;
-
                 retryClient++;
                 try{
                     // load GUI with proper context

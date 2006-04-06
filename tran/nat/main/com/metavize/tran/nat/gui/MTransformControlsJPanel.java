@@ -60,17 +60,13 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 
     private static Nat natTransform;
     public static Nat getNatTransform(){ return natTransform; }
-    private SetupState setupState;
-    private List<NetworkSpace> networkSpaceList;    
+    private SetupState currentSetupState;
+    private SetupState previousSetupState;
 
-    private Component natScrollable;    
-    private Component dmzScrollable;
     private JTabbedPane spacesJTabbedPane;
-    private InterfaceMapJPanel interfaceMapJPanel;
-    private SpaceListJPanel spaceListJPanel;
-    private List<String> spaceNameList;
-    private List<Component> spaceScrollableList;
-    private RoutingJPanel routingJPanel;
+    private List<NetworkSpace> networkSpaceList;    
+    private List<String> spaceNameList = new ArrayList<String>();
+    private List<Component> spaceScrollableList = new ArrayList<Component>();
 
     private IPaddr host;
     private boolean dhcpEnabled;
@@ -83,106 +79,87 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 
     private void generateSpecificGui(){
 	
-	if(SetupState.BASIC.equals(setupState)){
+	if(SetupState.BASIC.equals(currentSetupState)){
 	    // REMOVE ADVANCED STUFF IF IT WAS THERE //
-	    if(spacesJTabbedPane != null){
-		removeTab(spacesJTabbedPane);
-		spacesJTabbedPane = null;
-	    }
-	    if(interfaceMapJPanel != null){
-		removeTab(interfaceMapJPanel);
+	    if(SetupState.ADVANCED.equals(previousSetupState)){
+		removeTab(NAME_NET_SPACES);
 		removeSavable(NAME_INTERFACE_MAP);
 		removeRefreshable(NAME_INTERFACE_MAP);
-		interfaceMapJPanel = null;
-	    }
-	    if(spaceListJPanel != null){
-		removeTab(spaceListJPanel);
 		removeSavable(NAME_SPACE_LIST);
 		removeRefreshable(NAME_SPACE_LIST);
-		spaceListJPanel = null;
-	    }
-	    if(spaceNameList != null){
 		for( String name : spaceNameList ){
 		    removeSavable(name);
 		    removeRefreshable(name);
 		}
-		spaceNameList = null;
-	    }
-	    if(routingJPanel != null){
-		removeTab(routingJPanel);
+		spaceNameList.clear();
+		removeTab(NAME_ROUTING);
 		removeSavable(NAME_ROUTING);
 		removeRefreshable(NAME_ROUTING);
-		routingJPanel = null;
 	    }
 
-	    // NAT ///////////////
-	    if( natScrollable == null ){
+	    // ADD BASIC STUFF IF WE WERENT PREVIOUSLY BASIC
+	    if(!SetupState.BASIC.equals(previousSetupState)){
+		// NAT ///////////////
 		NatJPanel natJPanel = new NatJPanel(this);
-		natScrollable = addScrollableTab(0, null, NAME_NAT, null, natJPanel, false, true);
+		addScrollableTab(0, null, NAME_NAT, null, natJPanel, false, true);
 		addSavable(NAME_NAT, natJPanel);
 		addRefreshable(NAME_NAT, natJPanel);
 		natJPanel.setSettingsChangedListener(this);
-	    }
-	    
-	    // DMZ ////////////////
-	    if( dmzScrollable == null ){
+		// DMZ ////////////////
 		DmzJPanel dmzJPanel = new DmzJPanel();
-		dmzScrollable = addScrollableTab(1, null, NAME_DMZ, null, dmzJPanel, false, true);
+		addScrollableTab(1, null, NAME_DMZ, null, dmzJPanel, false, true);
 		addSavable(NAME_DMZ, dmzJPanel);
 		addRefreshable(NAME_DMZ, dmzJPanel);
 		dmzJPanel.setSettingsChangedListener(this);
 	    }
 	}
-	else if(SetupState.ADVANCED.equals(setupState)){
+	else if(SetupState.ADVANCED.equals(currentSetupState)){
 	    // REMOVE BASIC STUFF IF IT WAS THERE //
-	    if(natScrollable != null){
-		removeTab(natScrollable);
+	    if(SetupState.BASIC.equals(previousSetupState)){
+		removeTab(NAME_NAT);
 		removeSavable(NAME_NAT);
 		removeRefreshable(NAME_NAT);
-		natScrollable = null;
-	    }
-	    if(dmzScrollable != null){
-		removeTab(dmzScrollable);
+		removeTab(NAME_DMZ);
 		removeSavable(NAME_DMZ);
 		removeRefreshable(NAME_DMZ);
-		dmzScrollable = null;
 	    }
 
-	    // NET SPACES
-	    if( spacesJTabbedPane == null ){
+	    // ADD ADVANCED STUFF IF WE WERENT PREVIOUSLY ADVANCED
+	    if(!SetupState.ADVANCED.equals(previousSetupState)){
+		// NET SPACES
 		spacesJTabbedPane = addTabbedPane(0, NAME_NET_SPACES, null);
-	    }
-
-	    // INTERFACE MAP //
-	    if( interfaceMapJPanel == null ){
-		interfaceMapJPanel = new InterfaceMapJPanel();
+		// INTERFACE MAP //
+		InterfaceMapJPanel interfaceMapJPanel = new InterfaceMapJPanel();
 		spacesJTabbedPane.addTab(NAME_INTERFACE_MAP, null, interfaceMapJPanel);
 		interfaceMapJPanel.setSettingsChangedListener(this);
 		addSavable(NAME_INTERFACE_MAP, interfaceMapJPanel);
 		addRefreshable(NAME_INTERFACE_MAP, interfaceMapJPanel);
-	    }
-
-	    // SPACE LIST //
-	    if( spaceListJPanel == null ){
-		spaceListJPanel = new SpaceListJPanel();
+		// SPACE LIST //
+		SpaceListJPanel spaceListJPanel = new SpaceListJPanel();
 		spacesJTabbedPane.addTab(NAME_SPACE_LIST, null, spaceListJPanel);
 		spaceListJPanel.setSettingsChangedListener(this);
 		addSavable(NAME_SPACE_LIST, spaceListJPanel);
 		addRefreshable(NAME_SPACE_LIST, spaceListJPanel);
+		// ROUTING //
+		RoutingJPanel routingJPanel = new RoutingJPanel();
+		addTab(1, NAME_ROUTING, null, routingJPanel);
+		addSavable(NAME_ROUTING, routingJPanel);
+		addRefreshable(NAME_ROUTING, routingJPanel);
+		routingJPanel.setSettingsChangedListener(this);
 	    }
 
-	    // SPACES //
-	    if( spaceNameList != null ){
-		for( String name : spaceNameList ){
-		    removeSavable(name);
-		    removeRefreshable(name);
-		}		
-		for( Component component : spaceScrollableList ){
-		    spacesJTabbedPane.remove(component);
-		}		
+	    // REMOVE PREVIOUS SPACES //
+	    for( String name : spaceNameList ){
+		removeSavable(name);
+		removeRefreshable(name);
 	    }
-	    spaceNameList = new ArrayList<String>();
-	    spaceScrollableList = new ArrayList<Component>();
+	    spaceNameList.clear();
+	    for( Component component : spaceScrollableList ){
+		spacesJTabbedPane.remove(component);
+	    }
+	    spaceScrollableList.clear();
+
+	    // ADD NEW SPACES //
 	    JComponent spaceJComponent;
 	    for( NetworkSpace networkSpace : networkSpaceList ){
 		if( networkSpace.getIsPrimary() ){
@@ -203,14 +180,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 		addRefreshable( networkSpace.getName() + " (" + NAME_SPACE + ")", (Refreshable)spaceJComponent);
 	    }
 
-	    // ROUTING //
-	    if( routingJPanel == null ){
-		routingJPanel = new RoutingJPanel();
-		addTab(1, NAME_ROUTING, null, routingJPanel);
-		addSavable(NAME_ROUTING, routingJPanel);
-		addRefreshable(NAME_ROUTING, routingJPanel);
-		routingJPanel.setSettingsChangedListener(this);
-	    }
+
 	}
 	else{
 	    // SOME BAD SHITE HAPPENED
@@ -293,9 +263,10 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	host = basicNetworkSettings.host();
 	dhcpEnabled = basicNetworkSettings.isDhcpEnabled();
 	super.refreshAll();
-	setupState = ((NatCommonSettings)settings).getSetupState();
+	previousSetupState = currentSetupState;
+	currentSetupState = ((NatCommonSettings)settings).getSetupState();
 	natTransform = (Nat) mTransformJPanel.getTransform();
-	if(SetupState.ADVANCED.equals( setupState )){
+	if(SetupState.ADVANCED.equals( currentSetupState )){
 	    networkSpaceList = ((NetworkSpacesSettings)settings).getNetworkSpaceList();
 	}
 	if( baseGuiBuilt ){
@@ -322,7 +293,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 			selectedJTabbedPane.setSelectedIndex(subSelectedIndex);
 		}		
 	    }});
-	}
+	}	
     }
         
 }

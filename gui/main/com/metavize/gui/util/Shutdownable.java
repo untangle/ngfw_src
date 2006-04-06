@@ -9,9 +9,7 @@
  * $Id$
  */
 
-package com.metavize.gui.transform;
-
-import com.metavize.gui.util.*;
+package com.metavize.gui.util;
 
 public interface Shutdownable {
     public void doShutdown();

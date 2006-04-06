@@ -204,7 +204,7 @@ public class UpgradeProcessJPanel extends JPanel
             try{
                 // DISABLE ALL GRAPHS SO NO EXCEPTIONS ARE CAUSED
 		Util.getPolicyStateMachine().stopAllGraphs();
-                Util.getStatsCache().kill();
+                Util.getStatsCache().doShutdown();
 
                 // DO THE DOWNLOAD AND INSTALL
                 long key = Util.getToolboxManager().upgrade();

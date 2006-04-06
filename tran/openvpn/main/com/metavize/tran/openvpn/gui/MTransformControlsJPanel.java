@@ -43,7 +43,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         
     public void generateGui(){
 	// BASE STATE
-	removeAllTabs();
+	cleanup();
 	super.saveJButton.setVisible(true);
 	super.reloadJButton.setVisible(true);
 
@@ -122,6 +122,26 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	else{
 	    // BAD SHITE HAPPENED
 	}	
+    }
+
+    private void cleanup(){
+	removeTab(WIZARD_NAME);
+	removeRefreshable(WIZARD_NAME);
+
+	removeTab(EXPORTS_NAME);
+	removeSavable(EXPORTS_NAME);
+	removeRefreshable(EXPORTS_NAME);
+	
+	removeTab(CLIENTS_AND_SITES_NAME);
+	removeSavable(POOLS_NAME);
+	removeRefreshable(POOLS_NAME);
+	removeSavable(CLIENT_TO_SITE_NAME);
+	removeRefreshable(CLIENT_TO_SITE_NAME);
+	removeSavable(SITE_TO_SITE_NAME);
+	removeRefreshable(SITE_TO_SITE_NAME);
+
+	removeTab(NAME_LOG);
+	removeShutdownable(NAME_LOG);
     }
 
     public void refreshAll() throws Exception {	

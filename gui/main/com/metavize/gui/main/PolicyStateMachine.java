@@ -49,7 +49,7 @@ import com.metavize.mvvm.security.*;
 import com.metavize.mvvm.toolbox.*;
 import com.metavize.mvvm.tran.*;
 
-public class PolicyStateMachine implements ActionListener {
+public class PolicyStateMachine implements ActionListener, Shutdownable {
 
     // MVVM DATA MODELS (USED ONLY DURING INIT) //////
     private List<Tid>                       utilTidList;
@@ -88,9 +88,11 @@ public class PolicyStateMachine implements ActionListener {
     private int                 lastToolboxScrollPosition = -1;
     private Map<Policy,Integer> lastRackScrollPosition;
     private volatile static int applianceLoadProgress;
+    private MessageClientThread messageClientThread;
     // THREAD QUEUES & THREADS /////////
     BlockingQueue<MTransformJButton> purchaseBlockingQueue;
     StoreModelThread                 storeModelThread;
+    MoveFromStoreToToolboxThread     moveFromStoreToToolboxThread;
     // CONSTANTS /////////////
     private GridBagConstraints buttonGridBagConstraints;
     private GridBagConstraints storeProgressGridBagConstraints;
@@ -173,12 +175,10 @@ public class PolicyStateMachine implements ActionListener {
         lastRackScrollPosition = new HashMap<Policy,Integer>();
         // THREAD QUEUES & THREADS /////////
         purchaseBlockingQueue = new ArrayBlockingQueue<MTransformJButton>(1000);
-        new MoveFromStoreToToolboxThread();
+        moveFromStoreToToolboxThread = new MoveFromStoreToToolboxThread();
 	actionJTabbedPane.setSelectedIndex(0);
         storeModelThread = new StoreModelThread();
-        MessageClient msgClient = new MessageClient(Util.getMvvmContext());
-        msgClient.setToolboxMessageVisitor(new StoreMessageVisitor());
-        msgClient.start();
+        messageClientThread = new MessageClientThread(Util.getMvvmContext(),new StoreMessageVisitor());
         // CONSTANTS
         buttonGridBagConstraints = new GridBagConstraints(0, GridBagConstraints.RELATIVE, 1, 1, 1d, 0d,
                                                           GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
@@ -230,6 +230,22 @@ public class PolicyStateMachine implements ActionListener {
         }
 
         Util.setPolicyStateMachine(this);
+	Util.addShutdownable("PolicyStateMachine", this);
+	Util.addShutdownable("MessageClientThread", messageClientThread);
+	Util.addShutdownable("StoreModelThread", storeModelThread);
+	Util.addShutdownable("MoveFromStoreToToolboxThread", moveFromStoreToToolboxThread);
+    }
+
+    public void doShutdown(){	
+	storeModelThread.doShutdown();
+	moveFromStoreToToolboxThread.doShutdown();
+	for(MTransformJPanel mTransformJPanel : coreRackMap.values() )
+	    mTransformJPanel.doShutdown();
+	for(MTransformJPanel mTransformJPanel : utilRackMap.values() )
+	    mTransformJPanel.doShutdown();
+	for(Policy policy : policyRackMap.keySet() )
+	    for(MTransformJPanel mTransformJPanel : policyRackMap.get(policy).values() )
+		mTransformJPanel.doShutdown();
     }
 
     // HANDLERS ///////////////////////////////////////////
@@ -622,15 +638,20 @@ public class PolicyStateMachine implements ActionListener {
         }
     }
     */
-    private class MoveFromStoreToToolboxThread extends Thread{
+    private class MoveFromStoreToToolboxThread extends Thread implements Shutdownable {
+	private volatile boolean stop = false;
         public MoveFromStoreToToolboxThread(){
             setDaemon(true);
             setContextClassLoader( Util.getClassLoader() );
             setName("MVCLIENT-MoveFromStoreToToolboxThread");
             start();
         }
+	public void doShutdown(){
+	    stop = true;
+	    this.interrupt();
+	}
         public void run(){
-            while(true){
+            while(!stop){
                 MTransformJButton purchasedMTransformJButton;
                 try{
                     purchasedMTransformJButton = purchaseBlockingQueue.take();
@@ -789,10 +810,11 @@ public class PolicyStateMachine implements ActionListener {
     }
 
     public void updateStoreModel(){ storeModelThread.updateStoreModel(); }
-    private class StoreModelThread extends Thread {
+    private class StoreModelThread extends Thread implements Shutdownable {
         private JProgressBar storeProgressBar;
         private volatile boolean doUpdate = false;
 	private volatile boolean firstRun = true;
+	private volatile boolean stop = false;
         public StoreModelThread(){
             setDaemon(true);
 	    setName("MVCLIENT-UpdateStoreModelThread");
@@ -809,17 +831,27 @@ public class PolicyStateMachine implements ActionListener {
             doUpdate = true;
             notify();
         }
+	public synchronized void doShutdown(){
+	    stop = true;
+	    notify();
+	}
         public void run(){
             // MAIN STORE EVENT LOOP
             while(true){
                 try{
                     initStoreModel();
                     synchronized(this){
-			firstRun = false;
-                        if( doUpdate )
+			if(stop)
+			    break;
+                        else if( doUpdate )
                             doUpdate = false;
-                        else
+                        else{
+			    if(stop)
+				break;
                             wait(STORE_UPDATE_CHECK_SLEEP);
+			    if(stop)
+				break;
+			}
                     }
                 }
                 catch(Exception e){
@@ -858,8 +890,10 @@ public class PolicyStateMachine implements ActionListener {
                     storeProgressBar.setValue(0);
                     storeProgressBar.setIndeterminate(false);
                     storeProgressBar.setString("No Connection");
-		    if(firstRun)
+		    if(firstRun){
 			actionJTabbedPane.setSelectedIndex(0);
+			firstRun = false;
+		    }
                 }});
             }
             else{
@@ -869,8 +903,10 @@ public class PolicyStateMachine implements ActionListener {
                         storeProgressBar.setValue(0);
                         storeProgressBar.setIndeterminate(false);
                         storeProgressBar.setString("No New Items");
-			if(firstRun)
+			if(firstRun){
 			    actionJTabbedPane.setSelectedIndex(1);			
+			    firstRun = false;
+			}
                     }});
                 }
                 else{
@@ -882,8 +918,10 @@ public class PolicyStateMachine implements ActionListener {
                         storeJPanel.add(storeSpacerJPanel, storeSpacerGridBagConstraints, 0);
                         storeJPanel.revalidate();
                         storeJPanel.repaint();
-			if(firstRun)
+			if(firstRun){
 			    actionJTabbedPane.setSelectedIndex(0);
+			    firstRun = false;
+			}
                     }});
                     for( MackageDesc mackageDesc : storeItemsAvailable ){
                         addToStore(mackageDesc,false);

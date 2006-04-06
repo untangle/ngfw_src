@@ -43,8 +43,10 @@ public class MTransformJPanel extends javax.swing.JPanel {
     private void setPolicy(Policy policy){ this.policy = policy; }
 
     // GUI VIEW MODEL
-    private MTransformControlsJPanel mTransformControlsJPanel; protected MTransformControlsJPanel mTransformControlsJPanel(){ return mTransformControlsJPanel; }
-    private MTransformDisplayJPanel mTransformDisplayJPanel;  public MTransformDisplayJPanel mTransformDisplayJPanel() { return mTransformDisplayJPanel; }
+    private MTransformControlsJPanel mTransformControlsJPanel;
+    protected MTransformControlsJPanel mTransformControlsJPanel(){ return mTransformControlsJPanel; }
+    private MTransformDisplayJPanel mTransformDisplayJPanel;
+    public MTransformDisplayJPanel mTransformDisplayJPanel() { return mTransformDisplayJPanel; }
 
     // GUI DATA MODEL
     protected MStateMachine mStateMachine;
@@ -58,6 +60,11 @@ public class MTransformJPanel extends javax.swing.JPanel {
     // GUI CONSTANTS
     private static Dimension maxDimension, minDimension;
     private static final int HELPER_POWER_ON_BLINK = 200;
+
+    // SHUTDOWNABLE
+    private Map<String, Shutdownable> shutdownableMap = new LinkedHashMap(1);
+    protected void addShutdownable(String name, Shutdownable shutdownable){ shutdownableMap.put(name, shutdownable); }
+    protected void removeShutdownable(String shutdownableKey){ shutdownableMap.remove(shutdownableKey); }
 
     public static MTransformJPanel instantiate(TransformContext transformContext, TransformDesc transformDesc, Policy policy) throws Exception {
         Class guiClass = Util.getClassLoader().loadClass( transformDesc.getGuiClassName(), transformDesc );
@@ -168,6 +175,8 @@ public class MTransformJPanel extends javax.swing.JPanel {
                                                 minDimension, maxDimension,
                                                 596, 380, 46, -280, 100);
 
+	// SHUTDOWNABLE //
+	addShutdownable("ShowControlsThread", showControlsThread);
 
         // SETUP COLORS and name
 	try{ ((JComponent)descriptionTextJLabel).putClientProperty(com.sun.java.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY, new Boolean(true)); }
@@ -196,6 +205,10 @@ public class MTransformJPanel extends javax.swing.JPanel {
     }
 
     public void doShutdown(){
+	for( Map.Entry<String,Shutdownable> shutdownableEntry : shutdownableMap.entrySet()){
+	    System.err.println("Shutting down: " + shutdownableEntry.getKey());
+	    shutdownableEntry.getValue().doShutdown();
+	}
         try{
             SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
                 mTransformControlsJPanel.doShutdown();
@@ -345,17 +358,26 @@ public class MTransformJPanel extends javax.swing.JPanel {
 
 
     private Exception generateGuiException;
-    private class ShowControlsThread extends Thread {
+    private class ShowControlsThread extends Thread implements Shutdownable {
+	private volatile boolean stop = false;
         public ShowControlsThread(){
 	    super("MVCLIENT-ShowControlsThread: " + MTransformJPanel.this.transformDesc.getDisplayName());
             setDaemon(true);
             start();
         }
+	public synchronized void doShutdown(){
+		stop = true;
+		notify();
+	}
         public void run(){
             try{
                 while(true){
                     synchronized(this){
+			if(stop)
+			    break;
                         wait();
+			if(stop)
+			    break;
                         if(MTransformJPanel.this.showingSettings && !MTransformJPanel.this.controlsLoaded){
                             SwingUtilities.invokeLater( new Runnable(){ public void run(){
                                 jProgressBar.setVisible(true);

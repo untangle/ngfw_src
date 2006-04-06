@@ -45,7 +45,7 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.RectangleInsets;
 import org.jfree.ui.TextAnchor;
 
-public class MTransformDisplayJPanel extends javax.swing.JPanel {
+public class MTransformDisplayJPanel extends javax.swing.JPanel implements Shutdownable {
 
     // GENERAL TRANSFORM
     protected MTransformJPanel mTransformJPanel;
@@ -130,10 +130,11 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
 
 
         updateGraphThread = new UpdateGraphThread();
+	mTransformJPanel.addShutdownable("UpdateGraphThread", updateGraphThread);
     }
 
-    void doShutdown(){
-        updateGraphThread.kill();
+    public void doShutdown(){
+	mTransformJPanel.mTransformControlsJPanel().doShutdown();
     }
 
     public void setUpdateGraph(boolean updateGraph){
@@ -406,12 +407,12 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
     }//GEN-END:initComponents
 
 
-    private class UpdateGraphThread extends Thread implements Killable {
+    private class UpdateGraphThread extends Thread implements Shutdownable {
 
         // GRAPH CONTROL //////
-        private boolean killed;
-        public synchronized void kill(){
-            killed = true;
+        private volatile boolean stop;
+        public synchronized void doShutdown(){
+            stop = true;
             notify();
         }
         private boolean updateGraph;
@@ -443,7 +444,6 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
         public UpdateGraphThread(){
             super("MVCLIENT-UpdateGraphThread: " + MTransformDisplayJPanel.this.mTransformJPanel.getTransformDesc().getDisplayName());
             this.setDaemon(true);
-            Util.addKillableThread(this);
             resetCounters();
             this.start();
         }
@@ -522,14 +522,14 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel {
                 try{
                     // GET TRANSFORM STATS AND HANDLE KILL/PAUSE
                     synchronized(this){
-                        if( killed ){
+                        if( stop ){
                             return;
                         }
                         if( !updateGraph ){
                             doUpdateGraph();
                             wait();
                         }
-                        if( killed ){
+                        if( stop ){
                             return;
                         }
                         currentStats = Util.getStatsCache().getFakeTransform(mTransformJPanel.getTid()).getStats();
