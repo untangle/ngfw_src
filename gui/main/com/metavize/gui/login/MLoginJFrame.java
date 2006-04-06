@@ -546,19 +546,15 @@ public class MLoginJFrame extends javax.swing.JFrame {
                     return;
                 }
                 catch(com.metavize.mvvm.client.InvocationTargetExpiredException e){
-                    e.printStackTrace();
                     //Util.handleExceptionNoRestart("Error:", e);
                 }
                 catch(com.metavize.mvvm.client.InvocationConnectionException e){
-                    e.printStackTrace();
                     //Util.handleExceptionNoRestart("Error:", e);
                 }
                 catch(MvvmConnectException e){
-                    e.printStackTrace();
                     //Util.handleExceptionNoRestart("Error:", e);
                 }
                 catch(Exception e){
-                    e.printStackTrace();
                     //Util.handleExceptionNoRestart("Error:", e);
                 }
                 finally{
