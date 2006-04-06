@@ -604,18 +604,24 @@ static int _update_bridge_devices( netcap_intf_db_t* db )
             return errlog( ERR_CRITICAL, "sysfs_class_net is not initialzed\n" );
         }
         
-        if (( dev = sysfs_get_class_device( _interface.sysfs_class_net, intf_info->name.s )) == NULL ) {
+        if (( dev = sysfs_open_class_device( SYSFS_CLASS_NET, intf_info->name.s )) == NULL ) {
             return perrlog( "sysfs_get_class_device" );
         }
-        
+                
         /* dev must be closed */
         ret = _update_bridge_device( db, intf_info, dev );
         
-        // XXX Not sure if these have to be closed
-        // Probably should check for leaks, it doesn't look like the value from get_class_device
-        // has to be closed, in fact if it is it causes errors.  This may be the incorrect function
-        // to use, it seems if it used open_class_device then it would have to be closed.
-        // sysfs_close_class_device( dev );
+        // RBS: 10/16/05 Probably should check for leaks, it doesn't
+        // look like the value from get_class_device has to be closed,
+        // in fact if it is it causes errors.  This may be the
+        // incorrect function to use, it seems if it used
+        // open_class_device then it would have to be closed.
+
+        // RBS: 04/05/06: get_device seems buggie, and didn't work
+        // when the interface changed switching to sysfs_open_device
+        // instead which seems a little bit more stable.  This one
+        // does require the device to be closed.
+        sysfs_close_class_device( dev );
         
         if ( ret < 0 ) return errlog( ERR_CRITICAL, "_update_bridge_device\n" );
     }
