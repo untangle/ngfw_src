@@ -162,6 +162,12 @@ public class PrimarySpaceJPanel extends javax.swing.JPanel implements Savable<Ob
                 mtuJTextField.setMaximumSize(new java.awt.Dimension(100, 20));
                 mtuJTextField.setMinimumSize(new java.awt.Dimension(100, 20));
                 mtuJTextField.setPreferredSize(new java.awt.Dimension(100, 20));
+                mtuJTextField.addCaretListener(new javax.swing.event.CaretListener() {
+                        public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                                mtuJTextFieldCaretUpdate(evt);
+                        }
+                });
+
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
                 gridBagConstraints.gridy = 0;
@@ -183,6 +189,20 @@ public class PrimarySpaceJPanel extends javax.swing.JPanel implements Savable<Ob
                 add(mtuJPanel, gridBagConstraints);
 
         }//GEN-END:initComponents
+
+    private void mtuJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_mtuJTextFieldCaretUpdate
+	boolean change = false;
+	try{
+	    int mtuNew = Integer.parseInt(mtuJTextField.getText().trim());
+	    if( mtuCurrent != mtuNew )
+		change = true;
+	}
+	catch(Exception e){
+	    change = true;
+	}	    
+	if( change && (settingsChangedListener != null) )
+	    settingsChangedListener.settingsChanged(this);
+    }//GEN-LAST:event_mtuJTextFieldCaretUpdate
                         
             
         // Variables declaration - do not modify//GEN-BEGIN:variables
