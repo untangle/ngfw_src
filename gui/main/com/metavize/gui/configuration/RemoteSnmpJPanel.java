@@ -181,9 +181,9 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel
 
                 setLayout(new java.awt.GridBagLayout());
 
-                setMaximumSize(new java.awt.Dimension(550, 343));
-                setMinimumSize(new java.awt.Dimension(550, 343));
-                setPreferredSize(new java.awt.Dimension(550, 343));
+                setMaximumSize(new java.awt.Dimension(550, 293));
+                setMinimumSize(new java.awt.Dimension(550, 293));
+                setPreferredSize(new java.awt.Dimension(550, 293));
                 externalRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
                 externalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "SNMP Monitoring", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));

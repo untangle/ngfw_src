@@ -39,7 +39,7 @@ public class NetworkJDialog extends MConfigJDialog {
     }
 
     protected Dimension getMinSize(){
-	return new Dimension(640, 550);
+	return new Dimension(640, 600);
     }
     
     protected void generateGui(){        
