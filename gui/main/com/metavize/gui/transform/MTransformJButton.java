@@ -39,8 +39,9 @@ public class MTransformJButton extends JButton {
     private static Color COLOR_NAME_DISABLED = new Color(140,140,140);
 
     public MTransformJButton(MackageDesc mackageDesc) {
-
         this.mackageDesc = mackageDesc;
+
+	setFocusable(false);
 
         // INITIAL LAYOUT
         this.setLayout(new GridBagLayout());
