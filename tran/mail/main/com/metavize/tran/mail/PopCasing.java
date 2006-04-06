@@ -24,7 +24,13 @@ public class PopCasing extends AbstractCasing
     private final Parser parser;
     private final PopUnparser unparser;
 
+    // these elements are only used on server-side casings
     private String zUser;
+    // incoming msg is expected from server
+    // (client sent RETR <#> command
+    //  so unless there is an error,
+    //  server will send msg immediately after +OK reply)
+    private boolean bIncomingMsg;
 
     // constructors -----------------------------------------------------------
 
@@ -34,6 +40,7 @@ public class PopCasing extends AbstractCasing
         unparser = new PopUnparser(session, clientSide, this);
 
         zUser = null;
+        bIncomingMsg = false;
     }
 
     // Casing methods ---------------------------------------------------------
@@ -57,5 +64,19 @@ public class PopCasing extends AbstractCasing
     public String getUser()
     {
         return zUser;
+    }
+
+    // client unparser will set flag to true when RETR command is found
+    // server parser will set flag to false as soon as reply is received
+    // (msg is assumed to immediately follow only if reply is +OK)
+    public void setIncomingMsg(boolean bIncomingMsg)
+    {
+        this.bIncomingMsg = bIncomingMsg;
+        return;
+    }
+
+    public boolean getIncomingMsg()
+    {
+        return bIncomingMsg;
     }
 }

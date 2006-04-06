@@ -130,8 +130,32 @@ public class PopServerParser extends AbstractParser
                         break;
                     }
 
+                    boolean bMsgData;
                     if (true == reply.isMsgData()) {
-                        //logger.debug("retr message reply: " + reply + ", " + buf);
+                        // we got +OK w/ octet count (so client sent RETR)
+                        // - msg must start next
+                        bMsgData = true;
+                        zCasing.setIncomingMsg(false);
+                        //logger.debug("retr message reply (octets): " + reply);
+                    } else if (true == zCasing.getIncomingMsg()) {
+                        if (true == reply.isSimpleOK()) {
+                            // we got +OK w/o octet count after client sent RETR
+                            // - assume that msg starts next
+                            bMsgData = true;
+                            reply.setMsgData(true);
+                            //logger.debug("retr message reply (no octets): " + reply);
+                        } else {
+                            // we didn't get +OK after client sent RETR (-ERR)
+                            // - no msg will follow
+                            bMsgData = false;
+                            logger.warn("retr message reply (no octets): " + reply);
+                        }
+                        zCasing.setIncomingMsg(false);
+                    } else {
+                        bMsgData = false;
+                    }
+
+                    if (true == bMsgData) {
                         logger.debug("retr message reply: " + buf);
 
                         try {

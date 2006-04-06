@@ -135,12 +135,14 @@ public class PopCommand implements Token
     private final static String AUTHLOGIN = "^AUTH" + LWSP + "LOGIN";
     private final static String CRLF = "\r\n";
     private final static String STLS = "^(STLS|STARTTLS)" + CRLF;
+    private final static String RETR = "^RETR ";
     private final static String PEOLINE = CRLF + "$"; /* protocol EOLINE */
     private final static String LWSPEOL = "(" + LWSP + "|" + PEOLINE + ")";
     private final static Pattern USERP = Pattern.compile(USER, Pattern.CASE_INSENSITIVE);
     private final static Pattern APOPP = Pattern.compile(APOP, Pattern.CASE_INSENSITIVE);
     private final static Pattern AUTHLOGINP = Pattern.compile(AUTHLOGIN, Pattern.CASE_INSENSITIVE);
     private final static Pattern STLSP = Pattern.compile(STLS, Pattern.CASE_INSENSITIVE);
+    private final static Pattern RETRP = Pattern.compile(RETR, Pattern.CASE_INSENSITIVE);
     private final static Pattern LWSPEOLP = Pattern.compile(LWSPEOL);
 
     private final static String NO_USER = "unknown";
@@ -154,10 +156,11 @@ public class PopCommand implements Token
     private final boolean hasSpace;
     private final boolean bIsAuthLogin;
     private final boolean bIsTLS;
+    private final boolean bIsRETR;
 
     // constructors -----------------------------------------------------------
 
-    private PopCommand(String command, String argument, String zUser, boolean hasSpace, boolean bIsAuthLogin, boolean bIsTLS)
+    private PopCommand(String command, String argument, String zUser, boolean hasSpace, boolean bIsAuthLogin, boolean bIsTLS, boolean bIsRETR)
     {
         this.command = command;
         this.argument = argument;
@@ -165,6 +168,7 @@ public class PopCommand implements Token
         this.hasSpace = hasSpace;
         this.bIsAuthLogin = bIsAuthLogin;
         this.bIsTLS = bIsTLS;
+        this.bIsRETR = bIsRETR;
     }
 
     // static factories -------------------------------------------------------
@@ -174,9 +178,9 @@ public class PopCommand implements Token
         ByteBuffer zDup = buf.duplicate();
         String zTmp = AsciiCharBuffer.wrap(zDup).toString();
 
-        Matcher zMatcher = STLSP.matcher(zTmp);
-        boolean bIsTLS = zMatcher.find();
-        //logger.debug("command: " + zTmp + ", is TLS: " + bIsTLS);
+        boolean bIsTLS = STLSP.matcher(zTmp).find();
+        boolean bIsRETR = RETRP.matcher(zTmp).find();
+        //logger.debug("command: " + zTmp + ", is TLS: " + bIsTLS + ", is RETR: " + bIsRETR);
 
         String cmd = consumeToken(zDup);
         if (0 == cmd.length()) {
@@ -185,7 +189,7 @@ public class PopCommand implements Token
 
         boolean space = eatSpace(zDup);
         String arg = consumeBuf(zDup); /* eat CRLF */
-        return new PopCommand(cmd, 0 == arg.length() ? null : arg, null, space, false, bIsTLS);
+        return new PopCommand(cmd, 0 == arg.length() ? null : arg, null, space, false, bIsTLS, bIsRETR);
     }
 
     public static PopCommand parseUser(ByteBuffer buf) throws ParseException
@@ -217,7 +221,7 @@ public class PopCommand implements Token
 
         boolean space = eatSpace(zDup);
         String arg = consumeBuf(zDup); /* eat CRLF */
-        return new PopCommand(cmd, 0 == arg.length() ? null : arg, zUser, space, bIsAuthLogin, bIsTLS);
+        return new PopCommand(cmd, 0 == arg.length() ? null : arg, zUser, space, bIsAuthLogin, bIsTLS, false);
     }
 
     // accessors --------------------------------------------------------------
@@ -250,6 +254,11 @@ public class PopCommand implements Token
     public boolean isTLS()
     {
         return bIsTLS;
+    }
+
+    public boolean isRETR()
+    {
+        return bIsRETR;
     }
 
     // Token methods ----------------------------------------------------------

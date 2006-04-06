@@ -98,6 +98,9 @@ public class PopUnparser extends AbstractUnparser
                 true == zCommand.isUser()) {
                 /* workaround to supply user to server parser */
                 zCasing.setUser(zCommand.getUser());
+            } else if (true == zCommand.isRETR()) {
+                /* workaround to supply client's RETR command to server parser */
+                zCasing.setIncomingMsg(true);
             }
 
             zWriteBufs.add(zCommand.getBytes());
@@ -115,7 +118,8 @@ public class PopUnparser extends AbstractUnparser
             PopReply zReply = (PopReply) token;
 
             if (null == zMsgDataReply &&
-                true == zReply.isMsgData()) {
+                (true == zCasing.getIncomingMsg() ||
+                 true == zReply.isMsgData())) {
                 zMsgDataReply = zReply; /* save for later */
                 zByteStuffer = new ByteBufferByteStuffer();
                 return UnparseResult.NONE;
@@ -278,8 +282,14 @@ public class PopUnparser extends AbstractUnparser
         ByteBuffer zNewBuf = zMsgDataReply.getBytes();
 
         String zMsgDataSz = zMsgDataReply.getMsgDataSz();
-        int iMsgDataSz = Integer.valueOf(zMsgDataSz).intValue();
+        if (null == zMsgDataSz) {
+            // original +OK reply didn't include octet count so leave as is
+            zMsgDataReply = null;
+            return zNewBuf;
+        }
 
+        // original +OK reply included octet count so update if necessary
+        int iMsgDataSz = Integer.valueOf(zMsgDataSz).intValue();
         if (iMsgDataSz != iNewMsgDataSz) {
             /* rebuild retrieve-ok reply because message size has changed */
 

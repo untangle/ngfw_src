@@ -108,7 +108,7 @@ public class PopClientParser extends AbstractParser
                                 logger.debug("returning ParseResult(Release( " + cmd + "))");
                                 session.release();
                                 return new ParseResult(new Release(dup));
-                            }
+                            } // else do not care about command
                         }
 
                         zTokens.add(cmd);
