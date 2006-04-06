@@ -60,7 +60,7 @@ public class Argon
     boolean isShieldEnabled = true;
     String shieldFile       = null;
     Shield shield;
-
+    
     /* Number of threads to donate to netcap */
     int numThreads        = 15;
 
@@ -76,6 +76,9 @@ public class Argon
 
     /* A list of user interfaces */
     String userIntfs = "";
+
+    /* The NAT Checker */
+    private final NatChecker natChecker = new NatChecker();
     
     /* Singleton */
     private Argon()
@@ -95,6 +98,11 @@ public class Argon
         init( policyManager );
 
         registerHooks();
+    }
+
+    NatChecker getNatChecker()
+    {
+        return this.natChecker;
     }
 
     /**
@@ -203,6 +211,9 @@ public class Argon
         } catch ( ArgonException e ) {
             logger.error( "Unable to initialize interface array.", e );
         }
+
+        /* Register the NatChecker */
+        networkManager.registerListener( this.natChecker );
 
         /* Initialize the network manager, this has to be done after netcap init. */
         networkManager.init();

@@ -213,9 +213,7 @@ function dhcpInterface() {
         return
     fi
 
-    killall dhclient
-    sleep .5
-    killall -KILL dhclient
+    killDhcp
 
     dhclient ${t_interface}
 
@@ -228,6 +226,7 @@ function dhcpInterface() {
 function killDhcp() {
     echo "[DEBUG] Killing dhcp"
 
+    killall pump
     killall dhclient
     sleep .5
     killall -KILL dhclient

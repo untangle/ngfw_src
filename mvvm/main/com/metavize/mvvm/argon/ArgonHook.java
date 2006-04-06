@@ -11,6 +11,8 @@
 
 package com.metavize.mvvm.argon;
 
+import java.net.InetAddress;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -64,6 +66,8 @@ abstract class ArgonHook implements Runnable
     protected IPSessionDesc serverSide = null;
 
     protected Policy policy = null;
+    
+    private boolean isMirrored = false;
 
     protected static final PipelineFoundry pipelineFoundry = MvvmContextFactory.context().pipelineFoundry();
 
@@ -119,7 +123,12 @@ abstract class ArgonHook implements Runnable
                 return;
             }
             
-            if ( serverIntf == clientIntf ) {
+            /* Determine whether or not the session should be allowed even though it is
+             * going out the same interface it came in on(mirrored).
+             * This is valid if the session is redirected (serverInterface changed),
+             * and the client was NATd.
+             */
+            if (( serverIntf == clientIntf ) && !checkIsMirrored( originalServerIntf, serverIntf )) {
                 if ( logger.isInfoEnabled()) {
                     logger.info( "" + netcapSession + " has matching client and server interface, raze." );
                 }
@@ -203,7 +212,7 @@ abstract class ArgonHook implements Runnable
                 if ( logger.isDebugEnabled())
                     logger.debug( "Finished vectoring for session: " + sessionGlobalState );
             } else {
-                logger.info( "Session rejected by transform, skipping vectoring: " + sessionGlobalState );
+                logger.info( "Session rejected, skipping vectoring: " + sessionGlobalState );
             }
 
             /* Must raze sessions all sessions in the session list */
@@ -277,6 +286,27 @@ abstract class ArgonHook implements Runnable
         boolean serverActionCompleted = true;
         switch ( state ) {
         case IPNewSessionRequest.REQUESTED:
+            /* If the session is mirrored, just check to see if the client and
+             * server addresses are unique, if they are not, reject the session */
+            if ( this.isMirrored ) {
+                boolean validMirror = false;
+                if ( !sessionList.isEmpty()) {
+                    /* Get the last session and check to see if the client and server are different */
+                    IPSession session = (IPSession)sessionList.get( sessionList.size() - 1 );
+                    NetcapSession netcapSession = sessionGlobalState.netcapSession();
+                    InetAddress clientAddress = netcapSession.clientSide().client().host();
+                    InetAddress serverAddress = session.clientAddr();
+                
+                    if ( !clientAddress.equals( serverAddress )) validMirror = true;
+                }
+                
+                /* If using the same server and client address, tear down the session silently */
+                if ( !validMirror ) {
+                    this.state = IPNewSessionRequest.REJECTED_SILENT;
+                    return false;
+                }
+            }
+            
             /* If the server doesn't complete, we have to "vector" the reset */
             if ( !serverComplete()) {
                 /* ??? May want to send different codes, or something ??? */
@@ -542,6 +572,22 @@ abstract class ArgonHook implements Runnable
         logger.debug( "vectorReset: isEndpointed - " + isEndpointed );
 
         return !isEndpointed;
+    }
+
+    /* Helper function to determine if a session is going to be NATd and going in and out
+     * the same interface. */
+    private boolean checkIsMirrored( byte originalServerIntf, byte serverIntf )
+    {
+        if ( originalServerIntf == serverIntf ) return ( this.isMirrored = false );
+
+        this.isMirrored = Argon.getInstance().getNatChecker().isNat( this.sessionGlobalState.netcapSession());
+        return this.isMirrored;
+    }
+
+    /* Lookup the value of isMirrored */
+    protected boolean isMirrored()
+    {
+        return this.isMirrored;
     }
 
     protected boolean alive()

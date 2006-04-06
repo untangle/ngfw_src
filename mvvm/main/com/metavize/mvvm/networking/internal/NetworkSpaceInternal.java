@@ -28,9 +28,7 @@ public class NetworkSpaceInternal
     /** True if this network space is enabled */
     private final boolean isEnabled;
 
-    /* The bunesiess papers associated with this network space, if you
-     * don't know about papers (aka, your name is not robert or ian)
-     * don't mess with this). */
+    /* The business papers associated with this network space */
     private final long businessPapers;
 
     /** List of networks on this network space */
@@ -102,7 +100,7 @@ public class NetworkSpaceInternal
         /* Set whether or not the space is enabled */
         this.isEnabled = networkSpace.isLive();
 
-        /* Set the business papears */
+        /* Set the business papers */
         this.businessPapers = networkSpace.getBusinessPapers();
 
         /* Get the network list */

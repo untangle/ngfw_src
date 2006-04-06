@@ -70,6 +70,11 @@ class PipelineFoundryImpl implements PipelineFoundry
     private static final Map<Policy, Map<Fitting, List<MPipeFitting>>> outboundChains
         = new HashMap<Policy, Map<Fitting, List<MPipeFitting>>>();
 
+    /* Rule used to track u-turn sessions */
+    /* rbscott added this nugget for u-turn traffic, should be verified by aaron and john. */
+    private static final SystemPolicyRule uturnPolicyRule = 
+        new SystemPolicyRule((byte)-1, (byte)-1, (Policy)null, true);
+
     private PipelineFoundryImpl() { }
 
     public static PipelineFoundryImpl foundry()
@@ -435,6 +440,11 @@ class PipelineFoundryImpl implements PipelineFoundry
             if (spr.matches(sd)) {
                 return spr;
             }
+        }
+
+        /* rbscott added this nugget for u-turn traffic, should be verified by aaron and john. */
+        if (sd.clientIntf() == sd.serverIntf()) {
+            return uturnPolicyRule;
         }
 
         return null;

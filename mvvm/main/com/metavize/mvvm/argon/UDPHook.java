@@ -117,10 +117,8 @@ public class UDPHook implements NetcapHook
             if ( sessionList.isEmpty()) {
                 /* No sessions, complete with the current session parameters */
                 serverTraffic = new IPTraffic( netcapUDPSession.serverSide());
-                
-
             } else {
-                /* Setup the UDP parameters to use the parameteres from the last session in the chain */
+                /* Setup the UDP parameters to use the parameters from the last session in the chain */
                 UDPSession session = (UDPSession)sessionList.get( sessionList.size() - 1 );
 
                 if ( logger.isInfoEnabled()) {
@@ -140,11 +138,15 @@ public class UDPHook implements NetcapHook
                 icmpServerId = session.icmpId();
             }
 
-            /* Setup the marking */
-            serverTraffic.isMarkEnabled( true );
-            
             /* Packets cannot go back out on the client interface */
-            serverTraffic.mark( IntfConverter.toNetcap( clientSide.clientIntf()));
+            if ( isMirrored()) {
+                serverTraffic.isMarkEnabled( false );
+            } else {
+                /* Setup the marking */
+                serverTraffic.isMarkEnabled( true );
+
+                serverTraffic.mark( IntfConverter.toNetcap( clientSide.clientIntf()));
+            }
             
             serverTraffic.lock();
             
@@ -179,10 +181,14 @@ public class UDPHook implements NetcapHook
             clientTraffic = IPTraffic.makeSwapped( netcapUDPSession.clientSide());
 
             /* Setup the marking */
-            clientTraffic.isMarkEnabled( true );
+            if ( isMirrored()) {
+                clientTraffic.isMarkEnabled( false );
+            } else {
+                clientTraffic.isMarkEnabled( true );
 
-            /* Packets cannot go back out on the server interface */
-            clientTraffic.mark( IntfConverter.toNetcap( serverSide.serverIntf()));
+                /* Packets cannot go back out on the server interface */
+                clientTraffic.mark( IntfConverter.toNetcap( serverSide.serverIntf()));
+            }
             
             clientTraffic.lock();
             return true;

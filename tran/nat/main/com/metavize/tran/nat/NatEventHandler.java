@@ -82,10 +82,6 @@ class NatEventHandler extends AbstractEventHandler
      * on a NATd interface */
     private List<DmzMatcher> dmzHostMatchers = Collections.emptyList();
 
-    // private RedirectMatcher nat = RedirectMatcher.MATCHER_DISABLED;
-    // private RedirectMatcher vpn = RedirectMatcher.MATCHER_DISABLED;
-    // private IPMatcher natLocalNetwork;
-
     /* match to determine  whether a session is directed for the dmz */
     private RedirectMatcher dmzHost = RedirectMatcher.MATCHER_DISABLED;
 
@@ -385,8 +381,6 @@ class NatEventHandler extends AbstractEventHandler
         NatMatcher natMatcher = null;
         
         for ( NatMatcher matcher : natMatchers ) {
-            logger.debug( "testing nat matcher" );            
-
             if ( matcher.isMatch( request, protocol )) {
                 natMatcher = matcher;
                 break;
@@ -776,7 +770,6 @@ class NatMatcher
         try {
             clientIntfMatcher = intfMatcherFactory.makeSetMatcher( intfArray );            
             serverIntfMatcher = intfMatcherFactory.makeInverseMatcher( dstIntfArray );
-            // serverIntfMatcher = intfMatcherFactory.getAllMatcher();
         } catch ( ParseException e ) {
             throw new TransformException( "Unable to create the client or server interface matcher " +
                                           "for a NAT matcher", e );
