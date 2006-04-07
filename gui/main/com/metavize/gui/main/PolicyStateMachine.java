@@ -260,7 +260,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         if( viewSelector.getSelectedItem() instanceof String ){
             if( viewSelector.getSelectedItem().equals(POLICY_MANAGER_OPTION) ){
                 try{
-                    PolicyJDialog policyJDialog = new PolicyJDialog();
+                    PolicyJDialog policyJDialog = new PolicyJDialog(Util.getMMainJFrame());
                     policyJDialog.setVisible(true);
                     viewSelector.setSelectedItem(selectedPolicy);
                     updatePolicyRacks();

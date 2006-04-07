@@ -36,7 +36,8 @@ public class UpgradeJDialog extends MConfigJDialog {
     public static final String NAME_UPGRADE  = "Upgrade";
     public static final String NAME_SETTINGS = "Settings";
 
-    public UpgradeJDialog() {
+    public UpgradeJDialog(Frame parentFrame) {
+	super(parentFrame);
 	setTitle(NAME_TITLE);
 	setResizable(false);
 	compoundSettings = new UpgradeCompoundSettings();

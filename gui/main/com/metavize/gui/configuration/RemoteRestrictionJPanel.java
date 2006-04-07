@@ -40,6 +40,7 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
 	boolean isOutsideAccessEnabled = externalAdminEnabledRadioButton.isSelected();
 	
 	// OUTSIDE PORT //////
+	((JSpinner.DefaultEditor)externalAdminPortJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
 	int httpsPort = 0;
 	if( isOutsideAccessEnabled ){
 	    try{ externalAdminPortJSpinner.commitEdit(); }
@@ -54,8 +55,8 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
 	boolean isOutsideAccessRestricted = externalAdminRestrictEnabledRadioButton.isSelected();
 
 	// OUTSIDE ACCESS RESTRICTION ADDRESS /////////
-	IPaddr outsideNetwork = null;
         restrictIPaddrJTextField.setBackground( Color.WHITE );
+	IPaddr outsideNetwork = null;
 	if( isOutsideAccessEnabled && isOutsideAccessRestricted ){
 	    try{
 		outsideNetwork = IPaddr.parse( restrictIPaddrJTextField.getText() );
@@ -69,8 +70,8 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
         }
 
 	// OUTSIDE ACCESS RESTRICTION NETMASK /////////
-	IPaddr outsideNetmask = null;
         restrictNetmaskJTextField.setBackground( Color.WHITE );
+	IPaddr outsideNetmask = null;
 	if( isOutsideAccessEnabled && isOutsideAccessRestricted ){	    
 	    try{
 		outsideNetmask = IPaddr.parse( restrictNetmaskJTextField.getText() );
@@ -132,7 +133,7 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
 
 	// OUTSIDE ACCESS RESTRICTED NETMASK /////
         restrictNetmaskJTextField.setText( networkingConfiguration.outsideNetmask().toString() );
-	restrictNetmaskJTextField.setBackground( Color.white );
+	restrictNetmaskJTextField.setBackground( Color.WHITE );
         
 	// INSIDE INSECURE ENABLED ///////
 	boolean isInsideInsecureEnabled = networkingConfiguration.isInsideInsecureEnabled();

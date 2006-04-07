@@ -41,9 +41,9 @@ final public class RestartDialog extends javax.swing.JDialog implements java.awt
 
     private void init(Window parentWindow){
 	initComponents();
-        this.addWindowListener(this);
-        this.setBounds( Util.generateCenteredBounds(parentWindow.getBounds(), this.getWidth(), this.getHeight()) );
-        this.setVisible(true);
+        addWindowListener(this);
+        setBounds( Util.generateCenteredBounds(parentWindow, this.getWidth(), this.getHeight()) );
+        setVisible(true);
     }
 
     private void initComponents() {//GEN-BEGIN:initComponents

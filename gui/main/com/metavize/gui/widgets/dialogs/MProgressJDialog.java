@@ -20,20 +20,20 @@ public class MProgressJDialog extends javax.swing.JDialog implements java.awt.ev
 
     public static MProgressJDialog factory(String label, String message, Window parentWindow){
 	if( parentWindow instanceof Frame )
-	    return new MProgressJDialog(label, message, (Frame)parentWindow, true);
+	    return new MProgressJDialog(label, message, (Frame)parentWindow);
 	else if( parentWindow instanceof Dialog )
-	    return new MProgressJDialog(label, message, (Dialog)parentWindow, true);
+	    return new MProgressJDialog(label, message, (Dialog)parentWindow);
 	else
 	    return null;
     }
     
-    public MProgressJDialog(String label, String message, Frame topLevelFrame, boolean isModal){
-        super(topLevelFrame, isModal);
+    public MProgressJDialog(String label, String message, Frame topLevelFrame){
+        super(topLevelFrame, true);
         init(label, message, topLevelFrame);
     }
     
-    public MProgressJDialog(String label, String message, Dialog topLevelDialog, boolean isModal){
-        super(topLevelDialog, isModal);
+    public MProgressJDialog(String label, String message, Dialog topLevelDialog){
+        super(topLevelDialog, true);
         init(label, message, topLevelDialog);
     }
     
@@ -41,8 +41,8 @@ public class MProgressJDialog extends javax.swing.JDialog implements java.awt.ev
         initComponents();
         labelJLabel.setText(label);
         messageJLabel.setText(message);
-        this.addWindowListener(this);
-        this.setBounds( Util.generateCenteredBounds(topLevelWindow, this.getWidth(), this.getHeight()) );
+        addWindowListener(this);
+        setBounds( Util.generateCenteredBounds(topLevelWindow, this.getWidth(), this.getHeight()) );
     }
     
     public JProgressBar getJProgressBar(){

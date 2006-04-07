@@ -36,8 +36,9 @@ public class AboutJDialog extends MConfigJDialog {
     private static final String NAME_TIMEZONE_PANEL    = "Timezone";
 
 
-    public AboutJDialog( ) {
-        this.setTitle(NAME_ABOUT_CONFIG);
+    public AboutJDialog(Frame parentFrame) {
+	super(parentFrame);
+        setTitle(NAME_ABOUT_CONFIG);
 	compoundSettings = new AboutCompoundSettings();
     }
 

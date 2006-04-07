@@ -563,7 +563,7 @@ public class MMainJFrame extends javax.swing.JFrame {
     private void emailJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_emailJButtonActionPerformed
         try{
             emailJButton.setEnabled(false);
-            EmailJDialog emailJDialog = new EmailJDialog();
+            EmailJDialog emailJDialog = new EmailJDialog(this);
             emailJDialog.setVisible(true);
         }
         catch(Exception e){
@@ -586,7 +586,7 @@ public class MMainJFrame extends javax.swing.JFrame {
             int modifiers = evt.getModifiers();
             boolean showHiddenPanel = ((modifiers & evt.SHIFT_MASK) > 0) && ((modifiers & evt.CTRL_MASK) > 0);
             MaintenanceJDialog.setShowHiddenPanel( showHiddenPanel );
-            MaintenanceJDialog maintenanceJDialog = new MaintenanceJDialog();
+            MaintenanceJDialog maintenanceJDialog = new MaintenanceJDialog(this);
             maintenanceJDialog.setVisible(true);
         }
         catch(Exception e){
@@ -601,7 +601,7 @@ public class MMainJFrame extends javax.swing.JFrame {
     private void remoteJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_remoteJButtonActionPerformed
         try{
             remoteJButton.setEnabled(false);
-            RemoteJDialog remoteJDialog = new RemoteJDialog();
+            RemoteJDialog remoteJDialog = new RemoteJDialog(this);
             remoteJDialog.setVisible(true);
         }
         catch(Exception e){
@@ -616,7 +616,7 @@ public class MMainJFrame extends javax.swing.JFrame {
     private void backupJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backupJButtonActionPerformed
         try{
             backupJButton.setEnabled(false);
-            BackupJDialog backupRestoreJDialog = new BackupJDialog();
+            BackupJDialog backupRestoreJDialog = new BackupJDialog(this);
             backupRestoreJDialog.setVisible(true);
         }
         catch(Exception e){
@@ -631,7 +631,7 @@ public class MMainJFrame extends javax.swing.JFrame {
     private void networkJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_networkJButtonActionPerformed
         try{
             networkJButton.setEnabled(false);
-            NetworkJDialog networkJDialog = new NetworkJDialog( );
+            NetworkJDialog networkJDialog = new NetworkJDialog(this);
             networkJDialog.setVisible(true);
         }
         catch(Exception e){
@@ -646,7 +646,7 @@ public class MMainJFrame extends javax.swing.JFrame {
     private void aboutJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutJButtonActionPerformed
         try{
             aboutJButton.setEnabled(false);
-            AboutJDialog aboutJDialog = new AboutJDialog();
+            AboutJDialog aboutJDialog = new AboutJDialog(this);
             aboutJDialog.setVisible(true);
         }
         catch(Exception e){
@@ -665,7 +665,7 @@ public class MMainJFrame extends javax.swing.JFrame {
     private void upgradeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeJButtonActionPerformed
         try{
             upgradeJButton.setEnabled(false);
-            UpgradeJDialog upgradeJDialog =  new UpgradeJDialog();
+            UpgradeJDialog upgradeJDialog =  new UpgradeJDialog(this);
             upgradeJDialog.setVisible(true);
         }
         catch(Exception e){

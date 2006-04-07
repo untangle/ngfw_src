@@ -36,8 +36,9 @@ public class MaintenanceJDialog extends MConfigJDialog {
     private static boolean showHiddenPanel;
     public static void setShowHiddenPanel(boolean showHiddenPanelX){ showHiddenPanel = showHiddenPanelX; }
 
-    public MaintenanceJDialog( ) {
-        this.setTitle(NAME_MAINTENANCE_CONFIG);
+    public MaintenanceJDialog( Frame parentFrame ) {
+	super(parentFrame);
+        setTitle(NAME_MAINTENANCE_CONFIG);
 	compoundSettings = new MaintenanceCompoundSettings();
     }
 

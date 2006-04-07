@@ -49,6 +49,7 @@ public class MaintenanceSecretJPanel extends javax.swing.JPanel
 	RemoteSettings remoteSettings = maintenanceCompoundSettings.getRemoteSettings();
 	
 	// SCRIPT //
+	scriptJTextArea.setBackground( Color.WHITE );
 	String script = remoteSettings.getPostConfigurationScript();
 	scriptJTextArea.setText( script );	
     }

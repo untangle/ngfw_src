@@ -36,8 +36,9 @@ public class RemoteJDialog extends MConfigJDialog {
     private static final String NAME_MONITORING_SYSLOG      = "Syslog";
     private static final String NAME_MANUAL_REBOOT          = "Manual Reboot";
     
-    public RemoteJDialog( ) {
-        this.setTitle(NAME_ADMINISTRATION_CONFIG);
+    public RemoteJDialog( Frame parentFrame ) {
+	super(parentFrame);
+	setTitle(NAME_ADMINISTRATION_CONFIG);
 	compoundSettings = new RemoteCompoundSettings();
     }
 

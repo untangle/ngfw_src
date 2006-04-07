@@ -22,6 +22,7 @@ import com.metavize.mvvm.security.Tid;
 import java.lang.reflect.Constructor;
 
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.Component;
 import java.awt.BorderLayout;
 import java.util.*;
@@ -42,8 +43,9 @@ public class EmailJDialog extends MConfigJDialog {
 
     private EmailCompoundSettings emailCompoundSettings;
 
-    public EmailJDialog( ) {
-        this.setTitle(NAME_EMAIL_CONFIG);
+    public EmailJDialog( Frame parentFrame ) {
+	super(parentFrame);
+        setTitle(NAME_EMAIL_CONFIG);
 	compoundSettings = new EmailCompoundSettings();
 	emailCompoundSettings = (EmailCompoundSettings) compoundSettings;
 	INSTANCE = this;

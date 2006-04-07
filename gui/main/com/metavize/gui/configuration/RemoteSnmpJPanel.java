@@ -40,8 +40,8 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel
 	boolean isSnmpEnabled = snmpEnabledRadioButton.isSelected();
 
 	// SNMP COMMUNITY ///////
-	String snmpCommunity = snmpCommunityJTextField.getText();
 	snmpCommunityJTextField.setBackground( Color.WHITE );
+	String snmpCommunity = snmpCommunityJTextField.getText();
 	if( isSnmpEnabled && (snmpCommunity.length() == 0) ){
 	    snmpCommunityJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
 	    throw new Exception(EXCEPTION_SNMP_COMMUNITY_MISSING);
@@ -57,26 +57,26 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel
 	boolean isTrapEnabled = trapEnabledRadioButton.isSelected();
 	
 	// TRAP COMMUNITY /////
-	String trapCommunity = trapCommunityJTextField.getText();
 	trapCommunityJTextField.setBackground( Color.WHITE );
+	String trapCommunity = trapCommunityJTextField.getText();
 	if( isSnmpEnabled && isTrapEnabled && (trapCommunity.length() == 0) ){
 	    trapCommunityJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
 	    throw new Exception(EXCEPTION_TRAP_COMMUNITY_MISSING);
 	}
 
 	// TRAP HOST /////
-	String trapHost = trapHostJTextField.getText();
 	trapHostJTextField.setBackground( Color.WHITE );
+	String trapHost = trapHostJTextField.getText();
 	if( isSnmpEnabled && isTrapEnabled && (trapHost.length() == 0) ){
 	    trapHostJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
 	    throw new Exception(EXCEPTION_TRAP_HOST_MISSING);
 	}
 
 	// TRAP PORT /////
+	((JSpinner.DefaultEditor)trapPortJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
 	int trapPort = 0;
 	try{ trapPortJSpinner.commitEdit(); }
 	catch(Exception e){ 
-	    ((JSpinner.DefaultEditor)trapPortJSpinner.getEditor()).getTextField().setBackground(Util.INVALID_BACKGROUND_COLOR);
 	    throw new Exception(Util.EXCEPTION_PORT_RANGE);
 	}
         trapPort = (Integer) trapPortJSpinner.getValue();

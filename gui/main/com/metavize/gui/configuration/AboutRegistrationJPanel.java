@@ -141,32 +141,26 @@ public class AboutRegistrationJPanel extends JPanel
 	// ADDRESS 1 /////
 	String address1 = registrationInfo.getAddress1();
 	address1JTextField.setText( address1 );
-	address1JTextField.setBackground( Color.WHITE );
 	
 	// ADDRESS 2 /////
 	String address2 = registrationInfo.getAddress2();
 	address2JTextField.setText( address2 );
-	address2JTextField.setBackground( Color.WHITE );
 	
 	// CITY NAME /////
 	String city = registrationInfo.getCity();
 	cityJTextField.setText( city );
-	cityJTextField.setBackground( Color.WHITE );
 	
 	// STATE NAME /////
 	String state = registrationInfo.getState();
 	stateJTextField.setText( state );
-	stateJTextField.setBackground( Color.WHITE );
 
 	// ZIPCODE NAME /////
 	String zipcode = registrationInfo.getZipcode();
 	zipcodeJTextField.setText( zipcode );
-	zipcodeJTextField.setBackground( Color.WHITE );
 	
 	// PHONE NAME /////
 	String phone = registrationInfo.getPhone();
 	phoneJTextField.setText( phone );
-	phoneJTextField.setBackground( Color.WHITE );
 	
 	// EMAIL NAME /////
 	String email = registrationInfo.getEmailAddr();

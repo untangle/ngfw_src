@@ -40,6 +40,7 @@ public class NetworkHostnameJPanel extends javax.swing.JPanel
     public void doSave(NetworkCompoundSettings networkCompoundSettings, boolean validateOnly) throws Exception {
 
 	// HOSTNAME ///////
+	hostnameJTextField.setBackground( Color.WHITE );
 	HostName hostname = null;
 	try{
 	    hostname = HostName.parse( hostnameJTextField.getText().trim());
@@ -59,6 +60,8 @@ public class NetworkHostnameJPanel extends javax.swing.JPanel
 	String provider = null;
 	String login = null;
 	String password = null;
+	loginJTextField.setBackground( Color.WHITE );
+	passwordJPasswordField.setBackground( Color.WHITE );
 	if( isDynamicDNSEnabled ){
 	    // PROVIDER //
 	    provider = (String) providerJComboBox.getSelectedItem();

@@ -43,6 +43,7 @@ public class RemoteSyslogJPanel extends javax.swing.JPanel
 	boolean isSyslogEnabled = syslogEnabledRadioButton.isSelected();
 
         // PORT /////
+	((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
 	int port = 0;
 	try{ portJSpinner.commitEdit(); }
 	catch(Exception e){ 
@@ -52,6 +53,7 @@ public class RemoteSyslogJPanel extends javax.swing.JPanel
         port = (Integer) portJSpinner.getValue();
 
         // HOST /////
+	hostJTextField.setBackground( Color.WHITE );
 	String host = hostJTextField.getText();
 	hostJTextField.setBackground( Color.WHITE );
 	if( isSyslogEnabled && (host.length() == 0) ){

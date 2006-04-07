@@ -41,6 +41,7 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
 	String host = hostJTextField.getText();
 
 	// PORT //////
+	((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
 	int port = 0;
 	try{ portJSpinner.commitEdit(); }
 	catch(Exception e){ 
@@ -59,6 +60,8 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
         String address = addressJTextField.getText();
 
 	// CHECK THAT BOTH PASSWORD AND LOGIN ARE FILLED OR UNFILLED /////
+	smtpPasswordJPasswordField.setBackground( Color.WHITE );
+	smtpLoginJTextField.setBackground( Color.WHITE );
 	if( (login.length() > 0) && (password.length() == 0) ){
 	    smtpPasswordJPasswordField.setBackground( Util.INVALID_BACKGROUND_COLOR );
 	    throw new Exception(EXCEPTION_PASSWORD_MISSING);
@@ -69,12 +72,14 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
 	}
 
 	// CHECK THAT IF EITHER LOGIN OR PASSWORD ARE FILLED, A HOSTNAME IS GIVEN
+	hostJTextField.setBackground( Color.WHITE );
 	if( (login.length() > 0) && (password.length() > 0) && (host.length() == 0) ){
 	    hostJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
 	    throw new Exception(EXCEPTION_HOSTNAME_MISSING);
 	}
 
 	// CHECK THAT A FROM ADDRESS IS SUPPLIED
+	addressJTextField.setBackground( Color.WHITE );
 	if( address.length() == 0 ){
 	    addressJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
 	    throw new Exception(EXCEPTION_ADDRESS_MISSING);
@@ -120,7 +125,7 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
 	// PASSWORD /////
 	passwordCurrent = mailSettings.getAuthPass();
 	smtpPasswordJPasswordField.setText( passwordCurrent );
-	smtpPasswordJTextField.setBackground( Color.WHITE );
+	smtpPasswordJPasswordField.setBackground( Color.WHITE );
 
 	// FROM ADDRESS //////
 	addressCurrent = mailSettings.getFromAddress();

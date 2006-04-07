@@ -33,8 +33,9 @@ public class NetworkJDialog extends MConfigJDialog {
     private static final String NAME_HOSTNAME          = "Hostname";
 
 
-    public NetworkJDialog( ) {
-        this.setTitle(NAME_NETWORKING_CONFIG);
+    public NetworkJDialog( Frame parentFrame ) {
+	super(parentFrame);
+        setTitle(NAME_NETWORKING_CONFIG);
 	compoundSettings = new NetworkCompoundSettings();
     }
 

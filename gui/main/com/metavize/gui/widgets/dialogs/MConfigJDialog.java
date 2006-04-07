@@ -50,19 +50,19 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 	init(parentDialog);
     }
 
-    public MConfigJDialog() {
-	super(Util.getMMainJFrame(), true);
-	init(Util.getMMainJFrame());
+    public MConfigJDialog(Frame parentFrame) {
+	super(parentFrame, true);
+	init(parentFrame);
     }
     
     private void init(Window parentWindow){
 	getRootPane().setDoubleBuffered(true);
 	RepaintManager.currentManager(this).setDoubleBufferingEnabled(true);
-        this.initComponents();
-        this.setBounds( Util.generateCenteredBounds( parentWindow.getBounds(), getMinSize().width, getMinSize().height) );
-        this.addWindowListener(this);
-	this.setGlassPane(infiniteProgressJComponent);
-        this.addComponentListener( new ComponentAdapter() { public void componentResized(ComponentEvent evt) {
+        initComponents();
+        setBounds( Util.generateCenteredBounds( parentWindow.getBounds(), getMinSize().width, getMinSize().height) );
+        addWindowListener(this);
+	setGlassPane(infiniteProgressJComponent);
+        addComponentListener( new ComponentAdapter() { public void componentResized(ComponentEvent evt) {
 	    dialogResized();
 	}});
     }

@@ -33,8 +33,9 @@ public class PolicyJDialog extends MConfigJDialog {
     private static final String NAME_USER_POLICIES      = "Custom Policies";
     private static final String NAME_AVAILABLE_POLICIES = "Rack List";
     
-    public PolicyJDialog( ) {
-        this.setTitle(NAME_POLICY_MANAGER);
+    public PolicyJDialog( Frame parentFrame ) {
+	super(parentFrame);
+        setTitle(NAME_POLICY_MANAGER);
 	compoundSettings = new PolicyCompoundSettings();
     }
 

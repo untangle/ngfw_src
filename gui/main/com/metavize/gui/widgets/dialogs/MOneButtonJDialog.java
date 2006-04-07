@@ -20,25 +20,6 @@ import com.metavize.gui.util.Util;
 
 public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
 
-    /*
-    public MOneButtonJDialog() {
-        super( (Util.getMMainJFrame()!=null?Util.getMMainJFrame():Util.getMLoginJFrame() ),
-               (Util.getMMainJFrame()!=null?true:false) );
-        init(null);
-    }
-    */
-
-    /*
-    public MOneButtonJDialog(String applianceName, String warning) {
-        super( (Util.getMMainJFrame()!=null?Util.getMMainJFrame():Util.getMLoginJFrame() ),
-               (Util.getMMainJFrame()!=null?true:false) );
-        init(null);
-        this.setTitle(applianceName + " Warning");
-        messageJLabel.setText("<html><center>" + warning + "</center></html>");
-        this.setVisible(true);
-    }
-    */
-
     public MOneButtonJDialog(Dialog parentDialog) {
         super(parentDialog, true);
         init(parentDialog);
@@ -59,45 +40,32 @@ public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.e
         else if( topLevelWindow instanceof Frame )
             return new MOneButtonJDialog((Frame)topLevelWindow, applianceName, warning, title, subtitle);
         else
-            return new MOneButtonJDialog((Frame)null, applianceName, warning, title, subtitle);
+            return null;
     }
 
     public MOneButtonJDialog(Dialog topLevelDialog, String applianceName, String warning, String title, String subtitle){
         super(topLevelDialog, true);
         init(topLevelDialog);
-        this.setTitle(title);
-        this.labelJLabel.setText(subtitle);
+        setTitle(title);
+        labelJLabel.setText(subtitle);
         messageJLabel.setText("<html><center>" + warning + "</center></html>");
-        this.setVisible(true);
+        setVisible(true);
     }
 
     public MOneButtonJDialog(Frame topLevelFrame, String applianceName, String warning, String title, String subtitle){
         super(topLevelFrame, true);
         init(topLevelFrame);
-        this.setTitle(title);
-        this.labelJLabel.setText(subtitle);
+        setTitle(title);
+        labelJLabel.setText(subtitle);
         messageJLabel.setText("<html><center>" + warning + "</center></html>");
-        this.setVisible(true);
+        setVisible(true);
     }
-
-    /*
-    public MOneButtonJDialog(Dialog topLevelDialog, String applianceName, String warning){
-        super(topLevelDialog, true);
-        init(topLevelDialog);
-        this.setTitle(applianceName + " Warning");
-        messageJLabel.setText("<html><center>" + warning + "</center></html>");
-        this.setVisible(true);
-    }
-    */
 
 
     private void init(Window window){
         initComponents();
-        this.addWindowListener(this);
-        if( window == null)
-            this.setBounds( Util.generateCenteredBounds((Util.getMMainJFrame()!=null?Util.getMMainJFrame().getBounds():Util.getMLoginJFrame().getBounds() ), this.getWidth(), this.getHeight()) );
-        else
-            this.setBounds( Util.generateCenteredBounds(window, this.getWidth(), this.getHeight()) );
+        addWindowListener(this);
+	setBounds( Util.generateCenteredBounds(window, this.getWidth(), this.getHeight()) );
     }
 
     private void initComponents() {//GEN-BEGIN:initComponents

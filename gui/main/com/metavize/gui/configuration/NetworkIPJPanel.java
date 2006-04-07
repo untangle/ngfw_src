@@ -45,8 +45,8 @@ public class NetworkIPJPanel extends javax.swing.JPanel
 	boolean isDhcpEnabled = dhcpEnabledRadioButton.isSelected();
 
 	// DHCP HOST ////////////
-	IPaddr host = null;
         dhcpIPaddrJTextField.setBackground( Color.WHITE );
+	IPaddr host = null;
         if( !isDhcpEnabled ){
             try{
                 host = IPaddr.parse( dhcpIPaddrJTextField.getText() );
@@ -60,8 +60,8 @@ public class NetworkIPJPanel extends javax.swing.JPanel
 	}
 
 	// DHCP NETMASK /////////
-	IPaddr netmask = null;
         dhcpNetmaskJTextField.setBackground( Color.WHITE );
+	IPaddr netmask = null;
 	if( !isDhcpEnabled ){
             try{
                 netmask = IPaddr.parse( dhcpNetmaskJTextField.getText() );
@@ -75,8 +75,8 @@ public class NetworkIPJPanel extends javax.swing.JPanel
 	}
 
 	// DHCP GATEWAY /////////
-	IPaddr gateway = null;
         dhcpRouteJTextField.setBackground( Color.WHITE );
+	IPaddr gateway = null;
 	if( !isDhcpEnabled ){
             try{
                 gateway = IPaddr.parse( dhcpRouteJTextField.getText() );
@@ -90,8 +90,8 @@ public class NetworkIPJPanel extends javax.swing.JPanel
 	}
 
 	// DHCP DNS1 ///////////
-	IPaddr dns1 = null;
         dnsPrimaryJTextField.setBackground( Color.WHITE );
+	IPaddr dns1 = null;
 	if( !isDhcpEnabled ){
             try{
                 dns1 = IPaddr.parse( dnsPrimaryJTextField.getText() );
@@ -105,8 +105,8 @@ public class NetworkIPJPanel extends javax.swing.JPanel
 	}
 
 	// DHCP DNS2 ///////
+        dnsSecondaryJTextField.setBackground( Color.WHITE );	
 	IPaddr dns2 = null;
-        dnsSecondaryJTextField.setBackground( Color.WHITE );
 	if( !isDhcpEnabled ){
             try{
                 String value = dnsSecondaryJTextField.getText().trim();

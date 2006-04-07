@@ -41,6 +41,7 @@ public class RemotePublicAddressJPanel extends javax.swing.JPanel
 	boolean isPublicAddressEnabled = enabledJRadioButton.isSelected();
         
         // ADDRESS //
+	addressJTextField.setBackground( Color.WHITE );
 	IPaddr address = null;
         try{ address = IPaddr.parse(addressJTextField.getText()); }
         catch(Exception e){
@@ -52,6 +53,7 @@ public class RemotePublicAddressJPanel extends javax.swing.JPanel
         }
 
         // PORT //
+	((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
 	int port = 0;
 	try{ portJSpinner.commitEdit(); }
 	catch(Exception e){ 

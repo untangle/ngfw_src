@@ -38,17 +38,15 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
     private InfiniteProgressJComponent infiniteProgressJComponent = new InfiniteProgressJComponent();
     private static final long MIN_PROGRESS_MILLIS = 1000l;
 
-    public BackupJDialog() {
-        super(Util.getMMainJFrame());
+    public BackupJDialog(Frame parentFrame) {
+        super(parentFrame, true);
 
         // BUILD GENERAL GUI
         initComponents();
-        this.setBounds( Util.generateCenteredBounds( Util.getMMainJFrame().getBounds(),
-							this.getWidth(),
-							this.getHeight()) );
+        setBounds( Util.generateCenteredBounds( parentFrame, this.getWidth(), this.getHeight()) );
         
-        this.addWindowListener(this);
-	this.setGlassPane(infiniteProgressJComponent);
+        addWindowListener(this);
+	setGlassPane(infiniteProgressJComponent);
 
 	if( Util.isLocal() ){
 	    backupFileJButton.setEnabled(false);

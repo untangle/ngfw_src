@@ -21,16 +21,18 @@ public class MOneButtonProgressJDialog extends javax.swing.JDialog implements ja
 
     public MOneButtonProgressJDialog(Dialog parentDialog){
 	super(parentDialog, true);
-        initComponents();
-        this.addWindowListener(this);
-        this.setBounds( Util.generateCenteredBounds(parentDialog.getBounds(), this.getWidth(), this.getHeight()) );
+        init(parentDialog);
     }
 
-    public MOneButtonProgressJDialog() {
-        super(Util.getMMainJFrame(), true);
+    public MOneButtonProgressJDialog(Frame parentFrame) {
+        super(parentFrame, true);
+        init(parentFrame);
+    }
+
+    private void init(Window window){
         initComponents();
-        this.addWindowListener(this);
-        this.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), this.getWidth(), this.getHeight()) );
+        addWindowListener(this);
+        setBounds( Util.generateCenteredBounds(window, this.getWidth(), this.getHeight()) );
     }
 
     private void initComponents() {//GEN-BEGIN:initComponents
