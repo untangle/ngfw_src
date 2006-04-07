@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# We must be very insistent since masqmail tends to not die easily (children stay alive
+# still listening to port 25)
+/etc/init.d/masqmail stop
+sleep .5
+killall masqmail
+sleep .5
+killall -KILL masqmail
+
+/etc/init.d/masqmail start

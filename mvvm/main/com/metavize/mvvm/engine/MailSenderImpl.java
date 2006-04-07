@@ -33,6 +33,7 @@ import com.metavize.mvvm.security.User;
 import com.metavize.mvvm.util.ConfigFileUtil;
 import com.metavize.mvvm.util.TransactionRunner;
 import com.metavize.mvvm.util.TransactionWork;
+import com.metavize.mvvm.tran.script.ScriptRunner;
 import com.sun.mail.smtp.SMTPTransport;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -72,9 +73,10 @@ class MailSenderImpl implements MailSender
     private static final String MAIL_FROM_PROP = "mail.from";
     private static final String MAIL_TRANSPORT_PROTO_PROP = "mail.transport.protocol";
 
+    private static final String BUNNICULA_BASE = System.getProperty( "bunnicula.home" );
+
     // masqmail.conf
-    private static final String MASQMAIL_CMD          = "/etc/init.d/masqmail ";
-    private static final String MASQMAIL_CMD_RESTART  = MASQMAIL_CMD + " restart";
+    private static final String MASQMAIL_CMD_RESTART  = BUNNICULA_BASE + "/networking/masqmail-restart";
     private static final String MASQMAIL_CONF_DIR     = "/etc/masqmail";
     private static final String MASQMAIL_CONF_FILE    = "/etc/masqmail/masqmail.conf";
     private static final String MASQMAIL_DEFAULT_ROUTE_FILE = "/etc/masqmail/default.route";
@@ -302,21 +304,12 @@ class MailSenderImpl implements MailSender
     void restartMasqMail() {
         File masqmail_dir = new File(MASQMAIL_CONF_DIR);
         if (masqmail_dir.isDirectory()) {
-            int code;
 
+            /* Run the script */
             try {
-                logger.debug( "Restarting MasqMail server" );
-
-                /* restart masqmail */
-                Process p = MvvmContextFactory.context().exec( MASQMAIL_CMD_RESTART );
-                code = p.waitFor();
+                ScriptRunner.getInstance().exec( MASQMAIL_CMD_RESTART );
             } catch ( Exception e ) {
                 logger.error( "Unable to reload masqmail configuration", e );
-                return;
-            }
-
-            if ( code != 0 ) {
-                logger.error( "Error starting masqmail server" + code );
             }
         }
     }
