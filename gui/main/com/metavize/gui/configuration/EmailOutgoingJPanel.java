@@ -39,7 +39,6 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
 
 	// HOSTNAME ///////
 	String host = hostJTextField.getText();
-	hostJTextField.setBackground( Color.WHITE );
 
 	// PORT //////
 	int port = 0;
@@ -52,15 +51,12 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
 
 	// SMTP LOGIN /////
 	String login = smtpLoginJTextField.getText();
-	smtpLoginJTextField.setBackground( Color.WHITE );
 
 	// SMTP PASSWORD /////
 	String password = new String(smtpPasswordJPasswordField.getPassword());
-	smtpPasswordJPasswordField.setBackground( Color.WHITE );
 
         // FROM ADDRESS /////
         String address = addressJTextField.getText();
-	addressJTextField.setBackground( Color.WHITE );
 
 	// CHECK THAT BOTH PASSWORD AND LOGIN ARE FILLED OR UNFILLED /////
 	if( (login.length() > 0) && (password.length() == 0) ){
@@ -119,14 +115,17 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
 	// LOGIN //////
 	loginCurrent = mailSettings.getAuthUser();
 	smtpLoginJTextField.setText( loginCurrent );
+	smtpLoginJTextField.setBackground( Color.WHITE );
 
 	// PASSWORD /////
 	passwordCurrent = mailSettings.getAuthPass();
 	smtpPasswordJPasswordField.setText( passwordCurrent );
+	smtpPasswordJTextField.setBackground( Color.WHITE );
 
 	// FROM ADDRESS //////
 	addressCurrent = mailSettings.getFromAddress();
 	addressJTextField.setText( addressCurrent );	
+	addressJTextField.setBackground( Color.WHITE );
 
 	// CONNECTIVITY TEST //
 	connectivityTestJButton.setEnabled(true);
