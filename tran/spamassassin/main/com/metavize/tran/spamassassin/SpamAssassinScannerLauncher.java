@@ -32,7 +32,8 @@ public class SpamAssassinScannerLauncher implements Runnable
 {
     private static final String REPORT_CMD = "/usr/bin/spamc -u spamc -R";
 
-    private static final Pattern REPORT_PATTERN = Pattern.compile("^[ ]*[-]?[0-9]+\\.[0-9]+ [A-Z0-9_]+");
+    private static final Pattern REPORT_PATTERN =
+        Pattern.compile("^[ ]*-?[0-9]+\\.[0-9]+ [A-Z0-9_]+");
 
     protected static final Logger logger = Logger.getLogger(SpamAssassinScannerLauncher.class.getName());
 
@@ -162,12 +163,18 @@ public class SpamAssassinScannerLauncher implements Runnable
                 while ((line = in.readLine()) != null) {
                     if (firstLine == null)
                         firstLine = line;
-
+                    logger.debug(line);
                     Matcher matcher = REPORT_PATTERN.matcher(line);
-                    if (matcher.matches()) {
+                    if (matcher.lookingAt()) {
+                        line = line.trim(); // Trim leading space
                         int j = line.indexOf(' ');
                         String score = line.substring(0, j);
-                        String category = line.substring(j + 1);
+                        int k = line.indexOf(' ', j + 1);
+                        if (k < 0)
+                            k = line.length();
+                        String category = line.substring(j + 1, k);
+                        if (logger.isDebugEnabled())
+                            logger.debug("adding item " + score + ", " + category);
                         ReportItem ri = new ReportItem(Float.parseFloat(score),
                                                        category);
                         items.add(ri);
