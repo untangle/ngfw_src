@@ -27,9 +27,8 @@ import org.apache.log4j.Logger;
 
 class SpamAssassinScanner implements SpamScanner
 {
-    private static final String REPORT_CMD = "/usr/bin/spamc-mv";
-
     private final Logger logger = Logger.getLogger(SpamAssassinScanner.class.getName());
+    private static final int timeout = 20000; /* XXX should be user configurable */
 
     SpamAssassinScanner() { }
 
@@ -40,31 +39,7 @@ class SpamAssassinScanner implements SpamScanner
 
     public SpamReport scanFile(File f, float threshold)
     {
-        List<ReportItem> items = new LinkedList<ReportItem>();
-        try {
-            ProcessBuilder pb = new ProcessBuilder(REPORT_CMD, f.getPath());
-            Process proc = pb.start();
-            InputStream is = proc.getInputStream();
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
-
-            for (String l = br.readLine(); null != l; l = br.readLine()) {
-                int i = l.indexOf(' ');
-                String score = l.substring(0, i);
-                String category = l.substring(i + 1);
-                ReportItem ri = new ReportItem(Float.parseFloat(score),
-                                               category);
-                items.add(ri);
-            }
-
-            proc.waitFor();
-        } catch (Exception exn) {
-            if (items.size() > 0)
-                logger.warn("Partial run of spamc.", exn);
-            else
-                logger.error("Could not run spamc, assume pass.", exn);
-        }
-
-        return new SpamReport(items, threshold);
+        SpamAssassinScannerLauncher scan = new SpamAssassinScannerLauncher(f, threshold);
+        return scan.doScan(this.timeout);
     }
 }

@@ -20,12 +20,14 @@ import com.metavize.tran.mail.papi.MailTransformSettings;
 import com.metavize.tran.mail.papi.quarantine.QuarantineTransformView;
 import com.metavize.tran.mail.papi.safelist.SafelistTransformView;
 import com.metavize.tran.mail.papi.smtp.sapi.Session;
+import com.metavize.tran.mail.papi.smtp.ScanLoadChecker;
 import com.metavize.tran.token.TokenHandler;
 import com.metavize.tran.token.TokenHandlerFactory;
 import org.apache.log4j.Logger;
 
 public class SpamSmtpFactory
   implements TokenHandlerFactory {
+
 
   private MailExport m_mailExport;
   private QuarantineTransformView m_quarantine;
@@ -69,5 +71,20 @@ public class SpamSmtpFactory
 
     public void handleNewSessionRequest(TCPNewSessionRequest tsr)
     {
+        boolean inbound = tsr.isInbound();
+
+        SpamSMTPConfig spamConfig = inbound?
+            m_spamImpl.getSpamSettings().getSMTPInbound():
+            m_spamImpl.getSpamSettings().getSMTPOutbound();
+
+        if(!spamConfig.getScan()) {
+            m_logger.debug("Scanning disabled.  Releasing.");
+            tsr.release(false);
+        }
+
+        if (ScanLoadChecker.reject(m_logger)) {
+            m_logger.warn("Load too high, rejecting connection from " + tsr.clientAddr());
+            tsr.rejectReturnRst();
+        }
     }
 }
