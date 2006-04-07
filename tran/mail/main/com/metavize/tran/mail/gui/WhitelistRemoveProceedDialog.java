@@ -18,7 +18,7 @@ import java.awt.Dialog;
 final public class WhitelistRemoveProceedDialog extends MTwoButtonJDialog {
     
     public WhitelistRemoveProceedDialog(Dialog topLevelDialog) {
-	super( topLevelDialog, true );
+	super( topLevelDialog );
         this.setTitle("Email Quarantine Whitelist Remove Warning");
         this.cancelJButton.setIcon(null);
         this.proceedJButton.setIcon(null);

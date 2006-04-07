@@ -18,7 +18,7 @@ import java.awt.Dialog;
 final public class PurgeProceedDialog extends MTwoButtonJDialog {
     
     public PurgeProceedDialog(Dialog topLevelDialog) {
-	super( topLevelDialog, true );
+	super( topLevelDialog );
         this.setTitle("Email Quarantine Purge Warning");
         this.cancelJButton.setIcon(null);
         this.proceedJButton.setIcon(null);
