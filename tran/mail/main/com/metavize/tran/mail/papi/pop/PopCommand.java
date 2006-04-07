@@ -129,13 +129,14 @@ public class PopCommand implements Token
 {
     //private final static Logger logger = Logger.getLogger(PopCommand.class);
 
-    private final static String USER = "^USER ";
-    private final static String APOP = "^APOP ";
     private final static String LWSP = "\\p{Blank}"; /* linear-white-space */
-    private final static String AUTHLOGIN = "^AUTH" + LWSP + "LOGIN";
+    private final static String START = "^(" + LWSP + ")*";
+    private final static String USER = START + "USER(" + LWSP + ")+";
+    private final static String APOP = START + "APOP(" + LWSP + ")+";
+    private final static String AUTHLOGIN = START + "AUTH(" + LWSP + ")+LOGIN";
     private final static String CRLF = "\r\n";
-    private final static String STLS = "^(STLS|STARTTLS)" + CRLF;
-    private final static String RETR = "^RETR ";
+    private final static String STLS = START + "(STLS|STARTTLS)" + CRLF;
+    private final static String RETR = START + "RETR(" + LWSP + ")+";
     private final static String PEOLINE = CRLF + "$"; /* protocol EOLINE */
     private final static String LWSPEOL = "(" + LWSP + "|" + PEOLINE + ")";
     private final static Pattern USERP = Pattern.compile(USER, Pattern.CASE_INSENSITIVE);

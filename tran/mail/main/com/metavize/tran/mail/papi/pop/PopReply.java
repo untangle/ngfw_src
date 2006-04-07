@@ -35,14 +35,15 @@ public class PopReply implements Token
     private final static Logger logger = Logger.getLogger(PopReply.class);
 
     private final static String DIGVAL = "(\\p{Digit})++";
-    private final static String SZVAL = DIGVAL + " octets";
-    private final static String OK = "^\\+OK";
     private final static String LWSP = "\\p{Blank}"; /* linear-white-space */
+    private final static String SZVAL = DIGVAL + "(" + LWSP + ")+octets";
+    private final static String START = "^(" + LWSP + ")*";
+    private final static String OK = START + "\\+OK";
     private final static String OKLWSP = OK + "(" + LWSP + ")";
     private final static String EOLINE = CRLF; /* EOLINE */
 
     private final static String DATAOK = OKLWSP + "+" + SZVAL + ".*?" + EOLINE;
-    private final static String PASSWDOK = "^\\+ .*?" + EOLINE;
+    private final static String PASSWDOK = START + "\\+(" + LWSP + ")+.*?" + EOLINE;
 
     private final static String PEOLINE = EOLINE + "$"; /* protocol EOLINE */
     private final static String OKSIMPLE = OKLWSP + "*" + PEOLINE;
