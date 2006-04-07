@@ -102,6 +102,7 @@ public class SystemStatus
             for ( i=0 ; i<8 && ((line = input.readLine()) != null) ; i++ ) {
                 sb.append(line+"\n");
             }
+            input.close();
 
         }
         catch (Exception e) {
@@ -128,6 +129,7 @@ public class SystemStatus
             while ((line = input.readLine()) != null) {
                 sb.append("LOAD: "+line+"\n");
             }
+            input.close();
 
             /**
              * /proc/meminfo
@@ -137,6 +139,7 @@ public class SystemStatus
             while ((line = input.readLine()) != null) {
                 sb.append("MEM: "+line+"\n");
             }
+            input.close();
 
             /**
              * df
