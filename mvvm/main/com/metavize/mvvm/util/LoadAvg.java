@@ -44,7 +44,7 @@ public class LoadAvg {
     }
 
     private static final String PATH_PROC_LOADAVG = "/proc/loadavg";
-    private static final long SAMPLING_FREQ = 5000; // 5 seconds
+    private static final long SAMPLING_FREQ = 100; // .1 seconds
 
     private static final Logger logger = Logger
         .getLogger(LoadAvg.class.getName());
@@ -92,6 +92,7 @@ public class LoadAvg {
     private void refresh() {
         long curTime = System.currentTimeMillis();
         if (curTime - SAMPLING_FREQ >= lastSampleTime) {
+            lastSampleTime = curTime;
             String line = null;
             try {
                 BufferedReader rdr = new BufferedReader(new FileReader(PATH_PROC_LOADAVG));
