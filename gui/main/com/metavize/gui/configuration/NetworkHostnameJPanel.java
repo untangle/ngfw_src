@@ -41,7 +41,6 @@ public class NetworkHostnameJPanel extends javax.swing.JPanel
 
 	// HOSTNAME ///////
 	HostName hostname = null;
-        hostnameJTextField.setBackground( Color.WHITE );
 	try{
 	    hostname = HostName.parse( hostnameJTextField.getText().trim());
 	}
