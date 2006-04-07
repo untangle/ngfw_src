@@ -206,7 +206,6 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
                 restrictIPJPanel.add(jLabel11, gridBagConstraints);
 
                 portJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
-                portJSpinner.setFocusable(false);
                 portJSpinner.setMaximumSize(new java.awt.Dimension(75, 19));
                 portJSpinner.setMinimumSize(new java.awt.Dimension(75, 19));
                 portJSpinner.setPreferredSize(new java.awt.Dimension(75, 19));
@@ -334,6 +333,7 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
                 connectivityTestJButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 connectivityTestJButton.setText("Run Connectivity Test");
                 connectivityTestJButton.setFocusPainted(false);
+                connectivityTestJButton.setFocusable(false);
                 connectivityTestJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 connectivityTestJButtonActionPerformed(evt);

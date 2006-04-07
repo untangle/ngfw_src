@@ -148,6 +148,7 @@ public class RemoteSyslogJPanel extends javax.swing.JPanel
                 syslogDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 syslogDisabledRadioButton.setText("<html><b>Disable</b> Syslog Monitoring. (This is the default setting.)</html>");
                 syslogDisabledRadioButton.setFocusPainted(false);
+                syslogDisabledRadioButton.setFocusable(false);
                 syslogDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 syslogDisabledRadioButtonActionPerformed(evt);
@@ -164,6 +165,7 @@ public class RemoteSyslogJPanel extends javax.swing.JPanel
                 syslogEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 syslogEnabledRadioButton.setText("<html><b>Enable</b> Syslog Monitoring.</html>");
                 syslogEnabledRadioButton.setFocusPainted(false);
+                syslogEnabledRadioButton.setFocusable(false);
                 syslogEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 syslogEnabledRadioButtonActionPerformed(evt);
@@ -208,7 +210,6 @@ public class RemoteSyslogJPanel extends javax.swing.JPanel
                 restrictIPJPanel.add(portJLabel, gridBagConstraints);
 
                 portJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
-                portJSpinner.setFocusable(false);
                 portJSpinner.setMaximumSize(new java.awt.Dimension(75, 19));
                 portJSpinner.setMinimumSize(new java.awt.Dimension(75, 19));
                 portJSpinner.setPreferredSize(new java.awt.Dimension(75, 19));

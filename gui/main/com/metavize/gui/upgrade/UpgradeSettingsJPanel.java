@@ -225,9 +225,8 @@ public class UpgradeSettingsJPanel extends javax.swing.JPanel
 
                 timeJSpinner.setFont(new java.awt.Font("Default", 0, 12));
                 timeJSpinner.setDoubleBuffered(true);
-                timeJSpinner.setFocusable(false);
-                timeJSpinner.setPreferredSize(null);
                 timeJSpinner.setOpaque(false);
+                timeJSpinner.setPreferredSize(null);
                 jPanel5.add(timeJSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(45, 200, 85, 30));
 
                 jScrollPane2.setViewportView(jPanel5);
@@ -263,6 +262,7 @@ public class UpgradeSettingsJPanel extends javax.swing.JPanel
                 yesAutoJRadioButton.setText("<html> <b>Automatically install new upgrades</b><br>\nIf new upgrades are found after a \"Scheduled<br>\nAutomatic Upgrade\", those upgrades will be<br>\nautomatically downloaded and installed.<br>\nIn the case of certain critical system upgrades,<br>\nthe system may be automatically restarted, and<br>\nthe user interface may not connect for a short<br>\nperiod of time. </html>");
                 yesAutoJRadioButton.setDoubleBuffered(true);
                 yesAutoJRadioButton.setFocusPainted(false);
+                yesAutoJRadioButton.setFocusable(false);
                 yesAutoJRadioButton.setOpaque(false);
                 yesAutoJRadioButton.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
                 jPanel6.add(yesAutoJRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, -1, -1));
@@ -273,6 +273,7 @@ public class UpgradeSettingsJPanel extends javax.swing.JPanel
                 noAutoJRadioButton.setText("<html>\n<b>Do not automatically install new upgrades</b><br>\nIf new upgrades are found after a \"Scheduled<br>\nAutomatic Upgrade\",  those upgrades will NOT<br>\nbe automatically installed.  The system<br>\nadministrator must manually upgrade the system<br>\nthrough the \"Manual Upgrade\" tab of this window.\n</html>");
                 noAutoJRadioButton.setDoubleBuffered(true);
                 noAutoJRadioButton.setFocusPainted(false);
+                noAutoJRadioButton.setFocusable(false);
                 noAutoJRadioButton.setOpaque(false);
                 noAutoJRadioButton.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
                 jPanel6.add(noAutoJRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 140, -1, -1));

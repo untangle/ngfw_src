@@ -191,6 +191,7 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel
                 snmpDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 snmpDisabledRadioButton.setText("<html><b>Disable</b> SNMP Monitoring. (This is the default setting.)</html>");
                 snmpDisabledRadioButton.setFocusPainted(false);
+                snmpDisabledRadioButton.setFocusable(false);
                 snmpDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 snmpDisabledRadioButtonActionPerformed(evt);
@@ -207,6 +208,7 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel
                 snmpEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 snmpEnabledRadioButton.setText("<html><b>Enable</b> SNMP Monitoring.</html>");
                 snmpEnabledRadioButton.setFocusPainted(false);
+                snmpEnabledRadioButton.setFocusable(false);
                 snmpEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 snmpEnabledRadioButtonActionPerformed(evt);
@@ -379,7 +381,6 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel
                 restrictIPJPanel1.add(trapPortJLabel, gridBagConstraints);
 
                 trapPortJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
-                trapPortJSpinner.setFocusable(false);
                 trapPortJSpinner.setMaximumSize(new java.awt.Dimension(75, 19));
                 trapPortJSpinner.setMinimumSize(new java.awt.Dimension(75, 19));
                 trapPortJSpinner.setPreferredSize(new java.awt.Dimension(75, 19));

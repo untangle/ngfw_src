@@ -185,6 +185,7 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
                 externalAdminEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 externalAdminEnabledRadioButton.setText("<html><b>Allow</b> Remote Administration outside the local network, via secure http (https).</html>");
                 externalAdminEnabledRadioButton.setFocusPainted(false);
+                externalAdminEnabledRadioButton.setFocusable(false);
                 externalAdminEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 externalAdminEnabledRadioButtonActionPerformed(evt);
@@ -207,7 +208,6 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
                 externalRemoteJPanel.add(externalAdminPortJLabel, gridBagConstraints);
 
                 externalAdminPortJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
-                externalAdminPortJSpinner.setFocusable(false);
                 externalAdminPortJSpinner.setMaximumSize(new java.awt.Dimension(100, 20));
                 externalAdminPortJSpinner.setMinimumSize(new java.awt.Dimension(100, 20));
                 externalAdminPortJSpinner.setPreferredSize(new java.awt.Dimension(100, 20));
@@ -222,6 +222,7 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
                 externalAdminDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 externalAdminDisabledRadioButton.setText("<html><b>Disallow</b> Remote Administration outside the local network, via secure http (https).<br>(This is the default setting.)</html>");
                 externalAdminDisabledRadioButton.setFocusPainted(false);
+                externalAdminDisabledRadioButton.setFocusable(false);
                 externalAdminDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 externalAdminDisabledRadioButtonActionPerformed(evt);
@@ -248,6 +249,7 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
                 externalAdminRestrictDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 externalAdminRestrictDisabledRadioButton.setText("<html><b>Unrestrict</b> so any outside IP address can remotely administer.</html>");
                 externalAdminRestrictDisabledRadioButton.setFocusPainted(false);
+                externalAdminRestrictDisabledRadioButton.setFocusable(false);
                 externalAdminRestrictDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 externalAdminRestrictDisabledRadioButtonActionPerformed(evt);
@@ -264,6 +266,7 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
                 externalAdminRestrictEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 externalAdminRestrictEnabledRadioButton.setText("<html><b>Restrict</b> the IP address(es) that can remotely administer to the following:</html>");
                 externalAdminRestrictEnabledRadioButton.setFocusPainted(false);
+                externalAdminRestrictEnabledRadioButton.setFocusable(false);
                 externalAdminRestrictEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 externalAdminRestrictEnabledRadioButtonActionPerformed(evt);
@@ -341,6 +344,7 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
                 internalAdminEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 internalAdminEnabledRadioButton.setText("<html><b>Allow</b> Remote Administration inside the local network, via http.<br>(This is the default setting.)</html>");
                 internalAdminEnabledRadioButton.setFocusPainted(false);
+                internalAdminEnabledRadioButton.setFocusable(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -351,6 +355,7 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
                 internalAdminDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 internalAdminDisabledRadioButton.setText("<html><b>Disallow</b> Remote Administration inside the local network, via http.</html>");
                 internalAdminDisabledRadioButton.setFocusPainted(false);
+                internalAdminDisabledRadioButton.setFocusable(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;

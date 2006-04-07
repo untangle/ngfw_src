@@ -232,6 +232,7 @@ public class NetworkHostnameJPanel extends javax.swing.JPanel
 
                 publicJCheckBox.setText("Hostname resolves publicly");
                 publicJCheckBox.setFocusPainted(false);
+                publicJCheckBox.setFocusable(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;

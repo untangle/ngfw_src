@@ -144,6 +144,7 @@ public class RemotePublicAddressJPanel extends javax.swing.JPanel
                 disabledJRadioButton.setText("<html><b>Disabled</b></html>");
                 disabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set EdgeGuard's IP address from the network's DHCP server.</html>");
                 disabledJRadioButton.setFocusPainted(false);
+                disabledJRadioButton.setFocusable(false);
                 disabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 disabledJRadioButtonActionPerformed(evt);
@@ -160,6 +161,7 @@ public class RemotePublicAddressJPanel extends javax.swing.JPanel
                 enabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 enabledJRadioButton.setText("<html><b>Enabled</b></html>");
                 enabledJRadioButton.setFocusPainted(false);
+                enabledJRadioButton.setFocusable(false);
                 enabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 enabledJRadioButtonActionPerformed(evt);
@@ -210,7 +212,6 @@ public class RemotePublicAddressJPanel extends javax.swing.JPanel
                 staticIPJPanel.add(portJLabel, gridBagConstraints);
 
                 portJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
-                portJSpinner.setFocusable(false);
                 portJSpinner.setMaximumSize(new java.awt.Dimension(75, 19));
                 portJSpinner.setMinimumSize(new java.awt.Dimension(75, 19));
                 portJSpinner.setPreferredSize(new java.awt.Dimension(75, 19));

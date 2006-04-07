@@ -246,6 +246,7 @@ public class NetworkIPJPanel extends javax.swing.JPanel
                 dhcpEnabledRadioButton.setText("<html><b>Automatically Set</b>  using the network's DHCP server.</html>");
                 dhcpEnabledRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set EdgeGuard's IP address from the network's DHCP server.</html>");
                 dhcpEnabledRadioButton.setFocusPainted(false);
+                dhcpEnabledRadioButton.setFocusable(false);
                 dhcpEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 dhcpEnabledRadioButtonActionPerformed(evt);
@@ -263,6 +264,7 @@ public class NetworkIPJPanel extends javax.swing.JPanel
                 dhcpDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 dhcpDisabledRadioButton.setText("<html><b>Manually Set</b> using  the fields below.</html>");
                 dhcpDisabledRadioButton.setFocusPainted(false);
+                dhcpDisabledRadioButton.setFocusable(false);
                 dhcpDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 dhcpDisabledRadioButtonActionPerformed(evt);
@@ -420,6 +422,7 @@ public class NetworkIPJPanel extends javax.swing.JPanel
                 renewDhcpLeaseJButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 renewDhcpLeaseJButton.setText("Renew DHCP Lease");
                 renewDhcpLeaseJButton.setFocusPainted(false);
+                renewDhcpLeaseJButton.setFocusable(false);
                 renewDhcpLeaseJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 renewDhcpLeaseJButtonActionPerformed(evt);
@@ -449,6 +452,7 @@ public class NetworkIPJPanel extends javax.swing.JPanel
                 connectivityTestJButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 connectivityTestJButton.setText("Run Connectivity Test");
                 connectivityTestJButton.setFocusPainted(false);
+                connectivityTestJButton.setFocusable(false);
                 connectivityTestJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 connectivityTestJButtonActionPerformed(evt);
