@@ -289,7 +289,7 @@ the line below is commented-out
       //Sort records by date, with "newest" (i.e. greatest numerical value for time)
       //at the top
       Arrays.sort(allRecords, InboxRecordComparator.getComparator(
-        InboxRecordComparator.SortBy.INTERN_DATE, true));
+        InboxRecordComparator.SortBy.INTERN_DATE, false));
         
       if(allRecords == null || allRecords.length == 0) {
         context.put(HAS_RECORDS_VV, Boolean.FALSE);

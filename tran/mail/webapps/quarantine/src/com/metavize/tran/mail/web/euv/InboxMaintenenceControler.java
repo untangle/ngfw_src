@@ -60,7 +60,7 @@ public class InboxMaintenenceControler
       InboxRecordComparator.SortBy sortBy =
         Util.stringToSortBy(req.getParameter(Constants.SORT_BY_RP),
           InboxRecordComparator.SortBy.INTERN_DATE);
-      boolean ascending = Util.readBooleanParam(req, Constants.SORT_ASCEND_RP, true);
+      boolean ascending = Util.readBooleanParam(req, Constants.SORT_ASCEND_RP, false);
       int startingAt = Util.readIntParam(req, Constants.FIRST_RECORD_RP, 0);
       int rowsPerPage = Util.readIntParam(req, "rowsPerPage", Constants.RECORDS_PER_PAGE);
 
