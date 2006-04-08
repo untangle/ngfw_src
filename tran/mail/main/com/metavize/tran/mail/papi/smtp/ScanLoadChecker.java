@@ -14,6 +14,7 @@ package com.metavize.tran.mail.papi.smtp;
 import org.apache.log4j.Logger;
 
 import com.metavize.mvvm.util.LoadAvg;
+import com.metavize.mvvm.util.MetaEnv;
 
 public final class ScanLoadChecker {
 
@@ -22,6 +23,8 @@ public final class ScanLoadChecker {
 
     public static final String SMTP_SCAN_REJECT_RUNNING_PROPERTY = "mvvm.smtp.scan.reject.running";
     public static final int SMTP_SCAN_REJECT_RUNNING_DEFAULT = 30;
+
+    public static final float ALLOW_ANYWAY_CHANCE = 0.05f;
 
     public static float SMTP_SCAN_REJECT_LOAD;
     public static int SMTP_SCAN_REJECT_RUNNING;
@@ -61,6 +64,10 @@ public final class ScanLoadChecker {
         int numRunning = la.getNumRunning();
         if (oneMinLA >= SMTP_SCAN_REJECT_LOAD ||
             numRunning >= SMTP_SCAN_REJECT_RUNNING) {
+            if (MetaEnv.rng().nextFloat() < ALLOW_ANYWAY_CHANCE) {
+                logger.warn("Load too high, but allowing anyway: " + la);
+                return false;
+            }
             logger.warn("Load too high: " + la);
             return true;
         }
