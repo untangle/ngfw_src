@@ -13,6 +13,7 @@ package com.metavize.tran.airgap;
 import java.io.Serializable;
 
 import java.util.Date;
+import java.sql.Timestamp;
 
 public class ShieldRejectionLogEntry implements Serializable
 {
@@ -28,7 +29,10 @@ public class ShieldRejectionLogEntry implements Serializable
                              double reputation, int limited, int dropped, int rejected )
                              
     {
-        this.createDate = createDate;
+	if( createDate instanceof Timestamp )
+	    this.createDate = new Date(createDate.getTime());
+	else
+	    this.createDate = createDate;
         this.client     = client;
         this.clientIntf = clientIntf;
         this.reputation = reputation;

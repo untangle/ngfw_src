@@ -13,6 +13,7 @@ package com.metavize.tran.openvpn;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.sql.Timestamp;
 
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
@@ -133,7 +134,10 @@ public class ClientConnectEvent extends LogEvent implements Serializable
     
     void setStart( Date start )
     {
-        this.start = start;
+	if( start instanceof Timestamp )
+	    this.start = new Date(start.getTime());
+	else
+	    this.start = start;
     }
 
     /**
@@ -151,7 +155,10 @@ public class ClientConnectEvent extends LogEvent implements Serializable
 
     void setEnd( Date end )
     {
-        this.end = end;
+	if( end instanceof Timestamp )
+	    this.end = new Date(end.getTime());
+	else
+	    this.end = end;
     }
 
     /**

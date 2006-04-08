@@ -37,7 +37,7 @@ public class LogJPanel extends MLogTableJPanel {
         public TableColumnModel getTableColumnModel(){
             DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
             //                                 #   min  rsz    edit   remv   desc   typ               def
-            addTableColumn( tableColumnModel,  0,  150, true,  false, false, false, String.class, null,  "timestamp" );
+            addTableColumn( tableColumnModel,  0,  150, true,  false, false, false, Date.class,   null,  "timestamp" );
             addTableColumn( tableColumnModel,  1,  120, true,  false, false, false, String.class, null,  sc.html("source") );
             addTableColumn( tableColumnModel,  2,  100, true,  false, false, false, String.class, null,  sc.html("source<br>interface") );
             addTableColumn( tableColumnModel,  3,  75,  true,  false, false, false, Double.class, null,  "reputation" );

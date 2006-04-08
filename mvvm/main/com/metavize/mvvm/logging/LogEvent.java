@@ -63,7 +63,7 @@ public abstract class LogEvent implements Comparable, Serializable
      */
     public Date getTimeStamp()
     {
-        return timeStamp;
+	return timeStamp;
     }
 
     /**

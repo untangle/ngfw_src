@@ -82,8 +82,8 @@ public class LogJPanel extends MLogTableJPanel
             Vector<Vector> allEvents = new Vector<Vector>(logList.size());
             Vector event;
 
-            for (Iterator i = logList.iterator(); i.hasNext(); ) {
-                RedirectEvent log = (RedirectEvent)i.next();
+            for ( LogEvent logEvent : logList ) {
+                RedirectEvent log = (RedirectEvent) logEvent;
                 PipelineEndpoints pe = log.getPipelineEndpoints();
 
                 event = new Vector(8);
