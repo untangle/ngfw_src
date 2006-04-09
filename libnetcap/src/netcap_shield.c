@@ -1378,14 +1378,14 @@ static int  _status             ( int conn, struct sockaddr_in *dst_addr )
         _reputation_update ( rep );
         _reputation_eval( item );
         
-        msg_len =  snprintf( buf, sizeof(buf), "<rep ip='%#08x' depth='%d' active='%d' val='%lg' "
-                             "evil-load='%g' evil-total='%d' request-load='%g' request-total='%d' "
+        msg_len =  snprintf( buf, sizeof(buf), "<rep ip='%#08x' children='%d' depth='%d' active='%d' "
+                             "val='%lg' evil-load='%g' evil-total='%d' request-load='%g' request-total='%d' "
                              "session-load='%g' session-total='%d' srv-conn-load='%g' srv-conn-total='%d' "
                              "srv-fail-load='%g' srv-fail-total='%d' "
                              "tcp-chk-load='%g' tcp-chk-total='%d' udp-chk-load='%g' udp-chk-total='%d' "
                              "icmp-chk-load='%g' icmp-chk-total='%d' byte-load='%g' byte-total='%d' "
                              "rejected='%d' limited='%d' divider='%g'/>\n",
-                             ntohl(rep->ip.s_addr), item->depth, rep->active_sessions, rep->score,
+                             ntohl(rep->ip.s_addr), children, item->depth, rep->active_sessions, rep->score,
                              rep->evil_load.load, rep->evil_load.total,
                              rep->request_load.load, rep->request_load.total,
                              rep->session_load.load, rep->session_load.total,

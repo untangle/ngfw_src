@@ -66,7 +66,11 @@ typedef union {
 typedef struct netcap_trie_level {
     netcap_trie_base_t base;
 
+    /* Number of direct descendents */
     int count;
+    
+    /* estimated total number of terminal child nodes for this node */
+    int num_children;
 
     netcap_trie_element_t r[NC_TRIE_ROW_SIZE];
 } netcap_trie_level_t;

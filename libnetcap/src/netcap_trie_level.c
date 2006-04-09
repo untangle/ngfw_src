@@ -34,6 +34,9 @@ int                  netcap_trie_level_init       ( netcap_trie_t* trie, netcap_
     
     bzero( level, sizeof(netcap_trie_level_t) );
     
+    /* Redundant due to bzero */
+    level->num_children = 0;
+    
     /* Initialize the base */
     if ( netcap_trie_base_init( trie, &level->base, parent, NC_TRIE_BASE_LEVEL, pos, depth ) < 0 ) {
         return errlog(ERR_CRITICAL, "netcap_trie_base_init\n");

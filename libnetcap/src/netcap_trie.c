@@ -34,6 +34,9 @@ static netcap_trie_element_t _create_element( netcap_trie_t* trie, netcap_trie_l
 
 static int _set_line( netcap_trie_line_t* line, netcap_trie_base_t* base );
 
+/* Decrements num_children for all of parent, and all of its parents */
+static int _decrement_children( netcap_trie_t* trie, netcap_trie_level_t* parent, struct in_addr* _ip );
+
 /* Get the closest item to ip, this never creates a new item  */
 int new_netcap_trie_get            ( netcap_trie_t* trie, struct in_addr* _ip, netcap_trie_line_t* line )
 {
@@ -113,7 +116,23 @@ int new_netcap_trie_insert_and_get ( netcap_trie_t* trie, struct in_addr* _ip, p
         
         debug( NC_TRIE_DEBUG_HIGH, "new_netcap_trie_insert_and_get: %#010x", _ip->s_addr );
 
-        for ( depth = 0 ; depth < NC_TRIE_DEPTH_TOTAL ; depth++ ) {            
+        /* Use two just in case */
+        int max_size = ht_num_entries( &trie->ip_element_table ) + 2;
+
+        for ( depth = 0 ; depth < NC_TRIE_DEPTH_TOTAL ; depth++ ) {
+            /* Increase the number of children in the parent */
+            if ( parent->num_children < 0 ) {
+                errlog( ERR_WARNING, "Parent at %#010x/%d has too many children[%d], set to 1\n.", 
+                        _ip->s_addr, depth, parent->num_children );
+                parent->num_children = 1;
+            } else if ( parent->num_children > max_size ) {
+                errlog( ERR_WARNING, "Parent at %#010x/%d has too many children[%d], set to %d\n.", 
+                        _ip->s_addr, depth, parent->num_children, max_size );
+                parent->num_children = max_size;
+            } else {
+                parent->num_children++;
+            }
+            
             _validate_depth( depth, parent->base.depth );
 
             pos = ip[depth];
@@ -176,7 +195,7 @@ int new_netcap_trie_remove         ( netcap_trie_t* trie, struct in_addr* _ip, p
         netcap_trie_level_t* parent = &trie->root;
         netcap_trie_element_t child;
         
-        u_char depth;
+        int depth;
 
         /* Set this before hand, this way the user knows if it didn't remove anything */
         line->is_bottom_up = 1;
@@ -215,10 +234,15 @@ int new_netcap_trie_remove         ( netcap_trie_t* trie, struct in_addr* _ip, p
                 return 0;
             }
 
+            /* XXX May want to check if parent->count is always positive. */
             if ( parent->count > 1 || depth == 0 ) {
+                /* Decrement children of all of the parent nodes. */
+                _decrement_children( trie, parent, _ip );
+
                 /* Otherwise remove the child and decrement the number of nodes. */
                 parent->r[pos].base = NULL;
                 parent->count--;
+                
                 child.base->parent = NULL;
                 return 0;
             }
@@ -226,11 +250,13 @@ int new_netcap_trie_remove         ( netcap_trie_t* trie, struct in_addr* _ip, p
             child.level =parent;
             line->d[line->count++] = child;
         }
+        
+        /* This line is pretty much unreachable (if statement if ( parent->count > 1 || depth == 0 )) */
+        errlog( ERR_CRITICAL, "unexpected statement\n" );
 
         return 0;
     }
 
-    /* Now lock the mutex, and check again */
     if ( mutex != NULL && pthread_mutex_lock( mutex ) < 0 ) return perrlog( "pthread_mutex_lock" );
 
     debug( NC_TRIE_DEBUG_HIGH, "new_netcap_trie_remove: %#010x", _ip->s_addr );
@@ -396,4 +422,41 @@ static int _set_line( netcap_trie_line_t* line, netcap_trie_base_t* base )
     return 0;
 }
 
+static int _decrement_children( netcap_trie_t* trie, netcap_trie_level_t* parent, struct in_addr* _ip )
+{
+    int depth;
+    
+    /* Use two just in case */
+    int max_size = ht_num_entries( &trie->ip_element_table ) + 2;
+    
+    /* Decrement the depth after the first iteration of the loop (starts at the current node) */
+    for ( depth = parent->base.depth; depth >= 0 ; depth-- ) {
+        if ( parent == NULL ) {
+            return errlog( ERR_WARNING, "Parent at %#010x/%d is NULL\n.", _ip->s_addr, depth );
+        }
 
+        _validate_depth( depth, parent->base.depth );
+
+        /* Validate that the size is reasonable */
+        if ( parent->num_children > max_size ) {
+            errlog( ERR_WARNING, "Parent at %#010x/%d has too many children[%d], set to %d\n.", 
+                    _ip->s_addr, depth, parent->num_children, max_size );
+            parent->num_children = max_size;
+        }
+
+        if ( parent->num_children <= 0 ) {
+            errlog( ERR_WARNING, "Parent at %#010x/%d has an invalid number of children[%d], set to 0.\n", 
+                    _ip->s_addr, depth, parent->num_children );
+            parent->num_children = 0;
+        } else {
+            parent->num_children--;
+        }
+        
+        if ((( parent = parent->base.parent ) == NULL )) {
+            if ( depth == 0 ) break;
+            else              return errlog( ERR_CRITICAL, "Disconnected node for %#010x\n", _ip->s_addr );
+        }
+    }
+
+    return 0;
+}

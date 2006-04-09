@@ -106,6 +106,10 @@ int netcap_lru_add( netcap_lru_t* lru, netcap_lru_node_t* node, void* data, pthr
         if (( node->state == _LRU_PERMANENT ) && ( node->list_node != NULL )) {
             return errlog( ERR_CRITICAL, "Node is on the permanent list, cannot be added to LRU\n" );
         }
+        
+        if ( node->state == _LRU_REMOVED ) {
+            return errlog( ERR_CRITICAL, "Node has already been removed, cannot be added to LRU\n" );
+        }
 
         node->state     = _LRU_READY;
         node->data      = data;
@@ -114,7 +118,7 @@ int netcap_lru_add( netcap_lru_t* lru, netcap_lru_node_t* node, void* data, pthr
         }
         return 0;
     }
-
+    
     int ret;
     
     _CHECK_AND_LOCK( mutex );
@@ -143,12 +147,16 @@ int netcap_lru_permanent_add( netcap_lru_t* lru, netcap_lru_node_t* node, void* 
                 if ( list_remove( &lru->lru_list, node->list_node ) < 0 ) perrlog( "list_remove\n" );
                 
                 /* Null out the list node */
-                node->list_node = NULL;                
+                node->list_node = NULL; 
                 break;
                 
             case _LRU_PERMANENT:
                 /* Already there, nothing left to do */
                 errlog( ERR_WARNING, "Node[%#10x] was already on the permanent list\n", data );
+                return 0;
+
+            case _LRU_REMOVED:
+                errlog( ERR_CRITICAL, "Node[%#10x] already removed, cannot put on permanent list\n", data );
                 return 0;
 
             default:
@@ -227,7 +235,9 @@ int netcap_lru_move_front( netcap_lru_t* lru, netcap_lru_node_t* node, pthread_m
     _validate_lru( lru );
     
     int _critical_section( void ) {
-        /* Node is not ready, can't use it yet anymore */
+        /* Node is not ready, can't use it yet anymore, check before locking the
+         * mutex to avoid unecessary locks, check after because the value can change
+         * only when you have the mutex. */
         if ( node->state != _LRU_READY ) {
             debug( _LRU_DEBUG_HIGH, "LRU: Node has already been removed\n" );
             return 0;
@@ -304,7 +314,7 @@ int netcap_lru_cut( netcap_lru_t* lru, netcap_lru_node_t** node_array, int node_
                     debug( _LRU_DEBUG_LOW, "LRU: Non-deletable node, continuing to sift\n" );
                 } else {
                     if ( _lru_remove( lru, node ) < 0 ) return errlog( ERR_CRITICAL, "_lru_remove\n" );
-                    if ( node_array != NULL &&  ( node_count < node_array_size )) {
+                    if (( node_array != NULL ) && ( node_count < node_array_size )) {
                         node_array[node_count++] = node;
                     } else node_count++;
                 }
@@ -323,7 +333,7 @@ int netcap_lru_cut( netcap_lru_t* lru, netcap_lru_node_t** node_array, int node_
                 
                 if ( _lru_remove( lru, node ) < 0 ) return errlog( ERR_CRITICAL, "_lru_remove\n" );
                 
-                if ( node_array != NULL &&  ( node_count < node_array_size )) {
+                if (( node_array != NULL ) &&  ( node_count < node_array_size )) {
                     node_array[node_count++] = node;
                 } else node_count++;
             }
@@ -352,7 +362,7 @@ static int _lru_remove( netcap_lru_t* lru, netcap_lru_node_t* node )
 {
     list_node_t* list_node = node->list_node;
     
-    if ( NULL == list_node || node->state != _LRU_READY ) {
+    if (( NULL == list_node ) || ( node->state != _LRU_READY )) {
         return errlog( ERR_CRITICAL, "Item is not on LRU or LRU is corrupted\n" );
     }
 
@@ -360,7 +370,7 @@ static int _lru_remove( netcap_lru_t* lru, netcap_lru_node_t* node )
     node->state = _LRU_REMOVED;
 
     /* Call the removal function on the data */
-    if ( lru->remove != NULL && lru->remove( node->data ) < 0 ) errlog( ERR_CRITICAL, "lru->remove\n" );
+    if (( lru->remove != NULL ) && ( lru->remove( node->data ) < 0 )) errlog( ERR_CRITICAL, "lru->remove\n" );
     
     /* Actually remove the node from the list */
     if ( list_remove( &lru->lru_list, list_node ) < 0 ) perrlog( "list_remove\n" );

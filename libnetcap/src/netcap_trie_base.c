@@ -57,7 +57,7 @@ int  netcap_trie_element_children( netcap_trie_element_t element )
 
     switch ( element.base->type ) {
     case NC_TRIE_BASE_LEVEL:
-        return element.level->count;
+        return element.level->num_children;
 
     case NC_TRIE_BASE_ITEM:
         return 1;
