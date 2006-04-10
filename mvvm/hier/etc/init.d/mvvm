@@ -132,7 +132,7 @@ case "$1" in
 
         # Wait for completion
         tick=0
-        for i in `seq 1 10` ; do
+        for i in `seq 1 15` ; do
             FINI="`cat $MVVM_CONSOLE_LOG 2>/dev/null | grep -i 'shutdown complete' `"
             sleep 1
             echo -n "."
@@ -173,6 +173,9 @@ case "$1" in
                     exit
                 else
                     tick=$(($tick+1))
+                    # send a kill signal
+                    kill -9 `ps awwx | grep java | grep mvvm | awk '{print $1}' | grep -v $$ ` &>/dev/null
+                    killall -9 mvvm.sh &>/dev/null
                 fi
             fi
         done
