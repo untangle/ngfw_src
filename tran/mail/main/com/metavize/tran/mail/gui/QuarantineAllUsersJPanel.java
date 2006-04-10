@@ -364,8 +364,8 @@ class QuarantineAllTableModel extends MSortedTableModel<MailTransformCompoundSet
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );
             tempRow.add( inbox.getAddress() );
-            tempRow.add( Integer.toString(inbox.getNumMails()) );
-            tempRow.add( Long.toString(inbox.getTotalSz()/1024l) );
+            tempRow.add( inbox.getNumMails() );
+            tempRow.add( inbox.getTotalSz()/1024l );
             allRows.add( tempRow );
         }
         return allRows;

@@ -33,7 +33,7 @@ import javax.swing.*;
 
 public class WhitelistUserJDialog extends MConfigJDialog {
 
-    private static final String NAME_WHITELIST_USER = "Email Quarantine Whitelist Details for: ";
+    private static final String NAME_WHITELIST_USER = "Email From-Safe List Details for: ";
 
     private SafelistAdminView safelistAdminView;
     private String account;
