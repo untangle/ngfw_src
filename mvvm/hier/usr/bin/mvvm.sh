@@ -57,10 +57,10 @@ reapChild() {
 
 
 flushIptables() {
-    iptables -t nat -F
-    iptables -t mangle -F
-    iptables -t filter -F
-    iptables -t raw -F
+    /sbin/iptables -t nat -F
+    /sbin/iptables -t mangle -F
+    /sbin/iptables -t filter -F
+    /sbin/iptables -t raw -F
 }
 
 raiseFdLimit() {
