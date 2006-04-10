@@ -188,7 +188,11 @@ Browser.prototype._makeActionMenu = function()
    var actionMenu = new DwtMenu(this._detailPanel, DwtMenu.POPUP_STYLE);
 
    var i = new DwtMenuItem(actionMenu, DwtMenuItem.NO_STYLE);
-   i.setText("Menu Item");
+   i.setText("Delete");
+   i.addSelectionListener(new AjxListener(this, this._deleteButtonListener));
+   i = new DwtMenuItem(actionMenu, DwtMenuItem.NO_STYLE);
+   i.setText("Rename");
+   i.addSelectionListener(new AjxListener(this, this._renameButtonListener));
 
    return actionMenu;
 }
@@ -274,6 +278,38 @@ Browser.prototype._deleteButtonListener = function(ev)
 
    AjxRpc.invoke(null, url, null, new AjxCallback(this, this.refresh, { }),
                  false);
+}
+
+Browser.prototype._renameButtonListener = function(ev)
+{
+   var sel = this._detailPanel.getSelection();
+   if (0 == sel.length) {
+      return;
+   }
+
+   var dialog = new RenameDialog(this._shell, sel[0]);
+
+   // XXX first selection only
+   var cb = function() {
+      var dest = dialog.getDest();
+
+      if (dest) {
+         var url = "exec?command=rename&src=" + sel[0].url + "&dest=" + dest;
+
+         var cb = function() {
+            dialog.popdown();
+            this.refresh();
+         }
+
+         AjxRpc.invoke(null, url, null, new AjxCallback(this, cb, {}), false);
+      }
+   }
+
+   var l = new AjxListener(this, cb);
+   dialog.setButtonListener(DwtDialog.OK_BUTTON, l);
+   dialog.addListener(DwtEvent.ENTER, l);
+
+   dialog.popup();
 }
 
 Browser.prototype._mkdirButtonListener = function(ev)

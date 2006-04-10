@@ -52,6 +52,8 @@ public class CommandRunner extends HttpServlet
             cp(req, auth);
         } else if (cmd.equals("mkdir")) {
             mkdir(req, auth);
+        } else if (cmd.equals("rename")) {
+            rename(req, auth);
         } else {
             throw new ServletException("bad command: " + cmd);
         }
@@ -95,6 +97,20 @@ public class CommandRunner extends HttpServlet
                 // XXX report errors to client
                 logger.warn("bad url", exn);
             }
+        }
+    }
+
+    private void rename(HttpServletRequest req, NtlmPasswordAuthentication auth)
+    {
+        String src = req.getParameter("src");
+        String dest = req.getParameter("dest");
+
+        try {
+            new SmbFile(src, auth).renameTo(new SmbFile(dest, auth));
+        } catch (SmbException exn) {
+            logger.warn("could not rename: " + src + " to: " + dest, exn);
+        } catch (MalformedURLException exn) {
+            logger.warn("bad url: " + src + " or: " + dest, exn);
         }
     }
 

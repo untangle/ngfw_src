@@ -22,16 +22,6 @@ MkdirDialog.prototype.constructor = MkdirDialog;
 
 // public methods -------------------------------------------------------------
 
-MkdirDialog.prototype.addUploadCompleteListener = function(listener)
-{
-   this.addListener(FileUploadPanel.UPLOAD_COMPLETE, listener);
-}
-
-MkdirDialog.prototype.removeUploadCompleteListener = function(listener)
-{
-   this.removeListener(FileUploadPanel.UPLOAD_COMPLETE, listener);
-}
-
 MkdirDialog.prototype.getDir = function()
 {
    return this._panel.getDir();
@@ -39,13 +29,6 @@ MkdirDialog.prototype.getDir = function()
 
 
 // internal methods -----------------------------------------------------------
-
-MkdirDialog.prototype._uploadCompleteListener = function(evt)
-{
-   evt.dialog = this;
-
-   this.notifyListeners(FileUploadPanel.UPLOAD_COMPLETE, evt);
-}
 
 MkdirDialog.prototype._focusListener = function(ev)
 {

@@ -30,6 +30,7 @@
 <script type="text/javascript" src="FileUploadPanel.js"></script>
 <script type="text/javascript" src="FileUploadDialog.js"></script>
 <script type="text/javascript" src="MkdirDialog.js"></script>
+<script type="text/javascript" src="RenameDialog.js"></script>
 
 </head>
 
