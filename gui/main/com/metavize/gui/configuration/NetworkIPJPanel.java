@@ -518,8 +518,11 @@ public class NetworkIPJPanel extends javax.swing.JPanel
 	    return;
         NetworkDhcpRenewDialog dhcpLeaseRenewDialog = new NetworkDhcpRenewDialog((JDialog)this.getTopLevelAncestor());
         NetworkingConfiguration newNetworkingConfiguration = dhcpLeaseRenewDialog.getNetworkingConfiguration();
-        if( newNetworkingConfiguration != null)
+        if( newNetworkingConfiguration != null){
             mConfigJDialog.refreshGui();
+	    // UPDATE STORE
+	    Util.getPolicyStateMachine().updateStoreModel();
+	}
     }//GEN-LAST:event_renewDhcpLeaseJButtonActionPerformed
 
     private void dhcpDisabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dhcpDisabledRadioButtonActionPerformed
