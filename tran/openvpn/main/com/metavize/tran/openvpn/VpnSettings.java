@@ -42,7 +42,7 @@ public class VpnSettings implements Serializable, Validatable
         };
 
     static private final int KEY_SIZE_DEFAULT    = KEY_SIZE_ENUMERATION[4];
-    static final int DEFAULT_PUBLIC_PORT = 1194;
+    public static final int DEFAULT_PUBLIC_PORT = 1194;
 
     
     private Long id;

@@ -85,7 +85,7 @@ public class WizardJPanel extends javax.swing.JPanel implements Refreshable<Obje
                 statusJPanel.add(statusJLabel, gridBagConstraints);
 
                 someJLabel.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
-                someJLabel.setText("<html><b>Current Configuration:</b></html>");
+                someJLabel.setText("<html><b>Current Mode:</b></html>");
                 someJLabel.setMaximumSize(new java.awt.Dimension(175, 15));
                 someJLabel.setMinimumSize(new java.awt.Dimension(175, 15));
                 someJLabel.setPreferredSize(new java.awt.Dimension(175, 15));
