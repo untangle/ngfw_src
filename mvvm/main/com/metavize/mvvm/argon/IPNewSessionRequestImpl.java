@@ -197,7 +197,7 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
     public void rejectReturnUnreachable( byte code )
     {
         if ( state != REQUESTED ) {
-            throw new IllegalStateException( "Unable to reject session that is not in the requested state" );
+            throw new IllegalStateException( "Unable to reject session that is in the state: " + state );
         }
 
         switch ( code ) {
@@ -220,7 +220,7 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
     public void release()
     {
         if ( state != REQUESTED ) {
-            throw new IllegalStateException( "Can't release a session that is not in the requested state" );
+            throw new IllegalStateException( "Can't release a session that is in the state: " + state );
         }
 
         state = RELEASED;

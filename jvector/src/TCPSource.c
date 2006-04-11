@@ -123,6 +123,11 @@ JNIEXPORT jint JNICALL JF_TCPSource( read )
                 ret = JN_TCPSource( READ_RESET );
                 break;
 
+            case ENETUNREACH:
+                debug( 5, "JVECTOR: TCPSource: fd %d net unreachable\n", fd );
+                ret = JN_TCPSource( READ_RESET );
+                break;
+
             default:
                 jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "TCPSource: read: %s\n", errstr );
                 ret = -2;

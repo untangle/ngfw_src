@@ -60,7 +60,7 @@ class TCPNewSessionRequestImpl extends IPNewSessionRequestImpl implements TCPNew
     public void rejectReturnRst()
     {
         if ( state != REQUESTED ) {
-            throw new IllegalStateException( "Unable to reject session that is not in the requested state" );
+            throw new IllegalStateException( "Unable to reject session in state: " + state  );
         }
         
         this.state = REJECTED;

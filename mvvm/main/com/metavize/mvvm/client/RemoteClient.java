@@ -59,6 +59,8 @@ public class RemoteClient
     private static String policyName = null;
     private static Policy policy = null;
 
+    private static final String SHIELD_STATUS_USAGE = "mcli shieldStatus ip port [interval]";
+
     private static boolean verbose = false;
     private static int timeout = 120000;
 
@@ -184,7 +186,7 @@ public class RemoteClient
         } else if (args[0].equalsIgnoreCase("resetLogs")) {
             resetLogs();
         } else if (args[0].equalsIgnoreCase("shieldStatus")) {
-            shieldStatus(args[1], args[2]);
+            shieldStatus(args);
         } else if (args[0].equalsIgnoreCase("shieldReconfigure")) {
             shieldReconfigure();
         } else if (args[0].equalsIgnoreCase("updateAddress")) {
@@ -801,10 +803,28 @@ public class RemoteClient
      * <code>shieldStatus</code> Sends out the current state of the shield
      * via UDP to the host and port specified in the command line
      */
-    private static void shieldStatus(String host, String port) throws Exception
+    private static void shieldStatus(String args[]) throws Exception
     {
-        mc.argonManager().shieldStatus(InetAddress.getByName(host),
-                                       Integer.parseInt(port));
+        /* If interval is zero, it doesn't loop */
+        int interval = 0;
+        InetAddress destination;
+        int port = 0;
+        
+        switch (args.length) {            
+        case 4:
+            /* Convert from seconds to milliseconds */
+            interval = Integer.parseInt(args[3]) * 1000;
+            /* fallthrough */
+        case 3:
+            destination = InetAddress.getByName(args[1]);
+            port = Integer.parseInt(args[2]);
+            break;
+
+        default:
+            throw new Exception("Usage: " + SHIELD_STATUS_USAGE);
+        }
+
+        mc.argonManager().shieldStatus(destination,port,interval);
     }
 
     /**
@@ -921,7 +941,7 @@ public class RemoteClient
         System.out.println("    mcli register mackage-name");
         System.out.println("    mcli unregister mackage-name");
         System.out.println("  argon commands:");
-        System.out.println("    mcli shieldStatus ip port");
+        System.out.println("    " + SHIELD_STATUS_USAGE);
         System.out.println("    mcli shieldReconfigure");
         System.out.println("  debugging commands:");
         System.out.println("    mcli aptTail");

@@ -22,7 +22,9 @@ import com.metavize.mvvm.shield.ShieldNodeSettings;
 
 public interface ArgonManager
 {
-    void shieldStatus( InetAddress ip, int port );
+    /* If interval is greater than zero, this will loop indefinitely,
+     * sleep for interval milliseconds in between. */
+    void shieldStatus( InetAddress ip, int port, int interval );
 
     void shieldReconfigure();
     

@@ -76,12 +76,22 @@ public class ArgonManagerImpl implements ArgonManager
     {
     }
 
-    public void shieldStatus( InetAddress ip, int port )
+    public void shieldStatus( InetAddress ip, int port, int interval )
     {
         if ( port < 0 || port > 0xFFFF ) {
             throw new IllegalArgumentException( "Invalid port: " + port );
         }
-        shield.status( ip, port );
+
+        do {
+            shield.status( ip, port );
+
+            try {
+                if ( interval > 0 ) Thread.sleep( interval );
+            } catch ( InterruptedException e ) {
+                logger.debug( "Shield status interrupted" );
+                break;
+            }
+        } while ( interval > 0 );
     }
 
     public void shieldReconfigure()

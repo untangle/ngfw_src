@@ -780,8 +780,8 @@ static int _add_request ( nc_shield_reputation_t *rep, int count, double divider
     if ( update_load == _NC_UPDATE_LOAD ) {
         netcap_load_val_t val;
 
-        /* magic number */
         val = ( rep->score < 105 ) ? 1.0 : 5.0;
+        
         return netcap_load_update( &rep->request_load, 1, ((netcap_load_val_t)val));
     }
     return 0;
@@ -1060,7 +1060,9 @@ static nc_shield_score_t  _reputation_eval     ( netcap_trie_item_t* item )
         (( item->depth * item->depth ) / (( 0.0 + NC_TRIE_DEPTH_TOTAL ) * ( 0.0 + NC_TRIE_DEPTH_TOTAL )));
     
     /* XXX Use whether or not their depth is terminal (this is a new node) */
+
     /* XXX Use the server connection/failure rate */
+
     return ( rep->score = score );
 }
 
@@ -1249,10 +1251,10 @@ static int  _apply      ( struct in_addr* ip, _apply_func_t* func )
     }
     
     func->divider = ((nc_shield_reputation_t*)element.base->data)->divider;
-    if ( func->divider < NC_SHIELD_DIVIDER_MIN  || func->divider > NC_SHIELD_DIVIDER_MAX ) {
+    if (( func->divider < NC_SHIELD_DIVIDER_MIN ) || func->divider > NC_SHIELD_DIVIDER_MAX ) {
         errlog( ERR_WARNING, "Invalid divider[%lg], using %g\n", func->divider, _DEFAULT_DIVIDER );
         func->divider = _DEFAULT_DIVIDER;
-        /* XXX Possibly update the node so the error messages stop */
+        ((nc_shield_reputation_t*)element.base->data)->divider = _DEFAULT_DIVIDER;
     }
 
     for ( c = 0 ; c < line.count && c <= NC_TRIE_DEPTH_TOTAL ; c++ ) {
