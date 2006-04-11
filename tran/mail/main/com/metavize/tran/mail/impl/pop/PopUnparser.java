@@ -154,7 +154,12 @@ public class PopUnparser extends AbstractUnparser
         return new UnparseResult(zWriteBufs.toArray(new ByteBuffer[zWriteBufs.size()]));
     }
 
-    public TCPStreamer endSession() { return null; }
+    public TCPStreamer endSession()
+    {
+        logger.debug("(pop)(" + (true == isClientSide() ? "client":"server") + ") End Session");
+
+        return null;
+    }
 
     private PopStreamer writeData(MIMEMessageT zMMessageT, boolean bIsComplete) throws UnparseException
     {

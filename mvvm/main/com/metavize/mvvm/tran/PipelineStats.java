@@ -229,20 +229,17 @@ public class PipelineStats extends PipelineEvent
         getPipelineEndpoints().appendSyslog(sb);
 
         sb.startSection("stats");
-
+        sb.addField("raze-date", razeDate);
         sb.addField("c2pBytes", c2pBytes);
         sb.addField("p2sBytes", p2sBytes);
         sb.addField("s2pBytes", s2pBytes);
         sb.addField("p2cBytes", p2cBytes);
-
         sb.addField("c2pChunks", c2pChunks);
-        sb.addField("p2sChunks", c2pChunks);
-        sb.addField("s2pChunks", c2pChunks);
-        sb.addField("p2cChunks", c2pChunks);
+        sb.addField("p2sChunks", p2sChunks);
+        sb.addField("s2pChunks", s2pChunks);
+        sb.addField("p2cChunks", p2cChunks);
     }
 
-    public SyslogPriority getSyslogPrioritiy()
-    {
-        return SyslogPriority.DEBUG;
-    }
+    // reuse default getSyslogId
+    // reuse default getSyslogPriority
 }

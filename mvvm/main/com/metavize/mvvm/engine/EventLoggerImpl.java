@@ -254,7 +254,7 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
             if (null == transformContext) {
                 this.tag = "mvvm[0]: ";
             } else {
-                String name = transformContext.getTransformDesc().getName();
+                String name = transformContext.getTransformDesc().getSyslogName();
                 this.tag = name + "[" + transformContext.getTid().getId() + "]: ";
             }
         }

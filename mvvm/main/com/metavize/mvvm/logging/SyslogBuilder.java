@@ -21,6 +21,7 @@ public interface SyslogBuilder
     void addField(String key, String value);
     void addField(String key, boolean value);
     void addField(String key, int value);
+    void addField(String key, long value);
     void addField(String key, double value);
     void addField(String key, InetAddress addr);
     void addField(String key, Date date);

@@ -194,8 +194,13 @@ public class ShieldRejectionEvent extends LogEvent implements Serializable
         sb.addField("dropped", dropped);
     }
 
-    public SyslogPriority getSyslogPrioritiy()
+    public String getSyslogId()
     {
-        return SyslogPriority.DEBUG;
+        return "Shield_Rejection";
+    }
+
+    public SyslogPriority getSyslogPriority()
+    {
+        return SyslogPriority.WARNING; // traffic altered
     }
 }

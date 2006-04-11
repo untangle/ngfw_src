@@ -112,14 +112,21 @@ public class IDSLogEvent extends PipelineEvent {
         getPipelineEndpoints().appendSyslog(sb);
 
         sb.startSection("info");
-        sb.addField("sid", ruleSid);
-        sb.addField("message", message);
+        sb.addField("snort-id", ruleSid);
         sb.addField("blocked", blocked);
+        sb.addField("message", message);
     }
 
-    public SyslogPriority getSyslogPrioritiy()
+    public String getSyslogId()
     {
-        return blocked ? SyslogPriority.NOTICE : SyslogPriority.INFORMATIONAL;
+        return "Log";
+    }
+
+    public SyslogPriority getSyslogPriority()
+    {
+        // NOTICE = ips event logged
+        // WARNING = traffic altered
+        return false == blocked ? SyslogPriority.NOTICE : SyslogPriority.WARNING;
     }
 
     // Object methods ---------------------------------------------------------

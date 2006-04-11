@@ -13,6 +13,7 @@ package com.metavize.tran.firewall;
 
 import com.metavize.mvvm.logging.StatisticEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
+import com.metavize.mvvm.logging.SyslogPriority;
 
 /**
  * Log event for a Firewall statistics.
@@ -383,5 +384,15 @@ public class FirewallStatisticEvent extends StatisticEvent
         sb.addField("icmp-blk-rule", icmpBlockedRule);
         sb.addField("icmp-pass-def", icmpPassedDefault);
         sb.addField("icmp-pass-rule", icmpPassedRule);
+    }
+
+    public String getSyslogId()
+    {
+        return "Statistic";
+    }
+
+    public SyslogPriority getSyslogPriority()
+    {
+        return SyslogPriority.INFORMATIONAL; // statistics or normal operation
     }
 }

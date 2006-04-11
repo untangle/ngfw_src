@@ -13,6 +13,7 @@ package com.metavize.tran.nat;
 
 import com.metavize.mvvm.logging.StatisticEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
+import com.metavize.mvvm.logging.SyslogPriority;
 
 /**
  * Log event for a Nat statistics.
@@ -39,9 +40,7 @@ public class NatStatisticEvent extends StatisticEvent
     /**
      * Hibernate constructor
      */
-    public NatStatisticEvent()
-    {
-    }
+    public NatStatisticEvent() {}
 
     public NatStatisticEvent( int natSessions, int tcpIncomingRedirects, int tcpOutgoingRedirects,
                               int udpIncomingRedirects,  int udpOutgoingRedirects,
@@ -260,5 +259,15 @@ public class NatStatisticEvent extends StatisticEvent
         sb.addField("icmp-incoming-redirects", icmpIncomingRedirects);
         sb.addField("icmp-outgoing-redirects", icmpOutgoingRedirects);
         sb.addField("dmz-sessions", dmzSessions);
+    }
+
+    public String getSyslogId()
+    {
+        return "Statistic";
+    }
+
+    public SyslogPriority getSyslogPriority()
+    {
+        return SyslogPriority.INFORMATIONAL; // statistics or normal operation
     }
 }

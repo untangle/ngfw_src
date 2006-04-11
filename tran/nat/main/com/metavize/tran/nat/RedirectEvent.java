@@ -15,9 +15,8 @@ import java.io.Serializable;
 
 import com.metavize.mvvm.logging.PipelineEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
-
+import com.metavize.mvvm.logging.SyslogPriority;
 import com.metavize.mvvm.networking.RedirectRule;
-
 import com.metavize.mvvm.tran.PipelineEndpoints;
 
 /**
@@ -38,9 +37,7 @@ public class RedirectEvent extends PipelineEvent implements Serializable
     /**
      * Hibernate constructor
      */
-    public RedirectEvent()
-    {
-    }
+    public RedirectEvent() {}
 
     public RedirectEvent( PipelineEndpoints pe, int ruleIndex )
     {
@@ -100,5 +97,15 @@ public class RedirectEvent extends PipelineEvent implements Serializable
         sb.startSection("info");
         sb.addField("rule", ruleIndex);
         sb.addField("is-dmz", isDmz);
+    }
+
+    public String getSyslogId()
+    {
+        return "Redirect";
+    }
+
+    public SyslogPriority getSyslogPriority()
+    {
+        return SyslogPriority.WARNING; // traffic altered
     }
 }

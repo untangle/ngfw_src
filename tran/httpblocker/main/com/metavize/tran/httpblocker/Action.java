@@ -21,14 +21,17 @@ public class Action implements Serializable
 {
     private static final long serialVersionUID = -1388743204136725990L;
 
-    public static final Action PASS = new Action('P', "pass");
-    public static final Action BLOCK = new Action('B', "block");
+    public static char PASS_KEY = 'P';
+    public static char BLOCK_KEY = 'B';
+
+    public static final Action PASS = new Action(PASS_KEY, "pass");
+    public static final Action BLOCK = new Action(BLOCK_KEY, "block");
 
     private static final Map INSTANCES = new HashMap();
 
     static {
-        INSTANCES.put('P', PASS);
-        INSTANCES.put('B', BLOCK);
+        INSTANCES.put(PASS.getKey(), PASS);
+        INSTANCES.put(BLOCK.getKey(), BLOCK);
     }
 
     private final char key;

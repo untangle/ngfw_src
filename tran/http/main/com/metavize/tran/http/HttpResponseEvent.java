@@ -113,8 +113,13 @@ public class HttpResponseEvent extends LogEvent
         sb.addField("content-length", contentLength);
     }
 
-    public SyslogPriority getSyslogPrioritiy()
+    public String getSyslogId()
     {
-        return SyslogPriority.DEBUG;
+        return "Response";
+    }
+
+    public SyslogPriority getSyslogPriority()
+    {
+        return SyslogPriority.INFORMATIONAL; // statistics or normal operation
     }
 }

@@ -26,7 +26,7 @@ import com.metavize.mvvm.tran.PipelineEndpoints;
 public class SpywareActiveXEvent extends SpywareEvent
 {
     private String identification;
-    private RequestLine requestLine;
+    private RequestLine requestLine; // pipeline endpoints & location
 
     // constructors -----------------------------------------------------------
 
@@ -43,6 +43,11 @@ public class SpywareActiveXEvent extends SpywareEvent
     }
 
     // SpywareEvent methods ---------------------------------------------------
+
+    public String getType()
+    {
+        return "ActiveX";
+    }
 
     public String getReason()
     {
@@ -100,4 +105,8 @@ public class SpywareActiveXEvent extends SpywareEvent
     {
         this.identification = identification;
     }
+
+    // Syslog methods ---------------------------------------------------------
+
+    // use SpywareEvent appendSyslog, getSyslogId and getSyslogPriority
 }

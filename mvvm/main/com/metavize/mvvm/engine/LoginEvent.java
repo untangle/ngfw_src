@@ -160,13 +160,18 @@ public class LoginEvent extends LogEvent
         sb.addField("reason", null == reason ? "none" : reason.toString());
     }
 
-    public SyslogPriority getSyslogPrioritiy()
+    public String getSyslogId()
     {
-        if (!succeeded) {
-            return SyslogPriority.NOTICE;
+        return "Login"; // XXX
+    }
+
+    public SyslogPriority getSyslogPriority()
+    {
+        if (false == succeeded) {
+            return SyslogPriority.WARNING; // login attempt failed
         } else {
             // local logins are not as interesting to enduser
-            return local ? SyslogPriority.DEBUG : SyslogPriority.INFORMATIONAL;
+            return true == local ? SyslogPriority.DEBUG : SyslogPriority.INFORMATIONAL;
         }
     }
 

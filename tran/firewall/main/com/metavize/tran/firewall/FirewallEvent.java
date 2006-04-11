@@ -15,6 +15,7 @@
 
 import com.metavize.mvvm.logging.PipelineEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
+import com.metavize.mvvm.logging.SyslogPriority;
 import com.metavize.mvvm.tran.PipelineEndpoints;
 
  /**
@@ -27,87 +28,99 @@ import com.metavize.mvvm.tran.PipelineEndpoints;
   * mutable="false"
   */
 
- public class FirewallEvent extends PipelineEvent implements Serializable
- {
-     private boolean wasBlocked;
-     private int     ruleIndex;
-     private FirewallRule rule;
+public class FirewallEvent extends PipelineEvent implements Serializable
+{
+    private FirewallRule rule;
+    private int     ruleIndex;
+    private boolean wasBlocked;
 
-     // Constructors
-     /**
-      * Hibernate constructor
-      */
-     public FirewallEvent()
-     {
-     }
+    // Constructors
+    /**
+     * Hibernate constructor
+     */
+    public FirewallEvent() {}
 
-     public FirewallEvent( PipelineEndpoints pe,  FirewallRule rule, boolean wasBlocked, int ruleIndex )
-     {
-         super(pe);
+    public FirewallEvent( PipelineEndpoints pe,  FirewallRule rule, boolean wasBlocked, int ruleIndex )
+    {
+        super(pe);
 
-         this.wasBlocked = wasBlocked;
-         this.ruleIndex  = ruleIndex;
-         this.rule       = rule;
-     }
+        this.wasBlocked = wasBlocked;
+        this.ruleIndex  = ruleIndex;
+        this.rule       = rule;
+    }
 
-     /**
-      * Whether or not the session was blocked.
-      *
-      * @return If the session was passed or blocked.
-      * @hibernate.property
-      * column="WAS_BLOCKED"
-      */
-     public boolean getWasBlocked()
-     {
-         return wasBlocked;
-     }
+    /**
+     * Whether or not the session was blocked.
+     *
+     * @return If the session was passed or blocked.
+     * @hibernate.property
+     * column="WAS_BLOCKED"
+     */
+    public boolean getWasBlocked()
+    {
+        return wasBlocked;
+    }
 
-     public void setWasBlocked( boolean wasBlocked )
-     {
-         this.wasBlocked = wasBlocked;
-     }
+    public void setWasBlocked( boolean wasBlocked )
+    {
+        this.wasBlocked = wasBlocked;
+    }
 
-     /**
-      * Rule index, when this event was triggered.
-      *
-      * @return current rule index for the rule that triggered this event.
-      * @hibernate.property
-      * column="RULE_INDEX"
-      */
-     public int getRuleIndex()
-     {
-         return ruleIndex;
-     }
+    /**
+     * Rule index, when this event was triggered.
+     *
+     * @return current rule index for the rule that triggered this event.
+     * @hibernate.property
+     * column="RULE_INDEX"
+     */
+    public int getRuleIndex()
+    {
+        return ruleIndex;
+    }
 
-     public void setRuleIndex( int ruleIndex )
-     {
-         this.ruleIndex = ruleIndex;
-     }
+    public void setRuleIndex( int ruleIndex )
+    {
+        this.ruleIndex = ruleIndex;
+    }
 
-     /**
-      * Firewall rule that triggered this event
-      *
-      * @return firewall rule that triggered this event
-      * @hibernate.many-to-one
-      * class="com.metavize.tran.firewall.FirewallRule"
-      * column="RULE_ID"
-      */
-     public FirewallRule getRule()
-     {
-         return rule;
-     }
+    /**
+     * Firewall rule that triggered this event
+     *
+     * @return firewall rule that triggered this event
+     * @hibernate.many-to-one
+     * class="com.metavize.tran.firewall.FirewallRule"
+     * column="RULE_ID"
+     */
+    public FirewallRule getRule()
+    {
+        return rule;
+    }
 
-     public void setRule( FirewallRule rule )
-     {
-         this.rule = rule;
-     }
+    public void setRule( FirewallRule rule )
+    {
+        this.rule = rule;
+    }
 
-     public void appendSyslog(SyslogBuilder sb)
-     {
-         getPipelineEndpoints().appendSyslog(sb);
+    // Syslog methods ---------------------------------------------------------
+ 
+    public void appendSyslog(SyslogBuilder sb)
+    {
+        getPipelineEndpoints().appendSyslog(sb);
 
-         sb.startSection("info");
-         sb.addField("reason", "rule #" + getRuleIndex());
-         sb.addField("blocked", wasBlocked);
-     }
+        sb.startSection("info");
+        sb.addField("reason-rule#", getRuleIndex());
+        sb.addField("blocked", getWasBlocked());
+    }
+
+    public String getSyslogId()
+    {
+        return ""; // XXX
+    }
+
+    public SyslogPriority getSyslogPriority()
+    {
+        // INFORMATIONAL = statistics or normal operation
+        // WARNING = traffic altered
+        return false == getWasBlocked() ? SyslogPriority.INFORMATIONAL : SyslogPriority.WARNING;
+    }
 }

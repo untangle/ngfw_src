@@ -13,6 +13,7 @@ package com.metavize.tran.ids;
 
 import com.metavize.mvvm.logging.StatisticEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
+import com.metavize.mvvm.logging.SyslogPriority;
 
 /**
  * Log event for a IDS statistics.
@@ -89,5 +90,15 @@ public class IDSStatisticEvent extends StatisticEvent {
         sb.addField("did-not-care", dnc);
         sb.addField("logged", logged);
         sb.addField("blocked", blocked);
+    }
+
+    public String getSyslogId()
+    {
+        return "Statistic";
+    }
+
+    public SyslogPriority getSyslogPriority()
+    {
+        return SyslogPriority.INFORMATIONAL; // statistics or normal operation
     }
 }

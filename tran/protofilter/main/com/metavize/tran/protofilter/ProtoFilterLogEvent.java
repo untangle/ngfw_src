@@ -80,17 +80,26 @@ public class ProtoFilterLogEvent extends PipelineEvent
         this.blocked = blocked;
     }
 
+    // Syslog methods ---------------------------------------------------------
+
     public void appendSyslog(SyslogBuilder sb)
     {
         getPipelineEndpoints().appendSyslog(sb);
 
         sb.startSection("info");
-        sb.addField("protocol", protocol);
-        sb.addField("blocked", blocked);
+        sb.addField("protocol", getProtocol());
+        sb.addField("blocked", isBlocked());
     }
 
-    public SyslogPriority getSyslogPrioritiy()
+    public String getSyslogId()
     {
-        return blocked ? SyslogPriority.NOTICE : SyslogPriority.INFORMATIONAL;
+        return ""; // XXX
+    }
+
+    public SyslogPriority getSyslogPriority()
+    {
+        // WARNING = traffic altered
+        // INFORMATIONAL = statistics or normal operation
+        return true == isBlocked() ? SyslogPriority.WARNING : SyslogPriority.INFORMATIONAL;
     }
 }

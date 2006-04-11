@@ -14,6 +14,7 @@ package com.metavize.mvvm.engine;
 
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
+import com.metavize.mvvm.logging.SyslogPriority;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.TransformState;
 
@@ -87,4 +88,11 @@ class TransformStateChange extends LogEvent
         sb.addField("tid", tid.toString());
         sb.addField("state", state.toString());
     }
+
+    public String getSyslogId()
+    {
+        return "Software_Appliance"; // XXX
+    }
+
+    // reuse default getSyslogPriority
 }

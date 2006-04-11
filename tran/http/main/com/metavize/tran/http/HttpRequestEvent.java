@@ -11,9 +11,9 @@
 
 package com.metavize.tran.http;
 
-
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
+import com.metavize.mvvm.logging.SyslogPriority;
 
 /**
  * Log event for a request.
@@ -120,6 +120,16 @@ public class HttpRequestEvent extends LogEvent
         sb.startSection("info");
         sb.addField("host", host);
         sb.addField("uri", requestLine.getRequestUri().toString());;
-        sb.addField("content-length", Integer.toString(contentLength));
+        sb.addField("content-length", contentLength);
+    }
+
+    public String getSyslogId()
+    {
+        return "Request";
+    }
+
+    public SyslogPriority getSyslogPriority()
+    {
+        return SyslogPriority.INFORMATIONAL; // statistics or normal operation
     }
 }

@@ -37,9 +37,7 @@ public class VpnStatisticEvent extends StatisticEvent
     /**
      * Hibernate constructor
      */
-    public VpnStatisticEvent()
-    {
-    }
+    public VpnStatisticEvent() {}
 
     /**
      * Time the session started.
@@ -97,7 +95,6 @@ public class VpnStatisticEvent extends StatisticEvent
         this.bytesRx += bytesRx;
     }
 
-
     /**
      * Total transmitted received during this session.
      *
@@ -125,15 +122,26 @@ public class VpnStatisticEvent extends StatisticEvent
         return ( this.bytesTx > 0 || this.bytesRx > 0 );
     }
 
-
     // Syslog methods ---------------------------------------------------------
 
+    // although events are created with no data (see constructor),
+    // all data will be set when events are actually and finally logged
     public void appendSyslog(SyslogBuilder sb)
     {
+        sb.startSection("info");
+        sb.addField("start", getStart());
+        sb.addField("end", getEnd());
+        sb.addField("bytes-received", getBytesRx());
+        sb.addField("bytes-transmitted", getBytesTx());
     }
 
-    public SyslogPriority getSyslogPrioritiy()
+    public String getSyslogId()
     {
-        return SyslogPriority.DEBUG;
+        return "Statistic";
+    }
+
+    public SyslogPriority getSyslogPriority()
+    {
+        return SyslogPriority.INFORMATIONAL; // statistics or normal operation
     }
 }

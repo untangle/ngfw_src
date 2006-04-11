@@ -13,6 +13,7 @@ package com.metavize.tran.spyware;
 
 import com.metavize.mvvm.logging.StatisticEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
+import com.metavize.mvvm.logging.SyslogPriority;
 
 /**
  * Log event for a Spyware statistics.
@@ -115,6 +116,16 @@ public class SpywareStatisticEvent extends StatisticEvent {
         sb.addField("cookie", cookie);
         sb.addField("activeX", activeX);
         sb.addField("url", url);
-        sb.addField("subnet access", subnetAccess);
+        sb.addField("subnetAccess", subnetAccess);
+    }
+
+    public String getSyslogId()
+    {
+        return "Statistic";
+    }
+
+    public SyslogPriority getSyslogPriority()
+    {
+        return SyslogPriority.INFORMATIONAL; // statistics or normal operation
     }
 }

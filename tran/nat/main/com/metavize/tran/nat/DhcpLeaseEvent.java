@@ -15,6 +15,7 @@ import java.util.Date;
 
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
+import com.metavize.mvvm.logging.SyslogPriority;
 import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.firewall.MACAddress;
@@ -47,9 +48,7 @@ public class DhcpLeaseEvent extends LogEvent
     /**
      * Hibernate constructor
      */
-    public DhcpLeaseEvent()
-    {
-    }
+    public DhcpLeaseEvent() {}
 
     /**
      * XXX Event type should be an enumeration or something */
@@ -179,5 +178,15 @@ public class DhcpLeaseEvent extends LogEvent
         }
 
         sb.addField("type", type);
+    }
+
+    public String getSyslogId()
+    {
+        return "DHCP_Lease";
+    }
+
+    public SyslogPriority getSyslogPriority()
+    {
+        return SyslogPriority.INFORMATIONAL; // statistics or normal operation
     }
 }

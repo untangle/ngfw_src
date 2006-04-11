@@ -61,14 +61,28 @@ public class VirusLogEvent extends VirusEvent
         return !result.isClean();
     }
 
+    public int getActionType()
+    {
+        if (true == result.isClean()) {
+            return PASSED;
+        } else if (true == result.isVirusCleaned()) {
+            return CLEANED;
+        } else {
+            return BLOCKED;
+        }
+    }
+
     public String getActionName()
     {
-        if (result.isClean()) {
-            return "clean";
-        } else if (result.isVirusCleaned()) {
-            return "cleaned";
-        } else {
-            return "blocked";
+        switch(getActionType())
+        {
+            case PASSED:
+                return "clean";
+            case CLEANED:
+                return "cleaned";
+            default:
+            case BLOCKED:
+                return "blocked";
         }
     }
 

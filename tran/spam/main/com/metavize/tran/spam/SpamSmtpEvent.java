@@ -51,6 +51,25 @@ public class SpamSmtpEvent extends SpamEvent
 
     // SpamEvent methods ------------------------------------------------------
 
+    public String getType()
+    {
+        return "SMTP";
+    }
+
+    public int getActionType()
+    {
+        char type = action.getKey();
+        if (SMTPSpamMessageAction.PASS_KEY == type) {
+            return PASSED;
+        } else if (SMTPSpamMessageAction.MARK_KEY == type) {
+            return MARKED;
+        } else if (SMTPSpamMessageAction.BLOCK_KEY == type) {
+            return BLOCKED;
+        } else { // QUARANTINE_KEY
+            return QUARANTINED;
+        }
+    }
+
     public String getActionName()
     {
         return action.toString();

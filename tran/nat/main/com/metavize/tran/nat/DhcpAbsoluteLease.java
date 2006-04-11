@@ -13,11 +13,11 @@ package com.metavize.tran.nat;
 
 import java.util.Date;
 
-import com.metavize.mvvm.tran.Rule;
-
+import com.metavize.mvvm.logging.SyslogBuilder;
+import com.metavize.mvvm.tran.firewall.MACAddress;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.HostName;
-import com.metavize.mvvm.tran.firewall.MACAddress;
+import com.metavize.mvvm.tran.Rule;
 
 /**
  * Log event for a DHCP lease event.
@@ -44,9 +44,7 @@ public class DhcpAbsoluteLease
     /**
      * Hibernate constructor 
      */
-    public DhcpAbsoluteLease()
-    {
-    }
+    public DhcpAbsoluteLease() {}
 
     /**
      * XXX Event type should be an enumeration or something */
@@ -167,4 +165,26 @@ public class DhcpAbsoluteLease
         this.eventType = eventType;
     }
 
+    // although DhcpAbsoluteLease isn't a LogEvent,
+    // DhcpAbsoluteEvent maintains a list of DhcpAbsoluteLease objects
+    // that it logs
+    public void appendSyslog(SyslogBuilder sb)
+    {
+        sb.startSection("lease");
+
+        sb.addField("mac", mac.toString());
+        sb.addField("hostname", hostname.toString());
+        sb.addField("ip", ip.toString());
+        sb.addField("lease-end", endOfLease);
+        String type;
+        if (REGISTERED == eventType) {
+            type = "registered";
+        } else if (EXPIRED == eventType) {
+            type = "expired";
+        } else {
+            type = "unknown";
+        }
+
+        sb.addField("type", type);
+    }
 }

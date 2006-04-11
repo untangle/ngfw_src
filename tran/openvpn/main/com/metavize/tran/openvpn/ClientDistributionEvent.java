@@ -15,6 +15,7 @@ import java.io.Serializable;
 
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
+import com.metavize.mvvm.logging.SyslogPriority;
 import com.metavize.mvvm.tran.IPaddr;
 
 /**
@@ -90,7 +91,17 @@ public class ClientDistributionEvent extends LogEvent implements Serializable
     public void appendSyslog(SyslogBuilder sb)
     {
         sb.startSection("info");
-        sb.addField("client-address", address.getAddr());
+        sb.addField("client-addr", address.getAddr());
         sb.addField("client-name", clientName);
+    }
+
+    public String getSyslogId()
+    {
+        return "Client_Distribution";
+    }
+
+    public SyslogPriority getSyslogPriority()
+    {
+        return SyslogPriority.INFORMATIONAL; // statistics or normal operation
     }
 }

@@ -42,6 +42,7 @@ public class TransformDesc implements Serializable
     private final boolean singleInstance;
 
     private final String displayName;
+    private final String syslogName;
 
     private final MackageDesc mackageDesc;
 
@@ -66,6 +67,7 @@ public class TransformDesc implements Serializable
         this.parents = Collections.unmodifiableList(l);
         this.singleInstance = singleInstance;
         this.displayName = displayName;
+        syslogName = displayName.replaceAll("\\p{Space}", "_");
         this.mackageDesc = mackageDesc;
     }
 
@@ -169,6 +171,16 @@ public class TransformDesc implements Serializable
     public String getDisplayName()
     {
         return displayName;
+    }
+
+    /**
+     * The name of the transform, for syslog purposes.
+     *
+     * @return syslog name.
+     */
+    public String getSyslogName()
+    {
+        return syslogName;
     }
 
     /**

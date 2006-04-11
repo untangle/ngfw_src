@@ -24,10 +24,15 @@ public class SMTPSpamMessageAction implements Serializable
 
     private static final Map INSTANCES = new HashMap();
 
-    public static final SMTPSpamMessageAction PASS = new SMTPSpamMessageAction('P', "pass message");
-    public static final SMTPSpamMessageAction MARK = new SMTPSpamMessageAction('M', "mark message");
-    public static final SMTPSpamMessageAction BLOCK = new SMTPSpamMessageAction('B', "block message");
-    public static final SMTPSpamMessageAction QUARANTINE = new SMTPSpamMessageAction('Q', "quarantine message");
+    public static char PASS_KEY = 'P';
+    public static char MARK_KEY = 'M';
+    public static char BLOCK_KEY = 'B';
+    public static char QUARANTINE_KEY = 'Q';
+
+    public static final SMTPSpamMessageAction PASS = new SMTPSpamMessageAction(PASS_KEY, "pass message");
+    public static final SMTPSpamMessageAction MARK = new SMTPSpamMessageAction(MARK_KEY, "mark message");
+    public static final SMTPSpamMessageAction BLOCK = new SMTPSpamMessageAction(BLOCK_KEY, "block message");
+    public static final SMTPSpamMessageAction QUARANTINE = new SMTPSpamMessageAction(QUARANTINE_KEY, "quarantine message");
 
     static {
         INSTANCES.put(PASS.getKey(), PASS);

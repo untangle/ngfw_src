@@ -11,8 +11,10 @@
 
 package com.metavize.tran.spyware;
 
-import com.metavize.tran.http.RequestLine;
+import com.metavize.mvvm.logging.SyslogBuilder;
+import com.metavize.mvvm.logging.SyslogPriority;
 import com.metavize.mvvm.tran.PipelineEndpoints;
+import com.metavize.tran.http.RequestLine;
 
 /**
  * Log event for a spyware hit.
@@ -26,7 +28,7 @@ import com.metavize.mvvm.tran.PipelineEndpoints;
 public class SpywareCookieEvent extends SpywareEvent
 {
     private String identification;
-    private RequestLine requestLine;
+    private RequestLine requestLine; // pipeline endpoints & location
     private boolean toServer;
 
     // constructors -----------------------------------------------------------
@@ -46,6 +48,11 @@ public class SpywareCookieEvent extends SpywareEvent
     }
 
     // SpywareEvent methods ---------------------------------------------------
+
+    public String getType()
+    {
+        return "Cookie";
+    }
 
     public String getReason()
     {
@@ -121,4 +128,19 @@ public class SpywareCookieEvent extends SpywareEvent
     {
         this.toServer = toServer;
     }
+
+    // Syslog methods ---------------------------------------------------------
+
+    public void appendSyslog(SyslogBuilder sb)
+    {
+        getPipelineEndpoints().appendSyslog(sb);
+
+        sb.startSection("info");
+        sb.addField("info", getIdentification());
+        sb.addField("loc", getLocation());
+        sb.addField("blocked", isBlocked());
+        sb.addField("toServer", isToServer());
+    }
+
+    // use SpywareEvent getSyslogId and getSyslogPriority
 }

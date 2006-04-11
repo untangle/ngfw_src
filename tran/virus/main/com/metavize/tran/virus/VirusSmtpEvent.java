@@ -67,6 +67,18 @@ public class VirusSmtpEvent extends VirusEvent
         return !result.isClean();
     }
 
+    public int getActionType()
+    {
+        char type = action.getKey();
+        if (SMTPVirusMessageAction.PASS_KEY == type) {
+            return PASSED;
+        } else if (SMTPVirusMessageAction.REMOVE_KEY == type) {
+            return CLEANED;
+        } else {
+            return BLOCKED;
+        }
+    }
+
     public String getActionName()
     {
         return action.getName();

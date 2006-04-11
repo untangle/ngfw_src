@@ -24,9 +24,13 @@ public class SMTPVirusMessageAction implements Serializable
 
     private static final Map INSTANCES = new HashMap();
 
-    public static final SMTPVirusMessageAction PASS = new SMTPVirusMessageAction('P', "pass message");
-    public static final SMTPVirusMessageAction REMOVE = new SMTPVirusMessageAction('R', "remove infection");
-    public static final SMTPVirusMessageAction BLOCK = new SMTPVirusMessageAction('B', "block message");
+    public static final char PASS_KEY = 'P';
+    public static final char REMOVE_KEY = 'R';
+    public static final char BLOCK_KEY = 'B';
+
+    public static final SMTPVirusMessageAction PASS = new SMTPVirusMessageAction(PASS_KEY, "pass message");
+    public static final SMTPVirusMessageAction REMOVE = new SMTPVirusMessageAction(REMOVE_KEY, "remove infection");
+    public static final SMTPVirusMessageAction BLOCK = new SMTPVirusMessageAction(BLOCK_KEY, "block message");
 
     static {
         INSTANCES.put(PASS.getKey(), PASS);

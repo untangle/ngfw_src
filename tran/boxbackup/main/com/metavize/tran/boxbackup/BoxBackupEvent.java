@@ -13,10 +13,10 @@ package com.metavize.tran.boxbackup;
 
 import java.util.Date;
 import java.util.Iterator;
+
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
-
-
+import com.metavize.mvvm.logging.SyslogPriority;
 
 /**
  * ...name says it all...
@@ -26,8 +26,7 @@ import com.metavize.mvvm.logging.SyslogBuilder;
  * table="TR_BOXBACKUP_EVT"
  * mutable="false"
  */
-public class BoxBackupEvent
-  extends LogEvent {
+public class BoxBackupEvent extends LogEvent {
 
   private static final long serialVersionUID = 5563835539346280962L;
   
@@ -42,7 +41,6 @@ public class BoxBackupEvent
     m_detail = detail;
   }
 
-
   /**
    * Was the backup a success
    *
@@ -55,7 +53,6 @@ public class BoxBackupEvent
   public void setSuccess(boolean success) {
     m_success = success;
   }
-
 
   /**
    * Detail.  Only really interesting if
@@ -71,9 +68,22 @@ public class BoxBackupEvent
     m_detail = detail;
   }
 
+  // Syslog methods ---------------------------------------------------------
   public void appendSyslog(SyslogBuilder sb) {
     sb.startSection("info");
     sb.addField("success", isSuccess());
     sb.addField("detail", getDetail());
   }
+
+    public String getSyslogId()
+    {
+        return ""; // XXX
+    }
+
+    public SyslogPriority getSyslogPriority()
+    {
+        // NOTICE = box backup failed
+        // INFORMATIONAL = statistics or normal operation
+        return false == isSuccess() ? SyslogPriority.WARNING : SyslogPriority.INFORMATIONAL;
+    }
 }

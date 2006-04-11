@@ -13,6 +13,7 @@ package com.metavize.tran.httpblocker;
 
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
+import com.metavize.mvvm.logging.SyslogPriority;
 import com.metavize.tran.http.RequestLine;
 
 /**
@@ -26,6 +27,10 @@ import com.metavize.tran.http.RequestLine;
  */
 public class HttpBlockerEvent extends LogEvent
 {
+    // action types
+    private static final int PASSED = 0;
+    private static final int BLOCKED = 1;
+
     private RequestLine requestLine;
     private Action action;
     private Reason reason;
@@ -139,6 +144,18 @@ public class HttpBlockerEvent extends LogEvent
         this.category = category;
     }
 
+    // HttpBlockerEvent methods -----------------------------------------------
+
+    private int getActionType()
+    {
+        if (null == action ||
+            Action.PASS_KEY == action.getKey()) {
+            return PASSED;
+        } else {
+            return BLOCKED;
+        }
+    }
+
     // LogEvent methods -------------------------------------------------------
 
     public boolean isPersistent()
@@ -157,6 +174,25 @@ public class HttpBlockerEvent extends LogEvent
         sb.addField("action", null == action ? "none" : action.toString());
         sb.addField("reason", reason.toString());
         sb.addField("category", category);
+    }
+
+    public String getSyslogId()
+    {
+        return "Block";
+    }
+
+    public SyslogPriority getSyslogPriority()
+    {
+        switch(getActionType())
+        {
+            case PASSED:
+                // statistics or normal operation
+                return SyslogPriority.INFORMATIONAL;
+
+            default:
+            case BLOCKED:
+                return SyslogPriority.WARNING; // traffic altered
+        }
     }
 
     // Object methods ---------------------------------------------------------

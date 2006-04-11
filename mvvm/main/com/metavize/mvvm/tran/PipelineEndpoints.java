@@ -14,6 +14,7 @@ package com.metavize.mvvm.tran;
 import java.net.InetAddress;
 import java.util.Date;
 
+import com.metavize.mvvm.argon.SessionEndpoints;
 import com.metavize.mvvm.argon.IPSessionDesc;
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
@@ -21,7 +22,7 @@ import com.metavize.mvvm.logging.SyslogPriority;
 import com.metavize.mvvm.policy.Policy;
 
 /**
- * Used to record the Session stats at session end time.
+ * Used to record the Session endpoints at session end time.
  * PipelineStats and PipelineEndpoints used to be the PiplineInfo
  * object.
  *
@@ -129,8 +130,8 @@ public class PipelineEndpoints extends LogEvent
     public String getProtocolName()
     {
         switch (protocol) {
-        case 6:  return "TCP";
-        case 17: return "UDP";
+        case SessionEndpoints.PROTO_TCP: return "TCP";
+        case SessionEndpoints.PROTO_UDP: return "UDP";
         default: return "unknown";
         }
     }
@@ -205,6 +206,11 @@ public class PipelineEndpoints extends LogEvent
         this.clientIntf = clientIntf;
     }
 
+    public String getClientIntf(byte clientInf)
+    {
+        return 0 == clientIntf ? "outside" : "inside";
+    }
+
     /**
      * Server interface number (at server).  (0 outside, 1 inside)
      *
@@ -220,6 +226,11 @@ public class PipelineEndpoints extends LogEvent
     public void setServerIntf(byte serverIntf)
     {
         this.serverIntf = serverIntf;
+    }
+
+    public String getServerIntf(byte serverIntf)
+    {
+        return 0 == serverIntf ? "outside" : "inside";
     }
 
     /**
@@ -411,18 +422,36 @@ public class PipelineEndpoints extends LogEvent
     public void appendSyslog(SyslogBuilder sb)
     {
         sb.startSection("endpoints");
-        sb.addField("sid", sessionId);
-        sb.addField("prot", protocol);
-        sb.addField("caddr", cClientAddr);
-        sb.addField("cport", cClientPort);
-        sb.addField("saddr", sServerAddr);
-        sb.addField("sport", sServerPort);
+        sb.addField("create-date", createDate);
+        sb.addField("session-id", sessionId);
+        sb.addField("protocol", getProtocolName());
+
+        sb.addField("policy", policy.getName());
+        sb.addField("policy-direction", getDirectionName());
+
+        sb.addField("client-iface", getClientIntf(clientIntf));
+        //Client address, at the client side.
+        sb.addField("client-addr", cClientAddr);
+        //Client port, at the client side.
+        sb.addField("client-port", cClientPort);
+        //Server address, at the client side.
+        sb.addField("server-addr", cServerAddr);
+        //Server port, at the client side.
+        sb.addField("server-port", cServerPort);
+
+        sb.addField("server-iface", getServerIntf(serverIntf));
+        //Client address, at the server side.
+        sb.addField("client-addr", sClientAddr);
+        //Client port, at the server side.
+        sb.addField("client-port", sClientPort);
+        //Server address, at the server side.
+        sb.addField("server-addr", sServerAddr);
+        //Server port, at the server side.
+        sb.addField("server-port", sServerPort);
     }
 
-    public SyslogPriority getSyslogPrioritiy()
-    {
-        return SyslogPriority.DEBUG;
-    }
+    // reuse default getSyslogId - not actually used
+    // reuse default getSyslogPriority - not actually used
 
     // Object methods ---------------------------------------------------------
 

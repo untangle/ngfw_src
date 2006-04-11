@@ -26,7 +26,7 @@ import com.metavize.mvvm.tran.PipelineEndpoints;
  */
 public class SpywareBlacklistEvent extends SpywareEvent
 {
-    private RequestLine requestLine;
+    private RequestLine requestLine; // pipeline endpoints & location
 
     // constructors -----------------------------------------------------------
 
@@ -41,6 +41,11 @@ public class SpywareBlacklistEvent extends SpywareEvent
     }
 
     // SpywareEvent methods ---------------------------------------------------
+
+    public String getType()
+    {
+        return "Blacklist";
+    }
 
     public String getReason()
     {
@@ -90,4 +95,8 @@ public class SpywareBlacklistEvent extends SpywareEvent
     {
         this.requestLine = requestLine;
     }
+
+    // Syslog methods ---------------------------------------------------------
+
+    // use SpywareEvent appendSyslog, getSyslogId and getSyslogPriority
 }

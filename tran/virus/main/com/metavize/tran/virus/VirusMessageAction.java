@@ -24,8 +24,11 @@ public class VirusMessageAction implements Serializable
 
     private static final Map INSTANCES = new HashMap();
 
-    public static final VirusMessageAction PASS = new VirusMessageAction('P', "pass message");
-    public static final VirusMessageAction REMOVE = new VirusMessageAction('R', "remove infection");
+    public static final char PASS_KEY = 'P';
+    public static final char REMOVE_KEY = 'R';
+
+    public static final VirusMessageAction PASS = new VirusMessageAction(PASS_KEY, "pass message");
+    public static final VirusMessageAction REMOVE = new VirusMessageAction(REMOVE_KEY, "remove infection");
 
     static {
         INSTANCES.put(PASS.getKey(), PASS);

@@ -220,8 +220,13 @@ public class ShieldStatisticEvent extends LogEvent implements Serializable
         sb.addField("closed", closed);
     }
 
-    public SyslogPriority getSyslogPrioritiy()
+    public String getSyslogId()
     {
-        return SyslogPriority.DEBUG;
+        return "Shield_Statistic";
+    }
+
+    public SyslogPriority getSyslogPriority()
+    {
+        return SyslogPriority.INFORMATIONAL; // statistics or normal operation
     }
 }

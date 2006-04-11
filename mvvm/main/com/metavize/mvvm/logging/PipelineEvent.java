@@ -11,7 +11,6 @@
 
 package com.metavize.mvvm.logging;
 
-
 import com.metavize.mvvm.tran.PipelineEndpoints;
 
 public abstract class PipelineEvent extends LogEvent

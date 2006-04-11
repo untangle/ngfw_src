@@ -12,11 +12,13 @@
 package com.metavize.tran.nat;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
+import com.metavize.mvvm.logging.SyslogPriority;
 
 /**
  * Log event for a DHCP absolute event .
@@ -34,9 +36,7 @@ public class DhcpAbsoluteEvent extends LogEvent implements Serializable
     /**
      * Hibernate constructor
      */
-    public DhcpAbsoluteEvent()
-    {
-    }
+    public DhcpAbsoluteEvent() {}
 
     public DhcpAbsoluteEvent( List s )
     {
@@ -44,7 +44,7 @@ public class DhcpAbsoluteEvent extends LogEvent implements Serializable
     }
 
     /**
-     * List of the leases assocaited with the event.
+     * List of the absolute leases associated with the event.
      *
      * @return the list of the redirect rules.
      * @hibernate.list
@@ -83,5 +83,22 @@ public class DhcpAbsoluteEvent extends LogEvent implements Serializable
     {
         sb.startSection("info");
         sb.addField("num-leases", absoluteLeaseList.size());
+
+        DhcpAbsoluteLease absoluteLease;
+        for (Iterator iter = absoluteLeaseList.iterator(); true == iter.hasNext(); )
+        {
+            absoluteLease = (DhcpAbsoluteLease) iter;
+            absoluteLease.appendSyslog(sb);
+        }
+    }
+
+    public String getSyslogId()
+    {
+        return "DHCP_AbsoluteLeases";
+    }
+
+    public SyslogPriority getSyslogPriority()
+    {
+        return SyslogPriority.INFORMATIONAL; // statistics or normal operation
     }
 }

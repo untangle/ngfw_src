@@ -17,7 +17,7 @@ import java.sql.Timestamp;
 
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
-
+import com.metavize.mvvm.logging.SyslogPriority;
 import com.metavize.mvvm.tran.IPaddr;
 
 /**
@@ -34,29 +34,18 @@ public class ClientConnectEvent extends LogEvent implements Serializable
     private static final long serialVersionUID = 5000360330098789417L;
     
     private IPaddr address;
-    private int    port;
-
+    private int port;
     private String clientName;
+    private Date start; /* Start of the session */
+    private Date end; /* End of the session */
+    private long bytesRx; /* Total bytes received */
+    private long bytesTx; /* Total bytes transmitted */
 
-    /* Start of the session */
-    private Date start;
-    
-    /* End of the session */
-    private Date end;
-    
-    /* Total bytes received */
-    private long bytesRx;
-    
-    /* Total bytes transmitted */
-    private long bytesTx;
-    
     // Constructors 
     /**
      * Hibernate constructor 
      */
-    public ClientConnectEvent()
-    {
-    }
+    public ClientConnectEvent() {}
 
     public ClientConnectEvent( Date start, IPaddr address, int port, String clientName )
     {
@@ -195,8 +184,30 @@ public class ClientConnectEvent extends LogEvent implements Serializable
         this.bytesTx = bytesTx;
     }
 
-    public void appendSyslog( SyslogBuilder sb )
+    // Syslog methods ---------------------------------------------------------
+
+    // although events are created with only some data (see constructor),
+    // all data will be set when events are actually and finally logged
+    // (gui event log receives snapshot copies of these events without end time)
+    public void appendSyslog(SyslogBuilder sb)
     {
-        /* XXXXXXX */
+        sb.startSection("info");
+        sb.addField("start", getStart());
+        sb.addField("end", getEnd());
+        sb.addField("client-name", getClientName());
+        sb.addField("client-addr", getAddress().getAddr());
+        sb.addField("client-port", getPort());
+        sb.addField("bytes-received", getBytesRx());
+        sb.addField("bytes-transmitted", getBytesTx());
+    }
+
+    public String getSyslogId()
+    {
+        return "Client_Connect";
+    }
+
+    public SyslogPriority getSyslogPriority()
+    {
+        return SyslogPriority.INFORMATIONAL; // statistics or normal operation
     }
 }

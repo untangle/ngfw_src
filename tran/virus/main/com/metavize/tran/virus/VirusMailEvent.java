@@ -63,6 +63,15 @@ public class VirusMailEvent extends VirusEvent
         return !result.isClean();
     }
 
+    public int getActionType()
+    {
+        if (VirusMessageAction.PASS_KEY == action.getKey()) {
+            return PASSED;
+        } else { // REMOVE_KEY
+            return CLEANED;
+        }
+    }
+
     public String getActionName()
     {
         return action.getName();

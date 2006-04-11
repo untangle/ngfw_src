@@ -49,6 +49,20 @@ public class SpamLogEvent extends SpamEvent
 
     // SpamEvent methods ------------------------------------------------------
 
+    public String getType()
+    {
+        return "POP/IMAP";
+    }
+
+    public int getActionType()
+    {
+        if (SpamMessageAction.PASS_KEY == action.getKey()) {
+            return PASSED;
+        } else {
+            return MARKED;
+        }
+    }
+
     public String getActionName()
     {
         return action.toString();

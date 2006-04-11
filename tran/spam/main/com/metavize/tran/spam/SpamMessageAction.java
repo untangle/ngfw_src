@@ -24,8 +24,11 @@ public class SpamMessageAction implements Serializable
 
     private static final Map INSTANCES = new HashMap();
 
-    public static final SpamMessageAction PASS = new SpamMessageAction('P', "pass message");
-    public static final SpamMessageAction MARK = new SpamMessageAction('M', "mark message");
+    public static char PASS_KEY = 'P';
+    public static char MARK_KEY = 'M';
+
+    public static final SpamMessageAction PASS = new SpamMessageAction(PASS_KEY, "pass message");
+    public static final SpamMessageAction MARK = new SpamMessageAction(MARK_KEY, "mark message");
 
     static {
         INSTANCES.put(PASS.getKey(), PASS);

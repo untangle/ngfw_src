@@ -20,5 +20,3 @@ public abstract class StatisticEvent extends LogEvent
      */
     public abstract boolean hasStatistics();
 }
-
-

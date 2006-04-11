@@ -86,6 +86,11 @@ public class SyslogBuilderImpl implements SyslogBuilder
         addField(key, Integer.toString(value));
     }
 
+    public void addField(String key, long value)
+    {
+        addField(key, Long.toString(value));
+    }
+
     public void addField(String key, double value)
     {
         addField(key, Double.toString(value));
@@ -106,7 +111,7 @@ public class SyslogBuilderImpl implements SyslogBuilder
     {
         sb.clear();
 
-        int v = 8 * facility + e.getSyslogPrioritiy().getPriorityValue();
+        int v = 8 * facility + e.getSyslogPriority().getPriorityValue();
         sb.append("<");
         sb.append(Integer.toString(v));
         sb.append(">");

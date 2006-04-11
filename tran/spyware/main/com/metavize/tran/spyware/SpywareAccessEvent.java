@@ -28,7 +28,7 @@ public class SpywareAccessEvent extends SpywareEvent
 {
     private PipelineEndpoints pipelineEndpoints;
     private String identification;
-    private IPMaddr ipMaddr;
+    private IPMaddr ipMaddr; // location
     private boolean blocked;
 
     // constructors -----------------------------------------------------------
@@ -50,6 +50,11 @@ public class SpywareAccessEvent extends SpywareEvent
     }
 
     // SpywareEvent methods ---------------------------------------------------
+
+    public String getType()
+    {
+        return "Access";
+    }
 
     public String getReason()
     {
@@ -135,4 +140,8 @@ public class SpywareAccessEvent extends SpywareEvent
     {
         this.blocked = blocked;
     }
+
+    // Syslog methods ---------------------------------------------------------
+
+    // use SpywareEvent appendSyslog, getSyslogId and getSyslogPriority
 }

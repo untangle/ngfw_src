@@ -84,7 +84,7 @@ public class SyslogPriority implements Serializable
 
     public boolean inThreshold(LogEvent le)
     {
-        return inThreshold(le.getSyslogPrioritiy());
+        return inThreshold(le.getSyslogPriority());
     }
 
     public boolean inThreshold(SyslogPriority lp)
