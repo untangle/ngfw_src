@@ -91,12 +91,19 @@ static struct {
 #endif
 
     netcap_shield_event_hook_t event_hook;
+    
+    /* Used to return a NULL element for get_end_of_line */
+    netcap_trie_element_t null_element;
 } _shield = {
     .root       = NULL,
     .mode       = NC_SHIELD_MODE_RELAXED,
     .enabled    = 0,
     .event_hook = _null_event_hook,
     .mutex      = PTHREAD_MUTEX_INITIALIZER,
+
+    .null_element = { 
+        .base = NULL
+    },
 #ifdef _TRIE_DEBUG_PRINT
     .dbg_mutex  = PTHREAD_MUTEX_INITIALIZER
 #endif
@@ -690,7 +697,7 @@ static int  _apply_func          ( netcap_trie_element_t element, void* arg, str
             ret = errlog( ERR_CRITICAL, "netcap_trie_element_children\n" );
             break;
         }
-        
+
         /* Count is zero if a node doesn't have any children */
         children = ( children == 0 ) ? 1 : children;
         
@@ -768,7 +775,7 @@ static int  _lru_remove       ( void* arg )
 
 
 static int _add_request ( nc_shield_reputation_t *rep, int count, double divider, void* arg, 
-                          int update_load )                           
+                          int update_load )
 {
     if ( update_load == _NC_UPDATE_LOAD ) {
         netcap_load_val_t val;
@@ -805,7 +812,9 @@ static int _add_srv_conn ( nc_shield_reputation_t *rep, int count, double divide
                            int update_load )
 {
     if ( update_load == _NC_UPDATE_LOAD ) {
-        return netcap_load_update( &rep->srv_conn_load, 1, ( 1.0 / divider ));
+        /* Just in case */
+        count = ( count <= 0 ) ? 1 : count;
+        return netcap_load_update( &rep->srv_conn_load, 1, ( 1.0 / ( divider * count )));
     }
     return 0;
 }
@@ -814,7 +823,9 @@ static int _add_srv_fail ( nc_shield_reputation_t *rep, int count, double divide
                            int update_load )
 {
     if ( update_load == _NC_UPDATE_LOAD ) {
-        return netcap_load_update( &rep->srv_fail_load, 1, ( 1.0 / divider ));
+        /* Just in case */
+        count = ( count <= 0 ) ? 1 : count;
+        return netcap_load_update( &rep->srv_fail_load, 1, ( 1.0 / ( divider * count )));
     }
     return 0;
 }
@@ -823,7 +834,10 @@ static int _add_evil ( nc_shield_reputation_t *rep, int count, double divider, v
                         
 {
     int evil_count = (int)arg;
-    netcap_load_val_t evil_val = ((netcap_load_val_t)evil_count + 0.0 ) / divider;
+    /* Just in case */
+    count = ( count <= 0 ) ? 1 : count;
+
+    netcap_load_val_t evil_val = ((netcap_load_val_t)evil_count + 0.0 ) / ( divider * count );
     if ( update_load == _NC_UPDATE_LOAD ) return netcap_load_update( &rep->evil_load, evil_count, evil_val );
     
     return 0;
@@ -836,6 +850,9 @@ static int _add_chunk ( nc_shield_reputation_t *rep, int count, double divider, 
     
     if ( (chk = (_chk_t*)arg) == NULL ) return errlogargs();
 
+    /* Just in case */
+    count = ( count <= 0 ) ? 1 : count;
+
     switch ( chk->protocol ) {
     case IPPROTO_TCP:  load = &rep->tcp_chk_load;  break;
     case IPPROTO_UDP:  load = &rep->udp_chk_load;  break;
@@ -845,8 +862,9 @@ static int _add_chunk ( nc_shield_reputation_t *rep, int count, double divider, 
     
     if ( chk->if_rx == 1 ) {
         if ( update_load == _NC_UPDATE_LOAD ) {
-            netcap_load_update ( load, 1, ( 1.0 / divider ));
-            netcap_load_update ( &rep->byte_load, chk->size, ((netcap_load_val_t)chk->size) / divider );
+            netcap_load_update( load, 1, ( 1.0 / ( divider * count )));
+            netcap_load_update( &rep->byte_load, chk->size, 
+                                ((netcap_load_val_t)chk->size) / ( divider * count ));
         }
     } else {
         return errlog( ERR_CRITICAL, "Invalid chunk Description\n" );
@@ -1160,17 +1178,17 @@ static void _report_intf_event( netcap_intf_t intf, netcap_shield_event_data_t* 
 
 static netcap_trie_element_t _get_end_of_line ( netcap_trie_line_t* line )
 {
-    netcap_trie_element_t null_element;
-    null_element.base = NULL;
+    /* in case the value is unitialized */
+    _shield.null_element.base = NULL;
 
     if ( line->count == 0 ) {
         errlog( ERR_CRITICAL, "Line has zero nodes\n" );
-        return null_element;
+        return _shield.null_element;
     }
     
     if ( line->count > NC_TRIE_LINE_COUNT_MAX ) {
         errlog( ERR_CRITICAL, "Line w/ invalid count %d\n", line->count );
-        return null_element;
+        return _shield.null_element;
     }
 
     return (( line->is_bottom_up ) ? line->d[0] : line->d[line->count-1]);
@@ -1199,7 +1217,7 @@ static int  _apply_close( struct in_addr* ip, _apply_func_t* func )
     if ( func->divider < NC_SHIELD_DIVIDER_MIN  || func->divider > NC_SHIELD_DIVIDER_MAX ) {
         errlog( ERR_WARNING, "Invalid divider[%g], using %g\n", func->divider, _DEFAULT_DIVIDER );
         func->divider = _DEFAULT_DIVIDER;
-        /* XXX Possibly update the node so the error messages stop */
+        ((nc_shield_reputation_t*)element.base->data)->divider = _DEFAULT_DIVIDER;
     }
 
     int c;
