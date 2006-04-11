@@ -23,8 +23,11 @@ import com.metavize.tran.mail.papi.safelist.SafelistAdminView;
 
 import java.awt.Component;
 import java.util.List;
+import java.util.Vector;
 
 public class MailTransformCompoundSettings implements CompoundSettings {
+
+    public static final String GLOBAL_BUSINESS_PAPERS = "GLOBAL";
 
     // MAIL TRANSFORM SETTINGS //
     private MailTransformSettings mailTransformSettings;
@@ -42,6 +45,14 @@ public class MailTransformCompoundSettings implements CompoundSettings {
     // QUARANTINE MAINTENANCE VIEW //
     private QuarantineMaintenenceView quarantineMaintenanceView;
     public QuarantineMaintenenceView getQuarantineMaintenanceView(){ return quarantineMaintenanceView; }
+
+    // GLOBAL SAFELIST //
+    private List<String> globalSafelist;
+    public List<String> getGlobalSafelist(){ return globalSafelist; }
+    public void setGlobalSafelist(List<String> inGlobalSafelist){
+	globalSafelist = inGlobalSafelist;
+    }
+
 
     // SAFELIST ADMIN VIEW //
     private SafelistAdminView safelistAdminView;
@@ -95,9 +106,14 @@ public class MailTransformCompoundSettings implements CompoundSettings {
     private Component quarantineGeneralSettingsComponent;
     public Component getQuarantineGeneralSettingsComponent(){ return quarantineGeneralSettingsComponent; }
 
+
+
     public void save() throws Exception {
 	mailTransformSettings.setQuarantineSettings(quarantineSettings);
 	mailTransform.setMailTransformSettings(mailTransformSettings);
+
+	// GLOBAL STUFF //
+	safelistAdminView.replaceSafelist(GLOBAL_BUSINESS_PAPERS, globalSafelist.toArray(new String[0]));
     }
 
     public void refresh() throws Exception {
@@ -110,6 +126,12 @@ public class MailTransformCompoundSettings implements CompoundSettings {
 	    quarantineMaintenanceView = mailTransform.getQuarantineMaintenenceView();
 	if(safelistAdminView == null)
 	    safelistAdminView = mailTransform.getSafelistAdminView();
+
+	// GLOBAL STUFF //
+	Vector<String> tempVector = new Vector<String>();
+	tempVector.copyInto( safelistAdminView.getSafelistContents(GLOBAL_BUSINESS_PAPERS) );
+	globalSafelist = tempVector;
+	System.err.println("VECTOR SIZE: " + tempVector.size() );
 
 	if(generalSettingsComponent == null)
 	    generalSettingsComponent = Util.getSettingsComponent("com.metavize.tran.mail.gui.MCasingJPanel", "mail-casing");

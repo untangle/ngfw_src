@@ -32,33 +32,32 @@ import java.awt.*;
 import java.awt.event.*;
 import com.metavize.gui.widgets.editTable.*;
 
-public class WhitelistAllJPanel extends javax.swing.JPanel
+public class WhitelistAllUsersJPanel extends javax.swing.JPanel
     implements Refreshable<EmailCompoundSettings>, ComponentListener {
 
     private static final Color TABLE_BACKGROUND_COLOR = new Color(213, 213, 226);
 
-    private WhitelistAllTableModel whitelistAllTableModel;
+    private WhitelistAllUsersTableModel whitelistAllUsersTableModel;
     private MailTransformCompoundSettings mailTransformCompoundSettings;
     
-    public WhitelistAllJPanel() {
+    public WhitelistAllUsersJPanel() {
         // INIT GUI & CUSTOM INIT
         initComponents();
         entryJScrollPane.getViewport().setOpaque(true);
         entryJScrollPane.getViewport().setBackground(TABLE_BACKGROUND_COLOR);
         entryJScrollPane.setViewportBorder(new MatteBorder(2, 2, 2, 1, TABLE_BACKGROUND_COLOR));
-        addComponentListener(WhitelistAllJPanel.this);
+        addComponentListener(WhitelistAllUsersJPanel.this);
         
         // create actual table model
-        whitelistAllTableModel = new WhitelistAllTableModel();
-        setTableModel( whitelistAllTableModel );
-        whitelistAllTableModel.setSortingStatus(2, whitelistAllTableModel.ASCENDING);
+        whitelistAllUsersTableModel = new WhitelistAllUsersTableModel();
+        setTableModel( whitelistAllUsersTableModel );
+        whitelistAllUsersTableModel.setSortingStatus(2, whitelistAllUsersTableModel.ASCENDING);
     }
 
     public void doRefresh(EmailCompoundSettings emailCompoundSettings){
 	mailTransformCompoundSettings = (MailTransformCompoundSettings) emailCompoundSettings.getMailTransformCompoundSettings();
-	whitelistAllTableModel.doRefresh(emailCompoundSettings);
+	whitelistAllUsersTableModel.doRefresh(emailCompoundSettings);
     }
-
 
     public void setTableModel(MSortedTableModel mSortedTableModel){
         entryJTable.setModel( mSortedTableModel );
@@ -71,7 +70,6 @@ public class WhitelistAllJPanel extends javax.swing.JPanel
         return (MSortedTableModel) entryJTable.getModel();
     }
     
-
     public MColoredJTable getJTable(){
         return (MColoredJTable) entryJTable;
     }
@@ -185,12 +183,12 @@ public class WhitelistAllJPanel extends javax.swing.JPanel
                 return;
         
         // show detail dialog
-        Vector<Vector> dataVector = whitelistAllTableModel.getDataVector();
+        Vector<Vector> dataVector = whitelistAllUsersTableModel.getDataVector();
         String account = (String) dataVector.elementAt(selectedModelRows[0]).elementAt(2);
         (new WhitelistUserJDialog((Dialog)getTopLevelAncestor(), mailTransformCompoundSettings, account)).setVisible(true);
         
         // refresh
-        whitelistAllTableModel.doRefresh(null);
+        whitelistAllUsersTableModel.doRefresh(null);
     }//GEN-LAST:event_detailJButtonActionPerformed
 
     private void removeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeJButtonActionPerformed
@@ -206,7 +204,7 @@ public class WhitelistAllJPanel extends javax.swing.JPanel
                 
         // release
         String account;
-        Vector<Vector> dataVector = whitelistAllTableModel.getDataVector();
+        Vector<Vector> dataVector = whitelistAllUsersTableModel.getDataVector();
         for( int i : selectedModelRows ){
             account = (String) dataVector.elementAt(i).elementAt(2);
             try{
@@ -216,7 +214,7 @@ public class WhitelistAllJPanel extends javax.swing.JPanel
         }
         
         // refresh
-        whitelistAllTableModel.doRefresh(null);
+        whitelistAllUsersTableModel.doRefresh(null);
     }//GEN-LAST:event_removeJButtonActionPerformed
     
     private int[] getSelectedModelRows(){
@@ -245,12 +243,12 @@ public class WhitelistAllJPanel extends javax.swing.JPanel
 
 
 
-class WhitelistAllTableModel extends MSortedTableModel<EmailCompoundSettings> {
+class WhitelistAllUsersTableModel extends MSortedTableModel<EmailCompoundSettings> {
 
     private SafelistAdminView safelistAdminView;
     private static final StringConstants sc = StringConstants.getInstance();
     
-    public WhitelistAllTableModel(){
+    public WhitelistAllUsersTableModel(){
     }
     
     public TableColumnModel getTableColumnModel(){

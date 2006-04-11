@@ -35,6 +35,8 @@ public class EmailJDialog extends MConfigJDialog {
     private static final String NAME_EMAIL_CONFIG            = "Email Config";
     private static final String NAME_OUTGOING_SETTINGS       = "Outgoing Server";
     private static final String NAME_SAFE_LIST               = "From-Safe List";
+    private static final String NAME_SAFE_LIST_GLOBAL        = "Global";
+    private static final String NAME_SAFE_LIST_USER          = "Per User";
     private static final String NAME_QUARANTINE_SETTINGS     = "Quarantine";
     private static final String NAME_ALL_ACCOUNTS            = "Release & Purge";
     private static final String NAME_QUARANTINABLE_ADDRESSES = "Quarantinable Addresses";
@@ -72,10 +74,15 @@ public class EmailJDialog extends MConfigJDialog {
 	// EMAIL TRANSFORM SETTINGS //
 	if( emailCompoundSettings.getMailTransformCompoundSettings() != null ){
 
-	    // SAFELIST CONTROLS //////
-	    Component whitelistAllComponent = emailCompoundSettings.getSafelistComponent();
-	    addTab(NAME_SAFE_LIST, null, whitelistAllComponent);
-	    addRefreshable(NAME_SAFE_LIST, (Refreshable) whitelistAllComponent);
+	    // SAFELIST GLOBAL & USER //////
+	    JTabbedPane safelistJTabbedPane = addTabbedPane(NAME_SAFE_LIST, null);
+	    Component whitelistGlobalComponent = emailCompoundSettings.getSafelistGlobalComponent();
+	    safelistJTabbedPane.addTab(NAME_SAFE_LIST_GLOBAL, null, whitelistGlobalComponent);
+	    addSavable(NAME_SAFE_LIST_GLOBAL, (Savable) whitelistGlobalComponent);
+	    addRefreshable(NAME_SAFE_LIST_GLOBAL, (Refreshable) whitelistGlobalComponent);
+	    Component whitelistAllUsersComponent = emailCompoundSettings.getSafelistAllUsersComponent();
+	    safelistJTabbedPane.addTab(NAME_SAFE_LIST_USER, null, whitelistAllUsersComponent);
+	    addRefreshable(NAME_SAFE_LIST_USER, (Refreshable) whitelistAllUsersComponent);
 	
 	    // QUARANTINE ///////
 	    JTabbedPane quarantineJTabbedPane = addTabbedPane(NAME_QUARANTINE_SETTINGS, null);

@@ -43,8 +43,10 @@ public class EmailCompoundSettings implements CompoundSettings {
     
 
     // QUARANTINE SAFELIST CONTROLS //////
-    private Component safelistComponent;
-    public Component getSafelistComponent(){ return safelistComponent; }
+    private Component safelistGlobalComponent;
+    public Component getSafelistGlobalComponent(){ return safelistGlobalComponent; }
+    private Component safelistAllUsersComponent;
+    public Component getSafelistAllUsersComponent(){ return safelistAllUsersComponent; }
 
     // QUARANTINE RELEASE & PURGE //
     private Component quarantineReleaseAndPurgeComponent;
@@ -77,7 +79,8 @@ public class EmailCompoundSettings implements CompoundSettings {
 	if(mailTransformCompoundSettings != null){
 	    mailTransformCompoundSettings.refresh();
 
-	    safelistComponent = Util.getSettingsComponent("com.metavize.tran.mail.gui.WhitelistAllJPanel", "mail-casing");
+	    safelistAllUsersComponent = Util.getSettingsComponent("com.metavize.tran.mail.gui.WhitelistAllUsersJPanel", "mail-casing");
+	    safelistGlobalComponent = Util.getSettingsComponent("com.metavize.tran.mail.gui.WhitelistGlobalJPanel", "mail-casing");
 	    quarantineReleaseAndPurgeComponent = Util.getSettingsComponent("com.metavize.tran.mail.gui.QuarantineAllUsersJPanel", "mail-casing");
 	    quarantinableAddressesComponent = Util.getSettingsComponent("com.metavize.tran.mail.gui.QuarantinableAddressesJPanel", "mail-casing");
 	    quarantinableForwardsComponent = Util.getSettingsComponent("com.metavize.tran.mail.gui.QuarantinableForwardsJPanel", "mail-casing");
