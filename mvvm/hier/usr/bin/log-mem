@@ -22,7 +22,7 @@ memStart=0
 memPrev=0
 
 function getPid {
-	echo `ps aux | grep java | grep bunnicula | grep -v grep | awk '{ print $2 }'` 
+	echo `ps aux | grep java | grep argon.inside | grep -v grep | awk '{ print $2 }'` 
 }
 
 lastPid=0
