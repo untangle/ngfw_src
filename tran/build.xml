@@ -463,6 +463,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   </target>
 
   <target name="install.portal">
+    <!-- browser -->
     <mkdir dir="${dist.mvvm.web}/browser/WEB-INF/lib"/>
 
     <copy todir="${dist.mvvm.web}/browser/WEB-INF/lib">
@@ -487,6 +488,34 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     <mkdir dir="${dist.mvvm.web}/browser/js"/>
 
     <copy todir="${dist.mvvm.web}/browser/js">
+      <fileset dir="${AJAXTK_HOME}/WebRoot/js"/>
+    </copy>
+
+    <!-- proxy -->
+    <mkdir dir="${dist.mvvm.web}/proxy/WEB-INF/lib"/>
+
+    <copy todir="${dist.mvvm.web}/proxy/WEB-INF/lib">
+      <fileset refid="log4j.jarset"/>
+      <fileset refid="mvvm-client.jarset"/>
+      <fileset refid="jcifs.jarset"/>
+      <fileset refid="commons-fileupload.jarset"/>
+      <fileset refid="commons-io.jarset"/>
+      <fileset refid="ajaxtk.thirdparty.jarset"/>
+    </copy>
+
+    <copy todir="${dist.mvvm.web}/proxy/WEB-INF/classes">
+      <fileset dir="${AJAXTK_HOME}/build/classes"/>
+    </copy>
+
+    <mkdir dir="${dist.mvvm.web}/proxy/WEB-INF/tlds"/>
+
+    <copy todir="${dist.mvvm.web}/proxy/WEB-INF/tlds">
+      <fileset dir="${AJAXTK_HOME}/WebRoot/WEB-INF/tlds"/>
+    </copy>
+
+    <mkdir dir="${dist.mvvm.web}/proxy/js"/>
+
+    <copy todir="${dist.mvvm.web}/proxy/js">
       <fileset dir="${AJAXTK_HOME}/WebRoot/js"/>
     </copy>
   </target>
@@ -839,6 +868,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   </target>
 
   <target name="compile.portal">
+    <!-- browser -->
     <mkdir dir="${dist.mvvm.web}/browser"/>
 
     <copy todir="${dist.mvvm.web}/browser">
@@ -892,6 +922,66 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
               srcFile="${build.gensrc}/browser/web-fragment.xml"/>
     <copy file="${tran.name}/webapps/browser/root/WEB-INF/web.xml"
           toFile="${dist.mvvm.web}/browser/WEB-INF/web.xml"
+          overwrite="true">
+      <filterset>
+        <filter token="JSP_PRE_COMPILED_SERVLETS" value="${generated-web.xml}"/>
+      </filterset>
+    </copy>
+
+    <!-- proxy -->
+    <mkdir dir="${dist.mvvm.web}/proxy"/>
+
+    <copy todir="${dist.mvvm.web}/proxy">
+      <fileset dir="${tran.name}/webapps/proxy/root"/>
+    </copy>
+
+    <mkdir dir="${dist.mvvm.web}/proxy/WEB-INF/classes"/>
+
+    <javac destdir="${dist.mvvm.web}/proxy/WEB-INF/classes"
+           debug="on"
+           optimize="false"
+           deprecation="on"
+           source="1.5"
+           includeAntRuntime="false">
+
+      <src path="${tran.name}/webapps/proxy/src"/>
+
+      <classpath refid="mvvm.thirdparty.classpath"/>
+      <classpath refid="tomcat.thirdparty.classpath"/>
+      <classpath refid="ajaxtk.thirdparty.classpath"/>
+    </javac>
+
+    <mkdir dir="${build.gensrc}/proxy/"/>
+
+    <copy todir="${dist.mvvm.web}/proxy">
+      <fileset dir="${AJAXTK_HOME}/build/WebRoot/examples">
+        <include name="*.jsp"/>
+      </fileset>
+    </copy>
+
+    <java classname="org.apache.jasper.JspC"
+          fork="true"
+          failonerror="true">
+      <arg line="-s"/>
+      <arg line="-l"/>
+      <arg line="-v"/>
+      <arg line="-compile"/>
+      <arg line="-d ${dist.mvvm.web}/proxy/WEB-INF/classes"/>
+      <arg line="-p com.metavize.tran.${tran.name}.proxy"/>
+      <arg line="-webinc ${build.gensrc}/proxy/web-fragment.xml"/>
+      <arg line="-uriroot ${dist.mvvm.web}/proxy"/>
+      <classpath path="${java.home}/../lib/tools.jar"/>
+      <classpath refid="tomcat.thirdparty.classpath"/>
+      <classpath refid="mvvm.thirdparty.classpath"/>
+      <classpath refid="ajaxtk.thirdparty.classpath"/>
+    </java>
+
+    <echo message="Adding JSP servlet mappings to web.xml"/>
+
+    <loadfile property="generated-web.xml"
+              srcFile="${build.gensrc}/proxy/web-fragment.xml"/>
+    <copy file="${tran.name}/webapps/proxy/root/WEB-INF/web.xml"
+          toFile="${dist.mvvm.web}/proxy/WEB-INF/web.xml"
           overwrite="true">
       <filterset>
         <filter token="JSP_PRE_COMPILED_SERVLETS" value="${generated-web.xml}"/>

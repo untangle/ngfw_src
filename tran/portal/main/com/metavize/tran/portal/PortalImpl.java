@@ -36,6 +36,12 @@ public class PortalImpl extends AbstractTransform implements Portal
         } else {
             logger.error("Unable to deploy Browser web app");
         }
+
+        if (MvvmContextFactory.context().appServerManager().loadWebApp("/proxy", "proxy")) {
+            logger.debug("Deployed Proxy web app");
+        } else {
+            logger.error("Unable to deploy Proxy web app");
+        }
     }
 
     private void unDeployWebAppIfRequired(Logger logger) {
@@ -43,6 +49,12 @@ public class PortalImpl extends AbstractTransform implements Portal
             logger.debug("Unloaded Browser web app");
         } else {
             logger.error("Unable to unload Browser web app");
+        }
+
+        if (MvvmContextFactory.context().appServerManager().unloadWebApp("/proxy")) {
+            logger.debug("Unloaded Proxy web app");
+        } else {
+            logger.error("Unable to unload Proxy web app");
         }
     }
 
