@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -17,15 +17,15 @@ import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tran.TransformException;
 import org.apache.log4j.Logger;
 
-public class ExploderImpl extends AbstractTransform implements Exploder
+public class PortalImpl extends AbstractTransform implements Portal
 {
-    private final Logger logger = Logger.getLogger(ExploderImpl.class);
+    private final Logger logger = Logger.getLogger(PortalImpl.class);
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[0];
 
     // constructors -----------------------------------------------------------
 
-    public ExploderImpl()
+    public PortalImpl()
     {
         logger.debug("<init>");
     }
@@ -46,7 +46,7 @@ public class ExploderImpl extends AbstractTransform implements Exploder
         }
     }
 
-    // Exploder methods -------------------------------------------------------
+    // Portal methods ---------------------------------------------------------
 
     // Transform methods ------------------------------------------------------
 

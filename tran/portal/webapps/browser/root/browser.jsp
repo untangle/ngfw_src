@@ -8,7 +8,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-<title>HippieSoft.com(tm) Exploder(r)</title>
+<title>Metavize Portal</title>
 <style type="text/css">
 <!--
 @import url(img/dwtimgs.css);

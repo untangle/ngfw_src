@@ -67,7 +67,7 @@
 
   <!-- Metavize stuff -->
 
-  <display-name>Exploder</display-name>
+  <display-name>Portal</display-name>
 
   <servlet>
     <servlet-name>FileLister</servlet-name>
