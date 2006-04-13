@@ -30,7 +30,7 @@ public class KeyButtonRunnable implements ButtonRunnable {
 	    this.isEnabled = false;
 	}
     }
-    public String getButtonText(){ return "Distribute Key"; }
+    public String getButtonText(){ return "Distribute Client"; }
     public boolean isEnabled(){ return isEnabled; }
 	public void setEnabled(boolean isEnabled){ this.isEnabled = isEnabled; }
     public void setVpnClient(VpnClient vpnClient){ this.vpnClient = vpnClient; }
