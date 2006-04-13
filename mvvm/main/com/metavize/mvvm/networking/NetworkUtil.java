@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Collections;
 
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.HostName;
@@ -22,6 +23,9 @@ import com.metavize.mvvm.tran.AddressRange;
 import com.metavize.mvvm.tran.AddressValidator;
 import com.metavize.mvvm.tran.ValidateException;
 import com.metavize.mvvm.tran.ParseException;
+
+import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
+import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
 
 public class NetworkUtil 
 {
@@ -50,12 +54,32 @@ public class NetworkUtil
 
     public static final int    DEF_HTTPS_PORT = 443;
 
+    private static final String PRIVATE_NETWORK_STRINGS[] = 
+    {
+        "192.168.0.0/16", "10.0.0.0/8", "172.16.0.0/12"
+    };
+
     private static final String PUBLIC_ADDRESS_EXCEPTION = 
-        "A public address is an ip address, optionally followed by a port.  (EG 1.2.3.4:445 or 1.2.3.4)";
+        "A public address is an ip address, optionally followed by a port.  (e.g. 1.2.3.4:445 or 1.2.3.4)";
+
+    /* XXX This should be final, but there is a bug in javac that won't let it be. */
+    private List<IPMatcher> privateNetworkList;
 
     /* Package protected so that NetworkUtilPriv can work */
     NetworkUtil()
     {
+        List<IPMatcher> matchers = new LinkedList<IPMatcher>();
+        IPMatcherFactory imf = IPMatcherFactory.getInstance();
+
+        for ( String matcherString : PRIVATE_NETWORK_STRINGS ) {
+            try {
+                matchers.add( imf.parse( matcherString ));
+            } catch ( Exception e ) {
+                System.err.println( "Unable to parse: " + matcherString );
+            }
+        }
+        
+        privateNetworkList = Collections.unmodifiableList( matchers );
     }
 
     /* Get all of the interfaces in a particular network space */
@@ -72,6 +96,18 @@ public class NetworkUtil
         return list;
     }
 
+    /* Check if the network is private */
+    public boolean isPrivateNetwork( IPaddr address, IPaddr netmask )
+    {
+        if (( address == null ) || ( netmask == null )) return false;
+
+        IPaddr base = address.and( netmask );
+
+        for ( IPMatcher matcher : privateNetworkList ) if ( matcher.isMatch( base.getAddr())) return true;
+
+        return false;
+    }
+    
     /* Validate that a network configuration is okay */
     public void validate( NetworkSpacesSettings settings ) throws ValidateException
     {
