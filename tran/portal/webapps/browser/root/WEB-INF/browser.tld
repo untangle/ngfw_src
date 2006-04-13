@@ -12,7 +12,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.1//EN"
 
   <tag>
     <name>dirtree</name>
-    <tagclass>com.metavize.tran.exploder.browser.DirectoryTree</tagclass>
+    <tagclass>com.metavize.tran.portal.browser.DirectoryTree</tagclass>
     <bodycontent>empty</bodycontent>
     <info>Insert root of directory tree</info>
 
@@ -25,7 +25,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.1//EN"
 
   <tag>
     <name>save-upload</name>
-    <tagclass>com.metavize.tran.exploder.browser.SaveUpload</tagclass>
+    <tagclass>com.metavize.tran.portal.browser.SaveUpload</tagclass>
     <bodycontent>empty</bodycontent>
     <info>Save uploaded file to CIFS</info>
   </tag>

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.tran.exploder.browser;
+package com.metavize.tran.portal.browser;
 
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;

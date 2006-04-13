@@ -72,7 +72,7 @@
   <servlet>
     <servlet-name>FileLister</servlet-name>
     <servlet-class>
-      com.metavize.tran.exploder.browser.FileLister
+      com.metavize.tran.portal.browser.FileLister
     </servlet-class>
   </servlet>
 
@@ -84,7 +84,7 @@
   <servlet>
     <servlet-name>FileGetter</servlet-name>
     <servlet-class>
-      com.metavize.tran.exploder.browser.FileGetter
+      com.metavize.tran.portal.browser.FileGetter
     </servlet-class>
   </servlet>
 
@@ -96,7 +96,7 @@
   <servlet>
     <servlet-name>FileSaver</servlet-name>
     <servlet-class>
-      com.metavize.tran.exploder.browser.FileSaver
+      com.metavize.tran.portal.browser.FileSaver
     </servlet-class>
   </servlet>
 
@@ -108,7 +108,7 @@
   <servlet>
     <servlet-name>CommandRunner</servlet-name>
     <servlet-class>
-      com.metavize.tran.exploder.browser.CommandRunner
+      com.metavize.tran.portal.browser.CommandRunner
     </servlet-class>
   </servlet>
 
@@ -120,7 +120,7 @@
   <servlet>
     <servlet-name>ImageScaler</servlet-name>
     <servlet-class>
-      com.metavize.tran.exploder.browser.ImageScaler
+      com.metavize.tran.portal.browser.ImageScaler
     </servlet-class>
   </servlet>
 

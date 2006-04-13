@@ -1425,14 +1425,14 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
 Description: The Metavize OpenVPN Software Appliance
  The Metavize OpenVPN Software Appliance
 
-Package: exploder-transform
+Package: portal-transform
 Architecture: any
 Depends: mvvm
-XB-Display-Name: HippieSoft Exploder
+XB-Display-Name: Metavize Portal
 XB-Website: http://www.metavize.com/openvpn.html
 XB-View-Position: 990
-Description: HippieSoft Exploder
- The HippieSoft exploder.
+Description: Metavize Portal
+ The HippieSoft portal.
 XB-Is-Core: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVHja5Fh7bBzFGZ+ZnX3d

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.tran.exploder;
+package com.metavize.tran.portal;
 
 public interface Exploder
 {

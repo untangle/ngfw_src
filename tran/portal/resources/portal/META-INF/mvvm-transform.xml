@@ -12,9 +12,9 @@ $Id: mvvm-transform.xml,v 1.3 2005/02/07 22:15:39 amread Exp $
 -->
 
 <mvvm-transform>
-  <transform-desc name="exploder-transform"
+  <transform-desc name="portal-transform"
                   display-name="Exploder"
-                  classname="com.metavize.tran.exploder.ExploderImpl"
-                  gui-classname="com.metavize.tran.exploder.gui.MCasingJPanel"
+                  classname="com.metavize.tran.portal.ExploderImpl"
+                  gui-classname="com.metavize.tran.portal.gui.MCasingJPanel"
                   single-instance="true"/>
 </mvvm-transform>

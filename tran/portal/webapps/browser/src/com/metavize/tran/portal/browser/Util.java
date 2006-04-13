@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.tran.exploder.browser;
+package com.metavize.tran.portal.browser;
 
 class Util
 {

@@ -32,7 +32,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <property name="bases"
             value="virus,spam"/>
   <property name="transforms"
-            value="openvpn,exploder,nat,firewall,airgap,reporting,protofilter,boxbackup,test,sigma,hauri,clam,kav,spyware,httpblocker,spamassassin,clamphish,ids"/>
+            value="openvpn,portal,nat,firewall,airgap,reporting,protofilter,boxbackup,test,sigma,hauri,clam,kav,spyware,httpblocker,spamassassin,clamphish,ids"/>
 
   <!--              -->
   <!-- main targets -->
@@ -462,7 +462,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     <copy file="${build.jar}/openvpn-web.jar" todir="${dist.mvvm.web}/${tran.name}/WEB-INF/lib"/>
   </target>
 
-  <target name="install.exploder">
+  <target name="install.portal">
     <mkdir dir="${dist.mvvm.web}/browser/WEB-INF/lib"/>
 
     <copy todir="${dist.mvvm.web}/browser/WEB-INF/lib">
@@ -585,7 +585,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     </jar>
   </target>
 
-  <target name="jar.exploder"/>
+  <target name="jar.portal"/>
 
   <target name="jar.firewall"/>
   <target name="jar.spyware"/>
@@ -838,7 +838,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     </copy>
   </target>
 
-  <target name="compile.exploder">
+  <target name="compile.portal">
     <mkdir dir="${dist.mvvm.web}/browser"/>
 
     <copy todir="${dist.mvvm.web}/browser">
