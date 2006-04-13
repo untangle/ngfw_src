@@ -123,7 +123,7 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
                 natButtonGroup.add(natEnabledJRadioButton);
                 natEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 natEnabledJRadioButton.setSelected(true);
-                natEnabledJRadioButton.setText("<html><b>Router</b> (NAT Enabled) This is the default setting.</html>");
+                natEnabledJRadioButton.setText("<html><b>Router</b><br>This is recommended if the external ethernet port is connected to an internet connection.  (This enables NAT)</html>");
                 natEnabledJRadioButton.setOpaque(false);
                 natEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -143,7 +143,7 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-                gridBagConstraints.insets = new java.awt.Insets(0, 50, 0, 25);
+                gridBagConstraints.insets = new java.awt.Insets(5, 50, 0, 25);
                 contentJPanel.add(questionJLabel, gridBagConstraints);
 
                 staticIPJPanel.setLayout(new java.awt.GridBagLayout());
@@ -192,7 +192,7 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
 
                 natButtonGroup.add(natDisabledJRadioButton);
                 natDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                natDisabledJRadioButton.setText("<html><b>Transparent Bridge</b> (NAT Disabled)</html>");
+                natDisabledJRadioButton.setText("<html><b>Transparent Bridge</b><br>This is recommended if the external port is connected to a firewall or router. (This disables NAT)</html>");
                 natDisabledJRadioButton.setOpaque(false);
                 natDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -206,7 +206,7 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.weighty = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                gridBagConstraints.insets = new java.awt.Insets(20, 15, 0, 15);
                 contentJPanel.add(natDisabledJRadioButton, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
