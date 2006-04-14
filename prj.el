@@ -35,6 +35,7 @@
       "../downloads/output/commons-fileupload-1.1/commons-fileupload-1.1.jar"
       "../downloads/output/commons-httpclient-3.0/commons-httpclient-3.0.jar"
       "../downloads/output/concurrent-1.3.4/lib/concurrent.jar"
+      "../downloads/output/gnu.regexp-1.1.4/lib/gnu-regexp-1.1.4.jar"
       "../downloads/output/hibernate-3.0/hibernate3.jar"
       "../downloads/output/jakarta-tomcat-5.0.28-embed/lib/catalina-optional.jar"
       "../downloads/output/jakarta-tomcat-5.0.28-embed/lib/catalina.jar"

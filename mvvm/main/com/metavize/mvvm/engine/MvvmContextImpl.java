@@ -19,7 +19,6 @@ import java.util.StringTokenizer;
 
 import com.metavize.mvvm.CronJob;
 import com.metavize.mvvm.MvvmLocalContext;
-import com.metavize.mvvm.NetworkManager;
 import com.metavize.mvvm.Period;
 import com.metavize.mvvm.argon.Argon;
 import com.metavize.mvvm.argon.ArgonManagerImpl;
@@ -404,9 +403,9 @@ public class MvvmContextImpl extends MvvmContextBase
         mPipeManager = MPipeManagerImpl.manager();
         pipelineFoundry = PipelineFoundryImpl.foundry();
 
-        // Retrieve the network settings manager.
-        // (Kind of busted, but NAT may register a listener, and thus the network manager
-        // should exist.
+        // Retrieve the network settings manager.  (Kind of busted,
+        // but NAT may register a listener, and thus the network
+        // manager should exist.
         networkManager = NetworkManagerImpl.getInstance();
 
         // start transforms:

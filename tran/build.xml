@@ -494,30 +494,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     <!-- proxy -->
     <mkdir dir="${dist.mvvm.web}/proxy/WEB-INF/lib"/>
 
-    <copy todir="${dist.mvvm.web}/proxy/WEB-INF/lib">
-      <fileset refid="log4j.jarset"/>
-      <fileset refid="mvvm-client.jarset"/>
-      <fileset refid="jcifs.jarset"/>
-      <fileset refid="commons-fileupload.jarset"/>
-      <fileset refid="commons-io.jarset"/>
-      <fileset refid="ajaxtk.thirdparty.jarset"/>
-    </copy>
-
-    <copy todir="${dist.mvvm.web}/proxy/WEB-INF/classes">
-      <fileset dir="${AJAXTK_HOME}/build/classes"/>
-    </copy>
-
-    <mkdir dir="${dist.mvvm.web}/proxy/WEB-INF/tlds"/>
-
-    <copy todir="${dist.mvvm.web}/proxy/WEB-INF/tlds">
-      <fileset dir="${AJAXTK_HOME}/WebRoot/WEB-INF/tlds"/>
-    </copy>
-
-    <mkdir dir="${dist.mvvm.web}/proxy/js"/>
-
-    <copy todir="${dist.mvvm.web}/proxy/js">
-      <fileset dir="${AJAXTK_HOME}/WebRoot/js"/>
-    </copy>
   </target>
 
   <target name="install.firewall"/>
