@@ -29,7 +29,7 @@ import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
 
 public class NetworkUtil 
 {
-    private static final NetworkUtil INSTANCE = new NetworkUtil();
+    private static final NetworkUtil INSTANCE;
     
     public static final IPaddr  EMPTY_IPADDR;
     public static final IPaddr  DEF_OUTSIDE_NETWORK;
@@ -369,5 +369,7 @@ public class NetworkUtil
 
         LOCAL_DOMAIN_DEFAULT = h;
         DEFAULT_HOSTNAME = l;
+
+	INSTANCE = new NetworkUtil();
     }
 }

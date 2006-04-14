@@ -12,6 +12,8 @@
 package com.metavize.gui.login;
 
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.networking.NetworkUtil;
+import com.metavize.mvvm.NetworkingConfiguration;
 
 import com.metavize.gui.widgets.wizard.*;
 import com.metavize.gui.util.Util;
@@ -33,8 +35,39 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
 	natEnabledJRadioButton.requestFocus();
 	addressJTextField.setText(INIT_ADDRESS);
 	netmaskJTextField.setText(INIT_NETMASK);
+	new AutoDetectThread();
+	
     }
-
+    
+    private class AutoDetectThread extends Thread {
+	public AutoDetectThread(){
+	    setDaemon(true);
+	    start();
+	}
+	public void run(){
+	    InitialSetupWizard.getInfiniteProgressJComponent().startLater("Auto-Detecting Usage...");
+            try{
+                NetworkingConfiguration nc = Util.getNetworkingManager().get();
+		final boolean isPrivateNetwork = NetworkUtil.getInstance().isPrivateNetwork(nc.host(),nc.netmask());
+		SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		    if(isPrivateNetwork){
+			natEnabledJRadioButton.setSelected(true);
+			natEnabledDependency(true);
+		    }
+		    else{
+			natDisabledJRadioButton.setSelected(false);
+			natEnabledDependency(false);
+		    }
+		}});
+		
+		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1000l);
+	    }
+	    catch(Exception e){
+		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(-1l);
+		Util.handleExceptionNoRestart("Error gvetting data", e);
+	    }
+	}
+    }
     
     public static boolean getNatEnabled(){ return natEnabled; }
     private static boolean natEnabled = true;
@@ -124,6 +157,8 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
                 natEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 natEnabledJRadioButton.setSelected(true);
                 natEnabledJRadioButton.setText("<html><b>Router</b><br>This is recommended if the external ethernet port is connected to an internet connection.  (This enables NAT)</html>");
+                natEnabledJRadioButton.setFocusPainted(false);
+                natEnabledJRadioButton.setFocusable(false);
                 natEnabledJRadioButton.setOpaque(false);
                 natEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -193,6 +228,8 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
                 natButtonGroup.add(natDisabledJRadioButton);
                 natDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 natDisabledJRadioButton.setText("<html><b>Transparent Bridge</b><br>This is recommended if the external port is connected to a firewall or router. (This disables NAT)</html>");
+                natDisabledJRadioButton.setFocusPainted(false);
+                natDisabledJRadioButton.setFocusable(false);
                 natDisabledJRadioButton.setOpaque(false);
                 natDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {

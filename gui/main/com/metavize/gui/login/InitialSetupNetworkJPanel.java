@@ -43,6 +43,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
 	hostnameJTextField.requestFocus();
     }
 	
+	
     boolean isDhcpEnabled;
     String hostString;
     IPaddr host;
@@ -180,7 +181,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                 }
 		networkingConfiguration.hostname( hostname );
 
-		boolean isPublic = NetworkUtil.isHostnameLikelyPublic( hostname.toString());
+		boolean isPublic = NetworkUtil.getInstance().isHostnameLikelyPublic( hostname.toString() );
                 networkingConfiguration.setIsHostnamePublic(isPublic);
 
 		InitialSetupWizard.setSharedData( hostname.toString());
