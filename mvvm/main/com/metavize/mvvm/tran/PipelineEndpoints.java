@@ -450,8 +450,8 @@ public class PipelineEndpoints extends LogEvent
         sb.addField("server-port", sServerPort);
     }
 
-    // reuse default getSyslogId - not actually used
-    // reuse default getSyslogPriority - not actually used
+    // reuse default getSyslogId
+    // reuse default getSyslogPriority
 
     // Object methods ---------------------------------------------------------
 

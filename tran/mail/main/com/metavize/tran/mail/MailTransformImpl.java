@@ -286,6 +286,13 @@ public class MailTransformImpl extends AbstractTransform
         logger.debug("Initialize SafeList/Quarantine...");
         s_quarantine.setSettings(this, settings.getQuarantineSettings());
         s_safelistMngr.setSettings(this, settings);
+
+        try {
+            // create GLOBAL safelist for admin to manage POP/IMAP accounts
+            // (GLOBAL safelist is created only if it doesn't exist yet)
+            s_safelistMngr.createSafelist("GLOBAL");
+        } catch (Exception ignore) {} //nothing can be done
+
         deployWebAppIfRequired(logger);
         s_quarantine.open();        
     }
