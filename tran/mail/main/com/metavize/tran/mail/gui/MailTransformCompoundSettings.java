@@ -131,12 +131,11 @@ public class MailTransformCompoundSettings implements CompoundSettings {
 	Vector<String> tempVector = new Vector<String>();
 	tempVector.copyInto( safelistAdminView.getSafelistContents(GLOBAL_BUSINESS_PAPERS) );
 	globalSafelist = tempVector;
-	System.err.println("VECTOR SIZE: " + tempVector.size() );
 
 	if(generalSettingsComponent == null)
 	    generalSettingsComponent = Util.getSettingsComponent("com.metavize.tran.mail.gui.MCasingJPanel", "mail-casing");
 	if(safelistComponent == null)
-	    safelistComponent = Util.getSettingsComponent("com.metavize.tran.mail.gui.WhitelistAllJPanel", "mail-casing");
+	    safelistComponent = Util.getSettingsComponent("com.metavize.tran.mail.gui.WhitelistAllUsersJPanel", "mail-casing");
 	if(quarantineReleaseAndPurgeComponent == null)
 	    quarantineReleaseAndPurgeComponent = Util.getSettingsComponent("com.metavize.tran.mail.gui.QuarantineAllUsersJPanel", "mail-casing");
 	if(quarantinableAddressesComponent == null)
