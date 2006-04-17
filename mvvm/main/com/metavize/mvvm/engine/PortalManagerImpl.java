@@ -119,6 +119,21 @@ public class PortalManagerImpl
         return result;
     }
 
+    public PortalHomeSettings getPortalHomeSettings(PortalUser user)
+    {
+        PortalHomeSettings result = user.getPortalHomeSettings();
+        if (result == null) {
+            PortalGroup userGroup = user.getPortalGroup();
+            if (userGroup != null) {
+                result = userGroup.getPortalHomeSettings();
+            }
+        }
+        if (result == null) {
+            result = portalSettings.getGlobal().getPortalHomeSettings();
+        }
+        return result;
+    }
+
     public PortalUser lookupUser(String uid)
     {
         List allUsers = portalSettings.getUsers();

@@ -28,9 +28,19 @@ public interface PortalManagerPriv extends PortalManager
      * at top, then group (if any), then global.
      *
      * @return the list of all bookmarks for the user
-     * @param uid a <code>String</code> giving the uid of the user
+     * @param user a <code>PortalUser</code> giving the user to fetch for
      */
     List<Bookmark> getAllBookmarks(PortalUser user);
+
+    /**
+     * Gets the <code>PortalHomeSettings</code> for the given user.  This finds the
+     * most specific one that is set and returns it.  (There is always a global one,
+     * so null is never returned)
+     *
+     * @param user a <code>PortalUser</code> giving the user to fetch for
+     * @return the <code>PortalHomeSettings</code> for the user
+     */
+    PortalHomeSettings getPortalHomeSettings(PortalUser user);
 
     /**
      * <code>lookupUser</code> should be called <b>after</b> the uid has been authenticated
