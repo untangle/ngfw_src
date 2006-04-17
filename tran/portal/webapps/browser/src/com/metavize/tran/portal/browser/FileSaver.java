@@ -46,7 +46,7 @@ public class FileSaver extends HttpServlet
 
         NtlmPasswordAuthentication auth = (NtlmPasswordAuthentication)s.getAttribute("ntlmPasswordAuthentication");
         if (null == auth) {
-            auth = new NtlmPasswordAuthentication("bebe", "kaka", "poopoo");
+            auth = new NtlmPasswordAuthentication("windows.metavize.com", "amread", "XYZ123abc");
             s.setAttribute("ntlmPasswordAuthentication", auth);
         }
 

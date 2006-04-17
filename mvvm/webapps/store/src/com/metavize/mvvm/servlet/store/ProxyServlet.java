@@ -85,7 +85,7 @@ public class ProxyServlet extends HttpServlet
         throws ServletException
     {
         InputStream is = null;
-        InputStream os = null;
+        OutputStream os = null;
 
         try {
             String pi = req.getPathInfo();
@@ -120,10 +120,11 @@ public class ProxyServlet extends HttpServlet
                 }
             }
 
+            os = resp.getOutputStream();
             if (rewriteStream) {
-                rewriteStream(is, resp.getOutputStream());
+                rewriteStream(is, os);
             } else {
-                copyStream(is, resp.getOutputStream());
+                copyStream(is, os);
             }
 
         } catch (UnknownHostException exn) {

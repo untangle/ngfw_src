@@ -31,6 +31,4 @@
     <url-pattern>/*</url-pattern>
   </servlet-mapping>
 
-  @JSP_PRE_COMPILED_SERVLETS@
-
 </web-app>
