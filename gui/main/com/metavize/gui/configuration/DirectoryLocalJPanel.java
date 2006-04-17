@@ -11,10 +11,12 @@
 
 package com.metavize.gui.configuration;
 
+import com.metavize.mvvm.addrbook.*;
+
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.util.Util;
 
-import java.awt.*;
+import java.awt.Insets;
 import java.util.*;
 import javax.swing.table.*;
 import javax.swing.*;
@@ -70,9 +72,9 @@ class DirectoryLocalTableModel extends MSortedTableModel<DirectoryCompoundSettin
         for( Vector rowVector : tableVector ){
 	    
 	    newElem = (UserEntry) rowVector.elementAt(5);
-	    newElem.setFirstName( rowVector.elementAt(2) );
-	    newElem.setLastName( rowVector.elementAt(3) );
-	    newElem.setEmail( rowVector.elementAt(4) );
+	    newElem.setFirstName( (String) rowVector.elementAt(2) );
+	    newElem.setLastName( (String) rowVector.elementAt(3) );
+	    newElem.setEmail( (String) rowVector.elementAt(4) );
             allRows.add(newElem);
         }
         
@@ -85,7 +87,7 @@ class DirectoryLocalTableModel extends MSortedTableModel<DirectoryCompoundSettin
 
     public Vector<Vector> generateRows(DirectoryCompoundSettings directoryCompoundSettings) {
 	List<UserEntry> userEntries = directoryCompoundSettings.getLocalUserList();
-        Vector<Vector> allRows = new Vector<Vector>(users.size());
+        Vector<Vector> allRows = new Vector<Vector>(userEntries.size());
 	Vector tempRow = null;
         int rowIndex = 0;
 
@@ -95,7 +97,7 @@ class DirectoryLocalTableModel extends MSortedTableModel<DirectoryCompoundSettin
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );
             tempRow.add( userEntry.getFirstName() );
-            tempRow.add( userEntry.getLastLogin() );
+            tempRow.add( userEntry.getLastName() );
             tempRow.add( userEntry.getEmail() );
             tempRow.add( userEntry );
             allRows.add( tempRow );

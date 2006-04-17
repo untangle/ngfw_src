@@ -331,7 +331,7 @@ public class AddressBookImpl
 	    return new ArrayList<UserEntry>();
   }
 
-  public void setUserEntries(List<UserEntry>)
+  public void setLocalUserEntries(List<UserEntry> userEntries)
     throws ServiceUnavailableException {
 
   }

@@ -40,12 +40,13 @@ public class DirectoryJDialog extends MConfigJDialog {
 	addSavable(NAME_LOCAL_DIRECTORY, directoryLocalJPanel);
 	addRefreshable(NAME_LOCAL_DIRECTORY, directoryLocalJPanel);
 
+	/*
 	// REMOTE ACTIVE DIRECTORY ////////
 	DirectoryRemoteADJPanel directoryRemoteADJPanel = new DirectoryRemoteADJPanel();
 	addTab(NAME_REMOTE_ACTIVE_DIRECTORY, null, directoryRemoteADJPanel);
 	addSavable(NAME_REMOTE_ACTIVE_DIRECTORY, directoryRemoteADJPanel);
 	addRefreshable(NAME_REMOTE_ACTIVE_DIRECTORY, directoryRemoteADJPanel);
-	
+	*/
     }
 
 }

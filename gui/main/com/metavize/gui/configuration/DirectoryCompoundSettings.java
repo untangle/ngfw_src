@@ -15,6 +15,9 @@ import com.metavize.gui.util.Util;
 import com.metavize.gui.transform.CompoundSettings;
 import com.metavize.mvvm.addrbook.*;
 
+import java.util.List;
+
+
 public class DirectoryCompoundSettings implements CompoundSettings {
 
     // ADDRESS BOOK SETTINGS //
@@ -35,6 +38,10 @@ public class DirectoryCompoundSettings implements CompoundSettings {
     public void refresh() throws Exception {
 	addressBookSettings = Util.getAddressBook().getAddressBookSettings();
 	localUserList = Util.getAddressBook().getLocalUserEntries();
+    }
+
+    public void validate() throws Exception {
+
     }
 
 }
