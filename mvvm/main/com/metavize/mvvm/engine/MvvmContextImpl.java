@@ -76,6 +76,7 @@ public class MvvmContextImpl extends MvvmContextBase
     private CronManager cronManager;
     private AppServerManagerImpl appServerManager;
     private AddressBookImpl addressBookImpl;
+    private PortalManagerImpl portalManager;
 
     // constructor ------------------------------------------------------------
 
@@ -110,6 +111,10 @@ public class MvvmContextImpl extends MvvmContextBase
 
     public AddressBookImpl appAddressBook() {
         return addressBookImpl;
+    }
+
+    public PortalManagerImpl portalManager() {
+        return portalManager;
     }
 
     public AppServerManagerImpl appServerManager()
@@ -380,6 +385,10 @@ public class MvvmContextImpl extends MvvmContextBase
         return cronManager.makeCronJob(p, r);
     }
 
+    public void loadLibrary(String libname) {
+        System.loadLibrary(libname);
+    }
+
     // MvvmContextBase methods ------------------------------------------------
 
     @Override
@@ -428,6 +437,8 @@ public class MvvmContextImpl extends MvvmContextBase
 
         //Start AddressBookImpl
         addressBookImpl = AddressBookImpl.getInstance();
+
+        portalManager = PortalManagerImpl.getInstance();
 
         // start vectoring:
         String argonFake = System.getProperty(ARGON_FAKE_KEY);
