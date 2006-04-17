@@ -45,6 +45,7 @@ import com.metavize.mvvm.client.*;
 import com.metavize.mvvm.logging.*;
 import com.metavize.mvvm.policy.*;
 import com.metavize.mvvm.security.*;
+import com.metavize.mvvm.addrBook.*;
 import com.metavize.mvvm.toolbox.ToolboxManager;
 import com.metavize.mvvm.tran.*;
 
@@ -117,6 +118,7 @@ public class Util {
     private static PolicyManager policyManager;
     private static LoggingManager loggingManager;
     private static AppServerManager appServerManager;
+    private static AddressBook appAddressBook;
 
     public static void setMvvmContext(MvvmRemoteContext mvvmContextX){
         mvvmContext = mvvmContextX;
@@ -129,6 +131,7 @@ public class Util {
             policyManager = mvvmContext.policyManager();
             loggingManager = mvvmContext.loggingManager();
             appServerManager = mvvmContext.appServerManager();
+            appAddressBook = mvvmContext.appAddressBook();
         }
         else{
             toolboxManager = null;
@@ -139,6 +142,7 @@ public class Util {
             policyManager = null;
             loggingManager = null;
             appServerManager = null;
+            appAddressBook = null;
         }
     }
 
