@@ -11,6 +11,17 @@
 
 package com.metavize.tran.portal;
 
+import com.metavize.mvvm.portal.*;
+
 public interface Portal
 {
+    Application[] getApplications();
+
+    String[] getApplicationNames();
+
+    Application getApplication(String name);
+
+    PortalSettings getPortalSettings();
+
+    void setPortalSettings(PortalSettings settings);
 }

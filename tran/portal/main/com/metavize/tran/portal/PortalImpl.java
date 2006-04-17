@@ -12,6 +12,7 @@
 package com.metavize.tran.portal;
 
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.portal.*;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tran.TransformException;
@@ -81,6 +82,34 @@ public class PortalImpl extends AbstractTransform implements Portal
 
         deployWebAppIfRequired(logger);
     }
+
+    // Portal methods ----------------------------------------------
+
+    public Application[] getApplications()
+    {
+        return MvvmContextFactory.context().portalManager().applicationManager().getApplications();
+    }
+
+    public String[] getApplicationNames()
+    {
+        return MvvmContextFactory.context().portalManager().applicationManager().getApplicationNames();
+    }
+
+    public Application getApplication(String name)
+    {
+        return MvvmContextFactory.context().portalManager().applicationManager().getApplication(name);
+    }
+
+    public PortalSettings getPortalSettings()
+    {
+        return MvvmContextFactory.context().portalManager().getPortalSettings();
+    }
+
+    public void setPortalSettings(PortalSettings settings)
+    {
+        MvvmContextFactory.context().portalManager().setPortalSettings(settings);
+    }
+
 
     // AbstractTransform methods ----------------------------------------------
 
