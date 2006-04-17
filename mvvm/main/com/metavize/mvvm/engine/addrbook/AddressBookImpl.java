@@ -322,6 +322,20 @@ public class AddressBookImpl
   }
 
 
+  public List<UserEntry> getLocalUserEntries()
+    throws ServiceUnavailableException {
+        if(!isNotConfigured()) {//Double negative. Bad english
+          return m_localAdapter.listAll();
+        }
+	else
+	    return new ArrayList<UserEntry>();
+  }
+
+  public void setUserEntries(List<UserEntry>)
+    throws ServiceUnavailableException {
+
+  }
+
     
   //====================================================
   // See doc on com.metavize.mvvm.addrbook.AddressBook

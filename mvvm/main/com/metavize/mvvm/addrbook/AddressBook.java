@@ -195,6 +195,14 @@ public interface AddressBook {
     throws ServiceUnavailableException;
 
 
+
+  public void setLocalUserEntries(List<UserEntry> userEntries)
+    throws ServiceUnavailableException;
+
+  public List<UserEntry> getLocalUserEntries()
+    throws ServiceUnavailableException;
+
+
     
   /**
    * Get all USerEntries from the given repository.
