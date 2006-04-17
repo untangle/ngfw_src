@@ -56,7 +56,7 @@ public class WhitelistAllUsersJPanel extends javax.swing.JPanel
 
     public void doRefresh(EmailCompoundSettings emailCompoundSettings){
 	mailTransformCompoundSettings = (MailTransformCompoundSettings) emailCompoundSettings.getMailTransformCompoundSettings();
-	whitelistAllUsersTableModel.doRefresh(emailCompoundSettings);
+	whitelistAllUsersTableModel.doRefresh(mailTransformCompoundSettings);
     }
 
     public void setTableModel(MSortedTableModel mSortedTableModel){
@@ -188,7 +188,7 @@ public class WhitelistAllUsersJPanel extends javax.swing.JPanel
         (new WhitelistUserJDialog((Dialog)getTopLevelAncestor(), mailTransformCompoundSettings, account)).setVisible(true);
         
         // refresh
-        whitelistAllUsersTableModel.doRefresh(null);
+        whitelistAllUsersTableModel.doRefresh(mailTransformCompoundSettings);
     }//GEN-LAST:event_detailJButtonActionPerformed
 
     private void removeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeJButtonActionPerformed
@@ -214,7 +214,7 @@ public class WhitelistAllUsersJPanel extends javax.swing.JPanel
         }
         
         // refresh
-        whitelistAllUsersTableModel.doRefresh(null);
+        whitelistAllUsersTableModel.doRefresh(mailTransformCompoundSettings);
     }//GEN-LAST:event_removeJButtonActionPerformed
     
     private int[] getSelectedModelRows(){
@@ -243,7 +243,7 @@ public class WhitelistAllUsersJPanel extends javax.swing.JPanel
 
 
 
-class WhitelistAllUsersTableModel extends MSortedTableModel<EmailCompoundSettings> {
+class WhitelistAllUsersTableModel extends MSortedTableModel<MailTransformCompoundSettings> {
 
     private SafelistAdminView safelistAdminView;
     private static final StringConstants sc = StringConstants.getInstance();
@@ -264,13 +264,14 @@ class WhitelistAllUsersTableModel extends MSortedTableModel<EmailCompoundSetting
 
 
    
-    public void generateSettings(EmailCompoundSettings emailCompoundSettings,
+    public void generateSettings(MailTransformCompoundSettings mailTransformCompoundSettings,
 				 Vector<Vector> tableVector, boolean validateOnly) throws Exception { }
 
-    public Vector<Vector> generateRows(EmailCompoundSettings emailCompoundSettings) {
+
+    public Vector<Vector> generateRows(MailTransformCompoundSettings mailTransformCompoundSettings) {
         
-        java.util.List<String> safelists = ((MailTransformCompoundSettings)emailCompoundSettings.getMailTransformCompoundSettings()).getSafelists();
-        int[] counts = ((MailTransformCompoundSettings)emailCompoundSettings.getMailTransformCompoundSettings()).getSafelistCounts();
+        java.util.List<String> safelists = mailTransformCompoundSettings.getSafelists();
+        int[] counts = mailTransformCompoundSettings.getSafelistCounts();
         
         Vector<Vector> allRows = new Vector<Vector>(safelists.size());
 	Vector tempRow = null;

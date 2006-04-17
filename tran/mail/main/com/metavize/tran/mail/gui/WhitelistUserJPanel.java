@@ -176,7 +176,7 @@ public class WhitelistUserJPanel extends javax.swing.JPanel
         catch(Exception e){Util.handleExceptionNoRestart("Error removing from whitelist: " + account, e);}
         
         // refresh
-        whitelistUserTableModel.doRefresh(null);
+        whitelistUserTableModel.doRefresh(mailTransformCompoundSettings);
     }//GEN-LAST:event_removeJButtonActionPerformed
     
     private int[] getSelectedModelRows(){
