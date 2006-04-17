@@ -16,6 +16,7 @@ CREATE TABLE settings.portal_user (
         uid              TEXT,
         live             BOOL,
         group_id         INT8,
+        home_settings_id INT8,
         PRIMARY KEY      (id));
 
 -- com.metavize.mvvm.portal.PortalUser.bookmarks -- 4.0

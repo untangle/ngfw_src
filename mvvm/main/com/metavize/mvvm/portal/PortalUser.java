@@ -32,6 +32,7 @@ public class PortalUser implements Serializable
     private String uid;
     private boolean live = true;
     private PortalGroup portalGroup;
+    private PortalHomeSettings portalHomeSettings;
 
     private List bookmarks;
 
@@ -122,6 +123,26 @@ public class PortalUser implements Serializable
     public void setPortalGroup(PortalGroup portalGroup)
     {
         this.portalGroup = portalGroup;
+    }
+
+    /**
+     * The PortalHomeSettings that this user has.  This may be null, in which case
+     * the group or global settings are used.
+     * Thus, this should remain null until the user changes some value -- the UI should
+     * show the group or global settings until that point.
+     *
+     * @return the PortalHomeSettings.
+     * @hibernate.one-to-one
+     * column="home_settings_id"
+     */
+    public PortalHomeSettings getPortalHomeSettings()
+    {
+        return portalHomeSettings;
+    }
+
+    public void setPortalHomeSettings(PortalHomeSettings portalHomeSettings)
+    {
+        this.portalHomeSettings = portalHomeSettings;
     }
 
     /**
