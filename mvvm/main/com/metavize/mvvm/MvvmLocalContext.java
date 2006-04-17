@@ -23,6 +23,7 @@ import com.metavize.mvvm.logging.LoggingManager;
 import com.metavize.mvvm.logging.SyslogManager;
 import com.metavize.mvvm.networking.NetworkManagerImpl;
 import com.metavize.mvvm.policy.PolicyManager;
+import com.metavize.mvvm.portal.PortalManager;
 import com.metavize.mvvm.security.AdminManager;
 import com.metavize.mvvm.tapi.MPipeManager;
 import com.metavize.mvvm.tapi.PipelineFoundry;
@@ -136,6 +137,13 @@ public interface MvvmLocalContext
      * @return a <code>AdminManager</code> value
      */
     AdminManager adminManager();
+
+    /**
+     * Get the <code>PortalManager</code> singleton.
+     *
+     * @return a <code>PortalManager</code> value
+     */
+    PortalManager portalManager();
 
     ArgonManager argonManager();
 
@@ -275,4 +283,9 @@ public interface MvvmLocalContext
     void restoreBackup(byte[] backupFileBytes)
       throws IOException, IllegalArgumentException;
 
+    /*
+     * Loads a shared library (.so) into the MVVM classloader.  This is so a transform
+     * dosen't load it into its own, which doesn't work right.
+     */
+    void loadLibrary(String libname);
 }
