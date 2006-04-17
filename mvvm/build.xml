@@ -210,6 +210,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <include name="com/metavize/mvvm/logging/SyslogFacility.java"/>
       <include name="com/metavize/mvvm/logging/SyslogPriority.java"/>
       <include name="com/metavize/mvvm/policy/*.java"/>
+      <include name="com/metavize/mvvm/portal/*.java"/>
       <include name="com/metavize/mvvm/security/*.java"/>
       <include name="com/metavize/mvvm/shield/ShieldNodeSettings.java"/>
       <include name="com/metavize/mvvm/snmp/SnmpManager.java"/>
@@ -429,6 +430,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <include name="com/metavize/mvvm/engine/**"/>
       <include name="com/metavize/mvvm/logging/**"/>
       <include name="com/metavize/mvvm/policy/**"/>
+      <include name="com/metavize/mvvm/portal/**"/>
       <include name="com/metavize/mvvm/security/**"/>
       <include name="com/metavize/mvvm/snmp/**"/>
       <include name="com/metavize/mvvm/tapi/**"/>
