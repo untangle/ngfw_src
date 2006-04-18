@@ -44,7 +44,7 @@ public class CommandRunner extends HttpServlet
 
         String cmd = req.getParameter("command");
 
-        if (cmd.equals("rm")) {
+       if (cmd.equals("rm")) {
             rm(req, auth);
         } else if (cmd.equals("mv")) {
             mv(req, auth);

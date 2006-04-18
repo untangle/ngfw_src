@@ -37,6 +37,7 @@
       "../downloads/output/concurrent-1.3.4/lib/concurrent.jar"
       "../downloads/output/gnu.regexp-1.1.4/lib/gnu-regexp-1.1.4.jar"
       "../downloads/output/hibernate-3.0/hibernate3.jar"
+      "../downloads/output/htmlparser1_6_20060319/htmlparser1_6/lib/htmlparser.jar"
       "../downloads/output/jakarta-tomcat-5.0.28-embed/lib/catalina-optional.jar"
       "../downloads/output/jakarta-tomcat-5.0.28-embed/lib/catalina.jar"
       "../downloads/output/jakarta-tomcat-5.0.28-embed/lib/jsp-api.jar"
