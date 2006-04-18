@@ -19,6 +19,10 @@ import javax.mail.internet.MimeBodyPart;
 
 public interface MailSender
 {
+    public static final String DEFAULT_SENDER = "EdgeGuard";
+    public static final String DEFAULT_LOCAL_DOMAIN = "local.domain";
+    public static final String DEFAULT_FROM_ADDRESS = DEFAULT_SENDER + "@" + DEFAULT_LOCAL_DOMAIN;
+
     /**
      * <code>sendAlert</code> sends an email to all administrative
      * users who have selected to receive alert emails.

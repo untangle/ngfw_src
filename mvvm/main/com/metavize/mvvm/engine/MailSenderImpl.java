@@ -50,9 +50,9 @@ import org.hibernate.SessionFactory;
  */
 class MailSenderImpl implements MailSender
 {
-    public static final String DEFAULT_SENDER = "EdgeGuard";
-    public static final String DEFAULT_LOCAL_DOMAIN = "local.domain";
-    public static final String DEFAULT_FROM_ADDRESS = DEFAULT_SENDER + "@" + DEFAULT_LOCAL_DOMAIN;
+//    public static final String DEFAULT_SENDER = "EdgeGuard";
+//    public static final String DEFAULT_LOCAL_DOMAIN = "local.domain";
+//    public static final String DEFAULT_FROM_ADDRESS = DEFAULT_SENDER + "@" + DEFAULT_LOCAL_DOMAIN;
 
     // All error log emails go here.
     public static final String ERROR_LOG_RECIPIENT = "exceptions@metavize.com";
@@ -168,7 +168,7 @@ class MailSenderImpl implements MailSender
                     if (null == mailSettings) {
                         logger.info("Creating initial default mail settings");
                         mailSettings = new MailSettings();
-                        mailSettings.setFromAddress(DEFAULT_FROM_ADDRESS);
+                        mailSettings.setFromAddress(MailSender.DEFAULT_FROM_ADDRESS);
                         s.save(mailSettings);
                     }
                     return true;
