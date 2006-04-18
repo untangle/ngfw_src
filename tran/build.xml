@@ -496,6 +496,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
     <copy todir="${dist.mvvm.web}/proxy/WEB-INF/lib">
       <fileset refid="httpclient.jarset"/>
+      <fileset refid="htmlparser.jarset"/>
       <fileset refid="commons-codec.jarset"/>
     </copy>
 

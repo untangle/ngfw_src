@@ -11,88 +11,105 @@
 
 package com.metavize.tran.portal.proxy;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.Writer;
-import java.util.Enumeration;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.MutableAttributeSet;
-import javax.swing.text.html.HTML;
 
 import org.apache.log4j.Logger;
+import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
 
-public class HtmlRewriter
+public class HtmlRewriter implements ContentHandler
 {
+    private static final String TEXT_STRING = "#text";
+
     private final PrintWriter writer;
     private final Logger logger = Logger.getLogger(getClass());
 
-    HtmlRewriter(OutputStream os)
+    HtmlRewriter(PrintWriter writer)
     {
-        this.writer = new PrintWriter(os);
+        this.writer = writer;
     }
 
-    public void flush() throws BadLocationException
+    public void setDocumentLocator(Locator locator)
     {
-        System.out.println("FLUSH" + "\n");
+        System.out.println("setDocumentLocator");
     }
 
-    public void handleText(char[] data, int pos)
+    public void startDocument() throws SAXException
     {
-        System.out.println("TEXT: " + new String(data) + "\n");
+        System.out.println("startDocument");
     }
 
-    public void handleComment(char[] data, int pos)
+    public void endDocument() throws SAXException
     {
-        System.out.println("COMMENT: " + new String(data) + "\n");
+        System.out.println("endDocument");
     }
 
-    public void handleStartTag(HTML.Tag t, MutableAttributeSet a, int pos)
+    public void startPrefixMapping(String prefix, String uri)
+        throws SAXException
     {
-        try {
-            writer.write("<");
-            writer.write(t.toString());
-            writeAttributes(writer, a);
-            writer.write(">");
-        } catch (IOException exn) {
-            logger.warn("could not write", exn);
+        System.out.println("startPrefixMapping");
+    }
+
+    public void endPrefixMapping(String prefix) throws SAXException
+    {
+        System.out.println("endPrefixMapping");
+    }
+
+    public void startElement(String uri, String localName, String qName,
+                             Attributes atts)
+        throws SAXException
+    {
+        writer.print("<");
+        writer.print(localName);
+        int l = atts.getLength();
+        for (int i = 0; i < l; i++) {
+            String k = atts.getQName(i);
+            String v = atts.getValue(i);
+
+            if (TEXT_STRING == k.intern()) {
+                writer.print(v);
+            } else {
+                writer.print(k);
+                writer.print("=\"");
+                writer.print(v);
+                writer.print("\"");
+            }
         }
-    }
 
-    public void handleEndTag(HTML.Tag t, int pos)
-    {
-        writer.print("</");
-        writer.print(t.toString());
         writer.print(">");
     }
 
-    public void handleSimpleTag(HTML.Tag t, MutableAttributeSet a, int pos)
+    public void endElement(String uri, String localName, String qName)
+        throws SAXException
     {
-        System.out.println("SIMPLE: " + t);
+        writer.print("</");
+        writer.print(localName);
+        writer.print(">");
     }
 
-    public void handleError(String errorMsg, int pos)
+    public void characters(char ch[], int start, int length)
+        throws SAXException
     {
-        System.out.println("ERROR: " + errorMsg);
+        writer.print(new String(ch, start, length));
     }
 
-    public void handleEndOfLineString(String eol)
+    public void ignorableWhitespace(char ch[], int start, int length)
+        throws SAXException
     {
-        System.out.println("EOL: " + eol + "\n");
+        writer.print(new String(ch, start, length));
     }
 
-    // private methods --------------------------------------------------------
-
-    private void writeAttributes(Writer writer, MutableAttributeSet a)
-        throws IOException
+    public void processingInstruction(String target, String data)
+        throws SAXException
     {
-        for (Enumeration e = a.getAttributeNames(); e.hasMoreElements(); ) {
-            Object o = e.nextElement();
-            writer.write(" ");
-            writer.write(o.toString());
-            writer.write("=\"");
-            writer.write(a.getAttribute(o).toString());
-            writer.write("\"");
-        }
+        System.out.println("processingInstruction");
+    }
+
+    public void skippedEntity(String name)
+        throws SAXException
+    {
+        System.out.println("skippedEntity");
     }
 }

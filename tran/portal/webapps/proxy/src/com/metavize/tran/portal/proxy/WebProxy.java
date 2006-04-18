@@ -13,7 +13,7 @@ package com.metavize.tran.portal.proxy;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +26,8 @@ import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 import org.xml.sax.ContentHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
@@ -50,27 +52,24 @@ public class WebProxy extends HttpServlet
         throws ServletException
     {
         InputStream is = null;
-        OutputStream os = null;
+        PrintWriter w = null;
 
         try {
-            HttpMethod get = new GetMethod("http://bebe/moin/");
+            HttpMethod get = new GetMethod(getUrl(req));
             int rc = httpClient.executeMethod(get);
 
-            //XMLReader xr = XMLReaderFactory.createXMLReader(HTML_READER);
-            //ContentHandler ch = new HtmlRewriter(os);
-            //xr.setContentHandler(ch);
-            //ErrorHandler eh = new MyErrorHandler();
-            //xr.setErrorHandler (eh);
-            //xr.parse(is = get.getResponseBodyAsStream());
+            XMLReader xr = XMLReaderFactory.createXMLReader(HTML_READER);
+            w = new PrintWriter(resp.getWriter());
+            ContentHandler ch = new HtmlRewriter(w);
+            xr.setContentHandler(ch);
+            xr.parse(new InputSource(is = get.getResponseBodyAsStream()));
         } catch (IOException exn) {
             logger.warn("could not write response", exn);
+        } catch (SAXException exn) {
+            logger.warn("could not write parse html", exn);
         } finally {
-            if (null != os) {
-                try {
-                    os.close();
-                } catch (IOException exn) {
-                    logger.warn("could not close OutputStream", exn);
-                }
+            if (null != w) {
+                w.close();
             }
 
             if (null != is) {
@@ -81,5 +80,18 @@ public class WebProxy extends HttpServlet
                 }
             }
         }
+    }
+
+    // private methods --------------------------------------------------------
+
+    private String getUrl(HttpServletRequest req)
+    {
+        String p = req.getPathInfo();
+        String qs = req.getQueryString();
+
+        String url = "http:/" + p + (null == qs ? "" : qs);
+        System.out.println("URL: " + url);
+
+        return url;
     }
 }
