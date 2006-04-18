@@ -16,6 +16,7 @@ import com.metavize.gui.util.Util;
 
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.*;
+import com.metavize.mvvm.MailSender;
 import com.metavize.mvvm.NetworkingManager;
 import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.gui.configuration.EmailConnectivityTestJDialog;
@@ -41,7 +42,7 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
     public void initialFocus(){			
 	hostJTextField.requestFocus();
         String hostname = (String) InitialSetupWizard.getSharedData();
-	addressJTextField.setText("edgeguard@" + hostname); // XXX this should be directly linked from the actual default value
+	addressJTextField.setText( MailSender.DEFAULT_SENDER + "@" + hostname); // XXX this should be directly linked from the actual default value
     }
     
     String host;

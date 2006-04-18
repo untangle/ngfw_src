@@ -72,7 +72,6 @@
             </Component>
             <Component class="javax.swing.JTextField" name="hostnameJTextField">
               <Properties>
-                <Property name="text" type="java.lang.String" value="edgeguard.local.domain"/>
               </Properties>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>

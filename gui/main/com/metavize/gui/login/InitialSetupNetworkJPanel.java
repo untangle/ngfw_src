@@ -20,6 +20,7 @@ import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.mvvm.NetworkingManager;
 import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.networking.*;
+import com.metavize.mvvm.MailSender;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,6 +41,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
     }
 
     public void initialFocus(){
+	hostnameJTextField.setText( "edgeguard" + "." + MailSender.DEFAULT_LOCAL_DOMAIN );
 	hostnameJTextField.requestFocus();
     }
 	
@@ -184,7 +186,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
 		boolean isPublic = NetworkUtil.getInstance().isHostnameLikelyPublic( hostname.toString() );
                 networkingConfiguration.setIsHostnamePublic(isPublic);
 
-		InitialSetupWizard.setSharedData( hostname.toString());
+		InitialSetupWizard.setSharedData(hostname.toString());
                 Util.getNetworkingManager().set(networkingConfiguration);
 		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);
             }
@@ -254,7 +256,6 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 hostnameJPanel.add(jLabel10, gridBagConstraints);
 
-                hostnameJTextField.setText("edgeguard.local.domain");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
                 gridBagConstraints.gridy = 0;
