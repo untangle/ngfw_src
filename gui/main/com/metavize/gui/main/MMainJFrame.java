@@ -118,12 +118,13 @@ public class MMainJFrame extends javax.swing.JFrame {
                 networkJButton = new javax.swing.JButton();
                 remoteJButton = new javax.swing.JButton();
                 emailJButton = new javax.swing.JButton();
+                directoryJButton = new javax.swing.JButton();
                 backupJButton = new javax.swing.JButton();
                 maintenanceJButton = new javax.swing.JButton();
                 aboutJButton = new javax.swing.JButton();
                 configurationSpacerJPanel1 = new javax.swing.JPanel();
                 upgradeJButton = new javax.swing.JButton();
-                upgradeJButton1 = new javax.swing.JButton();
+                helpJButton = new javax.swing.JButton();
                 mPipelineJPanel = new com.metavize.gui.pipeline.MPipelineJPanel();
                 backgroundJLabel = new com.metavize.gui.widgets.MTiledIconLabel();
 
@@ -370,6 +371,29 @@ public class MMainJFrame extends javax.swing.JFrame {
                 gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
                 jPanel8.add(emailJButton, gridBagConstraints);
 
+                directoryJButton.setFont(new java.awt.Font("Arial", 0, 12));
+                directoryJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
+                directoryJButton.setText("<html>User Directory</html>");
+                directoryJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
+                directoryJButton.setDoubleBuffered(true);
+                directoryJButton.setFocusPainted(false);
+                directoryJButton.setFocusable(false);
+                directoryJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+                directoryJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
+                directoryJButton.setMaximumSize(new java.awt.Dimension(810, 370));
+                directoryJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                directoryJButtonActionPerformed(evt);
+                        }
+                });
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
+                jPanel8.add(directoryJButton, gridBagConstraints);
+
                 backupJButton.setFont(new java.awt.Font("Arial", 0, 12));
                 backupJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
                 backupJButton.setText("<html>Backup/Restore</html>");
@@ -494,19 +518,19 @@ public class MMainJFrame extends javax.swing.JFrame {
                 gridBagConstraints.insets = new java.awt.Insets(10, 20, 10, 20);
                 controlsJPanel.add(upgradeJButton, gridBagConstraints);
 
-                upgradeJButton1.setFont(new java.awt.Font("Default", 0, 12));
-                upgradeJButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/main/IconHelp32x32.png")));
-                upgradeJButton1.setText("<html>Upgrade<br></html>");
-                upgradeJButton1.setDoubleBuffered(true);
-                upgradeJButton1.setFocusPainted(false);
-                upgradeJButton1.setFocusable(false);
-                upgradeJButton1.setMargin(new java.awt.Insets(2, 2, 2, 2));
-                upgradeJButton1.setMaximumSize(new java.awt.Dimension(36, 42));
-                upgradeJButton1.setMinimumSize(new java.awt.Dimension(36, 42));
-                upgradeJButton1.setPreferredSize(new java.awt.Dimension(36, 42));
-                upgradeJButton1.addActionListener(new java.awt.event.ActionListener() {
+                helpJButton.setFont(new java.awt.Font("Default", 0, 12));
+                helpJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/main/IconHelp32x32.png")));
+                helpJButton.setText("<html>Upgrade<br></html>");
+                helpJButton.setDoubleBuffered(true);
+                helpJButton.setFocusPainted(false);
+                helpJButton.setFocusable(false);
+                helpJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+                helpJButton.setMaximumSize(new java.awt.Dimension(36, 42));
+                helpJButton.setMinimumSize(new java.awt.Dimension(36, 42));
+                helpJButton.setPreferredSize(new java.awt.Dimension(36, 42));
+                helpJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                upgradeJButton1ActionPerformed(evt);
+                                helpJButtonActionPerformed(evt);
                         }
                 });
 
@@ -515,7 +539,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                 gridBagConstraints.gridy = 4;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 gridBagConstraints.insets = new java.awt.Insets(10, 20, 10, 20);
-                controlsJPanel.add(upgradeJButton1, gridBagConstraints);
+                controlsJPanel.add(helpJButton, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -549,8 +573,23 @@ public class MMainJFrame extends javax.swing.JFrame {
                 java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
                 setBounds((screenSize.width-1024)/2, (screenSize.height-768)/2, 1024, 768);
         }//GEN-END:initComponents
+    
+    private void directoryJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_directoryJButtonActionPerformed
+        try{
+            directoryJButton.setEnabled(false);
+            DirectoryJDialog directoryJDialog = new DirectoryJDialog(this);
+            directoryJDialog.setVisible(true);
+        }
+        catch(Exception e){
+            try{ Util.handleExceptionWithRestart("Error showing directory", e); }
+            catch(Exception f){ Util.handleExceptionNoRestart("Error showing directory", f); }
+        }
+        finally{
+            directoryJButton.setEnabled(true);
+        }
+    }//GEN-LAST:event_directoryJButtonActionPerformed
 
-    private void upgradeJButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeJButton1ActionPerformed
+	private void helpJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpJButtonActionPerformed
         try{
             URL newURL = new URL( "http://www.metavize.com/docs/" + Version.getVersion());
             ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
@@ -558,7 +597,7 @@ public class MMainJFrame extends javax.swing.JFrame {
         catch(Exception f){
             Util.handleExceptionNoRestart("Error showing help for EdgeReport", f);
         }
-    }//GEN-LAST:event_upgradeJButton1ActionPerformed
+	}//GEN-LAST:event_helpJButtonActionPerformed
 
     private void emailJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_emailJButtonActionPerformed
         try{
@@ -692,7 +731,9 @@ public class MMainJFrame extends javax.swing.JFrame {
         private javax.swing.JPanel configurationSpacerJPanel1;
         private javax.swing.JPanel controlsJPanel;
         private javax.swing.JPanel coreToolboxJPanel;
+        private javax.swing.JButton directoryJButton;
         private javax.swing.JButton emailJButton;
+        private javax.swing.JButton helpJButton;
         private javax.swing.JPanel jPanel8;
         private javax.swing.JPanel mPipelineJPanel;
         private javax.swing.JTabbedPane mTabbedPane;
@@ -710,7 +751,6 @@ public class MMainJFrame extends javax.swing.JFrame {
         private javax.swing.JPanel toolboxScrollJPanel;
         private javax.swing.JPanel toolboxSpacerJPanel;
         private javax.swing.JButton upgradeJButton;
-        private javax.swing.JButton upgradeJButton1;
         private javax.swing.JPanel utilToolboxJPanel;
         // End of variables declaration//GEN-END:variables
 

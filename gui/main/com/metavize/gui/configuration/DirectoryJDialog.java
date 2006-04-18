@@ -23,9 +23,9 @@ import com.metavize.mvvm.NetworkingConfiguration;
 
 public class DirectoryJDialog extends MConfigJDialog {
 
-    private static final String NAME_DIRECTORY_CONFIG  = "Directory Config";
+    private static final String NAME_DIRECTORY_CONFIG  = "User Directory Config";
     private static final String NAME_LOCAL_DIRECTORY   = "Local LDAP Directory";
-    private static final String NAME_REMOTE_ACTIVE_DIRECTORY   = "Remote Active Directory (AD)";
+    private static final String NAME_REMOTE_ACTIVE_DIRECTORY   = "Remote Active Directory (AD) Server";
     
     public DirectoryJDialog( Frame parentFrame ) {
 	super(parentFrame);
@@ -40,13 +40,11 @@ public class DirectoryJDialog extends MConfigJDialog {
 	addSavable(NAME_LOCAL_DIRECTORY, directoryLocalJPanel);
 	addRefreshable(NAME_LOCAL_DIRECTORY, directoryLocalJPanel);
 
-	/*
 	// REMOTE ACTIVE DIRECTORY ////////
 	DirectoryRemoteADJPanel directoryRemoteADJPanel = new DirectoryRemoteADJPanel();
 	addTab(NAME_REMOTE_ACTIVE_DIRECTORY, null, directoryRemoteADJPanel);
 	addSavable(NAME_REMOTE_ACTIVE_DIRECTORY, directoryRemoteADJPanel);
 	addRefreshable(NAME_REMOTE_ACTIVE_DIRECTORY, directoryRemoteADJPanel);
-	*/
     }
 
 }
