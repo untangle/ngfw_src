@@ -13,6 +13,7 @@ package com.metavize.tran.portal.proxy;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -20,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.swing.text.html.parser.ParserDelegator;
 
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
@@ -51,27 +53,78 @@ public class WebProxy extends HttpServlet
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException
     {
+        System.out.println("HI");
+
+        HttpMethod get = new GetMethod(getUrl(req));
+        try {
+            int rc = httpClient.executeMethod(get);
+            resp.setStatus(rc);
+        } catch (IOException exn) {
+            logger.warn("could not make request", exn);
+            try {
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            } catch (IOException x) {
+                throw new ServletException(x);
+            }
+            return;
+        }
+
+        boolean rewriteStream = false;
+
+        for (Header h : get.getResponseHeaders()) {
+            String name = h.getName();
+            String value = h.getValue();
+
+            if (name.equalsIgnoreCase("content-type")) {
+                resp.setContentType(value);
+
+                String v = value.toLowerCase();
+                if (v.startsWith("text/html")) {
+                    rewriteStream = true;
+                }
+            } else if (name.equalsIgnoreCase("date")) {
+                resp.setHeader(name, value);
+            } else if (name.equalsIgnoreCase("etag")) {
+                resp.setHeader(name, value);
+            } else if (name.equalsIgnoreCase("last-modified")) {
+                resp.setHeader(name, value);
+            }
+        }
+
         InputStream is = null;
-        PrintWriter w = null;
 
         try {
-            HttpMethod get = new GetMethod(getUrl(req));
-            int rc = httpClient.executeMethod(get);
+            is = get.getResponseBodyAsStream();
 
-            XMLReader xr = XMLReaderFactory.createXMLReader(HTML_READER);
-            w = new PrintWriter(resp.getWriter());
-            ContentHandler ch = new HtmlRewriter(w);
-            xr.setContentHandler(ch);
-            xr.parse(new InputSource(is = get.getResponseBodyAsStream()));
-        } catch (IOException exn) {
-            logger.warn("could not write response", exn);
-        } catch (SAXException exn) {
-            logger.warn("could not write parse html", exn);
-        } finally {
-            if (null != w) {
-                w.close();
+            if (rewriteStream) {
+                PrintWriter w = null;
+                try {
+                    w = new PrintWriter(resp.getWriter());
+                    rewriteStream(req, is, w);
+                } finally {
+                    if (null != w) {
+                        w.close();
+                    }
+                }
+            } else {
+                OutputStream os = null;
+                try {
+                    os = resp.getOutputStream();
+                    copyStream(is, os);
+                } finally {
+                    if (null != os) {
+                        try {
+                            os.close();
+                        } catch (IOException exn) {
+                            logger.warn("could not close OutputStream", exn);
+                        }
+                    }
+                }
             }
-
+        } catch (IOException exn) {
+            logger.warn("could not stream", exn);
+            // XXX what now?
+        } finally {
             if (null != is) {
                 try {
                     is.close();
@@ -89,9 +142,40 @@ public class WebProxy extends HttpServlet
         String p = req.getPathInfo();
         String qs = req.getQueryString();
 
-        String url = "http:/" + p + (null == qs ? "" : qs);
-        System.out.println("URL: " + url);
+        return "http:/" + p + (null == qs ? "" : "?" + qs);
+    }
 
-        return url;
+    private void rewriteStream(HttpServletRequest req, InputStream is,
+                               PrintWriter w)
+        throws IOException
+    {
+        String p = req.getPathInfo();
+        System.out.println("P: " + p);
+        // XXX if p invalid redirect to portal home?
+        String host = p.substring(1, p.indexOf('/', 1));
+        String ctxPath = req.getContextPath();
+
+        try {
+            XMLReader xr = XMLReaderFactory.createXMLReader(HTML_READER);
+            w = new PrintWriter(w);
+            ContentHandler ch = new HtmlRewriter(w, ctxPath, host);
+            xr.setContentHandler(ch);
+            xr.parse(new InputSource(is));
+        } catch (SAXException exn) {
+            logger.warn("could not rewrite stream", exn);
+            // XXX what now?
+        }
+    }
+
+    private void copyStream(InputStream is, OutputStream os)
+        throws IOException
+    {
+        byte[] buf = new byte[4096];
+        int i = 0;
+        while (0 <= (i = is.read(buf))) {
+            os.write(buf, 0, i);
+        }
+
+        os.flush();
     }
 }

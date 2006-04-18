@@ -21,14 +21,20 @@ import org.xml.sax.SAXException;
 
 public class HtmlRewriter implements ContentHandler
 {
-    private static final String TEXT_STRING = "#text";
+    private static final String TEXT = "#text";
+    private static final String HREF = "href";
+    private static final String SRC = "src";
 
     private final PrintWriter writer;
+    private final String contextRoot;
+    private final String requestHost;
     private final Logger logger = Logger.getLogger(getClass());
 
-    HtmlRewriter(PrintWriter writer)
+    HtmlRewriter(PrintWriter writer, String contextRoot, String requestHost)
     {
         this.writer = writer;
+        this.contextRoot = contextRoot;
+        this.requestHost = requestHost;
     }
 
     public void setDocumentLocator(Locator locator)
@@ -68,13 +74,18 @@ public class HtmlRewriter implements ContentHandler
             String k = atts.getQName(i);
             String v = atts.getValue(i);
 
-            if (TEXT_STRING == k.intern()) {
+            if (k.equals(TEXT)) {
                 writer.print(v);
+            } else if (HREF.equals(k)) {
+                rewrite(k, v);
+            } else if (SRC.equals(k)) {
+                rewrite(k, v);
             } else {
                 writer.print(k);
                 writer.print("=\"");
                 writer.print(v);
                 writer.print("\"");
+
             }
         }
 
@@ -111,5 +122,26 @@ public class HtmlRewriter implements ContentHandler
         throws SAXException
     {
         System.out.println("skippedEntity");
+    }
+
+    // private methods --------------------------------------------------------
+
+    public void rewrite(String k, String v)
+    {
+        String url;
+
+        if (v.startsWith("http://")) {
+            url = contextRoot + "/" + v.substring(7);
+        } else if (v.startsWith("//")) {
+            url = contextRoot + "/" + v.substring(2);
+        } else if (v.startsWith("/")) {
+            url = contextRoot + "/" + requestHost + v;
+        } else {
+            url = v;
+        }
+        writer.print(k);
+        writer.print("=\"");
+        writer.print(url);
+        writer.print("\"");
     }
 }
