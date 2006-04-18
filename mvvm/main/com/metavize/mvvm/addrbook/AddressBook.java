@@ -195,10 +195,31 @@ public interface AddressBook {
     throws ServiceUnavailableException;
 
 
-
+  /**
+   * Set all UserEntries that exist in the local repository.
+   * A convenience method for UI.
+   *
+   * @param userEntries the list of all local users.
+   *
+   * @exception ServiceUnavailableException the back-end directory
+   *            is in a bad state.  There are no corrective actions
+   *            the caller can take based on the given input
+   *   
+   */
   public void setLocalUserEntries(List<UserEntry> userEntries)
     throws ServiceUnavailableException;
 
+  /**
+   * Get all UserEntries from the local repository.
+   * A convenience method for UI.
+   * 
+   * @return the list of all local entries (may be of zero length,
+   *         but not null).
+   *
+   * @exception ServiceUnavailableException the back-end directory
+   *            is in a bad state.  There are no corrective actions
+   *            the caller can take based on the given input
+   */
   public List<UserEntry> getLocalUserEntries()
     throws ServiceUnavailableException;
 
