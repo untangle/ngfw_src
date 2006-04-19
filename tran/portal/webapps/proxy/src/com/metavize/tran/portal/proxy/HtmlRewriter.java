@@ -37,20 +37,11 @@ public class HtmlRewriter implements ContentHandler
         this.requestHost = requestHost;
     }
 
-    public void setDocumentLocator(Locator locator)
-    {
-        System.out.println("setDocumentLocator");
-    }
+    public void setDocumentLocator(Locator locator) { }
 
-    public void startDocument() throws SAXException
-    {
-        System.out.println("startDocument");
-    }
+    public void startDocument() throws SAXException { }
 
-    public void endDocument() throws SAXException
-    {
-        System.out.println("endDocument");
-    }
+    public void endDocument() throws SAXException { }
 
     public void startPrefixMapping(String prefix, String uri)
         throws SAXException
@@ -139,6 +130,7 @@ public class HtmlRewriter implements ContentHandler
         } else {
             url = v;
         }
+
         writer.print(k);
         writer.print("=\"");
         writer.print(url);

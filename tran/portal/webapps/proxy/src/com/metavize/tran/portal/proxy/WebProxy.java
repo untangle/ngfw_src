@@ -15,12 +15,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Enumeration;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.swing.text.html.parser.ParserDelegator;
+import javax.servlet.http.HttpSession;
 
+import org.apache.catalina.util.CookieTools;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -36,28 +39,86 @@ import org.xml.sax.helpers.XMLReaderFactory;
 public class WebProxy extends HttpServlet
 {
     private static final String HTML_READER = "org.htmlparser.sax.XMLReader";
+    private static final String HTTP_CLIENT = "httpClient";
 
     private Logger logger = Logger.getLogger(getClass());
-
-    private HttpClient httpClient;
-    private ParserDelegator parserDelegator;
 
     @Override
     public void init() throws ServletException
     {
-        httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
-        parserDelegator = new ParserDelegator();
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException
     {
-        System.out.println("HI");
+        HttpMethod method = new GetMethod(getUrl(req));
+        doIt(req, resp, method);
+    }
 
-        HttpMethod get = new GetMethod(getUrl(req));
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+        throws ServletException
+    {
+        RawPostMethod method = new RawPostMethod(getUrl(req));
+
         try {
-            int rc = httpClient.executeMethod(get);
+            method.setBodyStream(req.getContentType(), req.getInputStream(),
+                                 req.getIntHeader("Content-Length"));
+            doIt(req, resp, method);
+        } catch (IOException exn) {
+            logger.warn("could not process POST", exn);
+        }
+    }
+
+    // private methods --------------------------------------------------------
+
+    private void doIt(HttpServletRequest req, HttpServletResponse resp,
+                      HttpMethod method)
+        throws ServletException
+    {
+        HttpSession s = req.getSession();
+
+        HttpClient httpClient = (HttpClient)s.getAttribute(HTTP_CLIENT);
+        if (null == httpClient) {
+            httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
+            s.setAttribute(HTTP_CLIENT, httpClient);
+        }
+
+        String p = req.getPathInfo();
+        // XXX if p invalid redirect to portal home?
+        int i = p.indexOf('/', 1);
+        String host = p.substring(1, 1 > i ? p.length() : i);
+        String ctxPath = req.getContextPath();
+
+        for (Enumeration e = req.getHeaderNames(); e.hasMoreElements(); ) {
+            String k = (String)e.nextElement();
+            if (k.equalsIgnoreCase("transfer-encoding")
+                || k.equalsIgnoreCase("content-length")
+                || k.equalsIgnoreCase("cookie")) {
+                // skip
+            } else if (k.equalsIgnoreCase("host")) {
+                method.addRequestHeader("host", host);
+            } else {
+                for (Enumeration f = req.getHeaders(k); f.hasMoreElements(); ) {
+                    String v = (String)f.nextElement();
+                    method.addRequestHeader(k, v);
+                }
+            }
+        }
+
+        StringBuffer sb = new StringBuffer();
+        Cookie[] cookies = req.getCookies();
+        if (null == cookies) {
+            cookies = new Cookie[0];
+        }
+        for (Cookie c : cookies) {
+            //CookieTools.getCookieHeaderValue(c, sb);
+            String kaka = CookieTools.getCookieHeaderName(c);
+        }
+
+        try {
+            int rc = httpClient.executeMethod(method); // XXX release method
             resp.setStatus(rc);
         } catch (IOException exn) {
             logger.warn("could not make request", exn);
@@ -71,7 +132,7 @@ public class WebProxy extends HttpServlet
 
         boolean rewriteStream = false;
 
-        for (Header h : get.getResponseHeaders()) {
+        for (Header h : method.getResponseHeaders()) {
             String name = h.getName();
             String value = h.getValue();
 
@@ -82,11 +143,10 @@ public class WebProxy extends HttpServlet
                 if (v.startsWith("text/html")) {
                     rewriteStream = true;
                 }
-            } else if (name.equalsIgnoreCase("date")) {
-                resp.setHeader(name, value);
-            } else if (name.equalsIgnoreCase("etag")) {
-                resp.setHeader(name, value);
-            } else if (name.equalsIgnoreCase("last-modified")) {
+            } else if (name.equalsIgnoreCase("transfer-encoding")
+                       || name.equalsIgnoreCase("content-length")) {
+                // don't forward
+            } else {
                 resp.setHeader(name, value);
             }
         }
@@ -94,13 +154,13 @@ public class WebProxy extends HttpServlet
         InputStream is = null;
 
         try {
-            is = get.getResponseBodyAsStream();
+            is = method.getResponseBodyAsStream();
 
             if (rewriteStream) {
                 PrintWriter w = null;
                 try {
                     w = new PrintWriter(resp.getWriter());
-                    rewriteStream(req, is, w);
+                    rewriteStream(host, ctxPath, is, w);
                 } finally {
                     if (null != w) {
                         w.close();
@@ -135,8 +195,6 @@ public class WebProxy extends HttpServlet
         }
     }
 
-    // private methods --------------------------------------------------------
-
     private String getUrl(HttpServletRequest req)
     {
         String p = req.getPathInfo();
@@ -145,16 +203,10 @@ public class WebProxy extends HttpServlet
         return "http:/" + p + (null == qs ? "" : "?" + qs);
     }
 
-    private void rewriteStream(HttpServletRequest req, InputStream is,
+    private void rewriteStream(String host, String ctxPath, InputStream is,
                                PrintWriter w)
         throws IOException
     {
-        String p = req.getPathInfo();
-        System.out.println("P: " + p);
-        // XXX if p invalid redirect to portal home?
-        String host = p.substring(1, p.indexOf('/', 1));
-        String ctxPath = req.getContextPath();
-
         try {
             XMLReader xr = XMLReaderFactory.createXMLReader(HTML_READER);
             w = new PrintWriter(w);
