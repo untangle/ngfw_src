@@ -16,11 +16,15 @@ import java.io.PrintWriter;
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
+import org.xml.sax.DTDHandler;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
-public class HtmlRewriter implements ContentHandler
+public class HtmlRewriter implements DTDHandler, ContentHandler, ErrorHandler
 {
+    private static final String DOCTYPE = "!DOCTYPE";
     private static final String TEXT = "#text";
     private static final String HREF = "href";
     private static final String SRC = "src";
@@ -36,6 +40,28 @@ public class HtmlRewriter implements ContentHandler
         this.contextRoot = contextRoot;
         this.requestHost = requestHost;
     }
+
+    // DTDHandler methods -----------------------------------------------------
+
+    public void notationDecl(String name,
+                             String publicId,
+                             String systemId)
+        throws SAXException
+    {
+        System.out.println("notationDecl");
+    }
+
+
+    public void unparsedEntityDecl(String name,
+                                   String publicId,
+                                   String systemId,
+                                   String notationName)
+        throws SAXException
+    {
+        System.out.println("unparsedEntityDecl");
+    }
+
+    // ContentHandler methods -------------------------------------------------
 
     public void setDocumentLocator(Locator locator) { }
 
@@ -58,8 +84,11 @@ public class HtmlRewriter implements ContentHandler
                              Attributes atts)
         throws SAXException
     {
+        boolean useSpaces = localName.equals(DOCTYPE);
+
         writer.print("<");
         writer.print(localName);
+
         int l = atts.getLength();
         for (int i = 0; i < l; i++) {
             String k = atts.getQName(i);
@@ -68,14 +97,18 @@ public class HtmlRewriter implements ContentHandler
             if (k.equals(TEXT)) {
                 writer.print(v);
             } else if (HREF.equals(k)) {
-                rewrite(k, v);
+                rewrite(k, v, useSpaces);
             } else if (SRC.equals(k)) {
-                rewrite(k, v);
+                rewrite(k, v, useSpaces);
             } else {
                 writer.print(k);
-                writer.print("=\"");
+                if (!useSpaces) {
+                    writer.print("=\"");
+                }
                 writer.print(v);
-                writer.print("\"");
+                if (!useSpaces) {
+                    writer.print("\"");
+                }
 
             }
         }
@@ -115,9 +148,32 @@ public class HtmlRewriter implements ContentHandler
         System.out.println("skippedEntity");
     }
 
+    // ErrorHandler methods ---------------------------------------------------
+
+    public void warning(SAXParseException exn)
+        throws SAXException
+    {
+        System.out.println("WARNING: " + exn);
+    }
+
+
+    public void error(SAXParseException exn)
+        throws SAXException
+    {
+        System.out.println("ERROR: " + exn);
+    }
+
+
+    public void fatalError(SAXParseException exn)
+        throws SAXException
+    {
+        System.out.println("FATAL: " + exn);
+    }
+
+
     // private methods --------------------------------------------------------
 
-    public void rewrite(String k, String v)
+    public void rewrite(String k, String v, boolean useSpaces)
     {
         String url;
 
@@ -132,8 +188,12 @@ public class HtmlRewriter implements ContentHandler
         }
 
         writer.print(k);
-        writer.print("=\"");
+        if (!useSpaces) {
+            writer.print("=\"");
+        }
         writer.print(url);
-        writer.print("\"");
+        if (!useSpaces) {
+            writer.print("\"");
+        }
     }
 }

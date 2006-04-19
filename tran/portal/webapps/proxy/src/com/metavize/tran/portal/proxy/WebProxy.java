@@ -30,7 +30,6 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
-import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -210,8 +209,10 @@ public class WebProxy extends HttpServlet
         try {
             XMLReader xr = XMLReaderFactory.createXMLReader(HTML_READER);
             w = new PrintWriter(w);
-            ContentHandler ch = new HtmlRewriter(w, ctxPath, host);
+            HtmlRewriter ch = new HtmlRewriter(w, ctxPath, host);
+            xr.setDTDHandler(ch);
             xr.setContentHandler(ch);
+            xr.setErrorHandler(ch);
             xr.parse(new InputSource(is));
         } catch (SAXException exn) {
             logger.warn("could not rewrite stream", exn);

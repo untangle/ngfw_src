@@ -44,7 +44,6 @@ public class RawPostMethod extends ExpectContinueMethod
 
     public void setBodyStream(String contentType, InputStream is, int length)
     {
-        System.out.println("SBR CT: " + contentType + " IS: " + is + " LE: " + length);
         this.contentType = contentType;
         this.is = is;
         this.length = length;
@@ -81,18 +80,29 @@ public class RawPostMethod extends ExpectContinueMethod
 
     protected boolean writeRequestBody(HttpState state, HttpConnection conn)
         throws IOException, HttpException {
-        OutputStream cos = conn.getRequestOutputStream();
-        OutputStream os = 0 > length ? new ChunkedOutputStream(cos) : cos;
+        OutputStream os = conn.getRequestOutputStream();
 
+        if (0 > length) {
+            ChunkedOutputStream cos = new ChunkedOutputStream(os);
+            copyStream(is, cos);
+            cos.finish();
+        } else {
+            copyStream(is, os);
+        }
+        return true;
+    }
+
+    // private methods --------------------------------------------------------
+
+    private void copyStream(InputStream is, OutputStream os)
+        throws IOException
+    {
         byte[] buf = new byte[4096];
         int i = 0;
         while (0 <= (i = is.read(buf))) {
-            System.out.println("WRITE: " + i);
             os.write(buf, 0, i);
         }
 
         os.flush();
-
-        return true;
     }
 }
