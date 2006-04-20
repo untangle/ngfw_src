@@ -30,10 +30,11 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+import org.htmlparser.Node;
+import org.htmlparser.lexer.Lexer;
+import org.htmlparser.lexer.Page;
+import org.htmlparser.util.ParserException;
 import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 public class WebProxy extends HttpServlet
 {
@@ -159,7 +160,9 @@ public class WebProxy extends HttpServlet
                 PrintWriter w = null;
                 try {
                     w = new PrintWriter(resp.getWriter());
-                    rewriteStream(host, ctxPath, is, w);
+                    rewriteStream(is, w, ctxPath, host);
+                } catch (ParserException exn) {
+                    logger.warn("could not parse html", exn);
                 } finally {
                     if (null != w) {
                         w.close();
@@ -202,21 +205,17 @@ public class WebProxy extends HttpServlet
         return "http:/" + p + (null == qs ? "" : "?" + qs);
     }
 
-    private void rewriteStream(String host, String ctxPath, InputStream is,
-                               PrintWriter w)
-        throws IOException
+    private void rewriteStream(InputStream is, PrintWriter w,
+                               String ctxPath, String host)
+        throws IOException, ParserException
     {
-        try {
-            XMLReader xr = XMLReaderFactory.createXMLReader(HTML_READER);
-            w = new PrintWriter(w);
-            HtmlRewriter ch = new HtmlRewriter(w, ctxPath, host);
-            xr.setDTDHandler(ch);
-            xr.setContentHandler(ch);
-            xr.setErrorHandler(ch);
-            xr.parse(new InputSource(is));
-        } catch (SAXException exn) {
-            logger.warn("could not rewrite stream", exn);
-            // XXX what now?
+        // XXX charset from header
+        Page page = new Page(is, null);
+        Lexer lexer = new Lexer(page);
+        Node n;
+        RewriteVisitor v = new RewriteVisitor(w, ctxPath, host);
+        while (null != (n = lexer.nextNode())) {
+            n.accept(v);
         }
     }
 
