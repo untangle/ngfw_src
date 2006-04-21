@@ -27,6 +27,7 @@ public final class UserEntry
   private String m_email;
   private RepositoryType m_storedIn;
   private String m_password;
+    private String m_comment;
 
   public UserEntry() {
     this(null, null, null, null, RepositoryType.NONE);
@@ -59,7 +60,7 @@ public final class UserEntry
 
   /**
    * Get the uniqueID within the scope
-   * of the {@link #getStoredIn repository}
+   * of the {@link #getStoredIn repository} NOTE: the GUI sets this to first name + last name + email
    *
    * @return the unique id
    */
@@ -68,7 +69,7 @@ public final class UserEntry
   }
 
   public void setUID(String uid) {
-    uid = m_uid;
+      m_uid = uid;
   }
 
   /**
@@ -82,6 +83,19 @@ public final class UserEntry
 
   public void setPassword(String password) {
       m_password = password;
+  }
+
+  /**
+   * Get the comment;
+   *
+   * @return the comment
+   */
+  public String getComment() {
+      return m_comment;
+  }
+
+  public void setComment(String comment) {
+      m_comment = comment;
   }
 
   /**

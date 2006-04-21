@@ -13,6 +13,7 @@ package com.metavize.gui.configuration;
 
 import com.metavize.mvvm.addrbook.*;
 
+import com.metavize.gui.widgets.*;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.util.Util;
 
@@ -60,7 +61,9 @@ class DirectoryLocalTableModel extends MSortedTableModel<DirectoryCompoundSettin
         addTableColumn( tableColumnModel,  2,  100, true,  true,  false, false, String.class,     sc.EMPTY_NAME, "first name");
         addTableColumn( tableColumnModel,  3,  100, true,  true,  false, false, String.class,     sc.EMPTY_NAME, "last name");
         addTableColumn( tableColumnModel,  4,  150, true,  true,  false, false, String.class,     "[no email]", "email address");
-        addTableColumn( tableColumnModel,  5,  10,  false, false, true,  false, UserEntry.class,  null, "");
+        addTableColumn( tableColumnModel,  5,  150, true,  true,  false, false, MPasswordField.class, "aabbccdd", "password");
+        addTableColumn( tableColumnModel,  6,  150, true,  true,  false, true,  String.class,     sc.EMPTY_COMMENT, "comment");
+        addTableColumn( tableColumnModel,  7,  10,  false, false, true,  false, UserEntry.class,  null, "");
         return tableColumnModel;
     }
 
@@ -71,10 +74,13 @@ class DirectoryLocalTableModel extends MSortedTableModel<DirectoryCompoundSettin
 	
         for( Vector rowVector : tableVector ){
 	    
-	    newElem = (UserEntry) rowVector.elementAt(5);
+	    newElem = (UserEntry) rowVector.elementAt(7);
 	    newElem.setFirstName( (String) rowVector.elementAt(2) );
 	    newElem.setLastName( (String) rowVector.elementAt(3) );
 	    newElem.setEmail( (String) rowVector.elementAt(4) );
+	    newElem.setUID( newElem.getFirstName() + newElem.getLastName() + newElem.getEmail() );
+	    newElem.setPassword( new String(((MPasswordField)rowVector.elementAt(5)).getPassword()) );
+	    newElem.setComment( (String) rowVector.elementAt(6) );
             allRows.add(newElem);
         }
         
@@ -93,12 +99,14 @@ class DirectoryLocalTableModel extends MSortedTableModel<DirectoryCompoundSettin
 
 	for( UserEntry userEntry : userEntries ){
 	    rowIndex++;
-            tempRow = new Vector(6);
+            tempRow = new Vector(8);
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );
             tempRow.add( userEntry.getFirstName() );
             tempRow.add( userEntry.getLastName() );
             tempRow.add( userEntry.getEmail() );
+            tempRow.add( new MPasswordField(userEntry.getPassword()) );
+            tempRow.add( userEntry.getComment() );
             tempRow.add( userEntry );
             allRows.add( tempRow );
         }

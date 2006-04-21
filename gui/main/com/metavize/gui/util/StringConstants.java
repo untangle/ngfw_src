@@ -34,6 +34,7 @@ public class StringConstants
      * Description of the row or item.
      */
     public static final String EMPTY_DESCRIPTION = EMPTY_START + "no description" + EMPTY_END;
+    public static final String EMPTY_COMMENT = EMPTY_START + "no comment" + EMPTY_END;
 
     /**
      * Name of the row or item.
