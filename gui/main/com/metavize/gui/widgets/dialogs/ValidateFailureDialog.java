@@ -44,7 +44,7 @@ final public class ValidateFailureDialog extends MOneButtonJDialog {
 			      + " for the following reason:<br><br><b>" 
 			      + failureMessage 
 			      + "</b><br>"
-			      + "<br><br>Please correct this and then save again.</center></html>");
+			      + "Please correct this and then save again.</center></html>");
         setVisible(true);
     }
     
