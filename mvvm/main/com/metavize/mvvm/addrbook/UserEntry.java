@@ -26,6 +26,7 @@ public final class UserEntry
   private String m_uid;
   private String m_email;
   private RepositoryType m_storedIn;
+  private String m_password;
 
   public UserEntry() {
     this(null, null, null, null, RepositoryType.NONE);
@@ -68,6 +69,19 @@ public final class UserEntry
 
   public void setUID(String uid) {
     uid = m_uid;
+  }
+
+  /**
+   * Get the password to used in account creation
+   *
+   * @return the password
+   */
+  public String getPassword() {
+      return m_password;
+  }
+
+  public void setPassword(String password) {
+      m_password = password;
   }
 
   /**
@@ -137,6 +151,15 @@ public final class UserEntry
     return makeNotNull(other.getUID()).equals(makeNotNull(m_uid)) &&
       makeNotNull(other.getStoredIn()).equals(makeNotNull(m_storedIn));
   }
+
+
+  /**
+   * hashcode for use in hashing
+   */
+  public int hashCode() {
+      return new String(makeNotNull(m_uid).toString() + makeNotNull(m_storedIn).toString()).hashCode();
+  }
+
 
   /**
    * For debugging

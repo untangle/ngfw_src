@@ -207,7 +207,7 @@ public interface AddressBook {
    *   
    */
   public void setLocalUserEntries(List<UserEntry> userEntries)
-    throws ServiceUnavailableException;
+    throws ServiceUnavailableException, NameAlreadyBoundException, NameNotFoundException;
 
   /**
    * Get all UserEntries from the local repository.

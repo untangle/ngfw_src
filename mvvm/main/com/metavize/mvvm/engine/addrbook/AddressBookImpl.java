@@ -13,6 +13,7 @@ package com.metavize.mvvm.engine.addrbook;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.naming.ServiceUnavailableException;
 import javax.naming.NameAlreadyBoundException;
@@ -339,8 +340,30 @@ public class AddressBookImpl
   // See doc on com.metavize.mvvm.addrbook.AddressBook
   //====================================================
   public void setLocalUserEntries(List<UserEntry> userEntries)
-    throws ServiceUnavailableException {
-
+    throws ServiceUnavailableException, NameNotFoundException, NameAlreadyBoundException {
+      // compute the add/delete/keep lists
+      HashMap<UserEntry,UserEntry> currentEntries = new HashMap<UserEntry,UserEntry>();
+      for( UserEntry userEntry : getLocalUserEntries() )
+	  currentEntries.put(userEntry,userEntry);
+      List<UserEntry> keepList = new ArrayList<UserEntry>();
+      List<UserEntry> addList = new ArrayList<UserEntry>();
+      for( UserEntry userEntry : userEntries ){
+	  UserEntry foundEntry = currentEntries.remove(userEntry);
+	  if( foundEntry != null )
+	      keepList.add(userEntry);
+	  else
+	      addList.add(userEntry);
+      }
+      // perform the add/removes
+      for( UserEntry userEntry : keepList )
+	  updateLocalEntry(userEntry);
+      for( UserEntry userEntry : currentEntries.keySet() )
+	  deleteLocalEntry(userEntry.getUID());
+      for( UserEntry userEntry : addList ){
+	  String password = userEntry.getPassword();
+	  userEntry.setPassword(null);
+	  createLocalEntry(userEntry,password);
+      }
   }
 
     
