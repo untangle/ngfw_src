@@ -497,6 +497,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     <copy todir="${dist.mvvm.web}/proxy/WEB-INF/lib">
       <fileset refid="httpclient.jarset"/>
       <fileset refid="htmlparser.jarset"/>
+      <fileset refid="commons-fileupload.jarset"/>
       <fileset refid="commons-codec.jarset"/>
     </copy>
 
@@ -931,6 +932,8 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <src path="${tran.name}/webapps/proxy/src"/>
 
       <classpath refid="httpclient.classpath"/>
+      <classpath refid="htmlparser.classpath"/>
+      <classpath refid="commons-fileupload.classpath"/>
       <classpath refid="mvvm.thirdparty.classpath"/>
       <classpath refid="tomcat.thirdparty.classpath"/>
     </javac>

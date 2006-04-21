@@ -36,6 +36,8 @@ public class FileSaver extends HttpServlet
 {
     private Logger logger;
 
+    private FileItemFactory fileItemFactory;
+
     // HttpServlet methods ----------------------------------------------------
 
     @Override
@@ -50,8 +52,7 @@ public class FileSaver extends HttpServlet
             s.setAttribute("ntlmPasswordAuthentication", auth);
         }
 
-        FileItemFactory factory = new DiskFileItemFactory();
-        ServletFileUpload upload = new ServletFileUpload(factory);
+        ServletFileUpload upload = new ServletFileUpload(fileItemFactory);
         String dest = null;
 
         List<FileItem> items;
@@ -92,6 +93,7 @@ public class FileSaver extends HttpServlet
     public void init() throws ServletException
     {
         logger = Logger.getLogger(getClass());
+        fileItemFactory = new DiskFileItemFactory();
     }
 
     // private methods --------------------------------------------------------
