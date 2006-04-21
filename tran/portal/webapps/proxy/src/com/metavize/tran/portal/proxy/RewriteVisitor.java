@@ -24,18 +24,16 @@ import org.htmlparser.visitors.NodeVisitor;
 class RewriteVisitor extends NodeVisitor
 {
     private final PrintWriter writer;
-    private final String contextRoot;
-    private final String requestHost;
+    private final UrlRewriter rewriter;
 
     private final Logger logger = Logger.getLogger(getClass());
 
     // constructs -------------------------------------------------------------
 
-    RewriteVisitor(PrintWriter writer, String contextRoot, String requestHost)
+    RewriteVisitor(PrintWriter writer, UrlRewriter rewriter)
     {
         this.writer = writer;
-        this.contextRoot = contextRoot;
-        this.requestHost = requestHost;
+        this.rewriter = rewriter;
     }
 
     // NodeVisitor methods ----------------------------------------------------
@@ -58,15 +56,7 @@ class RewriteVisitor extends NodeVisitor
             if (null != name
                 && (name.equalsIgnoreCase("href")
                     || name.equalsIgnoreCase("src"))) {
-                String v = a.getValue();
-
-                if (v.startsWith("http://")) {
-                    a.setValue(contextRoot + "/" + v.substring(7));
-                } else if (v.startsWith("//")) {
-                    a.setValue(contextRoot + "/" + v.substring(2));
-                } else if (v.startsWith("/")) {
-                    a.setValue(contextRoot + "/" + requestHost + v);
-                }
+                a.setValue(rewriter.rewriteUrl(a.getValue()));
             }
         }
 
@@ -90,6 +80,4 @@ class RewriteVisitor extends NodeVisitor
     {
         writer.print(remark.toHtml());
     }
-
-    // private methods --------------------------------------------------------
 }

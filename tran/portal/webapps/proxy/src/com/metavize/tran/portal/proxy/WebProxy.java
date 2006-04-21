@@ -23,13 +23,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.catalina.util.CookieTools;
 import org.apache.commons.fileupload.MultipartStream;
 import org.apache.commons.fileupload.ParameterParser;
 import org.apache.commons.httpclient.Header;
@@ -107,37 +105,9 @@ public class WebProxy extends HttpServlet
             s.setAttribute(HTTP_CLIENT, httpClient);
         }
 
-        String p = req.getPathInfo();
-        // XXX if p invalid redirect to portal home?
-        int i = p.indexOf('/', 1);
-        String host = p.substring(1, 1 > i ? p.length() : i);
-        String ctxPath = req.getContextPath();
+        UrlRewriter rewriter = new UrlRewriter(req);
 
-        for (Enumeration e = req.getHeaderNames(); e.hasMoreElements(); ) {
-            String k = (String)e.nextElement();
-            if (k.equalsIgnoreCase("transfer-encoding")
-                || k.equalsIgnoreCase("content-length")
-                || k.equalsIgnoreCase("cookie")) {
-                // skip
-            } else if (k.equalsIgnoreCase("host")) {
-                method.addRequestHeader("host", host);
-            } else {
-                for (Enumeration f = req.getHeaders(k); f.hasMoreElements(); ) {
-                    String v = (String)f.nextElement();
-                    method.addRequestHeader(k, v);
-                }
-            }
-        }
-
-        StringBuffer sb = new StringBuffer();
-        Cookie[] cookies = req.getCookies();
-        if (null == cookies) {
-            cookies = new Cookie[0];
-        }
-        for (Cookie c : cookies) {
-            //CookieTools.getCookieHeaderValue(c, sb);
-            String kaka = CookieTools.getCookieHeaderName(c);
-        }
+        copyHeaders(req, method, rewriter);
 
         try {
             int rc = httpClient.executeMethod(method); // XXX release method
@@ -152,71 +122,12 @@ public class WebProxy extends HttpServlet
             return;
         }
 
-        String contentType = "";
-
-        for (Header h : method.getResponseHeaders()) {
-            String name = h.getName();
-            String value = h.getValue();
-
-            if (name.equalsIgnoreCase("content-type")) {
-                resp.setContentType(value);
-                contentType = value;
-            } else if (name.equalsIgnoreCase("transfer-encoding")
-                       || name.equalsIgnoreCase("content-length")) {
-                // don't forward
-            } else {
-                resp.setHeader(name, value);
-            }
-        }
+        copyHeaders(method, resp, rewriter);
 
         InputStream is = null;
-
         try {
             is = method.getResponseBodyAsStream();
-
-            String ct = contentType.toLowerCase();
-
-            if (ct.startsWith("text/html")) {
-                PrintWriter w = null;
-                try {
-                    w = new PrintWriter(resp.getWriter());
-                    rewriteStream(is, w, ctxPath, host);
-                } catch (ParserException exn) {
-                    logger.warn("could not parse html", exn);
-                } finally {
-                    if (null != w) {
-                        w.close();
-                    }
-                }
-            } else if (ct.startsWith("multipart/")) {
-                OutputStream os = null;
-                try {
-                    os = resp.getOutputStream();
-                    handleMultipart(contentType, is, os, ctxPath, host);
-                } finally {
-                    if (null != os) {
-                        try {
-                            os.close();
-                        } catch (IOException exn) {
-                            logger.warn("could not close OutputStream", exn);
-                        }
-                    }
-                }
-            } else {
-                OutputStream os = null;
-                try {
-                    os = resp.getOutputStream();
-                    copyStream(is, os);
-                } finally {
-                    if (null != os) {
-                        try {
-                            os.close();
-                        } catch (IOException exn) {
-                            logger.warn("could not close OutputStream", exn);
-                        }
-                    }
-                }
-            }
+            processResponse(is, resp, rewriter);
         } catch (IOException exn) {
             logger.warn("could not stream", exn);
             // XXX what now?
@@ -226,6 +137,103 @@ public class WebProxy extends HttpServlet
                     is.close();
                 } catch (IOException exn) {
                     logger.warn("could not close InputStream", exn);
+                }
+            }
+        }
+    }
+
+    private void copyHeaders(HttpServletRequest req, HttpMethod method,
+                             UrlRewriter rewriter)
+    {
+        for (Enumeration e = req.getHeaderNames(); e.hasMoreElements(); ) {
+            String k = (String)e.nextElement();
+            if (k.equalsIgnoreCase("transfer-encoding")
+                || k.equalsIgnoreCase("content-length")
+                || k.equalsIgnoreCase("cookie")) {
+                // skip
+            } else if (k.equalsIgnoreCase("host")) {
+                method.addRequestHeader("Host", rewriter.getHost());
+            } else if (k.equalsIgnoreCase("referer")) {
+                String v = req.getHeader(k);
+                System.out.println("UNWRITE: " + rewriter.unwriteUrl(v));
+                method.addRequestHeader("Referer", rewriter.unwriteUrl(v));
+            } else {
+                for (Enumeration f = req.getHeaders(k); f.hasMoreElements(); ) {
+                    String v = (String)f.nextElement();
+                    method.addRequestHeader(k, v);
+                }
+            }
+        }
+    }
+
+    private void copyHeaders(HttpMethod method, HttpServletResponse resp,
+                             UrlRewriter rewriter)
+    {
+        for (Header h : method.getResponseHeaders()) {
+            String name = h.getName();
+            String value = h.getValue();
+
+            if (name.equalsIgnoreCase("content-type")) {
+                resp.setContentType(value);
+            } else if (name.equalsIgnoreCase("transfer-encoding")
+                       || name.equalsIgnoreCase("content-length")) {
+                // don't forward
+            } else if (name.equalsIgnoreCase("location")
+                       || name.equalsIgnoreCase("content-location")) {
+                System.out.println("SET RESP HEADER: " + name + ": "
+                                   + rewriter.rewriteUrl(value));
+                resp.setHeader(name, rewriter.rewriteUrl(value));
+            } else {
+                resp.setHeader(name, value);
+            }
+        }
+    }
+
+    private void processResponse(InputStream is, HttpServletResponse resp,
+                                 UrlRewriter rewriter)
+        throws IOException
+    {
+        String contentType = resp.getContentType();
+        contentType = null == contentType ? "" : contentType.toLowerCase();
+
+        if (contentType.startsWith("text/html")) {
+            PrintWriter w = null;
+            try {
+                w = new PrintWriter(resp.getWriter());
+                rewriteStream(is, w, rewriter);
+            } catch (ParserException exn) {
+                logger.warn("could not parse html", exn);
+            } finally {
+                if (null != w) {
+                    w.close();
+                }
+            }
+        } else if (contentType.startsWith("multipart/")) {
+            OutputStream os = null;
+            try {
+                os = resp.getOutputStream();
+                handleMultipart(contentType, is, os, rewriter);
+            } finally {
+                if (null != os) {
+                    try {
+                        os.close();
+                    } catch (IOException exn) {
+                        logger.warn("could not close OutputStream", exn);
+                    }
+                }
+            }
+        } else {
+            OutputStream os = null;
+            try {
+                os = resp.getOutputStream();
+                copyStream(is, os);
+            } finally {
+                if (null != os) {
+                    try {
+                        os.close();
+                    } catch (IOException exn) {
+                        logger.warn("could not close OutputStream", exn);
+                    }
                 }
             }
         }
@@ -241,7 +249,7 @@ public class WebProxy extends HttpServlet
 
     private void handleMultipart(String contentType,
                                  InputStream is, OutputStream os,
-                                 String ctxPath, String host)
+                                 UrlRewriter rewriter)
         throws IOException
     {
         ParameterParser parser = new ParameterParser();
@@ -268,7 +276,7 @@ public class WebProxy extends HttpServlet
                     if (ct.toLowerCase().startsWith("text/html")) {
                         // XXX get charset from header!
                         PrintWriter w = new PrintWriter(os);
-                        rewriteStream(mps, w, ctxPath, host);
+                        rewriteStream(mps, w, rewriter);
                     } else {
                         mps.readBodyData(os);
                     }
@@ -286,21 +294,17 @@ public class WebProxy extends HttpServlet
 
             os.flush();
         }
-
-        // print end boundary?
-
-        // epilog
     }
 
     private void rewriteStream(InputStream is, PrintWriter w,
-                               String ctxPath, String host)
+                               UrlRewriter rewriter)
         throws IOException, ParserException
     {
         // XXX charset from header
         Page page = new Page(is, null);
         Lexer lexer = new Lexer(page);
         Node n;
-        RewriteVisitor v = new RewriteVisitor(w, ctxPath, host);
+        RewriteVisitor v = new RewriteVisitor(w, rewriter);
         while (null != (n = lexer.nextNode())) {
             n.accept(v);
         }
@@ -309,11 +313,11 @@ public class WebProxy extends HttpServlet
     }
 
     private void rewriteStream(MultipartStream mps, PrintWriter w,
-                               String ctxPath, String host)
+                               UrlRewriter rewriter)
         throws IOException
     {
         PipedInputStream pis = new PipedInputStream();
-        Thread t = new Thread(new Rewriter(pis, w, ctxPath, host));
+        Thread t = new Thread(new RewriteWorker(pis, w, rewriter));
         PipedOutputStream pos = new PipedOutputStream(pis);
         t.start();
         int i = mps.readBodyData(pos);
@@ -337,25 +341,23 @@ public class WebProxy extends HttpServlet
         os.flush();
     }
 
-    private class Rewriter implements Runnable
+    private class RewriteWorker implements Runnable
     {
         private final InputStream is;
         private final PrintWriter w;
-        private final String ctxPath;
-        private final String host;
+        private final UrlRewriter rewriter;
 
-        Rewriter(InputStream is, PrintWriter w, String ctxPath, String host)
+        RewriteWorker(InputStream is, PrintWriter w, UrlRewriter rewriter)
         {
             this.is = is;
             this.w = w;
-            this.ctxPath = ctxPath;
-            this.host = host;
+            this.rewriter = rewriter;
         }
 
         public void run()
         {
             try {
-                rewriteStream(is, w, ctxPath, host);
+                rewriteStream(is, w, rewriter);
             } catch (ParserException exn) {
                 logger.warn("could not parse html", exn);
             } catch (IOException exn) {
