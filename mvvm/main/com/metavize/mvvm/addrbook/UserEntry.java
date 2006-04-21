@@ -60,7 +60,7 @@ public final class UserEntry
 
   /**
    * Get the uniqueID within the scope
-   * of the {@link #getStoredIn repository} NOTE: the GUI sets this to first name + last name + email
+   * of the {@link #getStoredIn repository}
    *
    * @return the unique id
    */

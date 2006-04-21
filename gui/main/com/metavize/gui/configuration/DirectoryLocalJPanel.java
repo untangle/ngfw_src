@@ -58,15 +58,40 @@ class DirectoryLocalTableModel extends MSortedTableModel<DirectoryCompoundSettin
         //                                 #   min  rsz    edit   remv   desc   typ               def
         addTableColumn( tableColumnModel,  0,  Util.STATUS_MIN_WIDTH, false, false, false, false, String.class,     null, sc.TITLE_STATUS );
 	addTableColumn( tableColumnModel,  1,  Util.LINENO_MIN_WIDTH, false, false, false, false, Integer.class,    null, sc.TITLE_INDEX );
-        addTableColumn( tableColumnModel,  2,  100, true,  true,  false, false, String.class,     sc.EMPTY_NAME, "first name");
-        addTableColumn( tableColumnModel,  3,  100, true,  true,  false, false, String.class,     sc.EMPTY_NAME, "last name");
-        addTableColumn( tableColumnModel,  4,  150, true,  true,  false, false, String.class,     "[no email]", "email address");
-        addTableColumn( tableColumnModel,  5,  150, true,  true,  false, false, MPasswordField.class, "aabbccdd", "password");
-        addTableColumn( tableColumnModel,  6,  150, true,  true,  false, true,  String.class,     sc.EMPTY_COMMENT, "comment");
-        addTableColumn( tableColumnModel,  7,  10,  false, false, true,  false, UserEntry.class,  null, "");
+        addTableColumn( tableColumnModel,  2,  100, true,  true,  false, false, String.class,     "[no user/login ID]", "user/login ID");
+        addTableColumn( tableColumnModel,  3,  100, true,  true,  false, false, String.class,     sc.EMPTY_NAME, "first name");
+        addTableColumn( tableColumnModel,  4,  100, true,  true,  false, false, String.class,     sc.EMPTY_NAME, "last name");
+        addTableColumn( tableColumnModel,  5,  150, true,  true,  false, false, String.class,     "[no email]", "email address");
+        addTableColumn( tableColumnModel,  6,  150, true,  true,  false, false, MPasswordField.class, "aabbccdd", "password");
+        addTableColumn( tableColumnModel,  7,  150, true,  true,  false, true,  String.class,     sc.EMPTY_COMMENT, "comment");
+        addTableColumn( tableColumnModel,  8,  10,  false, false, true,  false, UserEntry.class,  null, "");
         return tableColumnModel;
     }
 
+    public void prevalidate(DirectoryCompoundSettings directoryCompoundSettings, Vector<Vector> tableVector) throws Exception {
+        Hashtable<String,String> uidHashtable = new Hashtable<String,String>();
+
+        int rowIndex = 0;
+
+        // go through all the rows and perform some tests
+        for( Vector tempUser : tableVector ){
+	    String uid = (String) tempUser.elementAt(2);
+	    String password = new String(((MPasswordField) tempUser.elementAt(6)).getPassword());
+
+	    // all uid's are unique
+	    if( uidHashtable.contains( uid ) )
+		throw new Exception("The user/login ID at row: " + rowIndex + " has already been taken.");
+	    else
+		uidHashtable.put(uid,uid);
+
+	    // the password meets certain criteria
+	    if( password.length() == 0 )
+		throw new Exception("The password must be at least 1 character long.");
+
+	    rowIndex++;
+	}
+
+    }
     
     public void generateSettings(DirectoryCompoundSettings directoryCompoundSettings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
 	List<UserEntry> allRows = new ArrayList(tableVector.size());
@@ -74,13 +99,13 @@ class DirectoryLocalTableModel extends MSortedTableModel<DirectoryCompoundSettin
 	
         for( Vector rowVector : tableVector ){
 	    
-	    newElem = (UserEntry) rowVector.elementAt(7);
-	    newElem.setFirstName( (String) rowVector.elementAt(2) );
-	    newElem.setLastName( (String) rowVector.elementAt(3) );
-	    newElem.setEmail( (String) rowVector.elementAt(4) );
-	    newElem.setUID( newElem.getFirstName() + newElem.getLastName() + newElem.getEmail() );
-	    newElem.setPassword( new String(((MPasswordField)rowVector.elementAt(5)).getPassword()) );
-	    newElem.setComment( (String) rowVector.elementAt(6) );
+	    newElem = (UserEntry) rowVector.elementAt(8);
+	    newElem.setUID( (String) rowVector.elementAt(2) );
+	    newElem.setFirstName( (String) rowVector.elementAt(3) );
+	    newElem.setLastName( (String) rowVector.elementAt(4) );
+	    newElem.setEmail( (String) rowVector.elementAt(5) );
+	    newElem.setPassword( new String(((MPasswordField)rowVector.elementAt(6)).getPassword()) );
+	    newElem.setComment( (String) rowVector.elementAt(7) );
             allRows.add(newElem);
         }
         
@@ -99,9 +124,10 @@ class DirectoryLocalTableModel extends MSortedTableModel<DirectoryCompoundSettin
 
 	for( UserEntry userEntry : userEntries ){
 	    rowIndex++;
-            tempRow = new Vector(8);
+            tempRow = new Vector(9);
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );
+            tempRow.add( userEntry.getUID() );
             tempRow.add( userEntry.getFirstName() );
             tempRow.add( userEntry.getLastName() );
             tempRow.add( userEntry.getEmail() );

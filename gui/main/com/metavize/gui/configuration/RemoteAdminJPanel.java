@@ -50,7 +50,6 @@ public class RemoteAdminJPanel extends MEditTableJPanel{
 class RemoteAdminTableModel extends MSortedTableModel<RemoteCompoundSettings> {
 
     private static final int MIN_PASSWD_LENGTH = 3;
-    private Hashtable loginHashtable = new Hashtable();
 
     private static final StringConstants sc = StringConstants.getInstance();
     
@@ -75,7 +74,7 @@ class RemoteAdminTableModel extends MSortedTableModel<RemoteCompoundSettings> {
 
 
     public void prevalidate(RemoteCompoundSettings remoteCompoundSettings, Vector<Vector> tableVector) throws Exception {
-        loginHashtable.clear();
+	Hashtable loginHashtable = new Hashtable();
 	boolean oneValidAccount = false;
 	boolean oneWritableAccount = false;
         int rowIndex = 0;
