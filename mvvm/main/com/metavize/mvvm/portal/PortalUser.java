@@ -31,6 +31,7 @@ public class PortalUser implements Serializable
     private Long id;
     private String uid;
     private boolean live = true;
+    private String description;
     private PortalGroup portalGroup;
     private PortalHomeSettings portalHomeSettings;
 
@@ -106,6 +107,23 @@ public class PortalUser implements Serializable
     public void setLive(boolean live)
     {
         this.live = live;
+    }
+
+    /**
+     * description/comments
+     *
+     * @return the recorded comments
+     * @hibernate.property
+     * column="DESCRIPTION"
+     */
+    public String getDescription()
+    {
+        return description;
+    }
+
+    public void setDescription(String description)
+    {
+        this.description = description;
     }
 
     /**

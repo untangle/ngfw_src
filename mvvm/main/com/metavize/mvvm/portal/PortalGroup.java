@@ -28,6 +28,7 @@ public class PortalGroup implements Serializable
 
     private Long id;
     private String name;
+    private String description;
 
     private PortalHomeSettings portalHomeSettings;
     private List bookmarks;
@@ -50,6 +51,22 @@ public class PortalGroup implements Serializable
     }
 
 
+    /**
+     * description/comments
+     *
+     * @return the recorded comments
+     * @hibernate.property
+     * column="DESCRIPTION"
+     */
+    public String getDescription()
+    {
+        return description;
+    }
+
+    public void setDescription(String description)
+    {
+        this.description = description;
+    }
 
     // accessors --------------------------------------------------------------
 
@@ -128,5 +145,13 @@ public class PortalGroup implements Serializable
     public void setBookmarks(List bookmarks)
     {
         this.bookmarks = bookmarks;
+    }
+
+    public boolean equals(Object obj)
+    {
+	if( !(obj instanceof PortalGroup) )
+	    return false;
+	PortalGroup other = (PortalGroup) obj;
+	return getName().equals(other.getName());       
     }
 }
