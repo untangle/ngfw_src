@@ -106,9 +106,8 @@ public class PopServerParser extends AbstractParser
         while (false == bDone) {
             switch (state) {
             case REPLY:
-                logger.debug("REPLY state, " + buf);
-
                 int iReplyEnd = findCRLFEnd(buf);
+                logger.debug("REPLY state, " + buf + ", end at: " + iReplyEnd);
                 if (1 < iReplyEnd) {
                     dup = buf.duplicate();
 
@@ -187,8 +186,21 @@ public class PopServerParser extends AbstractParser
                         //logger.debug("reply: " + reply + ", " + buf);
                         logger.debug("reply: " + buf);
 
-                        buf = null; /* buf has been consumed */
-                        bDone = true;
+                        if (false == buf.hasRemaining()) {
+                            logger.debug("reply buf is empty");
+
+                            buf = null; /* buf has been consumed */
+                            bDone = true;
+                        } else {
+                            /* else if we have more data */
+                            logger.debug("compact reply buf: " + buf);
+
+                            dup.clear();
+                            dup.put(buf);
+                            dup.flip();
+
+                            buf = dup;
+                        }
                     }
                 } else {
                     logger.debug("buf does not contain CRLF");
@@ -299,12 +311,12 @@ public class PopServerParser extends AbstractParser
                     }
 
                     if (false == buf.hasRemaining()) {
-                        logger.debug("buf is empty");
+                        logger.debug("data buf is empty");
 
                         buf = null; /* buf has been consumed */
                         bDone = true;
                     } else {
-                        logger.debug("compact buf: " + buf);
+                        logger.debug("compact data buf: " + buf);
 
                         dup.clear();
                         dup.put(buf);
@@ -350,11 +362,11 @@ public class PopServerParser extends AbstractParser
                 bDone = true; /* we may need more data */
 
                 if (false == buf.hasRemaining()) {
-                    logger.debug("buf is empty");
+                    logger.debug("skipdata buf is empty");
 
                     buf = null; /* buf has been consumed */
                 } else {
-                    logger.debug("compact buf: " + buf);
+                    logger.debug("compact skipdata buf: " + buf);
 
                     dup = buf.duplicate();
                     dup.clear();

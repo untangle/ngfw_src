@@ -110,6 +110,7 @@ public class PopReply implements Token
             arg = consumeBuf(buf); /* consume rest of buffer */
         }
 
+        //logger.debug("reply arg: " + arg);
         return new PopReply(reply, (0 == arg.length()) ? null : arg, zMsgDataSz, bIsSimpleOK, space);
     }
 
