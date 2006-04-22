@@ -34,6 +34,7 @@ import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 import org.htmlparser.Node;
@@ -72,20 +73,28 @@ public class WebProxy extends HttpServlet
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException
     {
-        HttpMethod method = new GetMethod(getUrl(req));
-        doIt(req, resp, method);
+        try {
+            UrlRewriter rewriter = new UrlRewriter(req);
+            HttpMethod method = new GetMethod(rewriter.getRemoteUrl());
+            doIt(req, resp, method, rewriter);
+        } catch (URIException exn) {
+            sendError(resp, HttpServletResponse.SC_BAD_REQUEST);
+        }
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException
     {
-        RawPostMethod method = new RawPostMethod(getUrl(req));
-
         try {
+            UrlRewriter rewriter = new UrlRewriter(req);
+            RawPostMethod method = new RawPostMethod(rewriter.getRemoteUrl());
+
             method.setBodyStream(req.getContentType(), req.getInputStream(),
                                  req.getIntHeader("Content-Length"));
-            doIt(req, resp, method);
+            doIt(req, resp, method, rewriter);
+        } catch (URIException exn) {
+            sendError(resp, HttpServletResponse.SC_BAD_REQUEST);
         } catch (IOException exn) {
             logger.warn("could not process POST", exn);
         }
@@ -94,18 +103,18 @@ public class WebProxy extends HttpServlet
     // private methods --------------------------------------------------------
 
     private void doIt(HttpServletRequest req, HttpServletResponse resp,
-                      HttpMethod method)
+                      HttpMethod method, UrlRewriter rewriter)
         throws ServletException
     {
         HttpSession s = req.getSession();
+
+        method.setFollowRedirects(false);
 
         HttpClient httpClient = (HttpClient)s.getAttribute(HTTP_CLIENT);
         if (null == httpClient) {
             httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
             s.setAttribute(HTTP_CLIENT, httpClient);
         }
-
-        UrlRewriter rewriter = new UrlRewriter(req);
 
         copyHeaders(req, method, rewriter);
 
@@ -114,11 +123,7 @@ public class WebProxy extends HttpServlet
             resp.setStatus(rc);
         } catch (IOException exn) {
             logger.warn("could not make request", exn);
-            try {
-                resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
-            } catch (IOException x) {
-                throw new ServletException(x);
-            }
+            sendError(resp, HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
@@ -142,6 +147,16 @@ public class WebProxy extends HttpServlet
         }
     }
 
+    private void sendError(HttpServletResponse resp, int code)
+        throws ServletException
+    {
+        try {
+            resp.sendError(code);
+        } catch (IOException exn) {
+            throw new ServletException("could not send error", exn);
+        }
+    }
+
     private void copyHeaders(HttpServletRequest req, HttpMethod method,
                              UrlRewriter rewriter)
     {
@@ -155,7 +170,6 @@ public class WebProxy extends HttpServlet
                 method.addRequestHeader("Host", rewriter.getHost());
             } else if (k.equalsIgnoreCase("referer")) {
                 String v = req.getHeader(k);
-                System.out.println("UNWRITE: " + rewriter.unwriteUrl(v));
                 method.addRequestHeader("Referer", rewriter.unwriteUrl(v));
             } else {
                 for (Enumeration f = req.getHeaders(k); f.hasMoreElements(); ) {
@@ -180,8 +194,6 @@ public class WebProxy extends HttpServlet
                 // don't forward
             } else if (name.equalsIgnoreCase("location")
                        || name.equalsIgnoreCase("content-location")) {
-                System.out.println("SET RESP HEADER: " + name + ": "
-                                   + rewriter.rewriteUrl(value));
                 resp.setHeader(name, rewriter.rewriteUrl(value));
             } else {
                 resp.setHeader(name, value);
@@ -237,14 +249,6 @@ public class WebProxy extends HttpServlet
                 }
             }
         }
-    }
-
-    private String getUrl(HttpServletRequest req)
-    {
-        String p = req.getPathInfo();
-        String qs = req.getQueryString();
-
-        return "http:/" + p + (null == qs ? "" : "?" + qs);
     }
 
     private void handleMultipart(String contentType,

@@ -13,6 +13,8 @@ package com.metavize.tran.portal.proxy;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.httpclient.URI;
+import org.apache.commons.httpclient.URIException;
 import org.apache.log4j.Logger;
 
 class UrlRewriter
@@ -20,6 +22,7 @@ class UrlRewriter
     private final String host;
     private final String contextBase;
     private final String localHost;
+    private final String remoteUrl;
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -33,6 +36,9 @@ class UrlRewriter
         this.host = p.substring(1, 1 > i ? p.length() : i);
         this.contextBase = req.getContextPath();
         this.localHost = req.getServerName();
+
+        String qs = req.getQueryString();
+        this.remoteUrl = "http:/" + p + (null == qs ? "" : "?" + qs);
     }
 
     // package protected methods ----------------------------------------------
@@ -59,6 +65,14 @@ class UrlRewriter
             logger.warn("unexpected referer: " + v);
             return v;
         }
+    }
+
+    String getRemoteUrl()
+        throws URIException
+    {
+        String s = new URI(remoteUrl).getEscapedURIReference();
+
+        return s;
     }
 
     String getHost()
