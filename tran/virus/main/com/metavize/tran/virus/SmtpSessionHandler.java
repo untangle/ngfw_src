@@ -88,7 +88,7 @@ public class SmtpSessionHandler
       VirusScannerResult scanResult = scanPart(part);
 
       if(scanResult == null) {
-        m_logger.error("Scanning returned null (error already reported).  Skip " +
+        m_logger.warn("Scanning returned null (error already reported).  Skip " +
           "part assuming local error");
         continue;
       }
@@ -211,7 +211,7 @@ public class SmtpSessionHandler
       VirusScannerResult scanResult = scanPart(part);
 
       if(scanResult == null) {
-        m_logger.error("Scanning returned null (error already reported).  Skip " +
+        m_logger.warn("Scanning returned null (error already reported).  Skip " +
           "part assuming local error");
         continue;
       }
@@ -307,7 +307,7 @@ public class SmtpSessionHandler
 
       VirusScannerResult result = m_virusImpl.getScanner().scanFile(f.getPath());
       if(result == null || result == VirusScannerResult.ERROR) {
-        m_logger.error("Received an error scan report.  Assume local error" +
+        m_logger.warn("Received an error scan report.  Assume local error" +
           " and report file clean");
         //TODO bscott This is scary
         return null;
