@@ -194,7 +194,7 @@ public class Reporter
         throws SQLException
     {
         Statement stmt = conn.createStatement();
-        stmt.executeUpdate("set sort_mem=8192");
+        stmt.executeUpdate("set sort_mem=16384");
         stmt.executeUpdate("set effective_cache_size=30000");
     }
 }

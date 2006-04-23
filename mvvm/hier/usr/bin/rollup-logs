@@ -12,6 +12,3 @@ echo "Purging all events older than $cutoff"
 for c in @MVVM_SCHEMA@/*/rollup.sql; do
     psql -U metavize -v cutoff="$cutoff" -f $c mvvm
 done
-
-echo "VACUUM ANALYZE;" | psql -U metavize mvvm
-

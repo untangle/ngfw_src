@@ -8,9 +8,9 @@ for f in @THIRDPARTY_REPORTS_LIB@/*jar ; do
     CLASSPATH="$CLASSPATH:$f"
 done
 
-# Use 64Meg of memory for sorting, 32Meg for vacuuming, assume 300Meg of linux caching
+# Use 16Meg of memory for sorting, 32Meg for vacuuming, assume 300Meg of linux caching
 # (tilts optimizer towards use of indices)
-PGOPTIONS="-c sort_mem=8192 -c vacuum_mem=32768 -c effective_cache_size=30000"
+PGOPTIONS="-c sort_mem=16384 -c vacuum_mem=32768 -c effective_cache_size=30000"
 
 export JAVA_HOME CLASSPATH PGOPTIONS
 
@@ -18,6 +18,8 @@ REPORT_DIR=@MVVM_WEB@/reports
 
 # roll up logs, deleting any more than 31 days old (and thus unreportable  on)
 @USR_BIN@/rollup-logs 31
+
+echo "VACUUM ANALYZE;" | psql -U metavize mvvm
 
 rm -rf $REPORT_DIR/current
 # Just in case left over (we use a jsp now)
@@ -38,7 +40,8 @@ if [ $is_reporting_enabled == 'true' ]; then
     for c in @MVVM_SCHEMA@/*/start-reports.sql; do
         psql -U metavize -f $c mvvm
     done
-    echo "ANALYZE;" | psql -U metavize mvvm
+
+    echo "VACUUM ANALYZE;" | psql -U metavize mvvm
 
     $JAVA_HOME/bin/java -Xmx512m \
         -Dlog4j.configuration=file:@MVVM_HOME@/conf/log4j-reporter.xml \
@@ -71,4 +74,6 @@ if [ $is_reporting_enabled == 'true' ]; then
     for c in @MVVM_SCHEMA@/*/finish-reports.sql; do
         psql -U metavize -f $c mvvm
     done
+
+    echo "VACUUM ANALYZE;" | psql -U metavize mvvm
 fi
