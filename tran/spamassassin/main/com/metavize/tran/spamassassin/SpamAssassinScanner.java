@@ -28,7 +28,9 @@ import org.apache.log4j.Logger;
 class SpamAssassinScanner implements SpamScanner
 {
     private final Logger logger = Logger.getLogger(SpamAssassinScanner.class.getName());
-    private static final int timeout = 20000; /* XXX should be user configurable */
+    private static final int timeout = 40000; /* XXX should be user configurable */
+
+    private volatile int activeScanCount = 0;
 
     SpamAssassinScanner() { }
 
@@ -37,9 +39,23 @@ class SpamAssassinScanner implements SpamScanner
         return "SpamAssassin";
     }
 
+    public int getActiveScanCount()
+    {
+        return activeScanCount;
+    }
+
     public SpamReport scanFile(File f, float threshold)
     {
         SpamAssassinScannerLauncher scan = new SpamAssassinScannerLauncher(f, threshold);
-        return scan.doScan(this.timeout);
+        try {
+            synchronized(this) {
+                activeScanCount++;
+            }
+            return scan.doScan(this.timeout);
+        } finally {
+            synchronized(this) {
+                activeScanCount--;
+            }
+        }
     }
 }

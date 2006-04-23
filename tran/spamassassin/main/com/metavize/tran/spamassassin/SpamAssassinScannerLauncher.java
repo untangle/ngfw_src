@@ -30,7 +30,7 @@ import com.metavize.tran.spam.ReportItem;
 
 public class SpamAssassinScannerLauncher implements Runnable
 {
-    private static final String REPORT_CMD = "/usr/bin/spamc -u spamc -R";
+    private static final String REPORT_CMD = "/usr/bin/spamc -u spamc -R -t 39";
 
     private static final Pattern REPORT_PATTERN =
         Pattern.compile("^[ ]*-?[0-9]+\\.[0-9]+ [A-Z0-9_]+");

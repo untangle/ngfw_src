@@ -33,4 +33,11 @@ public interface SpamScanner
      * @return a <code>SpamReport</code> value
      */
     SpamReport scanFile(File file, float threshold);
+
+    /**
+     * Returns the number of spam scans that are currently ongoing.
+     *
+     * @return an <code>int</code> value
+     */
+    int getActiveScanCount();
 }

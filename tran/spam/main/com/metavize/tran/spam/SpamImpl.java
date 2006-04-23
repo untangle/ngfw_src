@@ -424,7 +424,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
     }
 
 
-    SpamScanner getScanner()
+    public SpamScanner getScanner()
     {
         return scanner;
     }

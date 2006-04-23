@@ -31,6 +31,8 @@ class ClamPhishScanner implements SpamScanner
     private final Logger logger = Logger.getLogger(ClamPhishScanner.class.getName());
     private static final int timeout = 10000; /* XXX should be user configurable */
 
+    private volatile int activeScanCount = 0;
+
     ClamPhishScanner() { }
 
     public String getVendorName()
@@ -38,25 +40,39 @@ class ClamPhishScanner implements SpamScanner
         return "Clam";
     }
 
+    public int getActiveScanCount()
+    {
+        return activeScanCount;
+    }
+
     public SpamReport scanFile(File f, float threshold)
     {
-        String filePath = f.getPath();
-        if (logger.isDebugEnabled()) {
-            logger.debug("scanning file " + filePath);
-        }
-        ClamScannerLauncher scan = new ClamScannerLauncher(filePath);
-        VirusScannerResult vsr = scan.doScan(this.timeout);
-        if (logger.isDebugEnabled()) {
-            logger.debug("scan finished, clean: " + vsr.isClean()
-                         + ", name: " + vsr.getVirusName());
-        }
-        if (vsr.isClean() || vsr.getVirusName() == null || !vsr.getVirusName().contains("Phish")) {
-            return SpamReport.EMPTY;
-        } else {
-            ReportItem ourItem = new ReportItem(HIT_SCORE, vsr.getVirusName());
-            List<ReportItem> items = new LinkedList<ReportItem>();
-            items.add(ourItem);
-            return new SpamReport(items, threshold);
+        try {
+            synchronized(this) {
+                activeScanCount++;
+            }
+            String filePath = f.getPath();
+            if (logger.isDebugEnabled()) {
+                logger.debug("scanning file " + filePath);
+            }
+            ClamScannerLauncher scan = new ClamScannerLauncher(filePath);
+            VirusScannerResult vsr = scan.doScan(this.timeout);
+            if (logger.isDebugEnabled()) {
+                logger.debug("scan finished, clean: " + vsr.isClean()
+                             + ", name: " + vsr.getVirusName());
+            }
+            if (vsr.isClean() || vsr.getVirusName() == null || !vsr.getVirusName().contains("Phish")) {
+                return SpamReport.EMPTY;
+            } else {
+                ReportItem ourItem = new ReportItem(HIT_SCORE, vsr.getVirusName());
+                List<ReportItem> items = new LinkedList<ReportItem>();
+                items.add(ourItem);
+                return new SpamReport(items, threshold);
+            }
+        } finally {
+            synchronized(this) {
+                activeScanCount--;
+            }
         }
     }
 }

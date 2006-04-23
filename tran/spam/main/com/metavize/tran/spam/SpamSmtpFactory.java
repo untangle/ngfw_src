@@ -80,9 +80,11 @@ public class SpamSmtpFactory
         if(!spamConfig.getScan()) {
             m_logger.debug("Scanning disabled.  Releasing.");
             tsr.release(false);
+            return;
         }
 
-        if (ScanLoadChecker.reject(m_logger)) {
+        int activeCount = m_spamImpl.getScanner().getActiveScanCount();
+        if (ScanLoadChecker.reject(activeCount, m_logger)) {
             m_logger.warn("Load too high, rejecting connection from " + tsr.clientAddr());
             tsr.rejectReturnRst();
         }
