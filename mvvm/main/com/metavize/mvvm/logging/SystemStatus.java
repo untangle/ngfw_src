@@ -29,8 +29,37 @@ import org.apache.log4j.Logger;
     
 public class SystemStatus
 {
+    public static final String  JITTER_THREAD_PROPERTY = "mvvm.jitter.thread";
+    public static final boolean JITTER_THREAD_DEFAULT = true;
+
+    public static final String  JITTER_THREAD_FREQ_PROPERTY = "mvvm.jitter.thread.freq";
+    public static final long    JITTER_THREAD_FREQ_DEFAULT = 500;
+
+    public static boolean JITTER_THREAD;
+    public static long    JITTER_THREAD_FREQ;
+    
+    static {
+        JITTER_THREAD = JITTER_THREAD_DEFAULT;
+        String p = System.getProperty(JITTER_THREAD_PROPERTY);
+        if (p != null) {
+            JITTER_THREAD = Boolean.parseBoolean(p);
+        }
+        JITTER_THREAD_FREQ = JITTER_THREAD_FREQ_DEFAULT;
+        p = System.getProperty(JITTER_THREAD_FREQ_PROPERTY);
+        if (p != null) {
+            try {
+                JITTER_THREAD_FREQ = Long.parseLong(p);
+            } catch (NumberFormatException x) {
+                System.err.println("cannot parse jitter thread freq: " + p);
+                JITTER_THREAD_FREQ = JITTER_THREAD_FREQ_DEFAULT;
+            }
+        }
+    }
+
     private static final Logger logger = Logger.getLogger(LogMailer.class);
 
+    private JitterThread jitter = null;
+    
     private static final String SPACER = "========================================================\n";
     
     public String staticConf = null;
@@ -38,9 +67,17 @@ public class SystemStatus
     public SystemStatus()
     {
         staticConf = _buildStaticConf();
+
+        if (JITTER_THREAD) {
+            jitter = new JitterThread(JITTER_THREAD_FREQ);
+            new Thread(jitter).start();
+        }
+        else {
+            jitter = null;
+        }
     }
 
-    public void test ()
+    public void test()
     {
         SystemStatus stat = new SystemStatus();
         System.out.print(stat.staticConf);
@@ -113,13 +150,14 @@ public class SystemStatus
         return sb.toString();
     }
 
-    private static String _buildDynamicStat ()
+    private String _buildDynamicStat ()
     {
         StringBuilder sb = new StringBuilder();
         String line;
         Process proc;
         BufferedReader input;
         int i = 0;
+
         try {
             /**
              * /proc/loadavg
@@ -130,7 +168,29 @@ public class SystemStatus
                 sb.append("LOAD: "+line+"\n");
             }
             input.close();
+        }
+        catch (Exception e) {
+            logger.error("Exception: ", e);
+        }
 
+        try {
+            /**
+             * Jitter
+             */
+            sb.append(SPACER);
+            if (this.jitter != null) {
+                sb.append("JITTER: " + jitter.toString() +"\n");
+                jitter.resetMaxDelay();
+            }
+            else {
+                sb.append("jitter: disabled\n");
+            }
+        }
+        catch (Exception e) {
+            logger.error("Exception: ", e);
+        }
+
+        try {
             /**
              * /proc/meminfo
              */
@@ -140,7 +200,13 @@ public class SystemStatus
                 sb.append("MEM: "+line+"\n");
             }
             input.close();
+        }
+        catch (Exception e) {
+            logger.error("Exception: ", e);
+        }
 
+        proc = null;
+        try {
             /**
              * df
              */
@@ -150,29 +216,41 @@ public class SystemStatus
             while ((line = input.readLine()) != null) {
                 sb.append(line+"\n");
             }
-            proc.destroy();
+        }
+        catch (Exception e) {
+            logger.error("Exception: ", e);
+            sb.append("Exception on exec (/bin/df): " + e.toString() + "\n");
+        }
+        finally {
+            if (proc != null)
+                proc.destroy();
+        }
             
+        proc = null;
+        try {
             /**
              * ps aux
              */
             sb.append(SPACER);
             proc = MvvmContextFactory.context().exec("/bin/ps --sort -rss aux");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-            for ( i=0 ; (line = input.readLine()) != null ; i++ ) {
-                if (i<25) sb.append(line+"\n");
+            while ((line = input.readLine()) != null) {
+                sb.append(line+"\n");
             }
-            proc.destroy();
-            sb.append((i-25) + " lines truncated\n");
         }
         catch (Exception e) {
             logger.error("Exception: ", e);
-            return null;
+            sb.append("Exception on exec (/bin/ps): " + e.toString() + "\n");
         }
-
+        finally {
+            if (proc != null)
+                proc.destroy();
+        }
+        
         return sb.toString();
     }
 
-    private static String _buildMVVMStat ()
+    private String _buildMVVMStat ()
     {
         StringBuilder sb = new StringBuilder();
         String line;
@@ -207,7 +285,7 @@ public class SystemStatus
                 }
                 String name = pad(tctx.getTransformDesc().getName(), 25);
                 sb.append(t.getName() + "\t" + name + "\t" + t.getPolicy()
-                                   + "\t" + tran.getRunState() + "\n");
+                          + "\t" + tran.getRunState() + "\n");
             }
 
             /**
@@ -239,4 +317,98 @@ public class SystemStatus
         return sb.toString();
     }
 
+
+    private class JitterThread implements Runnable
+    {
+        private long millifreq;
+
+        private long maxDelay;
+        private long lastDelay;
+
+        private double ext_1min;
+        private double ext_5min;
+        private double ext_15min;
+
+        private double load_1min;
+        private double load_5min;
+        private double load_15min;
+        
+        JitterThread( long millifreq )
+        {
+            this.millifreq = millifreq;
+            this.maxDelay = 0;
+
+            this.ext_1min  = java.lang.Math.exp(-millifreq/ (60.0*1000.0));
+            this.ext_5min  = java.lang.Math.exp(-millifreq/ (5.0*60.0*1000.0));
+            this.ext_15min = java.lang.Math.exp(-millifreq/ (15.0*60.0*1000.0));
+
+            this.load_1min  = 0.0;
+            this.load_5min  = 0.0;
+            this.load_15min = 0.0;
+        }
+
+        public void run()
+        {
+            while (true) {
+
+                /**
+                 * Measure jitter (wake up delay)
+                 */
+                long startTime = System.currentTimeMillis();
+                try {
+                    Thread.sleep(this.millifreq);
+                }
+                catch (InterruptedException e) {
+                    logger.error("Exception: ", e);
+                }
+                long endTime   = System.currentTimeMillis();
+                long wakeupDelay = (endTime - startTime) - this.millifreq;
+
+                /**
+                 * Adjust loads and bookkeeping
+                 */
+                load_1min  = (load_1min  * ext_1min)  + wakeupDelay * ( 1 - ext_1min);
+                load_5min  = (load_5min  * ext_5min)  + wakeupDelay * ( 1 - ext_5min);
+                load_15min = (load_15min * ext_15min) + wakeupDelay * ( 1 - ext_15min);
+
+                lastDelay = wakeupDelay;
+
+                if (wakeupDelay > maxDelay) {
+                    maxDelay = wakeupDelay;
+                }
+            }
+        }
+
+        public void resetMaxDelay()
+        {
+            this.maxDelay = 0;
+        }
+
+        public void resetLoads()
+        {
+            this.load_1min = 0.0;
+            this.load_5min = 0.0;
+            this.load_15min = 0.0;
+        }
+
+        public String toString()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.append("1min: ");
+            sb.append(String.format("%03.2f",load_1min));
+            sb.append("  5min: ");
+            sb.append(String.format("%03.2f",load_5min));
+            sb.append("  15min: ");
+            sb.append(String.format("%03.2f",load_15min));
+            sb.append("    max: ");
+            sb.append(String.format("%7d",maxDelay));
+            sb.append("  last: ");
+            sb.append(String.format("%7d",lastDelay));
+
+            return sb.toString();
+        }
+        
+    }
+    
 }
