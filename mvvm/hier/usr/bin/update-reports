@@ -10,7 +10,7 @@ done
 
 # Use 64Meg of memory for sorting, 32Meg for vacuuming, assume 300Meg of linux caching
 # (tilts optimizer towards use of indices)
-PGOPTIONS="-c sort_mem=65536 -c vacuum_mem=32768 -c effective_cache_size=40000"
+PGOPTIONS="-c sort_mem=8192 -c vacuum_mem=32768 -c effective_cache_size=30000"
 
 export JAVA_HOME CLASSPATH PGOPTIONS
 
