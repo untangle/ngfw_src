@@ -58,12 +58,13 @@ class DirectoryLocalTableModel extends MSortedTableModel<DirectoryCompoundSettin
         //                                 #   min  rsz    edit   remv   desc   typ               def
         addTableColumn( tableColumnModel,  0,  Util.STATUS_MIN_WIDTH, false, false, false, false, String.class,     null, sc.TITLE_STATUS );
 	addTableColumn( tableColumnModel,  1,  Util.LINENO_MIN_WIDTH, false, false, false, false, Integer.class,    null, sc.TITLE_INDEX );
-        addTableColumn( tableColumnModel,  2,  100, true,  true,  false, false, String.class,     "[no user/login ID]", "user/login ID");
+        addTableColumn( tableColumnModel,  2,  100, true,  true,  false, false, String.class,     "[no ID/login]", "user/login ID");
         addTableColumn( tableColumnModel,  3,  100, true,  true,  false, false, String.class,     sc.EMPTY_NAME, "first name");
         addTableColumn( tableColumnModel,  4,  100, true,  true,  false, false, String.class,     sc.EMPTY_NAME, "last name");
         addTableColumn( tableColumnModel,  5,  150, true,  true,  false, false, String.class,     "[no email]", "email address");
         addTableColumn( tableColumnModel,  6,  150, true,  true,  false, false, MPasswordField.class, "aabbccdd", "password");
-        addTableColumn( tableColumnModel,  7,  150, true,  true,  false, true,  String.class,     sc.EMPTY_COMMENT, "comment");
+        //addTableColumn( tableColumnModel,  7,  150, true,  true,  false, false, DirectoryBookmarksButtonRunnable.class, "true", "bookmarks");
+        addTableColumn( tableColumnModel,  7,  150, true,  true,  false, true,  String.class,     sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
         addTableColumn( tableColumnModel,  8,  10,  false, false, true,  false, UserEntry.class,  null, "");
         return tableColumnModel;
     }
@@ -97,8 +98,7 @@ class DirectoryLocalTableModel extends MSortedTableModel<DirectoryCompoundSettin
 	List<UserEntry> allRows = new ArrayList(tableVector.size());
 	UserEntry newElem = null;
 	
-        for( Vector rowVector : tableVector ){
-	    
+        for( Vector rowVector : tableVector ){	    
 	    newElem = (UserEntry) rowVector.elementAt(8);
 	    newElem.setUID( (String) rowVector.elementAt(2) );
 	    newElem.setFirstName( (String) rowVector.elementAt(3) );

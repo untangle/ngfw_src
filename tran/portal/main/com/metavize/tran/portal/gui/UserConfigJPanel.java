@@ -13,9 +13,11 @@ package com.metavize.tran.portal.gui;
 
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.gui.transform.*;
+import com.metavize.gui.configuration.DirectoryCompoundSettings;
 import com.metavize.gui.pipeline.MPipelineJPanel;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.gui.widgets.editTable.*;
+import com.metavize.gui.widgets.MPasswordField;
 import com.metavize.gui.util.*;
 
 import com.metavize.tran.portal.*;
