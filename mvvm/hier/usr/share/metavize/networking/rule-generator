@@ -345,7 +345,7 @@ function antisubscribeRules() {
     
     ## This rule will often be unecessary, but it is there just in case.
     ## if the public address is ever different than the box address, these are different.    
-    if [ -n ${HTTPS_PUBLIC_ADDR} ]  && [ -n ${HTTPS_PUBLIC_PORT} ]; then
+    if [ -n "${HTTPS_PUBLIC_ADDR}" ] && [ -n "${HTTPS_PUBLIC_PORT}" ]; then
         ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -p tcp -m mark --mark ${t_mark} \
             --destination ${HTTPS_PUBLIC_ADDR} \
             --destination-port ${HTTPS_PUBLIC_PORT} \
@@ -487,7 +487,8 @@ function interceptRules() {
     fi
 
 ## Redirect all traffic to the public address to the mvvm
-    if [ -n ${HTTPS_PUBLIC_ADDR} ]  && [ -n ${HTTPS_PUBLIC_PORT} ]; then
+    if [ -n "${HTTPS_PUBLIC_ADDR}" ] && [ -n "${HTTPS_PUBLIC_PORT}" ] &&
+        [ "${HTTPS_PUBLIC_REDIRECT_EN}x" = "truex" ]; then
         ${IPTABLES} -t nat -A PREROUTING -p tcp \
             --destination ${HTTPS_PUBLIC_ADDR} \
             --destination-port ${HTTPS_PUBLIC_PORT} \

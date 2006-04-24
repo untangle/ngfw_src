@@ -40,6 +40,7 @@ public class RuleManager
     private static final String DHCP_BLOCK_FORWARD_FLAG      = "DHCP_BLOCK_FORWARDING";
     private static final String PUBLIC_ADDR_FLAG             = "HTTPS_PUBLIC_ADDR";
     private static final String PUBLIC_PORT_FLAG             = "HTTPS_PUBLIC_PORT";
+    private static final String PUBLIC_REDIRECT_EN           = "HTTPS_PUBLIC_REDIRECT_EN";
 
     /* Set to the index of the interfaces where ping should be enabled. */
     private static final String PING_ANTISUBSCRIBE_FLAG      = "MVVM_PING_EN";
@@ -59,6 +60,8 @@ public class RuleManager
     private boolean subscribeLocalInside  = false;
     private boolean subscribeLocalOutside = false;
     private boolean dhcpEnableForwarding  = true;
+
+    private boolean isPublicRedirectEnabled = false;
 
     private IPaddr publicAddress = null;
     private int publicPort = -1;
@@ -127,10 +130,11 @@ public class RuleManager
         this.dhcpEnableForwarding = dhcpEnableForwarding;
     }
 
-    void setPublicAddress( IPaddr publicAddress, int port  )
+    void setPublicAddress( IPaddr publicAddress, int port, boolean isPublicRedirectEnabled  )
     {
         this.publicAddress = publicAddress;
         this.publicPort    = port;
+        this.isPublicRedirectEnabled = isPublicRedirectEnabled;
     }
 
     /* Just used to setup the antisubscribes */
@@ -179,7 +183,11 @@ public class RuleManager
             if ( publicAddress != null && publicPort > 0 ) {
                 sb.append( PUBLIC_ADDR_FLAG         + "=" + publicAddress + "\n" );
                 sb.append( PUBLIC_PORT_FLAG         + "=" + publicPort + "\n" );
+                if ( isPublicRedirectEnabled ) {
+                    sb.append( PUBLIC_REDIRECT_EN + "=true\n" );
+                }
             }
+
             sb.append( DHCP_BLOCK_FORWARD_FLAG      + "=" + !dhcpEnableForwarding  + "\n\n" );
 
             if ( pingInterfaceEnable ) {

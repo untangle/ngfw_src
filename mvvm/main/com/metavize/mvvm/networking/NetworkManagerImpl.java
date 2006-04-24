@@ -595,14 +595,16 @@ public class NetworkManagerImpl implements NetworkManager
         /* Disable the public address and port by default */
         IPaddr publicAddress = null;
         int publicPort = -1;
+        boolean isPublicRedirectEnabled = false;
 
         if ( this.remote != null ) {
             publicAddress = this.remote.getCurrentPublicIPaddr();
             publicPort    = this.remote.getCurrentPublicPort();
+            isPublicRedirectEnabled = this.remote.getIsPublicAddressEnabled();
         }
 
         /* Set the public address */
-        this.ruleManager.setPublicAddress( publicAddress, publicPort );
+        this.ruleManager.setPublicAddress( publicAddress, publicPort, isPublicRedirectEnabled );
 
         this.ruleManager.generateIptablesRules();
     }
