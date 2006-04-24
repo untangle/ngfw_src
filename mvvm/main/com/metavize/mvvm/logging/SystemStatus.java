@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003,2004 Metavize Inc.
+ * Copyright (c) 2003,2004, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -14,19 +14,16 @@ package com.metavize.mvvm.logging;
 import java.io.*;
 
 import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.NetworkManager;
+import com.metavize.mvvm.argon.VectronTable;
 import com.metavize.mvvm.networking.NetworkManagerImpl;
 import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.mvvm.tran.TransformContext;
-import com.metavize.mvvm.tran.TransformDesc;
 import com.metavize.mvvm.tran.TransformManager;
-import com.metavize.mvvm.argon.VectronTable;
-
 import org.apache.log4j.Logger;
 
-    
+
 public class SystemStatus
 {
     public static final String  JITTER_THREAD_PROPERTY = "mvvm.jitter.thread";
@@ -37,7 +34,7 @@ public class SystemStatus
 
     public static boolean JITTER_THREAD;
     public static long    JITTER_THREAD_FREQ;
-    
+
     static {
         JITTER_THREAD = JITTER_THREAD_DEFAULT;
         String p = System.getProperty(JITTER_THREAD_PROPERTY);
@@ -59,11 +56,11 @@ public class SystemStatus
     private static final Logger logger = Logger.getLogger(LogMailer.class);
 
     private JitterThread jitter = null;
-    
+
     private static final String SPACER = "========================================================\n";
-    
+
     public String staticConf = null;
-    
+
     public SystemStatus()
     {
         staticConf = _buildStaticConf();
@@ -77,13 +74,21 @@ public class SystemStatus
         }
     }
 
+    public void destroy()
+    {
+        if (null != jitter) {
+            jitter.destroy();
+            jitter = null;
+        }
+    }
+
     public void test()
     {
         SystemStatus stat = new SystemStatus();
         System.out.print(stat.staticConf);
         String dynamicStat = _buildDynamicStat();
         System.out.print(dynamicStat);
-        
+
         return;
     }
 
@@ -100,7 +105,7 @@ public class SystemStatus
         return sb.toString();
     }
 
-    
+
     private String _buildStaticConf ()
     {
         StringBuilder sb = new StringBuilder();
@@ -119,7 +124,7 @@ public class SystemStatus
                 sb.append(line+"\n");
             }
             proc.destroy();
-            
+
             /**
              * lspci
              */
@@ -130,7 +135,7 @@ public class SystemStatus
                 sb.append(line+"\n");
             }
             proc.destroy();
-            
+
             /**
              * /proc/cpuinfo
              */
@@ -225,7 +230,7 @@ public class SystemStatus
             if (proc != null)
                 proc.destroy();
         }
-            
+
         proc = null;
         try {
             /**
@@ -246,7 +251,7 @@ public class SystemStatus
             if (proc != null)
                 proc.destroy();
         }
-        
+
         return sb.toString();
     }
 
@@ -332,7 +337,9 @@ public class SystemStatus
         private double load_1min;
         private double load_5min;
         private double load_15min;
-        
+
+        private volatile Thread thread;
+
         JitterThread( long millifreq )
         {
             this.millifreq = millifreq;
@@ -347,9 +354,20 @@ public class SystemStatus
             this.load_15min = 0.0;
         }
 
+        public void destroy()
+        {
+            Thread t = this.thread;
+            if (null != t) {
+                this.thread = null;
+                t.interrupt();
+            }
+        }
+
         public void run()
         {
-            while (true) {
+            this.thread = Thread.currentThread();
+
+            while (this.thread == Thread.currentThread()) {
 
                 /**
                  * Measure jitter (wake up delay)
@@ -359,7 +377,7 @@ public class SystemStatus
                     Thread.sleep(this.millifreq);
                 }
                 catch (InterruptedException e) {
-                    logger.error("Exception: ", e);
+                    continue;
                 }
                 long endTime   = System.currentTimeMillis();
                 long wakeupDelay = (endTime - startTime) - this.millifreq;
@@ -408,7 +426,7 @@ public class SystemStatus
 
             return sb.toString();
         }
-        
+
     }
-    
+
 }

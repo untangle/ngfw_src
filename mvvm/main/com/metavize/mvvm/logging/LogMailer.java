@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -50,7 +50,7 @@ public class LogMailer implements Runnable
     private String from;
     private String subject;
     private SystemStatus sysstat;
-    
+
     private long lastSendTime = 0;
 
     private volatile Thread thread;
@@ -80,6 +80,7 @@ public class LogMailer implements Runnable
 
     public void stop()
     {
+        this.sysstat.destroy();
         Thread t = thread;
         thread = null;
         t.interrupt();
