@@ -31,7 +31,8 @@ class ClamPhishScanner implements SpamScanner
     private final Logger logger = Logger.getLogger(ClamPhishScanner.class.getName());
     private static final int timeout = 10000; /* XXX should be user configurable */
 
-    private volatile int activeScanCount = 0;
+    private static int activeScanCount = 0;
+    private static Object activeScanMonitor = new Object();
 
     ClamPhishScanner() { }
 
@@ -42,13 +43,15 @@ class ClamPhishScanner implements SpamScanner
 
     public int getActiveScanCount()
     {
-        return activeScanCount;
+        synchronized(activeScanMonitor) {
+            return activeScanCount;
+        }
     }
 
     public SpamReport scanFile(File f, float threshold)
     {
         try {
-            synchronized(this) {
+            synchronized(activeScanMonitor) {
                 activeScanCount++;
             }
             String filePath = f.getPath();
@@ -70,7 +73,7 @@ class ClamPhishScanner implements SpamScanner
                 return new SpamReport(items, threshold);
             }
         } finally {
-            synchronized(this) {
+            synchronized(activeScanMonitor) {
                 activeScanCount--;
             }
         }

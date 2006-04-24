@@ -30,7 +30,8 @@ class SpamAssassinScanner implements SpamScanner
     private final Logger logger = Logger.getLogger(SpamAssassinScanner.class.getName());
     private static final int timeout = 40000; /* XXX should be user configurable */
 
-    private volatile int activeScanCount = 0;
+    private static int activeScanCount = 0;
+    private static Object activeScanMonitor = new Object();
 
     SpamAssassinScanner() { }
 
@@ -41,19 +42,21 @@ class SpamAssassinScanner implements SpamScanner
 
     public int getActiveScanCount()
     {
-        return activeScanCount;
+        synchronized(activeScanMonitor) {
+            return activeScanCount;
+        }
     }
 
     public SpamReport scanFile(File f, float threshold)
     {
         SpamAssassinScannerLauncher scan = new SpamAssassinScannerLauncher(f, threshold);
         try {
-            synchronized(this) {
+            synchronized(activeScanMonitor) {
                 activeScanCount++;
             }
             return scan.doScan(this.timeout);
         } finally {
-            synchronized(this) {
+            synchronized(activeScanMonitor) {
                 activeScanCount--;
             }
         }
