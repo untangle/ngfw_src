@@ -11,6 +11,12 @@
 
 package com.metavize.tran.portal.proxy;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.httpclient.URI;
@@ -19,6 +25,9 @@ import org.apache.log4j.Logger;
 
 class UrlRewriter
 {
+    private static final Pattern CSS_URL_PATTERN
+        = Pattern.compile("url\\s*\\(\\s*(('[^']*')|(\"[^\"]*\"))\\s*\\)");
+
     private final String host;
     private final String contextBase;
     private final String localHost;
@@ -67,10 +76,35 @@ class UrlRewriter
         }
     }
 
+    void filterCss(Reader r, Writer w)
+        throws IOException
+    {
+        System.out.println("REWRITEING CSS");
+
+        BufferedReader br = new BufferedReader(r);
+
+        CharSequence l;
+        while (null != (l = br.readLine())) {
+            Matcher m = CSS_URL_PATTERN.matcher(l);
+
+            StringBuffer sb = new StringBuffer();
+            while (m.find()) {
+                String rep = m.group(1);
+                rep = rewriteUrl(rep.substring(1, rep.length() - 1));
+                m.appendReplacement(sb, "url('" + rep + "')");
+            }
+            m.appendTail(sb);
+            l = sb;
+
+            w.append(l);
+            w.append("\n");
+        }
+    }
+
     String getRemoteUrl()
         throws URIException
     {
-        String s = new URI(remoteUrl).getEscapedURIReference();
+        String s = new URI(remoteUrl, false).getEscapedURIReference();
 
         return s;
     }

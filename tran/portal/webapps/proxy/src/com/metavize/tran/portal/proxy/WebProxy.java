@@ -13,15 +13,17 @@ package com.metavize.tran.portal.proxy;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -50,16 +52,9 @@ public class WebProxy extends HttpServlet
     private static final String HTML_READER = "org.htmlparser.sax.XMLReader";
     private static final String HTTP_CLIENT = "httpClient";
 
-    private static final Pattern CONTENT_TYPE_PATTERN;
-
-    static {
-        try {
-            CONTENT_TYPE_PATTERN = Pattern.compile("^Content-Type:\\s*(.*)$",
-                                                   Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-        } catch (PatternSyntaxException exn) {
-            throw new RuntimeException("could not compile regex", exn);
-        }
-    }
+    private static final Pattern CONTENT_TYPE_PATTERN
+        = Pattern.compile("^Content-Type:\\s*(.*)$",
+                          Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
     private Logger logger;
 
@@ -121,29 +116,17 @@ public class WebProxy extends HttpServlet
         try {
             int rc = httpClient.executeMethod(method); // XXX release method
             resp.setStatus(rc);
+            copyHeaders(method, resp, rewriter);
+            InputStream is = method.getResponseBodyAsStream();
+            if (null != is) {
+                processResponse(is, resp, rewriter);
+            }
         } catch (IOException exn) {
             logger.warn("could not make request", exn);
             sendError(resp, HttpServletResponse.SC_BAD_REQUEST);
             return;
-        }
-
-        copyHeaders(method, resp, rewriter);
-
-        InputStream is = null;
-        try {
-            is = method.getResponseBodyAsStream();
-            processResponse(is, resp, rewriter);
-        } catch (IOException exn) {
-            logger.warn("could not stream", exn);
-            // XXX what now?
         } finally {
-            if (null != is) {
-                try {
-                    is.close();
-                } catch (IOException exn) {
-                    logger.warn("could not close InputStream", exn);
-                }
-            }
+            method.releaseConnection();
         }
     }
 
@@ -209,45 +192,22 @@ public class WebProxy extends HttpServlet
         contentType = null == contentType ? "" : contentType.toLowerCase();
 
         if (contentType.startsWith("text/html")) {
-            PrintWriter w = null;
             try {
-                w = new PrintWriter(resp.getWriter());
+                PrintWriter w = new PrintWriter(resp.getWriter());
                 rewriteStream(is, w, rewriter);
             } catch (ParserException exn) {
                 logger.warn("could not parse html", exn);
-            } finally {
-                if (null != w) {
-                    w.close();
-                }
             }
         } else if (contentType.startsWith("multipart/")) {
-            OutputStream os = null;
-            try {
-                os = resp.getOutputStream();
-                handleMultipart(contentType, is, os, rewriter);
-            } finally {
-                if (null != os) {
-                    try {
-                        os.close();
-                    } catch (IOException exn) {
-                        logger.warn("could not close OutputStream", exn);
-                    }
-                }
-            }
+            OutputStream os = resp.getOutputStream();
+            handleMultipart(contentType, is, os, rewriter);
+        } else if (contentType.startsWith("text/css")) {
+            Reader r = new InputStreamReader(is);
+            Writer w = resp.getWriter();
+            rewriter.filterCss(r, w);
         } else {
-            OutputStream os = null;
-            try {
-                os = resp.getOutputStream();
-                copyStream(is, os);
-            } finally {
-                if (null != os) {
-                    try {
-                        os.close();
-                    } catch (IOException exn) {
-                        logger.warn("could not close OutputStream", exn);
-                    }
-                }
-            }
+            OutputStream os = resp.getOutputStream();
+            copyStream(is, os);
         }
     }
 
@@ -324,8 +284,11 @@ public class WebProxy extends HttpServlet
         Thread t = new Thread(new RewriteWorker(pis, w, rewriter));
         PipedOutputStream pos = new PipedOutputStream(pis);
         t.start();
-        int i = mps.readBodyData(pos);
-        pos.close();
+        try {
+            int i = mps.readBodyData(pos);
+        } finally {
+            pos.close();
+        }
         try {
             t.join();
         } catch (InterruptedException exn) {
