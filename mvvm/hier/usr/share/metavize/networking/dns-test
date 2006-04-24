@@ -22,7 +22,7 @@ function lookup() {
     local address=$1
     local server=$2
     
-    dig @${server} +tries=${DNS_TRIES} +time=${DNS_TIMEOUT} +short ${address}
+    dig @${server} +tries=${DNS_TRIES} +time=${DNS_TIMEOUT} +short ${address} > /dev/null
 }
 
 lookup ${TEST_HOSTNAME_BASE}.${TEST_DOMAIN} ${DNS_SERVER}

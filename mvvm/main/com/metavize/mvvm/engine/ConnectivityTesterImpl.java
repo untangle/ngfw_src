@@ -17,17 +17,20 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Random;
 
+import org.apache.log4j.Logger;
+
 import com.metavize.mvvm.ConnectivityTester;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.NetworkingConfiguration;
-import org.apache.log4j.Logger;
+import com.metavize.mvvm.tran.script.ScriptRunner;
 
 class ConnectivityTesterImpl implements ConnectivityTester
 {
     private static final Logger logger = Logger.getLogger( ConnectivityTesterImpl.class );
 
     private static final String BUNNICULA_BASE  = System.getProperty( "bunnicula.home" );
-    private static final String DNS_TEST_SCRIPT = BUNNICULA_BASE + "/networking/dns-test";
+    private static final String DNS_TEST_SCRIPT    = BUNNICULA_BASE + "/networking/dns-test";
+    private static final String BRIDGE_WAIT_SCRIPT = BUNNICULA_BASE + "/networking/bridge-wait";
 
     /* Name of the host to lookup */
     private static final String TEST_HOSTNAME_BASE    = "release";
@@ -45,6 +48,9 @@ class ConnectivityTesterImpl implements ConnectivityTester
     /* The amount of time before giving up on the DNS attempt in milliseconds */
     private static final int DNS_TEST_TIMEOUT_MS = 5000;
     private static final int TCP_TEST_TIMEOUT_MS = 10000;
+
+    /* Give the bridge 30 seconds to come alive */
+    private static final int BRIDGE_WAIT_TIMEOUT = 30000;
 
     /* Exit code for a DNS test that passed */
     private static final int DNS_TEST_PASS = 0;
@@ -66,10 +72,40 @@ class ConnectivityTesterImpl implements ConnectivityTester
         InetAddress dnsPrimary   = netConfig.dns1().getAddr();
         InetAddress dnsSecondary = ( netConfig.dns2().isEmpty()) ? null : netConfig.dns2().getAddr();
 
+        /* Wait for any bridge interfaces to come up */
+        waitForBridges();
+
         /* Returns the lookuped address if DNS is working, or null if it is not */
         return ConnectionStatus.
             makeConnectionStatus( isDnsWorking( dnsPrimary, dnsSecondary ), isTcpWorking());
     }
+
+    /**
+     * Wait until a bridge comes up
+     */
+    private void waitForBridges()
+    {
+        try {
+            Thread  bridge = new Thread( new Runnable() {
+                    public void run()
+                    {
+                        try {
+                            ScriptRunner.getInstance().exec( BRIDGE_WAIT_SCRIPT, 
+                                                             String.valueOf( BRIDGE_WAIT_TIMEOUT ));
+                        } catch ( Exception e ) {
+                            logger.info( "Exception executing bridge wait script", e );
+                        }
+                    }
+                } );
+                
+            bridge.start();
+
+            bridge.join( BRIDGE_WAIT_TIMEOUT + 1000 );
+            if ( bridge.isAlive()) bridge.interrupt();
+        } catch ( Exception e ) {
+            logger.warn( "unable to determine bridge status" );
+        }
+    } 
 
     /**
      * Test that DNS is working
