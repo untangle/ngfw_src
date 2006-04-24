@@ -555,6 +555,7 @@ class NetworkUtilPriv extends NetworkUtil
         configuration.dns2( settings.getDns2());
         configuration.gateway( settings.getDefaultRoute());
         configuration.setHostname( remoteSettings.getHostname());
+        configuration.setIsPublicAddressEnabled( remoteSettings.getIsPublicAddressEnabled());
         configuration.setPublicIPaddr( remoteSettings.getPublicIPaddr());
         configuration.setPublicPort( remoteSettings.getPublicPort());
         configuration.isSshEnabled( remoteSettings.isSshEnabled());
