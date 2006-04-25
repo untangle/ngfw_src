@@ -77,6 +77,7 @@ public class MvvmContextImpl extends MvvmContextBase
     private AppServerManagerImpl appServerManager;
     private AddressBookImpl addressBookImpl;
     private PortalManagerImpl portalManager;
+    private TomcatManager tomcatManager;
 
     // constructor ------------------------------------------------------------
 
@@ -187,6 +188,12 @@ public class MvvmContextImpl extends MvvmContextBase
         return mPipeManager;
     }
 
+    public TomcatManager getTomcatManager()
+    {
+        return tomcatManager;
+    }
+
+
     public PipelineFoundryImpl pipelineFoundry()
     {
         return pipelineFoundry;
@@ -264,7 +271,21 @@ public class MvvmContextImpl extends MvvmContextBase
         String[] newCmd = new String[cmd.length + 1];
         newCmd[0] = "mvnice";
         System.arraycopy(cmd, 0, newCmd, 1, cmd.length);
-        return Runtime.getRuntime().exec(newCmd, envp, dir);
+        try {
+            return Runtime.getRuntime().exec(newCmd, envp, dir);
+        } catch (IOException x) {
+            // Check and see if we've run out of virtual memory.  This is very ugly
+            // but there's not another apparent way.  XXXXXXXXXX 
+            String msg = x.getMessage();
+            if (msg.contains("Cannot allocate memory")) {
+                logger.error("Virtual memory exhausted in Process.exec()"); 
+                Main.fatalError("MvvmContextImpl.exec", x);
+                // There's no return from fatalError, but we have to keep the compiler happy.
+                return null;
+            } else {
+                throw x;
+            }
+        }
     }
 
     public void shutdown()
@@ -400,6 +421,12 @@ public class MvvmContextImpl extends MvvmContextBase
         eventLogger = EventLoggerFactory.factory().getEventLogger();
         eventLogger.start();
 
+        // Create the tomcat manager *before* the MVVM, so we can
+        // "register" webapps to be started before Tomcat exists.
+        tomcatManager = new TomcatManager(System.getProperty("bunnicula.home"),
+                                          System.getProperty("bunnicula.web.dir"),
+                                          System.getProperty("bunnicula.log.dir"));
+
         // start services:
         adminManager = AdminManagerImpl.adminManager();
         mailSender = MailSenderImpl.mailSender();
@@ -481,7 +508,7 @@ public class MvvmContextImpl extends MvvmContextBase
 
         //Inform the AppServer manager that everything
         //else is started.
-        appServerManager.postInit(this);
+        appServerManager.postInit(getInvoker());
 
     }
 
@@ -492,11 +519,18 @@ public class MvvmContextImpl extends MvvmContextBase
 
         // stop remote services:
         try {
-            httpInvoker.destroy();
+            if (httpInvoker != null)
+                httpInvoker.destroy();
         } catch (Exception exn) {
             logger.warn("could not destroy HttpInvoker", exn);
         }
         httpInvoker = null;
+
+        try {
+            tomcatManager.stopTomcat();
+        } catch (Exception exn) {
+            logger.warn("could not stop tomcat", exn);
+        }
 
         // stop vectoring:
         String argonFake = System.getProperty(ARGON_FAKE_KEY);

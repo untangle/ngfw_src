@@ -58,7 +58,7 @@ public class AppServerManagerImpl
   private AppServerManagerImpl() {
 
     //TODO Clean up stuff ported from "main"
-    m_tomcatManager = ((MvvmContextImpl)MvvmContextFactory.context()).getMain().getTomcatManager();
+    m_tomcatManager = ((MvvmContextImpl)MvvmContextFactory.context()).getTomcatManager();
 
     File f = new File(System.getProperty("bunnicula.conf.dir") + "/mvvm.networking.properties");
     Properties networkingProperties = new Properties();
@@ -122,7 +122,7 @@ public class AppServerManagerImpl
   }
 
 
-  public void postInit(MvvmContextBase mvvmContext) {
+  public void postInit(InvokerBase invokerBase) {
 
     String effectiveHostname = getFQDN();
 
@@ -171,7 +171,9 @@ public class AppServerManagerImpl
     try {
 //      System.out.println("Proxy restart of Tomcat");
 //      logger.info("starting tomcat");
-      m_tomcatManager.startTomcat(mvvmContext, m_defHttpPort, m_defHttpsPort, m_externalHttpsPort);
+        String disableTomcat = System.getProperty( "bunnicula.devel.notomcat" );
+        if ( disableTomcat == null || Boolean.valueOf( disableTomcat ) != true )
+            m_tomcatManager.startTomcat(invokerBase, m_defHttpPort, m_defHttpsPort, m_externalHttpsPort);
     }
     catch(Exception ex) {
       ex.printStackTrace(System.out);
