@@ -1,4 +1,4 @@
-<%@ page language="java" import="com.metavize.mvvm.*, com.metavize.mvvm.toolbox.*, com.metavize.mvvm.client.*" %>
+<%@ page language="java" import="com.metavize.mvvm.*, com.metavize.mvvm.toolbox.*" %>
 
 <%
 response.addHeader("content-type", "application/x-java-jnlp-file");
@@ -18,14 +18,7 @@ int colonIndex = host.indexOf(':');
 if( colonIndex >= 0 )
     host = host.substring(0, colonIndex);
 
-MvvmRemoteContext mvvm = MvvmRemoteContextFactory.factory().systemLogin(0);
-// XXX logins timeout
-//ServletContext sc = getServletContext();
-//MvvmRemoteContext mvvm = (MvvmRemoteContext) sc.getAttribute("mvvm");
-//if (mvvm == null) {
-//    mvvm = MvvmRemoteContextFactory.localLogin();
-//    sc.setAttribute("mvvm", mvvm);
-//}
+MvvmLocalContext mvvm = MvvmContextFactory.context();
 MackageDesc[] mds = mvvm.toolboxManager().installed();
 %>
 
@@ -78,5 +71,3 @@ MackageDesc[] mds = mvvm.toolboxManager().installed();
   <application-desc main-class="com.metavize.gui.util.MLauncher">
   </application-desc>
 </jnlp>
-
-<% MvvmRemoteContextFactory.factory().logout(); %>

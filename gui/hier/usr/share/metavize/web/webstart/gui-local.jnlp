@@ -1,4 +1,4 @@
-<%@ page language="java" import="com.metavize.mvvm.*, com.metavize.mvvm.toolbox.*, com.metavize.mvvm.client.*" %>
+<%@ page language="java" import="com.metavize.mvvm.*, com.metavize.mvvm.toolbox.*" %>
 
 <%
 response.addHeader("content-type", "application/x-java-jnlp-file");
@@ -18,7 +18,7 @@ int colonIndex = host.indexOf(':');
 if( colonIndex >= 0 )
     host = host.substring(0, colonIndex);
 
-MvvmRemoteContext mc = MvvmRemoteContextFactory.factory().systemLogin(0);
+MvvmLocalContext mc = MvvmContextFactory.context();
 MackageDesc[] mds = mc.toolboxManager().installed();
 %>
 
@@ -72,5 +72,3 @@ MackageDesc[] mds = mc.toolboxManager().installed();
     <argument>local</argument>
   </application-desc>
 </jnlp>
-
-<% MvvmRemoteContextFactory.factory().logout(); %>

@@ -1,15 +1,8 @@
-<%@ page language="java" import="com.metavize.mvvm.*, com.metavize.mvvm.client.*" %>
+<%@ page language="java" import="com.metavize.mvvm.*" %>
 
 <%
 
-MvvmRemoteContext mvvm = MvvmRemoteContextFactory.factory().systemLogin(0);
-// XXX logins timeout
-//ServletContext sc = getServletContext();
-//MvvmRemoteContext mvvm = (MvvmRemoteContext) sc.getAttribute("mvvm");
-//if (mvvm == null) {
-//    mvvm = MvvmRemoteContextFactory.localLogin();
-//    sc.setAttribute("mvvm", mvvm);
-//}
+MvvmLocalContext mvvm = MvvmContextFactory.context();
 boolean reportingEnabled = mvvm.reportingManager().isReportingEnabled();
 String host=request.getHeader("host");
 String scheme=request.getScheme();
@@ -185,5 +178,3 @@ if (!( isIndex || isDownload)) isIndex = true;
     <br/>
   </body>
 </html>
-
-<% MvvmRemoteContextFactory.factory().logout(); %>

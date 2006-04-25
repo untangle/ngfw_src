@@ -17,8 +17,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.ServletException;
 
-import com.metavize.mvvm.client.MvvmRemoteContextFactory;
-import com.metavize.mvvm.client.MvvmRemoteContext;
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.security.Tid;
 
@@ -116,7 +116,7 @@ public class QuarantineEnduserServlet
    */
   private void initRemoteRefs() {
     try {
-      MvvmRemoteContext ctx = MvvmRemoteContextFactory.factory().systemLogin(0);
+      MvvmLocalContext ctx = MvvmContextFactory.context();
       Tid tid = ctx.transformManager().transformInstances("mail-casing").get(0);
       TransformContext tc = ctx.transformManager().transformContext(tid);
       m_quarantine =  ((MailTransform) tc.transform()).getQuarantineUserView();

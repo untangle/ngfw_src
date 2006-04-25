@@ -25,8 +25,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.metavize.mvvm.client.MvvmRemoteContext;
-import com.metavize.mvvm.client.MvvmRemoteContextFactory;
+import com.metavize.mvvm.MvvmLocalContext;
+import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.TransformContext;
@@ -89,17 +89,14 @@ class Util
             try {
                 /* XXX Should this be cached?? */
                 IPaddr address = IPaddr.parse( request.getRemoteAddr());
-                MvvmRemoteContext ctx = MvvmRemoteContextFactory.factory().systemLogin( 0 );
+                MvvmLocalContext ctx = MvvmContextFactory.context();
                 Tid tid = ctx.transformManager().transformInstances( "openvpn-transform" ).get( 0 );
                 TransformContext tc = ctx.transformManager().transformContext( tid );
                 commonName = ((VpnTransform)tc.transform()).lookupClientDistributionKey( key, address );
-                MvvmRemoteContextFactory.factory().logout();
             } catch ( Exception e ) {
                 logger.error( "Error connecting to the openvpn transform", e );
                 request.setAttribute( REASON_ATTR, "Error connnecting to the openvpn transform " + e );
                 return null;
-            } finally {
-                MvvmRemoteContextFactory.factory().logout();
             }
 
             if ( null == commonName ) {

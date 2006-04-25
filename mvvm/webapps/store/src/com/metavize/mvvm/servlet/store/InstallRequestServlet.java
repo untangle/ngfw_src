@@ -18,10 +18,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.metavize.mvvm.client.MvvmConnectException;
-import com.metavize.mvvm.client.MvvmRemoteContext;
-import com.metavize.mvvm.client.MvvmRemoteContextFactory;
 import org.apache.log4j.Logger;
+
+import com.metavize.mvvm.MvvmLocalContext;
+import com.metavize.mvvm.MvvmContextFactory;
 
 public class InstallRequestServlet extends HttpServlet
 {
@@ -33,21 +33,8 @@ public class InstallRequestServlet extends HttpServlet
         String mackageName = req.getParameter("mackage");
 
         if (null != mackageName) {
-            MvvmRemoteContextFactory factory = null;
-            try {
-                factory = MvvmRemoteContextFactory.factory();
-                MvvmRemoteContext ctx = factory.systemLogin(0);
-
-                ctx.toolboxManager().requestInstall(mackageName);
-            } catch (MvvmConnectException exn) {
-                throw new ServletException("could not log into mvvm", exn);
-            } catch (FailedLoginException exn) {
-                throw new ServletException("could not log into mvvm", exn);
-            } finally {
-                if (null != factory) {
-                    factory.logout();
-                }
-            }
+            MvvmLocalContext ctx = MvvmContextFactory.context();
+            ctx.toolboxManager().requestInstall(mackageName);
         } else {
             try {
                 resp.sendError(406, "need mackage-name");

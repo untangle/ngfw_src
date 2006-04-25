@@ -1,7 +1,7 @@
-<%@ page language="java" import="com.metavize.mvvm.*, com.metavize.mvvm.client.*, com.metavize.mvvm.security.Tid, com.metavize.mvvm.tran.*, com.metavize.mvvm.tapi.*, com.metavize.mvvm.util.SessionUtil, org.apache.log4j.helpers.AbsoluteTimeDateFormat, java.util.Properties, java.net.URL, java.io.PrintWriter, javax.naming.*" %>
+<%@ page language="java" import="com.metavize.mvvm.*, com.metavize.mvvm.security.Tid, com.metavize.mvvm.tran.*, com.metavize.mvvm.tapi.*, com.metavize.mvvm.util.SessionUtil, org.apache.log4j.helpers.AbsoluteTimeDateFormat, java.util.Properties, java.net.URL, java.io.PrintWriter, javax.naming.*" %>
 
 <%
-MvvmRemoteContext mvvm = MvvmRemoteContextFactory.factory().systemLogin(0);
+MvvmLocalContext mvvm = MvvmContextFactory.context();
 // XXX logins timeout
 //ServletContext sc = getServletContext();
 //MvvmRemoteContext mvvm = (MvvmRemoteContext) sc.getAttribute("mvvm");
@@ -247,5 +247,4 @@ to a new location.</u></p>
 
 <%
     }
-    MvvmRemoteContextFactory.factory().logout();
 %>
