@@ -22,10 +22,6 @@ public abstract class MvvmContextBase
 {
     private Main m_main;
 
-    public final Main getMain() {
-      return m_main;
-    }
-
     protected abstract void init();
     protected abstract void destroy();
     protected abstract void postInit();
@@ -45,10 +41,5 @@ public abstract class MvvmContextBase
     void doDestroy()
     {
         destroy();
-    }
-
-    InvokerBase getInvokerBase()
-    {
-        return getInvoker();
     }
 }

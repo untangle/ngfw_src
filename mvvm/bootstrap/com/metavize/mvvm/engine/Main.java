@@ -47,8 +47,6 @@ public class Main
     private String bunniculaWeb;
     private String bunniculaTmp;
 
-    private TomcatManager tomcatManager;
-
     // constructor ------------------------------------------------------------
 
     private Main() { }
@@ -104,11 +102,6 @@ public class Main
         logger.info("setting up properties");
         setProperties();
         logger.info("starting mvvm");
-        // Create the tomcat manager *before* the MVVM, so we can
-        // "register" webapps to be started before Tomcat exists.
-        tomcatManager = new TomcatManager(bunniculaHome,
-          bunniculaWeb,
-          bunniculaLog);
         try {
             startMvvm();
         } catch (Throwable exn) {
@@ -122,8 +115,6 @@ public class Main
 
     private void destroy()
     {
-        tomcatManager.stopTomcat();
-
         mvvmContext.doDestroy();
         try {
             DataSourceFactory.factory().destroy();
@@ -223,11 +214,6 @@ public class Main
             // restored classloader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
     }
-
-    public TomcatManager getTomcatManager() {
-      return tomcatManager;
-    }
-
 }
 
 
