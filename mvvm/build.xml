@@ -133,7 +133,6 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
            debug="true"
            includeAntRuntime="false">
 
-      <classpath refid="tomcat.thirdparty.classpath"/>
       <classpath refid="mvvm.thirdparty.classpath"/>
 
       <src path="${src.bootstrap}"/>
@@ -179,6 +178,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <classpath refid="jnetcap.classpath"/>
       <classpath refid="jvector.classpath"/>
       <classpath refid="mvvm.thirdparty.classpath"/>
+      <classpath refid="tomcat.thirdparty.classpath"/>
       <classpath path="${build.jar}/bootstrap.jar"/>
 
       <src path="${src.main}"/>
@@ -419,6 +419,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <classpath refid="jnetcap.classpath"/>
       <classpath refid="jvector.classpath"/>
       <classpath refid="mvvm.thirdparty.classpath"/>
+      <classpath refid="tomcat.thirdparty.classpath"/>
       <classpath path="${build.jar}/bootstrap.jar"/>
 
       <src path="${src.main}"/>
@@ -541,7 +542,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
 
   <property name="build.servlets" value="${build.root}/servlets"/>
 
-  <target name="compile.servlets" depends="jar.bootstrap, jar.mvvm-client">
+  <target name="compile.servlets" depends="jar.mvvm">
     <mkdir dir="${build.servlets}"/>
 
     <exec executable="${buildtool.base}/dependset.sh">
@@ -566,7 +567,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <classpath refid="tomcat.thirdparty.classpath"/>
       <classpath refid="log4j.classpath"/>
       <classpath path="${build.jar}/bootstrap.jar"/>
-      <classpath path="${build.jar}/mvvm-client.jar"/>
+      <classpath refid="mvvm.classpath"/>
 
       <src path="${src.main}"/>
       <src path="${build.gensrc}"/>
@@ -588,19 +589,16 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
   <target name="install.servlets" depends="jar.servlets">
     <copy todir="${dist.mvvm.web}/http-invoker/WEB-INF/lib">
       <fileset dir="${build.jar}">
-        <include name="mvvm-client.jar"/>
         <include name="servlets.jar"/>
       </fileset>
     </copy>
     <copy todir="${dist.mvvm.web}/session-dumper/WEB-INF/lib">
       <fileset dir="${build.jar}">
-        <include name="mvvm-client.jar"/>
         <include name="servlets.jar"/>
       </fileset>
     </copy>
     <copy todir="${dist.mvvm.web}/reports/WEB-INF/lib">
       <fileset dir="${build.jar}">
-        <include name="mvvm-client.jar"/>
         <include name="servlets.jar"/>
       </fileset>
     </copy>
@@ -614,9 +612,6 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
 
     <mkdir dir="${dist.mvvm.web}/store/WEB-INF/lib"/>
     <copy todir="${dist.mvvm.web}/store/WEB-INF/lib">
-      <fileset dir="${build.jar}">
-        <include name="mvvm-client.jar"/>
-      </fileset>
       <fileset refid="httpclient.jarset"/>
       <fileset refid="commons-codec.jarset"/>
     </copy>
@@ -632,7 +627,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
 
       <src path="webapps/store/src"/>
 
-      <classpath refid="mvvm-client.classpath"/>
+      <classpath refid="mvvm.classpath"/>
       <classpath refid="mvvm.thirdparty.classpath"/>
       <classpath refid="tomcat.thirdparty.classpath"/>
       <classpath refid="httpclient.classpath"/>
@@ -726,7 +721,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
 
   <!-- hier targets -->
 
-  <target name="install.hier">
+  <target name="install.hier" depends="jar.mvvm-client">
     <mkdir dir="${dist.log}"/>
     <mkdir dir="${dist.var.run}"/>
     <mkdir dir="${dist.mvvm.data}"/>
@@ -765,10 +760,6 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
     </exec>
 
     <!-- This stuff was moved here from gui/build.xml, since it belongs here. -->
-    <copy todir="${dist.mvvm.webstart}/WEB-INF/lib">
-      <fileset refid="mvvm-client.jarset"/>
-    </copy>
-
     <copy todir="${dist.mvvm.webstart}" flatten="true">
       <fileset refid="mvvm-client.jarset"/>
     </copy>
