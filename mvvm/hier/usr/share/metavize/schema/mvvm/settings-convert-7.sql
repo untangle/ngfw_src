@@ -15,8 +15,11 @@ CREATE TABLE settings.portal_user (
         id               INT8 NOT NULL,
         uid              TEXT,
         live             BOOL,
+        description      TEXT,
         group_id         INT8,
         home_settings_id INT8,
+        settings_id      INT8,
+        position         INT4,
         PRIMARY KEY      (id));
 
 -- com.metavize.mvvm.portal.PortalUser.bookmarks -- 4.0
@@ -30,7 +33,10 @@ CREATE TABLE settings.portal_user_bm_mt (
 CREATE TABLE settings.portal_group (
         id               INT8 NOT NULL,
         name             TEXT,
+        description      TEXT,
         home_settings_id INT8,
+        settings_id      INT8,
+        position         INT4,
         PRIMARY KEY      (id));
 
 -- com.metavize.mvvm.portal.PortalGroup.bookmarks -- 4.0
@@ -43,7 +49,7 @@ CREATE TABLE settings.portal_group_bm_mt (
 -- com.metavize.mvvm.portal.PortalGlobal -- 4.0
 CREATE TABLE settings.portal_global (
         id               INT8 NOT NULL,
-        live             BOOL,
+        auto_create_users BOOL,
         login_page_title TEXT,
         login_page_text  TEXT,
         home_settings_id INT8,
@@ -73,3 +79,11 @@ CREATE TABLE settings.portal_settings (
     id int8 NOT NULL,
     global_settings_id INT8,
     PRIMARY KEY (id));
+
+ALTER TABLE settings.portal_group
+    ADD CONSTRAINT fk_portal_group_parent
+    FOREIGN KEY (settings_id) REFERENCES settings.portal_global;
+
+ALTER TABLE settings.portal_user
+    ADD CONSTRAINT fk_portal_user_parent
+    FOREIGN KEY (settings_id) REFERENCES settings.portal_global;
