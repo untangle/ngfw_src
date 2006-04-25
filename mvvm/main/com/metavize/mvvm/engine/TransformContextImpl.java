@@ -278,17 +278,19 @@ class TransformContextImpl implements TransformContext
 
     void unload()
     {
-        Thread ct = Thread.currentThread();
-        ClassLoader oldCl = ct.getContextClassLoader();
-        // Entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        ct.setContextClassLoader(classLoader);
-        try {
-            transformManager.registerThreadContext(this);
-            transform.unload();
-        } finally {
-            transformManager.deregisterThreadContext();
-            Thread.currentThread().setContextClassLoader(oldCl);
-            // Left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        if (transform != null) {
+            Thread ct = Thread.currentThread();
+            ClassLoader oldCl = ct.getContextClassLoader();
+            // Entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            ct.setContextClassLoader(classLoader);
+            try {
+                transformManager.registerThreadContext(this);
+                transform.unload();
+            } finally {
+                transformManager.deregisterThreadContext();
+                Thread.currentThread().setContextClassLoader(oldCl);
+                // Left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            }
         }
     }
 

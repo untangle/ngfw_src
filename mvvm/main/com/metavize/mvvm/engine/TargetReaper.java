@@ -66,8 +66,10 @@ class TargetReaper implements Runnable
     void destroy()
     {
         Thread t = thread;
-        thread = null;
-        t.interrupt();
+        if (t != null) {
+            thread = null;
+            t.interrupt();
+        }
     }
 
     WeakReference makeReference(Object target, Runnable runnable)
