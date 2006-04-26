@@ -138,8 +138,7 @@ class UrlRewriter
 
     String getScriptTag()
     {
-        return "<script type='text/javascript' src='" + contextBase
-            + "/mvrepl.js'/>";
+        return "<script type='text/javascript' src='" + contextBase + "mvrepl.js'/>";
     }
 
     void filterCss(Reader r, Writer w)

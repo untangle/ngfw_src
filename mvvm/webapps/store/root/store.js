@@ -6,6 +6,8 @@ response.setHeader("Cache-Control","no-cache");
 response.setHeader("Pragma","no-cache");
 response.setDateHeader("Expires", 0);
 %>
+// Copyright (c) 2006 Metavize Inc.
+// All rights reserved.
 
 <store:define-globals/>
 

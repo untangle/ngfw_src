@@ -74,6 +74,7 @@ class RewriteVisitor extends NodeVisitor
 
         if (tagName.equalsIgnoreCase("head")) {
             seenBody = true;
+            writer.println();
             writer.println(rewriter.getScriptTag());
         }
     }
