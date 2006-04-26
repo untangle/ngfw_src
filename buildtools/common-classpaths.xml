@@ -280,6 +280,7 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
 
   <fileset id="htmlparser.jarset" dir="${HTMLPARSER_HOME}/lib">
     <include name="htmllexer.jar"/>
+    <include name="htmlparser.jar"/>
   </fileset>
 
   <path id="htmlparser.classpath">

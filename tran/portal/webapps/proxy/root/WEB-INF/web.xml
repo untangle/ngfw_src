@@ -28,7 +28,12 @@
 
   <servlet-mapping>
     <servlet-name>WebProxy</servlet-name>
-    <url-pattern>/*</url-pattern>
+    <url-pattern>/http/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>WebProxy</servlet-name>
+    <url-pattern>/https/*</url-pattern>
   </servlet-mapping>
 
 </web-app>

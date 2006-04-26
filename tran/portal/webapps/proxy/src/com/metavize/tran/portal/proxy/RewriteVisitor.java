@@ -28,6 +28,8 @@ class RewriteVisitor extends NodeVisitor
 
     private final Logger logger = Logger.getLogger(getClass());
 
+    private boolean seenBody = false;
+
     // constructs -------------------------------------------------------------
 
     RewriteVisitor(PrintWriter writer, UrlRewriter rewriter)
@@ -51,6 +53,14 @@ class RewriteVisitor extends NodeVisitor
     @Override
     public void visitTag(Tag tag)
     {
+        String tagName = tag.getTagName();
+
+        if (!seenBody && tagName.equalsIgnoreCase("body")) {
+            writer.println("<head>");
+            writer.println(rewriter.getScriptTag());
+            writer.println("</head>");
+        }
+
         for (Attribute a : (List<Attribute>)tag.getAttributesEx()) {
             String name = a.getName();
             if (null != name
@@ -61,6 +71,11 @@ class RewriteVisitor extends NodeVisitor
         }
 
         writer.print(tag.toHtml());
+
+        if (tagName.equalsIgnoreCase("head")) {
+            seenBody = true;
+            writer.println(rewriter.getScriptTag());
+        }
     }
 
     @Override

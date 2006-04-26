@@ -69,7 +69,7 @@ public class WebProxy extends HttpServlet
         throws ServletException
     {
         try {
-            UrlRewriter rewriter = new UrlRewriter(req);
+            UrlRewriter rewriter = UrlRewriter.getRewriter(req);
             HttpMethod method = new GetMethod(rewriter.getRemoteUrl());
             doIt(req, resp, method, rewriter);
         } catch (URIException exn) {
@@ -82,7 +82,7 @@ public class WebProxy extends HttpServlet
         throws ServletException
     {
         try {
-            UrlRewriter rewriter = new UrlRewriter(req);
+            UrlRewriter rewriter = UrlRewriter.getRewriter(req);
             RawPostMethod method = new RawPostMethod(rewriter.getRemoteUrl());
 
             method.setBodyStream(req.getContentType(), req.getInputStream(),
@@ -205,6 +205,11 @@ public class WebProxy extends HttpServlet
             Reader r = new InputStreamReader(is);
             Writer w = resp.getWriter();
             rewriter.filterCss(r, w);
+        } else if (contentType.startsWith("text/javascript")
+                   || contentType.startsWith("application/x-javascript")) {
+            Reader r = new InputStreamReader(is);
+            Writer w = resp.getWriter();
+            rewriter.filterJavaScript(r, w);
         } else {
             OutputStream os = resp.getOutputStream();
             copyStream(is, os);
