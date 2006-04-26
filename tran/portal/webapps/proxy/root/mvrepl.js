@@ -3,5 +3,6 @@
 
 function mv_repl(str)
 {
+   alert("STR: " + str);
    return str;
 }

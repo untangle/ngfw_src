@@ -11,7 +11,12 @@
 
 package com.metavize.tran.portal.proxy;
 
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -63,10 +68,39 @@ class RewriteVisitor extends NodeVisitor
 
         for (Attribute a : (List<Attribute>)tag.getAttributesEx()) {
             String name = a.getName();
-            if (null != name
-                && (name.equalsIgnoreCase("href")
-                    || name.equalsIgnoreCase("src"))) {
-                a.setValue(rewriter.rewriteUrl(a.getValue()));
+            if (null != name) {
+                name = name.intern();
+                if (name.equalsIgnoreCase("href")
+                    || name.equalsIgnoreCase("src")) {
+                    a.setValue(rewriter.rewriteUrl(a.getValue()));
+                } else if (name.equalsIgnoreCase("onload")
+                           || name.equalsIgnoreCase("onunload")
+                           || name.equalsIgnoreCase("onclick")
+                           || name.equalsIgnoreCase("ondblclick")
+                           || name.equalsIgnoreCase("onmousedown")
+                           || name.equalsIgnoreCase("onmouseup")
+                           || name.equalsIgnoreCase("onmouseover")
+                           || name.equalsIgnoreCase("onmousemove")
+                           || name.equalsIgnoreCase("onmouseout")
+                           || name.equalsIgnoreCase("onfocus")
+                           || name.equalsIgnoreCase("onblur")
+                           || name.equalsIgnoreCase("onkeypress")
+                           || name.equalsIgnoreCase("onkeydown")
+                           || name.equalsIgnoreCase("onkeyup")
+                           || name.equalsIgnoreCase("onsubmit")
+                           || name.equalsIgnoreCase("onreset")
+                           || name.equalsIgnoreCase("onselect")
+                           || name.equalsIgnoreCase("onchange")) {
+                    String s = a.getValue();
+                    Reader r = new StringReader(s);
+                    Writer w = new StringWriter(s.length());
+                    try {
+                        rewriter.filterJavaScript(r, w);
+                    } catch (IOException exn) {
+                        logger.error("this won't happen", exn);
+                    }
+                    a.setValue(w.toString());
+                }
             }
         }
 
