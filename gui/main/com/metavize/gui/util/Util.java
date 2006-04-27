@@ -482,12 +482,12 @@ public class Util {
     }
 
     public synchronized static void handleExceptionWithRestart(String output, Exception e) throws Exception {
-	System.err.println(output);
-        e.printStackTrace();
         Throwable throwableRef = e;
 
         while( throwableRef != null){
             if( throwableRef instanceof InvocationConnectionException ){
+		System.err.println(output);
+		e.printStackTrace();
 		doShutdown();
                 mLoginJFrame.resetLogin("Server communication failure.  Re-login.");
                 mLoginJFrame.reshowLogin();
@@ -495,6 +495,8 @@ public class Util {
                 return;
             }
             else if( throwableRef instanceof InvocationTargetExpiredException ){
+		System.err.println(output);
+		e.printStackTrace();
 		doShutdown();
                 mLoginJFrame.resetLogin("Server synchronization failure.  Re-login.");
                 mLoginJFrame.reshowLogin();
@@ -502,6 +504,8 @@ public class Util {
                 return;
             }
             else if( throwableRef instanceof com.metavize.mvvm.client.LoginExpiredException ){
+		System.err.println(output);
+		e.printStackTrace();
 		doShutdown();
                 mLoginJFrame.resetLogin("Login expired.  Re-login.");
                 mLoginJFrame.reshowLogin();
@@ -511,6 +515,8 @@ public class Util {
             else if(    (throwableRef instanceof ConnectException)
                         || (throwableRef instanceof SocketException)
                         || (throwableRef instanceof SocketTimeoutException) ){
+		System.err.println(output);
+		e.printStackTrace();
                 doShutdown();
                 mLoginJFrame.resetLogin("Server connection failure.  Re-login.");
                 mLoginJFrame.reshowLogin();
@@ -529,7 +535,6 @@ public class Util {
             }
             throwableRef = throwableRef.getCause();
         }
-
         throw e;
     }
 
