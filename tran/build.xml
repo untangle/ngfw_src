@@ -192,6 +192,9 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     <if> <equals arg1="${tran.name}" arg2="reporting"/> <then>
     <patternset id="extra.sources" includes="com/metavize/tran/reporting/ReportingTransform.java"/>
     </then> </if>
+    <if> <equals arg1="${tran.name}" arg2="portal"/> <then>
+    <patternset id="extra.sources" includes="com/metavize/tran/portal/PortalTransform.java"/>
+    </then> </if>
     <if> <equals arg1="${tran.name}" arg2="http"/> <then>
     <patternset id="extra.sources" includes="com/metavize/tran/http/HttpTransform.java"/>
     </then> </if>
@@ -457,7 +460,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     <mkdir  dir="${dist.mvvm.web}/${tran.name}/WEB-INF/lib"/>
     <copy toDir="${dist.mvvm.web}/${tran.name}/WEB-INF/lib">
       <fileset refid="log4j.jarset"/>
-      <fileset refid="mvvm-client.jarset"/>
     </copy>
     <copy file="${build.jar}/openvpn-web.jar" todir="${dist.mvvm.web}/${tran.name}/WEB-INF/lib"/>
   </target>
@@ -468,7 +470,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
     <copy todir="${dist.mvvm.web}/browser/WEB-INF/lib">
       <fileset refid="log4j.jarset"/>
-      <fileset refid="mvvm-client.jarset"/>
       <fileset refid="jcifs.jarset"/>
       <fileset refid="commons-fileupload.jarset"/>
       <fileset refid="commons-io.jarset"/>
@@ -566,6 +567,12 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="install.reporting"/>
   <target name="install.protofilter"/>
   <target name="install.sigma"/>
+
+
+  <target name="install.puresight">
+    <copy file="${build.jar}/puresight-export.jar" todir="${dist.mvvm.toolbox}"/>
+  </target>
+
 
 
   <!--              -->
@@ -683,7 +690,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
       <classpath path="${build.jar}/mail-export.jar"/>
       <classpath refid="log4j.classpath"/>
-      <classpath refid="mvvm-client.classpath"/>
       <classpath refid="mvvm.classpath"/>
       <classpath refid="tomcat.classpath"/>
     </javac>
@@ -716,7 +722,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
       <classpath path="${build.jar}/mail-export.jar"/>
       <classpath refid="log4j.classpath"/>
-      <classpath refid="mvvm-client.classpath"/>
       <classpath refid="mvvm.classpath"/>
       <classpath refid="tomcat.classpath"/>
     </javac>
@@ -741,11 +746,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
     <!-- Copy-over required libraries -->
     <mkdir dir="${build.webapps}/quarantine/WEB-INF/lib"/>
-    <copy toDir="${build.webapps}/quarantine/WEB-INF/lib">
-      <fileset refid="log4j.jarset"/>
-      <fileset refid="mvvm-client.jarset"/>
-      <fileset refid="mvvm.jarset"/>
-    </copy>
     <copy toDir="${build.webapps}/quarantine/WEB-INF/lib" file="${build.jar}/mail-export.jar"/>
 
   </target>
@@ -819,6 +819,14 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       </fileset>
       <fileset dir="${build.root}/clam">
         <include name="com/metavize/tran/clam/ClamScannerLauncher.class"/>
+      </fileset>
+    </jar>
+  </target>
+
+  <target name="jar.puresight">
+    <jar destfile="${build.jar}/puresight-export.jar">
+      <fileset dir="${build.root}/puresight">
+        <include name="com/metavize/tran/puresight/PureSDK.class"/>
       </fileset>
     </jar>
   </target>
@@ -1012,6 +1020,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   <target name="compile.spamassassin"/>
   <target name="compile.clamphish"/>
   <target name="compile.httpblocker"/>
+  <target name="compile.puresight"/>
   <target name="compile.airgap"/>
   <target name="compile.reporting"/>
   <target name="compile.protofilter"/>
