@@ -18,7 +18,7 @@ import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tran.TransformException;
 import org.apache.log4j.Logger;
 
-public class PortalImpl extends AbstractTransform implements Portal
+public class PortalImpl extends AbstractTransform implements PortalTransform
 {
     private final Logger logger = Logger.getLogger(PortalImpl.class);
 

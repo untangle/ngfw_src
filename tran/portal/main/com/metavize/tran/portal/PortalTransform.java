@@ -13,7 +13,7 @@ package com.metavize.tran.portal;
 
 import com.metavize.mvvm.portal.*;
 
-public interface Portal
+public interface PortalTransform
 {
     Application[] getApplications();
 
