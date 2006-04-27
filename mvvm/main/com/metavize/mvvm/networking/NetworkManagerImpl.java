@@ -11,6 +11,7 @@
 
 package com.metavize.mvvm.networking;
 
+import java.net.InetAddress;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -1078,9 +1079,20 @@ public class NetworkManagerImpl implements NetworkManager
             NetworkSpaceInternal primary = networkSpaceList.get( 0 );
             IPMatcherFactory ipmf = IPMatcherFactory.getInstance();
 
-            IPaddr address = primary.getPrimaryAddress().getNetwork();
-            logger.debug( "Setting local address to: " + address );
-            ipmf.setLocalAddresses( address.getAddr());
+            List<IPNetwork> networkList = primary.getNetworkList();
+            
+            InetAddress addressArray[] = new InetAddress[networkList.size()];
+
+            /* Add all of the addresses to the address array */
+            int c = 0;
+            for ( IPNetwork network : networkList ) addressArray[c++] = network.getNetwork().getAddr();
+            
+            InetAddress primaryAddress = primary.getPrimaryAddress().getNetwork().getAddr();
+
+            logger.debug( "Setting local address: " + primaryAddress );
+            logger.debug( "Setting public address array to: " + Arrays.toString( addressArray ));
+                        
+            ipmf.setLocalAddresses( primaryAddress, addressArray );
         }
     }
 

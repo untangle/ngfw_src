@@ -176,6 +176,34 @@ class RedirectMatcher extends TrafficIntfMatcher {
         return this.isLoggingEnabled;
     }
 
+    static RedirectMatcher makeLocalRedirect( RedirectRule rule )
+    {
+        return makeLocalRedirect( rule, 0 );
+    }
+
+    static RedirectMatcher makeLocalRedirect( RedirectRule rule, int ruleIndex )
+    {
+        IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
+        IPMatcherFactory ipmf = IPMatcherFactory.getInstance();
+        PortMatcherFactory pmf = PortMatcherFactory.getInstance();
+        
+        IntfMatcher intfAllMatcher = IntfMatcherFactory.getInstance().getAllMatcher();
+        IPMatcher   ipAllMatcher   = IPMatcherFactory.getInstance().getAllMatcher();
+        PortMatcher portAllMatcher = PortMatcherFactory.getInstance().getAllMatcher();
+
+        InetAddress redirectAddress = null;
+        if ( rule.getRedirectAddress() != null ) redirectAddress = rule.getRedirectAddress().getAddr();
+
+        return 
+            new RedirectMatcher( rule.isLive(), rule.getLog(), rule.getProtocol(),
+                                 intfAllMatcher,       intfAllMatcher,
+                                 ipAllMatcher,         rule.getDstAddress(),
+                                 rule.getSrcPort(),    rule.getDstPort(),
+                                 rule.isDstRedirect(),
+                                 redirectAddress,
+                                 rule.getRedirectPort(), ruleIndex );
+    }
+
     static
     {
         IntfMatcherFactory imf = IntfMatcherFactory.getInstance();

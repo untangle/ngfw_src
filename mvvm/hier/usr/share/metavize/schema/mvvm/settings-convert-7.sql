@@ -87,3 +87,8 @@ ALTER TABLE settings.portal_group
 ALTER TABLE settings.portal_user
     ADD CONSTRAINT fk_portal_user_parent
     FOREIGN KEY (settings_id) REFERENCES settings.portal_global;
+
+-- com.metavize.mvvm.networking.RedirectRule
+-- Need to insert a column for is_local_redirect
+ALTER TABLE settings.mvvm_redirect_rule ADD COLUMN is_local_redirect BOOL DEFAULT FALSE;
+UPDATE settings.mvvm_redirect_rule SET is_local_redirect = false;

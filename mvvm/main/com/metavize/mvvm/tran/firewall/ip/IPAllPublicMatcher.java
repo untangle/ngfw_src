@@ -19,10 +19,10 @@ import com.metavize.mvvm.tran.ParseException;
 import com.metavize.mvvm.tran.firewall.Parser;
 import com.metavize.mvvm.tran.firewall.ParsingConstants;
 
-public final class IPLocalMatcher extends IPDBMatcher
+public final class IPAllPublicMatcher extends IPDBMatcher
 {
-    private static final IPLocalMatcher INSTANCE = new IPLocalMatcher();
-    private static final String MARKER_LOCAL[] = { "local", "edgeguard" };
+    private static final IPAllPublicMatcher INSTANCE = new IPAllPublicMatcher();
+    private static final String MARKER_ALL_PUBLIC[] = { "all public" };
     
     private static IPDBMatcher matcher = IPSimpleMatcher.getNilMatcher();
 
@@ -38,22 +38,20 @@ public final class IPLocalMatcher extends IPDBMatcher
 
     public String toDatabaseString()
     {
-        /* This is kind of harsh because edgeguard would always get converted to local, but
-         * it isn't too bad */
-        return MARKER_LOCAL[0];
+        return MARKER_ALL_PUBLIC[0];
     }
 
     /* Set the addresses of the outside interface */
-    void setAddress( InetAddress externalAddress )
+    void setAddresses( InetAddress ... externalAddressArray )
     {
-        if ( externalAddress == null ) {
+        if (( externalAddressArray == null ) || ( externalAddressArray.length == 0 )) {
             matcher = IPSimpleMatcher.getNilMatcher();
         } else {
-            matcher = IPSingleMatcher.makeInstance( externalAddress );
+            matcher = IPSetMatcher.makeInstance( externalAddressArray );
         }
     }
 
-    public static IPLocalMatcher getInstance()
+    public static IPAllPublicMatcher getInstance()
     {
         return INSTANCE;
     }
@@ -62,12 +60,12 @@ public final class IPLocalMatcher extends IPDBMatcher
     {
         public int priority()
         {
-            return 1;
+            return 2;
         }
         
         public boolean isParseable( String value )
         {
-            for ( String marker : MARKER_LOCAL ) {
+            for ( String marker : MARKER_ALL_PUBLIC ) {
                 if ( marker.equalsIgnoreCase( value )) return true;
             }
             
@@ -77,7 +75,7 @@ public final class IPLocalMatcher extends IPDBMatcher
         public IPDBMatcher parse( String value ) throws ParseException
         {
             if ( !isParseable( value )) {
-                throw new ParseException( "Invalid ip local matcher '" + value + "'" );
+                throw new ParseException( "Invalid ip all public matcher '" + value + "'" );
             }
             
             /* If it is parseable, then it is ready to go */

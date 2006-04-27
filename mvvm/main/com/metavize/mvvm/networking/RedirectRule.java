@@ -45,6 +45,10 @@ public class RedirectRule extends TrafficIntfRule
     
     private boolean isDstRedirect;
 
+    /* A local redirect is special case where many of the parameters
+     * are fixed to reasonable defaults for virtual servers */
+    private boolean isLocalRedirect;
+
     private int redirectPort;
     private IPaddr redirectAddress;
 
@@ -67,6 +71,7 @@ public class RedirectRule extends TrafficIntfRule
         this.isDstRedirect   = isDstRedirect;
         this.redirectAddress = redirectAddress;
         this.redirectPort    = redirectPort;
+        this.isLocalRedirect = false;
     }
 
     // accessors --------------------------------------------------------------
@@ -90,7 +95,7 @@ public class RedirectRule extends TrafficIntfRule
     /**
      * Is this a destination redirect or a source redirect
      *
-     * @return If this is a destinatino redirect.
+     * @return If this is a destination redirect.
      * @hibernate.property
      * column="is_dst_redirect"
      */
@@ -102,6 +107,23 @@ public class RedirectRule extends TrafficIntfRule
     public void setDstRedirect( boolean isDstRedirect )
     {
         this.isDstRedirect = isDstRedirect;
+    }
+
+    /**
+     * Is this is a local redirect.
+     *
+     * @return If this is a local redirect.
+     * @hibernate.property
+     * column="is_local_redirect"
+     */
+    public boolean isLocalRedirect()
+    {
+        return isLocalRedirect;
+    }
+
+    public void setLocalRedirect( boolean newValue )
+    {
+        this.isLocalRedirect = newValue;
     }
 
     /**

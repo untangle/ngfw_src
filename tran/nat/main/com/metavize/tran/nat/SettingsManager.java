@@ -52,6 +52,7 @@ import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.ValidateException;
 
 import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
+import com.metavize.mvvm.tran.firewall.ip.IPDBMatcher;
 import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
 import com.metavize.mvvm.tran.firewall.intf.IntfMatcher;
 import com.metavize.mvvm.tran.firewall.intf.IntfMatcherFactory;
@@ -283,27 +284,36 @@ class SettingsManager
 
     /* This removes the external interface, since it cannot be modified */
     NatAdvancedSettings toAdvancedSettings( NetworkSpacesSettings network,
+                                            NetworkSpacesInternalSettings networkInternal,
                                             ServicesInternalSettings services )
     {
         network.getNetworkSpaceList().get( 0 ).setIsPrimary( true );
         List<Interface> interfaceList = network.getInterfaceList();
-        
         
         for ( Iterator<Interface> iter = interfaceList.iterator() ; iter.hasNext() ; ) {
             Interface intf = iter.next();
             if ( intf.getArgonIntf() == IntfConstants.EXTERNAL_INTF ) iter.remove();
         }
 
-        return new NatAdvancedSettingsImpl( network, services.toSettings());
+        NetworkSpaceInternal primarySpace = networkInternal.getNetworkSpaceList().get( 0 );
+
+        List<IPDBMatcher> localMatcherList = getLocalMatcherList( primarySpace );
+
+        return new NatAdvancedSettingsImpl( network, services.toSettings(), localMatcherList );
     }
 
     NatBasicSettings toBasicSettings( Tid tid,
                                       NetworkSpacesInternalSettings networkSettings,
                                       ServicesInternalSettings servicesSettings )
-    {
-        NatBasicSettings natSettings = new NatSettingsImpl( tid, SetupState.BASIC );
-                
+    {                
         List<NetworkSpaceInternal> networkSpaceList = networkSettings.getNetworkSpaceList();
+
+        NetworkSpaceInternal primarySpace =
+            ( networkSpaceList.size() > 0 ) ? networkSpaceList.get( 0 ) : null;
+
+        List<IPDBMatcher> localMatcherList = getLocalMatcherList( primarySpace );
+        
+        NatBasicSettings natSettings = new NatSettingsImpl( tid, SetupState.BASIC, localMatcherList );
         
         /* Get the network space list in order to determine how many spaces there are */
         if ( networkSpaceList.size() == 1 ) {
@@ -313,14 +323,14 @@ class SettingsManager
             /* Nat is disabled */
             natSettings.setNatEnabled( false );
             natSettings.setNatInternalAddress( NatUtil.DEFAULT_NAT_ADDRESS );
-            natSettings.setNatInternalSubnet( NatUtil.DEFAULT_NAT_NETMASK );                
+            natSettings.setNatInternalSubnet( NatUtil.DEFAULT_NAT_NETMASK );
         } else if ( networkSpaceList.size() > 1 ) {
             NetworkSpaceInternal networkSpace = networkSpaceList.get( 1 );
             
             natSettings.setNatEnabled( networkSpace.getIsEnabled());
             IPNetwork primary = networkSpace.getPrimaryAddress();
             natSettings.setNatInternalAddress( primary.getNetwork());
-            natSettings.setNatInternalSubnet( primary.getNetmask());                
+            natSettings.setNatInternalSubnet( primary.getNetmask());
         } else {
             logger.error( "No network spaces, returning default settings" );
             natSettings = getDefaultSettings( tid );
@@ -424,11 +434,38 @@ class SettingsManager
         }
     }
 
+    private List<IPDBMatcher> getLocalMatcherList( NetworkSpaceInternal primary )
+    {
+        List<IPDBMatcher> list = new LinkedList<IPDBMatcher>();
+
+        IPMatcherFactory ipmf = IPMatcherFactory.getInstance();
+        
+        list.addAll( NatUtil.getInstance().getEmptyLocalMatcherList());
+        
+        /* If the primary space is not null, add a matcher for each alias */
+        if ( primary != null ) {
+            IPNetwork primaryNetwork = primary.getPrimaryAddress();
+            
+            for ( IPNetwork network : primary.getNetworkList()) {
+                /* Don't add the primary network to the list, it is covered by local */
+                if ( primaryNetwork != null && primaryNetwork.equals( network )) continue;
+
+                /* Only add unicast address */
+                if ( !network.isUnicast()) continue;
+
+                list.add( ipmf.makeSingleMatcher( network.getNetwork()));
+            }
+        }
+        
+        return list;
+    }
+
     NatBasicSettings getDefaultSettings( Tid tid )
     {
         logger.info( "Using default settings" );
 
-        NatSettingsImpl settings = new NatSettingsImpl( tid, SetupState.BASIC );
+        NatSettingsImpl settings = new NatSettingsImpl( tid, SetupState.BASIC, 
+                                                        NatUtil.getInstance().getEmptyLocalMatcherList());
 
         List<RedirectRule> redirectList = new LinkedList<RedirectRule>();
 

@@ -129,7 +129,9 @@ public class NatImpl extends AbstractTransform implements Nat
             nm.updateLeases( common );
             return common;
         } else if ( state.equals( SetupState.ADVANCED )) {
-            NatCommonSettings common = settingsManager.toAdvancedSettings( network, servicesInternal );
+            NatCommonSettings common = 
+                settingsManager.toAdvancedSettings( network, networkInternal, servicesInternal );
+
             nm.updateLeases( common );
             return common;
         }

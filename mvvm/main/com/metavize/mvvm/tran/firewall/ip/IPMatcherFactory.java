@@ -26,9 +26,9 @@ public class IPMatcherFactory
 
     private IPMatcherFactory()
     {
-        this.factory = new ParsingFactory<IPDBMatcher>( "intf matcher" );
-        factory.registerParsers( IPSimpleMatcher.PARSER, IPLocalMatcher.PARSER, IPSingleMatcher.PARSER,
-                                 IPSetMatcher.PARSER, IPRangeMatcher.PARSER,
+        this.factory = new ParsingFactory<IPDBMatcher>( "ip matcher" );
+        factory.registerParsers( IPSimpleMatcher.PARSER, IPLocalMatcher.PARSER, IPAllPublicMatcher.PARSER,
+                                 IPSingleMatcher.PARSER, IPSetMatcher.PARSER,   IPRangeMatcher.PARSER,
                                  IPSubnetMatcher.PARSER );
     }
 
@@ -48,10 +48,34 @@ public class IPMatcherFactory
     {
         return IPLocalMatcher.getInstance();
     }
-    
-    public final void setLocalAddresses( InetAddress ... externalAddressArray )
+
+    public final IPDBMatcher getAllPublicMatcher()
     {
-        IPLocalMatcher.getInstance().setAddresses( externalAddressArray );
+        return IPAllPublicMatcher.getInstance();
+    }
+    
+    public final void setLocalAddresses( InetAddress primaryAddress, InetAddress ... externalAddressArray )
+    {
+        if (( externalAddressArray == null ) || ( externalAddressArray.length == 0 )) {
+            IPLocalMatcher.getInstance().setAddress( primaryAddress );
+            IPAllPublicMatcher.getInstance().setAddresses( primaryAddress );
+        } else {
+            /* Add the primary address, it may not be in the external address array since,
+             * it could be assigned by DHCP(it doesn't matter if it is in there twice, as this
+             * is a set) */
+            InetAddress addressArray[] = externalAddressArray;
+                
+            if ( primaryAddress != null ) {
+                addressArray = new InetAddress[externalAddressArray.length + 1];
+                addressArray[0] = primaryAddress;
+                for ( int c = 0 ; c < externalAddressArray.length ; c++ ) {
+                    addressArray[c+1] = externalAddressArray[c];
+                }
+            }
+            
+            IPLocalMatcher.getInstance().setAddress( primaryAddress );
+            IPAllPublicMatcher.getInstance().setAddresses( addressArray );
+        }
     }
 
     public final IPDBMatcher getAllMatcher()

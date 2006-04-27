@@ -36,6 +36,7 @@ public class RedirectInternal
     private final PortDBMatcher dstPort;
     
     private final boolean isDstRedirect;       /* presently unsupported */
+    private final boolean isLocalRedirect;
     private final IPaddr redirectAddress;
     private final int redirectPort;
     private final int index;
@@ -46,7 +47,8 @@ public class RedirectInternal
                              IntfDBMatcher srcIntf,    IntfDBMatcher     dstIntf,
                              IPDBMatcher   srcAddress, IPDBMatcher       dstAddress,
                              PortDBMatcher srcPort,    PortDBMatcher     dstPort,
-                             boolean isDstRedirect, IPaddr redirectAddress, int redirectPort, int index )
+                             boolean isDstRedirect, IPaddr redirectAddress, int redirectPort, int index,
+                             boolean isLocalRedirect )
     {
         this.isEnabled        = isEnabled;
         this.isLoggingEnabled = isLoggingEnabled;
@@ -64,6 +66,7 @@ public class RedirectInternal
         this.redirectAddress  = redirectAddress;
         this.redirectPort     = redirectPort;
         this.index            = index;
+        this.isLocalRedirect  = isLocalRedirect;
     }
 
     public RedirectInternal( RedirectRule rule, int index )
@@ -72,7 +75,8 @@ public class RedirectInternal
               rule.getProtocol(), rule.getSrcIntf(), rule.getDstIntf(),
               rule.getSrcAddress(), rule.getDstAddress(),
               rule.getSrcPort(), rule.getDstPort(),
-              rule.isDstRedirect(), rule.getRedirectAddress(), rule.getRedirectPort(), index );
+              rule.isDstRedirect(), rule.getRedirectAddress(), rule.getRedirectPort(), index,
+              rule.isLocalRedirect());
     }
 
     public boolean getIsEnabled()
@@ -155,6 +159,11 @@ public class RedirectInternal
         return this.index;
     }
 
+    public boolean isLocalRedirect()
+    {
+        return this.isLocalRedirect;
+    }
+
     /* Return a new rule that is prepopulated with the value from this list */
     public RedirectRule toRule()
     {
@@ -167,6 +176,7 @@ public class RedirectInternal
         rule.setName( getName());
         rule.setCategory( getCategory());
         rule.setDescription( getDescription());
+        rule.setLocalRedirect( isLocalRedirect());
         
         return rule;
     }

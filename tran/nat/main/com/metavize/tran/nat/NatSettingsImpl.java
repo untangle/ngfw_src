@@ -15,6 +15,7 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Collections;
 
 import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.networking.DhcpLeaseRule;
@@ -27,7 +28,7 @@ import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.Validatable;
 import com.metavize.mvvm.tran.ValidateException;
-
+import com.metavize.mvvm.tran.firewall.ip.IPDBMatcher;
 
 /**
  * Settings for the Nat transform.
@@ -59,6 +60,8 @@ public class NatSettingsImpl implements NatSettings, Serializable
     /* Redirect rules */
     private List    redirectList = new LinkedList();
 
+    private List    localRedirectList = new LinkedList();
+
     /* Is dhcp enabled */
     private boolean dhcpEnabled = false;
     private IPaddr  dhcpStartAddress;
@@ -75,25 +78,23 @@ public class NatSettingsImpl implements NatSettings, Serializable
     /* DNS Static Hosts */
     private List    dnsStaticHostList = new LinkedList();
 
+    
+    private final List localMatcherList;
+
     /**
      * Hibernate constructor.
      */
     private NatSettingsImpl()
     {
+        this.localMatcherList = NatUtil.getInstance().getEmptyLocalMatcherList();
     }
 
-    /**
-     * Real constructor
-     */
-    public NatSettingsImpl( Tid tid )
-    {
-        this.tid = tid;
-    }
-
-    public NatSettingsImpl( Tid tid, SetupState setupState )
+    public NatSettingsImpl( Tid tid, SetupState setupState, List localMatcherList )
     {
         this.tid = tid;
         this.setupState = setupState;
+        if ( localMatcherList == null ) localMatcherList = NatUtil.getInstance().getEmptyLocalMatcherList();
+        this.localMatcherList = Collections.unmodifiableList( localMatcherList );
     }
 
 
@@ -108,8 +109,13 @@ public class NatSettingsImpl implements NatSettings, Serializable
         boolean isStartAddressValid = true;
         boolean isEndAddressValid   = true;
         boolean isValid             = true;
-
+        
+        /* Update PING redirects */
         for ( Iterator iter = this.redirectList.iterator(); iter.hasNext() ; ) {
+            ((RedirectRule)iter.next()).fixPing();
+        }
+
+        for ( Iterator iter = this.localRedirectList.iterator(); iter.hasNext() ; ) {
             ((RedirectRule)iter.next()).fixPing();
         }
 
@@ -380,6 +386,38 @@ public class NatSettingsImpl implements NatSettings, Serializable
     public void setRedirectList( List s )
     {
         redirectList = s;
+    }
+
+    public List getGlobalRedirectList()
+    {
+        return NatUtil.getInstance().getGlobalRedirectList( getRedirectList());
+    }
+    
+    public void setGlobalRedirectList( List newValue )
+    {
+        setRedirectList( NatUtil.getInstance().setGlobalRedirectList( getRedirectList(), newValue ));
+    }
+
+    /* All of the local redirects go at the bottom of the list */
+    public List getLocalRedirectList()
+    {
+        return NatUtil.getInstance().getLocalRedirectList( getRedirectList());
+    }
+    
+    public void setLocalRedirectList( List newValue )
+    {
+        setRedirectList( NatUtil.getInstance().setLocalRedirectList( getRedirectList(), newValue ));
+    }
+
+    /**
+     * List of all of the matchers available for local redirects
+     */
+    /**
+     * List of all of the matchers available for local redirects
+     */
+    public List getLocalMatcherList()
+    {
+        return this.localMatcherList;
     }
 
     /**

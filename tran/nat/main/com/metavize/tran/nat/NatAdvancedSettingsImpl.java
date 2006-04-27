@@ -13,6 +13,7 @@ package com.metavize.tran.nat;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Collections;
 
 import com.metavize.mvvm.networking.NetworkUtil;
 import com.metavize.mvvm.networking.NetworkSpacesSettings;
@@ -30,12 +31,15 @@ import com.metavize.mvvm.networking.SetupState;
 import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.ValidateException;
+import com.metavize.mvvm.tran.firewall.ip.IPDBMatcher;
 
 public class NatAdvancedSettingsImpl implements NatAdvancedSettings, Serializable
 {
     // !!!! private static final long serialVersionUID = 4349679825783697834L;
     private final NetworkSpacesSettings networkSpacesSettings;
     private final ServicesSettings servicesSettings;
+
+    private final List<IPDBMatcher> localMatcherList;
 
     private boolean isEnabled;
 
@@ -46,12 +50,19 @@ public class NatAdvancedSettingsImpl implements NatAdvancedSettings, Serializabl
 
         /* Not the perfect fit, but it implements services settings */
         servicesSettings = new ServicesSettingsImpl();
+
+        /* As null, this object will not be able to generate a complete getLocalMatcherList */
+        this.localMatcherList = NatUtil.getInstance().getEmptyLocalMatcherList();
     }
     
-    NatAdvancedSettingsImpl( NetworkSpacesSettings networkSpaces, ServicesSettings services )
+    NatAdvancedSettingsImpl( NetworkSpacesSettings networkSpaces, ServicesSettings services, 
+                             List<IPDBMatcher> localMatcherList )
     {
         this.networkSpacesSettings = networkSpaces;
         this.servicesSettings = services;
+
+        if ( localMatcherList == null ) localMatcherList = NatUtil.getInstance().getEmptyLocalMatcherList();
+        this.localMatcherList = Collections.unmodifiableList( localMatcherList );
     }
 
     public SetupState getSetupState()
@@ -113,6 +124,35 @@ public class NatAdvancedSettingsImpl implements NatAdvancedSettings, Serializabl
     public void setRedirectList( List<RedirectRule> newValue )
     {
         networkSpacesSettings.setRedirectList( newValue );
+    }
+
+    public List<RedirectRule> getGlobalRedirectList()
+    {
+        return NatUtil.getInstance().getGlobalRedirectList( getRedirectList());
+    }
+    
+    public void setGlobalRedirectList( List<RedirectRule> newValue )
+    {
+        setRedirectList( NatUtil.getInstance().setGlobalRedirectList( getRedirectList(), newValue ));
+    }
+
+    /* All of the local redirects go at the bottom of the list */
+    public List<RedirectRule> getLocalRedirectList()
+    {
+        return NatUtil.getInstance().getLocalRedirectList( getRedirectList());
+    }
+    
+    public void setLocalRedirectList( List<RedirectRule> newValue )
+    {
+        setRedirectList( NatUtil.getInstance().setLocalRedirectList( getRedirectList(), newValue ));
+    }
+
+    /**
+     * List of all of the matchers available for local redirects
+     */
+    public List<IPDBMatcher> getLocalMatcherList()
+    {
+        return this.localMatcherList;
     }
 
     /** IP address of the default route. */
