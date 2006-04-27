@@ -287,6 +287,11 @@ public abstract class TransformBase implements Transform
         children.add(child);
     }
 
+    private boolean removeChild(Transform child)
+    {
+        return children.remove(child);
+    }
+
     private void changeState(TransformState ts, boolean syncState)
     {
         changeState(ts, syncState, null);
@@ -434,8 +439,6 @@ public abstract class TransformBase implements Transform
     private void destroy(boolean syncState)
         throws TransformException, IllegalStateException
     {
-        // XXX this method should only be callable by transformmanager.
-
         if (TransformState.INITIALIZED != runState
             && TransformState.LOADED != runState) {
             throw new IllegalStateException("Destroy in state: " + runState);
@@ -444,6 +447,10 @@ public abstract class TransformBase implements Transform
         try {
             transformManager.registerThreadContext(transformContext);
             preDestroy();
+            for (TransformBase p : parents) {
+                p.removeChild(this);
+            }
+            parents.clear();
             changeState(TransformState.DESTROYED, syncState);
 
             postDestroy(); // XXX if exception, state == ?

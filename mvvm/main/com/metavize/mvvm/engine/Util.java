@@ -14,6 +14,7 @@ package com.metavize.mvvm.engine;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
@@ -43,18 +44,22 @@ class Util
 {
     private static final Logger logger = Logger.getLogger(Util.class);
 
-    private static final Map<ClassLoader, SessionFactory> sessionFactories
-        = new WeakHashMap<ClassLoader, SessionFactory>();
+    private static final Map<ClassLoader, WeakReference<SessionFactory>> sessionFactories
+        = new WeakHashMap<ClassLoader, WeakReference<SessionFactory>>();
 
     static SessionFactory makeSessionFactory(ClassLoader cl)
     {
         SessionFactory sessionFactory = null;
         synchronized (sessionFactories) {
-            sessionFactory = sessionFactories.get(cl);
+            WeakReference<SessionFactory> wr = sessionFactories.get(cl);
+            if (null != wr) {
+                sessionFactory = wr.get();
+            }
+
             if (null == sessionFactory) {
                 sessionFactory = createSessionFactory(cl);
                 if (null != sessionFactory) {
-                    sessionFactories.put(cl, sessionFactory);
+                    sessionFactories.put(cl, new WeakReference(sessionFactory));
                 }
             }
         }
