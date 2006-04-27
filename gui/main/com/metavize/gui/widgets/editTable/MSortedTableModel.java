@@ -126,6 +126,7 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
     }
 
     // PROTECTEDS ///////////////
+    protected void wireUpNewRow(Vector rowVector) {}
     protected boolean getSortable(){ return true; }
     public void handleDependencies(int modelCol, int modelRow){ fireTableRowsUpdated(modelRow, modelRow); }
 
@@ -433,22 +434,21 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
                         return null;
                     }
                 }
-
                 newRow.add( newField );
             }
             else if( !defaultValueIterator.hasNext() && !classTypeIterator.hasNext() ){
-                return newRow;
+                break;
             }
             else if( defaultValueIterator.hasNext() && !classTypeIterator.hasNext() ){
-                return null;
+                break;
             }
             else if( !defaultValueIterator.hasNext() && classTypeIterator.hasNext() ){
-                return null;
-            }
-            else{
-                return null;
+                break;
             }
         }
+	// WIRE DAT SHISE UP
+	wireUpNewRow(newRow);
+	return newRow;
     }
     ////////////////////////////////
 

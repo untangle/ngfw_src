@@ -13,9 +13,6 @@ package com.metavize.tran.portal.gui;
 
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.gui.transform.*;
-import com.metavize.gui.configuration.DirectoryCompoundSettings;
-import com.metavize.gui.pipeline.MPipelineJPanel;
-import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.widgets.MPasswordField;
 import com.metavize.gui.util.*;
@@ -45,6 +42,7 @@ public class UserConfigJPanel extends MEditTableJPanel{
         this.setTableModel( userConfigTableModel );
 	userConfigTableModel.setSortingStatus(3, UserConfigTableModel.ASCENDING);
     }
+
 }
 
 
@@ -56,7 +54,8 @@ class UserConfigTableModel extends MSortedTableModel<Object>{
     private static final int C2_MW = 55;  /* live */
     private static final int C3_MW = 150; /* UID */
     private static final int C4_MW = 150; /* group */
-    private static final int C5_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW + C3_MW + C4_MW), 120); /* description */
+    private static final int C5_MW = 150; /* edit (settings) */
+    private static final int C6_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW + C3_MW + C4_MW + C5_MW), 120); /* description */
 
 
     private DefaultComboBoxModel groupModel = new DefaultComboBoxModel();
@@ -79,30 +78,33 @@ class UserConfigTableModel extends MSortedTableModel<Object>{
         addTableColumn( tableColumnModel,  2, C2_MW, false, true,  false, false, Boolean.class, "true", sc.bold("live"));
         addTableColumn( tableColumnModel,  3, C3_MW, true,  true,  false, false, String.class,  "[no ID/login]", "user ID/login");
         addTableColumn( tableColumnModel,  4, C4_MW, true,  true,  false, false, ComboBoxModel.class, groupModel, "group");
-        addTableColumn( tableColumnModel,  5, C5_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
-        addTableColumn( tableColumnModel,  6, 10,    false, false, true,  false, PortalUser.class, null, "");
+        addTableColumn( tableColumnModel,  5, C5_MW, false, true,  false, false, SettingsButtonRunnable.class,  "true", "home page settings" );
+        addTableColumn( tableColumnModel,  6, C6_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
+        addTableColumn( tableColumnModel,  7, 10,    false, false, true,  false, PortalUser.class, null, "");
         return tableColumnModel;
     }
 
-    public void prevalidate(DirectoryCompoundSettings directoryCompoundSettings, Vector<Vector> tableVector) throws Exception {
+    protected void wireUpNewRow(Vector rowVector){
+	PortalUser portalUser = (PortalUser) rowVector.elementAt(7);
+	SettingsButtonRunnable settingsButtonRunnable = (SettingsButtonRunnable) rowVector.elementAt(5);
+	settingsButtonRunnable.setPortalUser(portalUser);
+	settingsButtonRunnable.setUserType(true);
+    }
+
+    public void prevalidate(Object settings, Vector<Vector> tableVector) throws Exception {
         Hashtable<String,String> uidHashtable = new Hashtable<String,String>();
-
         int rowIndex = 0;
-
         // go through all the rows and perform some tests
         for( Vector tempUser : tableVector ){
 	    String uid = (String) tempUser.elementAt(2);
-	    String password = new String(((MPasswordField) tempUser.elementAt(6)).getPassword());
-
 	    // all uid's are unique
 	    if( uidHashtable.contains( uid ) )
-		throw new Exception("The user/login ID at row: " + rowIndex + " has already been taken.");
+		throw new Exception("The user/login ID in row: " + rowIndex + " has already been taken.");
 	    else
 		uidHashtable.put(uid,uid);
 
 	    rowIndex++;
 	}
-
     }
         
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception{
@@ -110,12 +112,12 @@ class UserConfigTableModel extends MSortedTableModel<Object>{
 	PortalUser newElem = null;
 
 	for( Vector rowVector : tableVector ){
-	    newElem = (PortalUser) rowVector.elementAt(6);
+	    newElem = (PortalUser) rowVector.elementAt(7);
             newElem.setLive( (Boolean) rowVector.elementAt(2) );
             newElem.setUid( (String) rowVector.elementAt(3) );
 	    PortalGroupWrapper portalGroupWrapper = (PortalGroupWrapper) ((ComboBoxModel) rowVector.elementAt(4)).getSelectedItem();
             newElem.setPortalGroup( portalGroupWrapper.getPortalGroup() );
-            newElem.setDescription( (String) rowVector.elementAt(5) );
+            newElem.setDescription( (String) rowVector.elementAt(6) );
             elemList.add(newElem);
         }
 
@@ -138,7 +140,7 @@ class UserConfigTableModel extends MSortedTableModel<Object>{
 
 	for( PortalUser newElem : users ){
 	    rowIndex++;
-            tempRow = new Vector(7);
+            tempRow = new Vector(8);
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );
             tempRow.add( newElem.isLive() );
@@ -146,6 +148,10 @@ class UserConfigTableModel extends MSortedTableModel<Object>{
 	    ComboBoxModel comboBoxModel = copyComboBoxModel(groupModel);
 	    comboBoxModel.setSelectedItem(new PortalGroupWrapper(newElem.getPortalGroup()));
 	    tempRow.add( comboBoxModel );
+	    SettingsButtonRunnable settingsButtonRunnable = new SettingsButtonRunnable("true");
+	    settingsButtonRunnable.setPortalUser(newElem);
+	    settingsButtonRunnable.setUserType(true);
+	    tempRow.add( settingsButtonRunnable );
             tempRow.add( newElem.getDescription() );
 	    tempRow.add( newElem );
             allRows.add( tempRow );
