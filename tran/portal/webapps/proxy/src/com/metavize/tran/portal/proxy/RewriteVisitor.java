@@ -34,6 +34,7 @@ class RewriteVisitor extends NodeVisitor
     private final Logger logger = Logger.getLogger(getClass());
 
     private boolean seenBody = false;
+    private boolean inScript = false;
 
     // constructs -------------------------------------------------------------
 
@@ -62,8 +63,17 @@ class RewriteVisitor extends NodeVisitor
 
         if (!seenBody && tagName.equalsIgnoreCase("body")) {
             writer.println("<head>");
-            writer.println(rewriter.getScriptTag());
+            rewriter.writeJavaScript(writer);
             writer.println("</head>");
+        }
+
+        if (tagName.equalsIgnoreCase("script")) {
+            String type = tag.getAttribute("type");
+            if (null != type
+                && (type.equalsIgnoreCase("text/javascript")
+                    || type.equalsIgnoreCase("application/x-javascript"))) {
+                inScript = true;
+            }
         }
 
         for (Attribute a : (List<Attribute>)tag.getAttributesEx()) {
@@ -92,14 +102,21 @@ class RewriteVisitor extends NodeVisitor
                            || name.equalsIgnoreCase("onselect")
                            || name.equalsIgnoreCase("onchange")) {
                     String s = a.getValue();
+                    if (!s.endsWith(";")) {
+                        s += ";";
+                    }
                     Reader r = new StringReader(s);
-                    Writer w = new StringWriter(s.length());
+                    StringWriter w = new StringWriter(s.length());
                     try {
                         rewriter.filterJavaScript(r, w);
                     } catch (IOException exn) {
                         logger.error("this won't happen", exn);
                     }
-                    a.setValue(w.toString());
+                    StringBuffer sb = w.getBuffer();
+                    while (Character.isWhitespace(sb.charAt(sb.length() - 1))) {
+                        sb.deleteCharAt(sb.length() - 1);
+                    }
+                    a.setValue(sb.toString());
                 }
             }
         }
@@ -108,21 +125,36 @@ class RewriteVisitor extends NodeVisitor
 
         if (tagName.equalsIgnoreCase("head")) {
             seenBody = true;
-            writer.println();
-            writer.println(rewriter.getScriptTag());
+            rewriter.writeJavaScript(writer);
         }
     }
 
     @Override
     public void visitEndTag(Tag tag)
     {
+        if (tag.getTagName().equalsIgnoreCase("script")) {
+            inScript = false;
+        }
+
         writer.print(tag.toHtml());
     }
 
     @Override
     public void visitStringNode(Text string)
     {
-        writer.print(string.toHtml());
+        String text = string.getText();
+        if (inScript) {
+            Reader r = new StringReader(text);
+            Writer w = new StringWriter(text.length());
+            try {
+                rewriter.filterJavaScript(r, w);
+            } catch (IOException exn) {
+                logger.error("this won't happen", exn);
+            }
+            writer.print(w.toString());
+        } else {
+            writer.print(text);
+        }
     }
 
     @Override

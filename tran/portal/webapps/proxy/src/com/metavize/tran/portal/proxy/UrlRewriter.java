@@ -13,6 +13,7 @@ package com.metavize.tran.portal.proxy;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.regex.Matcher;
@@ -136,9 +137,29 @@ class UrlRewriter
         }
     }
 
-    String getScriptTag()
+    void writeJavaScript(PrintWriter w)
     {
-        return "<script type='text/javascript' src='" + contextBase + "mvrepl.js'/>";
+        w.println("\n<script type='text/javascript'>");
+
+        w.print("var mv_localHost = ");
+        w.println(localHost);
+        w.print("var mv_contextBase = ");
+        w.println(contextBase);
+        w.print("var mv_proto = ");
+        w.println(proto);
+        w.print("var mv_contextBaseProto = ");
+        w.println(contextBaseProto);
+        w.print("var mv_host = ");
+        w.println(host);
+        w.print("var mv_contextBaseProtoHost = ");
+        w.println(contextBaseProtoHost);
+        w.print("var mv_remoteUrl = ");
+        w.println(remoteUrl);
+
+        w.println("</script>");
+        w.print("<script type='text/javascript' src='");
+        w.print(contextBase);
+        w.println("mvrepl.js'/>");
     }
 
     void filterCss(Reader r, Writer w)
