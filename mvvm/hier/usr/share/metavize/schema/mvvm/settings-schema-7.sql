@@ -366,7 +366,7 @@ CREATE TABLE settings.mvvm_redirect_rule (
     live              BOOL,
     alert             BOOL,
     log               BOOL,
-    is_local_redirect BOOL DEFAULT FALSE,
+    is_local_redirect BOOL,
     primary key      (rule_id));
 
 -- Table linking network settings to redirects -- 3.2x

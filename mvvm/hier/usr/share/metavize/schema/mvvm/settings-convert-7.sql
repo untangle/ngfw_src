@@ -90,5 +90,5 @@ ALTER TABLE settings.portal_user
 
 -- com.metavize.mvvm.networking.RedirectRule
 -- Need to insert a column for is_local_redirect
-ALTER TABLE settings.mvvm_redirect_rule ADD COLUMN is_local_redirect BOOL DEFAULT FALSE;
+ALTER TABLE settings.mvvm_redirect_rule ADD COLUMN is_local_redirect BOOL;
 UPDATE settings.mvvm_redirect_rule SET is_local_redirect = false;
