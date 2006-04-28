@@ -131,7 +131,7 @@ public class PortalSettings implements Serializable
         return global;
     }
 
-    public void setGlobal(PortalGlobal Global)
+    public void setGlobal(PortalGlobal global)
     {
         this.global = global;
     }
