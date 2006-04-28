@@ -11,6 +11,7 @@
 
 package com.metavize.mvvm.portal;
 
+import java.util.List;
 
 public interface PortalManager
 {
@@ -19,4 +20,8 @@ public interface PortalManager
     PortalSettings getPortalSettings();
 
     void setPortalSettings(PortalSettings settings);
+
+    List<PortalLogin> getActiveLogins();
+
+    void forceLogout(PortalLogin login);
 }
