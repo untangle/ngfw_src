@@ -12,9 +12,10 @@
 package com.metavize.mvvm.engine;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.SortedMap;
+import java.util.Map;
 import java.util.TreeMap;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -40,6 +41,8 @@ public class PortalManagerImpl
 
     private PortalSettings portalSettings;
 
+    private Map<PortalLoginKey,PortalLogin> activeLogins;
+
     private PortalManagerImpl() {
         TransactionWork tw = new TransactionWork()
             {
@@ -62,6 +65,8 @@ public class PortalManagerImpl
         MvvmContextFactory.context().runTransaction(tw);
 
         appManager = PortalApplicationManagerImpl.applicationManager();
+
+        activeLogins = new HashMap<PortalLoginKey,PortalLogin>();
 
         logger.info("Initialized PortalManager");
     }
@@ -134,7 +139,7 @@ public class PortalManagerImpl
         return result;
     }
 
-    public PortalUser lookupUser(String uid)
+    public PortalUser getUser(String uid)
     {
         List allUsers = portalSettings.getUsers();
         for (Iterator iter = allUsers.iterator(); iter.hasNext();) {
@@ -142,14 +147,47 @@ public class PortalManagerImpl
             if (uid.equals(user.getUid()))
                 return user;
         }
+        return null;
+    }
 
-        if (portalSettings.getGlobal().isAutoCreateUsers()) {
+    public List<PortalLogin> getActiveLogins()
+    {
+        return new ArrayList<PortalLogin>(activeLogins.values());
+    }
+
+    public void forceLogout(PortalLogin login)
+    {
+        // XXX
+    }
+
+    public PortalLogin getLogin(PortalLoginKey key)
+    {
+        return activeLogins.get(key);
+    }
+
+    public PortalLoginKey login(String uid, String password)
+    {
+        PortalUser user = getUser(uid);
+
+    /**
+     * <code>lookupUser</code> should be called <b>after</b> the uid has been authenticated
+     * by the AddressBook.  We look up the PortalUser, if it already exists it is returned.
+     * Otherwise, if <code>isAutoCreateUsers</code> is on,  a new PortalUser is automatically
+     * created and returned.
+     * Otherwise, <code>null</code> is returned.
+     *
+     * Note that the resulting PortalUser must still be checked for liveness.
+     *
+     */
+
+        if (user == null && portalSettings.getGlobal().isAutoCreateUsers()) {
             logger.debug("lookupUser: " + uid + " didn't exist, auto creating");
             PortalUser newUser = portalSettings.addUser(uid);
             setPortalSettings(portalSettings);
-            return newUser;
+            user = newUser;
         }
 
+        // XXX
         return null;
     }
 }

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: HttpBlockerEvent.java 194 2005-04-06 19:13:55Z rbscott $
+ * $Id$
  */
 
 package com.metavize.mvvm.security;
@@ -15,28 +15,26 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LoginFailureReason implements Serializable
+public class LogoutReason implements Serializable
 {
-    private static final long serialVersionUID = 4000306330098897417L;
+    private static final long serialVersionUID = 2003060303088994717L;
 
-    public static final LoginFailureReason UNKNOWN_USER = new LoginFailureReason('U', "unknown user");
-    public static final LoginFailureReason BAD_PASSWORD = new LoginFailureReason('P', "incorrect password");
-
-    // For Future use:
-    public static final LoginFailureReason DISABLED = new LoginFailureReason('D', "disabled by administrator");
+    public static final LogoutReason TIMEOUT = new LogoutReason('T', "timed out");
+    public static final LogoutReason ADMINISTRATOR = new LogoutReason('A', "administrator initiated");
+    public static final LogoutReason USER = new LogoutReason('U', "user initiated");
 
     private static final Map INSTANCES = new HashMap();
 
     static {
-        INSTANCES.put('U', UNKNOWN_USER);
-        INSTANCES.put('P', BAD_PASSWORD);
-        INSTANCES.put('D', DISABLED);
+        INSTANCES.put('T', TIMEOUT);
+        INSTANCES.put('A', ADMINISTRATOR);
+        INSTANCES.put('U', USER);
     }
 
     private final char key;
     private final String reason;
 
-    private LoginFailureReason(char key, String reason)
+    private LogoutReason(char key, String reason)
     {
         this.key = key;
         this.reason = reason;
@@ -57,19 +55,19 @@ public class LoginFailureReason implements Serializable
         return INSTANCES.get(reason);
     }
 
-    public static LoginFailureReason getInstance(char key)
+    public static LogoutReason getInstance(char key)
     {
-        return (LoginFailureReason)INSTANCES.get(key);
+        return (LogoutReason)INSTANCES.get(key);
     }
 
     // Object methods ---------------------------------------------------------
 
     public boolean equals(Object o)
     {
-        if (!(o instanceof LoginFailureReason)) {
+        if (!(o instanceof LogoutReason)) {
             return false;
         } else {
-            LoginFailureReason lfr = (LoginFailureReason)o;
+            LogoutReason lfr = (LogoutReason)o;
             return key == lfr.key;
         }
     }

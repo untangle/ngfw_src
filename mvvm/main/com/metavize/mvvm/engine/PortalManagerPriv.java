@@ -12,6 +12,7 @@
 package com.metavize.mvvm.engine;
 
 import java.util.List;
+import javax.security.auth.login.FailedLoginException;
 import com.metavize.mvvm.portal.*;
 
 /**
@@ -43,17 +44,21 @@ public interface PortalManagerPriv extends PortalManager
     PortalHomeSettings getPortalHomeSettings(PortalUser user);
 
     /**
-     * <code>lookupUser</code> should be called <b>after</b> the uid has been authenticated
-     * by the AddressBook.  We look up the PortalUser, if it already exists it is returned.
-     * Otherwise, if <code>isAutoCreateUsers</code> is on,  a new PortalUser is automatically
-     * created and returned.
-     * Otherwise, <code>null</code> is returned.
+     * Looks up a user by uid.  Returns null if the user does not exist.
      *
-     * Note that the resulting PortalUser must still be checked for liveness.
-     *
-     * @param uid a <code>String</code> giving the uid of the already authenticated user
+     * @param uid a <code>String</code> giving the uid of the user
      * @return a <code>PortalUser</code> value
      */
-    PortalUser lookupUser(String uid);
-    
+    PortalUser getUser(String uid);
+
+    /**
+     * Looks up a login by login key.  Returns null if the login does not exist; this
+     * happens if the login times out or is forced to log out.
+     *
+     * @param loginKey a <code>PortalLoginKey</code> giving the key for the login
+     * @return a <code>PortalLogin</code> value
+     */
+    PortalLogin getLogin(PortalLoginKey loginKey);
+ 
+    PortalLoginKey login(String uid, String password);
  }
