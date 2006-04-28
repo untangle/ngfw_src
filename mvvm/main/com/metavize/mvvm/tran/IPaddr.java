@@ -46,7 +46,7 @@ public class IPaddr implements Comparable, Serializable
 
     private final InetAddress addr;
 
-    public IPaddr( Inet4Address addr )
+    public IPaddr( InetAddress addr )
     {
         this.addr = addr;
     }
@@ -71,7 +71,7 @@ public class IPaddr implements Comparable, Serializable
             }
         }
 
-        return new IPaddr((Inet4Address)InetAddress.getByName( dotNotation ));
+        return new IPaddr(InetAddress.getByName( dotNotation ));
     }
     
     public static IPaddr cidrToIPaddr( String cidr )
@@ -235,7 +235,7 @@ public class IPaddr implements Comparable, Serializable
             return null;
         }
 
-        return new IPaddr((Inet4Address)address );
+        return new IPaddr(address );
     }
 
     static int byteToInt ( byte val ) 
@@ -250,7 +250,7 @@ public class IPaddr implements Comparable, Serializable
         int c = 0;
         for ( String cidr : CIDR_STRINGS ) {
             try {
-                IPaddr addr = new IPaddr((Inet4Address)InetAddress.getByName( cidr ));
+                IPaddr addr = new IPaddr(InetAddress.getByName( cidr ));
                 NET_TO_CIDR.put( addr, c );
                 CIDR_CONVERTER[c++] = addr;
             } catch ( UnknownHostException e ) {
