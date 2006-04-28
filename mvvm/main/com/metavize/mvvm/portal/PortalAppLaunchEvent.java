@@ -27,7 +27,7 @@ import com.metavize.mvvm.tran.IPaddr;
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
  * @hibernate.class
- * table="TR_PORTAL_APP_LAUNCH_EVT"
+ * table="PORTAL_APP_LAUNCH_EVT"
  * mutable="false"
  */
 public class PortalAppLaunchEvent extends LogEvent implements Serializable
@@ -38,24 +38,28 @@ public class PortalAppLaunchEvent extends LogEvent implements Serializable
     private String uid;
     private boolean succeeded;
     private AppLaunchFailureReason reason;
+    private String appName;
+    private String destination;
 
     // constructors -----------------------------------------------------------
 
     public PortalAppLaunchEvent() { }
 
     // For successes
-    public PortalAppLaunchEvent(IPaddr clientAddr, String uid, boolean succeeded)
+    public PortalAppLaunchEvent(IPaddr clientAddr, String uid, boolean succeeded, Application app, String destination)
     {
-        this(clientAddr, uid, succeeded, null);
+        this(clientAddr, uid, succeeded, null, app, destination);
     }
 
     // For failures
-    public PortalAppLaunchEvent(IPaddr clientAddr, String uid, boolean succeeded, AppLaunchFailureReason reason)
+    public PortalAppLaunchEvent(IPaddr clientAddr, String uid, boolean succeeded, AppLaunchFailureReason reason, Application app, String destination)
     {
         this.clientAddr = clientAddr;
         this.uid = uid;
         this.succeeded = succeeded;
         this.reason = reason;
+        this.appName = app.getName();
+        this.destination = destination;
     }
 
     // accessors --------------------------------------------------------------
@@ -81,7 +85,7 @@ public class PortalAppLaunchEvent extends LogEvent implements Serializable
     }
 
     /**
-     * AppLaunch used to appLaunch.  May be  used to join to PORTAL_USER.
+     * uid used to appLaunch.  May be  used to join to PORTAL_USER.
      *
      * @return a <code>String</code> giving the uid for the user
      * @hibernate.property
@@ -132,6 +136,40 @@ public class PortalAppLaunchEvent extends LogEvent implements Serializable
         this.reason = reason;
     }
 
+    /**
+     * application named launched.
+     *
+     * @return a <code>String</code> naming the app that was launched
+     * @hibernate.property
+     * column="app_name"
+     */
+    public String getAppName()
+    {
+        return appName;
+    }
+
+    public void setAppName(String appName)
+    {
+        this.appName = appName;
+    }
+
+    /**
+     * Destination of application.  May be null (for non host services)
+     *
+     * @return a <code>String</code> giving the destination of the app, if any, otherwise null
+     * @hibernate.property
+     * column="destination"
+     */
+    public String getDestination()
+    {
+        return destination;
+    }
+
+    public void setDestination(String destination)
+    {
+        this.destination = destination;
+    }
+
     // Syslog methods ---------------------------------------------------------
 
     public void appendSyslog(SyslogBuilder sb)
@@ -143,6 +181,9 @@ public class PortalAppLaunchEvent extends LogEvent implements Serializable
         if (reason != null)
             // Don't need a reason for success
             sb.addField("reason", reason.toString());
+        sb.addField("app-name", appName);
+        if (destination != null)
+            sb.addField("destination", destination);
     }
 
     public String getSyslogId()
@@ -163,6 +204,7 @@ public class PortalAppLaunchEvent extends LogEvent implements Serializable
 
     public String toString()
     {
-        return "PortalAppLaunchEvent id: " + getId() + " uid: " + uid + " succeeded: " + succeeded;
+        return "PortalAppLaunchEvent id: " + getId() + " uid: " + uid + " succeeded: " + succeeded +
+            " app: " + appName;
     }
 }

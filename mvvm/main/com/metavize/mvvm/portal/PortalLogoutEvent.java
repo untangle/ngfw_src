@@ -28,7 +28,7 @@ import com.metavize.mvvm.tran.IPaddr;
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
  * @hibernate.class
- * table="TR_PORTAL_LOGOUT_EVT"
+ * table="PORTAL_LOGOUT_EVT"
  * mutable="false"
  */
 public class PortalLogoutEvent extends LogEvent implements Serializable

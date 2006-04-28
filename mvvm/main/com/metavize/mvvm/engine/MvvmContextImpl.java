@@ -526,6 +526,14 @@ public class MvvmContextImpl extends MvvmContextBase
         }
         httpInvoker = null;
 
+        // Stop portal
+        try {
+            portalManager.destroy();
+        } catch (Exception exn) {
+            logger.warn("could not destroy PortalManager", exn);
+        }
+        portalManager = null;
+
         try {
             tomcatManager.stopTomcat();
         } catch (Exception exn) {

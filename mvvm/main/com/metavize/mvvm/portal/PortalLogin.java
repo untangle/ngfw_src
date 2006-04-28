@@ -32,7 +32,9 @@ public class PortalLogin implements Serializable
     private IPaddr clientAddr;
     private Date loginDate;
     private long idleTime;
-    private NtlmPasswordAuthentication ntlmAuth;
+
+    // Not for UI use:
+    private transient NtlmPasswordAuthentication ntlmAuth;
 
     // constructors -----------------------------------------------------------
     // Not for user consumption, only used by PortalManagerImpl
@@ -128,4 +130,32 @@ public class PortalLogin implements Serializable
         this.idleTime = 0;
     }
 
+    public int hashCode()
+    {
+        if ( uid == null || clientAddr == null || loginDate == null )
+            // shouldn't happen
+            return 0;
+
+        return uid.hashCode() * 37 + clientAddr.hashCode() * 7 + loginDate.hashCode();
+    }
+
+    public boolean equals( Object o )
+    {
+        if (!(o instanceof PortalLogin ))
+            return false;
+
+        PortalLogin other = (PortalLogin)o;
+        if (uid.equals(other.uid) &&
+            clientAddr.equals(other.clientAddr) &&
+            loginDate.equals(other.loginDate))
+            // idle time and group aren't important.
+            return true;
+
+        return false;
+    }
+
+    public String toString()
+    {
+        return "PortalLogin of " + uid + " on " + loginDate + " from " + clientAddr;
+    }
 }

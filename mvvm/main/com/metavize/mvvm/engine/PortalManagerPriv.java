@@ -11,6 +11,7 @@
 
 package com.metavize.mvvm.engine;
 
+import java.net.InetAddress;
 import java.util.List;
 import javax.security.auth.login.FailedLoginException;
 import com.metavize.mvvm.portal.*;
@@ -60,5 +61,13 @@ public interface PortalManagerPriv extends PortalManager
      */
     PortalLogin getLogin(PortalLoginKey loginKey);
  
-    PortalLoginKey login(String uid, String password);
+    PortalLoginKey login(String uid, String password, InetAddress clientAddr);
+
+    
+    /**
+     * Normal user-initiated login
+     *
+     * @param loginKey a <code>PortalLoginKey</code> giving the login to log out
+     */
+    void logout(PortalLoginKey loginKey);
  }

@@ -28,7 +28,7 @@ import com.metavize.mvvm.tran.IPaddr;
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
  * @hibernate.class
- * table="TR_PORTAL_LOGIN_EVT"
+ * table="PORTAL_LOGIN_EVT"
  * mutable="false"
  */
 public class PortalLoginEvent extends LogEvent implements Serializable
@@ -45,15 +45,15 @@ public class PortalLoginEvent extends LogEvent implements Serializable
     public PortalLoginEvent() { }
 
     // For successes
-    public PortalLoginEvent(IPaddr clientAddr, String uid, boolean succeeded)
+    public PortalLoginEvent(InetAddress clientAddr, String uid, boolean succeeded)
     {
         this(clientAddr, uid, succeeded, null);
     }
 
     // For failures
-    public PortalLoginEvent(IPaddr clientAddr, String uid, boolean succeeded, LoginFailureReason reason)
+    public PortalLoginEvent(InetAddress clientAddr, String uid, boolean succeeded, LoginFailureReason reason)
     {
-        this.clientAddr = clientAddr;
+        this.clientAddr = new IPaddr(clientAddr);
         this.uid = uid;
         this.succeeded = succeeded;
         this.reason = reason;

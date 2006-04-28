@@ -11,17 +11,26 @@
 
 package com.metavize.mvvm.engine;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
+import javax.naming.ServiceUnavailableException;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import com.metavize.mvvm.util.TransactionWork;
+import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.addrbook.AddressBook;
+import com.metavize.mvvm.addrbook.UserEntry;
+import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.util.TransactionWork;
+import com.metavize.mvvm.security.LogoutReason;
+import com.metavize.mvvm.security.LoginFailureReason;
 import com.metavize.mvvm.portal.*;
 
 /**
@@ -33,9 +42,19 @@ public class PortalManagerImpl
 
     private static final Application[] protoArr = new Application[] { };
 
+    public static final long REAPING_FREQ = 5000;
+
+    // Add two seconds to each failed login attempt to blunt the force
+    // of scripted dictionary attacks.
+    private static final long LOGIN_FAIL_SLEEP_TIME = 2000;
+
     private static final PortalManagerImpl PORTAL_MANAGER = new PortalManagerImpl();
 
     private final Logger logger = Logger.getLogger(PortalManagerImpl.class);
+
+    private EventLogger eventLogger;
+
+    private AddressBook addressBook;
 
     private PortalApplicationManagerImpl appManager;
 
@@ -43,7 +62,11 @@ public class PortalManagerImpl
 
     private Map<PortalLoginKey,PortalLogin> activeLogins;
 
+    private TimeoutReaper reaper = null;
+
     private PortalManagerImpl() {
+        MvvmLocalContext ctx = MvvmContextFactory.context();
+
         TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork(Session s)
@@ -62,11 +85,18 @@ public class PortalManagerImpl
                     return true;
                 }
             };
-        MvvmContextFactory.context().runTransaction(tw);
+        ctx.runTransaction(tw);
 
         appManager = PortalApplicationManagerImpl.applicationManager();
 
-        activeLogins = new HashMap<PortalLoginKey,PortalLogin>();
+        addressBook = ctx.appAddressBook();
+
+        activeLogins = new ConcurrentHashMap<PortalLoginKey,PortalLogin>();
+
+        eventLogger = ctx.eventLogger();
+
+        reaper = new TimeoutReaper(REAPING_FREQ);
+        new Thread(reaper).start();
 
         logger.info("Initialized PortalManager");
     }
@@ -100,6 +130,9 @@ public class PortalManagerImpl
         MvvmContextFactory.context().runTransaction(tw);
 
         this.portalSettings = settings;
+    }
+
+    void destroy() {
     }
 
     public List<Bookmark> getAllBookmarks(PortalUser user)
@@ -157,28 +190,58 @@ public class PortalManagerImpl
 
     public void forceLogout(PortalLogin login)
     {
-        // XXX
+        if (login == null)
+            throw new NullPointerException("login cannot be null");
+        for (Iterator<PortalLoginKey> iter = activeLogins.keySet().iterator(); iter.hasNext();) {
+            PortalLoginKey key = iter.next();
+            PortalLogin l = activeLogins.get(key);
+            if (l.equals(login)) {
+                doLogout(key, LogoutReason.ADMINISTRATOR);
+                return;
+            }
+        }
+        logger.warn("Tried to logout missing login with uid " + login.getUser());
+    }
+
+    public void logout(PortalLoginKey loginKey)
+    {
+        doLogout(loginKey, LogoutReason.USER);
     }
 
     public PortalLogin getLogin(PortalLoginKey key)
     {
+        if (key == null)
+            throw new NullPointerException("login key cannot be null");
         return activeLogins.get(key);
     }
 
-    public PortalLoginKey login(String uid, String password)
+    public PortalLoginKey login(String uid, String password, InetAddress clientAddr)
     {
-        PortalUser user = getUser(uid);
+        try {
+            boolean authenticated = addressBook.authenticate(uid, password);
 
-    /**
-     * <code>lookupUser</code> should be called <b>after</b> the uid has been authenticated
-     * by the AddressBook.  We look up the PortalUser, if it already exists it is returned.
-     * Otherwise, if <code>isAutoCreateUsers</code> is on,  a new PortalUser is automatically
-     * created and returned.
-     * Otherwise, <code>null</code> is returned.
-     *
-     * Note that the resulting PortalUser must still be checked for liveness.
-     *
-     */
+            if (!authenticated) {
+                UserEntry ue = addressBook.getEntry(uid);
+                if (ue == null) {
+                    logger.debug("no user found with login: " + uid);
+                    PortalLoginEvent event = new PortalLoginEvent(clientAddr, uid, false, LoginFailureReason.UNKNOWN_USER);
+                    eventLogger.log(event);
+                } else {
+                    logger.debug("password check failed");
+                    PortalLoginEvent event = new PortalLoginEvent(clientAddr, uid, false, LoginFailureReason.BAD_PASSWORD);
+                    eventLogger.log(event);
+                }
+                try {
+                    Thread.sleep(LOGIN_FAIL_SLEEP_TIME);
+                } catch (InterruptedException exn) { }
+                return null; 
+            }
+        } catch (ServiceUnavailableException x) {
+            logger.error("Unable to authenticate user", x);
+            return null;
+        }
+            
+        PortalUser user = getUser(uid);
 
         if (user == null && portalSettings.getGlobal().isAutoCreateUsers()) {
             logger.debug("lookupUser: " + uid + " didn't exist, auto creating");
@@ -187,7 +250,112 @@ public class PortalManagerImpl
             user = newUser;
         }
 
-        // XXX
-        return null;
+        if (!user.isLive()) {
+            logger.debug("user is disabled");
+            PortalLoginEvent event = new PortalLoginEvent(clientAddr, uid, false, LoginFailureReason.DISABLED);
+            eventLogger.log(event);
+            return null;
+        }
+
+        // Make up a descriptor so the key prints nicely
+        String desc = uid + clientAddr;
+        PortalLoginKey key = new PortalLoginKey(desc);
+        PortalLogin login = new PortalLogin(user, clientAddr);
+        activeLogins.put(key, login);
+
+        PortalLoginEvent event = new PortalLoginEvent(clientAddr, uid, true);
+        eventLogger.log(event);
+
+        return key;
     }
+
+
+    private void doLogout(PortalLoginKey loginKey, LogoutReason reason)
+    {
+        PortalLogin login = activeLogins.get(loginKey);
+        if (login == null) {
+            logger.warn("ignoring doLogout for already logged out key " + loginKey);
+            return;
+        }
+
+        if (reason == LogoutReason.ADMINISTRATOR)
+            logger.warn("Administrative logout of " + login);
+        else
+            logger.info("" + reason + " logout of " + login);
+
+        activeLogins.remove(loginKey);
+
+        PortalLogoutEvent event = new PortalLogoutEvent(login.getClientAddr(), login.getUser(),
+                                                        reason);
+        eventLogger.log(event);
+    }
+
+    private long getIdleTimeout(PortalUser user)
+    {
+        PortalHomeSettings hs = getPortalHomeSettings(user);
+        return hs.getIdleTimeout();
+    }
+
+        
+    private class TimeoutReaper implements Runnable
+    {
+        private long millifreq;
+
+        private volatile Thread thread;
+
+        TimeoutReaper(long millifreq)
+        {
+            this.millifreq = millifreq;
+        }
+
+        public void destroy()
+        {
+            Thread t = this.thread;
+            if (null != t) {
+                this.thread = null;
+                t.interrupt();
+            }
+        }
+
+        public void run()
+        {
+            thread = Thread.currentThread();
+
+            while (thread == Thread.currentThread()) {
+                try {
+                    Thread.sleep(millifreq);
+                }
+                catch (InterruptedException e) {
+                    continue;
+                }
+
+                checkTimeouts();
+            }
+        }
+
+        private void checkTimeouts()
+        {
+            for (Iterator<PortalLoginKey> iter = activeLogins.keySet().iterator(); iter.hasNext();) {
+                PortalLoginKey key = iter.next();
+                if (key == null)
+                    // Concurrency
+                    continue;
+                PortalLogin login = activeLogins.get(key);
+                if (login == null)
+                    // Concurrency
+                    continue;
+
+                PortalUser user = getUser(login.getUser());
+                if (user == null) {
+                    // User deleted by admin
+                    doLogout(key, LogoutReason.ADMINISTRATOR);
+                } else {
+                    long timeout = getIdleTimeout(user);
+                    if (login.getIdleTime() >= timeout)
+                        doLogout(key, LogoutReason.TIMEOUT);
+                }
+            }
+        }
+    }
+
 }
