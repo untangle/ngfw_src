@@ -124,7 +124,7 @@ public class PortalAppLaunchEvent extends LogEvent implements Serializable
      * @return the reason.
      * @hibernate.property
      * column="REASON"
-     * type="com.metavize.mvvm.security.AppLaunchFailureReasonUserType"
+     * type="com.metavize.mvvm.portal.AppLaunchFailureReasonUserType"
      */
     public AppLaunchFailureReason getReason()
     {
