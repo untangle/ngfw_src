@@ -157,12 +157,14 @@ public class LoginEvent extends LogEvent
         sb.addField("login", login);
         sb.addField("local", local);
         sb.addField("succeeded", succeeded);
-        sb.addField("reason", null == reason ? "none" : reason.toString());
+        if (reason != null)
+            // Don't need a reason for success
+            sb.addField("reason", reason.toString());
     }
 
     public String getSyslogId()
     {
-        return "Login"; // XXX
+        return "AdminLogin"; // XXX
     }
 
     public SyslogPriority getSyslogPriority()

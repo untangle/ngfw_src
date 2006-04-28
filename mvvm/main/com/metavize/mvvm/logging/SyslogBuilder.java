@@ -11,6 +11,7 @@
 
 package com.metavize.mvvm.logging;
 
+import com.metavize.mvvm.tran.IPaddr;
 import java.net.InetAddress;
 import java.util.Date;
 
@@ -24,5 +25,6 @@ public interface SyslogBuilder
     void addField(String key, long value);
     void addField(String key, double value);
     void addField(String key, InetAddress addr);
+    void addField(String key, IPaddr addr);
     void addField(String key, Date date);
 }

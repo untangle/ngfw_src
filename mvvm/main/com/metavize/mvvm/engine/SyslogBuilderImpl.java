@@ -18,6 +18,7 @@ import java.util.Formatter;
 
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
+import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.tran.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;
 
@@ -99,6 +100,11 @@ public class SyslogBuilderImpl implements SyslogBuilder
     public void addField(String key, InetAddress ia)
     {
         addField(key, ia.getHostAddress());
+    }
+
+    public void addField(String key, IPaddr ia)
+    {
+        addField(key, ia.toString());
     }
 
     public void addField(String key, Date d)
