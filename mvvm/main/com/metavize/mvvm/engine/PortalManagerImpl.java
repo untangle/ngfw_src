@@ -20,13 +20,13 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.naming.ServiceUnavailableException;
+import jcifs.smb.NtlmPasswordAuthentication;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.addrbook.AddressBook;
-import com.metavize.mvvm.addrbook.UserEntry;
+import com.metavize.mvvm.addrbook.*;
 import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.util.TransactionWork;
 import com.metavize.mvvm.security.LogoutReason;
@@ -260,7 +260,12 @@ public class PortalManagerImpl
         // Make up a descriptor so the key prints nicely
         String desc = uid + clientAddr;
         PortalLoginKey key = new PortalLoginKey(desc);
-        PortalLogin login = new PortalLogin(user, clientAddr);
+
+        NtlmPasswordAuthentication pwa = null;
+        String domain = getCurrentDomain();
+        if (domain != null)
+            pwa = new NtlmPasswordAuthentication(domain, uid, password);
+        PortalLogin login = new PortalLogin(user, clientAddr, pwa);
         activeLogins.put(key, login);
 
         PortalLoginEvent event = new PortalLoginEvent(clientAddr, uid, true);
@@ -269,6 +274,12 @@ public class PortalManagerImpl
         return key;
     }
 
+    private String getCurrentDomain() {
+        AddressBookSettings s = addressBook.getAddressBookSettings();
+        if (s.getAddressBookConfiguration() == AddressBookConfiguration.AD_AND_LOCAL)
+            return s.getADRepositorySettings().getDomain();
+        return null;
+    }
 
     private void doLogout(PortalLoginKey loginKey, LogoutReason reason)
     {

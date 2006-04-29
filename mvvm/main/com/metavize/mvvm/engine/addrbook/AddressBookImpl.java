@@ -62,9 +62,9 @@ public class AddressBookImpl
             settings = new AddressBookSettings();
             settings.setAddressBookConfiguration(AddressBookConfiguration.NOT_CONFIGURED);
             settings.setADRepositorySettings(new RepositorySettings(
-              "cn=My Admin,cn=users,DC=mycompany,DC=com",
+              "My Admin",
               "mypassword",
-              "cn=users,DC=mycompany,DC=com",
+              "mycompany.com",
               "my_ad_server",
               389              
               ));

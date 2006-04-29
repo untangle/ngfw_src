@@ -39,21 +39,6 @@ public class PortalLogin implements Serializable
     // constructors -----------------------------------------------------------
     // Not for user consumption, only used by PortalManagerImpl
 
-    // No domain
-    public PortalLogin(PortalUser user, InetAddress clientAddr)
-    {
-        this.uid = user.getUid();
-        PortalGroup g = user.getPortalGroup();
-        if (g != null)
-            this.group = g.getName();
-        else
-            this.group = null;
-        this.clientAddr = new IPaddr(clientAddr);
-        this.loginDate = new Date(System.currentTimeMillis());
-        this.idleTime = 0;
-        this.ntlmAuth = null;
-    }
-
     // With domain
     public PortalLogin(PortalUser user, InetAddress clientAddr, NtlmPasswordAuthentication ntlmAuth)
     {

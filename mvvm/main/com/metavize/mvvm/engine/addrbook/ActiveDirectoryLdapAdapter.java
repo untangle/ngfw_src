@@ -237,9 +237,9 @@ public class ActiveDirectoryLdapAdapter
   public static void main(String[] args) throws Exception {
 
     RepositorySettings settings = new RepositorySettings(
-      "cn=Bill Test1,cn=users,DC=windows,DC=metavize,DC=com",
+      "Bill Test1",
       "ABC123xyz",
-      "cn=users,DC=windows,DC=metavize,DC=com",
+      "windows.metavize.com",
       "mrslave",
       389);
   

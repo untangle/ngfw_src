@@ -22,121 +22,141 @@ package com.metavize.mvvm.addrbook;
 public class RepositorySettings
   implements java.io.Serializable {
   
-  private static final long serialVersionUID = 1856246303246961114L;
+    private static final long serialVersionUID = 1856246303246961114L;
 
-  private Long id;
-  private String m_superuserDN;
-  private String m_superuserPass;
-  private String m_searchBase;
-  private String m_ldapHost;
-  private int m_ldapPort;
+    private Long id;
+    private String m_superuser;
+    private String m_superuserPass;
+    private String m_domain;
+    private String m_ldapHost;
+    private String m_ouFilter;
+    private int m_ldapPort;
 
-  public RepositorySettings() {
-  }
+    public RepositorySettings() {
+    }
 
-  public RepositorySettings(String superuserDN,
-    String superuserPass,
-    String searchBase,
-    String ldapHost,
-    int ldapPort) {
+    public RepositorySettings(String superuser,
+                              String superuserPass,
+                              String domain,
+                              String ldapHost,
+                              int ldapPort) {
       
-    m_superuserDN = superuserDN;
-    m_superuserPass = superuserPass;
-    m_searchBase = searchBase;
-    m_ldapHost = ldapHost;
-    m_ldapPort = ldapPort;
+        m_superuser = superuser;
+        m_superuserPass = superuserPass;
+        m_domain = domain;
+        m_ldapHost = ldapHost;
+        m_ldapPort = ldapPort;
+        m_ouFilter = "";
+    }
 
-  }
+    /**
+     * @hibernate.id
+     * column="SETTINGS_ID"
+     * generator-class="native"
+     * not-null="true"
+     */
+    private Long getId() {
+        return id;
+    }
 
-  /**
-   * @hibernate.id
-   * column="SETTINGS_ID"
-   * generator-class="native"
-   * not-null="true"
-   */
-  private Long getId() {
-      return id;
-  }
+    private void setId(Long id) {
+        this.id = id;
+    }
 
-  private void setId(Long id) {
-      this.id = id;
-  }
-
-  /**
-   * @hibernate.property
-   * column="SUPERUSER_DN"
-   */
-  public String getSuperuserDN() {
-    return m_superuserDN;
-  }
+    /**
+     * @hibernate.property
+     * column="SUPERUSER"
+     */
+    public String getSuperuser() {
+        return m_superuser;
+    }
   
-  public void setSuperuserDN(String dn) {
-    m_superuserDN = dn;
-  }
+    public void setSuperuser(String dn) {
+        m_superuser = dn;
+    }
+
+    public String getSuperuserDN() {
+        return "cn=" + m_superuser;
+    }
 
 
 
-  /**
-   * @hibernate.property
-   * column="SUPERUSER_PASS"
-   */  
-  public String getSuperuserPass() {
-    return m_superuserPass;
-  }
+    /**
+     * @hibernate.property
+     * column="SUPERUSER_PASS"
+     */  
+    public String getSuperuserPass() {
+        return m_superuserPass;
+    }
 
-  public void setSuperuserPass(String pass) {
-    m_superuserPass = pass;
-  }
-
-
+    public void setSuperuserPass(String pass) {
+        m_superuserPass = pass;
+    }
 
 
-  /**
-   * Get the base for searches.
-   */
-  public void setSearchBase(String sb) {
-    m_searchBase = sb;
-  }
-
-  /**
-   * @hibernate.property
-   * column="SEARCH_BASE"
-   */    
-  public String getSearchBase() {
-    return m_searchBase;
-  }
+    /**
+     * @hibernate.property
+     * column="DOMAIN"
+     */    
+    public String getDomain() {
+        return m_domain;
+    }
 
 
+    /**
+     * Get the AD domain
+     */
+    public void setDomain(String domain) {
+        m_domain = domain;
+    }
 
-  public void setLDAPHost(String ldapHost) {
-    m_ldapHost = ldapHost;
-  }
+    public String getSearchBase() {
+        return "cn=users," + domainComponents(m_domain);
+    }
 
-  /**
-   * @hibernate.property
-   * column="LDAP_HOST"
-   */     
-  public String getLDAPHost() {
-    return m_ldapHost;
-  }
-
-
-
-  public void setLDAPPort(int port) {
-    m_ldapPort = port;
-  }
-
-  /**
-   * @hibernate.property
-   * column="PORT"
-   */
-  public int getLDAPPort() {
-    return m_ldapPort;
-  }
-  
-  
-
-  
+    private String domainComponents(String dom)
+    {
+        while (dom.endsWith("."))
+            dom = dom.substring(0, dom.length() - 1);
+        return "DC=" + dom.replace(".", ",DC=");
+    }
 
 
+    public void setLDAPHost(String ldapHost) {
+        m_ldapHost = ldapHost;
+    }
+
+    /**
+     * @hibernate.property
+     * column="LDAP_HOST"
+     */     
+    public String getLDAPHost() {
+        return m_ldapHost;
+    }
+
+
+
+    public void setLDAPPort(int port) {
+        m_ldapPort = port;
+    }
+
+    /**
+     * @hibernate.property
+     * column="PORT"
+     */
+    public int getLDAPPort() {
+        return m_ldapPort;
+    }
+
+    /**
+     * @hibernate.property
+     * column="OU_FILTER"
+     */  
+    public String getOUFilter() {
+        return m_ouFilter;
+    }
+
+    public void setOUFilter(String ouFilter) {
+        m_ouFilter = ouFilter;
+    }
 }

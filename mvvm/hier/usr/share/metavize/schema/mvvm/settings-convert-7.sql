@@ -2,6 +2,18 @@
 
 ------ Added for Portal
 
+-- com.metavize.mvvm.addrbook.RepositorySettings
+DROP TABLE settings.ab_repository_settings;
+CREATE TABLE settings.ab_repository_settings (
+    settings_id int8 NOT NULL,
+    superuser text,
+    superuser_pass text,
+    domain text,
+    ldap_host text,
+    ou_filter text,
+    port int4,
+    PRIMARY KEY (settings_id));
+
 -- com.metavize.mvvm.portal.Bookmark -- 4.0
 CREATE TABLE settings.portal_bookmark (
         id               INT8 NOT NULL,
