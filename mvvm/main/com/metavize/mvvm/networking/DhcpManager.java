@@ -332,6 +332,10 @@ class DhcpManager
             logger.info( "empty address or netmask, continuing." );
             return servicesSettings;
         }
+
+        /* This may get disabled (eg in the case where the wizard detects it should go into bridge mode) */
+        servicesSettings.setDhcpEnabled( true );
+        servicesSettings.setDnsEnabled( true );
         
         /* Convert to an array of bytes, to calculate the start/end address */
         byte addressArray[] = address.getAddr().getAddress();

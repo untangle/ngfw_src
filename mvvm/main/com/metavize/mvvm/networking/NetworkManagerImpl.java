@@ -871,7 +871,7 @@ public class NetworkManagerImpl implements NetworkManager
         rsw.writeFile( ETC_RESOLV_FILE );
     }
 
-    /* Methods for saving and loading the settings files to the database */
+    /* Methods for saving and loading the settings files from the database at startup */
     private void loadAllSettings()
     {
         this.ddnsSettings = loadDynamicDnsSettings();

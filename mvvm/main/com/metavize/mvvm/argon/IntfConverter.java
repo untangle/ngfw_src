@@ -272,7 +272,7 @@ public final class IntfConverter
         this.deviceNameArray = deviceNameList.toArray( new String[0] );
 
         logger.debug( "New netcapIntfArray: " + Arrays.toString( this.netcapIntfArray ));
-        logger.debug( "New argonIntfArray: " + Arrays.toString( this.argonIntfArray ));
+        logger.debug( "New argonIntfArray:  " + Arrays.toString( this.argonIntfArray ));
         logger.debug( "New deviceNameArray: " + Arrays.toString( this.deviceNameArray ));
     }
     
@@ -308,7 +308,7 @@ public final class IntfConverter
 
             if (( 0 > argonIntf ) || ( argonIntf > ARGON_MAX ) || 
                 ( argonIntf < DMZ )) {
-                logger.error(  "Invalid argon intf: " + argonIntf + " '" + deviceName + "', continuing" );
+                logger.error( "Invalid argon intf: " + argonIntf + " '" + deviceName + "', continuing" );
                 continue;
             }
             
@@ -318,7 +318,7 @@ public final class IntfConverter
         /* Tell the new instance to generate new arrays */
         newInstance.updateArrays();
         
-        INSTANCE = newInstance;               
+        INSTANCE = newInstance;      
     }
 
 

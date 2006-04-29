@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.metavize.mvvm.tran.AddressValidator;
 import com.metavize.mvvm.tran.ValidateException;
 import org.apache.log4j.Logger;
 
@@ -28,16 +29,43 @@ public class AddressValidator
     private static final Logger logger = Logger.getLogger( AddressValidator.class );
 
     private static final List<AddressRange> ILLEGAL_ADDRESS_LIST;
+    private static final List<AddressRange> PRIVATE_ADDRESS_LIST;
 
-    public AddressValidator()
+    private static final AddressValidator INSTANCE = new AddressValidator();
+
+    AddressValidator()
     {
     }
 
     public void validate( List<AddressRange> addressRangeList ) throws ValidateException
     {
-        /* Make sure that none of these overlap */
         List<AddressRange> checkList = new LinkedList<AddressRange>( addressRangeList );
+
+        /* Make sure none of the addresses also overlap with the illegal ranges */
         checkList.addAll( ILLEGAL_ADDRESS_LIST );
+
+        ValidateException e = checkOverlap( checkList );
+        
+        if ( e != null ) throw e;
+    }
+
+    public boolean isInPrivateNetwork( InetAddress address )
+    {
+        List<AddressRange> checkList = new LinkedList<AddressRange>();
+        
+        /* Add an entry to the checklist for the single IP */
+        checkList.add( AddressRange.makeAddress( address ));
+
+        checkList.addAll( PRIVATE_ADDRESS_LIST );
+        
+        if ( null != checkOverlap( checkList )) return true;
+
+        return false;
+    }
+
+    private ValidateException checkOverlap( List<AddressRange> addressRangeList ) 
+    {
+        List<AddressRange> checkList = new LinkedList<AddressRange>( addressRangeList );
 
         /* Sort the list */
         Collections.sort( checkList );
@@ -56,20 +84,20 @@ public class AddressValidator
                         logger.warn( "Overlapping in the list of illegal addresses: " +
                                      range.getDescription() + "," + previous.getDescription());
                     } else if ( range.getIsIllegal()) {
-                        throw new
-                            ValidateException( "The network: " + previous.getDescription() +
-                                               " cannot overlap with the network " +
-                                               range.getDescription());
+                        return new
+                             ValidateException( "The network: " + previous.getDescription() +
+                                                " cannot overlap with the network " +
+                                                range.getDescription());
 
                     } else if ( previous.getIsIllegal()) {
-                        throw new
+                        return new
                             ValidateException( "The network: " + range.getDescription() +
                                                " cannot overlap with the network: " +
                                                previous.getDescription());
 
-                        /* They are both not illegal */
+                        /* They are both legal */
                     } else {
-                        throw new
+                        return new
                             ValidateException( "The two networks: " + range.getDescription() +
                                                " and " + previous.getDescription() + " cannot overlap" );
                     }
@@ -78,19 +106,28 @@ public class AddressValidator
 
             previous = range;
         }
+
+        return null;
     }
 
-    static {
+    public static AddressValidator getInstance()
+    {
+        return INSTANCE;
+    }
+    
+    static
+    {
         List<AddressRange> illegalList = new LinkedList<AddressRange>();
-
+        
         try {
+            
             /* This list is from RFC 3330 */
-            /* This network */
+            /* Loopback */
             illegalList.add( AddressRange.makeNetwork( InetAddress.getByName( "127.0.0.0" ),
                                                        InetAddress.getByName( "255.0.0.0" ),
                                                        true ));
 
-            /* Loopback */
+            /* "This" network */
             illegalList.add( AddressRange.makeNetwork( InetAddress.getByName( "0.0.0.0" ),
                                                        InetAddress.getByName( "255.0.0.0" ),
                                                        true ));
@@ -115,5 +152,26 @@ public class AddressValidator
         }
 
         ILLEGAL_ADDRESS_LIST = Collections.unmodifiableList( illegalList );
+        
+        List<AddressRange> privateList = new LinkedList<AddressRange>();
+
+        try {
+            privateList.add( AddressRange.makeNetwork( InetAddress.getByName( "10.0.0.0" ),
+                                                       InetAddress.getByName( "255.0.0.0" ),
+                                                       false ));
+
+            privateList.add( AddressRange.makeNetwork( InetAddress.getByName( "192.168.0.0" ),
+                                                       InetAddress.getByName( "255.255.0.0" ),
+                                                       false ));
+            
+            privateList.add( AddressRange.makeNetwork( InetAddress.getByName( "172.16.0.0" ),
+                                                       InetAddress.getByName( "255.240.0.0" ),
+                                                       false ));
+        } catch ( Exception e ) {
+            logger.error( "Unable to initialize illegal address list, using the empty list", e );
+            privateList.clear();
+        }
+        
+        PRIVATE_ADDRESS_LIST = Collections.unmodifiableList( privateList );
     }
 }

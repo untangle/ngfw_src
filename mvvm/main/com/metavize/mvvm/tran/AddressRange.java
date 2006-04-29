@@ -56,6 +56,15 @@ public class AddressRange implements Comparable<AddressRange>
         return this.isIllegal;
     }
 
+    /* Made for just a single address */
+    public static AddressRange makeAddress( InetAddress address )
+    {
+        long addressLong = toLong( address );
+
+        /* Assuming the address is not illegal */
+        return new AddressRange( addressLong, addressLong, address.getHostAddress(), false );
+    }
+
     public static AddressRange makeNetwork( InetAddress network, InetAddress netmask )
     {
         return makeNetwork( network, netmask, false );

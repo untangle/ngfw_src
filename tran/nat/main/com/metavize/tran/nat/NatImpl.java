@@ -10,6 +10,8 @@
  */
 package com.metavize.tran.nat;
 
+import java.net.InetAddress;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,13 +22,15 @@ import org.apache.log4j.Logger;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
 
+import com.metavize.mvvm.networking.IPNetwork;
 import com.metavize.mvvm.networking.NetworkManagerImpl;
+import com.metavize.mvvm.networking.NetworkSpacesSettings;
 import com.metavize.mvvm.networking.NetworkException;
 import com.metavize.mvvm.networking.RedirectRule;
 import com.metavize.mvvm.networking.SetupState;
-import com.metavize.mvvm.networking.NetworkSpacesSettings;
 import com.metavize.mvvm.networking.ServicesSettings;
 import com.metavize.mvvm.networking.NetworkSettingsListener;
+import com.metavize.mvvm.networking.internal.NetworkSpaceInternal;
 import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
 import com.metavize.mvvm.networking.internal.ServicesInternalSettings;
 import com.metavize.mvvm.argon.SessionMatcher;
@@ -42,6 +46,7 @@ import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.MPipe;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
+import com.metavize.mvvm.tran.AddressValidator;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformException;
@@ -273,8 +278,6 @@ public class NatImpl extends AbstractTransform implements Nat
         /* Disable everything */
 
         /* deconfigure the event handle and the dhcp manager */
-        // !!!! Pushed into the networking package
-        // dhcpManager.deconfigure();
         dhcpMonitor.stop();
 
         try {
@@ -318,28 +321,19 @@ public class NatImpl extends AbstractTransform implements Nat
                 }
 
                 /* Indicate to enable network spaces when then devices powers on */
-                isUpgrade = true;
+                this.isUpgrade = true;
             } else if ( state.equals( SetupState.WIZARD )) {
-                logger.info( "Settings are not setup yet, using defaults" );
-                try {                     
-                    /* Get the default settings, save them, and indicate
-                     * to turn on network spaces at startup. */
-                    NatBasicSettings defaultSettings = 
-                        this.settingsManager.getDefaultSettings( this.getTid());
-                    setNatSettings( defaultSettings );
-                } catch ( Exception e ) {
-                    logger.error( "Unable to set wizard nat settings", e );
-                }
-                
+                postInitWizard();
+
                 /* Indicate to enable network spaces when then devices powers on */
-                isUpgrade = true;
+                this.isUpgrade = true;
             }  else {
                 logger.info( "Settings are in [" + settings.getSetupState() +"]  mode, ignoring." );
             }
             
             /* If upgrading change the setting to basic mode, this just means they
              * won't be upgraded again.*/
-            if ( isUpgrade ) {
+            if ( this.isUpgrade ) {
                 /* Change to basic mode */
                 settings.setSetupState( SetupState.BASIC );
                 DataSaver<NatSettingsImpl> dataSaver = new DataSaver<NatSettingsImpl>( getTransformContext());
@@ -357,7 +351,7 @@ public class NatImpl extends AbstractTransform implements Nat
         NetworkManagerImpl networkManager = getNetworkManager();
 
         /* Enable the network settings */
-        if ( state.equals( MvvmLocalContext.MvvmState.RUNNING ) || isUpgrade ) {
+        if ( state.equals( MvvmLocalContext.MvvmState.RUNNING ) || this.isUpgrade ) {
             logger.debug( "enabling network spaces settings because user powered on nat or upgrade." );
             
             try {
@@ -366,7 +360,7 @@ public class NatImpl extends AbstractTransform implements Nat
                 throw new TransformStartException( "Unable to enable network spaces", e );
             }
 
-            isUpgrade = false;
+            this.isUpgrade = false;
         } else {
             logger.debug( "not enabling network spaces settings at startup" );
         }
@@ -505,6 +499,80 @@ public class NatImpl extends AbstractTransform implements Nat
         if ( isDhcpEnabled ) dhcpMonitor.start();
         else dhcpMonitor.stop();
     }
+
+    private void postInitWizard()
+    {
+        logger.info( "Settings are not setup yet, using defaults for setup wizard" );
+
+        try {
+            /* Get the default settings, save them, and indicate
+             * to turn on network spaces at startup. */
+            NatBasicSettings defaultSettings = 
+                this.settingsManager.getDefaultSettings( this.getTid());
+            
+            if ( isRouterDetected()) {
+                /* Disble NAT, DHCP and DNS */
+                defaultSettings.setNatEnabled( false );
+                defaultSettings.setDhcpEnabled( false );
+                defaultSettings.setDnsEnabled( false );
+            }
+            
+            setNatSettings( defaultSettings );
+        } catch ( Exception e ) {
+            logger.error( "Unable to set wizard nat settings", e );
+        }        
+    }
+
+    /**
+     * Returns true if the edgeguard detects that there is a Router on the outside
+     * of it that is NATing traffic
+     */
+    private boolean isRouterDetected()
+    {
+        NetworkSpacesInternalSettings networkSettings = getNetworkSettings();
+        
+        /* Nothing to check, settings are null */
+        if ( networkSettings == null ) {
+            logger.warn( "Unable to detect router, null network settings" );
+            return false;
+        }
+
+        List<NetworkSpaceInternal> networkSpaceList = networkSettings.getNetworkSpaceList();
+        
+        if ( networkSpaceList == null ) {
+            logger.warn( "Unable to detect router, null network space list" );
+            return false;
+        }
+
+        if ( networkSpaceList.size() == 0 ) {
+            logger.warn( "Unable to detect router, No network spaces" );
+            return false;
+        }
+
+        NetworkSpaceInternal space = networkSpaceList.get( 0 );
+        
+        IPNetwork network = space.getPrimaryAddress();
+        if ( network == null || IPNetwork.getEmptyNetwork().equals( network )) {
+            logger.warn( "Unable to detect router, NULL or empty network on primary space." );
+            return false;
+        }
+        
+        /* Verify that the address was retrieved using DHCP */
+        if ( !space.getIsDhcpEnabled()) {
+            logger.debug( "DHCP is disabled, assuming an external router is not in place." );
+            return false;
+        }
+        
+        /* If not in a private network, this is a public address */
+        InetAddress publicAddress = network.getNetwork().getAddr();
+        if ( !AddressValidator.getInstance().isInPrivateNetwork( network.getNetwork().getAddr())) {
+            logger.debug( "Detected public address for '"+ publicAddress.getHostAddress() + "'" );
+            return false;
+        }
+
+        logger.debug( "Detected private address for '"+ publicAddress.getHostAddress() + "'" );
+        return true;
+    }
     
     private NetworkManagerImpl getNetworkManager()
     {
@@ -556,6 +624,5 @@ public class NatImpl extends AbstractTransform implements Nat
             this.settings = settings;
             tl.run( go );
         }
-        
     }
 }

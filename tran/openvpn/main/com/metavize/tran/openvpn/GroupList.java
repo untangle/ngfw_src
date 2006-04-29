@@ -76,6 +76,6 @@ public class GroupList implements Serializable, Validatable
         }
 
         /* Determine if all of the addresses are unique */
-        new AddressValidator().validate( buildAddressRange());
+        AddressValidator.getInstance().validate( buildAddressRange());
     }
 }

@@ -92,6 +92,6 @@ public class SiteList implements Serializable, Validatable
         }
         
         /* XXX Check for overlap, and check for conflicts with the network settings */
-        new AddressValidator().validate( buildAddressRange());
+        AddressValidator.getInstance().validate( buildAddressRange());
     }
 }

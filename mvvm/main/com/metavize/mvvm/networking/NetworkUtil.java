@@ -183,7 +183,7 @@ public class NetworkUtil
             }
             
             /* Check for overlap in the network addresses */
-            // !!!! waiting till able to test. new AddressValidator().validate( addressRangeList );
+            // !!!! waiting till able to test. AddressValidator.getInstance().validate( addressRangeList );
             
             if ( space.getIsNatEnabled()) {
                 if ( isDhcpEnabled ) {
