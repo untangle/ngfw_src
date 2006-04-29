@@ -28,8 +28,8 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 
     private static final String EXCEPTION_PASSWORD_MISSING = "A \"Password\" must be specified if a \"Login\" is specified.";
     private static final String EXCEPTION_LOGIN_MISSING = "A \"Login\" must be specified if a \"Password\" is specified.";
-    private static final String EXCEPTION_HOSTNAME_MISSING = "A \"Hostanme\" must be specified if \"Login\" or \"Password\" are specified.";
-    private static final String EXCEPTION_SEARCH_BASE_MISSING = "A \"Search Base\" must be specified.";
+    private static final String EXCEPTION_HOSTNAME_MISSING = "A \"Hostname\" must be specified if \"Login\" or \"Password\" are specified.";
+    private static final String EXCEPTION_DOMAIN_MISSING = "A \"Domain\" must be specified.";
     
     public DirectoryRemoteADJPanel() {
         initComponents();
@@ -57,8 +57,8 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 	// PASSWORD /////
 	String password = new String(passwordJPasswordField.getPassword());
 
-        // SEARCH BASE /////
-        String searchBase = baseJTextField.getText();
+        // DOMAIN /////
+        String domain = baseJTextField.getText();
 
 	// CHECK THAT BOTH PASSWORD AND LOGIN ARE FILLED OR UNFILLED /////
 	passwordJPasswordField.setBackground( Color.WHITE );
@@ -79,21 +79,21 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 	    throw new Exception(EXCEPTION_HOSTNAME_MISSING);
 	}
 
-	// CHECK THAT A SEARCH BASE IS SUPPLIED
+	// CHECK THAT A DOMAIN IS SUPPLIED
 	baseJTextField.setBackground( Color.WHITE );
-	if( searchBase.length() == 0 ){
+	if( domain.length() == 0 ){
 	    baseJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
-	    throw new Exception(EXCEPTION_SEARCH_BASE_MISSING);
+	    throw new Exception(EXCEPTION_DOMAIN_MISSING);
 	}
 
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
 	    RepositorySettings repositorySettings = directoryCompoundSettings.getAddressBookSettings().getADRepositorySettings();
-	    repositorySettings.setSuperuserDN( login );
+	    repositorySettings.setSuperuser( login );
 	    repositorySettings.setSuperuserPass( password );
 	    repositorySettings.setLDAPHost( host );
 	    repositorySettings.setLDAPPort( port );
-	    repositorySettings.setSearchBase( searchBase );
+	    repositorySettings.setDomain( domain );
         }
 
     }
@@ -102,7 +102,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private int portCurrent;
     private String loginCurrent;
     private String passwordCurrent;
-    private String searchBaseCurrent;
+    private String domainCurrent;
 
     public void doRefresh(DirectoryCompoundSettings directoryCompoundSettings){
 	RepositorySettings repositorySettings = directoryCompoundSettings.getAddressBookSettings().getADRepositorySettings();
@@ -119,7 +119,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 	((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
 
 	// LOGIN //////
-	loginCurrent = repositorySettings.getSuperuserDN();
+	loginCurrent = repositorySettings.getSuperuser();
 	loginJTextField.setText( loginCurrent );
 	loginJTextField.setBackground( Color.WHITE );
 
@@ -128,9 +128,9 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 	passwordJPasswordField.setText( passwordCurrent );
 	passwordJPasswordField.setBackground( Color.WHITE );
 
-	// SEARCH BASE //////
-	searchBaseCurrent = repositorySettings.getSearchBase();
-	baseJTextField.setText( searchBaseCurrent );	
+	// DOMAIN //////
+	domainCurrent = repositorySettings.getDomain();
+	baseJTextField.setText( domainCurrent );	
 	baseJTextField.setBackground( Color.WHITE );
 
     }
@@ -282,7 +282,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 restrictIPJPanel1.setLayout(new java.awt.GridBagLayout());
 
                 jLabel6.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel6.setText("Search Base:");
+                jLabel6.setText("Domain:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
