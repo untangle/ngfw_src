@@ -601,8 +601,8 @@ ALTER TABLE mvvm_dns_host_list
 -- Portals
 ALTER TABLE settings.portal_group
     ADD CONSTRAINT fk_portal_group_parent
-    FOREIGN KEY (settings_id) REFERENCES settings.portal_global;
+    FOREIGN KEY (settings_id) REFERENCES settings.portal_settings;
 
 ALTER TABLE settings.portal_user
     ADD CONSTRAINT fk_portal_user_parent
-    FOREIGN KEY (settings_id) REFERENCES settings.portal_global;
+    FOREIGN KEY (settings_id) REFERENCES settings.portal_settings;
