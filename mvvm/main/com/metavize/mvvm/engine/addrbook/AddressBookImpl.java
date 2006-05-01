@@ -60,7 +60,7 @@ public class AddressBookImpl
           if(settings == null) {
             m_logger.info("creating new AddressBookSettings");
             settings = new AddressBookSettings();
-            settings.setAddressBookConfiguration(AddressBookConfiguration.NOT_CONFIGURED);
+            settings.setAddressBookConfiguration(AddressBookConfiguration.LOCAL_ONLY);
             settings.setADRepositorySettings(new RepositorySettings(
               "My Admin",
               "mypassword",
