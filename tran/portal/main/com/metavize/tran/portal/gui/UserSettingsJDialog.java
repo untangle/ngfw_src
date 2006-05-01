@@ -76,7 +76,7 @@ public class UserSettingsJDialog extends MConfigJDialog {
 	UserHomeSettingsJPanel userHomeSettingsJPanel = new UserHomeSettingsJPanel(portalUser);
 	addRefreshable(NAME_HOME, userHomeSettingsJPanel);
 	addSavable(NAME_HOME, userHomeSettingsJPanel);
-	addTab(NAME_HOME, null, userHomeSettingsJPanel);
+	addScrollableTab(getMTabbedPane(), NAME_HOME, null, userHomeSettingsJPanel, false, true);
     }
 
 }

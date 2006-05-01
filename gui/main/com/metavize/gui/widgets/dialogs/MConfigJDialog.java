@@ -125,7 +125,8 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 	}
 	// VALIDATE SIMULTANEOUSLY
 	try{
-	    compoundSettings.validate();
+	    if( compoundSettings != null )
+		compoundSettings.validate();
 	}
 	catch(Exception e){
 	    ValidateFailureDialog.factory( (Window) MConfigJDialog.this,
@@ -133,13 +134,15 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 	    throw new ValidationException();
 	}
 	// SEND SETTINGS TO SERVER
-	compoundSettings.save();
+	if( compoundSettings != null )
+	    compoundSettings.save();
     }
 
 
     protected void refreshAll() throws Exception {
 	// GET SETTINGS FROM SERVER
-	compoundSettings.refresh();
+	if( compoundSettings != null )
+	    compoundSettings.refresh();
     }
 
     protected void populateAll() throws Exception {

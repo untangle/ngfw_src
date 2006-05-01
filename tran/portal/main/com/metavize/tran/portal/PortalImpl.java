@@ -133,7 +133,7 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
 
     // XXX soon to be deprecated ----------------------------------------------
 
-    public Object getSettings() { return null; }
+    public Object getSettings() { return getPortalSettings(); }
 
-    public void setSettings(Object settings) { }
+    public void setSettings(Object settings) { setPortalSettings((PortalSettings)settings); }
 }

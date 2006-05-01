@@ -48,7 +48,7 @@ class BookmarksTableModel extends MSortedTableModel<Object>{
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
     private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # */
     private static final int C2_MW = 150; /* name */
-    private static final int C3_MW = 150; /* app */
+    private static final int C3_MW = 120; /* app */
     private static final int C4_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW + C3_MW ), 120); /* target */
 
     private Object portalObject;

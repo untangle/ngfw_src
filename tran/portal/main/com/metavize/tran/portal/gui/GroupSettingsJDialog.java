@@ -76,7 +76,7 @@ public class GroupSettingsJDialog extends MConfigJDialog {
 	GroupHomeSettingsJPanel groupHomeSettingsJPanel = new GroupHomeSettingsJPanel(portalGroup);
 	addRefreshable(NAME_HOME, groupHomeSettingsJPanel);
 	addSavable(NAME_HOME, groupHomeSettingsJPanel);
-	addTab(NAME_HOME, null, groupHomeSettingsJPanel);
+	addScrollableTab( getMTabbedPane(), NAME_HOME, null, groupHomeSettingsJPanel, false, true);
     }
 
 }

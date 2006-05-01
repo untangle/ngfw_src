@@ -64,7 +64,8 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 
 	// GLOBAL HOME SETTINGS //
 	GlobalHomeSettingsJPanel globalHomeSettingsJPanel = new GlobalHomeSettingsJPanel();
-	globalJTabbedPane.addTab(NAME_SETTINGS_HOME, null, globalHomeSettingsJPanel);
+	JScrollPane globalHomeSettingsJScrollPane = addScrollableTab(globalJTabbedPane, NAME_SETTINGS_HOME,
+								     null, globalHomeSettingsJPanel, false, true);
 	addSavable(NAME_SETTINGS_HOME, globalHomeSettingsJPanel);
 	addRefreshable(NAME_SETTINGS_HOME, globalHomeSettingsJPanel);
 	globalHomeSettingsJPanel.setSettingsChangedListener(this);
