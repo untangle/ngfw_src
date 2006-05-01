@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * Copyright (c) 2006 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+-->
+
+<!DOCTYPE web-app
+      PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+      "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+
+  <!-- Zimbra stuff -->
+
+  <context-param>
+    <param-name>
+      javax.servlet.jsp.jstl.fmt.fallbackLocale
+    </param-name>
+    <param-value>
+      en
+    </param-value>
+  </context-param>
+  <context-param>
+     <param-name>admin.allowed.ports</param-name>
+     <param-value>7071</param-value>
+  </context-param>
+
+
+  <!-- The protocol mode can be one of three modes - mixed, http, or https -->
+  <env-entry>
+      <env-entry-name>protocolMode</env-entry-name>
+      <env-entry-value>http</env-entry-value>
+      <env-entry-type>java.lang.String</env-entry-type>
+  </env-entry>
+  <!--
+    * The http and httpsPort need to be in sync with the webserver
+    * or the proxy - these are the ports that will be used in redirects
+    -->
+  <env-entry>
+      <env-entry-name>httpsPort</env-entry-name>
+      <env-entry-value>443</env-entry-value>
+      <env-entry-type>java.lang.String</env-entry-type>
+  </env-entry>
+
+  <env-entry>
+      <env-entry-name>httpPort</env-entry-name>
+      <env-entry-value>80</env-entry-value>
+      <env-entry-type>java.lang.String</env-entry-type>
+  </env-entry>
+
+  <servlet>
+    <servlet-name>Properties2Javascript</servlet-name>
+    <servlet-class>com.zimbra.webClient.servlet.Props2JsServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>Properties2Javascript</servlet-name>
+    <url-pattern>/js/msgs/*</url-pattern>
+  </servlet-mapping>
+
+  <!-- Metavize stuff -->
+
+  <display-name>Portal</display-name>
+
+  <servlet>
+    <servlet-name>FileLister</servlet-name>
+    <servlet-class>
+      com.metavize.tran.portal.browser.FileLister
+    </servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>FileLister</servlet-name>
+    <url-pattern>/ls</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>FileGetter</servlet-name>
+    <servlet-class>
+      com.metavize.tran.portal.browser.FileGetter
+    </servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>FileGetter</servlet-name>
+    <url-pattern>/get/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>FileSaver</servlet-name>
+    <servlet-class>
+      com.metavize.tran.portal.browser.FileSaver
+    </servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>FileSaver</servlet-name>
+    <url-pattern>/put/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>CommandRunner</servlet-name>
+    <servlet-class>
+      com.metavize.tran.portal.browser.CommandRunner
+    </servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>CommandRunner</servlet-name>
+    <url-pattern>/exec/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>ImageScaler</servlet-name>
+    <servlet-class>
+      com.metavize.tran.portal.browser.ImageScaler
+    </servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>ImageScaler</servlet-name>
+    <url-pattern>/scale/*</url-pattern>
+  </servlet-mapping>
+
+  @JSP_PRE_COMPILED_SERVLETS@
+
+</web-app>

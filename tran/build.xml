@@ -504,6 +504,32 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
     <!-- portal -->
     <mkdir dir="${dist.mvvm.web}/portal/WEB-INF/lib"/>
+
+    <copy todir="${dist.mvvm.web}/portal/WEB-INF/lib">
+      <fileset refid="log4j.jarset"/>
+      <fileset refid="jcifs.jarset"/>
+      <fileset refid="commons-fileupload.jarset"/>
+      <fileset refid="commons-io.jarset"/>
+      <fileset refid="ajaxtk.thirdparty.jarset"/>
+    </copy>
+
+    <copy todir="${dist.mvvm.web}/portal/WEB-INF/classes">
+      <fileset dir="${AJAXTK_HOME}/build/classes"/>
+    </copy>
+
+    <mkdir dir="${dist.mvvm.web}/portal/WEB-INF/tlds"/>
+
+    <copy todir="${dist.mvvm.web}/portal/WEB-INF/tlds">
+      <fileset dir="${AJAXTK_HOME}/WebRoot/WEB-INF/tlds"/>
+    </copy>
+
+    <mkdir dir="${dist.mvvm.web}/portal/js"/>
+
+    <copy todir="${dist.mvvm.web}/portal/js">
+      <fileset dir="${AJAXTK_HOME}/WebRoot/js"/>
+    </copy>
+
+
   </target>
 
   <target name="install.firewall"/>
@@ -971,12 +997,18 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
       <src path="${tran.name}/webapps/portal/src"/>
 
-      <classpath refid="httpclient.classpath"/>
       <classpath refid="mvvm.thirdparty.classpath"/>
       <classpath refid="tomcat.thirdparty.classpath"/>
+      <classpath refid="ajaxtk.thirdparty.classpath"/>
     </javac>
 
     <mkdir dir="${build.gensrc}/portal/"/>
+
+    <copy todir="${dist.mvvm.web}/portal">
+      <fileset dir="${AJAXTK_HOME}/build/WebRoot/examples">
+        <include name="*.jsp"/>
+      </fileset>
+    </copy>
 
     <java classname="org.apache.jasper.JspC"
           fork="true"
@@ -992,6 +1024,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <classpath path="${java.home}/../lib/tools.jar"/>
       <classpath refid="tomcat.thirdparty.classpath"/>
       <classpath refid="mvvm.thirdparty.classpath"/>
+      <classpath refid="ajaxtk.thirdparty.classpath"/>
     </java>
 
     <echo message="Adding JSP servlet mappings to web.xml"/>
@@ -1005,6 +1038,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <filter token="JSP_PRE_COMPILED_SERVLETS" value="${portal-generated-web.xml}"/>
       </filterset>
     </copy>
+
   </target>
 
   <target name="compile.firewall"/>
