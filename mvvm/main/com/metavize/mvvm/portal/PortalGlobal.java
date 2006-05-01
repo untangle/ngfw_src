@@ -117,7 +117,7 @@ public class PortalGlobal implements Serializable
      * settings customization).
      *
      * @return the PortalHomeSettings.
-     * @hibernate.one-to-one
+     * @hibernate.many-to-one
      * cascade="all"
      * column="home_settings_id"
      */

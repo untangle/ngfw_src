@@ -109,7 +109,7 @@ public class PortalGroup implements Serializable
      * show the global settings until that point.
      *
      * @return the PortalHomeSettings.
-     * @hibernate.one-to-one
+     * @hibernate.many-to-one
      * cascade="all"
      * column="home_settings_id"
      */

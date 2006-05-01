@@ -123,7 +123,7 @@ public class PortalSettings implements Serializable
      * The global portal settings for this portal configuration.
      *
      * @return the PortaGlobal.
-     * @hibernate.one-to-one
+     * @hibernate.many-to-one
      * cascade="all"
      * column="global_settings_id"
      */

@@ -130,7 +130,7 @@ public class PortalUser implements Serializable
      * The PortalGroup that this user belongs to.  May be null.
      *
      * @return the PortalGroup.
-     * @hibernate.one-to-one
+     * @hibernate.many-to-one
      * column="group_id"
      */
     public PortalGroup getPortalGroup()
@@ -150,7 +150,7 @@ public class PortalUser implements Serializable
      * show the group or global settings until that point.
      *
      * @return the PortalHomeSettings.
-     * @hibernate.one-to-one
+     * @hibernate.many-to-one
      * cascade="all"
      * column="home_settings_id"
      */
