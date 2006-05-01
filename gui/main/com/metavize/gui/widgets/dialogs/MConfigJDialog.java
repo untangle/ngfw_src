@@ -77,6 +77,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
     protected abstract void generateGui();
 
     // TABS AND TABBED PANES //////////////
+    public JTabbedPane getMTabbedPane(){ return contentJTabbedPane; }
     public void addTab(String name, Icon icon, Component component){ contentJTabbedPane.addTab(name, icon, component); }
     public JTabbedPane addTabbedPane(String name, Icon icon){
         JTabbedPane newJTabbedPane = new JTabbedPane();

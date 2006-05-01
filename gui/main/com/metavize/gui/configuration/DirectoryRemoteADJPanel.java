@@ -29,7 +29,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private static final String EXCEPTION_PASSWORD_MISSING = "A \"Password\" must be specified if a \"Login\" is specified.";
     private static final String EXCEPTION_LOGIN_MISSING = "A \"Login\" must be specified if a \"Password\" is specified.";
     private static final String EXCEPTION_HOSTNAME_MISSING = "A \"Hostname\" must be specified if \"Login\" or \"Password\" are specified.";
-    private static final String EXCEPTION_DOMAIN_MISSING = "A \"Domain\" must be specified.";
+    private static final String EXCEPTION_DOMAIN_MISSING = "A \"Search Base\" must be specified.";
     
     public DirectoryRemoteADJPanel() {
         initComponents();
@@ -59,6 +59,9 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 
         // DOMAIN /////
         String domain = baseJTextField.getText();
+
+	// ORG //
+	String org = orgJTextField.getText();
 
 	// CHECK THAT BOTH PASSWORD AND LOGIN ARE FILLED OR UNFILLED /////
 	passwordJPasswordField.setBackground( Color.WHITE );
@@ -94,6 +97,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 	    repositorySettings.setLDAPHost( host );
 	    repositorySettings.setLDAPPort( port );
 	    repositorySettings.setDomain( domain );
+	    repositorySettings.setOUFilter( org );
         }
 
     }
@@ -103,6 +107,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private String loginCurrent;
     private String passwordCurrent;
     private String domainCurrent;
+    private String orgCurrent;
 
     public void doRefresh(DirectoryCompoundSettings directoryCompoundSettings){
 	RepositorySettings repositorySettings = directoryCompoundSettings.getAddressBookSettings().getADRepositorySettings();
@@ -133,6 +138,10 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 	baseJTextField.setText( domainCurrent );	
 	baseJTextField.setBackground( Color.WHITE );
 
+	// ORG //
+	orgCurrent = repositorySettings.getOUFilter();
+	orgJTextField.setText( orgCurrent );
+	orgJTextField.setBackground( Color.WHITE );
     }
     
     
@@ -156,6 +165,8 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 restrictIPJPanel1 = new javax.swing.JPanel();
                 jLabel6 = new javax.swing.JLabel();
                 baseJTextField = new javax.swing.JTextField();
+                jLabel7 = new javax.swing.JLabel();
+                orgJTextField = new javax.swing.JTextField();
 
                 setLayout(new java.awt.GridBagLayout());
 
@@ -282,7 +293,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 restrictIPJPanel1.setLayout(new java.awt.GridBagLayout());
 
                 jLabel6.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel6.setText("Domain:");
+                jLabel6.setText("Search Base:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
@@ -304,11 +315,30 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 restrictIPJPanel1.add(baseJTextField, gridBagConstraints);
 
+                jLabel7.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel7.setText("Organization:");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 0);
+                restrictIPJPanel1.add(jLabel7, gridBagConstraints);
+
+                orgJTextField.setMaximumSize(new java.awt.Dimension(200, 19));
+                orgJTextField.setMinimumSize(new java.awt.Dimension(200, 19));
+                orgJTextField.setPreferredSize(new java.awt.Dimension(200, 19));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 0);
+                restrictIPJPanel1.add(orgJTextField, gridBagConstraints);
+
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(5, 91, 5, 0);
+                gridBagConstraints.insets = new java.awt.Insets(5, 87, 5, 0);
                 enableRemoteJPanel.add(restrictIPJPanel1, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
@@ -329,22 +359,22 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 add(externalRemoteJPanel, gridBagConstraints);
 
         }//GEN-END:initComponents
-
+    
     private void portJSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_portJSpinnerStateChanged
-
+	
     }//GEN-LAST:event_portJSpinnerStateChanged
     
     private void hostJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_hostJTextFieldCaretUpdate
-
+	
     }//GEN-LAST:event_hostJTextFieldCaretUpdate
     
-	private void loginJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_loginJTextFieldCaretUpdate
-
-	}//GEN-LAST:event_loginJTextFieldCaretUpdate
+    private void loginJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_loginJTextFieldCaretUpdate
+	
+    }//GEN-LAST:event_loginJTextFieldCaretUpdate
     
-	private void passwordJPasswordFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_passwordJPasswordFieldCaretUpdate
-
-	}//GEN-LAST:event_passwordJPasswordFieldCaretUpdate
+    private void passwordJPasswordFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_passwordJPasswordFieldCaretUpdate
+	
+    }//GEN-LAST:event_passwordJPasswordFieldCaretUpdate
     
     private void baseJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_baseJTextFieldCaretUpdate
 
@@ -361,9 +391,11 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         private javax.swing.JLabel jLabel12;
         private javax.swing.JLabel jLabel5;
         private javax.swing.JLabel jLabel6;
+        private javax.swing.JLabel jLabel7;
         private javax.swing.JLabel jLabel8;
         private javax.swing.JSeparator jSeparator2;
         public javax.swing.JTextField loginJTextField;
+        private javax.swing.JTextField orgJTextField;
         private javax.swing.JPasswordField passwordJPasswordField;
         private javax.swing.JSpinner portJSpinner;
         private javax.swing.JPanel restrictIPJPanel;
