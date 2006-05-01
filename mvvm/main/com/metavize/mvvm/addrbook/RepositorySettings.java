@@ -76,7 +76,7 @@ public class RepositorySettings
     }
 
     public String getSuperuserDN() {
-        return "cn=" + m_superuser;
+        return "cn=" + m_superuser + "," + getSearchBase();
     }
 
 
