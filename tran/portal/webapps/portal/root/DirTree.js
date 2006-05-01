@@ -32,7 +32,7 @@ DirTree.prototype.setRoot = function(url)
    var root = new DwtTreeItem(this);
    root.setText(n.label);
    root.setImage("Folder"); // XXX Make Server icon
-   root.setData(Browser.CIFS_NODE, n);
+   root.setData(Portal.CIFS_NODE, n);
 
    this._populate(root);
 }
@@ -77,7 +77,7 @@ DirTree.prototype._expandNode = function(url, node)
    var children = node.getItems();
    for (var i = 0; i < children.length; i++) {
       var child = children[i];
-      var cifsNode = child.getData(Browser.CIFS_NODE);
+      var cifsNode = child.getData(Portal.CIFS_NODE);
 
       var childUrl = cifsNode.url;
       var matches = true;
@@ -110,7 +110,7 @@ DirTree.prototype._expandNode = function(url, node)
 
 DirTree.prototype._populate = function(item, cb, repopulate)
 {
-   var n = item.getData(Browser.CIFS_NODE);
+   var n = item.getData(Portal.CIFS_NODE);
 
    if (repopulate || !item.getData(DirTree._POPULATED)) {
       item.setData(DirTree._POPULATED, true);
@@ -137,7 +137,7 @@ DirTree.prototype._populateCallback = function(obj, results)
 
    var children = obj.parent.getItems();
    for (var i = 0; i < children.length; i++) {
-      var n = children[i].getData(Browser.CIFS_NODE);
+      var n = children[i].getData(Portal.CIFS_NODE);
       current[n.name] = children[i];
    }
 
@@ -149,7 +149,7 @@ DirTree.prototype._populateCallback = function(obj, results)
       } else {
          var n = new CifsNode(obj.parentUrl, name, true);
          var tn = new DwtTreeItem(obj.parent, null, n.label, "folder");
-         tn.setData(Browser.CIFS_NODE, n);
+         tn.setData(Portal.CIFS_NODE, n);
          if (this._dragSource) {
             tn.setDragSource(this._dragSource);
          }
