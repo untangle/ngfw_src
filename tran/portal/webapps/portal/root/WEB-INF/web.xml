@@ -70,6 +70,18 @@
   <display-name>Portal</display-name>
 
   <servlet>
+    <servlet-name>LoginServlet</servlet-name>
+    <servlet-class>
+      com.metavize.tran.portal.LoginServlet
+    </servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>LoginServlet</servlet-name>
+    <url-pattern>/login</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
     <servlet-name>FileLister</servlet-name>
     <servlet-class>
       com.metavize.tran.portal.browser.FileLister
