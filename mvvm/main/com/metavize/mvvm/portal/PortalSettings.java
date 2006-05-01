@@ -124,6 +124,7 @@ public class PortalSettings implements Serializable
      *
      * @return the PortaGlobal.
      * @hibernate.one-to-one
+     * cascade="all"
      * column="global_settings_id"
      */
     public PortalGlobal getGlobal()

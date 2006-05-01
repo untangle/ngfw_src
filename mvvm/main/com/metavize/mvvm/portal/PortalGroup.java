@@ -110,6 +110,7 @@ public class PortalGroup implements Serializable
      *
      * @return the PortalHomeSettings.
      * @hibernate.one-to-one
+     * cascade="all"
      * column="home_settings_id"
      */
     public PortalHomeSettings getPortalHomeSettings()
