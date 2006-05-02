@@ -32,6 +32,10 @@ LoginDialog.prototype.getPassword = function()
    return this._panel.getPassword();
 }
 
+LoginDialog.prototype.reportFailure = function(msg)
+{
+   this._panel.reportFailure(msg);
+}
 
 // internal methods -----------------------------------------------------------
 

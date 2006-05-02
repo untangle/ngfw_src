@@ -76,9 +76,14 @@ Portal.prototype.login = function()
       // XXX XXX put in post
       var url = "login?user=" + user + "&password=" + password;
 
-      var cb = function() {
-         dialog.popdown();
-         this.refresh();
+      var cb = function(obj, results) {
+         var i = results.text.indexOf("success");
+
+         if (0 <= i) {
+            dialog.popdown();
+         } else {
+            dialog.reportFailure("bad login");
+         }
       }
 
       AjxRpc.invoke(null, url, null, new AjxCallback(this, cb, {}), false);

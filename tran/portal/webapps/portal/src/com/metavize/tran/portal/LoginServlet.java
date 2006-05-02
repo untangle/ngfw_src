@@ -11,6 +11,7 @@
 
 package com.metavize.tran.portal;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import javax.servlet.ServletException;
@@ -56,7 +57,17 @@ public class LoginServlet extends HttpServlet
         }
 
         PortalLoginKey plk = pm.login(user, password, addr);
-        System.out.println("PLK: " + plk);
+
+        try {
+            if (null == plk) {
+                resp.getWriter().println("failure");
+            } else {
+                s.setAttribute("portal-login-key", plk);
+                resp.getWriter().println("success");
+            }
+        } catch (IOException exn) {
+            logger.warn("could not write response", exn);
+        }
     }
 
     @Override
