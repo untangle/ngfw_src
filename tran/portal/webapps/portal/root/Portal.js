@@ -32,10 +32,6 @@ function Portal(shell, url) {
 Portal.prototype = new DwtComposite();
 Portal.prototype.constructor = Portal;
 
-// fields ---------------------------------------------------------------------
-
-Portal.CIFS_NODE = "cifsNode";
-
 // public methods -------------------------------------------------------------
 
 Portal.prototype.login = function()
@@ -100,6 +96,11 @@ Portal.prototype._makeToolbar = function() {
    b.addSelectionListener(new AjxListener(this, this._refreshButtonListener));
 
    b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
+   b.setText("New Bookmark");
+   b.setToolTipContent("Add a new bookmark");
+   b.addSelectionListener(new AjxListener(this, this._newBookmarkButtonListener));
+
+   b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
    b.setText("Delete");
    b.setToolTipContent("Delete selected files");
    b.addSelectionListener(new AjxListener(this, this._deleteButtonListener));
@@ -161,6 +162,21 @@ Portal.prototype._deleteButtonListener = function(ev)
 
    AjxRpc.invoke(null, url, null, new AjxCallback(this, this.refresh, { }),
                  false);
+}
+
+Portal.prototype._newBookmarkButtonListener = function(ev)
+{
+   var dialog = new NewBookmarkDialog(this._shell);
+
+   var cb = function() {
+      alert("BM: " + dialog.getBookmark());
+   }
+
+   var l = new AjxListener(this, cb);
+   dialog.setButtonListener(DwtDialog.OK_BUTTON, l);
+   dialog.addListener(DwtEvent.ENTER, l);
+
+   dialog.popup();
 }
 
 Portal.prototype._renameButtonListener = function(ev)
