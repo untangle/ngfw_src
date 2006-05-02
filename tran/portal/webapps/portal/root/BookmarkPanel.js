@@ -1,7 +1,7 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-function DetailPanel(parent, className, posStyle) {
+function BookmarkPanel(parent, className, posStyle) {
    if (0 == arguments.length) {
       return;
    }
@@ -21,12 +21,12 @@ function DetailPanel(parent, className, posStyle) {
    DwtListView.call(this, parent, className, posStyle, header, true);
 }
 
-DetailPanel.prototype = new DwtListView();
-DetailPanel.prototype.constructor = DetailPanel;
+BookmarkPanel.prototype = new DwtListView();
+BookmarkPanel.prototype.constructor = BookmarkPanel;
 
 // public methods -------------------------------------------------------------
 
-DetailPanel.prototype.chdir = function(url)
+BookmarkPanel.prototype.chdir = function(url)
 {
    if (this.cwd == url) {
       return;
@@ -37,7 +37,7 @@ DetailPanel.prototype.chdir = function(url)
    this.refresh();
 }
 
-DetailPanel.prototype.refresh = function()
+BookmarkPanel.prototype.refresh = function()
 {
    var cb = function(obj, results) {
       this._setListingXml(results.xml);
@@ -50,7 +50,7 @@ DetailPanel.prototype.refresh = function()
 
 // internal methods -----------------------------------------------------------
 
-DetailPanel.prototype._setListingXml = function(dom)
+BookmarkPanel.prototype._setListingXml = function(dom)
 {
    var root = dom.getElementsByTagName("root")[0];
    this.url = root.getAttribute("path");
@@ -76,7 +76,7 @@ DetailPanel.prototype._setListingXml = function(dom)
 
 // DwtListView methods --------------------------------------------------------
 
-DetailPanel.prototype._createItemHtml = function(item) {
+BookmarkPanel.prototype._createItemHtml = function(item) {
 
    var div = document.createElement("div");
    var base = "Row";
@@ -121,7 +121,7 @@ DetailPanel.prototype._createItemHtml = function(item) {
    return div;
 }
 
-DetailPanel.prototype._sortColumn = function(col, asc)
+BookmarkPanel.prototype._sortColumn = function(col, asc)
 {
    this._lastSortCol = col;
    this._lastSortAsc = asc;
@@ -141,7 +141,7 @@ DetailPanel.prototype._sortColumn = function(col, asc)
 
 // DwtControl methods ---------------------------------------------------------
 
-DetailPanel.prototype._getDnDIcon = function(dragOp)
+BookmarkPanel.prototype._getDnDIcon = function(dragOp)
 {
    var icon = document.createElement("div");
    Dwt.setPosition(icon, Dwt.ABSOLUTE_STYLE);
@@ -163,13 +163,13 @@ DetailPanel.prototype._getDnDIcon = function(dragOp)
    return icon;
 }
 
-DetailPanel.prototype._setDnDIconState = function(dropAllowed) {
+BookmarkPanel.prototype._setDnDIconState = function(dropAllowed) {
    this._dndIcon.className = dropAllowed
       ? this._dndIcon._origClassName + " DropAllowed"
       : this._dndIcon._origClassName + " DropNotAllowed";
 }
 
-DetailPanel.prototype._mouseOverAction = function(ev, div)
+BookmarkPanel.prototype._mouseOverAction = function(ev, div)
 {
    var item = this.getItemFromElement(div);
    this._mouseOverItem = item;
@@ -191,7 +191,7 @@ DwtListView.prototype._mouseOutAction = function(mouseEv, div)
 
 // util -----------------------------------------------------------------------
 
-DetailPanel.prototype._hasPreview = function(mimeType)
+BookmarkPanel.prototype._hasPreview = function(mimeType)
 {
    var s = mimeType.split('/');
    if ("image" == s[0]) {

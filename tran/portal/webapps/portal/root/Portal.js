@@ -37,15 +37,15 @@ function Portal(shell, url) {
    dragSource.addDragListener(new AjxListener(this, this._detailDragListener));
    dropTarget = new DwtDropTarget(CifsNode);
    dropTarget.addDropListener(new AjxListener(this, this._detailDropListener));
-   this._detailPanel = new DetailPanel(this, null, DwtControl.ABSOLUTE_STYLE);
-   this._detailPanel.setUI();
-   this._detailPanel.zShow(true);
-   this._detailPanel.addSelectionListener(new AjxListener(this, this._detailSelectionListener));
-   this._detailPanel.setDragSource(dragSource);
-   this._detailPanel.setDropTarget(dropTarget);
+   this._bookmarkPanel = new BookmarkPanel(this, null, DwtControl.ABSOLUTE_STYLE);
+   this._bookmarkPanel.setUI();
+   this._bookmarkPanel.zShow(true);
+   this._bookmarkPanel.addSelectionListener(new AjxListener(this, this._detailSelectionListener));
+   this._bookmarkPanel.setDragSource(dragSource);
+   this._bookmarkPanel.setDropTarget(dropTarget);
 
    this._actionMenu = this._makeActionMenu()
-   this._detailPanel.addActionListener(new AjxListener(this, this._listActionListener));
+   this._bookmarkPanel.addActionListener(new AjxListener(this, this._listActionListener));
 
    this.layout();
 
@@ -107,7 +107,7 @@ Portal.prototype.chdir = function(url, expandTree, expandDetail)
    }
 
    if (undefined == expandDetail || expandDetail) {
-      this._detailPanel.chdir(url);
+      this._bookmarkPanel.chdir(url);
    }
 }
 
@@ -130,7 +130,7 @@ Portal.prototype.cp = function(src, dest)
 Portal.prototype.refresh = function()
 {
    this._dirTree.refresh();
-   this._detailPanel.refresh();
+   this._bookmarkPanel.refresh();
 }
 
 Portal.prototype.layout = function(ignoreSash) {
@@ -157,8 +157,8 @@ Portal.prototype.layout = function(ignoreSash) {
    }
    x += this._sash.getSize().x;
 
-   this._detailPanel.setBounds(x, y, width - x, height);
-   x += this._detailPanel.getSize().x;
+   this._bookmarkPanel.setBounds(x, y, width - x, height);
+   x += this._bookmarkPanel.getSize().x;
 }
 
 // init -----------------------------------------------------------------------
@@ -218,7 +218,7 @@ Portal.prototype._makeAddressBar = function() {
 
 Portal.prototype._makeActionMenu = function()
 {
-   var actionMenu = new DwtMenu(this._detailPanel, DwtMenu.POPUP_STYLE);
+   var actionMenu = new DwtMenu(this._bookmarkPanel, DwtMenu.POPUP_STYLE);
 
    var i = new DwtMenuItem(actionMenu, DwtMenuItem.NO_STYLE);
    i.setText("Delete");
@@ -298,7 +298,7 @@ Portal.prototype._uploadCompleteListener = function(evt)
 
 Portal.prototype._deleteButtonListener = function(ev)
 {
-   var sel = this._detailPanel.getSelection();
+   var sel = this._bookmarkPanel.getSelection();
    if (0 == sel.length) {
       return;
    }
@@ -315,7 +315,7 @@ Portal.prototype._deleteButtonListener = function(ev)
 
 Portal.prototype._renameButtonListener = function(ev)
 {
-   var sel = this._detailPanel.getSelection();
+   var sel = this._bookmarkPanel.getSelection();
    if (0 == sel.length) {
       return;
    }
