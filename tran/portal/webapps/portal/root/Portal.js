@@ -14,28 +14,9 @@ function Portal(shell, url) {
    this._toolbar = this._makeToolbar();
    this._toolbar.zShow(true);
 
-   this._addressBar = this._makeAddressBar();
-   this._addressBar.zShow(true);
-
    var dragSource = new DwtDragSource(Dwt.DND_DROP_MOVE | Dwt.DND_DROP_COPY);
-   dragSource.addDragListener(new AjxListener(this, this._treeDragListener));
-   var dropTarget = new DwtDropTarget(CifsNode);
-   dropTarget.addDropListener(new AjxListener(this, this._treeDropListener));
-   this._dirTree = new DirTree(this, null, DwtControl.ABSOLUTE_STYLE,
-                              dragSource, dropTarget);
-   this._dirTree.setRoot(url);
-   this._dirTree.setScrollStyle(DwtControl.SCROLL);
-   this._dirTree.addSelectionListener(new AjxListener(this, this._dirSelectionListener));
-   this._dirTree.zShow(true);
-
-   this._sash = new DwtSash(this, DwtSash.HORIZONTAL_STYLE, null, 3);
-   this._sashPos = 200;
-   this._sash.registerCallback(this._sashCallback, this);
-   this._sash.zShow(true);
-
-   dragSource = new DwtDragSource(Dwt.DND_DROP_MOVE | Dwt.DND_DROP_COPY);
    dragSource.addDragListener(new AjxListener(this, this._detailDragListener));
-   dropTarget = new DwtDropTarget(CifsNode);
+   var dropTarget = new DwtDropTarget(CifsNode);
    dropTarget.addDropListener(new AjxListener(this, this._detailDropListener));
    this._bookmarkPanel = new BookmarkPanel(this, null, DwtControl.ABSOLUTE_STYLE);
    this._bookmarkPanel.setUI();
@@ -112,11 +93,10 @@ Portal.prototype.cp = function(src, dest)
 
 Portal.prototype.refresh = function()
 {
-   this._dirTree.refresh();
    this._bookmarkPanel.refresh();
 }
 
-Portal.prototype.layout = function(ignoreSash) {
+Portal.prototype.layout = function() {
    var size = this._shell.getSize();
    var width = size.x;
    var height = size.y;
@@ -127,18 +107,6 @@ Portal.prototype.layout = function(ignoreSash) {
    this._toolbar.setLocation(0, 0);
    var size = this._toolbar.getSize();
    y += size.y;
-
-   this._addressBar.setLocation(0, y);
-   size = this._addressBar.getSize();
-   y += size.y;
-
-   this._dirTree.setBounds(x, y, this._sashPos, height);
-   x += this._dirTree.getSize().x;
-
-   if (!ignoreSash) {
-      this._sash.setBounds(x, y, 2, height);
-   }
-   x += this._sash.getSize().x;
 
    this._bookmarkPanel.setBounds(x, y, width - x, height);
    x += this._bookmarkPanel.getSize().x;
@@ -168,32 +136,6 @@ Portal.prototype._makeToolbar = function() {
    b.setText("New Folder");
    b.setToolTipContent("Create a new folder");
    b.addSelectionListener(new AjxListener(this, this._mkdirButtonListener));
-
-   return toolbar;
-}
-
-Portal.prototype._makeAddressBar = function() {
-   var toolbar = new DwtToolBar(this, "ToolBar", DwtControl.ABSOLUTE_STYLE, 2);
-
-   var l = new DwtLabel(toolbar);
-   l.setText("Address");
-
-   this._addressField = new DwtInputField({ parent: toolbar, size: 50 });
-
-   with (this) {
-      this._addressField.getInputElement().onkeyup = function(ev) {
-         DwtInputField._keyUpHdlr(ev);
-
-         var keyEv = DwtShell.keyEvent;
-         keyEv.setFromDhtmlEvent(ev);
-         if (DwtKeyEvent.KEY_RETURN == keyEv.keyCode) {
-            var val = keyEv.dwtObj.getValue();
-            if (val.charAt(val.length - 1) != '/') {
-               val += '/';
-            }
-         }
-      };
-   }
 
    return toolbar;
 }
@@ -359,26 +301,6 @@ Portal.prototype._shellListener = function(ev)
    if (ev.oldWidth != ev.newWidth || ev.oldHeight != ev.newHeight) {
       this.layout();
    }
-}
-
-// sash -----------------------------------------------------------------------
-
-Portal.prototype._sashCallback = function(d)
-{
-   var oldPos = this._sashPos;
-
-   this._sashPos += d;
-   if (0 > this._sashPos) {
-      this._sashPos = 0;
-   }
-
-   if (this._shell.getSize().x < this._sashPos) {
-      this._sashPos = x;
-   }
-
-   this.layout(true);
-
-   return this._sashPos - oldPos;
 }
 
 // dnd ------------------------------------------------------------------------
