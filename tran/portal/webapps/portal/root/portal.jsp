@@ -23,16 +23,11 @@
 
 <jsp:include page="Ajax.jsp"/>
 
-<script type="text/javascript" src="CifsNode.js"></script>
 <script type="text/javascript" src="Bookmark.js"></script>
 <script type="text/javascript" src="Portal.js"></script>
 <script type="text/javascript" src="LoginPanel.js"></script>
 <script type="text/javascript" src="LoginDialog.js"></script>
 <script type="text/javascript" src="BookmarkPanel.js"></script>
-<script type="text/javascript" src="FileUploadPanel.js"></script>
-<script type="text/javascript" src="FileUploadDialog.js"></script>
-<script type="text/javascript" src="MkdirDialog.js"></script>
-<script type="text/javascript" src="RenameDialog.js"></script>
 
 </head>
 

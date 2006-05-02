@@ -93,66 +93,6 @@
     <url-pattern>/bmlist</url-pattern>
   </servlet-mapping>
 
-  <servlet>
-    <servlet-name>FileLister</servlet-name>
-    <servlet-class>
-      com.metavize.tran.portal.browser.FileLister
-    </servlet-class>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>FileLister</servlet-name>
-    <url-pattern>/ls</url-pattern>
-  </servlet-mapping>
-
-  <servlet>
-    <servlet-name>FileGetter</servlet-name>
-    <servlet-class>
-      com.metavize.tran.portal.browser.FileGetter
-    </servlet-class>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>FileGetter</servlet-name>
-    <url-pattern>/get/*</url-pattern>
-  </servlet-mapping>
-
-  <servlet>
-    <servlet-name>FileSaver</servlet-name>
-    <servlet-class>
-      com.metavize.tran.portal.browser.FileSaver
-    </servlet-class>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>FileSaver</servlet-name>
-    <url-pattern>/put/*</url-pattern>
-  </servlet-mapping>
-
-  <servlet>
-    <servlet-name>CommandRunner</servlet-name>
-    <servlet-class>
-      com.metavize.tran.portal.browser.CommandRunner
-    </servlet-class>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>CommandRunner</servlet-name>
-    <url-pattern>/exec/*</url-pattern>
-  </servlet-mapping>
-
-  <servlet>
-    <servlet-name>ImageScaler</servlet-name>
-    <servlet-class>
-      com.metavize.tran.portal.browser.ImageScaler
-    </servlet-class>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>ImageScaler</servlet-name>
-    <url-pattern>/scale/*</url-pattern>
-  </servlet-mapping>
-
   @JSP_PRE_COMPILED_SERVLETS@
 
 </web-app>

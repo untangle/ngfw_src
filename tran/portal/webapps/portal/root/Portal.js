@@ -68,14 +68,6 @@ Portal.prototype.login = function()
    dialog.popup();
 }
 
-Portal.prototype.mv = function(src, dest)
-{
-   var url = Portal._mkSrcDestCommand("mv", src, dest)
-
-   // XXX handle error
-   AjxRpc.invoke(null, url, null, new AjxCallback(this, this.refresh, { }), false);
-}
-
 Portal.prototype.refresh = function()
 {
    this._bookmarkPanel.refresh();
@@ -178,29 +170,7 @@ Portal.prototype._renameButtonListener = function(ev)
       return;
    }
 
-   var dialog = new RenameDialog(this._shell, sel[0]);
-
-   // XXX first selection only
-   var cb = function() {
-      var dest = dialog.getDest();
-
-      if (dest) {
-         var url = "exec?command=rename&src=" + sel[0].url + "&dest=" + dest;
-
-         var cb = function() {
-            dialog.popdown();
-            this.refresh();
-         }
-
-         AjxRpc.invoke(null, url, null, new AjxCallback(this, cb, {}), false);
-      }
-   }
-
-   var l = new AjxListener(this, cb);
-   dialog.setButtonListener(DwtDialog.OK_BUTTON, l);
-   dialog.addListener(DwtEvent.ENTER, l);
-
-   dialog.popup();
+   // XXX do something
 }
 
 // shell ----------------------------------------------------------------------
