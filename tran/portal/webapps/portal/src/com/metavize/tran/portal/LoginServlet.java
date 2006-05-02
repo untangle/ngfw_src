@@ -62,7 +62,7 @@ public class LoginServlet extends HttpServlet
             if (null == plk) {
                 resp.getWriter().println("failure");
             } else {
-                s.setAttribute("portal-login-key", plk);
+                s.setAttribute(PortalManagerPriv.PORTAL_LOGIN_KEY, plk);
                 resp.getWriter().println("success");
             }
         } catch (IOException exn) {

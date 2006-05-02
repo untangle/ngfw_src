@@ -13,7 +13,7 @@ package com.metavize.mvvm.engine;
 
 import java.net.InetAddress;
 import java.util.List;
-import javax.security.auth.login.FailedLoginException;
+
 import com.metavize.mvvm.portal.*;
 
 /**
@@ -24,10 +24,11 @@ import com.metavize.mvvm.portal.*;
  */
 public interface PortalManagerPriv extends PortalManager
 {
+    String PORTAL_LOGIN_KEY = "portal-login-key";
 
     /**
-     * The list of all bookmarks for the given user.  Is sorted with user's bookmarks
-     * at top, then group (if any), then global.
+     * The list of all bookmarks for the given user.  Is sorted with
+     * user's bookmarks at top, then group (if any), then global.
      *
      * @return the list of all bookmarks for the user
      * @param user a <code>PortalUser</code> giving the user to fetch for
@@ -35,9 +36,9 @@ public interface PortalManagerPriv extends PortalManager
     List<Bookmark> getAllBookmarks(PortalUser user);
 
     /**
-     * Gets the <code>PortalHomeSettings</code> for the given user.  This finds the
-     * most specific one that is set and returns it.  (There is always a global one,
-     * so null is never returned)
+     * Gets the <code>PortalHomeSettings</code> for the given user.
+     * This finds the most specific one that is set and returns it.
+     * (There is always a global one, so null is never returned)
      *
      * @param user a <code>PortalUser</code> giving the user to fetch for
      * @return the <code>PortalHomeSettings</code> for the user
@@ -53,21 +54,24 @@ public interface PortalManagerPriv extends PortalManager
     PortalUser getUser(String uid);
 
     /**
-     * Looks up a login by login key.  Returns null if the login does not exist; this
-     * happens if the login times out or is forced to log out.
+     * Looks up a login by login key.  Returns null if the login does
+     * not exist; this happens if the login times out or is forced to
+     * log out.
      *
-     * @param loginKey a <code>PortalLoginKey</code> giving the key for the login
+     * @param loginKey a <code>PortalLoginKey</code> giving the key
+     * for the login
      * @return a <code>PortalLogin</code> value
      */
     PortalLogin getLogin(PortalLoginKey loginKey);
- 
+
     PortalLoginKey login(String uid, String password, InetAddress clientAddr);
 
-    
+
     /**
-     * Normal user-initiated login
+     * Normal user-initiated login.
      *
-     * @param loginKey a <code>PortalLoginKey</code> giving the login to log out
+     * @param loginKey a <code>PortalLoginKey</code> giving the login
+     * to log out
      */
     void logout(PortalLoginKey loginKey);
  }

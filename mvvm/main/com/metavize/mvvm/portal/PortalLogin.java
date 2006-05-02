@@ -11,12 +11,12 @@
 
 package com.metavize.mvvm.portal;
 
-import jcifs.smb.NtlmPasswordAuthentication;
 import java.io.Serializable;
-import java.util.List;
-import com.metavize.mvvm.tran.IPaddr;
 import java.net.InetAddress;
 import java.util.Date;
+
+import com.metavize.mvvm.tran.IPaddr;
+import jcifs.smb.NtlmPasswordAuthentication;
 
 /**
  * Portal login.  Contains a PortalUser.
@@ -58,8 +58,7 @@ public class PortalLogin implements Serializable
     // accessors --------------------------------------------------------------
 
     /**
-     * Gets the user associated with this login
-     *
+     * Gets the user associated with this login.
      */
     public String getUser()
     {
@@ -67,8 +66,8 @@ public class PortalLogin implements Serializable
     }
 
     /**
-     * Gets the group of the user associated with this login (if any, otherwise null)
-     *
+     * Gets the group of the user associated with this login (if any,
+     * otherwise null).
      */
     public String getGroup()
     {
@@ -81,7 +80,7 @@ public class PortalLogin implements Serializable
     }
 
     /**
-     * Client address
+     * Client address.
      *
      * @return the address of the client
      */
@@ -91,7 +90,7 @@ public class PortalLogin implements Serializable
     }
 
     /**
-     * Date the user logged in
+     * Date the user logged in.
      *
      * @return the date of login
      */
@@ -101,9 +100,9 @@ public class PortalLogin implements Serializable
     }
 
     /**
-     * How long the login session has been idle
+     * How long the login session has been idle.
      *
-     * @return the idle time for the login session, in millis
+     * @return the idle time for the login session, in millis.
      */
     public long getIdleTime()
     {
