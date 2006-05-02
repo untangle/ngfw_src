@@ -36,6 +36,9 @@ public class UserHomeSettingsJPanel extends javax.swing.JPanel implements Savabl
     ///////////////////////////////////////////
     
     public void doSave(Object settings, boolean validateOnly) throws Exception {
+
+	// ENABLED //
+	boolean enabled = settingsEnabledJRadioButton.isSelected();
         
         // PAGE TITLE ///////////
 	String pageTitle = pageTitleJTextField.getText();
@@ -58,12 +61,21 @@ public class UserHomeSettingsJPanel extends javax.swing.JPanel implements Savabl
         // SAVE THE VALUES ////////////////////////////////////
 	if( !validateOnly ){
 	    PortalHomeSettings portalHomeSettings = portalUser.getPortalHomeSettings();
-	    portalHomeSettings.setHomePageTitle( pageTitle );
-	    portalHomeSettings.setHomePageText( pageText );
-	    portalHomeSettings.setBookmarkTableTitle( bookmarksText );
-	    portalHomeSettings.setShowExploder( showExplorer );
-	    portalHomeSettings.setShowBookmarks( showBookmarks );
-	    portalHomeSettings.setShowAddBookmark( showAddBookmarks );
+	    if( enabled ){
+		if( portalHomeSettings == null ){
+		    portalHomeSettings = new PortalHomeSettings();
+		    portalUser.setPortalHomeSettings( portalHomeSettings );
+		}
+		portalHomeSettings.setHomePageTitle( pageTitle );
+		portalHomeSettings.setHomePageText( pageText );
+		portalHomeSettings.setBookmarkTableTitle( bookmarksText );
+		portalHomeSettings.setShowExploder( showExplorer );
+		portalHomeSettings.setShowBookmarks( showBookmarks );
+		portalHomeSettings.setShowAddBookmark( showAddBookmarks );
+	    }
+	    else{
+		portalUser.setPortalHomeSettings( null );
+	    }
 	}        
     }
     
@@ -76,6 +88,16 @@ public class UserHomeSettingsJPanel extends javax.swing.JPanel implements Savabl
 
     public void doRefresh(Object settings) {
 	PortalHomeSettings portalHomeSettings = portalUser.getPortalHomeSettings();
+
+	if( portalHomeSettings == null ){
+	    settingsDisabledJRadioButton.setSelected(true);
+	    setTextEnabledDependency(false);
+	    return;
+	}
+	else{
+	    settingsEnabledJRadioButton.setSelected(true);
+	    setTextEnabledDependency(true);
+	}
 
         // PAGE TITLE ///////////
 	pageTitleCurrent = portalHomeSettings.getHomePageTitle();

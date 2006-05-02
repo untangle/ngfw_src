@@ -64,7 +64,12 @@ public class UserSettingsJDialog extends MConfigJDialog {
     }
 
     protected void generateGui(){
-        this.setTitle(NAME_TITLE + " for " + portalUser.getUid() + " (" + portalUser.getPortalGroup().getName() + ")");
+	String groupName;
+	if( portalUser.getPortalGroup() != null )
+	    groupName = portalUser.getPortalGroup().getName();
+	else
+	    groupName = "no group";
+        this.setTitle(NAME_TITLE + " for " + portalUser.getUid() + " (" + groupName + ")");
 
         // BOOKMARKS //////
 	BookmarksJPanel bookmarksJPanel = new BookmarksJPanel(portalUser);

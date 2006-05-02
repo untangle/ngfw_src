@@ -13,7 +13,7 @@ package com.metavize.mvvm.portal;
 
 import java.io.Serializable;
 import java.util.List;
-
+import java.util.ArrayList;
 /**
  * Portal group.  Group name is free, and currently has no relationship to addrress book.
  *
@@ -140,12 +140,15 @@ public class PortalGroup implements Serializable
      */
     public List getBookmarks()
     {
-        return bookmarks;
+	if( bookmarks == null )
+	    return new ArrayList<Bookmark>();
+	else
+	    return bookmarks;
     }
 
     public void setBookmarks(List bookmarks)
     {
-        this.bookmarks = bookmarks;
+	this.bookmarks = bookmarks;
     }
 
     public boolean equals(Object obj)

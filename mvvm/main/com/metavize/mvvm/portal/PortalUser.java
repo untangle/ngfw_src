@@ -13,6 +13,7 @@ package com.metavize.mvvm.portal;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Portal user.  UID must match an addressbook UID (although one could be left around
@@ -181,7 +182,10 @@ public class PortalUser implements Serializable
      */
     public List getBookmarks()
     {
-        return bookmarks;
+	if( bookmarks == null )
+	    return new ArrayList<Bookmark>();
+	else
+	    return bookmarks;
     }
 
     public void setBookmarks(List bookmarks)

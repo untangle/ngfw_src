@@ -32,7 +32,7 @@ public class SettingsButtonRunnable implements ButtonRunnable {
 	    this.isEnabled = false;
 	}
     }
-    public String getButtonText(){ return "Edit Bookmarks"; }
+    public String getButtonText(){ return "Edit"; }
     public boolean isEnabled(){ return isEnabled; }
     public void setEnabled(boolean isEnabled){ this.isEnabled = isEnabled; }
     public void setUserType(boolean isUserType){ this.isUserType = isUserType; }

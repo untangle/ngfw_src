@@ -96,7 +96,7 @@ class UserConfigTableModel extends MSortedTableModel<Object>{
         int rowIndex = 0;
         // go through all the rows and perform some tests
         for( Vector tempUser : tableVector ){
-	    String uid = (String) tempUser.elementAt(2);
+	    String uid = (String) tempUser.elementAt(3);
 	    // all uid's are unique
 	    if( uidHashtable.contains( uid ) )
 		throw new Exception("The user/login ID in row: " + rowIndex + " has already been taken.");
@@ -165,10 +165,10 @@ class UserConfigTableModel extends MSortedTableModel<Object>{
 	    this.portalGroup = portalGroup;
 	}
 	public String toString(){
-	    String name = portalGroup.getName();
-	    if( name == null )
-		name = "DEFAULT GROUP";
-	    return name;
+	    if( portalGroup == null )
+		return "no group";
+	    else
+		return portalGroup.getName();
 	}
 	public PortalGroup getPortalGroup(){
 	    return portalGroup;
