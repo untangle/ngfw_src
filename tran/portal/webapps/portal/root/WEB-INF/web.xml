@@ -82,6 +82,18 @@
   </servlet-mapping>
 
   <servlet>
+    <servlet-name>BookmarkServlet</servlet-name>
+    <servlet-class>
+      com.metavize.tran.portal.BookmarkServlet
+    </servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>BookmarkServlet</servlet-name>
+    <url-pattern>/bookmarks</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
     <servlet-name>FileLister</servlet-name>
     <servlet-class>
       com.metavize.tran.portal.browser.FileLister

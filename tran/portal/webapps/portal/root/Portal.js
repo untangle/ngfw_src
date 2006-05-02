@@ -49,8 +49,6 @@ function Portal(shell, url) {
 
    this.layout();
 
-   this.chdir(url, false);
-
    this.zShow(true);
 
    this.login();
@@ -94,21 +92,6 @@ Portal.prototype.login = function()
    dialog.addListener(DwtEvent.ENTER, l);
 
    dialog.popup();
-}
-
-Portal.prototype.chdir = function(url, expandTree, expandDetail)
-{
-   this._cwd = url;
-
-   this._addressField.setValue(url);
-
-   if (undefined == expandTree || expandTree) {
-      this._dirTree.chdir(url);
-   }
-
-   if (undefined == expandDetail || expandDetail) {
-      this._bookmarkPanel.chdir(url);
-   }
 }
 
 Portal.prototype.mv = function(src, dest)
@@ -208,7 +191,6 @@ Portal.prototype._makeAddressBar = function() {
             if (val.charAt(val.length - 1) != '/') {
                val += '/';
             }
-            chdir(val);
          }
       };
    }
@@ -238,7 +220,6 @@ Portal.prototype._detailSelectionListener = function(ev) {
       var item = ev.item;
       if (item.isDirectory) {
          DBG.println("IS DIR");
-         this.chdir(item.url);
       } else {
          AjxWindowOpener.open("get/" + item.url);
       }
@@ -252,7 +233,6 @@ Portal.prototype._dirSelectionListener = function(ev) {
    switch (ev.detail) {
       case DwtTree.ITEM_SELECTED:
       var n = ev.item.getData(Portal.CIFS_NODE);
-      this.chdir(n.url);
       break;
 
       case DwtTree.ITEM_DESELECTED:

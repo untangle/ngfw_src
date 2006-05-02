@@ -25,25 +25,16 @@ BookmarkPanel.prototype.constructor = BookmarkPanel;
 
 // public methods -------------------------------------------------------------
 
-BookmarkPanel.prototype.chdir = function(url)
-{
-   if (this.cwd == url) {
-      return;
-   }
-
-   this.cwd = url;
-
-   this.refresh();
-}
-
 BookmarkPanel.prototype.refresh = function()
 {
    var cb = function(obj, results) {
+      // XXX if error, show login dialog
+
       this._setListingXml(results.xml);
       this.setUI(1);
    }
 
-   AjxRpc.invoke(null, "ls?url=" + this.cwd + "&type=full", null,
+   AjxRpc.invoke(null, "bookmarks", null,
                  new AjxCallback(this, cb, new Object()), true);
 }
 
@@ -51,8 +42,8 @@ BookmarkPanel.prototype.refresh = function()
 
 BookmarkPanel.prototype._setListingXml = function(dom)
 {
-   var root = dom.getElementsByTagName("root")[0];
-   this.url = root.getAttribute("path");
+   var root = dom.getElementsByTagName("bookmarks")[0];
+
    var children = root.childNodes;
 
    var listing = new AjxVector();
@@ -60,14 +51,10 @@ BookmarkPanel.prototype._setListingXml = function(dom)
    for (var i = 0; i < children.length; i++) {
       var child = children[i];
       var tagName = child.tagName;
-      if ("dir" == tagName || "file" == tagName) {
-         listing.add(new CifsNode(this.url,
-                                  child.getAttribute("name"),
-                                  "dir" == tagName,
-                                  child.getAttribute("size"),
-                                  child.getAttribute("mtime"),
-                                  child.getAttribute("content-type")));
-      }
+
+      listing.add(new Bookmark(child.getAttribute("name"),
+                               child.getAttribute("app"),
+                               child.getAttribute("target")));
    }
 
    this.set(listing);
@@ -76,7 +63,6 @@ BookmarkPanel.prototype._setListingXml = function(dom)
 // DwtListView methods --------------------------------------------------------
 
 BookmarkPanel.prototype._createItemHtml = function(item) {
-
    var div = document.createElement("div");
    var base = "Row";
    div._styleClass = base;
@@ -166,38 +152,4 @@ BookmarkPanel.prototype._setDnDIconState = function(dropAllowed) {
    this._dndIcon.className = dropAllowed
       ? this._dndIcon._origClassName + " DropAllowed"
       : this._dndIcon._origClassName + " DropNotAllowed";
-}
-
-BookmarkPanel.prototype._mouseOverAction = function(ev, div)
-{
-   var item = this.getItemFromElement(div);
-   this._mouseOverItem = item;
-
-   if (div._type == DwtListView.TYPE_LIST_ITEM) {
-      if (item.tooltip) {
-         this.setToolTipContent(item.tooltip);
-      } else if (this._hasPreview(item.contentType)) {
-         item.tooltip = "<div class='PreviewDiv'><img src='scale?url=" + item.url + "'/></div>"
-         this.setToolTipContent(item.tooltip);
-      }
-   }
-}
-
-DwtListView.prototype._mouseOutAction = function(mouseEv, div)
-{
-   this._mouseOverItem = null;
-}
-
-// util -----------------------------------------------------------------------
-
-BookmarkPanel.prototype._hasPreview = function(mimeType)
-{
-   var s = mimeType.split('/');
-   if ("image" == s[0]) {
-      var sub = s[1];
-      // XXX get more complete list
-      return "gif" == sub || "jpeg" == sub || "png" == sub;
-   } else {
-      return false;
-   }
 }
