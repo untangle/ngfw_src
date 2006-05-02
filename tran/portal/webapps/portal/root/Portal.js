@@ -58,6 +58,7 @@ Portal.prototype.login = function()
       var cb = function(obj, results) {
          if (results.success) {
             dialog.popdown();
+            this.refresh();
          } else {
             dialog.reportFailure("bad login");
          }
@@ -191,7 +192,7 @@ Portal.prototype._dirSelectionListener = function(ev) {
    }
 }
 
-Portal.prototype._listActionListener = function (ev) {
+Portal.prototype._listActionListener = function(ev) {
     this._actionMenu.popup(0, ev.docX, ev.docY);
 }
 

@@ -40,7 +40,11 @@ public class BookmarkServlet extends HttpServlet
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException
     {
+        System.out.println("BookmarkServlet doGet");
         HttpSession s = req.getSession();
+
+        resp.setContentType("text/xml");
+        resp.addHeader("Cache-Control", "no-cache");
 
         PortalLoginKey plk = (PortalLoginKey)s.getAttribute(PortalManagerPriv.PORTAL_LOGIN_KEY);
         if (null == plk) {
@@ -80,11 +84,10 @@ public class BookmarkServlet extends HttpServlet
             return;
         }
 
-        List<Bookmark> gbm = (List<Bookmark>)pu.getPortalGroup().getBookmarks();
-        List<Bookmark> ubm = (List<Bookmark>)pu.getBookmarks();
+        List<Bookmark> bms = pm.getAllBookmarks(pu);
 
         try {
-            emitBookmarks(resp.getWriter(), ubm, gbm);
+            emitBookmarks(resp.getWriter(), bms);
         } catch (IOException exn) {
             logger.warn("could not write bookmarks", exn);
         }
@@ -98,19 +101,17 @@ public class BookmarkServlet extends HttpServlet
 
     // private methods --------------------------------------------------------
 
-    private void emitBookmarks(PrintWriter w, List<Bookmark>... bookmarks)
+    private void emitBookmarks(PrintWriter w, List<Bookmark> bookmarks)
     {
         w.println("<bookmarks>");
-        for (List<Bookmark> bml : bookmarks) {
-            for (Bookmark bm : bml) {
-                w.print("  <bookmark name='");
-                w.print(XmlUtil.escapeXml(bm.getName()));
-                w.print("' app='");
-                w.print(XmlUtil.escapeXml(bm.getApplicationName()));
-                w.print("' target='");
-                w.print(XmlUtil.escapeXml(bm.getTarget()));
-                w.println("'/>");
-            }
+        for (Bookmark bm : bookmarks) {
+            w.print("  <bookmark name='");
+            w.print(XmlUtil.escapeXml(bm.getName()));
+            w.print("' app='");
+            w.print(XmlUtil.escapeXml(bm.getApplicationName()));
+            w.print("' target='");
+            w.print(XmlUtil.escapeXml(bm.getTarget()));
+            w.println("'/>");
         }
         w.println("</bookmarks>");
     }
