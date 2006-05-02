@@ -679,6 +679,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <fileset refid="c3p0.jarset"/>
       <fileset refid="hibernate.jarset"/>
       <fileset refid="javamail.jarset"/>
+      <fileset refid="jcifs.jarset"/>
       <fileset refid="junit.jarset"/>
       <fileset refid="log4j.jarset"/>
       <fileset refid="postgresql.jarset"/>

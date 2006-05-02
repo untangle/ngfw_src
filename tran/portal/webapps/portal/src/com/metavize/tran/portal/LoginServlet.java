@@ -11,12 +11,18 @@
 
 package com.metavize.tran.portal;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.MvvmLocalContext;
+import com.metavize.mvvm.engine.PortalManagerPriv;
+import com.metavize.mvvm.portal.PortalLoginKey;
 import org.apache.log4j.Logger;
 
 public class LoginServlet extends HttpServlet
@@ -29,6 +35,9 @@ public class LoginServlet extends HttpServlet
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException
     {
+        MvvmLocalContext mctx = MvvmContextFactory.context();
+        PortalManagerPriv pm = (PortalManagerPriv)mctx.portalManager();
+
         HttpSession s = req.getSession();
 
         String user = req.getParameter("user");
@@ -36,6 +45,18 @@ public class LoginServlet extends HttpServlet
 
         System.out.println("USER: " + user);
         System.out.println("PASSWORD: " + password);
+
+        String remote = req.getRemoteAddr();
+
+        InetAddress addr;
+        try {
+            addr = InetAddress.getByName(remote);
+        } catch (UnknownHostException exn) {
+            addr = null;
+        }
+
+        PortalLoginKey plk = pm.login(user, password, addr);
+        System.out.println("PLK: " + plk);
     }
 
     @Override

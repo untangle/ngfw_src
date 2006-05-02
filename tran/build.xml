@@ -506,8 +506,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     <mkdir dir="${dist.mvvm.web}/portal/WEB-INF/lib"/>
 
     <copy todir="${dist.mvvm.web}/portal/WEB-INF/lib">
-      <fileset refid="log4j.jarset"/>
-      <fileset refid="jcifs.jarset"/>
       <fileset refid="commons-fileupload.jarset"/>
       <fileset refid="commons-io.jarset"/>
       <fileset refid="ajaxtk.thirdparty.jarset"/>
@@ -997,6 +995,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
       <src path="${tran.name}/webapps/portal/src"/>
 
+      <classpath refid="mvvm.classpath"/>
       <classpath refid="mvvm.thirdparty.classpath"/>
       <classpath refid="tomcat.thirdparty.classpath"/>
       <classpath refid="ajaxtk.thirdparty.classpath"/>

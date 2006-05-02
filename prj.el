@@ -18,6 +18,7 @@
     '("./mvvm/main" "./mvvm/bootstrap" "./util"
       "./mvvm/webapps/store/src"
       "./tran/portal/webapps/browser/src"
+      "./tran/portal/webapps/portal/src"
       "./tran/portal/webapps/proxy/src")
     (mapcar (lambda (a) (concat "./tran/" a "/main")) transforms)
     (mapcar (lambda (a) (concat "./tran/" a "/main")) casings)
