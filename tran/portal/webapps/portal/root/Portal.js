@@ -56,9 +56,7 @@ Portal.prototype.login = function()
       var url = "login?user=" + user + "&password=" + password;
 
       var cb = function(obj, results) {
-         var i = results.text.indexOf("success");
-
-         if (0 <= i) {
+         if (results.success) {
             dialog.popdown();
          } else {
             dialog.reportFailure("bad login");

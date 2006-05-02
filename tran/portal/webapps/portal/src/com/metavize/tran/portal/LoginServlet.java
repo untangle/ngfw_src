@@ -44,9 +44,6 @@ public class LoginServlet extends HttpServlet
         String user = req.getParameter("user");
         String password = req.getParameter("password");
 
-        System.out.println("USER: " + user);
-        System.out.println("PASSWORD: " + password);
-
         String remote = req.getRemoteAddr();
 
         InetAddress addr;
@@ -60,7 +57,7 @@ public class LoginServlet extends HttpServlet
 
         try {
             if (null == plk) {
-                resp.getWriter().println("failure");
+                resp.sendError(HttpServletResponse.SC_FORBIDDEN);
             } else {
                 s.setAttribute(PortalManagerPriv.PORTAL_LOGIN_KEY, plk);
                 resp.getWriter().println("success");
