@@ -16,7 +16,7 @@
 </style>
 <link rel="stylesheet" type="text/css" href="common.css"/>
 <link rel="stylesheet" type="text/css" href="dwt.css"/>
-<link rel="stylesheet" type="text/css" href="browser.css"/>
+<link rel="stylesheet" type="text/css" href="portal.css"/>
 
 <script type="text/javascript" src="I18nMsg.js"></script>
 <script type="text/javascript" src="AjxMsg.js"></script>

@@ -7,16 +7,15 @@ function BookmarkPanel(parent, className, posStyle) {
    }
 
    var header = [];
-   var i = 0;
    var hi = new DwtListHeaderItem("name", "Name", null, 200, true, true, true);
-   hi.memberName = "label";
-   header[i++] = hi;
-   hi = new DwtListHeaderItem("size", "Size", null, 100, true, true, true);
-   hi.memberName = "size";
-   header[i++] = hi;
-   hi = new DwtListHeaderItem("lastModified", "Last Modified", null, 200, true, true, true);
-   hi.memberName = "lastModified";
-   header[i++] = hi;
+   hi.memberName = "name";
+   header.push(hi);
+   hi = new DwtListHeaderItem("application", "Application Name", null, 100, true, true, true);
+   hi.memberName = "app";
+   header.push(hi);
+   hi = new DwtListHeaderItem("target", "Target", null, 200, true, true, true);
+   hi.memberName = "target";
+   header.push(hi);
 
    DwtListView.call(this, parent, className, posStyle, header, true);
 }
