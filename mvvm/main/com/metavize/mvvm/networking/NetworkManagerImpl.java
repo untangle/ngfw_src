@@ -312,13 +312,23 @@ public class NetworkManagerImpl implements NetworkManager
 
     public synchronized void startServices() throws NetworkException
     {
-        this.dhcpManager.configure( servicesSettings );
+        this.dhcpManager.configure( this.servicesSettings );
         this.dhcpManager.startDnsMasq();
+
+        /* Have to recreate the rules to change the DHCP forwarding settings */
+        generateRules();
     }
 
     public synchronized void stopServices()
     {
         this.dhcpManager.deconfigure();
+
+        /* Have to recreate the rules to change the DHCP forwarding settings */
+        try {
+            generateRules();
+        } catch ( NetworkException e ) {
+            logger.warn( "Unable to refresh iptables rules.", e );
+        }
     }
 
     public synchronized DynamicDNSSettings getDynamicDnsSettings()
@@ -556,7 +566,8 @@ public class NetworkManagerImpl implements NetworkManager
 
             /* Update the interface list for the iptables rules (this
              * affects the antisubscribes for PING) */
-            ruleManager.setInterfaceList( this.networkSettings.getInterfaceList());
+            ruleManager.setInterfaceList( this.networkSettings.getInterfaceList(),
+                                          this.networkSettings.getServiceSpace());
 
             updateRemoteSettings();
 

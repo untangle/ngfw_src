@@ -47,6 +47,10 @@ if [ -n "${MVVM_HTTPS_PORT}" ]; then
     fi
 fi
 
+## Default list of interfaces in the service space, (the inside interface) in case tmp
+## params doesn't specify a value
+MVVM_SERVICES_INTF_LIST=${MVVM_SERVICES_INTF_LIST:-"${MVVM_INSIDE_INTF}"}
+
 ## Local ports to antisubscribe to
 ANTISUBSCRIBES_LOCAL_TCP_PORTS="22 80_inside"
 

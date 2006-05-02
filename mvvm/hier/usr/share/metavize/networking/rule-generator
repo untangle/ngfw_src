@@ -79,36 +79,48 @@ function blockForwarding() {
     local l_outFlag
     local l_inFlag
     local l_modules
+    local l_interface
 
-    ## Flush the forward table
+    ## Flush the tables for input and forwarding.
     ${IPTABLES} -t filter -F FORWARD
+    ${IPTABLES} -t mangle -F FORWARD
+    ${IPTABLES} -t filter -F INPUT
+    ${IPTABLES} -t mangle -F INPUT        
     
     ## Block non-antisubscribed TCP traffic from being forwarded
     ${IPTABLES} -t filter -A FORWARD -m mark -p tcp --mark 0/${MARK_ANTISUB} \
         -j REJECT --reject-with tcp-reset
 
     if [ "${DHCP_BLOCK_FORWARDING}x" = "truex" ]; then
-        if [ -z `getBridge ${MVVM_INSIDE_INTF}` ]; then
-            l_modules=" "
-            l_inFlag=" -i "
-            l_outFlag=" -o "
-        else
-            l_modules=" -m physdev "
-            l_inFlag=" --physdev-in "
-            l_outFlag=" --physdev-out "
-        fi
+        ## Block DHCP traffic from being forwarded to interfaces in the services
+        ## spaces.
+        for l_interface in ${MVVM_SERVICES_INTF_LIST} ; do
+            if [ -z `getBridge ${l_interface}` ]; then
+                l_modules=" "
+                l_inFlag=" -i "
+                l_outFlag=" -o "
+            else
+                l_modules=" -m physdev "
+                l_inFlag=" --physdev-in "
+                l_outFlag=" --physdev-out "
+            fi
+            
+            ## Block forwarded DHCP traffic to the inside interface
+            ${IPTABLES} ${l_modules} -t filter -A FORWARD -p udp --source-port ${DHCP_PORT_RANGE} \
+                --destination-port ${DHCP_PORT_RANGE} ${l_outFlag} ${l_interface} -j DROP
+            
+            ## Block forwarded DHCP traffic from the inside interface
+            ${IPTABLES} ${l_modules} -t filter -A FORWARD -p udp --source-port ${DHCP_PORT_RANGE} \
+                --destination-port ${DHCP_PORT_RANGE} ${l_inFlag} ${l_interface} -j DROP
+            
+            ## antisub anything to the DHCP server that is not from one of these interfaces.
+            ${IPTABLES} ${l_modules} -t mangle -A INPUT ${l_inFlag} ${l_interface} -p udp  \
+                --destination-port ${DHCP_SERVER_PORT} -j MARK --set-mark ${MARK_ANTISUB}
+        done
         
-        ## Block forwarded DHCP traffic to the inside interface
-        ${IPTABLES} ${l_modules} -t filter -A FORWARD -p udp --source-port ${DHCP_PORT_RANGE} \
-            --destination-port ${DHCP_PORT_RANGE} ${l_outFlag} ${MVVM_INSIDE_INTF} -j DROP
-        
-        ## Block forwarded DHCP traffic from the inside interface
-        ${IPTABLES} ${l_modules} -t filter -A FORWARD -p udp --source-port ${DHCP_PORT_RANGE} \
-            --destination-port ${DHCP_PORT_RANGE} ${l_inFlag} ${MVVM_INSIDE_INTF} -j DROP
-        
-        ## Drop anything to the DHCP server that is not from the inside interface
-        ${IPTABLES} ${l_modules} -t filter -A INPUT ! ${l_inFlag} ${MVVM_INSIDE_INTF} -p udp  \
-            --destination-port ${DHCP_SERVER_PORT} -j DROP
+        ## Drop any DHCP traffic that didn't get antisubscribed.
+        ${IPTABLES} ${l_modules} -t mangle -A INPUT ${l_inFlag} ${l_interface} -p udp  \
+            --destination-port ${DHCP_SERVER_PORT} -m mark --mark 0/${MARK_ANTISUB} -j DROP
     fi
 }
 
@@ -232,12 +244,12 @@ function markIntfRules () {
             #echo "${addresses}"
             #echo `getBridgeNetmasks $interface`
         fi
+        
+        mask=${c}
 
-        if [ "${c}x" == "2x" ]; then
-            ## Set the special flag for inside traffic
-            mask=$(( ${c} | ${MARK_INSIDE_INTF} ))
-        else
-            mask=${c}
+        ## The services list determine which interfaces get the inside_intf flag.
+        if [ "${MVVM_SERVICES_INTF_LIST/${interface}/}x" != "${MVVM_SERVICES_INTF_LIST}x" ]; then
+            mask=$(( ${mask} | ${MARK_INSIDE_INTF} ))
         fi
 
         ${IPTABLES} -t mangle -A ${CHAIN_MARKINTF} ${matchType} ${interface} -j MARK --set-mark ${mask}

@@ -149,8 +149,6 @@ public class NatImpl extends AbstractTransform implements Nat
     public void setNatSettings( NatCommonSettings settings ) throws Exception
     {        
         /* Remove all of the non-static addresses before saving */
-        // !!!! Pushed into the networking package
-        // dhcpManager.fleeceLeases( settings );
         
         /* Validate the settings */
         try {

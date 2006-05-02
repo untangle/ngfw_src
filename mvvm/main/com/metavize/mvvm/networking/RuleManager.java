@@ -24,10 +24,12 @@ import com.metavize.jnetcap.Netcap;
 import com.metavize.jnetcap.JNetcapException;
 import com.metavize.jnetcap.PortRange;
 
+import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.tran.IPaddr;
 
 import com.metavize.mvvm.networking.internal.InterfaceInternal;
+import com.metavize.mvvm.networking.internal.NetworkSpaceInternal;
 
 public class RuleManager
 {
@@ -41,6 +43,10 @@ public class RuleManager
     private static final String PUBLIC_ADDR_FLAG             = "HTTPS_PUBLIC_ADDR";
     private static final String PUBLIC_PORT_FLAG             = "HTTPS_PUBLIC_PORT";
     private static final String PUBLIC_REDIRECT_EN           = "HTTPS_PUBLIC_REDIRECT_EN";
+
+    /* Set to a list of interfaces that are in the services space that need to be able to
+     * access the services */
+    private static final String SERVICES_INTERFACE_LIST      = "MVVM_SERVICES_INTF_LIST";
 
     /* Set to the index of the interfaces where ping should be enabled. */
     private static final String PING_ANTISUBSCRIBE_FLAG      = "MVVM_PING_EN";
@@ -73,6 +79,9 @@ public class RuleManager
 
     /* List of the interfaces where ping is enabled */
     private String pingInterfaceList = "";
+
+    /* List of interfaces that are in the services spaces */
+    private String servicesInterfaceList = "";
 
     /* Call the script to generate all of the iptables rules */
     synchronized void generateIptablesRules() throws NetworkException
@@ -138,13 +147,37 @@ public class RuleManager
     }
 
     /* Just used to setup the antisubscribes */
-    void setInterfaceList( List<InterfaceInternal> interfaceList )
+    void setInterfaceList( List<InterfaceInternal> interfaceList, NetworkSpaceInternal serviceSpace )
     {
         String pingAntisubscribeList = "";
+        
+        String servicesInterfaceList = "";
         
         IntfConverter ic = IntfConverter.getInstance();
 
         for ( InterfaceInternal intf : interfaceList ) {
+            if ( serviceSpace != null && serviceSpace.equals( intf.getNetworkSpace())) {
+                byte argonIntf = intf.getArgonIntf();
+                switch( argonIntf ) {
+                case IntfConstants.EXTERNAL_INTF:
+                    /* Always ignore the external interface */
+                    break;
+                    
+                case IntfConstants.DMZ_INTF:
+                    /* DMZ interface is not added if it is in the public space */
+                    if ( 0 == serviceSpace.getIndex()) break;
+
+                    /* fallthrough */
+                default:
+                    try {
+                        /* All other interfaces are always added unconditionally */
+                        servicesInterfaceList += " " + intf.getIntfName();
+                    } catch ( Exception e ) {
+                        logger.warn( "Error converting argon[" + argonIntf + "] interface, ignoring" );
+                    }
+                }
+            }
+            
             try {
                 if ( intf.isPingable()) {
                     byte netcapIntf = ic.toNetcap( intf.getArgonIntf());
@@ -155,8 +188,10 @@ public class RuleManager
             }
         }
         
-        pingInterfaceEnable = true;
-        pingInterfaceList   = pingAntisubscribeList.trim();
+        this.pingInterfaceEnable = true;
+        this.pingInterfaceList   = pingAntisubscribeList.trim();
+        this.servicesInterfaceList = servicesInterfaceList.trim();
+        
     }
 
     synchronized void isShutdown()
@@ -192,7 +227,11 @@ public class RuleManager
 
             if ( pingInterfaceEnable ) {
                 sb.append( PING_ANTISUBSCRIBE_FLAG    + "=true\n"  );
-                sb.append( PING_ANTISUBSCRIBE_LIST    + "=\"" + pingInterfaceList + "\"\n" );
+                sb.append( PING_ANTISUBSCRIBE_LIST    + "=\"" + this.pingInterfaceList + "\"\n" );
+            }
+
+            if (( null != this.servicesInterfaceList ) && ( this.servicesInterfaceList.length() > 0 )) {
+                sb.append( SERVICES_INTERFACE_LIST + "=\"" + this.servicesInterfaceList + "\"\n" );
             }
             
             writeFile( sb, MVVM_TMP_FILE );
