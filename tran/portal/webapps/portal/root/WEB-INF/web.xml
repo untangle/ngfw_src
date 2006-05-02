@@ -82,15 +82,15 @@
   </servlet-mapping>
 
   <servlet>
-    <servlet-name>BookmarkServlet</servlet-name>
+    <servlet-name>BookmarkLister</servlet-name>
     <servlet-class>
-      com.metavize.tran.portal.BookmarkServlet
+      com.metavize.tran.portal.BookmarkLister
     </servlet-class>
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>BookmarkServlet</servlet-name>
-    <url-pattern>/bookmarks</url-pattern>
+    <servlet-name>BookmarkLister</servlet-name>
+    <url-pattern>/bmlist</url-pattern>
   </servlet-mapping>
 
   <servlet>

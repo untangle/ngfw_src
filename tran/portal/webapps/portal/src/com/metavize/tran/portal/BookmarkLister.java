@@ -30,7 +30,7 @@ import com.metavize.mvvm.portal.PortalUser;
 import com.metavize.mvvm.util.XmlUtil;
 import org.apache.log4j.Logger;
 
-public class BookmarkServlet extends HttpServlet
+public class BookmarkLister extends HttpServlet
 {
     private Logger logger;
 

@@ -15,7 +15,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 /**
- * Portal group.  Group name is free, and currently has no relationship to addrress book.
+ * Portal group.  Group name is free, and currently has no
+ * relationship to addrress book.
  *
  * @author <a href="mailto:jdi@metavize.com">John Irwin</a>
  * @version 1.0
@@ -103,9 +104,9 @@ public class PortalGroup implements Serializable
     }
 
     /**
-     * The PortalHomeSettings that this group has.  This may be null, in which case
-     * the global settings are used.
-     * Thus, this should remain null until the user changes some value -- the UI should
+     * The PortalHomeSettings that this group has.  This may be null,
+     * in which case the global settings are used.  Thus, this should
+     * remain null until the user changes some value -- the UI should
      * show the global settings until that point.
      *
      * @return the PortalHomeSettings.
@@ -153,9 +154,9 @@ public class PortalGroup implements Serializable
 
     public boolean equals(Object obj)
     {
-	if( !(obj instanceof PortalGroup) )
-	    return false;
-	PortalGroup other = (PortalGroup) obj;
-	return getName().equals(other.getName());       
+    if( !(obj instanceof PortalGroup) )
+        return false;
+    PortalGroup other = (PortalGroup) obj;
+    return getName().equals(other.getName());
     }
 }

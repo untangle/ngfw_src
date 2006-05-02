@@ -34,7 +34,7 @@ BookmarkPanel.prototype.refresh = function()
       this.setUI(1);
    }
 
-   AjxRpc.invoke(null, "bookmarks", null,
+   AjxRpc.invoke(null, "bmlist", null,
                  new AjxCallback(this, cb, new Object()), true);
 }
 
