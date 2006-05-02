@@ -14,16 +14,10 @@ function Portal(shell, url) {
    this._toolbar = this._makeToolbar();
    this._toolbar.zShow(true);
 
-   var dragSource = new DwtDragSource(Dwt.DND_DROP_MOVE | Dwt.DND_DROP_COPY);
-   dragSource.addDragListener(new AjxListener(this, this._detailDragListener));
-   var dropTarget = new DwtDropTarget(CifsNode);
-   dropTarget.addDropListener(new AjxListener(this, this._detailDropListener));
    this._bookmarkPanel = new BookmarkPanel(this, null, DwtControl.ABSOLUTE_STYLE);
    this._bookmarkPanel.setUI();
    this._bookmarkPanel.zShow(true);
    this._bookmarkPanel.addSelectionListener(new AjxListener(this, this._detailSelectionListener));
-   this._bookmarkPanel.setDragSource(dragSource);
-   this._bookmarkPanel.setDropTarget(dropTarget);
 
    this._actionMenu = this._makeActionMenu()
    this._bookmarkPanel.addActionListener(new AjxListener(this, this._listActionListener));
@@ -82,14 +76,6 @@ Portal.prototype.mv = function(src, dest)
    AjxRpc.invoke(null, url, null, new AjxCallback(this, this.refresh, { }), false);
 }
 
-Portal.prototype.cp = function(src, dest)
-{
-   var url = Portal._mkSrcDestCommand("cp", src, dest)
-
-   // XXX handle error
-   AjxRpc.invoke(null, url, null, new AjxCallback(this, this.refresh, { }), false);
-}
-
 Portal.prototype.refresh = function()
 {
    this._bookmarkPanel.refresh();
@@ -122,19 +108,9 @@ Portal.prototype._makeToolbar = function() {
    b.addSelectionListener(new AjxListener(this, this._refreshButtonListener));
 
    b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
-   b.setText("Upload");
-   b.setToolTipContent("Upload files to share");
-   b.addSelectionListener(new AjxListener(this, this._uploadButtonListener));
-
-   b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
    b.setText("Delete");
    b.setToolTipContent("Delete selected files");
    b.addSelectionListener(new AjxListener(this, this._deleteButtonListener));
-
-   b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
-   b.setText("New Folder");
-   b.setToolTipContent("Create a new folder");
-   b.addSelectionListener(new AjxListener(this, this._mkdirButtonListener));
 
    return toolbar;
 }
@@ -168,30 +144,6 @@ Portal.prototype._detailSelectionListener = function(ev) {
    }
 }
 
-// toolbar buttons ------------------------------------------------------------
-
-Portal.prototype._dirSelectionListener = function(ev) {
-   switch (ev.detail) {
-      case DwtTree.ITEM_SELECTED:
-      var n = ev.item.getData(Portal.CIFS_NODE);
-      break;
-
-      case DwtTree.ITEM_DESELECTED:
-      break;
-
-      case DwtTree.ITEM_CHECKED:
-      break;
-
-      case DwtTree.ITEM_ACTIONED:
-      break;
-
-      case DwtTree.ITEM_DBL_CLICKED:
-      break;
-
-      default:
-   }
-}
-
 Portal.prototype._listActionListener = function(ev) {
     this._actionMenu.popup(0, ev.docX, ev.docY);
 }
@@ -199,21 +151,6 @@ Portal.prototype._listActionListener = function(ev) {
 
 Portal.prototype._refreshButtonListener = function(ev)
 {
-   this.refresh();
-}
-
-Portal.prototype._uploadButtonListener = function(ev)
-{
-   var dialog = new FileUploadDialog(this._shell, "put", this._cwd);
-
-   dialog.addUploadCompleteListener(new AjxListener(this, this._uploadCompleteListener));
-
-   dialog.popup();
-}
-
-Portal.prototype._uploadCompleteListener = function(evt)
-{
-   evt.dialog.popdown();
    this.refresh();
 }
 
@@ -266,114 +203,12 @@ Portal.prototype._renameButtonListener = function(ev)
    dialog.popup();
 }
 
-Portal.prototype._mkdirButtonListener = function(ev)
-{
-   var dialog = new MkdirDialog(this._shell, this._cwd);
-
-   var cb = function() {
-      var dir = dialog.getDir();
-
-      if (dir) {
-         var url = "exec?command=mkdir&url=" + dir;
-
-         var mkdirCb = function() {
-            dialog.popdown();
-            this.refresh();
-         }
-
-         AjxRpc.invoke(null, url, null, new AjxCallback(this, mkdirCb, { }),
-                       false);
-      }
-   }
-
-   var l = new AjxListener(this, cb);
-   dialog.setButtonListener(DwtDialog.OK_BUTTON, l);
-   dialog.addListener(DwtEvent.ENTER, l);
-
-   dialog.popup();
-}
-
 // shell ----------------------------------------------------------------------
 
 Portal.prototype._shellListener = function(ev)
 {
    if (ev.oldWidth != ev.newWidth || ev.oldHeight != ev.newHeight) {
       this.layout();
-   }
-}
-
-// dnd ------------------------------------------------------------------------
-
-Portal.prototype._treeDragListener = function(evt)
-{
-
-}
-
-Portal.prototype._treeDropListener = function(evt)
-{
-   var targetControl = evt.targetControl;
-
-   switch (evt.action) {
-      case DwtDropEvent.DRAG_ENTER:
-      break;
-
-      case DwtDropEvent.DRAG_LEAVE:
-      break;
-
-      case DwtDropEvent.DRAG_OP_CHANGED:
-      window.status = "OP CHANGED!";
-      break;
-
-      case DwtDropEvent.DRAG_DROP:
-      var dest = evt.targetControl.getData(Portal.CIFS_NODE);
-      var src = evt.srcData;
-
-      switch (evt.operation) {
-         case Dwt.DND_DROP_COPY:
-         this.cp(src, dest);
-         break;
-
-         case Dwt.DND_DROP_MOVE:
-         this.mv(src, dest);
-         break;
-      }
-      break;
-   }
-}
-
-Portal.prototype._detailDragListener = function(evt)
-{
-   switch (evt.action) {
-      case DwtDragEvent.DRAG_START:
-      break;
-
-      case DwtDragEvent.SET_DATA:
-      evt.srcData = evt.srcControl.getDnDSelection();
-      break;
-
-      case DwtDragEvent.DRAG_END:
-      break;
-   }
-}
-
-Portal.prototype._detailDropListener = function(evt)
-{
-   var targetControl = evt.targetControl;
-
-   switch (evt.action) {
-      case DwtDropEvent.DRAG_ENTER:
-      break;
-
-      case DwtDropEvent.DRAG_LEAVE:
-      break;
-
-      case DwtDropEvent.DRAG_OP_CHANGED:
-      window.status = "OP CHANGED!";
-      break;
-
-      case DwtDropEvent.DRAG_DROP:
-      alert("DROP: " + evt.srcData);
-      break;
    }
 }
 

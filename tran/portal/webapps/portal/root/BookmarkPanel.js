@@ -124,33 +124,3 @@ BookmarkPanel.prototype._sortColumn = function(col, asc)
 
    this.setUI(0);
 }
-
-// DwtControl methods ---------------------------------------------------------
-
-BookmarkPanel.prototype._getDnDIcon = function(dragOp)
-{
-   var icon = document.createElement("div");
-   Dwt.setPosition(icon, Dwt.ABSOLUTE_STYLE);
-
-   icon.innerHTML += "<B>DRAG OPERATION:</B> "
-
-   switch (dragOp) {
-      case Dwt.DND_DROP_COPY:
-      icon.innerHTML += "copy";
-      break;
-
-      case Dwt.DND_DROP_MOVE:
-      icon.innerHTML += "move";
-      break;
-   }
-
-   this.shell.getHtmlElement().appendChild(icon);
-   Dwt.setZIndex(icon, Dwt.Z_DND);
-   return icon;
-}
-
-BookmarkPanel.prototype._setDnDIconState = function(dropAllowed) {
-   this._dndIcon.className = dropAllowed
-      ? this._dndIcon._origClassName + " DropAllowed"
-      : this._dndIcon._origClassName + " DropNotAllowed";
-}

@@ -7,7 +7,7 @@ function Bookmark(name, app, target) {
    this.target = target;
 }
 
-CifsNode.prototype = {
+Bookmark.prototype = {
    toString: function() {
       return this.name;
    }
