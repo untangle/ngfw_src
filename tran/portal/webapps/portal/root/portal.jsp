@@ -1,7 +1,6 @@
 <%@ page language="java" import="jcifs.smb.*" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
-<%@ taglib prefix="browser" uri="WEB-INF/browser.tld" %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
@@ -33,7 +32,7 @@
 
 <body>
 
-<noscript><p><b>Please enable JavaScript to use this application</b></p></noscript>
+<noscript><p><b>Please enable JavaScript to use this application.</b></p></noscript>
 
 <script language="JavaScript">
 function launch() {
