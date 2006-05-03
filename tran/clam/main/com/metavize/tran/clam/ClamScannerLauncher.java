@@ -160,7 +160,7 @@ public class ClamScannerLauncher extends VirusScannerLauncher
                 } else {
                     for (i=0 ; i<invalidVirusNames.length ; i++) {
                         if (virusName.equalsIgnoreCase(invalidVirusNames[i])) {
-                            logger.warn("clamdscan: " + invalidVirusNames[i]);
+                            logger.warn("clamdscan: ignoring " + invalidVirusNames[i]);
                             this.result = VirusScannerResult.CLEAN;
                             return;
                         }
