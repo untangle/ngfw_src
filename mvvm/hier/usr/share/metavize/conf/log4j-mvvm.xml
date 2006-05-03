@@ -56,7 +56,7 @@
 
   <!-- normal level for engine is INFO -->
   <category name="com.metavize.mvvm.engine">
-    <priority value="DEBUG"/>
+    <priority value="INFO"/>
   </category>
 
   <category name="com.metavize.mvvm.logging">
@@ -80,7 +80,7 @@
   </category>
 
   <category name="org.hibernate">
-    <priority value="DEBUG"/>
+    <priority value="WARN"/>
   </category>
 
 
