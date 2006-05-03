@@ -82,15 +82,15 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
   </servlet-mapping>
 
   <servlet>
-    <servlet-name>BookmarkLister</servlet-name>
+    <servlet-name>BookmarkServlet</servlet-name>
     <servlet-class>
-      com.metavize.tran.portal.BookmarkLister
+      com.metavize.tran.portal.BookmarkServlet
     </servlet-class>
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>BookmarkLister</servlet-name>
-    <url-pattern>/bmlist</url-pattern>
+    <servlet-name>BookmarkServlet</servlet-name>
+    <url-pattern>/bookmark</url-pattern>
   </servlet-mapping>
 
   @JSP_PRE_COMPILED_SERVLETS@

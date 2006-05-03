@@ -30,7 +30,7 @@ import com.metavize.mvvm.portal.PortalUser;
 import com.metavize.mvvm.util.XmlUtil;
 import org.apache.log4j.Logger;
 
-public class BookmarkLister extends HttpServlet
+public class BookmarkServlet extends HttpServlet
 {
     private Logger logger;
 
@@ -84,10 +84,16 @@ public class BookmarkLister extends HttpServlet
             return;
         }
 
-        List<Bookmark> bms = pm.getAllBookmarks(pu);
+        String command = req.getParameter("command");
 
         try {
-            emitBookmarks(resp.getWriter(), bms);
+            if (command.equals("ls")) {
+                List<Bookmark> bms = pm.getAllBookmarks(pu);
+                emitBookmarks(resp.getWriter(), bms);
+            } else {
+                logger.warn("bad command: " + command);
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            }
         } catch (IOException exn) {
             logger.warn("could not write bookmarks", exn);
         }
