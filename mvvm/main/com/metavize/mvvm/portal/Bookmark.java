@@ -127,4 +127,28 @@ public class Bookmark implements Serializable
     {
         this.applicationName = applicationName;
     }
+
+    public int hashCode()
+    {
+        if ( name == null || applicationName == null || target == null )
+            // shouldn't happen
+            return 0;
+
+        return name.hashCode() * 37 + applicationName.hashCode() * 7 + target.hashCode();
+    }
+
+    public boolean equals( Object o )
+    {
+        if (!(o instanceof Bookmark ))
+            return false;
+
+        Bookmark other = (Bookmark)o;
+        if (name.equals(other.name) &&
+            applicationName.equals(other.applicationName) &&
+            target.equals(other.target))
+            // idle time and group aren't important.
+            return true;
+
+        return false;
+    }
 }

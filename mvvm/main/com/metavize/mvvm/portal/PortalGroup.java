@@ -32,7 +32,7 @@ public class PortalGroup implements Serializable
     private String description;
 
     private PortalHomeSettings portalHomeSettings;
-    private List bookmarks;
+    private List bookmarks = new ArrayList();
 
     // constructors -----------------------------------------------------------
 
@@ -136,27 +136,33 @@ public class PortalGroup implements Serializable
      * @hibernate.collection-index
      * column="POSITION"
      * @hibernate.collection-many-to-many
-     * class="com.metavize.mvvm.portal.Bookmark"
+     * class="com.metavi ze.mvvm.portal.Bookmark"
      * column="BOOKMARK_ID"
      */
     public List getBookmarks()
     {
-    if( bookmarks == null )
-        return new ArrayList<Bookmark>();
-    else
         return bookmarks;
     }
 
     public void setBookmarks(List bookmarks)
     {
-    this.bookmarks = bookmarks;
+        this.bookmarks = bookmarks;
+    }
+
+    public int hashCode()
+    {
+        if (name == null)
+            // shouldn't happen
+            return 0;
+
+        return name.hashCode();
     }
 
     public boolean equals(Object obj)
     {
-    if( !(obj instanceof PortalGroup) )
-        return false;
-    PortalGroup other = (PortalGroup) obj;
-    return getName().equals(other.getName());
+        if( !(obj instanceof PortalGroup) )
+            return false;
+        PortalGroup other = (PortalGroup) obj;
+        return getName().equals(other.getName());
     }
 }

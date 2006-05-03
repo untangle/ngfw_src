@@ -172,6 +172,39 @@ public class PortalManagerImpl
         return result;
     }
 
+    public Bookmark addUserBookmark(final PortalUser user, String name, Application application, String target)
+    {
+        Bookmark result = user.addBookmark(name, application, target);
+
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    s.saveOrUpdate(user);
+                    return true;
+                }
+            };
+        MvvmContextFactory.context().runTransaction(tw);
+        
+        return result;
+    }
+
+    public void removeUserBookmark(final PortalUser user, Bookmark bookmark)
+    {
+        user.removeBookmark(bookmark);
+
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    s.saveOrUpdate(user);
+                    return true;
+                }
+            };
+        MvvmContextFactory.context().runTransaction(tw);
+    }
+
+
     public PortalUser getUser(String uid)
     {
         List allUsers = portalSettings.getUsers();

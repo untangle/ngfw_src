@@ -36,7 +36,7 @@ public class PortalUser implements Serializable
     private PortalGroup portalGroup;
     private PortalHomeSettings portalHomeSettings;
 
-    private List bookmarks;
+    private List bookmarks = new ArrayList();
 
     // constructors -----------------------------------------------------------
 
@@ -58,6 +58,19 @@ public class PortalUser implements Serializable
     }
 
 
+    // business methods ------------------------------------------------------
+
+    public Bookmark addBookmark(String name, Application application, String target)
+    {
+        Bookmark bm = new Bookmark(name, application, target);
+        bookmarks.add(bm);
+        return bm;
+    }
+
+    public void removeBookmark(Bookmark bookmark)
+    {
+        bookmarks.remove(bookmark);
+    }
 
     // accessors --------------------------------------------------------------
 
@@ -182,10 +195,7 @@ public class PortalUser implements Serializable
      */
     public List getBookmarks()
     {
-	if( bookmarks == null )
-	    return new ArrayList<Bookmark>();
-	else
-	    return bookmarks;
+        return bookmarks;
     }
 
     public void setBookmarks(List bookmarks)

@@ -34,7 +34,7 @@ public class PortalGlobal implements Serializable
     private String loginPageText = "";
 
     private PortalHomeSettings portalHomeSettings;
-    private List bookmarks;
+    private List bookmarks = new ArrayList();
 
     // constructors -----------------------------------------------------------
 
@@ -149,10 +149,7 @@ public class PortalGlobal implements Serializable
      */
     public List getBookmarks()
     {
-	if( bookmarks == null )
-	    return new ArrayList<Bookmark>();
-	else
-	    return bookmarks;
+        return bookmarks;
     }
 
     public void setBookmarks(List bookmarks)

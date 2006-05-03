@@ -46,6 +46,14 @@ public interface PortalManagerPriv extends PortalManager
     PortalHomeSettings getPortalHomeSettings(PortalUser user);
 
     /**
+     * Adds a new bookmark for the given user.  Does not currently
+     * validate the target.
+     */
+    Bookmark addUserBookmark(PortalUser user, String name, Application application, String target);
+
+    void removeUserBookmark(PortalUser user, Bookmark bookmark);
+
+    /**
      * Looks up a user by uid.  Returns null if the user does not exist.
      *
      * @param uid a <code>String</code> giving the uid of the user
