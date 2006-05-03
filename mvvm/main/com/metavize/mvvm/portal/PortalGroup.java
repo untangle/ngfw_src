@@ -136,7 +136,7 @@ public class PortalGroup implements Serializable
      * @hibernate.collection-index
      * column="POSITION"
      * @hibernate.collection-many-to-many
-     * class="com.metavi ze.mvvm.portal.Bookmark"
+     * class="com.metavize.mvvm.portal.Bookmark"
      * column="BOOKMARK_ID"
      */
     public List getBookmarks()
