@@ -64,9 +64,9 @@ public class LocalLdapAdapter
    */
   public LocalLdapAdapter() {
     this(new RepositorySettings(
-      "cn=admin,dc=mydomain",
+      "admin",
       "passwd",
-      "DC=mydomain",
+      "mydomain",
       "localhost",
       389)
       );
