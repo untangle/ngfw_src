@@ -17,6 +17,7 @@
 #include <mvutil/debug.h>
 #include <mvutil/errlog.h>
 #include <mvutil/list.h>
+#include <mvutil/utime.h>
 
 #include "netcap_shield.h"
 #include "netcap_shield_cfg.h"
@@ -49,6 +50,10 @@
 
 /* This is not actually a multiplier, it is just a rate limit in seconds per IP */
 #define _ICMP_CHK_LOAD_MULT    40.0
+
+/* For debugging, if the shield exceeds this threshold a lot of
+ * information is printed about the reputation being analyzed */
+#define _REPUTATION_DEBUG_THRESHOLD 160.0
 
 static int _verifyCfg            ( nc_shield_cfg_t* cfg );
 static int _verifyFence          ( nc_shield_fence_t* fence );
@@ -163,7 +168,8 @@ int nc_shield_cfg_def  ( nc_shield_cfg_t* cfg )
                 .error   = { .prob = 0.95, .post = _SHIELD_REP_MAX * 0.40 }
             }
         },
-        .print_rate   = 0.25
+        .print_rate   = 0.25,
+        .rep_threshold = _REPUTATION_DEBUG_THRESHOLD
     };
     
     if ( cfg == NULL ) return errlogargs();
@@ -252,12 +258,12 @@ int nc_shield_cfg_get ( nc_shield_cfg_t* cfg, char* buf, int buf_len )
                        "<mult request-load='%lg' session-load='%lg' tcp-chk-load='%lg' udp-chk-load='%lg' "
                        " icmp-chk-load='%lg' evil-load='%lg' active-sess='%lg'/>\n<lru  low-water='%d' "
                        " high-water='%d'/>\n"
-                       "<print rate='%lg'/>\n"
+                       "<print rate='%lg' reputation-threshold='%lg'/>\n"
                        "</shield-cfg>\n",
                        cfg->mult.request_load, cfg->mult.session_load, cfg->mult.tcp_chk_load, 
                        cfg->mult.udp_chk_load, cfg->mult.icmp_chk_load, cfg->mult.evil_load, 
-                       cfg->mult.active_sess, cfg->lru.low_water, cfg->lru.high_water, cfg->print_rate );
-                       
+                       cfg->mult.active_sess, cfg->lru.low_water, cfg->lru.high_water,
+                       cfg->print_rate, cfg->rep_threshold );                       
 
     if ( count < 0 ) return perrlog ( "snprintf" );
 
@@ -439,7 +445,16 @@ static int _parseFencePost       ( nc_shield_post_t* post, xmlDoc* doc, xmlNode*
 
 static int _parsePrint           ( nc_shield_cfg_t* cfg, xmlDoc* doc, xmlNode* printNode )
 {
-    if ( _parseAttributeDouble ( &cfg->print_rate, doc, printNode, "rate" ) < 0 ) return -1;
+    if ( _parseAttributeDouble( &cfg->print_rate, doc, printNode, "rate" ) < 0 ) return -1;
+    if ( _parseAttributeDouble( &cfg->rep_threshold, doc, printNode, "reputation-threshold" ) < 0 ) return -1;
+
+    /* Calculate the print delay, this is the inverse of the print rate multiplied by 100,000 */
+    if ( cfg->print_rate != 0 ) {
+        cfg->print_delay = (((double)U_SEC) / cfg->print_rate );
+    } else {
+        errlog ( ERR_WARNING, "Shield: zero print_rate.\n" );
+        cfg->print_delay = U_SEC;
+    }
 
     return 0;
 }

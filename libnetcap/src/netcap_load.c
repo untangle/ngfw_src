@@ -17,6 +17,7 @@
 
 #include <mvutil/debug.h>
 #include <mvutil/errlog.h>
+#include <mvutil/utime.h>
 
 #include "netcap_load.h"
 
@@ -145,8 +146,8 @@ static int _load_update ( netcap_load_t* load, int count, netcap_load_val_t val,
     load->total += count;
     
     /* Multiply by 1,000,000 to convert seconds to microseconds */
-    current = ((netcap_load_val_t)current_time->tv_sec * 1000000 ) + current_time->tv_usec;
-    last_update = ((netcap_load_val_t)load->last_update.tv_sec * 1000000 ) + load->last_update.tv_usec;
+    current = ((netcap_load_val_t)current_time->tv_sec * U_SEC ) + current_time->tv_usec;
+    last_update = ((netcap_load_val_t)load->last_update.tv_sec * U_SEC ) + load->last_update.tv_usec;
 
     duration = current - last_update;
 
@@ -167,7 +168,7 @@ static int _load_update ( netcap_load_t* load, int count, netcap_load_val_t val,
         load->load = (e*load->load);
     } else {
         /* Calculate the number of events per second */
-        x = val * ((netcap_load_val_t)1000000) / ( duration );
+        x = val * ((netcap_load_val_t)U_SEC) / ( duration );
         load->load = (e*load->load + (1-e)*x);
     }
 

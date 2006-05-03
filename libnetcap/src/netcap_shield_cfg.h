@@ -78,8 +78,18 @@ typedef struct {
         nc_shield_fence_t closed;
     } fence;
 
-    /** Parameters that control how often rejection debugging messages should printed */
+    /** Parameters that control how often rejection debugging messages
+     * should printed, how often the shield listener is triggered for
+     * these events, and how often high reputation debugging messages
+     * are printed. */
     double print_rate;
+
+    /** The inverse of the print rate, converted to microseconds */
+    long print_delay;
+
+    /** If a reputation exceeds this threshold, debugging messages are
+     * printed out for a reputation. */
+    double rep_threshold;
 } nc_shield_cfg_t;
 
 /* Load the default shield configuration */

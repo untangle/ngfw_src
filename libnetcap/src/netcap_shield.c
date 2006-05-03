@@ -94,6 +94,12 @@ static struct {
     
     /* Used to return a NULL element for get_end_of_line */
     netcap_trie_element_t null_element;
+
+    /* Used to limit the number of times to print out messages about high reputations */
+    struct timeval threshold_last_update;
+
+    /* Mutex to limit the number of times to print out messages about high reputations */
+    pthread_mutex_t threshold_mutex;
 } _shield = {
     .root       = NULL,
     .mode       = NC_SHIELD_MODE_RELAXED,
@@ -104,6 +110,15 @@ static struct {
     .null_element = { 
         .base = NULL
     },
+
+    /* Set the time to something very far in the past */
+    .threshold_last_update = {
+        .tv_sec = 0,
+        .tv_usec = 0
+    },
+
+    .threshold_mutex  = PTHREAD_MUTEX_INITIALIZER,
+
 #ifdef _TRIE_DEBUG_PRINT
     .dbg_mutex  = PTHREAD_MUTEX_INITIALIZER
 #endif
@@ -170,6 +185,7 @@ static int _clean_lru_and_trie( void );
 
 static netcap_trie_element_t _get_end_of_line ( netcap_trie_line_t* line );
 
+static void _debug_reputation_threshold       ( netcap_trie_line_t* line );
 
 static void _report_intf_event( netcap_intf_t intf, netcap_shield_event_data_t* event, 
                                 nc_shield_rejection_counter_t* counter );
@@ -208,7 +224,7 @@ static int _check_if_print( struct in_addr* ip, nc_shield_reputation_t* rep,
     do {
         /* Check again after the lock to make sure that another thread didn't update the
          * value */
-        if ((volatile double)(rep->print_load.load) <  _shield.cfg.print_rate ) {
+        if ((volatile netcap_load_val_t)(rep->print_load.load) <  _shield.cfg.print_rate ) {
             bzero( &event, sizeof( event ));
             event.type                      = NC_SHIELD_EVENT_REJECTION;
             event.data.rejection.ip         = ip->s_addr;
@@ -895,7 +911,12 @@ static int  _get_response        ( netcap_shield_response_t* response, nc_shield
         return errlog( ERR_CRITICAL, "_get_end_of_line\n" );
     }
 
-    response->ans = _put_in_fence( _shield.fence, (*reputation)->score, *reputation, protocol );
+    nc_shield_score_t score = (*reputation)->score;
+
+    /* If the reputation is too high, and the load is low enough, print out debugging information. */
+    if ( score > _shield.cfg.rep_threshold ) _debug_reputation_threshold( &line );
+
+    response->ans = _put_in_fence( _shield.fence, score, *reputation, protocol );
 
     response->if_print = 0;
     
@@ -1196,6 +1217,102 @@ static netcap_trie_element_t _get_end_of_line ( netcap_trie_line_t* line )
     return (( line->is_bottom_up ) ? line->d[0] : line->d[line->count-1]);
 }
 
+static void _debug_reputation_threshold       ( netcap_trie_line_t* line )
+{
+    struct timeval current_time;
+
+    void _critical_section()
+    {
+        /* Check again after locking the mutex */
+        if ( gettimeofday( &current_time, NULL ) < 0 ) {
+            perrlog("gettimeofday");
+            return;
+        }
+
+        /* If the enough time hasn't elapsed yet, no need to check after locking the mutex */
+        if ( utime_usec_diff( &_shield.threshold_last_update, &current_time ) < _shield.cfg.print_delay ) {
+            return;
+        }
+
+        /* Copy in the current time */
+        memcpy( &_shield.threshold_last_update, &current_time, sizeof( _shield.threshold_last_update ) );
+        
+        int c;
+        for ( c = 0 ; c < line->count ; c++ ) {
+            netcap_trie_element_t element = line->d[c];
+            netcap_trie_item_t* item = element.item;
+            nc_shield_reputation_t* reputation;
+            int children;
+            
+            if ( element.base == NULL ) {
+                errlog( ERR_CRITICAL, "Line with null element at index: %d, %d\n", c, line->is_bottom_up );
+                continue;
+            }
+            
+            reputation = (nc_shield_reputation_t*)netcap_trie_item_data( item );
+            
+            if ( reputation == NULL ) {
+                errlog( ERR_CRITICAL, "Item with null reputation at index: %d, %d\n", c, line->is_bottom_up );
+                continue;
+            }
+            
+            if (( children = netcap_trie_element_children( element )) < 0 ) {
+                errlog( ERR_CRITICAL, "netcap_trie_element_children\n" );
+            }
+            
+            children = ( children <= 0 ) ? 1 : children;
+            
+            /* This prints out all of hte information that is used to
+             * calculate the reputation, at each level */
+            debug( 0, "Reputation[%08X,%d,%2d]: r %12lg a %08d r %12lg s %12lg t %12lg u %012lg e %12lg\n",
+                   ntohl( reputation->ip.s_addr ), item->depth, children, reputation->score,
+                   reputation->active_sessions,   reputation->request_load.load,
+                   reputation->session_load.load, reputation->tcp_chk_load.load,
+                   reputation->udp_chk_load.load, reputation->evil_load.load );
+        }
+    }
+
+    if ( line == NULL ) {
+        errlog( ERR_CRITICAL, "NULL line" );
+        return;
+    }
+    
+    if ( line->count == 0 ) {
+        errlog( ERR_CRITICAL, "Line has zero nodes\n" );
+        return;
+    }
+
+    if ( line->count > NC_TRIE_LINE_COUNT_MAX ) {
+        errlog( ERR_CRITICAL, "Line w/ invalid count %d\n", line->count );
+        return;
+    }
+
+    /* Check if the output should be printed. */
+    if ( gettimeofday( &current_time, NULL ) < 0 ) {
+        perrlog("gettimeofday");
+        return;
+    }
+    
+    /* If the enough time hasn't elapsed yet, no need to check after locking the mutex */
+    if ( utime_usec_diff( &_shield.threshold_last_update, &current_time ) < _shield.cfg.print_delay ) {
+        return;
+    }
+
+    /* There is only global load that controls all threads */
+    if ( pthread_mutex_lock( &_shield.threshold_mutex ) < 0 ) {
+        perrlog( "pthread_mutex_lock" );
+        return;
+    }
+
+    _critical_section();
+
+    if ( pthread_mutex_unlock( &_shield.threshold_mutex ) < 0 ) {
+        perrlog( "pthread_mutex_unlock" );
+    }
+}
+
+/** This function applies func to a line of nodes.  If the node
+ * doesn't exist, then it is not created */
 static int  _apply_close( struct in_addr* ip, _apply_func_t* func )
 {
     netcap_trie_line_t line;
@@ -1230,6 +1347,8 @@ static int  _apply_close( struct in_addr* ip, _apply_func_t* func )
     return 0;
 }
 
+/** This function applies func to a line of nodes.  If the node
+ * doesn't exist, then one is created. */
 static int  _apply      ( struct in_addr* ip, _apply_func_t* func )
 {
     netcap_trie_line_t line;
@@ -1350,7 +1469,6 @@ static int _clean_lru_and_trie( void )
 
     return ret;
 }
-
 
 #ifdef _TRIE_DEBUG_PRINT
 static int  _status             ( int conn, struct sockaddr_in *dst_addr )
