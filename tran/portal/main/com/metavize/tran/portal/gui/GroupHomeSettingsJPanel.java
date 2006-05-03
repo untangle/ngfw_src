@@ -17,15 +17,23 @@ import com.metavize.gui.transform.*;
 import com.metavize.mvvm.portal.*;
 
 import java.awt.*;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 
 
 public class GroupHomeSettingsJPanel extends javax.swing.JPanel implements Savable<Object>, Refreshable<Object> {
+
+    private static final String EXCEPTION_TIMEOUT_RANGE = "You must choose a timeout between " + 
+	(int)(PortalHomeSettings.IDLE_TIMEOUT_MIN) + " and " + (int)(PortalHomeSettings.IDLE_TIMEOUT_MAX);
     
     private PortalGroup portalGroup;
 
     public GroupHomeSettingsJPanel(PortalGroup portalGroup) {
 	this.portalGroup = portalGroup;
         initComponents();
+	timeoutJSpinner.setModel(new SpinnerNumberModel((int)(PortalHomeSettings.IDLE_TIMEOUT_MIN/60000l),
+							(int)(PortalHomeSettings.IDLE_TIMEOUT_MIN/60000l),
+							(int)(PortalHomeSettings.IDLE_TIMEOUT_MAX/60000l), 1));
     }
         
     // SETTINGS CHANGE NOTIFICATION /////////
@@ -58,6 +66,16 @@ public class GroupHomeSettingsJPanel extends javax.swing.JPanel implements Savab
 	// ADD BOOKMARKS //
 	boolean showAddBookmarks = addJCheckBox.isSelected();
 
+	// TIMEOUT //
+	((JSpinner.DefaultEditor)timeoutJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+	int timeout = 0;
+	try{ timeoutJSpinner.commitEdit(); }
+	catch(Exception e){ 
+	    ((JSpinner.DefaultEditor)timeoutJSpinner.getEditor()).getTextField().setBackground(Util.INVALID_BACKGROUND_COLOR);
+	    throw new Exception(EXCEPTION_TIMEOUT_RANGE);
+	}
+        timeout = (Integer) timeoutJSpinner.getValue();
+
         // SAVE THE VALUES ////////////////////////////////////
 	if( !validateOnly ){
 	    PortalHomeSettings portalHomeSettings = portalGroup.getPortalHomeSettings();
@@ -72,6 +90,7 @@ public class GroupHomeSettingsJPanel extends javax.swing.JPanel implements Savab
 		portalHomeSettings.setShowExploder( showExplorer );
 		portalHomeSettings.setShowBookmarks( showBookmarks );
 		portalHomeSettings.setShowAddBookmark( showAddBookmarks );
+		portalHomeSettings.setIdleTimeout( ((long)timeout)*60000l );
 	    }
 	    else{
 		portalGroup.setPortalHomeSettings( null );
@@ -85,6 +104,7 @@ public class GroupHomeSettingsJPanel extends javax.swing.JPanel implements Savab
     boolean showExplorerCurrent;
     boolean showBookmarksCurrent;
     boolean showAddBookmarksCurrent;
+    int timeoutCurrent;
 
     public void doRefresh(Object settings) {
 	PortalHomeSettings portalHomeSettings = portalGroup.getPortalHomeSettings();
@@ -123,6 +143,12 @@ public class GroupHomeSettingsJPanel extends javax.swing.JPanel implements Savab
 	showAddBookmarksCurrent = portalHomeSettings.isShowAddBookmark();
 	addJCheckBox.setSelected( showAddBookmarksCurrent );
         
+	// TIMEOUT //
+	timeoutCurrent = (int)(portalHomeSettings.getIdleTimeout()/60000l);
+	timeoutJSpinner.setValue( timeoutCurrent );
+	((JSpinner.DefaultEditor)timeoutJSpinner.getEditor()).getTextField().setText(Integer.toString(timeoutCurrent));
+	((JSpinner.DefaultEditor)timeoutJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+
     }
 
         
@@ -155,11 +181,17 @@ public class GroupHomeSettingsJPanel extends javax.swing.JPanel implements Savab
                 explorerJCheckBox = new javax.swing.JCheckBox();
                 bookmarksJCheckBox = new javax.swing.JCheckBox();
                 addJCheckBox = new javax.swing.JCheckBox();
+                externalRemoteJPanel1 = new javax.swing.JPanel();
+                jTextArea4 = new javax.swing.JTextArea();
+                restrictIPJPanel1 = new javax.swing.JPanel();
+                timeoutJLabel = new javax.swing.JLabel();
+                timeoutJSpinner = new javax.swing.JSpinner();
+                timeoutJLabel1 = new javax.swing.JLabel();
 
                 setLayout(new java.awt.GridBagLayout());
 
-                setMinimumSize(new java.awt.Dimension(530, 376));
-                setPreferredSize(new java.awt.Dimension(530, 376));
+                setMinimumSize(new java.awt.Dimension(530, 475));
+                setPreferredSize(new java.awt.Dimension(530, 475));
                 explanationJPanel1.setLayout(new java.awt.GridBagLayout());
 
                 explanationJPanel1.setBorder(new javax.swing.border.TitledBorder(null, "Override", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
@@ -219,10 +251,10 @@ public class GroupHomeSettingsJPanel extends javax.swing.JPanel implements Savab
 
                 explanationJPanel.setLayout(new java.awt.GridBagLayout());
 
-                explanationJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Text", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+                explanationJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Home Page Text", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
                 jTextArea2.setEditable(false);
                 jTextArea2.setLineWrap(true);
-                jTextArea2.setText("This is the text that will appear on the user's home page.");
+                jTextArea2.setText("This text will appear on the user's home page.");
                 jTextArea2.setWrapStyleWord(true);
                 jTextArea2.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
@@ -324,10 +356,10 @@ public class GroupHomeSettingsJPanel extends javax.swing.JPanel implements Savab
 
                 externalRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
-                externalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Features", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+                externalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Home Page Features", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
                 jTextArea3.setEditable(false);
                 jTextArea3.setLineWrap(true);
-                jTextArea3.setText("These are the features that available to the user on the home page.");
+                jTextArea3.setText("These features will be available on the user's home page.");
                 jTextArea3.setWrapStyleWord(true);
                 jTextArea3.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
@@ -414,13 +446,84 @@ public class GroupHomeSettingsJPanel extends javax.swing.JPanel implements Savab
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 2;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
+                add(externalRemoteJPanel, gridBagConstraints);
+
+                externalRemoteJPanel1.setLayout(new java.awt.GridBagLayout());
+
+                externalRemoteJPanel1.setBorder(new javax.swing.border.TitledBorder(null, "Timeout", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+                jTextArea4.setEditable(false);
+                jTextArea4.setLineWrap(true);
+                jTextArea4.setText("These sets how long a login can be idle before being logged out.");
+                jTextArea4.setWrapStyleWord(true);
+                jTextArea4.setOpaque(false);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 15);
+                externalRemoteJPanel1.add(jTextArea4, gridBagConstraints);
+
+                restrictIPJPanel1.setLayout(new java.awt.GridBagLayout());
+
+                timeoutJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                timeoutJLabel.setText("Timeout: ");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                restrictIPJPanel1.add(timeoutJLabel, gridBagConstraints);
+
+                timeoutJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
+                timeoutJSpinner.setMaximumSize(new java.awt.Dimension(75, 19));
+                timeoutJSpinner.setMinimumSize(new java.awt.Dimension(75, 19));
+                timeoutJSpinner.setPreferredSize(new java.awt.Dimension(75, 19));
+                timeoutJSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+                        public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                                timeoutJSpinnerStateChanged(evt);
+                        }
+                });
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
+                restrictIPJPanel1.add(timeoutJSpinner, gridBagConstraints);
+
+                timeoutJLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
+                timeoutJLabel1.setText(" (minutes)");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 2;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                restrictIPJPanel1.add(timeoutJLabel1, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.ipadx = 25;
+                gridBagConstraints.insets = new java.awt.Insets(15, 0, 5, 0);
+                externalRemoteJPanel1.add(restrictIPJPanel1, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 3;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.weighty = 1.0;
                 gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-                add(externalRemoteJPanel, gridBagConstraints);
+                add(externalRemoteJPanel1, gridBagConstraints);
 
         }//GEN-END:initComponents
+
+    private void timeoutJSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_timeoutJSpinnerStateChanged
+	if( ((Integer)timeoutJSpinner.getValue() != timeoutCurrent) && (settingsChangedListener != null) )
+	    settingsChangedListener.settingsChanged(this);
+    }//GEN-LAST:event_timeoutJSpinnerStateChanged
 
     private void addJCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addJCheckBoxActionPerformed
 	if( settingsChangedListener != null )
@@ -466,6 +569,9 @@ public class GroupHomeSettingsJPanel extends javax.swing.JPanel implements Savab
     
     
     private void setTextEnabledDependency(boolean enabled){
+	timeoutJLabel.setEnabled( enabled );
+	timeoutJSpinner.setEnabled( enabled );
+
 	pageTitleJLabel.setEnabled( enabled );
 	pageTitleJTextField.setEnabled( enabled );
 	pageTextJLabel.setEnabled( enabled );
@@ -493,17 +599,23 @@ public class GroupHomeSettingsJPanel extends javax.swing.JPanel implements Savab
         private javax.swing.JCheckBox explorerJCheckBox;
         private javax.swing.JLabel explorerJLabel;
         private javax.swing.JPanel externalRemoteJPanel;
+        private javax.swing.JPanel externalRemoteJPanel1;
         private javax.swing.JPanel jPanel1;
         private javax.swing.JTextArea jTextArea2;
         private javax.swing.JTextArea jTextArea3;
+        private javax.swing.JTextArea jTextArea4;
         private javax.swing.JLabel pageTextJLabel;
         public javax.swing.JTextField pageTextJTextField;
         private javax.swing.JLabel pageTitleJLabel;
         public javax.swing.JTextField pageTitleJTextField;
         private javax.swing.JPanel restrictIPJPanel;
+        private javax.swing.JPanel restrictIPJPanel1;
         private javax.swing.JPanel restrictIPJPanel2;
         public javax.swing.JRadioButton settingsDisabledJRadioButton;
         public javax.swing.JRadioButton settingsEnabledJRadioButton;
+        private javax.swing.JLabel timeoutJLabel;
+        private javax.swing.JLabel timeoutJLabel1;
+        private javax.swing.JSpinner timeoutJSpinner;
         private javax.swing.JLabel userBookmarksJLabel;
         // End of variables declaration//GEN-END:variables
     

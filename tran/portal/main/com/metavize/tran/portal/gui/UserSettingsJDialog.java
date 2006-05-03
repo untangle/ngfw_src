@@ -31,7 +31,7 @@ import javax.swing.*;
 public class UserSettingsJDialog extends MConfigJDialog {
 
     private static final String NAME_TITLE     = "User Settings";
-    private static final String NAME_BOOKMARKS = "Bookmarks";
+    private static final String NAME_BOOKMARKS = "Links";
     private static final String NAME_HOME      = "Page Setup";
 
     private PortalUser portalUser;

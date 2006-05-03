@@ -35,7 +35,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     private static final String NAME_GROUPS             = "Groups";
     private static final String NAME_SETTINGS           = "Global Settings";
     private static final String NAME_SETTINGS_HOME      = "Home Page";
-    private static final String NAME_SETTINGS_BOOKMARKS = "Bookmarks";
+    private static final String NAME_SETTINGS_BOOKMARKS = "Links";
     private static final String NAME_STATUS             = "Status";
     private static final String NAME_LOG                = "Event Log";
     
