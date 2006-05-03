@@ -143,15 +143,19 @@ public class MTransformJPanel extends javax.swing.JPanel {
         try{
             name = transformDesc.getName();
             name = name.substring(0, name.indexOf('-'));
-
             descriptionIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/tran/"
                                                                                                        + name
                                                                                                        +  "/gui/IconDesc42x42.png")));
+        }
+        catch(Exception e){ Util.handleExceptionNoRestart("Error adding icon: " + name , e); }
+        try{
+            name = transformDesc.getName();
+            name = name.substring(0, name.indexOf('-'));
             organizationIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/tran/"
                                                                                                         + name
                                                                                                         + "/gui/IconOrg42x42.png")));
         }
-        catch(Exception e){ Util.handleExceptionNoRestart("Error adding icons: " + name , e); }
+        catch(Exception e){ Util.handleExceptionNoRestart("Error adding icon: " + name , e); }
 
         // SIZES
         if(maxDimension == null)
