@@ -507,7 +507,7 @@
           <Properties>
             <Property name="editable" type="boolean" value="false"/>
             <Property name="lineWrap" type="boolean" value="true"/>
-            <Property name="text" type="java.lang.String" value="These sets how long a login can be idle before being logged out."/>
+            <Property name="text" type="java.lang.String" value="This sets how long a login can be idle before being logged out."/>
             <Property name="wrapStyleWord" type="boolean" value="true"/>
             <Property name="opaque" type="boolean" value="false"/>
           </Properties>

@@ -539,7 +539,7 @@ public class GlobalHomeSettingsJPanel extends javax.swing.JPanel implements Sava
                 externalRemoteJPanel1.setBorder(new javax.swing.border.TitledBorder(null, "Timeout", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
                 jTextArea4.setEditable(false);
                 jTextArea4.setLineWrap(true);
-                jTextArea4.setText("These sets how long a login can be idle before being logged out.");
+                jTextArea4.setText("This sets how long a login can be idle before being logged out.");
                 jTextArea4.setWrapStyleWord(true);
                 jTextArea4.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
