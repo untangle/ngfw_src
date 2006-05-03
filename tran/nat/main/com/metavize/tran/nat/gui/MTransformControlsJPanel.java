@@ -30,11 +30,12 @@ import javax.swing.event.*;
 import javax.swing.border.*;
 
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.firewall.ip.IPDBMatcher;
 import com.metavize.tran.nat.*;
 import com.metavize.mvvm.networking.*;
 import com.metavize.mvvm.client.MvvmRemoteContextFactory;
 
-public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransformControlsJPanel{
+public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransformControlsJPanel {
 
     private static final String NAME_NET_SPACES       = "Net Spaces";
     private static final String NAME_INTERFACE_MAP    = "Interface-To-Space Map";
@@ -44,6 +45,8 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     private static final String NAME_NAT              = "NAT";
     private static final String NAME_DMZ              = "DMZ Host";
     private static final String NAME_REDIRECT         = "Redirect";
+    private static final String NAME_REDIRECT_ANY     = "To Anywhere";
+    private static final String NAME_REDIRECT_VIRTUAL = "To Virtual Servers";
     private static final String NAME_DHCP             = "DHCP";
     private static final String NAME_DHCP_SETTINGS    = "Settings";
     private static final String NAME_DHCP_ADDRESS_MAP = "Address Map";
@@ -68,6 +71,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     private List<String> spaceNameList = new ArrayList<String>();
     private List<Component> spaceScrollableList = new ArrayList<Component>();
 
+    private List<IPDBMatcher> ipDBMatcherList;
     private IPaddr host;
     private boolean dhcpEnabled;
     public IPaddr getHost(){ return host; }
@@ -194,11 +198,21 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	generateSpecificGui();
 
         // REDIRECT /////////////
+	JTabbedPane redirectJTabbedPane = addTabbedPane(NAME_REDIRECT, null);
+
+	// REDIRECT ANY /////////
         RedirectJPanel redirectJPanel = new RedirectJPanel();
-        addTab(NAME_REDIRECT, null, redirectJPanel);
-        addSavable(NAME_REDIRECT, redirectJPanel);
-	addRefreshable(NAME_REDIRECT, redirectJPanel);
+        redirectJTabbedPane.addTab(NAME_REDIRECT_ANY, null, redirectJPanel);
+        addSavable(NAME_REDIRECT_ANY, redirectJPanel);
+	addRefreshable(NAME_REDIRECT_ANY, redirectJPanel);
 	redirectJPanel.setSettingsChangedListener(this);
+
+	// REDIRECT VIRTUAL /////////
+        RedirectVirtualJPanel redirectVirtualJPanel = new RedirectVirtualJPanel(this);
+        redirectJTabbedPane.addTab(NAME_REDIRECT_VIRTUAL, null, redirectVirtualJPanel);
+        addSavable(NAME_REDIRECT_VIRTUAL, redirectVirtualJPanel);
+	addRefreshable(NAME_REDIRECT_VIRTUAL, redirectVirtualJPanel);
+	redirectVirtualJPanel.setSettingsChangedListener(this);
 
 	// DHCP /////////////
         JTabbedPane dhcpJTabbedPane = addTabbedPane(NAME_DHCP, null);
@@ -251,6 +265,10 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	return new SaveProceedDialog( mTransformJPanel.getTransformDesc().getDisplayName() ).isProceeding();
     }
 
+    public List<IPDBMatcher> getLocalMatcherList(){
+	return ipDBMatcherList;
+    }
+
     public void saveAll() throws Exception {
 	int previousTimeout = MvvmRemoteContextFactory.factory().getTimeout();
 	MvvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_MILLIS);		
@@ -263,6 +281,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	host = basicNetworkSettings.host();
 	dhcpEnabled = basicNetworkSettings.isDhcpEnabled();
 	super.refreshAll();
+	ipDBMatcherList = ((NatCommonSettings)settings).getLocalMatcherList();
 	previousSetupState = currentSetupState;
 	currentSetupState = ((NatCommonSettings)settings).getSetupState();
 	natTransform = (Nat) mTransformJPanel.getTransform();
