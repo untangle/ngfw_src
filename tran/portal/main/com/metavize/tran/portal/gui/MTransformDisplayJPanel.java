@@ -23,8 +23,8 @@ public class MTransformDisplayJPanel extends com.metavize.gui.transform.MTransfo
 
         super.activity0JLabel.setText("LOGIN");
         super.activity1JLabel.setText("LOGOUT");
-        super.activity2JLabel.setText("");
-        super.activity3JLabel.setText("");
+        super.activity2JLabel.setText(" ");
+        super.activity3JLabel.setText(" ");
 
     }
 

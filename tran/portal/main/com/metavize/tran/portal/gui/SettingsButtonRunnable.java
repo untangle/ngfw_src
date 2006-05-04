@@ -12,6 +12,7 @@
 
 package com.metavize.tran.portal.gui;
 
+import com.metavize.gui.transform.MTransformControlsJPanel;
 import com.metavize.mvvm.portal.*;
 import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.gui.util.*;
@@ -24,6 +25,7 @@ public class SettingsButtonRunnable implements ButtonRunnable {
     private PortalUser portalUser;
     private PortalGroup portalGroup;
     private Window topLevelWindow;
+    private MTransformControlsJPanel mTransformControlsJPanel;
     public SettingsButtonRunnable(String isEnabled){
 	if( "true".equals(isEnabled) ) {
 	    this.isEnabled = true;
@@ -39,14 +41,15 @@ public class SettingsButtonRunnable implements ButtonRunnable {
     public void setPortalUser(PortalUser portalUser){ this.portalUser = portalUser; }
     public void setPortalGroup(PortalGroup portalGroup){ this.portalGroup = portalGroup; }
     public void setTopLevelWindow(Window topLevelWindow){ this.topLevelWindow = topLevelWindow; }
+    public void setMTransformControlsJPanel(MTransformControlsJPanel mTransformControlsJPanel){ this.mTransformControlsJPanel = mTransformControlsJPanel; }
     public void actionPerformed(ActionEvent evt){ run(); }
     public void run(){
 	if( isUserType ){
-	    UserSettingsJDialog userSettingsJDialog = UserSettingsJDialog.factory(topLevelWindow, portalUser); 
+	    UserSettingsJDialog userSettingsJDialog = UserSettingsJDialog.factory(topLevelWindow, portalUser, mTransformControlsJPanel); 
 	    userSettingsJDialog.setVisible(true);
 	}
 	else{
-	    GroupSettingsJDialog groupSettingsJDialog = GroupSettingsJDialog.factory(topLevelWindow, portalGroup); 
+	    GroupSettingsJDialog groupSettingsJDialog = GroupSettingsJDialog.factory(topLevelWindow, portalGroup, mTransformControlsJPanel); 
 	    groupSettingsJDialog.setVisible(true);
 	}
     }

@@ -34,7 +34,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     private static final String NAME_USERS              = "Users";
     private static final String NAME_GROUPS             = "Groups";
     private static final String NAME_SETTINGS           = "Global Settings";
-    private static final String NAME_SETTINGS_HOME      = "Home Page";
+    private static final String NAME_SETTINGS_HOME      = "Page Setup";
     private static final String NAME_SETTINGS_BOOKMARKS = "Links";
     private static final String NAME_STATUS             = "Status";
     private static final String NAME_LOG                = "Event Log";
@@ -46,14 +46,14 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     public void generateGui(){
 
 	// USERS ///////////
-	UserConfigJPanel userConfigJPanel = new UserConfigJPanel();
+	UserConfigJPanel userConfigJPanel = new UserConfigJPanel(this);
         addTab(NAME_USERS, null, userConfigJPanel);
 	addSavable(NAME_USERS, userConfigJPanel);
 	addRefreshable(NAME_USERS, userConfigJPanel);
 	userConfigJPanel.setSettingsChangedListener(this);
 
 	// GROUPS ///////////
-	GroupConfigJPanel groupConfigJPanel = new GroupConfigJPanel();
+	GroupConfigJPanel groupConfigJPanel = new GroupConfigJPanel(this);
         addTab(NAME_GROUPS, null, groupConfigJPanel);
 	addSavable(NAME_GROUPS, groupConfigJPanel);
 	addRefreshable(NAME_GROUPS, groupConfigJPanel);
@@ -62,6 +62,13 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         // GLOBAL SETTINGS ////////
 	JTabbedPane globalJTabbedPane = addTabbedPane(NAME_SETTINGS, null);
 
+	// GLOBAL BOOKMARKS //
+	BookmarksJPanel bookmarksJPanel = new BookmarksJPanel(null);
+	globalJTabbedPane.addTab(NAME_SETTINGS_BOOKMARKS, null, bookmarksJPanel);
+	addSavable(NAME_SETTINGS_BOOKMARKS, bookmarksJPanel);
+	addRefreshable(NAME_SETTINGS_BOOKMARKS, bookmarksJPanel);
+	bookmarksJPanel.setSettingsChangedListener(this);
+
 	// GLOBAL HOME SETTINGS //
 	GlobalHomeSettingsJPanel globalHomeSettingsJPanel = new GlobalHomeSettingsJPanel();
 	JScrollPane globalHomeSettingsJScrollPane = addScrollableTab(globalJTabbedPane, NAME_SETTINGS_HOME,
@@ -69,13 +76,6 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	addSavable(NAME_SETTINGS_HOME, globalHomeSettingsJPanel);
 	addRefreshable(NAME_SETTINGS_HOME, globalHomeSettingsJPanel);
 	globalHomeSettingsJPanel.setSettingsChangedListener(this);
-
-	// GLOBAL BOOKMARKS //
-	BookmarksJPanel bookmarksJPanel = new BookmarksJPanel(null);
-	globalJTabbedPane.addTab(NAME_SETTINGS_BOOKMARKS, null, bookmarksJPanel);
-	addSavable(NAME_SETTINGS_BOOKMARKS, bookmarksJPanel);
-	addRefreshable(NAME_SETTINGS_BOOKMARKS, bookmarksJPanel);
-	bookmarksJPanel.setSettingsChangedListener(this);
 
 	/*
         // STATUS ////////

@@ -14,7 +14,8 @@ package com.metavize.tran.portal.gui;
 import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.util.*;
-
+import com.metavize.gui.transform.MTransformControlsJPanel;
+import com.metavize.gui.transform.SettingsChangedListener;
 import com.metavize.mvvm.portal.*;
 
 
@@ -28,39 +29,58 @@ import javax.swing.*;
 
 
 
-public class UserSettingsJDialog extends MConfigJDialog {
+public class UserSettingsJDialog extends MConfigJDialog implements SettingsChangedListener {
 
     private static final String NAME_TITLE     = "User Settings";
     private static final String NAME_BOOKMARKS = "Links";
     private static final String NAME_HOME      = "Page Setup";
 
     private PortalUser portalUser;
+    private MTransformControlsJPanel mTransformControlsJPanel;
+    private boolean settingsChanged;
         
-    public static UserSettingsJDialog factory(Window topLevelWindow, PortalUser portalUser){
+    public static UserSettingsJDialog factory(Window topLevelWindow, PortalUser portalUser, MTransformControlsJPanel mTransformControlsJPanel){
 	if( topLevelWindow instanceof Frame )
-	    return new UserSettingsJDialog((Frame)topLevelWindow, portalUser);
+	    return new UserSettingsJDialog((Frame)topLevelWindow, portalUser, mTransformControlsJPanel);
 	else if( topLevelWindow instanceof Dialog )
-	    return new UserSettingsJDialog((Dialog)topLevelWindow, portalUser);
+	    return new UserSettingsJDialog((Dialog)topLevelWindow, portalUser, mTransformControlsJPanel);
 	else
 	    return null;
     }
 
-    public UserSettingsJDialog(Dialog topLevelDialog, PortalUser portalUser){
+    public UserSettingsJDialog(Dialog topLevelDialog, PortalUser portalUser, MTransformControlsJPanel mTransformControlsJPanel){
 	super(topLevelDialog);
-	init(portalUser);
+	init(portalUser, mTransformControlsJPanel);
     }
 
-    public UserSettingsJDialog(Frame topLevelFrame, PortalUser portalUser){
+    public UserSettingsJDialog(Frame topLevelFrame, PortalUser portalUser, MTransformControlsJPanel mTransformControlsJPanel){
 	super(topLevelFrame);
-	init(portalUser);
+	init(portalUser, mTransformControlsJPanel);
     }
 
-    private void init(PortalUser portalUser){
+    private void init(PortalUser portalUser, MTransformControlsJPanel mTransformControlsJPanel){
 	this.portalUser = portalUser;
+	this.mTransformControlsJPanel = mTransformControlsJPanel;
+	saveJButton.setText("<html><b>Change</b> Settings</html>");
     }
     
     protected Dimension getMinSize(){
-	return new Dimension(640, 550);
+	return new Dimension(640, 610);
+    }
+
+    protected void saveAll() throws Exception {
+	super.saveAll();
+	if( settingsChanged )
+	    mTransformControlsJPanel.setSaveSettingsHintVisible(true);	    
+    }
+
+    protected void refreshAll() throws Exception {
+	super.refreshAll();
+	settingsChanged = false;
+    }
+
+    public void settingsChanged(Object source){
+	settingsChanged = true;
     }
 
     protected void generateGui(){
@@ -76,12 +96,14 @@ public class UserSettingsJDialog extends MConfigJDialog {
 	addRefreshable(NAME_BOOKMARKS, bookmarksJPanel);
 	addSavable(NAME_BOOKMARKS, bookmarksJPanel);
         addTab(NAME_BOOKMARKS, null, bookmarksJPanel);
+	bookmarksJPanel.setSettingsChangedListener(this);
 
 	// HOME //
 	UserHomeSettingsJPanel userHomeSettingsJPanel = new UserHomeSettingsJPanel(portalUser);
 	addRefreshable(NAME_HOME, userHomeSettingsJPanel);
 	addSavable(NAME_HOME, userHomeSettingsJPanel);
 	addScrollableTab(getMTabbedPane(), NAME_HOME, null, userHomeSettingsJPanel, false, true);
+	userHomeSettingsJPanel.setSettingsChangedListener(this);
     }
 
 }

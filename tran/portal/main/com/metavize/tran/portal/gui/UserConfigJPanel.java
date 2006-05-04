@@ -29,7 +29,7 @@ import javax.swing.event.*;
 
 public class UserConfigJPanel extends MEditTableJPanel{
 
-    public UserConfigJPanel() {
+    public UserConfigJPanel(MTransformControlsJPanel mTransformControlsJPanel) {
         super(true, true);
         super.setFillJButtonEnabled( false );
         super.setInsets(new Insets(4, 4, 2, 2));
@@ -38,7 +38,7 @@ public class UserConfigJPanel extends MEditTableJPanel{
         super.setAddRemoveEnabled(true);
         
         // create actual table model
-        UserConfigTableModel userConfigTableModel = new UserConfigTableModel();
+        UserConfigTableModel userConfigTableModel = new UserConfigTableModel(mTransformControlsJPanel);
         this.setTableModel( userConfigTableModel );
 	userConfigTableModel.setSortingStatus(3, UserConfigTableModel.ASCENDING);
     }
@@ -57,6 +57,11 @@ class UserConfigTableModel extends MSortedTableModel<Object>{
     private static final int C5_MW = 150; /* edit (settings) */
     private static final int C6_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW + C3_MW + C4_MW + C5_MW), 120); /* description */
 
+    private MTransformControlsJPanel mTransformControlsJPanel;
+
+    public UserConfigTableModel(MTransformControlsJPanel mTransformControlsJPanel){
+	this.mTransformControlsJPanel = mTransformControlsJPanel;
+    }
 
     private DefaultComboBoxModel groupModel = new DefaultComboBoxModel();
 
@@ -89,6 +94,7 @@ class UserConfigTableModel extends MSortedTableModel<Object>{
 	SettingsButtonRunnable settingsButtonRunnable = (SettingsButtonRunnable) rowVector.elementAt(5);
 	settingsButtonRunnable.setPortalUser(portalUser);
 	settingsButtonRunnable.setUserType(true);
+	settingsButtonRunnable.setMTransformControlsJPanel(mTransformControlsJPanel);
     }
 
     public void prevalidate(Object settings, Vector<Vector> tableVector) throws Exception {
@@ -151,6 +157,7 @@ class UserConfigTableModel extends MSortedTableModel<Object>{
 	    SettingsButtonRunnable settingsButtonRunnable = new SettingsButtonRunnable("true");
 	    settingsButtonRunnable.setPortalUser(newElem);
 	    settingsButtonRunnable.setUserType(true);
+	    settingsButtonRunnable.setMTransformControlsJPanel(mTransformControlsJPanel);
 	    tempRow.add( settingsButtonRunnable );
             tempRow.add( newElem.getDescription() );
 	    tempRow.add( newElem );
@@ -179,8 +186,12 @@ class UserConfigTableModel extends MSortedTableModel<Object>{
 	    PortalGroupWrapper other = (PortalGroupWrapper) obj;
 	    if( (getPortalGroup() == null) && (other.getPortalGroup() == null) )
 		return true;
+	    else if( (getPortalGroup() != null) && (other.getPortalGroup() == null) )
+		return false;
+	    else if( (getPortalGroup() == null) && (other.getPortalGroup() != null) )
+		return false;
 	    else
-		return portalGroup.equals(obj);
+		return portalGroup.equals((PortalGroupWrapper)obj);
 	}
     }
 }

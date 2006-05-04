@@ -29,7 +29,7 @@ import javax.swing.event.*;
 
 public class GroupConfigJPanel extends MEditTableJPanel{
 
-    public GroupConfigJPanel() {
+    public GroupConfigJPanel(MTransformControlsJPanel mTransformControlsJPanel) {
         super(true, true);
         super.setFillJButtonEnabled( false );
         super.setInsets(new Insets(4, 4, 2, 2));
@@ -38,7 +38,7 @@ public class GroupConfigJPanel extends MEditTableJPanel{
         super.setAddRemoveEnabled(true);
         
         // create actual table model
-        GroupConfigTableModel groupConfigTableModel = new GroupConfigTableModel();
+        GroupConfigTableModel groupConfigTableModel = new GroupConfigTableModel(mTransformControlsJPanel);
         this.setTableModel( groupConfigTableModel );
 	groupConfigTableModel.setSortingStatus(2, GroupConfigTableModel.ASCENDING);
     }
@@ -55,6 +55,11 @@ class GroupConfigTableModel extends MSortedTableModel<Object>{
     private static final int C3_MW = 150; /* edit settings */
     private static final int C4_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW + C3_MW), 120); /* description */
 
+    private MTransformControlsJPanel mTransformControlsJPanel;
+
+    public GroupConfigTableModel(MTransformControlsJPanel mTransformControlsJPanel){
+	this.mTransformControlsJPanel = mTransformControlsJPanel;
+    }
 
     public TableColumnModel getTableColumnModel(){
         
@@ -73,7 +78,8 @@ class GroupConfigTableModel extends MSortedTableModel<Object>{
 	PortalGroup portalGroup = (PortalGroup) rowVector.elementAt(5);
 	SettingsButtonRunnable settingsButtonRunnable = (SettingsButtonRunnable) rowVector.elementAt(3);
 	settingsButtonRunnable.setPortalGroup(portalGroup);
-	settingsButtonRunnable.setUserType(false);	
+	settingsButtonRunnable.setUserType(false);
+	settingsButtonRunnable.setMTransformControlsJPanel(mTransformControlsJPanel);
     }
 
     public void prevalidate(Object settings, Vector<Vector> tableVector) throws Exception {
@@ -126,6 +132,7 @@ class GroupConfigTableModel extends MSortedTableModel<Object>{
 	    SettingsButtonRunnable settingsButtonRunnable = new SettingsButtonRunnable("true");
 	    settingsButtonRunnable.setPortalGroup(newElem);
 	    settingsButtonRunnable.setUserType(false);
+	    settingsButtonRunnable.setMTransformControlsJPanel(mTransformControlsJPanel);
 	    tempRow.add( settingsButtonRunnable );
             tempRow.add( newElem.getDescription() );
 	    tempRow.add( newElem );
