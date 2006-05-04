@@ -75,11 +75,6 @@ public class RepositorySettings
         m_superuser = dn;
     }
 
-    public String getSuperuserDN() {
-        return "cn=" + m_superuser + "," + getSearchBase();
-    }
-
-
 
     /**
      * @hibernate.property
@@ -109,18 +104,6 @@ public class RepositorySettings
     public void setDomain(String domain) {
         m_domain = domain;
     }
-
-    public String getSearchBase() {
-        return "cn=users," + domainComponents(m_domain);
-    }
-
-    private String domainComponents(String dom)
-    {
-        while (dom.endsWith("."))
-            dom = dom.substring(0, dom.length() - 1);
-        return "DC=" + dom.replace(".", ",DC=");
-    }
-
 
     public void setLDAPHost(String ldapHost) {
         m_ldapHost = ldapHost;

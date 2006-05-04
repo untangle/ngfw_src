@@ -92,6 +92,17 @@ public class ActiveDirectoryLdapAdapter
     return "sAMAccountName";//Dated, but seems to be what windows uses
   }
 
+    @Override
+        public String getSuperuserDN() {
+        return "cn=" + m_settings.getSuperuser() + "," + getSearchBase();
+    }
+
+    @Override
+    public String getSearchBase() {
+        return "cn=users," + domainComponents(m_settings.getDomain());
+    }
+
+
 
   @Override
   public boolean authenticate(String uid, String pwd)
@@ -106,7 +117,7 @@ public class ActiveDirectoryLdapAdapter
     }
     
     try {
-      String dn = "cn=" + cn + "," + getSettings().getSearchBase();
+      String dn = "cn=" + cn + "," + getSearchBase();
       DirContext ctx = createContext(
         getSettings().getLDAPHost(),
         getSettings().getLDAPPort(),
@@ -136,7 +147,7 @@ public class ActiveDirectoryLdapAdapter
 
     try {
       
-      String dn = "cn=" + cn + "," + getSettings().getSearchBase();
+      String dn = "cn=" + cn + "," + getSearchBase();
       DirContext ctx = createContext(
         getSettings().getLDAPHost(),
         getSettings().getLDAPPort(),
@@ -187,7 +198,7 @@ public class ActiveDirectoryLdapAdapter
     try {
       String searchStr = "(&(objectClass=" + getUserClassType() + ")(mail=" + email + "))";
       List<Map<String, String[]>> result = queryAsSuperuser(
-        getSettings().getSearchBase(),
+        getSearchBase(),
         searchStr,
         createSimpleSearchControls("cn"));
       if(result != null && result.size() > 0) {
@@ -210,7 +221,7 @@ public class ActiveDirectoryLdapAdapter
     try {
       String searchStr = "(&(objectClass=" + getUserClassType() + ")(sAMAccountName=" + uid + "))";
       List<Map<String, String[]>> result = queryAsSuperuser(
-        getSettings().getSearchBase(),
+        getSearchBase(),
         searchStr,
         createSimpleSearchControls("cn"));
       if(result != null && result.size() > 0) {

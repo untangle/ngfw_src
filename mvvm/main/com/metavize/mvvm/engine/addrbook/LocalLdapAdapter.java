@@ -103,6 +103,15 @@ public class LocalLdapAdapter
     return "uid";
   }  
   
+    @Override
+        public String getSuperuserDN() {
+        return "cn=" + m_settings.getSuperuser() + "," + getSearchBase();
+    }
+
+    @Override
+    public String getSearchBase() {
+        return domainComponents(m_settings.getDomain());
+    }
   
 
 
@@ -113,7 +122,7 @@ public class LocalLdapAdapter
     try {
       DirContext ctx = createContext(getSettings().getLDAPHost(),
       getSettings().getLDAPPort(),
-      "uid=" + uid + "," + getSettings().getSearchBase(),
+      "uid=" + uid + "," + getSearchBase(),
       pwd);
       boolean ret = ctx != null;
       closeContext(ctx);

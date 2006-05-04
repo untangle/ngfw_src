@@ -92,6 +92,11 @@ abstract class LdapAdapter {
    */
   protected abstract String getUIDAttributeName();
 
+    // Gets search base from repository settings in dependent way.
+    protected abstract String getSearchBase();
+
+    protected abstract String getSuperuserDN();
+
   /**
    * Authenticate the given uid/pwd combination.
    *
@@ -151,7 +156,7 @@ abstract class LdapAdapter {
 
     try {
       List<Map<String, String[]>> list =
-        queryAsSuperuser(getSettings().getSearchBase(),
+        queryAsSuperuser(getSearchBase(),
           getListAllUsersSearchString(),
           getUserEntrySearchControls());
 
@@ -298,7 +303,7 @@ abstract class LdapAdapter {
       m_logger.error("Unable to create superuser context with settings: " +
         "Host: \"" + settings.getLDAPHost() + "\", " +
         "Port: \"" + settings.getLDAPPort() + "\", " +
-        "Superuser DN: \"" + settings.getSuperuserDN() + "\", " +
+        "Superuser DN: \"" + getSuperuserDN() + "\", " +
         "Pass: " + (settings.getSuperuserPass()==null?"<null>":"<not null>"),
         ex);
       return null;
@@ -404,7 +409,7 @@ abstract class LdapAdapter {
     RepositorySettings settings = getSettings();
     return createContext(settings.getLDAPHost(),
       settings.getLDAPPort(),
-      settings.getSuperuserDN(),
+      getSuperuserDN(),
       settings.getSuperuserPass());
   }
 
@@ -515,7 +520,7 @@ abstract class LdapAdapter {
     try {
 
       List<Map<String, String[]>> list =
-        queryAsSuperuser(getSettings().getSearchBase(),
+        queryAsSuperuser(getSearchBase(),
           searchStr,
           getUserEntrySearchControls());
 
@@ -662,7 +667,14 @@ abstract class LdapAdapter {
     }
     return new Pair<String, String>(str.substring(0, index).trim(), str.substring(index).trim());
   }  
-  
+    
+    // Helper
+    protected String domainComponents(String dom)
+    {
+        while (dom.endsWith("."))
+            dom = dom.substring(0, dom.length() - 1);
+        return "DC=" + dom.replace(".", ",DC=");
+    }
 
 }
 
