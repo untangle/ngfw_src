@@ -98,7 +98,7 @@ Portal.prototype._makeToolbar = function() {
    b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
    b.setText("New Bookmark");
    b.setToolTipContent("Add a new bookmark");
-   b.addSelectionListener(new AjxListener(this, this._newBookmarkButtonListener));
+   b.addSelectionListener(new AjxListener(this, this._addBookmarkButtonListener));
 
    b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
    b.setText("Delete");
@@ -164,12 +164,20 @@ Portal.prototype._deleteButtonListener = function(ev)
                  false);
 }
 
-Portal.prototype._newBookmarkButtonListener = function(ev)
+Portal.prototype._addBookmarkButtonListener = function(ev)
 {
-   var dialog = new NewBookmarkDialog(this._shell);
+   var dialog = new AddBookmarkDialog(this._shell);
 
    var cb = function() {
-      alert("BM: " + dialog.getBookmark());
+      var bm = dialog.getBookmark();
+      var url = "bookmark?command=add&name=" + bm.name
+         + "&app=" + bm.app + "&target=" + bm.target;
+
+      var cb = function(obj, results) {
+         this.refresh();
+      }
+
+      AjxRpc.invoke(null, url, null, new AjxCallback(this, cb, {}), true);
    }
 
    var l = new AjxListener(this, cb);

@@ -90,6 +90,10 @@ public class BookmarkServlet extends HttpServlet
             if (command.equals("ls")) {
                 List<Bookmark> bms = pm.getAllBookmarks(pu);
                 emitBookmarks(resp.getWriter(), bms);
+            } else if (command.equals("add")) {
+                addBookmark(req.getParameter("name"),
+                            req.getParameter("app"),
+                            req.getParameter("target"));
             } else {
                 logger.warn("bad command: " + command);
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
@@ -120,5 +124,11 @@ public class BookmarkServlet extends HttpServlet
             w.println("'/>");
         }
         w.println("</bookmarks>");
+    }
+
+    private void addBookmark(String name, String app, String target)
+    {
+        System.out.println("ADD BOOKMARK: " + name + " APP: " + app
+                           + " TARGET: " + target);
     }
 }

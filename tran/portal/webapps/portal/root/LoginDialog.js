@@ -15,12 +15,23 @@ function LoginDialog(parent)
    this.addListener(DwtEvent.ONFOCUS, new AjxListener(this, this._focusListener));
 
    this.setView(this._panel);
+   this.setTabOrder(this._panel._fields);
+}
+
+LoginDialog.prototype.foo = function()
+{
+   DBG.println("HI");
 }
 
 LoginDialog.prototype = new DwtDialog();
 LoginDialog.prototype.constructor = LoginDialog;
 
 // public methods -------------------------------------------------------------
+
+LoginPanel.prototype.println = function()
+{
+   return "LoginDialog";
+}
 
 LoginDialog.prototype.getUser = function()
 {
@@ -50,4 +61,3 @@ LoginDialog.prototype._focusListener = function(ev)
 {
    this._panel.focus();
 }
-

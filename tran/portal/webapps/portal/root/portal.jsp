@@ -26,8 +26,8 @@
 <script type="text/javascript" src="Portal.js"></script>
 <script type="text/javascript" src="LoginPanel.js"></script>
 <script type="text/javascript" src="LoginDialog.js"></script>
-<script type="text/javascript" src="NewBookmarkPanel.js"></script>
-<script type="text/javascript" src="NewBookmarkDialog.js"></script>
+<script type="text/javascript" src="AddBookmarkPanel.js"></script>
+<script type="text/javascript" src="AddBookmarkDialog.js"></script>
 <script type="text/javascript" src="BookmarkPanel.js"></script>
 
 </head>

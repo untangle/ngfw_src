@@ -74,7 +74,6 @@ public interface PortalManagerPriv extends PortalManager
 
     PortalLoginKey login(String uid, String password, InetAddress clientAddr);
 
-
     /**
      * Normal user-initiated login.
      *

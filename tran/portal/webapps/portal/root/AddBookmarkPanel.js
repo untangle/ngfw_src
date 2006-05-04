@@ -1,7 +1,7 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-function NewBookmarkPanel(parent)
+function AddBookmarkPanel(parent)
 {
    if (0 == arguments.length) {
       return;
@@ -9,15 +9,15 @@ function NewBookmarkPanel(parent)
 
    DwtComposite.call(this, parent);
 
-   this._draw();
+   this._init();
 }
 
-NewBookmarkPanel.prototype = new DwtComposite();
-NewBookmarkPanel.prototype.constructor = NewBookmarkPanel;
+AddBookmarkPanel.prototype = new DwtComposite();
+AddBookmarkPanel.prototype.constructor = AddBookmarkPanel;
 
 // public methods -------------------------------------------------------------
 
-NewBookmarkPanel.prototype.getBookmark = function()
+AddBookmarkPanel.prototype.getBookmark = function()
 {
    return new Bookmark(this._nameField.getValue(), this._appField.getValue(),
                        this._targetField.getValue());
@@ -25,19 +25,22 @@ NewBookmarkPanel.prototype.getBookmark = function()
 
 // private methods ------------------------------------------------------------
 
-NewBookmarkPanel.prototype._draw = function()
+AddBookmarkPanel.prototype._init = function()
 {
-   this.clear();
+   this._fields = new Array();
 
    var label = new DwtLabel(this);
    label.setText("Name:");
    this._nameField = new DwtInputField({ parent: this });
+   this._fields.push(this._nameField);
 
    label = new DwtLabel(this);
    label.setText("Application:"); // XXX dropdown
    this._appField = new DwtInputField({ parent: this });
+   this._fields.push(this._appField);
 
    label = new DwtLabel(this);
    label.setText("Target:"); // XXX dropdown
    this._targetField = new DwtInputField({ parent: this });
+   this._fields.push(this._targetField);
 }

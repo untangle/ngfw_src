@@ -1,7 +1,7 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-function NewBookmarkDialog(parent)
+function AddBookmarkDialog(parent)
 {
    if (arguments.length == 0) {
       return;
@@ -9,34 +9,35 @@ function NewBookmarkDialog(parent)
 
    var className = null; // XXX
 
-   DwtDialog.call(this, parent, className, "NewBookmark");
+   DwtDialog.call(this, parent, className, "AddBookmark");
 
-   this._panel = new NewBookmarkPanel(this);
+   this._panel = new AddBookmarkPanel(this);
    this.addListener(DwtEvent.ONFOCUS, new AjxListener(this, this._focusListener));
 
    this.setView(this._panel);
+   this.setTabOrder(this._panel._fields);
 }
 
-NewBookmarkDialog.prototype = new DwtDialog();
-NewBookmarkDialog.prototype.constructor = NewBookmarkDialog;
+AddBookmarkDialog.prototype = new DwtDialog();
+AddBookmarkDialog.prototype.constructor = AddBookmarkDialog;
 
 // public methods -------------------------------------------------------------
 
-NewBookmarkDialog.prototype.getBookmark = function()
+AddBookmarkDialog.prototype.getBookmark = function()
 {
    return this._panel.getBookmark();
 }
 
 // internal methods -----------------------------------------------------------
 
-NewBookmarkDialog.prototype._uploadCompleteListener = function(evt)
+AddBookmarkDialog.prototype._uploadCompleteListener = function(evt)
 {
    evt.dialog = this;
 
    this.notifyListeners(FileUploadPanel.UPLOAD_COMPLETE, evt);
 }
 
-NewBookmarkDialog.prototype._focusListener = function(ev)
+AddBookmarkDialog.prototype._focusListener = function(ev)
 {
    this._panel.focus();
 }
