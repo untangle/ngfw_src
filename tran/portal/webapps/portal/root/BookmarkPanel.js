@@ -51,11 +51,12 @@ BookmarkPanel.prototype._setListingXml = function(dom)
 
    for (var i = 0; i < children.length; i++) {
       var child = children[i];
-      var tagName = child.tagName;
 
-      listing.add(new Bookmark(child.getAttribute("name"),
-                               child.getAttribute("app"),
-                               child.getAttribute("target")));
+      if ("bookmark" == child.tagName) {
+         listing.add(new Bookmark(child.getAttribute("name"),
+                                  child.getAttribute("app"),
+                                  child.getAttribute("target")));
+      }
    }
 
    this.set(listing);

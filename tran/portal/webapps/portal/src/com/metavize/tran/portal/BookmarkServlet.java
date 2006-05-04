@@ -113,6 +113,8 @@ public class BookmarkServlet extends HttpServlet
 
     private void emitBookmarks(PrintWriter w, List<Bookmark> bookmarks)
     {
+        System.out.println("BOOKMARKS: " + bookmarks);
+
         w.println("<bookmarks>");
         for (Bookmark bm : bookmarks) {
             w.print("  <bookmark name='");
