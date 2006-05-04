@@ -160,11 +160,11 @@ abstract class LdapAdapter {
           getListAllUsersSearchString(),
           getUserEntrySearchControls());
 
-      if(list == null || list.size() == 0) {
-        return null;
-      }
-
       List<UserEntry> ret = new ArrayList<UserEntry>();
+
+      if(list == null || list.size() == 0) {
+        return ret;
+      }
 
       for(Map<String, String[]> map : list) {
         UserEntry entry = toUserEntry(map);
