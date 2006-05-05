@@ -1,11 +1,13 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-function AddBookmarkPanel(parent)
+function AddBookmarkPanel(parent, apps)
 {
    if (0 == arguments.length) {
       return;
    }
+
+   DBG.println("APPS: " + apps);
 
    DwtComposite.call(this, parent);
 

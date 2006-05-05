@@ -23,6 +23,8 @@ import javax.servlet.http.HttpSession;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.engine.PortalManagerPriv;
+import com.metavize.mvvm.portal.Application;
+import com.metavize.mvvm.portal.ApplicationManager;
 import com.metavize.mvvm.portal.Bookmark;
 import com.metavize.mvvm.portal.PortalLogin;
 import com.metavize.mvvm.portal.PortalLoginKey;
@@ -33,6 +35,8 @@ import org.apache.log4j.Logger;
 public class BookmarkServlet extends HttpServlet
 {
     private Logger logger;
+    private PortalManagerPriv portalManager;
+    private ApplicationManager appManager;
 
     // HttpServlet methods ----------------------------------------------------
 
@@ -57,10 +61,7 @@ public class BookmarkServlet extends HttpServlet
             return;
         }
 
-        MvvmLocalContext mctx = MvvmContextFactory.context();
-        PortalManagerPriv pm = (PortalManagerPriv)mctx.portalManager();
-
-        PortalLogin pl = pm.getLogin(plk);
+        PortalLogin pl = portalManager.getLogin(plk);
 
         if (null == pl) {
             logger.info("login timeout: " + plk);
@@ -72,7 +73,7 @@ public class BookmarkServlet extends HttpServlet
             return;
         }
 
-        PortalUser pu = pm.getUser(pl.getUser());
+        PortalUser pu = portalManager.getUser(pl.getUser());
 
         if (null == pu) {
             logger.warn("no portal user for login: " + pl.getUser());
@@ -88,12 +89,14 @@ public class BookmarkServlet extends HttpServlet
 
         try {
             if (command.equals("ls")) {
-                List<Bookmark> bms = pm.getAllBookmarks(pu);
+                List<Bookmark> bms = portalManager.getAllBookmarks(pu);
                 emitBookmarks(resp.getWriter(), bms);
             } else if (command.equals("add")) {
-                addBookmark(req.getParameter("name"),
-                            req.getParameter("app"),
-                            req.getParameter("target"));
+                String name = req.getParameter("name");
+                String appName = req.getParameter("app");
+                Application app = appManager.getApplication(appName);
+                String target = req.getParameter("target");
+                portalManager.addUserBookmark(pu, name, app, target);
             } else {
                 logger.warn("bad command: " + command);
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
@@ -107,14 +110,16 @@ public class BookmarkServlet extends HttpServlet
     public void init() throws ServletException
     {
         logger = Logger.getLogger(getClass());
+
+        MvvmLocalContext mctx = MvvmContextFactory.context();
+        portalManager = (PortalManagerPriv)mctx.portalManager();
+        appManager = portalManager.applicationManager();
     }
 
     // private methods --------------------------------------------------------
 
     private void emitBookmarks(PrintWriter w, List<Bookmark> bookmarks)
     {
-        System.out.println("BOOKMARKS: " + bookmarks);
-
         w.println("<bookmarks>");
         for (Bookmark bm : bookmarks) {
             w.print("  <bookmark name='");
@@ -126,11 +131,5 @@ public class BookmarkServlet extends HttpServlet
             w.println("'/>");
         }
         w.println("</bookmarks>");
-    }
-
-    private void addBookmark(String name, String app, String target)
-    {
-        System.out.println("ADD BOOKMARK: " + name + " APP: " + app
-                           + " TARGET: " + target);
     }
 }

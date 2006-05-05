@@ -93,6 +93,18 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
     <url-pattern>/bookmark</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>ApplicationServlet</servlet-name>
+    <servlet-class>
+      com.metavize.tran.portal.ApplicationServlet
+    </servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>ApplicationServlet</servlet-name>
+    <url-pattern>/application</url-pattern>
+  </servlet-mapping>
+
   @JSP_PRE_COMPILED_SERVLETS@
 
 </web-app>

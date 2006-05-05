@@ -66,6 +66,26 @@ Portal.prototype.login = function()
 
 Portal.prototype.refresh = function()
 {
+   var cb = function(obj, results) {
+      var root = results.xml.getElementsByTagName("applications")[0];
+
+      var children = root.childNodes;
+
+      this._apps = new Array();
+
+      for (var i = 0; i < children.length; i++) {
+         var child = children[i];
+
+         if ("application" == child.tagName) {
+            DBG.println("ADDING APP: " + child.getAttribute("name"));
+            this._apps.push(new Application(child.getAttribute("name")))
+         }
+      }
+   }
+
+   AjxRpc.invoke(null, "application?command=ls", null,
+                 new AjxCallback(this, cb, new Object()), true);
+
    this._bookmarkPanel.refresh();
 }
 
@@ -166,7 +186,7 @@ Portal.prototype._deleteButtonListener = function(ev)
 
 Portal.prototype._addBookmarkButtonListener = function(ev)
 {
-   var dialog = new AddBookmarkDialog(this._shell);
+   var dialog = new AddBookmarkDialog(this._shell, this._apps);
 
    var cb = function() {
       var bm = dialog.getBookmark();

@@ -22,6 +22,7 @@
 
 <jsp:include page="Ajax.jsp"/>
 
+<script type="text/javascript" src="Application.js"></script>
 <script type="text/javascript" src="Bookmark.js"></script>
 <script type="text/javascript" src="Portal.js"></script>
 <script type="text/javascript" src="LoginPanel.js"></script>

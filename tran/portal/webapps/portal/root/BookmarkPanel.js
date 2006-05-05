@@ -42,7 +42,6 @@ BookmarkPanel.prototype.refresh = function()
 
 BookmarkPanel.prototype._setListingXml = function(dom)
 {
-   DBG.println("DOM: " + dom);
    var root = dom.getElementsByTagName("bookmarks")[0];
 
    var children = root.childNodes;
