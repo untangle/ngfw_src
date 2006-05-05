@@ -19,6 +19,7 @@ import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.portal.Application;
 import com.metavize.mvvm.portal.LocalApplicationManager;
 import com.metavize.mvvm.portal.LocalPortalManager;
+import com.metavize.mvvm.portal.PortalSettings;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tran.TransformException;
