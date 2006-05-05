@@ -51,6 +51,9 @@ import com.metavize.mvvm.tran.*;
 
 public class PolicyStateMachine implements ActionListener, Shutdownable {
 
+    private final String HTTP_BLOCKER_NAME = "httpblocker-storeitem";
+    private final String HTTP_BLOCKER_TRIAL_NAME = "httpblocker-trial30";
+
     // MVVM DATA MODELS (USED ONLY DURING INIT) //////
     private List<Tid>                       utilTidList;
     private Map<String,Object>              utilNameMap;
@@ -923,8 +926,25 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 			    firstRun = false;
 			}
                     }});
+		    // REMOVE TRIAL IF THE ACTUAL THING WAS PURCHASED
+		    boolean foundHttpBlocker = false;
+		    for( MackageDesc mackageDesc : storeItemsAvailable ){
+			if( mackageDesc.getName().equals(HTTP_BLOCKER_NAME) ){
+			    foundHttpBlocker = true;
+			    break;
+			}
+		    }
+			    
                     for( MackageDesc mackageDesc : storeItemsAvailable ){
-                        addToStore(mackageDesc,false);
+			if( mackageDesc.getName().equals(HTTP_BLOCKER_TRIAL_NAME) ){
+			    if( foundHttpBlocker ){
+				addToStore(mackageDesc,false);
+			    }
+			    else
+				continue;
+			}
+			else
+			    addToStore(mackageDesc,false);
                     }
                     revalidateStore();
                 }
