@@ -11,41 +11,37 @@
 
 package com.metavize.mvvm.engine;
 
-import java.util.Iterator;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import com.metavize.mvvm.portal.Application;
 import com.metavize.mvvm.portal.LocalApplicationManager;
 import org.apache.log4j.Logger;
+import java.util.ArrayList;
 
-/**
- * Implementation of the ApplicationManager
- */
-class PortalApplicationManagerImpl implements LocalApplicationManager {
-
-    private static final Application[] protoArr = new Application[] { };
-
+class PortalApplicationManagerImpl implements LocalApplicationManager
+{
     private static final PortalApplicationManagerImpl APPLICATION_MANAGER
         = new PortalApplicationManagerImpl();
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private SortedMap<Integer, Application> apps;
+    private SortedSet<Application> apps = new TreeSet<Application>();
+
+    // constructors -----------------------------------------------------------
 
     private PortalApplicationManagerImpl() {
-        apps = new TreeMap<Integer, Application>();
-
         logger.info("Initialized ApplicationManager");
     }
 
-    /**
-     * Do not call this directly, instead go through
-     * <code>MvvmLocalContext</code>
-     */
+    // static factories -------------------------------------------------------
+
     static PortalApplicationManagerImpl applicationManager() {
         return APPLICATION_MANAGER;
     }
+
+    // LocalApplicationManager methods ----------------------------------------
 
     /**
      * Registers a new application.  Called when a portal transform is
@@ -56,49 +52,64 @@ class PortalApplicationManagerImpl implements LocalApplicationManager {
      *
      * @return the registered <code>Application</code>
      */
-    public Application registerApplication(String name, String description,
+    public Application registerApplication(String name, String desc,
                                            boolean isHostService,
                                            Application.Validator validator,
                                            int sortPosition)
     {
-        if (getApplication(name) != null)
-            throw new IllegalArgumentException("Application " + name
-                                               + " already registered");
-        if (name == null || description == null || validator == null)
-            throw new IllegalArgumentException("null in registerApplication");
+        Application newApp = new Application(name, desc, isHostService,
+                                             validator, sortPosition);
 
-        Application newApp = new Application(name, description, isHostService,
-                                             validator);
-        apps.put(sortPosition, newApp);
+        synchronized (apps) {
+            if (!apps.add(newApp)) {
+                logger.warn("app already registered: " + name);
+                newApp = getApplication(name);
+            }
+        }
+
         return newApp;
     }
 
-    public Application[] getApplications()
+    public boolean deregisterApplication(Application app)
     {
-        return apps.values().toArray(protoArr);
+        synchronized (apps) {
+            return apps.remove(app);
+        }
     }
 
-    public String[] getApplicationNames()
+    public List<Application> getApplications()
     {
-        String[] result = new String[apps.size()];
-        int i = 0;
-        for (Iterator<Application> iter = apps.values().iterator();
-             iter.hasNext(); i++) {
-            Application app = iter.next();
-            result[i] = app.getName();
+        synchronized (apps) {
+            return new ArrayList(apps);
         }
+    }
+
+    public List<String> getApplicationNames()
+    {
+        List<String> result = new ArrayList(apps.size());
+
+        synchronized (apps) {
+            for (Application app : apps) {
+                result.add(app.getName());
+            }
+        }
+
         return result;
     }
 
     public Application getApplication(String name)
     {
-        for (Iterator<Application> iter = apps.values().iterator();
-             iter.hasNext();) {
-            Application app = iter.next();
-            if (name.equals(app.getName()))
-                return app;
-        }
-        return null;
-    }
+        Application a = null;
 
+        synchronized (apps) {
+            for (Application app : apps) {
+                if (name.equals(app.getName())) {
+                    a = app;
+                    break;
+                }
+            }
+        }
+
+        return a;
+    }
 }

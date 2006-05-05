@@ -11,11 +11,13 @@
 
 package com.metavize.mvvm.portal;
 
+import java.util.List;
+
 public interface RemoteApplicationManager
 {
-    Application[] getApplications();
+    List<Application> getApplications();
 
-    String[] getApplicationNames();
+    List<String> getApplicationNames();
 
     Application getApplication(String name);
 }

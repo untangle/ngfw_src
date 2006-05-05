@@ -11,18 +11,24 @@
 
 package com.metavize.tran.portal;
 
+import com.metavize.mvvm.AppServerManager;
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.portal.*;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tran.TransformException;
 import org.apache.log4j.Logger;
+import java.util.List;
 
 public class PortalImpl extends AbstractTransform implements PortalTransform
 {
     private final Logger logger = Logger.getLogger(PortalImpl.class);
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[0];
+
+    private Application browserApp;
+    private Application proxyApp;
 
     // constructors -----------------------------------------------------------
 
@@ -32,19 +38,29 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
     }
 
     private void deployWebAppIfRequired(Logger logger) {
-        if (MvvmContextFactory.context().appServerManager().loadWebApp("/browser", "browser")) {
+        MvvmLocalContext mctx = MvvmContextFactory.context();
+        AppServerManager asm = mctx.appServerManager();
+        LocalPortalManager lpm = mctx.portalManager();
+        LocalApplicationManager lam = lpm.applicationManager();
+
+        if (asm.loadWebApp("/browser", "browser")) {
             logger.debug("Deployed Browser web app");
         } else {
             logger.error("Unable to deploy Browser web app");
         }
 
-        if (MvvmContextFactory.context().appServerManager().loadWebApp("/proxy", "proxy")) {
+        browserApp = lam.registerApplication("CIFS", "Network File Browser",
+                                             true, null, 0);
+
+        if (asm.loadWebApp("/proxy", "proxy")) {
             logger.debug("Deployed Proxy web app");
         } else {
             logger.error("Unable to deploy Proxy web app");
         }
 
-        if (MvvmContextFactory.context().appServerManager().loadWebApp("/portal", "portal")) {
+        proxyApp = lam.registerApplication("HTTP", "Web Proxy", true, null, 0);
+
+        if (asm.loadWebApp("/portal", "portal")) {
             logger.debug("Deployed Portal web app");
         } else {
             logger.error("Unable to deploy Portal web app");
@@ -52,19 +68,28 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
     }
 
     private void unDeployWebAppIfRequired(Logger logger) {
-        if (MvvmContextFactory.context().appServerManager().unloadWebApp("/browser")) {
+        MvvmLocalContext mctx = MvvmContextFactory.context();
+        AppServerManager asm = mctx.appServerManager();
+        LocalPortalManager lpm = mctx.portalManager();
+        LocalApplicationManager lam = lpm.applicationManager();
+
+        if (asm.unloadWebApp("/browser")) {
             logger.debug("Unloaded Browser web app");
         } else {
             logger.error("Unable to unload Browser web app");
         }
 
-        if (MvvmContextFactory.context().appServerManager().unloadWebApp("/proxy")) {
+        lam.deregisterApplication(browserApp);
+
+        if (asm.unloadWebApp("/proxy")) {
             logger.debug("Unloaded Proxy web app");
         } else {
             logger.error("Unable to unload Proxy web app");
         }
 
-        if (MvvmContextFactory.context().appServerManager().unloadWebApp("/portal")) {
+        lam.deregisterApplication(proxyApp);
+
+        if (asm.unloadWebApp("/portal")) {
             logger.debug("Unloaded Portal web app");
         } else {
             logger.error("Unable to unload Portal web app");
@@ -97,12 +122,12 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
 
     // Portal methods ----------------------------------------------
 
-    public Application[] getApplications()
+    public List<Application> getApplications()
     {
         return MvvmContextFactory.context().portalManager().applicationManager().getApplications();
     }
 
-    public String[] getApplicationNames()
+    public List<String> getApplicationNames()
     {
         return MvvmContextFactory.context().portalManager().applicationManager().getApplicationNames();
     }

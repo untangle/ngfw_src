@@ -13,6 +13,7 @@ package com.metavize.tran.portal;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -86,7 +87,7 @@ public class ApplicationServlet extends HttpServlet
 
         try {
             if (command.equals("ls")) {
-                String[] apps = appManager.getApplicationNames();
+                List<String> apps = appManager.getApplicationNames();
                 emitApplications(resp.getWriter(), apps);
             } else {
                 logger.warn("bad command: " + command);
@@ -108,7 +109,7 @@ public class ApplicationServlet extends HttpServlet
 
     // private methods --------------------------------------------------------
 
-    private void emitApplications(PrintWriter w, String[] apps)
+    private void emitApplications(PrintWriter w, List<String> apps)
     {
         w.println("<applications>");
         for (String app : apps) {

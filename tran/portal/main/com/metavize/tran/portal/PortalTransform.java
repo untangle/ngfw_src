@@ -11,13 +11,16 @@
 
 package com.metavize.tran.portal;
 
-import com.metavize.mvvm.portal.*;
+import java.util.List;
+
+import com.metavize.mvvm.portal.Application;
+import com.metavize.mvvm.portal.PortalSettings;
 
 public interface PortalTransform
 {
-    Application[] getApplications();
+    List<Application> getApplications();
 
-    String[] getApplicationNames();
+    List<String> getApplicationNames();
 
     Application getApplication(String name);
 

@@ -165,7 +165,6 @@ public interface MvvmLocalContext
      */
     AppServerManager appServerManager();
 
-
     /**
      * Get the AddressBook singleton for this instance
      *

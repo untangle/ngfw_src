@@ -6,10 +6,12 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id$
+ * $Id$
  */
 
 package com.metavize.mvvm.engine;
+
+import java.util.List;
 
 import com.metavize.mvvm.portal.Application;
 import com.metavize.mvvm.portal.RemoteApplicationManager;
@@ -23,12 +25,12 @@ class RemotePortalApplicationManagerImpl implements RemoteApplicationManager
         this.am = am;
     }
 
-    public Application[] getApplications()
+    public List<Application> getApplications()
     {
         return am.getApplications();
     }
 
-    public String[] getApplicationNames()
+    public List<String> getApplicationNames()
     {
         return am.getApplicationNames();
     }

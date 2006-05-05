@@ -11,6 +11,8 @@
 
 package com.metavize.mvvm.portal;
 
+import java.util.List;
+
 public interface LocalApplicationManager
 {
     Application registerApplication(String name, String description,
@@ -18,9 +20,11 @@ public interface LocalApplicationManager
                                     Application.Validator validator,
                                     int sortPosition);
 
-    Application[] getApplications();
+    boolean deregisterApplication(Application app);
 
-    public String[] getApplicationNames();
+    List<Application> getApplications();
 
-    public Application getApplication(String name);
+    List<String> getApplicationNames();
+
+    Application getApplication(String name);
 }
