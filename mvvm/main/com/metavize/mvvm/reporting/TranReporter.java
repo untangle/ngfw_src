@@ -32,7 +32,8 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 public class TranReporter {
 
-    public static final float CHART_QUALITY = .9f;
+    public static final float CHART_QUALITY_JPEG = .9f;  // for JPEG
+    public static final int CHART_COMPRESSION_PNG = 0;  // for PNG
     public static final int CHART_WIDTH = 600;
     public static final int CHART_HEIGHT = 200;
 
@@ -157,11 +158,11 @@ public class TranReporter {
                     reportGraph = (ReportGraph) reportClass.newInstance();
 		    reportGraph.setExtraParams(extraParams);
                     logger.debug("Found graph: " + className);
-                    String dailyFile = new File(tranDir, name + "--daily.jpg").getCanonicalPath();
+                    String dailyFile = new File(tranDir, name + "--daily.png").getCanonicalPath();
                     processReportGraph(reportGraph, conn, dailyFile, Util.REPORT_TYPE_DAILY, Util.lastday, Util.midnight);
-                    String weeklyFile = new File(tranDir, name + "--weekly.jpg").getCanonicalPath();
+                    String weeklyFile = new File(tranDir, name + "--weekly.png").getCanonicalPath();
                     processReportGraph(reportGraph, conn, weeklyFile, Util.REPORT_TYPE_WEEKLY, Util.lastweek, Util.midnight);
-                    String monthlyFile = new File(tranDir, name + "--monthly.jpg").getCanonicalPath();
+                    String monthlyFile = new File(tranDir, name + "--monthly.png").getCanonicalPath();
                     processReportGraph(reportGraph, conn, monthlyFile, Util.REPORT_TYPE_MONTHLY, Util.lastmonth, Util.midnight);
                 } catch (Exception x) {
                     logger.error("Unable to generate summary graph", x);
@@ -304,7 +305,8 @@ public class TranReporter {
         JRDefaultScriptlet scriptlet = new FakeScriptlet(conn, params);
         JFreeChart jFreeChart = reportGraph.doInternal(conn, scriptlet);
         logger.debug("Exporting report to: " + fileName);
-        ChartUtilities.saveChartAsJPEG(new File(fileName), CHART_QUALITY, jFreeChart, CHART_WIDTH, CHART_HEIGHT);
+        //ChartUtilities.saveChartAsJPEG(new File(fileName), CHART_QUALITY, jFreeChart, CHART_WIDTH, CHART_HEIGHT);
+	ChartUtilities.saveChartAsPNG(new File(fileName), jFreeChart, CHART_WIDTH, CHART_HEIGHT, null, false, CHART_COMPRESSION_PNG);
     }
 
 
