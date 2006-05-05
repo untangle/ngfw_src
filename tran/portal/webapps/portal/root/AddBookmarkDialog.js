@@ -9,7 +9,7 @@ function AddBookmarkDialog(parent, apps)
 
    var className = null; // XXX
 
-   DwtDialog.call(this, parent, className, "AddBookmark");
+   DwtDialog.call(this, parent, className, "Add Bookmark");
 
    this._panel = new AddBookmarkPanel(this, apps);
    this.addListener(DwtEvent.ONFOCUS, new AjxListener(this, this._focusListener));

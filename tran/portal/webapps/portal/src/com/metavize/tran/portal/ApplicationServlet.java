@@ -42,7 +42,6 @@ public class ApplicationServlet extends HttpServlet
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException
     {
-        System.out.println("BookmarkServlet doGet");
         HttpSession s = req.getSession();
 
         resp.setContentType("text/xml");

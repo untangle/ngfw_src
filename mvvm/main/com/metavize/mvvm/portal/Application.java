@@ -92,8 +92,11 @@ public final class Application
 
     public int compareTo(Application app)
     {
-        return sortPosition < app.sortPosition ? -1
-            : (sortPosition > app.sortPosition ? 1 : 0);
+        if (sortPosition == app.sortPosition) {
+            return name.compareTo(app.name);
+        } else {
+            return sortPosition < app.sortPosition ? -1 : 1;
+        }
     }
 
     // Object methods ---------------------------------------------------------
@@ -105,7 +108,7 @@ public final class Application
         }
 
         Application a = (Application)o;
-        return name.equals(a.name);
+        return name.equals(a.name) && sortPosition == a.sortPosition;
     }
 
     public int hashCode()

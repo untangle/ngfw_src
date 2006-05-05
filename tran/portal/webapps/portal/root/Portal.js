@@ -17,7 +17,7 @@ function Portal(shell, url) {
    this._bookmarkPanel = new BookmarkPanel(this, null, DwtControl.ABSOLUTE_STYLE);
    this._bookmarkPanel.setUI();
    this._bookmarkPanel.zShow(true);
-   this._bookmarkPanel.addSelectionListener(new AjxListener(this, this._detailSelectionListener));
+   this._bookmarkPanel.addSelectionListener(new AjxListener(this, this._bookmarkSelectionListener));
 
    this._actionMenu = this._makeActionMenu()
    this._bookmarkPanel.addActionListener(new AjxListener(this, this._listActionListener));
@@ -77,7 +77,6 @@ Portal.prototype.refresh = function()
          var child = children[i];
 
          if ("application" == child.tagName) {
-            DBG.println("ADDING APP: " + child.getAttribute("name"));
             this._apps.push(new Application(child.getAttribute("name")))
          }
       }
@@ -135,16 +134,13 @@ Portal.prototype._makeActionMenu = function()
    var i = new DwtMenuItem(actionMenu, DwtMenuItem.NO_STYLE);
    i.setText("Delete");
    i.addSelectionListener(new AjxListener(this, this._deleteButtonListener));
-   i = new DwtMenuItem(actionMenu, DwtMenuItem.NO_STYLE);
-   i.setText("Rename");
-   i.addSelectionListener(new AjxListener(this, this._renameButtonListener));
 
    return actionMenu;
 }
 
 // listeners ------------------------------------------------------------------
 
-Portal.prototype._detailSelectionListener = function(ev) {
+Portal.prototype._bookmarkSelectionListener = function(ev) {
    switch (ev.detail) {
       case DwtListView.ITEM_DBL_CLICKED:
       var item = ev.item;
@@ -195,6 +191,7 @@ Portal.prototype._addBookmarkButtonListener = function(ev)
 
       var cb = function(obj, results) {
          this.refresh();
+         dialog.popdown();
       }
 
       AjxRpc.invoke(null, url, null, new AjxCallback(this, cb, {}), true);
@@ -205,16 +202,6 @@ Portal.prototype._addBookmarkButtonListener = function(ev)
    dialog.addListener(DwtEvent.ENTER, l);
 
    dialog.popup();
-}
-
-Portal.prototype._renameButtonListener = function(ev)
-{
-   var sel = this._bookmarkPanel.getSelection();
-   if (0 == sel.length) {
-      return;
-   }
-
-   // XXX do something
 }
 
 // shell ----------------------------------------------------------------------

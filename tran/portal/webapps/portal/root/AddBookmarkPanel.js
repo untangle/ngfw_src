@@ -7,9 +7,14 @@ function AddBookmarkPanel(parent, apps)
       return;
    }
 
-   DBG.println("APPS: " + apps);
-
    DwtComposite.call(this, parent);
+
+
+   this._apps = new Array();
+   for (var i = 0; i < apps.length; i++) {
+      DBG.println("ADDED: " + apps[i].name);
+      this._apps.push(apps[i].name);
+   }
 
    this._init();
 }
@@ -25,6 +30,11 @@ AddBookmarkPanel.prototype.getBookmark = function()
                        this._targetField.getValue());
 }
 
+AddBookmarkPanel.prototype.focus = function()
+{
+   this._fields[0].focus();
+}
+
 // private methods ------------------------------------------------------------
 
 AddBookmarkPanel.prototype._init = function()
@@ -37,12 +47,12 @@ AddBookmarkPanel.prototype._init = function()
    this._fields.push(this._nameField);
 
    label = new DwtLabel(this);
-   label.setText("Application:"); // XXX dropdown
-   this._appField = new DwtInputField({ parent: this });
+   label.setText("Application:");
+   this._appField = new DwtSelect(this, this._apps);
    this._fields.push(this._appField);
 
    label = new DwtLabel(this);
-   label.setText("Target:"); // XXX dropdown
+   label.setText("Target:");
    this._targetField = new DwtInputField({ parent: this });
    this._fields.push(this._targetField);
 }

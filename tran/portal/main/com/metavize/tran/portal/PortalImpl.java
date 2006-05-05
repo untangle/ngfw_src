@@ -151,7 +151,6 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
         MvvmContextFactory.context().portalManager().setPortalSettings(settings);
     }
 
-
     // AbstractTransform methods ----------------------------------------------
 
     @Override
