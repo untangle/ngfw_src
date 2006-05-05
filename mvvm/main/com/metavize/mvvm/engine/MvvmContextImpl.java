@@ -37,7 +37,6 @@ import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 
-
 public class MvvmContextImpl extends MvvmContextBase
     implements MvvmLocalContext
 {
@@ -77,6 +76,7 @@ public class MvvmContextImpl extends MvvmContextBase
     private AppServerManagerImpl appServerManager;
     private AddressBookImpl addressBookImpl;
     private PortalManagerImpl portalManager;
+    private RemotePortalManagerImpl remotePortalManager;
     private TomcatManager tomcatManager;
 
     // constructor ------------------------------------------------------------
@@ -116,6 +116,11 @@ public class MvvmContextImpl extends MvvmContextBase
 
     public PortalManagerImpl portalManager() {
         return portalManager;
+    }
+
+    public RemotePortalManagerImpl remotePortalManager()
+    {
+        return remotePortalManager;
     }
 
     public AppServerManagerImpl appServerManager()
@@ -275,10 +280,10 @@ public class MvvmContextImpl extends MvvmContextBase
             return Runtime.getRuntime().exec(newCmd, envp, dir);
         } catch (IOException x) {
             // Check and see if we've run out of virtual memory.  This is very ugly
-            // but there's not another apparent way.  XXXXXXXXXX 
+            // but there's not another apparent way.  XXXXXXXXXX
             String msg = x.getMessage();
             if (msg.contains("Cannot allocate memory")) {
-                logger.error("Virtual memory exhausted in Process.exec()"); 
+                logger.error("Virtual memory exhausted in Process.exec()");
                 Main.fatalError("MvvmContextImpl.exec", x);
                 // There's no return from fatalError, but we have to keep the compiler happy.
                 return null;
@@ -466,6 +471,7 @@ public class MvvmContextImpl extends MvvmContextBase
         addressBookImpl = AddressBookImpl.getInstance();
 
         portalManager = PortalManagerImpl.getInstance();
+        remotePortalManager = new RemotePortalManagerImpl(portalManager);
 
         // start vectoring:
         String argonFake = System.getProperty(ARGON_FAKE_KEY);
@@ -488,7 +494,7 @@ public class MvvmContextImpl extends MvvmContextBase
     }
 
     @Override
-        protected void postInit()
+    protected void postInit()
     {
         syslogManager.postInit();
 
@@ -513,7 +519,7 @@ public class MvvmContextImpl extends MvvmContextBase
     }
 
     @Override
-        protected void destroy()
+    protected void destroy()
     {
         state = MvvmState.DESTROYED;
 
@@ -606,7 +612,7 @@ public class MvvmContextImpl extends MvvmContextBase
     }
 
     @Override
-        protected InvokerBase getInvoker()
+    protected InvokerBase getInvoker()
     {
         return httpInvoker;
     }

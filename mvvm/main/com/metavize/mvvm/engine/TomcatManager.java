@@ -37,7 +37,7 @@ import org.apache.log4j.Logger;
   * code directly.  Instead, please go through the
   * {@link com.metavize.mvvm.AppServerManager AppServerManager} interface.
   */
-public class TomcatManager {
+class TomcatManager {
 
     public static int NUM_TOMCAT_RETRIES = 15;        //  5 minutes total
     public static long TOMCAT_SLEEP_TIME = 20 * 1000; // 20 seconds

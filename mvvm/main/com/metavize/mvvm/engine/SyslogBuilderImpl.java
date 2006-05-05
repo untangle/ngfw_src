@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -22,7 +22,7 @@ import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.tran.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;
 
-public class SyslogBuilderImpl implements SyslogBuilder
+class SyslogBuilderImpl implements SyslogBuilder
 {
     private static final int PACKET_SIZE = 1024;
     private static final int MAX_VALUE_SIZE = 256;

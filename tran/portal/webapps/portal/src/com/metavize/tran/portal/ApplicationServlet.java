@@ -21,8 +21,8 @@ import javax.servlet.http.HttpSession;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
-import com.metavize.mvvm.engine.PortalManagerPriv;
-import com.metavize.mvvm.portal.ApplicationManager;
+import com.metavize.mvvm.portal.LocalApplicationManager;
+import com.metavize.mvvm.portal.LocalPortalManager;
 import com.metavize.mvvm.portal.PortalLogin;
 import com.metavize.mvvm.portal.PortalLoginKey;
 import com.metavize.mvvm.portal.PortalUser;
@@ -32,8 +32,8 @@ import org.apache.log4j.Logger;
 public class ApplicationServlet extends HttpServlet
 {
     private Logger logger;
-    private PortalManagerPriv portalManager;
-    private ApplicationManager appManager;
+    private LocalPortalManager portalManager;
+    private LocalApplicationManager appManager;
 
     // HttpServlet methods ----------------------------------------------------
 
@@ -47,7 +47,7 @@ public class ApplicationServlet extends HttpServlet
         resp.setContentType("text/xml");
         resp.addHeader("Cache-Control", "no-cache");
 
-        PortalLoginKey plk = (PortalLoginKey)s.getAttribute(PortalManagerPriv.PORTAL_LOGIN_KEY);
+        PortalLoginKey plk = (PortalLoginKey)s.getAttribute(LocalPortalManager.PORTAL_LOGIN_KEY);
         if (null == plk) {
             logger.info("not logged in: " + plk);
             try {
@@ -102,7 +102,7 @@ public class ApplicationServlet extends HttpServlet
     {
         logger = Logger.getLogger(getClass());
         MvvmLocalContext mctx = MvvmContextFactory.context();
-        portalManager = (PortalManagerPriv)mctx.portalManager();
+        portalManager = mctx.portalManager();
         appManager = portalManager.applicationManager();
     }
 

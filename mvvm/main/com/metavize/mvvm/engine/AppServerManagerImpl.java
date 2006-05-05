@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,22 +11,20 @@
 
 package com.metavize.mvvm.engine;
 
-import com.metavize.mvvm.AppServerManager;
-import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.security.RegistrationInfo;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
-import java.net.InetAddress;
-import org.apache.log4j.Logger;
 
-import com.metavize.mvvm.security.RFC2253Name;
+import com.metavize.mvvm.AppServerManager;
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.networking.RemoteSettingsListener;
+import com.metavize.mvvm.networking.internal.RemoteInternalSettings;
 import com.metavize.mvvm.security.CertInfo;
+import com.metavize.mvvm.security.RFC2253Name;
+import com.metavize.mvvm.security.RegistrationInfo;
 import com.metavize.tran.util.MVKeyStore;
 import com.metavize.tran.util.OpenSSLWrapper;
-
-import com.metavize.mvvm.networking.internal.RemoteInternalSettings;
-import com.metavize.mvvm.networking.RemoteSettingsListener;
+import org.apache.log4j.Logger;
 
 //name_
 
@@ -35,8 +33,7 @@ import com.metavize.mvvm.networking.RemoteSettingsListener;
  * TODO A work in progress (currently a disorganized mess of crap taken
  * from the old "main" and "TomcatManager" code.
  */
-public class AppServerManagerImpl
-  implements AppServerManager {
+class AppServerManagerImpl implements AppServerManager {
 
   private static final String KS_STORE_PASS = "changeit";
 
@@ -45,7 +42,7 @@ public class AppServerManagerImpl
   public static int m_defHttpPort = 80;
   public int m_defHttpsPort = DEFAULT_HTTPS_PORT;
   public int m_externalHttpsPort = DEFAULT_HTTPS_PORT;
-  
+
 
   private static AppServerManagerImpl s_instance;
   private final Logger m_logger =
@@ -76,7 +73,7 @@ public class AppServerManagerImpl
         try{fis.close();}catch(Exception ignore){}
       }
     } /* This file may not exist */
-  
+
     /* Retrieve the outside HTTPS port from the properties */
     try {
         String temp;
@@ -96,15 +93,15 @@ public class AppServerManagerImpl
     }
 
 
-  
+
 /*
     File keysDir = new File(System.getProperty("bunnicula.conf.dir") +
       File.separator + "webServerSSLKeys");
     if(!keysDir.exists()) {
       keysDir.mkdirs();
     }
-*/    
-  
+*/
+
 //    System.out.println("***DEBUG*** bunnicula.home: " + System.getProperty("bunnicula.home"));
 //    java.io.File file = new java.io.File(System.getProperty("bunnicula.home") + "/conf/keystore");
 //    System.out.println("***DEBUG*** Keystore exists: " + file.exists());
@@ -140,7 +137,7 @@ public class AppServerManagerImpl
     //is the current host name.
     try {
       if(!(m_keyStore.containsAlias(effectiveHostname))) {
-        
+
         m_logger.debug("Upgrading keystore contents to contain a key for effective hostname \"" +
           effectiveHostname + "\"");
 
@@ -165,7 +162,7 @@ public class AppServerManagerImpl
     }
     catch(Exception ex) {
       m_logger.error("Exception passing cert parameters to Tomcat", ex);
-    } 
+    }
 
 //    System.out.println("***DEBUG*** [AppServerManagerImpl][postInit()]");
     try {
@@ -211,7 +208,7 @@ public class AppServerManagerImpl
 
   //===================================================
   // See Doc from interface
-  //===================================================  
+  //===================================================
   public boolean unloadWebApp(String contextRoot) {
     return m_tomcatManager.unloadWebApp(contextRoot);
   }
@@ -219,10 +216,10 @@ public class AppServerManagerImpl
 
   //TODO bscott Sometime in the next two years we need a way for them
   //     to roll to a new key while maintaing their existing signed cert.
-  
+
   //===================================================
   // See Doc from interface
-  //=================================================== 
+  //===================================================
   public boolean regenCert(RFC2253Name dn,
     int durationInDays) {
 
@@ -240,7 +237,7 @@ public class AppServerManagerImpl
       }
 
       dn.add("CN", effectiveHostname);
-      
+
       m_keyStore.generateKey(newName, dn, durationInDays);
       m_keyStore.renameEntry(newName, effectiveHostname);
 
@@ -255,7 +252,7 @@ public class AppServerManagerImpl
 
   //===================================================
   // See Doc from interface
-  //=================================================== 
+  //===================================================
   public boolean importServerCert(byte[] cert, byte[] caCert) {
 
     CertInfo localCertInfo = null;
@@ -291,12 +288,12 @@ public class AppServerManagerImpl
     }
 
     return true;
-    
+
   }
 
   //===================================================
   // See Doc from interface
-  //=================================================== 
+  //===================================================
   public byte[] getCurrentServerCert() {
     String effectiveHostname = getFQDN();
 
@@ -316,16 +313,16 @@ public class AppServerManagerImpl
       m_logger.error("Unable to retreive current cert", ex);
       return null;
     }
-    
+
   }
 
   //===================================================
   // See Doc from interface
-  //=================================================== 
+  //===================================================
   public byte[] generateCSR() {
 
     String effectiveHostname = getFQDN();
-  
+
     try {
       return m_keyStore.createCSR(effectiveHostname);
     }
@@ -337,7 +334,7 @@ public class AppServerManagerImpl
 
   //===================================================
   // See Doc from interface
-  //=================================================== 
+  //===================================================
   public CertInfo getCertInfo(byte[] certBytes) {
     try {
       return OpenSSLWrapper.getCertInfo(certBytes);
@@ -346,7 +343,7 @@ public class AppServerManagerImpl
       m_logger.error("Unable to get info from cert \"" +
         new String(certBytes) + "\"", ex);
       return null;
-    }    
+    }
   }
 
 
@@ -379,11 +376,11 @@ public class AppServerManagerImpl
       m_logger.error(reason, ex);
     }
   }
-  
+
 
 
   private String getFQDN() {
       return MvvmContextFactory.context().networkManager().getHostname().toString();
   }
-  
+
 }

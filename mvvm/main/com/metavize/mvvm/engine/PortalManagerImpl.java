@@ -13,33 +13,30 @@ package com.metavize.mvvm.engine;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.naming.ServiceUnavailableException;
+
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.MvvmLocalContext;
+import com.metavize.mvvm.addrbook.*;
+import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.portal.*;
+import com.metavize.mvvm.security.LoginFailureReason;
+import com.metavize.mvvm.security.LogoutReason;
+import com.metavize.mvvm.util.TransactionWork;
 import jcifs.smb.NtlmPasswordAuthentication;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import com.metavize.mvvm.MvvmLocalContext;
-import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.addrbook.*;
-import com.metavize.mvvm.logging.EventLogger;
-import com.metavize.mvvm.util.TransactionWork;
-import com.metavize.mvvm.security.LogoutReason;
-import com.metavize.mvvm.security.LoginFailureReason;
-import com.metavize.mvvm.portal.*;
 
 /**
  * Implementation of the PortalManager
- *
  */
-public class PortalManagerImpl
-  implements PortalManagerPriv {
-
+class PortalManagerImpl implements LocalPortalManager
+{
     private static final Application[] protoArr = new Application[] { };
 
     public static final long REAPING_FREQ = 5000;
@@ -57,6 +54,7 @@ public class PortalManagerImpl
     private AddressBook addressBook;
 
     private PortalApplicationManagerImpl appManager;
+    private RemotePortalApplicationManagerImpl remoteAppManager;
 
     private PortalSettings portalSettings;
 
@@ -88,6 +86,7 @@ public class PortalManagerImpl
         ctx.runTransaction(tw);
 
         appManager = PortalApplicationManagerImpl.applicationManager();
+        remoteAppManager = new RemotePortalApplicationManagerImpl(appManager);
 
         addressBook = ctx.appAddressBook();
 
@@ -110,6 +109,10 @@ public class PortalManagerImpl
 
     public PortalApplicationManagerImpl applicationManager() {
         return appManager;
+    }
+
+    public RemoteApplicationManager remoteApplicationManager() {
+        return remoteAppManager;
     }
 
     public PortalSettings getPortalSettings()
@@ -185,7 +188,7 @@ public class PortalManagerImpl
                 }
             };
         MvvmContextFactory.context().runTransaction(tw);
-        
+
         return result;
     }
 
@@ -267,13 +270,13 @@ public class PortalManagerImpl
                 try {
                     Thread.sleep(LOGIN_FAIL_SLEEP_TIME);
                 } catch (InterruptedException exn) { }
-                return null; 
+                return null;
             }
         } catch (ServiceUnavailableException x) {
             logger.error("Unable to authenticate user", x);
             return null;
         }
-            
+
         PortalUser user = getUser(uid);
 
         if (user == null && portalSettings.getGlobal().isAutoCreateUsers()) {
@@ -340,7 +343,7 @@ public class PortalManagerImpl
         return hs.getIdleTimeout();
     }
 
-        
+
     private class TimeoutReaper implements Runnable
     {
         private long millifreq;

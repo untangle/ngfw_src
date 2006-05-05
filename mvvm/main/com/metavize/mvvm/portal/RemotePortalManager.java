@@ -11,12 +11,17 @@
 
 package com.metavize.mvvm.portal;
 
+import java.util.List;
 
-public interface ApplicationManager
+public interface RemotePortalManager
 {
-    Application[] getApplications();
+    RemoteApplicationManager applicationManager();
 
-    String[] getApplicationNames();
+    PortalSettings getPortalSettings();
 
-    Application getApplication(String name);
+    void setPortalSettings(PortalSettings settings);
+
+    List<PortalLogin> getActiveLogins();
+
+    void forceLogout(PortalLogin login);
 }

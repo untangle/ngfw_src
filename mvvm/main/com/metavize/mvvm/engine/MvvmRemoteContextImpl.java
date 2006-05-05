@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -13,28 +13,28 @@ package com.metavize.mvvm.engine;
 
 import java.io.IOException;
 
+import com.metavize.mvvm.AppServerManager;
 import com.metavize.mvvm.ArgonManager;
 import com.metavize.mvvm.ConnectivityTester;
-import com.metavize.mvvm.MvvmLocalContext;
-import com.metavize.mvvm.NetworkingManager;
 import com.metavize.mvvm.NetworkManager;
+import com.metavize.mvvm.NetworkingManager;
 import com.metavize.mvvm.ReportingManager;
-import com.metavize.mvvm.toolbox.ToolboxManager;
+import com.metavize.mvvm.addrbook.AddressBook;
 import com.metavize.mvvm.client.MvvmRemoteContext;
 import com.metavize.mvvm.logging.LoggingManager;
 import com.metavize.mvvm.policy.PolicyManager;
+import com.metavize.mvvm.portal.RemotePortalManager;
 import com.metavize.mvvm.security.AdminManager;
+import com.metavize.mvvm.toolbox.ToolboxManager;
 import com.metavize.mvvm.tran.TransformManager;
-import com.metavize.mvvm.AppServerManager;
-import com.metavize.mvvm.addrbook.AddressBook;
 
 class MvvmRemoteContextImpl implements MvvmRemoteContext
 {
-    private final MvvmLocalContext context;
+    private final MvvmContextImpl context;
 
     // constructors -----------------------------------------------------------
 
-    MvvmRemoteContextImpl(MvvmLocalContext context)
+    MvvmRemoteContextImpl(MvvmContextImpl context)
     {
         this.context = context;
     }
@@ -90,7 +90,7 @@ class MvvmRemoteContextImpl implements MvvmRemoteContext
     {
         return context.getConnectivityTester();
     }
-    
+
     public AppServerManager appServerManager()
     {
         return context.appServerManager();
@@ -99,6 +99,11 @@ class MvvmRemoteContextImpl implements MvvmRemoteContext
     public AddressBook appAddressBook()
     {
         return context.appAddressBook();
+    }
+
+    public RemotePortalManager portalManager()
+    {
+        return context.remotePortalManager();
     }
 
     public void localBackup() throws IOException
@@ -139,5 +144,5 @@ class MvvmRemoteContextImpl implements MvvmRemoteContext
       throws IOException, IllegalArgumentException
     {
        context.restoreBackup(backupBytes);
-    }    
+    }
 }

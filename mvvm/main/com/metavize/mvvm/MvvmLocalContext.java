@@ -23,7 +23,7 @@ import com.metavize.mvvm.logging.LoggingManager;
 import com.metavize.mvvm.logging.SyslogManager;
 import com.metavize.mvvm.networking.NetworkManagerImpl;
 import com.metavize.mvvm.policy.PolicyManager;
-import com.metavize.mvvm.portal.PortalManager;
+import com.metavize.mvvm.portal.LocalPortalManager;
 import com.metavize.mvvm.security.AdminManager;
 import com.metavize.mvvm.tapi.MPipeManager;
 import com.metavize.mvvm.tapi.PipelineFoundry;
@@ -143,7 +143,7 @@ public interface MvvmLocalContext
      *
      * @return a <code>PortalManager</code> value
      */
-    PortalManager portalManager();
+    LocalPortalManager portalManager();
 
     ArgonManager argonManager();
 

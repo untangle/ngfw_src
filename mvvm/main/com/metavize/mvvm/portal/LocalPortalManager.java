@@ -9,7 +9,7 @@
  *  $Id$
  */
 
-package com.metavize.mvvm.engine;
+package com.metavize.mvvm.portal;
 
 import java.net.InetAddress;
 import java.util.List;
@@ -17,12 +17,12 @@ import java.util.List;
 import com.metavize.mvvm.portal.*;
 
 /**
- * Describe interface <code>PortalManagerPriv</code> here.
+ * Describe interface <code>LocalPortalManager</code> here.
  *
  * @author <a href="mailto:jdi@slabuntu">John Irwin</a>
  * @version 1.0
  */
-public interface PortalManagerPriv extends PortalManager
+public interface LocalPortalManager
 {
     String PORTAL_LOGIN_KEY = "portal-login-key";
 
@@ -81,4 +81,14 @@ public interface PortalManagerPriv extends PortalManager
      * to log out
      */
     void logout(PortalLoginKey loginKey);
+
+    LocalApplicationManager applicationManager();
+
+    PortalSettings getPortalSettings();
+
+    void setPortalSettings(PortalSettings settings);
+
+    List<PortalLogin> getActiveLogins();
+
+    void forceLogout(PortalLogin login);
  }

@@ -22,7 +22,7 @@ import javax.servlet.http.HttpSession;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
-import com.metavize.mvvm.engine.PortalManagerPriv;
+import com.metavize.mvvm.portal.LocalPortalManager;
 import com.metavize.mvvm.portal.PortalLoginKey;
 import org.apache.log4j.Logger;
 
@@ -37,7 +37,7 @@ public class LoginServlet extends HttpServlet
         throws ServletException
     {
         MvvmLocalContext mctx = MvvmContextFactory.context();
-        PortalManagerPriv pm = (PortalManagerPriv)mctx.portalManager();
+        LocalPortalManager pm = mctx.portalManager();
 
         HttpSession s = req.getSession();
 
@@ -59,7 +59,7 @@ public class LoginServlet extends HttpServlet
             if (null == plk) {
                 resp.sendError(HttpServletResponse.SC_FORBIDDEN);
             } else {
-                s.setAttribute(PortalManagerPriv.PORTAL_LOGIN_KEY, plk);
+                s.setAttribute(LocalPortalManager.PORTAL_LOGIN_KEY, plk);
                 resp.getWriter().println("success");
             }
         } catch (IOException exn) {

@@ -11,42 +11,25 @@
 
 package com.metavize.mvvm.engine.addrbook;
 
-import javax.naming.CommunicationException;
-import javax.naming.Context;
-import javax.naming.ServiceUnavailableException;
-import javax.naming.NamingException;
-import javax.naming.AuthenticationException;
-import javax.naming.NameAlreadyBoundException;
-import javax.naming.NameNotFoundException;
-import javax.naming.NamingEnumeration;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.Attributes;
-import javax.naming.directory.SearchResult;
-import javax.naming.directory.InitialDirContext;
-import javax.naming.directory.Attribute;
-import javax.naming.directory.SearchControls;
-import javax.naming.directory.BasicAttributes;
-import javax.naming.directory.BasicAttribute;
-
-import org.apache.log4j.Logger;
-
-import java.util.Hashtable;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
+import javax.naming.AuthenticationException;
+import javax.naming.NamingException;
+import javax.naming.ServiceUnavailableException;
+import javax.naming.directory.DirContext;
 
-import com.metavize.mvvm.addrbook.RepositoryType;
-import com.metavize.mvvm.addrbook.RepositorySettings;
-import com.metavize.mvvm.addrbook.UserEntry;
 import com.metavize.mvvm.addrbook.NoSuchEmailException;
+import com.metavize.mvvm.addrbook.RepositorySettings;
+import com.metavize.mvvm.addrbook.RepositoryType;
+import com.metavize.mvvm.addrbook.UserEntry;
+import org.apache.log4j.Logger;
 
 
 /**
  * Implementation of the Ldap adapter which understands uniqueness
  * of ActiveDirectory.
  */
-public class ActiveDirectoryLdapAdapter
-  extends LdapAdapter {
+class ActiveDirectoryLdapAdapter extends LdapAdapter {
 
   private final Logger m_logger =
     Logger.getLogger(ActiveDirectoryLdapAdapter.class);
@@ -115,7 +98,7 @@ public class ActiveDirectoryLdapAdapter
     if(cn == null) {
       return false;//throw new AuthenticationException("Unable to get CN from sAMAccountName");
     }
-    
+
     try {
       String dn = "cn=" + cn + "," + getSearchBase();
       DirContext ctx = createContext(
@@ -146,7 +129,7 @@ public class ActiveDirectoryLdapAdapter
     }
 
     try {
-      
+
       String dn = "cn=" + cn + "," + getSearchBase();
       DirContext ctx = createContext(
         getSettings().getLDAPHost(),
@@ -163,13 +146,13 @@ public class ActiveDirectoryLdapAdapter
     catch(NamingException ex) {
       m_logger.warn("Exception authenticating user by email \"" + email + "\"", ex);
       throw new ServiceUnavailableException(ex.toString());
-    }    
+    }
   }
 
 
 
   //TODO Some way to filter-out the system users from AD?!?
-  
+
 /*
   @Override
   protected String getListAllUsersSearchString() {
@@ -177,7 +160,7 @@ public class ActiveDirectoryLdapAdapter
     if(System.currentTimeMillis() > 0) {
       return "(&(objectClass=user)(!cn=Builtin))";
     }
-  
+
     StringBuilder sb = new StringBuilder();
     sb.append("(&");
     sb.append("(").append("objectClass=").append(getSettings().getUserClass()).append(")");
@@ -186,7 +169,7 @@ public class ActiveDirectoryLdapAdapter
     System.out.println("*************" + sb.toString());
     return sb.toString();
   }
-*/  
+*/
 
   /**
    * Get the CN from email address.  Returns null
@@ -194,7 +177,7 @@ public class ActiveDirectoryLdapAdapter
    */
   private String getCNFromEmail(String email)
     throws ServiceUnavailableException {
-    
+
     try {
       String searchStr = "(&(objectClass=" + getUserClassType() + ")(mail=" + email + "))";
       List<Map<String, String[]>> result = queryAsSuperuser(
@@ -209,7 +192,7 @@ public class ActiveDirectoryLdapAdapter
     catch(NamingException ex) {
       throw new ServiceUnavailableException("Unable to get CN from email");
     }
-  }  
+  }
 
   /**
    * Get the CN attribute from the uid (which we map to "sAMAccountName").
@@ -242,7 +225,7 @@ public class ActiveDirectoryLdapAdapter
 
 //=============================
 // Test Code
-//=============================  
+//=============================
 
 
   public static void main(String[] args) throws Exception {
@@ -253,7 +236,7 @@ public class ActiveDirectoryLdapAdapter
       "windows.metavize.com",
       "mrslave",
       389);
-  
+
     ActiveDirectoryLdapAdapter adapter = new ActiveDirectoryLdapAdapter(settings);
 
     System.out.println("==================================");
@@ -303,8 +286,8 @@ public class ActiveDirectoryLdapAdapter
     catch(NoSuchEmailException expected) {
       System.out.println("Got exception (as expected)");
     }
-    
-        
+
+
 
     System.out.println("===================================");
     System.out.println("Get full entry for bad user");
