@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: ProtocolMatcher.java 259 2005-04-11 01:29:04Z rbscott $
+ * $Id$
  */
 
 package com.metavize.mvvm.tran.firewall;

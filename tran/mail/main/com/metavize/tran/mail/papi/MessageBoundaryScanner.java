@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MailExport.java 1317 2005-07-12 23:58:12Z amread $
+ * $Id$
  */
 
 package com.metavize.tran.mail.papi;

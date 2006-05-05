@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: Validatable.java 229 2005-05-25 22:25:00Z inieves $
+ * $Id$
  */
 
 package com.metavize.mvvm.tran;

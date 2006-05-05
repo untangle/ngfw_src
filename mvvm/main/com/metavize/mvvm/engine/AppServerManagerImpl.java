@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: MvvmContextImpl.java 3986 2005-12-16 05:24:06Z amread $
+ * $Id$
  */
 
 package com.metavize.mvvm.engine;

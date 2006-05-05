@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MTransformControlsJPanel.java 4262 2006-01-23 19:03:15Z bscott $
+ * $Id$
  */
 
 

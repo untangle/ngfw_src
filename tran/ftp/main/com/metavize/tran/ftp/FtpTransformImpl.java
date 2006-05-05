@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: FtpTransform.java 1258 2005-07-07 04:02:17Z amread $
+ * $Id$
  */
 package com.metavize.tran.ftp;
 

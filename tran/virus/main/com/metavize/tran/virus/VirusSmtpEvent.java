@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: VirusLogEvent.java 502 2005-04-28 03:31:42Z amread $
+ * $Id$
  */
 
 package com.metavize.tran.virus;

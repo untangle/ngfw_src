@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: IDSSummarizer.java 2173 2005-08-18 02:22:16Z inieves $
+ * $Id$
  */
 
 package com.metavize.tran.ids.reports;

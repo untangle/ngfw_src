@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: FirewallAccessEventHandler.java 3373 2005-11-12 00:13:48Z amread $
+ * $Id$
  */
 
 package com.metavize.tran.firewall;

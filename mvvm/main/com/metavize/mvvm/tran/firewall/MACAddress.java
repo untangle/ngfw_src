@@ -7,7 +7,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- *  $Id: IPaddr.java 400 2005-04-22 21:55:25Z rbscott $
+ * $Id$
  */
 
 package com.metavize.mvvm.tran.firewall;

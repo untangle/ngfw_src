@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: EventCache.java 3779 2005-12-05 23:29:15Z amread $
+ * $Id$
  */
 
 package com.metavize.mvvm.engine;

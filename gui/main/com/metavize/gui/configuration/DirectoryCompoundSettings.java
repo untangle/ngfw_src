@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: DirectoryCompoundSettings.java 4961 2006-03-01 23:40:35Z inieves $
+ * $Id$
  */
 
 package com.metavize.gui.configuration;

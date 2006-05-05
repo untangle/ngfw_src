@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: MimeTypeRule.java 229 2005-04-07 22:25:00Z amread $
+ * $Id$
  */
 
 package com.metavize.tran.firewall;

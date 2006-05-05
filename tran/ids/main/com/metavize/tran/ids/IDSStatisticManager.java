@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: NatStatisticManager.java 1293 2005-07-11 23:21:41Z rbscott $
+ * $Id$
  */
 package com.metavize.tran.ids;
 

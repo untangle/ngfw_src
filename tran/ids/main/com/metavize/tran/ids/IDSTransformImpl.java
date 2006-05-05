@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: SpywareSettings.java 3501 2005-11-21 10:12:33Z amread $
+ * $Id$
  */
 
 package com.metavize.tran.ids;

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: HibernateAppender.java 869 2005-06-03 18:11:09Z rbscott $
+ * $Id$
  */
 
 package com.metavize.mvvm.logging;

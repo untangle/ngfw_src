@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: NatEventHandler.java 690 2005-05-12 04:25:06Z rbscott $
+ * $Id$
  */
 
 package com.metavize.tran.nat;

@@ -11,15 +11,18 @@
 
 package com.metavize.tran.portal;
 
+import java.util.List;
+
 import com.metavize.mvvm.AppServerManager;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
-import com.metavize.mvvm.portal.*;
+import com.metavize.mvvm.portal.Application;
+import com.metavize.mvvm.portal.LocalApplicationManager;
+import com.metavize.mvvm.portal.LocalPortalManager;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tran.TransformException;
 import org.apache.log4j.Logger;
-import java.util.List;
 
 public class PortalImpl extends AbstractTransform implements PortalTransform
 {
@@ -35,7 +38,7 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
     public PortalImpl()
     {
         logger.debug("<init>");
-    }
+     }
 
     private void deployWebAppIfRequired(Logger logger) {
         MvvmLocalContext mctx = MvvmContextFactory.context();

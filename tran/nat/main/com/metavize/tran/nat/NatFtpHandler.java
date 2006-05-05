@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: NatImpl.java 804 2005-05-25 20:52:10Z inieves $
+ * $Id$
  */
 package com.metavize.tran.nat;
 

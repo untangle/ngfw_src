@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: UDPPacketDesc.java 193 2005-04-06 19:13:30Z rbscott $
+ * $Id$
  */
 
 package com.metavize.mvvm.tapi;
