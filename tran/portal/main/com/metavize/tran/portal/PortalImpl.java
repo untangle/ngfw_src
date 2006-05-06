@@ -28,15 +28,11 @@ import org.apache.log4j.Logger;
 public class PortalImpl extends AbstractTransform implements PortalTransform
 {
     private static final String CIFS_JS
-        = "var foo = {\n"
-        + "  openBookmark: function(target) {\n"
-        + "    alert(target);\n"
-        + "  },\n"
-        + "  foo: function(target) {\n"
-        + "    alert(target);\n"
+        = "{\n"
+        + "  openBookmark: function(portal, target) {\n"
+        + "    portal.openPage('/browser/browser.jsp');\n"
         + "  }\n"
-        + "};\n"
-        + "foo;\n";
+        + "};\n";
 
     private static final String WEB_JS = CIFS_JS;
 

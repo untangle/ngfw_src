@@ -4,8 +4,7 @@
 function Application(name, appJs)
 {
    this.name = name;
-   this._appCode = eval(appJs);
-   DBG.println("APPCODE: " + this._appCode);
+   eval("this._appCode = " + appJs);
 }
 
 Application.prototype.toString = function() {

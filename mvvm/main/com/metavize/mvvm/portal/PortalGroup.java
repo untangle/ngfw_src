@@ -51,7 +51,6 @@ public class PortalGroup implements Serializable
         this.name = name;
     }
 
-
     /**
      * description/comments
      *

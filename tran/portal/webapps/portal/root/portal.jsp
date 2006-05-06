@@ -42,7 +42,7 @@ function launch() {
 DBG = new AjxDebug(AjxDebug.DBG1, null, false);
 
 var shell = new DwtShell("MainShell", false);
-new Portal(shell, "smb://windows.metavize.com/");
+var portal = new Portal(shell, "smb://windows.metavize.com/");
 }
 AjxCore.addOnloadListener(launch);
 </script>

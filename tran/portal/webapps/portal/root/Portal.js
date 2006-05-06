@@ -32,6 +32,13 @@ function Portal(shell, url) {
 Portal.prototype = new DwtComposite();
 Portal.prototype.constructor = Portal;
 
+// portal api -----------------------------------------------------------------
+
+Portal.prototype.openPage = function(url)
+{
+   window.open(url);
+}
+
 // public methods -------------------------------------------------------------
 
 Portal.prototype.login = function()
@@ -152,7 +159,7 @@ Portal.prototype._bookmarkSelectionListener = function(ev) {
       var item = ev.item;
       var app = this._appMap[item.app];
       // XXX if null?
-      app.openBookmark(item.target);
+      app.openBookmark(this, item.target);
       break;
    }
 }
