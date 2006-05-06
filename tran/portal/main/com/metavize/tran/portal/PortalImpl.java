@@ -27,6 +27,19 @@ import org.apache.log4j.Logger;
 
 public class PortalImpl extends AbstractTransform implements PortalTransform
 {
+    private static final String CIFS_JS
+        = "var foo = {\n"
+        + "  openBookmark: function(target) {\n"
+        + "    alert(target);\n"
+        + "  },\n"
+        + "  foo: function(target) {\n"
+        + "    alert(target);\n"
+        + "  }\n"
+        + "};\n"
+        + "foo;\n";
+
+    private static final String WEB_JS = CIFS_JS;
+
     private final Logger logger = Logger.getLogger(PortalImpl.class);
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[0];
@@ -54,7 +67,7 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
         }
 
         browserApp = lam.registerApplication("CIFS", "Network File Browser",
-                                             true, null, 0);
+                                             true, null, 0, CIFS_JS);
 
         if (asm.loadWebApp("/proxy", "proxy")) {
             logger.debug("Deployed Proxy web app");
@@ -62,7 +75,8 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
             logger.error("Unable to deploy Proxy web app");
         }
 
-        proxyApp = lam.registerApplication("HTTP", "Web Proxy", true, null, 0);
+        proxyApp = lam.registerApplication("HTTP", "Web Proxy", true, null, 0,
+                                           WEB_JS);
 
         if (asm.loadWebApp("/portal", "portal")) {
             logger.debug("Deployed Portal web app");

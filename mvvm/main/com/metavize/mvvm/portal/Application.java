@@ -26,20 +26,22 @@ public final class Application
         // String whyNotValid(String target);
     }
 
-    private String name;
-    private String description;
-    private boolean isHostService;
-    private Validator validator;
-    private int sortPosition;
+    private final String name;
+    private final String description;
+    private final boolean isHostService;
+    private final Validator validator;
+    private final int sortPosition;
+    private final String appJs;
 
     public Application(String name, String description, boolean isHostService,
-                       Validator validator, int sortPosition)
+                       Validator validator, int sortPosition, String appJs)
     {
         this.name = name;
         this.description = description;
         this.isHostService = isHostService;
         this.validator = validator;
         this.sortPosition = sortPosition;
+        this.appJs = appJs;
     }
 
     /**
@@ -75,6 +77,10 @@ public final class Application
         return isHostService;
     }
 
+    public String getAppJs()
+    {
+        return appJs;
+    }
 
     /**
      * Validates the given target, returning true if the target is

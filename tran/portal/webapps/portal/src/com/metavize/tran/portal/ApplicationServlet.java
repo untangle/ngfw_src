@@ -22,6 +22,7 @@ import javax.servlet.http.HttpSession;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
+import com.metavize.mvvm.portal.Application;
 import com.metavize.mvvm.portal.LocalApplicationManager;
 import com.metavize.mvvm.portal.LocalPortalManager;
 import com.metavize.mvvm.portal.PortalLogin;
@@ -86,7 +87,7 @@ public class ApplicationServlet extends HttpServlet
 
         try {
             if (command.equals("ls")) {
-                List<String> apps = appManager.getApplicationNames();
+                List<Application> apps = appManager.getApplications();
                 emitApplications(resp.getWriter(), apps);
             } else {
                 logger.warn("bad command: " + command);
@@ -108,13 +109,17 @@ public class ApplicationServlet extends HttpServlet
 
     // private methods --------------------------------------------------------
 
-    private void emitApplications(PrintWriter w, List<String> apps)
+    private void emitApplications(PrintWriter w, List<Application> apps)
     {
         w.println("<applications>");
-        for (String app : apps) {
+        for (Application app : apps) {
             w.print("  <application name='");
-            w.print(XmlUtil.escapeXml(app));
-            w.println("'/>");
+            w.print(XmlUtil.escapeXml(app.getName()));
+            w.println("'>");
+            w.println("    <appJs>");
+            w.println(XmlUtil.escapeXml(app.getAppJs()));
+            w.println("    </appJs>");
+            w.println("  </application>");
         }
         w.println("</applications>");
     }

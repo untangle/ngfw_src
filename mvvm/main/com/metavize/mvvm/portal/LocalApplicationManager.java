@@ -18,7 +18,7 @@ public interface LocalApplicationManager
     Application registerApplication(String name, String description,
                                     boolean isHostService,
                                     Application.Validator validator,
-                                    int sortPosition);
+                                    int sortPosition, String appJs);
 
     boolean deregisterApplication(Application app);
 

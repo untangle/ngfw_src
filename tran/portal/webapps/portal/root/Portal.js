@@ -72,12 +72,18 @@ Portal.prototype.refresh = function()
       var children = root.childNodes;
 
       this._apps = new Array();
+      this._appMap = new Object;
 
       for (var i = 0; i < children.length; i++) {
          var child = children[i];
 
          if ("application" == child.tagName) {
-            this._apps.push(new Application(child.getAttribute("name")))
+            var name = child.getAttribute("name");
+            var appJs = child.getElementsByTagName("appJs")[0].firstChild.data;
+            DBG.println("APPJS: " + appJs);
+            var app = new Application(name, appJs);
+            this._apps.push(app);
+            this._appMap[name] = app;
          }
       }
    }
@@ -144,11 +150,9 @@ Portal.prototype._bookmarkSelectionListener = function(ev) {
    switch (ev.detail) {
       case DwtListView.ITEM_DBL_CLICKED:
       var item = ev.item;
-      if (item.isDirectory) {
-         DBG.println("IS DIR");
-      } else {
-         AjxWindowOpener.open("get/" + item.url);
-      }
+      var app = this._appMap[item.app];
+      // XXX if null?
+      app.openBookmark(item.target);
       break;
    }
 }

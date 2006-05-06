@@ -11,6 +11,7 @@
 
 package com.metavize.mvvm.engine;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -18,7 +19,6 @@ import java.util.TreeSet;
 import com.metavize.mvvm.portal.Application;
 import com.metavize.mvvm.portal.LocalApplicationManager;
 import org.apache.log4j.Logger;
-import java.util.ArrayList;
 
 class PortalApplicationManagerImpl implements LocalApplicationManager
 {
@@ -55,10 +55,10 @@ class PortalApplicationManagerImpl implements LocalApplicationManager
     public Application registerApplication(String name, String desc,
                                            boolean isHostService,
                                            Application.Validator validator,
-                                           int sortPosition)
+                                           int sortPosition, String appJs)
     {
         Application newApp = new Application(name, desc, isHostService,
-                                             validator, sortPosition);
+                                             validator, sortPosition, appJs);
 
         synchronized (apps) {
             if (!apps.add(newApp)) {
