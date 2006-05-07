@@ -251,6 +251,29 @@ public abstract class TransformBase implements Transform
         }
     }
 
+    void disable()
+        throws TransformException, IllegalStateException
+    {
+        if (TransformState.LOADED == runState
+            || TransformState.DESTROYED == runState
+            || TransformState.DISABLED == runState) {
+            throw new IllegalStateException("disabling in: " + runState);
+        } else if (TransformState.RUNNING == runState) {
+            stop(false);
+            changeState(TransformState.DISABLED, true);
+        }
+    }
+
+    void enable()
+        throws TransformException, IllegalStateException
+    {
+        if (TransformState.DISABLED != runState) {
+            throw new IllegalStateException("enabling in: " + runState);
+        } else {
+            changeState(TransformState.INITIALIZED, true);
+        }
+    }
+
     /**
      * Unloads the transform for MVVM shutdown, does not change
      * transform's target state.
@@ -267,6 +290,8 @@ public abstract class TransformBase implements Transform
                 destroy(false);
             } else if (runState == TransformState.RUNNING) {
                 stop(false);
+                destroy(false);
+            } else if (runState == TransformState.DISABLED) {
                 destroy(false);
             }
         } catch (TransformException exn) {
@@ -440,7 +465,8 @@ public abstract class TransformBase implements Transform
         throws TransformException, IllegalStateException
     {
         if (TransformState.INITIALIZED != runState
-            && TransformState.LOADED != runState) {
+            && TransformState.LOADED != runState
+            && TransformState.DISABLED != runState) {
             throw new IllegalStateException("Destroy in state: " + runState);
         }
 
@@ -475,6 +501,10 @@ public abstract class TransformBase implements Transform
         } else if (TransformState.DESTROYED == tps.getTargetState()) {
             logger.debug("bringing into DESTROYED state: " + tid);
             runState = TransformState.DESTROYED;
+        } else if (TransformState.DISABLED == tps.getTargetState()) {
+            logger.debug("bringing into DISABLED state: " + tid);
+            init(false, tps.getArgArray());
+            runState = TransformState.DISABLED;
         } else {
             logger.warn("unknown state: " + tps.getTargetState());
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -26,35 +26,48 @@ public class TransformState implements Serializable
     private static final long serialVersionUID = 2291079542779127610L;
 
     /**
-     * Instantiated, but not initialized. This is a transient state, just
-     * after the main transform class has been instantiated, but before
-     * init has been called.
+     * Instantiated, but not initialized. This is a transient state,
+     * just after the main transform class has been instantiated, but
+     * before init has been called.
      */
-    public static final TransformState LOADED = new TransformState("loaded");
+    public static final TransformState LOADED;
 
     /**
-     * Initialized, but not running. The transform instance enters this state
-     * after it has been initialized, or when it is stopped.
+     * Initialized, but not running. The transform instance enters
+     * this state after it has been initialized, or when it is
+     * stopped.
      */
-    public static final TransformState INITIALIZED = new TransformState("initialized");
+    public static final TransformState INITIALIZED;
 
     /**
      * Running.
      */
-    public static final TransformState RUNNING = new TransformState("running");
+    public static final TransformState RUNNING;
 
     /**
      * Destroyed, this instance should not be used.
      */
-    public static final TransformState DESTROYED = new TransformState("destroyed");
+    public static final TransformState DESTROYED;
+
+    /**
+     * Disabled.
+     */
+    public static final TransformState DISABLED;
 
     private static final Map INSTANCES = new HashMap();
 
     static {
+        LOADED = new TransformState("loaded");
+        INITIALIZED = new TransformState("initialized");
+        RUNNING = new TransformState("running");
+        DESTROYED = new TransformState("destroyed");
+        DISABLED = new TransformState("disabled");
+
         INSTANCES.put(LOADED.toString(), LOADED);
         INSTANCES.put(INITIALIZED.toString(), INITIALIZED);
         INSTANCES.put(RUNNING.toString(), RUNNING);
         INSTANCES.put(DESTROYED.toString(), DESTROYED);
+        INSTANCES.put(DISABLED.toString(), DISABLED);
     }
 
     private String state;
