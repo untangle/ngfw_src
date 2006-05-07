@@ -39,6 +39,53 @@ Portal.prototype.openPage = function(url)
    window.open(url);
 }
 
+Portal.prototype.splitUrl = function(url)
+{
+   var o = new Object();
+
+   if (0 == url.indexOf("//")) {
+      o.proto = location.protocol;
+      if (":" == o.proto[o.proto.length - 1]) {
+         o.proto = o.proto.substring(0, o.proto.length - 1);
+      }
+      var i = url.indexOf("/", 2);
+      o.host = url.substring(2, i);
+      o.path = url.substring(i);
+   } else if (0 == url.indexOf("/")) {
+      o.proto = location.protocol;
+      if (":" == o.proto[o.proto.length - 1]) {
+         o.proto = o.proto.substring(0, o.proto.length - 1);
+      }
+      o.host = location.host;
+      o.path = url;
+   } else {
+      var i = url.indexOf(":");
+      if (0 > i) {
+         o.proto = location.protocol;
+         if (":" == o.proto[o.proto.length - 1]) {
+            o.proto = o.proto.substring(0, o.proto.length - 1);
+         }
+         o.host = location.hostname;
+         var p = location.pathname;
+         for (var k = p.length - 1; 0 <= k; k--) {
+            if ("/" == p[k]) {
+               p = p.substring(0, k + 1);
+               break;
+            }
+         }
+         o.path = p + url;
+      } else {
+         o.proto = url.substring(0, i);
+         i = i + 3;
+         var j = url.indexOf('/', i);
+         o.host = url.substring(i, j);
+         o.path = url.substring(j);
+      }
+   }
+
+   return o;
+}
+
 // public methods -------------------------------------------------------------
 
 Portal.prototype.login = function()

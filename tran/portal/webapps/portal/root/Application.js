@@ -11,6 +11,6 @@ Application.prototype.toString = function() {
    return this.name;
 };
 
-Application.prototype.openBookmark = function(target) {
-   this._appCode.openBookmark(target);
+Application.prototype.openBookmark = function() {
+   this._appCode.openBookmark.apply(this, arguments);
 }

@@ -34,7 +34,13 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
         + "  }\n"
         + "};\n";
 
-    private static final String WEB_JS = CIFS_JS;
+    private static final String WEB_JS
+        = "{\n"
+        + "  openBookmark: function(portal, target) {\n"
+        + "    var o = portal.splitUrl(target);"
+        + "    portal.openPage('/proxy/' + o.proto + '/' + o.host + o.path);\n"
+        + "  }\n"
+        + "};\n";
 
     private final Logger logger = Logger.getLogger(PortalImpl.class);
 
