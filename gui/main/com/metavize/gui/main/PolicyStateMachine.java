@@ -54,6 +54,10 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     private final String HTTP_BLOCKER_NAME = "httpblocker-storeitem";
     private final String HTTP_BLOCKER_TRIAL_NAME = "httpblocker-trial30";
 
+    // FOR REMOVING TRIALS FROM STORE WHEN ITEM IS PURCHASED
+    private final String STOREITEM_EXTENSION = "storeitem";
+    private final String TRIAL_EXTENSION = "trial30";
+
     // MVVM DATA MODELS (USED ONLY DURING INIT) //////
     private List<Tid>                       utilTidList;
     private Map<String,Object>              utilNameMap;
@@ -926,18 +930,21 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 			    firstRun = false;
 			}
                     }});
+
 		    // REMOVE TRIAL IF THE ACTUAL THING WAS PURCHASED
-		    boolean foundHttpBlocker = false;
+		    Map<String,String> storeItemMap = new HashMap<String,String>();
 		    for( MackageDesc mackageDesc : storeItemsAvailable ){
-			if( mackageDesc.getName().equals(HTTP_BLOCKER_NAME) ){
-			    foundHttpBlocker = true;
-			    break;
+			String name = mackageDesc.getName();
+			if( name.endsWith(STOREITEM_EXTENSION) ){
+			    name = name.substring(0, name.indexOf('-'));
+			    storeItemMap.put(name, name);
 			}
-		    }
-			    
+		    }			    
                     for( MackageDesc mackageDesc : storeItemsAvailable ){
-			if( mackageDesc.getName().equals(HTTP_BLOCKER_TRIAL_NAME) ){
-			    if( foundHttpBlocker ){
+			String name = mackageDesc.getName();
+			if( name.endsWith(TRIAL_EXTENSION) ){
+			    name = name.substring(0, name.indexOf('-'));
+			    if( storeItemMap.containsKey(name) ){
 				addToStore(mackageDesc,false);
 			    }
 			    else
