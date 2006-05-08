@@ -278,7 +278,12 @@ class Blacklist
                     (requestLine.getRequestLine(), Action.BLOCK, reason, category);
                 transform.log(hbe);
 
-                return settings.getBlockTemplate().render(host, uri, category);
+                BlacklistCategory bc = settings.getBlacklistCategory(category);
+                if (null != bc && bc.getLogOnly()) {
+                    return null;
+                } else {
+                    return settings.getBlockTemplate().render(host, uri, category);
+                }
             }
 
             return null;

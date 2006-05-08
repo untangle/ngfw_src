@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -32,6 +32,7 @@ public class BlacklistCategory implements Serializable
     private boolean blockDomains = false;
     private boolean blockUrls = false;
     private boolean blockExpressions = false;
+    private boolean logOnly = false;
 
     /**
      * Hibernate constructor.
@@ -163,5 +164,22 @@ public class BlacklistCategory implements Serializable
     public void setBlockExpressions(boolean blockExpressions)
     {
         this.blockExpressions = blockExpressions;
+    }
+
+    /**
+     * Should items be logged only.
+     *
+     * @return true of logged only
+     * @hibernate.property
+     * column="LOG_ONLY"
+     */
+    public boolean getLogOnly()
+    {
+        return logOnly;
+    }
+
+    public void setLogOnly(boolean logOnly)
+    {
+        this.logOnly = logOnly;
     }
 }

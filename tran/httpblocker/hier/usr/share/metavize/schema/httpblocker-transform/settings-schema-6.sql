@@ -57,9 +57,10 @@ CREATE TABLE settings.tr_httpblk_blcat (
     name varchar(255),
     display_name varchar(255),
     description varchar(255),
-    block_domains bool,
-    block_urls bool,
-    block_expressions bool,
+    block_domains bool NOT NULL,
+    block_urls bool NOT NULL,
+    block_expressions bool NOT NULL,
+    log_only bool NOT NULL;
     setting_id int8,
     position int4,
     PRIMARY KEY (category_id));

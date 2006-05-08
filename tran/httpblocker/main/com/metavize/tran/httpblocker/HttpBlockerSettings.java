@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.metavize.mvvm.security.Tid;
+import java.util.Iterator;
 
 /**
  * HttpBlocker settings.
@@ -63,6 +64,18 @@ public class HttpBlockerSettings implements Serializable
     public void addBlacklistCategory(BlacklistCategory category)
     {
         blacklistCategories.add(category);
+    }
+
+    public BlacklistCategory getBlacklistCategory(String name)
+    {
+        for (Iterator i = blacklistCategories.iterator(); i.hasNext(); ) {
+            BlacklistCategory bc = (BlacklistCategory)i.next();
+            if (bc.getName() == name) {
+                return bc;
+            }
+        }
+
+        return null;
     }
 
     // accessors --------------------------------------------------------------
