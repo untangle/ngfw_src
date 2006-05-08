@@ -138,11 +138,11 @@ public class HttpBlockerSettings implements Serializable
     }
 
     /**
-     * If true, then block bad requests, otherwise just log.
-     *
-     * @return true to block.
-     * @hibernate.property
-     * column="FASCIST_MODE"
+     * If true, block everything that is not whitelisted.
+//      *
+//      * @return true to block.
+//      * @hibernate.property
+//      * column="FASCIST_MODE"
      */
     public boolean getFascistMode()
     {
