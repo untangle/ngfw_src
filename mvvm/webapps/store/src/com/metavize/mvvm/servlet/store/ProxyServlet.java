@@ -31,7 +31,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -48,7 +50,7 @@ public class ProxyServlet extends HttpServlet
     private static final Map<Character, Integer> OCCURANCE;
     private static final int[] SHIFTS;
 
-    private final HttpClient httpClient;
+    private static final String HTTP_CLIENT = "httpClient";
 
     static {
         String s = System.getProperty("mvvm.store.host");
@@ -74,16 +76,26 @@ public class ProxyServlet extends HttpServlet
 
     // constructors -----------------------------------------------------------
 
-    public ProxyServlet()
-    {
-        httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
-    }
+    public ProxyServlet() { }
 
     // HttpServlet methods ----------------------------------------------------
 
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException
     {
+        HttpSession s = req.getSession();
+
+        HttpClient httpClient = (HttpClient)s.getAttribute(HTTP_CLIENT);
+        if (null == httpClient) {
+            httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
+            HttpState state = httpClient.getState();
+            String boxKey = "XXX";
+            state.addCookie(new Cookie(STORE_HOST, "box-key", boxKey));
+            s.setAttribute(HTTP_CLIENT, httpClient);
+        }
+
+        Cookie
+
         InputStream is = null;
         OutputStream os = null;
 
