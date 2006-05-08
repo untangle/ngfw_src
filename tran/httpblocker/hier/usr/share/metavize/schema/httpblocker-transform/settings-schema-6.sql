@@ -20,8 +20,7 @@ CREATE TABLE settings.tr_httpblk_settings (
     tid int8 NOT NULL UNIQUE,
     template int8 NOT NULL,
     block_all_ip_hosts bool NOT NULL,
-    block_requests bool NOT NULL,
-    block_responses bool NOT NULL,
+    fascist_mode bool NOT NULL,
     PRIMARY KEY (settings_id));
 
 -- com.metavize.tran.httpblocker.HttpBlockerSettings.blockedExtensions

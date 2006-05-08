@@ -36,8 +36,7 @@ public class HttpBlockerSettings implements Serializable
 
     private boolean blockAllIpHosts = false;
 
-    private boolean blockRequests;
-    private boolean blockResponses;
+    private boolean fascistMode = false;
 
     private List passedClients = new ArrayList();
     private List passedUrls = new ArrayList();
@@ -143,33 +142,16 @@ public class HttpBlockerSettings implements Serializable
      *
      * @return true to block.
      * @hibernate.property
-     * column="BLOCK_REQUESTS"
+     * column="FASCIST_MODE"
      */
-    public boolean getBlockRequests()
+    public boolean getFascistMode()
     {
-        return blockRequests;
+        return fascistMode;
     }
 
-    public void setBlockRequests(boolean blockRequests)
+    public void setFascistMode(boolean fascistMode)
     {
-        this.blockRequests = blockRequests;
-    }
-
-    /**
-     * If true, then block bad responses, otherwise just log.
-     *
-     * @return true to block.
-     * @hibernate.property
-     * column="BLOCK_RESPONSES"
-     */
-    public boolean getBlockResponses()
-    {
-        return blockResponses;
-    }
-
-    public void setBlockResponses(boolean blockResponses)
-    {
-        this.blockResponses = blockResponses;
+        this.fascistMode = fascistMode;
     }
 
     /**

@@ -242,43 +242,47 @@ class Blacklist
     {
         URI uri = requestLine.getRequestUri().normalize();
 
-        StringBuilder sb = new StringBuilder(host);
-        sb.reverse();
-        sb.append(".");
-        String revHost = sb.toString();
+        if (settings.getFascistMode()) {
+            return settings.getBlockTemplate().render(host, uri, "not whitelisted");
+        } else {
+            StringBuilder sb = new StringBuilder(host);
+            sb.reverse();
+            sb.append(".");
+            String revHost = sb.toString();
 
-        String category = findCategory(domains, revHost);
-        Reason reason = null == category ? null : Reason.BLOCK_CATEGORY;
+            String category = findCategory(domains, revHost);
+            Reason reason = null == category ? null : Reason.BLOCK_CATEGORY;
 
-        String dom = host;
-        while (null == category && null != dom) {
-            String url = dom + uri.toString();
-            category = findCategory(urls, url);
+            String dom = host;
+            while (null == category && null != dom) {
+                String url = dom + uri.toString();
+                category = findCategory(urls, url);
 
-            if (null != category) {
-                reason = Reason.BLOCK_URL;
-            } else {
-                category = findCategory(blockedUrls, url,
-                                        settings.getBlockedUrls());
                 if (null != category) {
                     reason = Reason.BLOCK_URL;
+                } else {
+                    category = findCategory(blockedUrls, url,
+                                            settings.getBlockedUrls());
+                    if (null != category) {
+                        reason = Reason.BLOCK_URL;
+                    }
+                }
+
+                if (null == category) {
+                    dom = nextHost(dom);
                 }
             }
 
-            if (null == category) {
-                dom = nextHost(dom);
+            if (null != category) {
+                HttpBlockerEvent hbe = new HttpBlockerEvent
+                    (requestLine.getRequestLine(), Action.BLOCK, reason, category);
+                transform.log(hbe);
+
+                return settings.getBlockTemplate().render(host, uri, category);
             }
+
+            return null;
         }
-
-        if (null != category) {
-            HttpBlockerEvent hbe = new HttpBlockerEvent
-                (requestLine.getRequestLine(), Action.BLOCK, reason, category);
-            transform.log(hbe);
-
-            return settings.getBlockTemplate().render(host, uri, category);
-        }
-
-        return null;
     }
 
     private String findCategory(CharSequence[] strs, String val,
