@@ -319,6 +319,5 @@ public class ProxyServlet extends HttpServlet
         int i = ps.rewriteStream(is, fos);
 
         System.out.println("numTimes: " + numTimes + " I: " + i);
-
     }
 }

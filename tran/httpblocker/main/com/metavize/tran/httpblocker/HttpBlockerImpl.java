@@ -407,6 +407,28 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         return blacklist;
     }
 
+    boolean blockRequests()
+    {
+        HttpBlockerSettings settings = this.settings;
+
+        if (null != settings) {
+            return settings.getBlockRequests();
+        } else {
+            return true;
+        }
+    }
+
+    boolean blockResponses()
+    {
+        HttpBlockerSettings settings = this.settings;
+
+        if (null != settings) {
+            return settings.getBlockResponses();
+        } else {
+            return true;
+        }
+    }
+
     void log(HttpBlockerEvent se)
     {
         eventLogger.log(se);

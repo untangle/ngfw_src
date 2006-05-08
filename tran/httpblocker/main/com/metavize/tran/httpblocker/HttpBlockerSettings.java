@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -35,6 +35,9 @@ public class HttpBlockerSettings implements Serializable
     private BlockTemplate blockTemplate = new BlockTemplate();
 
     private boolean blockAllIpHosts = false;
+
+    private boolean blockRequests;
+    private boolean blockResponses;
 
     private List passedClients = new ArrayList();
     private List passedUrls = new ArrayList();
@@ -133,6 +136,40 @@ public class HttpBlockerSettings implements Serializable
     public void setBlockAllIpHosts(boolean blockAllIpHosts)
     {
         this.blockAllIpHosts = blockAllIpHosts;
+    }
+
+    /**
+     * If true, then block bad requests, otherwise just log.
+     *
+     * @return true to block.
+     * @hibernate.property
+     * column="BLOCK_REQUESTS"
+     */
+    public boolean getBlockRequests()
+    {
+        return blockRequests;
+    }
+
+    public void setBlockRequests(boolean blockRequests)
+    {
+        this.blockRequests = blockRequests;
+    }
+
+    /**
+     * If true, then block bad responses, otherwise just log.
+     *
+     * @return true to block.
+     * @hibernate.property
+     * column="BLOCK_RESPONSES"
+     */
+    public boolean getBlockResponses()
+    {
+        return blockResponses;
+    }
+
+    public void setBlockResponses(boolean blockResponses)
+    {
+        this.blockResponses = blockResponses;
     }
 
     /**
