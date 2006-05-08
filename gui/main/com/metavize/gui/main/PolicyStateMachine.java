@@ -51,9 +51,6 @@ import com.metavize.mvvm.tran.*;
 
 public class PolicyStateMachine implements ActionListener, Shutdownable {
 
-    private final String HTTP_BLOCKER_NAME = "httpblocker-storeitem";
-    private final String HTTP_BLOCKER_TRIAL_NAME = "httpblocker-trial30";
-
     // FOR REMOVING TRIALS FROM STORE WHEN ITEM IS PURCHASED
     private final String STOREITEM_EXTENSION = "storeitem";
     private final String TRIAL_EXTENSION = "trial30";
