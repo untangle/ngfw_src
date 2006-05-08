@@ -69,11 +69,7 @@ public class HttpBlockerHandler extends HttpStateMachine
             releaseRequest();
         } else {
             transform.incrementCount(BLOCK, 1);
-            if (transform.blockRequests()) {
-                blockRequest(generateResponse(c2sReplacement, isRequestPersistent()));
-            } else {
-                releaseRequest();
-            }
+            blockRequest(generateResponse(c2sReplacement, isRequestPersistent()));
         }
 
         return requestHeader;
@@ -114,12 +110,8 @@ public class HttpBlockerHandler extends HttpStateMachine
                 releaseResponse();
             } else {
                 transform.incrementCount(BLOCK, 1);
-                if (transform.blockResponses()) {
-                    blockResponse(generateResponse(s2cReplacement,
-                                                   isResponsePersistent()));
-                } else {
-                    releaseResponse();
-                }
+                blockResponse(generateResponse(s2cReplacement,
+                                               isResponsePersistent()));
             }
         }
 
