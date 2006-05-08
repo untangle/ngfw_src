@@ -352,6 +352,21 @@ class ToolboxManagerImpl implements ToolboxManager
         syncMackageState(ms);
     }
 
+    public void extraName(String mackageName, String extraName)
+    {
+        MackageState ms = mackageState.get(mackageName);
+        if (null == ms) {
+            ms = new MackageState(mackageName, extraName, true);
+            mackageState.put(mackageName, ms);
+        } else {
+            ms.setExtraName(extraName);
+        }
+
+        syncMackageState(ms);
+
+        refreshLists();
+    }
+
     public void requestInstall(String mackageName)
     {
         synchronized (messageQueues) {
@@ -630,7 +645,9 @@ class ToolboxManagerImpl implements ToolboxManager
                 String name = m.get("package");
                 boolean isTransform = name.endsWith("-transform");
 
-                MackageDesc md = new MackageDesc(m, instList.get(name));
+                MackageState mState = mackageState.get(name);
+                String en = null == mState ? null : mState.getExtraName();
+                MackageDesc md = new MackageDesc(m, instList.get(name), en);
 
                 logger.debug("Added available mackage: " + name);
                 pkgs.put(name, md);

@@ -129,6 +129,8 @@ public class RemoteClient
             enable(args[1]);
         } else if (args[0].equalsIgnoreCase("disable")) {
             disable(args[1]);
+        } else if (args[0].equalsIgnoreCase("extraName")) {
+            extraName(args[1], args[2]);
         } else if (args[0].equalsIgnoreCase("requestInstall")) {
             requestInstall(args[1]);
         } else if (args[0].equalsIgnoreCase("available")) {
@@ -330,6 +332,11 @@ public class RemoteClient
         throws Exception
     {
         tool.disable(mackage);
+    }
+
+    private static void extraName(String mackage, String extraName)
+    {
+        tool.extraName(mackage, extraName);
     }
 
     private static void requestInstall(String mackage)
@@ -915,6 +922,7 @@ public class RemoteClient
         System.out.println("    mcli upgrade");
         System.out.println("    mcli enable mackage-name");
         System.out.println("    mcli disable mackage-name");
+        System.out.println("    mcli extraName mackage-name extra-name");
         System.out.println("    mcli upgrade");
         System.out.println("    mcli requestInstall mackage-name");
         System.out.println("  toolbox lists:");
