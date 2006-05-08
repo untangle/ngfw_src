@@ -33,10 +33,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.MvvmLocalContext;
+import com.metavize.mvvm.toolbox.MackageDesc;
+import com.metavize.mvvm.toolbox.ToolboxManager;
 import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.HttpState;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.StatusLine;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -45,18 +50,21 @@ import org.apache.log4j.Logger;
 public class ProxyServlet extends HttpServlet
 {
     private static final String STORE_HOST;
+    private static final String COOKIE_DOMAIN;
     private static final String URI_BASE;
     private static final String BASE_URL;
     private static final Map<Character, Integer> OCCURANCE;
     private static final int[] SHIFTS;
 
     private static final String HTTP_CLIENT = "httpClient";
+    private static final String INST_COOKIE = "instCookie";
 
     static {
         String s = System.getProperty("mvvm.store.host");
         STORE_HOST = null == s ? "store.metavize.com" : s;
+        COOKIE_DOMAIN = STORE_HOST;
         s = System.getProperty("mvvm.store.uri");
-        URI_BASE = null == s ? "/" : s;
+        URI_BASE = null == s ? "" : s;
         BASE_URL = "https://" + STORE_HOST + URI_BASE;
 
         Map<Character, Integer> m = new HashMap<Character, Integer>();
@@ -86,15 +94,37 @@ public class ProxyServlet extends HttpServlet
         HttpSession s = req.getSession();
 
         HttpClient httpClient = (HttpClient)s.getAttribute(HTTP_CLIENT);
+        HttpState state;
         if (null == httpClient) {
             httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
-            HttpState state = httpClient.getState();
+            state = httpClient.getState();
             String boxKey = "XXX";
-            state.addCookie(new Cookie(STORE_HOST, "box-key", boxKey));
+            state.addCookie(new Cookie(COOKIE_DOMAIN, "boxkey", boxKey, "/", -1, false));
             s.setAttribute(HTTP_CLIENT, httpClient);
+        } else {
+            state = httpClient.getState();
         }
 
-        Cookie
+        MvvmLocalContext ctx = MvvmContextFactory.context();
+        ToolboxManager tool = ctx.toolboxManager();
+        tool.installed();
+        StringBuilder sb = new StringBuilder();
+        for (MackageDesc md : tool.installed()) {
+            sb.append(md.getName());
+            sb.append("=");
+            sb.append(md.getInstalledVersion());
+            sb.append(",");
+        }
+        sb.deleteCharAt(sb.length() - 1);
+
+        Cookie instCookie = (Cookie)s.getAttribute(INST_COOKIE);
+        if (null == instCookie) {
+            instCookie = new Cookie(COOKIE_DOMAIN, "installed", sb.toString(), "/", -1, false);
+            state.addCookie(instCookie);
+            s.setAttribute(INST_COOKIE, instCookie);
+        } else {
+            instCookie.setValue(sb.toString());
+        }
 
         InputStream is = null;
         OutputStream os = null;
@@ -103,8 +133,8 @@ public class ProxyServlet extends HttpServlet
             String pi = req.getPathInfo();
             String qs = req.getQueryString();
 
-            String url = BASE_URL + (null == pi ? "" : pi) + "?"
-                + (null == qs ? "" : qs);
+            String url = BASE_URL + (null == pi ? "" : pi)
+                + (null == qs ? "" : ("?" + qs));
             HttpMethod get = new GetMethod(url);
             int rc = httpClient.executeMethod(get);
             is = get.getResponseBodyAsStream();
