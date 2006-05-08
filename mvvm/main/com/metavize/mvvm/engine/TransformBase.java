@@ -230,6 +230,7 @@ public abstract class TransformBase implements Transform
     void resumeState() throws TransformException
     {
         TransformPersistentState tps = transformContext.getPersistentState();
+
         resumeState(tps);
     }
 
@@ -260,8 +261,8 @@ public abstract class TransformBase implements Transform
             throw new IllegalStateException("disabling in: " + runState);
         } else if (TransformState.RUNNING == runState) {
             stop(false);
-            changeState(TransformState.DISABLED, true);
         }
+        changeState(TransformState.DISABLED, true);
     }
 
     void enable()

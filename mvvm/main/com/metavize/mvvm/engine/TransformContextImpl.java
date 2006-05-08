@@ -91,6 +91,7 @@ class TransformContextImpl implements TransformContext
                 { (byte)(tid.getId() & 0xFF),
                   (byte)((tid.getId() >> 8) & 0xFF) };
 
+
             persistentState = new TransformPersistentState
                 (tid, mackageDesc.getName(), pKey);
 
@@ -152,6 +153,10 @@ class TransformContextImpl implements TransformContext
             if (isNew) {
                 transform.initializeSettings();
                 transform.init(args);
+                boolean enabled = toolboxManager.isEnabled(mackageDesc.getName());
+                if (!enabled) {
+                    transform.disable();
+                }
             } else {
                 transform.resumeState();
             }
@@ -281,7 +286,7 @@ class TransformContextImpl implements TransformContext
         if (transform != null) {
             Thread ct = Thread.currentThread();
             ClassLoader oldCl = ct.getContextClassLoader();
-            // Entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            // Entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             ct.setContextClassLoader(classLoader);
             try {
                 transformManager.registerThreadContext(this);
@@ -289,14 +294,14 @@ class TransformContextImpl implements TransformContext
             } finally {
                 transformManager.deregisterThreadContext();
                 Thread.currentThread().setContextClassLoader(oldCl);
-                // Left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                // Left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             }
         }
     }
 
     // private classes --------------------------------------------------------
 
-    private static class LoadSettings extends TransactionWork
+    private class LoadSettings extends TransactionWork
     {
         private final Tid tid;
 
@@ -313,7 +318,16 @@ class TransformContextImpl implements TransformContext
             Query q = s.createQuery
                 ("from TransformPersistentState tps where tps.tid = :tid");
             q.setParameter("tid", tid);
+
             persistentState = (TransformPersistentState)q.uniqueResult();
+
+            if (!toolboxManager.isEnabled(mackageDesc.getName())) {
+                persistentState.setTargetState(TransformState.DISABLED);
+                s.saveOrUpdate(persistentState);
+            } else if (TransformState.DISABLED == persistentState.getTargetState()) {
+                persistentState.setTargetState(TransformState.INITIALIZED);
+                s.saveOrUpdate(persistentState);
+            }
 
             q = s.createQuery
                 ("from TransformPreferences tp where tp.tid = :tid");

@@ -17,13 +17,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Vector;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.StringTokenizer;
+import java.util.Vector;
 import java.util.WeakHashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -46,6 +46,8 @@ import com.metavize.mvvm.toolbox.MackageUninstallException;
 import com.metavize.mvvm.toolbox.ToolboxManager;
 import com.metavize.mvvm.toolbox.ToolboxMessage;
 import com.metavize.mvvm.toolbox.UpgradeSettings;
+import com.metavize.mvvm.tran.TransformContext;
+import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -72,10 +74,10 @@ class ToolboxManagerImpl implements ToolboxManager
         }
     }
 
+    private final Map<String, MackageState> mackageState;
     private final CronJob cronJob;
     private final UpdateTask updateTask = new UpdateTask();
-    private final Map<Long, AptLogTail> tails
-        = new HashMap<Long, AptLogTail>();
+    private final Map<Long, AptLogTail> tails = new HashMap<Long, AptLogTail>();
     private final Map<LoginSession, MessageQueueImpl<ToolboxMessage>> messageQueues
         = new WeakHashMap<LoginSession, MessageQueueImpl<ToolboxMessage>>();
 
@@ -90,6 +92,8 @@ class ToolboxManagerImpl implements ToolboxManager
 
     private ToolboxManagerImpl()
     {
+        mackageState = loadMackageState();
+
         UpgradeSettings us = getUpgradeSettings();
         Period p = us.getPeriod();
 
@@ -115,6 +119,7 @@ class ToolboxManagerImpl implements ToolboxManager
     }
 
     // ToolboxManager implementation ------------------------------------------
+
     // all known mackages
     public MackageDesc[] available()
     {
@@ -135,11 +140,11 @@ class ToolboxManagerImpl implements ToolboxManager
     public MackageDesc[] installedVisible()
     {
         MackageDesc[] installed = installed();
-	Vector<MackageDesc> visibleVector = new Vector<MackageDesc>();
-	for( MackageDesc mackageDesc : installed ){
-	    if( mackageDesc.getViewPosition() >= 0 )
-		visibleVector.add(mackageDesc);
-	}
+    Vector<MackageDesc> visibleVector = new Vector<MackageDesc>();
+    for( MackageDesc mackageDesc : installed ){
+        if( mackageDesc.getViewPosition() >= 0 )
+        visibleVector.add(mackageDesc);
+    }
         return visibleVector.toArray(new MackageDesc[0]);
     }
 
@@ -299,6 +304,54 @@ class ToolboxManagerImpl implements ToolboxManager
         return alt.getKey();
     }
 
+    public void enable(String mackageName) throws MackageException
+    {
+        MackageState ms = mackageState.get(mackageName);
+        if (null == ms) {
+            ms = new MackageState(mackageName, null, true);
+            mackageState.put(mackageName, ms);
+        } else {
+            ms.setEnabled(true);
+        }
+
+        TransformManagerImpl tm = (TransformManagerImpl)MvvmContextFactory
+            .context().transformManager();
+        for (Tid tid : tm.transformInstances(mackageName)) {
+            TransformContext tctx = tm.transformContext(tid);
+            try {
+                ((TransformBase)tctx.transform()).enable();
+            } catch (TransformException exn) {
+                logger.warn("could not enable: " + tid, exn);
+            }
+        }
+
+        syncMackageState(ms);
+    }
+
+    public void disable(String mackageName) throws MackageException
+    {
+        MackageState ms = mackageState.get(mackageName);
+        if (null == ms) {
+            ms = new MackageState(mackageName, null, false);
+            mackageState.put(mackageName, ms);
+        } else {
+            ms.setEnabled(false);
+        }
+
+        TransformManagerImpl tm = (TransformManagerImpl)MvvmContextFactory
+            .context().transformManager();
+        for (Tid tid : tm.transformInstances(mackageName)) {
+            TransformContext tctx = tm.transformContext(tid);
+            try {
+                ((TransformBase)tctx.transform()).disable();
+            } catch (TransformException exn) {
+                logger.warn("could not disable: " + tid, exn);
+            }
+        }
+
+        syncMackageState(ms);
+    }
+
     public void requestInstall(String mackageName)
     {
         synchronized (messageQueues) {
@@ -411,6 +464,12 @@ class ToolboxManagerImpl implements ToolboxManager
         }
     }
 
+    boolean isEnabled(String mackageName)
+    {
+        MackageState ms = mackageState.get(mackageName);
+        return null == ms ? true : ms.isEnabled();
+    }
+
     // private classes --------------------------------------------------------
 
     private class UpdateTask implements Runnable
@@ -433,6 +492,41 @@ class ToolboxManagerImpl implements ToolboxManager
                 }
             }
         }
+    }
+
+    // private methods --------------------------------------------------------
+
+    private Map<String, MackageState> loadMackageState()
+    {
+        final Map<String, MackageState> m = new HashMap<String, MackageState>();
+
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(org.hibernate.Session s)
+                {
+                    Query q = s.createQuery("from MackageState ms");
+                    for (MackageState ms : (List<MackageState>)q.list()) {
+                        m.put(ms.getMackageName(), ms);
+                    }
+                    return true;
+                }
+            };
+        MvvmContextFactory.context().runTransaction(tw);
+
+        return m;
+    }
+
+    private void syncMackageState(final MackageState ms)
+    {
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(org.hibernate.Session s)
+                {
+                    s.saveOrUpdate(ms);
+                    return true;
+                }
+            };
+        MvvmContextFactory.context().runTransaction(tw);
     }
 
     // package list functions -------------------------------------------------

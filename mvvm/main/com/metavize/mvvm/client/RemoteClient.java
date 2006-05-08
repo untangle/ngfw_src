@@ -12,8 +12,8 @@
 package com.metavize.mvvm.client;
 
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.List;
@@ -125,6 +125,10 @@ public class RemoteClient
             update();
         } else if (args[0].equalsIgnoreCase("upgrade")) {
             upgrade();
+        } else if (args[0].equalsIgnoreCase("enable")) {
+            enable(args[1]);
+        } else if (args[0].equalsIgnoreCase("disable")) {
+            disable(args[1]);
         } else if (args[0].equalsIgnoreCase("requestInstall")) {
             requestInstall(args[1]);
         } else if (args[0].equalsIgnoreCase("available")) {
@@ -314,6 +318,18 @@ public class RemoteClient
         long key = tool.upgrade();
 
         doAptTail(key);
+    }
+
+    private static void enable(String mackage)
+        throws Exception
+    {
+        tool.enable(mackage);
+    }
+
+    private static void disable(String mackage)
+        throws Exception
+    {
+        tool.disable(mackage);
     }
 
     private static void requestInstall(String mackage)
@@ -556,7 +572,7 @@ public class RemoteClient
             }
         }
     }
-         
+
     private static String readPassword()
     {
         try {
@@ -809,8 +825,8 @@ public class RemoteClient
         int interval = 0;
         InetAddress destination;
         int port = 0;
-        
-        switch (args.length) {            
+
+        switch (args.length) {
         case 4:
             /* Convert from seconds to milliseconds */
             interval = Integer.parseInt(args[3]) * 1000;
@@ -896,6 +912,9 @@ public class RemoteClient
         System.out.println("    mcli install mackage-name");
         System.out.println("    mcli uninstall mackage-name");
         System.out.println("    mcli update");
+        System.out.println("    mcli upgrade");
+        System.out.println("    mcli enable mackage-name");
+        System.out.println("    mcli disable mackage-name");
         System.out.println("    mcli upgrade");
         System.out.println("    mcli requestInstall mackage-name");
         System.out.println("  toolbox lists:");

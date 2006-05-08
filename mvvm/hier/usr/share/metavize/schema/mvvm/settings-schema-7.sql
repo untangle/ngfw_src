@@ -111,6 +111,14 @@ CREATE TABLE settings.transform_args (
     position int4 NOT NULL,
     PRIMARY KEY (tps_id, position));
 
+-- com.metavize.mvvm.engine.MackageState
+CREATE TABLE settings.mackage_state (
+    id int8 NOT NULL,
+    mackage_name text NOT NULL,
+    extra_name text,
+    enabled bool NOT NULL,
+    PRIMARY KEY (id));
+
 -- com.metavize.mvvm.engine.TransformManagerState
 CREATE TABLE settings.transform_manager_state (
     id int8 NOT NULL,
@@ -299,7 +307,7 @@ CREATE TABLE settings.mvvm_network_intf (
 CREATE TABLE settings.mvvm_ip_network (
     rule_id     INT8 NOT NULL,
     network     TEXT,
-    name        TEXT, 
+    name        TEXT,
     category    TEXT,
     description TEXT,
     live        BOOL,
@@ -338,7 +346,7 @@ CREATE TABLE settings.mvvm_network_space (
     dmz_host             INET,
     dmz_host_logging     BOOL,
     mtu                  INT4,
-    name                 TEXT,           
+    name                 TEXT,
     category             TEXT,
     description          TEXT,
     live                 BOOL,
@@ -357,7 +365,7 @@ CREATE TABLE settings.mvvm_redirect_rule (
     src_intf_matcher  TEXT,
     dst_intf_matcher  TEXT,
     protocol_matcher  TEXT,
-    src_ip_matcher    TEXT, 
+    src_ip_matcher    TEXT,
     dst_ip_matcher    TEXT,
     src_port_matcher  TEXT,
     dst_port_matcher  TEXT,
@@ -396,7 +404,7 @@ CREATE TABLE settings.mvvm_network_services (
        dhcp_start_address INET,
        dhcp_end_address   INET,
        dhcp_lease_time    INT4,
-       dns_enabled        BOOL, 
+       dns_enabled        BOOL,
        dns_local_domain   TEXT,
        primary key        (settings_id));
 
@@ -596,7 +604,6 @@ ALTER TABLE mvvm_dns_host_list
 ALTER TABLE mvvm_dns_host_list
       ADD CONSTRAINT fk_mvvm_dns_dns
       FOREIGN KEY (rule_id) REFERENCES mvvm_dns_static_host_rule;
-
 
 -- Portals
 ALTER TABLE settings.portal_group

@@ -1,5 +1,13 @@
 -- settings conversion for release-4.0
 
+-- com.metavize.mvvm.engine.MackageState
+CREATE TABLE settings.mackage_state (
+    id int8 NOT NULL,
+    mackage_name text NOT NULL,
+    extra_name text,
+    enabled bool NOT NULL,
+    PRIMARY KEY (id));
+
 ------ Added for Portal
 
 -- com.metavize.mvvm.addrbook.RepositorySettings

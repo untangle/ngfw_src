@@ -115,6 +115,10 @@ public interface ToolboxManager
 
     long upgrade() throws MackageException;
 
+    void enable(String mackageName) throws MackageException;
+
+    void disable(String mackageName) throws MackageException;
+
     void requestInstall(String mackageName);
 
     MessageQueue<ToolboxMessage> subscribe();
