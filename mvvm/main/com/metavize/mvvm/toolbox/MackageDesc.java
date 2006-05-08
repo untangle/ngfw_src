@@ -185,6 +185,11 @@ public class MackageDesc implements Serializable
         return name;
     }
 
+    public String getExtraName()
+    {
+        return extraName;
+    }
+
     public String getDisplayName()
     {
         return displayName;

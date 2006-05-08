@@ -182,10 +182,17 @@ public class MTransformJPanel extends javax.swing.JPanel {
 	// SHUTDOWNABLE //
 	addShutdownable("ShowControlsThread", showControlsThread);
 
-        // SETUP COLORS and name
+        // SETUP NAME AND MESSAGE
 	try{ ((JComponent)descriptionTextJLabel).putClientProperty(com.sun.java.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY, new Boolean(true)); }
 	catch(Exception e){}
 	descriptionTextJLabel.setText( transformDesc.getDisplayName() );
+	try{ ((JComponent)messageTextJLabel).putClientProperty(com.sun.java.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY, new Boolean(true)); }
+	catch(Exception e){}
+	String extraName = mackageDesc.getExtraName();
+	if( extraName != null )
+	    messageTextJLabel.setText( extraName );
+	else
+	    messageTextJLabel.setText("");
 
         // SETUP STATE
         mStateMachine = new MStateMachine(this);
@@ -237,6 +244,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
                 descriptionIconJLabel = new javax.swing.JLabel();
                 organizationIconJLabel = new javax.swing.JLabel();
                 jProgressBar = new javax.swing.JProgressBar();
+                messageTextJLabel = new javax.swing.JLabel();
                 powerJToggleButton = new javax.swing.JToggleButton();
                 effectsJPanel = new javax.swing.JPanel();
                 backgroundJLabel = new javax.swing.JLabel();
@@ -310,6 +318,16 @@ public class MTransformJPanel extends javax.swing.JPanel {
                 jProgressBar.setString("");
                 jProgressBar.setStringPainted(true);
                 add(jProgressBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(106, 39, -1, -1));
+
+                messageTextJLabel.setFont(new java.awt.Font("Arial", 0, 12));
+                messageTextJLabel.setForeground(new java.awt.Color(124, 123, 123));
+                messageTextJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+                messageTextJLabel.setText("SuperTransform");
+                messageTextJLabel.setDoubleBuffered(true);
+                messageTextJLabel.setFocusable(false);
+                messageTextJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+                messageTextJLabel.setIconTextGap(0);
+                add(messageTextJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(106, 37, -1, 20));
 
                 powerJToggleButton.setFont(new java.awt.Font("Default", 0, 12));
                 powerJToggleButton.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconPowerOffState28x28.png")));
@@ -446,6 +464,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
         protected javax.swing.JLabel descriptionTextJLabel;
         private javax.swing.JPanel effectsJPanel;
         private javax.swing.JProgressBar jProgressBar;
+        private javax.swing.JLabel messageTextJLabel;
         protected javax.swing.JLabel nbPowerOnHintJLabel;
         private javax.swing.ButtonGroup onOffbuttonGroup;
         protected javax.swing.JLabel organizationIconJLabel;
