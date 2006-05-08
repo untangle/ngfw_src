@@ -144,8 +144,9 @@ class Blacklist
         } else {
             String dom = host;
             while (null != dom) {
-                String category = findCategory(passedUrls, dom + path,
-                                               settings.getPassedUrls());
+                StringRule sr = findCategory(passedUrls, dom + path,
+                                             settings.getPassedUrls());
+                String category = null == sr ? null : sr.getCategory();
 
                 if (null != category) {
                     HttpBlockerEvent hbe = new HttpBlockerEvent
@@ -252,6 +253,7 @@ class Blacklist
 
             String category = findCategory(domains, revHost);
             Reason reason = null == category ? null : Reason.BLOCK_CATEGORY;
+            StringRule stringRule = null;
 
             String dom = host;
             while (null == category && null != dom) {
@@ -261,8 +263,9 @@ class Blacklist
                 if (null != category) {
                     reason = Reason.BLOCK_URL;
                 } else {
-                    category = findCategory(blockedUrls, url,
-                                            settings.getBlockedUrls());
+                    stringRule = findCategory(blockedUrls, url,
+                                              settings.getBlockedUrls());
+                    category = null == stringRule ? null : stringRule.getCategory();
                     if (null != category) {
                         reason = Reason.BLOCK_URL;
                     }
@@ -279,7 +282,9 @@ class Blacklist
                 transform.log(hbe);
 
                 BlacklistCategory bc = settings.getBlacklistCategory(category);
-                if (null != bc && bc.getLogOnly()) {
+                if (null == bc && null != stringRule && stringRule.getLog()) {
+                    return null;
+                } else if (null != bc && bc.getLogOnly()) {
                     return null;
                 } else {
                     return settings.getBlockTemplate().render(host, uri, category);
@@ -290,7 +295,7 @@ class Blacklist
         }
     }
 
-    private String findCategory(CharSequence[] strs, String val,
+    private StringRule findCategory(CharSequence[] strs, String val,
                                 List<StringRule> rules)
     {
         int i = findMatch(strs, val);
@@ -330,7 +335,7 @@ class Blacklist
         return -1;
     }
 
-    private String lookupCategory(CharSequence match, List<StringRule> rules)
+    private StringRule lookupCategory(CharSequence match, List<StringRule> rules)
     {
         for (StringRule rule : rules) {
             String url = rule.getString().toLowerCase();
@@ -338,7 +343,7 @@ class Blacklist
                 ? url.substring("http://".length()) : url;
 
             if (rule.isLive() && match.equals(uri)) {
-                return rule.getCategory();
+                return rule;
             }
         }
 

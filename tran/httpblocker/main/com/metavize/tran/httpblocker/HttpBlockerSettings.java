@@ -13,10 +13,10 @@ package com.metavize.tran.httpblocker;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.metavize.mvvm.security.Tid;
-import java.util.Iterator;
 
 /**
  * HttpBlocker settings.
@@ -152,10 +152,10 @@ public class HttpBlockerSettings implements Serializable
 
     /**
      * If true, block everything that is not whitelisted.
-//      *
-//      * @return true to block.
-//      * @hibernate.property
-//      * column="FASCIST_MODE"
+     *
+     * @return true to block.
+     * @hibernate.property
+     * column="FASCIST_MODE"
      */
     public boolean getFascistMode()
     {
