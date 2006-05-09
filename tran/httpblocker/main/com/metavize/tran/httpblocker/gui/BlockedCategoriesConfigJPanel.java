@@ -46,8 +46,8 @@ class CategoryTableModel extends MSortedTableModel<Object> {
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
     private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # - invisible */
-    private static final int C2_MW = 195; /* category */
-    private static final int C3_MW = 55;  /* block domains */
+    private static final int C2_MW = 145; /* category */
+    private static final int C3_MW = 105;  /* action */
     private static final int C4_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW + C3_MW), 120); /* description */
 
     
@@ -58,40 +58,78 @@ class CategoryTableModel extends MSortedTableModel<Object> {
         addTableColumn( tableColumnModel,  0, C0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS);
         addTableColumn( tableColumnModel,  1, C1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX);
         addTableColumn( tableColumnModel,  2, C2_MW, true,  false, false, false, String.class,  null, sc.TITLE_CATEGORY);
-        addTableColumn( tableColumnModel,  3, C3_MW, false, true,  false, false, Boolean.class, null, sc.bold("block"));
+        addTableColumn( tableColumnModel,  3, C3_MW, false, true,  false, false, ComboBoxModel.class, null, sc.bold("action"));
         addTableColumn( tableColumnModel,  4, C4_MW, true,  true,  false, true,  String.class,  null, sc.TITLE_DESCRIPTION);
         addTableColumn( tableColumnModel,  5, 10,    false, false, true,  false, String.class,  null, "original name");
         addTableColumn( tableColumnModel,  6, 10,    false, false, true,  false, BlacklistCategory.class, null, "");
         return tableColumnModel;
     }
+
+    private static final String ACTION_DONT_BLOCK = "don't block";
+    private static final String ACTION_BLOCK = "block";
+    private static final String ACTION_PASS  = "pass";
+    private static final String ACTION_PASS_AND_LOG = "pass and log";
+
     
+    private DefaultComboBoxModel categoryComboBoxModel;
+    private DefaultComboBoxModel fascistComboBoxModel;
+
+
+    public CategoryTableModel(){
+	categoryComboBoxModel = new DefaultComboBoxModel();
+	categoryComboBoxModel.addElement( ACTION_BLOCK );
+	categoryComboBoxModel.addElement( ACTION_PASS );
+	categoryComboBoxModel.addElement( ACTION_PASS_AND_LOG );
+	fascistComboBoxModel = new DefaultComboBoxModel();
+	fascistComboBoxModel.addElement( ACTION_DONT_BLOCK );
+	fascistComboBoxModel.addElement( ACTION_BLOCK );
+    }
     
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
         List elemList = new ArrayList(tableVector.size());
 	BlacklistCategory newElem = null;
 
+	int i = 0;
+	boolean isFascistMode = false;
 	for( Vector rowVector : tableVector ){
-            newElem = (BlacklistCategory) rowVector.elementAt(6);
-            newElem.setDisplayName( (String) rowVector.elementAt(2) );
-	    if( (Boolean) rowVector.elementAt(3) ){
-		newElem.setBlockDomains( true );
-		newElem.setBlockUrls( true );
-		newElem.setBlockExpressions( true );
+	    if( i == (tableVector.size()-1) ){ // HACK TO DEAL WITH FASCIST MODE ROW
+		String selectedItem = (String) ((ComboBoxModel) rowVector.elementAt(3)).getSelectedItem();
+		isFascistMode = selectedItem.equals(ACTION_BLOCK);		    
 	    }
-	    else{
-		newElem.setBlockDomains( false );
-		newElem.setBlockUrls( false );
-		newElem.setBlockExpressions( false );
+	    else{	    
+		newElem = (BlacklistCategory) rowVector.elementAt(6);
+		newElem.setDisplayName( (String) rowVector.elementAt(2) );
+		String selectedItem = (String) ((ComboBoxModel) rowVector.elementAt(3)).getSelectedItem();
+		if( selectedItem.equals(ACTION_BLOCK)  ){
+		    newElem.setBlockDomains( true );
+		    newElem.setBlockUrls( true );
+		    newElem.setBlockExpressions( true );
+		    newElem.setLogOnly(true); // this setting wont/shouldnt actually be used since block implies log
+		}
+		else if( selectedItem.equals(ACTION_PASS)  ){
+		    newElem.setBlockDomains( false );
+		    newElem.setBlockUrls( false );
+		    newElem.setBlockExpressions( false );
+		    newElem.setLogOnly(false);
+		}
+		else{ // ACTION_PASS_AND_LOG
+		    newElem.setBlockDomains( false );
+		    newElem.setBlockUrls( false );
+		    newElem.setBlockExpressions( false );
+		    newElem.setLogOnly(true);
+		}
+		newElem.setDescription( (String) rowVector.elementAt(4) );
+		newElem.setName( (String) rowVector.elementAt(5) );
+		elemList.add(newElem);
 	    }
-            newElem.setDescription( (String) rowVector.elementAt(4) );
-            newElem.setName( (String) rowVector.elementAt(5) );
-            elemList.add(newElem);
+	    i++;
         }
         
 	// SAVE SETTINGS /////////
 	if( !validateOnly ){
 	    HttpBlockerSettings httpBlockerSettings = (HttpBlockerSettings) settings;
 	    httpBlockerSettings.setBlacklistCategories( elemList );
+	    httpBlockerSettings.setFascistMode( isFascistMode );
 	}
 
     }
@@ -109,12 +147,45 @@ class CategoryTableModel extends MSortedTableModel<Object> {
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );
             tempRow.add( newElem.getDisplayName() );
-            tempRow.add( newElem.getBlockDomains() );
+
+	    ComboBoxModel comboBoxModel = copyComboBoxModel(categoryComboBoxModel);
+	    if( newElem.getBlockDomains() ){
+		comboBoxModel.setSelectedItem( ACTION_BLOCK );
+	    }
+	    else if( newElem.getLogOnly() ){
+		comboBoxModel.setSelectedItem( ACTION_PASS_AND_LOG );
+	    }
+	    else{
+		comboBoxModel.setSelectedItem( ACTION_PASS );
+	    }
+	    tempRow.add( comboBoxModel );
+
             tempRow.add( newElem.getDescription() );
             tempRow.add( newElem.getName() );
 	    tempRow.add( newElem );
             allRows.add( tempRow );
         }
+
+	// HACK TO DEAL WITH FASCIST MODE
+	rowIndex++;
+	tempRow = new Vector(7);
+	tempRow.add( super.ROW_SAVED );
+	tempRow.add( rowIndex );
+	tempRow.add( "All Web Content" );
+
+	ComboBoxModel comboBoxModel = copyComboBoxModel(fascistComboBoxModel);
+	if( httpBlockerSettings.getFascistMode() ){
+	    comboBoxModel.setSelectedItem( ACTION_BLOCK );
+	}
+	else{
+	    comboBoxModel.setSelectedItem( ACTION_DONT_BLOCK );
+	}
+	tempRow.add( comboBoxModel );
+
+	tempRow.add( "Any web page that is not in the pass lists." );
+	tempRow.add( "" );
+	tempRow.add( null );
+	allRows.add( tempRow );
         return allRows;
     }
 }

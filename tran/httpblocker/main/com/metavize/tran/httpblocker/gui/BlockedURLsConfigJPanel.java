@@ -53,7 +53,8 @@ class BlockedURLTableModel extends MSortedTableModel<Object>{
     private static final int C2_MW = 150; /* category */
     private static final int C3_MW = 150; /* URL */
     private static final int C4_MW = 55; /* block */
-    private static final int C5_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW), 120); /* description */
+    private static final int C5_MW = 55; /* log */
+    private static final int C6_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW), 120); /* description */
 
     
     public TableColumnModel getTableColumnModel(){
@@ -65,8 +66,9 @@ class BlockedURLTableModel extends MSortedTableModel<Object>{
         addTableColumn( tableColumnModel,  2, C2_MW, true,  true,  false, false, String.class,  sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY);
         addTableColumn( tableColumnModel,  3, C3_MW, true,  true,  false, false, String.class,  "http://", "URL");
         addTableColumn( tableColumnModel,  4, C4_MW, false, true,  false, false, Boolean.class, "true", sc.bold("block"));
-        addTableColumn( tableColumnModel,  5, C5_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
-        addTableColumn( tableColumnModel,  6, 10,    false, false, true,  false, StringRule.class, null, "");
+        addTableColumn( tableColumnModel,  5, C5_MW, false, true,  false, false, Boolean.class, "true", sc.bold("log"));
+        addTableColumn( tableColumnModel,  6, C6_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel,  7, 10,    false, false, true,  false, StringRule.class, null, "");
         return tableColumnModel;
     }
 
@@ -77,7 +79,7 @@ class BlockedURLTableModel extends MSortedTableModel<Object>{
 
 	for( Vector rowVector : tableVector ){
             rowIndex++;
-            newElem = (StringRule) rowVector.elementAt(6);
+            newElem = (StringRule) rowVector.elementAt(7);
             newElem.setCategory( (String) rowVector.elementAt(2) );
 	    try{
 		URL newURL = new URL( (String) rowVector.elementAt(3) );
@@ -85,7 +87,8 @@ class BlockedURLTableModel extends MSortedTableModel<Object>{
 	    }
 	    catch(Exception e){ throw new Exception("Invalid \"URL\" specified at row: " + rowIndex); }
             newElem.setLive( (Boolean) rowVector.elementAt(4) );
-            newElem.setDescription( (String) rowVector.elementAt(5) );            
+            newElem.setLog( (Boolean) rowVector.elementAt(5) );
+            newElem.setDescription( (String) rowVector.elementAt(6) );            
             elemList.add(newElem);  
         }
         
@@ -106,12 +109,13 @@ class BlockedURLTableModel extends MSortedTableModel<Object>{
 
 	for( StringRule newElem : blockedUrls ){
 	    rowIndex++;
-            tempRow = new Vector(7);
+            tempRow = new Vector(8);
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );
             tempRow.add( newElem.getCategory() );
             tempRow.add( newElem.getString() );
             tempRow.add( newElem.isLive() );
+            tempRow.add( newElem.getLog() );
             tempRow.add( newElem.getDescription() );
 	    tempRow.add( newElem );
             allRows.add( tempRow );
