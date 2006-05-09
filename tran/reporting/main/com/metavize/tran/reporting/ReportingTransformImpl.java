@@ -63,6 +63,26 @@ public class ReportingTransformImpl extends AbstractTransform implements Reporti
                         ("from ReportingSettings ts where ts.tid = :tid");
                     q.setParameter("tid", getTid());
                     settings = (ReportingSettings)q.uniqueResult();
+
+                    boolean bSave = false;
+
+                    if (null == settings) {
+                        // should never happen
+                        settings = initSettings();
+                        bSave = true;
+                    } else {
+                        // create schedules on initial conversion
+                        Schedule sched = settings.getSchedule();
+                        if (null == sched) {
+                            sched = new Schedule();
+                            bSave = true;
+                        }
+                    }
+
+                    if (true == bSave) {
+                        s.save(settings);
+                    }
+
                     return true;
                 }
 
@@ -79,11 +99,17 @@ public class ReportingTransformImpl extends AbstractTransform implements Reporti
         }
     }
 
-    protected void initializeSettings()
+    private ReportingSettings initSettings()
     {
         ReportingSettings settings = new ReportingSettings();
         settings.setTid(getTid());
-        setReportingSettings(settings);
+
+        return settings;
+    }
+
+    protected void initializeSettings()
+    {
+        setReportingSettings(initSettings());
     }
 
     // XXX soon to be deprecated ----------------------------------------------

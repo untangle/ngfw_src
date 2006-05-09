@@ -31,7 +31,9 @@ public class ReportingSettings implements Serializable
     private Long id;
     private Tid tid;
 
+    private boolean emailDetail = false; // do not email detail info
     private IPMaddrDirectory networkDirectory = new IPMaddrDirectory();
+    private Schedule schedule = new Schedule();
 
     public ReportingSettings() { }
 
@@ -69,6 +71,26 @@ public class ReportingSettings implements Serializable
     }
 
     /**
+     * email detail info with reports
+     * - false = do not email detail info, true = do email detail info
+     *
+     * @return email detail
+     * @hibernate.property
+     * column="EMAIL_DETAIL"
+     * not-null="true"
+     */
+    public boolean getEmailDetail()
+    {
+        return emailDetail;
+    }
+
+    public void setEmailDetail(boolean emailDetail)
+    {
+        this.emailDetail = emailDetail;
+        return;
+    }
+
+    /**
      * Network Directory (maps IP addresses to reporting names)
      *
      * @return the network directory
@@ -85,5 +107,25 @@ public class ReportingSettings implements Serializable
     public void setNetworkDirectory(IPMaddrDirectory networkDirectory)
     {
         this.networkDirectory = networkDirectory;
+    }
+
+    /**
+     * Schedule (daily, weekly, monthly) for reports
+     *
+     * @return schedule for reports
+     * @hibernate.many-to-one
+     * column="SCHEDULE"
+     * cascade="all"
+     * not-null="true"
+     */
+    public Schedule getSchedule()
+    {
+        return schedule;
+    }
+
+    public void setSchedule(Schedule schedule)
+    {
+        this.schedule = schedule;
+        return;
     }
 }
