@@ -31,14 +31,14 @@ import org.apache.coyote.tomcat5.CoyoteConnector;
 import org.apache.log4j.Logger;
 
 /**
-  * Wrapper around the Tomcat server embedded within the MVVM.
-  * <br>
-  * Note that the rest of the MVVM should <b>not</b> access this
-  * code directly.  Instead, please go through the
-  * {@link com.metavize.mvvm.AppServerManager AppServerManager} interface.
-  */
-class TomcatManager {
-
+ * Wrapper around the Tomcat server embedded within the MVVM.
+ *
+ * Note that the rest of the MVVM should <b>not</b> access this code
+ * directly.  Instead, please go through the {@link
+ * com.metavize.mvvm.AppServerManager AppServerManager} interface.
+ */
+class TomcatManager
+{
     public static int NUM_TOMCAT_RETRIES = 15;        //  5 minutes total
     public static long TOMCAT_SLEEP_TIME = 20 * 1000; // 20 seconds
     private static final long REBIND_SLEEP_TIME = 1 * 1000; // 1 second
@@ -68,7 +68,8 @@ class TomcatManager {
     /**
      * Little class used to describe a web app to be deployed.
      */
-    class WebAppDescriptor {
+    class WebAppDescriptor
+    {
         final String urlBase;
         final String relativeRoot;
         final boolean isAdminOnly;
@@ -80,10 +81,8 @@ class TomcatManager {
         }
     }
 
-    TomcatManager(String catalinaHome,
-        String webAppRoot,
-        String logDir) {
-
+    TomcatManager(String catalinaHome, String webAppRoot, String logDir)
+    {
         this.catalinaHome = catalinaHome;
         this.webAppRoot = webAppRoot;
         this.logDir = logDir;
@@ -91,75 +90,77 @@ class TomcatManager {
         //Create the list of web-apps we know we're going to deploy
         //*before* we actualy create out Tomcat
         descriptors = new ArrayList<WebAppDescriptor>();
-        descriptors.add(new WebAppDescriptor("/session-dumper", "session-dumper", true));
+        descriptors.add(new WebAppDescriptor("/session-dumper",
+                                             "session-dumper", true));
         descriptors.add(new WebAppDescriptor("/webstart", "webstart", false));
         descriptors.add(new WebAppDescriptor("/store", "store", true));
         descriptors.add(new WebAppDescriptor("/reports", "reports", true));
     }
 
-    public String getKeystoreFileName() {
-      return this.keystoreFile;
+    public String getKeystoreFileName()
+    {
+        return this.keystoreFile;
     }
-    public String getKeystorePassword() {
-      return this.keystorePass;
+
+    public String getKeystorePassword()
+    {
+        return this.keystorePass;
     }
-    public String getKeyAlias() {
-      return this.keyAlias;
+
+    public String getKeyAlias()
+    {
+        return this.keyAlias;
     }
 
     /**
      * Method sets the security info (cert) for this Tomcat.  If the
-     * server is already started, this triggers a reset of the
-     * HTTPS sockets
+     * server is already started, this triggers a reset of the HTTPS
+     * sockets
      *
      * @param ksFile the KeyStore file
      * @param ksPass the password for the keystore file
      * @param ksAlias the alias within the KeyStore file
      */
     public void setSecurityInfo(String ksFile, String ksPass, String ksAlias)
-      throws Exception {
+        throws Exception
+    {
+        this.keystoreFile = ksFile;
+        this.keystorePass = ksPass;
+        this.keyAlias = ksAlias;
 
-      this.keystoreFile = ksFile;
-      this.keystorePass = ksPass;
-      this.keyAlias = ksAlias;
+        if (null != emb) {
+            // XXX Some validation of the new Keystore data, so we
+            // don't hose ourselves
+            int port = 0;
+            if (null != externalHTTPSConnector) {
+                port = externalHTTPSConnector.getPort();
+                destroyConnector(externalHTTPSConnector, "External HTTPS");
+                externalHTTPSConnector = createConnector(port, true);
+                startConnector(externalHTTPSConnector, "External HTTPS");
+            }
 
-      if(emb != null) {
-        //TODO Some validation of the new Keystore data, so we don't
-        //     hose ourselves
-        int port = 0;
-        if(externalHTTPSConnector != null) {
-          port = externalHTTPSConnector.getPort();
-          destroyConnector(externalHTTPSConnector, "External HTTPS");
-          externalHTTPSConnector = createConnector(port, true);
-          startConnector(externalHTTPSConnector, "External HTTPS");
+            if (null != defaultHTTPSConnector) {
+                port = defaultHTTPSConnector.getPort();
+                destroyConnector(defaultHTTPSConnector, "Default HTTPS");
+                defaultHTTPSConnector = createConnector(port, true);
+                startConnector(defaultHTTPSConnector, "Default HTTPS");
+            }
         }
-        if(defaultHTTPSConnector != null) {
-          port = defaultHTTPSConnector.getPort();
-          destroyConnector(defaultHTTPSConnector, "Default HTTPS");
-          defaultHTTPSConnector = createConnector(port, true);
-          startConnector(defaultHTTPSConnector, "Default HTTPS");
-        }
-      }
     }
 
-    public synchronized boolean loadWebApp(String urlBase,
-                                           String rootDir) {
-        if(emb == null) {
-            //Haven't started yet
+    public synchronized boolean loadWebApp(String urlBase, String rootDir) {
+        if (null == emb) {
+            // haven't started yet
             descriptors.add(new WebAppDescriptor(urlBase, rootDir, false));
             return true;
-        }
-        else {
+        } else {
             return loadWebAppImpl(urlBase, rootDir, false);
         }
     }
 
-
-    private boolean loadWebAppImpl(String urlBase,
-                                   String rootDir,
-                                   boolean isAdminOnly) {
-
-
+    private boolean loadWebAppImpl(String urlBase, String rootDir,
+                                   boolean isAdminOnly)
+    {
         String fqRoot = webAppRoot + "/" + rootDir;
 
         try {
@@ -175,74 +176,75 @@ class TomcatManager {
             }
             baseHost.addChild(ctx);
             return true;
-        }
-        catch(Exception ex) {
-            logger.error("Unable to deploy webapp \"" +
-                          urlBase + "\" from directory \"" +
-                          fqRoot + "\"", ex);
+        } catch(Exception ex) {
+            logger.error("Unable to deploy webapp \"" + urlBase
+                         + "\" from directory \"" + fqRoot + "\"", ex);
             return false;
         }
     }
 
-
-    public boolean unloadWebApp(String contextRoot) {
+    public boolean unloadWebApp(String contextRoot)
+    {
         try {
-            if (baseHost != null) {
+            if (null != baseHost) {
                 Container c = baseHost.findChild(contextRoot);
-                if(c != null) {
+                if (null != c) {
                     baseHost.removeChild(c);
                     return true;
                 }
             }
-        }
-        catch(Exception ex) {
+        } catch(Exception ex) {
             logger.error("Unable to unload web app \"" +
-                          contextRoot + "\"", ex);
+                         contextRoot + "\"", ex);
         }
         return false;
     }
 
-    public void rebindExternalHttpsPort(int port) throws Exception
+    public void rebindExternalHttpsPort(int port)
+        throws Exception
     {
         /* Synchronize on the external thread */
         synchronized(this.modifyExternalSynch) {
-            doRebindExternalHttpsPort( port );
+            doRebindExternalHttpsPort(port);
         }
     }
 
     private void doRebindExternalHttpsPort(int port) throws Exception
     {
-        logger.debug( "Rebinding the HTTPS port" );
+        logger.debug("Rebinding the HTTPS port");
 
-        if ( port == 80 || port == 0 || port > 0xFFFF ) {
-            throw new Exception( "Cannot bind external to port 80" );
+        if (port == 80 || port == 0 || port > 0xFFFF) {
+            throw new Exception("Cannot bind external to port 80");
         }
 
-        /* If there was a failed attempt, retry, startExternal will only be null */
-        if ((externalHTTPSConnector != null) &&
-            (externalHTTPSConnector.getPort() == port)) {
-            logger.info( "External is already bound to port: " + port );
+        /* If there was a failed attempt, retry, startExternal will
+         * only be null */
+        if (null != externalHTTPSConnector
+            && externalHTTPSConnector.getPort() == port) {
+            logger.info("External is already bound to port: " + port);
             return;
         }
         destroyConnector(externalHTTPSConnector, "External HTTPS");
         externalHTTPSConnector = null;
 
         /* If it is not the default port, then rebind it */
-        if ( defaultHTTPSConnector == null || port != defaultHTTPSConnector.getPort() ) {
-            logger.info( "Rebinding external server to " + port );
+        if (null == defaultHTTPSConnector
+            || defaultHTTPSConnector.getPort() != port) {
+            logger.info("Rebinding external server to " + port);
             externalHTTPSConnector = createConnector(port, true);
-            if(!startConnector(externalHTTPSConnector, "External HTTPS")) {
-              throw new Exception("Unable to bind to: " + port);
+            if (!startConnector(externalHTTPSConnector, "External HTTPS")) {
+                throw new Exception("Unable to bind to: " + port);
             }
         }
     }
 
     /**
-      * Gives no exceptions, even if Tomcat was never started.
-      */
-    void stopTomcat() {
+     * Gives no exceptions, even if Tomcat was never started.
+     */
+    void stopTomcat()
+    {
         try {
-            if (emb != null) {
+            if (null != emb) {
                 emb.stop();
             }
         } catch (LifecycleException exn) {
@@ -253,74 +255,83 @@ class TomcatManager {
     /**
      * Helper method - no synchronization
      */
-    private CoyoteConnector createConnector(int port, boolean secure) {
-        CoyoteConnector ret = (CoyoteConnector)emb.createConnector((InetAddress)null, port, secure);
-        if(secure) {
+    private CoyoteConnector createConnector(int port, boolean secure)
+    {
+        CoyoteConnector ret = (CoyoteConnector)emb
+            .createConnector((InetAddress)null, port, secure);
+
+        if (secure) {
             ret.setKeystoreFile(this.keystoreFile);
             ret.setKeystorePass(this.keystorePass);
             ret.setKeyAlias(this.keyAlias);
         }
+
         emb.addConnector(ret);
         return ret;
     }
 
-    private boolean destroyConnector(CoyoteConnector connector, String nameForLog) {
+    private boolean destroyConnector(CoyoteConnector connector,
+                                     String nameForLog)
+    {
         /* Need to change the port */
-        if ( connector != null ) {
-            logger.info( "Removing connector on port " + connector.getPort());
-            emb.removeConnector( connector );
+        if (null != connector) {
+            logger.info("Removing connector on port " + connector.getPort());
+            emb.removeConnector(connector);
             try {
                 connector.stop();
-            } catch ( Exception e ) {
-                logger.error( "Unable to stop externalConnector", e );
+            } catch (Exception e) {
+                logger.error("Unable to stop externalConnector", e);
                 return false;
             }
         }
         return true;
     }
 
-    private boolean startConnector(CoyoteConnector connector, String nameForLog) {
-      for (int i = 0; i < NUM_REBIND_RETRIES; i++) {
-        try {
-          connector.start();
-          return true;
-        }
-        catch (LifecycleException ex) {
-          if (i == NUM_REBIND_RETRIES) {
-            logger.error("Exception starting connector \"" + nameForLog + "\" on port " +
-              connector.getPort(), ex);
-            return false;
-          }
-        }
-        catch (Exception ex) {
-          logger.error("Exception starting connector \"" + nameForLog + "\" on port " +
-            connector.getPort(), ex);
-          return false;
-        }
+    private boolean startConnector(CoyoteConnector connector, String logName)
+    {
+        for (int i = 0; i < NUM_REBIND_RETRIES; i++) {
+            try {
+                connector.start();
+                return true;
+            } catch (LifecycleException ex) {
+                if (i == NUM_REBIND_RETRIES) {
+                    logger.error("Exception starting connector \"" + logName
+                                 + "\" on port " + connector.getPort(), ex);
+                    return false;
+                }
+            } catch (Exception ex) {
+                logger.error("Exception starting connector \"" + logName
+                             + "\" on port " + connector.getPort(), ex);
+                return false;
+            }
 
-        try {
-            Thread.sleep(REBIND_SLEEP_TIME);
-        } catch (InterruptedException exn) {
-            /* ??? */
-            logger.warn("Interrupted, breaking");
-            return false;
+            try {
+                Thread.sleep(REBIND_SLEEP_TIME);
+            } catch (InterruptedException exn) {
+                // XXX exit mechanism
+                logger.warn("Interrupted, breaking");
+                return false;
+            }
         }
-      }
-      logger.error("Unable to start connector \"" + nameForLog + "\" on port " +
-        connector.getPort() + " after " + NUM_REBIND_RETRIES + " attempts sleeping " +
-        REBIND_SLEEP_TIME + " between start attempts");
-      return false;
+        logger.error("Unable to start connector \"" + logName + "\" on port "
+                     + connector.getPort() + " after " + NUM_REBIND_RETRIES
+                     + " attempts sleeping " + REBIND_SLEEP_TIME
+                     + " between start attempts");
+        return false;
     }
 
     // XXX exception handling
     public synchronized void startTomcat(InvokerBase invokerBase,
-      int internalHTTPPort,
-      int internalHTTPSPort,
-      int externalHTTPSPort) throws Exception
+                                         int internalHTTPPort,
+                                         int internalHTTPSPort,
+                                         int externalHTTPSPort)
+        throws Exception
     {
-        // Change for 4.0: Put the Tomcat class loader insdie the MVVM class loader.
+        // Change for 4.0: Put the Tomcat class loader insdie the MVVM
+        // class loader.
 
-        // jdi 8/30/04 -- canonical host name depends on ordering of /etc/hosts
+        // jdi 8/30/04 -- canonical host name depends on ordering of
+        // /etc/hosts
         String hostname = "localhost";
 
         // set default logger and realm
@@ -393,7 +404,7 @@ class TomcatManager {
         defaultHTTPSConnector = createConnector(internalHTTPSPort, true);
 
         /* Start the outside https server */
-        if ( externalHTTPSPort != internalHTTPSPort ) {
+        if (externalHTTPSPort != internalHTTPSPort) {
             externalHTTPSConnector = createConnector(externalHTTPSPort, true);
         }
 
@@ -446,18 +457,20 @@ class TomcatManager {
         }
     }
 
-    private boolean isAIUExn(LifecycleException exn) {
+    private boolean isAIUExn(LifecycleException exn)
+    {
         Throwable wrapped = exn.getThrowable();
         String msg = exn.getMessage();
         if (wrapped != null && wrapped instanceof java.net.BindException)
             // Never happens right now. XXX
             return true;
-        if (msg.contains("ddress already in use"))
+        if (msg.contains("address already in use"))
             return true;
         return false;
     }
 
-    public String generateAuthNonce(InetAddress clientAddr, Principal user) {
+    public String generateAuthNonce(InetAddress clientAddr, Principal user)
+    {
         return realm.generateAuthNonce(clientAddr, user);
     }
 }
