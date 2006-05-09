@@ -14,7 +14,7 @@ package com.metavize.mvvm.portal;
 import java.io.Serializable;
 
 /**
- * Bookmark for portal use.  Points to a target for a given applicatoin
+ * Bookmark for portal use.  Points to a target for a given application
  *
  * @author <a href="mailto:jdi@metavize.com">John Irwin</a>
  * @version 1.0

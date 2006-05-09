@@ -57,11 +57,10 @@ public class AddressBookImpl implements AddressBook {
                     m_logger.info("creating new AddressBookSettings");
                     settings = new AddressBookSettings();
                     settings.setAddressBookConfiguration(AddressBookConfiguration.LOCAL_ONLY);
-                    settings.setADRepositorySettings(new RepositorySettings(
-                                                                            "My Admin",
+                    settings.setADRepositorySettings(new RepositorySettings("Administrator",
                                                                             "mypassword",
                                                                             "mycompany.com",
-                                                                            "my_ad_server",
+                                                                            "ad_server",
                                                                             389
                                                                             ));
                     s.save(settings);

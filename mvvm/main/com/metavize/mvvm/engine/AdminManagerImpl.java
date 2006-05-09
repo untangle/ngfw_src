@@ -13,7 +13,6 @@ package com.metavize.mvvm.engine;
 
 import java.io.*;
 import java.util.Hashtable;
-import java.util.StringTokenizer;
 import java.util.TimeZone;
 import javax.transaction.TransactionRolledbackException;
 
@@ -23,6 +22,7 @@ import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.security.*;
 import com.metavize.mvvm.snmp.SnmpManager;
 import com.metavize.mvvm.snmp.SnmpManagerImpl;
+import com.metavize.mvvm.util.FormUtil;
 import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -252,126 +252,5 @@ class AdminManagerImpl implements AdminManager
     }
 
 
-    // Helper class for dealing with form data
-    static class FormUtil {
 
-        static Hashtable emptyHashtable = new Hashtable();
-
-        private FormUtil() {}
-
-        static Hashtable parseQueryString(String s) {
-
-            String valArray[] = null;
-
-            if (s == null) {
-                throw new IllegalArgumentException();
-            }
-            Hashtable ht = new Hashtable();
-            StringBuffer sb = new StringBuffer();
-            StringTokenizer st = new StringTokenizer(s, "&");
-            while (st.hasMoreTokens()) {
-                String pair = (String)st.nextToken();
-                int pos = pair.indexOf('=');
-                if (pos == -1) {
-                    // XXX
-                    // should give more detail about the illegal argument
-                    throw new IllegalArgumentException();
-                }
-                String key = parseName(pair.substring(0, pos), sb);
-                String val = parseName(pair.substring(pos+1, pair.length()), sb);
-                if (ht.containsKey(key)) {
-                    String oldVals[] = (String []) ht.get(key);
-                    valArray = new String[oldVals.length + 1];
-                    for (int i = 0; i < oldVals.length; i++)
-                        valArray[i] = oldVals[i];
-                    valArray[oldVals.length] = val;
-                } else {
-                    valArray = new String[1];
-                    valArray[0] = val;
-                }
-                ht.put(key, valArray);
-            }
-            return ht;
-        }
-
-        static Hashtable parsePostData(File file)
-        {
-            try {
-                InputStream in = new FileInputStream(file);
-                int len = (int) file.length();
-
-                int inputLen, offset;
-                byte[] postedBytes = null;
-                String postedBody;
-
-                // XXX
-                // should a length of 0 be an IllegalArgumentException
-
-                if (len <=0)
-                    return new Hashtable(); // cheap hack to return an empty hash
-
-                if (in == null) {
-                    throw new IllegalArgumentException();
-                }
-
-                //
-                // Make sure we read the entire POSTed body.
-                //
-                postedBytes = new byte [len];
-                offset = 0;
-                do {
-                    inputLen = in.read (postedBytes, offset, len - offset);
-                    if (inputLen <= 0) {
-                        throw new IOException ("short read from form data file");
-                    }
-                    offset += inputLen;
-                } while ((len - offset) > 0);
-                in.close();
-
-                // XXX we shouldn't assume that the only kind of POST body
-                // is FORM data encoded using ASCII or ISO Latin/1 ... or
-                // that the body should always be treated as FORM data.
-
-                postedBody = new String(postedBytes, 0, len);
-
-                return parseQueryString(postedBody);
-            } catch (IOException e) {
-                return emptyHashtable;
-            }
-
-        }
-
-        static private String parseName(String s, StringBuffer sb) {
-            sb.setLength(0);
-            for (int i = 0; i < s.length(); i++) {
-                char c = s.charAt(i);
-                switch (c) {
-                case '+':
-                    sb.append(' ');
-                    break;
-                case '%':
-                    try {
-                        sb.append((char) Integer.parseInt(s.substring(i+1, i+3),
-                                                          16));
-                        i += 2;
-                    } catch (NumberFormatException e) {
-                        // XXX
-                        // need to be more specific about illegal arg
-                        throw new IllegalArgumentException();
-                    } catch (StringIndexOutOfBoundsException e) {
-                        String rest  = s.substring(i);
-                        sb.append(rest);
-                        if (rest.length()==2)
-                            i++;
-                    }
-
-                    break;
-                default:
-                    sb.append(c);
-                    break;
-                }
-            }
-            return sb.toString();
-        }
-    }
 }

@@ -12,6 +12,7 @@
 package com.metavize.mvvm.security;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
@@ -280,41 +281,46 @@ public class RegistrationInfo implements Serializable
     public String toForm()
     {
         StringBuilder result = new StringBuilder();
-        result.append("companyName=");
-        result.append(URLEncoder.encode(companyName));
-        result.append("&firstName=");
-        result.append(URLEncoder.encode(firstName));
-        result.append("&lastName=");
-        result.append(URLEncoder.encode(lastName));
-        if (address1 != null) {
-            result.append("&address1=");
-            result.append(URLEncoder.encode(address1));
+        try {
+            result.append("companyName=");
+            result.append(URLEncoder.encode(companyName, "UTF-8"));
+            result.append("&firstName=");
+            result.append(URLEncoder.encode(firstName, "UTF-8"));
+            result.append("&lastName=");
+            result.append(URLEncoder.encode(lastName, "UTF-8"));
+            if (address1 != null) {
+                result.append("&address1=");
+                result.append(URLEncoder.encode(address1, "UTF-8"));
+            }
+            if (address2 != null) {
+                result.append("&address2=");
+                result.append(URLEncoder.encode(address2, "UTF-8"));
+            }
+            if (city != null) {
+                result.append("&city=");
+                result.append(URLEncoder.encode(city, "UTF-8"));
+            }
+            if (state != null) {
+                result.append("&state=");
+                result.append(URLEncoder.encode(state, "UTF-8"));
+            }
+            if (zipcode != null) {
+                result.append("&zipcode=");
+                result.append(URLEncoder.encode(zipcode, "UTF-8"));
+            }
+            result.append("&emailAddr=");
+            result.append(URLEncoder.encode(emailAddr, "UTF-8"));
+            if (phone != null) {
+                result.append("&phone=");
+                result.append(URLEncoder.encode(phone, "UTF-8"));
+            }
+            result.append("&numSeats=");
+            result.append(numSeats);
+        } catch (UnsupportedEncodingException x) {
+            // Can't happen.
         }
-        if (address2 != null) {
-            result.append("&address2=");
-            result.append(URLEncoder.encode(address2));
-        }
-        if (city != null) {
-            result.append("&city=");
-            result.append(URLEncoder.encode(city));
-        }
-        if (state != null) {
-            result.append("&state=");
-            result.append(URLEncoder.encode(state));
-        }
-        if (zipcode != null) {
-            result.append("&zipcode=");
-            result.append(URLEncoder.encode(zipcode));
-        }
-        result.append("&emailAddr=");
-        result.append(URLEncoder.encode(emailAddr));
-        if (phone != null) {
-            result.append("&phone=");
-            result.append(URLEncoder.encode(phone));
-        }
-        result.append("&numSeats=");
-        result.append(numSeats);
         return result.toString();
+            
     }
    
     // Object methods ---------------------------------------------------------
