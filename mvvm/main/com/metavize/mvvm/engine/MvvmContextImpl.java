@@ -465,7 +465,7 @@ public class MvvmContextImpl extends MvvmContextBase
         // Retrieve the argon manager
         argonManager = ArgonManagerImpl.getInstance();
 
-        appServerManager = AppServerManagerImpl.getInstance();
+        appServerManager = new AppServerManagerImpl(this);
 
         //Start AddressBookImpl
         addressBookImpl = AddressBookImpl.getInstance();
