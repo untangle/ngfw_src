@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.mvvm.portal;
+package com.metavize.mvvm.engine;
 
 import java.io.IOException;
 import java.security.Principal;
@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
+import com.metavize.mvvm.portal.LocalPortalManager;
 import org.apache.catalina.HttpRequest;
 import org.apache.catalina.HttpResponse;
 import org.apache.catalina.authenticator.BasicAuthenticator;
@@ -26,7 +27,7 @@ import org.apache.catalina.deploy.LoginConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class PortalAuthenticator extends BasicAuthenticator
+class PortalAuthenticator extends BasicAuthenticator
 {
     private static Log log = LogFactory.getLog(PortalAuthenticator.class);
 

@@ -10,7 +10,7 @@
  * $Id$
  */
 
-package com.metavize.mvvm.portal;
+package com.metavize.mvvm.engine;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -20,11 +20,13 @@ import java.util.List;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
+import com.metavize.mvvm.portal.LocalPortalManager;
+import com.metavize.mvvm.portal.PortalLoginKey;
 import org.apache.catalina.realm.GenericPrincipal;
 import org.apache.catalina.realm.RealmBase;
 import org.apache.log4j.Logger;
 
-public class PortalRealm extends RealmBase
+class PortalRealm extends RealmBase
 {
     private static final Logger logger = Logger.getLogger(PortalRealm.class);
 

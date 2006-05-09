@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,11 +11,9 @@
 
 package com.metavize.tran.mail;
 
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
-
+import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.AbstractTransform;
@@ -23,36 +21,34 @@ import com.metavize.mvvm.tapi.CasingPipeSpec;
 import com.metavize.mvvm.tapi.Fitting;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tran.TransformException;
-import com.metavize.mvvm.tran.TransformStartException;
-import com.metavize.mvvm.tran.TransformStopException;
-import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.util.TransactionWork;
 import com.metavize.tran.mail.impl.imap.ImapCasingFactory;
+import com.metavize.tran.mail.impl.quarantine.Quarantine;
+import com.metavize.tran.mail.impl.safelist.SafelistManager;
 import com.metavize.tran.mail.impl.smtp.SmtpCasingFactory;
 import com.metavize.tran.mail.papi.*;
-import com.metavize.tran.mail.impl.quarantine.Quarantine;
-import com.metavize.tran.mail.papi.quarantine.QuarantineTransformView;
-import com.metavize.tran.mail.papi.quarantine.QuarantineMaintenenceView;
-import com.metavize.tran.mail.papi.quarantine.QuarantineUserView;
-import com.metavize.tran.mail.papi.quarantine.QuarantineSettings;
-import com.metavize.tran.mail.papi.quarantine.QuarantineUserActionFailedException;
-import com.metavize.tran.mail.papi.quarantine.InboxAlreadyRemappedException;
-import com.metavize.tran.mail.papi.quarantine.NoSuchInboxException;
 import com.metavize.tran.mail.papi.quarantine.BadTokenException;
-import com.metavize.tran.mail.papi.quarantine.InboxIndex;
 import com.metavize.tran.mail.papi.quarantine.Inbox;
+import com.metavize.tran.mail.papi.quarantine.InboxAlreadyRemappedException;
+import com.metavize.tran.mail.papi.quarantine.InboxIndex;
 import com.metavize.tran.mail.papi.quarantine.MailSummary;
-import com.metavize.tran.mail.papi.safelist.SafelistSettings;
-import com.metavize.tran.mail.papi.safelist.SafelistAdminView;
-import com.metavize.tran.mail.papi.safelist.SafelistEndUserView;
-import com.metavize.tran.mail.papi.safelist.SafelistTransformView;
-import com.metavize.tran.mail.papi.safelist.SafelistManipulation;
+import com.metavize.tran.mail.papi.quarantine.NoSuchInboxException;
+import com.metavize.tran.mail.papi.quarantine.QuarantineMaintenenceView;
+import com.metavize.tran.mail.papi.quarantine.QuarantineSettings;
+import com.metavize.tran.mail.papi.quarantine.QuarantineTransformView;
+import com.metavize.tran.mail.papi.quarantine.QuarantineUserActionFailedException;
+import com.metavize.tran.mail.papi.quarantine.QuarantineUserView;
 import com.metavize.tran.mail.papi.safelist.NoSuchSafelistException;
 import com.metavize.tran.mail.papi.safelist.SafelistActionFailedException;
-import com.metavize.tran.mail.impl.safelist.SafelistManager;
-import java.util.List;
-import java.io.File;
+import com.metavize.tran.mail.papi.safelist.SafelistAdminView;
+import com.metavize.tran.mail.papi.safelist.SafelistEndUserView;
+import com.metavize.tran.mail.papi.safelist.SafelistManipulation;
+import com.metavize.tran.mail.papi.safelist.SafelistSettings;
+import com.metavize.tran.mail.papi.safelist.SafelistTransformView;
 import com.metavize.tran.mime.EmailAddress;
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 public class MailTransformImpl extends AbstractTransform
     implements MailTransform, MailExport
@@ -111,7 +107,7 @@ public class MailTransformImpl extends AbstractTransform
 
     private static synchronized void deployWebAppIfRequired(Logger logger) {
         if(!s_deployedWebApp) {
-            if(MvvmContextFactory.context().appServerManager().loadWebApp("/quarantine", "quarantine")) {
+            if(MvvmContextFactory.context().appServerManager().loadInsecureApp("/quarantine", "quarantine")) {
                 logger.debug("Deployed Quarantine web app");
             }
             else {
@@ -294,7 +290,7 @@ public class MailTransformImpl extends AbstractTransform
         } catch (Exception ignore) {} //nothing can be done
 
         deployWebAppIfRequired(logger);
-        s_quarantine.open();        
+        s_quarantine.open();
     }
 
     // AbstractTransform methods ----------------------------------------------
@@ -320,9 +316,9 @@ public class MailTransformImpl extends AbstractTransform
 
   //================================================================
   //Hacks to work around issues w/ the implicit RMI proxy stuff
-    
+
   abstract class QuarantineManipulationWrapper {
-  
+
     public InboxIndex purge(String account,
       String...doomedMails)
       throws NoSuchInboxException, QuarantineUserActionFailedException {
@@ -344,7 +340,7 @@ public class MailTransformImpl extends AbstractTransform
       //Nothing to do
     }
   }
-    
+
 
   class QuarantineUserViewWrapper
     extends QuarantineManipulationWrapper
@@ -354,7 +350,7 @@ public class MailTransformImpl extends AbstractTransform
       throws BadTokenException {
       return s_quarantine.getAccountFromToken(token);
     }
-  
+
     public boolean requestDigestEmail(String account)
       throws NoSuchInboxException, QuarantineUserActionFailedException {
       return s_quarantine.requestDigestEmail(account);
@@ -364,27 +360,27 @@ public class MailTransformImpl extends AbstractTransform
       throws QuarantineUserActionFailedException, InboxAlreadyRemappedException {
       s_quarantine.remapSelfService(from, to);
     }
-  
+
     public boolean unmapSelfService(String inboxName, String aliasToRemove)
       throws QuarantineUserActionFailedException {
       return s_quarantine.unmapSelfService(inboxName, aliasToRemove);
     }
-      
+
     public String getMappedTo(String account)
       throws QuarantineUserActionFailedException {
       return s_quarantine.getMappedTo(account);
     }
-  
+
     public String[] getMappedFrom(String account)
       throws QuarantineUserActionFailedException {
       return s_quarantine.getMappedFrom(account);
     }
-          
+
   }
   class QuarantineMaintenenceViewWrapper
     extends QuarantineManipulationWrapper
     implements QuarantineMaintenenceView {
-    
+
     public List<Inbox> listInboxes()
       throws QuarantineUserActionFailedException {
       return s_quarantine.listInboxes();
@@ -394,11 +390,11 @@ public class MailTransformImpl extends AbstractTransform
       throws NoSuchInboxException, QuarantineUserActionFailedException {
       s_quarantine.deleteInbox(account);
     }
-  
+
     public void rescueInbox(String account)
       throws NoSuchInboxException, QuarantineUserActionFailedException {
       s_quarantine.rescueInbox(account);
-    }    
+    }
   }
   class QuarantineTransformViewWrapper
     implements QuarantineTransformView {
@@ -427,7 +423,7 @@ public class MailTransformImpl extends AbstractTransform
       throws NoSuchSafelistException, SafelistActionFailedException {
       return s_safelistMngr.addToSafelist(safelistOwnerAddress, toAdd);
     }
-  
+
     public String[] removeFromSafelist(String safelistOwnerAddress,
       String toRemove)
       throws NoSuchSafelistException, SafelistActionFailedException {
@@ -462,13 +458,13 @@ public class MailTransformImpl extends AbstractTransform
   class SafelistEndUserViewWrapper
     extends SafelistManipulationWrapper
     implements SafelistEndUserView {
-    
+
   }
 
   class SafelistAdminViewWrapper
     extends SafelistManipulationWrapper
     implements SafelistAdminView {
-    
+
     public List<String> listSafelists()
       throws SafelistActionFailedException {
       return s_safelistMngr.listSafelists();
@@ -487,7 +483,7 @@ public class MailTransformImpl extends AbstractTransform
     public boolean safelistExists(String safelistOwnerAddress)
       throws SafelistActionFailedException {
       return s_safelistMngr.safelistExists(safelistOwnerAddress);
-    }    
+    }
   }
-  
+
 }

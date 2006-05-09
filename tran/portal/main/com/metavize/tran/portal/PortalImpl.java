@@ -62,7 +62,7 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
         LocalPortalManager lpm = mctx.portalManager();
         LocalApplicationManager lam = lpm.applicationManager();
 
-        if (asm.loadWebApp("/browser", "browser")) {
+        if (asm.loadPortalApp("/browser", "browser")) {
             logger.debug("Deployed Browser web app");
         } else {
             logger.error("Unable to deploy Browser web app");
@@ -71,7 +71,7 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
         browserApp = lam.registerApplication("CIFS", "Network File Browser",
                                              true, null, 0, CIFS_JS);
 
-        if (asm.loadWebApp("/proxy", "proxy")) {
+        if (asm.loadPortalApp("/proxy", "proxy")) {
             logger.debug("Deployed Proxy web app");
         } else {
             logger.error("Unable to deploy Proxy web app");
@@ -80,7 +80,7 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
         proxyApp = lam.registerApplication("HTTP", "Web Proxy", true, null, 0,
                                            WEB_JS);
 
-        if (asm.loadWebApp("/portal", "portal")) {
+        if (asm.loadPortalApp("/portal", "portal")) {
             logger.debug("Deployed Portal web app");
         } else {
             logger.error("Unable to deploy Portal web app");

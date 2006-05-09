@@ -14,8 +14,6 @@ package com.metavize.mvvm.portal;
 import java.net.InetAddress;
 import java.util.List;
 
-import com.metavize.mvvm.portal.*;
-
 /**
  * Describe interface <code>LocalPortalManager</code> here.
  *

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -15,7 +15,6 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Hashtable;
-import java.util.StringTokenizer;
 
 /**
  * The registration info for the EdgeGuard customer
@@ -67,11 +66,11 @@ public class RegistrationInfo implements Serializable
     public RegistrationInfo(Hashtable entries)
     {
         String[] sa;
-        
+
         sa = (String[]) entries.get("companyName");
         if (sa != null && sa.length > 0 && sa[0].length() > 0)
             companyName = sa[0];
-        sa = (String[]) entries.get("firstName");        
+        sa = (String[]) entries.get("firstName");
         if (sa != null && sa.length > 0 && sa[0].length() > 0)
             firstName = sa[0];
         sa = (String[]) entries.get("lastName");
@@ -320,9 +319,9 @@ public class RegistrationInfo implements Serializable
             // Can't happen.
         }
         return result.toString();
-            
+
     }
-   
+
     // Object methods ---------------------------------------------------------
 
     public String toString()

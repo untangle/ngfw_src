@@ -15,12 +15,13 @@ import java.io.IOException;
 import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.catalina.authenticator.BasicAuthenticator;
-import org.apache.catalina.authenticator.Constants;
+
 import org.apache.catalina.HttpRequest;
 import org.apache.catalina.HttpResponse;
-import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.Realm;
+import org.apache.catalina.authenticator.BasicAuthenticator;
+import org.apache.catalina.authenticator.Constants;
+import org.apache.catalina.deploy.LoginConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -67,7 +68,6 @@ class MvvmAuthenticator extends BasicAuthenticator
                                 HttpResponse response,
                                 LoginConfig config)
         throws IOException {
-
         // Have we already authenticated someone?
         Principal principal =
             ((HttpServletRequest) request.getRequest()).getUserPrincipal();

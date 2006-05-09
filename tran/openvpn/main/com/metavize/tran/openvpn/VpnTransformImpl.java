@@ -21,6 +21,7 @@ import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.MailSender;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.argon.ArgonException;
+import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
@@ -36,7 +37,6 @@ import com.metavize.mvvm.tran.UnconfiguredException;
 import com.metavize.mvvm.tran.ValidateException;
 import com.metavize.mvvm.tran.script.ScriptRunner;
 import com.metavize.mvvm.util.TransactionWork;
-import com.metavize.mvvm.logging.EventManager;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -377,7 +377,7 @@ public class VpnTransformImpl extends AbstractTransform
     private synchronized void deployWebApp()
     {
         if ( !isWebAppDeployed ) {
-            if ( MvvmContextFactory.context().appServerManager().loadWebApp( WEB_APP_PATH, WEB_APP )) {
+            if ( MvvmContextFactory.context().appServerManager().loadInsecureApp( WEB_APP_PATH, WEB_APP )) {
                 logger.debug( "Deployed openvpn web app" );
             }
             else logger.warn( "Unable to deploy openvpn web app" );
@@ -681,15 +681,15 @@ public class VpnTransformImpl extends AbstractTransform
     {
         return this.openVpnMonitor.getClientConnectLogger();
     }
-    
+
     public EventManager<VpnStatisticEvent> getVpnStatisticEventManager()
     {
         return this.openVpnMonitor.getVpnStatsDistLogger();
     }
-    
+
     public EventManager<ClientDistributionEvent> getClientDistributionEventManager()
     {
         return this.openVpnMonitor.getClientDistLogger();
     }
-    
+
 }

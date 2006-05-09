@@ -13,14 +13,14 @@ package com.metavize.mvvm;
 import com.metavize.mvvm.security.CertInfo;
 import com.metavize.mvvm.security.CertInfo;
 import com.metavize.mvvm.security.CertInfo;
+import com.metavize.mvvm.security.CertInfo;
+import com.metavize.mvvm.security.CertInfo;
 import com.metavize.mvvm.security.RFC2253Name;
 
 
 /**
  * Abstraction to the application server used for external web
  * applications.
- *
- * <br>
  *
  * Instances of this interface are obtained via {@link
  * com.metavize.mvvm.MvvmLocalContext#appServerManager
@@ -35,7 +35,8 @@ public interface AppServerManager
 
 
     /**
-     * Load a web app. The web app's files are already assumed to be
+     * Load a portal web app. This app will use the PortalRealm for
+     * authentication. The web app's files are already assumed to be
      * unpackaged into the root web apps directory of the edgeguard
      * deployment
      *
@@ -44,8 +45,33 @@ public interface AppServerManager
      * @param rootDir the name of the root directory under the "web"
      * directory of edgeguard w/ the app.
      */
-    boolean loadWebApp(String urlBase,
-                       String rootDir);
+    boolean loadPortalApp(String urlBase, String rootDir);
+
+    /**
+     * Load a portal web app. This app will use the MvvmRealm for
+     * authentication. The web app's files are already assumed to be
+     * unpackaged into the root web apps directory of the edgeguard
+     * deployment
+     *
+     * @param urlBase the base URL
+     * (i.e. "http://edgeguard/<i>urlBase</i>/foo").
+     * @param rootDir the name of the root directory under the "web"
+     * directory of edgeguard w/ the app.
+     */
+    boolean loadSystemApp(String urlBase, String rootDir);
+
+    /**
+     * Load a portal web app. This app will not use
+     * authentication. The web app's files are already assumed to be
+     * unpackaged into the root web apps directory of the edgeguard
+     * deployment
+     *
+     * @param urlBase the base URL
+     * (i.e. "http://edgeguard/<i>urlBase</i>/foo").
+     * @param rootDir the name of the root directory under the "web"
+     * directory of edgeguard w/ the app.
+     */
+    boolean loadInsecureApp(String urlBase, String rootDir);
 
     boolean unloadWebApp(String urlBase);
 
@@ -53,8 +79,6 @@ public interface AppServerManager
      * Regenerate the self-signed certificate for this instance. The
      * key algorithm and strength are determined by the
      * implementation.
-     *
-     * <br>
      *
      * Note the following are the common attributes of a Distinguished
      * Name (and should be solicited from the requestor of this
@@ -72,8 +96,6 @@ public interface AppServerManager
      * external hostname of the machine (i.e. "www.widgets.com"),
      * which should not be solicited as it will be filled-in
      * automagically.
-     *
-     * <br>
      *
      * Since there should always be a "current" cert for the server,
      * it may be accessed via {@link #getCurrentServerCert
@@ -98,16 +120,12 @@ public interface AppServerManager
      * this method should be the bytes returned from a CA (where the
      * output of {@link #generateCSR generateCSR} was submitted).
      *
-     * <br>
-     *
      * This method optionaly takes a second cert. This is for cases
      * when the CA says the user needs an "intermediate certificate".
      * This is a cert along the trust chain between the signed server
      * cert and the implicit trusted roots (burned-into Java). If such
      * an intermediate cert is required, the CA will inform users of
      * this.
-     *
-     * <br>
      *
      * Warning. This cert will be registered under the hostname (CN)
      * within the signed document. If this does not agree with the
