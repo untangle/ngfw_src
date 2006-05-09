@@ -31,17 +31,11 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
 
     private static Date activeDate = new Date(0l);
     
-        private static ImageIcon addImageIcon;
-        private static ImageIcon changedImageIcon;
-        private static ImageIcon removeImageIcon;
-        private static ImageIcon savedImageIcon;
-    
-    /*
-        private static final ImageIcon addImageIcon = new ImageIcon( Thread.currentThread().getContextClassLoader().getResource("/com/metavize/gui/widgets/coloredTable/IconAdd13x13.png") );
-        private static final ImageIcon changedImageIcon = new ImageIcon( Thread.currentThread().getContextClassLoader().getResource("/com/metavize/gui/widgets/coloredTable/IconChanged15x15.png") );
-        private static final ImageIcon removeImageIcon = new ImageIcon( Thread.currentThread().getContextClassLoader().getResource("/com/metavize/gui/widgets/coloredTable/IconRemove13x13.png") );
-        private static final ImageIcon savedImageIcon = new ImageIcon( Thread.currentThread().getContextClassLoader().getResource("/com/metavize/gui/widgets/coloredTable/IconSaved13x13.png") );
-    */
+    private static ImageIcon addImageIcon;
+    private static ImageIcon changedImageIcon;
+    private static ImageIcon removeImageIcon;
+    private static ImageIcon savedImageIcon;
+        
     private static final Color unselectedOddColor = new Color(193, 193, 206);
     private static final Color unselectedEvenColor = new Color(183, 183, 196);
     private static final Color uneditableOddColor = unselectedOddColor; //new Color(216, 193, 193);

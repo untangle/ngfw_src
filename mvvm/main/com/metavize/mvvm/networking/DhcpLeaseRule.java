@@ -130,13 +130,9 @@ public class DhcpLeaseRule extends Rule
         this.staticAddress = staticAddress;
     }
     
-    public String getEndOfLease()
+    public Date getEndOfLease()
     {
-        if ( endOfLease == null ) {
-            return "";
-        } else {
-            return endOfLease.toString();
-        }
+	return endOfLease;
     }
 
     public void setEndOfLease( Date endOfLease )

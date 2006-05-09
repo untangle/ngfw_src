@@ -127,7 +127,7 @@ class AddressTableModel extends MSortedTableModel<Object>{
 	    tempRow.add( leaseRule.getStaticAddress().toString() );
 	    tempRow.add( leaseRule.getCurrentAddress().toString() );
 	    tempRow.add( leaseRule.getHostname() );
-	    tempRow.add( leaseRule.getEndOfLease() );
+	    tempRow.add( (leaseRule.getEndOfLease()==null?new Date(0l):leaseRule.getEndOfLease()) );
 	    tempRow.add( leaseRule.getCategory() );
 	    tempRow.add( leaseRule.getDescription() );
 	    tempRow.add( leaseRule );
