@@ -11,28 +11,11 @@
 package com.metavize.tran.nat;
 
 import java.net.InetAddress;
-
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-
-import org.apache.log4j.Logger;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
-
-import com.metavize.mvvm.networking.IPNetwork;
-import com.metavize.mvvm.networking.NetworkManagerImpl;
-import com.metavize.mvvm.networking.NetworkSpacesSettings;
-import com.metavize.mvvm.networking.NetworkException;
-import com.metavize.mvvm.networking.RedirectRule;
-import com.metavize.mvvm.networking.SetupState;
-import com.metavize.mvvm.networking.ServicesSettings;
-import com.metavize.mvvm.networking.NetworkSettingsListener;
-import com.metavize.mvvm.networking.internal.NetworkSpaceInternal;
-import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
-import com.metavize.mvvm.networking.internal.ServicesInternalSettings;
+import com.metavize.mvvm.MvvmState;
 import com.metavize.mvvm.argon.SessionMatcher;
 import com.metavize.mvvm.argon.SessionMatcherFactory;
 import com.metavize.mvvm.logging.EventLogger;
@@ -40,6 +23,15 @@ import com.metavize.mvvm.logging.EventLoggerFactory;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SimpleEventFilter;
+import com.metavize.mvvm.networking.IPNetwork;
+import com.metavize.mvvm.networking.NetworkException;
+import com.metavize.mvvm.networking.NetworkManagerImpl;
+import com.metavize.mvvm.networking.NetworkSettingsListener;
+import com.metavize.mvvm.networking.NetworkSpacesSettings;
+import com.metavize.mvvm.networking.SetupState;
+import com.metavize.mvvm.networking.internal.NetworkSpaceInternal;
+import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
+import com.metavize.mvvm.networking.internal.ServicesInternalSettings;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
 import com.metavize.mvvm.tapi.Fitting;
@@ -47,19 +39,16 @@ import com.metavize.mvvm.tapi.MPipe;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tran.AddressValidator;
-import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.TransformContext;
+import com.metavize.mvvm.tran.TransformContextSwitcher;
 import com.metavize.mvvm.tran.TransformException;
-import com.metavize.mvvm.tran.ParseException;
 import com.metavize.mvvm.tran.TransformStartException;
 import com.metavize.mvvm.tran.TransformState;
 import com.metavize.mvvm.tran.TransformStopException;
-import com.metavize.mvvm.tran.TransformContextSwitcher;
-
-import com.metavize.mvvm.util.DataSaver;
 import com.metavize.mvvm.util.DataLoader;
-
+import com.metavize.mvvm.util.DataSaver;
 import com.metavize.tran.token.TokenAdaptor;
+import org.apache.log4j.Logger;
 
 public class NatImpl extends AbstractTransform implements Nat
 {
@@ -120,36 +109,36 @@ public class NatImpl extends AbstractTransform implements Nat
     {
         /* Get the settings from Network Spaces (The only state in the transform is the setup state) */
         NetworkManagerImpl nm = getNetworkManager();
-        
+
         SetupState state = getSetupState();
 
         NetworkSpacesSettings network = nm.getNetworkSettings();
         NetworkSpacesInternalSettings networkInternal = nm.getNetworkInternalSettings();
         ServicesInternalSettings servicesInternal = nm.getServicesInternalSettings();
-        
+
         if ( state.equals( SetupState.BASIC )) {
             NatCommonSettings common = settingsManager.
                 toBasicSettings( this.getTid(), networkInternal, servicesInternal );
-            
+
             nm.updateLeases( common );
             return common;
         } else if ( state.equals( SetupState.ADVANCED )) {
-            NatCommonSettings common = 
+            NatCommonSettings common =
                 settingsManager.toAdvancedSettings( network, networkInternal, servicesInternal );
 
             nm.updateLeases( common );
             return common;
         }
-        
+
         logger.error( "Invalid state: [" + state + "] using basic" );
 
         return settingsManager.toBasicSettings( this.getTid(), networkInternal, servicesInternal );
     }
-        
+
     public void setNatSettings( NatCommonSettings settings ) throws Exception
-    {        
+    {
         /* Remove all of the non-static addresses before saving */
-        
+
         /* Validate the settings */
         try {
             settings.validate();
@@ -160,12 +149,12 @@ public class NatImpl extends AbstractTransform implements Nat
         }
 
         NetworkManagerImpl networkManager = getNetworkManager();
-        
+
         /* Integrate the settings from the internal network and the ones from the user */
         NetworkSpacesSettings networkSettings = networkManager.getNetworkSettings();
-        
+
         NetworkSpacesSettings newNetworkSettings = null;
-        
+
         try {
             SetupState state = settings.getSetupState();
             if ( state.equals( SetupState.BASIC )) {
@@ -177,7 +166,7 @@ public class NatImpl extends AbstractTransform implements Nat
             } else {
                 throw new Exception( "Illegal setup state: " + state );
             }
-            
+
         } catch ( Exception e ) {
             logger.error( "Unable to convert the settings objects.", e );
             throw e;
@@ -187,7 +176,7 @@ public class NatImpl extends AbstractTransform implements Nat
         /* This isn't necessary, (the state should carry over), but
          * just in case. */
         newNetworkSettings.setIsEnabled( isEnabled );
-        
+
         try {
             /* Have to reconfigure the network before configure the
              * services settings */
@@ -198,7 +187,7 @@ public class NatImpl extends AbstractTransform implements Nat
             throw e;
         }
     }
-    
+
     /* Reinitialize the settings to basic nat */
     public void resetBasic() throws Exception
     {
@@ -206,26 +195,26 @@ public class NatImpl extends AbstractTransform implements Nat
 
         /* Get the settings from Network Spaces (The only state in the transform is the setup state) */
         NetworkManagerImpl nm = getNetworkManager();
-        
-        NetworkSpacesSettings newSettings = 
+
+        NetworkSpacesSettings newSettings =
             this.settingsManager.resetToBasic( getTid(), nm.getNetworkSettings());
-        
+
         /* Only reconfigure if the transform is enabled */
         nm.setNetworkSettings( newSettings, getRunState() == TransformState.RUNNING );
     }
-    
+
     /* Convert the basic settings to advanced Network Spaces */
     public void switchToAdvanced() throws Exception
     {
         /* Get the settings from Network Spaces (The only state in the transform is the setup state) */
         NetworkManagerImpl nm = getNetworkManager();
-        
+
         NetworkSpacesSettings newSettings = this.settingsManager.basicToAdvanced( nm.getNetworkSettings());
-        
+
         /* Only reconfigure if the transform is enabled */
         nm.setNetworkSettings( newSettings, getRunState() == TransformState.RUNNING );
     }
-    
+
     public SetupState getSetupState()
     {
         SetupState state = getNetworkSettings().getSetupState();
@@ -299,18 +288,18 @@ public class NatImpl extends AbstractTransform implements Nat
         /* Check if the settings have been upgraded yet */
         DataLoader<NatSettingsImpl> natLoader = new DataLoader<NatSettingsImpl>( "NatSettingsImpl",
                                                                                  getTransformContext());
-        
+
         NatSettingsImpl settings = natLoader.loadData();
 
         if ( settings == null ) {
-            
+
         } else {
             /* In deprecated, mode, update and save new settings */
             SetupState state = settings.getSetupState();
             if ( state.equals( SetupState.NETWORK_SHARING )) {
                 logger.info( "Settings are in the deprecated mode, upgrading settings" );
                 settings.setSetupState( SetupState.BASIC );
-                
+
                 /* Save the new Settings */
                 try {
                     setNatSettings( settings );
@@ -328,7 +317,7 @@ public class NatImpl extends AbstractTransform implements Nat
             }  else {
                 logger.info( "Settings are in [" + settings.getSetupState() +"]  mode, ignoring." );
             }
-            
+
             /* If upgrading change the setting to basic mode, this just means they
              * won't be upgraded again.*/
             if ( this.isUpgrade ) {
@@ -345,13 +334,13 @@ public class NatImpl extends AbstractTransform implements Nat
         eventLogger.start();
 
         MvvmLocalContext context = MvvmContextFactory.context();
-        MvvmLocalContext.MvvmState state = context.state();
+        MvvmState state = context.state();
         NetworkManagerImpl networkManager = getNetworkManager();
 
         /* Enable the network settings */
-        if ( state.equals( MvvmLocalContext.MvvmState.RUNNING ) || this.isUpgrade ) {
+        if ( state.equals( MvvmState.RUNNING ) || this.isUpgrade ) {
             logger.debug( "enabling network spaces settings because user powered on nat or upgrade." );
-            
+
             try {
                 networkManager.enableNetworkSpaces();
             } catch ( Exception e ) {
@@ -362,10 +351,10 @@ public class NatImpl extends AbstractTransform implements Nat
         } else {
             logger.debug( "not enabling network spaces settings at startup" );
         }
-        
+
         NetworkSpacesInternalSettings networkSettings = getNetworkSettings();
         ServicesInternalSettings servicesSettings = getServicesSettings();
-        
+
         try {
             configureDhcpMonitor( servicesSettings.getIsDhcpEnabled());
             this.handler.configure( networkSettings );
@@ -377,7 +366,7 @@ public class NatImpl extends AbstractTransform implements Nat
             logger.error( "Could not start services.", e );
             throw new TransformStartException( "Unable to configure the handler" );
         }
-        
+
         statisticManager.start();
     }
 
@@ -391,19 +380,19 @@ public class NatImpl extends AbstractTransform implements Nat
     {
         /* Kill all active sessions */
         shutdownMatchingSessions();
-        
+
         MvvmLocalContext context = MvvmContextFactory.context();
-        
-        MvvmLocalContext.MvvmState state = context.state();
+
+        MvvmState state = context.state();
 
         NetworkManagerImpl networkManager = (NetworkManagerImpl)context.networkManager();
-        
+
         /* Only stop the services if the box isn't going down (the user turned off the appliance) */
-        if ( state.equals( MvvmLocalContext.MvvmState.RUNNING ))  {
+        if ( state.equals( MvvmState.RUNNING ))  {
             logger.debug( "Disabling services since user turned off network spaces." );
             networkManager.stopServices();
         }
-        
+
         dhcpMonitor.stop();
 
         statisticManager.stop();
@@ -413,7 +402,7 @@ public class NatImpl extends AbstractTransform implements Nat
 
         /* Deconfigure the network spaces */
         /* Only stop the services if the box isn't going down (the user turned off the appliance) */
-        if ( state.equals( MvvmLocalContext.MvvmState.RUNNING )) {
+        if ( state.equals( MvvmState.RUNNING )) {
             logger.debug( "Disabling network spaces since user turned off network spaces." );
             try {
                 networkManager.disableNetworkSpaces();
@@ -443,12 +432,12 @@ public class NatImpl extends AbstractTransform implements Nat
         logger.info("networkSettingsEvent");
 
         /* ????, what goes here. Configure the handler */
-        
+
         /* Retrieve the new settings from the network manager */
         NetworkManagerImpl nm = getNetworkManager();
         NetworkSpacesInternalSettings networkSettings = nm.getNetworkInternalSettings();
         ServicesInternalSettings servicesSettings = nm.getServicesInternalSettings();
-        
+
         if ( getRunState() == TransformState.RUNNING ) {
             /* Have to configure DHCP before the handler, this automatically starts the dns server */
             configureDhcpMonitor( servicesSettings.getIsDhcpEnabled());
@@ -505,20 +494,20 @@ public class NatImpl extends AbstractTransform implements Nat
         try {
             /* Get the default settings, save them, and indicate
              * to turn on network spaces at startup. */
-            NatBasicSettings defaultSettings = 
+            NatBasicSettings defaultSettings =
                 this.settingsManager.getDefaultSettings( this.getTid());
-            
+
             if ( isRouterDetected()) {
                 /* Disble NAT, DHCP and DNS */
                 defaultSettings.setNatEnabled( false );
                 defaultSettings.setDhcpEnabled( false );
                 defaultSettings.setDnsEnabled( false );
             }
-            
+
             setNatSettings( defaultSettings );
         } catch ( Exception e ) {
             logger.error( "Unable to set wizard nat settings", e );
-        }        
+        }
     }
 
     /**
@@ -528,7 +517,7 @@ public class NatImpl extends AbstractTransform implements Nat
     private boolean isRouterDetected()
     {
         NetworkSpacesInternalSettings networkSettings = getNetworkSettings();
-        
+
         /* Nothing to check, settings are null */
         if ( networkSettings == null ) {
             logger.warn( "Unable to detect router, null network settings" );
@@ -536,7 +525,7 @@ public class NatImpl extends AbstractTransform implements Nat
         }
 
         List<NetworkSpaceInternal> networkSpaceList = networkSettings.getNetworkSpaceList();
-        
+
         if ( networkSpaceList == null ) {
             logger.warn( "Unable to detect router, null network space list" );
             return false;
@@ -548,19 +537,19 @@ public class NatImpl extends AbstractTransform implements Nat
         }
 
         NetworkSpaceInternal space = networkSpaceList.get( 0 );
-        
+
         IPNetwork network = space.getPrimaryAddress();
         if ( network == null || IPNetwork.getEmptyNetwork().equals( network )) {
             logger.warn( "Unable to detect router, NULL or empty network on primary space." );
             return false;
         }
-        
+
         /* Verify that the address was retrieved using DHCP */
         if ( !space.getIsDhcpEnabled()) {
             logger.debug( "DHCP is disabled, assuming an external router is not in place." );
             return false;
         }
-        
+
         /* If not in a private network, this is a public address */
         InetAddress publicAddress = network.getNetwork().getAddr();
         if ( !AddressValidator.getInstance().isInPrivateNetwork( network.getNetwork().getAddr())) {
@@ -571,7 +560,7 @@ public class NatImpl extends AbstractTransform implements Nat
         logger.debug( "Detected private address for '"+ publicAddress.getHostAddress() + "'" );
         return true;
     }
-    
+
     private NetworkManagerImpl getNetworkManager()
     {
         return (NetworkManagerImpl)MvvmContextFactory.context().networkManager();
@@ -597,10 +586,10 @@ public class NatImpl extends AbstractTransform implements Nat
         private final TransformContextSwitcher tl;
 
         private final Runnable go;
-        
+
         /* This are the settings passed in by the network settings */
         private NetworkSpacesInternalSettings settings;
-        
+
         SettingsListener()
         {
             tl = new TransformContextSwitcher( getTransformContext().getClassLoader());

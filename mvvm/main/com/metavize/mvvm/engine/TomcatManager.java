@@ -58,8 +58,8 @@ class TomcatManager
     private final String catalinaHome;
     private final String logDir;
 
-    private MvvmRealm mvvmRealm = new MvvmRealm();
-    private PortalRealm portalRealm = new PortalRealm();
+    private final MvvmContextImpl mvvmContext;
+    private final MvvmRealm mvvmRealm = new MvvmRealm();
 
     private String keystoreFile = "conf/keystore";
     private String keystorePass = "changeit";
@@ -71,8 +71,10 @@ class TomcatManager
 
     // constructors -----------------------------------------------------------
 
-    TomcatManager(String catalinaHome, String webAppRoot, String logDir)
+    TomcatManager(MvvmContextImpl mvvmContext, String catalinaHome,
+                  String webAppRoot, String logDir)
     {
+        this.mvvmContext = mvvmContext;
         this.catalinaHome = catalinaHome;
         this.webAppRoot = webAppRoot;
         this.logDir = logDir;
@@ -138,8 +140,10 @@ class TomcatManager
 
     boolean loadPortalApp(String urlBase, String rootDir)
     {
-        PortalAuthenticator portalAuth = new PortalAuthenticator();
-        return loadWebApp(urlBase, rootDir, portalRealm, portalAuth);
+        PortalManagerImpl pm = mvvmContext.portalManager();
+        Realm realm = pm.getPortalRealm();
+        BasicAuthenticator auth = pm.newPortalAuthenticator();
+        return loadWebApp(urlBase, rootDir, realm, auth);
     }
 
     boolean loadSystemApp(String urlBase, String rootDir)

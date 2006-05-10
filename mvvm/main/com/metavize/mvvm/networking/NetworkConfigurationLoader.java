@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,43 +11,35 @@
 
 package com.metavize.mvvm.networking;
 
-import com.metavize.mvvm.NetworkingConfiguration;
-
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
-
 import java.net.Inet4Address;
-
 import java.util.Collections;
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
-
-import com.metavize.jnetcap.Netcap;
 import com.metavize.jnetcap.InterfaceData;
-
+import com.metavize.jnetcap.Netcap;
 import com.metavize.mvvm.InterfaceAlias;
 import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.MvvmLocalContext;
-
-import com.metavize.mvvm.tran.HostName;
-import com.metavize.mvvm.tran.IPaddr;
-import com.metavize.mvvm.tran.ParseException;
-
-import com.metavize.mvvm.tran.script.ScriptWriter;
-import com.metavize.mvvm.tran.script.ScriptRunner;
-
+import com.metavize.mvvm.MvvmState;
+import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.argon.ArgonException;
 import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.networking.internal.RemoteInternalSettings;
+import com.metavize.mvvm.tran.HostName;
+import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.ParseException;
+import com.metavize.mvvm.tran.script.ScriptRunner;
+import com.metavize.mvvm.tran.script.ScriptWriter;
+import org.apache.log4j.Logger;
 
 import static com.metavize.mvvm.networking.NetworkManagerImpl.BUNNICULA_BASE;
 import static com.metavize.mvvm.networking.NetworkManagerImpl.BUNNICULA_CONF;
@@ -88,7 +80,7 @@ class NetworkConfigurationLoader
     private static final String POST_FUNC_NAME    = "postConfigurationScript";
     /* Functionm declaration for the post configuration function */
     private static final String DECL_POST_CONF    = "function " + POST_FUNC_NAME + "() {";
-    
+
     private static final String FLAG_IS_HOSTNAME_PUBLIC = "MVVM_IS_HOSTNAME_EN";
     private static final String FLAG_HOSTNAME          = "MVVM_HOSTNAME";
     private static final String FLAG_PUBLIC_ADDRESS_EN = "MVVM_PUBLIC_ADDRESS_EN";
@@ -112,10 +104,10 @@ class NetworkConfigurationLoader
         throws NetworkException
     {
         NetworkingConfiguration configuration = new NetworkingConfigurationImpl();
-        
+
         loadBasicNetworkSettings( configuration );
         loadRemoteSettings( configuration );
-        
+
         return configuration;
     }
 
@@ -126,7 +118,7 @@ class NetworkConfigurationLoader
         loadRemoteSettings( remote );
         return remote;
     }
-    
+
     /* Fill in the remote settings for an existing remote settings object. */
     void loadRemoteSettings( RemoteSettings remote )
     {
@@ -158,21 +150,21 @@ class NetworkConfigurationLoader
         netcap.updateAddress();
 
         List<InterfaceData> externalIntfDataList;
-        
+
         try {
             externalIntfDataList = netcap.getInterfaceData( external );
         } catch ( Exception e ) {
             logger.warn( "Exception retrieving external interface data, setting to an empty list" );
             externalIntfDataList = EMPTY_INTF_DATA_LIST;
         }
-        
+
         if ( externalIntfDataList == null ) externalIntfDataList = EMPTY_INTF_DATA_LIST;
-        
+
         basic.host( NetworkUtil.EMPTY_IPADDR );
         basic.netmask( NetworkUtil.EMPTY_IPADDR );
 
         List<InterfaceAlias> interfaceAliasList = new LinkedList<InterfaceAlias>();
-        
+
         boolean isFirst = true;
         for ( InterfaceData data : externalIntfDataList ) {
             if ( isFirst ) {
@@ -182,12 +174,12 @@ class NetworkConfigurationLoader
                 /* XXX Broadcast address is presently not used */
                 interfaceAliasList.add( new InterfaceAlias( data.getAddress(), data.getNetmask(), null ));
             }
-            
+
             isFirst = false;
         }
 
         basic.setAliasList( interfaceAliasList );
-        
+
         Inet4Address gateway = (Inet4Address)Netcap.getGateway();
         if ( gateway == null ) basic.gateway( NetworkUtil.EMPTY_IPADDR );
         else                   basic.gateway( new IPaddr( gateway ));
@@ -210,9 +202,9 @@ class NetworkConfigurationLoader
             int code = 0;
             Process p = Runtime.getRuntime().exec( "sh " + DHCP_TEST_SCRIPT  );
             code = p.waitFor();
-            
+
             isDhcpEnabled = ( code == DHCP_ENABLED_CODE );
-        } catch ( Exception e ) { 
+        } catch ( Exception e ) {
             logger.warn( "Error testing DHCP address, continuing with false.", e );
             isDhcpEnabled = false;
         }
@@ -223,7 +215,7 @@ class NetworkConfigurationLoader
     private void loadDnsServers( BasicNetworkSettings basic )
     {
         List<IPaddr> dnsServers = NetworkUtilPriv.getPrivInstance().getDnsServers();
-        
+
         if ( dnsServers.size() >= 2 ) {
             basic.dns1( dnsServers.get( 0 ));
             basic.dns2( dnsServers.get( 1 ));
@@ -239,7 +231,7 @@ class NetworkConfigurationLoader
         String host = null;
         String mask = null;
         String publicAddress = null;
-        
+
         /* Open up the interfaces file */
         try {
             BufferedReader in = new BufferedReader(new FileReader( FLAGS_CFG_FILE ));
@@ -271,7 +263,7 @@ class NetworkConfigurationLoader
                     } else if ( str.startsWith( FLAG_PUBLIC_ADDRESS )) {
                         publicAddress = removeQuotes( str.substring( FLAG_PUBLIC_ADDRESS.length() + 1 ));
                     } else if ( str.startsWith( FLAG_POST_FUNC )) {
-                        /* Nothing to do here, this is just here to indicate that a 
+                        /* Nothing to do here, this is just here to indicate that a
                          * post configuration function exists */
                     } else if ( str.equals( DECL_POST_CONF )) {
                         parsePostConfigurationScript( remote, in );
@@ -299,7 +291,7 @@ class NetworkConfigurationLoader
         } catch ( Exception ex ) {
             logger.error( "Error parsing outside host or netmask", ex );
         }
-        
+
         /* Handle the public address */
         if (( publicAddress != null ) && ( publicAddress.length() > 0 )) {
             /* Do not alter the value of the public address flag */
@@ -317,7 +309,7 @@ class NetworkConfigurationLoader
     private void loadHostname( RemoteSettings remote )
     {
         HostName hostname = NetworkUtilPriv.getPrivInstance().loadHostname();
-        
+
         if ( hostname != null && !hostname.isEmpty() && !NetworkUtil.DEFAULT_HOSTNAME.equals( hostname )) {
             remote.setHostname( hostname );
         } else {
@@ -342,7 +334,7 @@ class NetworkConfigurationLoader
                 isComplete = true;
                 break;
             }
-            
+
             sb.append( command + "\n" );
         }
 
@@ -358,7 +350,7 @@ class NetworkConfigurationLoader
     {
         /* Try to read in the properties for the HTTPS port */
         remote.httpsPort( NetworkUtil.DEF_HTTPS_PORT );
-        
+
         try {
             Properties properties = new Properties();
             File f = new File( PROPERTY_FILE );
@@ -371,7 +363,7 @@ class NetworkConfigurationLoader
                     remote.httpsPort( Integer.parseInt( temp ));
                     logger.debug( "Found HTTPS port " + remote.httpsPort());
                 }
-            }            
+            }
         } catch ( Exception e ) {
             logger.warn( "Unable to load properties file: " + PROPERTY_FILE, e );
             remote.httpsPort( NetworkUtil.DEF_HTTPS_PORT );
@@ -383,7 +375,7 @@ class NetworkConfigurationLoader
         /* SSH is enabled if and only if this file exists */
         File sshd = new File( SSHD_PID_FILE );
 
-        remote.isSshEnabled( sshd.exists());        
+        remote.isSshEnabled( sshd.exists());
     }
 
     private boolean parseBooleanFlag( String nameValuePair, String name )
@@ -401,7 +393,7 @@ class NetworkConfigurationLoader
     }
 
     /* Save methods */
-    
+
     void saveRemoteSettings( RemoteInternalSettings remote )
     {
         try {
@@ -409,7 +401,7 @@ class NetworkConfigurationLoader
         } catch ( Exception e ) {
             logger.error( "Exception saving https port", e );
         }
-        
+
         try {
             saveHostname( remote );
         } catch ( Exception e ) {
@@ -472,10 +464,10 @@ class NetworkConfigurationLoader
         } else {
             sw.appendVariable( FLAG_IS_HOSTNAME_PUBLIC, "" + false );
         }
-        
+
         /* Append whether or not the public address is enabled */
         sw.appendVariable( FLAG_PUBLIC_ADDRESS_EN, "" + remote.getIsPublicAddressEnabled());
-        
+
         if ( remote.getPublicAddress() != null ) {
             sw.appendVariable( FLAG_PUBLIC_ADDRESS, remote.getPublicAddress());
         }
@@ -491,7 +483,7 @@ class NetworkConfigurationLoader
         try {
             MvvmContextFactory.context().appServerManager().rebindExternalHttpsPort( httpsPort );
         } catch ( Exception e ) {
-            if ( !MvvmContextFactory.context().state().equals( MvvmLocalContext.MvvmState.RUNNING )) {
+            if ( !MvvmContextFactory.context().state().equals( MvvmState.RUNNING )) {
                 /* This isn't a problem at startup, because the app manager uses the property also */
                 /* this fails the first time because the tomcat manager isn't initialized yet */
                 logger.info( "unable to rebind port at startup: " + e );
@@ -538,7 +530,7 @@ class NetworkConfigurationLoader
             logger.warn( "not saving hostname as requested" );
             return;
         }
-        
+
         ScriptRunner.getInstance().exec( HOSTNAME_SCRIPT, remote.getHostname().toString());
     }
 

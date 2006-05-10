@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -24,12 +24,11 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import sun.misc.BASE64Encoder;
 
 import org.apache.catalina.realm.GenericPrincipal;
 import org.apache.catalina.realm.RealmBase;
 import org.apache.log4j.Logger;
-
+import sun.misc.BASE64Encoder;
 
 class MvvmRealm extends RealmBase
 {
@@ -43,7 +42,7 @@ class MvvmRealm extends RealmBase
 
     // XXX Very small memory leak here if the nonce is never used (quite rare)
     private HashMap<String, Principal> nonces = new HashMap<String, Principal>();
-    
+
     public Principal authenticate(String username, String credentials)
     {
         DataSourceFactory dsf = DataSourceFactory.factory();
@@ -107,7 +106,8 @@ class MvvmRealm extends RealmBase
         String nonce = new BASE64Encoder().encode(buffer);
         nonces.put(nonce, user);
 
-        return MvvmAuthenticator.AUTH_NONCE_FIELD_NAME + "=" + URLEncoder.encode(nonce);
+        return MvvmAuthenticator.AUTH_NONCE_FIELD_NAME + "="
+            + URLEncoder.encode(nonce);
    }
 
     // Used by servlets (reports, store)

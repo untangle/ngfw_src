@@ -31,10 +31,10 @@ public class MvvmContextFactory
      *
      * @return a <code>MvvmState</code> enumerated value
      */
-    public static MvvmLocalContext.MvvmState state()
+    public static MvvmState state()
     {
         if (MVVM_CONTEXT == null) {
-            return MvvmLocalContext.MvvmState.LOADED;
+            return MvvmState.LOADED;
         } else {
             return MVVM_CONTEXT.state();
         }

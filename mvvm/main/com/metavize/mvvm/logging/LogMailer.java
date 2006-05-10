@@ -11,22 +11,25 @@
 
 package com.metavize.mvvm.logging;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.RandomAccessFile;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.mail.MessagingException;
 import javax.mail.Part;
 import javax.mail.internet.MimeBodyPart;
 
 import com.metavize.mvvm.MailSender;
 import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.MvvmLocalContext;
+import com.metavize.mvvm.MvvmState;
 import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.engine.Version;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformManager;
 import org.apache.log4j.Logger;
-
 
 public class LogMailer implements Runnable
 {
@@ -115,7 +118,7 @@ public class LogMailer implements Runnable
                 long now = System.currentTimeMillis();
                 if (now - MIN_MESSAGE_PERIOD < lastSendTime)
                     Thread.sleep(MIN_MESSAGE_PERIOD  - (now - lastSendTime));
-                if (MvvmContextFactory.state() == MvvmLocalContext.MvvmState.RUNNING &&
+                if (MvvmContextFactory.state() == MvvmState.RUNNING &&
                     MvvmContextFactory.context().networkingManager().get().isExceptionReportingEnabled())
                     sendMessage(triggerer);
                 lastSendTime = System.currentTimeMillis();
@@ -189,7 +192,8 @@ public class LogMailer implements Runnable
         }
     }
 
-    private void doSend(String subjectBase, String bodyBase, List<MimeBodyPart> parts) {
+    private void doSend(String subjectBase, String bodyBase,
+                        List<MimeBodyPart> parts) {
         NetworkingConfiguration netConf = MvvmContextFactory.context().networkingManager().get();
         String host = netConf.host().toString();
 

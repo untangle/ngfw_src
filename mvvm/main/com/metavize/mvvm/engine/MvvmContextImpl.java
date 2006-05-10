@@ -19,6 +19,7 @@ import java.util.StringTokenizer;
 
 import com.metavize.mvvm.CronJob;
 import com.metavize.mvvm.MvvmLocalContext;
+import com.metavize.mvvm.MvvmState;
 import com.metavize.mvvm.Period;
 import com.metavize.mvvm.argon.Argon;
 import com.metavize.mvvm.argon.ArgonManagerImpl;
@@ -192,12 +193,6 @@ public class MvvmContextImpl extends MvvmContextBase
     {
         return mPipeManager;
     }
-
-    public TomcatManager getTomcatManager()
-    {
-        return tomcatManager;
-    }
-
 
     public PipelineFoundryImpl pipelineFoundry()
     {
@@ -428,12 +423,13 @@ public class MvvmContextImpl extends MvvmContextBase
 
         // Create the tomcat manager *before* the MVVM, so we can
         // "register" webapps to be started before Tomcat exists.
-        tomcatManager = new TomcatManager(System.getProperty("bunnicula.home"),
+        tomcatManager = new TomcatManager(this,
+                                          System.getProperty("bunnicula.home"),
                                           System.getProperty("bunnicula.web.dir"),
                                           System.getProperty("bunnicula.log.dir"));
 
         // start services:
-        adminManager = AdminManagerImpl.adminManager();
+        adminManager = new AdminManagerImpl(this);
         mailSender = MailSenderImpl.mailSender();
 
         // Fire up the policy manager.
@@ -470,7 +466,7 @@ public class MvvmContextImpl extends MvvmContextBase
         //Start AddressBookImpl
         addressBookImpl = AddressBookImpl.getInstance();
 
-        portalManager = PortalManagerImpl.getInstance();
+        portalManager = new PortalManagerImpl(this);
         remotePortalManager = new RemotePortalManagerImpl(portalManager);
 
         // start vectoring:
@@ -618,6 +614,11 @@ public class MvvmContextImpl extends MvvmContextBase
     }
 
     // package protected methods ----------------------------------------------
+
+    TomcatManager tomcatManager()
+    {
+        return tomcatManager;
+    }
 
     MvvmRemoteContext remoteContext()
     {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -15,7 +15,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 
 import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.MvvmLocalContext;
+import com.metavize.mvvm.MvvmState;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.TransformContext;
 import org.apache.log4j.AppenderSkeleton;
@@ -23,8 +23,6 @@ import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.helpers.CyclicBuffer;
 import org.apache.log4j.spi.LoggingEvent;
-
-
 
 public class SMTPAppender extends AppenderSkeleton
 {
@@ -45,7 +43,7 @@ public class SMTPAppender extends AppenderSkeleton
 
         TransformContext tctx;
         String name;
-        if (MvvmContextFactory.state() == MvvmLocalContext.MvvmState.LOADED) {
+        if (MvvmContextFactory.state() == MvvmState.LOADED) {
             tid = new Tid(0L);
             tctx = null;
         } else {
@@ -84,7 +82,7 @@ public class SMTPAppender extends AppenderSkeleton
         try {
             // For now, ignore anything that happens before we are all the way booted.  This is
             // way safer than the alternative. XXX
-            if (MvvmContextFactory.state() != MvvmLocalContext.MvvmState.RUNNING) {
+            if (MvvmContextFactory.state() != MvvmState.RUNNING) {
                 return;
             }
             event.getThreadName();

@@ -11,29 +11,54 @@
 
 package com.metavize.mvvm.engine;
 
+import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.naming.ServiceUnavailableException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.MvvmLocalContext;
-import com.metavize.mvvm.addrbook.*;
+import com.metavize.mvvm.addrbook.AddressBook;
+import com.metavize.mvvm.addrbook.AddressBookConfiguration;
+import com.metavize.mvvm.addrbook.AddressBookSettings;
+import com.metavize.mvvm.addrbook.UserEntry;
 import com.metavize.mvvm.logging.EventLogger;
-import com.metavize.mvvm.portal.*;
+import com.metavize.mvvm.portal.Application;
+import com.metavize.mvvm.portal.Bookmark;
+import com.metavize.mvvm.portal.LocalPortalManager;
+import com.metavize.mvvm.portal.PortalGlobal;
+import com.metavize.mvvm.portal.PortalGroup;
+import com.metavize.mvvm.portal.PortalHomeSettings;
+import com.metavize.mvvm.portal.PortalLogin;
+import com.metavize.mvvm.portal.PortalLoginEvent;
+import com.metavize.mvvm.portal.PortalLogoutEvent;
+import com.metavize.mvvm.portal.PortalSettings;
+import com.metavize.mvvm.portal.PortalUser;
+import com.metavize.mvvm.portal.RemoteApplicationManager;
 import com.metavize.mvvm.security.LoginFailureReason;
 import com.metavize.mvvm.security.LogoutReason;
 import com.metavize.mvvm.util.TransactionWork;
 import jcifs.smb.NtlmPasswordAuthentication;
+import org.apache.catalina.HttpRequest;
+import org.apache.catalina.HttpResponse;
+import org.apache.catalina.Realm;
+import org.apache.catalina.authenticator.BasicAuthenticator;
+import org.apache.catalina.authenticator.Constants;
+import org.apache.catalina.deploy.LoginConfig;
+import org.apache.catalina.realm.RealmBase;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
 /**
- * Implementation of the PortalManager
+ * Implementation of the PortalManager.
  */
 class PortalManagerImpl implements LocalPortalManager
 {
@@ -45,25 +70,22 @@ class PortalManagerImpl implements LocalPortalManager
     // of scripted dictionary attacks.
     private static final long LOGIN_FAIL_SLEEP_TIME = 2000;
 
-    private static final PortalManagerImpl PORTAL_MANAGER = new PortalManagerImpl();
+    private final MvvmContextImpl mvvmContext;
+    private final PortalApplicationManagerImpl appManager;
+    private final RemotePortalApplicationManagerImpl remoteAppManager;
+    private final PortalRealm portalRealm;
+    private final AddressBook addressBook;
+    private final EventLogger eventLogger;
+
+    private final Map<PortalLogin, Long> activeLogins;
 
     private final Logger logger = Logger.getLogger(PortalManagerImpl.class);
 
-    private EventLogger eventLogger;
-
-    private AddressBook addressBook;
-
-    private PortalApplicationManagerImpl appManager;
-    private RemotePortalApplicationManagerImpl remoteAppManager;
-
     private PortalSettings portalSettings;
 
-    private Map<PortalLoginKey,PortalLogin> activeLogins;
-
-    private TimeoutReaper reaper = null;
-
-    private PortalManagerImpl() {
-        MvvmLocalContext ctx = MvvmContextFactory.context();
+    PortalManagerImpl(MvvmContextImpl mvvmContext)
+    {
+        this.mvvmContext = mvvmContext;
 
         TransactionWork tw = new TransactionWork()
             {
@@ -78,41 +100,38 @@ class PortalManagerImpl implements LocalPortalManager
                         pg.setPortalHomeSettings(new PortalHomeSettings());
                         portalSettings.setGlobal(pg);
                         s.save(portalSettings);
-
                     }
                     return true;
                 }
             };
-        ctx.runTransaction(tw);
+        mvvmContext.runTransaction(tw);
 
         appManager = PortalApplicationManagerImpl.applicationManager();
         remoteAppManager = new RemotePortalApplicationManagerImpl(appManager);
 
-        addressBook = ctx.appAddressBook();
+        portalRealm = new PortalRealm();
 
-        activeLogins = new ConcurrentHashMap<PortalLoginKey,PortalLogin>();
+        addressBook = mvvmContext.appAddressBook();
 
-        eventLogger = ctx.eventLogger();
+        eventLogger = mvvmContext.eventLogger();
 
-        reaper = new TimeoutReaper(REAPING_FREQ);
-        new Thread(reaper).start();
+        activeLogins = new ConcurrentHashMap<PortalLogin, Long>();
 
         logger.info("Initialized PortalManager");
     }
 
-    /**
-     * Do not call this directly, instead go through <code>MvvmLocalContext</code>
-     */
-    static PortalManagerImpl getInstance() {
-        return PORTAL_MANAGER;
-    }
+    // public methods ---------------------------------------------------------
 
-    public PortalApplicationManagerImpl applicationManager() {
-        return appManager;
-    }
-
-    public RemoteApplicationManager remoteApplicationManager() {
+    public RemoteApplicationManager remoteApplicationManager()
+    {
         return remoteAppManager;
+    }
+
+    // LocalPortalManager methods ---------------------------------------------
+
+    public PortalApplicationManagerImpl applicationManager()
+    {
+        return appManager;
     }
 
     public PortalSettings getPortalSettings()
@@ -130,12 +149,34 @@ class PortalManagerImpl implements LocalPortalManager
                     return true;
                 }
             };
-        MvvmContextFactory.context().runTransaction(tw);
+        mvvmContext.runTransaction(tw);
 
         this.portalSettings = settings;
     }
 
-    void destroy() {
+    public PortalHomeSettings getPortalHomeSettings(PortalUser user)
+    {
+        PortalHomeSettings result = user.getPortalHomeSettings();
+        if (result == null) {
+            PortalGroup userGroup = user.getPortalGroup();
+            if (userGroup != null) {
+                result = userGroup.getPortalHomeSettings();
+            }
+        }
+        if (result == null) {
+            result = portalSettings.getGlobal().getPortalHomeSettings();
+        }
+        return result;
+    }
+
+    public PortalUser getUser(String uid)
+    {
+        for (PortalUser user : (List<PortalUser>)portalSettings.getUsers()) {
+            if (uid.equals(user.getUid())) {
+                return user;
+            }
+        }
+        return null;
     }
 
     public List<Bookmark> getAllBookmarks(PortalUser user)
@@ -160,22 +201,8 @@ class PortalManagerImpl implements LocalPortalManager
         return result;
     }
 
-    public PortalHomeSettings getPortalHomeSettings(PortalUser user)
-    {
-        PortalHomeSettings result = user.getPortalHomeSettings();
-        if (result == null) {
-            PortalGroup userGroup = user.getPortalGroup();
-            if (userGroup != null) {
-                result = userGroup.getPortalHomeSettings();
-            }
-        }
-        if (result == null) {
-            result = portalSettings.getGlobal().getPortalHomeSettings();
-        }
-        return result;
-    }
-
-    public Bookmark addUserBookmark(final PortalUser user, String name, Application application, String target)
+    public Bookmark addUserBookmark(final PortalUser user, String name,
+                                    Application application, String target)
     {
         Bookmark result = user.addBookmark(name, application, target);
 
@@ -187,7 +214,7 @@ class PortalManagerImpl implements LocalPortalManager
                     return true;
                 }
             };
-        MvvmContextFactory.context().runTransaction(tw);
+        mvvmContext.runTransaction(tw);
 
         return result;
     }
@@ -204,72 +231,79 @@ class PortalManagerImpl implements LocalPortalManager
                     return true;
                 }
             };
-        MvvmContextFactory.context().runTransaction(tw);
+        mvvmContext.runTransaction(tw);
     }
 
-
-    public PortalUser getUser(String uid)
+    public void logout(PortalLogin login)
     {
-        List allUsers = portalSettings.getUsers();
-        for (Iterator iter = allUsers.iterator(); iter.hasNext();) {
-            PortalUser user = (PortalUser) iter.next();
-            if (uid.equals(user.getUid()))
-                return user;
-        }
-        return null;
-    }
-
-    public List<PortalLogin> getActiveLogins()
-    {
-        return new ArrayList<PortalLogin>(activeLogins.values());
+        doLogout(login, LogoutReason.USER);
     }
 
     public void forceLogout(PortalLogin login)
     {
-        if (login == null)
-            throw new NullPointerException("login cannot be null");
-        for (Iterator<PortalLoginKey> iter = activeLogins.keySet().iterator(); iter.hasNext();) {
-            PortalLoginKey key = iter.next();
-            PortalLogin l = activeLogins.get(key);
-            if (l.equals(login)) {
-                doLogout(key, LogoutReason.ADMINISTRATOR);
-                return;
-            }
+        doLogout(login, LogoutReason.ADMINISTRATOR);
+    }
+
+    public List<PortalLogin> getActiveLogins()
+    {
+        return new ArrayList(activeLogins.keySet());
+    }
+
+    // package protected methods ----------------------------------------------
+
+    BasicAuthenticator newPortalAuthenticator()
+    {
+        return new PortalAuthenticator();
+    }
+
+    Realm getPortalRealm()
+    {
+        return portalRealm;
+    }
+
+    void destroy() {
+        //XXX kill reaper
+    }
+
+    // private methods --------------------------------------------------------
+
+    private String getCurrentDomain()
+    {
+        AddressBookSettings s = addressBook.getAddressBookSettings();
+        if (AddressBookConfiguration.AD_AND_LOCAL == s.getAddressBookConfiguration()) {
+            return s.getADRepositorySettings().getDomain();
+        } else {
+            return null;
         }
-        logger.warn("Tried to logout missing login with uid " + login.getUser());
     }
 
-    public void logout(PortalLoginKey loginKey)
+    private long getIdleTimeout(PortalUser user)
     {
-        doLogout(loginKey, LogoutReason.USER);
+        PortalHomeSettings hs = getPortalHomeSettings(user);
+        return hs.getIdleTimeout();
     }
 
-    public PortalLogin getLogin(PortalLoginKey key)
-    {
-        if (key == null)
-            throw new NullPointerException("login key cannot be null");
-        return activeLogins.get(key);
-    }
-
-    public PortalLoginKey login(String uid, String password, InetAddress clientAddr)
+    private PortalLogin login(String uid, String password, InetAddress addr)
     {
         try {
             boolean authenticated = addressBook.authenticate(uid, password);
 
             if (!authenticated) {
                 UserEntry ue = addressBook.getEntry(uid);
-                if (ue == null) {
+                if (null == ue) {
                     logger.debug("no user found with login: " + uid);
-                    PortalLoginEvent event = new PortalLoginEvent(clientAddr, uid, false, LoginFailureReason.UNKNOWN_USER);
+                    PortalLoginEvent event = new PortalLoginEvent(addr, uid, false, LoginFailureReason.UNKNOWN_USER);
                     eventLogger.log(event);
                 } else {
                     logger.debug("password check failed");
-                    PortalLoginEvent event = new PortalLoginEvent(clientAddr, uid, false, LoginFailureReason.BAD_PASSWORD);
+                    PortalLoginEvent event = new PortalLoginEvent(addr, uid, false, LoginFailureReason.BAD_PASSWORD);
                     eventLogger.log(event);
                 }
+
                 try {
                     Thread.sleep(LOGIN_FAIL_SLEEP_TIME);
                 } catch (InterruptedException exn) { }
+
                 return null;
             }
         } catch (ServiceUnavailableException x) {
@@ -279,8 +313,8 @@ class PortalManagerImpl implements LocalPortalManager
 
         PortalUser user = getUser(uid);
 
-        if (user == null && portalSettings.getGlobal().isAutoCreateUsers()) {
-            logger.debug("lookupUser: " + uid + " didn't exist, auto creating");
+        if (null == user && portalSettings.getGlobal().isAutoCreateUsers()) {
+            logger.debug(uid + " didn't exist, auto creating");
             PortalUser newUser = portalSettings.addUser(uid);
             setPortalSettings(portalSettings);
             user = newUser;
@@ -288,121 +322,161 @@ class PortalManagerImpl implements LocalPortalManager
 
         if (!user.isLive()) {
             logger.debug("user is disabled");
-            PortalLoginEvent event = new PortalLoginEvent(clientAddr, uid, false, LoginFailureReason.DISABLED);
+            PortalLoginEvent event = new PortalLoginEvent(addr, uid, false, LoginFailureReason.DISABLED);
             eventLogger.log(event);
             return null;
         }
 
-        // Make up a descriptor so the key prints nicely
-        String desc = uid + clientAddr;
-        PortalLoginKey key = new PortalLoginKey(desc);
-
         NtlmPasswordAuthentication pwa = null;
         String domain = getCurrentDomain();
-        if (domain != null)
+        if (null != domain) {
             pwa = new NtlmPasswordAuthentication(domain, uid, password);
-        PortalLogin login = new PortalLogin(user, clientAddr, pwa);
-        activeLogins.put(key, login);
+        }
+        PortalLogin login = new PortalLogin(user, addr, pwa);
+        activeLogins.put(login, System.currentTimeMillis());
 
-        PortalLoginEvent event = new PortalLoginEvent(clientAddr, uid, true);
+        PortalLoginEvent event = new PortalLoginEvent(addr, uid, true);
         eventLogger.log(event);
 
-        return key;
+        return login;
     }
 
-    private String getCurrentDomain() {
-        AddressBookSettings s = addressBook.getAddressBookSettings();
-        if (s.getAddressBookConfiguration() == AddressBookConfiguration.AD_AND_LOCAL)
-            return s.getADRepositorySettings().getDomain();
-        return null;
-    }
-
-    private void doLogout(PortalLoginKey loginKey, LogoutReason reason)
+    private void doLogout(PortalLogin login, LogoutReason reason)
     {
-        PortalLogin login = activeLogins.get(loginKey);
-        if (login == null) {
-            logger.warn("ignoring doLogout for already logged out key " + loginKey);
-            return;
-        }
-
-        if (reason == LogoutReason.ADMINISTRATOR)
+        if (LogoutReason.ADMINISTRATOR == reason) {
             logger.warn("Administrative logout of " + login);
-        else
+        } else {
             logger.info("" + reason + " logout of " + login);
+        }
 
-        activeLogins.remove(loginKey);
+        activeLogins.remove(login);
 
-        PortalLogoutEvent event = new PortalLogoutEvent(login.getClientAddr(), login.getUser(),
-                                                        reason);
-        eventLogger.log(event);
+        PortalLogoutEvent evt = new PortalLogoutEvent(login.getClientAddr(),
+                                                      login.getUser(), reason);
+        eventLogger.log(evt);
     }
 
-    private long getIdleTimeout(PortalUser user)
+    // private classes --------------------------------------------------------
+
+    private class PortalAuthenticator extends BasicAuthenticator
     {
-        PortalHomeSettings hs = getPortalHomeSettings(user);
-        return hs.getIdleTimeout();
+        protected static final String info =
+            "com.metavize.mvvm.engine.PortalAuthenticator/4.0";
+
+        private final Log log = LogFactory.getLog(getClass());
+
+        // Realm methods ------------------------------------------------------
+
+        @Override
+        public String getInfo()
+        {
+            return info;
+        }
+
+        @Override
+        public boolean authenticate(HttpRequest request, HttpResponse response,
+                                    LoginConfig config)
+            throws IOException
+        {
+            HttpServletRequest req = (HttpServletRequest)request.getRequest();
+            HttpServletResponse resp = (HttpServletResponse)response.getResponse();
+            Principal principal = req.getUserPrincipal();
+
+            String ssoId = (String)request.getNote(Constants.REQ_SSOID_NOTE);
+
+            if (null != principal) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Already authenticated '" + principal.getName()
+                              + "'");
+                }
+                if (ssoId != null)
+                    associate(ssoId, getSession(request, true));
+                return true;
+            } else if (null != ssoId) {
+                if (log.isDebugEnabled()) {
+                    log.debug("SSO Id " + ssoId + " set; attempting " +
+                              "reauthentication");
+                }
+                if (reauthenticateFromSSO(ssoId, request)) {
+                    return true;
+                }
+            }
+
+            String authorization = request.getAuthorization();
+            String username = parseUsername(authorization);
+            String password = parsePassword(authorization);
+
+            LocalPortalManager pm = mvvmContext.portalManager();
+
+            String credentials = password + "," + req.getRemoteAddr();
+
+            principal = context.getRealm().authenticate(username, credentials);
+
+            if (null != principal) {
+                register(request, response, principal, Constants.BASIC_METHOD,
+                         username, password);
+                return true;
+            } else {
+                String realmName = config.getRealmName();
+                if (null == realmName) {
+                    realmName = req.getServerName() + ":"
+                        + req.getServerPort();
+                }
+
+                resp.setHeader("WWW-Authenticate",
+                               "Basic realm=\"" + realmName + "\"");
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return false;
+            }
+        }
     }
 
-
-    private class TimeoutReaper implements Runnable
+    private class PortalRealm extends RealmBase
     {
-        private long millifreq;
+        // Realm methods ------------------------------------------------------
 
-        private volatile Thread thread;
-
-        TimeoutReaper(long millifreq)
+        public Principal authenticate(String username, String credentials)
         {
-            this.millifreq = millifreq;
+            String[] creds = credentials.split(",");
+            String password = creds[0];
+            InetAddress addr;
+
+            try {
+                addr = InetAddress.getByName(creds[1]);
+            } catch (UnknownHostException exn) {
+                addr = null;
+            }
+
+            LocalPortalManager pm = mvvmContext.portalManager();
+
+            return login(username, password, addr);
         }
 
-        public void destroy()
+        @Override
+        public boolean hasRole(Principal p, String role)
         {
-            Thread t = this.thread;
-            if (null != t) {
-                this.thread = null;
-                t.interrupt();
-            }
+            return null != role && role.equalsIgnoreCase("user")
+                && p instanceof PortalLogin;
         }
 
-        public void run()
+        // RealmBase methods --------------------------------------------------
+
+        @Override
+        protected String getPassword(String username)
         {
-            thread = Thread.currentThread();
-
-            while (thread == Thread.currentThread()) {
-                try {
-                    Thread.sleep(millifreq);
-                }
-                catch (InterruptedException e) {
-                    continue;
-                }
-
-                checkTimeouts();
-            }
+            return null;
         }
 
-        private void checkTimeouts()
+        @Override
+        protected Principal getPrincipal(String username)
         {
-            for (Iterator<PortalLoginKey> iter = activeLogins.keySet().iterator(); iter.hasNext();) {
-                PortalLoginKey key = iter.next();
-                if (key == null)
-                    // Concurrency
-                    continue;
-                PortalLogin login = activeLogins.get(key);
-                if (login == null)
-                    // Concurrency
-                    continue;
+            return null;
+        }
 
-                PortalUser user = getUser(login.getUser());
-                if (user == null) {
-                    // User deleted by admin
-                    doLogout(key, LogoutReason.ADMINISTRATOR);
-                } else {
-                    long timeout = getIdleTimeout(user);
-                    if (login.getIdleTime() >= timeout)
-                        doLogout(key, LogoutReason.TIMEOUT);
-                }
-            }
+        @Override
+        protected String getName()
+        {
+            return "PortalRealm";
         }
     }
-
 }

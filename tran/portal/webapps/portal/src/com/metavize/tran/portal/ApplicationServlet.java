@@ -26,7 +26,6 @@ import com.metavize.mvvm.portal.Application;
 import com.metavize.mvvm.portal.LocalApplicationManager;
 import com.metavize.mvvm.portal.LocalPortalManager;
 import com.metavize.mvvm.portal.PortalLogin;
-import com.metavize.mvvm.portal.PortalLoginKey;
 import com.metavize.mvvm.portal.PortalUser;
 import com.metavize.mvvm.util.XmlUtil;
 import org.apache.log4j.Logger;
@@ -48,27 +47,10 @@ public class ApplicationServlet extends HttpServlet
         resp.setContentType("text/xml");
         resp.addHeader("Cache-Control", "no-cache");
 
-        PortalLoginKey plk = (PortalLoginKey)s.getAttribute(LocalPortalManager.PORTAL_LOGIN_KEY);
-        if (null == plk) {
-            logger.info("not logged in: " + plk);
-            try {
-                resp.sendError(HttpServletResponse.SC_FORBIDDEN);
-            } catch (IOException exn) {
-                logger.warn("could not send error", exn);
-            }
-            return;
-        }
-
-        PortalLogin pl = portalManager.getLogin(plk);
+        PortalLogin pl = (PortalLogin)req.getUserPrincipal();
 
         if (null == pl) {
-            logger.info("login timeout: " + plk);
-            try {
-                resp.sendError(HttpServletResponse.SC_FORBIDDEN);
-            } catch (IOException exn) {
-                logger.warn("could not send error", exn);
-            }
-            return;
+            System.out.println("NO PRINCIPAL! " + this);
         }
 
         PortalUser pu = portalManager.getUser(pl.getUser());

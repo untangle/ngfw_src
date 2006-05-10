@@ -11,19 +11,16 @@
 
 package com.metavize.mvvm.portal;
 
-import java.net.InetAddress;
 import java.util.List;
 
 /**
- * Describe interface <code>LocalPortalManager</code> here.
+ * Local interface to the PortalManager.
  *
  * @author <a href="mailto:jdi@slabuntu">John Irwin</a>
  * @version 1.0
  */
 public interface LocalPortalManager
 {
-    String PORTAL_LOGIN_KEY = "portal-login-key";
-
     /**
      * The list of all bookmarks for the given user.  Is sorted with
      * user's bookmarks at top, then group (if any), then global.
@@ -47,7 +44,8 @@ public interface LocalPortalManager
      * Adds a new bookmark for the given user.  Does not currently
      * validate the target.
      */
-    Bookmark addUserBookmark(PortalUser user, String name, Application application, String target);
+    Bookmark addUserBookmark(PortalUser user, String name,
+                             Application application, String target);
 
     void removeUserBookmark(PortalUser user, Bookmark bookmark);
 
@@ -59,26 +57,7 @@ public interface LocalPortalManager
      */
     PortalUser getUser(String uid);
 
-    /**
-     * Looks up a login by login key.  Returns null if the login does
-     * not exist; this happens if the login times out or is forced to
-     * log out.
-     *
-     * @param loginKey a <code>PortalLoginKey</code> giving the key
-     * for the login
-     * @return a <code>PortalLogin</code> value
-     */
-    PortalLogin getLogin(PortalLoginKey loginKey);
-
-    PortalLoginKey login(String uid, String password, InetAddress clientAddr);
-
-    /**
-     * Normal user-initiated login.
-     *
-     * @param loginKey a <code>PortalLoginKey</code> giving the login
-     * to log out
-     */
-    void logout(PortalLoginKey loginKey);
+    void logout(PortalLogin login);
 
     LocalApplicationManager applicationManager();
 

@@ -49,7 +49,7 @@ class AppServerManagerImpl implements AppServerManager
     {
         this.mctx = mctx;
         //TODO Clean up stuff ported from "main"
-        this.tomcatManager = mctx.getTomcatManager();
+        this.tomcatManager = mctx.tomcatManager();
 
         Properties networkingProperties = new Properties();
 
