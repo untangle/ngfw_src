@@ -58,7 +58,8 @@ class TomcatManager
     private final String catalinaHome;
     private final String logDir;
 
-    private MvvmRealm mvvmRealm;
+    private MvvmRealm mvvmRealm = new MvvmRealm();
+    private PortalRealm portalRealm = new PortalRealm();
 
     private String keystoreFile = "conf/keystore";
     private String keystorePass = "changeit";
@@ -137,7 +138,6 @@ class TomcatManager
 
     boolean loadPortalApp(String urlBase, String rootDir)
     {
-        PortalRealm portalRealm = new PortalRealm();
         PortalAuthenticator portalAuth = new PortalAuthenticator();
         return loadWebApp(urlBase, rootDir, portalRealm, portalAuth);
     }
@@ -145,7 +145,7 @@ class TomcatManager
     boolean loadSystemApp(String urlBase, String rootDir)
     {
         MvvmAuthenticator mvvmAuth = new MvvmAuthenticator();
-        return loadWebApp(urlBase, rootDir, null, mvvmAuth);
+        return loadWebApp(urlBase, rootDir, mvvmRealm, mvvmAuth);
     }
 
     boolean loadInsecureApp(String urlBase, String rootDir)
@@ -215,7 +215,6 @@ class TomcatManager
         fileLog.setTimestamp(true);
         // fileLog.setVerbosityLevel("DEBUG");
 
-        mvvmRealm = new MvvmRealm();
         emb = new Embedded(fileLog, mvvmRealm);
         emb.setCatalinaHome(catalinaHome);
 
@@ -379,7 +378,9 @@ class TomcatManager
 
         try {
             Context ctx = emb.createContext(urlBase, fqRoot);
-            ctx.setRealm(realm);
+            if (null != realm) {
+                ctx.setRealm(realm);
+            }
             StandardManager mgr = new StandardManager();
             mgr.setPathname(null); /* disable session persistence */
             ctx.setManager(mgr);

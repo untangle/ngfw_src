@@ -38,9 +38,7 @@ class MvvmAuthenticator extends BasicAuthenticator
     protected static final String info =
         "com.metavize.mvvm.engine.MvvmAuthenticator/3.2";
 
-
     // ------------------------------------------------------------- Properties
-
 
     /**
      * Return descriptive information about this Valve implementation.

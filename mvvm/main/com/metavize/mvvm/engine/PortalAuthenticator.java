@@ -35,14 +35,16 @@ class PortalAuthenticator extends BasicAuthenticator
         "com.metavize.mvvm.engine.PortalAuthenticator/4.0";
 
 
-    public String getInfo() {
+    public String getInfo()
+    {
         return info;
     }
 
+    @Override
     public boolean authenticate(HttpRequest request, HttpResponse response,
                                 LoginConfig config)
-        throws IOException {
-
+        throws IOException
+    {
         HttpServletRequest req = (HttpServletRequest)request.getRequest();
         HttpServletResponse resp = (HttpServletResponse)response.getResponse();
         Principal principal = req.getUserPrincipal();
