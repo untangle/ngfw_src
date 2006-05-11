@@ -78,22 +78,22 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
 	    Schedule schedule = reportingSettings.getSchedule();
 
 	    schedule.setDaily( daily );
-	    List<Integer> dayList = (List<Integer>) schedule.getWeeklySched();
+	    List<WeeklyScheduleRule> dayList = (List<WeeklyScheduleRule>) schedule.getWeeklySched();
 	    dayList.clear();
 	    if( weeklySunday )
-		dayList.add( Schedule.SUNDAY );
+		dayList.add(new WeeklyScheduleRule( Schedule.SUNDAY ));
 	    if( weeklyMonday )
-		dayList.add( Schedule.MONDAY );
+		dayList.add(new WeeklyScheduleRule( Schedule.MONDAY ));
 	    if( weeklyTuesday )
-		dayList.add( Schedule.TUESDAY );
+		dayList.add(new WeeklyScheduleRule( Schedule.TUESDAY ));
 	    if( weeklyWednesday )
-		dayList.add( Schedule.WEDNESDAY );
+		dayList.add(new WeeklyScheduleRule( Schedule.WEDNESDAY ));
 	    if( weeklyThursday )
-		dayList.add( Schedule.THURSDAY );
+		dayList.add(new WeeklyScheduleRule( Schedule.THURSDAY ));
 	    if( weeklyFriday )
-		dayList.add( Schedule.FRIDAY );
+		dayList.add(new WeeklyScheduleRule( Schedule.FRIDAY ));
 	    if( weeklySaturday )
-		dayList.add( Schedule.SATURDAY );
+		dayList.add(new WeeklyScheduleRule( Schedule.SATURDAY ));
 	    schedule.setWeeklySched( dayList );
 
 	    schedule.setMonthlyNFirst( monthlyFirst );
@@ -144,14 +144,42 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
 	dailyEverydayJCheckBox.setSelected( dailyCurrent );
         
         // WEEKLY //
-	List<Integer> dayList = (List<Integer>) schedule.getWeeklySched();
-	weeklySundayCurrent = dayList.contains( Schedule.SUNDAY );
-	weeklyMondayCurrent = dayList.contains( Schedule.MONDAY );
-	weeklyTuesdayCurrent = dayList.contains( Schedule.TUESDAY );
-	weeklyWednesdayCurrent = dayList.contains( Schedule.WEDNESDAY );
-	weeklyThursdayCurrent = dayList.contains( Schedule.THURSDAY );
-	weeklyFridayCurrent = dayList.contains( Schedule.FRIDAY );
-	weeklySaturdayCurrent = dayList.contains( Schedule.SATURDAY );
+	weeklySundayCurrent = false;
+	weeklyMondayCurrent = false;
+	weeklyTuesdayCurrent = false;
+	weeklyWednesdayCurrent = false;
+	weeklyThursdayCurrent = false;
+	weeklyFridayCurrent = false;
+	weeklySaturdayCurrent = false;
+
+	List<WeeklyScheduleRule> dayList = (List<WeeklyScheduleRule>) schedule.getWeeklySched();
+        for (WeeklyScheduleRule weeklySR : dayList) {
+            switch (weeklySR.getDay())
+            {
+                case Schedule.SUNDAY:
+                    weeklySundayCurrent = true;
+                    break;
+                case Schedule.MONDAY:
+	            weeklyMondayCurrent = true;
+                    break;
+                case Schedule.TUESDAY:
+	            weeklyTuesdayCurrent = true;
+                    break;
+                case Schedule.WEDNESDAY:
+	            weeklyWednesdayCurrent = true;
+                    break;
+                case Schedule.THURSDAY:
+	            weeklyThursdayCurrent = true;
+                    break;
+                case Schedule.FRIDAY:
+	            weeklyFridayCurrent = true;
+                    break;
+                case Schedule.SATURDAY:
+	            weeklySaturdayCurrent = true;
+                    break;
+            }
+        }
+
 	weeklySundayJCheckBox.setSelected( weeklySundayCurrent );
 	weeklyMondayJCheckBox.setSelected( weeklyMondayCurrent );
 	weeklyTuesdayJCheckBox.setSelected( weeklyTuesdayCurrent );
@@ -716,5 +744,4 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
         private javax.swing.JCheckBox weeklyWednesdayJCheckBox;
         private javax.swing.JLabel weeklyWednesdayJLabel;
         // End of variables declaration//GEN-END:variables
-    
 }
