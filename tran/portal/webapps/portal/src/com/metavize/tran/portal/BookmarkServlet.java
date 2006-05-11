@@ -103,7 +103,9 @@ public class BookmarkServlet extends HttpServlet
     {
         w.println("<bookmarks>");
         for (Bookmark bm : bookmarks) {
-            w.print("  <bookmark name='");
+            w.print("  <bookmark id='");
+            w.print(XmlUtil.escapeXml(bm.getId().toString()));
+            w.print("' name='");
             w.print(XmlUtil.escapeXml(bm.getName()));
             w.print("' app='");
             w.print(XmlUtil.escapeXml(bm.getApplicationName()));

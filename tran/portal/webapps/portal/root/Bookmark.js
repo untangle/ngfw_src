@@ -1,7 +1,8 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-function Bookmark(name, app, target) {
+function Bookmark(id, name, app, target) {
+   this.id = id;
    this.name = name;
    this.app = app;
    this.target = target;

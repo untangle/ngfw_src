@@ -13,10 +13,12 @@ package com.metavize.tran.portal;
 
 import java.util.List;
 
+import com.metavize.tran.portal.rdp.RdpBookmark;
 import com.metavize.mvvm.AppServerManager;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.portal.Application;
+import com.metavize.mvvm.portal.Bookmark;
 import com.metavize.mvvm.portal.LocalApplicationManager;
 import com.metavize.mvvm.portal.LocalPortalManager;
 import com.metavize.mvvm.portal.PortalSettings;
@@ -42,12 +44,21 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
         + "  }\n"
         + "};\n";
 
+    private static final String RDP_JS
+        = "{\n"
+        + "  openBookmark: function(portal, target) {\n"
+        + "    portal.openPage('/rdp/rdp.jsp?t=' + target.id);\n"
+        + "  }\n"
+        + "};\n";
+
     private final Logger logger = Logger.getLogger(PortalImpl.class);
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[0];
 
     private Application browserApp;
     private Application proxyApp;
+    private Application rdpApp;
+    private Application vncApp;
 
     // constructors -----------------------------------------------------------
 
@@ -69,7 +80,7 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
         }
 
         browserApp = lam.registerApplication("CIFS", "Network File Browser",
-                                             true, null, 0, CIFS_JS);
+                                             null, null, 0, CIFS_JS);
 
         if (asm.loadPortalApp("/proxy", "proxy")) {
             logger.debug("Deployed Proxy web app");
@@ -77,13 +88,32 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
             logger.error("Unable to deploy Proxy web app");
         }
 
-        proxyApp = lam.registerApplication("HTTP", "Web Proxy", true, null, 0,
+        proxyApp = lam.registerApplication("HTTP", "Web Proxy", null, null, 0,
                                            WEB_JS);
 
         if (asm.loadPortalApp("/portal", "portal")) {
             logger.debug("Deployed Portal web app");
         } else {
             logger.error("Unable to deploy Portal web app");
+        }
+
+        Application.Destinator rdpDestinator = new Application.Destinator() {
+                public String getDestinationHost(Bookmark bm) {
+                    RdpBookmark rb = new RdpBookmark(bm);
+                    return rb.getHost();
+                }
+                public int getDestinationPort(Bookmark bm) {
+                    return 3389;
+                }
+            };
+
+        rdpApp = lam.registerApplication("RDP", "Remote Desktop", rdpDestinator, null, 0,
+                                           RDP_JS);
+
+        if (asm.loadPortalApp("/rdp", "rdp")) {
+            logger.debug("Deployed RDP Portal app");
+        } else {
+            logger.error("Unable to deploy RDP Portal app");
         }
     }
 
@@ -96,7 +126,7 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
         if (asm.unloadWebApp("/browser")) {
             logger.debug("Unloaded Browser web app");
         } else {
-            logger.error("Unable to unload Browser web app");
+            logger.warn("Unable to unload Browser web app");
         }
 
         lam.deregisterApplication(browserApp);
@@ -104,7 +134,7 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
         if (asm.unloadWebApp("/proxy")) {
             logger.debug("Unloaded Proxy web app");
         } else {
-            logger.error("Unable to unload Proxy web app");
+            logger.warn("Unable to unload Proxy web app");
         }
 
         lam.deregisterApplication(proxyApp);
@@ -112,7 +142,15 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
         if (asm.unloadWebApp("/portal")) {
             logger.debug("Unloaded Portal web app");
         } else {
-            logger.error("Unable to unload Portal web app");
+            logger.warn("Unable to unload Portal web app");
+        }
+
+        lam.deregisterApplication(rdpApp);
+
+        if (asm.unloadWebApp("/rdp")) {
+            logger.debug("Unloaded RDP Portal app");
+        } else {
+            logger.warn("Unable to unload RDP Portal app");
         }
     }
 

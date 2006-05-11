@@ -36,6 +36,18 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
     <url-pattern>/https/*</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>ForwardServlet</servlet-name>
+    <servlet-class>
+      com.metavize.tran.portal.proxy.ForwardServlet
+    </servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>ForwardServlet</servlet-name>
+    <url-pattern>/forward</url-pattern>
+  </servlet-mapping>
+
   <security-constraint>
     <web-resource-collection>
       <url-pattern>/*</url-pattern>
