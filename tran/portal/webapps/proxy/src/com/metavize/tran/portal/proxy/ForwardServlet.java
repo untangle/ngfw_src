@@ -11,22 +11,27 @@
 
 package com.metavize.tran.portal.proxy;
 
-import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.MvvmLocalContext;
-import com.metavize.mvvm.portal.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.Iterator;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.Iterator;
-import java.util.List;
 
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.MvvmLocalContext;
+import com.metavize.mvvm.portal.Application;
+import com.metavize.mvvm.portal.Bookmark;
+import com.metavize.mvvm.portal.LocalApplicationManager;
+import com.metavize.mvvm.portal.LocalPortalManager;
+import com.metavize.mvvm.portal.PortalLogin;
+import com.metavize.mvvm.portal.PortalUser;
 import org.apache.log4j.Logger;
 
 public class ForwardServlet extends HttpServlet

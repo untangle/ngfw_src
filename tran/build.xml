@@ -963,6 +963,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
       <src path="${tran.name}/webapps/proxy/src"/>
 
+      <classpath refid="mvvm.classpath"/>
       <classpath refid="httpclient.classpath"/>
       <classpath refid="htmlparser.classpath"/>
       <classpath refid="commons-fileupload.classpath"/>
