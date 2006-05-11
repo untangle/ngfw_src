@@ -27,7 +27,6 @@ import org.xml.sax.*;
 
 public class Reporter
 {
-
     private static final String SYMLINK_CMD = "/bin/ln -s";
     private static final Logger logger = Logger.getLogger(Reporter.class);
 
@@ -37,9 +36,11 @@ public class Reporter
     // Today
     private static File outputDir;
 
+    private static Settings settings;
 
+    private Reporter() {}
 
-    private Reporter(File outputBaseDir, boolean toMidnight)
+    private Reporter(Connection conn, File outputBaseDir, boolean toMidnight)
     {
         this.outputBaseDir = outputBaseDir;
 
@@ -63,9 +64,59 @@ public class Reporter
         } catch (IOException exn) {
             logger.error("Unable to create current link", exn);
         }
+
+        settings = new Settings(conn, c);
+        String emailDetail = "export MV_EG_EMAIL_DETAIL=";
+        String daily = "export MV_EG_DAILY_REPORT=";
+        String weekly = "export MV_EG_WEEKLY_REPORT=";
+        String monthly = "export MV_EG_MONTHLY_REPORT=";
+
+        if (false == settings.getEmailDetail()) {
+            emailDetail += "n";
+        } else {
+            emailDetail += "y";
+        }
+
+        if (false == settings.getDaily()) {
+            daily += "n";
+        } else {
+            daily += "y";
+        }
+
+        if (false == settings.getWeekly()) {
+            weekly += "n";
+        } else {
+            weekly += "y";
+        }
+
+        if (false == settings.getMonthly()) {
+            monthly += "n";
+        } else {
+            monthly += "y";
+        }
+
+        try {
+            File envFile = new File(outputDir, "settings.env");
+            envFile.delete(); // discard any old env file
+            envFile.createNewFile(); // create new env file
+            FileWriter envFWriter = new FileWriter(envFile);
+            BufferedWriter envBWriter = new BufferedWriter(envFWriter);
+
+            envBWriter.write(emailDetail);
+            envBWriter.newLine();
+            envBWriter.write(daily);
+            envBWriter.newLine();
+            envBWriter.write(weekly);
+            envBWriter.newLine();
+            envBWriter.write(monthly);
+            envBWriter.newLine();
+
+            envBWriter.close();
+            envFWriter.close();
+        } catch (IOException exn) {
+            logger.error("Unable to delete old env file, create new env file, or write to new env file for update-reports", exn);
+        }
     }
-
-
 
     public static void main(String[] args)
     {
@@ -105,12 +156,12 @@ public class Reporter
             String[] mars = new String[numMars];
             System.arraycopy(args, i, mars, 0, numMars);
             File outputBaseDir = new File(outputBaseDirName);
-            Reporter reporter = new Reporter(outputBaseDir, toMidnight);
             if (doDHCPMap) {
-                reporter.prepare(conn);
+                Reporter.prepare(conn, toMidnight);
             } else {
+                Reporter reporter = new Reporter(conn, outputBaseDir, toMidnight);
                 reporter.generateNewReports(conn, mars);
-                reporter.purgeOldReports(conn, daysToKeep);
+                reporter.purgeOldReports(daysToKeep);
             }
 
         } catch (ClassNotFoundException exn) {
@@ -131,18 +182,17 @@ public class Reporter
         }
     }
 
-
-    private void prepare(Connection conn)
+    private static void prepare(Connection conn, boolean toMidnight)
         throws SQLException
     {
+        Util.init(toMidnight);
+
         DhcpMap.get().generateAddressMap(conn, Util.lastmonth, Util.midnight);
     }
-
 
     private void generateNewReports(Connection conn, String[] mars)
         throws IOException, JRScriptletException, SQLException, ClassNotFoundException
     {
-
         Thread ct = Thread.currentThread();
         ClassLoader oldCl = ct.getContextClassLoader();
 
@@ -157,19 +207,16 @@ public class Reporter
                 URLClassLoader ucl = new URLClassLoader(new URL[] { f.toURL() });
                 ct.setContextClassLoader(ucl);
                 logger.info("Running TranReporter for " + tranName);
-        TranReporter tranReporter = new TranReporter(outputDir, tranName, new JarFile(f), ucl);
-        tranReporter.process(conn);
+                TranReporter tranReporter = new TranReporter(outputDir, tranName, new JarFile(f), ucl, settings);
+                tranReporter.process(conn);
             } catch (Exception exn) {
                 logger.warn("bad mar: " + f, exn);
             }
         }
-
     }
 
-    private void purgeOldReports(Connection conn, int daysToKeep)
+    private void purgeOldReports(int daysToKeep)
     {
-        // DhcpMap.get().deleteAddressMap(conn);
-
         // Since daysToKeep will always be at least 1, we'll always keep today's.
         Calendar firstPurged = (Calendar) Util.reportNow.clone();
         firstPurged.add(Calendar.DAY_OF_YEAR, -1 - daysToKeep);

@@ -309,8 +309,7 @@ cat >> $main_index <<EOF
               <tr>
 EOF
 
-# XXX This should always be true:
-    if [ -f reporting-transform/sum-daily.html ]; then
+    if [ $MV_EG_DAILY_REPORT == 'y' ] || [ $MV_EG_WEEKLY_REPORT == 'y' ] || [ $MV_EG_MONTHLY_REPORT == 'y' ]; then
 	cat >> $main_index <<EOF
               <td width="200px" valign="top">
 EOF
@@ -355,12 +354,26 @@ EOF
 generate_period_menu ()
 {
 if [ "$generate_email_index" = false ]; then
-cat >> $main_index <<EOF
+    cat >> $main_index <<EOF
                 <table width="95%" border="1" bordercolor="bbbbbb" cellspacing="0" cellpadding="5">
                   <tr><td bgcolor="cccccc"><h3><b>Available Periods:</b></h3></td></tr>
-                  <tr><td>> <a href="index_online_monthly.html">Monthly</a></td></tr>
-                  <tr><td>> <a href="index_online_weekly.html">Weekly</a></td></tr>
-                  <tr><td>> <a href="index.html">Daily</a></td></tr>
+EOF
+    if [ $MV_EG_MONTHLY_REPORT == 'y' ]; then
+        cat >> $main_index <<EOF
+                  <tr><td> <a href="index_online_monthly.html">Monthly</a></td></tr>
+EOF
+    fi
+    if [ $MV_EG_WEEKLY_REPORT == 'y' ]; then
+        cat >> $main_index <<EOF
+                  <tr><td> <a href="index_online_weekly.html">Weekly</a></td></tr>
+EOF
+    fi
+    if [ $MV_EG_DAILY_REPORT == 'y' ]; then
+        cat >> $main_index <<EOF
+                  <tr><td> <a href="index.html">Daily</a></td></tr>
+EOF
+    fi
+cat >> $main_index <<EOF
                 </table>
 <br/>
 EOF
@@ -415,8 +428,8 @@ EOF
 
 generate_report_menu_entry ()
 {
-ls $1/*-daily.html >/dev/null 2>&1 || return
 tran_dir=$1
+ls $tran_dir/name >/dev/null 2>&1 || return
 tran_name=$(cat $tran_dir/name)
 
 if [ "$tran_name" = "EdgeGuard Appliance" ]; then
@@ -433,7 +446,6 @@ echo "generating menu entry: $tran_name"
 
 generate_summaries ()
 {
-
 
 cat >> $main_index <<EOF
               <!-- SUMMARY AREA -->
@@ -460,11 +472,9 @@ EOF
 generate_summary_entry ()
 {
 
-
 # true allows you to print only non EdgeGuard Appliance appliances, false allows you to print only EdgeGuard Appliance
 tran_dir=$1
-
-ls $1/*-daily.html >/dev/null 2>&1 || return
+ls $tran_dir/name >/dev/null 2>&1 || return
 tran_name=$(cat $tran_dir/name)
 
 if [ "$2" = false ]; then
@@ -502,8 +512,6 @@ if [ "$generate_email_index" = true ]; then
     fi
 fi
 
-
-
 cat >> $main_index <<EOF
               <a name="$tran_name"/>
               <table width="95%" border="1" bordercolor="bbbbbb" cellspacing="0" cellpadding="5">
@@ -527,8 +535,7 @@ cat >> $main_index <<EOF
 EOF
 
 
-
-if [ -f $1/*Summary_Graph--daily.png ]; then
+if [ -f $1/*Summary_Graph--${period}.png ]; then
 cat >> $main_index <<EOF
                 <tr>
                   <td>
@@ -542,7 +549,6 @@ cat >> $main_index <<EOF
                 </tr>
 EOF
 fi
-
 
 
 cat >> $main_index <<EOF
@@ -579,8 +585,8 @@ generate_vital_statistics ()
 <table width="100%" style="padding: 0px 0px 0px 15px" cellspacing="0">
 EOF
 
-    tran_dir=$1
-    tran_name=$(cat $tran_dir/name)
+    #tran_dir=$1
+    #tran_name=$(cat $tran_dir/name)
     rel_dir=$(echo $1 | sed -e 's/^\(.*\/current\/\)//')
 
 
@@ -608,8 +614,6 @@ cat $tran_dir/report-files | while read line; do
     base_name=$(echo $line | cut -d: -f2)
     graph_name=$(echo $line | cut -d: -f3-)
     if [ xsummaryGraph = "x$base_name" ] ; then
-
-
 cat >>$main_index <<EOF
 <!-- VISUAL SUMMARY -->
 <center>
@@ -629,8 +633,8 @@ done
 
 generate_detailed_reports ()
 {
-    tran_dir=$1
-    tran_name=$(cat $tran_dir/name)
+    #tran_dir=$1
+    #tran_name=$(cat $tran_dir/name)
     rel_dir=$(echo $1 | sed -e 's/^\(.*\/current\/\)//')
 
     cat >>$main_index <<EOF

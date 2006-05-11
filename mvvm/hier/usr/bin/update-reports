@@ -46,29 +46,63 @@ if [ $is_reporting_enabled == 'true' ]; then
     $JAVA_HOME/bin/java -Xmx512m \
         -Dlog4j.configuration=file:@MVVM_HOME@/conf/log4j-reporter.xml \
         com.metavize.mvvm.reporting.Reporter -o $REPORT_DIR -d 32 "$@" $mars
+    # note that Reporter has just created settings.env
 
     if [ -h $REPORT_DIR/current ]; then
+        source $REPORT_DIR/current/settings.env
+
         cp -pr $REPORT_DIR/css $REPORT_DIR/current
         cp -pr $REPORT_DIR/images $REPORT_DIR/current
 
 # generate the web viewable page
-        @USR_BIN@/index-reports index.html daily false
-        @USR_BIN@/index-reports index_online_weekly.html weekly false
-        @USR_BIN@/index-reports index_online_monthly.html monthly false
+        if [ $MV_EG_DAILY_REPORT == 'y' ]; then
+            @USR_BIN@/index-reports index.html daily false
+        fi
+        if [ $MV_EG_WEEKLY_REPORT == 'y' ]; then
+            @USR_BIN@/index-reports index_online_weekly.html weekly false
+        fi
+        if [ $MV_EG_MONTHLY_REPORT == 'y' ]; then
+            @USR_BIN@/index-reports index_online_monthly.html monthly false
+        fi
 
 # convert all non-index html pages to have MV look-n-feel
+# (convert-reports doesn't look for daily, weekly, or monthly html pages
+#  so if any set is missing, it is okay)
         @USR_BIN@/convert-reports
 
 # generate the emailable page
-        @USR_BIN@/index-reports index_email_daily.html daily true
-        @USR_BIN@/index-reports index_email_weekly.html weekly true
-        @USR_BIN@/index-reports index_email_monthly.html monthly true
+        if [ $MV_EG_DAILY_REPORT == 'y' ]; then
+            @USR_BIN@/index-reports index_email_daily.html daily true
+        fi
+        if [ $MV_EG_WEEKLY_REPORT == 'y' ]; then
+            @USR_BIN@/index-reports index_email_weekly.html weekly true
+        fi
+        if [ $MV_EG_MONTHLY_REPORT == 'y' ]; then
+            @USR_BIN@/index-reports index_email_monthly.html monthly true
+        fi
 
 # email the reports to all recipients
         cd $REPORT_DIR/current
-        cat @PREFIX@/tmp/mail_reports_arguments_daily.txt | xargs @USR_BIN@/mail-reports
-        cat @PREFIX@/tmp/mail_reports_arguments_weekly.txt | xargs @USR_BIN@/mail-reports
-        cat @PREFIX@/tmp/mail_reports_arguments_monthly.txt | xargs @USR_BIN@/mail-reports
+        if [ $MV_EG_DAILY_REPORT == 'y' ]; then
+            cat @PREFIX@/tmp/mail_reports_arguments_daily.txt | xargs @USR_BIN@/mail-reports
+        fi
+        if [ $MV_EG_WEEKLY_REPORT == 'y' ]; then
+            cat @PREFIX@/tmp/mail_reports_arguments_weekly.txt | xargs @USR_BIN@/mail-reports
+        fi
+        if [ $MV_EG_MONTHLY_REPORT == 'y' ]; then
+            cat @PREFIX@/tmp/mail_reports_arguments_monthly.txt | xargs @USR_BIN@/mail-reports
+        fi
+
+# ensure that a base index file is present
+        cd $REPORT_DIR/current
+        if [ $MV_EG_DAILY_REPORT == 'n' ]; then
+            rm -f index.html
+            if [ $MV_EG_WEEKLY_REPORT == 'y' ]; then
+                ln -s index_online_weekly.html index.html
+            elif [ $MV_EG_MONTHLY_REPORT == 'y' ]; then
+                ln -s index_online_monthly.html index.html
+            fi
+        fi
     fi
 
     for c in @MVVM_SCHEMA@/*/finish-reports.sql; do

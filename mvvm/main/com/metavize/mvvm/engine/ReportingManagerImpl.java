@@ -11,7 +11,12 @@
 
 package com.metavize.mvvm.engine;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.metavize.mvvm.MvvmContextFactory;
@@ -61,7 +66,43 @@ class ReportingManagerImpl implements ReportingManager
         File crd = new File(CURRENT_REPORT_DIR);
         if (!crd.isDirectory())
             return false;
-        File sum = new File(CURRENT_REPORT_DIR, "reporting-transform/sum-daily.html");
-        return (sum.isFile());
+
+        // note that Reporter creates env file
+        File envFile = new File(CURRENT_REPORT_DIR, "settings.env");
+
+        FileReader envFReader;
+        try {
+            envFReader = new FileReader(envFile);
+        } catch (FileNotFoundException exn) {
+            logger.error("report settings env file is missing: ", exn);
+            return false;
+        }
+
+        BufferedReader envBReader = new BufferedReader(envFReader);
+        ArrayList<String> envList = new ArrayList<String>();
+        try {
+            while (true == envBReader.ready()) {
+                envList.add(envBReader.readLine());
+            }
+            envBReader.close();
+            envFReader.close();
+        } catch (IOException exn) {
+            logger.error("cannot read or close report settings env file: ", exn);
+            return false;
+        }
+
+        String daily = "export MV_EG_DAILY_REPORT=y";
+        if (true == envList.contains(daily))
+            return true;
+
+        String weekly = "export MV_EG_WEEKLY_REPORT=y";
+        if (true == envList.contains(weekly))
+            return true;
+
+        String monthly = "export MV_EG_MONTHLY_REPORT=y";
+        if (true == envList.contains(monthly))
+            return true;
+
+        return false;
     }
 }

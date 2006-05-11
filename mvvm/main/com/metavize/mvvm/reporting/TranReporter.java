@@ -11,7 +11,6 @@
 
 package com.metavize.mvvm.reporting;
 
-
 import java.io.*;
 import java.net.*;
 import java.sql.*;
@@ -29,7 +28,6 @@ import org.jfree.chart.*;
 import org.xml.sax.*;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-
 public class TranReporter {
 
     public static final float CHART_QUALITY_JPEG = .9f;  // for JPEG
@@ -45,22 +43,23 @@ public class TranReporter {
     private static final String SUMMARY_FRAGMENT_MONTHLY = "sum-monthly.html";
 
     private final String tranName;
-    private final URLClassLoader ucl;
     private final JarFile jf;
+    private final URLClassLoader ucl;
+    private final Settings settings;
     private final File tranDir;
 
     private Map<String,Object> extraParams = new HashMap<String,Object>();
 
-    TranReporter(File outputDir, String tranName, JarFile jf, URLClassLoader ucl)
+    TranReporter(File outputDir, String tranName, JarFile jf, URLClassLoader ucl, Settings settings)
     {
         this.tranName = tranName;
         // These next two are the same, just different forms.
         this.jf = jf;
         this.ucl = ucl;
+        this.settings = settings;
 
         tranDir = new File(outputDir, tranName);
     }
-
 
     public void process(Connection conn) throws Exception
     {
@@ -133,16 +132,27 @@ public class TranReporter {
                 try {
                     Class reportClass = cl.loadClass(className);
                     ReportSummarizer reportSummarizer;
-                    reportSummarizer = (ReportSummarizer) reportClass.newInstance();
-                    logger.debug("Found summarizer: " + className);
-                    String dailyFile = new File(tranDir, SUMMARY_FRAGMENT_DAILY).getCanonicalPath();
-                    processReportSummarizer(reportSummarizer, conn, dailyFile, Util.lastday, Util.midnight);
-                    reportSummarizer = (ReportSummarizer) reportClass.newInstance();
-                    String weeklyFile = new File(tranDir, SUMMARY_FRAGMENT_WEEKLY).getCanonicalPath();
-                    processReportSummarizer(reportSummarizer, conn, weeklyFile, Util.lastweek, Util.midnight);
-                    reportSummarizer = (ReportSummarizer) reportClass.newInstance();
-                    String monthlyFile = new File(tranDir, SUMMARY_FRAGMENT_MONTHLY).getCanonicalPath();
-                    processReportSummarizer(reportSummarizer, conn, monthlyFile, Util.lastmonth, Util.midnight);
+
+                    if (true == settings.getDaily()) {
+                        logger.debug("Found daily summarizer: " + className);
+                        reportSummarizer = (ReportSummarizer) reportClass.newInstance();
+                        String dailyFile = new File(tranDir, SUMMARY_FRAGMENT_DAILY).getCanonicalPath();
+                        processReportSummarizer(reportSummarizer, conn, dailyFile, Util.lastday, Util.midnight);
+                    }
+
+                    if (true == settings.getWeekly()) {
+                        logger.debug("Found weekly summarizer: " + className);
+                        reportSummarizer = (ReportSummarizer) reportClass.newInstance();
+                        String weeklyFile = new File(tranDir, SUMMARY_FRAGMENT_WEEKLY).getCanonicalPath();
+                        processReportSummarizer(reportSummarizer, conn, weeklyFile, Util.lastweek, Util.midnight);
+                    }
+
+                    if (true == settings.getMonthly()) {
+                        logger.debug("Found monthly summarizer: " + className);
+                        reportSummarizer = (ReportSummarizer) reportClass.newInstance();
+                        String monthlyFile = new File(tranDir, SUMMARY_FRAGMENT_MONTHLY).getCanonicalPath();
+                        processReportSummarizer(reportSummarizer, conn, monthlyFile, Util.lastmonth, Util.midnight);
+                    }
                 } catch (Exception x) {
                     logger.error("Unable to summarize", x);
                 }
@@ -157,13 +167,24 @@ public class TranReporter {
                     String name = tok.nextToken();
                     reportGraph = (ReportGraph) reportClass.newInstance();
 		    reportGraph.setExtraParams(extraParams);
-                    logger.debug("Found graph: " + className);
-                    String dailyFile = new File(tranDir, name + "--daily.png").getCanonicalPath();
-                    processReportGraph(reportGraph, conn, dailyFile, Util.REPORT_TYPE_DAILY, Util.lastday, Util.midnight);
-                    String weeklyFile = new File(tranDir, name + "--weekly.png").getCanonicalPath();
-                    processReportGraph(reportGraph, conn, weeklyFile, Util.REPORT_TYPE_WEEKLY, Util.lastweek, Util.midnight);
-                    String monthlyFile = new File(tranDir, name + "--monthly.png").getCanonicalPath();
-                    processReportGraph(reportGraph, conn, monthlyFile, Util.REPORT_TYPE_MONTHLY, Util.lastmonth, Util.midnight);
+
+                    if (true == settings.getDaily()) {
+                        logger.debug("Found daily graph: " + className);
+                        String dailyFile = new File(tranDir, name + "--daily.png").getCanonicalPath();
+                        processReportGraph(reportGraph, conn, dailyFile, Util.REPORT_TYPE_DAILY, Util.lastday, Util.midnight);
+                    }
+
+                    if (true == settings.getWeekly()) {
+                        logger.debug("Found weekly graph: " + className);
+                        String weeklyFile = new File(tranDir, name + "--weekly.png").getCanonicalPath();
+                        processReportGraph(reportGraph, conn, weeklyFile, Util.REPORT_TYPE_WEEKLY, Util.lastweek, Util.midnight);
+                    }
+
+                    if (true == settings.getMonthly()) {
+                        logger.debug("Found monthly graph: " + className);
+                        String monthlyFile = new File(tranDir, name + "--monthly.png").getCanonicalPath();
+                        processReportGraph(reportGraph, conn, monthlyFile, Util.REPORT_TYPE_MONTHLY, Util.lastmonth, Util.midnight);
+                    }
                 } catch (Exception x) {
                     logger.error("Unable to generate summary graph", x);
 		    x.printStackTrace();
@@ -174,9 +195,18 @@ public class TranReporter {
                 String outputName = type;
                 String outputFile = new File(tranDir, outputName).getCanonicalPath();
                 String outputImages = globalImagesDir.getCanonicalPath();
-                processReport(resource, conn, outputFile + "--daily", outputImages, Util.lastday, Util.midnight);
-                processReport(resource, conn, outputFile + "--weekly", outputImages, Util.lastweek, Util.midnight);
-                processReport(resource, conn, outputFile + "--monthly", outputImages, Util.lastmonth, Util.midnight);
+
+                if (true == settings.getDaily()) {
+                    processReport(resource, conn, outputFile + "--daily", outputImages, Util.lastday, Util.midnight);
+                }
+
+                if (true == settings.getWeekly()) {
+                    processReport(resource, conn, outputFile + "--weekly", outputImages, Util.lastweek, Util.midnight);
+                }
+
+                if (true == settings.getMonthly()) {
+                    processReport(resource, conn, outputFile + "--monthly", outputImages, Util.lastmonth, Util.midnight);
+                }
             }
         }
         is.close();
@@ -239,7 +269,6 @@ public class TranReporter {
         pw.close();
     }
 
-
     ////////////////////////////////////////////////////
     // PROCESSORS //////////////////////////////////////
     ////////////////////////////////////////////////////
@@ -293,8 +322,6 @@ public class TranReporter {
         // Was: JasperExportManager.exportReportToHtmlFile(print, htmlFile);
     }
 
-
-
     private void processReportGraph(ReportGraph reportGraph, Connection conn, String fileName, int type, Timestamp startTime, Timestamp endTime)
         throws IOException, JRScriptletException, SQLException, ClassNotFoundException
     {
@@ -308,7 +335,6 @@ public class TranReporter {
         //ChartUtilities.saveChartAsJPEG(new File(fileName), CHART_QUALITY, jFreeChart, CHART_WIDTH, CHART_HEIGHT);
 	ChartUtilities.saveChartAsPNG(new File(fileName), jFreeChart, CHART_WIDTH, CHART_HEIGHT, null, false, CHART_COMPRESSION_PNG);
     }
-
 
     private class FakeScriptlet extends JRDefaultScriptlet
     {
@@ -330,5 +356,4 @@ public class TranReporter {
             return null;
         }
     }
-
 }
