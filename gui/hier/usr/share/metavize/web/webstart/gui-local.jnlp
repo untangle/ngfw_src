@@ -4,7 +4,6 @@
 response.addHeader("content-type", "application/x-java-jnlp-file");
 
 String host=request.getHeader("host");
-String serverName=request.getServerName();
 
 /* This should be either http or https */
 String scheme=request.getScheme();
