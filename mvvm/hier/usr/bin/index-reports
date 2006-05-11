@@ -331,8 +331,16 @@ EOF
    else
       cat >> $main_index <<EOF
 	<center>
-	<i>No reports are available, please check back tomorrow morning.</i><br/>
-	<i>Reports are generated every night automatically.</i>
+	<b><i>
+        No reports are available.<br/>
+        <br/>
+        When daily, weekly, and/or monthly Reports are scheduled,<br/>
+        please check back the morning after the scheduled day<br/>
+        for daily, weekly, and/or monthly Reports.<br/>
+        <br/>
+        When scheduled, EdgeReport automatically generates<br/>
+        the requested Reports during the preceeding night.
+        </i></b>
 	</center>
 EOF
    fi

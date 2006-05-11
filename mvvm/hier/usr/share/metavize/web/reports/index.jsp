@@ -190,8 +190,12 @@ h4 {
             EdgeReport is not installed into your rack or it is not turned on.<br/>
             Reports are only generated when EdgeReport is installed and turned on.
         <% } else{ %>
-                    <i>Please check back tomorrow morning.</i><br/>
-                    <i>Reports are generated every night automatically.</i>
+            When daily, weekly, and/or monthly Reports are scheduled,<br/>
+            please check back the morning after the scheduled day<br/>
+            for daily, weekly, and/or monthly Reports.<br/>
+            <br/>
+            When scheduled, EdgeReport automatically generates<br/>
+            the requested Reports during the preceeding night.
         <% } %>
 
         </i></b>

@@ -92,16 +92,19 @@ class ReportingManagerImpl implements ReportingManager
         }
 
         String daily = "export MV_EG_DAILY_REPORT=y";
-        if (true == envList.contains(daily))
+        if (true == envList.contains(daily)) {
             return true;
+        }
 
         String weekly = "export MV_EG_WEEKLY_REPORT=y";
-        if (true == envList.contains(weekly))
+        if (true == envList.contains(weekly)) {
             return true;
+        }
 
         String monthly = "export MV_EG_MONTHLY_REPORT=y";
-        if (true == envList.contains(monthly))
+        if (true == envList.contains(monthly)) {
             return true;
+        }
 
         return false;
     }
