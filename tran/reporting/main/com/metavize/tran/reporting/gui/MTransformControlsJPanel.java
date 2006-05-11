@@ -26,8 +26,9 @@ import javax.swing.border.EmptyBorder;
 public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransformControlsJPanel{
     
     private static final String NAME_DIRECTORY = "IP Address to User Map";
-    private static final String NAME_EMAIL_RECIPIENTS = "Email Report Recipients";
+    private static final String NAME_EMAIL_RECIPIENTS = "Recipients List";
     private static final String NAME_VIEW = "View Reports";
+    private static final String NAME_GENERATION_OPTIONS = "Generation Settings";
 
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
         super(mTransformJPanel);
@@ -43,12 +44,21 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	addTab(NAME_EMAIL_RECIPIENTS, null, emailConfigJPanel);
 	addSavable(NAME_EMAIL_RECIPIENTS, emailConfigJPanel);
 	addRefreshable(NAME_EMAIL_RECIPIENTS, emailConfigJPanel);
+	emailConfigJPanel.setSettingsChangedListener(this);
 	
 	// DIRECTORY ///////
 	DirectoryConfigJPanel directoryConfigJPanel = new DirectoryConfigJPanel();
 	addTab(NAME_DIRECTORY, null, directoryConfigJPanel);
 	addSavable(NAME_DIRECTORY, directoryConfigJPanel);
-	addRefreshable(NAME_DIRECTORY, directoryConfigJPanel);        
+	addRefreshable(NAME_DIRECTORY, directoryConfigJPanel);
+	directoryConfigJPanel.setSettingsChangedListener(this);
+
+	// GENERATION SETTINGS //
+	GenerationConfigJPanel generationConfigJPanel = new GenerationConfigJPanel();
+	addScrollableTab(null, NAME_GENERATION_OPTIONS, null, generationConfigJPanel, false, true);
+	addSavable(NAME_GENERATION_OPTIONS, generationConfigJPanel);
+	addRefreshable(NAME_GENERATION_OPTIONS, generationConfigJPanel);
+	generationConfigJPanel.setSettingsChangedListener(this);
     }
     
 }
