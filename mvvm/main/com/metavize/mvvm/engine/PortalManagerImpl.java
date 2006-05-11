@@ -76,6 +76,7 @@ class PortalManagerImpl implements LocalPortalManager
     private final PortalRealm portalRealm;
     private final AddressBook addressBook;
     private final EventLogger eventLogger;
+    private final LoginReaper reaper;
 
     private final Map<PortalLogin, Long> activeLogins;
 
@@ -86,6 +87,8 @@ class PortalManagerImpl implements LocalPortalManager
     PortalManagerImpl(MvvmContextImpl mvvmContext)
     {
         this.mvvmContext = mvvmContext;
+
+        activeLogins = new ConcurrentHashMap<PortalLogin, Long>();
 
         TransactionWork tw = new TransactionWork()
             {
@@ -115,7 +118,8 @@ class PortalManagerImpl implements LocalPortalManager
 
         eventLogger = mvvmContext.eventLogger();
 
-        activeLogins = new ConcurrentHashMap<PortalLogin, Long>();
+        reaper = new LoginReaper();
+        new Thread(reaper).start();
 
         logger.info("Initialized PortalManager");
     }
@@ -141,6 +145,8 @@ class PortalManagerImpl implements LocalPortalManager
 
     public void setPortalSettings(final PortalSettings settings)
     {
+        updateIdleTimes(settings);
+
         TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork(Session s)
@@ -262,10 +268,30 @@ class PortalManagerImpl implements LocalPortalManager
     }
 
     void destroy() {
-        //XXX kill reaper
+        reaper.destroy();
     }
 
     // private methods --------------------------------------------------------
+
+    private void updateIdleTimes(PortalSettings settings)
+    {
+        for (PortalUser pu : (List<PortalUser>)settings.getUsers()) {
+            String uid = pu.getUid();
+            PortalHomeSettings phs = pu.getPortalHomeSettings();
+            if (null != phs) {
+                long it = phs.getIdleTimeout();
+                for (PortalLogin pl : activeLogins.keySet()) {
+                    if (pl.getName().equals(uid)) {
+                        Long la = activeLogins.get(pl);
+                        if (null != la) {
+                            PortalLogin newPl = new PortalLogin(pl, it);
+                            activeLogins.put(newPl, la);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     private String getCurrentDomain()
     {
@@ -332,13 +358,13 @@ class PortalManagerImpl implements LocalPortalManager
         if (null != domain) {
             pwa = new NtlmPasswordAuthentication(domain, uid, password);
         }
-        PortalLogin login = new PortalLogin(user, addr, pwa);
-        activeLogins.put(login, System.currentTimeMillis());
+        PortalLogin pl = new PortalLogin(user, addr, pwa);
+        activeLogins.put(pl, System.currentTimeMillis());
 
         PortalLoginEvent event = new PortalLoginEvent(addr, uid, true);
         eventLogger.log(event);
 
-        return login;
+        return pl;
     }
 
     private void doLogout(PortalLogin login, LogoutReason reason)
@@ -354,6 +380,22 @@ class PortalManagerImpl implements LocalPortalManager
         PortalLogoutEvent evt = new PortalLogoutEvent(login.getClientAddr(),
                                                       login.getUser(), reason);
         eventLogger.log(evt);
+    }
+
+    private boolean isSessionLive(PortalLogin pl)
+    {
+        Long la = activeLogins.get(pl);
+        if (null == la) {
+            return false;
+        } else {
+            long ct = System.currentTimeMillis();
+            if (ct - la > pl.getIdleTimeout()) {
+                activeLogins.put(pl, ct);
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
     // private classes --------------------------------------------------------
@@ -373,7 +415,6 @@ class PortalManagerImpl implements LocalPortalManager
             return info;
         }
 
-        @Override
         public boolean authenticate(HttpRequest request, HttpResponse response,
                                     LoginConfig config)
             throws IOException
@@ -389,16 +430,30 @@ class PortalManagerImpl implements LocalPortalManager
                     log.debug("Already authenticated '" + principal.getName()
                               + "'");
                 }
-                if (ssoId != null)
+
+                if (ssoId != null) {
                     associate(ssoId, getSession(request, true));
-                return true;
+                }
+
+                if (isSessionLive((PortalLogin)principal)) {
+                    return true;
+                }
             } else if (null != ssoId) {
                 if (log.isDebugEnabled()) {
                     log.debug("SSO Id " + ssoId + " set; attempting " +
                               "reauthentication");
                 }
+
                 if (reauthenticateFromSSO(ssoId, request)) {
-                    return true;
+                    PortalLogin pl = (PortalLogin)req.getUserPrincipal();
+                    if (null == pl) {
+                        logger.warn("PortalLogin idle time not reset");
+                        return true;
+                    } else {
+                        if (isSessionLive(pl)) {
+                            return true;
+                        }
+                    }
                 }
             }
 
@@ -477,6 +532,36 @@ class PortalManagerImpl implements LocalPortalManager
         protected String getName()
         {
             return "PortalRealm";
+        }
+    }
+
+    private class LoginReaper implements Runnable
+    {
+        private volatile Thread thread;
+
+        public void run()
+        {
+            Thread currentThread = thread = Thread.currentThread();
+            while (currentThread == thread) {
+                for (PortalLogin pl : activeLogins.keySet()) {
+                    if (null != pl) {
+                        if (!isSessionLive(pl)) {
+                            activeLogins.remove(pl);
+                        }
+                    }
+                }
+
+                try {
+                    Thread.sleep(REAPING_FREQ);
+                } catch (InterruptedException exn) { /* eval loop cond */ }
+            }
+        }
+
+        void destroy()
+        {
+            Thread t = thread;
+            thread = null;
+            t.interrupt();
         }
     }
 }

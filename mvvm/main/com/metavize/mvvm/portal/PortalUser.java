@@ -12,13 +12,14 @@
 package com.metavize.mvvm.portal;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Portal user.  UID must match an addressbook UID (although one could be left around
- * from before, we don't cascade delete portal users when the address book user is
- * deleted (since we couldn't do that for an AD user at all))
+ * Portal user.  UID must match an addressbook UID (although one could
+ * be left around from before, we don't cascade delete portal users
+ * when the address book user is deleted (since we couldn't do that
+ * for an AD user at all))
  *
  * @author <a href="mailto:jdi@metavize.com">John Irwin</a>
  * @version 1.0
@@ -158,10 +159,11 @@ public class PortalUser implements Serializable
     }
 
     /**
-     * The PortalHomeSettings that this user has.  This may be null, in which case
-     * the group or global settings are used.
-     * Thus, this should remain null until the user changes some value -- the UI should
-     * show the group or global settings until that point.
+     * The PortalHomeSettings that this user has.  This may be null,
+     * in which case the group or global settings are used.  Thus,
+     * this should remain null until the user changes some value --
+     * the UI should show the group or global settings until that
+     * point.
      *
      * @return the PortalHomeSettings.
      * @hibernate.many-to-one

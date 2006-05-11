@@ -32,6 +32,7 @@ public class PortalLogin implements Principal
     private final String group;
     private final IPaddr clientAddr;
     private final Date loginDate;
+    private final long idleTimeout;
 
     // Not for UI use:
     private transient NtlmPasswordAuthentication ntlmAuth;
@@ -43,6 +44,8 @@ public class PortalLogin implements Principal
                        NtlmPasswordAuthentication ntlmAuth)
     {
         this.uid = user.getUid();
+        PortalHomeSettings phs = user.getPortalHomeSettings();
+        this.idleTimeout = null == phs ? 20 * 60 * 1000 : phs.getIdleTimeout();
         PortalGroup g = user.getPortalGroup();
         if (g != null) {
             this.group = g.getName();
@@ -52,6 +55,15 @@ public class PortalLogin implements Principal
         this.clientAddr = new IPaddr(clientAddr);
         this.loginDate = new Date(System.currentTimeMillis());
         this.ntlmAuth = ntlmAuth;
+    }
+
+    public PortalLogin(PortalLogin pl, long idleTimeout)
+    {
+        this.uid = pl.uid;
+        this.group = pl.group;
+        this.clientAddr = pl.clientAddr;
+        this.loginDate = pl.loginDate;
+        this.idleTimeout = idleTimeout;
     }
 
     // Principal methods ------------------------------------------------------
@@ -136,5 +148,10 @@ public class PortalLogin implements Principal
     public Date getLoginDate()
     {
         return loginDate;
+    }
+
+    public long getIdleTimeout()
+    {
+        return idleTimeout;
     }
 }
