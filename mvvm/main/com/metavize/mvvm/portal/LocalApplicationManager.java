@@ -16,7 +16,7 @@ import java.util.List;
 public interface LocalApplicationManager
 {
     Application registerApplication(String name, String description,
-                                    boolean isHostService,
+                                    Application.Destinator destinator,
                                     Application.Validator validator,
                                     int sortPosition, String appJs);
 

@@ -26,19 +26,31 @@ public final class Application
         // String whyNotValid(String target);
     }
 
+
+    /**
+     * For host services, the destinator is used to determine the destination given
+     * the bookmark
+     */
+    public interface Destinator
+    {  
+        String getDestinationHost(Bookmark bm);
+
+        int getDestinationPort(Bookmark bm);
+    }
+
     private final String name;
     private final String description;
-    private final boolean isHostService;
+    private final Destinator destinator;
     private final Validator validator;
     private final int sortPosition;
     private final String appJs;
 
-    public Application(String name, String description, boolean isHostService,
+    public Application(String name, String description, Destinator destinator,
                        Validator validator, int sortPosition, String appJs)
     {
         this.name = name;
         this.description = description;
-        this.isHostService = isHostService;
+        this.destinator = destinator;
         this.validator = validator;
         this.sortPosition = sortPosition;
         this.appJs = appJs;
@@ -74,8 +86,14 @@ public final class Application
      */
     public boolean isHostService()
     {
-        return isHostService;
+        return (destinator != null);
     }
+
+    public Destinator getDestinator()
+    {
+        return destinator;
+    }
+
 
     public String getAppJs()
     {

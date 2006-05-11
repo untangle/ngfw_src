@@ -53,11 +53,11 @@ class PortalApplicationManagerImpl implements LocalApplicationManager
      * @return the registered <code>Application</code>
      */
     public Application registerApplication(String name, String desc,
-                                           boolean isHostService,
+                                           Application.Destinator destinator,
                                            Application.Validator validator,
                                            int sortPosition, String appJs)
     {
-        Application newApp = new Application(name, desc, isHostService,
+        Application newApp = new Application(name, desc, destinator,
                                              validator, sortPosition, appJs);
 
         synchronized (apps) {

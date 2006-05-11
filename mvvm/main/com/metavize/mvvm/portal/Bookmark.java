@@ -66,7 +66,7 @@ public class Bookmark implements Serializable
      * column="ID"
      * generator-class="native"
      */
-    protected Long getId()
+    public Long getId()
     {
         return id;
     }
