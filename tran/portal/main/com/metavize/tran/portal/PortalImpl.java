@@ -13,7 +13,6 @@ package com.metavize.tran.portal;
 
 import java.util.List;
 
-import com.metavize.tran.portal.rdp.RdpBookmark;
 import com.metavize.mvvm.AppServerManager;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
@@ -25,6 +24,7 @@ import com.metavize.mvvm.portal.PortalSettings;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tran.TransformException;
+import com.metavize.tran.portal.rdp.RdpBookmark;
 import org.apache.log4j.Logger;
 
 public class PortalImpl extends AbstractTransform implements PortalTransform
@@ -107,14 +107,14 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
                 }
             };
 
-        rdpApp = lam.registerApplication("RDP", "Remote Desktop", rdpDestinator, null, 0,
-                                           RDP_JS);
+//         rdpApp = lam.registerApplication("RDP", "Remote Desktop", rdpDestinator, null, 0,
+//                                            RDP_JS);
 
-        if (asm.loadPortalApp("/rdp", "rdp")) {
-            logger.debug("Deployed RDP Portal app");
-        } else {
-            logger.error("Unable to deploy RDP Portal app");
-        }
+//         if (asm.loadPortalApp("/rdp", "rdp")) {
+//             logger.debug("Deployed RDP Portal app");
+//         } else {
+//             logger.error("Unable to deploy RDP Portal app");
+//         }
     }
 
     private void unDeployWebAppIfRequired(Logger logger) {
