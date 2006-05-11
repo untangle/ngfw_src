@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE document
+	PUBLIC "-//UJAC.org//Print Document//EN" 
+	"http://ujac.sourceforge.net/ujac-print-document.dtd">
+
+<document size="LETTER" margin-left="25" margin-right="25" margin-top="50" margin-bottom="50">
+  <set-property name="imageDirectory" type="String" value="images/"/>
+  <set-property name="linkPrefix"     type="String" value="link-"/>
+  
+  <font-def name="header"    family="Helvetica" size="12" style="bold"/>
+  <font-def name="normal"    family="Helvetica" size="12" style="normal"/>
+  <font-def name="statistic" family="Helvetica" size="11" style="normal"/>
+  <font-def name="small"     family="Helvetica" size="9"  style="normal"/>
+  <font-def name="title"     family="Helvetica" size="16" style="bold"/>
+  <font-def name="subtitle"  family="Helvetica" size="12" style="bold"/>
+
+
+  <header font="small">
+    <header-part halign="left">
+      <!-- ${reportTitle} -->
+    </header-part>
+  </header>
+
+  <footer font="small">
+    <footer-part padding-top="10" halign="center">
+      <!-- Page ${pageNumber} of ${pageCount} -->
+    </footer-part>
+  </footer>
+    
+  <!-- Now iterate all detailed reports and insert them at the end -->
+  <foreach sequence="${detailed}" loop-variable="row">
+    <insert-document source="${pdfDirectory + row.filename}" name='${linkPrefix + row.filename}'/>
+  </foreach>
+
+</document>

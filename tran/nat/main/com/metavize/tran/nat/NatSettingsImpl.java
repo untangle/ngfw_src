@@ -60,8 +60,6 @@ public class NatSettingsImpl implements NatSettings, Serializable
     /* Redirect rules */
     private List    redirectList = new LinkedList();
 
-    private List    localRedirectList = new LinkedList();
-
     /* Is dhcp enabled */
     private boolean dhcpEnabled = false;
     private IPaddr  dhcpStartAddress;
@@ -112,10 +110,6 @@ public class NatSettingsImpl implements NatSettings, Serializable
         
         /* Update PING redirects */
         for ( Iterator iter = this.redirectList.iterator(); iter.hasNext() ; ) {
-            ((RedirectRule)iter.next()).fixPing();
-        }
-
-        for ( Iterator iter = this.localRedirectList.iterator(); iter.hasNext() ; ) {
             ((RedirectRule)iter.next()).fixPing();
         }
 
@@ -409,9 +403,6 @@ public class NatSettingsImpl implements NatSettings, Serializable
         setRedirectList( NatUtil.getInstance().setLocalRedirectList( getRedirectList(), newValue ));
     }
 
-    /**
-     * List of all of the matchers available for local redirects
-     */
     /**
      * List of all of the matchers available for local redirects
      */

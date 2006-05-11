@@ -303,6 +303,9 @@ class NatEventHandler extends AbstractEventHandler
         /* Create a list to block traffic from being forwarded */
         List<TrafficForwardingBlocker> trafficBlockers = new LinkedList<TrafficForwardingBlocker>();
 
+        /* Assume NAT is disabled  */
+        this.isNatEnabled = false;
+
         /* First deal with all of the NATd spaces */
         for ( NetworkSpaceInternal space : settings.getNetworkSpaceList()) {
             /* When settings are disabled, ignore everything but the primary space or
@@ -327,8 +330,10 @@ class NatEventHandler extends AbstractEventHandler
             /* Create a NAT matcher for this space */
             for ( IPNetwork networkRule : (List<IPNetwork>)space.getNetworkList()) {
                 natMatchers.add( NatMatcher.makeNatMatcher( networkRule, space ));
-                isNatEnabled = true;
-            }            
+            }
+            
+            /* There is at least one network space with NAT enabled */
+            this.isNatEnabled = true;
         }
         
         /* Save all of the objects at once */

@@ -1,0 +1,267 @@
+#!/bin/sh
+
+# this script assumes that
+# REPORT_BASE, REPORT_TYPE and SHOW_DETAILED_REPORTS
+#  are already defined.
+
+if [ -z "${REPORT_TYPE}" ]; then
+    echo "REPORT_TYPE must be defined before executing this script"
+    return -1
+fi
+
+OUTPUT_FILE=$1
+
+if [ -z "${OUTPUT_FILE}" ]; then
+    echo "USAGE: $0 <file>"
+    echo "  The following environment variables should be set:"
+    echo "  REPORT_BASE must be defined to the location of the sub reports"
+    echo "  REPORT_TYPE must be (daily|weekly|monthly)"
+    echo "  SHOW_DETAILED_REPORTS must be (true|false)"
+    return -1
+fi
+
+
+## Directory configuration
+## XXX This should be a temp directory, that gets nuked.
+DIRECTORY_BASE="@MVVM_HOME@/reporting/output"
+DIRECTORY_PDF="${DIRECTORY_BASE}/pdf"
+DIRECTORY_IMAGES="${DIRECTORY_BASE}/images"
+DIRECTORY_TEMPLATES="${DIRECTORY_BASE}/template"
+DIRECTORY_PROPERTIES="${DIRECTORY_BASE}/properties"
+
+## Template configuration
+TEMPLATE_COVERPAGE="CoverPage.xml"
+TEMPLATE_TOC="TableOfContents.xml"
+TEMPLATE_BRIEFING="Briefing.xml"
+TEMPLATE_DETAILED="DetailedReport.xml"
+TEMPLATE_MASTER="MasterDocument.xml"
+
+## This is where all of the source files are located
+BASE_DIRECTORY_IMAGES="@MVVM_HOME@/reporting/images"
+BASE_DIRECTORY_TEMPLATES="@MVVM_HOME@/reporting/templates"
+
+SUFFIX_PROPERTIES=".properties"
+
+## Date format string
+DATE_FORMAT='%A %B %e, %Y'
+
+function copyFiles()
+{
+    ## Build all of the necessary directories.
+    for t in ${DIRECTORY_PDF} ${DIRECTORY_IMAGES} ${DIRECTORY_TEMPLATES} ${DIRECTORY_PROPERTIES}; do
+        mkdir -p ${t}
+    done
+
+    echo "'${REPORT_BASE}'" "'${REPORT_TYPE}'"
+
+    ## Copy all of the PDFs (use the / to derefence the symbolic links)
+    find ${REPORT_BASE}/ -name "*${REPORT_TYPE}.pdf" -print0 | xargs -0 -r cp --target-directory ${DIRECTORY_PDF}
+
+    ## Copy in any templates
+    find ${REPORT_BASE}/ -name '*.xml' -print0  | xargs -0 -r cp --target-directory ${DIRECTORY_TEMPLATES}
+
+    ## Copy all of the global images
+    cp ${BASE_DIRECTORY_IMAGES}/* ${DIRECTORY_IMAGES}
+
+    ## Copy all of the templates
+    cp ${BASE_DIRECTORY_TEMPLATES}/* ${DIRECTORY_TEMPLATES}
+}
+
+function generateTopLevel()
+{
+## Create the table of contents
+    cat > ${topLevel} <<EOF
+## Directory configuration
+templateDirectory=${DIRECTORY_TEMPLATES}/
+propertiesDirectory=${DIRECTORY_PROPERTIES}/
+imageDirectory=${DIRECTORY_IMAGES}/
+pdfDirectory=${DIRECTORY_PDF}/
+
+## Template configuration
+coverPageTemplate=${TEMPLATE_COVERPAGE}
+tocTemplate=${TEMPLATE_TOC}
+defaultBriefingTemplate=${TEMPLATE_BRIEFING}
+defaultDetailedTemplate=${TEMPLATE_DETAILED}
+
+## Flag for whether or not to show
+showDetailedReports=${SHOW_DETAILED_REPORTS}
+
+## Description of the report
+type=${reportType}
+start=${REPORT_START}
+end=${REPORT_END}
+prepared=${REPORT_PREPARED}
+
+hostname=${hostname}
+ipAddress=${ipAddress}
+
+EOF
+}
+
+function generateSubReports()
+{
+    local t=0
+    local t_reportDir
+    local t_name
+    local t_key
+    local t_iconOrg
+    local t_iconDesc
+
+    ## None of the transform use custom templates just yet.    
+    local t_template=""
+    local t_detailedTemplate=""
+
+    ## All of the transform have detailed reports
+    local t_hasDetailed="true"
+
+    ## This is the report field description
+    echo "reports.fields='title:string','properties:string','briefingTemplate:string','detailedTemplate:string','iconDescription:string','iconOrganization:string','link:string', 'detailed:string'" >> ${topLevel}
+
+    for t_reportDir in ${orderedTransformList}; do
+        ## Don't iterate the transforms that don't have reports.
+        ls ${t_reportDir}/*-daily.html >/dev/null 2>&1 || continue
+
+        t_name=`cat ${t_reportDir}/name`
+        t_key=`basename ${t_reportDir}`
+
+        ## Copy in all of the necessary files
+        t_iconDesc="${t_key}-icon-desc.png"
+        t_iconOrg="${t_key}-icon-org.png"
+        
+        ## Copy in the images.
+        cp "${t_reportDir}/images/IconDesc42x42.png" "${DIRECTORY_IMAGES}/${t_iconDesc}"
+        cp "${t_reportDir}/images/IconOrg42x42.png"  "${DIRECTORY_IMAGES}/${t_iconOrg}"
+        
+        ## Insert the data for each report
+        echo "reports.${t}='${t_name}','${t_key}${SUFFIX_PROPERTIES}','${t_template}','${t_detailedTemplate}','${t_iconDesc}','${t_iconOrg}','${LINK_PREFIX}${t_key}','${t_hasDetailed}'" >>  ${topLevel}
+
+        ## Create the sub properties
+        generateSubProperties ${t_reportDir} ${t_key} "${t_name}"
+        
+        ## Increment the index
+        t=$(( t + 1 ))
+    done
+ 
+}
+
+function generateSubProperties()
+{
+    ## Base directory for the transform
+    local t_baseDir="${1}"
+
+    ## This is the engineering name of the transform (eg nat-transform)
+    local t_key="${2}"
+
+    ## This is the marketting name of the transform (eg Router)
+    local t_name="${3}"
+   
+    ## Name of the file containing the graph
+    local t_graph=""
+    
+    ## Name of the file containing the summary pdf.
+    local t_summary=""
+    
+    local t_properties="${DIRECTORY_PROPERTIES}/${t_key}${SUFFIX_PROPERTIES}"
+
+    ## Check if there is a file for the graph
+    if [ -f ${t_baseDir}/*Summary_Graph--${REPORT_TYPE}.png ]; then
+        cp ${t_reportDir}/*Summary_Graph--${REPORT_TYPE}.png "${DIRECTORY_IMAGES}"
+        t_graph="graph=`basename ${t_baseDir}/*Summary_Graph--${REPORT_TYPE}.png`"
+    fi
+
+    if [ -f ${t_baseDir}/*Summary--${REPORT_TYPE}.pdf ]; then
+        t_summary="summary=`basename ${t_baseDir}/*Summary--${REPORT_TYPE}.pdf`"
+    else
+        echo "There is no summary for '${t_name}'"
+    fi
+
+    cat > ${t_properties} <<EOF
+reportTitle=${t_name}
+${t_graph}
+${t_summary}
+EOF
+
+    echo -e "\nstatistics.fields='description:string','data:string','percent:string','indent:int'" >> ${t_properties}
+
+    ## Insert the statistics
+    ## This converts the current statistics from html into valid properties.
+    ## 1. Here are the steps: A convert the &nbsp; which are used for indenting into the isIndented=1 flag
+    ## 2. Convert unindented tags to isIndented=0
+    ## 3. Remove all other &nbsp; they are not used in the PDF
+    ## 4. Change all of the &amp; to &.
+    ## 5. Remove the table row start tag.
+    ## 6. Remove the table row end tag.
+    ## 7. Replace the start of the cell with an open single quote.
+    ## 8. Replace the end of the cell with an single quote and a comma.
+    ## 9. Number all of the lines with AWK.
+    sed -e 's|\(.*\)&nbsp;&nbsp;&nbsp;&nbsp;\(.*\)|\1\21|' \
+        -e 's|>$|>0|' \
+        -e 's|&nbsp;||g' \
+        -e 's|&amp;|\&|g' \
+        -e 's|<tr[^>]*>||g' \
+        -e 's|</tr>||g' \
+        -e "s|<td[^>]*>|'|g" \
+        -e "s|</td>|',|g" ${t_statistics} \
+        "${t_baseDir}/sum-${REPORT_TYPE}.html" \
+        | awk 'BEGIN { n = 0 }; { print "statistics." n++ "=" $0 }' >> ${t_properties}
+    
+
+    ## Insert the detailed reports
+    echo -e "\ndetailed.fields='description:string','filename:string'"  >> ${t_properties}
+    ## 1. Ignore graphs
+    ## 2. Ignore summaries
+    ## 3. Ignore summarizers
+    ## 4. Ignore parameters
+    ## 5. Get rid of the path to the thing that generates the report
+    ## 6. Swap the order of the title, and description, and add quotes
+    ## 7. Number all of the lines with AWK.
+    grep '\.jasper' "${t_baseDir}/report-files" \
+        | sed -e '/Graph/d' \
+        -e '/Summary/d' \
+        -e '/Summarizer/d' \
+        -e '/:parameter:/d' \
+        -e 's|^[^:]*:||' \
+        -e "s|\(.*\):\(.*\)|'\2','\1--${REPORT_TYPE}.pdf'|" \
+        | awk 'BEGIN { n = 0 }; { print "detailed." n++ "=" $0 }' >> ${t_properties}
+}
+
+####################### START OF SCRIPT
+
+## Get the transform list, and reorder so the reporting transform is at the top.
+orderedTransformList=`@USR_BIN@/mcli instances | grep running | awk '{ print $2 }' | uniq | sed -e '/reporting-transform/d' -e '1ireporting-transform' -e "s|^\(.*\)$|${REPORT_BASE}/\1|"`
+
+## User string for the report type, Daily, Weekly, Monthly
+reportType=`echo ${REPORT_TYPE} | tr "dmw" "DMW"`
+
+REPORT_PREPARED=`date +"${DATE_FORMAT}"`
+
+case ${REPORT_TYPE} in
+    "daily") REPORT_START=`date -d'-2 days' +"${DATE_FORMAT}"`;;
+    "monthly") REPORT_START=`date -d'-30 days' +"${DATE_FORMAT}"`;;
+    "weekly") REPORT_START=`date -d'-8 days' +"${DATE_FORMAT}"`;;
+esac
+
+## Reports always end last night    
+REPORT_END=`date -d'-1 days' +"${DATE_FORMAT}"`
+
+copyFiles
+
+topLevel="${DIRECTORY_PROPERTIES}/toplevel.properties"
+hostname=`hostname`
+
+## Default to using the ip address of eth0
+device="eth0"
+
+## If eth0 is in a bridge, get the address of the bridge.
+if [ -L /sys/class/net/${device}/brport/bridge ]; then
+    device=`file -b /sys/class/net/eth0/brport/bridge | sed -e 's|symbolic link to .\.\./\.\./\.\./\.\./class/net/||g' -e "s|'$||g"`
+fi
+
+ipAddress=`ip addr show ${device} | grep inet | head -n 1 | awk '{ print $2 }' | sed 's|/.*||'`
+
+generateTopLevel
+
+generateSubReports
+
+## Now actually generate the PDF
+ujac-to-pdf "${DIRECTORY_TEMPLATES}/${TEMPLATE_MASTER}" ${topLevel} ${OUTPUT_FILE}

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE document
+	PUBLIC "-//UJAC.org//Print Document//EN" 
+	"http://ujac.sourceforge.net/ujac-print-document.dtd">
+
+<document size="LETTER" margin-left="25" margin-right="25" margin-top="50" margin-bottom="50">
+  <font-def name="title"       family="Helvetica" size="32" style="normal" color="747474"/>
+  <font-def name="subtitle"    family="Helvetica" size="12" style="normal"/>
+  <font-def name="subsubtitle" family="Helvetica" size="9"  style="normal"/>
+
+  <!-- I believe this is the size of the type letter -->
+  <set-property name="pageWidth" type="int" value="612"/>
+  <set-property name="boxWidth"  type="int" value="386"/>
+  <set-property name="boxHeight" type="int" value="445"/>
+  
+  <set-property name="boxX"  type="int" value="${ pageWidth/2  - boxWidth/2 }"/>
+  <set-property name="boxY"  type="int" value="175"/>
+
+  <sticky name="a">
+    <background-image x="${boxX}" y="${boxY}" width="${boxWidth}" height="${boxHeight}" 
+                      source="${imageDirectory + 'background.png'}"/>
+    foo
+  </sticky>
+
+  <box x="${boxX}" y="${boxY}" width="${boxWidth}" height="${boxHeight}" valign="top" halign="center"
+       padding-top="10">
+    <paragraph halign="center" spacing-after="10">
+      <image source="${imageDirectory + 'logo.png'}" width="200"/>
+    </paragraph>
+    
+    <paragraph font="title" halign="center" spacing-after="20">Metavize EdgeReport</paragraph>
+    <paragraph font="subtitle" halign="center" line-spacing="1.0">
+      ${start} to ${end}<br/>
+      ${type} Report
+    </paragraph>
+    
+    <paragraph font="subsubtitle" halign="center" spacing-after="20">Prepared: ${prepared}</paragraph>
+
+    <paragraph font="subtitle">${hostname} (${ipAddress})</paragraph>
+        
+  </box>
+</document>
