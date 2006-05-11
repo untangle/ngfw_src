@@ -94,6 +94,10 @@ public class Reporter
         } else {
             monthly += "y";
         }
+        //logger.info("email detail: " + emailDetail);
+        //logger.info("daily: " + daily);
+        //logger.info("weekly: " + weekly);
+        //logger.info("monthly: " + monthly);
 
         try {
             File envFile = new File(outputDir, "settings.env");

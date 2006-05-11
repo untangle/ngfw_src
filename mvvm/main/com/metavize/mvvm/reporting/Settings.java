@@ -97,12 +97,14 @@ public class Settings
 
             ps = conn.prepareStatement(SCHED_WEEKLY);
             rs = ps.executeQuery();
-            rs.first();
-            Integer dayOfWk;
-            do {
-               dayOfWk = new Integer(rs.getInt(1));
-               wyL.add(dayOfWk);
-            } while (true == rs.next());
+            if (true == rs.first()) {
+                Integer dayOfWk;
+                do {
+                   dayOfWk = new Integer(rs.getInt(1));
+                   //logger.info("day of week: " + dayOfWk);
+                   wyL.add(dayOfWk);
+                } while (true == rs.next());
+            }
             rs.close();
             ps.close();
         } catch (SQLException exn) {
