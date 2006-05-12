@@ -458,9 +458,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
   <target name="install.openvpn">
     <mkdir  dir="${dist.mvvm.web}/${tran.name}/WEB-INF/lib"/>
-    <copy toDir="${dist.mvvm.web}/${tran.name}/WEB-INF/lib">
-      <fileset refid="log4j.jarset"/>
-    </copy>
     <copy file="${build.jar}/openvpn-web.jar" todir="${dist.mvvm.web}/${tran.name}/WEB-INF/lib"/>
   </target>
 
@@ -469,8 +466,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     <mkdir dir="${dist.mvvm.web}/browser/WEB-INF/lib"/>
 
     <copy todir="${dist.mvvm.web}/browser/WEB-INF/lib">
-      <fileset refid="log4j.jarset"/>
-      <fileset refid="jcifs.jarset"/>
       <fileset refid="commons-fileupload.jarset"/>
       <fileset refid="commons-io.jarset"/>
       <fileset refid="ajaxtk.thirdparty.jarset"/>
@@ -500,6 +495,11 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <fileset refid="htmlparser.jarset"/>
       <fileset refid="commons-fileupload.jarset"/>
       <fileset refid="commons-codec.jarset"/>
+    </copy>
+
+    <!-- rdp -->
+    <copy todir="${dist.mvvm.web}/rdp">
+      <fileset refid="log4j.jarset"/>
     </copy>
 
     <!-- portal -->
@@ -945,6 +945,62 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       </filterset>
     </copy>
 
+    <!-- rdp -->
+    <mkdir dir="${dist.mvvm.web}/rdp"/>
+
+    <copy todir="${dist.mvvm.web}/rdp">
+      <fileset dir="${tran.name}/webapps/rdp/root"/>
+    </copy>
+
+    <mkdir dir="${dist.mvvm.web}/rdp/WEB-INF/classes"/>
+
+    <javac destdir="${dist.mvvm.web}/rdp/WEB-INF/classes"
+           debug="on"
+           optimize="false"
+           deprecation="on"
+           source="1.5"
+           includeAntRuntime="false">
+
+      <src path="${tran.name}/webapps/rdp/src"/>
+
+      <classpath refid="mvvm.classpath"/>
+      <classpath refid="mvvm.thirdparty.classpath"/>
+      <classpath refid="tomcat.thirdparty.classpath"/>
+    </javac>
+
+    <mkdir dir="${build.gensrc}/rdp/"/>
+
+    <java classname="org.apache.jasper.JspC"
+          fork="true"
+          failonerror="true">
+      <arg line="-s"/>
+      <arg line="-l"/>
+      <arg line="-v"/>
+      <arg line="-compile"/>
+      <arg line="-d ${dist.mvvm.web}/rdp/WEB-INF/classes"/>
+      <arg line="-p com.metavize.tran.${tran.name}.rdp"/>
+      <arg line="-webinc ${build.gensrc}/rdp/web-fragment.xml"/>
+      <arg line="-uriroot ${dist.mvvm.web}/rdp"/>
+      <arg value="rdp.jsp"/>
+      <arg value="rdp.jnlp"/>
+      <classpath path="${java.home}/../lib/tools.jar"/>
+      <classpath refid="mvvm.classpath"/>
+      <classpath refid="mvvm.thirdparty.classpath"/>
+      <classpath refid="tomcat.thirdparty.classpath"/>
+    </java>
+
+    <echo message="Adding JSP servlet mappings to web.xml"/>
+
+    <loadfile property="rdp-generated-web.xml"
+              srcFile="${build.gensrc}/rdp/web-fragment.xml"/>
+    <copy file="${tran.name}/webapps/rdp/root/WEB-INF/web.xml"
+          toFile="${dist.mvvm.web}/rdp/WEB-INF/web.xml"
+          overwrite="true">
+      <filterset>
+        <filter token="JSP_PRE_COMPILED_SERVLETS" value="${rdp-generated-web.xml}"/>
+      </filterset>
+    </copy>
+
     <!-- proxy -->
     <mkdir dir="${dist.mvvm.web}/proxy"/>
 
@@ -967,6 +1023,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <classpath refid="httpclient.classpath"/>
       <classpath refid="htmlparser.classpath"/>
       <classpath refid="commons-fileupload.classpath"/>
+      <classpath refid="mvvm.classpath"/>
       <classpath refid="mvvm.thirdparty.classpath"/>
       <classpath refid="tomcat.thirdparty.classpath"/>
     </javac>
