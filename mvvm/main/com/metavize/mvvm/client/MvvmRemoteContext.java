@@ -22,6 +22,7 @@ import com.metavize.mvvm.ReportingManager;
 import com.metavize.mvvm.addrbook.AddressBook;
 import com.metavize.mvvm.logging.LoggingManager;
 import com.metavize.mvvm.policy.PolicyManager;
+import com.metavize.mvvm.portal.RemotePortalManager;
 import com.metavize.mvvm.security.AdminManager;
 import com.metavize.mvvm.toolbox.ToolboxManager;
 import com.metavize.mvvm.tran.TransformManager;
@@ -111,6 +112,13 @@ public interface MvvmRemoteContext
      * @return the singleton
      */
     AppServerManager appServerManager();
+
+    /**
+     * Get the RemotePortalManager singleton for this instance
+     *
+     * @return the singleton
+     */
+    RemotePortalManager portalManager();
 
 
     /**
