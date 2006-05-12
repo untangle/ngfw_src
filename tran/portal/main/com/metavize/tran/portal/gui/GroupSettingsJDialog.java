@@ -35,6 +35,7 @@ public class GroupSettingsJDialog extends MConfigJDialog implements SettingsChan
     private static final String NAME_BOOKMARKS = "Links";
     private static final String NAME_HOME      = "Page Setup";
 
+    private List<String> applicationNames;
     private PortalGroup portalGroup;
     private MTransformControlsJPanel mTransformControlsJPanel;
     private boolean settingsChanged;
@@ -75,6 +76,7 @@ public class GroupSettingsJDialog extends MConfigJDialog implements SettingsChan
     }
 
     protected void refreshAll() throws Exception {
+	applicationNames = Util.getMvvmContext().portalManager().applicationManager().getApplicationNames();
 	super.refreshAll();
 	settingsChanged = false;
     }
@@ -87,7 +89,7 @@ public class GroupSettingsJDialog extends MConfigJDialog implements SettingsChan
         this.setTitle(NAME_TITLE + " for " + portalGroup.getName() );
 
         // BOOKMARKS //
-	BookmarksJPanel bookmarksJPanel = new BookmarksJPanel(portalGroup);
+	BookmarksJPanel bookmarksJPanel = new BookmarksJPanel(portalGroup, applicationNames);
 	addRefreshable(NAME_BOOKMARKS, bookmarksJPanel);
 	addSavable(NAME_BOOKMARKS, bookmarksJPanel);
         addTab(NAME_BOOKMARKS, null, bookmarksJPanel);

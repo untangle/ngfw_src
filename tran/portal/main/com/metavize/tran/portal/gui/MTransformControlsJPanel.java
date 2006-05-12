@@ -14,8 +14,9 @@
 package com.metavize.tran.portal.gui;
 
 import com.metavize.mvvm.tran.TransformContext;
-
 import com.metavize.mvvm.tran.IPMaddr;
+
+import com.metavize.mvvm.addrbook.UserEntry;
 
 import com.metavize.gui.transform.*;
 import com.metavize.gui.pipeline.MPipelineJPanel;
@@ -26,6 +27,7 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.table.*;
 import java.util.Vector;
+import java.util.List;
 import javax.swing.event.*;
 import javax.swing.border.EmptyBorder;
 
@@ -38,6 +40,11 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     private static final String NAME_SETTINGS_BOOKMARKS = "Links";
     private static final String NAME_STATUS             = "Status";
     private static final String NAME_LOG                = "Event Log";
+
+    private List<UserEntry> localUserEntries;
+    List<UserEntry> getLocalUserEntries(){ return localUserEntries; }
+
+    private List<String> applicationNames;
     
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
         super(mTransformJPanel);
@@ -63,7 +70,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	JTabbedPane globalJTabbedPane = addTabbedPane(NAME_SETTINGS, null);
 
 	// GLOBAL BOOKMARKS //
-	BookmarksJPanel bookmarksJPanel = new BookmarksJPanel(null);
+	BookmarksJPanel bookmarksJPanel = new BookmarksJPanel(null, applicationNames);
 	globalJTabbedPane.addTab(NAME_SETTINGS_BOOKMARKS, null, bookmarksJPanel);
 	addSavable(NAME_SETTINGS_BOOKMARKS, bookmarksJPanel);
 	addRefreshable(NAME_SETTINGS_BOOKMARKS, bookmarksJPanel);
@@ -90,6 +97,13 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         addShutdownable(NAME_LOG, logJPanel);
 	*/
     }
+
+    public void refreshAll() throws Exception {
+	applicationNames = Util.getMvvmContext().portalManager().applicationManager().getApplicationNames();
+	super.refreshAll();
+	localUserEntries = Util.getAddressBook().getLocalUserEntries();
+    }
+
 }
 
 

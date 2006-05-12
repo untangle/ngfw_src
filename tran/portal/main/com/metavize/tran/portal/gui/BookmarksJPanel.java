@@ -27,7 +27,7 @@ import javax.swing.event.*;
 
 public class BookmarksJPanel extends MEditTableJPanel{    
 
-    public BookmarksJPanel(Object obj) {
+    public BookmarksJPanel(Object obj, List<String> applicationNames) {
         super(true, true);
         super.setFillJButtonEnabled( false );
         super.setInsets(new Insets(4, 4, 2, 2));
@@ -36,7 +36,7 @@ public class BookmarksJPanel extends MEditTableJPanel{
         super.setAddRemoveEnabled(true);
         
         // create actual table model
-        BookmarksTableModel bookmarksTableModel = new BookmarksTableModel(obj);
+        BookmarksTableModel bookmarksTableModel = new BookmarksTableModel(obj, applicationNames);
         this.setTableModel( bookmarksTableModel );
     }
 }
@@ -52,15 +52,18 @@ class BookmarksTableModel extends MSortedTableModel<Object>{
     private static final int C4_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW + C3_MW ), 120); /* target */
 
     private Object portalObject;
+    private List<String> applicationNames;
 
-    public BookmarksTableModel(Object obj){
+    public BookmarksTableModel(Object obj, List<String> applicationNames){
 	portalObject = obj;
+	this.applicationNames = applicationNames;
     }
 
     private DefaultComboBoxModel appModel = new DefaultComboBoxModel();
     private void updateAppModel(){
 	appModel.removeAllElements();
-	appModel.addElement("HTTP");
+	for( String applicationName : applicationNames )
+	appModel.addElement(applicationName);
     }
     
     public TableColumnModel getTableColumnModel(){

@@ -35,6 +35,7 @@ public class UserSettingsJDialog extends MConfigJDialog implements SettingsChang
     private static final String NAME_BOOKMARKS = "Links";
     private static final String NAME_HOME      = "Page Setup";
 
+    private List<String> applicationNames;
     private PortalUser portalUser;
     private MTransformControlsJPanel mTransformControlsJPanel;
     private boolean settingsChanged;
@@ -75,6 +76,7 @@ public class UserSettingsJDialog extends MConfigJDialog implements SettingsChang
     }
 
     protected void refreshAll() throws Exception {
+	applicationNames = Util.getMvvmContext().portalManager().applicationManager().getApplicationNames();
 	super.refreshAll();
 	settingsChanged = false;
     }
@@ -92,7 +94,7 @@ public class UserSettingsJDialog extends MConfigJDialog implements SettingsChang
         this.setTitle(NAME_TITLE + " for " + portalUser.getUid() + " (" + groupName + ")");
 
         // BOOKMARKS //////
-	BookmarksJPanel bookmarksJPanel = new BookmarksJPanel(portalUser);
+	BookmarksJPanel bookmarksJPanel = new BookmarksJPanel(portalUser, applicationNames);
 	addRefreshable(NAME_BOOKMARKS, bookmarksJPanel);
 	addSavable(NAME_BOOKMARKS, bookmarksJPanel);
         addTab(NAME_BOOKMARKS, null, bookmarksJPanel);
