@@ -1,7 +1,5 @@
 <%@ page language="java" import="jcifs.smb.*" %>
 
-<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
-
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -25,8 +23,6 @@
 <script type="text/javascript" src="Application.js"></script>
 <script type="text/javascript" src="Bookmark.js"></script>
 <script type="text/javascript" src="Portal.js"></script>
-<script type="text/javascript" src="LoginPanel.js"></script>
-<script type="text/javascript" src="LoginDialog.js"></script>
 <script type="text/javascript" src="AddBookmarkPanel.js"></script>
 <script type="text/javascript" src="AddBookmarkDialog.js"></script>
 <script type="text/javascript" src="BookmarkPanel.js"></script>

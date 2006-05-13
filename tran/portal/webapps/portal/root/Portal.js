@@ -25,8 +25,6 @@ function Portal(shell, url) {
    this.layout();
 
    this.zShow(true);
-
-   this.login();
 }
 
 Portal.prototype = new DwtComposite();
@@ -87,36 +85,6 @@ Portal.prototype.splitUrl = function(url)
 }
 
 // public methods -------------------------------------------------------------
-
-Portal.prototype.login = function()
-{
-   var dialog = new LoginDialog(this._shell);
-
-   var cb = function() {
-      var user = dialog.getUser();
-      var password = dialog.getPassword();
-
-      // XXX XXX put in post
-      var url = "login?user=" + user + "&password=" + password;
-
-      var cb = function(obj, results) {
-         if (results.success) {
-            dialog.popdown();
-            this.refresh();
-         } else {
-            dialog.reportFailure("bad login");
-         }
-      }
-
-      AjxRpc.invoke(null, url, null, new AjxCallback(this, cb, {}), false);
-   }
-
-   var l = new AjxListener(this, cb);
-   dialog.setButtonListener(DwtDialog.OK_BUTTON, l);
-   dialog.addListener(DwtEvent.ENTER, l);
-
-   dialog.popup();
-}
 
 Portal.prototype.refresh = function()
 {
