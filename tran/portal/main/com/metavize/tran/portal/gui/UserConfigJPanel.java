@@ -117,7 +117,7 @@ class UserConfigTableModel extends MSortedTableModel<Object>{
 	    Vector rowVector = (Vector) getDataVector().elementAt(modelRow);
 	    ComboBoxModel comboBoxModel = (ComboBoxModel) rowVector.elementAt(3);
 	    if( comboBoxModel.getSelectedItem().equals(CREATE_NEW_USER_ENTRY) ){
-		Util.getMMainJFrame().showLocalUserDirectory( (Window) panel.getTopLevelAncestor() );
+            //		Util.getMMainJFrame().showLocalUserDirectory( (Window) panel.getTopLevelAncestor() );
 		mTransformControlsJPanel.refreshGui();
 	    }
 	}
