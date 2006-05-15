@@ -23,7 +23,7 @@ import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Pipeline;
 import org.apache.catalina.Realm;
-import org.apache.catalina.authenticator.BasicAuthenticator;
+import org.apache.catalina.authenticator.AuthenticatorBase;
 import org.apache.catalina.core.StandardDefaultContext;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.logger.FileLogger;
@@ -142,7 +142,7 @@ class TomcatManager
     {
         PortalManagerImpl pm = mvvmContext.portalManager();
         Realm realm = pm.getPortalRealm();
-        BasicAuthenticator auth = pm.newPortalAuthenticator();
+        AuthenticatorBase auth = pm.newPortalAuthenticator();
         return loadWebApp(urlBase, rootDir, realm, auth);
     }
 
@@ -346,10 +346,10 @@ class TomcatManager
         final String urlBase;
         final String relativeRoot;
         final Realm realm;
-        final BasicAuthenticator auth;
+        final AuthenticatorBase auth;
 
         WebAppDescriptor(String base, String rr, Realm realm,
-                         BasicAuthenticator auth)
+                         AuthenticatorBase auth)
         {
             this.urlBase = base;
             this.relativeRoot = rr;
@@ -362,7 +362,7 @@ class TomcatManager
 
     private synchronized boolean loadWebApp(String urlBase, String rootDir,
                                             Realm realm,
-                                            BasicAuthenticator auth)
+                                            AuthenticatorBase auth)
     {
         if (null == emb) {
             // haven't started yet
@@ -376,13 +376,13 @@ class TomcatManager
     }
 
     private boolean loadWebAppImpl(String urlBase, String rootDir,
-                                   Realm realm, BasicAuthenticator auth)
+                                   Realm realm, AuthenticatorBase auth)
     {
         String fqRoot = webAppRoot + "/" + rootDir;
 
         try {
             Context ctx = emb.createContext(urlBase, fqRoot);
-            if (null != realm) {
+           if (null != realm) {
                 ctx.setRealm(realm);
             }
             StandardManager mgr = new StandardManager();

@@ -41,8 +41,8 @@ public class MMainJFrame extends javax.swing.JFrame {
 
 
     public MMainJFrame() {
-	getRootPane().setDoubleBuffered(true);
-	RepaintManager.currentManager(this).setDoubleBufferingEnabled(true);
+    getRootPane().setDoubleBuffered(true);
+    RepaintManager.currentManager(this).setDoubleBufferingEnabled(true);
         Util.setMMainJFrame(this);
 
         // INIT GUI
@@ -54,8 +54,8 @@ public class MMainJFrame extends javax.swing.JFrame {
         setBounds((screenSize.width-1024)/2, (screenSize.height-768)/2, 1024, 768);
 
         PolicyStateMachine policyStateMachine = new PolicyStateMachine(mTabbedPane,Util.getMRackJPanel(),toolboxJScrollPane,
-								       utilToolboxJPanel,policyToolboxJPanel,coreToolboxJPanel,
-								       storeScrollJPanel,Util.getMPipelineJPanel().getJScrollPane());
+                                       utilToolboxJPanel,policyToolboxJPanel,coreToolboxJPanel,
+                                       storeScrollJPanel,Util.getMPipelineJPanel().getJScrollPane());
         metavizeJButton.addActionListener(policyStateMachine);
 
         // UPDATE/UPGRADE
@@ -573,7 +573,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                 java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
                 setBounds((screenSize.width-1024)/2, (screenSize.height-768)/2, 1024, 768);
         }//GEN-END:initComponents
-    
+
     private void directoryJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_directoryJButtonActionPerformed
         try{
             directoryJButton.setEnabled(false);
@@ -589,7 +589,7 @@ public class MMainJFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_directoryJButtonActionPerformed
 
-	private void helpJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpJButtonActionPerformed
+    private void helpJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpJButtonActionPerformed
         try{
             URL newURL = new URL( "http://www.metavize.com/docs/" + Version.getVersion());
             ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
@@ -597,7 +597,7 @@ public class MMainJFrame extends javax.swing.JFrame {
         catch(Exception f){
             Util.handleExceptionNoRestart("Error showing help for EdgeReport", f);
         }
-	}//GEN-LAST:event_helpJButtonActionPerformed
+    }//GEN-LAST:event_helpJButtonActionPerformed
 
     private void emailJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_emailJButtonActionPerformed
         try{
@@ -764,9 +764,9 @@ public class MMainJFrame extends javax.swing.JFrame {
             this.setContextClassLoader(Util.getClassLoader());
             this.start();
         }
-	public void doShutdown(){
-	    interrupt();
-	}
+    public void doShutdown(){
+        interrupt();
+    }
         public void run() {
             MackageDesc[] mackageDescs;
 

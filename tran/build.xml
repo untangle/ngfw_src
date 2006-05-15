@@ -1036,66 +1036,13 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     </copy>
 
     <!-- portal -->
-    <mkdir dir="${dist.mvvm.web}/portal"/>
-
-    <copy todir="${dist.mvvm.web}/portal">
-      <fileset dir="${tran.name}/webapps/portal/root"/>
-    </copy>
-
-    <mkdir dir="${dist.mvvm.web}/portal/WEB-INF/classes"/>
-
-    <javac destdir="${dist.mvvm.web}/portal/WEB-INF/classes"
-           debug="on"
-           optimize="false"
-           deprecation="on"
-           source="1.5"
-           includeAntRuntime="false">
-
-      <src path="${tran.name}/webapps/portal/src"/>
-
-      <classpath refid="mvvm.classpath"/>
-      <classpath refid="mvvm.thirdparty.classpath"/>
-      <classpath refid="tomcat.thirdparty.classpath"/>
-      <classpath refid="ajaxtk.thirdparty.classpath"/>
-    </javac>
-
-    <mkdir dir="${build.gensrc}/portal/"/>
-
-    <copy todir="${dist.mvvm.web}/portal">
-      <fileset dir="${AJAXTK_HOME}/build/WebRoot/examples">
-        <include name="*.jsp"/>
-      </fileset>
-    </copy>
-
-    <java classname="org.apache.jasper.JspC"
-          fork="true"
-          failonerror="true">
-      <arg line="-s"/>
-      <arg line="-l"/>
-      <arg line="-v"/>
-      <arg line="-compile"/>
-      <arg line="-d ${dist.mvvm.web}/portal/WEB-INF/classes"/>
-      <arg line="-p com.metavize.tran.${tran.name}.portal"/>
-      <arg line="-webinc ${build.gensrc}/portal/web-fragment.xml"/>
-      <arg line="-uriroot ${dist.mvvm.web}/portal"/>
-      <classpath path="${java.home}/../lib/tools.jar"/>
-      <classpath refid="tomcat.thirdparty.classpath"/>
-      <classpath refid="mvvm.thirdparty.classpath"/>
-      <classpath refid="ajaxtk.thirdparty.classpath"/>
-    </java>
-
-    <echo message="Adding JSP servlet mappings to web.xml"/>
-
-    <loadfile property="portal-generated-web.xml"
-              srcFile="${build.gensrc}/portal/web-fragment.xml"/>
-    <copy file="${tran.name}/webapps/portal/root/WEB-INF/web.xml"
-          toFile="${dist.mvvm.web}/portal/WEB-INF/web.xml"
-          overwrite="true">
-      <filterset>
-        <filter token="JSP_PRE_COMPILED_SERVLETS" value="${portal-generated-web.xml}"/>
-      </filterset>
-    </copy>
-
+    <exec executable="${buildtool.base}/mkwap.sh" failonerror="true">
+      <arg value="-c"/><arg value="portal/common"/>
+      <arg value="../.."/>
+      <arg value="com.metavize.tran.portal.jsp"/>
+      <arg value="${tran.name}/webapps/portal"/>
+      <arg value="${dist.mvvm.web}/portal"/>
+    </exec>
   </target>
 
   <target name="compile.firewall"/>

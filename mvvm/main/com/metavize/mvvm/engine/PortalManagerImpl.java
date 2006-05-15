@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.naming.ServiceUnavailableException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import com.metavize.mvvm.addrbook.AddressBook;
 import com.metavize.mvvm.addrbook.AddressBookConfiguration;
@@ -47,8 +45,8 @@ import jcifs.smb.NtlmPasswordAuthentication;
 import org.apache.catalina.HttpRequest;
 import org.apache.catalina.HttpResponse;
 import org.apache.catalina.Realm;
-import org.apache.catalina.authenticator.BasicAuthenticator;
-import org.apache.catalina.authenticator.Constants;
+import org.apache.catalina.authenticator.AuthenticatorBase;
+import org.apache.catalina.authenticator.FormAuthenticator;
 import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.realm.RealmBase;
 import org.apache.commons.logging.Log;
@@ -77,6 +75,7 @@ class PortalManagerImpl implements LocalPortalManager
     private final AddressBook addressBook;
     private final EventLogger eventLogger;
     private final LoginReaper reaper;
+    private final ThreadLocal<String> localAddr = new ThreadLocal<String>();
 
     private final Map<PortalLogin, Long> activeLogins;
 
@@ -257,7 +256,7 @@ class PortalManagerImpl implements LocalPortalManager
 
     // package protected methods ----------------------------------------------
 
-    BasicAuthenticator newPortalAuthenticator()
+    AuthenticatorBase newPortalAuthenticator()
     {
         return new PortalAuthenticator();
     }
@@ -400,7 +399,7 @@ class PortalManagerImpl implements LocalPortalManager
 
     // private classes --------------------------------------------------------
 
-    private class PortalAuthenticator extends BasicAuthenticator
+    private class PortalAuthenticator extends FormAuthenticator
     {
         protected static final String info =
             "com.metavize.mvvm.engine.PortalAuthenticator/4.0";
@@ -419,70 +418,9 @@ class PortalManagerImpl implements LocalPortalManager
                                     LoginConfig config)
             throws IOException
         {
-            HttpServletRequest req = (HttpServletRequest)request.getRequest();
-            HttpServletResponse resp = (HttpServletResponse)response.getResponse();
-            Principal principal = req.getUserPrincipal();
+            localAddr.set(request.getRequest().getRemoteAddr());
 
-            String ssoId = (String)request.getNote(Constants.REQ_SSOID_NOTE);
-
-            if (null != principal) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Already authenticated '" + principal.getName()
-                              + "'");
-                }
-
-                if (ssoId != null) {
-                    associate(ssoId, getSession(request, true));
-                }
-
-                if (isSessionLive((PortalLogin)principal)) {
-                    return true;
-                }
-            } else if (null != ssoId) {
-                if (log.isDebugEnabled()) {
-                    log.debug("SSO Id " + ssoId + " set; attempting " +
-                              "reauthentication");
-                }
-
-                if (reauthenticateFromSSO(ssoId, request)) {
-                    PortalLogin pl = (PortalLogin)req.getUserPrincipal();
-                    if (null == pl) {
-                        logger.warn("PortalLogin idle time not reset");
-                        return true;
-                    } else {
-                        if (isSessionLive(pl)) {
-                            return true;
-                        }
-                    }
-                }
-            }
-
-            String authorization = request.getAuthorization();
-            String username = parseUsername(authorization);
-            String password = parsePassword(authorization);
-
-            LocalPortalManager pm = mvvmContext.portalManager();
-
-            String credentials = password + "," + req.getRemoteAddr();
-
-            principal = context.getRealm().authenticate(username, credentials);
-
-            if (null != principal) {
-                register(request, response, principal, Constants.BASIC_METHOD,
-                         username, password);
-                return true;
-            } else {
-                String realmName = config.getRealmName();
-                if (null == realmName) {
-                    realmName = req.getServerName() + ":"
-                        + req.getServerPort();
-                }
-
-                resp.setHeader("WWW-Authenticate",
-                               "Basic realm=\"" + realmName + "\"");
-                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return false;
-            }
+            return super.authenticate(request, response, config);
         }
     }
 
@@ -492,19 +430,20 @@ class PortalManagerImpl implements LocalPortalManager
 
         public Principal authenticate(String username, String credentials)
         {
-            String[] creds = credentials.split(",");
-            String password = creds[0];
+            String password = credentials;
             InetAddress addr;
 
-            try {
-                addr = InetAddress.getByName(creds[1]);
-            } catch (UnknownHostException exn) {
-                addr = null;
+            String addrStr = localAddr.get();
+            if (null == addrStr) {
+                return null;
+            } else {
+                try {
+                    addr = InetAddress.getByName(addrStr);
+                    return login(username, password, addr);
+                } catch (UnknownHostException exn) {
+                    return null;
+                }
             }
-
-            LocalPortalManager pm = mvvmContext.portalManager();
-
-            return login(username, password, addr);
         }
 
         @Override

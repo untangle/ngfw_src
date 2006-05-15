@@ -6,20 +6,25 @@ set -e
 
 function copyfiles()
 {
-    while read l; do
-        find "$1" -path "$1/$l" -exec cp '{}' "$2" ';'
+    while read src dest; do
+        if [ ! -z "$src" ]; then
+            if [ ! -z "$dest" ]; then
+                mkdir -p $2/$dest
+            fi
+            cp -rf $1/$src $2/$dest
+        fi
     done
 }
 
 # main ------------------------------------------------------------------------
 
-while getopts :r:n: KEY
+while getopts :c: KEY
   do
   case ${KEY} in
-      r) root="$OPTARG";;
-      n) name="$OPTARG";;
+      c) common="$OPTARG";;
   esac
 done
+shift $(expr $OPTIND - 1)
 
 root=$1
 name=$2
@@ -28,33 +33,48 @@ dest=$4
 
 uriroot="$src/root"
 classroot="$dest/WEB-INF/classes"
+webinf="$dest/WEB-INF"
+weblib="$webinf/lib"
 
 libdirs="$root/alpine/output/usr/share/metavize/lib $root/alpine/output/usr/share/java/mvvm $root/downloads/output/jakarta-tomcat-5.0.28-embed/lib"
 
-classpath="$(find $libdirs -name '*.jar' -printf '%p:')"
-
-shift $(($OPTIND - 1))
+classpath="$root/alpine/buildtools"
+classpath="$classpath:$JAVA_HOME/lib/tools.jar:$(find $libdirs -name '*.jar' -printf '%p:')"
 
 mkdir -p "$classroot"
 
 srclist=$(mktemp)
 find "$src/src" -name '*.java' >$srclist
-
-$JAVA_HOME/bin/javac -cp "$classpath" -sourcepath "$src/src" -d "$classroot" \
-    @$srclist
+if grep java $srclist; then
+    $JAVA_HOME/bin/javac -cp "$classpath" -sourcepath "$src/src" -d "$classroot" \
+        @$srclist
+fi
 rm $srclist
 
 (cd "$uriroot" && tar c --exclude '*.svn*' . | tar x -C "$dest")
+if [ ! -z "$common" ]; then
+    (cd "$common/root" && tar c --exclude '*.svn*' . | tar x -C "$dest")
+fi
 
-weblib=$dest/WEB-INF/lib
 mkdir -p "$weblib"
-cat $src/dlinc | copyfiles $root/downloads/output $weblib
+
+if [ -r $src/dlroot ]; then
+    cat $src/dlroot | copyfiles $root/downloads/output $dest
+fi
+
+if [ -r $src/dllib ]; then
+    cat $src/dllib | copyfiles $root/downloads/output $weblib
+fi
 
 webfrag=$(mktemp)
 
-$JAVA_HOME/bin/java -cp "$classpath org.apache.jasper.JspC -d $classroot \
-    -p $name -webinc $webfrag -uriroot "$uriroot"
+$JAVA_HOME/bin/java -cp "$classpath" org.apache.jasper.JspC \
+    -s -l -v -compile -d $classroot -p $name -webinc $webfrag \
+    -uriroot "$dest"
 
-cat $webfrag
+find $classroot -name '*.java' -exec rm '{}' ';'
+
+sed -i "$webinf/web.xml" -e "/@JSP_PRE_COMPILED_SERVLETS@/r $webfrag" \
+    -e "/@JSP_PRE_COMPILED_SERVLETS@/d"
 
 rm $webfrag

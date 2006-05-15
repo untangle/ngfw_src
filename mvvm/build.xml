@@ -30,7 +30,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
   <target name="pkg.install"
           depends="install.hier, install.bootstrap,
                    install.mvvm-client, install.mvvm-reports, install.mvvm, install.servlets,
-                   install.thirdparty, install.reports"/>
+                   install.thirdparty, install.reports, install.webapps"/>
   <target name="pkg.clean" depends="clean.nuke"/>
 
   <target name="gensrc.servlets">
@@ -661,9 +661,6 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
         <filter token="JSP_PRE_COMPILED_SERVLETS" value="${generated-web.xml}"/>
       </filterset>
     </copy>
-
-
-
   </target>
 
   <!-- thirdparty -->
@@ -719,6 +716,16 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
          </copy>
     -->
   </target>
+
+  <target name="install.webapps" depends="install.thirdparty">
+    <exec executable="${buildtool.base}/mkwap.sh" failonerror="true">
+      <arg value="../.."/>
+      <arg value="com.metavize.mvvm.root.jsp"/>
+      <arg value="webapps/ROOT"/>
+      <arg value="${dist.mvvm.web}/ROOT"/>
+    </exec>
+  </target>
+
 
   <!-- hier targets -->
 

@@ -14,6 +14,7 @@ package com.metavize.mvvm.portal;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
 /**
  * Portal group.  Group name is free, and currently has no
  * relationship to addrress book.
@@ -21,7 +22,7 @@ import java.util.List;
  * @author <a href="mailto:jdi@metavize.com">John Irwin</a>
  * @version 1.0
  * @hibernate.class
- * table="Portal_Group"
+ * table="PORTAL_GROUP"
  */
 public class PortalGroup implements Serializable
 {
