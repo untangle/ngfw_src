@@ -1,4 +1,4 @@
-<%@ page language="java" %>
+<%@ page language="java" import="jcifs.smb.*" %>
 
 <% String sp = (String)request.getContextPath() + "/secure"; %>
 
@@ -15,32 +15,34 @@
 </style>
 <link rel="stylesheet" type="text/css" href="/AjaxTk/common.css"/>
 <link rel="stylesheet" type="text/css" href="/AjaxTk/dwt.css"/>
-<link rel="stylesheet" type="text/css" href="<%=sp%>/portal.css"/>
+<link rel="stylesheet" type="text/css" href="<%=sp%>/browser.css"/>
 
 <script type="text/javascript" src="/AjaxTk/I18nMsg.js"></script>
 <script type="text/javascript" src="/AjaxTk/AjxMsg.js"></script>
 
 <jsp:include page="Ajax.inc"/>
 
-<script type="text/javascript" src="<%=sp%>/Application.js"></script>
-<script type="text/javascript" src="<%=sp%>/Bookmark.js"></script>
-<script type="text/javascript" src="<%=sp%>/Portal.js"></script>
-<script type="text/javascript" src="<%=sp%>/AddBookmarkPanel.js"></script>
-<script type="text/javascript" src="<%=sp%>/AddBookmarkDialog.js"></script>
-<script type="text/javascript" src="<%=sp%>/BookmarkPanel.js"></script>
+<script type="text/javascript" src="<%=sp%>/CifsNode.js"></script>
+<script type="text/javascript" src="<%=sp%>/Browser.js"></script>
+<script type="text/javascript" src="<%=sp%>/DirTree.js"></script>
+<script type="text/javascript" src="<%=sp%>/DetailPanel.js"></script>
+<script type="text/javascript" src="<%=sp%>/FileUploadPanel.js"></script>
+<script type="text/javascript" src="<%=sp%>/FileUploadDialog.js"></script>
+<script type="text/javascript" src="<%=sp%>/MkdirDialog.js"></script>
+<script type="text/javascript" src="<%=sp%>/RenameDialog.js"></script>
 
 </head>
 
 <body>
 
-<noscript><p><b>Please enable JavaScript to use this application.</b></p></noscript>
+<noscript><p><b>Please enable JavaScript to use this application</b></p></noscript>
 
 <script language="JavaScript">
 function launch() {
 DBG = new AjxDebug(AjxDebug.DBG1, null, false);
 
 var shell = new DwtShell("MainShell", false);
-var portal = new Portal(shell, "smb://windows.metavize.com/");
+new Browser(shell, "smb://windows.metavize.com/");
 }
 AjxCore.addOnloadListener(launch);
 </script>

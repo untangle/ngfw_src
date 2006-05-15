@@ -36,9 +36,22 @@ classroot="$dest/WEB-INF/classes"
 webinf="$dest/WEB-INF"
 weblib="$webinf/lib"
 
-libdirs="$root/alpine/output/usr/share/metavize/lib $root/alpine/output/usr/share/java/mvvm $root/downloads/output/jakarta-tomcat-5.0.28-embed/lib"
-
 classpath="$root/alpine/buildtools"
+
+mkdir -p "$dest"
+
+if [ -r $src/dlroot ]; then
+    cat $src/dlroot | copyfiles $root/downloads/output $dest
+fi
+
+mkdir -p "$weblib"
+
+if [ -r $src/dllib ]; then
+    cat $src/dllib | copyfiles $root/downloads/output $weblib
+fi
+
+libdirs="$weblib $root/alpine/output/usr/share/metavize/lib $root/alpine/output/usr/share/java/mvvm $root/downloads/output/jakarta-tomcat-5.0.28-embed/lib"
+
 classpath="$classpath:$JAVA_HOME/lib/tools.jar:$(find $libdirs -name '*.jar' -printf '%p:')"
 
 mkdir -p "$classroot"
@@ -54,16 +67,6 @@ rm $srclist
 (cd "$uriroot" && tar c --exclude '*.svn*' . | tar x -C "$dest")
 if [ ! -z "$common" ]; then
     (cd "$common/root" && tar c --exclude '*.svn*' . | tar x -C "$dest")
-fi
-
-mkdir -p "$weblib"
-
-if [ -r $src/dlroot ]; then
-    cat $src/dlroot | copyfiles $root/downloads/output $dest
-fi
-
-if [ -r $src/dllib ]; then
-    cat $src/dllib | copyfiles $root/downloads/output $weblib
 fi
 
 webfrag=$(mktemp)

@@ -127,4 +127,8 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
       <form-error-page>/login/login.jsp</form-error-page>
     </form-login-config>
   </login-config>
+
+  <welcome-file-list>
+    <welcome-file>secure/portal.jsp</welcome-file>
+  </welcome-file-list>
 </web-app>

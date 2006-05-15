@@ -886,64 +886,13 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
   <target name="compile.portal">
     <!-- browser -->
-    <mkdir dir="${dist.mvvm.web}/browser"/>
-
-    <copy todir="${dist.mvvm.web}/browser">
-      <fileset dir="${tran.name}/webapps/browser/root"/>
-    </copy>
-
-    <mkdir dir="${dist.mvvm.web}/browser/WEB-INF/classes"/>
-
-    <javac destdir="${dist.mvvm.web}/browser/WEB-INF/classes"
-           debug="on"
-           optimize="false"
-           deprecation="on"
-           source="1.5"
-           includeAntRuntime="false">
-
-      <src path="${tran.name}/webapps/browser/src"/>
-
-      <classpath refid="mvvm.thirdparty.classpath"/>
-      <classpath refid="tomcat.thirdparty.classpath"/>
-      <classpath refid="ajaxtk.thirdparty.classpath"/>
-    </javac>
-
-    <mkdir dir="${build.gensrc}/browser/"/>
-
-    <copy todir="${dist.mvvm.web}/browser">
-      <fileset dir="${AJAXTK_HOME}/build/WebRoot/examples">
-        <include name="*.jsp"/>
-      </fileset>
-    </copy>
-
-    <java classname="org.apache.jasper.JspC"
-          fork="true"
-          failonerror="true">
-      <arg line="-s"/>
-      <arg line="-l"/>
-      <arg line="-v"/>
-      <arg line="-compile"/>
-      <arg line="-d ${dist.mvvm.web}/browser/WEB-INF/classes"/>
-      <arg line="-p com.metavize.tran.${tran.name}.browser"/>
-      <arg line="-webinc ${build.gensrc}/browser/web-fragment.xml"/>
-      <arg line="-uriroot ${dist.mvvm.web}/browser"/>
-      <classpath path="${java.home}/../lib/tools.jar"/>
-      <classpath refid="tomcat.thirdparty.classpath"/>
-      <classpath refid="mvvm.thirdparty.classpath"/>
-      <classpath refid="ajaxtk.thirdparty.classpath"/>
-    </java>
-
-    <echo message="Adding JSP servlet mappings to web.xml"/>
-
-    <loadfile property="browser-generated-web.xml"
-              srcFile="${build.gensrc}/browser/web-fragment.xml"/>
-    <copy file="${tran.name}/webapps/browser/root/WEB-INF/web.xml"
-          toFile="${dist.mvvm.web}/browser/WEB-INF/web.xml"
-          overwrite="true">
-      <filterset>
-        <filter token="JSP_PRE_COMPILED_SERVLETS" value="${browser-generated-web.xml}"/>
-      </filterset>
-    </copy>
+    <exec executable="${buildtool.base}/mkwap.sh" failonerror="true">
+      <arg value="-c"/><arg value="portal/common"/>
+      <arg value="../.."/>
+      <arg value="com.metavize.tran.browser.jsp"/>
+      <arg value="${tran.name}/webapps/browser"/>
+      <arg value="${dist.mvvm.web}/browser"/>
+    </exec>
 
     <!-- rdp -->
     <mkdir dir="${dist.mvvm.web}/rdp"/>
