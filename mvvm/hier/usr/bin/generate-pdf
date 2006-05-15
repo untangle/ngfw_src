@@ -6,7 +6,7 @@
 
 if [ -z "${REPORT_TYPE}" ]; then
     echo "REPORT_TYPE must be defined before executing this script"
-    return -1
+    exit -1
 fi
 
 OUTPUT_FILE=$1
@@ -17,7 +17,7 @@ if [ -z "${OUTPUT_FILE}" ]; then
     echo "  REPORT_BASE must be defined to the location of the sub reports"
     echo "  REPORT_TYPE must be (daily|weekly|monthly)"
     echo "  SHOW_DETAILED_REPORTS must be (true|false)"
-    return -1
+    exit -1
 fi
 
 
@@ -36,14 +36,18 @@ TEMPLATE_BRIEFING="Briefing.xml"
 TEMPLATE_DETAILED="DetailedReport.xml"
 TEMPLATE_MASTER="MasterDocument.xml"
 
-## This is where all of the source files are located
+## These are the directories where the base images and templates are stored.
 BASE_DIRECTORY_IMAGES="@MVVM_HOME@/reporting/images"
+## This is where the images for the email are stored.
+BASE_DIRECTORY_EMAIL_IMAGES="@MVVM_HOME@/reporting/email_images"
 BASE_DIRECTORY_TEMPLATES="@MVVM_HOME@/reporting/templates"
 
 SUFFIX_PROPERTIES=".properties"
 
 ## Date format string
 DATE_FORMAT='%A %B %e, %Y'
+
+EMAIL_TEMPLATE="@MVVM_HOME@/reporting/email.html"
 
 function copyFiles()
 {
@@ -203,7 +207,7 @@ EOF
         -e "s|<td[^>]*>|'|g" \
         -e "s|</td>|',|g" ${t_statistics} \
         "${t_baseDir}/sum-${REPORT_TYPE}.html" \
-        | awk 'BEGIN { n = 0 }; { print "statistics." n++ "=" $0 }' >> ${t_properties}
+        | awk 'BEGIN { n = 0 }; { print "statistics." n++ "=" $0 }' >> ${t_properties} 
     
 
     ## Insert the detailed reports
@@ -225,7 +229,35 @@ EOF
         | awk 'BEGIN { n = 0 }; { print "detailed." n++ "=" $0 }' >> ${t_properties}
 }
 
+function generateEmail()
+{
+    local t_email=${OUTPUT_FILE/%pdf/eml}
+    local t_arguments="@PREFIX@/tmp/${OUTPUT_FILE/%pdf/txt}"
+    
+    ## Generate the file (use the :-baz just in case EMAIL_TEMPLATE isn't set which causes
+    ## sed to block
+    sed -e "s|%%REPORT_TYPE%%|${reportType}|g" \
+        -e "s|%%FILE_LINK%%|${OUTPUT_FILE}|g" \
+        -e "s|%%REPORT_PREPARED%%|${REPORT_PREPARED}|g" \
+        ${EMAIL_TEMPLATE:-"baz"} \
+        > ${t_email}
+    
+    ## Generate the file list
+    cat > ${t_arguments} <<EOF
+-s "Metavize EdgeReport (${REPORT_TYPE})"
+${t_email}
+${OUTPUT_FILE} 
+EOF
+    
+    ## Find all of the images that are for the email
+    find ${BASE_DIRECTORY_EMAIL_IMAGES} -type f | \
+        sed "s|^${BASE_DIRECTORY_EMAIL_IMAGES}/\{0,1\}|./|" \
+        >> ${t_arguments}
+}
+
 ####################### START OF SCRIPT
+
+cd @MVVM_REPORTS@/current
 
 ## Get the transform list, and reorder so the reporting transform is at the top.
 orderedTransformList=`@USR_BIN@/mcli instances | grep running | awk '{ print $2 }' | uniq | sed -e '/reporting-transform/d' -e '1ireporting-transform' -e "s|^\(.*\)$|${REPORT_BASE}/\1|"`
@@ -236,9 +268,9 @@ reportType=`echo ${REPORT_TYPE} | tr "dmw" "DMW"`
 REPORT_PREPARED=`date +"${DATE_FORMAT}"`
 
 case ${REPORT_TYPE} in
-    "daily") REPORT_START=`date -d'-2 days' +"${DATE_FORMAT}"`;;
+    "daily") REPORT_START=`date -d'-1 days' +"${DATE_FORMAT}"`;;
     "monthly") REPORT_START=`date -d'-30 days' +"${DATE_FORMAT}"`;;
-    "weekly") REPORT_START=`date -d'-8 days' +"${DATE_FORMAT}"`;;
+    "weekly") REPORT_START=`date -d'-7 days' +"${DATE_FORMAT}"`;;
 esac
 
 ## Reports always end last night    
@@ -265,3 +297,6 @@ generateSubReports
 
 ## Now actually generate the PDF
 ujac-to-pdf "${DIRECTORY_TEMPLATES}/${TEMPLATE_MASTER}" ${topLevel} ${OUTPUT_FILE}
+
+## Build the email
+generateEmail

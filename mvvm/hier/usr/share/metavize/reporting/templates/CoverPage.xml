@@ -19,7 +19,6 @@
   <sticky name="a">
     <background-image x="${boxX}" y="${boxY}" width="${boxWidth}" height="${boxHeight}" 
                       source="${imageDirectory + 'background.png'}"/>
-    foo
   </sticky>
 
   <box x="${boxX}" y="${boxY}" width="${boxWidth}" height="${boxHeight}" valign="top" halign="center"
@@ -30,7 +29,7 @@
     
     <paragraph font="title" halign="center" spacing-after="20">Metavize EdgeReport</paragraph>
     <paragraph font="subtitle" halign="center" line-spacing="1.0">
-      ${start} to ${end}<br/>
+      ${range}<br/>
       ${type} Report
     </paragraph>
     

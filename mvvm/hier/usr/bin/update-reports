@@ -1,5 +1,59 @@
 #!/bin/sh
 
+REPORT_TYPE_MARK="REPORT_TYPE_MARK"
+IS_DETAILED_MARK="IS_DETAILED_MARK"
+EMAIL_BASE_NAME="${REPORT_TYPE_MARK}_${IS_DETAILED_MARK}"
+
+
+## Parameters:
+## <type> : daily, weekly or monthly
+## <isDetailed> : true | false (whether or not this is a detailed)
+## <extension> : desired file extension
+function getFileName()
+{
+    local t_type=$1
+    local t_isDetailed=$2
+    local t_extension=$3
+    local t_fileName=${EMAIL_BASE_NAME/${REPORT_TYPE_MARK}/${t_type}}
+
+    if [ "${t_isDetailed}x" == "truex" ]; then
+        t_isDetailed="detailed"
+    else
+        t_isDetailed="briefing"
+    fi
+
+    t_fileName=${t_fileName/${IS_DETAILED_MARK}/${t_isDetailed}}
+
+    echo "${t_fileName}.${t_extension}"
+}
+
+## Parameters:
+## <type> : daily, weekly or monthly
+function generateEmail()
+{
+    local t_reportType=$1
+    local t_isDetailed
+
+    ## Run detailed reports
+    for t_isDetailed in "true" "false" ; do 
+        ## Actually generate the PDF, email and index
+        REPORT_TYPE=${t_reportType} \
+            REPORT_BASE=$REPORT_DIR/current \
+            SHOW_DETAILED_REPORTS=$t \
+            sh @USR_BIN@/generate-pdf `getFileName ${t_reportType} ${t_isDetailed} pdf`
+    done
+}
+
+function mailReports()
+{
+    local t_reportType=$1
+    local t_isDetailed=${MV_EG_EMAIL_DETAIL/y/true}
+    t_isDetailed=${t_isDetailed/n/false}
+    local t_arguments=`getFileName ${t_reportType} ${t_isDetailed} txt`
+
+    cat "@PREFIX@/tmp/${t_arguments}" | xargs @USR_BIN@/mail-reports
+}
+
 JAVA_HOME=${JAVA_HOME:-/opt/java}
 
 # Need bootstrap for logging stuff...  XXX
@@ -72,25 +126,25 @@ if [ $is_reporting_enabled == 'true' ]; then
 
 # generate the emailable page
         if [ $MV_EG_DAILY_REPORT == 'y' ]; then
-            @USR_BIN@/index-reports index_email_daily.html daily true
+            generateEmail "daily"
         fi
         if [ $MV_EG_WEEKLY_REPORT == 'y' ]; then
-            @USR_BIN@/index-reports index_email_weekly.html weekly true
+            generateEmail "weekly"
         fi
         if [ $MV_EG_MONTHLY_REPORT == 'y' ]; then
-            @USR_BIN@/index-reports index_email_monthly.html monthly true
+            generateEmail "monthly"
         fi
 
 # email the reports to all recipients
         cd $REPORT_DIR/current
         if [ $MV_EG_DAILY_REPORT == 'y' ]; then
-            cat @PREFIX@/tmp/mail_reports_arguments_daily.txt | xargs @USR_BIN@/mail-reports
+            mailReports "daily"
         fi
         if [ $MV_EG_WEEKLY_REPORT == 'y' ]; then
-            cat @PREFIX@/tmp/mail_reports_arguments_weekly.txt | xargs @USR_BIN@/mail-reports
+            mailReports "weekly"
         fi
         if [ $MV_EG_MONTHLY_REPORT == 'y' ]; then
-            cat @PREFIX@/tmp/mail_reports_arguments_monthly.txt | xargs @USR_BIN@/mail-reports
+            mailReports "monthly"
         fi
 
 # ensure that a base index file is present
