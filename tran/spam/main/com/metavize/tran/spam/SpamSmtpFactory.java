@@ -83,10 +83,23 @@ public class SpamSmtpFactory
             return;
         }
 
+        if (spamConfig.getThrottle()) {
+            if(RBLChecker.checkRelay(tsr.clientAddr().getHostAddress())) {
+                m_logger.info("RBL check positive - sleeping to throttle" + tsr.clientAddr());
+                try {
+                    Thread.sleep(spamConfig.getThrottleSec()*1000);
+                }
+                catch (InterruptedException e) {
+                    m_logger.warn("Interrupted during spam throttle sleep",e);
+                }
+            }
+        }
+
         int activeCount = m_spamImpl.getScanner().getActiveScanCount();
         if (ScanLoadChecker.reject(activeCount, m_logger)) {
             m_logger.warn("Load too high, rejecting connection from " + tsr.clientAddr());
             tsr.rejectReturnRst();
         }
+
     }
 }

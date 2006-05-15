@@ -101,6 +101,10 @@
     <priority value="WARN"/>
   </category>
 
+  <category name="com.metavize.tran.spamassassin">
+    <priority value="WARN"/>
+  </category>
+
   <category name="com.metavize.tran.clamphish">
     <priority value="WARN"/>
   </category>

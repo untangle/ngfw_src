@@ -84,7 +84,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <delete><fileset dir="${build.dist}" includes="stamp-transform-kav"/></delete>
         </then> </if>
         <if> <equals arg1="${tran.name}" arg2="spam"/> <then>
-        <delete><fileset dir="${build.dist}" includes="stamp-transform-spamasssassin"/></delete>
+        <delete><fileset dir="${build.dist}" includes="stamp-transform-spamassassin"/></delete>
         <delete><fileset dir="${build.dist}" includes="stamp-transform-clamphish"/></delete>
         </then> </if>
         </then> </if>

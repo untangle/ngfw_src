@@ -306,7 +306,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
 
         zTmpSpamSettings.setSMTPInbound(
           new SpamSMTPConfig(true,
-                             SMTPSpamMessageAction.MARK,
+                             SMTPSpamMessageAction.QUARANTINE,
                              SpamSMTPNotifyAction.NEITHER,
                              SpamProtoConfig.DEFAULT_STRENGTH,
                              "Scan incoming SMTP e-mail",
@@ -316,7 +316,9 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
                              getDefaultIndicatorHeaderValue(true),
                              getDefaultIndicatorHeaderValue(false),
                              getDefaultNotifySubjectTemplate(true),
-                             getDefaultNotifyBodyTemplate(true) ));
+                             getDefaultNotifyBodyTemplate(true),
+                             true,
+                             15));
 
         zTmpSpamSettings.setSMTPOutbound(
           new SpamSMTPConfig(false,
@@ -330,7 +332,9 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
                              getDefaultIndicatorHeaderValue(true),
                              getDefaultIndicatorHeaderValue(false),
                              getDefaultNotifySubjectTemplate(false),
-                             getDefaultNotifyBodyTemplate(false)  ));
+                             getDefaultNotifyBodyTemplate(false),
+                             false,
+                             15));
 
         zTmpSpamSettings.setPOPInbound(
           new SpamPOPConfig(true,

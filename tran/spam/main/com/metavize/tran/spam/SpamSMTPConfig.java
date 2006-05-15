@@ -27,6 +27,8 @@ public class SpamSMTPConfig extends SpamProtoConfig
     private static final long serialVersionUID = 7520156745253589107L;
 
     /* settings */
+    private boolean throttle = false;
+    private int throttleSec = 15;
     private SMTPSpamMessageAction zMsgAction = SMTPSpamMessageAction.QUARANTINE;
     private SpamSMTPNotifyAction zNotifyAction = SpamSMTPNotifyAction.NEITHER;
     private transient SmtpNotifyMessageGenerator m_notifyMsgGenerator;
@@ -41,17 +43,19 @@ public class SpamSMTPConfig extends SpamProtoConfig
     public SpamSMTPConfig() {}
 
     public SpamSMTPConfig(boolean bScan,
-        SMTPSpamMessageAction zMsgAction,
-        SpamSMTPNotifyAction zNotifyAction,
-        int strength,
-        String zNotes,
-        String subjectTemplate,
-        String bodyTemplate,
-        String headerName,
-        String isSpamHeaderValue,
-        String isHamHeaderValue,
-        String notifySubjectTemplate,
-        String notifyBodyTemplate)
+                          SMTPSpamMessageAction zMsgAction,
+                          SpamSMTPNotifyAction zNotifyAction,
+                          int strength,
+                          String zNotes,
+                          String subjectTemplate,
+                          String bodyTemplate,
+                          String headerName,
+                          String isSpamHeaderValue,
+                          String isHamHeaderValue,
+                          String notifySubjectTemplate,
+                          String notifyBodyTemplate,
+                          boolean throttle,
+                          int throttleSec)
     {
         super(bScan,
           strength,
@@ -65,6 +69,8 @@ public class SpamSMTPConfig extends SpamProtoConfig
         this.zNotifyAction = zNotifyAction;
         m_notifySubjectWrapperTemplate = notifySubjectTemplate;
         m_notifyBodyWrapperTemplate =  notifyBodyTemplate;
+        this.throttle = throttle;
+        this.throttleSec = throttleSec;
     }
 
     // accessors --------------------------------------------------------------
@@ -157,7 +163,7 @@ public class SpamSMTPConfig extends SpamProtoConfig
 
     /**
      * notifyAction: a string specifying a response to events if a message containing spam (defaults to NEITHER)
-     * one of SENDER, RECEIVER, BOTH, or NEITHER
+     * one of SENDER, RECEIVER, or NEITHER
      *
      * @return the action to take if a message is judged to be spam.
      * @hibernate.property
@@ -188,4 +194,43 @@ public class SpamSMTPConfig extends SpamProtoConfig
 
         return azStr;
     }
+
+    /**
+     * throttle: a boolean specifying whether or not to throttle a connection from a suspect spammer
+     *
+     * @return whether or not to throttle a spammer
+     * @hibernate.property
+     * column="THROTTLE"
+     * not-null="true"
+     */
+    public boolean getThrottle()
+    {
+        return throttle;
+    }
+
+    public void setThrottle(boolean throttle)
+    {
+        this.throttle = throttle;
+        return;
+    }
+
+    /**
+     * throttleSec: a integer specifying how long to delay a connection from a suspect spammer if throttling
+     *
+     * @return how long to delay the connection if throttling
+     * @hibernate.property
+     * column="THROTTLE_SEC"
+     * not-null="true"
+     */
+    public int getThrottleSec()
+    {
+        return throttleSec;
+    }
+
+    public void setThrottleSec(int throttleSec)
+    {
+        this.throttleSec = throttleSec;
+        return;
+    }
+    
 }
