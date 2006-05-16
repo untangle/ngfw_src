@@ -502,6 +502,25 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <fileset refid="log4j.jarset"/>
     </copy>
 
+    <signjar keystore="../gui/keystore" alias="key"
+             storepass="0x7a0f4b2f2b0560fa" lazy="true">
+      <fileset dir="${dist.mvvm.web}/rdp">
+        <include name="*.jar"/>
+      </fileset>
+    </signjar>
+
+    <!-- vnc -->
+    <copy todir="${dist.mvvm.web}/vnc">
+      <fileset refid="log4j.jarset"/>
+    </copy>
+
+    <signjar keystore="../gui/keystore" alias="key"
+             storepass="0x7a0f4b2f2b0560fa" lazy="true">
+      <fileset dir="${dist.mvvm.web}/vnc">
+        <include name="*.jar"/>
+      </fileset>
+    </signjar>
+
     <!-- portal -->
     <mkdir dir="${dist.mvvm.web}/portal/WEB-INF/lib"/>
 
@@ -911,6 +930,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
            includeAntRuntime="false">
 
       <src path="${tran.name}/webapps/rdp/src"/>
+      <src path="${tran.name}/main/com/metavize/tran/portal/rdp"/>
 
       <classpath refid="mvvm.classpath"/>
       <classpath refid="mvvm.thirdparty.classpath"/>
@@ -949,7 +969,65 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <filter token="JSP_PRE_COMPILED_SERVLETS" value="${rdp-generated-web.xml}"/>
       </filterset>
     </copy>
+ 
+    <!-- vnc -->
+    <mkdir dir="${dist.mvvm.web}/vnc"/>
 
+    <copy todir="${dist.mvvm.web}/vnc">
+      <fileset dir="${tran.name}/webapps/vnc/root"/>
+    </copy>
+
+    <mkdir dir="${dist.mvvm.web}/vnc/WEB-INF/classes"/>
+
+    <javac destdir="${dist.mvvm.web}/vnc/WEB-INF/classes"
+           debug="on"
+           optimize="false"
+           deprecation="on"
+           source="1.5"
+           includeAntRuntime="false">
+
+      <src path="${tran.name}/webapps/vnc/src"/>
+      <src path="${tran.name}/main/com/metavize/tran/portal/vnc"/>
+
+      <classpath refid="mvvm.classpath"/>
+      <classpath refid="tightvnc-mv.classpath"/>
+      <classpath refid="mvvm.thirdparty.classpath"/>
+      <classpath refid="tomcat.thirdparty.classpath"/>
+    </javac>
+
+    <mkdir dir="${build.gensrc}/vnc/"/>
+
+    <java classname="org.apache.jasper.JspC"
+          fork="true"
+          failonerror="true">
+      <arg line="-s"/>
+      <arg line="-l"/>
+      <arg line="-v"/>
+      <arg line="-compile"/>
+      <arg line="-d ${dist.mvvm.web}/vnc/WEB-INF/classes"/>
+      <arg line="-p com.metavize.tran.${tran.name}.vnc"/>
+      <arg line="-webinc ${build.gensrc}/vnc/web-fragment.xml"/>
+      <arg line="-uriroot ${dist.mvvm.web}/vnc"/>
+      <arg value="vnc.jsp"/>
+      <arg value="vnc.jnlp"/>
+      <classpath path="${java.home}/../lib/tools.jar"/>
+      <classpath refid="mvvm.classpath"/>
+      <classpath refid="mvvm.thirdparty.classpath"/>
+      <classpath refid="tomcat.thirdparty.classpath"/>
+    </java>
+
+    <echo message="Adding JSP servlet mappings to web.xml"/>
+
+    <loadfile property="vnc-generated-web.xml"
+              srcFile="${build.gensrc}/vnc/web-fragment.xml"/>
+    <copy file="${tran.name}/webapps/vnc/root/WEB-INF/web.xml"
+          toFile="${dist.mvvm.web}/vnc/WEB-INF/web.xml"
+          overwrite="true">
+      <filterset>
+        <filter token="JSP_PRE_COMPILED_SERVLETS" value="${vnc-generated-web.xml}"/>
+      </filterset>
+    </copy>
+ 
     <!-- proxy -->
     <mkdir dir="${dist.mvvm.web}/proxy"/>
 
