@@ -23,11 +23,11 @@ fi
 
 ## Directory configuration
 ## XXX This should be a temp directory, that gets nuked.
-DIRECTORY_BASE="@MVVM_HOME@/reporting/output"
-DIRECTORY_PDF="${DIRECTORY_BASE}/pdf"
-DIRECTORY_IMAGES="${DIRECTORY_BASE}/images"
-DIRECTORY_TEMPLATES="${DIRECTORY_BASE}/template"
-DIRECTORY_PROPERTIES="${DIRECTORY_BASE}/properties"
+DIRECTORY_BASE="@MVVM_WEB@/reports"
+DIRECTORY_PDF="${DIRECTORY_BASE}/current"
+DIRECTORY_IMAGES="${DIRECTORY_BASE}/current"
+DIRECTORY_TEMPLATES="@MVVM_HOME@/reporting/templates"
+DIRECTORY_PROPERTIES=`mktemp -d -p @PREFIX@/tmp`
 
 ## Template configuration
 TEMPLATE_COVERPAGE="CoverPage.xml"
@@ -36,11 +36,8 @@ TEMPLATE_BRIEFING="Briefing.xml"
 TEMPLATE_DETAILED="DetailedReport.xml"
 TEMPLATE_MASTER="MasterDocument.xml"
 
-## These are the directories where the base images and templates are stored.
-BASE_DIRECTORY_IMAGES="@MVVM_HOME@/reporting/images"
 ## This is where the images for the email are stored.
 BASE_DIRECTORY_EMAIL_IMAGES="@MVVM_HOME@/reporting/email_images"
-BASE_DIRECTORY_TEMPLATES="@MVVM_HOME@/reporting/templates"
 
 SUFFIX_PROPERTIES=".properties"
 
@@ -48,28 +45,6 @@ SUFFIX_PROPERTIES=".properties"
 DATE_FORMAT='%A %B %e, %Y'
 
 EMAIL_TEMPLATE="@MVVM_HOME@/reporting/email.html"
-
-function copyFiles()
-{
-    ## Build all of the necessary directories.
-    for t in ${DIRECTORY_PDF} ${DIRECTORY_IMAGES} ${DIRECTORY_TEMPLATES} ${DIRECTORY_PROPERTIES}; do
-        mkdir -p ${t}
-    done
-
-    echo "'${REPORT_BASE}'" "'${REPORT_TYPE}'"
-
-    ## Copy all of the PDFs (use the / to derefence the symbolic links)
-    find ${REPORT_BASE}/ -name "*${REPORT_TYPE}.pdf" -print0 | xargs -0 -r cp --target-directory ${DIRECTORY_PDF}
-
-    ## Copy in any templates
-    find ${REPORT_BASE}/ -name '*.xml' -print0  | xargs -0 -r cp --target-directory ${DIRECTORY_TEMPLATES}
-
-    ## Copy all of the global images
-    cp ${BASE_DIRECTORY_IMAGES}/* ${DIRECTORY_IMAGES}
-
-    ## Copy all of the templates
-    cp ${BASE_DIRECTORY_TEMPLATES}/* ${DIRECTORY_TEMPLATES}
-}
 
 function generateTopLevel()
 {
@@ -123,19 +98,15 @@ function generateSubReports()
 
     for t_reportDir in ${orderedTransformList}; do
         ## Don't iterate the transforms that don't have reports.
-        ls ${t_reportDir}/*-daily.html >/dev/null 2>&1 || continue
+        ls ${t_reportDir}/*.html >/dev/null 2>&1 || continue
 
         t_name=`cat ${t_reportDir}/name`
         t_key=`basename ${t_reportDir}`
 
-        ## Copy in all of the necessary files
-        t_iconDesc="${t_key}-icon-desc.png"
-        t_iconOrg="${t_key}-icon-org.png"
-        
-        ## Copy in the images.
-        cp "${t_reportDir}/images/IconDesc42x42.png" "${DIRECTORY_IMAGES}/${t_iconDesc}"
-        cp "${t_reportDir}/images/IconOrg42x42.png"  "${DIRECTORY_IMAGES}/${t_iconOrg}"
-        
+        ## Set the image directory.
+        t_iconDesc="${t_key}/images/IconDesc42x42.png"
+        t_iconOrg="${t_key}/images/IconOrg42x42.png"
+                
         ## Insert the data for each report
         echo "reports.${t}='${t_name}','${t_key}${SUFFIX_PROPERTIES}','${t_template}','${t_detailedTemplate}','${t_iconDesc}','${t_iconOrg}','${LINK_PREFIX}${t_key}','${t_hasDetailed}'" >>  ${topLevel}
 
@@ -168,13 +139,16 @@ function generateSubProperties()
     local t_properties="${DIRECTORY_PROPERTIES}/${t_key}${SUFFIX_PROPERTIES}"
 
     ## Check if there is a file for the graph
-    if [ -f ${t_baseDir}/*Summary_Graph--${REPORT_TYPE}.png ]; then
-        cp ${t_reportDir}/*Summary_Graph--${REPORT_TYPE}.png "${DIRECTORY_IMAGES}"
-        t_graph="graph=`basename ${t_baseDir}/*Summary_Graph--${REPORT_TYPE}.png`"
+    t_graph=`find ${t_baseDir} -name "*Summary_Graph--${REPORT_TYPE}.png" | head -n 1 | xargs -r basename`
+    if [ -n "${t_graph}" ]; then
+        t_graph="graph=${t_key}/${t_graph}"
+    else
+        echo "There is no graph for '${t_name}'"
     fi
 
-    if [ -f ${t_baseDir}/*Summary--${REPORT_TYPE}.pdf ]; then
-        t_summary="summary=`basename ${t_baseDir}/*Summary--${REPORT_TYPE}.pdf`"
+    t_summary=`find ${t_baseDir} -name "*Summary--${REPORT_TYPE}.pdf" | head -n 1 | xargs -r basename`
+    if [ -n "${t_summary}" ]; then
+        t_summary="summary=${t_key}/${t_summary}"
     else
         echo "There is no summary for '${t_name}'"
     fi
@@ -212,12 +186,13 @@ EOF
 
     ## Insert the detailed reports
     echo -e "\ndetailed.fields='description:string','filename:string'"  >> ${t_properties}
+
     ## 1. Ignore graphs
     ## 2. Ignore summaries
     ## 3. Ignore summarizers
     ## 4. Ignore parameters
     ## 5. Get rid of the path to the thing that generates the report
-    ## 6. Swap the order of the title, and description, and add quotes
+    ## 6. Swap the order of the title, and description, and add quotes, and prefix the directory.
     ## 7. Number all of the lines with AWK.
     grep '\.jasper' "${t_baseDir}/report-files" \
         | sed -e '/Graph/d' \
@@ -225,7 +200,7 @@ EOF
         -e '/Summarizer/d' \
         -e '/:parameter:/d' \
         -e 's|^[^:]*:||' \
-        -e "s|\(.*\):\(.*\)|'\2','\1--${REPORT_TYPE}.pdf'|" \
+        -e "s|\(.*\):\(.*\)|'\2','${t_key}/\1--${REPORT_TYPE}.pdf'|" \
         | awk 'BEGIN { n = 0 }; { print "detailed." n++ "=" $0 }' >> ${t_properties}
 }
 
@@ -250,8 +225,8 @@ ${OUTPUT_FILE}
 EOF
     
     ## Find all of the images that are for the email
-    find ${BASE_DIRECTORY_EMAIL_IMAGES} -type f | \
-        sed "s|^${BASE_DIRECTORY_EMAIL_IMAGES}/\{0,1\}|./|" \
+    find "${DIRECTORY_IMAGES}/images" -type f -name 'eml_*.*' -exec basename \{\} \; \
+        | sed "s|\(.*\)|images/\1|" \
         >> ${t_arguments}
 }
 
@@ -276,7 +251,8 @@ esac
 ## Reports always end last night    
 REPORT_END=`date -d'-1 days' +"${DATE_FORMAT}"`
 
-copyFiles
+## Create the properties directory
+mkdir -p ${DIRECTORY_PROPERTIES}
 
 topLevel="${DIRECTORY_PROPERTIES}/toplevel.properties"
 hostname=`hostname`
@@ -300,3 +276,7 @@ ujac-to-pdf "${DIRECTORY_TEMPLATES}/${TEMPLATE_MASTER}" ${topLevel} ${OUTPUT_FIL
 
 ## Build the email
 generateEmail
+
+## Cleanup the properties directories
+#XXXX This should be in
+## rm -rf ${DIRECTORY_PROPERTIES}

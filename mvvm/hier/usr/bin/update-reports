@@ -39,7 +39,7 @@ function generateEmail()
         ## Actually generate the PDF, email and index
         REPORT_TYPE=${t_reportType} \
             REPORT_BASE=$REPORT_DIR/current \
-            SHOW_DETAILED_REPORTS=$t \
+            SHOW_DETAILED_REPORTS=${t_isDetailed} \
             sh @USR_BIN@/generate-pdf `getFileName ${t_reportType} ${t_isDetailed} pdf`
     done
 }

@@ -18,13 +18,13 @@
 
   <sticky name="a">
     <background-image x="${boxX}" y="${boxY}" width="${boxWidth}" height="${boxHeight}" 
-                      source="${imageDirectory + 'background.png'}"/>
+                      source="${imageDirectory + 'images/pdf_cover_background.png'}"/>
   </sticky>
 
   <box x="${boxX}" y="${boxY}" width="${boxWidth}" height="${boxHeight}" valign="top" halign="center"
        padding-top="10">
     <paragraph halign="center" spacing-after="10">
-      <image source="${imageDirectory + 'logo.png'}" width="200"/>
+      <image source="${imageDirectory + 'images/pdf_cover_logo.png'}" width="200"/>
     </paragraph>
     
     <paragraph font="title" halign="center" spacing-after="20">Metavize EdgeReport</paragraph>
