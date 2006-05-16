@@ -243,13 +243,13 @@ reportType=`echo ${REPORT_TYPE} | tr "dmw" "DMW"`
 REPORT_PREPARED=`date +"${DATE_FORMAT}"`
 
 case ${REPORT_TYPE} in
-    "daily") REPORT_START=`date -d'-1 days' +"${DATE_FORMAT}"`;;
-    "monthly") REPORT_START=`date -d'-30 days' +"${DATE_FORMAT}"`;;
-    "weekly") REPORT_START=`date -d'-7 days' +"${DATE_FORMAT}"`;;
+    "daily")   REPORT_START="${MV_EG_REPORT_START}";;
+    "weekly")  REPORT_START="${MV_EG_WEEK_START}";;
+    "monthly") REPORT_START="${MV_EG_MONTH_START}";;
 esac
 
 ## Reports always end last night    
-REPORT_END=`date -d'-1 days' +"${DATE_FORMAT}"`
+REPORT_END="${MV_EG_REPORT_END}"
 
 ## Create the properties directory
 mkdir -p ${DIRECTORY_PROPERTIES}

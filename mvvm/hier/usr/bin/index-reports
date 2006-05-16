@@ -392,6 +392,28 @@ generate_report_menu ()
 {
 
 cat >> $main_index <<EOF
+                <!-- Full Single file Reports -->
+                <table width="95%" border="1" bordercolor="bbbbbb" cellspacing="0" cellpadding="5">
+                  <tr><td bgcolor="cccccc">
+                    <h3><b>Complete Reports:</b></h3>
+                  </td></tr>
+                  <tr>
+                    <td>
+                     <img src="${web_base}/images/acrobat_icon_small.gif" alt="pdf" height="18" width="18" align="middle"/>
+                     <a href="${period}_briefing.pdf">Briefing</a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                     <img src="${web_base}/images/acrobat_icon_small.gif" alt="pdf" height="18" width="18" align="middle"/>
+                      <a href="${period}_detailed.pdf">Detailed Report</a>
+                    </td>
+                  </tr>
+                </table>
+                </br>
+EOF
+
+cat >> $main_index <<EOF
                 <!-- AVAILABLE REPORTS -->
                 <table width="95%" border="1" bordercolor="bbbbbb" cellspacing="0" cellpadding="5">
                   <tr><td bgcolor="cccccc">
@@ -401,7 +423,7 @@ EOF
 
 cat >> $main_index <<EOF
                   <tr><td>
-                    > <a href="#EdgeGuard Appliance">EdgeGuard Appliance</a>
+                    &gt; <a href="#EdgeGuard Appliance">EdgeGuard Appliance</a>
                   </td></tr>
 EOF
 
@@ -618,24 +640,24 @@ EOF
 generate_visual_summary ()
 {
     rel_dir=$(echo $1 | sed -e 's/^\(.*\/current\/\)//')
-cat $tran_dir/report-files | while read line; do
-    base_name=$(echo $line | cut -d: -f2)
-    graph_name=$(echo $line | cut -d: -f3-)
-    if [ xsummaryGraph = "x$base_name" ] ; then
-cat >>$main_index <<EOF
+    cat $tran_dir/report-files | while read line; do
+        base_name=$(echo $line | cut -d: -f2)
+        graph_name=$(echo $line | cut -d: -f3-)
+        if [ xsummaryGraph = "x$base_name" ] ; then
+            cat >>$main_index <<EOF
 <!-- VISUAL SUMMARY -->
 <center>
 <img src="$rel_dir/$graph_name--${period}.png" width="600" height="200" alt="Visual Summary may take some additional time to load.  If it does not load, it may not viewable from this email client.  Please use your browser to view reports directly from EdgeGuard."/>
 </center>
 <!-- END VISUAL SUMMARY -->
 EOF
-
-if [ "$generate_email_index" = true ]; then
-    echo "$rel_dir/$graph_name--${period}.png" >> $mail_reports_arguments
-fi
-
-fi
-done
+            
+            if [ "$generate_email_index" = true ]; then
+                echo "$rel_dir/$graph_name--${period}.png" >> $mail_reports_arguments
+            fi
+            
+        fi
+    done
 }
 
 

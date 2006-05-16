@@ -16,6 +16,7 @@ import java.net.*;
 import java.sql.*;
 import java.util.*;
 import java.util.jar.*;
+import java.text.SimpleDateFormat;
 
 import com.metavize.mvvm.reporting.summary.*;
 import net.sf.jasperreports.engine.*;
@@ -29,6 +30,8 @@ public class Reporter
 {
     private static final String SYMLINK_CMD = "/bin/ln -s";
     private static final Logger logger = Logger.getLogger(Reporter.class);
+
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEEE MMMM d, yyyy");
 
     // The base, containing one directory for each day's generated reports
     private static File outputBaseDir;
@@ -114,6 +117,10 @@ public class Reporter
             envBWriter.newLine();
             envBWriter.write(monthly);
             envBWriter.newLine();
+            addParam(envBWriter, "MV_EG_REPORT_END", Util.midnight);
+            addParam(envBWriter, "MV_EG_WEEK_START", Util.lastweek);
+            addParam(envBWriter, "MV_EG_MONTH_START", Util.lastmonth);
+            
 
             envBWriter.close();
             envFWriter.close();
@@ -247,5 +254,12 @@ public class Reporter
         Statement stmt = conn.createStatement();
         stmt.executeUpdate("set sort_mem=16384");
         stmt.executeUpdate("set effective_cache_size=30000");
+    }
+
+    private static void addParam(BufferedWriter w, String name, java.util.Date value) throws IOException
+    {
+        w.write("export " + name + "=");
+        w.write("'" + DATE_FORMAT.format(value) + "'");
+        w.newLine();
     }
 }
