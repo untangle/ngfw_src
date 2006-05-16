@@ -1,4 +1,4 @@
-<%@ page language="java" import="com.metavize.mvvm.*, com.metavize.mvvm.portal.*, com.metavize.tran.portal.rdp.*, java.util.*, java.io.IOException" %>
+<%@ page language="java" import="com.metavize.mvvm.*, com.metavize.mvvm.portal.*, com.metavize.tran.portal.vnc.*, java.util.*, java.io.IOException" %>
 
 <%
 response.addHeader("content-type", "application/x-java-jnlp-file");
@@ -41,7 +41,7 @@ LocalPortalManager portalManager = mvvm.portalManager();
 Bookmark target = null;
 String targetstr = request.getParameter("t");
 if (targetstr == null) {
-    System.out.println("no target for rdp.jnlp");
+    System.out.println("no target for vnc.jnlp");
     try {
          response.sendError(HttpServletResponse.SC_FORBIDDEN);
     } catch (IOException exn) {
@@ -65,11 +65,7 @@ if (targetstr == null) {
             if (target == null)
                 throw new ServletException("Target not found");
 
-        RdpBookmark rbm = new RdpBookmark(target);
-
-        String size = rbm.getSize();
-        String command = rbm.getCommand();
-        boolean console = rbm.getConsole();
+        VncBookmark vbm = new VncBookmark(target);
 
         String sessionCookie = null;
         Cookie[] cookies = request.getCookies();
@@ -91,7 +87,7 @@ if (targetstr == null) {
     <vendor>Metavize, Inc.</vendor>
     <homepage href="http://www.metavize.com"/>
     <description>Remote Desktop Client @ <%=host%>  </description>
-    <description kind="short">The graphical client for remote desktop access via RDP.</description>
+    <description kind="short">The graphical client for remote desktop access via VNC.</description>
     <icon href="images/LogoNoText96x96.gif" kind="splash" width="96" height="96"/>
     <icon href="images/LogoNoText32x32.gif" width="32" height="32"/>
     <icon href="images/LogoNoText64x64.gif" width="64" height="64"/>
@@ -101,31 +97,17 @@ if (targetstr == null) {
   <resources>
     <j2se version="1.5+"/>
 
-    <jar href="./properJavaRDP-1.1.jar" main="true"/>
-    <jar href="./log4j-1.2.9.jar"/>
-    <jar href="./java-getopt-1.0.12.jar"/>
+    <jar href="./VncViewer.jar" main="true"/>
 
   </resources>
-  <application-desc main-class="net.propero.rdp.Rdesktop">
+  <application-desc main-class="com.metavize.VncViewer">
         <% if (sessionCookie != null) { %>
                 <argument>-e</argument>
                 <argument><%=sessionCookie%></argument>
         <% } %>
         <argument>-q</argument>
         <argument><%=targetstr%></argument>
-        <argument>-g</argument>
-        <argument><%=size%></argument>
-        <% if (console) { %>
-                <argument>--console</argument>
-        <% } %>
-        <% if (command != null && !command.equals("")) { %>
-                <argument>-s</argument>
-                <argument><%=command%></argument>
-        <% } %>
-        <argument>-t</argument>
-        <argument><%=port%></argument>
-        <argument>-m</argument>
-        <argument>en-us</argument>
-        <argument><%=host%></argument>
+        <argument>SocketFactory</argument>
+        <argument>VncInvoker</argument>
   </application-desc>
 </jnlp>

@@ -25,6 +25,7 @@ import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.tran.portal.rdp.RdpBookmark;
+import com.metavize.tran.portal.vnc.VncBookmark;
 import org.apache.log4j.Logger;
 
 public class PortalImpl extends AbstractTransform implements PortalTransform
@@ -48,6 +49,13 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
         = "{\n"
         + "  openBookmark: function(portal, target) {\n"
         + "    portal.openPage('/rdp/rdp.jsp?t=' + target.id);\n"
+        + "  }\n"
+        + "};\n";
+
+    private static final String VNC_JS
+        = "{\n"
+        + "  openBookmark: function(portal, target) {\n"
+        + "    portal.openPage('/vnc/vnc.jsp?t=' + target.id);\n"
         + "  }\n"
         + "};\n";
 
@@ -107,14 +115,34 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
                 }
             };
 
-//         rdpApp = lam.registerApplication("RDP", "Remote Desktop", rdpDestinator, null, 0,
-//                                            RDP_JS);
+        rdpApp = lam.registerApplication("RDP", "Remote Desktop", rdpDestinator, null, 0,
+                                         RDP_JS);
 
-//         if (asm.loadPortalApp("/rdp", "rdp")) {
-//             logger.debug("Deployed RDP Portal app");
-//         } else {
-//             logger.error("Unable to deploy RDP Portal app");
-//         }
+        if (asm.loadPortalApp("/rdp", "rdp")) {
+            logger.debug("Deployed RDP Portal app");
+        } else {
+            logger.error("Unable to deploy RDP Portal app");
+        }
+
+        Application.Destinator vncDestinator = new Application.Destinator() {
+                public String getDestinationHost(Bookmark bm) {
+                    VncBookmark rb = new VncBookmark(bm);
+                    return rb.getHost();
+                }
+                public int getDestinationPort(Bookmark bm) {
+                    VncBookmark vb = new VncBookmark(bm);
+                    return 5900 + vb.getDisplayNumber();
+                }
+            };
+
+        vncApp = lam.registerApplication("VNC", "Virtual Network Computing", vncDestinator, null, 0,
+                                         VNC_JS);
+
+        if (asm.loadPortalApp("/vnc", "vnc")) {
+            logger.debug("Deployed VNC Portal app");
+        } else {
+            logger.error("Unable to deploy VNC Portal app");
+        }
     }
 
     private void unDeployWebAppIfRequired(Logger logger) {
@@ -151,6 +179,14 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
             logger.debug("Unloaded RDP Portal app");
         } else {
             logger.warn("Unable to unload RDP Portal app");
+        }
+
+        lam.deregisterApplication(vncApp);
+
+        if (asm.unloadWebApp("/vnc")) {
+            logger.debug("Unloaded VNC Portal app");
+        } else {
+            logger.warn("Unable to unload VNC Portal app");
         }
     }
 
