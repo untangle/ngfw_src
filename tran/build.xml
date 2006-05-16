@@ -462,31 +462,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   </target>
 
   <target name="install.portal">
-    <!-- browser -->
-    <mkdir dir="${dist.mvvm.web}/browser/WEB-INF/lib"/>
-
-    <copy todir="${dist.mvvm.web}/browser/WEB-INF/lib">
-      <fileset refid="commons-fileupload.jarset"/>
-      <fileset refid="commons-io.jarset"/>
-      <fileset refid="ajaxtk.thirdparty.jarset"/>
-    </copy>
-
-    <copy todir="${dist.mvvm.web}/browser/WEB-INF/classes">
-      <fileset dir="${AJAXTK_HOME}/build/classes"/>
-    </copy>
-
-    <mkdir dir="${dist.mvvm.web}/browser/WEB-INF/tlds"/>
-
-    <copy todir="${dist.mvvm.web}/browser/WEB-INF/tlds">
-      <fileset dir="${AJAXTK_HOME}/WebRoot/WEB-INF/tlds"/>
-    </copy>
-
-    <mkdir dir="${dist.mvvm.web}/browser/js"/>
-
-    <copy todir="${dist.mvvm.web}/browser/js">
-      <fileset dir="${AJAXTK_HOME}/WebRoot/js"/>
-    </copy>
-
     <!-- proxy -->
     <mkdir dir="${dist.mvvm.web}/proxy/WEB-INF/lib"/>
 
@@ -969,7 +944,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <filter token="JSP_PRE_COMPILED_SERVLETS" value="${rdp-generated-web.xml}"/>
       </filterset>
     </copy>
- 
+
     <!-- vnc -->
     <mkdir dir="${dist.mvvm.web}/vnc"/>
 
@@ -1027,7 +1002,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <filter token="JSP_PRE_COMPILED_SERVLETS" value="${vnc-generated-web.xml}"/>
       </filterset>
     </copy>
- 
+
     <!-- proxy -->
     <mkdir dir="${dist.mvvm.web}/proxy"/>
 
