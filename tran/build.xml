@@ -462,16 +462,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
   </target>
 
   <target name="install.portal">
-    <!-- proxy -->
-    <mkdir dir="${dist.mvvm.web}/proxy/WEB-INF/lib"/>
-
-    <copy todir="${dist.mvvm.web}/proxy/WEB-INF/lib">
-      <fileset refid="httpclient.jarset"/>
-      <fileset refid="htmlparser.jarset"/>
-      <fileset refid="commons-fileupload.jarset"/>
-      <fileset refid="commons-codec.jarset"/>
-    </copy>
-
     <!-- rdp -->
     <copy todir="${dist.mvvm.web}/rdp">
       <fileset refid="log4j.jarset"/>
@@ -1004,38 +994,13 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     </copy>
 
     <!-- proxy -->
-    <mkdir dir="${dist.mvvm.web}/proxy"/>
-
-    <copy todir="${dist.mvvm.web}/proxy">
-      <fileset dir="${tran.name}/webapps/proxy/root"/>
-    </copy>
-
-    <mkdir dir="${dist.mvvm.web}/proxy/WEB-INF/classes"/>
-
-    <javac destdir="${dist.mvvm.web}/proxy/WEB-INF/classes"
-           debug="on"
-           optimize="false"
-           deprecation="on"
-           source="1.5"
-           includeAntRuntime="false">
-
-      <src path="${tran.name}/webapps/proxy/src"/>
-
-      <classpath refid="mvvm.classpath"/>
-      <classpath refid="httpclient.classpath"/>
-      <classpath refid="htmlparser.classpath"/>
-      <classpath refid="commons-fileupload.classpath"/>
-      <classpath refid="mvvm.classpath"/>
-      <classpath refid="mvvm.thirdparty.classpath"/>
-      <classpath refid="tomcat.thirdparty.classpath"/>
-    </javac>
-
-    <mkdir dir="${build.gensrc}/proxy/"/>
-
-    <copy file="${tran.name}/webapps/proxy/root/WEB-INF/web.xml"
-          toFile="${dist.mvvm.web}/proxy/WEB-INF/web.xml"
-          overwrite="true">
-    </copy>
+    <exec executable="${buildtool.base}/mkwap.sh" failonerror="true">
+      <arg value="-c"/><arg value="portal/common"/>
+      <arg value="../.."/>
+      <arg value="com.metavize.tran.proxy.jsp"/>
+      <arg value="${tran.name}/webapps/proxy"/>
+      <arg value="${dist.mvvm.web}/proxy"/>
+    </exec>
 
     <!-- portal -->
     <exec executable="${buildtool.base}/mkwap.sh" failonerror="true">
