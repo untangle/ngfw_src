@@ -4,12 +4,12 @@
 	"http://ujac.sourceforge.net/ujac-print-document.dtd">
 
 <document size="LETTER" margin-left="25" margin-right="25" margin-top="50" margin-bottom="50">
-  <!-- Calculate the page range -->
+  <!-- Calculate the date period -->
   <if cond="${type == 'Daily'}">
     <set-property name="period" type="String" value="${start}"/>
   </if>
   <else>
-    <set-property name="period" type="String" value="${start} to ${end}"/>
+    <set-property name="period" type="String" value="${start + ' to ' + end}"/>
   </else>
 
   <!-- Insert the cover page -->

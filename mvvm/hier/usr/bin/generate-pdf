@@ -279,4 +279,4 @@ generateEmail
 
 ## Cleanup the properties directories
 #XXXX This should be in
-## rm -rf ${DIRECTORY_PROPERTIES}
+rm -rf ${DIRECTORY_PROPERTIES}

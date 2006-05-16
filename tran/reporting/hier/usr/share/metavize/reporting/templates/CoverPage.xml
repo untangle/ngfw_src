@@ -29,7 +29,7 @@
     
     <paragraph font="title" halign="center" spacing-after="20">Metavize EdgeReport</paragraph>
     <paragraph font="subtitle" halign="center" line-spacing="1.0">
-      ${range}<br/>
+      ${period}<br/>
       ${type} Report
     </paragraph>
     

@@ -23,7 +23,7 @@
     
       <cell>
         <paragraph font="small" halign="right">
-          ${start} to ${end}
+          ${period}
         </paragraph>
       </cell>
     </table-row>

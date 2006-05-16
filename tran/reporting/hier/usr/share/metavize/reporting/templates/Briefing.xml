@@ -12,11 +12,12 @@
   <font-def name="small"     family="Helvetica" size="9"  style="normal"/>
   <font-def name="title"     family="Helvetica" size="16" style="bold"/>
   <font-def name="subtitle"  family="Helvetica" size="12" style="bold"/>
+  <font-def name="link"      family="Helvetica" size="12" style="italic"/>
 
   <style-def name="cell.normal"   halign="left"/>
   <style-def name="cell.indented" halign="left"  padding-left="10"/>
   <style-def name="cell.data"     halign="right"/>
-  <style-def name="cell.link"     halign="right"/>
+  <style-def name="cell.link"     halign="center" font="link"/>
 
   <style-def name="table.summary-border" halign="center"
              border-style="top|bottom|left|right" border-width="0.5" font="normal" 
@@ -57,7 +58,7 @@
     </cell>
     <cell valign="middle" halign="right">
       <paragraph font="small">
-        ${start} to ${end}
+        ${period}
       </paragraph>
     </cell>
   </table>
@@ -109,7 +110,7 @@
       <foreach sequence="${detailed}" loop-variable="row">
         <table-row>
           <cell class="normal" bgcolor="${descriptionColor}">${row.description}:</cell>
-          <cell class="link"   bgcolor="${percentColor}">
+          <cell halign="center" class="link"   bgcolor="${percentColor}">
             <anchor reference='${"#"+ linkPrefix + row.filename}'>
               click here
             </anchor>
@@ -123,6 +124,10 @@
   </if>
   <else>
     <paragraph class="subtitle">Detailed Reports [disabled]</paragraph>
+    <paragraph font="small" halign="center">
+      To receive detailed reports enable "Include Incident Lists in
+      Emails" in the "Generation" tab of EdgeReport.
+    </paragraph>
   </else>
 
   <!-- Clear the header, leave the footer for the page numbers -->
