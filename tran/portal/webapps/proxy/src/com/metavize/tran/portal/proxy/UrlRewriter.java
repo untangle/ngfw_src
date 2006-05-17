@@ -33,10 +33,12 @@ class UrlRewriter
     private static final String HTTPS = "https://";
 
     private static final Pattern CSS_URL_PATTERN
-        = Pattern.compile("url\\s*\\(\\s*(('[^']*')|(\"[^\"]*\"))\\s*\\)");
+        = Pattern.compile("url\\s*\\(\\s*(('[^']*')|(\"[^\"]*\"))\\s*\\)",
+                          Pattern.CASE_INSENSITIVE);
 
     private static final Pattern JS_HREF_PATTERN
-        = Pattern.compile("(((location\\.\\S+)|(\\S+\\.location))\\s*=\\s*)(.*);");
+        = Pattern.compile("(((location\\.\\S+)|(\\S+\\.location))\\s*=\\s*)(.*);",
+                          Pattern.CASE_INSENSITIVE);
 
     private final String localHost;
     private final String contextBase;
@@ -141,25 +143,23 @@ class UrlRewriter
     {
         w.println("\n<script type='text/javascript'>");
 
-        w.print("var mv_localHost = ");
-        w.println(localHost);
-        w.print("var mv_contextBase = ");
-        w.println(contextBase);
-        w.print("var mv_proto = ");
-        w.println(proto);
-        w.print("var mv_contextBaseProto = ");
-        w.println(contextBaseProto);
-        w.print("var mv_host = ");
-        w.println(host);
-        w.print("var mv_contextBaseProtoHost = ");
-        w.println(contextBaseProtoHost);
-        w.print("var mv_remoteUrl = ");
-        w.println(remoteUrl);
+        w.print("var mv_localHost = '");
+        w.print(localHost);
+        w.println("';");
+        w.print("var mv_contextBase = '");
+        w.print(contextBase);
+        w.println("';");
+        w.print("var mv_proto = '");
+        w.print(proto);
+        w.println("';");
+        w.print("var mv_host = '");
+        w.print(host);
+        w.println("';");
 
         w.println("</script>");
         w.print("<script type='text/javascript' src='");
         w.print(contextBase);
-        w.println("mvrepl.js'/>");
+        w.println("mvrepl.js'></script>");
     }
 
     void filterCss(Reader r, Writer w)
