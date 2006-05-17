@@ -60,6 +60,7 @@ public class PopServerParser extends AbstractParser
     private enum State {
         REPLY,
         DATA,
+        HDRDATA,
         SKIPDATA,
         DONOTCARE
     };
@@ -107,7 +108,7 @@ public class PopServerParser extends AbstractParser
             switch (state) {
             case REPLY:
                 int iReplyEnd = findCRLFEnd(buf);
-                logger.debug("REPLY state, " + buf + ", end at: " + iReplyEnd);
+                logger.debug(state + " state, " + buf + ", end at: " + iReplyEnd);
                 if (1 < iReplyEnd) {
                     dup = buf.duplicate();
 
@@ -129,34 +130,63 @@ public class PopServerParser extends AbstractParser
                         break;
                     }
 
-                    boolean bMsgData;
-                    if (true == reply.isMsgData()) {
-                        // we got +OK w/ octet count (so client sent RETR)
+                    boolean bRetrReply;
+                    if (true == reply.isMsgData() &&
+                        false == zCasing.getIncomingMsgHdr()) {
+                        // we got +OK w/ octet count and client didn't send TOP
+                        // (so client sent RETR)
                         // - msg must start next
-                        bMsgData = true;
-                        zCasing.setIncomingMsg(false);
+                        bRetrReply = true;
                         //logger.debug("retr message reply (octets): " + reply);
                     } else if (true == zCasing.getIncomingMsg()) {
                         if (true == reply.isSimpleOK()) {
                             // we got +OK w/o octet count after client sent RETR
                             // - assume that msg starts next
-                            bMsgData = true;
+                            bRetrReply = true;
                             reply.setMsgData(true);
                             //logger.debug("retr message reply (no octets): " + reply);
                         } else {
                             // we didn't get +OK after client sent RETR (-ERR)
                             // - no msg will follow
-                            bMsgData = false;
+                            bRetrReply = false;
+                            reply.setMsgData(false);
                             logger.warn("retr message reply (no octets): " + reply);
                         }
-                        zCasing.setIncomingMsg(false);
                     } else {
-                        bMsgData = false;
+                        bRetrReply = false;
+                        reply.setMsgData(false);
                     }
 
-                    if (true == bMsgData) {
-                        logger.debug("retr message reply: " + buf);
+                    zCasing.setIncomingMsg(false);
 
+                    boolean bTopReply;
+                    if (false == bRetrReply &&
+                        true == zCasing.getIncomingMsgHdr()) {
+                        if (true == reply.isOK()) {
+                            // we got +OK (w/ or w/o octet count) and
+                            // client sent TOP
+                            // - assume that msg hdr starts next
+                            // (we do not scan msg frag because we cannot know
+                            //  if frag contains full msg)
+                            bTopReply = true;
+                            reply.setMsgHdrData(true);
+                            //logger.debug("top message reply: " + reply);
+                        } else {
+                            // we didn't get +OK after client sent TOP (-ERR)
+                            // - no msg hdr will follow
+                            bTopReply = false;
+                            reply.setMsgHdrData(false);
+                            logger.warn("top message reply: " + reply);
+                        }
+                    } else {
+                        bTopReply = false;
+                        reply.setMsgHdrData(false);
+                    }
+
+                    zCasing.setIncomingMsgHdr(false);
+
+                    if (true == bRetrReply ||
+                        true == bTopReply) {
                         try {
                             zMsgFile = pipeline.mktemp("popsp");
                             zWrChannel = new FileOutputStream(zMsgFile).getChannel();
@@ -167,8 +197,15 @@ public class PopServerParser extends AbstractParser
                             throw new ParseException("cannot create message file: " + exn + "; releasing session");
                         }
 
-                        logger.debug("entering DATA state");
-                        state = State.DATA;
+                        if (true == bRetrReply) {
+                            logger.debug("retr message reply: " + buf);
+                            logger.debug("entering DATA state");
+                            state = State.DATA;
+                        } else { /* must be (true == bTopReply) */
+                            logger.debug("top message reply: " + buf);
+                            logger.debug("entering HDRDATA state");
+                            state = State.HDRDATA;
+                        }
 
                         zMMessageT = new MIMEMessageT(zMsgFile);
 
@@ -179,8 +216,8 @@ public class PopServerParser extends AbstractParser
                             bDone = true;
                         }
                         /* else if we have more data
-                         * (e.g., buf also contains message fragment),
-                         * then parse remaining data in DATA stage
+                         * (e.g., buf also contains msg frag),
+                         * then parse remaining data in DATA or HDRDATA stage
                          */
                     } else {
                         //logger.debug("reply: " + reply + ", " + buf);
@@ -218,7 +255,7 @@ public class PopServerParser extends AbstractParser
                 break;
 
             case DATA:
-                logger.debug("DATA state, " + buf);
+                logger.debug(state + " state, " + buf);
 
                 if (true == buf.hasRemaining()) {
                     dup = buf.duplicate();
@@ -230,7 +267,7 @@ public class PopServerParser extends AbstractParser
                         ByteBuffer writeDup = buf.duplicate();
 
 //                        try {
-                            /* scan and "consume" message frag */
+                            /* scan and "consume" msg frag */
                             bHdrDone = zMBScanner.processHeaders(buf, LINE_SZ);
 //                        } catch (LineTooLongException exn) {
 //                            logger.warn("cannot process message header: " + exn);
@@ -291,7 +328,7 @@ public class PopServerParser extends AbstractParser
                         /* transform writes body */
                         logger.debug("message body: " + buf);
 
-                        /* scan and "copy" message frag */
+                        /* scan and "copy" msg frag */
                         ByteBuffer chunkDup = ByteBuffer.allocate(buf.remaining());
                         bBodyDone = zMBScanner.processBody(buf, chunkDup);
 
@@ -302,6 +339,9 @@ public class PopServerParser extends AbstractParser
                         if (true == bBodyDone) {
                             logger.debug("got message end: " + buf);
 
+                            /* note that we've excluded EOD from last chunk
+                             * (we add EOD later)
+                             */
                             zTokens.add(EndMarker.MARKER);
 
                             reset();
@@ -342,18 +382,76 @@ public class PopServerParser extends AbstractParser
 
                 break;
 
-            case SKIPDATA:
-                logger.debug("SKIPDATA state, " + buf);
+            case HDRDATA:
+                logger.debug(state + " state, " + buf);
 
-                ByteBuffer chunkDup = ByteBuffer.allocate(buf.remaining());
-                bBodyDone = zMBScanner.processBody(buf, chunkDup);
+                ByteBuffer writeDup = buf.duplicate();
+                ByteBuffer hdrDataDup = ByteBuffer.allocate(buf.remaining());
+                bBodyDone = zMBScanner.processBody(buf, hdrDataDup);
 
-                chunkDup.rewind();
-                zTokens.add(new Chunk(chunkDup));
+                /* we are initiating trickle
+                 * so we must dump data that we've processed so far to file
+                 * - none of transforms will write data to file
+                 * - hdrDataDup contains data that we've processed
+                 *
+                 * we keep dumping until we find "body is done" indicator
+                 * - only after we have indicator
+                 *   do we trickle what we've dumped
+                 */
+
+                /* writeDup position is already set */
+                writeDup.limit(hdrDataDup.position());
+                writeFile(writeDup);
 
                 if (true == bBodyDone) {
                     logger.debug("got message end: " + buf);
 
+                    /* ready to trickle msg frag now */
+                    zTokens.add(new MIMEMessageTrickleT(zMMessageT));
+                    /* note that we've excluded EOD from msg frag
+                     * (we add EOD later)
+                     */
+                    zTokens.add(EndMarker.MARKER);
+
+                    zWrChannel = closeChannel(zWrChannel);
+
+                    reset();
+                }
+
+                bDone = true; /* we may need more data */
+
+                if (false == buf.hasRemaining()) {
+                    logger.debug(state + " buf is empty");
+
+                    buf = null; /* buf has been consumed */
+                } else {
+                    logger.debug("compact " + state + " buf: " + buf);
+
+                    dup = buf.duplicate();
+                    dup.clear();
+                    dup.put(buf);
+                    dup.flip();
+
+                    buf = dup;
+                }
+                break;
+
+            case SKIPDATA:
+                logger.debug(state + " state, " + buf);
+
+                ByteBuffer skipDataDup = ByteBuffer.allocate(buf.remaining());
+                bBodyDone = zMBScanner.processBody(buf, skipDataDup);
+
+                /* flip to set limit; rewind doesn't set limit */
+                skipDataDup.flip();
+                zTokens.add(new Chunk(skipDataDup));
+
+                if (true == bBodyDone) {
+                    logger.debug("got message end: " + buf);
+
+                    /* note that we've excluded EOD from last chunk
+                     * (we add EOD later)
+                     */
                     zTokens.add(EndMarker.MARKER);
 
                     reset();
@@ -362,11 +460,11 @@ public class PopServerParser extends AbstractParser
                 bDone = true; /* we may need more data */
 
                 if (false == buf.hasRemaining()) {
-                    logger.debug("skipdata buf is empty");
+                    logger.debug(state + " buf is empty");
 
                     buf = null; /* buf has been consumed */
                 } else {
-                    logger.debug("compact skipdata buf: " + buf);
+                    logger.debug("compact " + state + " buf: " + buf);
 
                     dup = buf.duplicate();
                     dup.clear();
@@ -379,7 +477,7 @@ public class PopServerParser extends AbstractParser
 
             case DONOTCARE:
                 /* once we enter DONOTCARE stage, we do not exit */
-                logger.debug("DONOTCARE state, " + buf);
+                logger.debug(state + " state, " + buf);
 
                 zTokens.add(new DoNotCareChunkT(buf));
 
@@ -463,8 +561,8 @@ public class PopServerParser extends AbstractParser
     {
         logger.debug("parsed reply (exception): " + zBuf);
 
-        logger.debug("entering DONOTCARE state");
         state = State.DONOTCARE;
+        logger.debug("entering " + state + " state");
 
         /* state machine will pull up and
          * pass through message file (whatever we have collected) and
@@ -472,6 +570,7 @@ public class PopServerParser extends AbstractParser
          */
 
         if (0 < zMsgFile.length()) {
+            /* if we have data, we should have already dumped it to file */
             zTokens.add(new MIMEMessageTrickleT(new MIMEMessageT(zMsgFile)));
         }
 
@@ -487,12 +586,14 @@ public class PopServerParser extends AbstractParser
     {
         logger.debug("parsed reply (header parse exception)");
 
-        logger.debug("entering SKIPDATA state");
         state = State.SKIPDATA;
+        logger.debug("entering " + state + " state");
 
         /* since header parse exception has occurred,
          * we have message file so
          * pass through message file
+         *
+         * if we have data, we should have already dumped it to file
          */
         zTokens.add(new MIMEMessageTrickleT(new MIMEMessageT(zMsgFile)));
 
@@ -501,8 +602,8 @@ public class PopServerParser extends AbstractParser
 
     private void reset()
     {
-        logger.debug("re-entering REPLY state");
         state = State.REPLY;
+        logger.debug("re-entering " + state + " state");
 
         bHdrDone = false;
         bBodyDone = false;

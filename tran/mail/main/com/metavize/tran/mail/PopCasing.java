@@ -31,6 +31,11 @@ public class PopCasing extends AbstractCasing
     //  so unless there is an error,
     //  server will send msg immediately after +OK reply)
     private boolean bIncomingMsg;
+    // incoming msg hdr is expected from server
+    // (client sent TOP <#> <#> command
+    //  so unless there is an error,
+    //  server will send msg hdr immediately after +OK reply)
+    private boolean bIncomingMsgHdr;
 
     // constructors -----------------------------------------------------------
 
@@ -41,6 +46,7 @@ public class PopCasing extends AbstractCasing
 
         zUser = null;
         bIncomingMsg = false;
+        bIncomingMsgHdr = false;
     }
 
     // Casing methods ---------------------------------------------------------
@@ -78,5 +84,19 @@ public class PopCasing extends AbstractCasing
     public boolean getIncomingMsg()
     {
         return bIncomingMsg;
+    }
+
+    // client unparser will set flag to true when TOP command is found
+    // server parser will set flag to false as soon as reply is received
+    // (msg hdr is assumed to immediately follow only if reply is +OK)
+    public void setIncomingMsgHdr(boolean bIncomingMsgHdr)
+    {
+        this.bIncomingMsgHdr = bIncomingMsgHdr;
+        return;
+    }
+
+    public boolean getIncomingMsgHdr()
+    {
+        return bIncomingMsgHdr;
     }
 }

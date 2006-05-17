@@ -442,7 +442,8 @@ public abstract class PopStateMachine extends AbstractTokenHandler
         switch (serverState) {
         case REPLY:
             if (token instanceof PopReply) {
-                if (true == ((PopReply) token).isMsgData()) {
+                if (true == ((PopReply) token).isMsgData() ||
+                    true == ((PopReply) token).isMsgHdrData()) {
                     serverState = ServerState.DATA_REPLY;
                 } else {
                     // no change
@@ -461,7 +462,8 @@ public abstract class PopStateMachine extends AbstractTokenHandler
 
         case REPLY_MORE:
             if (token instanceof PopReply) {
-                if (true == ((PopReply) token).isMsgData()) {
+                if (true == ((PopReply) token).isMsgData() ||
+                    true == ((PopReply) token).isMsgHdrData()) {
                     serverState = ServerState.DATA_REPLY;
                 } else {
                     serverState = ServerState.REPLY;
@@ -520,7 +522,8 @@ public abstract class PopStateMachine extends AbstractTokenHandler
         case MARKER:
         case TRICKLE_MARKER:
             if (token instanceof PopReply) {
-                if (true == ((PopReply) token).isMsgData()) {
+                if (true == ((PopReply) token).isMsgData() ||
+                    true == ((PopReply) token).isMsgHdrData()) {
                     serverState = ServerState.DATA_REPLY;
                 } else {
                     serverState = ServerState.REPLY;
@@ -541,7 +544,8 @@ public abstract class PopStateMachine extends AbstractTokenHandler
                  * we must reset and restart
                  */
                 resetServer();
-                if (true == ((PopReply) token).isMsgData()) {
+                if (true == ((PopReply) token).isMsgData() ||
+                    true == ((PopReply) token).isMsgHdrData()) {
                     serverState = ServerState.DATA_REPLY;
                 } else {
                     serverState = ServerState.REPLY;

@@ -44,6 +44,7 @@ public class PopReply implements Token
 
     private final static String DATAOK = OKLWSP + "+" + SZVAL + ".*?" + EOLINE;
     private final static String PASSWDOK = START + "\\+(" + LWSP + ")+.*?" + EOLINE;
+    private final static String ANYOK = OKLWSP + "*.*?" + EOLINE;
 
     private final static String PEOLINE = EOLINE + "$"; /* protocol EOLINE */
     private final static String OKSIMPLE = OKLWSP + "*" + PEOLINE;
@@ -56,18 +57,22 @@ public class PopReply implements Token
     private final String argument;
     private final String zMsgDataSz;
     private final boolean isSimpleOK;
+    private final boolean isOK;
 
     private final boolean hasSpace;
 
     private boolean isMsgData;
+    private boolean isMsgHdrData;
 
-    private PopReply(String reply, String argument, String zMsgDataSz, boolean isSimpleOK, boolean hasSpace)
+    private PopReply(String reply, String argument, String zMsgDataSz, boolean isSimpleOK, boolean isOK, boolean hasSpace)
     {
         this.reply = reply;
         this.argument = argument;
         this.zMsgDataSz = zMsgDataSz;
         isMsgData = (null == zMsgDataSz) ? false : true;
+        isMsgHdrData = false;
         this.isSimpleOK = isSimpleOK;
+        this.isOK = isOK;
 
         this.hasSpace = hasSpace;
     }
@@ -80,6 +85,8 @@ public class PopReply implements Token
         zDup.limit(iEnd);
         String zTmp = AsciiCharBuffer.wrap(zDup).toString();
         boolean bIsMsgData = zTmp.matches(DATAOK);
+        boolean bIsOK = zTmp.matches(ANYOK);
+        //logger.debug("reply is message: " + bIsMsgData + ", is OK: " + bIsOK);
 
         String zMsgDataSz;
         boolean bIsSimpleOK;
@@ -90,7 +97,7 @@ public class PopReply implements Token
         } else {
             zMsgDataSz = parseMsgDataSz(zTmp);
             bIsSimpleOK = false;
-            //logger.debug("reply is message: " + bIsMsgData);
+            //logger.debug("reply is message, size: " + zMsgDataSz);
         }
 
         buf.mark(); /* in case we need to reset later */
@@ -104,14 +111,14 @@ public class PopReply implements Token
 
         String arg;
         if (true == bIsMsgData ||
-            true == bIsSimpleOK) {
+            true == bIsOK) {
             arg = consumeLine(buf, iEnd); /* consume up to end of line */
         } else {
             arg = consumeBuf(buf); /* consume rest of buffer */
         }
 
         //logger.debug("reply arg: " + arg);
-        return new PopReply(reply, (0 == arg.length()) ? null : arg, zMsgDataSz, bIsSimpleOK, space);
+        return new PopReply(reply, (0 == arg.length()) ? null : arg, zMsgDataSz, bIsSimpleOK, bIsOK, space);
     }
 
     // bean methods -----------------------------------------------------------
@@ -131,8 +138,8 @@ public class PopReply implements Token
         return zMsgDataSz;
     }
 
-    // override even if we don't have an octet count
-    // (since octet count is optional)
+    // RETR reply can include optional octet count
+    // so manually set if we get +OK without an octet count
     public void setMsgData(boolean isMsgData)
     {
         this.isMsgData = isMsgData;
@@ -144,9 +151,27 @@ public class PopReply implements Token
         return isMsgData;
     }
 
+    // TOP reply does not include any special text
+    // so manually set if we get +OK
+    public void setMsgHdrData(boolean isMsgHdrData)
+    {
+        this.isMsgHdrData = isMsgHdrData;
+        return;
+    }
+
+    public boolean isMsgHdrData()
+    {
+        return isMsgHdrData;
+    }
+
     public boolean isSimpleOK()
     {
         return isSimpleOK;
+    }
+
+    public boolean isOK()
+    {
+        return isOK;
     }
 
     // Token methods ---------------------------------------------------------

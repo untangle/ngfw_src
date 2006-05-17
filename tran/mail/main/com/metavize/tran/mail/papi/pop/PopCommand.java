@@ -127,7 +127,7 @@ import org.apache.log4j.Logger;
  */
 public class PopCommand implements Token
 {
-    //private final static Logger logger = Logger.getLogger(PopCommand.class);
+    private final static Logger logger = Logger.getLogger(PopCommand.class);
 
     private final static String LWSP = "\\p{Blank}"; /* linear-white-space */
     private final static String START = "^(" + LWSP + ")*";
@@ -137,6 +137,7 @@ public class PopCommand implements Token
     private final static String CRLF = "\r\n";
     private final static String STLS = START + "(STLS|STARTTLS)" + CRLF;
     private final static String RETR = START + "RETR(" + LWSP + ")+";
+    private final static String TOP = START + "TOP(" + LWSP + ")+";
     private final static String PEOLINE = CRLF + "$"; /* protocol EOLINE */
     private final static String LWSPEOL = "(" + LWSP + "|" + PEOLINE + ")";
     private final static Pattern USERP = Pattern.compile(USER, Pattern.CASE_INSENSITIVE);
@@ -144,6 +145,7 @@ public class PopCommand implements Token
     private final static Pattern AUTHLOGINP = Pattern.compile(AUTHLOGIN, Pattern.CASE_INSENSITIVE);
     private final static Pattern STLSP = Pattern.compile(STLS, Pattern.CASE_INSENSITIVE);
     private final static Pattern RETRP = Pattern.compile(RETR, Pattern.CASE_INSENSITIVE);
+    private final static Pattern TOPP = Pattern.compile(TOP, Pattern.CASE_INSENSITIVE);
     private final static Pattern LWSPEOLP = Pattern.compile(LWSPEOL);
 
     private final static String NO_USER = "unknown";
@@ -158,10 +160,11 @@ public class PopCommand implements Token
     private final boolean bIsAuthLogin;
     private final boolean bIsTLS;
     private final boolean bIsRETR;
+    private final boolean bIsTOP;
 
     // constructors -----------------------------------------------------------
 
-    private PopCommand(String command, String argument, String zUser, boolean hasSpace, boolean bIsAuthLogin, boolean bIsTLS, boolean bIsRETR)
+    private PopCommand(String command, String argument, String zUser, boolean hasSpace, boolean bIsAuthLogin, boolean bIsTLS, boolean bIsRETR, boolean bIsTOP)
     {
         this.command = command;
         this.argument = argument;
@@ -170,6 +173,7 @@ public class PopCommand implements Token
         this.bIsAuthLogin = bIsAuthLogin;
         this.bIsTLS = bIsTLS;
         this.bIsRETR = bIsRETR;
+        this.bIsTOP = bIsTOP;
     }
 
     // static factories -------------------------------------------------------
@@ -181,7 +185,8 @@ public class PopCommand implements Token
 
         boolean bIsTLS = STLSP.matcher(zTmp).find();
         boolean bIsRETR = RETRP.matcher(zTmp).find();
-        //logger.debug("command: " + zTmp + ", is TLS: " + bIsTLS + ", is RETR: " + bIsRETR);
+        boolean bIsTOP = TOPP.matcher(zTmp).find();
+        //logger.debug("command: " + zTmp + ", is TLS: " + bIsTLS + ", is RETR: " + bIsRETR + ", is TOP: " + bIsTOP);
 
         String cmd = consumeToken(zDup);
         if (0 == cmd.length()) {
@@ -189,8 +194,10 @@ public class PopCommand implements Token
         }
 
         boolean space = eatSpace(zDup);
+
         String arg = consumeBuf(zDup); /* eat CRLF */
-        return new PopCommand(cmd, 0 == arg.length() ? null : arg, null, space, false, bIsTLS, bIsRETR);
+
+        return new PopCommand(cmd, 0 == arg.length() ? null : arg, null, space, false, bIsTLS, bIsRETR, bIsTOP);
     }
 
     public static PopCommand parseUser(ByteBuffer buf) throws ParseException
@@ -222,7 +229,7 @@ public class PopCommand implements Token
 
         boolean space = eatSpace(zDup);
         String arg = consumeBuf(zDup); /* eat CRLF */
-        return new PopCommand(cmd, 0 == arg.length() ? null : arg, zUser, space, bIsAuthLogin, bIsTLS, false);
+        return new PopCommand(cmd, 0 == arg.length() ? null : arg, zUser, space, bIsAuthLogin, bIsTLS, false, false);
     }
 
     // accessors --------------------------------------------------------------
@@ -260,6 +267,11 @@ public class PopCommand implements Token
     public boolean isRETR()
     {
         return bIsRETR;
+    }
+
+    public boolean isTOP()
+    {
+        return bIsTOP;
     }
 
     // Token methods ----------------------------------------------------------

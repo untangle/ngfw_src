@@ -101,6 +101,9 @@ public class PopUnparser extends AbstractUnparser
             } else if (true == zCommand.isRETR()) {
                 /* workaround to supply client's RETR command to server parser */
                 zCasing.setIncomingMsg(true);
+            } else if (true == zCommand.isTOP()) {
+                /* workaround to supply client's TOP command to server parser */
+                zCasing.setIncomingMsgHdr(true);
             }
 
             zWriteBufs.add(zCommand.getBytes());
@@ -118,8 +121,8 @@ public class PopUnparser extends AbstractUnparser
             PopReply zReply = (PopReply) token;
 
             if (null == zMsgDataReply &&
-                (true == zCasing.getIncomingMsg() ||
-                 true == zReply.isMsgData())) {
+                (true == zReply.isMsgData() ||
+                 true == zReply.isMsgHdrData())) {
                 zMsgDataReply = zReply; /* save for later */
                 zByteStuffer = new ByteBufferByteStuffer();
                 return UnparseResult.NONE;
