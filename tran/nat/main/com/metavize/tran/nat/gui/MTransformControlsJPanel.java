@@ -200,19 +200,19 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         // REDIRECT /////////////
 	JTabbedPane redirectJTabbedPane = addTabbedPane(NAME_REDIRECT, null);
 
-	// REDIRECT ANY /////////
-        RedirectJPanel redirectJPanel = new RedirectJPanel();
-        redirectJTabbedPane.addTab(NAME_REDIRECT_ANY, null, redirectJPanel);
-        addSavable(NAME_REDIRECT_ANY, redirectJPanel);
-	addRefreshable(NAME_REDIRECT_ANY, redirectJPanel);
-	redirectJPanel.setSettingsChangedListener(this);
-
 	// REDIRECT VIRTUAL /////////
         RedirectVirtualJPanel redirectVirtualJPanel = new RedirectVirtualJPanel(this);
         redirectJTabbedPane.addTab(NAME_REDIRECT_VIRTUAL, null, redirectVirtualJPanel);
         addSavable(NAME_REDIRECT_VIRTUAL, redirectVirtualJPanel);
 	addRefreshable(NAME_REDIRECT_VIRTUAL, redirectVirtualJPanel);
 	redirectVirtualJPanel.setSettingsChangedListener(this);
+
+	// REDIRECT ANY /////////
+        RedirectJPanel redirectJPanel = new RedirectJPanel();
+        redirectJTabbedPane.addTab(NAME_REDIRECT_ANY, null, redirectJPanel);
+        addSavable(NAME_REDIRECT_ANY, redirectJPanel);
+	addRefreshable(NAME_REDIRECT_ANY, redirectJPanel);
+	redirectJPanel.setSettingsChangedListener(this);
 
 	// DHCP /////////////
         JTabbedPane dhcpJTabbedPane = addTabbedPane(NAME_DHCP, null);
