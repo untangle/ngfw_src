@@ -160,7 +160,7 @@ class SmtpClientParser
               //Position the "real" buffer beyond the bad point.
               buf.position(dup.position());
 
-              m_logger.error("Exception parsing command line \"" +
+              m_logger.warn("Exception parsing command line \"" +
                 ASCIIUtil.bbToString(badBuf) + "\".  Pass to server and monitor response", pe);
 
               cmd = new UnparsableCommand(badBuf);
