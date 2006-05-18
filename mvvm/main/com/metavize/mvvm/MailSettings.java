@@ -101,9 +101,7 @@ public class MailSettings implements Serializable
 
     /**
      * The SMTP mail host to use to send internal report and error
-     * emails.  This can be a host name or an IP address.  (If not
-     * set, all email addresses must be fully qualified, and the
-     * normal DNS MX records are used to determine SMTP host).
+     * emails.  This can be a host name or an IP address.
      *
      * @return a <code>String</code> value
      * @hibernate.property
@@ -111,7 +109,10 @@ public class MailSettings implements Serializable
      */
     public String getSmtpHost()
     {
-        return smtpHost;
+	if( smtpHost == null )
+	    return "";
+	else
+	    return smtpHost;
     }
 
     public void setSmtpHost(String smtpHost)

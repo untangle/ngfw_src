@@ -262,7 +262,7 @@ class MailSenderImpl implements MailSender
             sb = new StringBuilder();
             sb.append(MASQMAIL_DEFAULT_ROUTE_START);
             String mailHost = mailSettings.getSmtpHost();
-            if (mailHost != null && !"".equals(mailHost)) {
+            if ( !mailSettings.isUseMxRecords() )) {
                 sb.append("mail_host=\"");
                 sb.append(mailHost);
                 sb.append(":");
@@ -332,7 +332,7 @@ class MailSenderImpl implements MailSender
         File masqmail_dir = new File(MASQMAIL_CONF_DIR);
         if (masqmail_dir.isDirectory()) {
             commonProps.put(MAIL_HOST_PROP, "localhost");
-        } else if (mailSettings.getSmtpHost() != null && !"".equals(mailSettings.getSmtpHost())) {
+        } else if ( !mailSettings.isUseMxRecords() ) {
             commonProps.put(MAIL_HOST_PROP, mailSettings.getSmtpHost());
         }
 
