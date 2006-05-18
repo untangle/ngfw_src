@@ -192,13 +192,13 @@ class TransformManagerImpl implements TransformManager
 
     public List<Tid> transformInstancesVisible(Policy policy)
     {
-	List<Tid> transformInstances = transformInstances(policy);
-	Vector<Tid> visibleVector = new Vector<Tid>();
-	for( Tid tid : transformInstances ){
-	    if( transformContext(tid).getMackageDesc().getViewPosition() >= 0 )
-		visibleVector.add(tid);
-	}
-	return (List<Tid>) visibleVector;
+    List<Tid> transformInstances = transformInstances(policy);
+    Vector<Tid> visibleVector = new Vector<Tid>();
+    for( Tid tid : transformInstances ){
+        if( transformContext(tid).getMackageDesc().getViewPosition() >= 0 )
+        visibleVector.add(tid);
+    }
+    return (List<Tid>) visibleVector;
     }
 
     public TransformContext transformContext(Tid tid)
@@ -446,7 +446,7 @@ class TransformManagerImpl implements TransformManager
             URL[] urls = tbm.resources(name);
             final URLClassLoader cl = getClassLoader(tDesc, urls);
 
-            Thread t = new Thread(new Runnable()
+            Thread t = MvvmContextFactory.context().newThread(new Runnable()
                 {
                     public void run()
                     {
@@ -578,7 +578,7 @@ class TransformManagerImpl implements TransformManager
 
         MackageDesc mackageDesc = tbm.mackageDesc(transformName);
         if ((mackageDesc.isService() || mackageDesc.isUtil() || mackageDesc.isCore())
-	    && tid.getPolicy() != null) {
+        && tid.getPolicy() != null) {
             throw new DeployException("Cannot specify a policy for a service/util/core: "
                                       + transformName);
         }

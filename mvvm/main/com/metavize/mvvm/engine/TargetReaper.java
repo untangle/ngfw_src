@@ -17,6 +17,7 @@ import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.metavize.mvvm.MvvmContextFactory;
 import org.apache.log4j.Logger;
 
 class TargetReaper implements Runnable
@@ -59,7 +60,7 @@ class TargetReaper implements Runnable
 
     void init()
     {
-        thread = new Thread(this);
+        thread = MvvmContextFactory.context().newThread(this);
         thread.start();
     }
 

@@ -215,9 +215,9 @@ class ToolboxManagerImpl implements ToolboxManager
             tails.put(i, alt);
         }
 
-        new Thread(alt).start();
+        MvvmContextFactory.context().newThread(alt).start();
 
-        new Thread(new Runnable() {
+        MvvmContextFactory.context().newThread(new Runnable() {
                 public void run()
                 {
                     try {
@@ -258,7 +258,7 @@ class ToolboxManagerImpl implements ToolboxManager
                 }
             });
 
-        new Thread(f).start();
+        MvvmContextFactory.context().newThread(f).start();
 
         TRY_AGAIN:
         try {
@@ -288,9 +288,9 @@ class ToolboxManagerImpl implements ToolboxManager
             tails.put(i, alt);
         }
 
-        new Thread(alt).start();
+        MvvmContextFactory.context().newThread(alt).start();
 
-        new Thread(new Runnable() {
+        MvvmContextFactory.context().newThread(new Runnable() {
                 public void run()
                 {
                     try {

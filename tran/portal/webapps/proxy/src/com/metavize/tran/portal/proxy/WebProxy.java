@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.metavize.mvvm.MvvmContextFactory;
 import org.apache.commons.fileupload.MultipartStream;
 import org.apache.commons.fileupload.ParameterParser;
 import org.apache.commons.httpclient.Header;
@@ -286,7 +287,7 @@ public class WebProxy extends HttpServlet
         throws IOException
     {
         PipedInputStream pis = new PipedInputStream();
-        Thread t = new Thread(new RewriteWorker(pis, w, rewriter));
+        Thread t = MvvmContextFactory.context().newThread(new RewriteWorker(pis, w, rewriter));
         PipedOutputStream pos = new PipedOutputStream(pis);
         t.start();
         try {

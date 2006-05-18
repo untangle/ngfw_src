@@ -79,6 +79,7 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
             INIT_QUEUE.add(name);
         }
 
+        // XXX not using newThread, called from MvvmContextImpl constructor
         new Thread(new Runnable()
             {
                 public void run()
@@ -368,7 +369,7 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
         void start()
         {
             if (0 == clientCount) {
-                new Thread(this).start();
+                MvvmContextFactory.context().newThread(this).start();
             }
 
             clientCount++;

@@ -229,11 +229,14 @@ public class MvvmContextImpl extends MvvmContextBase
     {
         return new Thread(new Runnable()
             {
-                TransformContext tctx = transformManager.threadContext();
-
                 public void run()
                 {
-                    transformManager.registerThreadContext(tctx);
+                    TransformContext tctx = null == transformManager
+                        ? null : transformManager.threadContext();
+
+                    if (null != tctx) {
+                        transformManager.registerThreadContext(tctx);
+                    }
                     try {
                         runnable.run();
                     } catch (OutOfMemoryError exn) {
@@ -241,7 +244,9 @@ public class MvvmContextImpl extends MvvmContextBase
                     } catch (Exception exn) {
                         logger.error("Exception running: " + runnable, exn);
                     } finally {
-                        transformManager.deregisterThreadContext();
+                        if (null != tctx) {
+                            transformManager.deregisterThreadContext();
+                        }
                     }
                 }
             });
@@ -293,7 +298,7 @@ public class MvvmContextImpl extends MvvmContextBase
     public void shutdown()
     {
         // XXX check access permission
-        Thread t = new Thread(new Runnable()
+        Thread t = newThread(new Runnable()
             {
                 public void run()
                 {

@@ -38,9 +38,10 @@ public class ForwardServlet extends HttpServlet
 {
     public static final String TARGET_HEADER = "Target";
 
-    private Logger logger;
+    private MvvmLocalContext mvvmContext;
     private LocalPortalManager portalManager;
     private LocalApplicationManager appManager;
+    private Logger logger;
 
     // HttpServlet methods ----------------------------------------------------
 
@@ -48,9 +49,8 @@ public class ForwardServlet extends HttpServlet
     public void init() throws ServletException
     {
         logger = Logger.getLogger(getClass());
-
-        MvvmLocalContext mctx = MvvmContextFactory.context();
-        portalManager = mctx.portalManager();
+        mvvmContext = MvvmContextFactory.context();
+        portalManager = mvvmContext.portalManager();
         appManager = portalManager.applicationManager();
     }
 
@@ -124,9 +124,9 @@ public class ForwardServlet extends HttpServlet
             session.setMaxInactiveInterval(1200);            // XXX Use user's timeout
 
             Worker w1 = new Worker(his, sos);
-            Thread t1 = new Thread(w1);
+            Thread t1 = mvvmContext.newThread(w1);
             Worker w2 = new Worker(sis, hos);
-            Thread t2 = new Thread(w2);
+            Thread t2 = mvvmContext.newThread(w2);
 
             t1.start();
             t2.start();

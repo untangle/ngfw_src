@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.naming.ServiceUnavailableException;
+import javax.servlet.http.HttpServletRequest;
 
 import com.metavize.mvvm.addrbook.AddressBook;
 import com.metavize.mvvm.addrbook.AddressBookConfiguration;
@@ -77,7 +78,7 @@ class PortalManagerImpl implements LocalPortalManager
     private final LoginReaper reaper;
     private final ThreadLocal<String> localAddr = new ThreadLocal<String>();
 
-    private final Map<PortalLogin, Long> activeLogins;
+    private final Map<String, PortalLoginDesc> activeLogins;
 
     private final Logger logger = Logger.getLogger(PortalManagerImpl.class);
 
@@ -87,7 +88,7 @@ class PortalManagerImpl implements LocalPortalManager
     {
         this.mvvmContext = mvvmContext;
 
-        activeLogins = new ConcurrentHashMap<PortalLogin, Long>();
+        activeLogins = new ConcurrentHashMap<String, PortalLoginDesc>();
 
         TransactionWork tw = new TransactionWork()
             {
@@ -118,7 +119,7 @@ class PortalManagerImpl implements LocalPortalManager
         eventLogger = mvvmContext.eventLogger();
 
         reaper = new LoginReaper();
-        new Thread(reaper).start();
+        mvvmContext.newThread(reaper).start();
 
         logger.info("Initialized PortalManager");
     }
@@ -251,7 +252,13 @@ class PortalManagerImpl implements LocalPortalManager
 
     public List<PortalLogin> getActiveLogins()
     {
-        return new ArrayList(activeLogins.keySet());
+        List<PortalLogin> l = new ArrayList<PortalLogin>();
+
+        for (PortalLoginDesc pld : activeLogins.values()) {
+            l.add(pld.getPortalLogin());
+        }
+
+        return l;
     }
 
     // package protected methods ----------------------------------------------
@@ -276,18 +283,17 @@ class PortalManagerImpl implements LocalPortalManager
     {
         for (PortalUser pu : (List<PortalUser>)settings.getUsers()) {
             String uid = pu.getUid();
-            PortalHomeSettings phs = pu.getPortalHomeSettings();
-            if (null != phs) {
-                long it = phs.getIdleTimeout();
-                for (PortalLogin pl : activeLogins.keySet()) {
-                    if (pl.getName().equals(uid)) {
-                        Long la = activeLogins.get(pl);
-                        if (null != la) {
-                            PortalLogin newPl = new PortalLogin(pl, it);
-                            activeLogins.put(newPl, la);
-                        }
-                    }
+            PortalLoginDesc pld = activeLogins.get(uid);
+            if (null != pld) {
+                PortalHomeSettings phs = pu.getPortalHomeSettings();
+                long it;
+                if (null == phs) {
+                    logger.warn("null PortalHomeSettings: " + pu);
+                    it = Long.MAX_VALUE;
+                } else {
+                    it = phs.getIdleTimeout();
                 }
+                pld.setIdleTimeout(it);
             }
         }
     }
@@ -300,12 +306,6 @@ class PortalManagerImpl implements LocalPortalManager
         } else {
             return null;
         }
-    }
-
-    private long getIdleTimeout(PortalUser user)
-    {
-        PortalHomeSettings hs = getPortalHomeSettings(user);
-        return hs.getIdleTimeout();
     }
 
     private PortalLogin login(String uid, String password, InetAddress addr)
@@ -356,9 +356,16 @@ class PortalManagerImpl implements LocalPortalManager
         String domain = getCurrentDomain();
         if (null != domain) {
             pwa = new NtlmPasswordAuthentication(domain, uid, password);
+
         }
         PortalLogin pl = new PortalLogin(user, addr, pwa);
-        activeLogins.put(pl, System.currentTimeMillis());
+        PortalHomeSettings phs = user.getPortalHomeSettings();
+        if (null == phs) {
+            logger.warn("null PortalHomeSettings: " + user);
+        }
+        long it = null == phs ? Long.MAX_VALUE : phs.getIdleTimeout();
+        PortalLoginDesc pld = new PortalLoginDesc(pl, it);
+        activeLogins.put(uid, pld);
 
         PortalLoginEvent event = new PortalLoginEvent(addr, uid, true);
         eventLogger.log(event);
@@ -374,7 +381,7 @@ class PortalManagerImpl implements LocalPortalManager
             logger.info("" + reason + " logout of " + login);
         }
 
-        activeLogins.remove(login);
+        activeLogins.remove(login.getUser());
 
         PortalLogoutEvent evt = new PortalLogoutEvent(login.getClientAddr(),
                                                       login.getUser(), reason);
@@ -383,21 +390,52 @@ class PortalManagerImpl implements LocalPortalManager
 
     private boolean isSessionLive(PortalLogin pl)
     {
-        Long la = activeLogins.get(pl);
-        if (null == la) {
-            return false;
-        } else {
-            long ct = System.currentTimeMillis();
-            if (ct - la > pl.getIdleTimeout()) {
-                activeLogins.put(pl, ct);
-                return true;
-            } else {
-                return false;
-            }
-        }
+        PortalLoginDesc pld = activeLogins.get(pl.getName());
+        return null == pld ? false : pld.isLive();
     }
 
     // private classes --------------------------------------------------------
+
+    private static class PortalLoginDesc
+    {
+        private volatile PortalLogin portalLogin;
+
+        private volatile long idleTimeout;
+        private volatile long lastActivity;
+
+        PortalLoginDesc(PortalLogin portalLogin, long idleTimeout)
+        {
+            this.portalLogin = portalLogin;
+            this.idleTimeout = idleTimeout;
+            this.lastActivity = System.currentTimeMillis();
+        }
+
+        PortalLogin getPortalLogin()
+        {
+            return portalLogin;
+        }
+
+        String getUser()
+        {
+            return portalLogin.getUser();
+        }
+
+        void setIdleTimeout(long idleTimeout)
+        {
+            this.idleTimeout = idleTimeout;
+        }
+
+        boolean isLive()
+        {
+            long ct = System.currentTimeMillis();
+            boolean live = ct - lastActivity > idleTimeout;
+            if (live) {
+                lastActivity = ct;
+            }
+            return live;
+        }
+
+    }
 
     private class PortalAuthenticator extends FormAuthenticator
     {
@@ -418,9 +456,24 @@ class PortalManagerImpl implements LocalPortalManager
                                     LoginConfig config)
             throws IOException
         {
-            localAddr.set(request.getRequest().getRemoteAddr());
+            HttpServletRequest req = (HttpServletRequest)request.getRequest();
 
-            return super.authenticate(request, response, config);
+            Principal p = req.getUserPrincipal();
+
+            if (null != p) {
+                PortalLoginDesc pld = activeLogins.get(p.getName());
+                boolean isLive = null == pld ? false : pld.isLive();
+                if (isLive) {
+                    return true;
+                } else {
+                    // XXX clear User Principal ???
+                    localAddr.set(req.getRemoteAddr());
+                    return super.authenticate(request, response, config);
+                }
+            } else {
+                localAddr.set(req.getRemoteAddr());
+                return super.authenticate(request, response, config);
+            }
         }
     }
 
@@ -482,11 +535,9 @@ class PortalManagerImpl implements LocalPortalManager
         {
             Thread currentThread = thread = Thread.currentThread();
             while (currentThread == thread) {
-                for (PortalLogin pl : activeLogins.keySet()) {
-                    if (null != pl) {
-                        if (!isSessionLive(pl)) {
-                            activeLogins.remove(pl);
-                        }
+                for (PortalLoginDesc pld : activeLogins.values()) {
+                    if (!pld.isLive()) {
+                        activeLogins.remove(pld.getUser());
                     }
                 }
 
