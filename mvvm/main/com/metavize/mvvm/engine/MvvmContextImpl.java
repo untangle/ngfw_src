@@ -452,6 +452,9 @@ public class MvvmContextImpl extends MvvmContextBase
         // manager should exist.
         networkManager = NetworkManagerImpl.getInstance();
 
+        portalManager = new PortalManagerImpl(this);
+        remotePortalManager = new RemotePortalManagerImpl(portalManager);
+
         // start transforms:
         transformManager = TransformManagerImpl.manager();
 
@@ -472,9 +475,6 @@ public class MvvmContextImpl extends MvvmContextBase
 
         //Start AddressBookImpl
         addressBookImpl = AddressBookImpl.getInstance();
-
-        portalManager = new PortalManagerImpl(this);
-        remotePortalManager = new RemotePortalManagerImpl(portalManager);
 
         // start vectoring:
         String argonFake = System.getProperty(ARGON_FAKE_KEY);
@@ -535,20 +535,6 @@ public class MvvmContextImpl extends MvvmContextBase
         }
         httpInvoker = null;
 
-        // Stop portal
-        try {
-            portalManager.destroy();
-        } catch (Exception exn) {
-            logger.warn("could not destroy PortalManager", exn);
-        }
-        portalManager = null;
-
-        try {
-            tomcatManager.stopTomcat();
-        } catch (Exception exn) {
-            logger.warn("could not stop tomcat", exn);
-        }
-
         // stop vectoring:
         String argonFake = System.getProperty(ARGON_FAKE_KEY);
         if (null == argonFake || !argonFake.equalsIgnoreCase("yes")) {
@@ -566,6 +552,14 @@ public class MvvmContextImpl extends MvvmContextBase
             logger.warn("could not destroy TransformManager", exn);
         }
         transformManager = null;
+
+        // Stop portal
+        try {
+            portalManager.destroy();
+        } catch (Exception exn) {
+            logger.warn("could not destroy PortalManager", exn);
+        }
+        portalManager = null;
 
         // XXX destroy methods for:
         // - pipelineFoundry
@@ -592,6 +586,12 @@ public class MvvmContextImpl extends MvvmContextBase
         // XXX destroy methods for:
         // - mailSender
         // - adminManager
+
+        try {
+            tomcatManager.stopTomcat();
+        } catch (Exception exn) {
+            logger.warn("could not stop tomcat", exn);
+        }
 
         try {
             eventLogger.stop();
