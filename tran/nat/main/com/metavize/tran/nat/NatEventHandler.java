@@ -75,9 +75,6 @@ class NatEventHandler extends AbstractEventHandler
     /* match to determine whether a session is natted */
     private List<NatMatcher> natMatchers     = Collections.emptyList();
 
-    /* !!! This is going to have to scale for more stuff */
-    private boolean isNatEnabled = false;
-
     /* match to determine whether a session should pass to be passed to the DMZ
      * on a NATd interface */
     private List<DmzMatcher> dmzHostMatchers = Collections.emptyList();
@@ -93,7 +90,10 @@ class NatEventHandler extends AbstractEventHandler
     private List<RedirectMatcher> redirectList = new LinkedList<RedirectMatcher>();
     
     /* A list of all of the traffic blockers */
-    private List<TrafficForwardingBlocker> trafficBlockers = new LinkedList<TrafficForwardingBlocker>();
+    private List<RequestIntfMatcher> trafficBlockers = new LinkedList<RequestIntfMatcher>();
+
+    /* A list of matchers that block traffic that would pass unfiltered */
+    private List<RequestIntfMatcher> unmodifiedBlockers = new LinkedList<RequestIntfMatcher>();
 
     /* tracks the open TCP ports for NAT */
     private final PortList tcpPortList;
@@ -143,30 +143,25 @@ class NatEventHandler extends AbstractEventHandler
 
         request.attach( attachment );
         
-        for ( TrafficForwardingBlocker blocker : trafficBlockers ) {
-            if ( blocker.isMatch( request )) {
-
-                transform.incrementCount( BLOCK_COUNTER ); // BLOCK COUNTER
-                
-                /* XXX How should the session be rejected */
-                request.rejectSilently();
-                return;
-            }
+        if ( matchesTrafficBlocker( request )) {
+            transform.incrementCount( BLOCK_COUNTER ); // BLOCK COUNTER
+            
+            /* XXX How should the session be rejected */
+            request.rejectSilently();
+            return;
         }
         
         /* Check for NAT, Redirects or DMZ */
         try {
-            if (logger.isInfoEnabled())
-                logger.info( "Testing <" + request + ">" );
+            if (logger.isInfoEnabled()) logger.info( "Testing <" + request + ">" );
+                
             if ( handleNat( request, protocol )      ||
                  handleRedirect( request, protocol ) ||
                  handleDmzHost( request,  protocol )) {
 
+                if (logger.isInfoEnabled()) logger.info( "<" + request + "> is nat, redirect or dmz" );
 
-                if (logger.isInfoEnabled())
-                    logger.info( "<" + request + "> is nat, redirect or dmz" );
-
-                /* Nothing left to do */
+                /* Nothing left to do (sesssion is already released, and doesn't require finalization) */
                 if ( request.attachment() == null ) return;
 
                 request.release( true );
@@ -178,28 +173,15 @@ class NatEventHandler extends AbstractEventHandler
 
                     attachment.isManagedSession( true );
                 }
+
                 return;
             }
 
-            /* DMZ Sessions do not require finalization */
-            if ( isDmz( request, protocol )) {
-                request.release( false );
-                return;
-            }
-
-            /* VPN Sessions that don't require NAT. */
-            if ( isVpn( request, protocol )) {
-                request.release( false );
-                return;
-            }
-
-            /* If nat is on, and this session wasn't natted, redirected or dmzed, it
-             * must be rejected */
-            if ( isNatEnabled ) {
-                /* !!!!!!  This must get more interesting */
-                /* Increment the block counter */
+            /* If nat is on, and this session wasn't natted,
+             * redirected or dmzed, it must be rejected */
+            if ( isUnmodifiedSessionBlocked( request )) {
                 transform.incrementCount( BLOCK_COUNTER ); // BLOCK COUNTER
-
+                
                 /* XXX How should the session be rejected */
                 request.rejectSilently();
                 return;
@@ -301,39 +283,33 @@ class NatEventHandler extends AbstractEventHandler
         List<DmzMatcher> dmzHostMatchers = new LinkedList<DmzMatcher>();
 
         /* Create a list to block traffic from being forwarded */
-        List<TrafficForwardingBlocker> trafficBlockers = new LinkedList<TrafficForwardingBlocker>();
-
-        /* Assume NAT is disabled  */
-        this.isNatEnabled = false;
-
+        List<RequestIntfMatcher> trafficBlockers = new LinkedList<RequestIntfMatcher>();
+        
+        /* Create a list to block unmodified traffic that shouldn't be forwarded. */
+        List<RequestIntfMatcher> unmodifiedBlockers = new LinkedList<RequestIntfMatcher>();
+                
         /* First deal with all of the NATd spaces */
         for ( NetworkSpaceInternal space : settings.getNetworkSpaceList()) {
             /* When settings are disabled, ignore everything but the primary space or
              * if the space is just disabled. */
             if (( !settings.getIsEnabled() && space.getIndex() != 0 ) || !space.getIsEnabled()) continue;
             
-            if ( !space.getIsTrafficForwarded()) {
-                try {
-                    trafficBlockers.add( TrafficForwardingBlocker.makeInstance( space ));
-                } catch ( TransformException e ) {
-                    logger.warn( "unable to create a traffic blocker", e );
-                }
-            }
-
+            /* If the network space has multiple interfaces, than the traffic has to be allowed
+             * between those interfaces */
+            setupTrafficFlow( space, trafficBlockers, unmodifiedBlockers );
+            
             if ( space.getIsDmzHostEnabled()) {
                 logger.debug( "Inserting new dmz host matcher: " + space );
                 dmzHostMatchers.add( DmzMatcher.makeDmzMatcher( space, settings ));
             }
-            
-            if ( !space.getIsNatEnabled()) continue;
 
-            /* Create a NAT matcher for this space */
-            for ( IPNetwork networkRule : (List<IPNetwork>)space.getNetworkList()) {
-                natMatchers.add( NatMatcher.makeNatMatcher( networkRule, space ));
-            }
             
-            /* There is at least one network space with NAT enabled */
-            this.isNatEnabled = true;
+            if ( space.getIsNatEnabled()) {
+                /* Create a NAT matcher for this space */
+                for ( IPNetwork networkRule : (List<IPNetwork>)space.getNetworkList()) {
+                    natMatchers.add( NatMatcher.makeNatMatcher( networkRule, space ));
+                }                
+            }
         }
         
         /* Save all of the objects at once */
@@ -360,10 +336,12 @@ class NatEventHandler extends AbstractEventHandler
         for ( NatMatcher natMatcher : natMatchers ) overrideList.add( natMatcher.getInterfaceRedirect());
         
         /* Set the redirect list at the end(avoid concurrency issues) */
-        this.redirectList = redirectMatcherList;
-        this.natMatchers     = natMatchers;
-        this.dmzHostMatchers = dmzHostMatchers;
-        this.trafficBlockers = trafficBlockers;
+        this.redirectList        = redirectMatcherList;
+        this.natMatchers         = natMatchers;
+        this.dmzHostMatchers     = dmzHostMatchers;
+        this.trafficBlockers     = Collections.unmodifiableList( trafficBlockers );
+        this.unmodifiedBlockers  = Collections.unmodifiableList( unmodifiedBlockers );
+
         argonManager.setInterfaceOverrideList( overrideList );
         networkManager.subscribeLocalOutside( true );
     }
@@ -523,30 +501,6 @@ class NatEventHandler extends AbstractEventHandler
         return false;
     }
 
-    private boolean isDmz( IPNewSessionRequest request, Protocol protocol )
-    {
-        byte clientIntf = request.clientIntf();
-        byte serverIntf = request.serverIntf();
-
-        if (( clientIntf == IntfConstants.DMZ_INTF && serverIntf == IntfConstants.EXTERNAL_INTF ) ||
-            ( clientIntf == IntfConstants.EXTERNAL_INTF && serverIntf == IntfConstants.DMZ_INTF )) {
-            return true;
-        }
-
-        return false;
-    }
-
-    private boolean isVpn( IPNewSessionRequest request, Protocol protocol )
-    {
-        if ( request.clientIntf() == IntfConstants.VPN_INTF ||
-             request.serverIntf() == IntfConstants.VPN_INTF ) {
-            return true;
-        }
-
-        return false;
-    }
-
-
     /**
      * Retrieve the next port from the port list
      */
@@ -562,6 +516,56 @@ class NatEventHandler extends AbstractEventHandler
     void releasePort( Protocol protocol, int port )
     {
         getPortList( protocol ).releasePort( port );
+    }
+
+    private void setupTrafficFlow( NetworkSpaceInternal space, 
+                                   List<RequestIntfMatcher> blockers, 
+                                   List<RequestIntfMatcher> unmodified )
+    {
+        List<InterfaceInternal> interfaceList = space.getInterfaceList();
+
+        IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
+
+        /* Block traffic from leaving this network space */
+        if ( !space.getIsTrafficForwarded()) {
+            try {
+                blockers.add( RequestIntfMatcher.makeInstance( space ));
+            } catch ( TransformException e ) {
+                logger.error( "unable to create a traffic blocker for [" + space + "]", e );
+            }
+        }
+
+        if ( space.getIsNatEnabled()) {
+            /* Block traffic from entering this network space unfiltered */
+            try {
+                unmodified.add( RequestIntfMatcher.makeNatInstance( space ));
+            } catch ( TransformException e ) { 
+                logger.error( "Unable to create a traffic passer for [" + space + "]", e );
+            }
+        }
+    }
+
+    /** Returns true if the request matches a traffic blocker */
+    private boolean matchesTrafficBlocker( IPNewSessionRequest request )
+    {
+        /* Test all of the traffic blockers to determine if the traffic should be blocked */
+        for ( RequestIntfMatcher blocker : trafficBlockers ) {
+            if ( blocker.isMatch( request )) return true;
+        }
+
+        return false;
+    }
+    
+    /** Returns true if the request should be allowed through unmodified (not NATd or redirected) */
+    private boolean isUnmodifiedSessionBlocked( IPNewSessionRequest request )
+    {
+        /* Test all of the traffic  to determine if the traffic should be allowed
+         * to pass unmodified */
+        for ( RequestIntfMatcher blocker : this.unmodifiedBlockers ) {
+            if ( blocker.isMatch( request )) return true;
+        }
+
+        return false;
     }
 
     /**
@@ -640,25 +644,38 @@ class NatEventHandler extends AbstractEventHandler
     }
 }
 
-class TrafficForwardingBlocker
+class RequestIntfMatcher
 {
-    IntfMatcher client;
-    IntfMatcher server;
+    private final boolean isBidirectional;
+    private final IntfMatcher client;
+    private final IntfMatcher server;
     
-    TrafficForwardingBlocker( IntfMatcher client, IntfMatcher server )
+    RequestIntfMatcher( IntfMatcher client, IntfMatcher server )
+    {
+        this( client, server, true );
+    }
+
+    RequestIntfMatcher( IntfMatcher client, IntfMatcher server, boolean isBidirectional )
     {
         this.client = client;
         this.server = server;
+        this.isBidirectional = isBidirectional;
     }
 
     boolean isMatch( IPNewSessionRequest request )
     {
-        /* This is bi-directional */
-        return ( this.client.isMatch( request.clientIntf()) && this.server.isMatch( request.serverIntf()) ||
-                 this.client.isMatch( request.serverIntf()) && this.server.isMatch( request.clientIntf()));
+        return (( this.client.isMatch( request.clientIntf()) && this.server.isMatch( request.serverIntf())) ||
+                ( this.isBidirectional && 
+                  this.client.isMatch( request.serverIntf()) && this.server.isMatch( request.clientIntf())));
+    }
+
+    public String toString()
+    {
+        String connector = this.isBidirectional ? " <-> " : " -> ";
+        return this.client.toString() + connector + this.server;
     }
     
-    static TrafficForwardingBlocker makeInstance( NetworkSpaceInternal space ) throws TransformException
+    static RequestIntfMatcher makeInstance( NetworkSpaceInternal space ) throws TransformException
     {
         List<InterfaceInternal> interfaceList = space.getInterfaceList();
         IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
@@ -677,8 +694,36 @@ class TrafficForwardingBlocker
             throw new TransformException( "Unable to create the interface matchers", e );
         }
         
-        return new TrafficForwardingBlocker( clientIntfMatcher, serverIntfMatcher );
+        return new RequestIntfMatcher( clientIntfMatcher, serverIntfMatcher );
     }
+
+    static RequestIntfMatcher makeNatInstance( NetworkSpaceInternal space ) throws TransformException
+    {
+        List<InterfaceInternal> interfaceList = space.getInterfaceList();
+        IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
+        
+        byte clientIntfArray[] = new byte[interfaceList.size()+1];
+        byte serverIntfArray[] = new byte[interfaceList.size()];
+        
+        int c = 0;
+        for ( InterfaceInternal intf : interfaceList ) {
+            serverIntfArray[c] = clientIntfArray[c++] = intf.getArgonIntf();
+        }
+        /* The client can be from the VPN interface (this is an inverse matcher) */
+        clientIntfArray[c] = IntfConstants.VPN_INTF;
+
+        IntfMatcher clientIntfMatcher, serverIntfMatcher;
+
+        try {
+            clientIntfMatcher = imf.makeInverseMatcher( clientIntfArray );
+            serverIntfMatcher = imf.makeSetMatcher( serverIntfArray );
+        } catch ( ParseException e ) {
+            throw new TransformException( "Unable to create the interface matchers", e );
+        }
+        
+        return new RequestIntfMatcher( clientIntfMatcher, serverIntfMatcher );
+    }
+
 }
 
 class NatMatcher
