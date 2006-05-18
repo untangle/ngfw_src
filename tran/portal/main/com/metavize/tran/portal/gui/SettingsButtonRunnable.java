@@ -18,6 +18,7 @@ import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.gui.util.*;
 import java.awt.Window;
 import java.awt.event.*;
+import javax.swing.CellEditor;
 
 public class SettingsButtonRunnable implements ButtonRunnable {
     private boolean isUserType;
@@ -37,6 +38,7 @@ public class SettingsButtonRunnable implements ButtonRunnable {
     public String getButtonText(){ return "Edit"; }
     public boolean isEnabled(){ return isEnabled; }
     public boolean valueChanged(){ return false; }
+    public void setCellEditor(CellEditor cellEditor){}
     public void setEnabled(boolean isEnabled){ this.isEnabled = isEnabled; }
     public void setUserType(boolean isUserType){ this.isUserType = isUserType; }
     public void setPortalUser(PortalUser portalUser){ this.portalUser = portalUser; }
