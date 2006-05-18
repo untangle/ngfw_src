@@ -36,6 +36,7 @@ public class SettingsButtonRunnable implements ButtonRunnable {
     }
     public String getButtonText(){ return "Edit"; }
     public boolean isEnabled(){ return isEnabled; }
+    public boolean valueChanged(){ return false; }
     public void setEnabled(boolean isEnabled){ this.isEnabled = isEnabled; }
     public void setUserType(boolean isUserType){ this.isUserType = isUserType; }
     public void setPortalUser(PortalUser portalUser){ this.portalUser = portalUser; }
