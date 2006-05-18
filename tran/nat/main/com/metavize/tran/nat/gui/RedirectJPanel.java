@@ -69,8 +69,8 @@ class RedirectTableModel extends MSortedTableModel<Object>{
     private static final int  C8_MW = 130;  /* destination address */
     private static final int  C9_MW = 110;  /* source port */
     private static final int C10_MW = 110;  /* destination port */
-    private static final int C11_MW = 130;  /* redirect address */
-    private static final int C12_MW = 110;  /* redirect port */
+    private static final int C11_MW = 130;  /* redirect to new address */
+    private static final int C12_MW = 110;  /* redirect to new port */
     private static final int C13_MW = 120;  /* category */
     
     private final int C14_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW + C8_MW + C9_MW + C10_MW + C11_MW + C12_MW + C13_MW), 120); /* description */
@@ -103,8 +103,8 @@ class RedirectTableModel extends MSortedTableModel<Object>{
         addTableColumn( tableColumnModel,  8,  C8_MW, true,  true,  false, false, String.class, "1.2.3.4", sc.html("destination<br>address") );
         addTableColumn( tableColumnModel,  9,  C9_MW, true,  true,  false, false, String.class, "any", sc.html("source<br>port") );
         addTableColumn( tableColumnModel, 10, C10_MW, true,  true,  false, false, String.class, "2-5", sc.html("destination<br>port") );
-        addTableColumn( tableColumnModel, 11, C11_MW, true,  true,  false, false, String.class, "1.2.3.4", sc.html("redirect<br>address") );
-        addTableColumn( tableColumnModel, 12, C12_MW, true,  true,  false, false, String.class, "5", sc.html("redirect<br>port") );
+        addTableColumn( tableColumnModel, 11, C11_MW, true,  true,  false, false, String.class, "1.2.3.4", sc.html("redirect to<br>new address") );
+        addTableColumn( tableColumnModel, 12, C12_MW, true,  true,  false, false, String.class, "5", sc.html("redirect to<br>new port") );
         addTableColumn( tableColumnModel, 13, C13_MW, true,  true,  false, false, String.class, sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY);
         addTableColumn( tableColumnModel, 14, C14_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
         addTableColumn( tableColumnModel, 15, 10,     false, false, true,  false, RedirectRule.class, null, "");
