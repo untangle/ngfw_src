@@ -236,6 +236,8 @@ public class MvvmContextImpl extends MvvmContextBase
                     transformManager.registerThreadContext(tctx);
                     try {
                         runnable.run();
+                    } catch (OutOfMemoryError exn) {
+                        Main.fatalError("MvvmContextImpl", exn);
                     } catch (Exception exn) {
                         logger.error("Exception running: " + runnable, exn);
                     } finally {
