@@ -262,7 +262,7 @@ class MailSenderImpl implements MailSender
             sb = new StringBuilder();
             sb.append(MASQMAIL_DEFAULT_ROUTE_START);
             String mailHost = mailSettings.getSmtpHost();
-            if ( !mailSettings.isUseMxRecords() )) {
+            if ( !mailSettings.isUseMxRecords() ) {
                 sb.append("mail_host=\"");
                 sb.append(mailHost);
                 sb.append(":");
