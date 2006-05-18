@@ -39,6 +39,7 @@ public class MailSettings implements Serializable
     // private String  alertFromAddress;
 
     // Common settings follow
+    private boolean useMxRecords;
     private String  smtpHost;
     private int     smtpPort = 25;
     private boolean useTls = false;
@@ -77,6 +78,24 @@ public class MailSettings implements Serializable
     public void setReportEmail(String reportEmail)
     {
         this.reportEmail = reportEmail;
+    }
+
+    /**
+     * Specifies if we should use MX records or the outgoing mail server to send emails.
+     *
+     * @return true if should use MX records
+     * @hibernate.property
+     * not-null="true"
+     * column="USE_MX_RECORDS"
+     */
+    public boolean isUseMxRecords()
+    {
+        return useMxRecords;
+    }
+
+    public void setUseMxRecords(boolean useMxRecords)
+    {
+        this.useMxRecords = useMxRecords;
     }
 
     /**

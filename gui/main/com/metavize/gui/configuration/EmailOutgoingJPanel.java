@@ -28,7 +28,6 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
     private static final String EXCEPTION_LOGIN_MISSING = "A \"Login\" must be specified if a \"Password\" is specified.";
     private static final String EXCEPTION_HOSTNAME_MISSING = "A \"Hostanme\" must be specified if \"Login\" or \"Password\" are specified.";
     private static final String EXCEPTION_ADDRESS_MISSING = "A \"From Address\" must be specified.";
-
     
     public EmailOutgoingJPanel() {
         initComponents();
@@ -36,6 +35,9 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
     }
 
     public void doSave(EmailCompoundSettings emailCompoundSettings, boolean validateOnly) throws Exception {
+
+	// ENABLED //
+	boolean useMxRecords = smtpDisabledJRadioButton.isSelected();
 
 	// HOSTNAME ///////
 	String host = hostJTextField.getText();
@@ -88,15 +90,19 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
             MailSettings mailSettings = emailCompoundSettings.getMailSettings();
-            mailSettings.setSmtpHost( host );
-            mailSettings.setSmtpPort( port );
-            mailSettings.setAuthUser( login );
-            mailSettings.setAuthPass( password );
+	    mailSettings.setUseMxRecords( useMxRecords );
+	    if( !useMxRecords ){
+		mailSettings.setSmtpHost( host );
+		mailSettings.setSmtpPort( port );
+		mailSettings.setAuthUser( login );
+		mailSettings.setAuthPass( password );
+	    }
             mailSettings.setFromAddress( address );
         }
 
     }
 
+    private boolean useMxRecordsCurrent;
     private String hostCurrent;
     private int portCurrent;
     private String loginCurrent;
@@ -106,6 +112,14 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
     public void doRefresh(EmailCompoundSettings emailCompoundSettings){
 	MailSettings mailSettings = emailCompoundSettings.getMailSettings();
 
+	// ENABLED //
+	useMxRecordsCurrent = mailSettings.isUseMxRecords();
+	setMxRecordsEnabledDependency( useMxRecordsCurrent );
+	if( useMxRecordsCurrent )
+	    smtpDisabledJRadioButton.setSelected( true );
+	else
+	    smtpEnabledJRadioButton.setSelected( true );	
+	
 	// HOST /////
 	hostCurrent = mailSettings.getSmtpHost();
 	hostJTextField.setText( hostCurrent );
@@ -140,19 +154,21 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
         private void initComponents() {//GEN-BEGIN:initComponents
                 java.awt.GridBagConstraints gridBagConstraints;
 
-                snmpButtonGroup = new javax.swing.ButtonGroup();
-                trapButtonGroup = new javax.swing.ButtonGroup();
+                smtpButtonGroup = new javax.swing.ButtonGroup();
                 externalRemoteJPanel = new javax.swing.JPanel();
-                enableRemoteJPanel = new javax.swing.JPanel();
+                jLabel13 = new javax.swing.JLabel();
+                smtpDisabledJRadioButton = new javax.swing.JRadioButton();
+                smtpEnabledJRadioButton = new javax.swing.JRadioButton();
                 restrictIPJPanel = new javax.swing.JPanel();
-                jLabel5 = new javax.swing.JLabel();
+                hostJLabel = new javax.swing.JLabel();
                 hostJTextField = new javax.swing.JTextField();
-                jLabel11 = new javax.swing.JLabel();
+                portJLabel = new javax.swing.JLabel();
                 portJSpinner = new javax.swing.JSpinner();
-                jLabel8 = new javax.swing.JLabel();
+                smtpLoginJLabel = new javax.swing.JLabel();
                 smtpLoginJTextField = new javax.swing.JTextField();
-                jLabel12 = new javax.swing.JLabel();
+                smtpPasswordJLabel = new javax.swing.JLabel();
                 smtpPasswordJPasswordField = new javax.swing.JPasswordField();
+                enableRemoteJPanel = new javax.swing.JPanel();
                 jSeparator2 = new javax.swing.JSeparator();
                 restrictIPJPanel1 = new javax.swing.JPanel();
                 jLabel6 = new javax.swing.JLabel();
@@ -163,23 +179,68 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
 
                 setLayout(new java.awt.GridBagLayout());
 
-                setMaximumSize(new java.awt.Dimension(563, 286));
-                setMinimumSize(new java.awt.Dimension(563, 286));
-                setPreferredSize(new java.awt.Dimension(563, 286));
+                setMaximumSize(new java.awt.Dimension(563, 400));
+                setMinimumSize(new java.awt.Dimension(563, 400));
+                setPreferredSize(new java.awt.Dimension(563, 400));
                 externalRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
                 externalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Outgoing Email Server (SMTP)", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
-                enableRemoteJPanel.setLayout(new java.awt.GridBagLayout());
+                jLabel13.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel13.setText("<html>The Outgoing Email Server is used to send emails afrom EdgeGuard, such as email reports, etc.  In most cases, automatic settings should work, but if they do not, you should specify the settings manually.</html>");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
+                externalRemoteJPanel.add(jLabel13, gridBagConstraints);
+
+                smtpButtonGroup.add(smtpDisabledJRadioButton);
+                smtpDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                smtpDisabledJRadioButton.setText("<html><b>Automatically Set</b>  using the network's DNS server.</html>");
+                smtpDisabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set EdgeGuard's IP address from the network's DHCP server.</html>");
+                smtpDisabledJRadioButton.setFocusPainted(false);
+                smtpDisabledJRadioButton.setFocusable(false);
+                smtpDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                smtpDisabledJRadioButtonActionPerformed(evt);
+                        }
+                });
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 50, 0, 0);
+                externalRemoteJPanel.add(smtpDisabledJRadioButton, gridBagConstraints);
+
+                smtpButtonGroup.add(smtpEnabledJRadioButton);
+                smtpEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                smtpEnabledJRadioButton.setText("<html><b>Manually Set</b> using  the fields below.</html>");
+                smtpEnabledJRadioButton.setFocusPainted(false);
+                smtpEnabledJRadioButton.setFocusable(false);
+                smtpEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                smtpEnabledJRadioButtonActionPerformed(evt);
+                        }
+                });
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 50, 0, 0);
+                externalRemoteJPanel.add(smtpEnabledJRadioButton, gridBagConstraints);
 
                 restrictIPJPanel.setLayout(new java.awt.GridBagLayout());
 
-                jLabel5.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel5.setText("SMTP Email Server:");
+                hostJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                hostJLabel.setText("SMTP Email Server:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                restrictIPJPanel.add(jLabel5, gridBagConstraints);
+                restrictIPJPanel.add(hostJLabel, gridBagConstraints);
 
                 hostJTextField.setMaximumSize(new java.awt.Dimension(200, 19));
                 hostJTextField.setMinimumSize(new java.awt.Dimension(200, 19));
@@ -197,13 +258,13 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
                 gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
                 restrictIPJPanel.add(hostJTextField, gridBagConstraints);
 
-                jLabel11.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel11.setText("Port:");
+                portJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                portJLabel.setText("Port:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 1;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                restrictIPJPanel.add(jLabel11, gridBagConstraints);
+                restrictIPJPanel.add(portJLabel, gridBagConstraints);
 
                 portJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
                 portJSpinner.setMaximumSize(new java.awt.Dimension(75, 19));
@@ -222,13 +283,13 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
                 gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
                 restrictIPJPanel.add(portJSpinner, gridBagConstraints);
 
-                jLabel8.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel8.setText("Authentication Login:");
+                smtpLoginJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                smtpLoginJLabel.setText("Authentication Login:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 2;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                restrictIPJPanel.add(jLabel8, gridBagConstraints);
+                restrictIPJPanel.add(smtpLoginJLabel, gridBagConstraints);
 
                 smtpLoginJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
                 smtpLoginJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
@@ -246,13 +307,13 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
                 gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
                 restrictIPJPanel.add(smtpLoginJTextField, gridBagConstraints);
 
-                jLabel12.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel12.setText("Authentication Password:");
+                smtpPasswordJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                smtpPasswordJLabel.setText("Authentication Password:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 3;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                restrictIPJPanel.add(jLabel12, gridBagConstraints);
+                restrictIPJPanel.add(smtpPasswordJLabel, gridBagConstraints);
 
                 smtpPasswordJPasswordField.setMaximumSize(new java.awt.Dimension(150, 19));
                 smtpPasswordJPasswordField.setMinimumSize(new java.awt.Dimension(150, 19));
@@ -272,10 +333,11 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 0);
-                enableRemoteJPanel.add(restrictIPJPanel, gridBagConstraints);
+                gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 0);
+                externalRemoteJPanel.add(restrictIPJPanel, gridBagConstraints);
+
+                enableRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
                 jSeparator2.setForeground(new java.awt.Color(200, 200, 200));
                 gridBagConstraints = new java.awt.GridBagConstraints();
@@ -363,7 +425,15 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
                 add(externalRemoteJPanel, gridBagConstraints);
 
         }//GEN-END:initComponents
-
+    
+    private void smtpEnabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_smtpEnabledJRadioButtonActionPerformed
+	setMxRecordsEnabledDependency(false);
+    }//GEN-LAST:event_smtpEnabledJRadioButtonActionPerformed
+    
+    private void smtpDisabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_smtpDisabledJRadioButtonActionPerformed
+	setMxRecordsEnabledDependency(true);
+    }//GEN-LAST:event_smtpDisabledJRadioButtonActionPerformed
+    
     private void portJSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_portJSpinnerStateChanged
 	connectivityTestJButton.setEnabled(false);
     }//GEN-LAST:event_portJSpinnerStateChanged
@@ -401,29 +471,40 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
 	}
     }//GEN-LAST:event_connectivityTestJButtonActionPerformed
     
-
+    private void setMxRecordsEnabledDependency(boolean enabled){
+	hostJTextField.setEnabled( !enabled );
+	hostJLabel.setEnabled( !enabled );
+	portJSpinner.setEnabled( !enabled );
+	portJLabel.setEnabled( !enabled );
+	smtpLoginJTextField.setEnabled( !enabled );
+	smtpLoginJLabel.setEnabled( !enabled );
+	smtpPasswordJPasswordField.setEnabled( !enabled );
+	smtpPasswordJLabel.setEnabled( !enabled );
+    }
     
         // Variables declaration - do not modify//GEN-BEGIN:variables
         public javax.swing.JTextField addressJTextField;
         private javax.swing.JButton connectivityTestJButton;
         private javax.swing.JPanel enableRemoteJPanel;
         private javax.swing.JPanel externalRemoteJPanel;
+        private javax.swing.JLabel hostJLabel;
         public javax.swing.JTextField hostJTextField;
         private javax.swing.JLabel jLabel10;
-        private javax.swing.JLabel jLabel11;
-        private javax.swing.JLabel jLabel12;
-        private javax.swing.JLabel jLabel5;
+        private javax.swing.JLabel jLabel13;
         private javax.swing.JLabel jLabel6;
-        private javax.swing.JLabel jLabel8;
         private javax.swing.JSeparator jSeparator2;
         private javax.swing.JSeparator jSeparator3;
+        private javax.swing.JLabel portJLabel;
         private javax.swing.JSpinner portJSpinner;
         private javax.swing.JPanel restrictIPJPanel;
         private javax.swing.JPanel restrictIPJPanel1;
+        private javax.swing.ButtonGroup smtpButtonGroup;
+        public javax.swing.JRadioButton smtpDisabledJRadioButton;
+        public javax.swing.JRadioButton smtpEnabledJRadioButton;
+        private javax.swing.JLabel smtpLoginJLabel;
         public javax.swing.JTextField smtpLoginJTextField;
+        private javax.swing.JLabel smtpPasswordJLabel;
         private javax.swing.JPasswordField smtpPasswordJPasswordField;
-        private javax.swing.ButtonGroup snmpButtonGroup;
-        private javax.swing.ButtonGroup trapButtonGroup;
         // End of variables declaration//GEN-END:variables
     
 

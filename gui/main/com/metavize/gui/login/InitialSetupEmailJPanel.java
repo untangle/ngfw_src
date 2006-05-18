@@ -37,14 +37,17 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
     public InitialSetupEmailJPanel() {
         initComponents();
 	Util.setPortView(portJSpinner, 25);
+	smtpDisabledJRadioButton.setSelected(true);
+	setMxRecordsEnabledDependency(true);
     }
     
     public void initialFocus(){			
-	hostJTextField.requestFocus();
+	smtpDisabledJRadioButton.requestFocus();
         String hostname = (String) InitialSetupWizard.getSharedData();
 	addressJTextField.setText( MailSender.DEFAULT_SENDER + "@" + hostname); // XXX this should be directly linked from the actual default value
     }
     
+    boolean mxRecords;
     String host;
     int port;
     String login;
@@ -60,6 +63,7 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
 	    smtpPasswordJPasswordField.setBackground( Color.WHITE );
 	    addressJTextField.setBackground( Color.WHITE );
 
+	    mxRecords = smtpDisabledJRadioButton.isSelected();
 	    host = hostJTextField.getText().trim();
             port = (Integer) portJSpinner.getValue();
             login = smtpLoginJTextField.getText().trim();
@@ -68,44 +72,47 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
 
 	    exception = null;
 
-	    // CHECK THAT BOTH PASSWORD AND LOGIN ARE FILLED OR UNFILLED /////
-	    if( (login.length() > 0) && (password.length() == 0) ){
-		smtpPasswordJPasswordField.setBackground( Util.INVALID_BACKGROUND_COLOR );
-		exception = new Exception(EXCEPTION_PASSWORD_MISSING);
-		return;
-	    }
-	    else if( (login.length() == 0) && (password.length() > 0) ){
-		smtpLoginJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
-		exception = new Exception(EXCEPTION_LOGIN_MISSING);
-		return;
-	    }
-	    
-	    // CHECK THAT IF EITHER LOGIN OR PASSWORD ARE FILLED, A HOSTNAME IS GIVEN
-	    if( (login.length() > 0) && (password.length() > 0) && (host.length() == 0) ){
-		hostJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
-		exception = new Exception(EXCEPTION_HOSTNAME_MISSING);
-		return;
+	    if( !mxRecords ){
+		// CHECK THAT BOTH PASSWORD AND LOGIN ARE FILLED OR UNFILLED /////
+		if( (login.length() > 0) && (password.length() == 0) ){
+		    smtpPasswordJPasswordField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+		    exception = new Exception(EXCEPTION_PASSWORD_MISSING);
+		    return;
+		}
+		else if( (login.length() == 0) && (password.length() > 0) ){
+		    smtpLoginJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+		    exception = new Exception(EXCEPTION_LOGIN_MISSING);
+		    return;
+		}
+		
+		// CHECK THAT IF EITHER LOGIN OR PASSWORD ARE FILLED, A HOSTNAME IS GIVEN
+		if( (login.length() > 0) && (password.length() > 0) && (host.length() == 0) ){
+		    hostJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+		    exception = new Exception(EXCEPTION_HOSTNAME_MISSING);
+		    return;
+		}
 	    }
 	}});
-
+	
 	if( exception != null )
 	    throw exception;
 
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
-	    try{
-		if( host.length() > 0){
-		    InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving Email Settings...");
-		    MailSettings mailSettings = Util.getAdminManager().getMailSettings();
+	    try{		
+		InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving Email Settings...");
+		MailSettings mailSettings = Util.getAdminManager().getMailSettings();
+		mailSettings.setUseMxRecords( mxRecords );		
+		if( !mxRecords ){
 		    mailSettings.setSmtpHost( host );
 		    mailSettings.setSmtpPort( port );
 		    mailSettings.setAuthUser( login );
 		    mailSettings.setAuthPass( password );
 		    if( address.length() > 0 )
 			mailSettings.setFromAddress( address );
-		    Util.getAdminManager().setMailSettings( mailSettings );
-		    InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);
 		}
+		Util.getAdminManager().setMailSettings( mailSettings );
+		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);		
             }
 	    catch(Exception e){
 		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(-1l);
@@ -121,20 +128,22 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
         private void initComponents() {//GEN-BEGIN:initComponents
                 java.awt.GridBagConstraints gridBagConstraints;
 
-                buttonGroup1 = new javax.swing.ButtonGroup();
+                smtpButtonGroup = new javax.swing.ButtonGroup();
                 contentJPanel = new javax.swing.JPanel();
                 jLabel2 = new javax.swing.JLabel();
+                smtpDisabledJRadioButton = new javax.swing.JRadioButton();
+                smtpEnabledJRadioButton = new javax.swing.JRadioButton();
                 jPanel1 = new javax.swing.JPanel();
-                jLabel8 = new javax.swing.JLabel();
+                hostJLabel = new javax.swing.JLabel();
                 hostJTextField = new javax.swing.JTextField();
-                jLabel15 = new javax.swing.JLabel();
+                portJLabel = new javax.swing.JLabel();
                 portJSpinner = new javax.swing.JSpinner();
-                jLabel10 = new javax.swing.JLabel();
+                smtpLoginJLabel = new javax.swing.JLabel();
                 smtpLoginJTextField = new javax.swing.JTextField();
-                jLabel16 = new javax.swing.JLabel();
+                smtpPasswordJLabel = new javax.swing.JLabel();
                 smtpPasswordJPasswordField = new javax.swing.JPasswordField();
-                jLabel1 = new javax.swing.JLabel();
-                jLabel5 = new javax.swing.JLabel();
+                optionalJLabel1 = new javax.swing.JLabel();
+                optionalJLabel2 = new javax.swing.JLabel();
                 jSeparator1 = new javax.swing.JSeparator();
                 jLabel3 = new javax.swing.JLabel();
                 jPanel2 = new javax.swing.JPanel();
@@ -162,15 +171,54 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
                 gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
                 contentJPanel.add(jLabel2, gridBagConstraints);
 
+                smtpButtonGroup.add(smtpDisabledJRadioButton);
+                smtpDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                smtpDisabledJRadioButton.setText("<html><b>Automatically Set</b>  using the network's DNS server.</html>");
+                smtpDisabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set EdgeGuard's IP address from the network's DHCP server.</html>");
+                smtpDisabledJRadioButton.setFocusPainted(false);
+                smtpDisabledJRadioButton.setFocusable(false);
+                smtpDisabledJRadioButton.setOpaque(false);
+                smtpDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                smtpDisabledJRadioButtonActionPerformed(evt);
+                        }
+                });
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(10, 50, 0, 0);
+                contentJPanel.add(smtpDisabledJRadioButton, gridBagConstraints);
+
+                smtpButtonGroup.add(smtpEnabledJRadioButton);
+                smtpEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                smtpEnabledJRadioButton.setText("<html><b>Manually Set</b> using  the fields below.</html>");
+                smtpEnabledJRadioButton.setFocusPainted(false);
+                smtpEnabledJRadioButton.setFocusable(false);
+                smtpEnabledJRadioButton.setOpaque(false);
+                smtpEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                smtpEnabledJRadioButtonActionPerformed(evt);
+                        }
+                });
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 50, 0, 0);
+                contentJPanel.add(smtpEnabledJRadioButton, gridBagConstraints);
+
                 jPanel1.setLayout(new java.awt.GridBagLayout());
 
                 jPanel1.setOpaque(false);
-                jLabel8.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel8.setText("SMTP Email Server:");
+                hostJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                hostJLabel.setText("SMTP Email Server:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                jPanel1.add(jLabel8, gridBagConstraints);
+                jPanel1.add(hostJLabel, gridBagConstraints);
 
                 hostJTextField.setMaximumSize(new java.awt.Dimension(170, 19));
                 hostJTextField.setMinimumSize(new java.awt.Dimension(170, 19));
@@ -181,12 +229,12 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
                 gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
                 jPanel1.add(hostJTextField, gridBagConstraints);
 
-                jLabel15.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel15.setText("Port:");
+                portJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                portJLabel.setText("Port:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                jPanel1.add(jLabel15, gridBagConstraints);
+                jPanel1.add(portJLabel, gridBagConstraints);
 
                 portJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
                 portJSpinner.setMaximumSize(new java.awt.Dimension(170, 19));
@@ -198,13 +246,13 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
                 gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
                 jPanel1.add(portJSpinner, gridBagConstraints);
 
-                jLabel10.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel10.setText("Authentication Login:");
+                smtpLoginJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                smtpLoginJLabel.setText("Authentication Login:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
-                jPanel1.add(jLabel10, gridBagConstraints);
+                jPanel1.add(smtpLoginJLabel, gridBagConstraints);
 
                 smtpLoginJTextField.setMaximumSize(new java.awt.Dimension(170, 19));
                 smtpLoginJTextField.setMinimumSize(new java.awt.Dimension(170, 19));
@@ -215,12 +263,12 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
                 gridBagConstraints.insets = new java.awt.Insets(10, 0, 2, 0);
                 jPanel1.add(smtpLoginJTextField, gridBagConstraints);
 
-                jLabel16.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel16.setText("Authentication Password:");
+                smtpPasswordJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                smtpPasswordJLabel.setText("Authentication Password:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                jPanel1.add(jLabel16, gridBagConstraints);
+                jPanel1.add(smtpPasswordJLabel, gridBagConstraints);
 
                 smtpPasswordJPasswordField.setMaximumSize(new java.awt.Dimension(170, 19));
                 smtpPasswordJPasswordField.setMinimumSize(new java.awt.Dimension(170, 19));
@@ -231,30 +279,30 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
                 gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
                 jPanel1.add(smtpPasswordJPasswordField, gridBagConstraints);
 
-                jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel1.setText("(optional)");
+                optionalJLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
+                optionalJLabel1.setText("(optional)");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 2;
                 gridBagConstraints.gridy = 2;
                 gridBagConstraints.gridwidth = 3;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
                 gridBagConstraints.insets = new java.awt.Insets(0, 5, 5, 0);
-                jPanel1.add(jLabel1, gridBagConstraints);
+                jPanel1.add(optionalJLabel1, gridBagConstraints);
 
-                jLabel5.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel5.setText("(optional)");
+                optionalJLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
+                optionalJLabel2.setText("(optional)");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 2;
                 gridBagConstraints.gridy = 3;
                 gridBagConstraints.gridwidth = 3;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
                 gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
-                jPanel1.add(jLabel5, gridBagConstraints);
+                jPanel1.add(optionalJLabel2, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                gridBagConstraints.insets = new java.awt.Insets(10, 15, 0, 15);
                 contentJPanel.add(jPanel1, gridBagConstraints);
 
                 jSeparator1.setForeground(new java.awt.Color(156, 156, 156));
@@ -262,7 +310,7 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
                 gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                gridBagConstraints.insets = new java.awt.Insets(5, 15, 0, 5);
                 contentJPanel.add(jSeparator1, gridBagConstraints);
 
                 jLabel3.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -308,7 +356,7 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
                 gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                gridBagConstraints.insets = new java.awt.Insets(5, 15, 0, 15);
                 contentJPanel.add(jSeparator2, gridBagConstraints);
 
                 jPanel3.setLayout(new java.awt.GridBagLayout());
@@ -345,7 +393,7 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.weighty = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                gridBagConstraints.insets = new java.awt.Insets(10, 15, 0, 10);
                 contentJPanel.add(jPanel3, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
@@ -367,58 +415,81 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
 
         }//GEN-END:initComponents
 
-		private void connectivityTestJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectivityTestJButtonActionPerformed
-				new ConnectivityThread();
-		}//GEN-LAST:event_connectivityTestJButtonActionPerformed
-
-		private class ConnectivityThread extends Thread{
-				public ConnectivityThread(){
-				    super("MVCLIENT-EmailConnectivityThread");
-						setDaemon(true);
-						connectivityTestJButton.setEnabled(false);
-						start();
-				}
-				public void run(){
-				try{
-						doSave(null, false);
-						EmailConnectivityTestJDialog connectivityJDialog = new EmailConnectivityTestJDialog((Dialog)InitialSetupEmailJPanel.this.getTopLevelAncestor());
-						connectivityJDialog.setVisible(true);
-				}
-				catch(Exception e){
-						Util.handleExceptionNoRestart("Error testing connectivity", e);
-				}
-				finally{
-						SwingUtilities.invokeLater( new Runnable(){ public void run(){
-						InitialSetupEmailJPanel.this.connectivityTestJButton.setEnabled(true);
-						}});
-				}
-				}
-		}
+    private void smtpEnabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_smtpEnabledJRadioButtonActionPerformed
+	setMxRecordsEnabledDependency(false);
+    }//GEN-LAST:event_smtpEnabledJRadioButtonActionPerformed
+    
+    private void smtpDisabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_smtpDisabledJRadioButtonActionPerformed
+	setMxRecordsEnabledDependency(true);
+    }//GEN-LAST:event_smtpDisabledJRadioButtonActionPerformed
+    
+    private void connectivityTestJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectivityTestJButtonActionPerformed
+	new ConnectivityThread();
+    }//GEN-LAST:event_connectivityTestJButtonActionPerformed
+    
+    private class ConnectivityThread extends Thread{
+	public ConnectivityThread(){
+	    super("MVCLIENT-EmailConnectivityThread");
+	    setDaemon(true);
+	    connectivityTestJButton.setEnabled(false);
+	    start();
+	}
+	public void run(){
+	    try{
+		doSave(null, false);
+		EmailConnectivityTestJDialog connectivityJDialog = new EmailConnectivityTestJDialog((Dialog)InitialSetupEmailJPanel.this.getTopLevelAncestor());
+		connectivityJDialog.setVisible(true);
+	    }
+	    catch(Exception e){
+		Util.handleExceptionNoRestart("Error testing connectivity", e);
+	    }
+	    finally{
+		SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		    InitialSetupEmailJPanel.this.connectivityTestJButton.setEnabled(true);
+		}});
+	    }
+	}
+    }
+    
+    private void setMxRecordsEnabledDependency(boolean enabled){
+	hostJTextField.setEnabled( !enabled );
+	hostJLabel.setEnabled( !enabled );
+	portJSpinner.setEnabled( !enabled );
+	portJLabel.setEnabled( !enabled );
+	smtpLoginJTextField.setEnabled( !enabled );
+	smtpLoginJLabel.setEnabled( !enabled );
+	smtpPasswordJPasswordField.setEnabled( !enabled );
+	smtpPasswordJLabel.setEnabled( !enabled );
+	optionalJLabel1.setEnabled( !enabled );
+	optionalJLabel2.setEnabled( !enabled );
+    }
     
         // Variables declaration - do not modify//GEN-BEGIN:variables
         public javax.swing.JTextField addressJTextField;
         private javax.swing.JLabel backgroundJPabel;
-        private javax.swing.ButtonGroup buttonGroup1;
         private javax.swing.JButton connectivityTestJButton;
         private javax.swing.JPanel contentJPanel;
+        private javax.swing.JLabel hostJLabel;
         public javax.swing.JTextField hostJTextField;
-        private javax.swing.JLabel jLabel1;
-        private javax.swing.JLabel jLabel10;
         private javax.swing.JLabel jLabel11;
         private javax.swing.JLabel jLabel12;
-        private javax.swing.JLabel jLabel15;
-        private javax.swing.JLabel jLabel16;
         private javax.swing.JLabel jLabel2;
         private javax.swing.JLabel jLabel3;
-        private javax.swing.JLabel jLabel5;
-        private javax.swing.JLabel jLabel8;
         private javax.swing.JPanel jPanel1;
         private javax.swing.JPanel jPanel2;
         private javax.swing.JPanel jPanel3;
         private javax.swing.JSeparator jSeparator1;
         private javax.swing.JSeparator jSeparator2;
+        private javax.swing.JLabel optionalJLabel1;
+        private javax.swing.JLabel optionalJLabel2;
+        private javax.swing.JLabel portJLabel;
         private javax.swing.JSpinner portJSpinner;
+        private javax.swing.ButtonGroup smtpButtonGroup;
+        private javax.swing.JRadioButton smtpDisabledJRadioButton;
+        private javax.swing.JRadioButton smtpEnabledJRadioButton;
+        private javax.swing.JLabel smtpLoginJLabel;
         public javax.swing.JTextField smtpLoginJTextField;
+        private javax.swing.JLabel smtpPasswordJLabel;
         private javax.swing.JPasswordField smtpPasswordJPasswordField;
         // End of variables declaration//GEN-END:variables
     
