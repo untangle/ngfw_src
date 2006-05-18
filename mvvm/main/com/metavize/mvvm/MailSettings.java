@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -81,7 +81,8 @@ public class MailSettings implements Serializable
     }
 
     /**
-     * Specifies if we should use MX records or the outgoing mail server to send emails.
+     * Specifies if we should use MX records or the outgoing mail
+     * server to send emails.
      *
      * @return true if should use MX records
      * @hibernate.property

@@ -112,3 +112,11 @@ ALTER TABLE settings.portal_user
 -- Need to insert a column for is_local_redirect
 ALTER TABLE settings.mvvm_redirect_rule ADD COLUMN is_local_redirect BOOL;
 UPDATE settings.mvvm_redirect_rule SET is_local_redirect = false;
+
+-- add use_mx_records to MailSettings
+
+ALTER TABLE settings.mail_settings ADD COLUMN use_mx_records bool;
+UPDATE settings.mail_settings SET use_mx_records = true;
+UPDATE settings.mail_settings SET use_mx_records = true WHERE smtp_host IS NULL;
+UPDATE settings.mail_settings SET use_mx_records = true WHERE smtp_host = '';
+ALTER TABLE settings.mail_settings ALTER COLUMN use_mx_records SET NOT NULL;

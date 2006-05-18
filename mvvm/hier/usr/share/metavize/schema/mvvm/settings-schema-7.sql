@@ -42,6 +42,7 @@ CREATE TABLE settings.mail_settings (
     auth_user text,
     auth_pass text,
     local_host_name text,
+    use_mx_records bool NOT NULL,
     PRIMARY KEY (mail_settings_id));
 
 -- com.metavize.mvvm.logging.LoggingSettings
