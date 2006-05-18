@@ -40,6 +40,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
     private Map<String, Shutdownable> shutdownableMap = new LinkedHashMap(1);
     protected void addShutdownable(String name, Shutdownable shutdownable){ shutdownableMap.put(name, shutdownable); }
     protected CompoundSettings compoundSettings;
+    public CompoundSettings getCompoundSettings(){ return compoundSettings; }
     protected static InfiniteProgressJComponent infiniteProgressJComponent = new InfiniteProgressJComponent();
     public static InfiniteProgressJComponent getInfiniteProgressJComponent(){ return infiniteProgressJComponent; }
     private static final long MIN_PROGRESS_MILLIS = 1000;

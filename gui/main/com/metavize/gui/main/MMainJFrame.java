@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
@@ -11,6 +12,8 @@
 
 package com.metavize.gui.main;
 
+import java.awt.Window;
+import java.awt.Frame;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;

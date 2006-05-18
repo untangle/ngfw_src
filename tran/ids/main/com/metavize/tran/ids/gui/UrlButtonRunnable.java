@@ -20,6 +20,7 @@ import java.awt.event.*;
 import java.net.URL;
 import javax.jnlp.BasicService;
 import javax.jnlp.ServiceManager;
+import javax.swing.CellEditor;
 
 public class UrlButtonRunnable implements ButtonRunnable {
     private String url;
@@ -29,12 +30,12 @@ public class UrlButtonRunnable implements ButtonRunnable {
     }
     public String getButtonText(){ return "Show URL"; }
 
-
+    public boolean valueChanged(){ return false; }
     public void setEnabled(boolean enabled){ this.isEnabled = enabled; }
     public boolean isEnabled(){ return isEnabled; }
 
     public void setUrl(String url){ this.url = url; }
-
+    public void setCellEditor(CellEditor cellEditor){}
     public void setTopLevelWindow(Window topLevelWindow){ this.topLevelWindow = topLevelWindow; }
 
     public void actionPerformed(ActionEvent evt){ run(); }

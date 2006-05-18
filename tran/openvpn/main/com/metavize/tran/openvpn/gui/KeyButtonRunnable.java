@@ -16,6 +16,7 @@ import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.gui.util.*;
 import java.awt.Window;
 import java.awt.event.*;
+import javax.swing.CellEditor;
 
 public class KeyButtonRunnable implements ButtonRunnable {
     private boolean isEnabled;
@@ -32,9 +33,11 @@ public class KeyButtonRunnable implements ButtonRunnable {
     }
     public String getButtonText(){ return "Distribute Client"; }
     public boolean isEnabled(){ return isEnabled; }
-	public void setEnabled(boolean isEnabled){ this.isEnabled = isEnabled; }
+    public void setEnabled(boolean isEnabled){ this.isEnabled = isEnabled; }
+    public boolean valueChanged(){ return false; }
     public void setVpnClient(VpnClient vpnClient){ this.vpnClient = vpnClient; }
     public static void setVpnTransform(VpnTransform vpnTransformX){ vpnTransform = vpnTransformX; }
+    public void setCellEditor(CellEditor cellEditor){}
     public void setTopLevelWindow(Window topLevelWindow){ this.topLevelWindow = topLevelWindow; }
 	public void actionPerformed(ActionEvent evt){ run(); }
     public void run(){

@@ -72,22 +72,20 @@ class DirectoryLocalTableModel extends MSortedTableModel<DirectoryCompoundSettin
     public void prevalidate(DirectoryCompoundSettings directoryCompoundSettings, Vector<Vector> tableVector) throws Exception {
         Hashtable<String,String> uidHashtable = new Hashtable<String,String>();
 
-        int rowIndex = 0;
+        int rowIndex = 1;
 
         // go through all the rows and perform some tests
         for( Vector tempUser : tableVector ){
 	    String uid = (String) tempUser.elementAt(2);
 	    String password = new String(((MPasswordField) tempUser.elementAt(6)).getPassword());
-
 	    // all uid's are unique
 	    if( uidHashtable.contains( uid ) )
 		throw new Exception("The user/login ID at row: " + rowIndex + " has already been taken.");
 	    else
 		uidHashtable.put(uid,uid);
-
 	    // the password meets certain criteria
 	    if( password.length() == 0 )
-		throw new Exception("The password must be at least 1 character long.");
+		throw new Exception("The password at row: " + rowIndex + " must be at least 1 character long.");
 
 	    rowIndex++;
 	}

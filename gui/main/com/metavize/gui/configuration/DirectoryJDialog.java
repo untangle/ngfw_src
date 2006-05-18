@@ -33,6 +33,12 @@ public class DirectoryJDialog extends MConfigJDialog {
 	compoundSettings = new DirectoryCompoundSettings();
     }
 
+    public DirectoryJDialog( Dialog parentDialog ) {
+	super(parentDialog);
+	setTitle(NAME_DIRECTORY_CONFIG);
+	compoundSettings = new DirectoryCompoundSettings();
+    }
+
     protected void generateGui(){
 	// LOCAL DIRECTORY ////////
 	DirectoryLocalJPanel directoryLocalJPanel = new DirectoryLocalJPanel();

@@ -65,8 +65,8 @@ public class TableModelClientToSite extends MSortedTableModel<Object>{
         return tableColumnModel;
     }
 
-    public void handleDependencies(int modelCol, int modelRow){
-	Vector rowVector = (Vector) getDataVector().elementAt(modelRow);
+    public void handleDependencies(int viewCol, int viewRow){
+	Vector rowVector = (Vector) getDataVector().elementAt(viewRow);
 	String rowState = (String) rowVector.elementAt( getStateModelIndex() );
 	KeyButtonRunnable keyButtonRunnable = (KeyButtonRunnable) rowVector.elementAt(5);
 	if( !rowState.equals(ROW_SAVED) ){
@@ -75,7 +75,7 @@ public class TableModelClientToSite extends MSortedTableModel<Object>{
 	else{
 	    keyButtonRunnable.setEnabled(true);	
 	}
-	super.handleDependencies(modelCol,modelRow);
+	super.handleDependencies(viewCol,viewRow);
     }
 
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {

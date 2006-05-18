@@ -166,11 +166,12 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	    returnValue = value;
 	    jButton.setText( ((ButtonRunnable)value).getButtonText() );
 	    jButton.setEnabled( ((ButtonRunnable)value).isEnabled() );
-		((ButtonRunnable)value).setTopLevelWindow( (Window) mColoredJTable.getTopLevelAncestor() );
-		ActionListener[] actionListeners = jButton.getActionListeners();
-		for( ActionListener actionListener : actionListeners )
-				jButton.removeActionListener(actionListener);
-		jButton.addActionListener( (ButtonRunnable) value );
+	    ((ButtonRunnable)value).setTopLevelWindow( (Window) mColoredJTable.getTopLevelAncestor() );
+	    ((ButtonRunnable)value).setCellEditor( this );
+	    ActionListener[] actionListeners = jButton.getActionListeners();
+	    for( ActionListener actionListener : actionListeners )
+		jButton.removeActionListener(actionListener);
+	    jButton.addActionListener( (ButtonRunnable) value );
 	    return jButtonJPanel;
 	}
 	else if(value instanceof ComboBoxModel){
@@ -286,12 +287,14 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	if( mSortedTableModel.getAlwaysSelectable() )
 	    return;
 	if( selectedValue.equals(newValue) ){
-	    //System.err.println("row UNCHANGED: " + newValue.toString() );
-	    mSortedTableModel.setRowState(selectedState, selectedModelRow);
+	    if( (returnValue instanceof ButtonRunnable) && ( ((ButtonRunnable)returnValue).valueChanged()) ){
+		mSortedTableModel.setRowChanged(selectedModelRow, isFinalChange);
+	    }
+	    else
+		mSortedTableModel.setRowState(selectedState, selectedModelRow);
+
 	}
-	else{
-		
-	    //System.err.println("row CHANGED from: " + selectedValue.toString() + " to: " + newValue.toString());		
+	else{		
 	    if(editedComponent instanceof MPasswordField){
 		if( ((MPasswordField)editedComponent).getGeneratesChangeEvent() ){
 		    mSortedTableModel.setRowChanged(selectedModelRow, isFinalChange);
