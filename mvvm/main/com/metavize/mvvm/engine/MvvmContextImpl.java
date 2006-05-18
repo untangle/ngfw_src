@@ -452,6 +452,9 @@ public class MvvmContextImpl extends MvvmContextBase
         // manager should exist.
         networkManager = NetworkManagerImpl.getInstance();
 
+        //Start AddressBookImpl
+        addressBookImpl = AddressBookImpl.getInstance();
+
         portalManager = new PortalManagerImpl(this);
         remotePortalManager = new RemotePortalManagerImpl(portalManager);
 
@@ -472,9 +475,6 @@ public class MvvmContextImpl extends MvvmContextBase
         argonManager = ArgonManagerImpl.getInstance();
 
         appServerManager = new AppServerManagerImpl(this);
-
-        //Start AddressBookImpl
-        addressBookImpl = AddressBookImpl.getInstance();
 
         // start vectoring:
         String argonFake = System.getProperty(ARGON_FAKE_KEY);
@@ -560,6 +560,9 @@ public class MvvmContextImpl extends MvvmContextBase
             logger.warn("could not destroy PortalManager", exn);
         }
         portalManager = null;
+
+        // XXX destroy needed
+        addressBookImpl = null;
 
         // XXX destroy methods for:
         // - pipelineFoundry

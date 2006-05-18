@@ -124,7 +124,7 @@ public class MailSettings implements Serializable
      * The port used to connect to the SMTP mail host.  If the SMTP_HOST
      * is null, this is ignored.
      *
-     * @return a <code>int</code> giving the TCP port to connect to the SMTP_HOST at
+     * @return the TCP port to connect to.
      * @hibernate.property
      * not-null="true"
      * column="SMTP_PORT"
