@@ -76,6 +76,8 @@ class DirectoryLocalTableModel extends MSortedTableModel<DirectoryCompoundSettin
 
         // go through all the rows and perform some tests
         for( Vector tempUser : tableVector ){
+	    if( ((String)tempUser.elementAt(0)).equals(ROW_REMOVE) )
+		continue;
 	    String uid = (String) tempUser.elementAt(2);
 	    String password = new String(((MPasswordField) tempUser.elementAt(6)).getPassword());
 	    // all uid's are unique
