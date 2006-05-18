@@ -91,7 +91,10 @@ public final class UserEntry
    * @return the comment
    */
   public String getComment() {
-      return m_comment;
+      if( m_comment != null )
+	  return m_comment;
+      else 
+	  return "";
   }
 
   public void setComment(String comment) {
