@@ -295,13 +295,36 @@ public class TranReporter {
         }
 
         Map params = new HashMap();
+        Object paramValue;
         params.put("startTime", startTime);
         params.put("endTime", endTime);
         for (String paramName : extraParams.keySet()) {
-            Object paramValue = extraParams.get(paramName);
+            paramValue = extraParams.get(paramName);
             params.put(paramName, paramValue);
         }
-        params.put(JRParameter.REPORT_MAX_COUNT, Util.MAX_ROWS_PER_REPORT);
+
+        /* to override default of 500 max rows per report,
+         * add a parameter line like this to report-files:
+         *
+         * REPORT_MAX_COUNT:parameter:5000
+         *
+         * (where REPORT_MAX_COUNT is basis of JRParameter.REPORT_MAX_COUNT and
+         *  for this report, a max of 5000 rows instead of 500 rows)
+         */
+        paramValue = extraParams.get(JRParameter.REPORT_MAX_COUNT);
+        int maxRows;
+        if (null == paramValue) {
+            // use default max rows per report
+            maxRows = Util.MAX_ROWS_PER_REPORT;
+        } else {
+            // override default max rows per report
+            maxRows = Integer.valueOf((String) paramValue).intValue();
+        }
+        logger.debug("max rows per report: " + maxRows);
+        // if key is already present, replace its original value
+        // else if not key is not present, add it and its value
+        params.put(JRParameter.REPORT_MAX_COUNT, maxRows);
+
         logger.debug("Filling report");
         JasperPrint print = JasperFillManager.fillReport(jasperIs, params, conn);
 

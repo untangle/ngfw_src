@@ -24,14 +24,17 @@ public class Util {
     static final int REPORT_TYPE_MONTHLY = 2;
     ////////////////////////////////
 
-    // REPORT GENERATION TIME PERIODS ///////
+    // REPORT GENERATION QUERY LIMITS ///////
     static final int MAX_ROWS_PER_REPORT = 500;  // gives ~25 pages
+    /////////////////////////////////////////
+
+    // REPORT GENERATION TIME PERIODS ///////
     static Calendar reportNow;
     static Timestamp midnight;
     static Timestamp lastday;
     static Timestamp lastweek;
     static Timestamp lastmonth;
-    /////////////////////////////////////////////
+    ////////////////////////////////
 
     // FOR UNIT CONVERSIONS ///////
     static final int KILO =  0;

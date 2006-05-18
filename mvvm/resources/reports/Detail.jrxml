@@ -229,8 +229,8 @@
           <font fontName="SansSerif" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded="false" pdfEncoding="Cp1252" isStrikeThrough="false" />
         </textElement>
         <textFieldExpression class="java.lang.String"><![CDATA[
-        500 <= $V{REPORT_COUNT}.intValue() ?
-        new String("Note: This EdgeReport is limited to 500 incidents.") :
+        $P{REPORT_MAX_COUNT}.intValue() <= $V{REPORT_COUNT}.intValue() ?
+        new String("Note: This EdgeReport is limited to " + $P{REPORT_MAX_COUNT} + " incidents.") :
         new String("")]]></textFieldExpression>
       </textField>
 
@@ -245,8 +245,8 @@
           <font fontName="SansSerif" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded="false" pdfEncoding="Cp1252" isStrikeThrough="false" />
         </textElement>
         <textFieldExpression class="java.lang.String"><![CDATA[
-        500 <= $V{REPORT_COUNT}.intValue() ?
-        new String("Note: This EdgeReport is limited to 500 incidents.") :
+        $P{REPORT_MAX_COUNT}.intValue() <= $V{REPORT_COUNT}.intValue() ?
+        new String("Note: This EdgeReport is limited to " + $P{REPORT_MAX_COUNT} + " incidents.") :
         new String("")]]></textFieldExpression>
       </textField>
 
