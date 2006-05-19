@@ -49,12 +49,12 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	// BLOCK LISTS ///////////
         JTabbedPane blockJTabbedPane = addTabbedPane(NAME_BLOCK, null);
 
-	// COOKIES //////////////
-	CookieConfigJPanel cookieConfigJPanel = new CookieConfigJPanel();
-        blockJTabbedPane.addTab(NAME_BLOCK_COOKIE, null, cookieConfigJPanel);
-	addSavable(NAME_BLOCK + " " + NAME_BLOCK_COOKIE, cookieConfigJPanel);
-	addRefreshable(NAME_BLOCK + " " + NAME_BLOCK_COOKIE, cookieConfigJPanel);
-	cookieConfigJPanel.setSettingsChangedListener(this);
+        // URL ///////////////
+	UrlConfigJPanel urlConfigJPanel = new UrlConfigJPanel();
+        blockJTabbedPane.addTab(NAME_BLOCK_URL, null, urlConfigJPanel);
+	addSavable(NAME_BLOCK + " " + NAME_BLOCK_URL, urlConfigJPanel);
+	addRefreshable(NAME_BLOCK + " " + NAME_BLOCK_URL, urlConfigJPanel);
+	urlConfigJPanel.setSettingsChangedListener(this);
 
 	// SUBNETS ///////////////
 	SubnetConfigJPanel subnetConfigJPanel = new SubnetConfigJPanel();
@@ -63,6 +63,13 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	addRefreshable(NAME_BLOCK + " " + NAME_BLOCK_SUBNET, subnetConfigJPanel);
 	subnetConfigJPanel.setSettingsChangedListener(this);
 
+	// COOKIES //////////////
+	CookieConfigJPanel cookieConfigJPanel = new CookieConfigJPanel();
+        blockJTabbedPane.addTab(NAME_BLOCK_COOKIE, null, cookieConfigJPanel);
+	addSavable(NAME_BLOCK + " " + NAME_BLOCK_COOKIE, cookieConfigJPanel);
+	addRefreshable(NAME_BLOCK + " " + NAME_BLOCK_COOKIE, cookieConfigJPanel);
+	cookieConfigJPanel.setSettingsChangedListener(this);
+
 	// ACTIVEX ///////////////
 	ActiveXConfigJPanel activeXConfigJPanel = new ActiveXConfigJPanel();
         blockJTabbedPane.addTab(NAME_BLOCK_ACTIVEX, null, activeXConfigJPanel);
@@ -70,13 +77,6 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	addRefreshable(NAME_BLOCK + " " + NAME_BLOCK_ACTIVEX, activeXConfigJPanel);
 	activeXConfigJPanel.setSettingsChangedListener(this);
         
-        // URL ///////////////
-	UrlConfigJPanel urlConfigJPanel = new UrlConfigJPanel();
-        blockJTabbedPane.addTab(NAME_BLOCK_URL, null, urlConfigJPanel);
-	addSavable(NAME_BLOCK + " " + NAME_BLOCK_URL, urlConfigJPanel);
-	addRefreshable(NAME_BLOCK + " " + NAME_BLOCK_URL, urlConfigJPanel);
-	urlConfigJPanel.setSettingsChangedListener(this);
-
 	// PASS DOMAIN //////////////
 	PassDomainConfigJPanel passDomainConfigJPanel = new PassDomainConfigJPanel();
         addTab(NAME_PASS_DOMAIN, null, passDomainConfigJPanel);
