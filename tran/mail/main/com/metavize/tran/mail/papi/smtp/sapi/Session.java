@@ -688,15 +688,21 @@ public final class Session
         return;
       }
 
-      //Check for "EHLO"
+      //Check for "EHLO" and "HELO"
       if(cmd.getType() == Command.CommandType.EHLO) {
         m_logger.debug("Enqueuing private response handler to EHLO command so " +
           "unknown extensions can be disabled");
         actions.sendCommandToServer(cmd, new SessionOpenResponse());
-        //Let the handler at least see the EHLO command, for logging
+        //Let the handler at least see the EHLO command, for logging and
+        //building a "fake" received header for Spamassassin
         m_sessionHandler.observeEHLOCommand(cmd);
         actions.followup();
         return;
+      } else if(cmd.getType() == Command.CommandType.HELO) {
+        //Let the handler at least see the HELO command, for logging and
+        //building a "fake" received header for Spamassassin
+        m_sessionHandler.observeEHLOCommand(cmd);
+        //fall through and continue like before
       }
 
       if(m_currentTxHandler != null) {
