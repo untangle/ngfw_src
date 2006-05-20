@@ -148,7 +148,6 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	DefaultFormatterFactory factory = (DefaultFormatterFactory)tf.getFormatterFactory();
 	DateFormatter formatter = (DateFormatter)factory.getDefaultFormatter();
 	formatter.setFormat(new SimpleDateFormat("HH:mm " + "(" + "a" + ")"));
-
     }
     
     
@@ -210,6 +209,13 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	    selectedValue = ((String)value).trim();
 	    editedComponent = jTextField;
 	    ((JTextField)editedComponent).setText((String) value );
+	}
+	else if( (value instanceof IPMaddrString)
+		 || (value instanceof IPaddrString)
+		 || (value instanceof IPPortString) ){
+	    selectedValue = value;
+	    editedComponent = jTextField;
+	    ((JTextField)editedComponent).setText( selectedValue.toString() );
 	}
 	else if(value instanceof Date){
 	    selectedValue = ((Date)value).toString().trim();
@@ -286,13 +292,20 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
     private void showStatusChange(boolean isFinalChange){
 	if( mSortedTableModel.getAlwaysSelectable() )
 	    return;
-	if( selectedValue.equals(newValue) ){
+	if( (selectedValue instanceof IPMaddrString)
+	    || (selectedValue instanceof IPaddrString)
+	    || (selectedValue instanceof IPPortString) ){
+	    if( !selectedValue.toString().equals(((String)returnValue).trim()) )
+		mSortedTableModel.setRowChanged(selectedModelRow, isFinalChange);
+	    else
+		mSortedTableModel.setRowState(selectedState, selectedModelRow);
+	}
+	else if( selectedValue.equals(newValue) ){
 	    if( (returnValue instanceof ButtonRunnable) && ( ((ButtonRunnable)returnValue).valueChanged()) ){
 		mSortedTableModel.setRowChanged(selectedModelRow, isFinalChange);
 	    }
 	    else
 		mSortedTableModel.setRowState(selectedState, selectedModelRow);
-
 	}
 	else{		
 	    if(editedComponent instanceof MPasswordField){
@@ -302,8 +315,7 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	    }
 	    else{
 		mSortedTableModel.setRowChanged(selectedModelRow, isFinalChange);
-	    }
-	    
+	    }	    
 	}
 	mSortedTableModel.handleDependencies(selectedModelCol, selectedModelRow);
     }
@@ -314,8 +326,19 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 
 	if( mSortedTableModel.getAlwaysSelectable() )
 	    return selectedValue;
-	else
-	    return returnValue;
+	else{
+	    if( selectedValue instanceof IPMaddrString ){
+		((IPMaddrString)selectedValue).setString((String)returnValue);
+		return selectedValue;
+	    }
+	    else if( selectedValue instanceof IPaddrString ){
+		((IPaddrString)selectedValue).setString((String)returnValue);
+		return selectedValue;
+	    }
+	    else
+		return returnValue;
+	}
+
     }
     
     private void update(boolean isFinal){

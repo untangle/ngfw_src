@@ -15,7 +15,7 @@ import com.metavize.mvvm.security.*;
 import com.metavize.gui.widgets.wizard.*;
 import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.gui.widgets.editTable.*;
-import com.metavize.gui.util.Util;
+import com.metavize.gui.util.*;
 import javax.swing.*;
 import java.awt.Dialog;
 
@@ -81,10 +81,10 @@ public class ServerRoutingWizardSitesJPanel extends MWizardPageJPanel {
 		newElem.setName( (String) rowVector.elementAt(4) );
 		newElem.setGroup( (VpnGroup) ((ComboBoxModel) rowVector.elementAt(5)).getSelectedItem() );
 		IPaddr network;
-		try{ network = IPaddr.parse((String) rowVector.elementAt(6)); }
+		try{ network = IPaddr.parse(((IPaddrString) rowVector.elementAt(6)).getString()); }
 		catch(Exception e){ exception = new Exception("Invalid \"network address\" in row: " + rowIndex); return; }
 		IPaddr netmask;
-		try{ netmask = IPaddr.parse((String) rowVector.elementAt(7)); }
+		try{ netmask = IPaddr.parse(((IPaddrString) rowVector.elementAt(7)).getString()); }
 		catch(Exception e){ exception = new Exception("Invalid \"network netmask\" in row: " + rowIndex); return; }
 		newElem.setSiteNetwork(network, netmask);
 		newElem.setDescription( (String) rowVector.elementAt(9) );
@@ -107,6 +107,7 @@ public class ServerRoutingWizardSitesJPanel extends MWizardPageJPanel {
 		ServerRoutingWizard.getInfiniteProgressJComponent().stopLater(1500l);
 	    }
 	    catch(Exception e){
+		e.printStackTrace();
 		ServerRoutingWizard.getInfiniteProgressJComponent().stopLater(-1l);
 		throw new Exception("Your VPN Routing Server configuration could not be saved.  Please try again.");
 	    }

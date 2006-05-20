@@ -12,6 +12,7 @@
 package com.metavize.tran.spam;
 
 import java.util.Iterator;
+import java.net.InetAddress;
 
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
@@ -60,13 +61,13 @@ public abstract class SpamEvent extends LogEvent
         return null == getMessageInfo() ? "" : getMessageInfo().getSubject();
     }
 
-    public String getClientAddr()
+    public InetAddress getClientAddr()
     {
         if (null == getMessageInfo()) {
-            return "";
+            return null;
         } else {
             PipelineEndpoints pe = getMessageInfo().getPipelineEndpoints();
-            return null == pe ? "" : pe.getCClientAddr().getHostAddress();
+            return null == pe ? null : pe.getCClientAddr();
         }
     }
 
@@ -80,13 +81,13 @@ public abstract class SpamEvent extends LogEvent
         }
     }
 
-    public String getServerAddr()
+    public InetAddress getServerAddr()
     {
         if (null == getMessageInfo()) {
-            return "";
+            return null;
         } else {
             PipelineEndpoints pe = getMessageInfo().getPipelineEndpoints();
-            return null == pe ? "" : pe.getSServerAddr().getHostAddress();
+            return null == pe ? null : pe.getSServerAddr();
         }
     }
 

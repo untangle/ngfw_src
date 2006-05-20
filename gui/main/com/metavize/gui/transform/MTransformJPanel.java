@@ -217,7 +217,6 @@ public class MTransformJPanel extends javax.swing.JPanel {
 
     public void doShutdown(){
 	for( Map.Entry<String,Shutdownable> shutdownableEntry : shutdownableMap.entrySet()){
-	    System.err.println("Shutting down: " + shutdownableEntry.getKey());
 	    shutdownableEntry.getValue().doShutdown();
 	}
         try{

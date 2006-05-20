@@ -14,7 +14,7 @@ package com.metavize.tran.openvpn.gui;
 import com.metavize.mvvm.security.*;
 import com.metavize.gui.widgets.wizard.*;
 import com.metavize.gui.widgets.editTable.*;
-import com.metavize.gui.util.Util;
+import com.metavize.gui.util.*;
 import javax.swing.SwingUtilities;
 
 import java.awt.Color;
@@ -58,9 +58,9 @@ public class ServerRoutingWizardExportsJPanel extends MWizardPageJPanel {
 		newElem = new ServerSiteNetwork();
 		newElem.setLive( (Boolean) rowVector.elementAt(2) );
 		newElem.setName( (String) rowVector.elementAt(3) );
-		try{ newElem.setNetwork( IPaddr.parse((String) rowVector.elementAt(4)) ); }
+		try{ newElem.setNetwork( IPaddr.parse(((IPaddrString) rowVector.elementAt(4)).getString()) ); }
 		catch(Exception e){ exception = new Exception("Invalid \"IP address\" in row: " + rowIndex); return; }
-		try{ newElem.setNetmask( IPaddr.parse((String) rowVector.elementAt(5)) ); }
+		try{ newElem.setNetmask( IPaddr.parse(((IPaddrString) rowVector.elementAt(5)).getString()) ); }
 		catch(Exception e){ exception = new Exception("Invalid \"netmask\" in row: " + rowIndex); return; }
 		newElem.setDescription( (String) rowVector.elementAt(6) );
 		elemList.add(newElem);

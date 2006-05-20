@@ -32,7 +32,7 @@ import javax.swing.*;
 public class GroupSettingsJDialog extends MConfigJDialog implements SettingsChangedListener {
 
     private static final String NAME_TITLE     = "Group Settings";
-    private static final String NAME_BOOKMARKS = "Links";
+    private static final String NAME_BOOKMARKS = "Bookmarks";
     private static final String NAME_HOME      = "Page Setup";
 
     private List<String> applicationNames;

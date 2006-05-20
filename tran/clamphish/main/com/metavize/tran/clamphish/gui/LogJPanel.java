@@ -18,7 +18,7 @@ import javax.swing.table.*;
 
 import com.metavize.gui.transform.*;
 import com.metavize.gui.widgets.editTable.*;
-import com.metavize.gui.util.Util;
+import com.metavize.gui.util.*;
 import com.metavize.mvvm.logging.EventRepository;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.logging.RepositoryDesc;
@@ -64,12 +64,12 @@ public class LogJPanel extends MLogTableJPanel {
             //                                 #   min  rsz    edit   remv   desc   typ           def
             addTableColumn( tableColumnModel,  0,  150, true,  false, false, false, Date.class,   null, "timestamp" );
             addTableColumn( tableColumnModel,  1,   90, true,  false, false, false, String.class, null, "action" );
-            addTableColumn( tableColumnModel,  2,  165, true,  false, false, false, String.class, null, "client" );
+            addTableColumn( tableColumnModel,  2,  165, true,  false, false, false, IPPortString.class, null, "client" );
             addTableColumn( tableColumnModel,  3,  100, true,  false, false, true,  String.class, null, "subject" );
             addTableColumn( tableColumnModel,  4,  100, true,  false, false, false, String.class, null, "receiver" );
             addTableColumn( tableColumnModel,  5,  100, true,  false, false, false, String.class, null, "sender" );
             addTableColumn( tableColumnModel,  6,  100, true,  false, false, false, String.class, null, sc.html("direction") );
-            addTableColumn( tableColumnModel,  7,  165, true,  false, false, false, String.class, null, "server" );
+            addTableColumn( tableColumnModel,  7,  165, true,  false, false, false, IPPortString.class, null, "server" );
             return tableColumnModel;
         }
 
@@ -85,12 +85,12 @@ public class LogJPanel extends MLogTableJPanel {
                 event = new Vector(8);
                 event.add( requestLog.getTimeStamp() );
                 event.add( requestLog.getActionName() );
-                event.add( requestLog.getClientAddr() + ":" + (Integer.toString(requestLog.getClientPort())) );
+                event.add( new IPPortString(requestLog.getClientAddr(), requestLog.getClientPort()) );
                 event.add( requestLog.getSubject() );
                 event.add( requestLog.getReceiver() );
                 event.add( requestLog.getSender() );
                 event.add( requestLog.getDirectionName() );
-                event.add( requestLog.getServerAddr() + ":" + (Integer.toString(requestLog.getServerPort())) );
+                event.add( new IPPortString(requestLog.getServerAddr(), requestLog.getServerPort()) );
                 allEvents.add( event );
             }
 

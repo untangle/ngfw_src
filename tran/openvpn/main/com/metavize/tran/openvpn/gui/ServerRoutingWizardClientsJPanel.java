@@ -14,7 +14,7 @@ package com.metavize.tran.openvpn.gui;
 import com.metavize.mvvm.security.*;
 import com.metavize.gui.widgets.wizard.*;
 import com.metavize.gui.widgets.editTable.*;
-import com.metavize.gui.util.Util;
+import com.metavize.gui.util.*;
 import javax.swing.SwingUtilities;
 import javax.swing.ComboBoxModel;
 

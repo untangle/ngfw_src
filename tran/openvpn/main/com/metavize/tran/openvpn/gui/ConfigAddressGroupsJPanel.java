@@ -63,8 +63,8 @@ class TableModelAddressGroups extends MSortedTableModel<Object>{
         addTableColumn( tableColumnModel,  2, C2_MW, false, true,  false, false, Boolean.class, "true", sc.bold("enabled"));
         addTableColumn( tableColumnModel,  3, C3_MW, false, true,  false, false, Boolean.class, "false", sc.html("export<br>DNS"));
         addTableColumn( tableColumnModel,  4, C4_MW, true,  true,  false, false, String.class,  sc.EMPTY_NAME, sc.html("address pool<br>name") );
-        addTableColumn( tableColumnModel,  5, C5_MW, false, true,  false, false, String.class,  "172.16.16.0", sc.html("IP address"));
-        addTableColumn( tableColumnModel,  6, C6_MW, false, true,  false, false, String.class,  "255.255.255.0", sc.html("netmask"));
+        addTableColumn( tableColumnModel,  5, C5_MW, false, true,  false, false, IPaddrString.class,  "172.16.16.0", sc.html("IP address"));
+        addTableColumn( tableColumnModel,  6, C6_MW, false, true,  false, false, IPaddrString.class,  "255.255.255.0", sc.html("netmask"));
         addTableColumn( tableColumnModel,  7, C7_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
         addTableColumn( tableColumnModel,  8, 10,    false, false, true,  false, VpnGroup.class, null, "");
         return tableColumnModel;
@@ -121,9 +121,9 @@ class TableModelAddressGroups extends MSortedTableModel<Object>{
 	    newElem.setLive( (Boolean) rowVector.elementAt(2) );
 	    newElem.setUseDNS( (Boolean) rowVector.elementAt(3) );
 	    newElem.setName( (String) rowVector.elementAt(4) );
-	    try{ newElem.setAddress( IPaddr.parse((String) rowVector.elementAt(5)) ); }
+	    try{ newElem.setAddress( IPaddr.parse( ((IPaddrString) rowVector.elementAt(5)).getString() ) ); }
 	    catch(Exception e){ throw new Exception("Invalid \"IP address\" in row: " + rowIndex);  }
-	    try{ newElem.setNetmask( IPaddr.parse((String) rowVector.elementAt(6)) ); }
+	    try{ newElem.setNetmask( IPaddr.parse( ((IPaddrString) rowVector.elementAt(6)).getString() ) ); }
 	    catch(Exception e){ throw new Exception("Invalid \"netmask\" in row: " + rowIndex);  }
 	    newElem.setDescription( (String) rowVector.elementAt(7) );
 	    elemList.add(newElem);
@@ -152,8 +152,8 @@ class TableModelAddressGroups extends MSortedTableModel<Object>{
 	    tempRow.add( vpnGroup.isLive() );
 	    tempRow.add( vpnGroup.isUseDNS() );
 	    tempRow.add( vpnGroup.getName() );
-	    tempRow.add( vpnGroup.getAddress().toString() );
-	    tempRow.add( vpnGroup.getNetmask().toString() );
+	    tempRow.add( new IPaddrString(vpnGroup.getAddress()) );
+	    tempRow.add( new IPaddrString(vpnGroup.getNetmask()) );
 	    tempRow.add( vpnGroup.getDescription() );
 	    tempRow.add( vpnGroup );
 	    allRows.add(tempRow);

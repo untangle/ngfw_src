@@ -18,6 +18,8 @@ import javax.swing.table.*;
 
 import com.metavize.gui.transform.*;
 import com.metavize.gui.widgets.editTable.*;
+import com.metavize.gui.util.*;
+
 import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.logging.EventRepository;
 import com.metavize.mvvm.logging.EventManager;
@@ -66,9 +68,9 @@ public class LogJPanel extends MLogTableJPanel
             addTableColumn( tableColumnModel,  0,  150, true,  false, false, false, Date.class,   null, "timestamp" );
             addTableColumn( tableColumnModel,  1,  55,  true,  false, false, false, String.class, null, "action" );
             addTableColumn( tableColumnModel,  2,  55,  true,  false, false, false, String.class, null, "protocol" );
-            addTableColumn( tableColumnModel,  3,  165, true,  false, false, false, String.class, null, "source" );
-            addTableColumn( tableColumnModel,  4,  165, true,  false, false, false, String.class, null, "original destination" );
-            addTableColumn( tableColumnModel,  5,  165, true,  false, false, false, String.class, null, "redirected destination" );
+            addTableColumn( tableColumnModel,  3,  165, true,  false, false, false, IPPortString.class, null, "source" );
+            addTableColumn( tableColumnModel,  4,  165, true,  false, false, false, IPPortString.class, null, sc.html("original<br>destination") );
+            addTableColumn( tableColumnModel,  5,  165, true,  false, false, false, IPPortString.class, null, sc.html("redirected<br>destination") );
             addTableColumn( tableColumnModel,  6,  150, true,  false, false, false, String.class, null, sc.html("reason for<br>action") );
             addTableColumn( tableColumnModel,  7,  100, true,  false, false, false, String.class, null, sc.html("client interface") );
             addTableColumn( tableColumnModel,  8,  105, true,  false, false, false, String.class, null, sc.html("redirected<br>server interface") );
@@ -90,9 +92,9 @@ public class LogJPanel extends MLogTableJPanel
                 event.add( null == pe ? "" : pe.getCreateDate() );
                 event.add( log.getIsDmz() ? "dmz host" : "redirect" );
                 event.add( null == pe ? "" : pe.getProtocolName());
-                event.add( null == pe ? "" : pe.getCClientAddr().getHostAddress() );
-                event.add( null == pe ? "" : pe.getCServerAddr().getHostAddress() );
-                event.add( null == pe ? "" : pe.getSServerAddr().getHostAddress() );
+                event.add( null == pe ? new IPPortString() : new IPPortString(pe.getCClientAddr(), pe.getCClientPort()) );
+                event.add( null == pe ? new IPPortString() : new IPPortString(pe.getCServerAddr(), pe.getCServerPort()) );
+                event.add( null == pe ? new IPPortString() : new IPPortString(pe.getSServerAddr(), pe.getSServerPort()) );
                 event.add( log.getIsDmz() ? "Destined to DMZ Host" : ("Redirect Rule #" + log.getRuleIndex()));
                 /* This does't use the IntfEnum because there may be interfaces that
                  * are no longer avaiable.  EG. Someone installs VPN, accumulates events,

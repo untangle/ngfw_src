@@ -17,7 +17,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.table.*;
 
 import com.metavize.gui.transform.*;
-import com.metavize.gui.util.Util;
+import com.metavize.gui.util.*;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.logging.EventRepository;
@@ -64,10 +64,10 @@ public class LogJPanel extends MLogTableJPanel {
             //                                 #   min  rsz    edit   remv   desc   typ               def
             addTableColumn( tableColumnModel,  0,  150, true,  false, false, false, Date.class,   null, "timestamp" );
             addTableColumn( tableColumnModel,  1,  55,  true,  false, false, false, String.class, null, "action" );
-            addTableColumn( tableColumnModel,  2,  165, true,  false, false, false, String.class, null, "client" );
+            addTableColumn( tableColumnModel,  2,  165, true,  false, false, false, IPPortString.class, null, "client" );
             addTableColumn( tableColumnModel,  3,  100, true,  false, false, false, String.class, null, sc.html("reason for<br>action") );
             addTableColumn( tableColumnModel,  4,  100, true,  false, false, false, String.class, null, sc.html("direction") );
-            addTableColumn( tableColumnModel,  5,  165, true,  false, false, false, String.class, null, "server" );
+            addTableColumn( tableColumnModel,  5,  165, true,  false, false, false, IPPortString.class, null, "server" );
             return tableColumnModel;
         }
 
@@ -83,10 +83,10 @@ public class LogJPanel extends MLogTableJPanel {
                 PipelineEndpoints pe = requestLog.getPipelineEndpoints();
                 event.add( null == pe ? "" : requestLog.getTimeStamp() );
                 event.add( requestLog.getWasBlocked() ? "blocked" : "passed" );
-                event.add( null == pe ? "" : (pe.getCClientAddr().getHostAddress() + ":" + Integer.toString(pe.getCClientPort())) );
+                event.add( null == pe ? new IPPortString() : new IPPortString(pe.getCClientAddr(), pe.getCClientPort()) );
                 event.add( "rule #" + requestLog.getRuleIndex() );
                 event.add( null == pe ? "" : pe.getDirectionName() );
-                event.add( null == pe ? "" : (pe.getSServerAddr().getHostAddress() + ":" + (Integer.toString(pe.getSServerPort()))) );
+                event.add( null == pe ? new IPPortString() : new IPPortString(pe.getSServerAddr(), pe.getSServerPort()) );
                 allEvents.add( event );
             }
 

@@ -66,8 +66,8 @@ class ExportTableModel extends MSortedTableModel<Object>{
         addTableColumn( tableColumnModel,  1, C1_MW, false, false, false, false, Integer.class, null, sc.TITLE_INDEX);
         addTableColumn( tableColumnModel,  2, C2_MW, false, true,  false, false, Boolean.class, "true", sc.bold("export"));
         addTableColumn( tableColumnModel,  3, C3_MW, true,  true,  false, false, String.class,  sc.EMPTY_NAME, sc.html("host/network name") );
-        addTableColumn( tableColumnModel,  4, C4_MW, false, true,  false, false, String.class,  "192.168.1.0", sc.html("IP address"));
-        addTableColumn( tableColumnModel,  5, C5_MW, false, true,  false, false, String.class,  "255.255.255.0", sc.html("netmask"));
+        addTableColumn( tableColumnModel,  4, C4_MW, false, true,  false, false, IPaddrString.class,  "192.168.1.0", sc.html("IP address"));
+        addTableColumn( tableColumnModel,  5, C5_MW, false, true,  false, false, IPaddrString.class,  "255.255.255.0", sc.html("netmask"));
         addTableColumn( tableColumnModel,  6, C6_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
         addTableColumn( tableColumnModel,  7, 10,    false, false, true,  false, ServerSiteNetwork.class, null, "");
         return tableColumnModel;
@@ -84,9 +84,9 @@ class ExportTableModel extends MSortedTableModel<Object>{
             newElem = (ServerSiteNetwork) rowVector.elementAt(7);
 	    newElem.setLive( (Boolean) rowVector.elementAt(2) );
 	    newElem.setName( (String) rowVector.elementAt(3) );
-	    try{ newElem.setNetwork( IPaddr.parse((String) rowVector.elementAt(4)) ); }
+	    try{ newElem.setNetwork( IPaddr.parse( ((IPaddrString) rowVector.elementAt(4)).getString() ) ); }
 	    catch(Exception e){ throw new Exception("Invalid \"IP address\" in row: " + rowIndex);  }
-	    try{ newElem.setNetmask( IPaddr.parse((String) rowVector.elementAt(5)) ); }
+	    try{ newElem.setNetmask( IPaddr.parse( ((IPaddrString) rowVector.elementAt(5)).getString() ) ); }
 	    catch(Exception e){ throw new Exception("Invalid \"netmask\" in row: " + rowIndex);  }
 	    newElem.setDescription( (String) rowVector.elementAt(6) );
 	    elemList.add(newElem);
@@ -114,8 +114,8 @@ class ExportTableModel extends MSortedTableModel<Object>{
 	    tempRow.add( rowIndex );
 	    tempRow.add( serverSiteNetwork.isLive() );
 	    tempRow.add( serverSiteNetwork.getName() );
-	    tempRow.add( serverSiteNetwork.getNetwork().toString() );
-	    tempRow.add( serverSiteNetwork.getNetmask().toString() );
+	    tempRow.add( new IPaddrString(serverSiteNetwork.getNetwork()) );
+	    tempRow.add( new IPaddrString(serverSiteNetwork.getNetmask()) );
 	    tempRow.add( serverSiteNetwork.getDescription() );
 	    tempRow.add( serverSiteNetwork );
 	    allRows.add(tempRow);

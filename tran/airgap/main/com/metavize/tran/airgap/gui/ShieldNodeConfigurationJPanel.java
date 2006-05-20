@@ -72,7 +72,7 @@ class ShieldNodeConfigurationModel extends MSortedTableModel<Object>{
         addTableColumn( tableColumnModel,  0,  C0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS );
         addTableColumn( tableColumnModel,  1,  C1_MW, false, false, false, false, Integer.class, null, sc.TITLE_INDEX );
         addTableColumn( tableColumnModel,  2,  C2_MW, false, true,  false, false, Boolean.class, "true", sc.bold("enable"));
-        addTableColumn( tableColumnModel,  3,  C3_MW, false, true,  false, false, String.class, "1.2.3.4", sc.bold("address") );
+        addTableColumn( tableColumnModel,  3,  C3_MW, false, true,  false, false, IPaddrString.class, "1.2.3.4", sc.bold("address") );
         addTableColumn( tableColumnModel,  4,  C4_MW, false, true,  false, false, ComboBoxModel.class, dividerModel, sc.bold("user<br>count") );
         addTableColumn( tableColumnModel,  5,  C5_MW, true,  true,  false, false, String.class, sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY );
         addTableColumn( tableColumnModel,  6,  C6_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
@@ -90,7 +90,7 @@ class ShieldNodeConfigurationModel extends MSortedTableModel<Object>{
 	    rowIndex++;
             newElem = (ShieldNodeRule)rowVector.elementAt(7);
             newElem.setLive((Boolean)rowVector.elementAt(2));
-            try{ newElem.setAddress((String)rowVector.elementAt(3)); }
+            try{ newElem.setAddress( ((IPaddrString)rowVector.elementAt(3)).getString() ); }
             catch(Exception e){ throw new Exception("Invalid \"address\" in row: " + rowIndex); }
             // try{ newElem.setNetmask( (String)rowVector.elementAt(4)); }
             // catch(Exception e){ throw new Exception("Invalid \"NETMASK\" in row: " + rowIndex); }
@@ -121,7 +121,7 @@ class ShieldNodeConfigurationModel extends MSortedTableModel<Object>{
 	    tempRow.add( super.ROW_SAVED );
 	    tempRow.add( rowIndex );
             tempRow.add( newElem.isLive());
-            tempRow.add( newElem.getAddressString());
+            tempRow.add( new IPaddrString(newElem.getAddress()) );
 	    tempRow.add( super.generateComboBoxModel( ShieldNodeRule.getDividerEnumeration(), newElem.getDividerString()));
             tempRow.add( newElem.getCategory() );
             tempRow.add( newElem.getDescription() );

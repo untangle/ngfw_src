@@ -188,7 +188,10 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
 		     || (value instanceof Integer)
 		     || (value instanceof Float)
 		     || (value instanceof Long)
-		     || (value instanceof Double) ){
+		     || (value instanceof Double)
+		     || (value instanceof IPMaddrString)
+		     || (value instanceof IPaddrString)
+		     || (value instanceof IPPortString)){
                 if(value != null)
                     if ((value instanceof Double) || (value instanceof Float))
                         // Print all floatign point like: 0.1, 124.2, 123.0, 0.0, -2.1, -2.0

@@ -19,7 +19,7 @@ import javax.swing.table.*;
 
 import com.metavize.gui.transform.*;
 import com.metavize.gui.widgets.editTable.*;
-import com.metavize.gui.util.Util;
+import com.metavize.gui.util.*;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.logging.EventRepository;
 import com.metavize.mvvm.logging.RepositoryDesc;
@@ -66,7 +66,7 @@ public class LogJPanel extends MLogTableJPanel {
             addTableColumn( tableColumnModel,  0,  150, true,  false, false, false, Date.class,   null, "start time" );
             addTableColumn( tableColumnModel,  1,  150, true,  false, false, false, Date.class,   null, "end time" );
             addTableColumn( tableColumnModel,  2,  150, true,  false, false, false, String.class, null, "client name" );
-            addTableColumn( tableColumnModel,  3,  150, true,  false, false, false, String.class, null, "client address" );
+            addTableColumn( tableColumnModel,  3,  150, true,  false, false, false, IPPortString.class, null, "client address" );
             addTableColumn( tableColumnModel,  4,  100, true,  false, false, false, Integer.class, null, sc.html("Kbytes<br>sent") );
             addTableColumn( tableColumnModel,  5,  100, true,  false, false, false, Integer.class, null, sc.html("Kbytes<br>received") );
 
@@ -86,7 +86,7 @@ public class LogJPanel extends MLogTableJPanel {
 		event.add( requestLog.getStart() );
 		event.add( (requestLog.getEnd()==null?new Date(0):requestLog.getEnd()) );
 		event.add( requestLog.getClientName() );
-		event.add( requestLog.getAddress().toString() + ":" + requestLog.getPort() );
+		event.add( new IPPortString(requestLog.getAddress(), requestLog.getPort()) );
 		event.add( requestLog.getBytesTx()/1024l );
 		event.add( requestLog.getBytesRx()/1024l );
                 allEvents.add( event );

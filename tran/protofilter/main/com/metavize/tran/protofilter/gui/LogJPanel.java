@@ -18,7 +18,7 @@ import javax.swing.table.*;
 
 import com.metavize.gui.transform.*;
 import com.metavize.gui.widgets.editTable.*;
-import com.metavize.gui.util.Util;
+import com.metavize.gui.util.*;
 import com.metavize.mvvm.logging.EventRepository;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.logging.RepositoryDesc;
@@ -66,11 +66,11 @@ public class LogJPanel extends MLogTableJPanel {
             //                                 #   min  rsz    edit   remv   desc   typ               def
             addTableColumn( tableColumnModel,  0,  150, true,  false, false, false, Date.class,   null, "timestamp" );
             addTableColumn( tableColumnModel,  1,  55,  true,  false, false, false, String.class, null, "action" );
-            addTableColumn( tableColumnModel,  2,  165, true,  false, false, false, String.class, null, "client" );
+            addTableColumn( tableColumnModel,  2,  165, true,  false, false, false, IPPortString.class, null, "client" );
             addTableColumn( tableColumnModel,  3,  100, true,  false, false, true,  String.class, null, "request" );
             addTableColumn( tableColumnModel,  4,  150, true,  false, false, false, String.class, null, sc.html("reason for<br>action") );
             addTableColumn( tableColumnModel,  5,  100, true,  false, false, false, String.class, null, sc.html("direction") );
-            addTableColumn( tableColumnModel,  6,  165, true,  false, false, false, String.class, null, "server" );
+            addTableColumn( tableColumnModel,  6,  165, true,  false, false, false, IPPortString.class, null, "server" );
             return tableColumnModel;
         }
 
@@ -86,11 +86,11 @@ public class LogJPanel extends MLogTableJPanel {
                 event = new Vector(7);
 		event.add( log.getTimeStamp() );
                 event.add( log.isBlocked() ? "blocked" : "passed" );
-                event.add( null == pe ? "" : (pe.getCClientAddr().getHostAddress() + ":" + pe.getCClientPort()));
+                event.add( null == pe ? new IPPortString() : new IPPortString(pe.getCClientAddr(), pe.getCClientPort()) );
                 event.add( log.getProtocol() );
                 event.add( log.isBlocked() ? "blocked in block list" : "not blocked in block list");
                 event.add( null == pe ? "" : pe.getDirectionName() );
-                event.add( null == pe ? "" : pe.getSServerAddr().getHostAddress() + ":" + pe.getSServerPort());
+                event.add( null == pe ? new IPPortString() : new IPPortString(pe.getSServerAddr(), pe.getSServerPort()) );
                 allEvents.add( event );
             }
 

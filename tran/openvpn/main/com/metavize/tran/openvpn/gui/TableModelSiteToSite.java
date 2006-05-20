@@ -59,8 +59,8 @@ public class TableModelSiteToSite extends MSortedTableModel<Object>{
         addTableColumn( tableColumnModel,  3, C3_MW, false, true,  false, false, Boolean.class, "true", sc.html("is<br>edgeguard"));
         addTableColumn( tableColumnModel,  4, C4_MW, true,  true,  false, false, String.class,  sc.EMPTY_NAME, sc.html("site name") );
         addTableColumn( tableColumnModel,  5, C5_MW, true,  true,  false, false, ComboBoxModel.class,  groupModel, sc.html("address<br>pool"));
-        addTableColumn( tableColumnModel,  6, C6_MW, false, true,  false, false, String.class,  "1.2.3.4", sc.html("network<br>address"));
-        addTableColumn( tableColumnModel,  7, C7_MW, false, true,  false, false, String.class,  "255.255.255.0", sc.html("network<br>netmask"));
+        addTableColumn( tableColumnModel,  6, C6_MW, false, true,  false, false, IPaddrString.class,  "1.2.3.4", sc.html("network<br>address"));
+        addTableColumn( tableColumnModel,  7, C7_MW, false, true,  false, false, IPaddrString.class,  "255.255.255.0", sc.html("network<br>netmask"));
         addTableColumn( tableColumnModel,  8, C8_MW, false, true,  false, false, KeyButtonRunnable.class,  "false", sc.html("Secure Key<br>Distribution"));
         addTableColumn( tableColumnModel,  9, C9_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
         addTableColumn( tableColumnModel,  10, 10,   false, false, true,  false, VpnSite.class, null, "");
@@ -93,10 +93,10 @@ public class TableModelSiteToSite extends MSortedTableModel<Object>{
 	    newElem.setName( (String) rowVector.elementAt(4) );
 	    newElem.setGroup( (VpnGroup) ((ComboBoxModel) rowVector.elementAt(5)).getSelectedItem() );
 	    IPaddr network;
-	    try{ network = IPaddr.parse((String) rowVector.elementAt(6)); }
+	    try{ network = IPaddr.parse( ((IPaddrString) rowVector.elementAt(6)).getString() ); }
 	    catch(Exception e){ throw new Exception("Invalid \"network address\" in row: " + rowIndex);  }
 	    IPaddr netmask;
-	    try{ netmask = IPaddr.parse((String) rowVector.elementAt(7)); }
+	    try{ netmask = IPaddr.parse( ((IPaddrString) rowVector.elementAt(7)).getString() ); }
 	    catch(Exception e){ throw new Exception("Invalid \"network netmask\" in row: " + rowIndex);  }
 	    newElem.setSiteNetwork(network, netmask);
 	    newElem.setDescription( (String) rowVector.elementAt(9) );
@@ -132,8 +132,8 @@ public class TableModelSiteToSite extends MSortedTableModel<Object>{
 	    groupComboBoxModel.setSelectedItem( vpnSite.getGroup() );
 	    tempRow.add( groupComboBoxModel );
             /* XXX RBS-Could use convenience method getSiteNetwork */
-	    tempRow.add( ((ClientSiteNetwork) vpnSite.getExportedAddressList().get(0)).getNetwork().toString() );
-	    tempRow.add( ((ClientSiteNetwork) vpnSite.getExportedAddressList().get(0)).getNetmask().toString() );
+	    tempRow.add( new IPaddrString(((ClientSiteNetwork) vpnSite.getExportedAddressList().get(0)).getNetwork()) );
+	    tempRow.add( new IPaddrString(((ClientSiteNetwork) vpnSite.getExportedAddressList().get(0)).getNetmask()) );
 	    KeyButtonRunnable keyButtonRunnable = new KeyButtonRunnable("true");
 	    keyButtonRunnable.setVpnClient( vpnSite );
 	    tempRow.add( keyButtonRunnable );

@@ -70,7 +70,7 @@ class SpyTableModel extends MSortedTableModel<Object>{
         addTableColumn( tableColumnModel,  0, C0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS );
 	addTableColumn( tableColumnModel,  1, C1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX);
         addTableColumn( tableColumnModel,  2, C2_MW, true,  true,  false, false, String.class,  sc.EMPTY_NAME, sc.TITLE_NAME );
-        addTableColumn( tableColumnModel,  3, C3_MW, true,  true,  false, false, String.class,  "1.2.3.4/5", "subnet");
+        addTableColumn( tableColumnModel,  3, C3_MW, true,  true,  false, false, IPMaddrString.class,  "1.2.3.4/5", "subnet");
         addTableColumn( tableColumnModel,  4, C4_MW, false, true,  true,  false, Boolean.class, "true", sc.bold("block"));
         addTableColumn( tableColumnModel,  5, C5_MW, false, true,  false, false, Boolean.class, "true", sc.bold("log"));
         addTableColumn( tableColumnModel,  6, C6_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
@@ -89,10 +89,10 @@ class SpyTableModel extends MSortedTableModel<Object>{
             // newElem.setCategory( (String) rowVector.elementAt(2) );
             newElem.setName( (String) rowVector.elementAt(2) );
 	    try{
-		IPMaddr newIPMaddr = IPMaddr.parse( (String) rowVector.elementAt(3) );
+		IPMaddr newIPMaddr = IPMaddr.parse( ((IPMaddrString) rowVector.elementAt(3)).getString() );
 		newElem.setIpMaddr( newIPMaddr );
 	    }
-            catch(Exception e){ throw new Exception("Invalid \"subnet\" specified at row: " + rowIndex); }
+            catch(Exception e){ throw new Exception("Invalid \"subnet\" specified at row: " + rowIndex);  }
             newElem.setLive( (Boolean) rowVector.elementAt(4) );
             newElem.setLog( (Boolean) rowVector.elementAt(5) );
             newElem.setDescription( (String) rowVector.elementAt(6) );
@@ -122,7 +122,7 @@ class SpyTableModel extends MSortedTableModel<Object>{
             tempRow.add( rowIndex );
             // tempRow.add( newElem.getCategory() );
             tempRow.add( newElem.getName() );
-            tempRow.add( newElem.getIpMaddr().toString() );
+            tempRow.add( new IPMaddrString(newElem.getIpMaddr()) );
             tempRow.add( newElem.isLive() );
             tempRow.add( newElem.getLog() );
             tempRow.add( newElem.getDescription() );
