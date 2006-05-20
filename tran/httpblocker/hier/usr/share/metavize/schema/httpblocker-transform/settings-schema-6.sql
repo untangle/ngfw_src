@@ -60,7 +60,7 @@ CREATE TABLE settings.tr_httpblk_blcat (
     block_domains bool NOT NULL,
     block_urls bool NOT NULL,
     block_expressions bool NOT NULL,
-    log_only bool NOT NULL;
+    log_only bool NOT NULL,
     setting_id int8,
     position int4,
     PRIMARY KEY (category_id));
