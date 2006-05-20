@@ -69,7 +69,7 @@ class DnsAddressTableModel extends MSortedTableModel<Object>{
         addTableColumn( tableColumnModel,  0,  C0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS );
         addTableColumn( tableColumnModel,  1,  C1_MW, false, false, false, false, Integer.class, null, sc.TITLE_INDEX );
         addTableColumn( tableColumnModel,  2,  C2_MW, true,  true,  false, false, String.class, sc.empty("no hostname"), sc.html("translate this<br><b>hostname</b>") );
-        addTableColumn( tableColumnModel,  3,  C3_MW, true,  true,  false, false, String.class, "1.2.3.4", sc.html("into this<br><b>IP address</b>") );
+        addTableColumn( tableColumnModel,  3,  C3_MW, true,  true,  false, false, IPaddrString.class, "1.2.3.4", sc.html("into this<br><b>IP address</b>") );
         addTableColumn( tableColumnModel,  4,  C4_MW, true,  true,  false, false, String.class, sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY);
         addTableColumn( tableColumnModel,  5,  C5_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
         addTableColumn( tableColumnModel,  6,  10,    false, false, true,  false, DnsStaticHostRule.class, null, "");
@@ -87,7 +87,7 @@ class DnsAddressTableModel extends MSortedTableModel<Object>{
             newElem = (DnsStaticHostRule) rowVector.elementAt(6);
             try{ newElem.setHostNameList( HostNameList.parse( (String)rowVector.elementAt(2)) ); }
             catch(Exception e){ throw new Exception("Invalid \"hostname\" in row: " + rowIndex); }
-            try{ newElem.setStaticAddress( IPaddr.parse( (String)rowVector.elementAt(3)) ); }
+            try{ newElem.setStaticAddress( IPaddr.parse( ((IPaddrString)rowVector.elementAt(3)).getString()) ); }
             catch(Exception e){ throw new Exception("Invalid \"IP address\" in row: " + rowIndex); }
             newElem.setCategory( (String) rowVector.elementAt(4) );
             newElem.setDescription( (String) rowVector.elementAt(5) );
@@ -114,7 +114,7 @@ class DnsAddressTableModel extends MSortedTableModel<Object>{
 	    tempRow.add( super.ROW_SAVED );
 	    tempRow.add( rowIndex );
 	    tempRow.add( hostRule.getHostNameList().toString() );
-	    tempRow.add( hostRule.getStaticAddress().toString() );
+	    tempRow.add( new IPaddrString(hostRule.getStaticAddress()) );
 	    tempRow.add( hostRule.getCategory() );
 	    tempRow.add( hostRule.getDescription() );
 	    tempRow.add( hostRule );

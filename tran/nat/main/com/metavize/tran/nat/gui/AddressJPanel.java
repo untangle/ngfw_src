@@ -74,8 +74,8 @@ class AddressTableModel extends MSortedTableModel<Object>{
         addTableColumn( tableColumnModel,  0,  C0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS );
         addTableColumn( tableColumnModel,  1,  C1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX );
         addTableColumn( tableColumnModel,  2,  C2_MW, true,  true,  false, false, String.class, "00:01:23:45:67:89", sc.html("MAC<br>address") );
-        addTableColumn( tableColumnModel,  3,  C3_MW, true,  true,  false, false, String.class, "1.2.3.4", sc.html("target static<br>IP address") );
-        addTableColumn( tableColumnModel,  4,  C4_MW, true,  false, false, false, String.class, "", sc.html("current<br>IP address") );
+        addTableColumn( tableColumnModel,  3,  C3_MW, true,  true,  false, false, IPaddrString.class, "1.2.3.4", sc.html("target static<br>IP address") );
+        addTableColumn( tableColumnModel,  4,  C4_MW, true,  false, false, false, IPaddrString.class, "", sc.html("current<br>IP address") );
         addTableColumn( tableColumnModel,  5,  C5_MW, true,  false, false, false, String.class, "", sc.html("current<br>hostname") );
         addTableColumn( tableColumnModel,  6,  C6_MW, true,  false, false, false, Date.class,   "", sc.html("current<br>lease end") );
         addTableColumn( tableColumnModel,  7,  C7_MW, true,  true,  false, false, String.class, sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY);
@@ -96,7 +96,7 @@ class AddressTableModel extends MSortedTableModel<Object>{
             newElem = (DhcpLeaseRule) rowVector.elementAt(9);
             try{ newElem.setMacAddress( MACAddress.parse( (String)rowVector.elementAt(2)) ); }
             catch(Exception e){ throw new Exception("Invalid \"MAC address\" in row: " + rowIndex); }
-            try{ newElem.setStaticAddress( IPNullAddr.parse( (String)rowVector.elementAt(3)) ); }
+            try{ newElem.setStaticAddress( IPNullAddr.parse( ((IPaddrString)rowVector.elementAt(3)).getString()) ); }
             catch(Exception e){ throw new Exception("Invalid \"target static IP address\" in row: " + rowIndex); }
             newElem.setCategory( (String) rowVector.elementAt(7) );
             newElem.setDescription( (String) rowVector.elementAt(8) );
@@ -124,8 +124,8 @@ class AddressTableModel extends MSortedTableModel<Object>{
 	    tempRow.add( super.ROW_SAVED );
 	    tempRow.add( rowIndex );
 	    tempRow.add( leaseRule.getMacAddress().toString() );
-	    tempRow.add( leaseRule.getStaticAddress().toString() );
-	    tempRow.add( leaseRule.getCurrentAddress().toString() );
+	    tempRow.add( new IPaddrString(leaseRule.getStaticAddress()) );
+	    tempRow.add( new IPaddrString(leaseRule.getCurrentAddress()) );
 	    tempRow.add( leaseRule.getHostname() );
 	    tempRow.add( (leaseRule.getEndOfLease()==null?new Date(0l):leaseRule.getEndOfLease()) );
 	    tempRow.add( leaseRule.getCategory() );
