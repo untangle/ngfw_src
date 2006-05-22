@@ -12,34 +12,46 @@
 package com.metavize.mvvm.servlet.store;
 
 import java.io.IOException;
-import javax.security.auth.login.FailedLoginException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
-
-import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.MvvmLocalContext;
+import org.apache.log4j.Logger;
 
 public class InstallRequestServlet extends HttpServlet
 {
+    private boolean readOnly;
+
     private final Logger logger = Logger.getLogger(getClass());
 
+    @Override
+    public void init()
+    {
+        String s = System.getProperty("mvvm.settings.readonly");
+        readOnly = Boolean.parseBoolean(s);
+    }
+
+    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException
     {
-        String mackageName = req.getParameter("mackage");
-
-        if (null != mackageName) {
-            MvvmLocalContext ctx = MvvmContextFactory.context();
-            ctx.toolboxManager().requestInstall(mackageName);
+        if (readOnly) {
+            logger.debug("ignoring install request in read-only mode");
         } else {
-            try {
-                resp.sendError(406, "need mackage-name");
-            } catch (IOException exn) {
-                logger.warn("could not send error page", exn);
+            String mackageName = req.getParameter("mackage");
+
+            if (null != mackageName) {
+                MvvmLocalContext ctx = MvvmContextFactory.context();
+                ctx.toolboxManager().requestInstall(mackageName);
+            } else {
+                try {
+                    resp.sendError(406, "need mackage-name");
+                } catch (IOException exn) {
+                    logger.warn("could not send error page", exn);
+                }
             }
         }
     }
