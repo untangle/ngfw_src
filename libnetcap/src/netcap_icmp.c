@@ -413,9 +413,20 @@ int  netcap_icmp_call_hook( netcap_pkt_t* pkt )
 
         case _FIND_ERROR:
         default:
-            ret = errlog ( ERR_CRITICAL, "_icmp_find_session (%s:%d -> %s:%d)\n",
+        {
+            int icmp_type = -1;
+            int icmp_code = -1;
+            struct icmp *packet = (struct icmp*)pkt->data;
+            if ( packet != NULL ) {
+                icmp_type = packet->icmp_type;
+                icmp_code = packet->icmp_code;
+            }
+
+            ret = errlog ( ERR_CRITICAL, "_icmp_find_session (%s:%d -> %s:%d), type %d code %d\n",
                            unet_next_inet_ntoa ( pkt->src.host.s_addr ), pkt->src.port, 
-                           unet_next_inet_ntoa ( pkt->dst.host.s_addr ), pkt->dst.port );
+                           unet_next_inet_ntoa ( pkt->dst.host.s_addr ), pkt->dst.port,
+                           icmp_type, icmp_code );
+        }
         }
     } while ( 0 );
 
@@ -933,6 +944,12 @@ static _find_t _icmp_find_session( netcap_pkt_t* pkt, netcap_session_t** netcap_
         case ICMP_ADDRESSREPLY:
             /* We don't really care about these, these packets should be dropped */
             *netcap_sess = NULL;
+            ret = _FIND_DROP;
+            break;
+
+            /* Just in case this is another type of packet */
+        default:
+            errlog( ERR_WARNING, "Unknown icmp packet type: %d, dropping.\n", packet->icmp_type );
             ret = _FIND_DROP;
             break;
         }
