@@ -28,8 +28,7 @@ public class MEditTableJPanel extends javax.swing.JPanel
     implements ListSelectionListener, TableModelListener, ComponentListener,
 	       Savable<Object>, Refreshable<Object> {
 
-    private JLabel messageJLabel;
-    
+    private JLabel messageJLabel;    
     private MTransformJPanel mTransformJPanel;
     
     // the table model and table
@@ -37,16 +36,23 @@ public class MEditTableJPanel extends javax.swing.JPanel
             
     private boolean addRemoveUsable = false;
     private boolean fillUsable = false;
+    private boolean alwaysAddLast = false;
     
     private static final Color TABLE_BACKGROUND_COLOR = new Color(213, 213, 226);
     
-    private Insets lastInsets;
-    
+    private Insets lastInsets;   
     public void setInsets(Insets newInsets){
         GridBagConstraints newConstraints = ((GridBagLayout)this.getLayout()).getConstraints(contentJPanel);
         newConstraints.insets = newInsets;
         ((GridBagLayout)this.getLayout()).setConstraints(contentJPanel, newConstraints);
 	lastInsets = newInsets;
+    }
+
+    public void setAlwaysAddLast(boolean alwaysAddLast){
+	this.alwaysAddLast = alwaysAddLast;
+    }
+    public boolean getAlwaysAddLast(){
+	return alwaysAddLast;
     }
 
     // SETTINGS CHANGE NOTIFICATION /////////
@@ -431,7 +437,7 @@ public class MEditTableJPanel extends javax.swing.JPanel
     private void addJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addJButtonActionPerformed
 	try{
 	    int[] selectedViewRows;
-	    if( (evt.getModifiers() & java.awt.event.ActionEvent.SHIFT_MASK) > 0 ){
+	    if( ((evt.getModifiers() & java.awt.event.ActionEvent.SHIFT_MASK) > 0) || (getAlwaysAddLast()) ){
 		selectedViewRows = new int[]{-1};
 	    }
 	    else{

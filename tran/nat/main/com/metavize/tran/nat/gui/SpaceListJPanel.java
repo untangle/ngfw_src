@@ -39,6 +39,7 @@ public class SpaceListJPanel extends MEditTableJPanel {
         this.setTableModel( spaceListTableModel );
         this.setAddRemoveEnabled(true);
 	this.setFillJButtonEnabled(false);
+	this.setAlwaysAddLast(true);
     }
 }
 
