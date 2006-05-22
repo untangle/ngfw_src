@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -13,8 +13,8 @@ package com.metavize.mvvm.engine;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,7 @@ class ReportingManagerImpl implements ReportingManager
     private static final String WEB_REPORTS_DIR = BUNNICULA_WEB + "/reports";
     private static final String CURRENT_REPORT_DIR = WEB_REPORTS_DIR + "/current";
 
-    private static final Logger logger = Logger.getLogger( ReportingManagerImpl.class );
+    private final Logger logger = Logger.getLogger(getClass());
 
     private static ReportingManagerImpl REPORTING_MANAGER = new ReportingManagerImpl();
 

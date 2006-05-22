@@ -32,7 +32,7 @@ import sun.misc.BASE64Encoder;
 
 class MvvmRealm extends RealmBase
 {
-    private static final Logger logger = Logger.getLogger(MvvmRealm.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private static final String userQuery
         = "SELECT password FROM mvvm_user WHERE login = ?";

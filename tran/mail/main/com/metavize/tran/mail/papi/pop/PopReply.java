@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
  */
 public class PopReply implements Token
 {
-    private final static Logger logger = Logger.getLogger(PopReply.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private final static String DIGVAL = "(\\p{Digit})++";
     private final static String LWSP = "\\p{Blank}"; /* linear-white-space */

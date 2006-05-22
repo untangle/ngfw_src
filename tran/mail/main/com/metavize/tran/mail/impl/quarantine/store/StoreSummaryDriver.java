@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,11 +11,12 @@
 
 package com.metavize.tran.mail.impl.quarantine.store;
 
+import java.io.*;
+import java.util.*;
+
 import com.metavize.tran.util.IOUtil;
 import com.metavize.tran.util.Pair;
 import org.apache.log4j.Logger;
-import java.io.*;
-import java.util.*;
 
 
 /**
@@ -44,8 +45,7 @@ public /*temp*/ class StoreSummaryDriver
   private static final int VERSION = 1;
 
 
-  private static final Logger s_logger =
-    Logger.getLogger(StoreSummaryDriver.class);
+  private static final Logger s_logger = Logger.getLogger(StoreSummaryDriver.class);
 
   /**
    * Marks the file as "open", meaning if there is a crash
@@ -68,11 +68,11 @@ public /*temp*/ class StoreSummaryDriver
    *
    * @return the "result".  The "StoreSummary" will be null
    *         unless the result was "OK".
-   */  
+   */
   static Pair<FileReadOutcome, StoreSummary> readSummary(File inboxDir) {
-  
+
     FileInputStream fIn = null;
-    
+
     try {
       File f = new File(inboxDir, CLOSED_FILE_NAME);
       if(!f.exists()) {
@@ -94,7 +94,7 @@ public /*temp*/ class StoreSummaryDriver
       while(mapping != null) {
         ret.addInbox(mapping.a, mapping.b);
         mapping = readInboxSummary(reader);
-      }      
+      }
       IOUtil.close(fIn);
       return new Pair<FileReadOutcome, StoreSummary>(FileReadOutcome.OK, ret);
     }
@@ -107,7 +107,7 @@ public /*temp*/ class StoreSummaryDriver
       s_logger.warn("", ex);
       IOUtil.close(fIn);
       return new Pair<FileReadOutcome, StoreSummary>(FileReadOutcome.FILE_CORRUPT);
-    }     
+    }
     catch(IOException ex) {
       s_logger.warn("", ex);
       IOUtil.close(fIn);
@@ -115,17 +115,17 @@ public /*temp*/ class StoreSummaryDriver
     }
   }
 
-  
-  
+
+
 
 
   static boolean writeSummary(File dir,
     StoreSummary summary) {
-    
+
     if(!dir.exists()) {
       dir.mkdir();
-    }    
-    
+    }
+
     File f = null;
     FileOutputStream fOut = null;
     try {
@@ -153,7 +153,7 @@ public /*temp*/ class StoreSummaryDriver
       if(!f.renameTo(new File(dir, CLOSED_FILE_NAME))) {
         IOUtil.delete(f);
         return false;
-      }      
+      }
       return true;
     }
     catch(Exception ex) {
@@ -161,7 +161,7 @@ public /*temp*/ class StoreSummaryDriver
       IOUtil.close(fOut);
       IOUtil.delete(f);
       return false;
-    }        
+    }
   }
 
 
@@ -192,8 +192,8 @@ public /*temp*/ class StoreSummaryDriver
     catch(EOFException ex) {
       return null;
     }
-    
-  }    
+
+  }
 
 
 
@@ -219,10 +219,10 @@ public /*temp*/ class StoreSummaryDriver
       map.addInbox(s, new RelativeFileName(s.substring(0, 1) + "XX/123"));
     }
 
-    
+
     System.out.println("1 (write): " + writeMetadata(new File(targetDir, "test1"), map));
 
-    
+
     File dir2 = new File(targetDir, "test2");
     System.out.println("2 (write): " + writeMetadata(dir2, map));
     Pair<FileReadOutcome, QuarantineMetadata> read = readMetadata(dir2);
@@ -232,15 +232,15 @@ public /*temp*/ class StoreSummaryDriver
       RelativeFileName dirName = read.b.getInboxDir(s);
       System.out.println("2 Dir for: " + s + ": \"" +
         (dirName==null?"<null return>":dirName.relativePath) + "\"");
-        
-    }
-    
 
-        
+    }
+
+
+
   }
-  
-*/  
-  
-  
-  
+
+*/
+
+
+
 }

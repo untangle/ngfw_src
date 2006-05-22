@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -17,9 +17,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tran.PipelineEndpoints;
-import org.apache.log4j.Logger;
 
 /**
  * Log e-mail message info.
@@ -40,8 +38,6 @@ public class MessageInfo implements Serializable
     // How big a varchar() do we get for default String fields.  This
     // should be elsewhere. XXX
     public static final int DEFAULT_STRING_SIZE = 255;
-
-    // private static final Logger zLog = Logger.getLogger(MessageInfo.class.getName());
 
     /* columns */
     private Long id; /* msg_id */

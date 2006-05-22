@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -25,7 +25,6 @@ import com.metavize.tran.mail.papi.MessageInfo;
 public class SafelistSender implements Serializable
 {
     /* constants */
-    //private static final Logger logger = Logger.getLogger(SafelistSender.class.getName());
 
     /* columns */
     private Long id;

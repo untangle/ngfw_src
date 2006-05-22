@@ -58,8 +58,7 @@ class TransformManagerImpl implements TransformManager
 
     private static final Object LOCK = new Object();
 
-    private static final Logger logger = Logger
-        .getLogger(TransformManagerImpl.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private static TransformManagerImpl TRANSFORM_MANAGER;
 

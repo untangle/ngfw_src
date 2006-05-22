@@ -22,7 +22,7 @@ import org.apache.log4j.Logger;
 
 class TargetReaper implements Runnable
 {
-    private static final Logger logger = Logger.getLogger(TargetReaper.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private final ReferenceQueue referenceQueue = new ReferenceQueue();
     private final Map<Reference, Runnable> actions

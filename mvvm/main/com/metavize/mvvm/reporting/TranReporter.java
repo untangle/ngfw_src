@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -35,7 +35,7 @@ public class TranReporter {
     public static final int CHART_WIDTH = 600;
     public static final int CHART_HEIGHT = 200;
 
-    private static final Logger logger = Logger.getLogger(Reporter.class);
+    private final Logger logger = Logger.getLogger(getClass());
     public static final String ICON_DESC = "IconDesc42x42.png";
     public static final String ICON_ORG = "IconOrg42x42.png";
     private static final String SUMMARY_FRAGMENT_DAILY = "sum-daily.html";
@@ -109,7 +109,7 @@ public class TranReporter {
                 extraParams.put("virusVendor", scanner.getVendorName());
                 extraParams.put("spamVendor", scanner.getVendorName());
             }
-        } 
+        }
         is.close();
 
         // Now do everything else.
@@ -166,7 +166,7 @@ public class TranReporter {
                     ReportGraph reportGraph;
                     String name = tok.nextToken();
                     reportGraph = (ReportGraph) reportClass.newInstance();
-		    reportGraph.setExtraParams(extraParams);
+            reportGraph.setExtraParams(extraParams);
 
                     if (true == settings.getDaily()) {
                         logger.debug("Found daily graph: " + className);
@@ -187,7 +187,7 @@ public class TranReporter {
                     }
                 } catch (Exception x) {
                     logger.error("Unable to generate summary graph", x);
-		    x.printStackTrace();
+            x.printStackTrace();
                 }
             }
             else {
@@ -356,7 +356,7 @@ public class TranReporter {
         JFreeChart jFreeChart = reportGraph.doInternal(conn, scriptlet);
         logger.debug("Exporting report to: " + fileName);
         //ChartUtilities.saveChartAsJPEG(new File(fileName), CHART_QUALITY, jFreeChart, CHART_WIDTH, CHART_HEIGHT);
-	ChartUtilities.saveChartAsPNG(new File(fileName), jFreeChart, CHART_WIDTH, CHART_HEIGHT, null, false, CHART_COMPRESSION_PNG);
+    ChartUtilities.saveChartAsPNG(new File(fileName), jFreeChart, CHART_WIDTH, CHART_HEIGHT, null, false, CHART_COMPRESSION_PNG);
     }
 
     private class FakeScriptlet extends JRDefaultScriptlet

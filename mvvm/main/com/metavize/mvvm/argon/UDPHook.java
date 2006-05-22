@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -13,27 +13,26 @@ package com.metavize.mvvm.argon;
 
 import java.util.Iterator;
 
-import com.metavize.mvvm.policy.PolicyRule;
-import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.jnetcap.IPTraffic;
-import com.metavize.jnetcap.Netcap;
 import com.metavize.jnetcap.NetcapHook;
 import com.metavize.jnetcap.NetcapSession;
 import com.metavize.jnetcap.NetcapUDPSession;
-import com.metavize.jvector.IncomingSocketQueue;
-import com.metavize.jvector.OutgoingSocketQueue;
+import com.metavize.jvector.Sink;
+import com.metavize.jvector.Sink;
 import com.metavize.jvector.Sink;
 import com.metavize.jvector.Source;
 import com.metavize.jvector.UDPSink;
 import com.metavize.jvector.UDPSource;
+import com.metavize.mvvm.policy.PolicyRule;
+import com.metavize.mvvm.tran.PipelineEndpoints;
 import org.apache.log4j.Logger;
 
 
 public class UDPHook implements NetcapHook
 {
     private static UDPHook INSTANCE;
-    private static final Logger logger = Logger.getLogger( UDPHook.class );
-    
+    private final Logger logger = Logger.getLogger(getClass());
+
     private int icmpServerId = -1;
 
     public static UDPHook getInstance() {
@@ -133,7 +132,7 @@ public class UDPHook implements NetcapHook
                 serverTraffic.ttl( session.ttl());
                 serverTraffic.tos( session.tos());
                 /** XXX Setup the options */
-                
+
                 /* Update the ICMP id */
                 icmpServerId = session.icmpId();
             }
@@ -147,11 +146,11 @@ public class UDPHook implements NetcapHook
 
                 serverTraffic.mark( IntfConverter.toNetcap( clientSide.clientIntf()));
             }
-            
+
             serverTraffic.lock();
-            
+
             byte intf = IntfConverter.toNetcap( serverSide.serverIntf());
-                        
+
             /* XXXX ICMP HACK */
             if ( isIcmpSession ) {
                 if ( !netcapUDPSession.icmpMerge( serverTraffic, icmpServerId, intf )) {
@@ -189,7 +188,7 @@ public class UDPHook implements NetcapHook
                 /* Packets cannot go back out on the server interface */
                 clientTraffic.mark( IntfConverter.toNetcap( serverSide.serverIntf()));
             }
-            
+
             clientTraffic.lock();
             return true;
         }
@@ -236,7 +235,7 @@ public class UDPHook implements NetcapHook
             } else {
                 request = new UDPNewSessionRequestImpl( prevSession, agent, originalServerIntf, pe );
             }
-                    
+
             PolicyRule pr = pipelineDesc.getPolicyRule();
             boolean isInbound = pr == null ? true : pr.isInbound();
             UDPSession session = agent.getNewSessionEventListener().newSession( request, isInbound );
@@ -266,14 +265,14 @@ public class UDPHook implements NetcapHook
             }
 
             /* No longer need these */
-            
+
             try {
                 if ( serverTraffic != null )
                     serverTraffic.raze();
             } catch ( Exception e ) {
                 logger.error( "Unable to raze server traffic", e );
             }
-        
+
             try {
                 if ( clientTraffic != null )
                     clientTraffic.raze();
@@ -305,8 +304,8 @@ public class UDPHook implements NetcapHook
                 super.shutdownEvent( source );
                 checkEndpoints();
             }
-            
-            public void shutdownEvent( Sink sink ) 
+
+            public void shutdownEvent( Sink sink )
             {
                 super.shutdownEvent( sink );
                 checkEndpoints();

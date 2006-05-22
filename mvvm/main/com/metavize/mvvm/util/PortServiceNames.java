@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -31,8 +31,6 @@ public class PortServiceNames {
     private final static String UDP_PROTO_NAME = "udp";
     private final static String TCP_PROTO_NAME = "tcp";
 
-    private static final Logger logger = Logger.getLogger(PortServiceNames.class);
-
     private static PortServiceNames thePSN;
 
     private Map<Integer, String> tcpMap;
@@ -63,6 +61,7 @@ public class PortServiceNames {
                 br.close();
             } catch (IOException ioe) {
                 String msg = "Services file " + servicesFile + " not found";
+                Logger logger = Logger.getLogger(PortServiceNames.class);
                 logger.error(msg);
                 throw new IllegalArgumentException(msg);
             }
@@ -105,7 +104,7 @@ public class PortServiceNames {
         if (! st.hasMoreTokens()) {
             return; // bad line
         }
-        String portValue = st.nextToken().trim();       
+        String portValue = st.nextToken().trim();
         int port;
         try {
             port = Integer.parseInt(portValue);

@@ -24,8 +24,7 @@ import org.apache.log4j.Logger;
 
 public class PhishImapFactory implements TokenHandlerFactory
 {
-  private static final Logger m_logger =
-    Logger.getLogger(PhishImapFactory.class);
+  private final Logger m_logger = Logger.getLogger(getClass());
 
   private final MailExport m_mailExport;
   private final ClamPhishTransform m_transform;

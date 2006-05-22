@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -14,9 +14,9 @@ package com.metavize.mvvm.reporting;
 import java.io.*;
 import java.net.*;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.jar.*;
-import java.text.SimpleDateFormat;
 
 import com.metavize.mvvm.reporting.summary.*;
 import net.sf.jasperreports.engine.*;
@@ -29,7 +29,7 @@ import org.xml.sax.*;
 public class Reporter
 {
     private static final String SYMLINK_CMD = "/bin/ln -s";
-    private static final Logger logger = Logger.getLogger(Reporter.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEEE MMMM d, yyyy");
 
@@ -120,7 +120,7 @@ public class Reporter
             addParam(envBWriter, "MV_EG_REPORT_END", Util.midnight);
             addParam(envBWriter, "MV_EG_WEEK_START", Util.lastweek);
             addParam(envBWriter, "MV_EG_MONTH_START", Util.lastmonth);
-            
+
 
             envBWriter.close();
             envFWriter.close();
@@ -131,6 +131,8 @@ public class Reporter
 
     public static void main(String[] args)
     {
+        Logger logger = Logger.getLogger(Reporter.class);
+
         if (args.length < 2) {
             logger.warn("usage: reporter base-dir days-to-save [mars]");
             System.exit(1);

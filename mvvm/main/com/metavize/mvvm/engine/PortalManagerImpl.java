@@ -434,7 +434,6 @@ class PortalManagerImpl implements LocalPortalManager
             }
             return live;
         }
-
     }
 
     private class PortalAuthenticator extends FormAuthenticator

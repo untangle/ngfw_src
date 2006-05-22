@@ -59,8 +59,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
     private static final Object LOCK = new Object();
 
-    private static final Logger logger = Logger
-        .getLogger(ToolboxManagerImpl.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private static ToolboxManagerImpl TOOLBOX_MANAGER;
 

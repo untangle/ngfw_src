@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,13 +11,13 @@
 
 package com.metavize.tran.mail.impl.quarantine.store;
 
-import org.apache.log4j.Logger;
 import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.io.IOException;
 import java.io.EOFException;
-import com.metavize.tran.util.Pair;
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import com.metavize.tran.util.CharSequenceUtil;
+import org.apache.log4j.Logger;
 
 
 /**
@@ -35,12 +35,7 @@ class AbstractDriver {
   //New line.  I know we're always on Unix, but old
   //habits die hard...
   private static final String NEW_LINE =
-    System.getProperty("line.separator", "\n");  
-
-
-  private static final Logger s_logger =
-    Logger.getLogger(AbstractDriver.class);
-
+    System.getProperty("line.separator", "\n");
 
   /**
    * Enum of outcomes for reading files.
@@ -50,8 +45,8 @@ class AbstractDriver {
     NO_SUCH_FILE,
     EXCEPTION,
     FILE_CORRUPT
-  };     
-    
+  };
+
 
   /**
    * This method implicitly trims the line
@@ -80,8 +75,8 @@ class AbstractDriver {
   static long readLong(BufferedReader reader)
     throws EOFException, IOException, BadFileEntry {
     return aToL(readLine(reader, true, true));
-  }  
-    
+  }
+
   /**
    * This method implicitly trims the line
    *
@@ -130,7 +125,7 @@ class AbstractDriver {
    *
    * @exception BadFileEntry if the line was read, but
    *            did not match <code>expect</code>
-   */  
+   */
   static void readLineExact(BufferedReader reader,
     String expect) throws EOFException,
       BadFileEntry, IOException{
@@ -138,7 +133,7 @@ class AbstractDriver {
     if(!read.equals(expect)) {
       throw new BadFileEntry("Read \"" +
         read + "\" Expected \"" + expect + "\"");
-    }  
+    }
   }
 
   /**
@@ -159,13 +154,13 @@ class AbstractDriver {
    *
    * @exception BadFileEntry if the line was read, but
    *            did not start with <code>tag</code>
-   */  
+   */
   static String readTaggedEntry(BufferedReader reader,
     String tag) throws EOFException,
       BadFileEntry, IOException{
 
     String read = readLine(reader, true, true);
-    
+
     if(!read.startsWith(tag)) {
       throw new BadFileEntry("Expected line \"" +
         read + "\" to start with \"" + tag + "\"");
@@ -182,7 +177,7 @@ class AbstractDriver {
    *
    *
    * @exception IOException from the underlying IO system
-   */  
+   */
   static void writeTaggedEntry(PrintWriter pw,
     String tag,
     String entry) throws IOException {
@@ -209,12 +204,12 @@ class AbstractDriver {
    *
    * @exception BadFileEntry if the line(s) was read, but
    *            did not conform to the correct multiline format
-   */  
+   */
   static String readMultilineEntry(BufferedReader reader)
     throws EOFException, BadFileEntry, IOException{
-  
+
     String read = readLine(reader, true, true);
-    
+
     int index = read.indexOf(':');
     if(index == -1) {
       throw new BadFileEntry("Expected line \"" +
@@ -254,7 +249,7 @@ class AbstractDriver {
    * @param value the value to be written.
    *
    * @exception IOException from the underlying IO system
-   */  
+   */
   static void writeMultilineEntry(PrintWriter writer,
     String value) throws IOException {
     writer.print(Integer.toString(
@@ -317,8 +312,8 @@ class AbstractDriver {
     catch(Exception ex) {
       throw new BadFileEntry("Unable to parse \"" +
         str + "\" into long");
-    }    
-  }  
+    }
+  }
 
   /**
    * Convert a string to
@@ -343,7 +338,7 @@ class AbstractDriver {
    */
   static String nullToQQ(String s) {
     return s==null?"":s;
-  }  
+  }
 
 
 
@@ -360,6 +355,8 @@ class AbstractDriver {
    */
   static boolean readUntil(BufferedReader reader,
     String match) {
+      Logger logger = Logger.getLogger(AbstractDriver.class);
+
     try {
       while(true) {
         String line = reader.readLine();
@@ -378,7 +375,7 @@ class AbstractDriver {
       }
     }
     catch(Exception ex) {
-      s_logger.warn("Exception reading line", ex);
+      logger.warn("Exception reading line", ex);
       return false;
     }
   }

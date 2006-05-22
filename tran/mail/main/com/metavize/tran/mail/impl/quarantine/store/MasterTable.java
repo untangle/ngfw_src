@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -10,12 +10,13 @@
  */
 
 package com.metavize.tran.mail.impl.quarantine.store;
+import java.io.File;
+import java.util.Map;
+import java.util.Set;
+
 import com.metavize.tran.mail.papi.quarantine.InboxRecord;
 import com.metavize.tran.util.Pair;
 import org.apache.log4j.Logger;
-import java.io.File;
-import java.util.Set;
-import java.util.Map;
 
 //========================================================
 // For add/remove operations, we make a copy
@@ -35,8 +36,7 @@ import java.util.Map;
  */
 final class MasterTable {
 
-  private static final Logger s_logger =
-    Logger.getLogger(MasterTable.class);
+  private final Logger m_logger = Logger.getLogger(getClass());
 
   private File m_rootDir;
   private StoreSummary m_summary;
@@ -58,40 +58,41 @@ final class MasterTable {
    */
   static MasterTable open(File rootDir,
     InboxDirectoryTree dirTracker) {
+    Logger logger = Logger.getLogger(MasterTable.class);
 
     Pair<StoreSummaryDriver.FileReadOutcome, StoreSummary> read =
       StoreSummaryDriver.readSummary(rootDir);
 
     boolean needRebuild = false;
-    
+
     switch(read.a) {
       case OK:
-        s_logger.debug("Read existing StoreSummary file from disk");
+        logger.debug("Read existing StoreSummary file from disk");
         StoreSummaryDriver.openSummary(rootDir);
         needRebuild = false;//redundant
         break;
       case NO_SUCH_FILE:
-        s_logger.warn("No store summary on disk.  Either this is a " +
+        logger.warn("No store summary on disk.  Either this is a " +
           "fresh startup, or the system experienced an improper shutdown " +
           "on last run");
         needRebuild = true;
         break;
       case EXCEPTION:
-        s_logger.warn("Store summary cannot be read (system halt while writing to disk?). " +
+        logger.warn("Store summary cannot be read (system halt while writing to disk?). " +
           "Rebuild summary from Inbox scans");
         needRebuild = true;
         break;
       case FILE_CORRUPT:
-        s_logger.warn("Store summary corrupt (system halt while writing to disk?). " +
+        logger.warn("Store summary corrupt (system halt while writing to disk?). " +
           "Rebuild summary from Inbox scans");
         needRebuild = true;
     }
 
     if(needRebuild) {
       RebuildingVisitor visitor = new RebuildingVisitor();
-      s_logger.debug("About to scan Inbox directories to rebuild summary");
+      logger.debug("About to scan Inbox directories to rebuild summary");
       dirTracker.visitInboxes(visitor);
-      s_logger.debug("Done scanning Inbox directories to rebuild summary");
+      logger.debug("Done scanning Inbox directories to rebuild summary");
       return new MasterTable(rootDir, visitor.getSummary());
     }
     else {
@@ -147,7 +148,7 @@ final class MasterTable {
    * inbox exists.
    *
    * PRE: address lower case
-   */  
+   */
   synchronized boolean mailRemoved(String address, long sz) {
     InboxSummary meta = m_summary.getInbox(address);
     if(meta == null) {
@@ -163,7 +164,7 @@ final class MasterTable {
    * inbox exists.
    *
    * PRE: address lower case
-   */  
+   */
   synchronized boolean updateMailbox(String address,
     long totalSz, int totalMails) {
     InboxSummary meta = m_summary.getInbox(address);
@@ -195,7 +196,7 @@ final class MasterTable {
    */
   int getTotalInboxes() {
     return m_summary.size();
-  }  
+  }
 
   /**
    * Close this table, causing data to be written
@@ -211,12 +212,12 @@ final class MasterTable {
   private void save() {
     if(m_closing) {
       if(!StoreSummaryDriver.writeSummary(m_rootDir, m_summary)) {
-        s_logger.warn("Unable to save StoreSummary.  Next startup " +
+        m_logger.warn("Unable to save StoreSummary.  Next startup " +
           "will have to rebuild index");
       }
     }
   }
-  
+
 
 
   /**
@@ -239,7 +240,7 @@ final class MasterTable {
    */
   Set<Map.Entry<String,InboxSummary>> entries() {
     return m_summary.entries();
-  }  
+  }
 
   //-------------- Inner Class ---------------------
 
@@ -250,7 +251,7 @@ final class MasterTable {
     implements InboxDirectoryTreeVisitor {
 
     private StoreSummary m_storeMeta = new StoreSummary();
-    
+
     public void visit(RelativeFile f) {
       if(!f.file.isDirectory()) {
         //Defensive programming against myself!
@@ -276,7 +277,7 @@ final class MasterTable {
     StoreSummary getSummary() {
       return m_storeMeta;
     }
-    
+
   }
-  
+
 }

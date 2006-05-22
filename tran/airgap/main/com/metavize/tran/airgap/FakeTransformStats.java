@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,8 +12,9 @@ package com.metavize.tran.airgap;
 
 import java.io.*;
 import java.util.*;
-import org.apache.log4j.Logger;
+
 import com.metavize.mvvm.tran.TransformStats;
+import org.apache.log4j.Logger;
 
 /**
     // Airgap isn't real, so we get stats from /proc/net/dev, which looks like:
@@ -45,8 +46,7 @@ class FakeTransformStats {
     private static final String TUN_DEV_PREFIX = "tun";
     private static final String TAP_DEV_PREFIX = "tap";
 
-    private static final Logger logger = Logger
-        .getLogger(FakeTransformStats.class.getName());
+    private static final Logger logger = Logger.getLogger(FakeTransformStats.class);
 
     public static void update(TransformStats stats) {
         String line = null;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003 Metavize Inc.
+ * Copyright (c) 2003, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,16 +11,12 @@
 
 package com.metavize.mvvm.argon;
 
-import java.net.InetAddress;
+
+
+
+
 
 import org.apache.log4j.Logger;
-
-import com.metavize.jvector.IncomingSocketQueue;
-import com.metavize.jvector.OutgoingSocketQueue;
-import com.metavize.jvector.Source;
-import com.metavize.jvector.Sink;
-import com.metavize.jvector.UDPSink;
-
 public class UDPSessionImpl extends IPSessionImpl implements UDPSession
 {
     protected final byte ttl;
@@ -28,24 +24,24 @@ public class UDPSessionImpl extends IPSessionImpl implements UDPSession
     protected final byte options[];
     protected final int  icmpId;
 
-    private static final Logger logger = Logger.getLogger( UDPSessionImpl.class );
+    private final Logger logger = Logger.getLogger(getClass());
 
     public UDPSessionImpl( UDPNewSessionRequest request )
     {
         super( request );
-        
+
         ttl     = request.ttl();
         tos     = request.tos();
         options = request.options();
         icmpId  = request.icmpId();
     }
-    
+
     /**
      * Retrieve the TTL for a session, this only has an impact for the last session in the chain
      * when passing data crumbs (UDPPacketCrumbs have TTL value inside of them)
      */
-    public byte ttl() 
-    { 
+    public byte ttl()
+    {
         return ttl;
     }
 

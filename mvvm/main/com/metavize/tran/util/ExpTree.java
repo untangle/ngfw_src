@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003 Metavize Inc.
+ * Copyright (c) 2003, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -10,9 +10,10 @@
  */
 package com.metavize.tran.util;
 
-import java.util.Hashtable;
 import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.LinkedList;
+
 import org.apache.log4j.Logger;
 
 /* expression keywords include
@@ -24,7 +25,7 @@ import org.apache.log4j.Logger;
 public class ExpTree
 {
     /* constants */
-    private static final Logger zLog = Logger.getLogger(ExpTree.class.getName());
+    private final Logger zLog = Logger.getLogger(getClass());
 
     private static final int INIT_SZ = 5;
 

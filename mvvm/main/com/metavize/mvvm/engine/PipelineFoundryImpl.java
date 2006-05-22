@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -48,8 +48,7 @@ class PipelineFoundryImpl implements PipelineFoundry
 
     private static final EventLogger eventLogger
         = MvvmContextImpl.context().eventLogger();
-    private static final Logger logger
-        = Logger.getLogger(PipelineFoundryImpl.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private final Map<Fitting, List<MPipe>> inboundMPipes
         = new HashMap<Fitting, List<MPipe>>();
@@ -72,7 +71,7 @@ class PipelineFoundryImpl implements PipelineFoundry
 
     /* Rule used to track u-turn sessions */
     /* rbscott added this nugget for u-turn traffic, should be verified by aaron and john. */
-    private static final SystemPolicyRule uturnPolicyRule = 
+    private static final SystemPolicyRule uturnPolicyRule =
         new SystemPolicyRule((byte)-1, (byte)-1, (Policy)null, true);
 
     private PipelineFoundryImpl() { }
@@ -196,7 +195,7 @@ class PipelineFoundryImpl implements PipelineFoundry
             logger.debug("removed: " + pipeline + " for: " + start.id());
         }
 
-        // Endpoints can be null, if the session was never properly set up at all 
+        // Endpoints can be null, if the session was never properly set up at all
         // (unknown server interface for example)
         if (pe != null)
             eventLogger.log(new PipelineStats(start, end, pe));

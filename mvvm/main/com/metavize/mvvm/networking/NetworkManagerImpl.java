@@ -12,7 +12,6 @@
 package com.metavize.mvvm.networking;
 
 import java.net.InetAddress;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -33,8 +32,8 @@ import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
 import com.metavize.mvvm.networking.internal.RemoteInternalSettings;
 import com.metavize.mvvm.networking.internal.ServicesInternalSettings;
 import com.metavize.mvvm.security.Tid;
-import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.HostName;
+import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.TransformManager;
 import com.metavize.mvvm.tran.ValidateException;
 import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
@@ -54,7 +53,7 @@ public class NetworkManagerImpl implements NetworkManager
     static final String ETC_INTERFACES_FILE = "/etc/network/interfaces";
     static final String ETC_RESOLV_FILE = "/etc/resolv.conf";
 
-    private static final Logger logger = Logger.getLogger( NetworkManagerImpl.class );
+    private final Logger logger = Logger.getLogger(getClass());
 
     static final String BUNNICULA_BASE = System.getProperty( "bunnicula.home" );
     static final String BUNNICULA_CONF = System.getProperty( "bunnicula.conf.dir" );
@@ -186,7 +185,7 @@ public class NetworkManagerImpl implements NetworkManager
 
         NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
         NetworkSpacesInternalSettings internal = nup.toInternal( settings );
-        
+
         /* If the saving is disable, then don't actually reconfigured,
          * just save the settings to the database. */
         if ( configure ) {
@@ -847,7 +846,7 @@ public class NetworkManagerImpl implements NetworkManager
         writeInterfaces( newSettings );
 
         List<NetworkSpaceInternal> networkSpaceList = newSettings.getNetworkSpaceList();
-        
+
         boolean resolvConf = true;
 
         if ( networkSpaceList == null || networkSpaceList.size() == 0 ) {
@@ -856,7 +855,7 @@ public class NetworkManagerImpl implements NetworkManager
             /* Don't write the resolv conf if dhcp is enabled on the first space. */
             resolvConf = false;
         }
-        
+
         if ( resolvConf ) writeResolvConf( newSettings );
     }
 
@@ -960,7 +959,7 @@ public class NetworkManagerImpl implements NetworkManager
     }
 
     /**
-     * RBS: 04/05/2006: After rereading this, it is a little redundant code. 
+     * RBS: 04/05/2006: After rereading this, it is a little redundant code.
      * the only caller to this function has internal settings and then converts
      * them to settings in order to call this function.  It would make more sense
      * to pass in the internal, and convert those to settings rather than going
@@ -988,7 +987,7 @@ public class NetworkManagerImpl implements NetworkManager
             logger.error( "Unable to save the network settings." );
             return;
         }
-        
+
         this.networkSettings = nssi;
     }
 
@@ -1091,18 +1090,18 @@ public class NetworkManagerImpl implements NetworkManager
             IPMatcherFactory ipmf = IPMatcherFactory.getInstance();
 
             List<IPNetwork> networkList = primary.getNetworkList();
-            
+
             InetAddress addressArray[] = new InetAddress[networkList.size()];
 
             /* Add all of the addresses to the address array */
             int c = 0;
             for ( IPNetwork network : networkList ) addressArray[c++] = network.getNetwork().getAddr();
-            
+
             InetAddress primaryAddress = primary.getPrimaryAddress().getNetwork().getAddr();
 
             logger.debug( "Setting local address: " + primaryAddress );
             logger.debug( "Setting public address array to: " + Arrays.toString( addressArray ));
-                        
+
             ipmf.setLocalAddresses( primaryAddress, addressArray );
         }
     }

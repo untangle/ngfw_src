@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,28 +11,26 @@
 
 package com.metavize.mvvm.networking;
 
-import org.apache.log4j.Logger;
-
-import com.metavize.mvvm.tran.script.ScriptWriter;
-import com.metavize.mvvm.tran.IPaddr;
-
 import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
+import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.script.ScriptWriter;
+import org.apache.log4j.Logger;
 
 import static com.metavize.mvvm.tran.script.ScriptWriter.COMMENT;
 import static com.metavize.mvvm.tran.script.ScriptWriter.METAVIZE_HEADER;
 
 class ResolvScriptWriter extends ScriptWriter
 {
-    private static final Logger logger = Logger.getLogger( ResolvScriptWriter.class );
+    private final Logger logger = Logger.getLogger(getClass());
 
     static final String NS_PARAM = "nameserver";
 
-    private static final String RESOLV_HEADER = 
+    private static final String RESOLV_HEADER =
         COMMENT + METAVIZE_HEADER +
         COMMENT + " name resolution settings\n";
 
     private final NetworkSpacesInternalSettings settings;
-    
+
     ResolvScriptWriter( NetworkSpacesInternalSettings settings )
     {
         super();
@@ -43,15 +41,15 @@ class ResolvScriptWriter extends ScriptWriter
     {
         // ???? Just always write the file, just in case
         // if ( this.settings.isDhcpEnabled()) return;
-        
+
         addDns( settings.getDns1());
-        addDns( settings.getDns2());    
+        addDns( settings.getDns2());
     }
 
     private void addDns( IPaddr dns )
     {
         if ( dns == null || dns.isEmpty()) return;
-        
+
         appendVariable( NS_PARAM, dns.toString());
     }
 
@@ -71,10 +69,10 @@ class ResolvScriptWriter extends ScriptWriter
 
         appendLine( variable + " " + value );
     }
-    
+
     @Override
     protected String header()
     {
         return RESOLV_HEADER;
-    }    
+    }
 }

@@ -44,13 +44,13 @@ public class IDSTest {
         }
     }
 
-    private static final Logger log = Logger.getLogger(IDSTest.class);
+    private final Logger log = Logger.getLogger(getClass());
     private IDSRuleManager manager = new IDSRuleManager(null);
 
-    static {
+    public IDSTest()
+    {
         log.setLevel(Level.ALL);
     }
-    public IDSTest() {}
 
     public boolean runTest() {
         generateRuleTest();

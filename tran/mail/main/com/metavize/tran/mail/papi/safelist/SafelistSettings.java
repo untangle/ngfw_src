@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,7 +12,6 @@
 package com.metavize.tran.mail.papi.safelist;
 
 import java.io.Serializable;
-//import org.apache.log4j.Logger;
 
 /**
  * Setting for safelist (recipient and sender pair).
@@ -24,8 +23,6 @@ import java.io.Serializable;
  */
 public class SafelistSettings implements Serializable
 {
-    //private final Logger logger = Logger.getLogger(SafelistSettings.class);
-
     private static final long serialVersionUID = -7466793822226799781L;
 
     private Long id;

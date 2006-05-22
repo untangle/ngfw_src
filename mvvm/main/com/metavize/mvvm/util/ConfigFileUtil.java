@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
 
 public class ConfigFileUtil {
 
-    private static final Logger logger = Logger.getLogger( ConfigFileUtil.class );
+    private static final Logger logger = Logger.getLogger(ConfigFileUtil.class);
 
     private static final String CHMOD_CMD          = "/bin/chmod";
     private static final String CHMOD_PROTECT_CMD          = "/bin/chmod go-rwx ";

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -27,13 +27,13 @@ import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.tran.mail.PopCasing;
 import com.metavize.tran.mail.papi.AddressKind;
-import com.metavize.tran.mail.papi.DoNotCareT;
 import com.metavize.tran.mail.papi.DoNotCareChunkT;
+import com.metavize.tran.mail.papi.DoNotCareT;
+import com.metavize.tran.mail.papi.MIMEMessageT;
+import com.metavize.tran.mail.papi.MIMEMessageTrickleT;
 import com.metavize.tran.mail.papi.MessageBoundaryScanner;
 import com.metavize.tran.mail.papi.MessageInfo;
 import com.metavize.tran.mail.papi.MessageInfoFactory;
-import com.metavize.tran.mail.papi.MIMEMessageT;
-import com.metavize.tran.mail.papi.MIMEMessageTrickleT;
 import com.metavize.tran.mail.papi.pop.PopReply;
 import com.metavize.tran.mail.papi.pop.PopReplyMore;
 import com.metavize.tran.mime.HeaderParseException;
@@ -51,7 +51,7 @@ import org.apache.log4j.Logger;
 
 public class PopServerParser extends AbstractParser
 {
-    private static final Logger logger = Logger.getLogger(PopServerParser.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private static final File BUNNICULA_TMP = new File(System.getProperty("bunnicula.tmp.dir"));
 

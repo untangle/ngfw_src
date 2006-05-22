@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -10,9 +10,8 @@
  */
 package com.metavize.tran.openvpn;
 
-import org.apache.log4j.Logger;
-
 import com.metavize.mvvm.tran.script.ScriptWriter;
+import org.apache.log4j.Logger;
 
 import static com.metavize.mvvm.tran.script.ScriptWriter.COMMENT;
 import static com.metavize.mvvm.tran.script.ScriptWriter.METAVIZE_HEADER;
@@ -20,12 +19,12 @@ import static com.metavize.mvvm.tran.script.ScriptWriter.METAVIZE_HEADER;
 
 class VpnScriptWriter extends ScriptWriter
 {
-    private static final Logger logger = Logger.getLogger( VpnScriptWriter.class );
+    private final Logger logger = Logger.getLogger(getClass());
 
-    private static final String OPENVPN_HEADER = 
+    private static final String OPENVPN_HEADER =
         COMMENT + METAVIZE_HEADER + "\n" +
         COMMENT + " OpenVPN(v2.0) configuration script\n\n";
-        
+
     VpnScriptWriter()
     {
         super();
@@ -49,7 +48,7 @@ class VpnScriptWriter extends ScriptWriter
             logger.warn( "NULL variable[" + variable +"] or value[" + variable + "], ignoring" );
             return;
         }
-        
+
         variable = variable.trim();
         value    = value.trim();
 

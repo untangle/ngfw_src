@@ -17,16 +17,15 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Random;
 
-import org.apache.log4j.Logger;
-
 import com.metavize.mvvm.ConnectivityTester;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.tran.script.ScriptRunner;
+import org.apache.log4j.Logger;
 
 class ConnectivityTesterImpl implements ConnectivityTester
 {
-    private static final Logger logger = Logger.getLogger( ConnectivityTesterImpl.class );
+    private final Logger logger = Logger.getLogger(getClass());
 
     private static final String BUNNICULA_BASE  = System.getProperty( "bunnicula.home" );
     private static final String DNS_TEST_SCRIPT    = BUNNICULA_BASE + "/networking/dns-test";
@@ -90,14 +89,14 @@ class ConnectivityTesterImpl implements ConnectivityTester
                     public void run()
                     {
                         try {
-                            ScriptRunner.getInstance().exec( BRIDGE_WAIT_SCRIPT, 
+                            ScriptRunner.getInstance().exec( BRIDGE_WAIT_SCRIPT,
                                                              String.valueOf( BRIDGE_WAIT_TIMEOUT ));
                         } catch ( Exception e ) {
                             logger.info( "Exception executing bridge wait script", e );
                         }
                     }
                 } );
-                
+
             bridge.start();
 
             bridge.join( BRIDGE_WAIT_TIMEOUT + 1000 );
@@ -105,7 +104,7 @@ class ConnectivityTesterImpl implements ConnectivityTester
         } catch ( Exception e ) {
             logger.warn( "unable to determine bridge status" );
         }
-    } 
+    }
 
     /**
      * Test that DNS is working

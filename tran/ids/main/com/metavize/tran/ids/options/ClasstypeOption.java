@@ -24,7 +24,7 @@ public class ClasstypeOption extends IDSOption {
     private static final int LOW_PRIORITY = 3;
     private static final int INFORMATIONAL_PRIORITY = 4; // Super low priority
 
-    private static final Logger logger = Logger.getLogger(ClasstypeOption.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     public ClasstypeOption(IDSDetectionEngine engine, IDSRuleSignature signature, String params, boolean initializeSettingsTime) {
         super(signature, params);

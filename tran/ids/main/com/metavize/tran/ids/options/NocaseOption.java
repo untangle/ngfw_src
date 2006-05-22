@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
 
 public class NocaseOption extends IDSOption {
 
-    private static final Logger logger = Logger.getLogger(NocaseOption.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     public NocaseOption(IDSRuleSignature signature, String params) {
         super(signature, params);

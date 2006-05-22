@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
 
 public class IDSRuleHeader {
 
-    private static final Logger logger = Logger.getLogger(IDSRuleHeader.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     public static final boolean IS_BIDIRECTIONAL = true;
     public static final boolean IS_SERVER = true;

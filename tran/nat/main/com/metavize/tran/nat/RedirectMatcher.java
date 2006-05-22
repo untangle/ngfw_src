@@ -13,20 +13,18 @@ package com.metavize.tran.nat;
 
 import java.net.InetAddress;
 
-import org.apache.log4j.Logger;
-
 import com.metavize.mvvm.networking.RedirectRule;
 import com.metavize.mvvm.networking.internal.RedirectInternal;
-
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
-import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
-import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
-import com.metavize.mvvm.tran.firewall.intf.IntfMatcher;
-import com.metavize.mvvm.tran.firewall.intf.IntfMatcherFactory;
-import com.metavize.mvvm.tran.firewall.port.PortMatcher;
-import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
 import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
 import com.metavize.mvvm.tran.firewall.TrafficIntfMatcher;
+import com.metavize.mvvm.tran.firewall.intf.IntfMatcher;
+import com.metavize.mvvm.tran.firewall.intf.IntfMatcherFactory;
+import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
+import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
+import com.metavize.mvvm.tran.firewall.port.PortMatcher;
+import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
+import org.apache.log4j.Logger;
 
 /**
  * A class for matching redirects
@@ -34,7 +32,7 @@ import com.metavize.mvvm.tran.firewall.TrafficIntfMatcher;
  *   This is a property which is not possible in hibernate objects.
  */
 class RedirectMatcher extends TrafficIntfMatcher {
-    private static final Logger logger = Logger.getLogger( RedirectMatcher.class );
+    private final Logger logger = Logger.getLogger(getClass());
 
     public static final RedirectMatcher MATCHER_DISABLED;
 
@@ -62,7 +60,7 @@ class RedirectMatcher extends TrafficIntfMatcher {
 
     /** Whether or not to log */
     private final boolean isLoggingEnabled;
-     
+
 
 
     private RedirectMatcher( boolean     isEnabled, boolean isLoggingEnabled,
@@ -74,7 +72,7 @@ class RedirectMatcher extends TrafficIntfMatcher {
                              int ruleIndex )
     {
         /* XXX logging should be pushed into a higher class, but for now just leave it in here */
-        super( isEnabled, protocol, srcIntf, dstIntf, srcAddress, dstAddress, 
+        super( isEnabled, protocol, srcIntf, dstIntf, srcAddress, dstAddress,
                srcPort, dstPort );
 
         this.isLoggingEnabled = isLoggingEnabled;
@@ -99,7 +97,7 @@ class RedirectMatcher extends TrafficIntfMatcher {
                      PortMatcher srcPort,    PortMatcher     dstPort,
                      boolean isDstRedirect,  InetAddress redirectAddress, int redirectPort )
     {
-        this( isEnabled, isLoggingEnabled, protocol, srcIntf, dstIntf, srcAddress, dstAddress, 
+        this( isEnabled, isLoggingEnabled, protocol, srcIntf, dstIntf, srcAddress, dstAddress,
               srcPort, dstPort, isDstRedirect, redirectAddress, redirectPort, 0 );
     }
 
@@ -186,7 +184,7 @@ class RedirectMatcher extends TrafficIntfMatcher {
         IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
         IPMatcherFactory ipmf = IPMatcherFactory.getInstance();
         PortMatcherFactory pmf = PortMatcherFactory.getInstance();
-        
+
         IntfMatcher intfAllMatcher = IntfMatcherFactory.getInstance().getAllMatcher();
         IPMatcher   ipAllMatcher   = IPMatcherFactory.getInstance().getAllMatcher();
         PortMatcher portAllMatcher = PortMatcherFactory.getInstance().getAllMatcher();
@@ -194,7 +192,7 @@ class RedirectMatcher extends TrafficIntfMatcher {
         InetAddress redirectAddress = null;
         if ( rule.getRedirectAddress() != null ) redirectAddress = rule.getRedirectAddress().getAddr();
 
-        return 
+        return
             new RedirectMatcher( rule.isLive(), rule.getLog(), rule.getProtocol(),
                                  intfAllMatcher,       intfAllMatcher,
                                  ipAllMatcher,         rule.getDstAddress(),
@@ -209,12 +207,12 @@ class RedirectMatcher extends TrafficIntfMatcher {
         IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
         IPMatcherFactory ipmf = IPMatcherFactory.getInstance();
         PortMatcherFactory pmf = PortMatcherFactory.getInstance();
-        
+
         MATCHER_DISABLED =
             new RedirectMatcher( false, false, ProtocolMatcher.MATCHER_NIL,
                                  imf.getNilMatcher(), imf.getNilMatcher(),
                                  ipmf.getNilMatcher(), ipmf.getNilMatcher(),
-                                 pmf.getNilMatcher(), pmf.getNilMatcher(), 
+                                 pmf.getNilMatcher(), pmf.getNilMatcher(),
                                  false, null, -1, -1 );
     }
 

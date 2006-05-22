@@ -17,8 +17,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.sql.SQLException;
 import java.util.Properties;
-import java.util.Properties;
-import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
@@ -32,7 +30,7 @@ public class Main
         MvvmRepositorySelector.get().init("");
     }
 
-    private static final Logger logger = Logger.getLogger(Main.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private URLClassLoader ucl;
     private Class mvvmPrivClass;

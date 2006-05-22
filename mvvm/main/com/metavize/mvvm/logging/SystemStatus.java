@@ -53,7 +53,7 @@ public class SystemStatus
         }
     }
 
-    private static final Logger logger = Logger.getLogger(LogMailer.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private JitterThread jitter = null;
 

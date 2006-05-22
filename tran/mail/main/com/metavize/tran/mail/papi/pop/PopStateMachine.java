@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -18,14 +18,14 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
 import com.metavize.mvvm.tapi.TCPSession;
-import com.metavize.tran.mail.papi.DoNotCareT;
 import com.metavize.tran.mail.papi.DoNotCareChunkT;
-import com.metavize.tran.mail.papi.MessageInfo;
-import com.metavize.tran.mail.papi.MessageTransmissionTimeoutStrategy;
+import com.metavize.tran.mail.papi.DoNotCareT;
 import com.metavize.tran.mail.papi.MIMEMessageT;
 import com.metavize.tran.mail.papi.MIMEMessageTrickleT;
-import com.metavize.tran.mime.InvalidHeaderDataException;
+import com.metavize.tran.mail.papi.MessageInfo;
+import com.metavize.tran.mail.papi.MessageTransmissionTimeoutStrategy;
 import com.metavize.tran.mime.HeaderParseException;
+import com.metavize.tran.mime.InvalidHeaderDataException;
 import com.metavize.tran.mime.MIMEMessage;
 import com.metavize.tran.mime.MIMEMessageHeaders;
 import com.metavize.tran.mime.MIMEPartParseException;
@@ -40,7 +40,7 @@ import org.apache.log4j.Logger;
 
 public abstract class PopStateMachine extends AbstractTokenHandler
 {
-    private final static Logger logger = Logger.getLogger(PopStateMachine.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     public enum ClientState {
         COMMAND,
@@ -239,7 +239,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
                 logger.error("problem occurred during scan; scan result for message may have been discarded: " + t);
                 zResult = handleException(ExceptionState.MESSAGE_COMPLETE, zMMessageT);
                 /* fall through */
-            }            
+            }
 
             resetServer(); /* done so reset */
             return zResult;

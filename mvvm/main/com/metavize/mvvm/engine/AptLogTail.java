@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -38,7 +38,7 @@ class AptLogTail implements Runnable
     private static final Pattern FETCH_PATTERN;
     private static final Pattern DOWNLOAD_PATTERN;
 
-    private static final Logger logger = Logger.getLogger(AptLogTail.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     static {
         FETCH_PATTERN = Pattern.compile("'(http://.*)' (.*\\.deb) ([0-9]+) ([0-9a-z]+)");

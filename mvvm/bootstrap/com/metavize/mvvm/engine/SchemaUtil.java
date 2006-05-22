@@ -26,8 +26,6 @@ import org.apache.log4j.Logger;
  */
 public class SchemaUtil
 {
-    private static final Logger logger = Logger.getLogger(SchemaUtil.class);
-
     private static final Set<String> CONVERTS = new HashSet<String>();
 
     // static methods ---------------------------------------------------------
@@ -66,11 +64,13 @@ public class SchemaUtil
                 p.waitFor();
             } catch (InterruptedException exn) {
                 // can happen from the EventLogger
+                Logger logger = Logger.getLogger(SchemaUtil.class);
                 logger.debug("waiting for update-schema");
                 break TRY_AGAIN;
             }
 
         } catch (IOException exn) {
+            Logger logger = Logger.getLogger(SchemaUtil.class);
             logger.warn("error in update-schema", exn);
         } finally {
             synchronized (CONVERTS) {

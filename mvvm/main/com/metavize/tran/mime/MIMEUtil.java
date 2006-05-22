@@ -6,26 +6,26 @@
   * Metavize Inc. ("Confidential Information").  You shall
   * not disclose such Confidential Information.
   *
-  * $Id:$
+  * $Id$
   */
 package com.metavize.tran.mime;
 
 import static com.metavize.tran.mime.HeaderNames.*;
-import java.io.ByteArrayOutputStream;
-import java.util.Date;
 import static com.metavize.tran.util.Ascii.*;
-import org.apache.log4j.Logger;
+
+import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import org.apache.log4j.Logger;
 
 /**
  * Utility methods for working with MIME
  */
 public class MIMEUtil {
-
-
-  private static final Logger m_logger = Logger.getLogger(MIMEUtil.class);
   public static final String MAIL_FORMAT_STR = "EEE, d MMM yyyy HH:mm:ss Z";
 
+    private static final Logger s_logger = Logger.getLogger(MIMEUtil.class);
 
   public static final byte[] MIME_SPECIALS = {
     (byte) '(',
@@ -44,7 +44,7 @@ public class MIMEUtil {
     (byte) '?',
     (byte) '='
   };
-  
+
   /**
    * Convienence blank array of MIMEParts
    */
@@ -86,7 +86,7 @@ public class MIMEUtil {
       return headerQuote(str);
     }
     return str;
-  }  
+  }
 
   /**
    * Quotes the given string for MIME headers.
@@ -107,7 +107,7 @@ public class MIMEUtil {
     sb.append(QUOTE);
     return sb.toString();
   }
-  
+
   /**
    * Wraps the given MIMEMessage in a new MIMEMessage with
    * the old as an RFC822 attachment, with the new
@@ -145,7 +145,7 @@ public class MIMEUtil {
       ContentXFerEncodingHeaderField.SEVEN_BIT_STR);
 
     //Create the new message
-    MIMEMessage ret = new MIMEMessage(newHeaders);      
+    MIMEMessage ret = new MIMEMessage(newHeaders);
 
     //Create the body part of the new message
     MIMEPart bodyPart = new MIMEPart();
@@ -167,7 +167,7 @@ public class MIMEUtil {
     ret.addChild(new AttachedMIMEMessage(oldMsg));
 
     return ret;
-    
+
   }
 
   /**
@@ -178,7 +178,7 @@ public class MIMEUtil {
    */
   public static String getRFC822Date() {
     return getRFC822Date(new Date());
-  }  
+  }
 
   /**
    * Get the RFC822-compliant representation of
@@ -210,7 +210,7 @@ public class MIMEUtil {
    */
   public static void removeChild(MIMEPart child)
     throws HeaderParseException {
-    
+
     MIMEPart parent = child.getParent();
     //Boundary-case.  If the parent is itself
     //a top-level MIMEMessage, and there are no other
@@ -220,13 +220,13 @@ public class MIMEUtil {
       return;
     }
     parent.removeChild(child);
-    
+
     if(parent.getNumChildren() == 0) {
       //If we just created an empty multipart, go up to the parent-parent
       //and remove
       removeChild(parent);
     }
-    
+
   }
 
   /**
@@ -277,7 +277,7 @@ public class MIMEUtil {
     }
     else {
       if(shouldScan(msg)) {
-        m_logger.debug("Message itself is scannable (no child parts, but not \"" +
+          s_logger.debug("Message itself is scannable (no child parts, but not \"" +
           ContentTypeHeaderField.TEXT_PRIM_TYPE_STR + "/*\" content type");
         return new MIMEPart[] {msg};
       }
@@ -298,28 +298,28 @@ public class MIMEUtil {
   }
 
 
-//------------- Debug/Test ---------------  
+//------------- Debug/Test ---------------
 /*
   public static void main(String[] args) throws Exception {
 
     File f = new File(args[0]);
 
     FileMIMESource source = new FileMIMESource(f);
-    
+
     MIMEMessage mp = new MIMEMessage(source.getInputStream(),
       source,
       new MIMEPolicy(),
       null);
 
     MIMEMessage wrapped = simpleWrap("This is wrapped\r\n", mp);
-    
+
     FileOutputStream fOut = new FileOutputStream(new File(args[0] + "_WRAPPED"));
     wrapped.writeTo(new MIMEOutputStream(fOut));
     fOut.flush();
     fOut.close();
   }
-*/  
+*/
 
-//------------- Debug/Test --------------- 
-  
+//------------- Debug/Test ---------------
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -13,22 +13,21 @@ package com.metavize.mvvm.argon;
 
 import java.net.InetAddress;
 
-import org.apache.log4j.Logger;
-
-import com.metavize.jnetcap.NetcapSession;
 import com.metavize.jnetcap.Endpoint;
 import com.metavize.jnetcap.Endpoints;
+import com.metavize.jnetcap.NetcapSession;
+import org.apache.log4j.Logger;
 
-class NetcapIPSessionDescImpl implements IPSessionDesc 
+class NetcapIPSessionDescImpl implements IPSessionDesc
 {
     protected final SessionGlobalState sessionGlobalState;
-    protected static final Logger logger =  Logger.getLogger( NetcapIPSessionDescImpl.class );
-    
+    protected final Logger logger =  Logger.getLogger(getClass());
+
     protected final InetAddress clientAddr;
     protected final InetAddress serverAddr;
     protected final int clientPort;
     protected final int serverPort;
-    /* XXXXXXXX Get rid of the server and client interface, 
+    /* XXXXXXXX Get rid of the server and client interface,
        there should just be one interface for the side */
     protected final byte clientIntf;
     protected final byte serverIntf;
@@ -36,11 +35,11 @@ class NetcapIPSessionDescImpl implements IPSessionDesc
     NetcapIPSessionDescImpl( SessionGlobalState sessionGlobalState, boolean ifClientSide )
     {
         Endpoints side;
-        
+
         NetcapSession session;
 
         this.sessionGlobalState = sessionGlobalState;
-        
+
         session = this.sessionGlobalState.netcapSession();
 
         if ( ifClientSide ) {
@@ -59,8 +58,8 @@ class NetcapIPSessionDescImpl implements IPSessionDesc
         this.serverAddr = server.host();
         this.serverPort = server.port();
         this.serverIntf = IntfConverter.toArgon( session.serverSide().interfaceId());
-    }    
-    
+    }
+
     /**
      * Returns the ID of this session.</p>
      */
@@ -77,7 +76,7 @@ class NetcapIPSessionDescImpl implements IPSessionDesc
     {
         return sessionGlobalState.protocol();
     }
-    
+
     /**
      * Returns an argon interface for the client.</p>
      *
@@ -120,7 +119,7 @@ class NetcapIPSessionDescImpl implements IPSessionDesc
 
     // We provide these here, confident that nothing other than UDP or TCP
     // will be a session, others will be stateless.  (Or this will just be 0)
-    
+
     /**
      * Gets the client port for this session.</p>
      * @return the client port.
@@ -169,7 +168,7 @@ class NetcapIPSessionDescImpl implements IPSessionDesc
     {
         return sessionGlobalState.serverSideListener().rxBytes;
     }
-    
+
     /**
      * Number of bytes transmitted to the client.
      */
@@ -201,7 +200,7 @@ class NetcapIPSessionDescImpl implements IPSessionDesc
     {
         return sessionGlobalState.serverSideListener().rxChunks;
     }
-    
+
     /**
      * Number of chunks transmitted to the client.
      */

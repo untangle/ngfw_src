@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
 
 public class SophosScanner implements VirusScanner
 {
-    private static final Logger logger = Logger.getLogger(SophosScanner.class.getName());
+    private final Logger logger = Logger.getLogger(getClass());
 
     public SophosScanner() {}
 

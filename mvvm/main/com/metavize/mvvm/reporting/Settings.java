@@ -11,8 +11,8 @@
 
 package com.metavize.mvvm.reporting;
 
-import java.sql.*;
 import java.lang.Integer;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 
 public class Settings
 {
-    private static final Logger logger = Logger.getLogger(Settings.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private static final int NONE = -1; // value must match Schedule.NONE
 

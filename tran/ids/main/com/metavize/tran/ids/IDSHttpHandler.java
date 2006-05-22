@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
 
 class IDSHttpHandler extends HttpStateMachine {
 
-    private static final Logger logger = Logger.getLogger(IDSHttpHandler.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private IDSDetectionEngine engine;
 

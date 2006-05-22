@@ -47,7 +47,7 @@ class HttpInvoker extends InvokerBase
     private static final int LOGIN_TIMEOUT_MINUTES = 30;
     private static final int LOGIN_REAPER_PERIOD = 60000;
 
-    private static final Logger logger = Logger.getLogger(HttpInvoker.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private final Map<LoginSession, LoginDesc> logins;
     private final ThreadLocal<LoginSession> activeLogin;

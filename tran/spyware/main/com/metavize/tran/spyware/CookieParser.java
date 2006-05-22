@@ -22,7 +22,7 @@ public class CookieParser
     private static final int VALUE_STATE = 1;
     private static final int END_AVPAIR_STATE = 2;
 
-    private static final Logger logger = Logger.getLogger(CookieParser.class);
+    private final static Logger logger = Logger.getLogger(CookieParser.class);
 
     /**
      * Parses a cookie, keys and values are converted to lower case.

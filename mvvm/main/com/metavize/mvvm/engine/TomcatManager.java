@@ -46,7 +46,7 @@ class TomcatManager
     private static final long REBIND_SLEEP_TIME = 1 * 1000; // 1 second
     private static final int NUM_REBIND_RETRIES = 5; //  10 seconds
 
-    private static final  Logger logger = Logger.getLogger(TomcatManager.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private final List<WebAppDescriptor> descriptors = new ArrayList<WebAppDescriptor>();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003 Metavize Inc.
+ * Copyright (c) 2003, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,30 +11,27 @@
 
 package com.metavize.mvvm.argon;
 
-import org.apache.log4j.Logger;
-
 import com.metavize.jnetcap.NetcapSession;
-
-import com.metavize.jvector.Vector;
 import com.metavize.jvector.IncomingSocketQueue;
 import com.metavize.jvector.OutgoingSocketQueue;
 import com.metavize.jvector.ShutdownCrumb;
 import com.metavize.jvector.SocketQueueListener;
-import com.metavize.jvector.ResetCrumb;
+import com.metavize.jvector.Vector;
+import org.apache.log4j.Logger;
 
 public abstract class SessionImpl implements Session
 {
     protected int maxInputSize  = 0;
     protected int maxOutputSize = 0;
 
-    private static final Logger logger = Logger.getLogger( SessionImpl.class );
+    private final Logger logger = Logger.getLogger(getClass());
 
     protected final IncomingSocketQueue clientIncomingSocketQueue;
     protected final OutgoingSocketQueue clientOutgoingSocketQueue;
-    
+
     protected final IncomingSocketQueue serverIncomingSocketQueue;
     protected final OutgoingSocketQueue serverOutgoingSocketQueue;
-    
+
     protected final ArgonAgent argonAgent;
 
     protected final SessionGlobalState sessionGlobalState;
@@ -59,7 +56,7 @@ public abstract class SessionImpl implements Session
             public void clientEvent( OutgoingSocketQueue out )
             {
             }
-            
+
             public void serverEvent( IncomingSocketQueue in )
             {
             }
@@ -68,15 +65,15 @@ public abstract class SessionImpl implements Session
             {
             }
 
-            
+
             public void serverEvent( OutgoingSocketQueue out )
             {
             }
-            
+
             public void clientOutputResetEvent( OutgoingSocketQueue out )
             {
             }
-            
+
             public void raze()
             {
             }
@@ -89,8 +86,8 @@ public abstract class SessionImpl implements Session
     static void init()
     {
     }
-    
-    
+
+
     /* Package method just used create released sessions,
      * released session should set isVectored to false */
     SessionImpl( NewSessionRequest request, boolean isVectored )
@@ -100,19 +97,19 @@ public abstract class SessionImpl implements Session
 
         if ( isVectored ) {
             this.isVectored           = true;
-            
+
             clientIncomingSocketQueue = new IncomingSocketQueue();
             clientOutgoingSocketQueue = new OutgoingSocketQueue();
-            
+
             serverIncomingSocketQueue = new IncomingSocketQueue();
             serverOutgoingSocketQueue = new OutgoingSocketQueue();
         } else {
             this.isVectored           = false;
             clientIncomingSocketQueue = null;
             clientOutgoingSocketQueue = null;
-            
+
             serverIncomingSocketQueue = null;
-            serverOutgoingSocketQueue = null; 
+            serverOutgoingSocketQueue = null;
         }
     }
 
@@ -128,11 +125,11 @@ public abstract class SessionImpl implements Session
     }
 
     /* SessionDesc */
-    public int id() 
+    public int id()
     {
         return sessionGlobalState.id();
     }
-        
+
     /* Session */
     public ArgonAgent argonAgent()
     {
@@ -172,7 +169,7 @@ public abstract class SessionImpl implements Session
     {
         return sessionGlobalState.serverSideListener().rxBytes;
     }
-    
+
     /**
      * Number of bytes transmitted to the client.
      */
@@ -204,7 +201,7 @@ public abstract class SessionImpl implements Session
     {
         return sessionGlobalState.serverSideListener().rxChunks;
     }
-    
+
     /**
      * Number of chunks transmitted to the client.
      */
@@ -261,24 +258,24 @@ public abstract class SessionImpl implements Session
      */
     public void killSession()
     {
-        try { 
+        try {
             if ( clientIncomingSocketQueue != null ) clientIncomingSocketQueue.kill();
             if ( clientOutgoingSocketQueue != null ) clientOutgoingSocketQueue.kill();
             if ( serverIncomingSocketQueue != null ) serverIncomingSocketQueue.kill();
             if ( serverOutgoingSocketQueue != null ) serverOutgoingSocketQueue.kill();
-            
+
             /* Call the raze method */
             if ( this.listener != null ) this.listener.raze();
         } catch ( Exception ex ) {
             logger.warn( "Error while killing a session", ex );
         }
-        
+
         /* Replace the listener with a NULL Listener */
         this.listener = NULL_PIPELINE_LISTENER;
 
         try {
             Vector vector = sessionGlobalState.argonHook.vector;
-            
+
             /* Last send the kill signal to the vectoring machine */
             if ( vector != null ) vector.shutdown();
             else logger.info( "kill session called before vectoring started, ignoring vectoring." );
@@ -297,15 +294,15 @@ public abstract class SessionImpl implements Session
     }
 
     /**
-     * Register a listener a listener for the session. 
+     * Register a listener a listener for the session.
      */
     public void registerListener( PipelineListener listener )
     {
         this.listener = listener;
-        
+
         if ( isVectored ) {
             SocketQueueListener sqListener = new SessionSocketQueueListener();
-            
+
             clientIncomingSocketQueue.registerListener( sqListener );
             clientOutgoingSocketQueue.registerListener( sqListener );
             serverIncomingSocketQueue.registerListener( sqListener );
@@ -342,7 +339,7 @@ public abstract class SessionImpl implements Session
             logger.error( "Unknown shutdown socket queue: " + osq );
             return;
         }
-        
+
         /* Remove the session from the argon agent table */
         if ( isClientShutdown && isServerShutdown ) {
             argonAgent.removeSession( this );
@@ -374,16 +371,16 @@ public abstract class SessionImpl implements Session
 
     public OutgoingSocketQueue serverOutgoingSocketQueue()
     {
-        if ( serverOutgoingSocketQueue == null || serverOutgoingSocketQueue.isClosed()) return null;        
+        if ( serverOutgoingSocketQueue == null || serverOutgoingSocketQueue.isClosed()) return null;
         return serverOutgoingSocketQueue;
     }
-    
+
     class SessionSocketQueueListener implements SocketQueueListener
     {
         SessionSocketQueueListener()
         {
         }
-        
+
         public void event( IncomingSocketQueue in, OutgoingSocketQueue out )
         {
             /* XXX An optimization we don't have yet */
@@ -400,7 +397,7 @@ public abstract class SessionImpl implements Session
 
                 listener.serverEvent( in );
             } else if ( in == clientIncomingSocketQueue ) {
-                if ( logger.isDebugEnabled()) {                    
+                if ( logger.isDebugEnabled()) {
                     logger.debug( "IncomingSocketQueueEvent: client - " + in +
                                   " " + sessionGlobalState );
                 }
@@ -411,7 +408,7 @@ public abstract class SessionImpl implements Session
                 throw new IllegalStateException( "Invalid socket queue: " + in );
             }
         }
-        
+
         public void event( OutgoingSocketQueue out )
         {
             /**
@@ -460,7 +457,7 @@ public abstract class SessionImpl implements Session
                 throw new IllegalStateException( "Invalid socket queue: " + in );
             }
         }
-            
+
         /** This occurs when the outgoing socket queue is shutdown */
         public void shutdownEvent( OutgoingSocketQueue out )
         {
@@ -490,7 +487,7 @@ public abstract class SessionImpl implements Session
             } else {
                 /* This should never happen */
                 throw new IllegalStateException( "Invalid socket queue: " + out );
-            }                        
+            }
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -17,20 +17,18 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
-import java.nio.charset.CharsetEncoder;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.mvvm.tapi.event.TCPStreamer;
 import com.metavize.tran.mail.PopCasing;
 import com.metavize.tran.mail.papi.ByteBufferByteStuffer;
-import com.metavize.tran.mail.papi.DoNotCareT;
 import com.metavize.tran.mail.papi.DoNotCareChunkT;
+import com.metavize.tran.mail.papi.DoNotCareT;
 import com.metavize.tran.mail.papi.MIMEMessageT;
 import com.metavize.tran.mail.papi.MIMEMessageTrickleT;
 import com.metavize.tran.mail.papi.pop.PopCommand;
@@ -38,7 +36,6 @@ import com.metavize.tran.mail.papi.pop.PopCommandMore;
 import com.metavize.tran.mail.papi.pop.PopReply;
 import com.metavize.tran.mail.papi.pop.PopReplyMore;
 import com.metavize.tran.mime.MIMEMessage;
-import com.metavize.tran.mime.MIMEMessageHeaders;
 import com.metavize.tran.token.AbstractUnparser;
 import com.metavize.tran.token.Chunk;
 import com.metavize.tran.token.EndMarker;
@@ -51,7 +48,7 @@ import org.apache.log4j.Logger;
 
 public class PopUnparser extends AbstractUnparser
 {
-    private final static Logger logger = Logger.getLogger(PopUnparser.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private final static String ENCODING = System.getProperty("file.encoding");
     private final static Charset CHARSET = Charset.forName(ENCODING);

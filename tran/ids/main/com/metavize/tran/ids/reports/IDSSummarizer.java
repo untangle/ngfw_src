@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -15,12 +15,10 @@ import java.sql.*;
 
 import com.metavize.mvvm.reporting.BaseSummarizer;
 import com.metavize.mvvm.reporting.Util;
-
 import org.apache.log4j.Logger;
 
 public class IDSSummarizer extends BaseSummarizer {
-
-    private static final Logger log = Logger.getLogger(IDSSummarizer.class);
+    private final Logger log = Logger.getLogger(getClass());
 
     public IDSSummarizer() { }
 
@@ -37,14 +35,14 @@ public class IDSSummarizer extends BaseSummarizer {
             ps.setTimestamp(2, endDate);
             ResultSet rs = ps.executeQuery();
             rs.first();
-    
+
             dncEvtCount = rs.getLong(1);
             loggedEvtCount = rs.getLong(2);
             blockedEvtCount = rs.getLong(3);
-    
+
             rs.close();
             ps.close();
-    
+
         } catch (SQLException exn) {
             log.warn("could not summarize", exn);
         }

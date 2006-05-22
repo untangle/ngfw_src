@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,7 +12,6 @@
 package com.metavize.mvvm.argon;
 
 import java.net.InetAddress;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -30,8 +29,8 @@ import com.metavize.jvector.Vector;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.policy.Policy;
 import com.metavize.mvvm.policy.PolicyRule;
-import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.mvvm.tapi.PipelineFoundry;
+import com.metavize.mvvm.tran.PipelineEndpoints;
 import org.apache.log4j.Logger;
 
 /**
@@ -39,7 +38,7 @@ import org.apache.log4j.Logger;
  */
 abstract class ArgonHook implements Runnable
 {
-    private static final Logger logger = Logger.getLogger( ArgonHook.class );
+    private final Logger logger = Logger.getLogger(getClass());
     private static final VectronTable activeVectrons = VectronTable.getInstance();
 
     /* Reject the client with whatever response the server returned */
@@ -66,7 +65,7 @@ abstract class ArgonHook implements Runnable
     protected IPSessionDesc serverSide = null;
 
     protected Policy policy = null;
-    
+
     private boolean isMirrored = false;
 
     protected static final PipelineFoundry pipelineFoundry = MvvmContextFactory.context().pipelineFoundry();
@@ -91,8 +90,8 @@ abstract class ArgonHook implements Runnable
                                                          serverSideListener(), this );
 
             if ( logger.isDebugEnabled()) {
-                logger.debug( "New thread for session id: " + netcapSession().id() + 
-                              " " + sessionGlobalState );                              
+                logger.debug( "New thread for session id: " + netcapSession().id() +
+                              " " + sessionGlobalState );
             }
 
             /* Update the server interface with the current server address */
@@ -110,11 +109,11 @@ abstract class ArgonHook implements Runnable
             InterfaceOverride.getInstance().updateDestinationInterface( netcapSession );
 
             if ( logger.isDebugEnabled()) logger.debug( netcapSession );
-            
+
             /* If the server interface is still unknown, drop the session */
             byte serverIntf = netcapSession.serverSide().interfaceId();
             byte clientIntf = netcapSession.clientSide().interfaceId();
-            if ( IntfConverter.NETCAP_UNKNOWN == serverIntf || 
+            if ( IntfConverter.NETCAP_UNKNOWN == serverIntf ||
                  IntfConverter.NETCAP_LOOPBACK == serverIntf ) {
                 if ( logger.isInfoEnabled()) {
                     logger.info( "" + netcapSession + " destined to unknown or local interface, raze." );
@@ -122,7 +121,7 @@ abstract class ArgonHook implements Runnable
                 raze();
                 return;
             }
-            
+
             /* Determine whether or not the session should be allowed even though it is
              * going out the same interface it came in on(mirrored).
              * This is valid if the session is redirected (serverInterface changed),
@@ -243,14 +242,14 @@ abstract class ArgonHook implements Runnable
         } catch ( Exception e ) {
             logger.error( "Exception destroying pipeline", e );
         }
-        
+
         try {
             /* Delete the vector */
             if ( vector != null ) vector.raze();
 
             /* Delete everything else */
             raze();
-            
+
             if ( logger.isDebugEnabled()) logger.debug( "Exiting thread: " + sessionGlobalState );
         } catch ( Exception e ) {
             logger.error( "Exception razing vector and session", e );
@@ -296,17 +295,17 @@ abstract class ArgonHook implements Runnable
                     NetcapSession netcapSession = sessionGlobalState.netcapSession();
                     InetAddress clientAddress = netcapSession.clientSide().client().host();
                     InetAddress serverAddress = session.clientAddr();
-                
+
                     if ( !clientAddress.equals( serverAddress )) validMirror = true;
                 }
-                
+
                 /* If using the same server and client address, tear down the session silently */
                 if ( !validMirror ) {
                     this.state = IPNewSessionRequest.REJECTED_SILENT;
                     return false;
                 }
             }
-            
+
             /* If the server doesn't complete, we have to "vector" the reset */
             if ( !serverComplete()) {
                 /* ??? May want to send different codes, or something ??? */

@@ -49,7 +49,7 @@ public class IDSDetectionEngine {
     Map<Integer,List<IDSRuleHeader>>    portS2CMap      = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
     Map<Integer,List<IDSRuleHeader>>    portC2SMap  = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
 
-    private static final Logger log = Logger.getLogger(IDSDetectionEngine.class);
+    private final Logger log = Logger.getLogger(getClass());
 
     /*private static IDSDetectionEngine instance = new IDSDetectionEngine();
       public  static IDSDetectionEngine instance() {

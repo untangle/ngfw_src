@@ -37,7 +37,7 @@ import org.hibernate.Session;
 
 public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 {
-    private static final Logger logger = Logger.getLogger(HttpBlockerImpl.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private final HttpBlockerFactory factory = new HttpBlockerFactory(this);
 

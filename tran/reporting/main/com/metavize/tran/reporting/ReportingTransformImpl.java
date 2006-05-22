@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -19,8 +19,7 @@ import org.hibernate.Session;
 
 public class ReportingTransformImpl extends AbstractTransform implements ReportingTransform
 {
-    private static final Logger logger = Logger
-        .getLogger(ReportingTransformImpl.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private ReportingSettings settings;
 

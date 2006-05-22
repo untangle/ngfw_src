@@ -19,8 +19,7 @@ import org.apache.log4j.Logger;
 
 public class HttpBlockerFactory implements TokenHandlerFactory
 {
-    private static final Logger logger = Logger
-        .getLogger(HttpBlockerFactory.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private final HttpBlockerImpl transform;
 

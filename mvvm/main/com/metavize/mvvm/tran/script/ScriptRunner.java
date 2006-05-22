@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
 
 public class ScriptRunner
 {
-    private static final Logger logger = Logger.getLogger( ScriptRunner.class );
+    private final Logger logger = Logger.getLogger(getClass());
 
     private static final ScriptRunner INSTANCE = new ScriptRunner();
 

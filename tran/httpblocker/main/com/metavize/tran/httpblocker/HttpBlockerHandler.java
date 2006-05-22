@@ -30,8 +30,7 @@ public class HttpBlockerHandler extends HttpStateMachine
     private static final int BLOCK = Transform.GENERIC_1_COUNTER;
     private static final int PASS = Transform.GENERIC_2_COUNTER;
 
-    private static final Logger logger = Logger
-        .getLogger(HttpBlockerHandler.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private final HttpBlockerImpl transform;
 

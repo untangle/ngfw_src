@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003,2004 Metavize Inc.
+ * Copyright (c) 2003,2004, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,20 +11,18 @@
 
 package com.metavize.mvvm.argon;
 
-import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
-
-import org.apache.log4j.Logger;
+import java.util.Map;
 
 import com.metavize.jvector.Vector;
+import org.apache.log4j.Logger;
 
-import com.metavize.mvvm.policy.Policy;
 
 public class VectronTable
 {
     /* Debugging */
-    private static final Logger logger = Logger.getLogger( VectronTable.class );
+    private final Logger logger = Logger.getLogger(getClass());
     private static final VectronTable INSTANCE = new VectronTable();
 
     private final Map<Vector,SessionGlobalState> activeVectrons = new HashMap<Vector,SessionGlobalState>();
@@ -35,10 +33,10 @@ public class VectronTable
     {
     }
 
-    /** 
+    /**
      * Add a vectron to the hash set.
      * @param  vectron - The vectron to add.
-     * @return - True if the item did not already exist 
+     * @return - True if the item did not already exist
      */
     public synchronized boolean put( Vector vectron, SessionGlobalState session )
     {
@@ -66,28 +64,28 @@ public class VectronTable
     /**
      * This kills all active vectors, since this is synchronized, it pauses the creation
      * of new vectoring machines, but it doesn't prevent the creating of new vectoring
-     * machines 
+     * machines
      * @return - Returns false if there are no active sessions. */
     public synchronized boolean shutdownActive()
     {
         if ( activeVectrons.isEmpty()) return false;
 
-        for ( Iterator<Vector> iter = (Iterator<Vector>)activeVectrons.keySet().iterator(); 
+        for ( Iterator<Vector> iter = (Iterator<Vector>)activeVectrons.keySet().iterator();
               iter.hasNext() ; ) {
-            Vector vectron = iter.next();            
+            Vector vectron = iter.next();
             vectron.shutdown();
             /* Don't actually remove the item, it is removed when the session exits */
         }
 
         return true;
-    }    
+    }
 
     public synchronized void shutdownMatches( SessionMatcher matcher )
     {
         boolean isDebugEnabled = logger.isDebugEnabled();
 
         logger.debug( "Shutting down matching sessions with: matcher " + matcher );
-        
+
         if ( activeVectrons.isEmpty()) return;
 
         /* This matcher doesn't match anything */
@@ -96,16 +94,16 @@ public class VectronTable
             return;
         } else if ( matcher == SessionMatcherFactory.ALL_MATCHER ) {
             logger.debug( "ALL Session matcher" );
-            
+
             /* Just clear all, without checking for matches */
-            for ( Iterator<Vector> iter = (Iterator<Vector>)activeVectrons.keySet().iterator() ; 
+            for ( Iterator<Vector> iter = (Iterator<Vector>)activeVectrons.keySet().iterator() ;
                   iter.hasNext() ; ) {
                 Vector vectron = iter.next();
                 vectron.shutdown();
             }
             return;
         }
-        
+
         /* XXXX THIS IS INCREDIBLY INEFFICIENT AND LOCKS THE CREATION OF NEW SESSIONS */
         for ( Iterator iter = activeVectrons.entrySet().iterator() ; iter.hasNext() ; ) {
             Map.Entry<Vector,SessionGlobalState> e = (Map.Entry<Vector,SessionGlobalState>)iter.next();
@@ -113,13 +111,13 @@ public class VectronTable
 
             SessionGlobalState session = e.getValue();
             Vector vectron  = e.getKey();
-            
+
             ArgonHook argonHook = session.argonHook();
 
             isMatch = matcher.isMatch( argonHook.policy, argonHook.clientSide, argonHook.serverSide );
 
             if ( isDebugEnabled )
-                logger.debug( "Tested session: " + session + " id: " + session.id() + 
+                logger.debug( "Tested session: " + session + " id: " + session.id() +
                               " matched: " + isMatch );
 
             if ( isMatch )

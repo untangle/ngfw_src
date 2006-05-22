@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -39,7 +39,7 @@ import org.apache.log4j.Logger;
 public class WrappedMessageGenerator
   extends MessageGenerator {
 
-  private final Logger m_logger = Logger.getLogger(WrappedMessageGenerator.class);
+  private final Logger m_logger = Logger.getLogger(getClass());
 
   public WrappedMessageGenerator() {
     this(null, null);

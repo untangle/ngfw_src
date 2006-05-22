@@ -30,10 +30,10 @@ import com.metavize.mvvm.networking.RemoteSettingsListener;
 import com.metavize.mvvm.networking.internal.RemoteInternalSettings;
 import com.metavize.mvvm.security.AdminSettings;
 import com.metavize.mvvm.security.User;
+import com.metavize.mvvm.tran.script.ScriptRunner;
 import com.metavize.mvvm.util.ConfigFileUtil;
 import com.metavize.mvvm.util.TransactionRunner;
 import com.metavize.mvvm.util.TransactionWork;
-import com.metavize.mvvm.tran.script.ScriptRunner;
 import com.sun.mail.smtp.SMTPTransport;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -137,7 +137,7 @@ class MailSenderImpl implements MailSender
     // This is the session used to send mail to Metavize Inc.
     private Session mvSession;
 
-    private static final Logger logger = Logger.getLogger(MailSenderImpl.class.getName());
+    private final Logger logger = Logger.getLogger(getClass());
 
     // NOTE: Only used for stand-alone operation.
     private final TransactionRunner transactionRunner;
@@ -328,7 +328,7 @@ class MailSenderImpl implements MailSender
         commonProps.put(MAIL_FROM_PROP, mailSettings.getFromAddress());
         commonProps.put(MAIL_ENVELOPE_FROM_PROP, mailSettings.getFromAddress());
         commonProps.put(MAIL_TRANSPORT_PROTO_PROP, "smtp");
-        
+
         File masqmail_dir = new File(MASQMAIL_CONF_DIR);
         if (masqmail_dir.isDirectory()) {
             commonProps.put(MAIL_HOST_PROP, "localhost");

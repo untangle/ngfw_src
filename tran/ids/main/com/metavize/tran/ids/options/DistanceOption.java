@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
 
 public class DistanceOption extends IDSOption {
 
-    private static final Logger logger = Logger.getLogger(DistanceOption.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     public DistanceOption(IDSRuleSignature signature, String params) {
         super(signature, params);

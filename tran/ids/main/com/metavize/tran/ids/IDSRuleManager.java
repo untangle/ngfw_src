@@ -33,7 +33,7 @@ public class IDSRuleManager {
 
     private final IDSTransformImpl ids;
 
-    private final Logger logger = Logger.getLogger(IDSRuleManager.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     // constructors -----------------------------------------------------------
 

@@ -12,6 +12,7 @@ package com.metavize.mvvm.util;
 
 import java.io.*;
 import java.util.*;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -46,8 +47,7 @@ public class LoadAvg {
     private static final String PATH_PROC_LOADAVG = "/proc/loadavg";
     private static final long SAMPLING_FREQ = 100; // .1 seconds
 
-    private static final Logger logger = Logger
-        .getLogger(LoadAvg.class.getName());
+    private final Logger logger = Logger.getLogger(getClass());
 
     private static LoadAvg instance = new LoadAvg();
 

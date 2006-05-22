@@ -21,8 +21,6 @@ import sun.misc.BASE64Decoder;
 
 public class PopCommandMore implements Token
 {
-    private final static Logger logger = Logger.getLogger(PopCommandMore.class);
-
     private final static String NO_USER = "unknown";
 
     private final ByteBuffer zBuf;
@@ -46,6 +44,8 @@ public class PopCommandMore implements Token
 
     public static PopCommandMore parseAuthUser(ByteBuffer buf)
     {
+        Logger logger = Logger.getLogger(PopCommandMore.class);
+
         ByteBuffer zDup = buf.duplicate();
         String zTmp = AsciiCharBuffer.wrap(zDup).toString();
 

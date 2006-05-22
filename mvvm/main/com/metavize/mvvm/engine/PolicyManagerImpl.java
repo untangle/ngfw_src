@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -31,7 +31,7 @@ class PolicyManagerImpl implements PolicyManagerPriv
     private static final String INITIAL_POLICY_NAME = "Default Rack";
     private static final String INITIAL_POLICY_NOTES = "The default rack";
 
-    private static final Logger logger = Logger.getLogger( PolicyManagerImpl.class );
+    private final Logger logger = Logger.getLogger(getClass());
 
     private static PolicyManagerImpl POLICY_MANAGER = new PolicyManagerImpl();
 

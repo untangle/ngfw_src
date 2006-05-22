@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,9 +12,9 @@ package com.metavize.tran.mail.impl.pop;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.FileNotFoundException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
 public class PopStreamer implements TCPStreamer
 {
     /* constants */
-    private static final Logger zLog = Logger.getLogger(PopStreamer.class.getName());
+    private final Logger zLog = Logger.getLogger(getClass());
     private static final int DATA_SZ = 8192;
     private static final int READ_FAIL = -100;
 
@@ -76,11 +76,13 @@ public class PopStreamer implements TCPStreamer
 
     public static PopStreamer stuffFile(File zOrgFile, File zNewFile, ByteBufferByteStuffer zByteStuffer, boolean bIsComplete)
     {
+        Logger logger = Logger.getLogger(PopStreamer.class);
+
         FileChannel zReadChannel;
         try {
             zReadChannel = new FileInputStream(zOrgFile).getChannel();
         } catch (FileNotFoundException exn) {
-            zLog.debug("cannot open input file channel for byte unstuffed message file: " + exn);
+            logger.debug("cannot open input file channel for byte unstuffed message file: " + exn);
             return null;
         }
 
@@ -88,13 +90,13 @@ public class PopStreamer implements TCPStreamer
         try {
             zWriteChannel = new FileOutputStream(zNewFile).getChannel();
         } catch (IOException exn) {
-            zLog.debug("cannot open output file channel for byte stuffed message file: " + exn);
+            logger.debug("cannot open output file channel for byte stuffed message file: " + exn);
             closeChannel(zReadChannel);
             return null;
         }
 
         long lOrgFileSz = zOrgFile.length();
-        zLog.debug("byte unstuffed message file size: " + lOrgFileSz);
+        logger.debug("byte unstuffed message file size: " + lOrgFileSz);
         int iDataSz = (int) ((DATA_SZ < lOrgFileSz) ? DATA_SZ : lOrgFileSz);
         ByteBuffer zReadBuf = ByteBuffer.allocate(iDataSz);
         ByteBuffer zWriteBuf = ByteBuffer.allocate(iDataSz);
@@ -133,7 +135,7 @@ public class PopStreamer implements TCPStreamer
 
         closeChannel(zReadChannel);
         closeChannel(zWriteChannel);
-        zLog.debug("byte stuffed message file size: " + iNewFileSz + ", " + zNewFile.length());
+        logger.debug("byte stuffed message file size: " + iNewFileSz + ", " + zNewFile.length());
 
         /* ready to build PopStreamer */
         PopStreamer zPopStreamer = new PopStreamer();
@@ -141,7 +143,7 @@ public class PopStreamer implements TCPStreamer
         try {
             zPopStreamer.zFileChannel = new FileInputStream(zNewFile).getChannel();
         } catch (FileNotFoundException exn) {
-            zLog.debug("cannot open input file channel for byte stuffed message file: " + exn);
+            logger.debug("cannot open input file channel for byte stuffed message file: " + exn);
             return null;
         }
         zPopStreamer.iDataSz = (int) ((DATA_SZ < iNewFileSz) ? DATA_SZ : iNewFileSz);
@@ -167,7 +169,8 @@ public class PopStreamer implements TCPStreamer
         try {
             return zReadChannel.read(zReadBuf);
         } catch (IOException exn) {
-            zLog.warn("cannot read from message file: " + exn);
+            Logger logger = Logger.getLogger(PopStreamer.class);
+            logger.warn("cannot read from message file: " + exn);
             return READ_FAIL;
         }
     }
@@ -181,7 +184,8 @@ public class PopStreamer implements TCPStreamer
 
             return true;
         } catch (IOException exn) {
-            zLog.warn("cannot write data to message file: " + exn);
+            Logger logger = Logger.getLogger(PopStreamer.class);
+            logger.warn("cannot write data to message file: " + exn);
             return false;
         }
     }
@@ -191,7 +195,8 @@ public class PopStreamer implements TCPStreamer
         try {
             zChannel.close();
         } catch (IOException exn) {
-            zLog.warn("cannot close file channel: " + exn);
+            Logger logger = Logger.getLogger(PopStreamer.class);
+            logger.warn("cannot close file channel: " + exn);
         }
 
         return;

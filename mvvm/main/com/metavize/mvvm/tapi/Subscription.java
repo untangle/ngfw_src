@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
  */
 public class Subscription
 {
-    private static final Logger logger = Logger.getLogger(Subscription.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private final Protocol protocol;
     private final boolean inbound;

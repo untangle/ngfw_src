@@ -16,8 +16,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.metavize.mvvm.tran.AddressValidator;
-import com.metavize.mvvm.tran.ValidateException;
 import org.apache.log4j.Logger;
 
 /** This validates a list of address/networks do not overlap.
@@ -26,7 +24,7 @@ import org.apache.log4j.Logger;
  */
 public class AddressValidator
 {
-    private static final Logger logger = Logger.getLogger( AddressValidator.class );
+    private final Logger logger = Logger.getLogger(getClass());
 
     private static final List<AddressRange> ILLEGAL_ADDRESS_LIST;
     private static final List<AddressRange> PRIVATE_ADDRESS_LIST;
@@ -45,25 +43,25 @@ public class AddressValidator
         checkList.addAll( ILLEGAL_ADDRESS_LIST );
 
         ValidateException e = checkOverlap( checkList );
-        
+
         if ( e != null ) throw e;
     }
 
     public boolean isInPrivateNetwork( InetAddress address )
     {
         List<AddressRange> checkList = new LinkedList<AddressRange>();
-        
+
         /* Add an entry to the checklist for the single IP */
         checkList.add( AddressRange.makeAddress( address ));
 
         checkList.addAll( PRIVATE_ADDRESS_LIST );
-        
+
         if ( null != checkOverlap( checkList )) return true;
 
         return false;
     }
 
-    private ValidateException checkOverlap( List<AddressRange> addressRangeList ) 
+    private ValidateException checkOverlap( List<AddressRange> addressRangeList )
     {
         List<AddressRange> checkList = new LinkedList<AddressRange>( addressRangeList );
 
@@ -114,13 +112,13 @@ public class AddressValidator
     {
         return INSTANCE;
     }
-    
+
     static
     {
         List<AddressRange> illegalList = new LinkedList<AddressRange>();
-        
+
         try {
-            
+
             /* This list is from RFC 3330 */
             /* Loopback */
             illegalList.add( AddressRange.makeNetwork( InetAddress.getByName( "127.0.0.0" ),
@@ -136,7 +134,7 @@ public class AddressValidator
             illegalList.add( AddressRange.makeNetwork( InetAddress.getByName( "169.254.0.0" ),
                                                        InetAddress.getByName( "255.255.0.0" ),
                                                        true ));
-            
+
             /* Multicast */
             illegalList.add( AddressRange.makeNetwork( InetAddress.getByName( "224.0.0.0" ),
                                                        InetAddress.getByName( "240.0.0.0" ),
@@ -147,12 +145,13 @@ public class AddressValidator
                                                        InetAddress.getByName( "240.0.0.0" ),
                                                        true ));
         } catch ( Exception e ) {
+            Logger logger = Logger.getLogger(AddressValidator.class);
             logger.error( "Unable to initialize illegal address list, using the empty list", e );
             illegalList.clear();
         }
 
         ILLEGAL_ADDRESS_LIST = Collections.unmodifiableList( illegalList );
-        
+
         List<AddressRange> privateList = new LinkedList<AddressRange>();
 
         try {
@@ -163,15 +162,16 @@ public class AddressValidator
             privateList.add( AddressRange.makeNetwork( InetAddress.getByName( "192.168.0.0" ),
                                                        InetAddress.getByName( "255.255.0.0" ),
                                                        false ));
-            
+
             privateList.add( AddressRange.makeNetwork( InetAddress.getByName( "172.16.0.0" ),
                                                        InetAddress.getByName( "255.240.0.0" ),
                                                        false ));
         } catch ( Exception e ) {
+            Logger logger = Logger.getLogger(AddressValidator.class);
             logger.error( "Unable to initialize illegal address list, using the empty list", e );
             privateList.clear();
         }
-        
+
         PRIVATE_ADDRESS_LIST = Collections.unmodifiableList( privateList );
     }
 }

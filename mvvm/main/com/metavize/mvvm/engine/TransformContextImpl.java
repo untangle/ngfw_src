@@ -46,7 +46,7 @@ import org.hibernate.SessionFactory;
 
 class TransformContextImpl implements TransformContext
 {
-    private static final Logger logger = Logger.getLogger(TransformContextImpl.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private static final URL[] URL_PROTO = new URL[0];
 

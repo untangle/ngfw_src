@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,21 +11,16 @@
 
 package com.metavize.tran.ids.options;
 
-import java.nio.ByteBuffer;
-import org.apache.log4j.Logger;
-
-import com.metavize.tran.ids.IDSDetectionEngine;
 import com.metavize.tran.ids.IDSRule;
 import com.metavize.tran.ids.IDSRuleSignature;
-import com.metavize.tran.ids.IDSTransformImpl;
-import com.metavize.tran.ids.RuleClassification;
-import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.event.*;
+import com.metavize.mvvm.tapi.event.*;
+import org.apache.log4j.Logger;
 
 
 public class SidOption extends IDSOption {
 
-    private static final Logger logger = Logger.getLogger(SidOption.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     public SidOption(IDSRuleSignature signature, String params, boolean initializeSettingsTime) {
         super(signature, params);

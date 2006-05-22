@@ -61,8 +61,7 @@ class VirusHttpHandler extends HttpStateMachine
     private static final int BLOCK_COUNTER = Transform.GENERIC_1_COUNTER;
     private static final int PASS_COUNTER  = Transform.GENERIC_2_COUNTER;
 
-    private static final Logger logger = Logger
-        .getLogger(VirusHttpHandler.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private final String vendor;
     private final VirusTransformImpl transform;

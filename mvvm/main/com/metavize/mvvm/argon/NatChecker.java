@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,28 +12,22 @@
 package com.metavize.mvvm.argon;
 
 import java.net.InetAddress;
-
 import java.util.Collections;
-import java.util.List;
 import java.util.LinkedList;
-
-import org.apache.log4j.Logger;
-
+import java.util.List;
 
 import com.metavize.jnetcap.NetcapSession;
-
 import com.metavize.mvvm.networking.IPNetwork;
 import com.metavize.mvvm.networking.NetworkSettingsListener;
-
 import com.metavize.mvvm.networking.internal.InterfaceInternal;
-import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
 import com.metavize.mvvm.networking.internal.NetworkSpaceInternal;
-
+import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
 import com.metavize.mvvm.tran.ParseException;
-import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
-import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
 import com.metavize.mvvm.tran.firewall.intf.IntfMatcher;
 import com.metavize.mvvm.tran.firewall.intf.IntfMatcherFactory;
+import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
+import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
+import org.apache.log4j.Logger;
 
 /* Class used to determine if a session is going to be Nattd */
 class NatChecker implements NetworkSettingsListener
@@ -45,13 +39,13 @@ class NatChecker implements NetworkSettingsListener
     NatChecker()
     {
     }
-    
+
     boolean isNat( NetcapSession client )
     {
         for ( NatMatcher matcher : this.natMatcherList ) {
             if ( matcher.isMatch( client )) return true;
         }
-        
+
         return false;
     }
 
@@ -74,7 +68,7 @@ class NatChecker implements NetworkSettingsListener
         }
 
         /* Set this list once at the end to avoid locks */
-        this.natMatcherList = Collections.unmodifiableList( matchers );        
+        this.natMatcherList = Collections.unmodifiableList( matchers );
     }
 }
 
@@ -85,8 +79,8 @@ class NatMatcher
      * because, it is the same as the client interface. */
     private final IPMatcher   ipMatcher;
     private final IntfMatcher intfMatcher;
-    private static final Logger logger = Logger.getLogger( NatChecker.class );
-    
+    private final Logger logger = Logger.getLogger(getClass());
+
 
     NatMatcher( IPMatcher ipMatcher, IntfMatcher intfMatcher )
     {
@@ -103,7 +97,7 @@ class NatMatcher
 
         return this.intfMatcher.isMatch( clientIntf ) && this.ipMatcher.isMatch( clientAddr );
     }
-    
+
     public String toString()
     {
         return "<NatMatcher: " + ipMatcher + "/" + intfMatcher + ">";
@@ -114,22 +108,23 @@ class NatMatcher
     {
         IPMatcher ip = IPMatcherFactory.getInstance().
             makeSubnetMatcher( network.getNetwork(), network.getNetmask());
-        
+
         List<InterfaceInternal> intfList = space.getInterfaceList();
 
         byte intfArray[] = new byte[intfList.size()];
-        
-        int c = 0 ; 
+
+        int c = 0 ;
         for ( InterfaceInternal intf : intfList ) intfArray[c++] = intf.getArgonIntf();
-        
+
         IntfMatcher intfMatcher;
         try {
             intfMatcher = IntfMatcherFactory.getInstance().makeSetMatcher( intfArray );
         } catch ( ParseException e ) {
-            logger.error( "Error making set matcher, using the nil matcher.", e ); 
+            Logger logger = Logger.getLogger(NatChecker.class);
+            logger.error( "Error making set matcher, using the nil matcher.", e );
             intfMatcher = IntfMatcherFactory.getInstance().getNilMatcher();
         }
-        
+
         return new NatMatcher( ip, intfMatcher );
     }
 }

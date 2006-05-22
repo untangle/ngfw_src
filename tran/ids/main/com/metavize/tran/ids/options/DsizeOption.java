@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
 
 public class DsizeOption extends IDSOption {
 
-    private static final Logger log = Logger.getLogger(DsizeOption.class);
+    private final Logger log = Logger.getLogger(getClass());
 
     int min;
     int max;

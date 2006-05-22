@@ -19,14 +19,13 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.log4j.Logger;
 
 import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.tran.spam.SpamReport;
 import com.metavize.tran.spam.ReportItem;
+import com.metavize.tran.spam.SpamReport;
+import org.apache.log4j.Logger;
 
 public class SpamAssassinScannerLauncher implements Runnable
 {
@@ -35,7 +34,7 @@ public class SpamAssassinScannerLauncher implements Runnable
     private static final Pattern REPORT_PATTERN =
         Pattern.compile("^[ ]*-?[0-9]+\\.[0-9]+ [A-Z0-9_]+");
 
-    protected static final Logger logger = Logger.getLogger(SpamAssassinScannerLauncher.class.getName());
+    protected final Logger logger = Logger.getLogger(getClass());
 
     private File f = null;
     private float threshold;
@@ -98,7 +97,7 @@ public class SpamAssassinScannerLauncher implements Runnable
             } else {
                 this.scanProcess.destroy();
             }
-            
+
             return cleanReport();
         } else {
             return this.result;
@@ -109,7 +108,7 @@ public class SpamAssassinScannerLauncher implements Runnable
     {
         return new SpamReport(new LinkedList<ReportItem>(), threshold);
     }
-            
+
 
 
     /**

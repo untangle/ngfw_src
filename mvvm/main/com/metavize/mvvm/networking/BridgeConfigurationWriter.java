@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -13,20 +13,18 @@ package com.metavize.mvvm.networking;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
-import com.metavize.mvvm.tran.script.ScriptWriter;
-
-import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
-import com.metavize.mvvm.networking.internal.NetworkSpaceInternal;
 import com.metavize.mvvm.networking.internal.InterfaceInternal;
+import com.metavize.mvvm.networking.internal.NetworkSpaceInternal;
+import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
+import com.metavize.mvvm.tran.script.ScriptWriter;
+import org.apache.log4j.Logger;
 
 class BridgeConfigurationWriter extends ScriptWriter
 {
-    private static final Logger logger = Logger.getLogger( BridgeConfigurationWriter.class );
+    private final Logger logger = Logger.getLogger(getClass());
 
     private final NetworkSpacesInternalSettings settings;
-    
+
     BridgeConfigurationWriter( NetworkSpacesInternalSettings settings )
     {
         super();
@@ -43,9 +41,9 @@ class BridgeConfigurationWriter extends ScriptWriter
     {
         /* If the space is not enabled, nothing to do */
         if ( !space.getIsEnabled()) return;
-        
+
         List<InterfaceInternal> interfaceList = space.getInterfaceList();
-        
+
         if ( interfaceList.size() < 1 ) {
             logger.error( "Empty interface list for enabled space" );
             return;

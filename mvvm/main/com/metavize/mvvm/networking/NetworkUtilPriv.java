@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -13,46 +13,39 @@ package com.metavize.mvvm.networking;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-
 import java.net.Inet4Address;
-
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.LinkedHashMap;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
-import org.apache.log4j.Logger;
-
-import com.metavize.jnetcap.Netcap;
 import com.metavize.jnetcap.InterfaceData;
-
-import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.NetworkingConfiguration;
+import com.metavize.jnetcap.Netcap;
 import com.metavize.mvvm.InterfaceAlias;
 import com.metavize.mvvm.IntfConstants;
-import com.metavize.mvvm.util.ConfigFileUtil;
-
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.argon.ArgonException;
 import com.metavize.mvvm.argon.IntfConverter;
-
-import com.metavize.mvvm.tran.IPaddr;
-import com.metavize.mvvm.tran.HostName;
-import com.metavize.mvvm.tran.ValidateException;
-
-import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
+import com.metavize.mvvm.networking.internal.InterfaceInternal;
 import com.metavize.mvvm.networking.internal.NetworkSpaceInternal;
-import com.metavize.mvvm.networking.internal.RouteInternal;
+import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
 import com.metavize.mvvm.networking.internal.RedirectInternal;
 import com.metavize.mvvm.networking.internal.RemoteInternalSettings;
-import com.metavize.mvvm.networking.internal.InterfaceInternal;
+import com.metavize.mvvm.networking.internal.RouteInternal;
 import com.metavize.mvvm.networking.internal.ServicesInternalSettings;
+import com.metavize.mvvm.tran.HostName;
+import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.ValidateException;
+import com.metavize.mvvm.util.ConfigFileUtil;
+import org.apache.log4j.Logger;
 
 /* Utilities that are only required inside of this package */
 class NetworkUtilPriv extends NetworkUtil
 {
-    private static final Logger logger = Logger.getLogger( NetworkUtilPriv.class );
+    private final Logger logger = Logger.getLogger(getClass());
 
     private static final NetworkUtilPriv INSTANCE = new NetworkUtilPriv();
 
@@ -88,7 +81,7 @@ class NetworkUtilPriv extends NetworkUtil
     {
     }
 
-    /* Convert a NetworkConfiguration and the previous internal network settings into 
+    /* Convert a NetworkConfiguration and the previous internal network settings into
      * a new network spaces settings object.
      * @param networkingConfiguration:  New networking configuration for the primary space.
      * @param internalSettings: Current configuration for all of the other spaces.
@@ -96,12 +89,12 @@ class NetworkUtilPriv extends NetworkUtil
     public NetworkSpacesInternalSettings toInternal( BasicNetworkSettings basic,
                                                      NetworkSpacesInternalSettings internalSettings )
         throws NetworkException, ValidateException
-    {        
+    {
         NetworkSpacesSettings settings = toSettings( internalSettings );
-        
+
         /* Now replace the parameters for the first space */
         NetworkSpace primary = settings.getNetworkSpaceList().get( 0 );
-        
+
         boolean isDhcpEnabled = basic.isDhcpEnabled();
         primary.setIsDhcpEnabled( basic.isDhcpEnabled());
         primary.setIsNatEnabled( false );
@@ -111,9 +104,9 @@ class NetworkUtilPriv extends NetworkUtil
         primary.setIsDmzHostLoggingEnabled( false );
         primary.setDmzHost( null );
         List<IPNetworkRule> networkList = new LinkedList<IPNetworkRule>();
-        
+
         if ( !isDhcpEnabled ) networkList.add( IPNetworkRule.makeInstance( basic.host(), basic.netmask()));
-        
+
         /* Add all of the other networks from the alias list */
         for ( InterfaceAlias a : basic.getAliasList()) {
             networkList.add( IPNetworkRule.makeInstance( a.getAddress(), a.getNetmask()));
@@ -132,7 +125,7 @@ class NetworkUtilPriv extends NetworkUtil
     /** this function is a mess on almost every level */
     public NetworkSpacesInternalSettings toInternal( NetworkSpacesSettings networkSettings )
         throws NetworkException, ValidateException
-    {        
+    {
         List<InterfaceInternal> interfaceList       = new LinkedList<InterfaceInternal>();
         List<NetworkSpaceInternal> networkSpaceList = new LinkedList<NetworkSpaceInternal>();
         List<RouteInternal> routingTable            = new LinkedList<RouteInternal>();
@@ -153,38 +146,38 @@ class NetworkUtilPriv extends NetworkUtil
             List<Interface> networkSpaceIntfList = new LinkedList<Interface>();
 
             String deviceName = BRIDGE_PREFIX + index;
-            
+
             if ( networkSpace.isLive()) {
-                
-                logger.debug( "network space: " + networkSpace.hashCode() + " " + 
+
+                logger.debug( "network space: " + networkSpace.hashCode() + " " +
                               networkSpace.getBusinessPapers());
 
                 /* Use an iterator in order to allow for remove */
                 for ( Iterator<Interface> iter = intfListCopy.iterator() ; iter.hasNext() ; ) {
                     Interface intf = iter.next();
-                    
+
                     NetworkSpace intfSpace = intf.getNetworkSpace();
-                    logger.debug( "Interface: " + intf.getArgonIntf() + " / " + 
+                    logger.debug( "Interface: " + intf.getArgonIntf() + " / " +
                                   intfSpace.getName() + " " + intfSpace.hashCode()
                                   + " " + intfSpace.getBusinessPapers());
-                    
-                    if ( intfSpace.equals( networkSpace ) || 
+
+                    if ( intfSpace.equals( networkSpace ) ||
                          ( intfSpace.getBusinessPapers() == networkSpace.getBusinessPapers())) {
                         try {
                             /* Set the name of the interface */
                             intf.setIntfName( ic.argonIntfToString( intf.getArgonIntf()));
                         } catch( ArgonException e ) {
-                            logger.error( "Unable to retrieve the interface name for: " + 
+                            logger.error( "Unable to retrieve the interface name for: " +
                                           intf.getArgonIntf(), e );
-                            throw new NetworkException( "Unable determine the interface name for intf: " + 
+                            throw new NetworkException( "Unable determine the interface name for intf: " +
                                                         intf.getArgonIntf());
                         }
-                        
+
                         /* If there are more than 1, it is a bridge anyway, so the primary interface
                          * doesn't matter */
                         primaryIntf = intf;
                         iter.remove();
-                        
+
                         networkSpaceIntfList.add( intf );
                     }
                 }
@@ -200,22 +193,22 @@ class NetworkUtilPriv extends NetworkUtil
                     /* Nothing to do */
                 }
             }
-            
+
             IPNetwork primaryAddress = getPrimaryAddress( networkSpace, index );
 
-            SpaceInfo info = new SpaceInfo( networkSpace, deviceName, index, 
+            SpaceInfo info = new SpaceInfo( networkSpace, deviceName, index,
                                             networkSpaceIntfList, primaryAddress );
             spaceToInfoMap.put( networkSpace, info );
             if ( index == SPACE_INDEX_BASE ) primarySpaceInfo = info;
             index++;
         }
-        
+
         if ( intfListCopy.size() > 0 ) {
-            throw new NetworkException( "At least one interface [ " + intfListCopy +" ] was not" + 
+            throw new NetworkException( "At least one interface [ " + intfListCopy +" ] was not" +
                                         " bound to a network space." );
         }
 
-        /** Set the NAT addresses on the second iteration, this is when the primary 
+        /** Set the NAT addresses on the second iteration, this is when the primary
          * address has been set on all of the spaces. */
         for ( SpaceInfo info :  spaceToInfoMap.values()) {
             try {
@@ -228,9 +221,9 @@ class NetworkUtilPriv extends NetworkUtil
                     space.setIsNatEnabled( false);
                 }
             }
-            
+
             NetworkSpaceInternal nwi = makeNetworkSpaceInternal( info );
-            
+
             /* Iterate all of its interfaces and add them to the
              *  interface list, this allows the network space in the
              *  interface to be final and to also have a final mapping
@@ -245,51 +238,51 @@ class NetworkUtilPriv extends NetworkUtil
         for ( Route route : networkSettings.getRoutingTable()) {
             routingTable.add( RouteInternal.makeInstance( route ));
         }
-        
+
         /* Thsese may come from DHCP */
         IPaddr dns1          = networkSettings.getDns1();
         IPaddr dns2          = networkSettings.getDns2();
-        
+
         IPaddr defaultRoute  = networkSettings.getDefaultRoute();
-        
+
         SetupState setupState = networkSettings.getSetupState();
         boolean isEnabled     = networkSettings.getIsEnabled();
 
         /* Create all of the redirects */
         List<RedirectInternal> redirectList = new LinkedList<RedirectInternal>();
-        
+
         int redirectIndex = 1;
         for ( RedirectRule redirect : networkSettings.getRedirectList()) {
             redirectList.add( new RedirectInternal( redirect, redirectIndex++ ));
         }
 
-        
+
         /* If necessary, move all of the interfaces into the primary network space */
         List<InterfaceInternal> realInterfaceList = interfaceList;
         if ( !isEnabled ) {
             realInterfaceList = new LinkedList<InterfaceInternal>();
             SpaceInfo i = primarySpaceInfo;
             SpaceInfo info = new SpaceInfo( i.getNetworkSpace(), BRIDGE_PREFIX + SPACE_INDEX_BASE,
-                                            SPACE_INDEX_BASE, networkSettings.getInterfaceList(), 
+                                            SPACE_INDEX_BASE, networkSettings.getInterfaceList(),
                                             i.getPrimaryAddress());
             info.setNatAddress( null );
 
             NetworkSpaceInternal nwi = makeNetworkSpaceInternal( info );
-            
+
             /* Create a list of all of the interfaces mapped to the first space */
             for ( InterfaceInternal intf : nwi.getInterfaceList()) realInterfaceList.add( intf );
-            
+
             /* Replace the first space with the new one the network space to the list of network spaces. */
             networkSpaceList.remove( 0 );
             networkSpaceList.add( 0, nwi );
         }
 
         return NetworkSpacesInternalSettings.
-            makeInstance( setupState, isEnabled, realInterfaceList, interfaceList, networkSpaceList, 
+            makeInstance( setupState, isEnabled, realInterfaceList, interfaceList, networkSpaceList,
                           routingTable, redirectList, dns1, dns2, defaultRoute );
-                          
+
     }
-    
+
     /**
      * Convert a networking configuration object to an internal representation.
      * This should only be used when updating a box.  Under other circumstances,
@@ -305,36 +298,36 @@ class NetworkUtilPriv extends NetworkUtil
 
         /* By default the network space settings are disabled */
         newSettings.setIsEnabled( false );
-        
-        /* Build an empty network settings where all of the interfaces are mapped to the 
+
+        /* Build an empty network settings where all of the interfaces are mapped to the
          * first network space */
-        
+
         /* Create a single network space */
         NetworkSpace primary = new NetworkSpace();
         primary.setName( NetworkUtil.DEFAULT_SPACE_NAME_PRIMARY );
-        
+
         primary.setBusinessPapers( 0 );
         primary.setIsTrafficForwarded( true );
         primary.setIsNatEnabled( false );
         primary.setIsDmzHostEnabled( false );
         primary.setIsDhcpEnabled( configuration.isDhcpEnabled());
-        
+
         List<Interface> interfaceList = new LinkedList<Interface>();
         for ( byte argonIntf : ic.argonIntfArray()) {
             /* The VPN interface doesn't belong to a network space */
             if ( argonIntf == IntfConstants.VPN_INTF ) continue;
-            
+
             /* Add each interface to the list */
-            Interface intf =  new Interface( argonIntf, EthernetMedia.AUTO_NEGOTIATE, true );            
+            Interface intf =  new Interface( argonIntf, EthernetMedia.AUTO_NEGOTIATE, true );
             intf.setName( IntfConstants.toName( argonIntf ));
             intf.setNetworkSpace( primary );
             interfaceList.add( intf );
         }
         List<NetworkSpace> networkSpaceList = new LinkedList<NetworkSpace>();
-        
+
         /* Set the address and the address of the aliases */
         List<IPNetworkRule> networkList = new LinkedList<IPNetworkRule>();
-        
+
         IPaddr host = configuration.host();
         IPaddr netmask = configuration.netmask();
         if (( host == null ) || ( netmask == null ) || ( host.isEmpty()) || netmask.isEmpty()) {
@@ -362,18 +355,18 @@ class NetworkUtilPriv extends NetworkUtil
         primary.setNetworkList( networkList );
 
         networkSpaceList.add( primary );
-        
+
         newSettings.setInterfaceList( interfaceList );
         newSettings.setNetworkSpaceList( networkSpaceList );
         newSettings.setRoutingTable( new LinkedList<Route>());
         newSettings.setDefaultRoute( configuration.gateway());
         newSettings.setDns1( configuration.dns1());
         newSettings.setDns2( configuration.dns2());
-        
+
         return toInternal( newSettings );
     }
 
-    ServicesInternalSettings toInternal( NetworkSpacesInternalSettings settings, DhcpServerSettings dhcp, 
+    ServicesInternalSettings toInternal( NetworkSpacesInternalSettings settings, DhcpServerSettings dhcp,
                                          DnsServerSettings dns )
     {
         NetworkSpaceInternal serviceSpace = settings.getServiceSpace();
@@ -410,7 +403,7 @@ class NetworkUtilPriv extends NetworkUtil
         }
 
         return ServicesInternalSettings.
-            makeInstance( isEnabled, dhcp, dns, defaultRoute, netmask, dnsServerList, 
+            makeInstance( isEnabled, dhcp, dns, defaultRoute, netmask, dnsServerList,
                           interfaceName, primary.getNetwork());
     }
 
@@ -420,39 +413,39 @@ class NetworkUtilPriv extends NetworkUtil
     {
         /* Convert the settings out */
         NetworkSpacesSettings settings = toSettings( internal );
-        
+
         /* XXXX DHCP only works on the first space. */
         /* This assumes at least one space */
         NetworkSpace space = settings.getNetworkSpaceList().get( 0 );
-                
+
         Netcap netcap = Netcap.getInstance();
-        
-        DhcpStatus status = 
+
+        DhcpStatus status =
             new DhcpStatus( NetworkUtil.BOGUS_DHCP_ADDRESS, NetworkUtil.BOGUS_DHCP_NETMASK );
-        
+
         try {
             IntfConverter ic = IntfConverter.getInstance();
-            
+
             /* XXX Right now the only space that supports DHCP is the external space,
              * need to update for when there are others */
             String external = ic.argonIntfToString( IntfConstants.EXTERNAL_INTF );
             List<InterfaceData> externalIntfDataList = netcap.getInterfaceData( external );
-            
+
             if ( externalIntfDataList == null || ( externalIntfDataList.size() == 0 )) {
                 throw new Exception( "no interface data for external interface." );
             }
-            
+
             InterfaceData data = externalIntfDataList.get( 0 );
             status = new DhcpStatus( data.getAddress(), data.getNetmask());
-            
+
             /* Update the dns servers */
             List<IPaddr> dnsServers = getDnsServers();
-            
+
             switch( dnsServers.size()) {
             default:
             case 2:
                 settings.setDns2( dnsServers.get( 1 ));
-                
+
             case 1:
                 settings.setDns1( dnsServers.get( 0 ));
                 break;
@@ -468,10 +461,10 @@ class NetworkUtilPriv extends NetworkUtil
         } catch( Exception e ) {
             logger.warn( "Error updating DHCP address", e );
         }
-        
+
         logger.debug( "Updating the primary address for the space '" + space.getName() + "'" );
         logger.debug( status );
-        
+
         space.setDhcpStatus( status );
 
         return toInternal( settings );
@@ -489,11 +482,11 @@ class NetworkUtilPriv extends NetworkUtil
 
         services.setDnsEnabled( false );
         return services;
-        
+
     }
 
     /* Used when the network settings change, but the dns masq settings haven't */
-    ServicesInternalSettings update( NetworkSpacesInternalSettings settings, 
+    ServicesInternalSettings update( NetworkSpacesInternalSettings settings,
                                      ServicesInternalSettings services )
     {
         NetworkSpaceInternal serviceSpace = settings.getServiceSpace();
@@ -502,9 +495,9 @@ class NetworkUtilPriv extends NetworkUtil
         IPaddr netmask;
         List<IPaddr> dnsServerList = new LinkedList<IPaddr>();
         String interfaceName =  null;
-        
+
         IPNetwork primary = serviceSpace.getPrimaryAddress();
-            
+
         if ( serviceSpace.getIsNatEnabled()) {
             defaultRoute = primary.getNetwork();
             netmask = primary.getNetmask();
@@ -522,22 +515,22 @@ class NetworkUtilPriv extends NetworkUtil
         }
 
         return ServicesInternalSettings.
-            makeInstance( settings.getIsEnabled(), services, defaultRoute, netmask, dnsServerList, 
+            makeInstance( settings.getIsEnabled(), services, defaultRoute, netmask, dnsServerList,
                           interfaceName, primary.getNetwork());
 
     }
-    
+
     NetworkingConfiguration toConfiguration( NetworkSpacesInternalSettings settings,
                                              RemoteSettings remoteSettings )
     {
         NetworkingConfiguration configuration = new NetworkingConfigurationImpl();
-        
+
         NetworkSpaceInternal primary = settings.getNetworkSpaceList().get( 0 );
 
         /* Grab the stuff from the primary space */
         configuration.isDhcpEnabled( primary.getIsDhcpEnabled());
         IPNetwork primaryNetwork = primary.getPrimaryAddress();
-        
+
         configuration.host( primaryNetwork.getNetwork());
         configuration.netmask( primaryNetwork.getNetmask());
 
@@ -576,20 +569,20 @@ class NetworkUtilPriv extends NetworkUtil
         NetworkSpacesSettingsImpl settings = new NetworkSpacesSettingsImpl();
 
         settings.setSetupState( internalSettings.getSetupState());
-        
+
         /* Generate the list network spaces and a map from internal -> normal. */
         List<NetworkSpace> networkSpaceList = new LinkedList<NetworkSpace>();
 
         settings.setIsEnabled( internalSettings.getIsEnabled());
-        
-        Map<NetworkSpaceInternal,NetworkSpace> networkSpaceMap = 
+
+        Map<NetworkSpaceInternal,NetworkSpace> networkSpaceMap =
             new HashMap<NetworkSpaceInternal,NetworkSpace>();
 
         NetworkSpace primary = null;
 
         for ( NetworkSpaceInternal si : internalSettings.getNetworkSpaceList()) {
             NetworkSpace space = si.toNetworkSpace();
-            
+
             if ( primary == null ) primary = space;
 
             /* Placed into both in order to maintain the order of the items */
@@ -600,27 +593,27 @@ class NetworkUtilPriv extends NetworkUtil
 
         /* Assuming there is at least one space, otherwise primary would be null. */
         primary.setIsPrimary( true );
-        
+
         /* Update the nat space in the ones where this is needed. */
         for ( Map.Entry<NetworkSpaceInternal,NetworkSpace> entry : networkSpaceMap.entrySet()) {
             NetworkSpace space = entry.getValue();
             NetworkSpaceInternal si = entry.getKey();
 
             int natSpaceIndex = si.getNatSpaceIndex();
-            
+
             if ( natSpaceIndex >= 0 && ( natSpaceIndex <= networkSpaceList.size())) {
                 space.setNatSpace( networkSpaceList.get( natSpaceIndex ));
             } else {
                 space.setNatSpace( null );
             }
         }
-                   
+
         /* Generate the interfaces, wire them up to the correct network space.
          * always wire settings up as if they were enabled. */
         List<Interface> intfList = new LinkedList<Interface>();
         for ( InterfaceInternal intfInternal : internalSettings.getEnabledList()) {
             Interface i = intfInternal.toInterface();
-            
+
             NetworkSpace space = networkSpaceMap.get( intfInternal.getNetworkSpace());
             i.setNetworkSpace(( space == null ) ? primary : space );
             intfList.add( i );
@@ -629,7 +622,7 @@ class NetworkUtilPriv extends NetworkUtil
         /* Generate the routing table. */
         List<Route> routingTable = new LinkedList<Route>();
         for( RouteInternal r : internalSettings.getRoutingTable()) routingTable.add( r.toRoute());
-        
+
         /* Set all of the simple settings (eg defaultRoute) */
         settings.setInterfaceList( intfList );
         settings.setNetworkSpaceList( networkSpaceList );
@@ -649,7 +642,7 @@ class NetworkUtilPriv extends NetworkUtil
         String publicAddress;
         IPaddr publicIPaddr = NetworkUtil.BOGUS_DHCP_ADDRESS;
         int publicPort  = NetworkUtil.DEF_HTTPS_PORT;
-        
+
         /* assumes at least one space */
         IPaddr primaryAddress = null;
 
@@ -668,7 +661,7 @@ class NetworkUtilPriv extends NetworkUtil
             publicPort   = remote.getPublicPort();
         } else {
             HostName hostname = remote.getHostname();
-        
+
             /* Here is where a some validation is required. */
             boolean isHostnamePublic = remote.getIsHostnamePublic();
 
@@ -679,13 +672,13 @@ class NetworkUtilPriv extends NetworkUtil
                 publicAddress = hostname.toString();
                 publicPort = remote.httpsPort();
                 publicIPaddr = primaryAddress;
-                
+
                 if ( publicPort != NetworkUtil.DEF_HTTPS_PORT ) publicAddress += ":" + publicPort;
             } else if (( primaryAddress == null ) || ( primaryAddress.isEmpty())) {
                 logger.warn( "Network settings are unitialized, using hostname as fallback for " +
                              "public address" );
                 publicAddress = hostname.toString();
-                
+
                 if ( hostname == null ) {
                     publicAddress = NetworkUtil.DEFAULT_HOSTNAME.toString();
                     publicPort    = NetworkUtil.DEF_HTTPS_PORT;
@@ -699,16 +692,16 @@ class NetworkUtilPriv extends NetworkUtil
             }
         }
 
-        /* Otherwise return the primary address of the primary space and the HTTPS port */        
+        /* Otherwise return the primary address of the primary space and the HTTPS port */
         return new RemoteInternalSettings( remote, publicIPaddr, publicPort, publicAddress );
     }
-    
+
     List<IPaddr> getDnsServers()
     {
         List<IPaddr> dnsServers = new LinkedList<IPaddr>();
-        
+
         BufferedReader in = null;
-        
+
         /* Open up the interfaces file */
         try {
             in = new BufferedReader( new FileReader( NetworkManagerImpl.ETC_RESOLV_FILE ));
@@ -732,7 +725,7 @@ class NetworkUtilPriv extends NetworkUtil
         return dnsServers;
     }
 
-    
+
     /* Get the hostname of the box from the /etc/hostname file */
     HostName loadHostname()
     {
@@ -764,7 +757,7 @@ class NetworkUtilPriv extends NetworkUtil
 
 
     /************* PRIVATE **********/
-    private SpaceInfo makeBasicNetworkSpace( BasicNetworkSettings basicNetworkSettings, 
+    private SpaceInfo makeBasicNetworkSpace( BasicNetworkSettings basicNetworkSettings,
                                              NetworkSpacesInternalSettings internalSettings )
     {
         List<Interface> interfaceList = new LinkedList<Interface>();
@@ -772,12 +765,12 @@ class NetworkUtilPriv extends NetworkUtil
         /* The list of interfaces in this network space are defined by the internal settings */
         throw new IllegalStateException( "Implement me" );
     }
-    
+
 
     private IPNetwork getPrimaryAddress( NetworkSpace networkSpace, int index )
     {
         IPNetwork primaryAddress = IPNetwork.getEmptyNetwork();
-            
+
         if ( networkSpace.getIsDhcpEnabled()) {
             DhcpStatus status = networkSpace.getDhcpStatus();
             primaryAddress = IPNetwork.makeInstance( status.getAddress(), status.getNetmask());
@@ -789,7 +782,7 @@ class NetworkUtilPriv extends NetworkUtil
                 }
             }
         }
-        
+
         if ( primaryAddress == null || primaryAddress.equals( IPNetwork.getEmptyNetwork())) {
             /* XXX This is where it would handle the empty ip network */
             logger.warn( "Network space " + index + " doesn't have a primary address" );
@@ -802,9 +795,9 @@ class NetworkUtilPriv extends NetworkUtil
         throws NetworkException
     {
         NetworkSpace space = info.getNetworkSpace();
-        
+
         if ( !space.getIsNatEnabled()) return;
-        
+
         NetworkSpace natSpace = space.getNatSpace();
         int natSpaceIndex = -1;
         IPaddr natAddress = NetworkUtil.EMPTY_IPADDR;
@@ -814,29 +807,29 @@ class NetworkUtilPriv extends NetworkUtil
         }
 
         if ( natSpace == null ) {
-            throw new NetworkException( "An enabled space [" + space.getName() + 
+            throw new NetworkException( "An enabled space [" + space.getName() +
                                         "] running nat must have a nat space" );
         }
 
         if ( space.isLive() && !natSpace.isLive()) {
             throw new NetworkException( "An enabled space cannot NAT to a disabled space." );
         }
-        
+
         if ( spaceToInfoMap.get( natSpace ) == null ) {
-            throw new NetworkException( "Network space " + info.getIndex() + " is not nattd to an " + 
+            throw new NetworkException( "Network space " + info.getIndex() + " is not nattd to an " +
                                         "unlisted network space" );
         }
-        
+
         /* Grab the info for the nat space */
         SpaceInfo i   = spaceToInfoMap.get( natSpace );
-        
+
         /* By default use the primary address of the nat space */
         natAddress    = i.getPrimaryAddress().getNetwork();
-        
+
         /* If the nat address is set, use the nat address */
         if ( space.getNatAddress() != null ) natAddress = space.getNatAddress();
         natSpaceIndex = i.getIndex();
-        
+
         if ( natAddress == null || natAddress.isEmpty()) {
             logger.info( "Requesting NAT on a space that doesn't have an address, NATing to bogus address" );
 
@@ -848,7 +841,7 @@ class NetworkUtilPriv extends NetworkUtil
             info.setNatSpaceIndex( natSpaceIndex );
         }
     }
-    
+
     // Writes out the new ddclient config files when the ddns settings change.
     void writeDDNSConfiguration(DynamicDNSSettings settings, HostName hostName, String externalInterfaceName )
     {
@@ -934,10 +927,10 @@ class NetworkUtilPriv extends NetworkUtil
     }
 
     private NetworkSpaceInternal makeNetworkSpaceInternal( SpaceInfo info ) throws ValidateException
-    {        
+    {
         return NetworkSpaceInternal.
-            makeInstance( info.getNetworkSpace(), info.getInterfaceList(), info.getPrimaryAddress(), 
-                          info.getDeviceName(), info.getIndex(), info.getNatAddress(), 
+            makeInstance( info.getNetworkSpace(), info.getInterfaceList(), info.getPrimaryAddress(),
+                          info.getDeviceName(), info.getIndex(), info.getNatAddress(),
                           info.getNatSpaceIndex());
     }
 
@@ -983,12 +976,12 @@ class SpaceInfo
     {
         return deviceName;
     }
-    
+
     int getIndex()
     {
         return this.index;
     }
-    
+
     IPNetwork getPrimaryAddress()
     {
         return this.primaryAddress;
@@ -1008,7 +1001,7 @@ class SpaceInfo
     {
         return this.natSpaceIndex;
     }
-    
+
     void setNatSpaceIndex( int newValue )
     {
         this.natSpaceIndex = newValue;

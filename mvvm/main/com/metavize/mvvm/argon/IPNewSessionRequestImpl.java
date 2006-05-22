@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003 Metavize Inc.
+ * Copyright (c) 2003, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,15 +12,12 @@
 package com.metavize.mvvm.argon;
 
 import java.net.InetAddress;
-import java.net.Inet4Address;
+
+import com.metavize.jnetcap.Endpoint;
+import com.metavize.jnetcap.Endpoints;
+
 
 import com.metavize.mvvm.tran.PipelineEndpoints;
-import com.metavize.jnetcap.NetcapSession;
-import com.metavize.jnetcap.Endpoints;
-import com.metavize.jnetcap.Endpoint;
-import com.metavize.jvector.IncomingSocketQueue;
-import com.metavize.jvector.OutgoingSocketQueue;
-
 import org.apache.log4j.Logger;
 
 public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl implements IPNewSessionRequest
@@ -28,7 +25,7 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
     protected InetAddress clientAddr;
     protected int clientPort;
     protected byte clientIntf;
-    
+
     protected InetAddress serverAddr;
     protected int serverPort;
     final byte originalServerIntf;
@@ -42,7 +39,7 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
     protected byte code  = REJECTED;
 
     /* Debugging */
-    private static final Logger logger = Logger.getLogger( IPNewSessionRequestImpl.class );
+    private final Logger logger = Logger.getLogger(getClass());
 
     /* Two ways to create an IPNewSessionRequest:
      * A. Pass in the netcap session and get the parameters from there.
@@ -51,10 +48,10 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
                                     byte originalServerIntf, PipelineEndpoints pe )
     {
         super( sessionGlobalState, agent );
-        
+
         Endpoints clientSide = sessionGlobalState.netcapSession().clientSide();
         Endpoints serverSide = sessionGlobalState.netcapSession().serverSide();
-        
+
         Endpoint client = clientSide.client();
         Endpoint server = clientSide.server();
 
@@ -65,7 +62,7 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
         serverIntf = IntfConverter.toArgon( serverSide.interfaceId());
         this.originalServerIntf = originalServerIntf;
         this.pipelineEndpoints = pe;
-        
+
         serverAddr = server.host();
         serverPort = server.port();
     }
@@ -76,7 +73,7 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
     public IPNewSessionRequestImpl( IPSession session, ArgonAgent agent, byte originalServerIntf, PipelineEndpoints pe )
     {
         super( session.sessionGlobalState(), agent);
-  
+
         /* Get the server and client from the previous request */
         clientAddr = session.clientAddr();
         clientPort = session.clientPort();
@@ -100,7 +97,7 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
     {
         return clientAddr;
     }
-    
+
     public void clientAddr( InetAddress addr )
     {
         clientAddr = addr;
@@ -162,38 +159,38 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
         return pipelineEndpoints;
     }
 
-    // One of REQUESTED, REJECTED, RELEASED 
+    // One of REQUESTED, REJECTED, RELEASED
     public byte state()
     {
         return state;
     }
-    
+
     public byte rejectCode()
     {
         return code;
     }
-    
-    // May only be called before session is established (from UDPNewSessionRequestEvent handler) 
+
+    // May only be called before session is established (from UDPNewSessionRequestEvent handler)
     public void rejectSilently()
     {
         if ( state != REQUESTED ) {
             throw new IllegalStateException( "Unable to reject session that is not in the requested state" );
         }
-        
+
         state = REJECTED_SILENT;
     }
-    
+
     // May only call if the session is in the requested state
     public void endpoint()
     {
         if ( state != REQUESTED ) {
             throw new IllegalStateException( "Unable to reject session that is not in the requested state" );
         }
-        
+
         state = ENDPOINTED;
     }
 
-    // May only be called before session is established (from UDPNewSessionRequestEvent handler) 
+    // May only be called before session is established (from UDPNewSessionRequestEvent handler)
     public void rejectReturnUnreachable( byte code )
     {
         if ( state != REQUESTED ) {
@@ -210,7 +207,7 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
             state     = REJECTED;
             this.code = code;
             break;
-            
+
         default:
             throw new IllegalArgumentException( "Invalid code: " + code );
         }

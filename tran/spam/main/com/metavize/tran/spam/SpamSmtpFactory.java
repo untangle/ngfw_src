@@ -19,8 +19,8 @@ import com.metavize.tran.mail.papi.MailExportFactory;
 import com.metavize.tran.mail.papi.MailTransformSettings;
 import com.metavize.tran.mail.papi.quarantine.QuarantineTransformView;
 import com.metavize.tran.mail.papi.safelist.SafelistTransformView;
-import com.metavize.tran.mail.papi.smtp.sapi.Session;
 import com.metavize.tran.mail.papi.smtp.ScanLoadChecker;
+import com.metavize.tran.mail.papi.smtp.sapi.Session;
 import com.metavize.tran.token.TokenHandler;
 import com.metavize.tran.token.TokenHandlerFactory;
 import org.apache.log4j.Logger;
@@ -33,8 +33,7 @@ public class SpamSmtpFactory
   private QuarantineTransformView m_quarantine;
   private SafelistTransformView m_safelist;
   private SpamImpl m_spamImpl;
-  private static final Logger m_logger =
-    Logger.getLogger(SpamSmtpFactory.class);
+  private final Logger m_logger = Logger.getLogger(getClass());
 
   public SpamSmtpFactory(SpamImpl impl) {
     Policy p = impl.getTid().getPolicy();

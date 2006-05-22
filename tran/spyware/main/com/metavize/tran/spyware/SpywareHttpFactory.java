@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 
 class SpywareHttpFactory implements TokenHandlerFactory
 {
-    private static final Logger logger = Logger.getLogger(SpywareHttpFactory.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private final SpywareImpl transform;
 

@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
 
 public class FProtScanner implements VirusScanner {
 
-    private static final Logger logger = Logger.getLogger(FProtScanner.class.getName());
+    private final Logger logger = Logger.getLogger(getClass());
 
     public FProtScanner() {}
 

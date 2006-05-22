@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003 Metavize Inc.
+ * Copyright (c) 2003, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -14,32 +14,27 @@ package com.metavize.mvvm.argon;
 import java.net.InetAddress;
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
-
-import com.metavize.mvvm.policy.PolicyRule;
-import com.metavize.mvvm.tran.PipelineEndpoints;
+import com.metavize.jnetcap.Inet4AddressConverter;
 import com.metavize.jnetcap.Netcap;
 import com.metavize.jnetcap.NetcapHook;
 import com.metavize.jnetcap.NetcapSession;
 import com.metavize.jnetcap.NetcapTCPSession;
-import com.metavize.jnetcap.IPTraffic;
-import com.metavize.jnetcap.Inet4AddressConverter;
 import com.metavize.jnetcap.Shield;
-
 import com.metavize.jvector.Sink;
-import com.metavize.jvector.TCPSink;
 import com.metavize.jvector.Source;
+import com.metavize.jvector.TCPSink;
 import com.metavize.jvector.TCPSource;
-import com.metavize.jvector.IncomingSocketQueue;
-import com.metavize.jvector.OutgoingSocketQueue;
+import com.metavize.mvvm.policy.PolicyRule;
+import com.metavize.mvvm.tran.PipelineEndpoints;
+import org.apache.log4j.Logger;
 
 public class TCPHook implements NetcapHook
 {
     private static TCPHook INSTANCE;
-    private static final Logger logger = Logger.getLogger( TCPHook.class );
+    private final Logger logger = Logger.getLogger(getClass());
 
     private final Shield shield;
-    
+
     public static TCPHook getInstance() {
         if ( INSTANCE == null )
             init();
@@ -68,7 +63,7 @@ public class TCPHook implements NetcapHook
         // new Thread( new TCPArgonHook( sessionID )).start();
         new TCPArgonHook( sessionID ).run();
     }
-        
+
     private class TCPArgonHook extends ArgonHook
     {
         protected static final int TIMEOUT = -1;
@@ -92,7 +87,7 @@ public class TCPHook implements NetcapHook
             netcapTCPSession   = new NetcapTCPSession( id );
             shieldUser = Inet4AddressConverter.toLong( netcapTCPSession.clientSide().client().host());
         }
-        
+
         protected int timeout()
         {
             return TIMEOUT;
@@ -112,15 +107,15 @@ public class TCPHook implements NetcapHook
         {
             return serverSideListener;
         }
-        
-        protected boolean serverComplete() 
+
+        protected boolean serverComplete()
         {
             InetAddress clientAddr;
             int clientPort;
             InetAddress serverAddr;
             int serverPort;
             int flags = NetcapTCPSession.NON_LOCAL_BIND;
-            
+
             if ( sessionList.isEmpty()) {
                 clientAddr = netcapTCPSession.serverSide().client().host();
                 clientPort = netcapTCPSession.serverSide().client().port();
@@ -130,14 +125,14 @@ public class TCPHook implements NetcapHook
             } else {
                 /* Complete with the parameters from the last transform */
                 TCPSession session = (TCPSession)sessionList.get( sessionList.size() - 1 );
-                
+
                 clientAddr = session.clientAddr();
                 clientPort = session.clientPort();
                 serverAddr = session.serverAddr();
                 serverPort = session.serverPort();
             }
 
-            /* XXX Have to check if it is destined locally, if so, you don't create two 
+            /* XXX Have to check if it is destined locally, if so, you don't create two
              * connections, you just connect locally, instead, we could redirect the connection
              * from 127.0.0.1 to 127.0.0.1, it just limits the number of possible sessions
              * to that one server to 0xFFFF */
@@ -154,7 +149,7 @@ public class TCPHook implements NetcapHook
 
             try {
                 byte intf = IntfConverter.toNetcap( clientSide.serverIntf());
-                netcapTCPSession.serverComplete( clientAddr, clientPort, serverAddr, serverPort, intf, 
+                netcapTCPSession.serverComplete( clientAddr, clientPort, serverAddr, serverPort, intf,
                                                  flags );
                 netcapTCPSession.tcpServerSide().blocking( false );
                 ifServerComplete = true;
@@ -162,19 +157,19 @@ public class TCPHook implements NetcapHook
                 logger.info( "TCP - Unable to complete connection to the server: " + e );
                 ifServerComplete = false;
             }
-            
+
             return ifServerComplete;
         }
-        
-        protected boolean clientComplete() 
+
+        protected boolean clientComplete()
         {
             if ( logger.isInfoEnabled()) {
                 logger.info( "TCP - Completing client connection: " + sessionGlobalState );
                 logger.info( "TCP - client acked: " + netcapTCPSession.acked());
             }
-            
+
             try {
-                if ( !netcapTCPSession.acked()) 
+                if ( !netcapTCPSession.acked())
                     netcapTCPSession.clientComplete();
 
                 netcapTCPSession.tcpClientSide().blocking( false );
@@ -184,14 +179,14 @@ public class TCPHook implements NetcapHook
                 logger.info( "TCP - Unable to complete connection to the client: " + e );
                 ifClientComplete = false;
             }
-            
+
             return ifClientComplete;
         }
 
         protected void clientReject()
-        {            
+        {
             if ( logger.isDebugEnabled()) logger.debug( "TCP - Rejecting client" );
-                        
+
             switch( rejectCode ) {
             case IPNewSessionRequest.TCP_REJECT_RESET:
                 netcapTCPSession.clientReset();
@@ -222,12 +217,12 @@ public class TCPHook implements NetcapHook
 
             netcapTCPSession.clientDrop();
         }
-        
+
         protected Sink makeClientSink()
         {
             return new TCPSink( netcapTCPSession.tcpClientSide().fd(), clientSideListener );
         }
-        
+
         protected Sink makeServerSink()
         {
             if ( !ifServerComplete ) {
@@ -241,7 +236,7 @@ public class TCPHook implements NetcapHook
         {
             return new TCPSource( netcapTCPSession.tcpClientSide().fd(), clientSideListener );
         }
-        
+
         protected Source makeServerSource()
         {
             if ( !ifServerComplete ) {
@@ -260,27 +255,27 @@ public class TCPHook implements NetcapHook
             } else {
                 request = new TCPNewSessionRequestImpl( prevSession, agent, originalServerIntf, pe );
             }
-                         
+
             PolicyRule pr = pipelineDesc.getPolicyRule();
             boolean isInbound = pr == null ? true : pr.isInbound();
 
             // TAPI returns null when rejecting the session
             TCPSession session = agent.getNewSessionEventListener().newSession( request, isInbound );
-            
+
             processSession( request, session );
-            
+
             if ( iter.hasNext()) {
                 /* Advance the previous session if the transform requested or released the session */
                 if (( request.state() == IPNewSessionRequest.REQUESTED ) ||
                     ( request.state() == IPNewSessionRequest.RELEASED && session != null )) {
                     prevSession = session;
-                } 
+                }
             } else {
                 prevSession = null;
             }
         }
 
-        protected void raze() 
+        protected void raze()
         {
             netcapTCPSession.raze();
         }
@@ -295,7 +290,7 @@ public class TCPHook implements NetcapHook
                     logger.debug( "client side: " + clientSideListener.stats());
                     logger.debug( "server side: " + serverSideListener.stats());
                 }
-                    
+
                 vector.timeout( DEAD_TIMEOUT );
             }
         }
@@ -311,24 +306,24 @@ public class TCPHook implements NetcapHook
                 super.dataEvent( source, numBytes );
                 shield.addChunk( shieldUser , Netcap.IPPROTO_TCP, numBytes );
             }
-            
+
             public void dataEvent( Sink sink, int numBytes )
             {
                 super.dataEvent( sink, numBytes );
                 shield.addChunk( shieldUser, Netcap.IPPROTO_TCP, numBytes );
             }
-            
+
             public void shutdownEvent( Source source )
             {
                 super.shutdownEvent( source );
                 checkEndpoints();
             }
-            
+
             public void shutdownEvent( Sink sink )
             {
                 super.shutdownEvent( sink );
                 checkEndpoints();
-            }            
+            }
         }
     }
 }

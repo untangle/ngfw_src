@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
 public class EventHandler extends AbstractEventHandler
 {
     private SigmaSettings settings = null;
-    private final Logger logger = Logger.getLogger(EventHandler.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private class SessionInfo {
         public int myState;

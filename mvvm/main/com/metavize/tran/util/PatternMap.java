@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004 Metavize Inc.
+ * Copyright (c) 2004, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,6 +12,7 @@ package com.metavize.tran.util;
 
 import java.util.*;
 import java.util.regex.*;
+
 import org.apache.log4j.Logger;
 
 /* PatternMap maps a list of pattern-types to a list of actions
@@ -26,7 +27,7 @@ import org.apache.log4j.Logger;
 public class PatternMap
 {
     /* constants */
-    private static final Logger zLog = Logger.getLogger(PatternMap.class.getName());
+    private final Logger zLog = Logger.getLogger(getClass());
 
     /* pattern to action mapping options (mutually exclusive)
      * (for these options,

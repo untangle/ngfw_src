@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -14,11 +14,7 @@ package com.metavize.tran.mail.impl.pop;
 import static com.metavize.tran.util.Ascii.*;
 import static com.metavize.tran.util.BufferUtil.*;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -29,7 +25,6 @@ import com.metavize.tran.mail.PopCasing;
 import com.metavize.tran.mail.papi.pop.PopCommand;
 import com.metavize.tran.mail.papi.pop.PopCommandMore;
 import com.metavize.tran.token.AbstractParser;
-import com.metavize.tran.token.EndMarker;
 import com.metavize.tran.token.ParseException;
 import com.metavize.tran.token.ParseResult;
 import com.metavize.tran.token.Release;
@@ -39,7 +34,7 @@ import org.apache.log4j.Logger;
 
 public class PopClientParser extends AbstractParser
 {
-    private final static Logger logger = Logger.getLogger(PopClientParser.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private enum State {
         COMMAND,

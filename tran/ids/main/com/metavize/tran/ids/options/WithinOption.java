@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
 
 public class WithinOption extends IDSOption {
 
-    private static final Logger logger = Logger.getLogger(WithinOption.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     public WithinOption(IDSRuleSignature signature, String params) {
         super(signature, params);

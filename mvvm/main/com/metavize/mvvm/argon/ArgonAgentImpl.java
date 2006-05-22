@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -41,7 +41,7 @@ public class ArgonAgentImpl implements ArgonAgent {
     private boolean isDestroyed = false;
 
     /* Debugging */
-    private static final Logger logger = Logger.getLogger( ArgonAgentImpl.class );
+    private final Logger logger = Logger.getLogger(getClass());
 
     private static final NewSessionEventListener NULL_NEW_SESSION_LISTENER = new NewSessionEventListener() {
             public UDPSession newSession( UDPNewSessionRequest request, boolean isInbound )
@@ -50,7 +50,7 @@ public class ArgonAgentImpl implements ArgonAgent {
                 request.release();
                 return null;
             }
-            
+
             public TCPSession newSession( TCPNewSessionRequest request, boolean isInbound )
             {
                 /* Release everything */
@@ -106,7 +106,7 @@ public class ArgonAgentImpl implements ArgonAgent {
     {
         /* Session is already dead, no need to do anything */
         if ( deadState() == DEAD_ARGON ) return;
-        
+
         /* This means DO not remove sessions in raze, they are cleared at the end */
         isDestroyed = true;
 

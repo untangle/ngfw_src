@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003 Metavize Inc.
+ * Copyright (c) 2003, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,6 +11,7 @@
 package com.metavize.tran.util;
 
 import java.util.Hashtable;
+
 import org.apache.log4j.Logger;
 
 /* RuleMap maps a list of expressions to a list of actions
@@ -25,7 +26,7 @@ import org.apache.log4j.Logger;
 public class RuleMap
 {
     /* constants */
-    private static final Logger zLog = Logger.getLogger(RuleMap.class.getName());
+    private final Logger zLog = Logger.getLogger(getClass());
 
     /* expression to action mapping options (mutually exclusive)
      * (for these options,
@@ -346,7 +347,7 @@ public class RuleMap
     {
         iFirstTrue = NO_TRUE_ACTION;
         iLastTrue = NO_TRUE_ACTION;
- 
+
         return;
     }
 

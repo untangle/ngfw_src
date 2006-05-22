@@ -1,25 +1,27 @@
  /*
-  * Copyright (c) 2005 Metavize Inc.
+  * Copyright (c) 2005, 2006 Metavize Inc.
   * All rights reserved.
   *
   * This software is the confidential and proprietary information of
   * Metavize Inc. ("Confidential Information").  You shall
   * not disclose such Confidential Information.
   *
-  * $Id:$
+  * $Id$
   */
 package com.metavize.tran.mime;
 
-import javax.mail.internet.*;
-import javax.mail.*;
-import java.util.*;
-import java.io.*;
 import static com.metavize.tran.util.Ascii.*;
+
+import java.io.*;
+import java.util.*;
+import javax.mail.*;
+import javax.mail.internet.*;
+
 import org.apache.log4j.Logger;
 
 //===========================================
 // Implementation Note.  We're currently
-// leaning on the JavaMail API for the 
+// leaning on the JavaMail API for the
 // heavy lifting (parsing).  We've created
 // this wrapper in case we need to move alway
 // from JavaMail in the future.
@@ -31,25 +33,23 @@ import org.apache.log4j.Logger;
  * HeaderField containing EmailAddresses.  This is useful for
  * things like "cc" and "To".
  */
-public class EmailAddressHeaderField 
+public class EmailAddressHeaderField
   extends HeaderField {
 
-  private static Logger m_logger = Logger.getLogger(EmailAddressHeaderField.class);
-
   private List<EmailAddress> m_addresses;
-  
+
   public EmailAddressHeaderField(String name,
     LCString lCName) {
     super(name, lCName);
   }
   public EmailAddressHeaderField(String name) {
     super(name);
-  }  
+  }
 
-  
+
   /**
    * Get the Address at the given index.
-   * 
+   *
    */
   public EmailAddress getAddress(int index)
     throws IndexOutOfBoundsException {
@@ -69,7 +69,7 @@ public class EmailAddressHeaderField
       0:
       m_addresses.size();
   }
-  
+
   /**
    * Iterate over the addressed contained within
    *
@@ -78,14 +78,14 @@ public class EmailAddressHeaderField
   public Iterator<EmailAddress> iterator() {
     ensureList();
     return m_addresses.iterator();
-  } 
-  
+  }
+
   /**
    * Remove all occurances of EmailAddresses which
    * test equals (true) for the argument.  The argument
    * address itself (instance) need not be contained
    * in this Header
-   * 
+   *
    * @param address the address
    * @return true if one or more were present, and removed.
    */
@@ -103,7 +103,7 @@ public class EmailAddressHeaderField
     }
     return ret;
   }
-  
+
   /**
    * Removes all EmailAddresses from this header field.
    */
@@ -113,7 +113,7 @@ public class EmailAddressHeaderField
       changed();
     }
   }
-  
+
   /**
    * Test if this Header contains any EmailAddresses which
    * Match the argument.
@@ -125,9 +125,9 @@ public class EmailAddressHeaderField
         return true;
       }
     }
-    return false;  
+    return false;
   }
-  
+
   /**
    * Duplicates are not prevented.
    */
@@ -136,8 +136,8 @@ public class EmailAddressHeaderField
     m_addresses.add(address);
     changed();
   }
-  
-  
+
+
   /**
    * Makes sure List<EmailAddresses> is never null.
    */
@@ -146,26 +146,26 @@ public class EmailAddressHeaderField
       m_addresses = new ArrayList<EmailAddress>();
     }
   }
-  
-  @Override  
-  protected void parseStringValue() 
-    throws HeaderParseException {
-    
-    m_addresses = EmailAddressHeaderField.parseHeaderLine(getValueAsString());
-    
-  }  
-  
+
   @Override
-  public void parseLines() 
+  protected void parseStringValue()
     throws HeaderParseException {
-    
+
+    m_addresses = EmailAddressHeaderField.parseHeaderLine(getValueAsString());
+
+  }
+
+  @Override
+  public void parseLines()
+    throws HeaderParseException {
+
     parseStringValue();
   }
-  
+
   /**
    * Really only for debugging, not to produce output suitable
    * for output.
-   */  
+   */
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append(getName());
@@ -182,17 +182,17 @@ public class EmailAddressHeaderField
       sb.append(it.next().toMIMEString());
     }
     return sb.toString();
-  }   
-  
+  }
+
   @Override
   public void writeToAssemble(MIMEOutputStream out)
     throws IOException {
-    
+
     out.write(getName());
     out.write((byte) COLON);
-    
-    int written = getName().length()+1;    
-    
+
+    int written = getName().length()+1;
+
     boolean first = true;
     for(EmailAddress address : m_addresses) {
       if(address.isNullAddress()) {
@@ -223,7 +223,7 @@ public class EmailAddressHeaderField
     throws HeaderParseException {
     return parseHeaderLine(line, true);
   }
-  
+
   /**
    * Parse a raw header line into a collection of EmailAddresses,
    * as per RFC821 and its successors.
@@ -233,14 +233,16 @@ public class EmailAddressHeaderField
    * @return a Listof EmailAddresses.
    */
   public static List<EmailAddress> parseHeaderLine(String line,
-    boolean skipBadAddresses) 
+    boolean skipBadAddresses)
     throws HeaderParseException {
+
+    Logger logger = Logger.getLogger(EmailAddressHeaderField.class);
 
     //TODO bscott See bug 808.  This isn't really "fixed".  It
     //still cannot handle <foo:;> which is legal.
 
     List<EmailAddress> ret = new ArrayList<EmailAddress>();
-    
+
     HeaderFieldTokenizer tokenizer = new HeaderFieldTokenizer(line);
 
     HeaderFieldTokenizer.Token t = null;
@@ -273,7 +275,7 @@ public class EmailAddressHeaderField
             sb.toString() + "\" into address from header line \"" +
             line + "\"", ex);
           if(skipBadAddresses) {
-            m_logger.warn(hpe.fillInStackTrace());
+            logger.warn(hpe.fillInStackTrace());
           }
           else {
             throw hpe;
@@ -314,7 +316,7 @@ public class EmailAddressHeaderField
             sb.toString() + "\" into address from header line \"" +
             line + "\"", ex);
           if(skipBadAddresses) {
-            m_logger.warn(hpe.fillInStackTrace());
+            logger.warn(hpe.fillInStackTrace());
           }
           else {
             throw hpe;
@@ -324,7 +326,7 @@ public class EmailAddressHeaderField
         sawGT = false;
         sawAt = false;
         sawLT = false;
-        continue;        
+        continue;
       }
       if(t.isDelim()) {
         if(t.getDelim() == GT_B) {
@@ -346,9 +348,9 @@ public class EmailAddressHeaderField
         t.appendTo(sb);
         if(wasQuote) {
           sb.append(QUOTE);
-        }        
+        }
       }
-      
+
     }while(t != null);
 
     return ret;
@@ -374,7 +376,7 @@ public class EmailAddressHeaderField
       testAddress(", Bill Scott<bscott@metavize.com>;");
       testAddress(", ; Bill Scott<bscott@metavize.com>;,");
       testAddress(",;Bill Scott<bscott@metavize.com> ,;");
-    
+
       testAddress("Bill Scott<bscott@metavize.com");
       testAddress(";;Bill Scott<bscott@metavize.com");
       testAddress(",,Bill Scott<bscott@metavize.com");
@@ -390,9 +392,9 @@ public class EmailAddressHeaderField
     }
     else {
       BufferedReader reader = new BufferedReader(new FileReader(args[0]));
-  
+
       String line = null;
-      
+
       while((line = reader.readLine()) != null) {
         line = line.trim();
         if("".equals(line)) {
@@ -421,16 +423,16 @@ public class EmailAddressHeaderField
         System.out.print(addr.toMIMEString());
       }
       System.out.println("");
-      
+
     }
     catch(Exception ex) {
       System.out.println("***EXCEPTION***");
       System.err.println("***EXCEPTION***");
       ex.printStackTrace(System.out);
     }
-    System.out.println("-----------------------------");    
+    System.out.println("-----------------------------");
   }
-  
 
-  
-}  
+
+
+}

@@ -21,7 +21,7 @@ public class MackageDesc implements Serializable
 {
     private static final long serialVersionUID = 3662589795455307379L;
 
-    private static final Logger logger = Logger.getLogger(MackageDesc.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     public static final int UNKNOWN_POSITION = -1;
 

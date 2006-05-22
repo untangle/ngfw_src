@@ -42,8 +42,7 @@ public class LogMailer implements Runnable
     // This many lines from the end of non-log4j logs (console, gc) for each message
     public static final int OTHER_LOG_LINES = 50;
 
-    private static final Logger logger = Logger
-        .getLogger(LogMailer.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private static final Object LOCK = new Object();
     private static LogMailer LOGMAILER;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,34 +11,34 @@
 
 package com.metavize.tran.mail.impl.quarantine.store;
 
-import com.metavize.tran.mail.papi.quarantine.InboxRecord;
-import com.metavize.tran.mail.papi.quarantine.MailSummary;
-import com.metavize.tran.mail.papi.quarantine.InboxIndex;
-import org.apache.log4j.Logger;
-import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.io.IOException;
-import java.io.EOFException;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import java.io.EOFException;
 import java.io.File;
-import com.metavize.tran.util.Pair;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+
+import com.metavize.tran.mail.papi.quarantine.InboxIndex;
+import com.metavize.tran.mail.papi.quarantine.InboxRecord;
+import com.metavize.tran.mail.papi.quarantine.MailSummary;
 import com.metavize.tran.util.IOUtil;
+import com.metavize.tran.util.Pair;
+import org.apache.log4j.Logger;
 
 /**
  * Driver for reading/writing Inbox Indecies
  * on disk
- */ 
+ */
 class InboxIndexDriver
   extends AbstractDriver {
 
 
 
-  private static final Logger s_logger =
-    Logger.getLogger(InboxIndexDriver.class);
+  private static final Logger s_logger = Logger.getLogger(InboxIndexDriver.class);
 
   //Blurb added to top of file
   private static final String[] BLURB = new String[] {
@@ -50,14 +50,14 @@ class InboxIndexDriver
     "# Although this is a text file, it is intended #",
     "# only for machine reading and writing.        #",
     "################################################"
-  };    
+  };
   private static final String INDEX_FILE_NAME = "index.mqi";
   private static final String RECORD_SEP = "--SEP--";
   private static final String INBOX_OWNER_TAG = "Address:";
   private static final int VERSION = 3;
 
 
-  
+
   /**
    * Read the index contained in the given inbox directory
    *
@@ -68,9 +68,9 @@ class InboxIndexDriver
    *         unless the result was "OK".
    */
   static Pair<FileReadOutcome, InboxIndexImpl> readIndex(File inboxDir) {
-  
+
     FileInputStream fIn = null;
-    
+
     try {
       File f = new File(inboxDir, INDEX_FILE_NAME);
       if(!f.exists()) {
@@ -85,7 +85,7 @@ class InboxIndexDriver
       //Someday, we'll care about version...
 
       InboxIndexImpl ret = new InboxIndexImpl();
-      
+
       //Read inbox owner
       ret.setOwnerAddress(readTaggedEntry(reader, INBOX_OWNER_TAG));
       ret.setLastAccessTimestamp(f.lastModified());
@@ -108,7 +108,7 @@ class InboxIndexDriver
       s_logger.warn("", ex);
       IOUtil.close(fIn);
       return new Pair<FileReadOutcome, InboxIndexImpl>(FileReadOutcome.FILE_CORRUPT);
-    }     
+    }
     catch(IOException ex) {
       s_logger.warn("", ex);
       IOUtil.close(fIn);
@@ -148,9 +148,9 @@ class InboxIndexDriver
   static boolean appendIndex(String address,
     File inboxDir,
     InboxRecord newRecord) {
-    
+
     File f = new File(inboxDir, INDEX_FILE_NAME);
-    
+
     //Make sure index exists
     if(!f.exists()) {
       InboxIndexImpl impl = new InboxIndexImpl();
@@ -158,10 +158,10 @@ class InboxIndexDriver
       impl.put(newRecord.getMailID(), newRecord);
       return replaceIndex(impl, inboxDir);
     }
-    
+
     FileOutputStream fOut = null;
     try {
-      
+
       fOut = new FileOutputStream(f, true);
       PrintWriter pw = new PrintWriter(fOut);
 
@@ -176,8 +176,8 @@ class InboxIndexDriver
       s_logger.error("Exception appending to index file", ex);
       IOUtil.close(fOut);
       return false;
-    }     
-  }  
+    }
+  }
 
   /**
    * Replace the index file for a given user
@@ -191,14 +191,14 @@ class InboxIndexDriver
    */
   static boolean replaceIndex(InboxIndex index,
     File inboxDir) {
-    
+
     File f = null;
     FileOutputStream fOut = null;
 
     if(!inboxDir.exists()) {
       inboxDir.mkdirs();
     }
-    
+
     try {
       f = File.createTempFile("idx", ".tmp", inboxDir);
       fOut = new FileOutputStream(f, false);
@@ -238,14 +238,14 @@ class InboxIndexDriver
       IOUtil.close(fOut);
       IOUtil.delete(f);
       return false;
-    }    
+    }
   }
-  
-  
+
+
 
   private static void writeRecord(InboxRecord record,
     PrintWriter pw) throws IOException {
-    
+
     pw.println(RECORD_SEP);
     writeVersion(pw, VERSION);
     pw.println(nullToQQ(record.getMailID()));
@@ -259,7 +259,7 @@ class InboxIndexDriver
     for(String s : recipients) {
       writeMultilineEntry(pw, s);
     }
-    
+
     MailSummary summary = record.getMailSummary();
     writeMultilineEntry(pw, summary.getSender());
     writeMultilineEntry(pw, summary.getSubject());
@@ -297,7 +297,7 @@ class InboxIndexDriver
     catch(EOFException ex) {
       return null;
     }
-    
+
   }
 
   private static InboxRecordImpl readV3Record(BufferedReader reader)
@@ -314,33 +314,7 @@ class InboxIndexDriver
         recipients[i] = readMultilineEntry(reader);
       }
       ret.setRecipients(recipients);
-      
-      MailSummary summary = new MailSummary();
-      ret.setMailSummary(summary);
-      summary.setSender(readMultilineEntry(reader));
-      summary.setSubject(readMultilineEntry(reader));
-      summary.setQuarantineCategory(readMultilineEntry(reader));
-      summary.setQuarantineDetail(readMultilineEntry(reader));
-      summary.setAttachmentCount((int) readLong(reader));
-      return ret;
-    }
-    catch(EOFException ex) {
-      return null;
-    }
-  }  
-  
 
-  private static InboxRecordImpl readV2Record(BufferedReader reader,
-    String inboxOwnerAddress)
-    throws BadFileEntry, IOException {
-
-    try {
-      InboxRecordImpl ret = new InboxRecordImpl();
-      ret.setMailID(readLine(reader));
-      ret.setInternDate(readLong(reader));
-      ret.setSize(readLong(reader));
-      //Fake the recipients (just assume same as inbox)
-      ret.setRecipients(new String[] {inboxOwnerAddress});      
       MailSummary summary = new MailSummary();
       ret.setMailSummary(summary);
       summary.setSender(readMultilineEntry(reader));
@@ -354,8 +328,34 @@ class InboxIndexDriver
       return null;
     }
   }
-  
-  
+
+
+  private static InboxRecordImpl readV2Record(BufferedReader reader,
+    String inboxOwnerAddress)
+    throws BadFileEntry, IOException {
+
+    try {
+      InboxRecordImpl ret = new InboxRecordImpl();
+      ret.setMailID(readLine(reader));
+      ret.setInternDate(readLong(reader));
+      ret.setSize(readLong(reader));
+      //Fake the recipients (just assume same as inbox)
+      ret.setRecipients(new String[] {inboxOwnerAddress});
+      MailSummary summary = new MailSummary();
+      ret.setMailSummary(summary);
+      summary.setSender(readMultilineEntry(reader));
+      summary.setSubject(readMultilineEntry(reader));
+      summary.setQuarantineCategory(readMultilineEntry(reader));
+      summary.setQuarantineDetail(readMultilineEntry(reader));
+      summary.setAttachmentCount((int) readLong(reader));
+      return ret;
+    }
+    catch(EOFException ex) {
+      return null;
+    }
+  }
+
+
   private static InboxRecordImpl readV1Record(BufferedReader reader,
     String inboxOwnerAddress)
     throws BadFileEntry, IOException {
@@ -423,8 +423,8 @@ class InboxIndexDriver
       300,
       new MailSummary("sender3c@foo.com", "subject 3c", "5.0", "this has no lines")));
     System.out.println("\n(3) Read (b)");
-    readIndex(dir).b.debugPrint();    
+    readIndex(dir).b.debugPrint();
   }
-*/    
+*/
 
 }

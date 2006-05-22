@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003 Metavize Inc.
+ * Copyright (c) 2003, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -10,10 +10,10 @@
  */
 package com.metavize.tran.util;
 
-import java.lang.Number;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
+
 import org.apache.log4j.Logger;
 
 /* IP address, IPv4
@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
 public class IPAddress
 {
     /* constants */
-    private static final Logger zLog = Logger.getLogger(IPAddress.class.getName());
+    private final Logger zLog = Logger.getLogger(getClass());
 
     protected static final String IP_OCTSEP_STR = ".";
     protected static final String ALLBITS__STR = "255";

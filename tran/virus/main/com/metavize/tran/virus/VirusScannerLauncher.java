@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -10,14 +10,15 @@
  */
 package com.metavize.tran.virus;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.Logger;
+
 import com.metavize.mvvm.MvvmContextFactory;
-import java.io.IOException;
-import java.util.List;
 import org.apache.log4j.Logger;
 
 abstract public class VirusScannerLauncher implements Runnable
 {
-    protected static final Logger logger = Logger.getLogger(VirusScannerLauncher.class.getName());
+    protected final Logger logger = Logger.getLogger(getClass());
 
     protected String pathName = null;
 
@@ -74,7 +75,7 @@ abstract public class VirusScannerLauncher implements Runnable
             } else {
                 this.scanProcess.destroy();
             }
-            
+
             return VirusScannerResult.ERROR;
         } else {
             return this.result;

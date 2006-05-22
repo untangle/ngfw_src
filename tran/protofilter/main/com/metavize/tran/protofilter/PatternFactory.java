@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003,2004 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -10,17 +10,17 @@
  */
 package com.metavize.tran.protofilter;
 
-import java.util.regex.*;
 import java.io.*;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.*;
 
 import org.apache.log4j.Logger;
 
 public class PatternFactory {
 
     private static Map _cachedPatterns = new HashMap();
-    private static final Logger logger = Logger.getLogger( PatternFactory.class );
+    private static final Logger logger = Logger.getLogger(PatternFactory.class);
 
     /**
      * There is a bug in the java regex compiler that makes it so the pattern
@@ -28,7 +28,7 @@ public class PatternFactory {
      * To fix this, all sequences of the form [abd\xFF] are converted to ([abd]|0xFF)
      * which is identical, but more verbose.  Since [abd-\xFF] works, and is not logically
      * equivalent to '([abd-]|0xFF)', it -\xFF is treated as a special case.  This function
-     * assumes that its input is 8 bit characters, so it uses 16 bit characters as 
+     * assumes that its input is 8 bit characters, so it uses 16 bit characters as
      * placeholders.  \uFFEE = '\xFF, \uFEFE = '-xFF'.  This array should be applied
      * to the input in order.
      *
@@ -106,12 +106,12 @@ public class PatternFactory {
 class StringReplacer {
     final Pattern pattern;
     final String replacement;
-    
+
     StringReplacer( String search, String replacement ) {
         pattern = Pattern.compile( search );
         this.replacement = replacement;
     }
-    
+
     String replaceAll( String input ) {
         return pattern.matcher( input ).replaceAll( replacement );
     }

@@ -24,8 +24,7 @@ import org.apache.log4j.Logger;
 public class SpamImapFactory
   implements TokenHandlerFactory {
 
-  private static final Logger m_logger =
-    Logger.getLogger(SpamImapFactory.class);
+  private final Logger m_logger = Logger.getLogger(getClass());
 
   private final SpamImpl m_impl;
   private final MailExport m_mailExport;

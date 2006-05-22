@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -18,8 +18,7 @@ import com.metavize.mvvm.reporting.Util;
 import org.apache.log4j.Logger;
 
 public class PhishSummarizer extends BaseSummarizer {
-
-    private static final Logger logger = Logger.getLogger(PhishSummarizer.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     public PhishSummarizer() { }
 

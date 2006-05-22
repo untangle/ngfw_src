@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -15,17 +15,16 @@ import java.nio.*;
 
 import com.metavize.mvvm.tapi.*;
 import com.metavize.mvvm.tapi.event.*;
+import com.metavize.mvvm.tran.Transform;
 import com.metavize.mvvm.util.MetaEnv;
 import com.metavize.mvvm.util.SessionUtil;
 import org.apache.log4j.Logger;
-import com.metavize.mvvm.tran.Transform;
 
 public class EventHandler extends AbstractEventHandler
 {
     private static final long HALF_OPEN_TIMEOUT = 10000; // 10 seconds
 
-    private static final Logger logger
-        = Logger.getLogger(EventHandler.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private TestSettings settings;
 

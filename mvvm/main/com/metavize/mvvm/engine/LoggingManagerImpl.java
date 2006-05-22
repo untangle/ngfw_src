@@ -27,8 +27,7 @@ class LoggingManagerImpl implements LoggingManager
 
     private static LoggingManagerImpl LOGGING_MANAGER;
 
-    private static final Logger logger = Logger
-        .getLogger(LoggingManagerImpl.class.getName());
+    private final Logger logger = Logger.getLogger(getClass());
 
     private LoggingSettings loggingSettings;
 

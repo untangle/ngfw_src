@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 
 public class DepthOption extends IDSOption {
 
-    private static final Logger logger = Logger.getLogger(DepthOption.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     public DepthOption(IDSRuleSignature signature, String params) throws ParseException {
         super(signature, params);

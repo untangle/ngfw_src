@@ -34,7 +34,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 public class IDSTransformImpl extends AbstractTransform implements IDSTransform {
-    private static final Logger logger = Logger.getLogger(IDSTransformImpl.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private static final boolean DO_TEST = false;
 

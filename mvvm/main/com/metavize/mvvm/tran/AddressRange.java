@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -17,8 +17,6 @@ import org.apache.log4j.Logger;
 
 public class AddressRange implements Comparable<AddressRange>
 {
-    private static final Logger logger = Logger.getLogger( AddressRange.class );
-
     private final long start;
     private final long end;
     /* These are addresses that are globally illegal, used for
@@ -27,7 +25,7 @@ public class AddressRange implements Comparable<AddressRange>
     private final String description;
 
     static final int INADDRSZ = 4;
-    
+
     private AddressRange( long start, long end, String description, boolean isIllegal )
     {
         this.start       = start;
@@ -35,7 +33,7 @@ public class AddressRange implements Comparable<AddressRange>
         this.description = description;
         this.isIllegal   = isIllegal;
     }
-    
+
     long getStart()
     {
         return this.start;
@@ -80,14 +78,15 @@ public class AddressRange implements Comparable<AddressRange>
         long end   = ( start | ( ~netmaskLong & 0xFFFFFFFFL ));
 
         if ( start > end ) {
+            Logger logger = Logger.getLogger(AddressRange.class);
             logger.warn( "Made a subnet the incorrect way[" + networkLong + "/" + netmaskLong + "] -> " +
                          start + ":" + end );
             long temp = start;
             start = end;
             end = temp;
         }
-        
-        return new AddressRange( start, end, network.getHostAddress() + "/" + netmask.getHostAddress(), 
+
+        return new AddressRange( start, end, network.getHostAddress() + "/" + netmask.getHostAddress(),
                                  isIllegal );
     }
 
@@ -95,28 +94,28 @@ public class AddressRange implements Comparable<AddressRange>
     {
         return makeRange( start, end, false );
     }
-        
+
     public static AddressRange makeRange( InetAddress start, InetAddress end, boolean isIllegal )
     {
         long startLong = toLong( start );
         long endLong = toLong( end );
-        
+
         if ( startLong < endLong ) {
             long temp = startLong;
             startLong = endLong;
             endLong = temp;
         }
 
-        return new AddressRange( startLong, endLong, start.getHostAddress() + " - " + end.getHostAddress(), 
+        return new AddressRange( startLong, endLong, start.getHostAddress() + " - " + end.getHostAddress(),
                                  isIllegal );
     }
 
     static long toLong( InetAddress address )
     {
         long val = 0;
-        
+
         byte valArray[] = address.getAddress();
-        
+
         for ( int c = 0 ; c < INADDRSZ ; c++ ) {
             val += ((long)byteToInt(valArray[c])) << ( 8 * ( INADDRSZ - c - 1 ));
         }
@@ -124,7 +123,7 @@ public class AddressRange implements Comparable<AddressRange>
         return val;
     }
 
-    static int byteToInt ( byte val ) 
+    static int byteToInt ( byte val )
     {
         int num = val;
         if ( num < 0 ) num = ( num & 0x7F ) | 0x80;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -33,7 +33,7 @@ import org.apache.log4j.Logger;
 
 public class SpamPopHandler extends PopStateMachine
 {
-    private final static Logger logger = Logger.getLogger(SpamPopHandler.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     /* no block counter */
     private final static int PASS_COUNTER = Transform.GENERIC_0_COUNTER;

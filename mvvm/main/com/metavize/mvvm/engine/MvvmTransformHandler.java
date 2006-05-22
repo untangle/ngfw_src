@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -14,8 +14,8 @@ package com.metavize.mvvm.engine;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.metavize.mvvm.toolbox.MackageDesc;
 import com.metavize.mvvm.security.Tid;
+import com.metavize.mvvm.toolbox.MackageDesc;
 import com.metavize.mvvm.tran.TransformDesc;
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
@@ -30,8 +30,7 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class MvvmTransformHandler extends DefaultHandler
 {
-    private static final Logger logger = Logger
-        .getLogger(MvvmTransformHandler.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private final MackageDesc mackageDesc;
 

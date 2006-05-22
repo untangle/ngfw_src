@@ -24,7 +24,7 @@ public class HauriScanner implements VirusScanner
 {
     public static final String VERSION_ARG = "-V";
 
-    private static final Logger logger = Logger.getLogger(HauriScanner.class.getName());
+    private final Logger logger = Logger.getLogger(getClass());
     private static final int timeout = 30000; /* XXX should be user configurable */
 
     public HauriScanner() {}

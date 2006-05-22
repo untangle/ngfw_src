@@ -18,8 +18,8 @@ import com.metavize.tran.mail.papi.MailExportFactory;
 import com.metavize.tran.mail.papi.MailTransformSettings;
 import com.metavize.tran.mail.papi.quarantine.QuarantineTransformView;
 import com.metavize.tran.mail.papi.safelist.SafelistTransformView;
-import com.metavize.tran.mail.papi.smtp.sapi.Session;
 import com.metavize.tran.mail.papi.smtp.ScanLoadChecker;
+import com.metavize.tran.mail.papi.smtp.sapi.Session;
 import com.metavize.tran.spam.SpamSMTPConfig;
 import com.metavize.tran.token.TokenHandler;
 import com.metavize.tran.token.TokenHandlerFactory;
@@ -32,8 +32,7 @@ public class PhishSmtpFactory
   private ClamPhishTransform m_phishImpl;
   private QuarantineTransformView m_quarantine;
   private SafelistTransformView m_safelist;
-  private static final Logger m_logger =
-    Logger.getLogger(PhishSmtpFactory.class);
+  private final Logger m_logger = Logger.getLogger(getClass());
 
   public PhishSmtpFactory(ClamPhishTransform impl) {
     m_mailExport = MailExportFactory.factory().getExport();

@@ -29,8 +29,7 @@ public final class VirusImapFactory
   implements TokenHandlerFactory {
 
 
-  private static final Logger m_logger =
-    Logger.getLogger(VirusImapFactory.class);
+  private final Logger m_logger = Logger.getLogger(getClass());
 
   private final VirusTransformImpl m_virusImpl;
   private final MailExport m_mailExport;

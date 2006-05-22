@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 
 public class PcreOption extends IDSOption {
 
-    private static final Logger logger = Logger.getLogger(PcreOption.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private Pattern pcrePattern;
 

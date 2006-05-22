@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary statsrmation of
@@ -10,11 +10,8 @@
  */
 package com.metavize.tran.mail.papi;
 
-import org.apache.log4j.Logger;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Log e-mail message stats.
@@ -28,7 +25,6 @@ import java.util.ArrayList;
 public class MessageStats implements Serializable
 {
     /* constants */
-    // private static final Logger zLog = Logger.getLogger(MessageStats.class.getName());
 
     /* columns */
     private Long id; /* id */
@@ -52,7 +48,7 @@ public class MessageStats implements Serializable
     /* public methods */
 
     /**
-     * 
+     *
      * @hibernate.id
      * column="ID"
      * generator-class="native"

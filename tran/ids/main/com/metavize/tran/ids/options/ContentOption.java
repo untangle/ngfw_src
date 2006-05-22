@@ -33,7 +33,7 @@ import org.apache.log4j.Logger;
 
 public class ContentOption extends IDSOption {
 
-    private static final Logger logger = Logger.getLogger(ContentOption.class);
+    private final Logger logger = Logger.getLogger(getClass());
 
     private ContentOption previousContentOption = null;
 
