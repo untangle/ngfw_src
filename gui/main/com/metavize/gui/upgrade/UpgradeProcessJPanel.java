@@ -228,7 +228,7 @@ public class UpgradeProcessJPanel extends JPanel
                     // LET THE USER KNOW WERE FINISHED NORMALLY
 		    MConfigJDialog.getInfiniteProgressJComponent().setTextLater("Upgrade Success");
 		    MOneButtonJDialog.factory(UpgradeProcessJPanel.this.getTopLevelAncestor(), "",
-					      "The upgrade procedure finished successfully.",
+					      "The updates have successfully downloaded.  The client will now exit while the upgrade is performed.",
 					      "Upgrade Success", "");
                 }
                 else{

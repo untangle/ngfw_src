@@ -28,7 +28,7 @@ public class UrlButtonRunnable implements ButtonRunnable {
     private boolean isEnabled;
     public UrlButtonRunnable(String isEnabled){
     }
-    public String getButtonText(){ return "Show URL"; }
+    public String getButtonText(){ return "Show"; }
 
     public boolean valueChanged(){ return false; }
     public void setEnabled(boolean enabled){ this.isEnabled = enabled; }
