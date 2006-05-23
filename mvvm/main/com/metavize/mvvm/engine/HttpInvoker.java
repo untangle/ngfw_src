@@ -258,9 +258,7 @@ class HttpInvoker extends InvokerBase
 
                     for (LoginSession loginSession : logins.keySet()) {
                         LoginDesc loginDesc = logins.get(loginSession);
-                        // don't expire system logins
-                        // XXX make servlets more robust instead
-                        if (!loginSession.isSystem() && null != loginDesc) {
+                        if (null != loginDesc) {
                             Date lastAccess = loginDesc.getLastAccess();
                             if (cutoff.after(lastAccess)) {
                                 LoginDesc ld = logins.remove(loginSession);

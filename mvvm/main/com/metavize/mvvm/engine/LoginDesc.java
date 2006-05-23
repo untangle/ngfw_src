@@ -133,7 +133,6 @@ class LoginDesc
 
         public void run()
         {
-            System.out.println("EXPIRE: " + targetId);
             targets.remove(targetId);
         }
     }
