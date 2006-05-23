@@ -253,7 +253,4 @@ class AdminManagerImpl implements AdminManager
         logger.info("Generating auth nonce for " + ls.getClientAddr() + " " + ls.getMvvmPrincipal());
         return tm.generateAuthNonce(ls.getClientAddr(), ls.getMvvmPrincipal());
     }
-
-
-
 }

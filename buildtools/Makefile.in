@@ -7,11 +7,12 @@ else
   USE_DEBUG:=false
 endif
 
-## Location of the src in each sub directory, the sub directory make may overwrite this value
+## Location of the src in each sub directory, the sub directory make
+## may overwrite this value
 src_path=src
 
-## Random unique target string suffix to guarantee that the default ensure dir target does
-## not conflict with any other targets
+## Random unique target string suffix to guarantee that the default
+## ensure dir target does not conflict with any other targets
 dir_target=ensure_dir_target
 
 ## Location of the build directory
@@ -44,9 +45,10 @@ JNETCAP_PKG   = 210
 JVECTOR_PKG   = 211
 JMVUTIL_PKG   = 212
 
-## This crazy command gets the relative path of the base directory.  (EG. if you are in
-## libnetcap, this will resolve to ./../bin (which is just ../bin) and if you are in
-## the base directory this will just resolve to ./bin
+## This crazy command gets the relative path of the base directory.
+## (EG. if you are in libnetcap, this will resolve to ./../bin (which
+## is just ../bin) and if you are in the base directory this will just
+## resolve to ./bin
 
 BINDIR        = $(alpine_root)/buildtools
 
@@ -91,12 +93,14 @@ else
     STRIPCMD  = echo "Stripping debug symbols..." ; $(STRIP) --strip-debug --remove-section=.note --remove-section=.comment -x
 endif
 
-## Do not use all or build as the name of the default rule, because then that will override the
-## build target in child directories, make always builds with the first rule, so this will default
-## to make build
+## Do not use all or build as the name of the default rule, because
+## then that will override the build target in child directories, make
+## always builds with the first rule, so this will default to make
+## build
 default: all
 
-# The funny ${<:.c=.o} insures that the object is stored in the same directory as the .c file.
+# The funny ${<:.c=.o} insures that the object is stored in the same
+# directory as the .c file.
 %.o: %.c
 	@echo "==> gcc $@"
 	@${CC} -c $< ${CFLAGS} -o ${<:.c=.o}
@@ -150,8 +154,9 @@ ifndef ANT_INVOKED
 	@$(ANT)
 endif
 
-## Define INSTALL_LIB if you want to install a .a (must also define lib_file_name)
-## If there are any includes to install, then define install_includes to a space separated list of values
+## Define INSTALL_LIB if you want to install a .a (must also define
+## lib_file_name) If there are any includes to install, then define
+## install_includes to a space separated list of values
 build.default: $(build_lib_path).$(dir_target) $(build_inc_path).$(dir_target) $(install_includes)
 ifdef INSTALL_LIB
 	mkdir -p $(build_lib_path)

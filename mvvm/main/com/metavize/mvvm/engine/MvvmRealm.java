@@ -22,10 +22,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 
-import org.apache.catalina.realm.GenericPrincipal;
+import com.metavize.mvvm.security.MvvmPrincipal;
 import org.apache.catalina.realm.RealmBase;
 import org.apache.log4j.Logger;
 import sun.misc.BASE64Encoder;
@@ -35,63 +33,15 @@ class MvvmRealm extends RealmBase
     private final Logger logger = Logger.getLogger(getClass());
 
     private static final String userQuery
-        = "SELECT password FROM mvvm_user WHERE login = ?";
-
-    private static final String roleQuery
-        = "SELECT role_name FROM mvvm_role WHERE login = ?";
+        = "SELECT password, read_only FROM mvvm_user WHERE login = ?";
 
     // XXX Very small memory leak here if the nonce is never used (quite rare)
     private HashMap<String, Principal> nonces = new HashMap<String, Principal>();
 
-    public Principal authenticate(String username, String credentials)
-    {
-        DataSourceFactory dsf = DataSourceFactory.factory();
-
-        Connection c = null;
-        try {
-            // XXX use pool
-            c = dsf.getConnection();
-
-            logger.debug("doing query: " + userQuery);
-            PreparedStatement ps = c.prepareStatement(userQuery);
-            ps.setString(1, username);
-            ResultSet rs = ps.executeQuery();
-
-            if (!rs.next()) {
-                logger.warn("no such user: " + username);
-                return null;
-            }
-
-            byte[] hashedPasswd  = rs.getBytes("password");
-            if (!check(credentials, hashedPasswd)) {
-                logger.warn("bad password for user: " + username);
-                return null;
-            }
-        } catch (SQLException exn) {
-            logger.warn("could not query domains", exn);
-        } finally {
-            try {
-                if (null != c) {
-                    dsf.closeConnection(c);
-                }
-            } catch (SQLException exn) {
-                logger.warn(exn);
-            }
-        }
-
-        List roles = new LinkedList();
-        roles.add("user");
-
-        return new GenericPrincipal(this, username, credentials, roles);
-    }
+    // public methods ---------------------------------------------------------
 
     // Used by servlets (reports, store)
     public String generateAuthNonce(InetAddress clientAddr, Principal user) {
-        // We have to turn the MvvmPrincipal into a GenericPrincipal
-        List roles = new LinkedList();
-        roles.add("user");
-        user = new GenericPrincipal(this, user.getName(), null, roles);
-
         MessageDigest d = null;
         try {
             d = MessageDigest.getInstance(PASSWORD_HASH_ALGORITHM);
@@ -119,13 +69,62 @@ class MvvmRealm extends RealmBase
         return user;
     }
 
-    public Principal authenticate(String username, byte[] credentials)
+    // Realm methods ----------------------------------------------------------
+
+    @Override
+    public Principal authenticate(String username, String credentials)
     {
-        return authenticate(username, credentials.toString());
+        DataSourceFactory dsf = DataSourceFactory.factory();
+
+        boolean readOnly;
+
+        Connection c = null;
+        try {
+            // XXX use pool
+            c = dsf.getConnection();
+
+            logger.debug("doing query: " + userQuery);
+            PreparedStatement ps = c.prepareStatement(userQuery);
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+
+            if (!rs.next()) {
+                logger.warn("no such user: " + username);
+                return null;
+            }
+
+            byte[] hashedPasswd  = rs.getBytes("password");
+            if (!check(credentials, hashedPasswd)) {
+                logger.warn("bad password for user: " + username);
+                return null;
+            } else {
+                readOnly = rs.getBoolean("read_only");
+            }
+        } catch (SQLException exn) {
+            logger.warn("could not query domains", exn);
+            return null;
+        } finally {
+            try {
+                if (null != c) {
+                    dsf.closeConnection(c);
+                }
+            } catch (SQLException exn) {
+                logger.warn(exn);
+            }
+        }
+
+        return new MvvmPrincipal(username, readOnly);
+    }
+
+    @Override
+    public boolean hasRole(Principal p, String role)
+    {
+        return null != role && role.equalsIgnoreCase("user")
+            && p instanceof MvvmPrincipal;
     }
 
 
-    // protected methods ------------------------------------------------------
+    // RealmBase methods ------------------------------------------------------
 
     protected String getPassword(String username) { return null; }
     protected Principal getPrincipal(String username) { return null; }

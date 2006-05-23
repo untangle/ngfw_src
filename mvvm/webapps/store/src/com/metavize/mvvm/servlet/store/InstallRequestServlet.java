@@ -19,26 +19,25 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
+import com.metavize.mvvm.security.MvvmPrincipal;
 import org.apache.log4j.Logger;
 
 public class InstallRequestServlet extends HttpServlet
 {
-    private boolean readOnly;
-
     private final Logger logger = Logger.getLogger(getClass());
 
     @Override
     public void init()
     {
-        String s = System.getProperty("mvvm.settings.readonly");
-        readOnly = Boolean.parseBoolean(s);
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException
     {
-        if (readOnly) {
+        MvvmPrincipal p = (MvvmPrincipal)req.getUserPrincipal();
+
+        if (p.isReadOnly()) {
             logger.debug("ignoring install request in read-only mode");
         } else {
             String mackageName = req.getParameter("mackage");
