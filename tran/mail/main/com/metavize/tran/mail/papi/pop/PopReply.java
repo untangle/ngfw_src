@@ -36,7 +36,7 @@ public class PopReply implements Token
 
     private final static String DIGVAL = "(\\p{Digit})++";
     private final static String LWSP = "\\p{Blank}"; /* linear-white-space */
-    private final static String SZVAL = DIGVAL + "(" + LWSP + ")+octets";
+    private final static String SZVAL = DIGVAL + "(" + LWSP + ")+(oct|byt|char).*?";
     private final static String START = "^(" + LWSP + ")*";
     private final static String OK = START + "\\+OK";
     private final static String OKLWSP = OK + "(" + LWSP + ")";

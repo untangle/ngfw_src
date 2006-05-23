@@ -137,14 +137,14 @@ public class PopServerParser extends AbstractParser
                         // (so client sent RETR)
                         // - msg must start next
                         bRetrReply = true;
-                        //logger.debug("retr message reply (octets): " + reply);
+                        logger.debug("retr message reply (octets): " + reply);
                     } else if (true == zCasing.getIncomingMsg()) {
                         if (true == reply.isSimpleOK()) {
                             // we got +OK w/o octet count after client sent RETR
                             // - assume that msg starts next
                             bRetrReply = true;
                             reply.setMsgData(true);
-                            //logger.debug("retr message reply (no octets): " + reply);
+                            logger.debug("retr message reply (no octets): " + reply);
                         } else {
                             // we didn't get +OK after client sent RETR (-ERR)
                             // - no msg will follow
@@ -170,7 +170,7 @@ public class PopServerParser extends AbstractParser
                             //  if frag contains full msg)
                             bTopReply = true;
                             reply.setMsgHdrData(true);
-                            //logger.debug("top message reply: " + reply);
+                            logger.debug("top message reply: " + reply);
                         } else {
                             // we didn't get +OK after client sent TOP (-ERR)
                             // - no msg hdr will follow
@@ -198,11 +198,11 @@ public class PopServerParser extends AbstractParser
                         }
 
                         if (true == bRetrReply) {
-                            logger.debug("retr message reply: " + buf);
+                            //logger.debug("retr message reply: " + buf);
                             logger.debug("entering DATA state");
                             state = State.DATA;
                         } else { /* must be (true == bTopReply) */
-                            logger.debug("top message reply: " + buf);
+                            //logger.debug("top message reply: " + buf);
                             logger.debug("entering HDRDATA state");
                             state = State.HDRDATA;
                         }
