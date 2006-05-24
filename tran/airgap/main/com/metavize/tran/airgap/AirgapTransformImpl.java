@@ -94,7 +94,7 @@ public class AirgapTransformImpl extends AbstractTransform
     {
         validateSettings();
 	if( settings == null )
-	    logger.error("Settings not yet initialized. State: " + txtx.getRunState() );
+	    logger.error("Settings not yet initialized. State: " + getTransformContext().getRunState() );
         return settings;
     }
 

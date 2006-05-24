@@ -66,7 +66,7 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
     public ProtoFilterSettings getProtoFilterSettings()
     {
 	if( this.cachedSettings == null )
-	    logger.error("Settings not yet initialized. State: " + txtx.getRunState() );
+	    logger.error("Settings not yet initialized. State: " + getTransformContext().getRunState() );
         return this.cachedSettings;
     }
 
