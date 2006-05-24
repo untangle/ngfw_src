@@ -125,8 +125,6 @@ public abstract class TransformBase implements Transform
         }
     }
 
-    public void reconfigure() throws TransformException { }
-
     public TransformContext getTransformContext()
     {
         return transformContext;

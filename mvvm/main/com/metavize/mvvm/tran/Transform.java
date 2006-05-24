@@ -82,12 +82,6 @@ public interface Transform
      */
     void stop() throws TransformStopException, IllegalStateException;
 
-    /**
-     * Tell the transform it has been reconfigured.
-     *
-     */
-    void reconfigure() throws TransformException;
-
     TransformContext getTransformContext();
 
     TransformDesc getTransformDesc();

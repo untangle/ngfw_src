@@ -161,8 +161,6 @@ public class RemoteClient
             stop(args[1]);
         } else if (args[0].equalsIgnoreCase("destroy")) {
             destroy(args[1]);
-        } else if (args[0].equalsIgnoreCase("reconfig")) {
-            reconfig(args[1]);
         } else if (args[0].equalsIgnoreCase("neverStarted")) {
             neverStarted(args[1]);
         } else if (args[0].equalsIgnoreCase("instances")) {
@@ -474,25 +472,6 @@ public class RemoteClient
     {
         Tid tid = new Tid(Long.parseLong(tidStr));
         tm.destroy(tid);
-    }
-
-    private static void reconfig(String tidStr)
-        throws Exception
-    {
-        Tid tid = new Tid(Long.parseLong(tidStr));
-        TransformContext tctx = tm.transformContext(tid);
-        if (tctx == null) {
-            System.err.println("NULL Transform Context (tid:" + tid + ")");
-            return;
-        }
-        Transform tran = tctx.transform();
-        if (tran == null) {
-            System.err.println("NULL Transform Context (tid:" + tid + ")");
-            return;
-        }
-
-        tran.reconfigure();
-        return;
     }
 
     private static void neverStarted(String tidStr)
@@ -936,7 +915,6 @@ public class RemoteClient
         System.out.println("    mcli start TID");
         System.out.println("    mcli stop TID");
         System.out.println("    mcli destroy TID");
-        System.out.println("    mcli reconfig TID");
         System.out.println("    mcli neverStarted");
         System.out.println("  transform manager lists:");
         System.out.println("    mcli instances");
