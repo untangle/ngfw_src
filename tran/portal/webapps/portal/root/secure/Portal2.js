@@ -111,12 +111,10 @@ Portal.prototype.layout = function() {
    var width = size.x;
    var height = size.y;
 
-   var x = 0;
-   var y = 0;
-
    this._toolbar.setLocation(0, 0);
-   var size = this._toolbar.getSize();
-   y += size.y;
+   // XXX bar at bottom does not work
+   //var size = this._toolbar.getSize();
+   //this._toolbar.setLocation(0, height - size.y);
 }
 
 // init -----------------------------------------------------------------------
@@ -126,6 +124,12 @@ Portal.prototype._makeToolbar = function() {
 
    var b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
    b.setText("My Portal Potty");
+
+   var menu = new DwtMenu(b, DwtMenu.POPUP_STYLE);
+   b.setMenu(menu);
+
+   var mi = new DwtMenuItem(menu);
+   mi.setText("Make Poopy");
 
    return toolbar;
 }

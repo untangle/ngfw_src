@@ -97,7 +97,8 @@ public class LoginEvent extends LogEvent
     }
 
     /**
-     * Whether or not the login is local (from internal tools on system, ignored for reporting).
+     * Whether or not the login is local (from internal tools on
+     * system, ignored for reporting).
      *
      * @return whether or not the login was local
      * @hibernate.property
