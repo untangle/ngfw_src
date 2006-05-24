@@ -188,9 +188,7 @@ public class MailTransformImpl extends AbstractTransform
         return m_stv;
     }
 
-    // Transform methods ------------------------------------------------------
-
-    public void reconfigure()
+    private void reconfigure()
     {
         SMTP_PIPE_SPEC.setEnabled(settings.isSmtpEnabled());
         POP_PIPE_SPEC.setEnabled(settings.isPopEnabled());
@@ -202,6 +200,8 @@ public class MailTransformImpl extends AbstractTransform
          */
         POP_PIPE_SPEC.setReleaseParseExceptions(true);
     }
+
+    // Transform methods ------------------------------------------------------
 
     protected void initializeSettings() {
     }

@@ -154,7 +154,7 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
         eventLogger.stop();
     }
 
-    public    void reconfigure() throws TransformException
+    private void reconfigure() throws TransformException
     {
         ArrayList enabledPatternsList = new ArrayList();
 

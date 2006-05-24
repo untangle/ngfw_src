@@ -92,6 +92,13 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
                 public Object getResult() { return null; }
             };
         getTransformContext().runTransaction(tw);
+
+        try {
+            reconfigure();
+        }
+        catch (TransformException exn) {
+            logger.error("Could not save IDS settings", exn);
+        }
     }
 
     public EventManager<IDSLogEvent> getEventManager()
@@ -145,12 +152,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
             initializeSettings();
         }
 
-        try {
-            reconfigure();
-        }
-        catch (Exception e) {
-            throw new TransformException(e);
-        }
+	reconfigure();
 
     }
 
@@ -177,7 +179,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
         engine.stop();
     }
 
-    public void reconfigure() throws TransformException {
+    private void reconfigure() throws TransformException {
         engine.setSettings(settings);
         engine.onReconfigure();
         engine.setMaxChunks(settings.getMaxChunks());

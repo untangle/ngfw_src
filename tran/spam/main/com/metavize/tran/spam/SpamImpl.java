@@ -252,7 +252,6 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
                     s.saveOrUpdate(newSettings);
                     SpamImpl.this.zSpamSettings = newSettings;
 
-                    reconfigure();
                     return true;
                 }
 
@@ -295,8 +294,6 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
       incrementCount(Transform.GENERIC_3_COUNTER);
     }
 
-
-    public void reconfigure() { return; }
 
     protected void initializeSettings()
     {
@@ -406,7 +403,6 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
 
                     ensureTemplateSettings(zSpamSettings);
 
-                    reconfigure();
                     return true;
                 }
 

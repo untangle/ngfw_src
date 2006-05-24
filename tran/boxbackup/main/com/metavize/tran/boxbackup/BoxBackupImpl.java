@@ -242,7 +242,7 @@ public class BoxBackupImpl extends AbstractTransform implements BoxBackup
 
 
 
-    public void reconfigure() throws TransformException
+    private void reconfigure() throws TransformException
     {
         BoxBackupSettings settings = getBoxBackupSettings();
         logger.info("Reconfigure()");

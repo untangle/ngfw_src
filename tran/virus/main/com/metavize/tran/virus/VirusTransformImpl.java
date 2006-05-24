@@ -209,6 +209,7 @@ public abstract class VirusTransformImpl extends AbstractTransform
                 public Object getResult() { return null; }
             };
         getTransformContext().runTransaction(tw);
+        shutdownMatchingSessions();
     }
 
     public VirusSettings getVirusSettings()
@@ -539,11 +540,6 @@ public abstract class VirusTransformImpl extends AbstractTransform
     public void setSettings(Object settings)
     {
         setVirusSettings((VirusSettings)settings);
-    }
-
-    public void reconfigure()
-    {
-        shutdownMatchingSessions();
     }
 
     protected SessionMatcher sessionMatcher()

@@ -178,7 +178,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
         eventLogger.stop();
     }
 
-    public    void reconfigure() throws TransformException
+    private void reconfigure() throws TransformException
     {
         FirewallSettings settings = getFirewallSettings();
         ArrayList enabledPatternsList = new ArrayList();

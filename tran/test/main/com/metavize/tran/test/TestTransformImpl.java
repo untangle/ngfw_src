@@ -129,7 +129,7 @@ public class TestTransformImpl extends AbstractTransform
         reconfigure();
     }
 
-    public void reconfigure()
+    private void reconfigure()
     {
         handler.setSettings(settings);
 

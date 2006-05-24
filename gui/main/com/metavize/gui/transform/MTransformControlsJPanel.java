@@ -242,7 +242,6 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
 	}        
 	// SEND SETTINGS TO SERVER
 	mTransformJPanel.getTransform().setSettings( settings );
-	mTransformJPanel.getTransform().reconfigure();
 	setSaveSettingsHintVisible(false);
     }
 

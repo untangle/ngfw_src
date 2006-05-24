@@ -69,15 +69,15 @@ public class HttpTransformImpl extends AbstractTransform
         reconfigure();
     }
 
-    // Transform methods ------------------------------------------------------
-
-    public void reconfigure()
+    private void reconfigure()
     {
         if (null != settings) {
             pipeSpec.setEnabled(settings.isEnabled());
             pipeSpec.setReleaseParseExceptions(!settings.isNonHttpBlocked());
         }
     }
+
+    // Transform methods ------------------------------------------------------
 
     protected void initializeSettings() { }
 

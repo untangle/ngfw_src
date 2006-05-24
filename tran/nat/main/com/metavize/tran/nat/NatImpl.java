@@ -420,13 +420,6 @@ public class NatImpl extends AbstractTransform implements Nat
         getNetworkManager().unregisterListener( this.listener );
     }
 
-    @Override
-    public void reconfigure() throws TransformException
-    {
-        /* This  has been moved into networkSettingsEvent which is called automatically
-         * whenever the network settings change */
-    }
-
     public void networkSettingsEvent( ) throws TransformException
     {
         logger.info("networkSettingsEvent");

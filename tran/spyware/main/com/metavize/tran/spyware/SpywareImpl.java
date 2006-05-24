@@ -141,10 +141,8 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         return eventLogger;
     }
 
-    // Transform methods ------------------------------------------------------
-
     // XXX avoid
-    public void reconfigure()
+    private void reconfigure()
     {
         logger.info("Reconfigure.");
         if (this.settings.getSpywareEnabled()) {
@@ -192,6 +190,8 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         }
         domainWhitelist = s;
     }
+
+    // Transform methods ------------------------------------------------------
 
     // AbstractTransform methods ----------------------------------------------
 

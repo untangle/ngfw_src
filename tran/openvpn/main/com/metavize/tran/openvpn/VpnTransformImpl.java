@@ -152,8 +152,6 @@ public class VpnTransformImpl extends AbstractTransform
         getTransformContext().runTransaction( tw );
 
         try {
-            reconfigure();
-
             if ( getRunState() == TransformState.RUNNING ) {
                 /* This stops then starts openvpn */
                 this.openVpnManager.configure( this.settings );
@@ -440,8 +438,6 @@ public class VpnTransformImpl extends AbstractTransform
         getTransformContext().runTransaction( tw );
 
         deployWebApp();
-
-        reconfigure();
     }
 
     @Override protected void preStart() throws TransformStartException
@@ -477,7 +473,6 @@ public class VpnTransformImpl extends AbstractTransform
             throw new UnconfiguredException( e );
         }
 
-        reconfigure();
 
         deployWebApp();
 
@@ -547,10 +542,6 @@ public class VpnTransformImpl extends AbstractTransform
         return this.openVpnMonitor.updateStats( stats );
     }
 
-    public void reconfigure()
-    {
-        /* Nothing to do here */
-    }
 
     // private methods -------------------------------------------------------
 

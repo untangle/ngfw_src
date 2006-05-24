@@ -91,6 +91,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         getTransformContext().runTransaction(tw);
 
         blacklist.configure(settings);
+	reconfigure();
     }
 
     public EventManager<HttpBlockerEvent> getEventManager()
@@ -98,12 +99,10 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         return eventLogger;
     }
 
-    // Transform methods ------------------------------------------------------
-
     /**
      * Causes the blacklist to populate its arrays.
      */
-    public void reconfigure()
+    private void reconfigure()
     {
         MvvmContextFactory.context().newThread(new Runnable() {
                 public void run() {
@@ -112,7 +111,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
             }).start();
     }
 
-    // AbstractTransform methods ----------------------------------------------
+    // Transform methods ------------------------------------------------------
 
     @Override
     protected PipeSpec[] getPipeSpecs()

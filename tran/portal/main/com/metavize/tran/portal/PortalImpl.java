@@ -194,10 +194,6 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
 
     // Transform methods ------------------------------------------------------
 
-    public void reconfigure()
-    {
-    }
-
     protected void initializeSettings() { }
 
     @Override

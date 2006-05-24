@@ -101,7 +101,7 @@ public class SigmaImpl extends AbstractTransform implements Sigma
         }
     }
 
-    public    void reconfigure() throws TransformException
+    private void reconfigure() throws TransformException
     {
         SigmaSettings settings = getSigmaSettings();
         logger.info("Reconfigure()");
