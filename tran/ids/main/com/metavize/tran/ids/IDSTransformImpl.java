@@ -76,6 +76,8 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
     }
 
     public IDSSettings getIDSSettings() {
+	if( this.settings == null )
+	    logger.error("Settings not yet initialized. State: " + txtx.getRunState() );
         return this.settings;
     }
 

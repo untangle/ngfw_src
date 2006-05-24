@@ -214,6 +214,8 @@ public abstract class VirusTransformImpl extends AbstractTransform
 
     public VirusSettings getVirusSettings()
     {
+	if( settings == null )
+	    logger.error("Settings not yet initialized. State: " + txtx.getRunState() );
         return settings;
     }
 

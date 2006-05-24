@@ -238,6 +238,8 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
 
     public SpamSettings getSpamSettings()
     {
+	if( this.zSpamSettings == null )
+	    logger.error("Settings not yet initialized. State: " + txtx.getRunState() );
         return this.zSpamSettings;
     }
 

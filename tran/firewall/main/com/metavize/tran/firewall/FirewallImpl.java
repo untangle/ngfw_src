@@ -79,6 +79,8 @@ public class FirewallImpl extends AbstractTransform implements Firewall
 
     public FirewallSettings getFirewallSettings()
     {
+	if( settings == null )
+	    logger.error("Settings not yet initialized. State: " + txtx.getRunState() );
         return settings;
     }
 

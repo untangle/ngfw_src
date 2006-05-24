@@ -93,6 +93,8 @@ public class AirgapTransformImpl extends AbstractTransform
     public AirgapSettings getAirgapSettings()
     {
         validateSettings();
+	if( settings == null )
+	    logger.error("Settings not yet initialized. State: " + txtx.getRunState() );
         return settings;
     }
 

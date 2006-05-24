@@ -115,6 +115,8 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
     public SpywareSettings getSpywareSettings()
     {
+	if( settings == null )
+	    logger.error("Settings not yet initialized. State: " + txtx.getRunState() );
         return settings;
     }
 

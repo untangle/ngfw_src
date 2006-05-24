@@ -72,6 +72,8 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 
     public HttpBlockerSettings getHttpBlockerSettings()
     {
+	if( settings == null )
+	    logger.error("Settings not yet initialized. State: " + txtx.getRunState() );
         return settings;
     }
 
