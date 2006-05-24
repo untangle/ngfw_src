@@ -20,7 +20,7 @@ package com.metavize.mvvm.addrbook;
  */
 public class AddressBookSettings
   implements java.io.Serializable {
-  
+
   private static final long serialVersionUID = 1981170448212868734L;
 
   private Long id;
@@ -31,13 +31,12 @@ public class AddressBookSettings
   public AddressBookSettings() {
   }
 
-
   /**
    * @hibernate.id
    * column="SETTINGS_ID"
    * generator-class="native"
    * not-null="true"
-   */  
+   */
   private Long getId() {
       return id;
   }
@@ -55,7 +54,7 @@ public class AddressBookSettings
   public RepositorySettings getADRepositorySettings() {
     return m_aDSettings;
   }
-  
+
   public void setADRepositorySettings(RepositorySettings aDSettings) {
     m_aDSettings = aDSettings;
   }

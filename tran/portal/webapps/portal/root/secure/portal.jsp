@@ -24,7 +24,7 @@
 
 <script type="text/javascript" src="<%=sp%>/Application.js"></script>
 <script type="text/javascript" src="<%=sp%>/Bookmark.js"></script>
-<script type="text/javascript" src="<%=sp%>/Portal.js"></script>
+<script type="text/javascript" src="<%=sp%>/Portal2.js"></script>
 <script type="text/javascript" src="<%=sp%>/AddBookmarkPanel.js"></script>
 <script type="text/javascript" src="<%=sp%>/AddBookmarkDialog.js"></script>
 <script type="text/javascript" src="<%=sp%>/BookmarkPanel.js"></script>
