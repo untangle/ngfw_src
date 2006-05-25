@@ -24,9 +24,12 @@
 
 <script type="text/javascript" src="<%=sp%>/Application.js"></script>
 <script type="text/javascript" src="<%=sp%>/Bookmark.js"></script>
+<script type="text/javascript" src="<%=sp%>/Desktop.js"></script>
 <script type="text/javascript" src="<%=sp%>/Portal2.js"></script>
 <script type="text/javascript" src="<%=sp%>/AddBookmarkPanel.js"></script>
 <script type="text/javascript" src="<%=sp%>/AddBookmarkDialog.js"></script>
+<script type="text/javascript" src="<%=sp%>/BookmarkManagerPanel.js"></script>
+<script type="text/javascript" src="<%=sp%>/BookmarkManagerDialog.js"></script>
 <script type="text/javascript" src="<%=sp%>/BookmarkPanel.js"></script>
 
 </head>

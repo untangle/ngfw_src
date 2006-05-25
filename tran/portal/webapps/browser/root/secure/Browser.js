@@ -22,7 +22,7 @@ function Browser(shell, url) {
    var dropTarget = new DwtDropTarget(CifsNode);
    dropTarget.addDropListener(new AjxListener(this, this._treeDropListener));
    this._dirTree = new DirTree(this, null, DwtControl.ABSOLUTE_STYLE,
-                              dragSource, dropTarget);
+                               dragSource, dropTarget);
    this._dirTree.setRoot(url);
    this._dirTree.setScrollStyle(DwtControl.SCROLL);
    this._dirTree.addSelectionListener(new AjxListener(this, this._dirSelectionListener));

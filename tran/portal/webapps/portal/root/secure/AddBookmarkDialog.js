@@ -30,13 +30,6 @@ AddBookmarkDialog.prototype.getBookmark = function()
 
 // internal methods -----------------------------------------------------------
 
-AddBookmarkDialog.prototype._uploadCompleteListener = function(evt)
-{
-   evt.dialog = this;
-
-   this.notifyListeners(FileUploadPanel.UPLOAD_COMPLETE, evt);
-}
-
 AddBookmarkDialog.prototype._focusListener = function(ev)
 {
    this._panel.focus();

@@ -8,7 +8,7 @@ function Application(name, appJs)
 }
 
 Application.prototype.toString = function() {
-   return this.name;
+   return "Application: " + this.name;
 };
 
 Application.prototype.openBookmark = function() {
