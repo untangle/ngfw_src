@@ -10,6 +10,7 @@ function Bookmark(id, name, app, target) {
 
 Bookmark.prototype = {
    toString: function() {
-      return this.name;
+      return "Bookmark [id: " + this.id + " name: " + this.name
+         + " app: " + this.app + " target: " + this.target + "]";
    }
 }
