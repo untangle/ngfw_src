@@ -1028,7 +1028,8 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             else
                 progressBar.setString("Populating Racks...");
         }});
-        // GENERATE OVERALL COUNT
+        // GENERATE OVERALL AND CURRENT COUNT
+        applianceLoadProgress = 0;
         int overall = 0;
         for( Policy policy : policyTidMap.keySet() )
             overall += policyTidMap.get(policy).size();
@@ -1046,7 +1047,6 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             }
         }
         // NON-SECURITY
-        applianceLoadProgress = 0;
         for( Tid tid : nonPolicyTidList ){
             new LoadApplianceThread(null,tid,overall,progressBar);
         }
