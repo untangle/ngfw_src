@@ -9,7 +9,7 @@ ALTER TABLE settings.tr_reporting_settings
 UPDATE settings.tr_reporting_settings SET email_detail = false;
 
 ALTER TABLE settings.tr_reporting_settings
-   ADD COLUMN schedule int8 NOT NULL;
+   ADD COLUMN schedule int8;
 -- when converting, defaults for schedule are generated in code
 
 -- com.metavize.tran.reporting.Schedule

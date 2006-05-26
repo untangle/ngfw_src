@@ -10,7 +10,7 @@ CREATE TABLE settings.tr_reporting_settings (
     tid int8 NOT NULL UNIQUE,
     email_detail bool,
     network_directory int8 NOT NULL,
-    schedule int8 NOT NULL,
+    schedule int8,
     PRIMARY KEY (id));
 
 -- com.metavize.tran.reporting.Schedule
