@@ -436,13 +436,8 @@ public abstract class VirusTransformImpl extends AbstractTransform
         s.add(new StringRule("rar", "archive", "download" , true));
         s.add(new StringRule("arj", "archive", "download" , true));
         s.add(new StringRule("ace", "archive", "download" , true));
-        s.add(new StringRule("gz", "archive", "download" , true));
+        s.add(new StringRule("gz",  "archive", "download" , true));
         s.add(new StringRule("tar", "archive", "download" , true));
-        s.add(new StringRule("jpg", "image", "download", false));
-        s.add(new StringRule("png", "image", "download", false ));
-        s.add(new StringRule("gif", "image", "download", false));
-        s.add(new StringRule("jar", "java", "download", false));
-        s.add(new StringRule("class", "java", "download", false));
         s.add(new StringRule("mp3", "audio", "download", false));
         s.add(new StringRule("wav", "audio", "download", false));
         s.add(new StringRule("wmf", "audio", "download", false));
@@ -450,12 +445,8 @@ public abstract class VirusTransformImpl extends AbstractTransform
         s.add(new StringRule("mpg", "video", "download", false));
         s.add(new StringRule("avi", "video", "download", false));
         s.add(new StringRule("swf", "flash", "download", false));
-        s.add(new StringRule("mp3", "audio", "stream", false));
-        s.add(new StringRule("wav", "audio", "stream", false));
-        s.add(new StringRule("wmf", "audio", "stream", false));
-        s.add(new StringRule("mov", "video", "stream", false));
-        s.add(new StringRule("mpg", "video", "stream", false));
-        s.add(new StringRule("avi", "video", "stream", false));
+        s.add(new StringRule("jar",   "java", "download", false));
+        s.add(new StringRule("class", "java", "download", false));
         vs.setExtensions(s);
 
         //TEMP hack - bscott
