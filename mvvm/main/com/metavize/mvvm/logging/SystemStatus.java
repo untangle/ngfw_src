@@ -163,6 +163,27 @@ public class SystemStatus
         BufferedReader input;
         int i = 0;
 
+        proc = null;
+        try {
+            /**
+             * uptime
+             */
+            sb.append(SPACER);
+            proc = MvvmContextFactory.context().exec("/usr/bin/uptime");
+            input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            while ((line = input.readLine()) != null) {
+                sb.append(line+"\n");
+            }
+        }
+        catch (Exception e) {
+            logger.error("Exception: ", e);
+            sb.append("Exception on exec (/usr/bin/uptime): " + e.toString() + "\n");
+        }
+        finally {
+            if (proc != null)
+                proc.destroy();
+        }
+
         try {
             /**
              * /proc/loadavg
@@ -193,6 +214,27 @@ public class SystemStatus
         }
         catch (Exception e) {
             logger.error("Exception: ", e);
+        }
+
+        proc = null;
+        try {
+            /**
+             * free -m
+             */
+            sb.append(SPACER);
+            proc = MvvmContextFactory.context().exec("/usr/bin/free -m");
+            input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            while ((line = input.readLine()) != null) {
+                sb.append(line+"\n");
+            }
+        }
+        catch (Exception e) {
+            logger.error("Exception: ", e);
+            sb.append("Exception on exec (/usr/bin/free -m): " + e.toString() + "\n");
+        }
+        finally {
+            if (proc != null)
+                proc.destroy();
         }
 
         try {
