@@ -22,6 +22,15 @@ CREATE TABLE settings.ab_repository_settings (
     port int4,
     PRIMARY KEY (settings_id));
 
+-- com.metavize.mvvm.addrbook.AddressBookSettings
+DROP TABLE settings.ab_settings;
+CREATE TABLE settings.ab_settings (
+    settings_id int8 NOT NULL,
+    ad_repo_settings int8 NOT NULL,
+    ab_configuration char(1) NOT NULL,
+    PRIMARY KEY (settings_id));
+
+
 -- com.metavize.mvvm.portal.Bookmark -- 4.0
 CREATE TABLE settings.portal_bookmark (
         id               INT8 NOT NULL,
