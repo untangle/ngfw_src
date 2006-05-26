@@ -32,7 +32,9 @@ Portal.prototype.constructor = Portal;
 
 Portal.prototype.openPage = function(url)
 {
-   window.open(url);
+   //window.open(url);
+   var dialog = new AppWindow(this._shell, url);
+   dialog.popup();
 }
 
 Portal.prototype.splitUrl = function(url)

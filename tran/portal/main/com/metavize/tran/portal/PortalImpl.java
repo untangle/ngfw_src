@@ -33,7 +33,7 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
     private static final String CIFS_JS
         = "{\n"
         + "  openBookmark: function(portal, target) {\n"
-        + "    portal.openPage('/browser/browser.jsp');\n"
+        + "    portal.openPage('/browser/');\n"
         + "  }\n"
         + "};\n";
 
