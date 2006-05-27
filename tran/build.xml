@@ -875,6 +875,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <arg value="../.."/>
       <arg value="com.metavize.tran.browser.jsp"/>
       <arg value="${tran.name}/webapps/browser"/>
+      <arg value="${build.dist}"/>
       <arg value="${dist.mvvm.web}/browser"/>
     </exec>
 
@@ -999,6 +1000,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <arg value="../.."/>
       <arg value="com.metavize.tran.proxy.jsp"/>
       <arg value="${tran.name}/webapps/proxy"/>
+      <arg value="${build.dist}"/>
       <arg value="${dist.mvvm.web}/proxy"/>
     </exec>
 
@@ -1008,6 +1010,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <arg value="../.."/>
       <arg value="com.metavize.tran.portal.jsp"/>
       <arg value="${tran.name}/webapps/portal"/>
+      <arg value="${build.dist}"/>
       <arg value="${dist.mvvm.web}/portal"/>
     </exec>
   </target>

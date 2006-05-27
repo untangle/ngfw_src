@@ -721,6 +721,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <arg value="../.."/>
       <arg value="com.metavize.mvvm.root.jsp"/>
       <arg value="webapps/ROOT"/>
+      <arg value="${build.dist}"/>
       <arg value="${dist.mvvm.web}/ROOT"/>
     </exec>
   </target>

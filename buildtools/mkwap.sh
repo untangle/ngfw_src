@@ -29,7 +29,8 @@ shift $(expr $OPTIND - 1)
 root=$1
 name=$2
 src=$3
-dest=$4
+destroot=$4
+dest=$5
 
 uriroot="$src/root"
 classroot="$dest/WEB-INF/classes"
@@ -50,7 +51,7 @@ if [ -r $src/dllib ]; then
     cat $src/dllib | copyfiles $root/downloads/output $weblib
 fi
 
-libdirs="$weblib $root/alpine/output/usr/share/metavize/lib $root/alpine/output/usr/share/java/mvvm $root/downloads/output/jakarta-tomcat-5.0.28-embed/lib"
+libdirs="$weblib $destroot/usr/share/metavize/lib $destroot/usr/share/java/mvvm $root/downloads/output/jakarta-tomcat-5.0.28-embed/lib"
 
 classpath="$classpath:$JAVA_HOME/lib/tools.jar:$(find $libdirs -name '*.jar' -printf '%p:')"
 
