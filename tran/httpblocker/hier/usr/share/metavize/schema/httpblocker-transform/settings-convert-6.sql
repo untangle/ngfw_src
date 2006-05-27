@@ -1,7 +1,7 @@
 -- settings convert for release 4.0
 
 ALTER TABLE settings.tr_httpblk_settings ADD COLUMN fascist_mode bool;
-UPDATE settings.tr_httpblk_settings SET fascist_mode = true;
+UPDATE settings.tr_httpblk_settings SET fascist_mode = false;
 ALTER TABLE settings.tr_httpblk_settings ALTER COLUMN fascist_mode SET NOT NULL;
 
 ALTER TABLE settings.tr_httpblk_blcat ADD COLUMN log_only bool;
