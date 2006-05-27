@@ -11,6 +11,3 @@ ALTER TABLE settings.tr_httpblk_blcat ALTER COLUMN log_only SET NOT NULL;
 ALTER TABLE settings.tr_httpblk_blcat ALTER COLUMN block_domains SET NOT NULL;
 ALTER TABLE settings.tr_httpblk_blcat ALTER COLUMN block_urls SET NOT NULL;
 ALTER TABLE settings.tr_httpblk_blcat ALTER COLUMN block_expressions SET NOT NULL;
-
-
-
