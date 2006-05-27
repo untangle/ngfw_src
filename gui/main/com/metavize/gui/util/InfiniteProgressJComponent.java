@@ -210,6 +210,7 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
             double maxY = 0.0; 
 	    
             Graphics2D g2 = (Graphics2D) g;
+	    RenderingHints oldRenderingHints = g2.getRenderingHints();
             g2.setRenderingHints(hints);
             
             g2.setColor(new Color(255, 255, 255, (int) (alphaLevel * shield)));
@@ -244,6 +245,7 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
 				(float) (maxY + layout.getLeading() + 2 * layout.getAscent()));
 		}
 	    }
+	    g2.setRenderingHints(oldRenderingHints);
         }
     }
     
