@@ -1,3 +1,8 @@
-usr/share/metavize/toolbox/portal-transform.mar
-usr/share/metavize/web/webstart/portal-transform-client.mar
 usr/share/metavize/schema/portal-transform/*
+usr/share/metavize/toolbox/portal-transform.mar
+usr/share/metavize/web/browser/*
+usr/share/metavize/web/portal/*
+usr/share/metavize/web/proxy/*
+usr/share/metavize/web/rdp/*
+usr/share/metavize/web/vnc/*
+usr/share/metavize/web/webstart/portal-transform-client.mar
