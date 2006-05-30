@@ -238,24 +238,18 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
 
                 monthlyButtonGroup = new javax.swing.ButtonGroup();
                 explanationJPanel1 = new javax.swing.JPanel();
+                jLabel1 = new javax.swing.JLabel();
                 jPanel1 = new javax.swing.JPanel();
-                explorerJLabel1 = new javax.swing.JLabel();
                 dailyEverydayJCheckBox = new javax.swing.JCheckBox();
                 explanationJPanel = new javax.swing.JPanel();
+                jLabel2 = new javax.swing.JLabel();
                 jPanel2 = new javax.swing.JPanel();
-                weeklySundayJLabel = new javax.swing.JLabel();
                 weeklySundayJCheckBox = new javax.swing.JCheckBox();
-                weeklyMondayJLabel = new javax.swing.JLabel();
                 weeklyMondayJCheckBox = new javax.swing.JCheckBox();
-                weeklyTuesdayJLabel = new javax.swing.JLabel();
                 weeklyTuesdayJCheckBox = new javax.swing.JCheckBox();
-                weeklyWednesdayJLabel = new javax.swing.JLabel();
                 weeklyWednesdayJCheckBox = new javax.swing.JCheckBox();
-                weeklyThursdayJLabel = new javax.swing.JLabel();
                 weeklyThursdayJCheckBox = new javax.swing.JCheckBox();
-                weeklyFridayJLabel = new javax.swing.JLabel();
                 weeklyFridayJCheckBox = new javax.swing.JCheckBox();
-                weeklySaturdayJLabel = new javax.swing.JLabel();
                 weeklySaturdayJCheckBox = new javax.swing.JCheckBox();
                 externalRemoteJPanel = new javax.swing.JPanel();
                 jPanel3 = new javax.swing.JPanel();
@@ -264,28 +258,31 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
                 monthlyEverydayJRadioButton = new javax.swing.JRadioButton();
                 monthlyOnceJRadioButton = new javax.swing.JRadioButton();
                 monthlyOnceJComboBox = new javax.swing.JComboBox();
+                jLabel3 = new javax.swing.JLabel();
                 externalRemoteJPanel1 = new javax.swing.JPanel();
                 jPanel4 = new javax.swing.JPanel();
-                explorerJLabel2 = new javax.swing.JLabel();
                 includeIncidentsJCheckBox = new javax.swing.JCheckBox();
 
                 setLayout(new java.awt.GridBagLayout());
 
-                setMinimumSize(new java.awt.Dimension(530, 485));
-                setPreferredSize(new java.awt.Dimension(530, 485));
+                setMinimumSize(new java.awt.Dimension(530, 621));
+                setPreferredSize(new java.awt.Dimension(530, 621));
                 explanationJPanel1.setLayout(new java.awt.GridBagLayout());
 
-                explanationJPanel1.setBorder(new javax.swing.border.TitledBorder(null, "Daily Schedule", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+                explanationJPanel1.setBorder(new javax.swing.border.TitledBorder(null, "Daily Report Delivery", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+                jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel1.setText("<html>This report is delivered at midnight and covers events from the previous 24 hours, up to, but not including the day of delivery.</html>");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.insets = new java.awt.Insets(0, 5, 5, 5);
+                explanationJPanel1.add(jLabel1, gridBagConstraints);
+
                 jPanel1.setLayout(new java.awt.GridBagLayout());
 
-                explorerJLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
-                explorerJLabel1.setText("Every Day");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-                jPanel1.add(explorerJLabel1, gridBagConstraints);
-
+                dailyEverydayJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
+                dailyEverydayJCheckBox.setText("Every Day");
                 dailyEverydayJCheckBox.setFocusable(false);
                 dailyEverydayJCheckBox.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -301,7 +298,7 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
+                gridBagConstraints.gridy = 1;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.insets = new java.awt.Insets(0, 50, 0, 0);
@@ -317,17 +314,20 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
 
                 explanationJPanel.setLayout(new java.awt.GridBagLayout());
 
-                explanationJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Weekly Schedule", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+                explanationJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Weekly Delivery", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+                jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel2.setText("<html>This report is delivered at midnight and covers events from the previous 7 days, up to, but not including the day of delivery.</html>");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.insets = new java.awt.Insets(0, 5, 5, 5);
+                explanationJPanel.add(jLabel2, gridBagConstraints);
+
                 jPanel2.setLayout(new java.awt.GridBagLayout());
 
-                weeklySundayJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                weeklySundayJLabel.setText("Sunday");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-                jPanel2.add(weeklySundayJLabel, gridBagConstraints);
-
+                weeklySundayJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
+                weeklySundayJCheckBox.setText("Sunday");
                 weeklySundayJCheckBox.setFocusable(false);
                 weeklySundayJCheckBox.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -337,18 +337,11 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 jPanel2.add(weeklySundayJCheckBox, gridBagConstraints);
 
-                weeklyMondayJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                weeklyMondayJLabel.setText("Monday");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 1;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-                jPanel2.add(weeklyMondayJLabel, gridBagConstraints);
-
+                weeklyMondayJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
+                weeklyMondayJCheckBox.setText("Monday");
                 weeklyMondayJCheckBox.setFocusable(false);
                 weeklyMondayJCheckBox.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -358,18 +351,11 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 1;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 jPanel2.add(weeklyMondayJCheckBox, gridBagConstraints);
 
-                weeklyTuesdayJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                weeklyTuesdayJLabel.setText("Tuesday");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 2;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-                jPanel2.add(weeklyTuesdayJLabel, gridBagConstraints);
-
+                weeklyTuesdayJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
+                weeklyTuesdayJCheckBox.setText("Tuesday");
                 weeklyTuesdayJCheckBox.setFocusable(false);
                 weeklyTuesdayJCheckBox.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -379,18 +365,11 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 2;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 jPanel2.add(weeklyTuesdayJCheckBox, gridBagConstraints);
 
-                weeklyWednesdayJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                weeklyWednesdayJLabel.setText("Wednesday");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 3;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-                jPanel2.add(weeklyWednesdayJLabel, gridBagConstraints);
-
+                weeklyWednesdayJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
+                weeklyWednesdayJCheckBox.setText("Wednesday");
                 weeklyWednesdayJCheckBox.setFocusable(false);
                 weeklyWednesdayJCheckBox.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -400,18 +379,11 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 3;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 jPanel2.add(weeklyWednesdayJCheckBox, gridBagConstraints);
 
-                weeklyThursdayJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                weeklyThursdayJLabel.setText("Thursday");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 4;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-                jPanel2.add(weeklyThursdayJLabel, gridBagConstraints);
-
+                weeklyThursdayJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
+                weeklyThursdayJCheckBox.setText("Thursday");
                 weeklyThursdayJCheckBox.setFocusable(false);
                 weeklyThursdayJCheckBox.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -421,18 +393,11 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 4;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 jPanel2.add(weeklyThursdayJCheckBox, gridBagConstraints);
 
-                weeklyFridayJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                weeklyFridayJLabel.setText("Friday");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 5;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-                jPanel2.add(weeklyFridayJLabel, gridBagConstraints);
-
+                weeklyFridayJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
+                weeklyFridayJCheckBox.setText("Friday");
                 weeklyFridayJCheckBox.setFocusable(false);
                 weeklyFridayJCheckBox.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -442,18 +407,11 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 5;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 jPanel2.add(weeklyFridayJCheckBox, gridBagConstraints);
 
-                weeklySaturdayJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                weeklySaturdayJLabel.setText("Saturday");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 6;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-                jPanel2.add(weeklySaturdayJLabel, gridBagConstraints);
-
+                weeklySaturdayJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
+                weeklySaturdayJCheckBox.setText("Saturday");
                 weeklySaturdayJCheckBox.setFocusable(false);
                 weeklySaturdayJCheckBox.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -463,13 +421,12 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 6;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 jPanel2.add(weeklySaturdayJCheckBox, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
+                gridBagConstraints.gridy = 1;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.insets = new java.awt.Insets(0, 50, 0, 0);
@@ -485,7 +442,7 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
 
                 externalRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
-                externalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Monthly Schedule", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+                externalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Monthly Delivery", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
                 jPanel3.setLayout(new java.awt.GridBagLayout());
 
                 monthlyButtonGroup.add(monthlyNoneJRadioButton);
@@ -570,11 +527,20 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
+                gridBagConstraints.gridy = 1;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.insets = new java.awt.Insets(0, 50, 0, 0);
                 externalRemoteJPanel.add(jPanel3, gridBagConstraints);
+
+                jLabel3.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel3.setText("<html>This report is delivered at midnight and covers events from the previous 30 days, up to, but not including the day of delivery.</html>");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.insets = new java.awt.Insets(0, 5, 5, 5);
+                externalRemoteJPanel.add(jLabel3, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -589,14 +555,8 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
                 externalRemoteJPanel1.setBorder(new javax.swing.border.TitledBorder(null, "Contents", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
                 jPanel4.setLayout(new java.awt.GridBagLayout());
 
-                explorerJLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                explorerJLabel2.setText("Include Incident Lists In Emails");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-                jPanel4.add(explorerJLabel2, gridBagConstraints);
-
+                includeIncidentsJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
+                includeIncidentsJCheckBox.setText("<html><b>Include Incident Lists in Emails</b> - this makes emailed reports larger, but includes information about each policy incident.</html>");
                 includeIncidentsJCheckBox.setFocusable(false);
                 includeIncidentsJCheckBox.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -607,12 +567,15 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.weightx = 1.0;
                 jPanel4.add(includeIncidentsJCheckBox, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.insets = new java.awt.Insets(0, 50, 0, 0);
@@ -714,11 +677,12 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
         private javax.swing.JCheckBox dailyEverydayJCheckBox;
         private javax.swing.JPanel explanationJPanel;
         private javax.swing.JPanel explanationJPanel1;
-        private javax.swing.JLabel explorerJLabel1;
-        private javax.swing.JLabel explorerJLabel2;
         private javax.swing.JPanel externalRemoteJPanel;
         private javax.swing.JPanel externalRemoteJPanel1;
         private javax.swing.JCheckBox includeIncidentsJCheckBox;
+        private javax.swing.JLabel jLabel1;
+        private javax.swing.JLabel jLabel2;
+        private javax.swing.JLabel jLabel3;
         private javax.swing.JPanel jPanel1;
         private javax.swing.JPanel jPanel2;
         private javax.swing.JPanel jPanel3;
@@ -730,18 +694,11 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
         private javax.swing.JComboBox monthlyOnceJComboBox;
         private javax.swing.JRadioButton monthlyOnceJRadioButton;
         private javax.swing.JCheckBox weeklyFridayJCheckBox;
-        private javax.swing.JLabel weeklyFridayJLabel;
         private javax.swing.JCheckBox weeklyMondayJCheckBox;
-        private javax.swing.JLabel weeklyMondayJLabel;
         private javax.swing.JCheckBox weeklySaturdayJCheckBox;
-        private javax.swing.JLabel weeklySaturdayJLabel;
         private javax.swing.JCheckBox weeklySundayJCheckBox;
-        private javax.swing.JLabel weeklySundayJLabel;
         private javax.swing.JCheckBox weeklyThursdayJCheckBox;
-        private javax.swing.JLabel weeklyThursdayJLabel;
         private javax.swing.JCheckBox weeklyTuesdayJCheckBox;
-        private javax.swing.JLabel weeklyTuesdayJLabel;
         private javax.swing.JCheckBox weeklyWednesdayJCheckBox;
-        private javax.swing.JLabel weeklyWednesdayJLabel;
         // End of variables declaration//GEN-END:variables
 }
