@@ -363,7 +363,7 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
 
                 jPanel3.setOpaque(false);
                 connectivityTestJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                connectivityTestJButton.setText("Run Connectivity Test");
+                connectivityTestJButton.setText("Run Email Test");
                 connectivityTestJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 connectivityTestJButtonActionPerformed(evt);
@@ -377,7 +377,7 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
                 jPanel3.add(connectivityTestJButton, gridBagConstraints);
 
                 jLabel11.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel11.setText("<html>The <b>Connectivity Test is optional</b>, but it can tell you if your mail settings  above are correct, by sending you an email.</html>");
+                jLabel11.setText("<html>The <b>Email Test is optional</b>, but it can tell you if your mail settings  above are correct, by sending you an email.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
                 gridBagConstraints.gridy = 6;
@@ -485,8 +485,8 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
         private javax.swing.JLabel portJLabel;
         private javax.swing.JSpinner portJSpinner;
         private javax.swing.ButtonGroup smtpButtonGroup;
-        private javax.swing.JRadioButton smtpDisabledJRadioButton;
-        private javax.swing.JRadioButton smtpEnabledJRadioButton;
+        public javax.swing.JRadioButton smtpDisabledJRadioButton;
+        public javax.swing.JRadioButton smtpEnabledJRadioButton;
         private javax.swing.JLabel smtpLoginJLabel;
         public javax.swing.JTextField smtpLoginJTextField;
         private javax.swing.JLabel smtpPasswordJLabel;
