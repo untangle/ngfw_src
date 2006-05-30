@@ -59,7 +59,7 @@ public class AddressBookImpl implements AddressBook {
                     settings.setAddressBookConfiguration(AddressBookConfiguration.LOCAL_ONLY);
                     settings.setADRepositorySettings(new RepositorySettings("Administrator",
                                                                             "mypassword",
-                                                                            "mycompany.com",
+                                                                            "mydomain",
                                                                             "ad_server",
                                                                             389
                                                                             ));
