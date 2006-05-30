@@ -52,8 +52,8 @@ class LocalLdapAdapter extends LdapAdapter {
     public LocalLdapAdapter() {
         this(new RepositorySettings(
                                     "admin",
-                                    "passwd",
-                                    "mydomain",
+                                    "nimda11lacol",
+                                    "nodomain",
                                     "localhost",
                                     389)
              );
