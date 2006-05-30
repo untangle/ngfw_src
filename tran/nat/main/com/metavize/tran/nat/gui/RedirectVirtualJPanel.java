@@ -96,9 +96,9 @@ class RedirectVirtualTableModel extends MSortedTableModel<Object>{
         addTableColumn( tableColumnModel,  3,  C3_MW,  false, true,  false, false, Boolean.class, "false",  sc.bold("log"));
         addTableColumn( tableColumnModel,  4,  C4_MW,  false, true,  false, false, ComboBoxModel.class, protocolModel, sc.html("traffic<br>type") );
         addTableColumn( tableColumnModel,  5,  C5_MW,  true,  true,  false, false, ComboBoxModel.class, interfaceModel, sc.html("destination<br>address") );
-        addTableColumn( tableColumnModel,  6,  C6_MW,  true,  true,  false, false, String.class, "2-5", sc.html("destination<br>port") );
-        addTableColumn( tableColumnModel,  7,  C7_MW,  true,  true,  false, false, String.class, "1.2.3.4", sc.html("redirect to<br>new address") );
-        addTableColumn( tableColumnModel,  8,  C8_MW,  true,  true,  false, false, String.class, "5", sc.html("redirect to<br>new port") );
+        addTableColumn( tableColumnModel,  6,  C6_MW,  true,  true,  false, false, String.class, "80", sc.html("destination<br>port") );
+        addTableColumn( tableColumnModel,  7,  C7_MW,  true,  true,  false, false, String.class, "192.168.1.10", sc.html("redirect to<br>new address") );
+        addTableColumn( tableColumnModel,  8,  C8_MW,  true,  true,  false, false, String.class, "80", sc.html("redirect to<br>new port") );
         addTableColumn( tableColumnModel,  9,  C9_MW,  true,  true,  false, false, String.class, sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY);
         addTableColumn( tableColumnModel,  10, C10_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
         addTableColumn( tableColumnModel,  11, 10,     false, false, true,  false, RedirectRule.class, null, "");

@@ -46,7 +46,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     private static final String NAME_DMZ              = "DMZ Host";
     private static final String NAME_REDIRECT         = "Redirect";
     private static final String NAME_REDIRECT_ANY     = "To Anywhere";
-    private static final String NAME_REDIRECT_VIRTUAL = "To Virtual Servers";
+    private static final String NAME_REDIRECT_VIRTUAL = "Port Forwarding";
     private static final String NAME_DHCP             = "DHCP";
     private static final String NAME_DHCP_SETTINGS    = "Settings";
     private static final String NAME_DHCP_ADDRESS_MAP = "Address Map";
