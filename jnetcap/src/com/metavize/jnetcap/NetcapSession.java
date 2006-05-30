@@ -57,7 +57,12 @@ public abstract class NetcapSession {
     /* Returns one of Netcap.IPPROTO_UDP, Netcap.IPPROTO_TCP, Netcap.IPPROTO_ICMP */
     public short protocol()
     {
-        return (short)getIntValue( FLAG_PROTOCOL, pointer.value());
+        short protocol = (short)getIntValue( FLAG_PROTOCOL, pointer.value());
+        
+        /* XXX ICMP Hack, the protocol switch to ICMP has only occured on the C-side */
+        if ( protocol == Netcap.IPPROTO_ICMP ) protocol = Netcap.IPPROTO_UDP;
+
+        return protocol;
     }
 
     public int id() 

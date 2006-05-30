@@ -67,9 +67,12 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         maxPacketSize[CLIENT] = numBytes;
     }
 
+    /**
+     * Returns true if this is a Ping session
+     */
     public boolean isPing()
     {
-        return (clientPort() == 0 && serverPort() == 0);
+        return ((com.metavize.mvvm.argon.UDPSession)pSession).isPing();
     }
 
     public int icmpId()

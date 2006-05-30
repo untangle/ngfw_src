@@ -24,6 +24,7 @@ public class NetcapUDPSession extends NetcapSession
     private final static int FLAG_TOS            = 65;
     private final static int FLAG_ICMP_CLIENT_ID = 66;
     private final static int FLAG_ICMP_SERVER_ID = 67;
+    private final static int FLAG_IS_ICMP        = 68;
     
     private final PacketMailbox clientMailbox;
     private final PacketMailbox serverMailbox;
@@ -49,17 +50,19 @@ public class NetcapUDPSession extends NetcapSession
         return (byte) getIntValue( FLAG_TOS, pointer.value());
     }
 
+    /* XXX ICMP Hack */
     public boolean isIcmpSession()
     {
-        /* Only ICMP sessions have non-zero ICMP client ids */
-        return ( clientSide.client().port() == 0 && clientSide.server().port() == 0 );
+        return (( getIntValue( FLAG_IS_ICMP, pointer.value()) == 1 ) ? true : false );
     }
 
+    /* XXX ICMP Hack */
     public int icmpClientId()
     { 
         return  getIntValue( FLAG_ICMP_CLIENT_ID, pointer.value());
     }
     
+    /* XXX ICMP Hack */
     public int icmpServerId()
     {
         return  getIntValue( FLAG_ICMP_SERVER_ID, pointer.value());
@@ -169,6 +172,7 @@ public class NetcapUDPSession extends NetcapSession
             
             IPTraffic ipTraffic = new IPTraffic( packetPointer );
             
+            /* XXX ICMP Hack */
             switch ( ipTraffic.protocol()) {
             case Netcap.IPPROTO_UDP:
                 return new PacketMailboxUDPPacket( packetPointer );

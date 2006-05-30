@@ -28,7 +28,12 @@ public interface UDPSessionDesc extends IPSessionDesc {
      * Retrieve the options associated with the first UDP packet in the session.
      */
     byte[] options();
-
+    
+    /**
+     * Returns true if this is a Ping session
+     */
+    boolean isPing();
+    
     /**
      * Retrieve the ICMP associated with the session
      */

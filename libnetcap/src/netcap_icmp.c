@@ -76,7 +76,7 @@ static netcap_session_t* _icmp_get_tuple( netcap_pkt_t* pkt )
     int id = ntohs( ((struct icmphdr*)pkt->data)->un.echo.id );
     
     /* The ID is treated as the sequence number, this way each ICMP message is distinguishable */
-    return netcap_nc_sesstable_get_tuple( !NC_SESSTABLE_LOCK, IPPROTO_UDP,
+    return netcap_nc_sesstable_get_tuple( !NC_SESSTABLE_LOCK, IPPROTO_ICMP,
                                           pkt->src.host.s_addr, pkt->dst.host.s_addr,
                                           0, 0, id );
 }
@@ -233,7 +233,7 @@ static netcap_session_t* _icmp_create_session( netcap_pkt_t* pkt )
     session = netcap_udp_session_create( pkt );
 
     /* pkt->data has already been tested for size and validity */    
-    if ( netcap_nc_sesstable_add_tuple( !NC_SESSTABLE_LOCK, session, IPPROTO_UDP,
+    if ( netcap_nc_sesstable_add_tuple( !NC_SESSTABLE_LOCK, session, IPPROTO_ICMP,
                                         pkt->src.host.s_addr, pkt->dst.host.s_addr,
                                         0, 0, icmp_client_id ) < 0 ) {
         netcap_udp_session_raze( !NC_SESSTABLE_LOCK, session );
@@ -949,7 +949,8 @@ static _find_t _icmp_find_session( netcap_pkt_t* pkt, netcap_session_t** netcap_
 
             /* Just in case this is another type of packet */
         default:
-            errlog( ERR_WARNING, "Unknown icmp packet type: %d, dropping.\n", packet->icmp_type );
+            errlog( ERR_WARNING, "Unknown icmp packet type: %d, code: %d, dropping.\n", 
+                    packet->icmp_type, packet->icmp_code );
             ret = _FIND_DROP;
             break;
         }

@@ -300,7 +300,7 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
             netcap_udp_session_raze(!NC_SESSTABLE_LOCK, session);
             netcap_pkt_raze(pkt);
             SESSTABLE_UNLOCK();
-            return perrlog("netcap_sesstable_add_tuple");
+            return perrlog("netcap_nc_sesstable_add_tuple");
         }
 
         // Add the session to itself
@@ -308,7 +308,7 @@ int  netcap_udp_call_hooks (netcap_pkt_t* pkt, void* arg)
             netcap_udp_session_raze(!NC_SESSTABLE_LOCK, session);
             netcap_pkt_raze(pkt);
             SESSTABLE_UNLOCK();
-            return perrlog("netcap_sesstable_add_tuple");
+            return perrlog("netcap_sesstable_add");
         }
 
         // Dump the packet into the mailbox

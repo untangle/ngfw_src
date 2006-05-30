@@ -206,8 +206,12 @@ public class UDPHook implements NetcapHook
 
         protected Sink makeClientSink()
         {
+            /* XXX ICMP Hack */
+            int icmpClientId = 0;
+            if ( netcapUDPSession.isIcmpSession()) icmpClientId = netcapUDPSession.icmpClientId();
+
             return new UDPSink( clientTraffic, clientSideListener, netcapUDPSession.icmpClientMailbox(),
-                                netcapUDPSession.icmpClientId());
+                                icmpClientId );
         }
 
         protected Sink makeServerSink()

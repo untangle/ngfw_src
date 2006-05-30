@@ -23,6 +23,7 @@ public class UDPSessionImpl extends IPSessionImpl implements UDPSession
     protected final byte tos;
     protected final byte options[];
     protected final int  icmpId;
+    protected final boolean isPing;
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -34,6 +35,7 @@ public class UDPSessionImpl extends IPSessionImpl implements UDPSession
         tos     = request.tos();
         options = request.options();
         icmpId  = request.icmpId();
+        isPing  = request.isPing();
     }
 
     /**
@@ -60,6 +62,14 @@ public class UDPSessionImpl extends IPSessionImpl implements UDPSession
     public byte[] options()
     {
         return options;
+    }
+
+    /**
+     * Returns true if this is a Ping session
+     */
+    public boolean isPing()
+    {
+        return this.isPing;
     }
 
     /**

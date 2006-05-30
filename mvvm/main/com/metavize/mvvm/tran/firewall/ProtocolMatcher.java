@@ -63,13 +63,13 @@ public final class ProtocolMatcher implements Serializable
     }
     
     public boolean isMatch( Protocol protocol ) {
-        if (( protocol == Protocol.TCP )  && isTcpEnabled )
+        if (( protocol == Protocol.TCP ) && isTcpEnabled )
             return true;
 
-        if (( protocol == Protocol.UDP )  && isUdpEnabled )
+        if (( protocol == Protocol.UDP ) && isUdpEnabled )
             return true;
 
-        /* Right now Ping is a UDP session */
+        /* Right now Ping is a UDP session. [XXX ICMP HACK] */
         if (( protocol == Protocol.UDP ) && isPingEnabled )
             return true;
 

@@ -61,9 +61,14 @@ JNIEXPORT jlong JNICALL JF_Session( getSession )
     
     
     /* If necessary, verify that the protocol matches */
+    int session_protocol = session->protocol;
+
+    /* XXXX, Offensive ICMP Hack, they must stop. */
+    if ( session_protocol == IPPROTO_ICMP ) session_protocol = IPPROTO_UDP;
+
     /* XXX This is kind of a mess access wise, because only certain classes should 
      * be able to create sessions with unverified protocols */
-    if ( protocol != 0 && session->protocol != protocol ) {
+    if ( protocol != 0 && session_protocol != protocol ) {
         jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, "Mismatched protocol: expected %d actual %d\n",
                        protocol, session->protocol );
         return 0;
@@ -127,19 +132,31 @@ JNIEXPORT jint JNICALL JF_Session( getIntValue )
 
         /* XXXXXXXX This will have to change for ICMP session */
     case JN_UDPSession( FLAG_TTL ): 
-        if ( session->protocol != IPPROTO_UDP ) return errlog( ERR_CRITICAL, "Expecting UDP\n" );
+        /* XXX ICMP Hack */
+        if ( session->protocol != IPPROTO_UDP && session->protocol != IPPROTO_ICMP ) {
+            return errlog( ERR_CRITICAL, "Expecting UDP or ICMP\n" );
+        }
         return session->ttl;
 
     case JN_UDPSession( FLAG_TOS ): 
-        if ( session->protocol != IPPROTO_UDP ) return errlog( ERR_CRITICAL, "Expecting UDP\n" );
+        /* XXX ICMP Hack */
+        if ( session->protocol != IPPROTO_UDP && session->protocol != IPPROTO_ICMP ) {
+            return errlog( ERR_CRITICAL, "Expecting UDP or ICMP\n" );
+        }
         return session->ttl;
 
+    case JN_UDPSession( FLAG_IS_ICMP ):
+        /* XXX ICMP Hack */
+        return ( session->protocol == IPPROTO_ICMP ) ? 1 : 0;
+        
     case JN_UDPSession( FLAG_ICMP_CLIENT_ID ):
-        if ( session->protocol != IPPROTO_UDP ) return errlog( ERR_CRITICAL, "Expecting UDP\n" );
+        /* XXX ICMP Hack */
+        if ( session->protocol != IPPROTO_ICMP ) return errlog( ERR_CRITICAL, "Expecting ICMP\n" );
         return session->icmp.client_id;
 
     case JN_UDPSession( FLAG_ICMP_SERVER_ID ): 
-        if ( session->protocol != IPPROTO_UDP ) return errlog( ERR_CRITICAL, "Expecting UDP\n" );
+        /* XXX ICMP Hack */
+        if ( session->protocol != IPPROTO_ICMP ) return errlog( ERR_CRITICAL, "Expecting ICMP\n" );
         return session->icmp.server_id;
     }
     

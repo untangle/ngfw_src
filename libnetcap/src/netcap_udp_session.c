@@ -15,6 +15,11 @@ int netcap_udp_session_init(netcap_session_t* netcap_sess, netcap_pkt_t* pkt)
     
     if ( pkt == NULL ) return errlogargs();
 
+    /* XXX ICMP Hack */
+    if (( pkt->proto != IPPROTO_UDP ) && ( pkt->proto != IPPROTO_ICMP )) {
+        return errlog( ERR_CRITICAL, "non-udp and icmp packet for udp session: %d.\n", pkt->proto );
+    }
+
     netcap_endpoints_bzero( &endpoints );
         
     memcpy( &endpoints.cli, &pkt->src, sizeof( endpoints.cli ));
@@ -26,7 +31,7 @@ int netcap_udp_session_init(netcap_session_t* netcap_sess, netcap_pkt_t* pkt)
     netcap_sess->alive = 1;
 
     /* Set the protocol */
-    netcap_sess->protocol = IPPROTO_UDP;
+    netcap_sess->protocol = pkt->proto;
 
     /* Set the TTL and TOS value */
     netcap_sess->ttl      = pkt->ttl;

@@ -22,16 +22,22 @@ class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNew
     protected byte tos;
     protected byte[] options;
     protected int icmpId;
+    private final boolean isPing;
 
     public UDPNewSessionRequestImpl( SessionGlobalState sessionGlobalState, ArgonAgent agent,
                                      byte originalServerIntf, PipelineEndpoints pe )
     {
         super( sessionGlobalState, agent, originalServerIntf, pe );
-        
-        /* Grab the TTL, TOS and ICMP Identifier from the udp session */
-        this.ttl    = sessionGlobalState.netcapUDPSession().ttl();
-        this.tos    = sessionGlobalState.netcapUDPSession().tos();
-        this.icmpId = sessionGlobalState.netcapUDPSession().icmpClientId();
+
+        NetcapUDPSession netcapUDPSession = sessionGlobalState.netcapUDPSession();
+
+        /* Grab the TTL, TOS, isPing and ICMP Identifier from the udp session. */
+        this.ttl    = netcapUDPSession.ttl();
+        this.tos    = netcapUDPSession.tos();
+        this.icmpId = ( netcapUDPSession.isIcmpSession()) ? netcapUDPSession.icmpClientId() : 0;
+
+        /* XXX ICMP Hack, PING is presently the only ICMP session. */
+        this.isPing = netcapUDPSession.isIcmpSession();
     }
     
     public UDPNewSessionRequestImpl( UDPSession session, ArgonAgent agent, byte originalServerIntf, PipelineEndpoints pe )
@@ -42,6 +48,7 @@ class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNew
         this.ttl    = session.ttl();
         this.tos    = session.tos();
         this.icmpId = session.icmpId();
+        this.isPing = session.isPing();
     }
 
 
@@ -71,6 +78,14 @@ class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNew
         return options;
     }
     
+    /**
+     * Returns true if this is a Ping session
+     */
+    public boolean isPing()
+    {
+        return this.isPing;
+    }
+
     /**
      * Retrieve the ICMP associated with the session
      */

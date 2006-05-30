@@ -56,6 +56,11 @@ public interface UDPNewSessionRequest extends IPNewSessionRequest, UDPSessionDes
     void options( byte[] value );
 
     /**
+     * Returns true if this is an Ping session
+     */
+    boolean isPing();
+
+    /**
      * Set the ICMP id for the session.
      * @param value - The value to set the icmp id to, set to -1 to not modify
      */

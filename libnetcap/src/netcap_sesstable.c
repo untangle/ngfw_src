@@ -294,7 +294,7 @@ int        netcap_sesstable_merge_icmp_tuple ( netcap_session_t* netcap_sess, in
     }
         
     /* XXX Using UDP right now for ICMP session */
-    return _netcap_sesstable_merge_tuple( netcap_sess, IPPROTO_UDP, src, dst, 0, 0, intf, icmp_pid ); 
+    return _netcap_sesstable_merge_tuple( netcap_sess, IPPROTO_ICMP, src, dst, 0, 0, intf, icmp_pid ); 
 }
 
 int        netcap_sesstable_remove_tuple (int if_lock, int proto, 
@@ -357,8 +357,9 @@ int netcap_sesstable_remove_session (int if_lock, netcap_session_t* netcap_sess)
         /* Remove the forward tuple */
         endpoints = &netcap_sess->cli;
         
-        /* XXX Special casing ICMP */
-        if ( endpoints->cli.port == 0 ) {
+        /* XXX Special casing ICMP, 
+         * 5907: better because it actually uses the protocol. */
+        if ( netcap_sess->protocol == IPPROTO_ICMP ) {
             _netcap_sesstable_remove_tuple( netcap_sess->protocol, endpoints->cli.host.s_addr, 
                                             endpoints->srv.host.s_addr,
                                             endpoints->cli.port, endpoints->srv.port, 
@@ -369,14 +370,15 @@ int netcap_sesstable_remove_session (int if_lock, netcap_session_t* netcap_sess)
                                             endpoints->cli.port, endpoints->srv.port, 0 );
         }
         
-        /* Only remove the reverse if this is a UDP Connection */
-        if ( netcap_sess->protocol == IPPROTO_UDP && 
-             ( netcap_sess->remove_tuples == NETCAP_SESSION_REMOVE_SERVER_TUPLE )) {
+        /* Only remove the reverse if this is a UDP or ICMP session. */
+        if (( netcap_sess->protocol == IPPROTO_UDP || netcap_sess->protocol == IPPROTO_ICMP ) && 
+            ( netcap_sess->remove_tuples == NETCAP_SESSION_REMOVE_SERVER_TUPLE )) {
             /* Remove the reverse endpoints */
             endpoints = &netcap_sess->srv;
             
-            /* XXX Special casing ICMP */
-            if ( endpoints->cli.port == 0 ) {
+            /* XXX Special casing ICMP.
+             * 5907: Better because it uses the protocol. */
+            if ( netcap_sess->protocol == IPPROTO_ICMP ) {
                 _netcap_sesstable_remove_tuple( netcap_sess->protocol, endpoints->srv.host.s_addr, 
                                                 endpoints->cli.host.s_addr,
                                                 endpoints->srv.port, endpoints->cli.port,
@@ -412,8 +414,10 @@ static int _netcap_sesstable_remove_tuple(u_short proto,
     /* Static/private function, no error checking necessary */
     session_tuple_t st = {proto,shost,dhost,sport,dport,seq};
 
-    if (ht_remove(&_sess_tuple_table,(void*)&st)<0) {
-        return errlog( ERR_WARNING, "ht_remove (proto: %d)\n", proto );
+    if ( ht_remove( &_sess_tuple_table, (void*)&st ) < 0 ) {
+        return errlog( ERR_WARNING, "ht_remove (%d,%#010x,%s:%i -> %s:%i)\n", proto, seq,
+                       unet_next_inet_ntoa( shost ), sport,
+                       unet_next_inet_ntoa( dhost ), dport );
     }
 
     return 0;
@@ -586,12 +590,20 @@ static u_int  _tuple_hash_func ( const void* input )
     u_int hash;
     session_tuple_t* st = (session_tuple_t*) input;
 
-    /* XXX weak, but prime hash table size */    
-    hash  = (u_int)(st->shost << 4 | ((st->shost>>28) & 0x0F));
-    hash ^= (u_int)(st->dhost << 8 | ((st->dhost>>24) & 0xFF));
-    hash ^= (u_int)(st->sport << 2 ) * ( st->proto << 4);
-    hash ^= (u_int)(st->dport << 12 ) * ( st->proto << 8 );
-    // hash ^= (u_int)(st->seq << 8 | ((st->seq>>24)&0xFF)); /* XXXXXXX all ping sessions match to the same bucket */
+    /* XXX weak, but prime hash table size */
+    hash  = 17;
+    hash  = ( 37 * hash ) + (u_int)st->proto;
+    hash  = ( 37 * hash ) + (u_int)st->shost;
+    hash  = ( 37 * hash ) + (u_int)st->dhost;
+    hash  = ( 37 * hash ) + (u_int)st->sport;
+    hash  = ( 37 * hash ) + (u_int)st->dport;
+    hash  = ( 37 * hash ) + (u_int)st->seq;
+
+/*     hash  = (u_int)(st->shost << 4 | ((st->shost>>28) & 0x0F)); */
+/*     hash ^= (u_int)(st->dhost << 8 | ((st->dhost>>24) & 0xFF)); */
+/*     hash ^= (u_int)(st->sport << 2 ) * ( st->proto << 4); */
+/*     hash ^= (u_int)(st->dport << 12 ) * ( st->proto << 8 ); */
+/*     hash ^= (u_int)(st->seq << 8 | ((st->seq>>24)&0xFF)); */
     
     return hash;
 }
@@ -606,7 +618,7 @@ static u_char _tuple_equ_func ( const void* input, const void* input2 )
     if (st1->sport != st2->sport) return 0;
     if ((u_int)st1->dhost != (u_int)st2->dhost) return 0;
     if ((u_int)st1->shost != (u_int)st2->shost) return 0;
-    if (st1->seq != 0 && st2->seq != 0 && (st1->seq != st2->seq)) return 0;
+    if ( st1->seq != st2->seq ) return 0;
 
     return 1;
 }

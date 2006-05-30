@@ -21,7 +21,15 @@ class UDPNewSessionRequestImpl extends IPNewSessionRequestImpl implements UDPNew
         super(disp, pRequest, isInbound);
     }
 
-        /**
+    /**
+     * Returns true if this is a Ping session
+     */
+    public boolean isPing()
+    {
+        return ((com.metavize.mvvm.argon.UDPNewSessionRequest)pRequest).isPing();
+    }
+    
+    /**
      * Retrieve the ICMP associated with the session
      */
     public int icmpId()
