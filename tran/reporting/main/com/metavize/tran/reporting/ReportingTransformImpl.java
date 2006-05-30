@@ -70,10 +70,10 @@ public class ReportingTransformImpl extends AbstractTransform implements Reporti
                         settings = initSettings();
                         bSave = true;
                     } else {
-                        // create schedules on initial conversion
                         Schedule sched = settings.getSchedule();
                         if (null == sched) {
-                            sched = new Schedule();
+                            // create and save schedule on initial conversion
+                            settings.setSchedule(new Schedule());
                             bSave = true;
                         }
                     }
