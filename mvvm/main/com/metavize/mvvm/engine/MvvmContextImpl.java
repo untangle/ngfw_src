@@ -79,6 +79,7 @@ public class MvvmContextImpl extends MvvmContextBase
     private PortalManagerImpl portalManager;
     private RemotePortalManagerImpl remotePortalManager;
     private TomcatManager tomcatManager;
+    private HeapMonitor heapMonitor;
 
     // constructor ------------------------------------------------------------
 
@@ -490,6 +491,12 @@ public class MvvmContextImpl extends MvvmContextBase
             networkingManager.buildIntfEnum();
         }
 
+        this.heapMonitor = new HeapMonitor();
+        String useHeapMonitor = System.getProperty(HeapMonitor.KEY_ENABLE_MONITOR);
+        if (null != useHeapMonitor && Boolean.valueOf(useHeapMonitor)) {
+            this.heapMonitor.start();
+        }
+
         httpInvoker = HttpInvoker.invoker();
 
         remoteContext = new MvvmRemoteContextImpl(this);
@@ -614,6 +621,14 @@ public class MvvmContextImpl extends MvvmContextBase
             cronManager = null;
         } catch (Exception exn) {
             logger.warn("could not stop CronManager", exn);
+        }
+
+        try {
+            if (null != this.heapMonitor) {
+                this.heapMonitor.stop();
+            }
+        } catch (Exception exn) {
+            logger.warn("unable to stop the heap monitor",exn);
         }
     }
 

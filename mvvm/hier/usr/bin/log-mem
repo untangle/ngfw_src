@@ -32,6 +32,12 @@ for (( c =0 ; c < 100000 ; c++ )); do
     if [ "${pid}x" = "x" ] || [ "${pid}x" = "0x" ]; then 
         echo "${lastPid} died, waiting 5 seconds and checking again"
 	sleep 5
+
+        heapPrev=0
+        heapStart=0
+        
+        memStart=0
+        memPrev=0
 	continue
     fi
 
