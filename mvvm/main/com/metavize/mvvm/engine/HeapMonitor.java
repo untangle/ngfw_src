@@ -159,7 +159,7 @@ class HeapMonitor
 
         logger.debug( "Starting the heap monitor" );
         
-        this.thread = MvvmContextFactory.context().newThread(new Task()).start();
+        this.thread = MvvmContextFactory.context().newThread(new Task());
     }
     
     synchronized void stop()
