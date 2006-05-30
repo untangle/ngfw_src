@@ -47,7 +47,7 @@ class CategoryTableModel extends MSortedTableModel<Object> {
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
     private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # - invisible */
     private static final int C2_MW = 145; /* category */
-    private static final int C3_MW = 105;  /* action */
+    private static final int C3_MW = 120;  /* action */
     private static final int C4_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW + C3_MW), 120); /* description */
 
     
@@ -66,7 +66,7 @@ class CategoryTableModel extends MSortedTableModel<Object> {
     }
 
     private static final String ACTION_DONT_BLOCK = "don't block";
-    private static final String ACTION_BLOCK = "block";
+    private static final String ACTION_BLOCK = "block and log";
     private static final String ACTION_PASS  = "pass";
     private static final String ACTION_PASS_AND_LOG = "pass and log";
 
@@ -92,7 +92,7 @@ class CategoryTableModel extends MSortedTableModel<Object> {
 	int i = 0;
 	boolean isFascistMode = false;
 	for( Vector rowVector : tableVector ){
-	    if( i == (tableVector.size()-1) ){ // HACK TO DEAL WITH FASCIST MODE ROW
+	    if( 0 == i ){ // HACK TO DEAL WITH FASCIST MODE ROW
 		String selectedItem = (String) ((ComboBoxModel) rowVector.elementAt(3)).getSelectedItem();
 		isFascistMode = selectedItem.equals(ACTION_BLOCK);		    
 	    }
@@ -141,6 +141,26 @@ class CategoryTableModel extends MSortedTableModel<Object> {
 	Vector tempRow = null;
 	int rowIndex = 0;
 
+	// HACK TO DEAL WITH FASCIST MODE
+	tempRow = new Vector(7);
+	tempRow.add( super.ROW_SAVED );
+	tempRow.add( rowIndex );
+	tempRow.add( "All Web Content" );
+
+	ComboBoxModel newComboBoxModel = copyComboBoxModel(fascistComboBoxModel);
+	if( httpBlockerSettings.getFascistMode() ){
+	    newComboBoxModel.setSelectedItem( ACTION_BLOCK );
+	}
+	else{
+	    newComboBoxModel.setSelectedItem( ACTION_DONT_BLOCK );
+	}
+	tempRow.add( newComboBoxModel );
+	tempRow.add( "Any web page that is not in the pass lists." );
+	tempRow.add( "" );
+	tempRow.add( null );
+	allRows.add( tempRow );
+
+	// DEAL WITH ALL OTHER ROWS
 	for( BlacklistCategory newElem : blacklistCategories ){
 	    rowIndex++;
             tempRow = new Vector(7);
@@ -166,26 +186,6 @@ class CategoryTableModel extends MSortedTableModel<Object> {
             allRows.add( tempRow );
         }
 
-	// HACK TO DEAL WITH FASCIST MODE
-	rowIndex++;
-	tempRow = new Vector(7);
-	tempRow.add( super.ROW_SAVED );
-	tempRow.add( rowIndex );
-	tempRow.add( "All Web Content" );
-
-	ComboBoxModel comboBoxModel = copyComboBoxModel(fascistComboBoxModel);
-	if( httpBlockerSettings.getFascistMode() ){
-	    comboBoxModel.setSelectedItem( ACTION_BLOCK );
-	}
-	else{
-	    comboBoxModel.setSelectedItem( ACTION_DONT_BLOCK );
-	}
-	tempRow.add( comboBoxModel );
-
-	tempRow.add( "Any web page that is not in the pass lists." );
-	tempRow.add( "" );
-	tempRow.add( null );
-	allRows.add( tempRow );
         return allRows;
     }
 }
