@@ -133,7 +133,10 @@ public class PortalUser implements Serializable
      */
     public String getDescription()
     {
-        return description;
+	if( description == null )
+	    return "";
+	else
+	    return description;
     }
 
     public void setDescription(String description)
