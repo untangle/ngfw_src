@@ -30,6 +30,8 @@ function Portal(shell) {
 
    this.layout();
 
+   this.refresh();
+
    this.zShow(true);
 }
 

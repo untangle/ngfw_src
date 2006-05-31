@@ -28,6 +28,11 @@ NavigationBar.prototype.portalMode = function()
 
    var bm = new DwtLabel(this, DwtLabel.ALIGN_LEFT, "NavBarBookmark");
    bm.setText("bookmark");
+
+   this.addFiller();
+
+   var logout = new DwtLabel(this);
+   logout.setImage("Logout");
 }
 
 NavigationBar.prototype.applicationMode = function(bookmark)
