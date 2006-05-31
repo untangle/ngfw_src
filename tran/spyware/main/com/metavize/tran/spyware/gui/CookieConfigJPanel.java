@@ -45,6 +45,7 @@ public class CookieConfigJPanel extends MEditTableJPanel{
         // create actual table model
         CookieTableModel cookieTableModel = new CookieTableModel();
         this.setTableModel( cookieTableModel );
+	cookieTableModel.setSortingStatus(2, SpyTableModel.ASCENDING);
     }
 }
 

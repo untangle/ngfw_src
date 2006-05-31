@@ -34,7 +34,8 @@ public class BlockedCategoriesConfigJPanel extends MEditTableJPanel {
         super.setTableTitle("Blocked Categories");
         super.setDetailsTitle("rule notes");
         super.setAddRemoveEnabled(false);
-        
+        super.setFillJButtonEnabled(false);
+
         // create actual table model
         CategoryTableModel categoryTableModel = new CategoryTableModel();
         super.setTableModel( categoryTableModel );
@@ -65,7 +66,7 @@ class CategoryTableModel extends MSortedTableModel<Object> {
         return tableColumnModel;
     }
 
-    private static final String ACTION_DONT_BLOCK = "don't block";
+    private static final String ACTION_DONT_BLOCK = "do not block";
     private static final String ACTION_BLOCK = "block and log";
     private static final String ACTION_PASS  = "pass";
     private static final String ACTION_PASS_AND_LOG = "pass and log";
@@ -155,7 +156,7 @@ class CategoryTableModel extends MSortedTableModel<Object> {
 	    newComboBoxModel.setSelectedItem( ACTION_DONT_BLOCK );
 	}
 	tempRow.add( newComboBoxModel );
-	tempRow.add( "Any web page that is not in the pass lists." );
+	tempRow.add( "Blocks any web page that is not in the pass lists." );
 	tempRow.add( "" );
 	tempRow.add( null );
 	allRows.add( tempRow );
