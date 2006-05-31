@@ -69,6 +69,7 @@
 <script type="text/javascript" src="/AjaxTk/js/dwt/core/Dwt.js"></script>
 <script type="text/javascript" src="/AjaxTk/js/dwt/core/DwtException.js"></script>
 <script type="text/javascript" src="/AjaxTk/js/dwt/core/DwtDraggable.js"></script>
+<script type="text/javascript" src="/AjaxTk/js/dwt/core/DwtDragTracker.js"></script>
 
 <script type="text/javascript" src="/AjaxTk/js/dwt/graphics/DwtCssStyle.js"></script>
 <script type="text/javascript" src="/AjaxTk/js/dwt/graphics/DwtPoint.js"></script>

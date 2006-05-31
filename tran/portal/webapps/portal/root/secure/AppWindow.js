@@ -25,5 +25,46 @@ AppWindow.prototype.constructor = AppWindow;
 
 AppWindow.prototype.initializeResizing = function()
 {
-   DBG.println(this.getHtmlElement());
+   var htmlEl = this.getHtmlElement();
+   var table = htmlEl.childNodes[0];
+   var tbody = table.tBodies[0];
+   var br = tbody.rows[5];
+   var cell = br.cells[2];
+
+   cell.style.cursor = DwtDragTracker.STYLE_RESIZE_SOUTHEAST;
+
+   with (this) {
+      var moveFn = function(evt) {
+         DBG.println("moveFn: " + cell);
+
+         var bounds = getBounds();
+
+         var h = evt.screenY - bounds.y;
+         var w = evt.screenX - bounds.x;
+
+         DBG.println("SET SIZE: H: " + h + " W: " + w);
+
+         //setBounds(bounds.x, bounds.y, w, h);
+         //setBounds(bounds.x, bounds.y, bounds.width + 1, bounds.height + 1);
+         setSize(50, 150);
+         popup();
+      }
+   }
+
+   var upFn = function() {
+      DBG.println("upFn");
+      Dwt.clearHandler(cell, DwtEvent.ONMOUSEMOVE);
+   }
+
+   var downFn = function() {
+      DBG.println("downFn: " + cell);
+      Dwt.setHandler(cell, DwtEvent.ONMOUSEUP, upFn);
+      Dwt.setHandler(cell, DwtEvent.ONMOUSEMOVE, moveFn);
+   }
+
+
+   DBG.println("SE EDGE: " + cell);
+   Dwt.setHandler(cell, DwtEvent.ONMOUSEDOWN, downFn);
 }
+
+

@@ -99,7 +99,7 @@ Portal.prototype.layout = function() {
 
 // private fields -------------------------------------------------------------
 
-Portal._BOOKMARK_KEY;
+Portal._BOOKMARK_KEY = "bookmark";
 
 // init -----------------------------------------------------------------------
 
@@ -139,10 +139,7 @@ Portal.prototype._addBookmarks = function(menu)
 Portal.prototype._bookmarkItemListener = function(ev) {
    var item = ev.item;
    var bm = item.getData(Portal._BOOKMARK_KEY);
-   DBG.println("GOT BM: " + bm);
-   DBG.println("GOT BM APP: " + bm.app);
    var app = this._appMap[bm.app];
-   DBG.println("GOT APP: " + app);
       // XXX if null?
    app.openBookmark(this, item.target);
 }
