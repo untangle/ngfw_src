@@ -27,15 +27,9 @@ BookmarkPanel.prototype.constructor = BookmarkPanel;
 
 BookmarkPanel.prototype.refresh = function()
 {
-   var cb = function(obj, results) {
-      // XXX if error, show login dialog
+   var cb = new AjxCallback(this, this._bookmarkListCallback, { })
 
-      this._setListingXml(results.xml);
-      this.setUI(1);
-   }
-
-   AjxRpc.invoke(null, "bookmark?command=ls", null,
-                 new AjxCallback(this, cb, new Object()), true);
+   AjxRpc.invoke(null, "secure/bookmark?command=ls", null, cb , true);
 }
 
 // internal methods -----------------------------------------------------------
@@ -125,3 +119,13 @@ BookmarkPanel.prototype._sortColumn = function(col, asc)
 
    this.setUI(0);
 }
+
+// callbacks ------------------------------------------------------------------
+
+BookmarkPanel.prototype._bookmarkListCallback = function(obj, results)
+{
+      // XXX if error, show login dialog
+   this._setListingXml(results.xml);
+   this.setUI(1);
+}
+

@@ -1,7 +1,7 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-function Portal(shell, url) {
+function Portal(shell) {
    if (0 == arguments.length) {
       return;
    }
@@ -11,6 +11,9 @@ function Portal(shell, url) {
    this._shell.addControlListener(new AjxListener(this, this._shellListener));
 
    DwtComposite.call(this, this._shell, "Portal", DwtComposite.ABSOLUTE_STYLE);
+
+   this._loadApps();
+
    this._toolbar = this._makeToolbar();
    this._toolbar.zShow(true);
 
@@ -88,30 +91,7 @@ Portal.prototype.splitUrl = function(url)
 
 Portal.prototype.refresh = function()
 {
-   var cb = function(obj, results) {
-      var root = results.xml.getElementsByTagName("applications")[0];
-
-      var children = root.childNodes;
-
-      this._apps = new Array();
-      this._appMap = new Object;
-
-      for (var i = 0; i < children.length; i++) {
-         var child = children[i];
-
-         if ("application" == child.tagName) {
-            var name = child.getAttribute("name");
-            var appJs = child.getElementsByTagName("appJs")[0].firstChild.data;
-            DBG.println("APPJS: " + appJs);
-            var app = new Application(name, appJs);
-            this._apps.push(app);
-            this._appMap[name] = app;
-         }
-      }
-   }
-
-   AjxRpc.invoke(null, "application?command=ls", null,
-                 new AjxCallback(this, cb, new Object()), true);
+   this._loadApps();
 
    this._bookmarkPanel.refresh();
 }
@@ -133,6 +113,35 @@ Portal.prototype.layout = function() {
 }
 
 // init -----------------------------------------------------------------------
+
+Portal.prototype._loadApps = function()
+{
+   AjxRpc.invoke(null, "secure/application?command=ls", null,
+                 new AjxCallback(this, this._refreshAppsCallback,
+                                 new Object()), true);
+}
+
+Portal.prototype._refreshAppsCallback = function(obj, results) {
+   var root = results.xml.getElementsByTagName("applications")[0];
+
+   var children = root.childNodes;
+
+   this._apps = new Array();
+   this._appMap = new Object();
+
+   for (var i = 0; i < children.length; i++) {
+      var child = children[i];
+
+      if ("application" == child.tagName) {
+         var name = child.getAttribute("name");
+         var appJs = child.getElementsByTagName("appJs")[0].firstChild.data;
+         var app = new Application(name, appJs);
+         this._apps.push(app);
+         this._appMap[name] = app;
+         DBG.println("this._appMap[" + name + "] = " + app);
+      }
+   }
+}
 
 Portal.prototype._makeToolbar = function() {
    var toolbar = new DwtToolBar(this, "ToolBar", DwtControl.ABSOLUTE_STYLE, 2);
