@@ -7,10 +7,10 @@
     filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFF0F0F0,endColorStr=#FF9997B5);
 }
 
-.PreviewDiv {
-    display: table/table-cell
-    height: 150px;
-    width: 150px;
-    vertical-align: middle;
-    text-align: center;
+.NavBarTitle .Text {
+    font-weight: bold;
+}
+
+.NavBarBookmark .Text {
+    font-style: italic;
 }

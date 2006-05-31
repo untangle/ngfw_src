@@ -14,6 +14,9 @@ function Portal(shell) {
 
    this._loadApps();
 
+   this._navBar = new NavigationBar(this);
+   this._navBar.zShow(true);
+
    this._toolbar = this._makeToolbar();
    this._toolbar.zShow(true);
 
@@ -96,7 +99,8 @@ Portal.prototype.refresh = function()
    this._bookmarkPanel.refresh();
 }
 
-Portal.prototype.layout = function() {
+Portal.prototype.layout = function()
+{
    var size = this._shell.getSize();
    var width = size.x;
    var height = size.y;
@@ -104,12 +108,18 @@ Portal.prototype.layout = function() {
    var x = 0;
    var y = 0;
 
-   this._toolbar.setLocation(0, 0);
-   var size = this._toolbar.getSize();
+   DBG.println("NAV_BAR LOC (" + x + ", " + y + ")");
+   this._navBar.setLocation(x, y);
+   var size = this._navBar.getSize();
    y += size.y;
 
-   this._bookmarkPanel.setBounds(x, y, width - x, height);
-   x += this._bookmarkPanel.getSize().x;
+   DBG.println("TOOLBAR LOC (" + x + ", " + y + ")");
+   this._toolbar.setLocation(0, y);
+   size = this._toolbar.getSize();
+   y += size.y;
+
+   DBG.println("BOOKMARK PANEL LOC (" + 0 + ", " + y + ")");
+   this._bookmarkPanel.setBounds(0, y, width, height - y);
 }
 
 // init -----------------------------------------------------------------------

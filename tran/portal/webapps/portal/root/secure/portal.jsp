@@ -12,6 +12,9 @@
 <!--
 @import url(/AjaxTk/img/dwtimgs.css);
 -->
+<!--
+@import url(/images/mvimgs.css);
+-->
 </style>
 <link rel="stylesheet" type="text/css" href="/AjaxTk/common.css"/>
 <link rel="stylesheet" type="text/css" href="/AjaxTk/dwt.css"/>
@@ -22,17 +25,18 @@
 
 <jsp:include page="Ajax.inc"/>
 
-<script type="text/javascript" src="<%=sp%>/AppWindow.js"></script>
 <script type="text/javascript" src="<%=sp%>/AddBookmarkDialog.js"></script>
 <script type="text/javascript" src="<%=sp%>/AddBookmarkPanel.js"></script>
+<script type="text/javascript" src="<%=sp%>/AppWindow.js"></script>
 <script type="text/javascript" src="<%=sp%>/Application.js"></script>
 <script type="text/javascript" src="<%=sp%>/Bookmark.js"></script>
 <script type="text/javascript" src="<%=sp%>/BookmarkManagerDialog.js"></script>
 <script type="text/javascript" src="<%=sp%>/BookmarkManagerPanel.js"></script>
 <script type="text/javascript" src="<%=sp%>/BookmarkPanel.js"></script>
 <script type="text/javascript" src="<%=sp%>/Desktop.js"></script>
+<script type="text/javascript" src="<%=sp%>/NavigationBar.js"></script>
 <script type="text/javascript" src="<%=sp%>/Portal.js"></script>
-
+o
 </head>
 
 <body>
