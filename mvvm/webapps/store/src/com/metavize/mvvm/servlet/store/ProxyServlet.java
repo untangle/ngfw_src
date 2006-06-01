@@ -61,7 +61,7 @@ public class ProxyServlet extends HttpServlet
 
     static {
         String s = System.getProperty("mvvm.store.host");
-        STORE_HOST = null == s ? "store.metavize.com" : s;
+        STORE_HOST = null == s ? "store40.metavize.com" : s;
         COOKIE_DOMAIN = STORE_HOST;
         s = System.getProperty("mvvm.store.uri");
         URI_BASE = null == s ? "" : s;
