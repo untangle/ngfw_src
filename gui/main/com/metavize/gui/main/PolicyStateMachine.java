@@ -53,7 +53,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 
     // FOR REMOVING TRIALS FROM STORE WHEN ITEM IS PURCHASED
     private final String STOREITEM_EXTENSION = "storeitem";
-    private final String TRIAL_EXTENSION = "trial30";
+    private final String TRIAL_EXTENSION = "trial30-storeitem";
 
     // MVVM DATA MODELS (USED ONLY DURING INIT) //////
     private List<Tid>                       utilTidList;
@@ -928,11 +928,11 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 			}
                     }});
 
-		    // REMOVE TRIAL IF THE ACTUAL THING WAS PURCHASED
+		    // REMOVE TRIAL IF THE ACTUAL THING WAS PURCHASED (IS NO LONGER IN THE STORE)
 		    Map<String,String> storeItemMap = new HashMap<String,String>();
 		    for( MackageDesc mackageDesc : storeItemsAvailable ){
 			String name = mackageDesc.getName();
-			if( name.endsWith(STOREITEM_EXTENSION) ){
+			if( name.endsWith(STOREITEM_EXTENSION) && !name.endsWith(TRIAL_EXTENSION) ){
 			    name = name.substring(0, name.indexOf('-'));
 			    storeItemMap.put(name, name);
 			}
