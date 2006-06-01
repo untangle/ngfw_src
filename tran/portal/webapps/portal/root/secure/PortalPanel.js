@@ -21,14 +21,11 @@ function PortalPanel(parent)
 
    this._actionMenu = this._makeActionMenu()
 
-   var l = new AjxListener(this, this._bookmarkSelectionListener);
-   this._bookmarkPanel.addSelectionListener(l);
-
    // XXX
    l = new AjxListener(this, this._listActionListener);
    this._bookmarkPanel.addActionListener(l);
 
-   this.addControlListener(new AjxListener(this, this._controlCallback));
+   this.addControlListener(new AjxListener(this, this._controlListener));
 }
 
 PortalPanel.prototype = new DwtComposite();
@@ -59,6 +56,11 @@ PortalPanel.prototype.layout = function()
    y += size.y;
 
    this._bookmarkPanel.setBounds(0, y, width, height - y);
+}
+
+PortalPanel.prototype.addSelectionListener = function(l)
+{
+   this._bookmarkPanel.addSelectionListener(l);
 }
 
 // private methods ------------------------------------------------------------
@@ -97,9 +99,9 @@ PortalPanel.prototype._makeActionMenu = function()
 
 // callbacks ------------------------------------------------------------------
 
-PortalPanel.prototype._controlCallback = function()
+PortalPanel.prototype._refreshButtonListener = function()
 {
-   this.layout();
+   this.refresh();
 }
 
 PortalPanel.prototype._listActionListener = function(ev) {
@@ -121,17 +123,6 @@ PortalPanel.prototype._deleteButtonListener = function(ev)
 
    AjxRpc.invoke(null, url, null, new AjxCallback(this, this.refresh, { }),
                  false);
-}
-
-PortalPanel.prototype._bookmarkSelectionListener = function(ev) {
-   switch (ev.detail) {
-      case DwtListView.ITEM_DBL_CLICKED:
-      var item = ev.item;
-      var app = this._appMap[item.app];
-      // XXX if null?
-      app.openBookmark(this, item.target);
-      break;
-   }
 }
 
 PortalPanel.prototype._addBookmarkButtonListener = function(ev)
@@ -156,4 +147,9 @@ PortalPanel.prototype._addBookmarkButtonListener = function(ev)
    dialog.addListener(DwtEvent.ENTER, l);
 
    dialog.popup();
+}
+
+PortalPanel.prototype._controlListener = function()
+{
+   this.layout();
 }

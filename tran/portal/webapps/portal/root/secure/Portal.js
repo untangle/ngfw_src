@@ -18,12 +18,14 @@ function Portal(shell) {
    this._navBar.zShow(true);
 
    this._portalPanel = new PortalPanel(this);
+   var l = new AjxListener(this, this._bookmarkSelectionListener);
+   this._portalPanel.addSelectionListener(l);
    this._portalPanel.zShow(true);
 
-   this.layout();
-
    this.refresh();
+   this.addControlListener(new AjxListener(this, this._controlListener));
 
+   this.layout();
    this.zShow(true);
 }
 
@@ -89,6 +91,7 @@ Portal.prototype.splitUrl = function(url)
 Portal.prototype.refresh = function()
 {
    this._loadApps();
+   this._portalPanel.refresh();
 }
 
 Portal.prototype.layout = function()
@@ -162,5 +165,23 @@ Portal._mkSrcDestCommand = function(command, src, dest)
    url += "&dest=" + dest.url; // XXX does this get escaped ?
 
    return url;
+}
+
+// callbacks ------------------------------------------------------------------
+
+Portal.prototype._controlListener = function()
+{
+   this.layout();
+}
+
+Portal.prototype._bookmarkSelectionListener = function(ev) {
+   switch (ev.detail) {
+      case DwtListView.ITEM_DBL_CLICKED:
+      var item = ev.item;
+      var app = this._appMap[item.app];
+      // XXX if null?
+      app.openBookmark(this, item.target);
+      break;
+   }
 }
 
