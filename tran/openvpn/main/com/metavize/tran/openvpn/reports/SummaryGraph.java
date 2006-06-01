@@ -81,13 +81,14 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         long periodMillis = endMinuteInMillis - startMinuteInMillis;
         int periodMinutes = (int)(periodMillis / MINUTE_INTERVAL);
         int queries = periodMinutes/(BUCKETS*MINUTES_PER_BUCKET) + (periodMinutes%(BUCKETS*MINUTES_PER_BUCKET)>0?1:0);
-        int periodBuckets = periodMinutes/(MINUTES_PER_BUCKET) + (periodMinutes%(MINUTES_PER_BUCKET)>0?1:0);
+
         System.out.println("====== START ======");
         System.out.println("start: " + (new Timestamp(startMinuteInMillis)).toString() );
         System.out.println("end:   " + (new Timestamp(endMinuteInMillis)).toString() );
         System.out.println("mins: " + periodMinutes);
         System.out.println("days: " + queries);
         System.out.println("===================");
+
         // ALLOCATE COUNTS
         int size;
         if( periodMinutes >= BUCKETS*MINUTES_PER_BUCKET )
@@ -126,53 +127,61 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         totalQueryTime = System.currentTimeMillis() - totalQueryTime;
         totalProcessTime = System.currentTimeMillis();
 
+        Timestamp createDate;
+        long countB;
+        long countC;
+        long sesStart;
+        long realStart;
+        int startInterval;
+        int bucket;
+
         // PROCESS EACH ROW
         while (rs.next()) {
             // GET RESULTS
-            Timestamp createDate = rs.getTimestamp(1);
-            long countB = rs.getLong(2);
-            long countC = rs.getLong(3);
+            createDate = rs.getTimestamp(1);
+            countB = rs.getLong(2);
+            countC = rs.getLong(3);
 
             // ALLOCATE COUNT TO EACH MINUTE WE WERE ALIVE EQUALLY
-            long sesStart = (createDate.getTime() / MINUTE_INTERVAL) * MINUTE_INTERVAL;
-            long realStart = sesStart < startMinuteInMillis ? (long) 0 : sesStart - startMinuteInMillis;
-            int startInterval = (int)(realStart / MINUTE_INTERVAL)/MINUTES_PER_BUCKET;
+            sesStart = (createDate.getTime() / MINUTE_INTERVAL) * MINUTE_INTERVAL;
+            realStart = sesStart < startMinuteInMillis ? (long) 0 : sesStart - startMinuteInMillis;
+            startInterval = (int)(realStart / MINUTE_INTERVAL)/MINUTES_PER_BUCKET;
+            bucket = startInterval%BUCKETS;
 
             // INCREMENT COUNTS
-            countsB[startInterval%BUCKETS] += countB;
-            countsC[startInterval%BUCKETS] += countC;
+            countsB[bucket] += countB;
+            countsC[bucket] += countC;
         }
         try { stmt.close(); } catch (SQLException x) { }
 
         // POST PROCESS: PRODUCE UNITS OF KBytes/sec., AVERAGED PER DAY, FROM BYTES PER BUCKET
-        //double averageACount;
         double averageBCount;
         double averageCCount;
+        int newIndex;
+        int denom;
 
+        // MOVING AVERAGE
         for(int i = 0; i < size; i++) {
-            // MOVING AVERAGE
-            //averageACount = 0;
             averageBCount = 0;
             averageCCount = 0;
-            int newIndex = 0;
-            int denom = 0;
+            newIndex = 0;
+            denom = 1; // prevent divide-by-zero error
 
             for(int j=0; j<MOVING_AVERAGE_MINUTES; j++) {
                 newIndex = i-j;
-                if( newIndex >= 0 )
+                if( newIndex >= 1 )
                     denom++;
                 else
                     continue;
 
-                averageBCount += countsB[newIndex] / 1024.0d / (double)queries / (double)(60*MINUTES_PER_BUCKET);
-                averageCCount += countsC[newIndex] / 1024.0d / (double)queries / (double)(60*MINUTES_PER_BUCKET);
+                averageBCount += countsB[newIndex] / 1024.0d / (double)(queries*(60*MINUTES_PER_BUCKET));
+                averageCCount += countsC[newIndex] / 1024.0d / (double)(queries*(60*MINUTES_PER_BUCKET));
             }
 
-            //averageACount /= denom;
             averageBCount /= denom;
             averageCCount /= denom;
 
-            java.util.Date date = new java.util.Date(startMinuteInMillis + i * MINUTE_INTERVAL * MINUTES_PER_BUCKET);
+            java.util.Date date = new java.util.Date(startMinuteInMillis + (i * MINUTE_INTERVAL * MINUTES_PER_BUCKET));
             //datasetA.addOrUpdate(new Minute(date), averageACount);
             datasetB.addOrUpdate(new Minute(date), averageBCount);
             datasetC.addOrUpdate(new Minute(date), averageCCount);

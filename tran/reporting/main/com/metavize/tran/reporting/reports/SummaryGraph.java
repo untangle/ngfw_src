@@ -103,18 +103,21 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         int periodMinutes = (int)(periodMillis / MINUTE_INTERVAL);
         int queries = periodMinutes/(BUCKETS*MINUTES_PER_BUCKET) + (periodMinutes%(BUCKETS*MINUTES_PER_BUCKET)>0?1:0);
         int periodBuckets = periodMinutes/(MINUTES_PER_BUCKET) + (periodMinutes%(MINUTES_PER_BUCKET)>0?1:0);
+
         System.out.println("====== START ======");
         System.out.println("start: " + (new Timestamp(startMinuteInMillis)).toString() );
         System.out.println("end:   " + (new Timestamp(endMinuteInMillis)).toString() );
         System.out.println("mins: " + periodMinutes);
         System.out.println("days: " + queries);
         System.out.println("===================");
+
         // ALLOCATE COUNTS
         int size;
         if( periodMinutes >= BUCKETS*MINUTES_PER_BUCKET )
             size = BUCKETS;
         else
             size = periodMinutes/(BUCKETS*MINUTES_PER_BUCKET) + (periodMinutes%(BUCKETS*MINUTES_PER_BUCKET)>0?1:0);
+
         double counts[] = new double[ size ];
         double incomingCounts[] = null;
         double outgoingCounts[] = null;
@@ -124,9 +127,8 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         }
 
         // SETUP TIMESTAMPS
-        Timestamp startTimestamp, endTimestamp;
-        startTimestamp = new Timestamp(startMinuteInMillis);
-        endTimestamp = new Timestamp(endMinuteInMillis);
+        Timestamp startTimestamp = new Timestamp(startMinuteInMillis);
+        Timestamp endTimestamp = new Timestamp(endMinuteInMillis);
 
         totalQueryTime = System.currentTimeMillis();
 
@@ -151,78 +153,107 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         totalQueryTime = System.currentTimeMillis() - totalQueryTime;
         totalProcessTime = System.currentTimeMillis();
 
+        Timestamp createDate;
+        Timestamp razeDate;
+        double incomingBytesPerInterval;
+        double outgoingBytesPerInterval;
+        long c2pBytes;
+        long p2sBytes;
+        long s2pBytes;
+        long p2cBytes;
+        long sesStart;
+        long realStart;
+        long incomingByteCount;
+        long outgoingByteCount;
+        short clientIntf;
+        int numIntervals;
+        int startInterval;
+        int endInterval;
+        int bucket;
+
         // PROCESS EACH ROW
         while (rs.next()) {
             // GET RESULTS
-            short clientIntf = rs.getShort(1);
-            Timestamp createDate = rs.getTimestamp(2);
-            Timestamp razeDate = rs.getTimestamp(3);
-            long c2pBytes = rs.getLong(4);
-            long p2sBytes = rs.getLong(5);
-            long s2pBytes = rs.getLong(6);
-            long p2cBytes = rs.getLong(7);
+            clientIntf = rs.getShort(1);
+            createDate = rs.getTimestamp(2);
+            razeDate = rs.getTimestamp(3);
+            c2pBytes = rs.getLong(4);
+            p2sBytes = rs.getLong(5);
+            s2pBytes = rs.getLong(6);
+            p2cBytes = rs.getLong(7);
             // ALLOCATE COUNT TO EACH MINUTE WE WERE ALIVE EQUALLY
-            long sesStart = (createDate.getTime() / MINUTE_INTERVAL) * MINUTE_INTERVAL;
-            int numIntervals = (int)((razeDate.getTime() - createDate.getTime()) / MINUTE_INTERVAL)/MINUTES_PER_BUCKET + 1;
-            long realStart = sesStart < startMinuteInMillis ? (long) 0 : sesStart - startMinuteInMillis;
-            int startInterval = (int)(realStart / MINUTE_INTERVAL)/MINUTES_PER_BUCKET;
-            int endInterval = Math.min(startInterval + numIntervals, periodBuckets);
+            sesStart = (createDate.getTime() / MINUTE_INTERVAL) * MINUTE_INTERVAL;
+            numIntervals = (int)((razeDate.getTime() - createDate.getTime()) / MINUTE_INTERVAL)/MINUTES_PER_BUCKET + 1;
+            realStart = sesStart < startMinuteInMillis ? (long) 0 : sesStart - startMinuteInMillis;
+            startInterval = (int)(realStart / MINUTE_INTERVAL)/MINUTES_PER_BUCKET;
+            endInterval = Math.min(startInterval + numIntervals, periodBuckets);
             // COMPUTE BYTE COUNTS
-            long incomingByteCount = 0;
+            incomingByteCount = 0;
             if (clientIntf == 0)
                 incomingByteCount += c2pBytes;
             else
                 incomingByteCount += s2pBytes;
-            double incomingBytesPerInterval = (double)incomingByteCount / numIntervals;
-            long outgoingByteCount = 0;
+            incomingBytesPerInterval = (double)incomingByteCount / numIntervals;
+            outgoingByteCount = 0;
             if (clientIntf == 0)
                 outgoingByteCount += p2cBytes;
             else
                 outgoingByteCount += p2sBytes;
-            double outgoingBytesPerInterval = (double)outgoingByteCount / numIntervals;
+            outgoingBytesPerInterval = (double)outgoingByteCount / numIntervals;
+
             // INCREMENT COUNTS
             if (doThreeSeries) {
                 for (int interval = startInterval; interval < endInterval; interval++) {
-                    incomingCounts[interval%BUCKETS] += incomingBytesPerInterval;
-                    outgoingCounts[interval%BUCKETS] += outgoingBytesPerInterval;
-                    counts[interval%BUCKETS] += incomingBytesPerInterval + outgoingBytesPerInterval;
+                    bucket = interval%BUCKETS;
+                    incomingCounts[bucket] += incomingBytesPerInterval;
+                    outgoingCounts[bucket] += outgoingBytesPerInterval;
+                    counts[bucket] += incomingBytesPerInterval + outgoingBytesPerInterval;
                 }
             }
             else {
                 for (int interval = startInterval; interval < endInterval; interval++) {
+                    bucket = interval%BUCKETS;
                     if (countIncomingBytes)
-                        counts[interval%BUCKETS] += incomingBytesPerInterval;
+                        counts[bucket] += incomingBytesPerInterval;
                     if (countOutgoingBytes)
-                        counts[interval%BUCKETS] += outgoingBytesPerInterval;
+                        counts[bucket] += outgoingBytesPerInterval;
                 }
             }
         }
         try { stmt.close(); } catch (SQLException x) { }
 
-
         // POST PROCESS: PRODUCE UNITS OF KBytes/sec., AVERAGED PER DAY, FROM BYTES PER BUCKET
-        double averageTotalCount, averageIncomingCount, averageOutgoingCount;
-        for(int i = 0; i < size; i++) {
+        double averageTotalCount;
+        double averageIncomingCount;
+        double averageOutgoingCount;
+        int newIndex;
+        int denom;
 
-            // MOVING AVERAGE
-            averageTotalCount = averageIncomingCount = averageOutgoingCount = 0;
-            int newIndex = 0;
-            int denom = 0;
+        // MOVING AVERAGE
+        for(int i = 0; i < size; i++) {
+            averageTotalCount = 0;
+            averageIncomingCount = 0;
+            averageOutgoingCount = 0;
+            newIndex = 0;
+            denom = 1; // prevent divide-by-zero error
+
             for(int j=0; j<MOVING_AVERAGE_MINUTES; j++){
                 newIndex = i-j;
-                if( newIndex >= 0 )
+                if( newIndex >= 1 )
                     denom++;
                 else
                     continue;
-                averageTotalCount += counts[newIndex] / 1024.0d / (double)queries / (double)(60*MINUTES_PER_BUCKET);
-                averageIncomingCount += incomingCounts[newIndex] / 1024.0d / (double)queries / (double)(60*MINUTES_PER_BUCKET);
-                averageOutgoingCount += outgoingCounts[newIndex] / 1024.0d / (double)queries / (double)(60*MINUTES_PER_BUCKET);
+
+                averageTotalCount += counts[newIndex] / 1024.0d / (double)(queries*(60*MINUTES_PER_BUCKET));
+                averageIncomingCount += incomingCounts[newIndex] / 1024.0d / (double)(queries*(60*MINUTES_PER_BUCKET));
+                averageOutgoingCount += outgoingCounts[newIndex] / 1024.0d / (double)(queries*(60*MINUTES_PER_BUCKET));
             }
+
             averageTotalCount /= denom;
             averageIncomingCount /= denom;
             averageOutgoingCount /= denom;
 
-            java.util.Date date = new java.util.Date(startMinuteInMillis + i * MINUTE_INTERVAL * MINUTES_PER_BUCKET);
+            java.util.Date date = new java.util.Date(startMinuteInMillis + (i * MINUTE_INTERVAL * MINUTES_PER_BUCKET));
             dataset.addOrUpdate(new Minute(date), averageTotalCount);
             if (doThreeSeries) {
                 incomingDataset.addOrUpdate(new Minute(date), averageIncomingCount);

@@ -84,19 +84,21 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         long periodMillis = endMinuteInMillis - startMinuteInMillis;
         int periodMinutes = (int)(periodMillis / MINUTE_INTERVAL);
         int queries = periodMinutes/(BUCKETS*MINUTES_PER_BUCKET) + (periodMinutes%(BUCKETS*MINUTES_PER_BUCKET)>0?1:0);
-        int periodBuckets = periodMinutes/(MINUTES_PER_BUCKET) + (periodMinutes%(MINUTES_PER_BUCKET)>0?1:0);
+
         System.out.println("====== START ======");
         System.out.println("start: " + (new Timestamp(startMinuteInMillis)).toString() );
         System.out.println("end:   " + (new Timestamp(endMinuteInMillis)).toString() );
         System.out.println("mins: " + periodMinutes);
         System.out.println("days: " + queries);
         System.out.println("===================");
+
         // ALLOCATE COUNTS
         int size;
         if( periodMinutes >= BUCKETS*MINUTES_PER_BUCKET )
             size = BUCKETS;
         else
             size = periodMinutes/(BUCKETS*MINUTES_PER_BUCKET) + (periodMinutes%(BUCKETS*MINUTES_PER_BUCKET)>0?1:0);
+
         //double countsA[] = new double[ size ];
         double countsB[] = new double[ size ];
         double countsC[] = new double[ size ];
@@ -131,23 +133,33 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         totalQueryTime = System.currentTimeMillis() - totalQueryTime;
         totalProcessTime = System.currentTimeMillis();
 
+        Timestamp eventDate;
+        //long countA;
+        long countB;
+        long countC;
+        long eventStart;
+        long realStart;
+        int startInterval;
+        int bucket;
+
         // PROCESS EACH ROW
         while (rs.next()) {
             // GET RESULTS
-            Timestamp eventDate = rs.getTimestamp(1);
-            //long countA = rs.getLong(2) + rs.getLong(3);
-            long countB = rs.getLong(2);
-            long countC = rs.getLong(3);
+            eventDate = rs.getTimestamp(1);
+            //countA = rs.getLong(2) + rs.getLong(3);
+            countB = rs.getLong(2);
+            countC = rs.getLong(3);
             
             // ALLOCATE COUNT TO EACH MINUTE WE WERE ALIVE EQUALLY
-            long eventStart = (eventDate.getTime() / MINUTE_INTERVAL) * MINUTE_INTERVAL;
-            long realStart = eventStart < startMinuteInMillis ? (long) 0 : eventStart - startMinuteInMillis;
-            int startInterval = (int)(realStart / MINUTE_INTERVAL)/MINUTES_PER_BUCKET;
+            eventStart = (eventDate.getTime() / MINUTE_INTERVAL) * MINUTE_INTERVAL;
+            realStart = eventStart < startMinuteInMillis ? (long) 0 : eventStart - startMinuteInMillis;
+            startInterval = (int)(realStart / MINUTE_INTERVAL)/MINUTES_PER_BUCKET;
+            bucket = startInterval%BUCKETS;
 
             // COMPUTE COUNTS IN INTERVALS
-            //countsA[startInterval%BUCKETS] += countA;
-            countsB[startInterval%BUCKETS] += countB;
-            countsC[startInterval%BUCKETS] += countC;
+            //countsA[bucket] += countA;
+            countsB[bucket] += countB;
+            countsC[bucket] += countC;
         }
         try { stmt.close(); } catch (SQLException x) { }
 
@@ -173,20 +185,21 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         // PROCESS EACH ROW
         while (rs.next()) {
             // GET RESULTS
-            Timestamp eventDate = rs.getTimestamp(1);
-            //long countA = rs.getLong(2) + rs.getLong(3);
-            long countB = rs.getLong(2);
-            long countC = rs.getLong(3);
-            
+            eventDate = rs.getTimestamp(1);
+            //countA = rs.getLong(2) + rs.getLong(3);
+            countB = rs.getLong(2);
+            countC = rs.getLong(3);
+
             // ALLOCATE COUNT TO EACH MINUTE WE WERE ALIVE EQUALLY
-            long eventStart = (eventDate.getTime() / MINUTE_INTERVAL) * MINUTE_INTERVAL;
-            long realStart = eventStart < startMinuteInMillis ? (long) 0 : eventStart - startMinuteInMillis;
-            int startInterval = (int)(realStart / MINUTE_INTERVAL)/MINUTES_PER_BUCKET;
+            eventStart = (eventDate.getTime() / MINUTE_INTERVAL) * MINUTE_INTERVAL;
+            realStart = eventStart < startMinuteInMillis ? (long) 0 : eventStart - startMinuteInMillis;
+            startInterval = (int)(realStart / MINUTE_INTERVAL)/MINUTES_PER_BUCKET;
+            bucket = startInterval%BUCKETS;
 
             // COMPUTE COUNTS IN INTERVALS
-            //countsA[startInterval%BUCKETS] += countA;
-            countsB[startInterval%BUCKETS] += countB;
-            countsC[startInterval%BUCKETS] += countC;
+            //countsA[bucket] += countA;
+            countsB[bucket] += countB;
+            countsC[bucket] += countC;
         }
         try { stmt.close(); } catch (SQLException x) { }
 
@@ -194,32 +207,34 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         //double averageACount;
         double averageBCount;
         double averageCCount;
+        int newIndex;
+        int denom;
 
+        // MOVING AVERAGE
         for(int i = 0; i < size; i++) {
-            // MOVING AVERAGE
             //averageACount = 0;
             averageBCount = 0;
             averageCCount = 0;
-            int newIndex = 0;
-            int denom = 0;
+            newIndex = 0;
+            denom = 1; // prevent divide-by-zero error
 
             for(int j=0; j<MOVING_AVERAGE_MINUTES; j++){
                 newIndex = i-j;
-                if( newIndex >= 0 )
+                if( newIndex >= 1 )
                     denom++;
                 else
                     continue;
 
-                //averageACount += countsA[newIndex] / (double)queries;
-                averageBCount += countsB[newIndex] / (double)queries;
-                averageCCount += countsC[newIndex] / (double)queries;
+                //averageACount += countsA[newIndex] / (double)(queries*MINUTES_PER_BUCKET);
+                averageBCount += countsB[newIndex] / (double)(queries*MINUTES_PER_BUCKET);
+                averageCCount += countsC[newIndex] / (double)(queries*MINUTES_PER_BUCKET);
             }
 
             //averageACount /= denom;
             averageBCount /= denom;
             averageCCount /= denom;
 
-            java.util.Date date = new java.util.Date(startMinuteInMillis + i * MINUTE_INTERVAL * MINUTES_PER_BUCKET);
+            java.util.Date date = new java.util.Date(startMinuteInMillis + (i * MINUTE_INTERVAL * MINUTES_PER_BUCKET));
             //datasetA.addOrUpdate(new Minute(date), averageACount);
             datasetB.addOrUpdate(new Minute(date), averageBCount);
             datasetC.addOrUpdate(new Minute(date), averageCCount);
