@@ -15,6 +15,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Collections;
 
+import com.metavize.mvvm.networking.BasicNetworkSettings;
 import com.metavize.mvvm.networking.NetworkUtil;
 import com.metavize.mvvm.networking.NetworkSpacesSettings;
 import com.metavize.mvvm.networking.NetworkSpacesSettingsImpl;
@@ -38,6 +39,9 @@ public class NatAdvancedSettingsImpl implements NatAdvancedSettings, Serializabl
     // !!!! private static final long serialVersionUID = 4349679825783697834L;
     private final NetworkSpacesSettings networkSpacesSettings;
     private final ServicesSettings servicesSettings;
+
+    /* Network settings to used in validation for the DHCP settings */
+    private BasicNetworkSettings networkSettings;
 
     private final List<IPDBMatcher> localMatcherList;
 
@@ -308,11 +312,27 @@ public class NatAdvancedSettingsImpl implements NatAdvancedSettings, Serializabl
         servicesSettings.setDnsStaticHostList( newValue );
     }
 
+    /** Methods used to update the current basic network settings object.
+     *  this object is only used in validation */
+    public BasicNetworkSettings getNetworkSettings()
+    {
+        return this.networkSettings;
+    }
+    
+    public void setNetworkSettings( BasicNetworkSettings networkSettings )
+    {
+        this.networkSettings = networkSettings;
+    }
+
     /* Validate method */
     public void validate() throws ValidateException
     {
         /* implement me */
         NetworkUtil.getInstance().validate( this.networkSpacesSettings );
+
+        /* Done afterwards because the validate function will disable
+         * the spaces that have no interfaces mapped to them. */
+        SettingsValidator.getInstance().validate( this );
     }
 
     

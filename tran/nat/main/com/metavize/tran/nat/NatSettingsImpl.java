@@ -12,13 +12,14 @@
 package com.metavize.tran.nat;
 
 import java.io.Serializable;
-import java.util.Iterator;
+
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Collections;
 
 import com.metavize.mvvm.NetworkingConfiguration;
-import com.metavize.mvvm.networking.DhcpLeaseRule;
+
+import com.metavize.mvvm.networking.BasicNetworkSettings;
 import com.metavize.mvvm.networking.NetworkUtil;
 import com.metavize.mvvm.networking.RedirectRule;
 import com.metavize.mvvm.networking.SetupState;
@@ -38,7 +39,7 @@ import com.metavize.mvvm.tran.firewall.ip.IPDBMatcher;
  * @hibernate.class
  * table="tr_nat_settings"
  */
-public class NatSettingsImpl implements NatSettings, Serializable
+public class NatSettingsImpl implements Validatable, NatSettings, Serializable
 {
     // !!!! private static final long serialVersionUID = 4349679825783697834L;
 
@@ -76,6 +77,8 @@ public class NatSettingsImpl implements NatSettings, Serializable
     /* DNS Static Hosts */
     private List    dnsStaticHostList = new LinkedList();
 
+    /* Network settings to used in validation for the DHCP settings */
+    private BasicNetworkSettings networkSettings;
     
     private final List localMatcherList;
 
@@ -98,96 +101,7 @@ public class NatSettingsImpl implements NatSettings, Serializable
 
     public void validate() throws ValidateException
     {
-        validate( null );
-    }
-
-    /* Validation method */
-    public void validate( NetworkingConfiguration netConfig ) throws ValidateException
-    {
-        boolean isStartAddressValid = true;
-        boolean isEndAddressValid   = true;
-        boolean isValid             = true;
-        
-        /* Update PING redirects */
-        for ( Iterator iter = this.redirectList.iterator(); iter.hasNext() ; ) {
-            ((RedirectRule)iter.next()).fixPing();
-        }
-
-        if ( natEnabled &&
-             ( natInternalAddress == null || natInternalSubnet == null  ||
-               natInternalAddress.isEmpty() || natInternalSubnet.isEmpty())) {
-            throw new ValidateException( "Enablng NAT requires an \"Internal IP address\" and " +
-                                         "an \"Internal Subnet\"" );
-        }
-
-        if ( dmzEnabled ) {
-            if ( dmzAddress == null ) {
-                throw new ValidateException( "Enabling DMZ requires a target IP address" );
-            }
-
-            if ( natEnabled && !dmzAddress.isInNetwork( natInternalAddress, natInternalSubnet )) {
-                throw new ValidateException( "When NAT is enabled, the \"DMZ address\" in the DMZ Host " +
-                                             "panel must be in the internal network." );
-            }
-        }
-
-        if ( dhcpEnabled ) {
-            IPaddr host = null;
-            IPaddr netmask = null;
-
-            if ( natEnabled ) {
-                host    = natInternalAddress;
-                netmask = natInternalSubnet;
-            } else {
-                /* Need the network settings */
-                /* XXX This inefficient since it has to call to the server */
-                /* XXX Currently a bug, getting around by ignoring */
-                if ( netConfig == null ) {
-                    //netConfig = MvvmContextFactory.context().networkingManager().get();
-                }
-
-                if ( netConfig != null ) {
-                    host    = netConfig.host();
-                    netmask = netConfig.netmask();
-                }
-            }
-
-            if ( host != null && !dhcpStartAddress.isInNetwork( host, netmask )) {
-                isStartAddressValid = false;
-
-                throw new ValidateException( "\"IP Address Range Start\" in the DHCP panel must " + 
-                                             "be in the network: "
-                                             + host.toString() + "/" + netmask.toString());
-
-            }
-
-            if ( host != null && !dhcpEndAddress.isInNetwork( host, netmask )) {
-                isEndAddressValid = false;
-
-                throw new ValidateException( "\"IP Address Range End\" in the DHCP panel must "+
-                                             "be in the network: "
-                                             + host.toString() + "/" + netmask.toString());
-            }
-            
-            if ( host != null && netmask != null && !host.isEmpty() && !netmask.isEmpty()) {
-                int c = 1;
-                for ( Iterator iter = this.dhcpLeaseList.iterator() ; iter.hasNext() ; c++ ) {
-                    DhcpLeaseRule rule =  (DhcpLeaseRule)iter.next();
-                    IPaddr address = rule.getStaticAddress();
-                    if ( address.getAddr() == null ) continue;
-                    
-                    if ( !address.isInNetwork( host, netmask )) {
-                        throw new 
-                            ValidateException( "\"target static IP address\" for DHCP Address Map entry '" +
-                                               address.toString() + "' must be in the network: " + 
-                                               host.toString() + "/" + netmask.toString());
-                    }
-                }
-            }
-        }
-
-        /* Setup this way to allow reporting of multiple errors in one place */
-        isValid = isStartAddressValid & isEndAddressValid;
+        SettingsValidator.getInstance().validate( this );
     }
 
     /**
@@ -594,5 +508,17 @@ public class NatSettingsImpl implements NatSettings, Serializable
     public void setDnsStaticHostList( List s )
     {
         dnsStaticHostList = s;
+    }
+
+    /** Methods used to update the current basic network settings object.
+     *  this object is only used in validation */
+    public BasicNetworkSettings getNetworkSettings()
+    {
+        return this.networkSettings;
+    }
+    
+    public void setNetworkSettings( BasicNetworkSettings networkSettings )
+    {
+        this.networkSettings = networkSettings;
     }
 }

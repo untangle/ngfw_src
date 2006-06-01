@@ -271,6 +271,12 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 
     public void saveAll() throws Exception {
 	int previousTimeout = MvvmRemoteContextFactory.factory().getTimeout();
+        
+        /* Load the current networking configuration, this is used in validation, this is here
+         * because it is a remote call. [RBS, per recommendation of inieves] */
+        BasicNetworkSettings basicNetworkSettings = Util.getNetworkingManager().get();
+        ((NatCommonSettings)settings).setNetworkSettings(basicNetworkSettings);
+        
 	MvvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_MILLIS);		
 	super.saveAll();
 	MvvmRemoteContextFactory.factory().setTimeout(previousTimeout);		

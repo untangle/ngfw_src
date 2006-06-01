@@ -11,11 +11,13 @@
 
 package com.metavize.tran.nat;
 
+import java.io.Serializable;
+
 import java.util.List;
 
 import com.metavize.mvvm.tran.Validatable;
-import java.io.Serializable;
 
+import com.metavize.mvvm.networking.BasicNetworkSettings;
 import com.metavize.mvvm.networking.ServicesSettings;
 import com.metavize.mvvm.networking.RedirectRule;
 import com.metavize.mvvm.networking.SetupState;
@@ -57,4 +59,10 @@ public interface NatCommonSettings extends ServicesSettings, Validatable
      * List of all of the matchers available for local redirects
      */
     public List<IPDBMatcher> getLocalMatcherList();
+
+    /** Methods used to update the current basic network settings object.
+     *  this object is only used in validation */
+    public BasicNetworkSettings getNetworkSettings();
+    
+    public void setNetworkSettings( BasicNetworkSettings networkSettings );
 }

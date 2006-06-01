@@ -176,7 +176,7 @@ public class NetworkSpacesInternalSettings
         NetworkSpaceInternal serviceSpace = networkSpaceList.get( 0 );
         if ( isEnabled ) {
             for ( NetworkSpaceInternal space : networkSpaceList ) {
-                if ( space.getIsNatEnabled()) {
+                if ( space.getIsEnabled() && space.getIsNatEnabled()) {
                     serviceSpace = space;
                     break;
                 }

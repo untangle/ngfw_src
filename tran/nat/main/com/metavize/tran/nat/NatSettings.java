@@ -16,5 +16,4 @@ package com.metavize.tran.nat;
  */
 public interface NatSettings extends NatBasicSettings
 {
-    
 }

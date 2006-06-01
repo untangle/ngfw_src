@@ -205,6 +205,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     <patternset id="extra.sources">
       <include name="com/metavize/tran/nat/NatSettingsImpl.java"/>
       <include name="com/metavize/tran/nat/NatAdvancedSettingsImpl.java"/>
+      <include name="com/metavize/tran/nat/SettingsValidator.java"/>
     </patternset>
     </then> </if>
 

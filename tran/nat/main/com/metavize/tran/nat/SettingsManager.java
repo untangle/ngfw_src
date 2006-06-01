@@ -20,6 +20,7 @@ import java.util.HashMap;
 import org.apache.log4j.Logger;
 
 import com.metavize.mvvm.IntfConstants;
+import com.metavize.mvvm.MvvmContextFactory;
 
 import com.metavize.mvvm.argon.IntfConverter;
 
@@ -368,6 +369,12 @@ class SettingsManager
         
         /* Setup the redirect settings */
         natSettings.setRedirectList( networkSettings.getRedirectRuleList());
+
+        /* Set the basic network settings for validation */
+        /* XXX The network settings are already known, there isn't really a need to craete
+         * a new object, but this is more convenient */
+        natSettings.
+            setNetworkSettings( MvvmContextFactory.context().networkManager().getNetworkingConfiguration());
                 
         return natSettings;
     }
@@ -415,8 +422,17 @@ class SettingsManager
      * returns a copy */
     NetworkSpacesSettings resetToBasic( Tid tid, NetworkSpacesSettingsImpl ns )
     {
+        /* This object gets recycled so these values have to be saved beforehand */
+        List<RedirectRule> redirectList = new LinkedList<RedirectRule>( ns.getRedirectList());
+        
         /* Reset to the default settings */
-        return toNetworkSettings( ns, getDefaultSettings( tid ));
+        NetworkSpacesSettings settings = toNetworkSettings( ns, getDefaultSettings( tid ));
+        
+        /* Save the list of redirects */
+        settings.setRedirectList( redirectList );
+        
+        return settings;
+
     }
 
     private void setupDmz( NatBasicSettings settings, NetworkSpaceInternal space )
@@ -485,16 +501,54 @@ class SettingsManager
             /* A sample DMZ */
             settings.setDmzAddress( NatUtil.DEFAULT_DMZ_ADDRESS );
             
-            // !!!! Need the local matcher
-            RedirectRule tmp = new RedirectRule( false, ProtocolMatcher.MATCHER_ALL,
+            // A few port forwards
+            // 21 to 21
+            RedirectRule tmp = new RedirectRule( false, ProtocolMatcher.MATCHER_TCP,
                                                  imf.getExternalMatcher(), imf.getAllMatcher(),
                                                  ipmf.getAllMatcher(), ipmf.getLocalMatcher(),
-                                                 pmf.getAllMatcher(), pmf.makeSingleMatcher( 8080 ),
-                                                 true, IPaddr.parse( "192.168.1.16" ), 80 );
-            tmp.setDescription( "Redirect incoming traffic to EdgeGuard port 8080 to port 80 on 192.168.1.16" );
-            tmp.setLog( true );
-            
+                                                 pmf.getAllMatcher(), pmf.makeSingleMatcher( 21 ),
+                                                 true, IPaddr.parse( "192.168.1.16" ), 21 );
+            tmp.setDescription( "Forward incoming FTP traffic to 192.168.1.16" );
             redirectList.add( tmp );
+
+            // 25 to 25
+            tmp = new RedirectRule( false, ProtocolMatcher.MATCHER_TCP,
+                                    imf.getExternalMatcher(), imf.getAllMatcher(),
+                                    ipmf.getAllMatcher(), ipmf.getLocalMatcher(),
+                                    pmf.getAllMatcher(), pmf.makeSingleMatcher( 25 ),
+                                    true, IPaddr.parse( "192.168.1.16" ), 25 );
+            tmp.setDescription( "Forward incoming mail server(SMTP) traffic to 192.168.1.16" );
+            redirectList.add( tmp );
+            
+            // 80 to 80
+            tmp = new RedirectRule( false, ProtocolMatcher.MATCHER_TCP,
+                                    imf.getExternalMatcher(), imf.getAllMatcher(),
+                                    ipmf.getAllMatcher(), ipmf.getLocalMatcher(),
+                                    pmf.getAllMatcher(), pmf.makeSingleMatcher( 80 ),
+                                    true, IPaddr.parse( "192.168.1.16" ), 80 );
+            tmp.setDescription( "Forward incoming web/HTTP traffic (port 80) to 192.168.1.16" );
+            redirectList.add( tmp );
+
+            // 443 to 443
+            tmp = new RedirectRule( false, ProtocolMatcher.MATCHER_TCP,
+                                    imf.getExternalMatcher(), imf.getAllMatcher(),
+                                    ipmf.getAllMatcher(), ipmf.getLocalMatcher(),
+                                    pmf.getAllMatcher(), pmf.makeSingleMatcher( 443 ),
+                                    true, IPaddr.parse( "192.168.1.16" ), 443 );
+            tmp.setDescription( "Forward incoming secure web/HTTPS traffic to 192.168.1.16" );
+            redirectList.add( tmp );
+            
+            // 8080 to 80
+            tmp = new RedirectRule( false, ProtocolMatcher.MATCHER_TCP,
+                                    imf.getExternalMatcher(), imf.getAllMatcher(),
+                                    ipmf.getAllMatcher(), ipmf.getLocalMatcher(),
+                                    pmf.getAllMatcher(), pmf.makeSingleMatcher( 8080 ),
+                                    true, IPaddr.parse( "192.168.1.16" ), 80 );
+            tmp.setDescription( "Redirect incoming traffic to port 8080 to port 80 on 192.168.1.16" );
+            redirectList.add( tmp );
+
+            
+            for ( RedirectRule redirect : redirectList ) redirect.setLocalRedirect( true );
 
             tmp = new RedirectRule( false, ProtocolMatcher.MATCHER_ALL,
                                     imf.getExternalMatcher(), imf.getAllMatcher(),
@@ -514,8 +568,10 @@ class SettingsManager
 
             redirectList.add( tmp );
 
-
-            for ( RedirectRule redirect : redirectList ) redirect.setCategory( "[Sample]" );
+            for ( RedirectRule redirect : redirectList ) {
+                redirect.setLog( true );
+                redirect.setCategory( "[Sample]" );
+            }
 
             /* Enable DNS and DHCP */
             settings.setDnsEnabled( true );
