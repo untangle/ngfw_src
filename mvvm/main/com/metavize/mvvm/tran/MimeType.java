@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -63,6 +63,10 @@ public class MimeType implements Serializable
      */
     public boolean matches(String val)
     {
+        if (null == val) {
+            return false;
+        }
+
         val = getType(val);
 
         if (isWildcard()) {
