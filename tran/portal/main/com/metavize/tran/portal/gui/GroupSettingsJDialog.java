@@ -38,7 +38,6 @@ public class GroupSettingsJDialog extends MConfigJDialog implements SettingsChan
     private List<String> applicationNames;
     private PortalGroup portalGroup;
     private MTransformControlsJPanel mTransformControlsJPanel;
-    private boolean settingsChanged;
         
     public static GroupSettingsJDialog factory(Window topLevelWindow, PortalGroup portalGroup, MTransformControlsJPanel mTransformControlsJPanel){
 	if( topLevelWindow instanceof Frame )

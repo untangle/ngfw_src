@@ -38,7 +38,6 @@ public class UserSettingsJDialog extends MConfigJDialog implements SettingsChang
     private List<String> applicationNames;
     private PortalUser portalUser;
     private MTransformControlsJPanel mTransformControlsJPanel;
-    private boolean settingsChanged;
         
     public static UserSettingsJDialog factory(Window topLevelWindow, PortalUser portalUser, MTransformControlsJPanel mTransformControlsJPanel){
 	if( topLevelWindow instanceof Frame )

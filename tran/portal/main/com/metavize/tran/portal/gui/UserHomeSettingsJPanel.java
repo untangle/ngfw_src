@@ -570,6 +570,7 @@ public class UserHomeSettingsJPanel extends javax.swing.JPanel implements Savabl
     
     private void setTextEnabledDependency(boolean enabled){
 	timeoutJLabel.setEnabled( enabled );
+	timeoutJLabel1.setEnabled( enabled );
 	timeoutJSpinner.setEnabled( enabled );
 	
 	pageTitleJLabel.setEnabled( enabled );

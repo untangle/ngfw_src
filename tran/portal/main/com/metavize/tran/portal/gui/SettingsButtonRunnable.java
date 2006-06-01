@@ -19,14 +19,18 @@ import com.metavize.gui.util.*;
 import java.awt.Window;
 import java.awt.event.*;
 import javax.swing.CellEditor;
+import javax.swing.SwingUtilities;
 
 public class SettingsButtonRunnable implements ButtonRunnable {
     private boolean isUserType;
     private boolean isEnabled;
     private PortalUser portalUser;
     private PortalGroup portalGroup;
-    private Window topLevelWindow;
+    private Window topLevelWindow;    
     private MTransformControlsJPanel mTransformControlsJPanel;
+    private boolean valueChanged;
+    private CellEditor cellEditor;
+
     public SettingsButtonRunnable(String isEnabled){
 	if( "true".equals(isEnabled) ) {
 	    this.isEnabled = true;
@@ -37,8 +41,8 @@ public class SettingsButtonRunnable implements ButtonRunnable {
     }
     public String getButtonText(){ return "Edit"; }
     public boolean isEnabled(){ return isEnabled; }
-    public boolean valueChanged(){ return false; }
-    public void setCellEditor(CellEditor cellEditor){}
+    public boolean valueChanged(){ return valueChanged; }
+    public void setCellEditor(CellEditor cellEditor){ this.cellEditor = cellEditor; }
     public void setEnabled(boolean isEnabled){ this.isEnabled = isEnabled; }
     public void setUserType(boolean isUserType){ this.isUserType = isUserType; }
     public void setPortalUser(PortalUser portalUser){ this.portalUser = portalUser; }
@@ -48,12 +52,17 @@ public class SettingsButtonRunnable implements ButtonRunnable {
     public void actionPerformed(ActionEvent evt){ run(); }
     public void run(){
 	if( isUserType ){
-	    UserSettingsJDialog userSettingsJDialog = UserSettingsJDialog.factory(topLevelWindow, portalUser, mTransformControlsJPanel); 
+	    UserSettingsJDialog userSettingsJDialog = UserSettingsJDialog.factory(topLevelWindow, portalUser, mTransformControlsJPanel);
 	    userSettingsJDialog.setVisible(true);
+	    valueChanged = userSettingsJDialog.getSettingsSaved();
 	}
 	else{
 	    GroupSettingsJDialog groupSettingsJDialog = GroupSettingsJDialog.factory(topLevelWindow, portalGroup, mTransformControlsJPanel); 
 	    groupSettingsJDialog.setVisible(true);
+	    valueChanged = groupSettingsJDialog.getSettingsSaved();
 	}
+	SwingUtilities.invokeLater( new Runnable(){ public void run(){
+	    cellEditor.stopCellEditing();
+	}});
     }
 }

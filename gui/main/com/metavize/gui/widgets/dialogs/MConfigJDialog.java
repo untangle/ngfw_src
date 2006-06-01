@@ -33,6 +33,10 @@ import java.util.*;
 public abstract class MConfigJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
     
     // SAVING/REFRESHING ///////////
+    protected boolean settingsSaved;
+    public boolean getSettingsSaved(){ return settingsSaved; }
+    protected boolean settingsChanged;
+    public boolean getSettingsChanged(){ return settingsChanged; }
     private Map<String, Refreshable> refreshableMap = new LinkedHashMap(5);
     protected void addRefreshable(String name, Refreshable refreshable){ refreshableMap.put(name, refreshable); }
     private Map<String, Savable> savableMap = new LinkedHashMap(5);
@@ -137,6 +141,9 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 	// SEND SETTINGS TO SERVER
 	if( compoundSettings != null )
 	    compoundSettings.save();
+
+	// RECORD THE FACT THAT SETTINGS WERE SAVED FOR WHEN THE DIALOG RETURNS
+	settingsSaved = true;
     }
 
 

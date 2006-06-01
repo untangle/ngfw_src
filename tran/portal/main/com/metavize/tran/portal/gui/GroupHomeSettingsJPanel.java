@@ -571,6 +571,7 @@ public class GroupHomeSettingsJPanel extends javax.swing.JPanel implements Savab
     private void setTextEnabledDependency(boolean enabled){
 	timeoutJLabel.setEnabled( enabled );
 	timeoutJSpinner.setEnabled( enabled );
+	timeoutJLabel1.setEnabled( enabled );
 
 	pageTitleJLabel.setEnabled( enabled );
 	pageTitleJTextField.setEnabled( enabled );
