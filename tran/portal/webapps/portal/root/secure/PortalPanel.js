@@ -9,6 +9,9 @@ function PortalPanel(parent)
 
    DwtComposite.call(this, parent, "PortalPanel", DwtControl.ABSOLUTE_STYLE);
 
+   this._welcomePanel = new WelcomePanel(this);
+   this._welcomePanel.setText("Hello World");
+
    this._toolbar = this._makeToolbar();
    this._toolbar.zShow(true);
 
@@ -31,7 +34,6 @@ function PortalPanel(parent)
 PortalPanel.prototype = new DwtComposite();
 PortalPanel.prototype.constructor = PortalPanel;
 
-
 // public methods -------------------------------------------------------------
 
 PortalPanel.prototype.refresh = function()
@@ -47,6 +49,10 @@ PortalPanel.prototype.layout = function()
 
    var x = 0;
    var y = 0;
+
+   this._welcomePanel.setLocation(x, y);
+   size = this._welcomePanel.getSize();
+   y += size.y;
 
    this._toolbar.setLocation(x, y);
    size = this._toolbar.getSize();
@@ -93,7 +99,6 @@ PortalPanel.prototype._makeActionMenu = function()
 
 PortalPanel.prototype._controlCallback = function()
 {
-   DBG.println("CONTROL CALLBACK!");
    this.layout();
 }
 

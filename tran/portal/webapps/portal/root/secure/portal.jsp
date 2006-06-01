@@ -37,6 +37,7 @@
 <script type="text/javascript" src="<%=sp%>/NavigationBar.js"></script>
 <script type="text/javascript" src="<%=sp%>/Portal.js"></script>
 <script type="text/javascript" src="<%=sp%>/PortalPanel.js"></script>
+<script type="text/javascript" src="<%=sp%>/WelcomePanel.js"></script>
 </head>
 
 <body>
