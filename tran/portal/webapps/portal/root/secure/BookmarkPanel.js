@@ -128,4 +128,3 @@ BookmarkPanel.prototype._bookmarkListCallback = function(obj, results)
    this._setListingXml(results.xml);
    this.setUI(1);
 }
-

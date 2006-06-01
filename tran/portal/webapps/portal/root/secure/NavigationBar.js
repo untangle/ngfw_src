@@ -7,7 +7,7 @@ function NavigationBar(parent)
       return;
    }
 
-   DwtToolBar.call(this, parent, "Toolbar", DwtControl.ABSOLUTE_STYLE);
+   DwtToolBar.call(this, parent, "ToolBar", DwtControl.ABSOLUTE_STYLE, 2);
 
    this.portalMode();
 }

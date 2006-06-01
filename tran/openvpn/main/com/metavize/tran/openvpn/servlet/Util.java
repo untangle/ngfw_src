@@ -25,8 +25,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.TransformContext;

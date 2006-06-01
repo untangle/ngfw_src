@@ -485,33 +485,6 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <include name="*.jar"/>
       </fileset>
     </signjar>
-
-    <!-- portal -->
-    <mkdir dir="${dist.mvvm.web}/portal/WEB-INF/lib"/>
-
-    <copy todir="${dist.mvvm.web}/portal/WEB-INF/lib">
-      <fileset refid="commons-fileupload.jarset"/>
-      <fileset refid="commons-io.jarset"/>
-      <fileset refid="ajaxtk.thirdparty.jarset"/>
-    </copy>
-
-    <copy todir="${dist.mvvm.web}/portal/WEB-INF/classes">
-      <fileset dir="${AJAXTK_HOME}/build/classes"/>
-    </copy>
-
-    <mkdir dir="${dist.mvvm.web}/portal/WEB-INF/tlds"/>
-
-    <copy todir="${dist.mvvm.web}/portal/WEB-INF/tlds">
-      <fileset dir="${AJAXTK_HOME}/WebRoot/WEB-INF/tlds"/>
-    </copy>
-
-    <mkdir dir="${dist.mvvm.web}/portal/js"/>
-
-    <copy todir="${dist.mvvm.web}/portal/js">
-      <fileset dir="${AJAXTK_HOME}/WebRoot/js"/>
-    </copy>
-
-
   </target>
 
   <target name="install.firewall"/>
