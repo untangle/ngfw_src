@@ -27,8 +27,8 @@
 
 <script type="text/javascript" src="<%=sp%>/AddBookmarkDialog.js"></script>
 <script type="text/javascript" src="<%=sp%>/AddBookmarkPanel.js"></script>
-<script type="text/javascript" src="<%=sp%>/AppWindow.js"></script>
 <script type="text/javascript" src="<%=sp%>/Application.js"></script>
+<script type="text/javascript" src="<%=sp%>/ApplicationIframe.js"></script>
 <script type="text/javascript" src="<%=sp%>/Bookmark.js"></script>
 <script type="text/javascript" src="<%=sp%>/BookmarkManagerDialog.js"></script>
 <script type="text/javascript" src="<%=sp%>/BookmarkManagerPanel.js"></script>

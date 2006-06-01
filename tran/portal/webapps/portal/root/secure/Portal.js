@@ -21,6 +21,7 @@ function Portal(shell) {
    var l = new AjxListener(this, this._bookmarkSelectionListener);
    this._portalPanel.addSelectionListener(l);
    this._portalPanel.zShow(true);
+   this._mainPanel = this._portalPanel;
 
    this.refresh();
    this.addControlListener(new AjxListener(this, this._controlListener));
@@ -36,7 +37,10 @@ Portal.prototype.constructor = Portal;
 
 Portal.prototype.openPage = function(url)
 {
-   window.open(url);
+   this.removeChild(this._mainPanel);
+   this._mainPanel = new ApplicationIframe(this, url);
+   this._mainPanel.zShow(true);
+   this.layout();
 }
 
 Portal.prototype.splitUrl = function(url)
@@ -88,6 +92,17 @@ Portal.prototype.splitUrl = function(url)
 
 // public methods -------------------------------------------------------------
 
+Portal.prototype.showPortalPanel = function()
+{
+   if (this._mainPanel) {
+      this._mainPanel.zShow(false)
+      this._mainPanel.dispose();
+      this._mainPanel = this._portalPanel;
+   }
+   this._portalPanel.zShow(true);
+   this.layout();
+}
+
 Portal.prototype.refresh = function()
 {
    this._loadApps();
@@ -103,13 +118,11 @@ Portal.prototype.layout = function()
    var x = 0;
    var y = 0;
 
-   DBG.println("NAV_BAR LOC (" + x + ", " + y + ")");
    this._navBar.setLocation(x, y);
    var size = this._navBar.getSize();
    y += size.y;
 
-   DBG.println("PORTAL_PANEL LOC (" + x + ", " + y + ")");
-   this._portalPanel.setBounds(x, y, width, height - y);
+   this._mainPanel.setBounds(x, y, width, height - y);
 }
 
 // init -----------------------------------------------------------------------
@@ -119,28 +132,6 @@ Portal.prototype._loadApps = function()
    AjxRpc.invoke(null, "secure/application?command=ls", null,
                  new AjxCallback(this, this._refreshAppsCallback,
                                  new Object()), true);
-}
-
-Portal.prototype._refreshAppsCallback = function(obj, results) {
-   var root = results.xml.getElementsByTagName("applications")[0];
-
-   var children = root.childNodes;
-
-   this._apps = new Array();
-   this._appMap = new Object();
-
-   for (var i = 0; i < children.length; i++) {
-      var child = children[i];
-
-      if ("application" == child.tagName) {
-         var name = child.getAttribute("name");
-         var appJs = child.getElementsByTagName("appJs")[0].firstChild.data;
-         var app = new Application(name, appJs);
-         this._apps.push(app);
-         this._appMap[name] = app;
-         DBG.println("this._appMap[" + name + "] = " + app);
-      }
-   }
 }
 
 // shell ----------------------------------------------------------------------
@@ -185,3 +176,24 @@ Portal.prototype._bookmarkSelectionListener = function(ev) {
    }
 }
 
+Portal.prototype._refreshAppsCallback = function(obj, results) {
+   var root = results.xml.getElementsByTagName("applications")[0];
+
+   var children = root.childNodes;
+
+   this._apps = new Array();
+   this._appMap = new Object();
+
+   for (var i = 0; i < children.length; i++) {
+      var child = children[i];
+
+      if ("application" == child.tagName) {
+         var name = child.getAttribute("name");
+         var appJs = child.getElementsByTagName("appJs")[0].firstChild.data;
+         var app = new Application(name, appJs);
+         this._apps.push(app);
+         this._appMap[name] = app;
+         DBG.println("this._appMap[" + name + "] = " + app);
+      }
+   }
+}
