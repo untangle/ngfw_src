@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.TimeZone;
 import javax.transaction.TransactionRolledbackException;
@@ -196,6 +197,11 @@ class AdminManagerImpl implements AdminManager
             logger.error(message, exn);
             throw new TransactionRolledbackException(message);
         }
+    }
+
+    public Date getDate()
+    {
+        return new Date(System.currentTimeMillis());
     }
 
     public void setRegistrationInfo(RegistrationInfo info)

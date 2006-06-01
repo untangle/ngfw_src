@@ -11,6 +11,7 @@
 
 package com.metavize.mvvm.security;
 
+import java.util.Date;
 import java.util.TimeZone;
 import javax.transaction.TransactionRolledbackException;
 
@@ -58,6 +59,13 @@ public interface AdminManager
      * @exception TransactionRolledbackException if an error occurs
      */
     void setTimeZone(TimeZone timezone) throws TransactionRolledbackException;
+
+    /**
+     * Returns the current time that the MVVM is set to
+     *
+     * @return a <code>Date</code> giving the current time as seen by EdgeGuard
+     */
+    Date getDate();
 
     /**
      * Sets the registration info for the box customer.  The new info
