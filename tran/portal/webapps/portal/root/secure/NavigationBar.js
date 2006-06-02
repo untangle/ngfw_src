@@ -9,6 +9,20 @@ function NavigationBar(parent)
 
    DwtToolBar.call(this, parent, "ToolBar", DwtControl.ABSOLUTE_STYLE, 2);
 
+   this.home = new DwtLabel(this);
+   this.home.setImage("Home"); // XXX change to "Home"
+   this.home.setToolTipContent("Portal Home");
+
+   this.title = new DwtLabel(this, DwtLabel.ALIGN_LEFT, "NavBarTitle");
+
+   this.bm = new DwtLabel(this, DwtLabel.ALIGN_LEFT, "NavBarBookmark");
+
+   this.addFiller();
+
+   this.logout = new DwtLabel(this);
+   this.logout.setImage("Logout");
+   this.logout.setToolTipContent("Logout");
+
    this.portalMode();
 }
 
@@ -19,22 +33,13 @@ NavigationBar.prototype.constructor = NavigationBar;
 
 NavigationBar.prototype.portalMode = function()
 {
-   this.removeChildren();
-   var label = new DwtLabel(this);
-   label.setImage("Home"); // XXX change to "Home"
-
-   var title = new DwtLabel(this, DwtLabel.ALIGN_LEFT, "NavBarTitle");
-   title.setText("Metavize Portal");
-
-   var bm = new DwtLabel(this, DwtLabel.ALIGN_LEFT, "NavBarBookmark");
-   bm.setText("bookmark");
-
-   this.addFiller();
-
-   var logout = new DwtLabel(this);
-   logout.setImage("Logout");
+   this.title.setText("Metavize Portal");
+   this.bm.setText("bookmark");
 }
 
 NavigationBar.prototype.applicationMode = function(bookmark)
 {
+   this.title.setText(bookmark.app);
+   this.bm.setText(bookmark.name);
+   this.bm.setToolTipContent(bookmark.target);
 }

@@ -32,30 +32,30 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
 {
     private static final String CIFS_JS
         = "{\n"
-        + "  openBookmark: function(portal, target) {\n"
-        + "    portal.openPage('/browser/');\n"
+        + "  openBookmark: function(portal, bookmark) {\n"
+        + "    portal.showApplicationUrl('/browser/', bookmark);\n"
         + "  }\n"
         + "};\n";
 
     private static final String WEB_JS
         = "{\n"
-        + "  openBookmark: function(portal, target) {\n"
-        + "    var o = portal.splitUrl(target);"
-        + "    portal.openPage('/proxy/' + o.proto + '/' + o.host + o.path);\n"
+        + "  openBookmark: function(portal, bookmark) {\n"
+        + "    var o = portal.splitUrl(bookmark.target);"
+        + "    portal.showApplicationUrl('/proxy/' + o.proto + '/' + o.host + o.path, bookmark);\n"
         + "  }\n"
         + "};\n";
 
     private static final String RDP_JS
         = "{\n"
-        + "  openBookmark: function(portal, target) {\n"
-        + "    portal.openPage('/rdp/rdp.jsp?t=' + target.id);\n"
+        + "  openBookmark: function(portal, bookmark) {\n"
+        + "    portal.openPage('/rdp/rdp.jsp?t=' + bookmark.id);\n"
         + "  }\n"
         + "};\n";
 
     private static final String VNC_JS
         = "{\n"
-        + "  openBookmark: function(portal, target) {\n"
-        + "    portal.openPage('/vnc/vnc.jsp?t=' + target.id);\n"
+        + "  openBookmark: function(portal, bookmark) {\n"
+        + "    portal.openPage('/vnc/vnc.jsp?t=' + bookmark.id);\n"
         + "  }\n"
         + "};\n";
 

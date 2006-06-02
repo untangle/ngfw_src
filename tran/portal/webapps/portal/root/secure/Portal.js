@@ -35,12 +35,14 @@ Portal.prototype.constructor = Portal;
 
 // portal api -----------------------------------------------------------------
 
-Portal.prototype.openPage = function(url)
+Portal.prototype.showApplicationUrl = function(url, bookmark)
 {
    this.removeChild(this._mainPanel);
    this._mainPanel = new ApplicationIframe(this, url);
    this._mainPanel.zShow(true);
    this.layout();
+
+   this._navBar.applicationMode(bookmark);
 }
 
 Portal.prototype.splitUrl = function(url)
@@ -171,7 +173,7 @@ Portal.prototype._bookmarkSelectionListener = function(ev) {
       var item = ev.item;
       var app = this._appMap[item.app];
       // XXX if null?
-      app.openBookmark(this, item.target);
+      app.openBookmark(this, item);
       break;
    }
 }
