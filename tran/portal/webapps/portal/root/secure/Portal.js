@@ -19,11 +19,16 @@ function Portal(shell) {
    var l = new AjxListener(this, this._homeButtonListener);
    this._navBar.addHomeButtonListener(l);
 
-   this._portalPanel = new PortalPanel(this);
+   this._tabPanel = new DwtTabView(this);
+   this._tabPanel.zShow(true);
+
+   this._portalPanel = new PortalPanel(this._shell);
    var l = new AjxListener(this, this._bookmarkSelectionListener);
    this._portalPanel.addSelectionListener(l);
    this._portalPanel.zShow(true);
-   this._mainPanel = this._portalPanel;
+   var k = this._tabPanel.addTab("Portal", this._portalPanel);
+   var b = this._tabPanel.getTabButton(k);
+   b.setToolTipContent("Portal Home");
 
    this.refresh();
    this.addControlListener(new AjxListener(this, this._controlListener));
@@ -39,12 +44,13 @@ Portal.prototype.constructor = Portal;
 
 Portal.prototype.showApplicationUrl = function(url, bookmark)
 {
-   this.removeChild(this._mainPanel);
-   this._mainPanel = new ApplicationIframe(this, url);
-   this._mainPanel.zShow(true);
+   var p = new ApplicationIframe(this._shell, url);
+   var k = this._tabPanel.addTab(bookmark.app + ": " + bookmark.name, p);
+   var v = this._tabPanel.getTabButton(k);
+   v.setToolTipContent(bookmark.target);
+   this._tabPanel.switchToTab(k);
+   p.zShow(true);
    this.layout();
-
-   this._navBar.applicationMode(bookmark);
 }
 
 Portal.prototype.splitUrl = function(url)
@@ -96,16 +102,6 @@ Portal.prototype.splitUrl = function(url)
 
 // public methods -------------------------------------------------------------
 
-Portal.prototype.showPortalPanel = function()
-{
-   DBG.println("this._portalPanel: " + this._portalPanel);
-   this.removeChild(this._mainPanel);
-   this._mainPanel = this._portalPanel;
-   this._portalPanel.reparent(this);
-   this._portalPanel.zShow(true);
-   this.layout();
-}
-
 Portal.prototype.refresh = function()
 {
    this._loadApps();
@@ -125,7 +121,7 @@ Portal.prototype.layout = function()
    var size = this._navBar.getSize();
    y += size.y;
 
-   this._mainPanel.setBounds(x, y, width, height - y);
+   this._tabPanel.setBounds(x, y, width, height - y);
 }
 
 // init -----------------------------------------------------------------------
@@ -203,5 +199,4 @@ Portal.prototype._refreshAppsCallback = function(obj, results) {
 
 Portal.prototype._homeButtonListener = function()
 {
-   this.showPortalPanel();
 }
