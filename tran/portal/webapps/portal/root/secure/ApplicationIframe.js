@@ -7,10 +7,10 @@ function ApplicationIframe(parent, url)
       return;
    }
 
-   DwtTabViewPage.call(this, parent, "ApplicationIframe", DwtControl.ABSOLUTE_STYLE);
+   DwtComposite.call(this, parent, "ApplicationIframe", DwtControl.ABSOLUTE_STYLE);
 
    this.setContent("<iframe class='kaka' src='" + url + "'></iframe>");
 }
 
-ApplicationIframe.prototype = new DwtTabViewPage();
+ApplicationIframe.prototype = new DwtComposite();
 ApplicationIframe.prototype.constructor = ApplicationIframe;

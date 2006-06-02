@@ -7,7 +7,7 @@ function PortalPanel(parent)
       return;
    }
 
-   DwtTabViewPage.call(this, parent, "PortalPanel", DwtControl.ABSOLUTE_STYLE);
+   DwtComposite.call(this, parent, "PortalPanel", DwtControl.ABSOLUTE_STYLE);
 
    this._welcomePanel = new WelcomePanel(this);
    this._welcomePanel.setText("Hello World");
@@ -28,7 +28,7 @@ function PortalPanel(parent)
    this.addControlListener(new AjxListener(this, this._controlListener));
 }
 
-PortalPanel.prototype = new DwtTabViewPage();
+PortalPanel.prototype = new DwtComposite();
 PortalPanel.prototype.constructor = PortalPanel;
 
 // public methods -------------------------------------------------------------
@@ -61,14 +61,6 @@ PortalPanel.prototype.layout = function()
 PortalPanel.prototype.addSelectionListener = function(l)
 {
    this._bookmarkPanel.addSelectionListener(l);
-}
-
-// DwtTabViewPage methods -----------------------------------------------------
-
-PortalPanel.prototype.showMe =
-function() {
-    DwtTabViewPage.prototype.showMe.call(this);
-    this.layout();
 }
 
 // private methods ------------------------------------------------------------

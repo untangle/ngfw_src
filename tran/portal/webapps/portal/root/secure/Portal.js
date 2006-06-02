@@ -19,16 +19,12 @@ function Portal(shell) {
    var l = new AjxListener(this, this._homeButtonListener);
    this._navBar.addHomeButtonListener(l);
 
-   this._tabPanel = new DwtTabView(this);
-   this._tabPanel.zShow(true);
-
    this._portalPanel = new PortalPanel(this._shell);
    var l = new AjxListener(this, this._bookmarkSelectionListener);
    this._portalPanel.addSelectionListener(l);
    this._portalPanel.zShow(true);
-   var k = this._tabPanel.addTab("Portal", this._portalPanel);
-   var b = this._tabPanel.getTabButton(k);
-   b.setToolTipContent("Portal Home");
+
+   this.showPortal();
 
    this.refresh();
    this.addControlListener(new AjxListener(this, this._controlListener));
@@ -44,13 +40,15 @@ Portal.prototype.constructor = Portal;
 
 Portal.prototype.showApplicationUrl = function(url, bookmark)
 {
-   var p = new ApplicationIframe(this._shell, url);
-   var k = this._tabPanel.addTab(bookmark.app + ": " + bookmark.name, p);
-   var v = this._tabPanel.getTabButton(k);
-   v.setToolTipContent(bookmark.target);
-   this._tabPanel.switchToTab(k);
-   p.zShow(true);
-   this.layout();
+   if (this._mainPanel) {
+      Dwt.setVisible(this._mainPanel.getHtmlElement(), false);
+      if (this._mainPanel != this._portalPanel) {
+         this._mainPanel.dispose();
+      }
+   }
+
+   this._mainPanel = new ApplicationIframe(this._shell, url);
+   Dwt.setVisible(this._mainPanel.getHtmlElement(), true);
 }
 
 Portal.prototype.splitUrl = function(url)
@@ -102,6 +100,16 @@ Portal.prototype.splitUrl = function(url)
 
 // public methods -------------------------------------------------------------
 
+Portal.prototype.showPortal = function()
+{
+   if (this._mainPanel && this._mainPanel != this._portalPanel) {
+      Dwt.setVisible(this._mainPanel.getHtmlElement(), false);
+      this._mainPanel.dispose();
+   }
+   this._mainPanel = this._portalPanel;
+   Dwt.setVisible(this._portalPanel.getHtmlElement(), true);
+}
+
 Portal.prototype.refresh = function()
 {
    this._loadApps();
@@ -121,7 +129,7 @@ Portal.prototype.layout = function()
    var size = this._navBar.getSize();
    y += size.y;
 
-   this._tabPanel.setBounds(x, y, width, height - y);
+   this._mainPanel.setBounds(x, y, width, height - y);
 }
 
 // init -----------------------------------------------------------------------
@@ -199,4 +207,5 @@ Portal.prototype._refreshAppsCallback = function(obj, results) {
 
 Portal.prototype._homeButtonListener = function()
 {
+   this.showPortal();
 }
