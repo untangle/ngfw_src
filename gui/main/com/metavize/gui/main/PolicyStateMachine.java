@@ -929,6 +929,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                     }});
 
 		    // REMOVE TRIAL IF THE ACTUAL THING WAS PURCHASED (IS NO LONGER IN THE STORE)
+		    /*
 		    Map<String,String> storeItemMap = new HashMap<String,String>();
 		    for( MackageDesc mackageDesc : storeItemsAvailable ){
 			String name = mackageDesc.getName();
@@ -949,7 +950,16 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 			}
 			else
 			    addToStore(mackageDesc,false);
-                    }
+		        }
+		    */
+		    // ADD TO STORE IF NOT A TRIAL
+		    for( MackageDesc mackageDesc : storeItemsAvailable ){
+			String name = mackageDesc.getName();
+			if( name.endsWith(STOREITEM_EXTENSION) && !name.endsWith(TRIAL_EXTENSION) ){
+			    addToStore(mackageDesc,false);
+			}
+		    }			    
+
                     revalidateStore();
                 }
             }
