@@ -16,6 +16,8 @@ function Portal(shell) {
 
    this._navBar = new NavigationBar(this);
    this._navBar.zShow(true);
+   var l = new AjxListener(this, this._homeButtonListener);
+   this._navBar.addHomeButtonListener(l);
 
    this._portalPanel = new PortalPanel(this);
    var l = new AjxListener(this, this._bookmarkSelectionListener);
@@ -96,11 +98,10 @@ Portal.prototype.splitUrl = function(url)
 
 Portal.prototype.showPortalPanel = function()
 {
-   if (this._mainPanel) {
-      this._mainPanel.zShow(false)
-      this._mainPanel.dispose();
-      this._mainPanel = this._portalPanel;
-   }
+   DBG.println("this._portalPanel: " + this._portalPanel);
+   this.removeChild(this._mainPanel);
+   this._mainPanel = this._portalPanel;
+   this._portalPanel.reparent(this);
    this._portalPanel.zShow(true);
    this.layout();
 }
@@ -198,4 +199,9 @@ Portal.prototype._refreshAppsCallback = function(obj, results) {
          DBG.println("this._appMap[" + name + "] = " + app);
       }
    }
+}
+
+Portal.prototype._homeButtonListener = function()
+{
+   this.showPortalPanel();
 }
