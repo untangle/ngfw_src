@@ -49,6 +49,9 @@ Portal.prototype.showApplicationUrl = function(url, bookmark)
 
    this._mainPanel = new ApplicationIframe(this._shell, url);
    Dwt.setVisible(this._mainPanel.getHtmlElement(), true);
+   this._mainPanel.zShow(true);
+
+   this.layout();
 }
 
 Portal.prototype.splitUrl = function(url)
