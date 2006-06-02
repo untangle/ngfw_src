@@ -276,7 +276,7 @@ class NetworkUtilPriv extends NetworkUtil
             networkSpaceList.remove( 0 );
             networkSpaceList.add( 0, nwi );
         }
-
+        
         return NetworkSpacesInternalSettings.
             makeInstance( setupState, isEnabled, realInterfaceList, interfaceList, networkSpaceList,
                           routingTable, redirectList, dns1, dns2, defaultRoute );
@@ -438,26 +438,29 @@ class NetworkUtilPriv extends NetworkUtil
             InterfaceData data = externalIntfDataList.get( 0 );
             status = new DhcpStatus( data.getAddress(), data.getNetmask());
 
-            /* Update the dns servers */
-            List<IPaddr> dnsServers = getDnsServers();
+            /* RBS: Changing this function scares me, but it has to be done */
+            if ( space.getIsDhcpEnabled()) {
+                /* Update the dns servers */
+                List<IPaddr> dnsServers = getDnsServers();
+                
+                switch( dnsServers.size()) {
+                default:
+                case 2:
+                    settings.setDns2( dnsServers.get( 1 ));
+                    
+                case 1:
+                    settings.setDns1( dnsServers.get( 0 ));
+                    break;
+                    
+                case 0:
+                    logger.info( "DHCP didn't set any DNS servers" );
+                }
 
-            switch( dnsServers.size()) {
-            default:
-            case 2:
-                settings.setDns2( dnsServers.get( 1 ));
-
-            case 1:
-                settings.setDns1( dnsServers.get( 0 ));
-                break;
-
-            case 0:
-                logger.info( "DHCP didn't set any DNS servers" );
+                /* Update the default route */
+                Inet4Address gateway = (Inet4Address)Netcap.getGateway();
+                if ( gateway == null ) settings.setDefaultRoute( NetworkUtil.EMPTY_IPADDR );
+                else                   settings.setDefaultRoute( new IPaddr( gateway ));
             }
-
-            /* Update the default route */
-            Inet4Address gateway = (Inet4Address)Netcap.getGateway();
-            if ( gateway == null ) settings.setDefaultRoute( NetworkUtil.EMPTY_IPADDR );
-            else                   settings.setDefaultRoute( new IPaddr( gateway ));
         } catch( Exception e ) {
             logger.warn( "Error updating DHCP address", e );
         }

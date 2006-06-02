@@ -245,7 +245,7 @@ public class NetworkManagerImpl implements NetworkManager
     public synchronized void setRemoteSettings( RemoteSettings newSettings )
         throws NetworkException
     {
-        if ( logger.isDebugEnabled()) logger.debug( "Loaded remote settings: " + newSettings );
+        if ( logger.isDebugEnabled()) logger.debug( "Loaded remote settings:\n" + newSettings );
         NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
 
         this.remote = nup.makeRemoteInternal( this.networkSettings, newSettings, this.ddnsSettings );
@@ -255,7 +255,7 @@ public class NetworkManagerImpl implements NetworkManager
         /* Update the rules */
         generateRules();
 
-        if ( logger.isDebugEnabled()) logger.debug( "Loaded remote settings: " + this.remote );
+        if ( logger.isDebugEnabled()) logger.debug( "Loaded remote settings:\n" + this.remote );
 
         /* Have to do this too, because the hostname may have changed */
         try {
@@ -777,8 +777,8 @@ public class NetworkManagerImpl implements NetworkManager
             NetworkSpacesInternalSettings internal = nup.toInternal( configuration );
 
             if ( logger.isDebugEnabled()) {
-                logger.debug( "Loaded the configuration: \n" + configuration );
-                logger.debug( "Converted to: \n" + internal );
+                logger.debug( "Loaded the configuration:\n" + configuration );
+                logger.debug( "Converted to:\n" + internal );
             }
 
             /* Save the network settings */
