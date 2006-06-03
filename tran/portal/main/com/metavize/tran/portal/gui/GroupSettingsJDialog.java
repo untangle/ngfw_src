@@ -32,8 +32,10 @@ import javax.swing.*;
 public class GroupSettingsJDialog extends MConfigJDialog implements SettingsChangedListener {
 
     private static final String NAME_TITLE     = "Group Settings";
-    private static final String NAME_BOOKMARKS = "Bookmarks";
-    private static final String NAME_HOME      = "Page Setup";
+    private static final String NAME_HOME               = "Page Setup";
+    private static final String NAME_BOOKMARKS          = "Bookmarks";
+    private static final String NAME_RDP_BOOKMARKS      = "RDP";
+    private static final String NAME_OTHER_BOOKMARKS    = "HTTP, CIFS, VNC";
 
     private List<String> applicationNames;
     private PortalGroup portalGroup;
@@ -87,12 +89,22 @@ public class GroupSettingsJDialog extends MConfigJDialog implements SettingsChan
     protected void generateGui(){
         this.setTitle(NAME_TITLE + " for " + portalGroup.getName() );
 
-        // BOOKMARKS //
-	BookmarksJPanel bookmarksJPanel = new BookmarksJPanel(portalGroup, applicationNames);
-	addRefreshable(NAME_BOOKMARKS, bookmarksJPanel);
-	addSavable(NAME_BOOKMARKS, bookmarksJPanel);
-        addTab(NAME_BOOKMARKS, null, bookmarksJPanel);
-	bookmarksJPanel.setSettingsChangedListener(this);
+	// GLOBAL BOOKMARKS //
+	JTabbedPane bookmarksJTabbedPane = addTabbedPane(NAME_BOOKMARKS, null);
+
+	// RDP BOOKMARKS //
+	BookmarksJPanel rdpBookmarksJPanel = new BookmarksJPanel(portalGroup, applicationNames, "RDP");
+	bookmarksJTabbedPane.addTab(NAME_RDP_BOOKMARKS, null, rdpBookmarksJPanel);
+	addSavable(NAME_RDP_BOOKMARKS, rdpBookmarksJPanel);
+	addRefreshable(NAME_RDP_BOOKMARKS, rdpBookmarksJPanel);
+	rdpBookmarksJPanel.setSettingsChangedListener(this);
+
+	// OTHER BOOKMARKS //
+	BookmarksJPanel otherBookmarksJPanel = new BookmarksJPanel(portalGroup, applicationNames, "OTHER");
+	bookmarksJTabbedPane.addTab(NAME_OTHER_BOOKMARKS, null, otherBookmarksJPanel);
+	addSavable(NAME_OTHER_BOOKMARKS, otherBookmarksJPanel);
+	addRefreshable(NAME_OTHER_BOOKMARKS, otherBookmarksJPanel);
+	otherBookmarksJPanel.setSettingsChangedListener(this);
 
 	// HOME //
 	GroupHomeSettingsJPanel groupHomeSettingsJPanel = new GroupHomeSettingsJPanel(portalGroup);

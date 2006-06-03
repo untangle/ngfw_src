@@ -37,7 +37,8 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     private static final String NAME_GROUPS             = "Groups";
     private static final String NAME_SETTINGS           = "Global Settings";
     private static final String NAME_SETTINGS_HOME      = "Page Setup";
-    private static final String NAME_SETTINGS_BOOKMARKS = "Bookmarks";
+    private static final String NAME_SETTINGS_RDP       = "RDP Bookmarks";
+    private static final String NAME_SETTINGS_OTHER     = "HTTP, CIFS, VNC Bookmarks";
     private static final String NAME_STATUS             = "Status";
     private static final String NAME_LOG                = "Event Log";
 
@@ -66,20 +67,26 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	addRefreshable(NAME_GROUPS, groupConfigJPanel);
 	groupConfigJPanel.setSettingsChangedListener(this);
 
-        // GLOBAL SETTINGS ////////
-	JTabbedPane globalJTabbedPane = addTabbedPane(NAME_SETTINGS, null);
+	// GLOBAL SETTINGS //
+	JTabbedPane settingsJTabbedPane = addTabbedPane(NAME_SETTINGS, null);
 
-	// GLOBAL BOOKMARKS //
-	BookmarksJPanel bookmarksJPanel = new BookmarksJPanel(null, applicationNames);
-	globalJTabbedPane.addTab(NAME_SETTINGS_BOOKMARKS, null, bookmarksJPanel);
-	addSavable(NAME_SETTINGS_BOOKMARKS, bookmarksJPanel);
-	addRefreshable(NAME_SETTINGS_BOOKMARKS, bookmarksJPanel);
-	bookmarksJPanel.setSettingsChangedListener(this);
+	// RDP BOOKMARKS //
+	BookmarksJPanel rdpBookmarksJPanel = new BookmarksJPanel(null, applicationNames, "RDP");
+	settingsJTabbedPane.addTab(NAME_SETTINGS_RDP, null, rdpBookmarksJPanel);
+	addSavable(NAME_SETTINGS_RDP, rdpBookmarksJPanel);
+	addRefreshable(NAME_SETTINGS_RDP, rdpBookmarksJPanel);
+	rdpBookmarksJPanel.setSettingsChangedListener(this);
 
-	// GLOBAL HOME SETTINGS //
+	// OTHER BOOKMARKS //
+	BookmarksJPanel otherBookmarksJPanel = new BookmarksJPanel(null, applicationNames, "OTHER");
+	settingsJTabbedPane.addTab(NAME_SETTINGS_OTHER, null, otherBookmarksJPanel);
+	addSavable(NAME_SETTINGS_OTHER, otherBookmarksJPanel);
+	addRefreshable(NAME_SETTINGS_OTHER, otherBookmarksJPanel);
+	otherBookmarksJPanel.setSettingsChangedListener(this);
+
+	// GLOBAL PAGE SETTINGS //
 	GlobalHomeSettingsJPanel globalHomeSettingsJPanel = new GlobalHomeSettingsJPanel();
-	JScrollPane globalHomeSettingsJScrollPane = addScrollableTab(globalJTabbedPane, NAME_SETTINGS_HOME,
-								     null, globalHomeSettingsJPanel, false, true);
+	addScrollableTab(settingsJTabbedPane, NAME_SETTINGS_HOME, null, globalHomeSettingsJPanel, false, true);
 	addSavable(NAME_SETTINGS_HOME, globalHomeSettingsJPanel);
 	addRefreshable(NAME_SETTINGS_HOME, globalHomeSettingsJPanel);
 	globalHomeSettingsJPanel.setSettingsChangedListener(this);
@@ -90,12 +97,13 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
         addTab(NAME_STATUS, null, statusJPanel);
 	addSavable(NAME_STATUS, statusJPanel);
 	addRefreshable(NAME_STATUS, statusJPanel);
+	*/
 
  	// EVENT LOG ///////
 	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransform(), this);
         addTab(NAME_LOG, null, logJPanel);
         addShutdownable(NAME_LOG, logJPanel);
-	*/
+
     }
 
     public void refreshAll() throws Exception {

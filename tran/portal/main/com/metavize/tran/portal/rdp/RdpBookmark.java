@@ -27,7 +27,7 @@ public class RdpBookmark extends Bookmark
     private static final String SIZE_1024 = "1024x768";
     private static final String SIZE_1280 = "1280x1024";
 
-    private static final String[] SIZE_ENUMERATION = { SIZE_640, SIZE_800, SIZE_1024, SIZE_1280 };
+    public static final String[] SIZE_ENUMERATION = { SIZE_640, SIZE_800, SIZE_1024, SIZE_1280 };
 
     public static final String SIZE_DEFAULT = SIZE_800;
     public static final String CONSOLE_DEFAULT = "false";

@@ -15,6 +15,8 @@ import java.util.List;
 
 import com.metavize.mvvm.portal.Application;
 import com.metavize.mvvm.portal.PortalSettings;
+import com.metavize.mvvm.logging.EventManager;
+import com.metavize.mvvm.logging.LogEvent;
 
 public interface PortalTransform
 {
@@ -27,4 +29,7 @@ public interface PortalTransform
     PortalSettings getPortalSettings();
 
     void setPortalSettings(PortalSettings settings);
+
+    EventManager<LogEvent> getEventManager();
 }
+

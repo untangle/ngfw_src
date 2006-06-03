@@ -21,6 +21,8 @@ import com.metavize.mvvm.portal.Bookmark;
 import com.metavize.mvvm.portal.LocalApplicationManager;
 import com.metavize.mvvm.portal.LocalPortalManager;
 import com.metavize.mvvm.portal.PortalSettings;
+import com.metavize.mvvm.logging.EventManager;
+import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.PipeSpec;
 import com.metavize.mvvm.tran.TransformException;
@@ -193,6 +195,12 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
     // Portal methods ---------------------------------------------------------
 
     // Transform methods ------------------------------------------------------
+
+    public EventManager<LogEvent> getEventManager()
+    {
+        return null;
+    }
+
 
     protected void initializeSettings() { }
 
