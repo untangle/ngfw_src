@@ -52,8 +52,10 @@ body {
 }
 
 /* WRS: Changed to only pad left.  It made the hyperlinked area way too small */
-.sect1, .chapter, .synopsis, .appendix, .preface, .article, .refsect1, .index, .glossary, .section {
+/* Also, add pad right and add other sections */
+.sect1, .sect2, .sect3, .sect4, .chapter, .synopsis, .appendix, .preface, .article, .refsect1, .index, .glossary, .section {
   padding-left: 1em;
+  padding-right: 1em;
 }
 
 .toc .chapter {

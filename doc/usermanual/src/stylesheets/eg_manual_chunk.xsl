@@ -399,6 +399,11 @@ appendix toc
 -->
 
 <!-- WRS: Crazy attempt to get fancy w/ the headers -->
+<!-- need to split single table with 2 rows into 2 tables with single row -->
+<!-- - otherwise, alignment of prev and next of header and footer differed -->
+<!--   (header prev and next didn't not align with footer prev and next) -->
+<!-- - with single table, header prev and next row is forced to align -->
+<!--   with image row that is above it -->
 <xsl:template name="header.navigation">
   <xsl:param name="prev" select="/foo"/>
   <xsl:param name="next" select="/foo"/>
@@ -407,8 +412,8 @@ appendix toc
   <xsl:variable name="home" select="/*[1]"/>
   <xsl:variable name="up" select="parent::*"/>
 
-  <xsl:variable name="row1" select="$navig.showtitles != 0"/>
-  <xsl:variable name="row2" select="count($prev) &gt; 0
+  <xsl:variable name="t1row1" select="$navig.showtitles != 0"/>
+  <xsl:variable name="t2row1" select="count($prev) &gt; 0
                                     or (count($up) &gt; 0 
           and generate-id($up) != generate-id($home)
                                         and $navig.showtitles != 0)
@@ -416,9 +421,9 @@ appendix toc
 
   <xsl:if test="$suppress.navigation = '0' and $suppress.header.navigation = '0'">
     <div class="navheader">
-      <xsl:if test="$row1 or $row2">
-        <table width="100%" summary="Navigation header" class="navheadertable">
-          <xsl:if test="$row1">
+      <xsl:if test="$t1row1 or $t2row1">
+          <xsl:if test="$t1row1">
+           <table width="100%" summary="Navigation header 1" class="navheader1table">
             <tr>
               <th colspan="3" align="center">
                 <!-- I "borrowed" this stuff from the KDE manuals -->
@@ -434,15 +439,15 @@ appendix toc
                   <xsl:apply-templates select="." mode="object.title.markup"/>
                   </div>
                 </div>
-              
-                
               </th>
             </tr>
+           </table>
           </xsl:if>
 
-          <xsl:if test="$row2">
+          <xsl:if test="$t2row1">
+           <table width="100%" summary="Navigation header 2" class="navheader2table">
             <tr>
-              <td width="20%" align="left">
+              <td width="40%" align="left">
                 <xsl:if test="count($prev)>0">
                   <a accesskey="p">
                     <xsl:attribute name="href">
@@ -457,7 +462,7 @@ appendix toc
                 </xsl:if>
                 <xsl:text disable-output-escaping="yes">&#38;nbsp;</xsl:text>
               </td>
-              <th width="60%" align="center">
+              <th width="20%" align="center">
 <!--
 Commented out printing of the parent section.  Didn't look too cool          
                 <xsl:choose>
@@ -470,7 +475,8 @@ Commented out printing of the parent section.  Didn't look too cool
                 </xsl:choose>
 -->                
               </th>
-              <td width="20%" align="right">
+
+              <td width="40%" align="right">
                 <xsl:text disable-output-escaping="yes">&#38;nbsp;</xsl:text>
                 <xsl:if test="count($next)>0">
                   <a accesskey="n">
@@ -486,8 +492,8 @@ Commented out printing of the parent section.  Didn't look too cool
                 </xsl:if>
               </td>
             </tr>
+           </table>
           </xsl:if>
-        </table>
       </xsl:if>
       <xsl:if test="$header.rule != 0">
         <hr/>
@@ -495,9 +501,6 @@ Commented out printing of the parent section.  Didn't look too cool
     </div>
   </xsl:if>
 </xsl:template>
-
-
-
 
 <!-- WRS: More crazy stuff for custom footer -->
 
@@ -642,8 +645,6 @@ Commented out printing of the parent section.  Didn't look too cool
   </xsl:if>
 </xsl:template>
 
-
-
 <!-- WRS: There is a goofy duplicate title on the title page.  Nuke it -->
 <xsl:template match="title" mode="titlepage.mode">
   <xsl:variable name="id">
@@ -679,7 +680,5 @@ Commented out printing of the parent section.  Didn't look too cool
   </h1>
 -->    
 </xsl:template>
-
-
 
 </xsl:stylesheet>
