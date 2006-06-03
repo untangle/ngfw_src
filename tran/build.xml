@@ -193,7 +193,10 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     <patternset id="extra.sources" includes="com/metavize/tran/reporting/ReportingTransform.java"/>
     </then> </if>
     <if> <equals arg1="${tran.name}" arg2="portal"/> <then>
-    <patternset id="extra.sources" includes="com/metavize/tran/portal/PortalTransform.java"/>
+    <patternset id="extra.sources">
+      <include name="com/metavize/tran/portal/PortalTransform.java"/>
+      <include name="com/metavize/tran/portal/rdp/RdpBookmark.java"/>
+    </patternset>
     </then> </if>
     <if> <equals arg1="${tran.name}" arg2="http"/> <then>
     <patternset id="extra.sources" includes="com/metavize/tran/http/HttpTransform.java"/>
