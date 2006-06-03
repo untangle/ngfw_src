@@ -13,6 +13,8 @@
 
 package com.metavize.tran.portal.gui;
 
+import com.metavize.mvvm.portal.*;
+
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.IPMaddr;
 
@@ -39,7 +41,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     private static final String NAME_SETTINGS_HOME      = "Page Setup";
     private static final String NAME_SETTINGS_RDP       = "RDP Bookmarks";
     private static final String NAME_SETTINGS_OTHER     = "HTTP, CIFS, VNC Bookmarks";
-    private static final String NAME_STATUS             = "Status";
+    private static final String NAME_STATUS             = "Active Users";
     private static final String NAME_LOG                = "Event Log";
 
     private List<UserEntry> localUserEntries;
@@ -91,19 +93,21 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	addRefreshable(NAME_SETTINGS_HOME, globalHomeSettingsJPanel);
 	globalHomeSettingsJPanel.setSettingsChangedListener(this);
 
-	/*
         // STATUS ////////
-	StatusJPanel statusJPanel = new StatusJPanel();
-        addTab(NAME_STATUS, null, statusJPanel);
-	addSavable(NAME_STATUS, statusJPanel);
-	addRefreshable(NAME_STATUS, statusJPanel);
-	*/
+	KickUserJPanel kickUserJPanel = new KickUserJPanel(this);
+        addTab(NAME_STATUS, null, kickUserJPanel);
+	addSavable(NAME_STATUS, kickUserJPanel);
+	addRefreshable(NAME_STATUS, kickUserJPanel);
 
  	// EVENT LOG ///////
 	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransform(), this);
         addTab(NAME_LOG, null, logJPanel);
         addShutdownable(NAME_LOG, logJPanel);
 
+    }
+
+    List<PortalLogin> getLoginList(){
+	return null;
     }
 
     public void refreshAll() throws Exception {
