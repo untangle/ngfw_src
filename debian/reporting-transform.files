@@ -1,3 +1,4 @@
 usr/share/metavize/toolbox/reporting-transform.mar
 usr/share/metavize/web/webstart/reporting-transform-client.mar
 usr/share/metavize/schema/reporting-transform/*
+usr/share/metavize/reporting/*
