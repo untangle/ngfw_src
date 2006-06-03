@@ -9,9 +9,9 @@ function NavigationBar(parent)
 
    DwtToolBar.call(this, parent, "ToolBar", DwtControl.ABSOLUTE_STYLE, 2);
 
-   this.home = new DwtButton(this);
-   this.home.setImage("Home"); // XXX change to "Home"
-   this.home.setToolTipContent("Portal Home");
+   this._home = new DwtButton(this);
+   this._home.setImage("Home"); // XXX change to "Home"
+   this._home.setToolTipContent("Portal Home");
 
    this.title = new DwtLabel(this, DwtLabel.ALIGN_LEFT, "NavBarTitle");
 
@@ -19,9 +19,9 @@ function NavigationBar(parent)
 
    this.addFiller();
 
-   this.logout = new DwtButton(this);
-   this.logout.setImage("Logout");
-   this.logout.setToolTipContent("Logout");
+   this._logout = new DwtButton(this);
+   this._logout.setImage("Logout");
+   this._logout.setToolTipContent("Logout");
 
    this.portalMode();
 }
@@ -46,7 +46,13 @@ NavigationBar.prototype.applicationMode = function(bookmark)
 
 NavigationBar.prototype.addHomeButtonListener = function(l)
 {
-   this.home.addSelectionListener(l);
+   this._home.addSelectionListener(l);
+}
+
+
+NavigationBar.prototype.addLogoutButtonListener = function(l)
+{
+   this._logout.addSelectionListener(l);
 }
 
 // listeners ------------------------------------------------------------------

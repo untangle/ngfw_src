@@ -105,6 +105,18 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
     <url-pattern>/secure/application</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>LogoutServlet</servlet-name>
+    <servlet-class>
+      com.metavize.tran.portal.LogoutServlet
+    </servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>LogoutServlet</servlet-name>
+    <url-pattern>/logout</url-pattern>
+  </servlet-mapping>
+
   @JSP_PRE_COMPILED_SERVLETS@
 
   <security-constraint>

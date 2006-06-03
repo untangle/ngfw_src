@@ -18,6 +18,8 @@ function Portal(shell) {
    this._navBar.zShow(true);
    var l = new AjxListener(this, this._homeButtonListener);
    this._navBar.addHomeButtonListener(l);
+   l = new AjxListener(this, this._logoutButtonListener);
+   this._navBar.addLogoutButtonListener(l);
 
    this._portalPanel = new PortalPanel(this._shell);
    var l = new AjxListener(this, this._bookmarkSelectionListener);
@@ -211,4 +213,15 @@ Portal.prototype._refreshAppsCallback = function(obj, results) {
 Portal.prototype._homeButtonListener = function()
 {
    this.showPortal();
+}
+
+Portal.prototype._logoutButtonListener = function()
+{
+   var cb = new AjxCallback(this, this._logoutCallback);
+   AjxRpc.invoke(null, "logout", null, cb, { }, true);
+}
+
+Portal.prototype._logoutCallback = function()
+{
+   window.location.reload();
 }
