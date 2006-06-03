@@ -22,7 +22,7 @@ import com.metavize.mvvm.tran.firewall.ParsingConstants;
 public final class IPAllPublicMatcher extends IPDBMatcher
 {
     private static final IPAllPublicMatcher INSTANCE = new IPAllPublicMatcher();
-    private static final String MARKER_ALL_PUBLIC[] = { "all public" };
+    private static final String MARKER_ALL_PUBLIC[] = { "all external addresses" };
     
     private static IPDBMatcher matcher = IPSimpleMatcher.getNilMatcher();
 

@@ -22,7 +22,7 @@ import com.metavize.mvvm.tran.firewall.ParsingConstants;
 public final class IPLocalMatcher extends IPDBMatcher
 {
     private static final IPLocalMatcher INSTANCE = new IPLocalMatcher();
-    private static final String MARKER_LOCAL[] = { "local", "edgeguard" };
+    private static final String MARKER_LOCAL[] = { "external address", "local", "edgeguard" };
     
     private static IPDBMatcher matcher = IPSimpleMatcher.getNilMatcher();
 

@@ -63,7 +63,7 @@ class RedirectVirtualTableModel extends MSortedTableModel<Object>{
     private static final int  C2_MW = 75;   /* redirect */
     private static final int  C3_MW = 55;   /* log */
     private static final int  C4_MW = 100;  /* traffic type */
-    private static final int  C5_MW = 130;  /* destination address */
+    private static final int  C5_MW = 175;  /* destination address */
     private static final int  C6_MW = 110;  /* destination port */
     private static final int  C7_MW = 130;  /* redirect to new address */
     private static final int  C8_MW = 110;  /* redirect to new port */
