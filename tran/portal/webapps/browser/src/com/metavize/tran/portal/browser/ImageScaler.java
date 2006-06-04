@@ -56,7 +56,7 @@ public class ImageScaler extends HttpServlet
             s.setAttribute("ntlmPasswordAuthentication", auth);
         }
 
-        String url = req.getParameter("url");
+        String url = "smb:" + req.getParameter("url");
         try {
             BufferedImage bi = readImage(url, auth);
             bi = scaleImage(bi);

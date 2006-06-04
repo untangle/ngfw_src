@@ -62,7 +62,7 @@ public class FileGetter extends HttpServlet
             throw new ServletException("could not decode UTF-8", exn);
         }
 
-        url = url.substring(l, url.length());
+        url = "smb:" + url.substring(l, url.length());
 
         SmbFile f;
 

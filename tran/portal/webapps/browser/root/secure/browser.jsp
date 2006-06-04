@@ -1,6 +1,9 @@
-<%@ page language="java" import="jcifs.smb.*" %>
+<%@ page language="java" %>
 
-<% String sp = (String)request.getContextPath() + "/secure"; %>
+<%
+String sp = (String)request.getContextPath() + "/secure";
+String target = request.getParameter("target");
+%>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
@@ -42,7 +45,7 @@ function launch() {
 DBG = new AjxDebug(AjxDebug.DBG1, null, false);
 
 var shell = new DwtShell("MainShell", false);
-new Browser(shell, "smb://windows.metavize.com/");
+new Browser(shell, "<%=target%>");
 }
 AjxCore.addOnloadListener(launch);
 </script>
