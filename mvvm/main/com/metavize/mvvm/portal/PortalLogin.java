@@ -13,7 +13,10 @@ package com.metavize.mvvm.portal;
 
 import java.net.InetAddress;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import com.metavize.mvvm.tran.IPaddr;
 import jcifs.smb.NtlmPasswordAuthentication;
@@ -34,7 +37,7 @@ public class PortalLogin implements Principal
     private final Date loginDate;
 
     // Not for UI use:
-    private transient NtlmPasswordAuthentication ntlmAuth;
+    private transient List authenticators = new ArrayList();;
 
     // constructors -----------------------------------------------------------
 
@@ -52,7 +55,7 @@ public class PortalLogin implements Principal
         }
         this.clientAddr = new IPaddr(clientAddr);
         this.loginDate = new Date(System.currentTimeMillis());
-        this.ntlmAuth = ntlmAuth;
+        this.authenticators.add(ntlmAuth);
     }
 
     // Principal methods ------------------------------------------------------
@@ -114,9 +117,9 @@ public class PortalLogin implements Principal
         return group;
     }
 
-    public NtlmPasswordAuthentication getNtlmAuth()
+    public List getAuthenticators()
     {
-        return ntlmAuth;
+        return Collections.unmodifiableList(authenticators);
     }
 
     /**

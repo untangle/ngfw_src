@@ -27,9 +27,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
-import jcifs.smb.NtlmPasswordAuthentication;
+import com.metavize.mvvm.portal.PortalLogin;
 import jcifs.smb.SmbFile;
 import org.apache.log4j.Logger;
 
@@ -48,17 +47,11 @@ public class ImageScaler extends HttpServlet
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException
     {
-        HttpSession s = req.getSession();
-
-        NtlmPasswordAuthentication auth = (NtlmPasswordAuthentication)s.getAttribute("ntlmPasswordAuthentication");
-        if (null == auth) {
-            auth = new NtlmPasswordAuthentication("windows.metavize.com", "amread", "XYZ123abc");
-            s.setAttribute("ntlmPasswordAuthentication", auth);
-        }
+        PortalLogin pl = (PortalLogin)req.getUserPrincipal();
 
         String url = "smb:" + req.getParameter("url");
         try {
-            BufferedImage bi = readImage(url, auth);
+            BufferedImage bi = readImage(url, pl);
             bi = scaleImage(bi);
             writeImage(bi, resp);
         } catch (MalformedURLException exn) {
@@ -70,6 +63,8 @@ public class ImageScaler extends HttpServlet
         } catch (IOException exn) {
             logger.warn("could not scale image: " + url, exn);
             resp.setStatus(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE);
+        } catch (AuthenticationException exn) {
+            Util.sendAuthenicationError(resp, exn);
         }
     }
 
@@ -88,10 +83,10 @@ public class ImageScaler extends HttpServlet
 
     // private methods --------------------------------------------------------
 
-    private BufferedImage readImage(String url, NtlmPasswordAuthentication auth)
-        throws MalformedURLException, IOException
+    private BufferedImage readImage(String url, PortalLogin pl)
+        throws MalformedURLException, IOException, AuthenticationException
     {
-        SmbFile f = new SmbFile(url, auth);
+        SmbFile f = Util.authenticateFile(url, pl);
         String contentType = mimeMap.getContentType(f.getName());
         Iterator<ImageReader> i = ImageIO.getImageReadersByMIMEType(contentType);
         if (!i.hasNext()) {

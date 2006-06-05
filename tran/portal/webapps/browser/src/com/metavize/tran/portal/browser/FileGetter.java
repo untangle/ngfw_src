@@ -22,9 +22,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
-import jcifs.smb.NtlmPasswordAuthentication;
+import com.metavize.mvvm.portal.PortalLogin;
 import jcifs.smb.SmbFile;
 import org.apache.log4j.Logger;
 
@@ -43,14 +42,7 @@ public class FileGetter extends HttpServlet
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException
     {
-        HttpSession s = req.getSession();
-
-        // XXX auth
-        NtlmPasswordAuthentication auth = (NtlmPasswordAuthentication)s.getAttribute("ntlmPasswordAuthentication");
-        if (null == auth) {
-            auth = new NtlmPasswordAuthentication("windows.metavize.com", "amread", "XYZ123abc");
-            s.setAttribute("ntlmPasswordAuthentication", auth);
-        }
+        PortalLogin pl = (PortalLogin)req.getUserPrincipal();
 
         int l = req.getContextPath().length() + req.getServletPath().length() + 1;
 
@@ -67,9 +59,12 @@ public class FileGetter extends HttpServlet
         SmbFile f;
 
         try {
-            f = new SmbFile(url, auth);
+            f = Util.authenticateFile(url, pl);
         } catch (MalformedURLException exn) {
             throw new ServletException(exn);
+        } catch (AuthenticationException exn) {
+            Util.sendAuthenicationError(resp, exn);
+            return;
         }
 
         ServletOutputStream os = null;

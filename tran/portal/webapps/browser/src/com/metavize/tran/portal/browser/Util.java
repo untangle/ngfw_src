@@ -11,8 +11,50 @@
 
 package com.metavize.tran.portal.browser;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.util.List;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
+
+import com.metavize.mvvm.portal.PortalLogin;
+import jcifs.smb.NtlmPasswordAuthentication;
+import jcifs.smb.SmbException;
+import jcifs.smb.SmbFile;
+
 class Util
 {
+    static SmbFile authenticateFile(String url, PortalLogin pl)
+        throws AuthenticationException, MalformedURLException
+    {
+        for (NtlmPasswordAuthentication npa : (List<NtlmPasswordAuthentication>)pl.getAuthenticators()) {
+            try {
+                SmbFile f = new SmbFile(url, npa);
+                f.exists();
+                return f;
+            } catch (SmbException exn) { }
+        }
+
+        throw new AuthenticationException(url);
+    }
+
+    static void sendAuthenicationError(HttpServletResponse resp, AuthenticationException exn)
+        throws ServletException
+    {
+        String url = exn.getUrl();
+        if (url.startsWith("smb:")) {
+            url = url.substring(3);
+        }
+
+        try {
+            PrintWriter w = resp.getWriter();
+            w.println("<error type='auth' url='" + escapeXml(url) + "'/>");
+        } catch (IOException e) {
+            throw new ServletException(e);
+        }
+    }
+
     static String escapeXml(String in)
     {
         StringBuilder sb = null;
