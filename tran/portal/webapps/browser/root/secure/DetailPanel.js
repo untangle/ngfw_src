@@ -44,8 +44,11 @@ DetailPanel.prototype.refresh = function()
       this.setUI(1);
    }
 
-   AjxRpc.invoke(null, "ls?url=" + this.cwd + "&type=full", null,
-                 new AjxCallback(this, cb, new Object()), true);
+//   AjxRpc.invoke(null, "ls?url=" + this.cwd + "&type=full", null,
+//                 new AjxCallback(this, cb, new Object()), true);
+   DBG.println("INVOKE ls");
+   MvRpc.invoke(null, "ls?url=" + this.cwd + "&type=full", null, true,
+                new AjxCallback(this, cb, new Object()));
 }
 
 // internal methods -----------------------------------------------------------

@@ -25,6 +25,8 @@ String target = request.getParameter("target");
 
 <jsp:include page="Ajax.inc"/>
 
+<script type="text/javascript" src="<%=sp%>/MvRpc.js"></script>
+
 <script type="text/javascript" src="<%=sp%>/CifsNode.js"></script>
 <script type="text/javascript" src="<%=sp%>/Browser.js"></script>
 <script type="text/javascript" src="<%=sp%>/DirTree.js"></script>

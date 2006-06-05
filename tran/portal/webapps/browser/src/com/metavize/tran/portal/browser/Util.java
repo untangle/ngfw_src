@@ -48,6 +48,7 @@ class Util
         }
 
         try {
+            System.out.println("SENT ERROR");
             PrintWriter w = resp.getWriter();
             w.println("<error type='auth' url='" + escapeXml(url) + "'/>");
         } catch (IOException e) {
