@@ -231,9 +231,9 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
     <fileset refid="jasperreports.jarset"/>
   </path>
 
-  <fileset id="jasperreports.old-commons.jarset" dir="${TOMCAT_EMBED_HOME}/lib">
-    <include name="commons-collections-3.1.jar"/>
-    <include name="commons-logging.jar"/>
+  <fileset id="jasperreports.old-commons.jarset" dir="${HIBERNATE_HOME}/lib">
+    <include name="commons-collections-2.1.1.jar"/>
+    <include name="commons-logging-1.0.4.jar"/>
   </fileset>
 
   <path id="jasperreports.old-commons.classpath">
@@ -268,6 +268,15 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
 
   <path id="jcifs.classpath">
     <fileset refid="jcifs.jarset"/>
+  </path>
+
+  <fileset id="properjavardp.jarset" dir="${PROPERJAVARDP_HOME}">
+    <include name="*.jar"/>
+    <include name="dist/*.jar"/>
+  </fileset>
+
+  <path id="properjavardp.classpath">
+    <fileset refid="properjavardp.jarset"/>
   </path>
 
   <fileset id="tightvnc-mv.jarset" dir="${TIGHTVNC_HOME}">
@@ -353,6 +362,7 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
 
   <path id="tomcat.thirdparty.classpath">
     <path refid="tomcat.classpath"/>
+    <path refid="ant.classpath"/>
   </path>
 
   <!-- ********************************************************************* -->
