@@ -27,7 +27,6 @@ public class KickButtonRunnable implements ButtonRunnable {
     private MTransformControlsJPanel mTransformControlsJPanel;
     private boolean valueChanged;
     private CellEditor cellEditor;
-
     private PortalLogin portalLogin;
 
     public KickButtonRunnable(PortalLogin portalLogin, String isEnabled){
@@ -48,10 +47,45 @@ public class KickButtonRunnable implements ButtonRunnable {
     public void setMTransformControlsJPanel(MTransformControlsJPanel mTransformControlsJPanel){ this.mTransformControlsJPanel = mTransformControlsJPanel; }
     public void actionPerformed(ActionEvent evt){ run(); }
     public void run(){
+	new KickUserThread();
+    }
 
-	isEnabled = false;
-	SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    cellEditor.stopCellEditing();
-	}});
+    class KickUserThread extends Thread {
+	MProgressJDialog mProgressJDialog;
+	public KickUserThread(){
+	    setDaemon(true);
+	    setName("MV-CLIENT: KickUserThread");
+	    start();
+	    mProgressJDialog = MProgressJDialog.factory("Logging out...",
+							"The user: " + portalLogin.getUser() + " from group: " + portalLogin.getGroup() + " is being logged out.",
+							topLevelWindow);
+	    mProgressJDialog.getJProgressBar().setIndeterminate(true);
+	    mProgressJDialog.getJProgressBar().setString("Logging out...");
+	    mProgressJDialog.setVisible(true);
+	}
+	public void run(){
+
+	    try{
+		Util.getRemotePortalManager().forceLogout(portalLogin);
+		Thread.sleep(2000l);
+		SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		    mProgressJDialog.getJProgressBar().setIndeterminate(false);
+		    mProgressJDialog.getJProgressBar().setString("Success");
+		    mProgressJDialog.getJProgressBar().setValue(100);
+		}});
+	    }
+	    catch(Exception e){
+		try{ Util.handleExceptionWithRestart("Error forcing logout", e); }
+		catch(Exception f){ Util.handleExceptionNoRestart("Error forcing logout", f); }
+	    }
+	    finally{
+		isEnabled = false;
+		SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		    mProgressJDialog.setVisible(false);
+		    cellEditor.stopCellEditing();
+		}});
+	    }
+
+	}
     }
 }

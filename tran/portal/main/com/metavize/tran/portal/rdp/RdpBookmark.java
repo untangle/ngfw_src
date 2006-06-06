@@ -35,6 +35,10 @@ public class RdpBookmark extends Bookmark
     // Cache
     transient Hashtable values = null;
 
+    public RdpBookmark(){  // temporarily for GUI compatibility
+	this(new Bookmark());
+    }
+
     public RdpBookmark(Bookmark parent)
     {
         setId(parent.getId());

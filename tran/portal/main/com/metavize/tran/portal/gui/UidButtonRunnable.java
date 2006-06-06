@@ -48,15 +48,20 @@ public class UidButtonRunnable implements ButtonRunnable {
 	UidSelectJDialog uidSelectJDialog = UidSelectJDialog.factory(topLevelWindow);
 	uidSelectJDialog.setVisible(true);
 	String newUid = uidSelectJDialog.getUid();
-	if( (uid == null) && (newUid == null) )
+	if( (uid == null) && (newUid == null) ){
 	    valueChanged = false;
-	else if( (uid != null) && (newUid == null) )
+	}
+	else if( (uid != null) && (newUid == null) ){
+	    valueChanged = false;
+	}
+	else if( (uid == null) && (newUid != null) ){
 	    valueChanged = true;
-	else if( (uid == null) && (newUid != null) )
-	    valueChanged = true;
-	else
+	}
+	else{
 	    valueChanged = !uid.equals(newUid);
-	uid = newUid;
+	}
+	if(valueChanged)
+	    uid = newUid;
 	SwingUtilities.invokeLater( new Runnable(){ public void run(){
 	    cellEditor.stopCellEditing();
 	}});

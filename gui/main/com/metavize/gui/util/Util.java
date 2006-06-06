@@ -48,6 +48,7 @@ import com.metavize.mvvm.security.*;
 import com.metavize.mvvm.addrbook.*;
 import com.metavize.mvvm.toolbox.ToolboxManager;
 import com.metavize.mvvm.tran.*;
+import com.metavize.mvvm.portal.RemotePortalManager;
 
 public class Util {
 
@@ -119,6 +120,7 @@ public class Util {
     private static LoggingManager loggingManager;
     private static AppServerManager appServerManager;
     private static AddressBook addressBook;
+    private static RemotePortalManager remotePortalManager;
 
     public static void setMvvmContext(MvvmRemoteContext mvvmContextX){
         mvvmContext = mvvmContextX;
@@ -132,6 +134,7 @@ public class Util {
             loggingManager = mvvmContext.loggingManager();
             appServerManager = mvvmContext.appServerManager();
             addressBook = mvvmContext.appAddressBook();
+	    remotePortalManager = mvvmContext.portalManager();
         }
         else{
             toolboxManager = null;
@@ -143,6 +146,7 @@ public class Util {
             loggingManager = null;
             appServerManager = null;
             addressBook = null;
+	    remotePortalManager = null;
         }
     }
 
@@ -157,6 +161,7 @@ public class Util {
     public static LoggingManager getLoggingManager(){ return loggingManager; }
     public static AppServerManager getAppServerManager(){ return appServerManager; }
     public static AddressBook getAddressBook(){ return addressBook; }
+    public static RemotePortalManager getRemotePortalManager(){ return remotePortalManager; }
     ///////////////////////////////////
 
 

@@ -77,9 +77,10 @@ class UserConfigTableModel extends MSortedTableModel<Object>{
 	groupModel.removeAllElements();
 	PortalGroupWrapper defaultPortalGroupWrapper = new PortalGroupWrapper(null);
 	groupModel.addElement(defaultPortalGroupWrapper); // for the "default" group
-	groupModel.setSelectedItem(defaultPortalGroupWrapper);
-	for( PortalGroup portalGroup : portalGroups )
+	for( PortalGroup portalGroup : portalGroups ){
 	    groupModel.addElement(new PortalGroupWrapper(portalGroup));
+	}
+	groupModel.setSelectedItem(defaultPortalGroupWrapper);
     }
     
     public TableColumnModel getTableColumnModel(){
@@ -113,16 +114,19 @@ class UserConfigTableModel extends MSortedTableModel<Object>{
         int rowIndex = 1;
         // go through all the rows and perform some tests
         for( Vector tempUser : tableVector ){
-	    String uid = ((UidButtonRunnable) tempUser.elementAt(3)).getUid();
-	    // no uid is unselected
-	    if( uid == null ){
-		throw new Exception("No user id/login has been selected in row: " + rowIndex);
+	    String state = (String) tempUser.elementAt(0);
+	    if( !ROW_REMOVE.equals(state) ){
+		String uid = ((UidButtonRunnable) tempUser.elementAt(3)).getUid();
+		// no uid is unselected
+		if( uid == null ){
+		    throw new Exception("No user id/login has been selected in row: " + rowIndex);
+		}
+		// all uid's are unique
+		if( uidHashtable.contains( uid ) )
+		    throw new Exception("The user/login ID in row: " + rowIndex + " has already been taken.");
+		else
+		    uidHashtable.put(uid,uid);
 	    }
-	    // all uid's are unique
-	    if( uidHashtable.contains( uid ) )
-		throw new Exception("The user/login ID in row: " + rowIndex + " has already been taken.");
-	    else
-		uidHashtable.put(uid,uid);
 	    rowIndex++;
 	}
     }
@@ -208,7 +212,7 @@ class UserConfigTableModel extends MSortedTableModel<Object>{
 	    else if( (getPortalGroup() == null) && (other.getPortalGroup() != null) )
 		return false;
 	    else
-		return portalGroup.equals((PortalGroupWrapper)obj);
+		return getPortalGroup().equals(other.getPortalGroup());
 	}
     }
 }

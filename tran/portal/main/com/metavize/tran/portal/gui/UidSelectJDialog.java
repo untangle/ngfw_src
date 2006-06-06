@@ -247,9 +247,9 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
 	public String toString(){
 	    String repository = "UNKNOWN";
 	    switch(userEntry.getStoredIn()){
-	    case MS_ACTIVE_DIRECTORY : repository = "Remote Active Directory (AD)";
+	    case MS_ACTIVE_DIRECTORY : repository = "Active Directory";
 		break;
-	    case LOCAL_DIRECTORY : repository = "Local LDAP Directory";
+	    case LOCAL_DIRECTORY : repository = "LDAP";
 		break;
 	    case NONE : repository = "UNKNOWN";
 	    default :;

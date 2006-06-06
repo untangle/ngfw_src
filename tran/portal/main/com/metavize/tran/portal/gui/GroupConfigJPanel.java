@@ -82,17 +82,46 @@ class GroupConfigTableModel extends MSortedTableModel<Object>{
 	settingsButtonRunnable.setMTransformControlsJPanel(mTransformControlsJPanel);
     }
 
+
+    Hashtable<String,String> userHashtable = new Hashtable<String,String>();
+	
     public void prevalidate(Object settings, Vector<Vector> tableVector) throws Exception {
+	
+	PortalSettings portalSettings = (PortalSettings) settings;
+
+	// BUILD THE LIST OF REFERENCED GROUPS (ASSUMES NAMES ARE UNIQUE)
+	userHashtable.clear();
+	List<PortalUser> portalUsers = (List<PortalUser>) portalSettings.getUsers();
+	for( PortalUser user : portalUsers ){
+	    if( user.getPortalGroup() != null ){
+		if( !userHashtable.containsKey(user.getPortalGroup().getName()) )
+		    userHashtable.put(user.getPortalGroup().getName(), user.getUid());
+	    }
+	}
+
         Hashtable<String,String> nameHashtable = new Hashtable<String,String>();
-        int rowIndex = 0;
-        // go through all the rows and perform some tests
+        int rowIndex = 1;
+        // go through all the rows and perform some tests on groups
         for( Vector tempUser : tableVector ){
+	    String state = (String) tempUser.elementAt(0);
 	    String name = (String) tempUser.elementAt(2);
-	    // all names are unique
-	    if( nameHashtable.contains( name ) )
-		throw new Exception("The name in row: " + rowIndex + " has already been taken.");
-	    else
-		nameHashtable.put(name,name);
+	    if( !ROW_REMOVE.equals(state) ){
+		// all names are unique
+		if( nameHashtable.contains( name ) )
+		    throw new Exception("The name in row: " + rowIndex + " has already been taken.");
+		else
+		    nameHashtable.put(name,name);
+	    }
+	    else{
+		// removed rows should not be referenced
+		if( userHashtable.containsKey(name) ){
+		    throw new Exception("The group \"" 
+					+ name 
+					+ "\" cannot be deleted because it is being used by the user: " 
+					+ userHashtable.get(name)
+					+ " in the Users list." );
+		}
+	    }
 	    rowIndex++;
 	}
     }

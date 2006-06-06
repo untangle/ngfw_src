@@ -48,6 +48,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     List<UserEntry> getLocalUserEntries(){ return localUserEntries; }
 
     private List<String> applicationNames;
+    private List<PortalLogin> loginList;
     
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
         super(mTransformJPanel);
@@ -62,7 +63,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	addRefreshable(NAME_USERS, userConfigJPanel);
 	userConfigJPanel.setSettingsChangedListener(this);
 
-	// GROUPS ///////////
+	// GROUPS ///////////  THIS MUST BE AFTER USERS FOR PREVALIDATION REASONS
 	GroupConfigJPanel groupConfigJPanel = new GroupConfigJPanel(this);
         addTab(NAME_GROUPS, null, groupConfigJPanel);
 	addSavable(NAME_GROUPS, groupConfigJPanel);
@@ -100,18 +101,20 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	addRefreshable(NAME_STATUS, kickUserJPanel);
 
  	// EVENT LOG ///////
+	/*
 	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransform(), this);
         addTab(NAME_LOG, null, logJPanel);
         addShutdownable(NAME_LOG, logJPanel);
-
+	*/
     }
 
     List<PortalLogin> getLoginList(){
-	return null;
+	return loginList;
     }
 
     public void refreshAll() throws Exception {
-	applicationNames = Util.getMvvmContext().portalManager().applicationManager().getApplicationNames();
+	applicationNames = Util.getRemotePortalManager().applicationManager().getApplicationNames();
+	loginList = Util.getRemotePortalManager().getActiveLogins();
 	super.refreshAll();
 	localUserEntries = Util.getAddressBook().getLocalUserEntries();
     }
