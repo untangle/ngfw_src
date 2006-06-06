@@ -17,6 +17,7 @@ import com.metavize.mvvm.security.RegistrationInfo;
 import com.metavize.mvvm.toolbox.MackageDesc;
 
 import java.util.TimeZone;
+import java.util.Date;
 import java.net.URL;
 
 public class AboutCompoundSettings implements CompoundSettings {
@@ -38,10 +39,12 @@ public class AboutCompoundSettings implements CompoundSettings {
     private String aboutText = "<br><br><b>Readme:</b> http://www.metavize.com/egquickstart<br><br><b>Website: </b>http://www.metavize.com";
     public String getAboutText(){ return aboutText; }
     
-	// TIMEZONE //
+    // TIMEZONE //
     private TimeZone timeZone;
+    private Date date;
     public TimeZone getTimeZone(){ return timeZone; }
     public void setTimeZone(TimeZone tzIn){ timeZone = tzIn; };
+    public Date getDate(){ return date; }
 	
     public void save() throws Exception {
 	Util.getAdminManager().setRegistrationInfo(registrationInfo);
@@ -61,6 +64,7 @@ public class AboutCompoundSettings implements CompoundSettings {
 	
 	licenseURL = Util.getClassLoader().getResource("License.txt");
 	timeZone = Util.getAdminManager().getTimeZone();
+	date = Util.getAdminManager().getDate();
     }
 
     public void validate() throws Exception {

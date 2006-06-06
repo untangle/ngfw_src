@@ -21,6 +21,7 @@ import com.metavize.mvvm.tran.*;
 import java.awt.*;
 import javax.swing.*;
 import java.util.TimeZone;
+import java.text.SimpleDateFormat;
 
 public class AboutTimezoneJPanel extends javax.swing.JPanel
     implements Savable<AboutCompoundSettings>, Refreshable<AboutCompoundSettings> {
@@ -59,7 +60,13 @@ public class AboutTimezoneJPanel extends javax.swing.JPanel
 	    }
 	}
 	timezoneJComboBox.setSelectedItem(timezone);
-			
+
+	// DATE //
+	SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, MMM d yyyy   h:mm a");
+	simpleDateFormat.setTimeZone(aboutCompoundSettings.getTimeZone());
+	String dateString = simpleDateFormat.format(aboutCompoundSettings.getDate());
+	dateString += "   " + timezone;
+	timeJLabel.setText(dateString);
     }
     
     
@@ -73,6 +80,8 @@ public class AboutTimezoneJPanel extends javax.swing.JPanel
                 restrictIPJPanel = new javax.swing.JPanel();
                 jLabel5 = new javax.swing.JLabel();
                 timezoneJComboBox = new javax.swing.JComboBox();
+                jLabel6 = new javax.swing.JLabel();
+                timeJLabel = new javax.swing.JLabel();
 
                 setLayout(new java.awt.GridBagLayout());
 
@@ -102,8 +111,27 @@ public class AboutTimezoneJPanel extends javax.swing.JPanel
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
                 gridBagConstraints.gridy = 0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.insets = new java.awt.Insets(0, 5, 2, 0);
                 restrictIPJPanel.add(timezoneJComboBox, gridBagConstraints);
+
+                jLabel6.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel6.setText("Time as of Refresh:");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
+                restrictIPJPanel.add(jLabel6, gridBagConstraints);
+
+                timeJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
+                restrictIPJPanel.add(timeJLabel, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -137,8 +165,10 @@ public class AboutTimezoneJPanel extends javax.swing.JPanel
         private javax.swing.JPanel enableRemoteJPanel;
         private javax.swing.JPanel externalRemoteJPanel;
         private javax.swing.JLabel jLabel5;
+        private javax.swing.JLabel jLabel6;
         private javax.swing.JPanel restrictIPJPanel;
         private javax.swing.ButtonGroup snmpButtonGroup;
+        private javax.swing.JLabel timeJLabel;
         private javax.swing.JComboBox timezoneJComboBox;
         private javax.swing.ButtonGroup trapButtonGroup;
         // End of variables declaration//GEN-END:variables
