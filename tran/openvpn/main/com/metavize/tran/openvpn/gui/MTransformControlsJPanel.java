@@ -24,8 +24,8 @@ import javax.swing.*;
 public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransformControlsJPanel{
     
     private static final String SETUP_NAME = "Setup";
-	private static final String WIZARD_NAME = "Wizard";
-	private static final String ADVANCED_NAME = "Advanced Settings";
+    private static final String WIZARD_NAME = "Wizard";
+    private static final String ADVANCED_NAME = "Advanced Settings";
     private static final String EXPORTS_NAME = "Exported Hosts/Networks";
     private static final String CLIENTS_AND_SITES_NAME = "VPN Clients/Sites";
     private static final String POOLS_NAME = "Address Pools";
@@ -80,10 +80,10 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	    // WIZARD
 	    WizardJPanel wizardJPanel = new WizardJPanel( vpnTransform, this );
 	    addRefreshable( WIZARD_NAME, wizardJPanel );
-		ServerAdvancedJPanel serverAdvancedJPanel = new ServerAdvancedJPanel();
-		serverAdvancedJPanel.setSettingsChangedListener(this);
-		addSavable( ADVANCED_NAME, serverAdvancedJPanel );
-		addRefreshable( ADVANCED_NAME, serverAdvancedJPanel );
+	    ServerAdvancedJPanel serverAdvancedJPanel = new ServerAdvancedJPanel();
+	    serverAdvancedJPanel.setSettingsChangedListener(this);
+	    addSavable( ADVANCED_NAME, serverAdvancedJPanel );
+	    addRefreshable( ADVANCED_NAME, serverAdvancedJPanel );
 		
 	    // EXPORTS
 	    ConfigExportsJPanel configExportsJPanel = new ConfigExportsJPanel();
@@ -109,10 +109,10 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	    addRefreshable( POOLS_NAME, configAddressGroupsJPanel );
 	    configAddressGroupsJPanel.setSettingsChangedListener(this);
 
-        // DONE TO REARRANGE THE DISPLAY ORDER indepently of the SAVE/REFRESH ORDER
-		JTabbedPane wizardJTabbedPane = addTabbedPane(SETUP_NAME, null);
-		wizardJTabbedPane.addTab( WIZARD_NAME, null, wizardJPanel );
-		wizardJTabbedPane.addTab( ADVANCED_NAME, null, serverAdvancedJPanel );
+	    // DONE TO REARRANGE THE DISPLAY ORDER indepently of the SAVE/REFRESH ORDER
+	    JTabbedPane wizardJTabbedPane = addTabbedPane(SETUP_NAME, null);
+	    wizardJTabbedPane.addTab( WIZARD_NAME, null, wizardJPanel );
+	    wizardJTabbedPane.addTab( ADVANCED_NAME, null, serverAdvancedJPanel );
 	    addTab( EXPORTS_NAME, null, configExportsJPanel );
 	    JTabbedPane clientsAndSitesJTabbedPane = addTabbedPane(CLIENTS_AND_SITES_NAME, null);
 	    clientsAndSitesJTabbedPane.addTab( POOLS_NAME, null, configAddressGroupsJPanel );
