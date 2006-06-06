@@ -56,11 +56,10 @@ class BookmarksTableModel extends MSortedTableModel<Object>{
     private static final int RC0_MW = Util.STATUS_MIN_WIDTH; /* status */
     private static final int RC1_MW = Util.LINENO_MIN_WIDTH; /* # */
     private static final int RC2_MW = 150; /* name */
-    private static final int RC3_MW = 150; /* target */
-    private static final int RC4_MW = 120; /* screen size */
-    private static final int RC5_MW = 75;  /* create new console */
-    private static final int RC6_MW = 100; /* hostname */
-    private static final int RC7_MW = Util.chooseMax(RT_TW - (RC0_MW + RC2_MW + RC3_MW + RC4_MW + RC5_MW + RC6_MW), 120); /* optional command */
+    private static final int RC3_MW = 120; /* screen size */
+    private static final int RC4_MW = 75;  /* create new console */
+    private static final int RC5_MW = 100; /* hostname */
+    private static final int RC6_MW = Util.chooseMax(RT_TW - (RC0_MW + RC2_MW + RC3_MW + RC4_MW + RC5_MW), 120); /* optional command */
 
     private Object portalObject;
     private List<String> applicationNames;
@@ -110,12 +109,11 @@ class BookmarksTableModel extends MSortedTableModel<Object>{
 	    addTableColumn( tableColumnModel,  0, RC0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS );
 	    addTableColumn( tableColumnModel,  1, RC1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX );
 	    addTableColumn( tableColumnModel,  2, RC2_MW, true,  true,  false, false, String.class, "[no name]", "name");
-	    addTableColumn( tableColumnModel,  3, RC3_MW, true,  true,  false, false, String.class, "[no target]", "target");
-	    addTableColumn( tableColumnModel,  4, RC4_MW, false, true,  false, false, ComboBoxModel.class, screenModel, "screen size");
-	    addTableColumn( tableColumnModel,  5, RC5_MW, false, true,  false, false, Boolean.class, RdpBookmark.CONSOLE_DEFAULT, sc.html("create new<br>console"));
-	    addTableColumn( tableColumnModel,  6, RC6_MW, true,  true,  false, false, String.class, "[no host]", sc.html("hostname"));
-	    addTableColumn( tableColumnModel,  7, RC7_MW, true,  true,  false, false, String.class, "[no command]", sc.html("optional<br>command"));
-	    addTableColumn( tableColumnModel,  8, 10,     false, false, true,  false, RdpBookmark.class, null, "");
+	    addTableColumn( tableColumnModel,  3, RC3_MW, false, true,  false, false, ComboBoxModel.class, screenModel, "screen size");
+	    addTableColumn( tableColumnModel,  4, RC4_MW, false, true,  false, false, Boolean.class, RdpBookmark.CONSOLE_DEFAULT, sc.html("create new<br>console"));
+	    addTableColumn( tableColumnModel,  5, RC5_MW, true,  true,  false, false, String.class, "[no host]", sc.html("hostname"));
+	    addTableColumn( tableColumnModel,  6, RC6_MW, true,  true,  false, false, String.class, "[no command]", sc.html("optional<br>command"));
+	    addTableColumn( tableColumnModel,  7, 10,     false, false, true,  false, RdpBookmark.class, null, "");
 	    return tableColumnModel;
 	}
     }
@@ -137,14 +135,13 @@ class BookmarksTableModel extends MSortedTableModel<Object>{
 	else{ // RDP
 	    RdpBookmark newElem = null;
 	    for( Vector rowVector : tableVector ){
-		newElem = (RdpBookmark) rowVector.elementAt(8);
+		newElem = (RdpBookmark) rowVector.elementAt(7);
 		newElem.setName( (String) rowVector.elementAt(2) );
 		newElem.setApplicationName( "RDP" );
-		newElem.setTarget( (String) rowVector.elementAt(3) );
-		newElem.setSize( (String) ((ComboBoxModel) rowVector.elementAt(4)).getSelectedItem() );
-		newElem.setConsole( (Boolean) rowVector.elementAt(5) );
-		newElem.setHost( (String) rowVector.elementAt(6) );
-		newElem.setCommand( (String) rowVector.elementAt(7) );
+		newElem.setSize( (String) ((ComboBoxModel) rowVector.elementAt(3)).getSelectedItem() );
+		newElem.setConsole( (Boolean) rowVector.elementAt(4) );
+		newElem.setHost( (String) rowVector.elementAt(5) );
+		newElem.setCommand( (String) rowVector.elementAt(6) );
 		elemList.add(newElem);
 	    }
 	}
@@ -154,6 +151,7 @@ class BookmarksTableModel extends MSortedTableModel<Object>{
 
 	    // FILTER OUT WHAT IS ABOUT TO BE SAVED OVER
 	    List<Bookmark> oldBookmarkList = null;
+	    List<Bookmark> newBookmarkList = new ArrayList<Bookmark>();
 	    if( portalObject instanceof PortalUser )
 		oldBookmarkList = (List<Bookmark>) ((PortalUser)portalObject).getBookmarks();
 	    else if( portalObject instanceof PortalGroup )
@@ -162,17 +160,16 @@ class BookmarksTableModel extends MSortedTableModel<Object>{
 		oldBookmarkList = (List<Bookmark>) ((PortalSettings)settings).getGlobal().getBookmarks();
 	    if( mode.equals("OTHER") ){ // VNC, HTTP, CIFS
 		for( Bookmark bookmark : oldBookmarkList )
-		    if( !bookmark.getApplicationName().equals("RDP") )
-			oldBookmarkList.remove(bookmark);
+		    if( bookmark.getApplicationName().equals("RDP") )
+			newBookmarkList.add(bookmark);
 	    }
 	    else{ // RDP
 		for( Bookmark bookmark : oldBookmarkList )
-		    if( bookmark.getApplicationName().equals("RDP") )
-			oldBookmarkList.remove(bookmark);
+		    if( !bookmark.getApplicationName().equals("RDP") )
+			newBookmarkList.add(bookmark);
 	    }
 	    // SAVE OVER
-	    oldBookmarkList.addAll(elemList);
-	    List newBookmarkList = oldBookmarkList;
+	    newBookmarkList.addAll(elemList);
 
 	    // SAVE NEW LIST
 	    if( portalObject instanceof PortalUser )
@@ -186,6 +183,8 @@ class BookmarksTableModel extends MSortedTableModel<Object>{
     
     public Vector<Vector> generateRows(Object settings){
 	List<Bookmark> bookmarks;
+	List<Bookmark> newBookmarks = new ArrayList<Bookmark>();
+
 	if( portalObject instanceof PortalUser )
 	    bookmarks = ((PortalUser)portalObject).getBookmarks();
 	else if( portalObject instanceof PortalGroup )
@@ -198,21 +197,21 @@ class BookmarksTableModel extends MSortedTableModel<Object>{
 	// FILTER OUT WHAT IS NOT TO BE DISPLAYED
 	if( mode.equals("OTHER") ){ // VNC, HTTP, CIFS
 	    for( Bookmark bookmark : bookmarks )
-		if( bookmark.getApplicationName().equals("RDP") )
-		    bookmarks.remove(bookmark);
+		if( !bookmark.getApplicationName().equals("RDP") )
+		    newBookmarks.add(bookmark);
 	}
 	else{ // RDP
 	    for( Bookmark bookmark : bookmarks )
-		if( !bookmark.getApplicationName().equals("RDP") )
-		    bookmarks.remove(bookmark);
+		if( bookmark.getApplicationName().equals("RDP") )
+		    newBookmarks.add(bookmark);
 	}
 	
-        Vector<Vector> allRows = new Vector<Vector>(bookmarks.size());
+        Vector<Vector> allRows = new Vector<Vector>(newBookmarks.size());
 	Vector tempRow = null;
 	int rowIndex = 0;
 
 	if( mode.equals("OTHER") ){ // VNC, HTTP, CIFS
-	    for( Bookmark newElem : bookmarks ){
+	    for( Bookmark newElem : newBookmarks ){
 		rowIndex++;
 		tempRow = new Vector(6);
 		tempRow.add( super.ROW_SAVED );
@@ -227,14 +226,13 @@ class BookmarksTableModel extends MSortedTableModel<Object>{
 	    }
 	}
 	else{ /// RDP
-	    for( Bookmark newBookmark : bookmarks ){
+	    for( Bookmark newBookmark : newBookmarks ){
 		rowIndex++;
 		RdpBookmark newElem = (RdpBookmark) newBookmark;
-		tempRow = new Vector(9);
+		tempRow = new Vector(8);
 		tempRow.add( super.ROW_SAVED );
 		tempRow.add( rowIndex );
 		tempRow.add( newElem.getName() );
-		tempRow.add( newElem.getTarget() );
 		ComboBoxModel comboBoxModel = copyComboBoxModel(screenModel);
 		comboBoxModel.setSelectedItem(newElem.getSize());
 		tempRow.add( comboBoxModel );
