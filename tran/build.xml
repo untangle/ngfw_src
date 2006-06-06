@@ -467,8 +467,8 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
   <target name="install.portal">
     <!-- rdp -->
-    <copy todir="${dist.mvvm.web}/rdp">
-      <fileset refid="log4j.jarset"/>
+    <copy todir="${dist.mvvm.web}/rdp" flatten="yes">
+      <fileset refid="properjavardp.jarset"/>
     </copy>
 
     <signjar keystore="../gui/keystore" alias="key"
@@ -889,6 +889,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <arg line="-l"/>
       <arg line="-v"/>
       <arg line="-compile"/>
+      <arg line="-source 1.5"/>
       <arg line="-d ${dist.mvvm.web}/rdp/WEB-INF/classes"/>
       <arg line="-p com.metavize.tran.${tran.name}.rdp"/>
       <arg line="-webinc ${build.gensrc}/rdp/web-fragment.xml"/>
@@ -947,6 +948,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <arg line="-l"/>
       <arg line="-v"/>
       <arg line="-compile"/>
+      <arg line="-source 1.5"/>
       <arg line="-d ${dist.mvvm.web}/vnc/WEB-INF/classes"/>
       <arg line="-p com.metavize.tran.${tran.name}.vnc"/>
       <arg line="-webinc ${build.gensrc}/vnc/web-fragment.xml"/>
