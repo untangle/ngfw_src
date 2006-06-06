@@ -43,8 +43,8 @@ import com.metavize.mvvm.security.LoginFailureReason;
 import com.metavize.mvvm.security.LogoutReason;
 import com.metavize.mvvm.util.TransactionWork;
 import jcifs.smb.NtlmPasswordAuthentication;
-import org.apache.catalina.HttpRequest;
-import org.apache.catalina.HttpResponse;
+import org.apache.catalina.connector.Request;
+import org.apache.catalina.connector.Response;
 import org.apache.catalina.Realm;
 import org.apache.catalina.authenticator.AuthenticatorBase;
 import org.apache.catalina.authenticator.FormAuthenticator;
@@ -443,6 +443,11 @@ class PortalManagerImpl implements LocalPortalManager
 
         private final Log log = LogFactory.getLog(getClass());
 
+        PortalAuthenticator() {
+            super();
+            //            setCache(false);
+        }
+
         // Realm methods ------------------------------------------------------
 
         @Override
@@ -451,26 +456,30 @@ class PortalManagerImpl implements LocalPortalManager
             return info;
         }
 
-        public boolean authenticate(HttpRequest request, HttpResponse response,
+        public boolean authenticate(Request request, Response response,
                                     LoginConfig config)
             throws IOException
         {
-            HttpServletRequest req = (HttpServletRequest)request.getRequest();
-
-            Principal p = req.getUserPrincipal();
+            Principal p = request.getUserPrincipal();
 
             if (null != p) {
+                log.debug("Principal: " + p);
                 PortalLoginDesc pld = activeLogins.get(p.getName());
                 boolean isLive = null == pld ? false : pld.isLive();
                 if (isLive) {
                     return true;
                 } else {
                     // XXX clear User Principal ???
-                    localAddr.set(req.getRemoteAddr());
+                    localAddr.set(request.getRemoteAddr());
                     return super.authenticate(request, response, config);
                 }
             } else {
-                localAddr.set(req.getRemoteAddr());
+                log.debug("No principal, calling super");
+                org.apache.catalina.Session session = request.getSessionInternal(false);
+                if (session != null) {
+                    p = session.getPrincipal();
+                }
+                localAddr.set(request.getRemoteAddr());
                 return super.authenticate(request, response, config);
             }
         }

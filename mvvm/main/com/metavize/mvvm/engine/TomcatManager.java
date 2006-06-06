@@ -24,12 +24,14 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Pipeline;
 import org.apache.catalina.Realm;
 import org.apache.catalina.authenticator.AuthenticatorBase;
-import org.apache.catalina.core.StandardDefaultContext;
+import org.apache.catalina.authenticator.SingleSignOn;
+// import org.apache.catalina.core.StandardDefaultContext;
 import org.apache.catalina.core.StandardHost;
-import org.apache.catalina.logger.FileLogger;
+// import org.apache.catalina.logger.FileLogger;
 import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Embedded;
-import org.apache.coyote.tomcat5.CoyoteConnector;
+import org.apache.catalina.connector.Connector;
+import org.apache.coyote.http11.Http11BaseProtocol;
 import org.apache.log4j.Logger;
 
 /**
@@ -65,9 +67,9 @@ class TomcatManager
     private String keystorePass = "changeit";
     private String keyAlias = "tomcat";
 
-    private CoyoteConnector defaultHTTPConnector;
-    private CoyoteConnector defaultHTTPSConnector;
-    private CoyoteConnector externalHTTPSConnector;
+    private Connector defaultHTTPConnector;
+    private Connector defaultHTTPSConnector;
+    private Connector externalHTTPSConnector;
 
     // constructors -----------------------------------------------------------
 
@@ -206,132 +208,148 @@ class TomcatManager
     {
         // Change for 4.0: Put the Tomcat class loader insdie the MVVM
         // class loader.
-
-        // jdi 8/30/04 -- canonical host name depends on ordering of
-        // /etc/hosts
-        String hostname = "localhost";
-
-        // set default logger and realm
-        FileLogger fileLog = new FileLogger();
-        fileLog.setDirectory(logDir);
-        fileLog.setPrefix("tomcat");
-        fileLog.setSuffix(".log");
-        fileLog.setTimestamp(true);
-        // fileLog.setVerbosityLevel("DEBUG");
-
-        emb = new Embedded(fileLog, mvvmRealm);
-        emb.setCatalinaHome(catalinaHome);
-
-        // create an Engine
-        Engine baseEngine = emb.createEngine();
-
-        // set Engine properties
-        baseEngine.setName("tomcat");
-        baseEngine.setDefaultHost(hostname);
-        baseEngine.setParentClassLoader(Thread.currentThread().getContextClassLoader());
-
-        // Set up the Default Context
-        StandardDefaultContext sdc = new StandardDefaultContext();
-        sdc.setAllowLinking(true);
-        baseEngine.addDefaultContext(sdc);
-
-        // create Host
-        baseHost = (StandardHost)emb
-            .createHost(hostname, webAppRoot);
-        baseHost.setUnpackWARs(true);
-        baseHost.setDeployOnStartup(true);
-        baseHost.setAutoDeploy(true);
-        baseHost.getPipeline().addValve(new org.apache.catalina.authenticator.SingleSignOn());
-
-        // add host to Engine
-        baseEngine.addChild(baseHost);
-
-        // create root Context
-        Context ctx = emb.createContext("", webAppRoot + "/ROOT");
-        StandardManager mgr = new StandardManager();
-        mgr.setPathname(null); /* disable session persistence */
-        ctx.setManager(mgr);
-        ctx.setManager(new StandardManager());
-
-        // add context to host
-        baseHost.addChild(ctx);
-
-        // create application Context
-        ctx = emb.createContext("/http-invoker", "http-invoker");
-        ctx.setPrivileged(true);
-        baseHost.addChild(ctx);
-        ctx.getServletContext().setAttribute("invoker", invokerBase);
-        mgr = new StandardManager();
-        mgr.setPathname(null); /* disable session persistence */
-        ctx.setManager(mgr);
-
-        // Load the webapps which were requested before the
-        // system started-up.
-        for (WebAppDescriptor desc : descriptors) {
-            loadWebAppImpl(desc.urlBase, desc.relativeRoot, desc.realm,
-                           desc.auth);
-        }
-
-        // add new Engine to set of
-        // Engine for embedded server
-        emb.addEngine(baseEngine);
-
-        // create Connectors
-        defaultHTTPConnector = createConnector(internalHTTPPort, false);
-        defaultHTTPSConnector = createConnector(internalHTTPSPort, true);
-
-        /* Start the outside https server */
-        if (externalHTTPSPort != internalHTTPSPort) {
-            externalHTTPSConnector = createConnector(externalHTTPSPort, true);
-        }
-
-        // start operation
+        ClassLoader mvvmCl = Thread.currentThread().getContextClassLoader();
+        ClassLoader tomcatParent = new StupidClassLoader(mvvmCl);
         try {
-            emb.start();
-        } catch (LifecycleException exn) {
-            Throwable wrapped = exn.getThrowable();
-            // Note -- right now wrapped is always null!  Thus the
-            // following horror:
-            boolean isAddressInUse = isAIUExn(exn);
-            if (isAddressInUse) {
-                Runnable tryAgain = new Runnable() {
-                        public void run() {
-                            int i;
-                            for (i = 0; i < NUM_TOMCAT_RETRIES; i++) {
-                                try {
-                                    logger.warn("could not start Tomcat (address in use), sleeping 20 and trying again");
-                                    Thread.sleep(TOMCAT_SLEEP_TIME);
+            // Entering Tomcat ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            Thread.currentThread().setContextClassLoader(tomcatParent);
+            MvvmRepositorySelector.get().init("tomcat");
+
+            // jdi 8/30/04 -- canonical host name depends on ordering of
+            // /etc/hosts
+            String hostname = "localhost";
+
+            // set default logger and realm
+            // FileLogger fileLog = new FileLogger();
+            // fileLog.setDirectory(logDir);
+            // fileLog.setPrefix("tomcat");
+            // fileLog.setSuffix(".log");
+            // fileLog.setTimestamp(true);
+            // fileLog.setVerbosityLevel("DEBUG");
+
+            emb = new Embedded(/* fileLog, */ mvvmRealm);
+            emb.setCatalinaHome(catalinaHome);
+
+            // create an Engine
+            Engine baseEngine = emb.createEngine();
+
+            // set Engine properties
+            baseEngine.setName("tomcat");
+            baseEngine.setDefaultHost(hostname);
+
+            baseEngine.setParentClassLoader(tomcatParent);
+
+            // Set up the Default Context
+            // StandardDefaultContext sdc = new StandardDefaultContext();
+            // sdc.setAllowLinking(true);
+            // baseEngine.addDefaultContext(sdc);
+
+            // create Host
+            baseHost = (StandardHost)emb
+                .createHost(hostname, webAppRoot);
+            baseHost.setUnpackWARs(true);
+            baseHost.setDeployOnStartup(true);
+            baseHost.setAutoDeploy(true);
+            OurSingleSignOn ourSsoWorkaroundValve = new OurSingleSignOn();
+            SingleSignOn ssoValve = new org.apache.catalina.authenticator.SingleSignOn();
+            // ssoValve.setRequireReauthentication(true);
+            baseHost.getPipeline().addValve(ourSsoWorkaroundValve);
+            baseHost.getPipeline().addValve(ssoValve);
+
+            // add host to Engine
+            baseEngine.addChild(baseHost);
+
+            // create root Context
+            Context ctx = emb.createContext("", webAppRoot + "/ROOT");
+            StandardManager mgr = new StandardManager();
+            mgr.setPathname(null); /* disable session persistence */
+            ctx.setManager(mgr);
+            ctx.setManager(new StandardManager());
+
+            // add context to host
+            baseHost.addChild(ctx);
+
+            // create application Context
+            ctx = emb.createContext("/http-invoker", "http-invoker");
+            ctx.setPrivileged(true);
+            baseHost.addChild(ctx);
+            ctx.getServletContext().setAttribute("invoker", invokerBase);
+            mgr = new StandardManager();
+            mgr.setPathname(null); /* disable session persistence */
+            ctx.setManager(mgr);
+
+            // Load the webapps which were requested before the
+            // system started-up.
+            for (WebAppDescriptor desc : descriptors) {
+                loadWebAppImpl(desc.urlBase, desc.relativeRoot, desc.realm,
+                               desc.auth);
+            }
+
+            // add new Engine to set of
+            // Engine for embedded server
+            emb.addEngine(baseEngine);
+
+            // create Connectors
+            defaultHTTPConnector = createConnector(internalHTTPPort, false);
+            defaultHTTPSConnector = createConnector(internalHTTPSPort, true);
+
+            /* Start the outside https server */
+            if (externalHTTPSPort != internalHTTPSPort) {
+                externalHTTPSConnector = createConnector(externalHTTPSPort, true);
+            }
+
+            // start operation
+            try {
+                emb.start();
+            } catch (LifecycleException exn) {
+                Throwable wrapped = exn.getThrowable();
+                // Note -- right now wrapped is always null!  Thus the
+                // following horror:
+                boolean isAddressInUse = isAIUExn(exn);
+                if (isAddressInUse) {
+                    Runnable tryAgain = new Runnable() {
+                            public void run() {
+                                int i;
+                                for (i = 0; i < NUM_TOMCAT_RETRIES; i++) {
                                     try {
-                                        emb.stop();
-                                    } catch (LifecycleException exn) {
-                                        logger.warn(exn, exn);
-                                    }
-                                    emb.start();
-                                    logger.info("Tomcat successfully started");
-                                    break;
-                                } catch (InterruptedException x) {
-                                    return;
-                                } catch (LifecycleException x) {
-                                    boolean isAddressInUse = isAIUExn(x);
-                                    if (!isAddressInUse) {
-                                        Main.fatalError("Starting Tomcat", x);
+                                        logger.warn("could not start Tomcat (address in use), sleeping 20 and trying again");
+                                        Thread.sleep(TOMCAT_SLEEP_TIME);
+                                        try {
+                                            emb.stop();
+                                        } catch (LifecycleException exn) {
+                                            logger.warn(exn, exn);
+                                        }
+                                        emb.start();
+                                        logger.info("Tomcat successfully started");
+                                        break;
+                                    } catch (InterruptedException x) {
                                         return;
+                                    } catch (LifecycleException x) {
+                                        boolean isAddressInUse = isAIUExn(x);
+                                        if (!isAddressInUse) {
+                                            Main.fatalError("Starting Tomcat", x);
+                                            return;
+                                        }
                                     }
                                 }
+                                if (i == NUM_TOMCAT_RETRIES)
+                                    Main.fatalError("Unable to start Tomcat after " +
+                                                    NUM_TOMCAT_RETRIES
+                                                    + " tries, giving up",
+                                                    null);
                             }
-                            if (i == NUM_TOMCAT_RETRIES)
-                                Main.fatalError("Unable to start Tomcat after " +
-                                                NUM_TOMCAT_RETRIES
-                                                + " tries, giving up",
-                                                null);
-                        }
-                    };
-                new Thread(tryAgain, "Tomcat starter").start();
-            } else {
-                // Something else, just die die die.
-                throw exn;
+                        };
+                    new Thread(tryAgain, "Tomcat starter").start();
+                } else {
+                    // Something else, just die die die.
+                    throw exn;
+                }
             }
+        } finally {
+            Thread.currentThread().setContextClassLoader(mvvmCl);
+            // restored classloader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
+
     }
 
     String generateAuthNonce(InetAddress clientAddr, Principal user)
@@ -434,22 +452,23 @@ class TomcatManager
     /**
      * Helper method - no synchronization
      */
-    private CoyoteConnector createConnector(int port, boolean secure)
+    private Connector createConnector(int port, boolean secure)
     {
-        CoyoteConnector ret = (CoyoteConnector)emb
+        Connector ret = emb
             .createConnector((InetAddress)null, port, secure);
 
         if (secure) {
-            ret.setKeystoreFile(this.keystoreFile);
-            ret.setKeystorePass(this.keystorePass);
-            ret.setKeyAlias(this.keyAlias);
+            Http11BaseProtocol ph = (Http11BaseProtocol)ret.getProtocolHandler();
+            ph.setKeystore(this.keystoreFile);
+            ph.setKeypass(this.keystorePass);
+            ph.setKeyAlias(this.keyAlias);
         }
 
         emb.addConnector(ret);
         return ret;
     }
 
-    private boolean destroyConnector(CoyoteConnector connector,
+    private boolean destroyConnector(Connector connector,
                                      String nameForLog)
     {
         /* Need to change the port */
@@ -466,7 +485,7 @@ class TomcatManager
         return true;
     }
 
-    private boolean startConnector(CoyoteConnector connector, String logName)
+    private boolean startConnector(Connector connector, String logName)
     {
         for (int i = 0; i < NUM_REBIND_RETRIES; i++) {
             try {
@@ -509,5 +528,11 @@ class TomcatManager
         if (msg.contains("address already in use"))
             return true;
         return false;
+    }
+
+    private static class StupidClassLoader extends ClassLoader {
+        StupidClassLoader(ClassLoader parent) {
+            super(parent);
+        }
     }
 }
