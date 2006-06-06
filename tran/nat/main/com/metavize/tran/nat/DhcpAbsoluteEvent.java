@@ -87,7 +87,7 @@ public class DhcpAbsoluteEvent extends LogEvent implements Serializable
         DhcpAbsoluteLease absoluteLease;
         for (Iterator iter = absoluteLeaseList.iterator(); true == iter.hasNext(); )
         {
-            absoluteLease = (DhcpAbsoluteLease) iter;
+            absoluteLease = (DhcpAbsoluteLease) iter.next();
             absoluteLease.appendSyslog(sb);
         }
     }
