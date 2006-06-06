@@ -31,7 +31,7 @@ function FileUploadPanel(parent, url, dest)
       };
 
       iFrame.uploadFailure = function(msg) {
-         alert("XXX OOPIES!");
+         DBG.println("XXX OOPIES!");
       }
    }
 

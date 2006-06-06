@@ -23,16 +23,16 @@ DirTree._POPULATED = "populated";
 
 // public methods -------------------------------------------------------------
 
-DirTree.prototype.setRoot = function(url)
+DirTree.prototype.setRoot = function(url, principal)
 {
    this.cwd = url;
 
-   var n = new CifsNode(null, url, true);
+   var n = new CifsNode(null, url, principal, true);
 
    var root = new DwtTreeItem(this);
    root.setText(n.label);
    root.setImage("Folder"); // XXX Make Server icon
-   root.setData(Browser.CIFS_NODE, n);
+   root.setData(Browser.CIFS_NODE, n, principal);
 
    this._populate(root);
 }
@@ -115,9 +115,7 @@ DirTree.prototype._populate = function(item, cb, repopulate)
    if (repopulate || !item.getData(DirTree._POPULATED)) {
       item.setData(DirTree._POPULATED, true);
 
-      var url = n.url;
-
-      var obj = { parent: item, parentUrl: url, cb: cb };
+      var obj = { parent: item, cb: cb };
 
       AjxRpc.invoke(null, "ls?url=" + url + "&type=dir", null,
                      new AjxCallback(this, this._populateCallback, obj), true);
@@ -147,7 +145,9 @@ DirTree.prototype._populateCallback = function(obj, results)
       if (current[name]) {
          delete current[name];
       } else {
-         var n = new CifsNode(obj.parentUrl, name, true);
+         var p = obj.parent;
+         var pcn = parent.getData(Browser.CIFS_NODE);
+         var n = new CifsNode(pcn.url, name, pcn.principal, true);
          var tn = new DwtTreeItem(obj.parent, null, n.label, "folder");
          tn.setData(Browser.CIFS_NODE, n);
          if (this._dragSource) {

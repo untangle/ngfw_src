@@ -1,7 +1,7 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-function Browser(shell, url) {
+function Browser(shell, url, principal) {
    if (0 == arguments.length) {
       return;
    }
@@ -11,6 +11,9 @@ function Browser(shell, url) {
    this._shell.addControlListener(new AjxListener(this, this._shellListener));
 
    DwtComposite.call(this, this._shell, "Browser", DwtComposite.ABSOLUTE_STYLE);
+
+   this._authCallback = new AjxCallback(this, this._authResource, { });
+
    this._toolbar = this._makeToolbar();
    this._toolbar.zShow(true);
 
@@ -23,7 +26,7 @@ function Browser(shell, url) {
    dropTarget.addDropListener(new AjxListener(this, this._treeDropListener));
    this._dirTree = new DirTree(this, null, DwtControl.ABSOLUTE_STYLE,
                                dragSource, dropTarget);
-   this._dirTree.setRoot(url);
+   this._dirTree.setRoot(url, principal);
    this._dirTree.setScrollStyle(DwtControl.SCROLL);
    this._dirTree.addSelectionListener(new AjxListener(this, this._dirSelectionListener));
    this._dirTree.zShow(true);
@@ -37,7 +40,7 @@ function Browser(shell, url) {
    dragSource.addDragListener(new AjxListener(this, this._detailDragListener));
    dropTarget = new DwtDropTarget(CifsNode);
    dropTarget.addDropListener(new AjxListener(this, this._detailDropListener));
-   this._detailPanel = new DetailPanel(this, null, DwtControl.ABSOLUTE_STYLE);
+   this._detailPanel = new DetailPanel(this, this._authCallback);
    this._detailPanel.setUI();
    this._detailPanel.zShow(true);
    this._detailPanel.addSelectionListener(new AjxListener(this, this._detailSelectionListener));
@@ -339,6 +342,12 @@ Browser.prototype._mkdirButtonListener = function(ev)
    dialog.popup();
 }
 
+Browser.prototype._authResource = function(obj, response)
+{
+   alert("AUTHENTICATE MF");
+}
+
+
 // shell ----------------------------------------------------------------------
 
 Browser.prototype._shellListener = function(ev)
@@ -438,7 +447,6 @@ Browser.prototype._detailDropListener = function(evt)
       break;
 
       case DwtDropEvent.DRAG_DROP:
-      alert("DROP: " + evt.srcData);
       break;
    }
 }
@@ -458,8 +466,7 @@ Browser._mkSrcDestCommand = function(command, src, dest)
    return url;
 }
 
-DwtControl._mouseOverHdlr =
-function(ev) {
+DwtControl._mouseOverHdlr = function(ev) {
     // Check to see if a drag is occurring. If so, don't process the mouse
     // over events.
     var captureObj = (DwtMouseEventCapture.getId() == "DwtControl") ? DwtMouseEventCapture.getCaptureObj() : null;

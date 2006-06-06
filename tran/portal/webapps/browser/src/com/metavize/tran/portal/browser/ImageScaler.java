@@ -29,8 +29,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.metavize.mvvm.portal.PortalLogin;
+import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbFile;
 import org.apache.log4j.Logger;
+
 
 public class ImageScaler extends HttpServlet
 {
@@ -48,10 +50,11 @@ public class ImageScaler extends HttpServlet
         throws ServletException
     {
         PortalLogin pl = (PortalLogin)req.getUserPrincipal();
+        NtlmPasswordAuthentication auth = pl.getNtlmAuth();
 
         String url = "smb:" + req.getParameter("url");
         try {
-            BufferedImage bi = readImage(url, pl);
+            BufferedImage bi = readImage(url, auth);
             bi = scaleImage(bi);
             writeImage(bi, resp);
         } catch (MalformedURLException exn) {
@@ -63,8 +66,6 @@ public class ImageScaler extends HttpServlet
         } catch (IOException exn) {
             logger.warn("could not scale image: " + url, exn);
             resp.setStatus(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE);
-        } catch (AuthenticationException exn) {
-            Util.sendAuthenicationError(resp, exn);
         }
     }
 
@@ -83,10 +84,10 @@ public class ImageScaler extends HttpServlet
 
     // private methods --------------------------------------------------------
 
-    private BufferedImage readImage(String url, PortalLogin pl)
-        throws MalformedURLException, IOException, AuthenticationException
+    private BufferedImage readImage(String url, NtlmPasswordAuthentication auth)
+        throws MalformedURLException, IOException
     {
-        SmbFile f = Util.authenticateFile(url, pl);
+        SmbFile f = new SmbFile(url, auth);
         String contentType = mimeMap.getContentType(f.getName());
         Iterator<ImageReader> i = ImageIO.getImageReadersByMIMEType(contentType);
         if (!i.hasNext()) {

@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.metavize.mvvm.portal.PortalLogin;
+import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 import org.apache.log4j.Logger;
@@ -34,25 +35,22 @@ public class CommandRunner extends HttpServlet
         throws ServletException
     {
         PortalLogin pl = (PortalLogin)req.getUserPrincipal();
+        NtlmPasswordAuthentication auth = pl.getNtlmAuth();
 
         String cmd = req.getParameter("command");
 
-        try {
-            if (cmd.equals("rm")) {
-                rm(req, pl);
-            } else if (cmd.equals("mv")) {
-                mv(req, pl);
-            } else if (cmd.equals("cp")) {
-                cp(req, pl);
-            } else if (cmd.equals("mkdir")) {
-                mkdir(req, pl);
-            } else if (cmd.equals("rename")) {
-                rename(req, pl);
-            } else {
-                throw new ServletException("bad command: " + cmd);
-            }
-        } catch (AuthenticationException exn) {
-            Util.sendAuthenicationError(resp, exn);
+        if (cmd.equals("rm")) {
+            rm(req, auth);
+        } else if (cmd.equals("mv")) {
+            mv(req, auth);
+        } else if (cmd.equals("cp")) {
+            cp(req, auth);
+        } else if (cmd.equals("mkdir")) {
+            mkdir(req, auth);
+        } else if (cmd.equals("rename")) {
+            rename(req, auth);
+        } else {
+            throw new ServletException("bad command: " + cmd);
         }
     }
 
@@ -61,14 +59,13 @@ public class CommandRunner extends HttpServlet
         logger = Logger.getLogger(getClass());
     }
 
-    private void rm(HttpServletRequest req, PortalLogin pl)
-        throws AuthenticationException
+    private void rm(HttpServletRequest req, NtlmPasswordAuthentication auth)
     {
         String[] files = req.getParameterValues("file");
 
         for (String f : files) {
             try {
-                Util.authenticateFile("smb:" + f, pl).delete();
+                new SmbFile("smb:" + f, auth).delete();
             } catch (SmbException exn) {
                 logger.warn("could not delete: " + f, exn);
             } catch (MalformedURLException exn) {
@@ -77,16 +74,15 @@ public class CommandRunner extends HttpServlet
         }
     }
 
-    private void mv(HttpServletRequest req, PortalLogin pl)
-        throws AuthenticationException
+    private void mv(HttpServletRequest req, NtlmPasswordAuthentication auth)
     {
         String[] s = req.getParameterValues("src");
         String d = "smb:" + req.getParameter("dest");
 
         for (String f : s) {
             try {
-                SmbFile src = Util.authenticateFile("smb:" + f, pl);
-                SmbFile dest = Util.authenticateFile(d + src.getName(), pl);
+                SmbFile src = new SmbFile("smb:" + f, auth);
+                SmbFile dest = new SmbFile(d + src.getName(), auth);
                 src.renameTo(dest);
             } catch (SmbException exn) {
                 // XXX report errors to client
@@ -98,15 +94,14 @@ public class CommandRunner extends HttpServlet
         }
     }
 
-    private void rename(HttpServletRequest req, PortalLogin pl)
-        throws AuthenticationException
+    private void rename(HttpServletRequest req, NtlmPasswordAuthentication auth)
     {
         String src = "smb:" + req.getParameter("src");
         String dest = "smb:" + req.getParameter("dest");
 
         try {
-            SmbFile destFile = Util.authenticateFile(dest, pl);
-            Util.authenticateFile(src, pl).renameTo(destFile);
+            SmbFile destFile = new SmbFile(dest, auth);
+            new SmbFile(src, auth).renameTo(destFile);
         } catch (SmbException exn) {
             logger.warn("could not rename: " + src + " to: " + dest, exn);
         } catch (MalformedURLException exn) {
@@ -114,16 +109,15 @@ public class CommandRunner extends HttpServlet
         }
     }
 
-    private void cp(HttpServletRequest req, PortalLogin pl)
-        throws AuthenticationException
+    private void cp(HttpServletRequest req, NtlmPasswordAuthentication auth)
     {
         String[] s = req.getParameterValues("src");
         String d = "smb:" + req.getParameter("dest");
 
         for (String f : s) {
             try {
-                SmbFile src = Util.authenticateFile("smb:" + f, pl);
-                SmbFile dest = Util.authenticateFile(d + src.getName(), pl);
+                SmbFile src = new SmbFile("smb:" + f, auth);
+                SmbFile dest = new SmbFile(d + src.getName(), auth);
                 src.copyTo(dest);
             } catch (SmbException exn) {
                 // XXX report errors to client
@@ -135,13 +129,12 @@ public class CommandRunner extends HttpServlet
         }
     }
 
-    private void mkdir(HttpServletRequest req, PortalLogin pl)
-        throws AuthenticationException
+    private void mkdir(HttpServletRequest req, NtlmPasswordAuthentication auth)
     {
         String url = "smb:" + req.getParameter("url");
 
         try {
-            Util.authenticateFile(url, pl).mkdir();
+            new SmbFile(url, auth).mkdir();
         } catch (MalformedURLException exn) {
             // XXX
             logger.warn("bad url:" + url, exn);

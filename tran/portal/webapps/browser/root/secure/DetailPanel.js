@@ -1,10 +1,12 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-function DetailPanel(parent, className, posStyle) {
+function DetailPanel(parent, authCallback) {
    if (0 == arguments.length) {
       return;
    }
+
+   this._authCallback = authCallback;
 
    var header = [];
    var i = 0;
@@ -18,7 +20,7 @@ function DetailPanel(parent, className, posStyle) {
    hi.memberName = "lastModified";
    header[i++] = hi;
 
-   DwtListView.call(this, parent, className, posStyle, header, true);
+   DwtListView.call(this, parent, null, DwtControl.ABSOLUTE_STYLE, header, true);
 }
 
 DetailPanel.prototype = new DwtListView();
@@ -39,16 +41,15 @@ DetailPanel.prototype.chdir = function(url)
 
 DetailPanel.prototype.refresh = function()
 {
-   var cb = function(obj, results) {
+   var f = function(obj, results) {
       this._setListingXml(results.xml);
       this.setUI(1);
    }
+   var actionCb = new AjxCallback(this, f, new Object());
 
-//   AjxRpc.invoke(null, "ls?url=" + this.cwd + "&type=full", null,
-//                 new AjxCallback(this, cb, new Object()), true);
    DBG.println("INVOKE ls");
    MvRpc.invoke(null, "ls?url=" + this.cwd + "&type=full", null, true,
-                new AjxCallback(this, cb, new Object()));
+                actionCb, MvRpc.reloadPageCallback, this._authCallback);
 }
 
 // internal methods -----------------------------------------------------------
@@ -67,6 +68,7 @@ DetailPanel.prototype._setListingXml = function(dom)
       if ("dir" == tagName || "file" == tagName) {
          listing.add(new CifsNode(this.url,
                                   child.getAttribute("name"),
+                                  child.getAttribute("principal"),
                                   "dir" == tagName,
                                   child.getAttribute("size"),
                                   child.getAttribute("mtime"),

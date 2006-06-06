@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.metavize.mvvm.portal.PortalLogin;
+import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFileFilter;
@@ -60,6 +61,7 @@ public class FileLister extends HttpServlet
         throws ServletException
     {
         PortalLogin pl = (PortalLogin)req.getUserPrincipal();
+        NtlmPasswordAuthentication auth = pl.getNtlmAuth();
 
         resp.setContentType("text/xml");
         resp.addHeader("Cache-Control", "no-cache");
@@ -81,11 +83,9 @@ public class FileLister extends HttpServlet
         SmbFile f = null;
 
         try {
-            f = Util.authenticateFile(url, pl);
+            f = new SmbFile(url, auth);
         } catch (MalformedURLException exn) {
             throw new ServletException(exn);
-        } catch (AuthenticationException exn) {
-            Util.sendAuthenicationError(resp, exn);
         }
 
         PrintWriter os = null;
@@ -144,9 +144,11 @@ public class FileLister extends HttpServlet
                 boolean hidden = f.isHidden();
                 String contentType = f.isDirectory() ? ""
                     : mimeMap.getContentType(name);
+                String principal = f.getPrincipal().toString();
 
                 os.println("  <" + tag + " "
                            + "name='" + name + "' "
+                           + "principal='" + principal + "' "
                            + "ctime='" + ctime + "' "
                            + "mtime='" + mtime + "' "
                            + "size='" + length + "' "

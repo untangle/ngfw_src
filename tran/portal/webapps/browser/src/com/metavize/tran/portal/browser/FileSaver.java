@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.metavize.mvvm.portal.PortalLogin;
+import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbFile;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
@@ -44,6 +45,7 @@ public class FileSaver extends HttpServlet
         throws ServletException
     {
         PortalLogin pl = (PortalLogin)req.getUserPrincipal();
+        NtlmPasswordAuthentication auth = pl.getNtlmAuth();
 
         ServletFileUpload upload = new ServletFileUpload(fileItemFactory);
         String dest = null;
@@ -73,12 +75,9 @@ public class FileSaver extends HttpServlet
         byte[] buf = new byte[4092];
         for (FileItem fi : items) {
             try {
-                copyFile(fi, dest, pl, buf);
+                copyFile(fi, dest, auth, buf);
             } catch (IOException exn) {
                 logger.warn("could not save: " + fi.getName(), exn);
-            } catch (AuthenticationException exn) {
-                Util.sendAuthenicationError(resp, exn);
-                return;
             }
         }
 
@@ -116,14 +115,14 @@ public class FileSaver extends HttpServlet
     }
 
     private void copyFile(FileItem fi, String dest,
-                          PortalLogin pl, byte[] buf)
-        throws IOException, AuthenticationException
+                          NtlmPasswordAuthentication auth, byte[] buf)
+        throws IOException
     {
         OutputStream os = null;
         InputStream is = null;
 
         try {
-            SmbFile f = Util.authenticateFile(dest + basename(fi.getName()), pl);
+            SmbFile f = new SmbFile(dest + basename(fi.getName()), auth);
             is = fi.getInputStream();
             os = f.getOutputStream();
 

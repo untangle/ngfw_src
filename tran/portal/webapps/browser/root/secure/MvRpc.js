@@ -21,27 +21,30 @@ MvRpc.invoke = function(requestStr, serverUrl, requestHeaders, useGet,
 
 // public methods -------------------------------------------------------------
 
-/* MvRpc.reloadPageCallback = new AjxCallback(null, new function() { */
-/*    DBG.println("MvRpc.reloadPageCallback"); */
-/*    window.location.reload(); */
-/* }); */
+MvRpc._reloadPage = function()
+{
+   window.location.reload();
+}
+
+MvRpc.reloadPageCallback = new AjxCallback(null, MvRpc._reloadPage, { });
 
 // private methods ------------------------------------------------------------
 
 MvRpc._callbackFn = function(obj, results)
 {
    if (results.xml) {
+      DBG.println("first child: " + results.xml.firstChild.tagName);
       if (obj.authCallback && "error" == results.xml.firstChild.tagName) {
          DBG.println("RUNNING authCallback");
-         obj.authCallback.run(results);
+         return obj.authCallback.run(results);
       } else if (obj.actionCallback) {
          DBG.println("RUNNING actionCallback");
-         obj.actionCallback.run(results);
+         return obj.actionCallback.run(results);
       }
    } else {
       // XXX detect timeout page
       if (obj.timeoutCallback) {
-         obj.timeoutCallback.run(results);
+         return obj.timeoutCallback.run(results);
          DBG.println("RUNNING timeoutCallback");
       } else {
          DBG.println("DOING NOTHING");

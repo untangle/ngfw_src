@@ -4,9 +4,11 @@
 CifsNode.FILE = "file"
 CifsNode.DIR = "dir"
 
-function CifsNode(parent, name, isDirectory, size, lastModified, contentType) {
+function CifsNode(parent, name, principal, isDirectory, size, lastModified,
+                  contentType) {
    this.parent = parent;
    this.name = name;
+   this.principal = principal;
    this.isDirectory = isDirectory || false;
    this.size = size || 0;
    this.contentType = contentType;
