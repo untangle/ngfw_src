@@ -11,6 +11,7 @@
 
 package com.metavize.mvvm.portal;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.security.Principal;
 import java.util.ArrayList;
