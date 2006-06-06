@@ -90,8 +90,13 @@ public class RdpBookmark extends Bookmark
     }
 
     private void strSetter(String key, String val) {
-        if (values == null)
-            values = FormUtil.parseQueryString(getTarget());
+        if (values == null) {
+            String target = getTarget();
+            if (target != null && !target.equals(""))
+                values = FormUtil.parseQueryString(getTarget());
+            else
+                values = new Hashtable();
+        }
         values.put(key, new String[] { val });
         setTarget(FormUtil.unparseQueryString(values));
     }
