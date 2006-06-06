@@ -149,6 +149,11 @@
     <priority value="WARN"/>
   </category>
 
+  <category name="org.apache.catalina">
+    <priority value="WARN"/>
+  </category>
+
+
   <!-- ======================= -->
   <!-- Setup the Root category -->
   <!-- ======================= -->
