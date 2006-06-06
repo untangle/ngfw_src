@@ -187,6 +187,15 @@ class AppServerManagerImpl implements AppServerManager
         return tomcatManager.unloadWebApp(contextRoot);
     }
 
+    public void resetRootWelcome()
+    {
+        tomcatManager.resetRootWelcome();
+    }
+
+    public void setRootWelcome(String welcomeFile)
+    {
+        tomcatManager.setRootWelcome(welcomeFile);
+    }
 
     //TODO bscott Sometime in the next two years we need a way for them
     //     to roll to a new key while maintaing their existing signed cert.

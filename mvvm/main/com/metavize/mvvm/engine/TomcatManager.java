@@ -25,21 +25,15 @@ import org.apache.catalina.Pipeline;
 import org.apache.catalina.Realm;
 import org.apache.catalina.authenticator.AuthenticatorBase;
 import org.apache.catalina.authenticator.SingleSignOn;
-// import org.apache.catalina.core.StandardDefaultContext;
+import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.StandardHost;
-// import org.apache.catalina.logger.FileLogger;
 import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Embedded;
-import org.apache.catalina.connector.Connector;
 import org.apache.coyote.http11.Http11BaseProtocol;
 import org.apache.log4j.Logger;
 
 /**
  * Wrapper around the Tomcat server embedded within the MVVM.
- *
- * Note that the rest of the MVVM should <b>not</b> access this code
- * directly.  Instead, please go through the {@link
- * com.metavize.mvvm.AppServerManager AppServerManager} interface.
  */
 class TomcatManager
 {
@@ -47,6 +41,8 @@ class TomcatManager
     private static final long TOMCAT_SLEEP_TIME = 20 * 1000; // 20 seconds
     private static final long REBIND_SLEEP_TIME = 1 * 1000; // 1 second
     private static final int NUM_REBIND_RETRIES = 5; //  10 seconds
+
+    private static final String STANDARD_WELCOME = "./webstart/";
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -66,6 +62,9 @@ class TomcatManager
     private String keystoreFile = "conf/keystore";
     private String keystorePass = "changeit";
     private String keyAlias = "tomcat";
+
+    private Context rootContext;
+    private String welcomeFile = STANDARD_WELCOME;
 
     private Connector defaultHTTPConnector;
     private Connector defaultHTTPSConnector;
@@ -260,17 +259,19 @@ class TomcatManager
             baseEngine.addChild(baseHost);
 
             // create root Context
-            Context ctx = emb.createContext("", webAppRoot + "/ROOT");
+            rootContext = emb.createContext("", webAppRoot + "/ROOT");
             StandardManager mgr = new StandardManager();
             mgr.setPathname(null); /* disable session persistence */
-            ctx.setManager(mgr);
-            ctx.setManager(new StandardManager());
+            rootContext.setManager(mgr);
+            rootContext.setManager(new StandardManager());
+            System.out.println("init ADDED WELCOMEFILE: " + welcomeFile);
+            setRootWelcome(welcomeFile);
 
             // add context to host
-            baseHost.addChild(ctx);
+            baseHost.addChild(rootContext);
 
             // create application Context
-            ctx = emb.createContext("/http-invoker", "http-invoker");
+            Context ctx = emb.createContext("/http-invoker", "http-invoker");
             ctx.setPrivileged(true);
             baseHost.addChild(ctx);
             ctx.getServletContext().setAttribute("invoker", invokerBase);
@@ -355,6 +356,18 @@ class TomcatManager
     String generateAuthNonce(InetAddress clientAddr, Principal user)
     {
         return mvvmRealm.generateAuthNonce(clientAddr, user);
+    }
+
+    void resetRootWelcome()
+    {
+        setRootWelcome(STANDARD_WELCOME);
+    }
+
+    synchronized void setRootWelcome(String welcomeFile)
+    {
+        System.out.println("setRootWelcome ADDED WELCOMEFILE: " + welcomeFile);
+        this.welcomeFile = welcomeFile;
+        rootContext.addParameter("welcomeFile", welcomeFile);
     }
 
     // private classes --------------------------------------------------------

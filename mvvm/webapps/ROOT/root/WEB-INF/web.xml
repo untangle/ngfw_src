@@ -7,10 +7,4 @@
 
   @JSP_PRE_COMPILED_SERVLETS@
 
-  <display-name>Metavize Common</display-name>
-
-  <welcome-file-list>
-    <welcome-file>secure/portal.jsp</welcome-file>
-  </welcome-file-list>
-
 </web-app>

@@ -11,10 +11,6 @@
 
 package com.metavize.mvvm;
 import com.metavize.mvvm.security.CertInfo;
-import com.metavize.mvvm.security.CertInfo;
-import com.metavize.mvvm.security.CertInfo;
-import com.metavize.mvvm.security.CertInfo;
-import com.metavize.mvvm.security.CertInfo;
 import com.metavize.mvvm.security.RFC2253Name;
 
 
@@ -32,7 +28,6 @@ public interface AppServerManager
      * Change the port to-which the external interface is bound
      */
     void rebindExternalHttpsPort(int port) throws Exception;
-
 
     /**
      * Load a portal web app. This app will use the PortalRealm for
@@ -74,6 +69,10 @@ public interface AppServerManager
     boolean loadInsecureApp(String urlBase, String rootDir);
 
     boolean unloadWebApp(String urlBase);
+
+    void resetRootWelcome();
+
+    void setRootWelcome(String welcome);
 
     /**
      * Regenerate the self-signed certificate for this instance. The

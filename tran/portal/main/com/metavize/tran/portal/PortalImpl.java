@@ -101,12 +101,6 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
         proxyApp = lam.registerApplication("HTTP", "Web Proxy", null, null, 0,
                                            WEB_JS);
 
-        if (asm.loadPortalApp("/portal", "portal")) {
-            logger.debug("Deployed Portal web app");
-        } else {
-            logger.error("Unable to deploy Portal web app");
-        }
-
         Application.Destinator rdpDestinator = new Application.Destinator() {
                 public String getDestinationHost(Bookmark bm) {
                     RdpBookmark rb = new RdpBookmark(bm);
@@ -117,8 +111,8 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
                 }
             };
 
-        rdpApp = lam.registerApplication("RDP", "Remote Desktop", rdpDestinator, null, 0,
-                                         RDP_JS);
+        rdpApp = lam.registerApplication("RDP", "Remote Desktop",
+                                         rdpDestinator, null, 0, RDP_JS);
 
         if (asm.loadPortalApp("/rdp", "rdp")) {
             logger.debug("Deployed RDP Portal app");
@@ -137,14 +131,22 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
                 }
             };
 
-        vncApp = lam.registerApplication("VNC", "Virtual Network Computing", vncDestinator, null, 0,
-                                         VNC_JS);
+        vncApp = lam.registerApplication("VNC", "Virtual Network Computing",
+                                         vncDestinator, null, 0, VNC_JS);
 
         if (asm.loadPortalApp("/vnc", "vnc")) {
             logger.debug("Deployed VNC Portal app");
         } else {
             logger.error("Unable to deploy VNC Portal app");
         }
+
+        if (asm.loadPortalApp("/portal", "portal")) {
+            logger.debug("Deployed Portal web app");
+        } else {
+            logger.error("Unable to deploy Portal web app");
+        }
+
+        asm.setRootWelcome("./portal/");
     }
 
     private void unDeployWebAppIfRequired(Logger logger) {
@@ -152,6 +154,14 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
         AppServerManager asm = mctx.appServerManager();
         LocalPortalManager lpm = mctx.portalManager();
         LocalApplicationManager lam = lpm.applicationManager();
+
+        asm.resetRootWelcome();
+
+        if (asm.unloadWebApp("/portal")) {
+            logger.debug("Unloaded Portal web app");
+        } else {
+            logger.warn("Unable to unload Portal web app");
+        }
 
         if (asm.unloadWebApp("/browser")) {
             logger.debug("Unloaded Browser web app");
@@ -168,12 +178,6 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
         }
 
         lam.deregisterApplication(proxyApp);
-
-        if (asm.unloadWebApp("/portal")) {
-            logger.debug("Unloaded Portal web app");
-        } else {
-            logger.warn("Unable to unload Portal web app");
-        }
 
         lam.deregisterApplication(rdpApp);
 
