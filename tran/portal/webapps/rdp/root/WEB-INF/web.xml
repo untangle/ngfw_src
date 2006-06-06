@@ -9,12 +9,26 @@
 
   <display-name>Remote Desktop Client</display-name>
 
-  <servlet-mapping>
-    <servlet-name>com.metavize.tran.portal.rdp.rdp_jsp</servlet-name>
-    <url-pattern>*.html</url-pattern>
-  </servlet-mapping>
+  <security-constraint>
+    <web-resource-collection>
+      <http-method>GET</http-method>
+      <url-pattern>/rdp.jsp</url-pattern>
+      <url-pattern>/rdp.jnlp</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>user</role-name>
+    </auth-constraint>
+  </security-constraint>
 
-  <welcome-file-list>
-    <welcome-file>rdp.jsp</welcome-file>
-  </welcome-file-list>
+  <security-role>
+    <role-name>user</role-name>
+  </security-role>
+
+  <login-config>
+    <auth-method>FORM</auth-method>
+    <form-login-config>
+      <form-login-page>/login/login.jsp</form-login-page>
+      <form-error-page>/login/login.jsp</form-error-page>
+    </form-login-config>
+  </login-config>
 </web-app>

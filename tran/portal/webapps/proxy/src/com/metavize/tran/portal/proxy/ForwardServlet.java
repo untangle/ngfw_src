@@ -30,6 +30,7 @@ import com.metavize.mvvm.portal.Application;
 import com.metavize.mvvm.portal.Bookmark;
 import com.metavize.mvvm.portal.LocalApplicationManager;
 import com.metavize.mvvm.portal.LocalPortalManager;
+import com.metavize.mvvm.portal.PortalHomeSettings;
 import com.metavize.mvvm.portal.PortalLogin;
 import com.metavize.mvvm.portal.PortalUser;
 import org.apache.log4j.Logger;
@@ -55,11 +56,12 @@ public class ForwardServlet extends HttpServlet
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+    protected void service(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException
     {
         String destHost;
         int destPort;
+        int idleTime = 1200;
         HttpSession session = req.getSession();
 
         PortalLogin pl = (PortalLogin)req.getUserPrincipal();
@@ -78,24 +80,32 @@ public class ForwardServlet extends HttpServlet
             }
             return;
         }
+        PortalHomeSettings phs = portalManager.getPortalHomeSettings(pu);
+        if (phs == null)
+            logger.warn("No portal home settings for " + pl);
+        else
+            idleTime = (int)(phs.getIdleTimeout() / 1000l);
 
         try {
             Bookmark target = null;
             String targetStr = req.getHeader(TARGET_HEADER);
             if (targetStr == null)
                 throw new ServletException("Missing target");
+
+            long targetId;
             try {
-                long targetId = Long.parseLong(targetStr);
-                List<Bookmark> allBookmarks = portalManager.getAllBookmarks(pu);
-                for (Iterator<Bookmark> iter = allBookmarks.iterator(); iter.hasNext();) {
-                    Bookmark bm = iter.next();
-                    if (bm.getId() == targetId) {
-                        target = bm;
-                        break;
-                    }
-                }
+                targetId = Long.parseLong(targetStr);
             } catch (NumberFormatException x) {
                 throw new ServletException("Malformed target " + targetStr);
+            }
+                    
+            List<Bookmark> allBookmarks = portalManager.getAllBookmarks(pu);
+            for (Iterator<Bookmark> iter = allBookmarks.iterator(); iter.hasNext();) {
+                Bookmark bm = iter.next();
+                if (bm.getId() == targetId) {
+                    target = bm;
+                    break;
+                }
             }
             if (target == null)
                 throw new ServletException("Target not found");
@@ -110,23 +120,30 @@ public class ForwardServlet extends HttpServlet
                 throw new ServletException("Target does not contain destination host");
             destPort = dest.getDestinationPort(target);
 
-            session.setMaxInactiveInterval(1200);            // XXX Use user's timeout
+            if (logger.isInfoEnabled())
+                logger.info("Opening forward for " + pl + " to " + destHost + ":" + destPort);
+
+            session.setMaxInactiveInterval(idleTime);
+
+            resp.setBufferSize(0);
+            // Turn on chunking:
+            resp.addHeader("Connection", "keep-alive");
+            resp.flushBuffer();        // Ensure response line/headers get there.
 
             InputStream his = req.getInputStream();
-            OutputStream hos = resp.getOutputStream();
+            OutputStream hos =resp.getOutputStream();
             Socket s = new Socket(destHost, destPort);
             InputStream sis = s.getInputStream();
             OutputStream sos = s.getOutputStream();
 
-            resp.setBufferSize(0);
-            resp.flushBuffer();        // Ensure response line/headers get there.
-
-            session.setMaxInactiveInterval(1200);            // XXX Use user's timeout
+            session.setMaxInactiveInterval(idleTime);
 
             Worker w1 = new Worker(his, sos);
             Thread t1 = mvvmContext.newThread(w1);
+            t1.setName("forward reader " + t1.getName());
             Worker w2 = new Worker(sis, hos);
             Thread t2 = mvvmContext.newThread(w2);
+            t2.setName("forward writer " + t2.getName());
 
             t1.start();
             t2.start();
@@ -141,6 +158,7 @@ public class ForwardServlet extends HttpServlet
             }
         } catch (IOException exn) {
             logger.error("could not get stream", exn);
+            throw new ServletException("Unable to forward", exn);
         }
     }
 

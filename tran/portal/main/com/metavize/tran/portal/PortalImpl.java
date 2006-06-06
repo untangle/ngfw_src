@@ -50,14 +50,14 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
     private static final String RDP_JS
         = "{\n"
         + "  openBookmark: function(portal, bookmark) {\n"
-        + "    portal.openPage('/rdp/rdp.jsp?t=' + bookmark.id);\n"
+        + "    portal.showApplicationUrl('/rdp/rdp.jsp?t=' + bookmark.id, bookmark);\n"
         + "  }\n"
         + "};\n";
 
     private static final String VNC_JS
         = "{\n"
         + "  openBookmark: function(portal, bookmark) {\n"
-        + "    portal.openPage('/vnc/vnc.jsp?t=' + bookmark.id);\n"
+        + "    portal.showApplicationUrl('/vnc/vnc.jsp?t=' + bookmark.id, bookmark);\n"
         + "  }\n"
         + "};\n";
 

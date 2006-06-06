@@ -55,7 +55,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
       <url-pattern>/mvrepl.js</url-pattern>
       <url-pattern>/http/*</url-pattern>
       <url-pattern>/https/*</url-pattern>
-      <url-pattern>/fowared/*</url-pattern>
+      <url-pattern>/forward/*</url-pattern>
     </web-resource-collection>
     <auth-constraint>
       <role-name>user</role-name>

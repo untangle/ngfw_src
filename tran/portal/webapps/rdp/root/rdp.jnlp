@@ -1,6 +1,8 @@
-<%@ page language="java" import="com.metavize.mvvm.*, com.metavize.mvvm.portal.*, com.metavize.tran.portal.rdp.*, java.util.*, java.io.IOException" %>
+<%@ page language="java" import="com.metavize.mvvm.*, com.metavize.mvvm.portal.*, com.metavize.tran.portal.rdp.*, java.util.*, java.io.IOException, org.apache.log4j.Logger" %>
 
 <%
+Logger logger = Logger.getLogger(getClass());
+
 response.addHeader("content-type", "application/x-java-jnlp-file");
 
 String host=request.getHeader("host");
@@ -10,9 +12,40 @@ int port=request.getLocalPort();
 String scheme=request.getScheme();
 String ctxPath=request.getContextPath();
 String sltPath=request.getServletPath();
+String query = request.getQueryString();
 
 String cb = scheme + "://" + host + ctxPath + "/";
+
+        String ssoSessionCookie = null;
+        Cookie[] cookies = request.getCookies();
+if (cookies != null)
+        for (int i = 0; i < cookies.length; i++) {
+                Cookie cookie = cookies[i];
+                if (cookie.getName().equals("JSESSIONIDSSO")) {
+// System.out.println("Found sso session cookie: " + cookie.toString());
+                        ssoSessionCookie = cookie.getValue();
+                        break;
+                }
+        }
+
+if (ssoSessionCookie == null) {
+    logger.warn("no sso session cookie requested");
+    try {
+        response.sendError(HttpServletResponse.SC_FORBIDDEN);
+    } catch (IOException exn) {
+        System.out.println("could not send error" + exn);
+    }
+    return;
+} else {
+    logger.debug("ssoSessionCookie: " + ssoSessionCookie);
+}
+
 String href = "." + sltPath;
+if (query != null)
+        href += "?" + query + "&";
+else
+        href += "?";
+href += "jsessionidsso=" + ssoSessionCookie;
 
 int colonIndex = host.indexOf(':');
 if( colonIndex >= 0 )
@@ -24,16 +57,22 @@ LocalPortalManager portalManager = mvvm.portalManager();
         PortalLogin pl = (PortalLogin)request.getUserPrincipal();
 
         if (null == pl) {
-            System.out.println("NO PRINCIPAL! " + this);
+            logger.warn("NO PRINCIPAL!");
+            try {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            } catch (IOException exn) {
+                logger.warn("could not send error" + exn);
+            }
+return;
         }
 
         PortalUser pu = portalManager.getUser(pl.getUser());
         if (null == pu) {
-            System.out.println("no portal user for login: " + pl.getUser());
+            logger.warn("no portal user for login: " + pl.getUser());
             try {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN);
             } catch (IOException exn) {
-                System.out.println("could not send error" + exn);
+                logger.warn("could not send error" + exn);
             }
             return;
         }
@@ -41,11 +80,11 @@ LocalPortalManager portalManager = mvvm.portalManager();
 Bookmark target = null;
 String targetstr = request.getParameter("t");
 if (targetstr == null) {
-    System.out.println("no target for rdp.jnlp");
+    logger.warn("no target for rdp.jnlp");
     try {
          response.sendError(HttpServletResponse.SC_FORBIDDEN);
     } catch (IOException exn) {
-         System.out.println("could not send error" + exn);
+         logger.warn("could not send error" + exn);
     }
     return;
 }
@@ -70,17 +109,6 @@ if (targetstr == null) {
         String size = rbm.getSize();
         String command = rbm.getCommand();
         boolean console = rbm.getConsole();
-
-        String sessionCookie = null;
-        Cookie[] cookies = request.getCookies();
-        for (int i = 0; i < cookies.length; i++) {
-                Cookie cookie = cookies[i];
-                if (cookie.getName().equals("JSESSIONID")) {
-                        System.out.println("Found session cookie: " + cookie.toString());
-                        sessionCookie = cookie.toString();
-                        break;
-                }
-        }
 %>
 
 <?xml version="1.0" encoding="utf-8"?>
@@ -98,6 +126,9 @@ if (targetstr == null) {
     <icon href="images/LogoNoText16x16.gif" width="16" height="16"/>
     <icon href="images/LogoNoText128x128.gif" width="128" height="128"/>
   </information>
+  <security>
+    <all-permissions/>
+  </security>
   <resources>
     <j2se version="1.5+"/>
 
@@ -107,9 +138,9 @@ if (targetstr == null) {
 
   </resources>
   <application-desc main-class="net.propero.rdp.Rdesktop">
-        <% if (sessionCookie != null) { %>
+        <% if (ssoSessionCookie != null) { %>
                 <argument>-e</argument>
-                <argument><%=sessionCookie%></argument>
+                <argument><%=ssoSessionCookie%></argument>
         <% } %>
         <argument>-q</argument>
         <argument><%=targetstr%></argument>
