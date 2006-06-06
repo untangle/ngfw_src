@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
  *
  * @author <a href="mailto:jdi@metavize.com">John Irwin</a>
  */
-public class PortalLogin implements Principal
+public class PortalLogin implements Principal, Serializable
 {
     private static final long serialVersionUID = -3861141760496839437L;
 
