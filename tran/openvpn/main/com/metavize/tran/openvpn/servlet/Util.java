@@ -92,7 +92,7 @@ class Util
                 MvvmLocalContext ctx = MvvmContextFactory.context();
                 Tid tid = ctx.transformManager().transformInstances( "openvpn-transform" ).get( 0 );
                 TransformContext tc = ctx.transformManager().transformContext( tid );
-                commonName = ((VpnTransform)tc.transform()).lookupClientDistributionKey( key, address );
+                commonName = ((VpnTransform)tc.transformProxy(VpnTransform.class)).lookupClientDistributionKey( key, address );
             } catch ( Exception e ) {
                 logger.error( "Error connecting to the openvpn transform", e );
                 request.setAttribute( REASON_ATTR, "Error connnecting to the openvpn transform " + e );

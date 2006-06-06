@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,20 +11,18 @@
 package com.metavize.tran.mail.web.euv;
 
 import java.io.IOException;
-
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.ServletException;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
-import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.security.Tid;
-
+import com.metavize.mvvm.tran.TransformContext;
+import com.metavize.tran.mail.papi.MailTransform;
 import com.metavize.tran.mail.papi.quarantine.QuarantineUserView;
 import com.metavize.tran.mail.papi.safelist.SafelistEndUserView;
-import com.metavize.tran.mail.papi.MailTransform;
 
 
 /**
@@ -44,7 +42,7 @@ public class QuarantineEnduserServlet
   public QuarantineEnduserServlet() {
     assignInstance(this);
   }
-  
+
   protected void service(HttpServletRequest req,
     HttpServletResponse resp)
     throws ServletException, IOException {
@@ -83,7 +81,7 @@ public class QuarantineEnduserServlet
       }
     }
     return m_safelist;
-  }  
+  }
 
   /**
    * Access the remote reference to the QuarantineUserView.  If this
@@ -119,8 +117,9 @@ public class QuarantineEnduserServlet
       MvvmLocalContext ctx = MvvmContextFactory.context();
       Tid tid = ctx.transformManager().transformInstances("mail-casing").get(0);
       TransformContext tc = ctx.transformManager().transformContext(tid);
-      m_quarantine =  ((MailTransform) tc.transform()).getQuarantineUserView();
-      m_safelist =  ((MailTransform) tc.transform()).getSafelistEndUserView();
+      MailTransform mt = (MailTransform) tc.transformProxy(MailTransform.class);
+      m_quarantine =  mt.getQuarantineUserView();
+      m_safelist = mt.getSafelistEndUserView();
     }
     catch(Exception ex) {
       log("Unable to create reference to Quarantine/safelist", ex);
@@ -133,5 +132,5 @@ public class QuarantineEnduserServlet
       s_instance = servlet;
     }
   }
-  
-} 
+
+}

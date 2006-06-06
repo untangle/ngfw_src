@@ -38,6 +38,9 @@ public interface TransformContext
      */
     Transform transform();
 
+    // XXX i know this is ugly, love amr
+    Object transformProxy(Class iface);
+
     /**
      * Returns desc from mvvm-transform.xml.
      *
