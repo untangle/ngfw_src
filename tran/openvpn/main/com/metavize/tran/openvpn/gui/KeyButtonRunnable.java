@@ -39,11 +39,26 @@ public class KeyButtonRunnable implements ButtonRunnable {
     public static void setVpnTransform(VpnTransform vpnTransformX){ vpnTransform = vpnTransformX; }
     public void setCellEditor(CellEditor cellEditor){}
     public void setTopLevelWindow(Window topLevelWindow){ this.topLevelWindow = topLevelWindow; }
-	public void actionPerformed(ActionEvent evt){ run(); }
+    public void actionPerformed(ActionEvent evt){ run(); }
     public void run(){
-	KeyJDialog keyJDialog = KeyJDialog.factory(topLevelWindow, vpnClient);
-	keyJDialog.setVisible(true);
-	if( keyJDialog.isProceeding() ){
+	new DistributeKeyThread(vpnClient, vpnTransform);
+    }
+
+    class DistributeKeyThread extends Thread {
+	private KeyJDialog keyJDialog;
+	private VpnClient vpnClient;
+	private VpnTransform vpnTransform;
+	public DistributeKeyThread(VpnClient vpnClient, VpnTransform vpnTransform){
+	    setDaemon(true);
+	    setName("MV-CLIENT: DistributeKeyThread");
+	    this.vpnClient = vpnClient;
+	    this.vpnTransform = vpnTransform;
+	    keyJDialog = KeyJDialog.factory(topLevelWindow, vpnClient);
+	    keyJDialog.setVisible(true);
+	    if( keyJDialog.isProceeding() )
+		start();
+	}
+	public void run(){
 	    if( keyJDialog.isUsbSelected() ){
 		vpnClient.setDistributeUsb(true);
 	    }
