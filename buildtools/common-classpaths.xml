@@ -279,12 +279,12 @@ $Id: common-classpaths.xml,v 1.32 2005/02/10 23:25:44 jdi Exp $
     <fileset refid="properjavardp.jarset"/>
   </path>
 
-  <fileset id="tightvnc-mv.jarset" dir="${TIGHTVNC_HOME}">
+  <fileset id="tightvnc.jarset" dir="${TIGHTVNC_HOME}/classes">
     <include name="*.jar"/>
   </fileset>
 
-  <path id="tightvnc-mv.classpath">
-    <fileset refid="tightvnc-mv.jarset"/>
+  <path id="tightvnc.classpath">
+    <fileset refid="tightvnc.jarset"/>
   </path>
 
   <fileset id="httpclient.jarset" dir="${HTTPCLIENT_HOME}">
