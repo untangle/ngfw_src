@@ -155,10 +155,10 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
                 restrictAdminButtonGroup = new javax.swing.ButtonGroup();
                 sshButtonGroup = new javax.swing.ButtonGroup();
                 externalRemoteJPanel = new javax.swing.JPanel();
+                externalAdminDisabledRadioButton = new javax.swing.JRadioButton();
                 externalAdminEnabledRadioButton = new javax.swing.JRadioButton();
                 externalAdminPortJLabel = new javax.swing.JLabel();
                 externalAdminPortJSpinner = new javax.swing.JSpinner();
-                externalAdminDisabledRadioButton = new javax.swing.JRadioButton();
                 jSeparator2 = new javax.swing.JSeparator();
                 enableRemoteJPanel = new javax.swing.JPanel();
                 externalAdminRestrictDisabledRadioButton = new javax.swing.JRadioButton();
@@ -181,6 +181,23 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
                 externalRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
                 externalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "External Remote Administration", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+                externalAdminButtonGroup.add(externalAdminDisabledRadioButton);
+                externalAdminDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                externalAdminDisabledRadioButton.setText("<html><b>Disallow</b> Remote Administration outside the local network, via secure http (https).<br>(This is the default setting.)</html>");
+                externalAdminDisabledRadioButton.setFocusPainted(false);
+                externalAdminDisabledRadioButton.setFocusable(false);
+                externalAdminDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                externalAdminDisabledRadioButtonActionPerformed(evt);
+                        }
+                });
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                externalRemoteJPanel.add(externalAdminDisabledRadioButton, gridBagConstraints);
+
                 externalAdminButtonGroup.add(externalAdminEnabledRadioButton);
                 externalAdminEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 externalAdminEnabledRadioButton.setText("<html><b>Allow</b> Remote Administration outside the local network, via secure http (https).</html>");
@@ -202,7 +219,7 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
                 externalAdminPortJLabel.setText("Remote Https Port:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 1;
+                gridBagConstraints.gridy = 2;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 gridBagConstraints.insets = new java.awt.Insets(0, 50, 10, 0);
                 externalRemoteJPanel.add(externalAdminPortJLabel, gridBagConstraints);
@@ -213,28 +230,10 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
                 externalAdminPortJSpinner.setPreferredSize(new java.awt.Dimension(100, 20));
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 1;
+                gridBagConstraints.gridy = 2;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 gridBagConstraints.insets = new java.awt.Insets(0, 163, 10, 0);
                 externalRemoteJPanel.add(externalAdminPortJSpinner, gridBagConstraints);
-
-                externalAdminButtonGroup.add(externalAdminDisabledRadioButton);
-                externalAdminDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                externalAdminDisabledRadioButton.setText("<html><b>Disallow</b> Remote Administration outside the local network, via secure http (https).<br>(This is the default setting.)</html>");
-                externalAdminDisabledRadioButton.setFocusPainted(false);
-                externalAdminDisabledRadioButton.setFocusable(false);
-                externalAdminDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                externalAdminDisabledRadioButtonActionPerformed(evt);
-                        }
-                });
-
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
-                externalRemoteJPanel.add(externalAdminDisabledRadioButton, gridBagConstraints);
 
                 jSeparator2.setForeground(new java.awt.Color(200, 200, 200));
                 jSeparator2.setPreferredSize(new java.awt.Dimension(0, 1));
