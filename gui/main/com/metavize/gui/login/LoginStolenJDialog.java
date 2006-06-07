@@ -22,8 +22,8 @@ final public class LoginStolenJDialog extends javax.swing.JDialog implements jav
         initComponents();
         
         messageJLabel.setText("<html><center>You have been logged out because:<br>"
-                            + loginName + " has logged in at " + loginAddress
-                            + "<br><br>You must exit now, but you can login again later.</center></html>");
+			      + loginName + " has logged in at " + (loginAddress.equals("127.0.0.1")?"the console.":loginAddress)
+			      + "<br><br>You must exit now, but you can login again later.</center></html>");
         this.addWindowListener(this);
         this.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(), this.getWidth(), this.getHeight()) );
         this.setVisible(true);

@@ -19,7 +19,7 @@ public class StealLoginJDialog extends javax.swing.JDialog implements java.awt.e
     public StealLoginJDialog(String loginName, String loginAddress) {
         super(Util.getMMainJFrame(), true);
         initComponents();
-        messageJLabel.setText("<html><center>" + loginName + " is is currently logged in at " + loginAddress
+        messageJLabel.setText("<html><center>" + loginName + " is is currently logged in at " + (loginAddress.equals("127.0.0.1")?"the console.":loginAddress)
                               + "<br><br>You may cancel your login, or you can continue your login<br>which will automatically logout the other user.</center></html>");
         this.addWindowListener(this);
         this.setBounds( Util.generateCenteredBounds(Util.getMLoginJFrame().getBounds(), this.getWidth(), this.getHeight()) );
