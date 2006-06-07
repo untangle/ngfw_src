@@ -32,6 +32,7 @@ import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
 import com.metavize.mvvm.networking.internal.RemoteInternalSettings;
 import com.metavize.mvvm.networking.internal.ServicesInternalSettings;
 import com.metavize.mvvm.security.Tid;
+import com.metavize.mvvm.toolbox.ToolboxManager;
 import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.TransformManager;
@@ -54,6 +55,8 @@ public class NetworkManagerImpl implements NetworkManager
     static final String ETC_RESOLV_FILE = "/etc/resolv.conf";
 
     private final Logger logger = Logger.getLogger(getClass());
+
+    static final String NAT_TRANSFORM_NAME = "nat-transform";
 
     static final String BUNNICULA_BASE = System.getProperty( "bunnicula.home" );
     static final String BUNNICULA_CONF = System.getProperty( "bunnicula.conf.dir" );
@@ -540,11 +543,13 @@ public class NetworkManagerImpl implements NetworkManager
         try{
             logger.debug( "disabling nat as requested by setup wizard: " );
             TransformManager transformManager = MvvmContextFactory.context().transformManager();
-            List<Tid> tidList = transformManager.transformInstances("nat-transform");
+            List<Tid> tidList = transformManager.transformInstances(NAT_TRANSFORM_NAME);
             if( tidList != null ){
                 for( Tid tid : tidList )
                     transformManager.destroy(tid);
             }
+            ToolboxManager tool = MvvmContextFactory.context().toolboxManager();
+            tool.uninstall(NAT_TRANSFORM_NAME);
         }
         catch(Exception e){
             logger.warn( "Error removing NAT in wizard", e );
