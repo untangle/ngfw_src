@@ -152,7 +152,7 @@ if (!( isIndex || isDownload)) isIndex = true;
               </script>
               <% if ( !isDownload ) { %>
                 <div style="text-align: center;">
-                  <a href="vnc.jnlp?t=<%=target%>">Launch Remote Desktop Client</a><br>
+                  <a href="vnc.jnlp?t=<%=target%>">Launch VNC Remote Desktop Client</a><br>
 
                 </div>
                 <% } %>

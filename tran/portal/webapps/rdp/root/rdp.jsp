@@ -13,9 +13,6 @@ boolean isIndex    = pageName.equals("/index.html");
 boolean isDownload = pageName.equals("/download.html");
 boolean isSecure   = scheme.equals("https");
 
-// Fake out Tomcat so it uses URL rewriting.
-// ((org.apache.coyote.tomcat5.CoyoteRequest)request).setRequestedSessionCookie(false);
-
 String target = request.getParameter("t");
 
 /* If they request anything else, give them the index page */

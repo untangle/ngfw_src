@@ -14,6 +14,7 @@ package com.metavize.tran.portal.proxy;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.Iterator;
@@ -23,9 +24,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.log4j.Logger;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
+import com.metavize.mvvm.NetworkManager;
+import com.metavize.mvvm.networking.NetworkUtil;
 import com.metavize.mvvm.portal.Application;
 import com.metavize.mvvm.portal.Bookmark;
 import com.metavize.mvvm.portal.LocalApplicationManager;
@@ -33,15 +37,18 @@ import com.metavize.mvvm.portal.LocalPortalManager;
 import com.metavize.mvvm.portal.PortalHomeSettings;
 import com.metavize.mvvm.portal.PortalLogin;
 import com.metavize.mvvm.portal.PortalUser;
-import org.apache.log4j.Logger;
+import com.metavize.mvvm.tran.IPaddr;
 
 public class ForwardServlet extends HttpServlet
 {
+    public static final int CONNECTION_TIMEOUT = 5000;
+
     public static final String TARGET_HEADER = "Target";
 
     private MvvmLocalContext mvvmContext;
     private LocalPortalManager portalManager;
     private LocalApplicationManager appManager;
+    private NetworkManager netManager;
     private Logger logger;
 
     // HttpServlet methods ----------------------------------------------------
@@ -53,6 +60,7 @@ public class ForwardServlet extends HttpServlet
         mvvmContext = MvvmContextFactory.context();
         portalManager = mvvmContext.portalManager();
         appManager = portalManager.applicationManager();
+        netManager = mvvmContext.networkManager();
     }
 
     @Override
@@ -123,6 +131,15 @@ public class ForwardServlet extends HttpServlet
             if (logger.isInfoEnabled())
                 logger.info("Opening forward for " + pl + " to " + destHost + ":" + destPort);
 
+            InetSocketAddress isa = new InetSocketAddress(destHost, destPort);
+            IPaddr addr = new IPaddr(isa.getAddress());
+            if (NetworkUtil.getInstance().isAddressLocal(addr, netManager.getNetworkSettings())) {
+                logger.warn("Unable to forward to local address");
+                resp.sendError(HttpServletResponse.SC_FORBIDDEN,
+                               "Unable to forward to local address");
+                return;
+            }
+
             session.setMaxInactiveInterval(idleTime);
 
             resp.setBufferSize(0);
@@ -130,10 +147,12 @@ public class ForwardServlet extends HttpServlet
             resp.addHeader("Connection", "keep-alive");
             resp.flushBuffer();        // Ensure response line/headers get there.
 
-            InputStream his = req.getInputStream();
-            OutputStream hos =resp.getOutputStream();
-            Socket s = new Socket(destHost, destPort);
-            InputStream sis = s.getInputStream();
+            Socket s = new Socket();
+            s.connect(isa, CONNECTION_TIMEOUT);
+
+            InputStream his =  req.getInputStream();
+            OutputStream hos = resp.getOutputStream();
+            InputStream sis =  s.getInputStream();
             OutputStream sos = s.getOutputStream();
 
             session.setMaxInactiveInterval(idleTime);
@@ -180,7 +199,11 @@ public class ForwardServlet extends HttpServlet
                 int i;
                 while (true) {
                     try {
+                        if (logger.isDebugEnabled())
+                            logger.debug("" + Thread.currentThread().getName() + " about to read");
                         i = is.read(buf);
+                        if (logger.isDebugEnabled())
+                            logger.debug("" + Thread.currentThread().getName() + " got " + i);
                     } catch (SocketTimeoutException exn) {
                         // This is expected with Tomcat sockets, just gives us a chance
                         // to see if the session timeout has expired or whatever. XXX
@@ -196,9 +219,13 @@ public class ForwardServlet extends HttpServlet
             } finally {
                 try {
                     os.close();
+                } catch (IOException exn) {
+                    logger.warn("exception closing os", exn);
+                }
+                try {
                     is.close();
                 } catch (IOException exn) {
-                    logger.error("exception closing", exn);
+                    logger.warn("exception closing is", exn);
                 }
             }
         }

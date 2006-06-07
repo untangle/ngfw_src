@@ -76,6 +76,7 @@ return;
             }
             return;
         }
+String username = pu.getUid();
 
 Bookmark target = null;
 String targetstr = request.getParameter("t");
@@ -157,6 +158,8 @@ if (targetstr == null) {
         <argument><%=port%></argument>
         <argument>-m</argument>
         <argument>en-us</argument>
+        <argument>-u</argument>
+        <argument><%=username%></argument>
         <argument><%=host%></argument>
   </application-desc>
 </jnlp>
