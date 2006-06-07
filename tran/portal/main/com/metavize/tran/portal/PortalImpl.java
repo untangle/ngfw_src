@@ -205,7 +205,6 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
         return null;
     }
 
-
     protected void initializeSettings() { }
 
     @Override

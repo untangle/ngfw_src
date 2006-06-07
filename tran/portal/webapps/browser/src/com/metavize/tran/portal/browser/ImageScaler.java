@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.metavize.mvvm.portal.PortalLogin;
-import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbFile;
 import org.apache.log4j.Logger;
 
@@ -50,11 +49,10 @@ public class ImageScaler extends HttpServlet
         throws ServletException
     {
         PortalLogin pl = (PortalLogin)req.getUserPrincipal();
-        NtlmPasswordAuthentication auth = pl.getNtlmAuth();
 
         String url = "smb:" + req.getParameter("url");
         try {
-            BufferedImage bi = readImage(url, auth);
+            BufferedImage bi = readImage(url, pl);
             bi = scaleImage(bi);
             writeImage(bi, resp);
         } catch (MalformedURLException exn) {
@@ -84,10 +82,10 @@ public class ImageScaler extends HttpServlet
 
     // private methods --------------------------------------------------------
 
-    private BufferedImage readImage(String url, NtlmPasswordAuthentication auth)
+    private BufferedImage readImage(String url, PortalLogin pl)
         throws MalformedURLException, IOException
     {
-        SmbFile f = new SmbFile(url, auth);
+        SmbFile f = Util.getSmbFile(url, pl);
         String contentType = mimeMap.getContentType(f.getName());
         Iterator<ImageReader> i = ImageIO.getImageReadersByMIMEType(contentType);
         if (!i.hasNext()) {

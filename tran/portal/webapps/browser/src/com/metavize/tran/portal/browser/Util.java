@@ -11,8 +11,19 @@
 
 package com.metavize.tran.portal.browser;
 
+import java.net.MalformedURLException;
+
+import com.metavize.mvvm.portal.PortalLogin;
+import jcifs.smb.SmbFile;
+
 class Util
 {
+    static SmbFile getSmbFile(String url, PortalLogin pl)
+        throws MalformedURLException
+    {
+        return new SmbFile(url, pl.getNtlmAuth());
+    }
+
     static String escapeXml(String in)
     {
         StringBuilder sb = null;

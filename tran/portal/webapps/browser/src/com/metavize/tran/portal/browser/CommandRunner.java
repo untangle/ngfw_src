@@ -40,15 +40,15 @@ public class CommandRunner extends HttpServlet
         String cmd = req.getParameter("command");
 
         if (cmd.equals("rm")) {
-            rm(req, auth);
+            rm(req, pl);
         } else if (cmd.equals("mv")) {
-            mv(req, auth);
+            mv(req, pl);
         } else if (cmd.equals("cp")) {
-            cp(req, auth);
+            cp(req, pl);
         } else if (cmd.equals("mkdir")) {
-            mkdir(req, auth);
+            mkdir(req, pl);
         } else if (cmd.equals("rename")) {
-            rename(req, auth);
+            rename(req, pl);
         } else {
             throw new ServletException("bad command: " + cmd);
         }
@@ -59,13 +59,13 @@ public class CommandRunner extends HttpServlet
         logger = Logger.getLogger(getClass());
     }
 
-    private void rm(HttpServletRequest req, NtlmPasswordAuthentication auth)
+    private void rm(HttpServletRequest req, PortalLogin pl)
     {
         String[] files = req.getParameterValues("file");
 
         for (String f : files) {
             try {
-                new SmbFile("smb:" + f, auth).delete();
+                Util.getSmbFile("smb:" + f, pl).delete();
             } catch (SmbException exn) {
                 logger.warn("could not delete: " + f, exn);
             } catch (MalformedURLException exn) {
@@ -74,15 +74,15 @@ public class CommandRunner extends HttpServlet
         }
     }
 
-    private void mv(HttpServletRequest req, NtlmPasswordAuthentication auth)
+    private void mv(HttpServletRequest req, PortalLogin pl)
     {
         String[] s = req.getParameterValues("src");
         String d = "smb:" + req.getParameter("dest");
 
         for (String f : s) {
             try {
-                SmbFile src = new SmbFile("smb:" + f, auth);
-                SmbFile dest = new SmbFile(d + src.getName(), auth);
+                SmbFile src = Util.getSmbFile("smb:" + f, pl);
+                SmbFile dest = Util.getSmbFile(d + src.getName(), pl);
                 src.renameTo(dest);
             } catch (SmbException exn) {
                 // XXX report errors to client
@@ -94,14 +94,14 @@ public class CommandRunner extends HttpServlet
         }
     }
 
-    private void rename(HttpServletRequest req, NtlmPasswordAuthentication auth)
+    private void rename(HttpServletRequest req, PortalLogin pl)
     {
         String src = "smb:" + req.getParameter("src");
         String dest = "smb:" + req.getParameter("dest");
 
         try {
-            SmbFile destFile = new SmbFile(dest, auth);
-            new SmbFile(src, auth).renameTo(destFile);
+            SmbFile destFile = Util.getSmbFile(dest, pl);
+            Util.getSmbFile(src, pl).renameTo(destFile);
         } catch (SmbException exn) {
             logger.warn("could not rename: " + src + " to: " + dest, exn);
         } catch (MalformedURLException exn) {
@@ -109,15 +109,15 @@ public class CommandRunner extends HttpServlet
         }
     }
 
-    private void cp(HttpServletRequest req, NtlmPasswordAuthentication auth)
+    private void cp(HttpServletRequest req, PortalLogin pl)
     {
         String[] s = req.getParameterValues("src");
         String d = "smb:" + req.getParameter("dest");
 
         for (String f : s) {
             try {
-                SmbFile src = new SmbFile("smb:" + f, auth);
-                SmbFile dest = new SmbFile(d + src.getName(), auth);
+                SmbFile src = Util.getSmbFile("smb:" + f, pl);
+                SmbFile dest = Util.getSmbFile(d + src.getName(), pl);
                 src.copyTo(dest);
             } catch (SmbException exn) {
                 // XXX report errors to client
@@ -129,12 +129,12 @@ public class CommandRunner extends HttpServlet
         }
     }
 
-    private void mkdir(HttpServletRequest req, NtlmPasswordAuthentication auth)
+    private void mkdir(HttpServletRequest req, PortalLogin pl)
     {
         String url = "smb:" + req.getParameter("url");
 
         try {
-            new SmbFile(url, auth).mkdir();
+            Util.getSmbFile(url, pl).mkdir();
         } catch (MalformedURLException exn) {
             // XXX
             logger.warn("bad url:" + url, exn);

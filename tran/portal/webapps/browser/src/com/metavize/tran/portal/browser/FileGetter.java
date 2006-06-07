@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.metavize.mvvm.portal.PortalLogin;
-import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbFile;
 import org.apache.log4j.Logger;
 
@@ -44,7 +43,6 @@ public class FileGetter extends HttpServlet
         throws ServletException
     {
         PortalLogin pl = (PortalLogin)req.getUserPrincipal();
-        NtlmPasswordAuthentication auth = pl.getNtlmAuth();
 
         int l = req.getContextPath().length() + req.getServletPath().length() + 1;
 
@@ -61,7 +59,7 @@ public class FileGetter extends HttpServlet
         SmbFile f;
 
         try {
-            f = new SmbFile(url, auth);
+            f = Util.getSmbFile(url, pl);
         } catch (MalformedURLException exn) {
             throw new ServletException(exn);
         }

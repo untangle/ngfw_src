@@ -117,6 +117,7 @@ DirTree.prototype._populate = function(item, cb, repopulate)
 
       var obj = { parent: item, cb: cb };
 
+      var url = n.url;
       AjxRpc.invoke(null, "ls?url=" + url + "&type=dir", null,
                      new AjxCallback(this, this._populateCallback, obj), true);
    } else {
@@ -146,7 +147,7 @@ DirTree.prototype._populateCallback = function(obj, results)
          delete current[name];
       } else {
          var p = obj.parent;
-         var pcn = parent.getData(Browser.CIFS_NODE);
+         var pcn = p.getData(Browser.CIFS_NODE);
          var n = new CifsNode(pcn.url, name, pcn.principal, true);
          var tn = new DwtTreeItem(obj.parent, null, n.label, "folder");
          tn.setData(Browser.CIFS_NODE, n);
