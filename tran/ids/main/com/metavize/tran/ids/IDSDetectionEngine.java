@@ -13,7 +13,9 @@ package com.metavize.tran.ids;
 
 import java.net.InetAddress;
 import java.nio.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -48,6 +50,8 @@ public class IDSDetectionEngine {
 
     Map<Integer,List<IDSRuleHeader>>    portS2CMap      = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
     Map<Integer,List<IDSRuleHeader>>    portC2SMap  = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
+    // bug1443 -- save memory by memoizing
+    List<List<IDSRuleHeader>> allPortMapLists = new ArrayList<List<IDSRuleHeader>>();
 
     private final Logger log = Logger.getLogger(getClass());
 
@@ -108,6 +112,7 @@ public class IDSDetectionEngine {
     public void onReconfigure() {
         portC2SMap = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
         portS2CMap = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
+        allPortMapLists = new ArrayList<List<IDSRuleHeader>>();
 
         manager.onReconfigure();
         log.debug("Done with reconfigure");
@@ -116,6 +121,7 @@ public class IDSDetectionEngine {
     public void stop() {
         portC2SMap = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
         portS2CMap = new ConcurrentHashMap<Integer,List<IDSRuleHeader>>();
+        allPortMapLists = new ArrayList<List<IDSRuleHeader>>();
         sessionInfoMap = new ConcurrentHashMap<Integer, IDSSessionInfo>();
     }
 
@@ -165,7 +171,21 @@ public class IDSDetectionEngine {
 
         if(c2sList == null) {
             c2sList = manager.matchingPortsList(request.serverPort(), IDSRuleManager.TO_SERVER);
-            portC2SMap.put(request.serverPort(),c2sList);
+            // bug1443 -- save memory by reusing value.
+            synchronized(allPortMapLists) {
+                boolean found = false;
+                for (Iterator<List<IDSRuleHeader>> iter = allPortMapLists.iterator(); iter.hasNext();) {
+                    List<IDSRuleHeader> savedList = iter.next();
+                    if (savedList.equals(c2sList)) {
+                        c2sList = savedList;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                    allPortMapLists.add(c2sList);
+                portC2SMap.put(request.serverPort(),c2sList);
+            }
 
             if (log.isDebugEnabled())
                 log.debug("c2sHeader list Size: "+c2sList.size() + " For port: "+request.serverPort());
@@ -173,7 +193,20 @@ public class IDSDetectionEngine {
 
         if(s2cList == null) {
             s2cList = manager.matchingPortsList(request.serverPort(), IDSRuleManager.TO_CLIENT);
-            portS2CMap.put(request.serverPort(),s2cList);
+            synchronized(allPortMapLists) {
+                boolean found = false;
+                for (Iterator<List<IDSRuleHeader>> iter = allPortMapLists.iterator(); iter.hasNext();) {
+                    List<IDSRuleHeader> savedList = iter.next();
+                    if (savedList.equals(s2cList)) {
+                        s2cList = savedList;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                    allPortMapLists.add(s2cList);
+                portS2CMap.put(request.serverPort(),s2cList);
+            }
 
             if (log.isDebugEnabled())
                 log.debug("s2cHeader list Size: "+s2cList.size() + " For port: "+request.serverPort());

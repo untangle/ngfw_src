@@ -184,7 +184,9 @@ public class IDSRuleHeader {
         return signatures.isEmpty();
     }
 
-    public boolean equals(IDSRuleHeader other) {
+    // Rule manager uses this to decide if the rule is already known.  We ignore the signatures
+    // attached.
+    public boolean matches(IDSRuleHeader other) {
         boolean action = (this.action == other.action);
         boolean protocol = (this.protocol == other.protocol); // ?
         boolean clientPorts = (this.clientPortRange.equals(other.clientPortRange));

@@ -136,7 +136,7 @@ public class IDSRuleManager {
 
         if(!signature.remove() && !rule.disabled()) {
             for(IDSRuleHeader headerTmp : knownHeaders) {
-                if(headerTmp.equals(header)) {
+                if(headerTmp.matches(header)) {
                     headerTmp.addSignature(signature);
 
                     rule.setHeader(headerTmp);
