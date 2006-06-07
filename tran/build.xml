@@ -479,8 +479,8 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     </signjar>
 
     <!-- vnc -->
-    <copy todir="${dist.mvvm.web}/vnc">
-      <fileset refid="log4j.jarset"/>
+    <copy todir="${dist.mvvm.web}/vnc" flatten="yes">
+      <fileset refid="tightvnc.jarset"/>
     </copy>
 
     <signjar keystore="../gui/keystore" alias="key"
@@ -591,7 +591,13 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
     </jar>
   </target>
 
-  <target name="jar.portal"/>
+  <target name="jar.portal">
+    <jar destfile="${dist.mvvm.web}/vnc/VncInvoker.jar">
+      <fileset dir="${dist.mvvm.web}/vnc/WEB-INF/classes">
+        <include name="VncInvoker*.class"/>
+      </fileset>
+    </jar>
+  </target>
 
   <target name="jar.firewall"/>
   <target name="jar.spyware"/>
@@ -934,8 +940,8 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <src path="${tran.name}/main/com/metavize/tran/portal/vnc"/>
 
       <classpath refid="mvvm.classpath"/>
-      <classpath refid="tightvnc-mv.classpath"/>
       <classpath refid="mvvm.thirdparty.classpath"/>
+      <classpath refid="tightvnc.classpath"/>
       <classpath refid="tomcat.thirdparty.classpath"/>
     </javac>
 
