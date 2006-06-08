@@ -25,7 +25,8 @@ import com.metavize.mvvm.portal.LocalPortalManager;
 import com.metavize.mvvm.portal.PortalSettings;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.PipeSpec;
-import com.metavize.mvvm.tran.TransformException;
+import com.metavize.mvvm.tran.TransformStartException;
+import com.metavize.mvvm.tran.TransformStopException;
 import com.metavize.tran.portal.rdp.RdpBookmark;
 import com.metavize.tran.portal.vnc.VncBookmark;
 import org.apache.log4j.Logger;
@@ -208,15 +209,15 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
     protected void initializeSettings() { }
 
     @Override
-        protected void preDestroy() throws TransformException {
-        super.preDestroy();
-        logger.debug("preDestroy()");
+        protected void preStop() throws TransformStopException {
+        super.preStop();
+        logger.debug("preStop()");
         unDeployWebAppIfRequired(logger);
     }
-
-    protected void postInit(String[] args)
+    
+    protected void postStart() throws TransformStartException
     {
-        logger.debug("postInit()");
+        logger.debug("postStart()");
 
         deployWebAppIfRequired(logger);
     }
