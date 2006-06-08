@@ -556,6 +556,13 @@ public class NetworkManagerImpl implements NetworkManager
         }
     }
 
+    /* Returns true if address is local to the edgeguard */
+    public boolean isAddressLocal( IPaddr address )
+    {
+        NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
+        
+        return nup.isAddressLocal( this.networkSettings, address );
+    }
 
     public synchronized void updateAddress()
     {

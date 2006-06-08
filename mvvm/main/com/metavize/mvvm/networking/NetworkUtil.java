@@ -108,27 +108,6 @@ public class NetworkUtil
 
         return false;
     }
-
-    /* Check if the address refers to the edgeguard box itself */
-    public boolean isAddressLocal(IPaddr address, NetworkSpacesSettings settings)
-    {
-        InetAddress addr = address.getAddr();
-        if (addr.isLoopbackAddress() || addr.isLinkLocalAddress())
-            return true;
-
-        List<NetworkSpace> spaces = settings.getNetworkSpaceList();
-        for (NetworkSpace space : spaces) {
-            if (space.isLive()) {
-                for(IPNetworkRule aliasRule : (List<IPNetworkRule>) space.getNetworkList()) {
-                    IPaddr alias = aliasRule.getNetwork();
-                    if (alias.equals(address))
-                        return true;
-                }
-            }
-        }
-
-        return false;
-    }
                 
     /* Validate that a network configuration is okay */
     public void validate( NetworkSpacesSettings settings ) throws ValidateException

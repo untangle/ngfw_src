@@ -13,7 +13,10 @@ package com.metavize.mvvm.networking;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+
+import java.net.InetAddress;
 import java.net.Inet4Address;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -728,6 +731,33 @@ class NetworkUtilPriv extends NetworkUtil
         return dnsServers;
     }
 
+    /* Check if the address refers to the edgeguard box itself */
+    public boolean isAddressLocal( NetworkSpacesInternalSettings settings, IPaddr address )
+    {
+        InetAddress addr = address.getAddr();
+        if (addr.isLoopbackAddress() || addr.isLinkLocalAddress())
+            return true;
+        
+        List<NetworkSpaceInternal> spaces = settings.getNetworkSpaceList();
+        
+        for (NetworkSpaceInternal space : spaces) {
+            if (space.getIsEnabled()) {
+                /* Check the primary address */
+                if ( address.equals( space.getPrimaryAddress().getNetwork())) return true;
+                
+                for(IPNetwork aliasRule : (List<IPNetwork>) space.getNetworkList()) {
+                    IPaddr alias = aliasRule.getNetwork();
+                    if (alias.equals(address))
+                        return true;
+                }
+            }
+
+            /* Only check the first space if it is not enabled */
+            if ( !settings.getIsEnabled()) break;
+        }
+
+        return false;
+    }
 
     /* Get the hostname of the box from the /etc/hostname file */
     HostName loadHostname()

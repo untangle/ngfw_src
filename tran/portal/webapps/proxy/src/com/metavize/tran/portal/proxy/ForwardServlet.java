@@ -133,7 +133,7 @@ public class ForwardServlet extends HttpServlet
 
             InetSocketAddress isa = new InetSocketAddress(destHost, destPort);
             IPaddr addr = new IPaddr(isa.getAddress());
-            if (NetworkUtil.getInstance().isAddressLocal(addr, netManager.getNetworkSettings())) {
+            if (netManager.isAddressLocal(addr)) {
                 logger.warn("Unable to forward to local address");
                 resp.sendError(HttpServletResponse.SC_FORBIDDEN,
                                "Unable to forward to local address");

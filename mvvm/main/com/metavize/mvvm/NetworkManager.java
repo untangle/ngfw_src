@@ -88,4 +88,7 @@ public interface NetworkManager
     /* Allow the setup wizard to setup NAT properly, or disable it. */
     public void setWizardNatEnabled(IPaddr address, IPaddr netmask);
     public void setWizardNatDisabled();
+
+    /* Returns true if address is local to the edgeguard */
+    public boolean isAddressLocal( IPaddr address );
 }
