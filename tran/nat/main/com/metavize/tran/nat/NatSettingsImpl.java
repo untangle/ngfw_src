@@ -41,7 +41,7 @@ import com.metavize.mvvm.tran.firewall.ip.IPDBMatcher;
  */
 public class NatSettingsImpl implements Validatable, NatSettings, Serializable
 {
-    // !!!! private static final long serialVersionUID = 4349679825783697834L;
+    private static final long serialVersionUID = 4691775205493112137L;
 
     private Long id;
     private Tid tid;

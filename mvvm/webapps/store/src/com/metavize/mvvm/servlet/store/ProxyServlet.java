@@ -253,7 +253,7 @@ public class ProxyServlet extends HttpServlet
 
             if (-1 == j) {
                 count++;
-                w.append("./"); // XXX not correct in general
+                w.append("."); // XXX not correct in general
                 i = 0;
             } else {
                 Integer k = OCCURANCE.get(buf[(offset + j) % buf.length]);

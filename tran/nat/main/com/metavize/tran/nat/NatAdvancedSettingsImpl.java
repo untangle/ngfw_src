@@ -35,8 +35,8 @@ import com.metavize.mvvm.tran.ValidateException;
 import com.metavize.mvvm.tran.firewall.ip.IPDBMatcher;
 
 public class NatAdvancedSettingsImpl implements NatAdvancedSettings, Serializable
-{
-    // !!!! private static final long serialVersionUID = 4349679825783697834L;
+{    
+    private static final long serialVersionUID = -5344795278019860714L;
     private final NetworkSpacesSettings networkSpacesSettings;
     private final ServicesSettings servicesSettings;
 

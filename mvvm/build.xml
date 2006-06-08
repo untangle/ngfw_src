@@ -601,65 +601,6 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
         <include name="servlets.jar"/>
       </fileset>
     </copy>
-
-
-    <mkdir dir="${dist.mvvm.web}/store"/>
-
-    <copy todir="${dist.mvvm.web}/store">
-      <fileset dir="webapps/store/root"/>
-    </copy>
-
-    <mkdir dir="${dist.mvvm.web}/store/WEB-INF/lib"/>
-    <copy todir="${dist.mvvm.web}/store/WEB-INF/lib">
-      <fileset refid="httpclient.jarset"/>
-      <fileset refid="commons-codec.jarset"/>
-    </copy>
-
-    <mkdir dir="${dist.mvvm.web}/store/WEB-INF/classes"/>
-
-    <javac destdir="${dist.mvvm.web}/store/WEB-INF/classes"
-           debug="on"
-           optimize="false"
-           deprecation="on"
-           source="1.5"
-           includeAntRuntime="false">
-
-      <src path="webapps/store/src"/>
-
-      <classpath refid="mvvm.classpath"/>
-      <classpath refid="mvvm.thirdparty.classpath"/>
-      <classpath refid="tomcat.thirdparty.classpath"/>
-      <classpath refid="httpclient.classpath"/>
-    </javac>
-
-    <mkdir dir="${build.gensrc}/store/"/>
-
-    <java classname="org.apache.jasper.JspC"
-          fork="true"
-          failonerror="true">
-      <arg line="-s"/>
-      <arg line="-l"/>
-      <arg line="-v"/>
-      <arg line="-compile"/>
-      <arg line="-d ${dist.mvvm.web}/store/WEB-INF/classes"/>
-      <arg line="-p com.metavize.mvvm.servlet.store"/>
-      <arg line="-webinc ${build.gensrc}/store/web-fragment.xml"/>
-      <arg line="-uriroot ${dist.mvvm.web}/store"/>
-      <arg value="store.js"/>
-      <classpath path="${java.home}/../lib/tools.jar"/>
-      <classpath refid="tomcat.thirdparty.classpath"/>
-      <classpath refid="mvvm.thirdparty.classpath"/>
-    </java>
-
-    <loadfile property="generated-web.xml"
-              srcFile="${build.gensrc}/store/web-fragment.xml"/>
-    <copy file="webapps/store/root/WEB-INF/web.xml"
-          toFile="${dist.mvvm.web}/store/WEB-INF/web.xml"
-          overwrite="true">
-      <filterset>
-        <filter token="JSP_PRE_COMPILED_SERVLETS" value="${generated-web.xml}"/>
-      </filterset>
-    </copy>
   </target>
 
   <!-- thirdparty -->
@@ -723,6 +664,14 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <arg value="webapps/ROOT"/>
       <arg value="${build.dist}"/>
       <arg value="${dist.mvvm.web}/ROOT"/>
+    </exec>
+
+    <exec executable="${buildtool.base}/mkwap.sh" failonerror="true">
+      <arg value="../.."/>
+      <arg value="com.metavize.mvvm.store.jsp"/>
+      <arg value="webapps/store"/>
+      <arg value="${build.dist}"/>
+      <arg value="${dist.mvvm.web}/store"/>
     </exec>
   </target>
 
