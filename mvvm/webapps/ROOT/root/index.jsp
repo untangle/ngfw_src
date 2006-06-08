@@ -1,6 +1,6 @@
-<%@ page language="java"%>
+<%@ page language="java" import="com.metavize.mvvm.*"%>
 
 <%
-String welcomeUrl = application.getInitParameter("welcomeFile");
-response.sendRedirect(welcomeUrl);
+String wu = MvvmContextFactory.context().appServerManager().getRootWelcome();
+response.sendRedirect(wu);
 %>

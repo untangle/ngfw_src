@@ -74,6 +74,8 @@ public interface AppServerManager
 
     void setRootWelcome(String welcome);
 
+    String getRootWelcome();
+
     /**
      * Regenerate the self-signed certificate for this instance. The
      * key algorithm and strength are determined by the

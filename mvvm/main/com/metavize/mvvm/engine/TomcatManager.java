@@ -264,7 +264,6 @@ class TomcatManager
             mgr.setPathname(null); /* disable session persistence */
             rootContext.setManager(mgr);
             rootContext.setManager(new StandardManager());
-            System.out.println("init ADDED WELCOMEFILE: " + welcomeFile);
             setRootWelcome(welcomeFile);
 
             // add context to host
@@ -365,9 +364,13 @@ class TomcatManager
 
     synchronized void setRootWelcome(String welcomeFile)
     {
-        System.out.println("setRootWelcome ADDED WELCOMEFILE: " + welcomeFile);
+        System.out.println("SETTING WELCOME FILE: " + welcomeFile);
         this.welcomeFile = welcomeFile;
-        rootContext.addParameter("welcomeFile", welcomeFile);
+    }
+
+    String getRootWelcome()
+    {
+        return welcomeFile;
     }
 
     // private classes --------------------------------------------------------

@@ -34,7 +34,7 @@ NavigationBar.prototype.constructor = NavigationBar;
 NavigationBar.prototype.portalMode = function()
 {
    this.title.setText("Metavize Portal");
-   this.bm.setText("bookmark");
+   this.bm.setText("");
 }
 
 NavigationBar.prototype.applicationMode = function(bookmark)

@@ -127,7 +127,7 @@ PortalPanel.prototype._deleteButtonListener = function(ev)
 
 PortalPanel.prototype._addBookmarkButtonListener = function(ev)
 {
-   var dialog = new AddBookmarkDialog(this._shell, this._apps);
+   var dialog = new AddBookmarkDialog(DwtShell.getShell(window), this._apps);
 
    var cb = function() {
       var bm = dialog.getBookmark();
