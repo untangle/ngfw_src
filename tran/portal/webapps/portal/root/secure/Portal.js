@@ -25,6 +25,8 @@ function Portal(shell) {
    var l = new AjxListener(this, this._bookmarkSelectionListener);
    this._portalPanel.addSelectionListener(l);
    this._portalPanel.zShow(true);
+   var l = new AjxListener(this, this._addBookmarkButtonListener);
+   this._portalPanel.addBookmarkButton.addSelectionListener(l);
 
    this.showPortal();
 
@@ -227,4 +229,28 @@ Portal.prototype._logoutButtonListener = function()
 Portal.prototype._logoutCallback = function()
 {
    window.location.reload();
+}
+
+Portal.prototype._addBookmarkButtonListener = function(ev)
+{
+   var dialog = new AddBookmarkDialog(DwtShell.getShell(window), this._apps);
+
+   var cb = function() {
+      var bm = dialog.getBookmark();
+      var url = "bookmark?command=add&name=" + bm.name
+         + "&app=" + bm.app + "&target=" + bm.target;
+
+      var cb = function(obj, results) {
+         this.refresh();
+         dialog.popdown();
+      }
+
+      AjxRpc.invoke(null, url, null, new AjxCallback(this, cb, {}), true);
+   }
+
+   var l = new AjxListener(this, cb);
+   dialog.setButtonListener(DwtDialog.OK_BUTTON, l);
+   dialog.addListener(DwtEvent.ENTER, l);
+
+   dialog.popup();
 }

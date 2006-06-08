@@ -34,7 +34,7 @@ MvRpc._callbackFn = function(obj, results)
 {
    if (results.xml) {
       DBG.println("first child: " + results.xml.firstChild.tagName);
-      if (obj.authCallback && "error" == results.xml.firstChild.tagName) {
+      if (obj.authCallback && "auth-error" == results.xml.firstChild.tagName) {
          DBG.println("RUNNING authCallback");
          return obj.authCallback.run(results);
       } else if (obj.actionCallback) {

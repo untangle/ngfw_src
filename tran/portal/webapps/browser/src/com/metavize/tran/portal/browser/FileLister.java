@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.metavize.mvvm.portal.PortalLogin;
+import jcifs.smb.SmbAuthException;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFileFilter;
@@ -128,10 +129,23 @@ public class FileLister extends HttpServlet
         os.println("<?xml version=\"1.0\" ?>");
 
         String p = dir.getPath().substring(4); // strip 'smb:'
+
+        SmbFile[] files;
+        try {
+            files = dir.listFiles();
+        } catch (SmbAuthException exn) {
+            os.println("<auth-error type='listFiles' url='" + p + "'/>)");
+            return;
+        } catch (SmbException exn) {
+            // XXX add error handling for client
+            throw new ServletException("could not list directory", exn);
+        }
+
+
         os.println("<root path='" + p + "'>");
 
         try {
-            for (SmbFile f : dir.listFiles(filter)) {
+            for (SmbFile f : files) {
                 String tag = f.isDirectory() ? "dir" : "file";
                 String name = Util.escapeXml(f.getName());
                 long ctime = f.createTime();
@@ -156,6 +170,7 @@ public class FileLister extends HttpServlet
                            + "content-type='" + contentType + "'/>");
              }
         } catch (SmbException exn) {
+            // XXX add error handling for client
             throw new ServletException("could not list directory", exn);
         }
 
