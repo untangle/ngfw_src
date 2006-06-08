@@ -24,7 +24,6 @@ import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.policy.Policy;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tapi.IPSessionDesc;
-import com.metavize.mvvm.tapi.ProxyGenerator;
 import com.metavize.mvvm.toolbox.MackageDesc;
 import com.metavize.mvvm.tran.DeployException;
 import com.metavize.mvvm.tran.TooManyInstancesException;
@@ -221,12 +220,6 @@ class TransformContextImpl implements TransformContext
     public Transform transform()
     {
         return transform;
-    }
-
-    // XXX i know this is ugly, love amr
-    public Object transformProxy(Class iface)
-    {
-        return (Transform)ProxyGenerator.generateProxy(iface, transform);
     }
 
     // transform call-through methods -----------------------------------------

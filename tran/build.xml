@@ -683,6 +683,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       <classpath refid="log4j.classpath"/>
       <classpath refid="mvvm.classpath"/>
       <classpath refid="tomcat.classpath"/>
+      <classpath refid="mvvm-client.classpath"/>
     </javac>
 
     <!-- perform the JSPc stuff -->
@@ -737,6 +738,9 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
     <!-- Copy-over required libraries -->
     <mkdir dir="${build.webapps}/quarantine/WEB-INF/lib"/>
+    <copy toDir="${build.webapps}/quarantine/WEB-INF/lib">
+      <fileset refid="mvvm-client.jarset"/>
+    </copy>
     <copy toDir="${build.webapps}/quarantine/WEB-INF/lib" file="${build.jar}/mail-export.jar"/>
 
   </target>
