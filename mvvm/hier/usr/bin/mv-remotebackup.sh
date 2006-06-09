@@ -80,7 +80,7 @@ function getHTTPStatus() {
 # returns the return of CURL
 function callCurl() {
   debug "Calling CURL.  Dumping headers to $2"
-  curl $URL -k -F boxkey=$BOX_KEY -F uploadedfile=@$1 --dump-header $2 --max-time $TIMEOUT > /dev/null 2>&1
+  curl "$URL" -k -F boxkey="$BOX_KEY" -F uploadedfile=@$1 --dump-header $2 --max-time $TIMEOUT > /dev/null 2>&1
   return $?
 }
 
@@ -125,12 +125,12 @@ while getopts "ht:k:u:v" opt; do
   esac
 done
 
-if [ "INVALID" == $URL ]; then
+if [ "INVALID" == "$URL" ]; then
   echo "Please provide a URL";
   exit 1;
 fi
 
-if [ "INVALID" == $BOX_KEY ]; then
+if [ "INVALID" == "$BOX_KEY" ]; then
   echo "Please provide a box key";
   exit 1;
 fi

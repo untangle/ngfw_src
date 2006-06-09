@@ -33,6 +33,8 @@ datestamp=$(date '+%Y%m%d%H%M')
 
 [ $? -eq 0 ] || exit 1
 
+slapcat -l @PREFIX@/usr/share/metavize/conf/dirbackup.ldif
+
 tar zcf $outdir/files-$datestamp.tar.gz --ignore-failed-read -C @PREFIX@/ \
         etc/hostname \
         etc/network/interfaces \
@@ -44,7 +46,8 @@ tar zcf $outdir/files-$datestamp.tar.gz --ignore-failed-read -C @PREFIX@/ \
         usr/share/metavize/conf/networking.sh \
         usr/share/metavize/conf/openvpn/misc \
         usr/share/metavize/conf/openvpn/pki \
-        usr/share/metavize/conf/timezone
+        usr/share/metavize/conf/timezone \
+        usr/share/metavize/conf/dirbackup.ldif
 
 [ $? -eq 0 ] || exit 1    
 
