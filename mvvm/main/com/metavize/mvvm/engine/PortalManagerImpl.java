@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.naming.ServiceUnavailableException;
-import javax.servlet.http.HttpServletRequest;
 
 import com.metavize.mvvm.addrbook.AddressBook;
 import com.metavize.mvvm.addrbook.AddressBookConfiguration;
@@ -43,11 +42,11 @@ import com.metavize.mvvm.security.LoginFailureReason;
 import com.metavize.mvvm.security.LogoutReason;
 import com.metavize.mvvm.util.TransactionWork;
 import jcifs.smb.NtlmPasswordAuthentication;
-import org.apache.catalina.connector.Request;
-import org.apache.catalina.connector.Response;
 import org.apache.catalina.Realm;
 import org.apache.catalina.authenticator.AuthenticatorBase;
 import org.apache.catalina.authenticator.FormAuthenticator;
+import org.apache.catalina.connector.Request;
+import org.apache.catalina.connector.Response;
 import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.realm.RealmBase;
 import org.apache.commons.logging.Log;
@@ -55,6 +54,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import java.util.Set;
 
 /**
  * Implementation of the PortalManager.
@@ -228,6 +228,21 @@ class PortalManagerImpl implements LocalPortalManager
     public void removeUserBookmark(final PortalUser user, Bookmark bookmark)
     {
         user.removeBookmark(bookmark);
+
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    s.saveOrUpdate(user);
+                    return true;
+                }
+            };
+        mvvmContext.runTransaction(tw);
+    }
+
+    public void removeUserBookmarks(final PortalUser user, Set<Long> ids)
+    {
+        user.removeBookmarks(ids);
 
         TransactionWork tw = new TransactionWork()
             {

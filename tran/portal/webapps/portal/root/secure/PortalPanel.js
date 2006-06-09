@@ -15,15 +15,15 @@ function PortalPanel(parent)
    this._toolbar = this._makeToolbar();
    this._toolbar.zShow(true);
 
-   this._bookmarkPanel = new BookmarkPanel(this, null, DwtControl.ABSOLUTE_STYLE);
-   this._bookmarkPanel.setUI();
-   this._bookmarkPanel.zShow(true);
+   this.bookmarkPanel = new BookmarkPanel(this, null, DwtControl.ABSOLUTE_STYLE);
+   this.bookmarkPanel.setUI();
+   this.bookmarkPanel.zShow(true);
 
    this._actionMenu = this._makeActionMenu()
 
    // XXX
    l = new AjxListener(this, this._listActionListener);
-   this._bookmarkPanel.addActionListener(l);
+   this.bookmarkPanel.addActionListener(l);
 
    this.addControlListener(new AjxListener(this, this._controlListener));
 }
@@ -35,7 +35,7 @@ PortalPanel.prototype.constructor = PortalPanel;
 
 PortalPanel.prototype.refresh = function()
 {
-   this._bookmarkPanel.refresh();
+   this.bookmarkPanel.refresh();
 }
 
 PortalPanel.prototype.layout = function()
@@ -55,12 +55,12 @@ PortalPanel.prototype.layout = function()
    size = this._toolbar.getSize();
    y += size.y;
 
-   this._bookmarkPanel.setBounds(0, y, width, height - y);
+   this.bookmarkPanel.setBounds(0, y, width, height - y);
 }
 
 PortalPanel.prototype.addSelectionListener = function(l)
 {
-   this._bookmarkPanel.addSelectionListener(l);
+   this.bookmarkPanel.addSelectionListener(l);
 }
 
 // private methods ------------------------------------------------------------
@@ -81,14 +81,14 @@ PortalPanel.prototype._makeToolbar = function() {
    b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
    b.setText("Delete");
    b.setToolTipContent("Delete selected files");
-   b.addSelectionListener(new AjxListener(this, this._deleteButtonListener));
+   this.deleteBookmarkButton = b;
 
    return toolbar;
 }
 
 PortalPanel.prototype._makeActionMenu = function()
 {
-   var actionMenu = new DwtMenu(this._bookmarkPanel, DwtMenu.POPUP_STYLE);
+   var actionMenu = new DwtMenu(this.bookmarkPanel, DwtMenu.POPUP_STYLE);
 
    var i = new DwtMenuItem(actionMenu, DwtMenuItem.NO_STYLE);
    i.setText("Delete");
@@ -106,23 +106,6 @@ PortalPanel.prototype._refreshButtonListener = function()
 
 PortalPanel.prototype._listActionListener = function(ev) {
     this._actionMenu.popup(0, ev.docX, ev.docY);
-}
-
-PortalPanel.prototype._deleteButtonListener = function(ev)
-{
-   var sel = this._bookmarkPanel.getSelection();
-   if (0 == sel.length) {
-      return;
-   }
-
-   var url = "secure/exec?command=rm";
-
-   for (var i = 0; i < sel.length; i++) {
-      url += "&id=" + sel[i].id;
-   }
-
-   AjxRpc.invoke(null, url, null, new AjxCallback(this, this.refresh, { }),
-                 false);
 }
 
 PortalPanel.prototype._controlListener = function()

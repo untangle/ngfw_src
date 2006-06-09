@@ -12,6 +12,7 @@
 package com.metavize.mvvm.portal;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Local interface to the PortalManager.
@@ -48,6 +49,8 @@ public interface LocalPortalManager
                              Application application, String target);
 
     void removeUserBookmark(PortalUser user, Bookmark bookmark);
+
+    void removeUserBookmarks(PortalUser user, Set<Long> ids);
 
     /**
      * Looks up a user by uid.  Returns null if the user does not exist.

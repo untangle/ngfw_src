@@ -13,7 +13,9 @@ package com.metavize.tran.portal;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -50,10 +52,6 @@ public class BookmarkServlet extends HttpServlet
 
         PortalLogin pl = (PortalLogin)req.getUserPrincipal();
 
-        if (null == pl) {
-            System.out.println("NO PRINCIPAL! " + this);
-        }
-
         PortalUser pu = portalManager.getUser(pl.getUser());
 
         if (null == pu) {
@@ -79,6 +77,15 @@ public class BookmarkServlet extends HttpServlet
                 System.out.println(appName + ":  " + app);
                 String target = req.getParameter("target");
                 portalManager.addUserBookmark(pu, name, app, target);
+            } else if (command.equals("rm")) {
+                Set<Long> ids = new HashSet<Long>();
+                for (String idStr : req.getParameterValues("id")) {
+                    Long id = Long.parseLong(idStr);
+                    ids.add(id);
+                }
+                System.out.println("REMOVING BOOKMARKS: " + ids);
+                portalManager.removeUserBookmarks(pu, ids);
+                System.out.println("REMOVED BOOKMARKS");
             } else {
                 logger.warn("bad command: " + command);
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST);

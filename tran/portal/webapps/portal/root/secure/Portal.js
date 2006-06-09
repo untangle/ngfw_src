@@ -27,6 +27,8 @@ function Portal(shell) {
    this._portalPanel.zShow(true);
    var l = new AjxListener(this, this._addBookmarkButtonListener);
    this._portalPanel.addBookmarkButton.addSelectionListener(l);
+   var l = new AjxListener(this, this._deleteButtonListener)
+   this._portalPanel.deleteBookmarkButton.addSelectionListener(l);
 
    this.showPortal();
 
@@ -254,4 +256,21 @@ Portal.prototype._addBookmarkButtonListener = function(ev)
    dialog.addListener(DwtEvent.ENTER, l);
 
    dialog.popup();
+}
+
+Portal.prototype._deleteButtonListener = function(ev)
+{
+   var sel = this._portalPanel.bookmarkPanel.getSelection();
+   if (0 == sel.length) {
+      return;
+   }
+
+   var url = "secure/bookmark?command=rm";
+
+   for (var i = 0; i < sel.length; i++) {
+      url += "&id=" + sel[i].id;
+   }
+
+   AjxRpc.invoke(null, url, null, new AjxCallback(this, this.refresh, { }),
+                 true);
 }

@@ -13,7 +13,9 @@ package com.metavize.mvvm.portal;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Portal user.  UID must match an addressbook UID (although one could
@@ -71,6 +73,17 @@ public class PortalUser implements Serializable
     public void removeBookmark(Bookmark bookmark)
     {
         bookmarks.remove(bookmark);
+    }
+
+    public void removeBookmarks(Set bookmarkIds)
+    {
+        for (Iterator i = bookmarks.iterator(); i.hasNext(); ) {
+            Bookmark bm = (Bookmark)i.next();
+            Long id = (Long)bm.getId();
+            if (null != id && bookmarkIds.contains(id)) {
+                i.remove();
+            }
+        }
     }
 
     // accessors --------------------------------------------------------------
@@ -133,10 +146,10 @@ public class PortalUser implements Serializable
      */
     public String getDescription()
     {
-	if( description == null )
-	    return "";
-	else
-	    return description;
+    if( description == null )
+        return "";
+    else
+        return description;
     }
 
     public void setDescription(String description)
