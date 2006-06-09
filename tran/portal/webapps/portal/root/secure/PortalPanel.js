@@ -115,10 +115,10 @@ PortalPanel.prototype._deleteButtonListener = function(ev)
       return;
    }
 
-   var url = "exec?command=rm";
+   var url = "secure/exec?command=rm";
 
    for (var i = 0; i < sel.length; i++) {
-      url += "&file=" + sel[i].url;
+      url += "&id=" + sel[i].id;
    }
 
    AjxRpc.invoke(null, url, null, new AjxCallback(this, this.refresh, { }),

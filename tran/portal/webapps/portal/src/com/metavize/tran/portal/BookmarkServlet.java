@@ -76,8 +76,13 @@ public class BookmarkServlet extends HttpServlet
                 String name = req.getParameter("name");
                 String appName = req.getParameter("app");
                 Application app = appManager.getApplication(appName);
+                System.out.println(appName + ":  " + app);
                 String target = req.getParameter("target");
                 portalManager.addUserBookmark(pu, name, app, target);
+            } else if (command.equals("rm")) {
+                String idStr = req.getParameter("id");
+
+                portalManager.removeUserBookmark(pu, id);
             } else {
                 logger.warn("bad command: " + command);
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST);

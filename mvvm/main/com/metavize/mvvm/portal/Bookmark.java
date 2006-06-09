@@ -58,7 +58,6 @@ public class Bookmark implements Serializable
         this.target = target;
     }
 
-
     // accessors --------------------------------------------------------------
 
     /**

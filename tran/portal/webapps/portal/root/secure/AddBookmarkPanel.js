@@ -26,8 +26,9 @@ AddBookmarkPanel.prototype.constructor = AddBookmarkPanel;
 
 AddBookmarkPanel.prototype.getBookmark = function()
 {
-   return new Bookmark(this._nameField.getValue(), this._appField.getValue(),
-                       this._targetField.getValue());
+   return new Bookmark(null, this._nameField.getValue(),
+                         this._appField.getValue(),
+                         this._targetField.getValue());
 }
 
 AddBookmarkPanel.prototype.focus = function()
