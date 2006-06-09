@@ -84,7 +84,7 @@ class TomcatManager
         loadSystemApp("/session-dumper", "session-dumper");
         loadSystemApp("/webstart", "webstart");
         loadSystemApp("/store", "store");
-        loadSystemApp("/reports", "reports");
+        loadSystemApp("/reports", "reports", new WebAppOptions(true));
     }
 
     // package protected methods ----------------------------------------------
@@ -145,13 +145,19 @@ class TomcatManager
         PortalManagerImpl pm = mvvmContext.portalManager();
         Realm realm = pm.getPortalRealm();
         AuthenticatorBase auth = pm.newPortalAuthenticator();
-        return loadWebApp(urlBase, rootDir, realm, auth);
+        // Need a large timeout since we handle that ourselves.
+        WebAppOptions options = new WebAppOptions(false, 24*60);
+        return loadWebApp(urlBase, rootDir, realm, auth, options);
     }
 
-    boolean loadSystemApp(String urlBase, String rootDir)
+    boolean loadSystemApp(String urlBase, String rootDir, WebAppOptions options)
     {
         MvvmAuthenticator mvvmAuth = new MvvmAuthenticator();
-        return loadWebApp(urlBase, rootDir, mvvmRealm, mvvmAuth);
+        return loadWebApp(urlBase, rootDir, mvvmRealm, mvvmAuth, options);
+    }
+
+    boolean loadSystemApp(String urlBase, String rootDir) {
+        return loadSystemApp(urlBase, rootDir, new WebAppOptions());
     }
 
     boolean loadInsecureApp(String urlBase, String rootDir)
@@ -165,7 +171,14 @@ class TomcatManager
             if (null != baseHost) {
                 Container c = baseHost.findChild(contextRoot);
                 if (null != c) {
+                    logger.info("Removing web app " + contextRoot);
                     baseHost.removeChild(c);
+                    try {
+                        ((StandardContext)c).destroy();
+                    } catch (Exception x) {
+                        logger.warn("Exception destroying web app \"" +
+                                    contextRoot + "\"", x);
+                    }
                     return true;
                 }
             }
@@ -278,7 +291,7 @@ class TomcatManager
             // system started-up.
             for (WebAppDescriptor desc : descriptors) {
                 loadWebAppImpl(desc.urlBase, desc.relativeRoot, desc.realm,
-                               desc.auth);
+                               desc.auth, desc.options);
             }
 
             // add new Engine to set of
@@ -377,42 +390,88 @@ class TomcatManager
         final String relativeRoot;
         final Realm realm;
         final AuthenticatorBase auth;
+        final WebAppOptions options;
 
         WebAppDescriptor(String base, String rr, Realm realm,
-                         AuthenticatorBase auth)
+                         AuthenticatorBase auth, WebAppOptions options)
         {
             this.urlBase = base;
             this.relativeRoot = rr;
             this.realm = realm;
             this.auth = auth;
+            this.options = options;
         }
     }
 
+    private static class WebAppOptions
+    {
+        public static final int DEFAULT_SESSION_TIMEOUT = 30;
+
+        final boolean allowLinking;
+        final int sessionTimeout; // Minutes
+
+        WebAppOptions() {
+            this(false, DEFAULT_SESSION_TIMEOUT);
+        }
+
+        WebAppOptions(boolean allowLinking) {
+            this(allowLinking, DEFAULT_SESSION_TIMEOUT);
+        }
+
+        WebAppOptions(boolean allowLinking, int sessionTimeout) {
+            this.allowLinking = allowLinking;
+            this.sessionTimeout = sessionTimeout;
+        }
+    }
+
+
     // private methods --------------------------------------------------------
 
-    private synchronized boolean loadWebApp(String urlBase, String rootDir,
+    /**
+     * Loads the web application.  If Tomcat is not yet running, schedules it for
+     * later loading.
+     *
+     * @param urlBase a <code>String</code> value
+     * @param rootDir a <code>String</code> value
+     * @param realm a <code>Realm</code> value
+     * @param auth an <code>AuthenticatorBase</code> value
+     * @return a <code>boolean</code> value
+     */
+    private synchronized boolean loadWebApp(String urlBase,
+                                            String rootDir,
                                             Realm realm,
-                                            AuthenticatorBase auth)
+                                            AuthenticatorBase auth,
+                                            WebAppOptions options)
     {
         if (null == emb) {
             // haven't started yet
             WebAppDescriptor wad = new WebAppDescriptor(urlBase, rootDir,
-                                                        realm, auth);
+                                                        realm, auth, options);
             descriptors.add(wad);
             return true;
         } else {
-            return loadWebAppImpl(urlBase, rootDir, realm, auth);
+            return loadWebAppImpl(urlBase, rootDir, realm, auth, options);
         }
     }
 
+    private boolean loadWebApp(String urlBase,
+                               String rootDir,
+                               Realm realm,
+                               AuthenticatorBase auth) {
+        return loadWebApp(urlBase, rootDir, realm, auth, new WebAppOptions());
+    }
+
     private boolean loadWebAppImpl(String urlBase, String rootDir,
-                                   Realm realm, AuthenticatorBase auth)
+                                   Realm realm, AuthenticatorBase auth, WebAppOptions options)
     {
         String fqRoot = webAppRoot + "/" + rootDir;
 
+        logger.info("Adding web app " + fqRoot);
         try {
-            Context ctx = emb.createContext(urlBase, fqRoot);
-	    ((StandardContext)ctx).setAllowLinking(true);
+            StandardContext ctx = (StandardContext) emb.createContext(urlBase, fqRoot);
+            if (options.allowLinking)
+                ctx.setAllowLinking(true);
+            ctx.setSessionTimeout(options.sessionTimeout);
            if (null != realm) {
                 ctx.setRealm(realm);
             }
