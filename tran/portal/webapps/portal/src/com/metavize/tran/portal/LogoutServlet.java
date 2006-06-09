@@ -48,6 +48,11 @@ public class LogoutServlet extends HttpServlet
         } else {
             portalManager.logout(pl);
         }
+        try {
+            s.invalidate();
+        } catch (IllegalStateException x) {
+            // fine, be that way.
+        }
     }
 
     @Override
