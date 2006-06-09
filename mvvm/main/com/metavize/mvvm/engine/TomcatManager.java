@@ -26,6 +26,7 @@ import org.apache.catalina.Realm;
 import org.apache.catalina.authenticator.AuthenticatorBase;
 import org.apache.catalina.authenticator.SingleSignOn;
 import org.apache.catalina.connector.Connector;
+import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Embedded;
@@ -238,11 +239,6 @@ class TomcatManager
 
             baseEngine.setParentClassLoader(tomcatParent);
 
-            // Set up the Default Context
-            // StandardDefaultContext sdc = new StandardDefaultContext();
-            // sdc.setAllowLinking(true);
-            // baseEngine.addDefaultContext(sdc);
-
             // create Host
             baseHost = (StandardHost)emb
                 .createHost(hostname, webAppRoot);
@@ -416,6 +412,7 @@ class TomcatManager
 
         try {
             Context ctx = emb.createContext(urlBase, fqRoot);
+	    ((StandardContext)ctx).setAllowLinking(true);
            if (null != realm) {
                 ctx.setRealm(realm);
             }
