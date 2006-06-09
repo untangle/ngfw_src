@@ -13,7 +13,7 @@ String host=request.getHeader("host");
 <title>Metavize Portal Login</title>
 </head>
 
-<!--<img src="<%=cp%>/login/Dolphin-m.jpg">-->
+
 <body LINK="#0000EE" VLINK="#0000EE" style="background-image: url(<%=cp%>/login/DarkBackground1600x100.jpg);">
 
     <br/>
@@ -53,8 +53,12 @@ String host=request.getHeader("host");
 			<br/>
 			<input type="submit" value="login">
 			</form>
-
-
+			<br/>
+			<br/>
+			<br/>
+			<div style="font-style: italic; font-size: 80%;"> 	
+			<a href="http://<%=host%>/webstart">Administrator Login</a>
+			</div>
                   </center>
               </div>
             </td>
@@ -63,7 +67,7 @@ String host=request.getHeader("host");
       </table>
     </center>
 
-    <br/>
+
     <br/>
     <br/>
     <br/>
