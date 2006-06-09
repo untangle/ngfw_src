@@ -12,39 +12,72 @@
 package com.metavize.mvvm.servlet.store;
 
 import java.io.BufferedReader;
+
 import java.io.BufferedWriter;
+
 import java.io.FileOutputStream;
+
 import java.io.IOException;
+
 import java.io.InputStream;
+
 import java.io.InputStreamReader;
+
 import java.io.OutputStream;
+
 import java.io.OutputStreamWriter;
+
 import java.io.PipedInputStream;
+
 import java.io.PipedOutputStream;
+
 import java.net.Socket;
+
 import java.net.UnknownHostException;
+
 import java.util.Collections;
+
 import java.util.HashMap;
+
 import java.util.Map;
+
 import java.util.Random;
+
 import javax.servlet.ServletException;
+
 import javax.servlet.http.HttpServlet;
+
 import javax.servlet.http.HttpServletRequest;
+
 import javax.servlet.http.HttpServletResponse;
+
 import javax.servlet.http.HttpSession;
 
+
 import com.metavize.mvvm.MvvmContextFactory;
+
 import com.metavize.mvvm.MvvmLocalContext;
+
 import com.metavize.mvvm.toolbox.MackageDesc;
+
 import com.metavize.mvvm.toolbox.ToolboxManager;
+
 import org.apache.commons.httpclient.Cookie;
+
 import org.apache.commons.httpclient.Header;
+
 import org.apache.commons.httpclient.HttpClient;
+
 import org.apache.commons.httpclient.HttpMethod;
+
 import org.apache.commons.httpclient.HttpState;
+
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+
 import org.apache.commons.httpclient.StatusLine;
+
 import org.apache.commons.httpclient.methods.GetMethod;
+
 import org.apache.log4j.Logger;
 
 public class ProxyServlet extends HttpServlet
@@ -170,7 +203,7 @@ public class ProxyServlet extends HttpServlet
             }
 
         } catch (UnknownHostException exn) {
-            // XXX show page about this instead
+            // XXX show page about txhis instead
             throw new ServletException("unknown host", exn);
         } catch (IOException exn) {
             // XXX show page about this instead
