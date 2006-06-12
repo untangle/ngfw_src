@@ -45,6 +45,8 @@ DirTree.prototype.addWorkGroup = function(name)
    root.setText(n.label);
    root.setImage("WorkGroup");
    root.setData(Browser.CIFS_NODE, n, null);
+
+   this._populate(root);
 }
 
 DirTree.prototype.chdir = function(url)

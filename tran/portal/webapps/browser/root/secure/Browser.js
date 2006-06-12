@@ -219,7 +219,7 @@ Browser.prototype._broadcastRootsCb = function(obj, results)
       var child = children[i];
       var tagName = child.tagName;
       if ("dir" == tagName || "file" == tagName) {
-         this._dirTree.addWorkGroup(child.getAttribute("name"));
+         this._dirTree.addWorkGroup("//" + child.getAttribute("name"));
       }
    }
 }
