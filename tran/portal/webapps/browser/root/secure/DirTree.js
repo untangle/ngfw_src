@@ -31,7 +31,7 @@ DirTree.prototype.addRoot = function(url, principal)
 
    var root = new DwtTreeItem(this);
    root.setText(n.label);
-   root.setImage("Folder"); // XXX Make Server icon
+   root.setImage(n.getIconName()); // XXX Make Server icon
    root.setData(Browser.CIFS_NODE, n, principal);
 
    this._populate(root);
@@ -160,8 +160,11 @@ DirTree.prototype._populateCallback = function(obj, results)
       } else {
          var p = obj.parent;
          var pcn = p.getData(Browser.CIFS_NODE);
-         var n = new CifsNode(pcn.url, name, pcn.principal, CifsNode.DIR);
-         var tn = new DwtTreeItem(obj.parent, null, n.label, "folder");
+         var isWorkGroup = pcn.isWorkGroup();
+         var n = isWorkGroup
+            ? new CifsNode(null, "//" + name, pcn.principal, CifsNode.WORKGROUP)
+            : new CifsNode(pcn.url, name, pcn.principal, CifsNode.DIR);
+         var tn = new DwtTreeItem(obj.parent, null, n.label, n.getIconName());
          tn.setData(Browser.CIFS_NODE, n);
          if (this._dragSource) {
             tn.setDragSource(this._dragSource);

@@ -1,10 +1,6 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-CifsNode.WORKGROUP = "workgroup"
-CifsNode.FILE = "file"
-CifsNode.DIR = "dir"
-
 function CifsNode(parent, name, principal, type, size, lastModified,
                   contentType) {
    this.parent = parent;
@@ -32,6 +28,17 @@ function CifsNode(parent, name, principal, type, size, lastModified,
    }
 }
 
+CifsNode.WORKGROUP = "workgroup";
+CifsNode.SERVER = "server";
+CifsNode.FILE = "file";
+CifsNode.DIR = "dir";
+
+CifsNode.ICON_NAMES = { };
+CifsNode.ICON_NAMES[CifsNode.WORKGROUP] = "WorkGroup";
+CifsNode.ICON_NAMES[CifsNode.SERVER] = "Server";
+CifsNode.ICON_NAMES[CifsNode.FILE] = "File";
+CifsNode.ICON_NAMES[CifsNode.DIR] = "Folder";
+
 CifsNode.prototype = {
    toString: function() {
       return this.name;
@@ -39,5 +46,13 @@ CifsNode.prototype = {
 
    isDirectory: function() {
       return this.type == CifsNode.DIR;
+   },
+
+   isWorkGroup: function() {
+      return this.type = CifsNode.WORKGROUP;
+   },
+
+   getIconName: function() {
+      return CifsNode.ICON_NAMES[this.type];
    }
 }
