@@ -23,11 +23,11 @@ DirTree._POPULATED = "populated";
 
 // public methods -------------------------------------------------------------
 
-DirTree.prototype.setRoot = function(url, principal)
+DirTree.prototype.addRoot = function(url, principal)
 {
    this.cwd = url;
 
-   var n = new CifsNode(null, url, principal, true);
+   var n = new CifsNode(null, url, principal, CifsNode.DIR); // XXX type
 
    var root = new DwtTreeItem(this);
    root.setText(n.label);
@@ -35,6 +35,16 @@ DirTree.prototype.setRoot = function(url, principal)
    root.setData(Browser.CIFS_NODE, n, principal);
 
    this._populate(root);
+}
+
+DirTree.prototype.addWorkGroup = function(name)
+{
+   var n = new CifsNode(null, name, null, CifsNode.WORKGROUP);
+
+   var root = new DwtTreeItem(this);
+   root.setText(n.label);
+   root.setImage("WorkGroup");
+   root.setData(Browser.CIFS_NODE, n, null);
 }
 
 DirTree.prototype.chdir = function(url)
@@ -119,7 +129,7 @@ DirTree.prototype._populate = function(item, cb, repopulate)
 
       var url = n.url;
       AjxRpc.invoke(null, "ls?url=" + url + "&type=dir", null,
-                     new AjxCallback(this, this._populateCallback, obj), true);
+                    new AjxCallback(this, this._populateCallback, obj), true);
    } else {
       if (cb) {
          cb.run(item);
@@ -148,7 +158,7 @@ DirTree.prototype._populateCallback = function(obj, results)
       } else {
          var p = obj.parent;
          var pcn = p.getData(Browser.CIFS_NODE);
-         var n = new CifsNode(pcn.url, name, pcn.principal, true);
+         var n = new CifsNode(pcn.url, name, pcn.principal, CifsNode.DIR);
          var tn = new DwtTreeItem(obj.parent, null, n.label, "folder");
          tn.setData(Browser.CIFS_NODE, n);
          if (this._dragSource) {

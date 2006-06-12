@@ -69,7 +69,7 @@ DetailPanel.prototype._setListingXml = function(dom)
          listing.add(new CifsNode(this.url,
                                   child.getAttribute("name"),
                                   child.getAttribute("principal"),
-                                  "dir" == tagName,
+                                  "dir" == tagName ? CifsNode.DIR : CifsNode.FILE,
                                   child.getAttribute("size"),
                                   child.getAttribute("mtime"),
                                   child.getAttribute("content-type")));

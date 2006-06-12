@@ -1,15 +1,16 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
+CifsNode.WORKGROUP = "workgroup"
 CifsNode.FILE = "file"
 CifsNode.DIR = "dir"
 
-function CifsNode(parent, name, principal, isDirectory, size, lastModified,
+function CifsNode(parent, name, principal, type, size, lastModified,
                   contentType) {
    this.parent = parent;
    this.name = name;
    this.principal = principal;
-   this.isDirectory = isDirectory || false;
+   this.type = type;
    this.size = size || 0;
    this.contentType = contentType;
 
@@ -34,5 +35,9 @@ function CifsNode(parent, name, principal, isDirectory, size, lastModified,
 CifsNode.prototype = {
    toString: function() {
       return this.name;
+   },
+
+   isDirectory: function() {
+      return this.type == CifsNode.DIR;
    }
 }

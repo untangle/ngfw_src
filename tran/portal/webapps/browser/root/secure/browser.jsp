@@ -17,6 +17,9 @@ String principal = pl.getNtlmAuth().toString();
 <!--
 @import url(/AjaxTk/img/dwtimgs.css);
 -->
+<!--
+@import url(/images/mvimgs.css);
+-->
 </style>
 <link rel="stylesheet" type="text/css" href="/AjaxTk/common.css"/>
 <link rel="stylesheet" type="text/css" href="/AjaxTk/dwt.css"/>

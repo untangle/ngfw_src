@@ -26,7 +26,7 @@ function Browser(shell, url, principal) {
    dropTarget.addDropListener(new AjxListener(this, this._treeDropListener));
    this._dirTree = new DirTree(this, null, DwtControl.ABSOLUTE_STYLE,
                                dragSource, dropTarget);
-   this._dirTree.setRoot(url, principal);
+   this._dirTree.addRoot(url, principal);
    this._dirTree.setScrollStyle(DwtControl.SCROLL);
    this._dirTree.addSelectionListener(new AjxListener(this, this._dirSelectionListener));
    this._dirTree.zShow(true);
@@ -49,6 +49,8 @@ function Browser(shell, url, principal) {
 
    this._actionMenu = this._makeActionMenu()
    this._detailPanel.addActionListener(new AjxListener(this, this._listActionListener));
+
+   this._broadcastRoots();
 
    this.layout();
 
@@ -200,13 +202,35 @@ Browser.prototype._makeActionMenu = function()
    return actionMenu;
 }
 
+Browser.prototype._broadcastRoots = function()
+{
+   var actionCb = new AjxCallback(this, this._broadcastRootsCb, new Object());
+
+   DBG.println("INVOKE ls");
+   MvRpc.invoke(null, "ls?url=//", null, true,
+                actionCb, MvRpc.reloadPageCallback, this._authCallback);
+}
+
+Browser.prototype._broadcastRootsCb = function(obj, results)
+{
+   var root = results.xml.getElementsByTagName("root")[0];
+   var children = root.childNodes;
+   for (var i = 0; i < children.length; i++) {
+      var child = children[i];
+      var tagName = child.tagName;
+      if ("dir" == tagName || "file" == tagName) {
+         this._dirTree.addWorkGroup(child.getAttribute("name"));
+      }
+   }
+}
+
 // listeners ------------------------------------------------------------------
 
 Browser.prototype._detailSelectionListener = function(ev) {
    switch (ev.detail) {
       case DwtListView.ITEM_DBL_CLICKED:
       var item = ev.item;
-      if (item.isDirectory) {
+      if (item.isDirectory()) {
          DBG.println("IS DIR");
          this.chdir(item.url);
       } else {
@@ -465,41 +489,3 @@ Browser._mkSrcDestCommand = function(command, src, dest)
 
    return url;
 }
-
-DwtControl._mouseOverHdlr = function(ev) {
-    // Check to see if a drag is occurring. If so, don't process the mouse
-    // over events.
-    var captureObj = (DwtMouseEventCapture.getId() == "DwtControl") ? DwtMouseEventCapture.getCaptureObj() : null;
-    if (captureObj != null) {
-        ev = DwtUiEvent.getEvent(ev);
-        ev._stopPropagation = true;
-        return false;
-    }
-    var obj = DwtUiEvent.getDwtObjFromEvent(ev);
-    if (!obj) return false;
-
-    var mouseEv = DwtShell.mouseEvent;
-    if (obj._dragging == DwtControl._NO_DRAG) {
-        mouseEv.setFromDhtmlEvent(ev);
-        if (obj.isListenerRegistered(DwtEvent.ONMOUSEOVER))
-            obj.notifyListeners(DwtEvent.ONMOUSEOVER, mouseEv);
-        // Call the tooltip after the listeners to give them a
-        // chance to change the tooltip text.
-        if (obj._toolTipContent != null) {
-            var shell = DwtShell.getShell(window);
-            var manager = shell.getHoverMgr();
-            if ((manager.getHoverObject() != this || !manager.isHovering()) && !DwtMenu.menuShowing()) {
-                manager.reset();
-                manager.setHoverObject(this);
-                manager.setHoverOverData(obj);
-                manager.setHoverOverDelay(DwtToolTip.TOOLTIP_DELAY);
-                manager.setHoverOverListener(obj._hoverOverListener);
-                manager.hoverOver(mouseEv.docX, mouseEv.docY);
-            }
-        }
-    }
-    mouseEv._stopPropagation = true;
-    mouseEv._returnValue = false;
-    mouseEv.setToDhtmlEvent(ev);
-    return false;
-};
