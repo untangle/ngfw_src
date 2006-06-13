@@ -1,10 +1,7 @@
 # CVS - Concurrent Versions System
-# Pattern quality: good veryfast
+# Pattern attributes: good veryfast
 # Protocol groups: version_control
-#
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/CVS
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
+# Wiki: http://www.protocolinfo.org/wiki/CVS
 
 cvs
 

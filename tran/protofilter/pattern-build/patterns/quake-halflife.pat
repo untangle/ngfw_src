@@ -1,6 +1,7 @@
 # Half Life 1 engine games (HL 1, Quake 2/3/World, Counterstrike 1.6, etc.)
-# Pattern quality: good veryfast
+# Pattern attributes: good veryfast
 # Protocol groups: proprietary game
+# Wiki: http://www.protocolinfo.org/wiki/Half-Life http://www.protocolinfo.org/wiki/Counter-Strike http://www.protocolinfo.org/wiki/Day_of_Defeat
 #
 # Contributed by Laurens Blankers <laurens AT blankersfamily.com>, who says:
 #
@@ -14,10 +15,6 @@
 # Fortress Classic, Deathmatch Classic, Ricochet, Half-Life [1] Deathmatch,
 # and I imagine all the other 3rd party mods that also use this engine
 # will match that pattern.
-#
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/Half-Life
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 quake-halflife
 # All quake (like) protocols start with 4x 0xFF.  Then the client either

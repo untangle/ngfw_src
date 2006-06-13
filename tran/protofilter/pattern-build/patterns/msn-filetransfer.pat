@@ -1,6 +1,7 @@
-# MSN (Microsoft Network) Messenger Filetransfers (MSNFTP and MSNSLP)
-# Pattern quality: good veryfast
-# Protocol groups: proprietary document_retrieval
+# MSN (Micosoft Network) Messenger Filetransfers (MSNFTP and MSNSLP)
+# Pattern attributes: good veryfast
+# Protocol groups: proprietary chat document_retrieval
+# Wiki: http://www.protocolinfo.org/wiki/MSN_Messenger
 #
 # http://www.hypothetic.org/docs/msn/client/file_transfer.php
 #
@@ -9,10 +10,6 @@
 # MSN client as well as with clones such as Trillian, Miranda, Gaim,
 # etc.  If you are using a MSN clone and this pattern DOES work for you,
 # please, also let us know.
-#
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/MSN_Messenger
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 # First part matches the older MSNFTP: A MSN filetransfer is a normal
 # MSN connection except that the protocol is MSNFTP. Some clients

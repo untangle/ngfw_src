@@ -1,12 +1,12 @@
 # Gkrellm - a system monitor - http://gkrellm.net
-# Pattern quality: good veryfast
+# Pattern attributes: great veryfast
 # Protocol groups: monitoring
+# Wiki: http://www.protocolinfo.org/wiki/Gkrellm
 # 
 # This pattern has been tested and is believed to work well.
-#
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/Gkrellm
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
+# Since this is not anything resembling a published protocol, it may change without
+# warning in new versions of gkrellm.
 
 gkrellm
-^<gkrellmd_setup>
+# tested with gkrellm 2.2.7
+^gkrellm [23].[0-9].[0-9]\x0a$

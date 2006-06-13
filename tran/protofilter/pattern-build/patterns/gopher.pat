@@ -1,14 +1,11 @@
 # Gopher - A precursor to HTTP - RFC 1436
-# Pattern quality: good notsofast undermatch
+# Pattern attributes: good notsofast undermatch
 # Protocol groups: obsolete ietf_rfc_documented document_retrieval
+# Wiki: http://www.protocolinfo.org/wiki/Gopher
 #
 # Gopher servers usually run on TCP port 70.
 #
 # This pattern is lightly tested using gopher.dna.affrc.go.jp .
-#
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/Gopher
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 gopher
 # This matches the server's response, but naturally only if it is a

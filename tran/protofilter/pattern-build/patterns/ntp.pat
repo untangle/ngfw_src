@@ -1,12 +1,9 @@
 # (S)NTP - (Simple) Network Time Protocol - RFCs 1305 and 2030
-# Pattern quality: good veryfast overmatch 
+# Pattern attributes: good veryfast overmatch 
 # Protocol groups: ietf_draft_standard time_synchronization
+# Wiki: http://www.protocolinfo.org/wiki/NTP
 #
 # This pattern is tested and is believed to work.
-#
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/NTP
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 # client|server
 # Requires the server's timestamp to be in the present or future (of 2005).

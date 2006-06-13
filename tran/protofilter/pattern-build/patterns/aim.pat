@@ -1,16 +1,13 @@
 # AIM - AOL instant messenger (OSCAR and TOC)
-# Pattern quality: good notsofast
+# Pattern attributes: good notsofast
 # Protocol groups: proprietary chat
+# Wiki: http://www.protocolinfo.org/wiki/AIM
 #
 # Usually runs on port 5190
 #
 # This may also match ICQ traffic.
 # 
 # This pattern has been tested and is believed to work well.
-#
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/AIM
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 aim
 # See http://gridley.acns.carleton.edu/~straitm/final (and various other places)

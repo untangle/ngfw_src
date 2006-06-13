@@ -54,6 +54,7 @@
 480|: IMAP|: Email
 490|: IP printing|: Printing
 500|: IRC|: Instant Messenger
+505|: iMesh|: Peer to Peer
 510|: Jabber (XMPP)|: Instant Messenger
 520|: KuGoo|: Peer to Peer
 530|: live365|: Music
@@ -89,9 +90,9 @@
 830|: SSDP|: Networking
 840|: SSH|: System Administration
 850|: Subspace|: Video Game
+855|: Subversion|: Software Development
 860|: TeamSpeak|: Voice over IP
 870|: Telnet|: System Administration
-880|: Tencent QQ Protocol|: Instant Messenger
 890|: Tesla Advanced Communication|: Peer to Peer
 900|: TFTP|: File Transfer
 910|: The Circle|: Peer to Peer

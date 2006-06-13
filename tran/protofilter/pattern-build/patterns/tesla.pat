@@ -1,12 +1,9 @@
 # Tesla Advanced Communication - P2P filesharing (?)
-# Pattern quality: marginal notsofast
+# Pattern attributes: marginal notsofast
 # Protocol groups: p2p
+# Wiki: http://www.protocolinfo.org/wiki/Tesla
 #
 # This pattern is untested!
-#
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/Tesla
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 # This is lifted from http://oofle.com/filesharing.php?app=tesla
 # There is no explaination of what these numbers mean.

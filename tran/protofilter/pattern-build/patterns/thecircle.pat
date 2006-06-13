@@ -1,10 +1,7 @@
 # The Circle - P2P application - http://thecircle.org.au
-# Pattern quality: ok veryfast
+# Pattern attributes: ok veryfast
 # Protocol groups: open_source p2p
-#
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/The_Circle
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
+# Wiki: http://www.protocolinfo.org/wiki/The_Circle
 
 # This is tested with The Circle 0.41c on Linux.
 # It likely misses some stuff.  Notably, I wasn't able to test it on any 

@@ -1,13 +1,10 @@
 # XBox Live - Console gaming
-# pattern quality: marginal notsofast
+# pattern attributes: marginal notsofast
 # Protocol groups: proprietary game
+# Wiki: http://www.protocolinfo.org/wiki/XBox_Live
 #
 # This may match all XBox traffic, or may only match Halo 2 traffic.  
 # We don't know yet.
-#
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/XBox_Live
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 #
 # Thanks to Myles Uyema <mylesuyema AT gmail DOT com>, who says:
 #

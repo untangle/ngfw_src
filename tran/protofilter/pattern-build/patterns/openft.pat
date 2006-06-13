@@ -1,10 +1,7 @@
 # OpenFT - P2P filesharing (implemented in giFT library)
-# Pattern quality: good fast
+# Pattern attributes: good fast
 # Protocol groups: p2p
-#
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/OpenFT
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
+# Wiki: http://www.protocolinfo.org/wiki/OpenFT
 
 # Ben Efros <ben AT xgendev.com> says:
 # "This pattern identifies openFT P2P transfers fine.  openFT is part of giFT

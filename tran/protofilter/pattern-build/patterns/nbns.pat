@@ -1,12 +1,9 @@
 # NBNS - NetBIOS name service
-# Pattern quality: good notsofast
+# Pattern attributes: good notsofast
 # Protocol groups: networking
+# Wiki: http://www.protocolinfo.org/wiki/NBNS
 #
 # This pattern has been tested and is believed to work well.
-#
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/NBNS
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 #
 # name query
 # \x01\x10 means name query

@@ -1,6 +1,7 @@
 # DHCP - Dynamic Host Configuration Protocol - RFC 1541
-# Pattern quality: good veryfast
+# Pattern attributes: good veryfast
 # Protocol groups: ietf_draft_standard networking
+# Wiki: http://www.protocolinfo.org/wiki/DHCP
 #
 # Usually runs on ports 67 (server) and 68 (client)
 #
@@ -9,10 +10,6 @@
 # for DHCP).
 #
 # This pattern is lightly tested.
-#
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/DHCP
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 dhcp
 ^[\x01\x02][\x01- ]\x06.*c\x82sc

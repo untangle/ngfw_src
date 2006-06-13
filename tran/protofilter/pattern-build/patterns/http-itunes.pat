@@ -1,6 +1,7 @@
 # HTTP - iTunes (Apple's music program)
-# Pattern-quality: good fast
+# Pattern attributes: good fast subset
 # Protocol groups: ietf_draft_standard streaming_audio
+# Wiki: http://protocolinfo.org/wiki/HTTP
 #
 # Port 80
 # iTunes program basically uses the HTTP protocol for its initial

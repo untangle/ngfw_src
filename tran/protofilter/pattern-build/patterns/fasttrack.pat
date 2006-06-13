@@ -1,15 +1,12 @@
 # FastTrack - P2P filesharing (Kazaa, Morpheus, iMesh, Grokster, etc)
-# Pattern quality: good notsofast
+# Pattern attributes: good notsofast
 # Protocol groups: p2p
+# Wiki: http://www.protocolinfo.org/wiki/Fasttrack
 #
 # Tested with Kazaa Lite Resurrection 0.0.7.6F
 #
 # This appears to match the download connections well, but not the search
 # connections (I think they are encrypted :-( ).
-#
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/Fasttrack
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 fasttrack
 # while this is a valid http request, this will be caught because

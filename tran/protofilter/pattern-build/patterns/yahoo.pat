@@ -1,14 +1,11 @@
 # Yahoo messenger - an instant messenger protocol - http://yahoo.com
-# Pattern quality: good veryfast
+# Pattern attributes: good veryfast
 # Protocol groups: proprietary chat
+# Wiki: http://www.protocolinfo.org/wiki/Yahoo_Messenger
 #
 # Usually runs on port 5050 
 #
 # This pattern has been tested and is believed to work well. 
-#
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/Yahoo_Messenger
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 yahoo
 # http://www.venkydude.com/articles/yahoo.htm says: 

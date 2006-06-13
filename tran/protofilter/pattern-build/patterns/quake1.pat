@@ -1,12 +1,9 @@
 # Quake 1 - A popular computer game.
-# Pattern quality: marginal veryfast
+# Pattern attributes: marginal veryfast
 # Protocol groups: proprietary game
+# Wiki: http://www.protocolinfo.org/wiki/Quake
 #
 # This pattern is untested and unconfirmed.
-#
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/Quake
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 # Info taken from http://www.gamers.org/dEngine/quake/QDP/qnp.html,
 # which says that it "is incomplete, inaccurate and only applies to

@@ -1,6 +1,7 @@
 # Valid certificate SSL 
-# Pattern quality: good notsofast
+# Pattern attributes: good notsofast subset
 # Protocol groups: ietf_proposed_standard secure
+# Wiki: http://www.protocolinfo.org/wiki/SSL
 
 # This matches anything claiming to use a valid certificate from a well 
 # known certificate authority.
@@ -13,10 +14,6 @@
 #
 # This pattern is believed match only the above, but may not match all
 # of it.
-#
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/SSL
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 #
 # the certificate authority info is sent in quasi plain text, if it matches 
 # a well known certificate authority then we will assume it is a 

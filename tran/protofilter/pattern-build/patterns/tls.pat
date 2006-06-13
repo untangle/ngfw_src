@@ -1,16 +1,13 @@
 # SSL and TLS - Secure Socket Layer / Transport Layer Security - RFC 2246
-# Pattern quality: good fast
+# Pattern attributes: good fast superset
 # Protocol groups: ietf_proposed_standard secure
+# Wiki: http://www.protocolinfo.org/wiki/SSL
 #
 # Usually runs on port 443
 #
-# This is a superset validcertssl.  For it to match, it must be first.
+# This is a superset of validcertssl.  For it to match, it must be first.
 # 
 # This pattern has been tested and is believed to work well.
-#
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/SSL
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 ssl
 # Client Hello | Server Hello with certificate

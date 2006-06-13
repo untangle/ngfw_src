@@ -1,6 +1,7 @@
 # Shoutcast and Icecast - streaming audio
-# Pattern quality: good fast
+# Pattern attributes: good fast
 # Protocol groups: streaming_audio
+# Wiki: http://www.protocolinfo.org/wiki/Icecast
 #
 # usually runs on port 80
 #
@@ -14,11 +15,6 @@
 # http://sander.vanzoest.com/talks/2002/audio_and_apache/
 # http://forums.radiotoolbox.com/viewtopic.php?t=74
 # http://www.icecast.org
-#
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/Icecast
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
-
 
 shoutcast
 # This pattern was discovered using Ethereal.

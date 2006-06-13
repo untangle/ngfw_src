@@ -1,10 +1,7 @@
-# Subspace - 2D asteroids-style space game - http://beginners.subspace.net
-# Pattern quality: marginal veryfast
+# Subspace - 2D asteroids-style space game - http://sscentral.com
+# Pattern attributes: marginal veryfast
 # Protocol groups: game
-#
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/Subspace
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
+# Wiki: http://www.protocolinfo.org/wiki/Subspace
 #
 # By Myles Uyema <mylesuyema AT gmail.com>
 #

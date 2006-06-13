@@ -1,12 +1,9 @@
 # Counterstrike (using the new "Source" engine) - network game 
-# Pattern quality: good veryfast
+# Pattern attributes: good veryfast
 # Protocol groups: proprietary game
+# Wiki: http://www.protocolinfo.org/wiki/Counter-Strike
 #
 # By adam.randazzoATgmail.com
-#
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/Counter-Strike
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 counterstrike-source
 ^\xff\xff\xff\xff.*cstrikeCounter-Strike

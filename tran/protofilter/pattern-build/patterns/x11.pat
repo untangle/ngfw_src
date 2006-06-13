@@ -1,15 +1,15 @@
 # X Windows Version 11 - Networked GUI system used in most Unices
-# Pattern quality: good veryfast
+# Pattern attributes: good veryfast
 # Protocol groups: x_consortium_standard remote_access
+# Wiki: http://www.protocolinfo.org/wiki/X11
+#
+# It is common for X to be tunneled through SSH.  Then obviously this pattern
+# will not catch it.
 #
 # Specification: http://www.msu.edu/~huntharo/xwin/docs/xwindows/PROTO.pdf
 # Usually runs on port 6000 (6001 for the second server on a host, etc)
 #
 # This pattern has been tested.
-#
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/X11
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 x11
 # 'l' = little-endian.  'B' = big endian

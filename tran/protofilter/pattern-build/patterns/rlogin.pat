@@ -1,14 +1,11 @@
 # rlogin - remote login - RFC 1282
-# Pattern quality: ok veryfast
+# Pattern attributes: ok veryfast
 # Protocol groups: ietf_rfc_documented remote_access
+# Wiki: http://www.protocolinfo.org/wiki/Rlogin
 #
 # usually runs on port 443
 #
 # This pattern is untested.
-#
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/Rlogin
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 rlogin
 # At least three characters (user name, user name, terminal type), 

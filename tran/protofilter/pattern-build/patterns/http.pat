@@ -1,20 +1,16 @@
 # HTTP - HyperText Transfer Protocol - RFC 2616
-# Pattern quality: great notsofast
+# Pattern attributes: great notsofast superset
 # Protocol groups: ietf_draft_standard document_retrieval
+# Wiki: http://protocolinfo.org/wiki/HTTP
 #
 # Usually runs on port 80
 #
 # This pattern has been tested and is believed to work well.
 #
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/HTTP
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
-#
-# this intentionally catches the response from the server
-# rather than the request so that other protocols which use
-# http (like kazaa) can be caught based on specific http requests
-# regardless of the ordering of filters...
-# also matches posts
+# this intentionally catches the response from the server rather than
+# the request so that other protocols which use http (like kazaa) can be
+# caught based on specific http requests regardless of the ordering of
+# filters... also matches posts
 
 # Sites that serve really long cookies may break this by pushing the
 # server response too far away from the beginning of the connection. To

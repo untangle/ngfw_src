@@ -1,12 +1,9 @@
 # BGP - Border Gateway Protocol - RFC 1771
-# Pattern quality: ok veryfast
+# Pattern attributes: ok veryfast
 # Protocol groups: ietf_draft_standard networking
+# Wiki: http://www.protocolinfo.org/wiki/BGP
 #
 # This pattern is UNTESTED.
-#
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/BGP
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 bgp
 # "After a transport protocol connection is established, the first

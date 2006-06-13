@@ -1,12 +1,9 @@
 # NCP - Novell Core Protocol
-# Pattern quality: good veryfast
+# Pattern attributes: good veryfast
 # Protocol groups: networking
+# Wiki: http://www.protocolinfo.org/wiki/NCP
 #
 # This pattern has been tested and is believed to work well.
-#
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/NCP
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 # ncp request
 # dmdt means Request

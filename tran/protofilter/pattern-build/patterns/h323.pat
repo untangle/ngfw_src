@@ -1,6 +1,7 @@
 # H.323 - Voice over IP.
-# Pattern quality: ok veryfast
+# Pattern attributes: ok veryfast
 # Protocol groups: voip
+# Wiki: http://www.protocolinfo.org/wiki/H.323
 #
 # This pattern is written without knowledge of the principles of H.323.
 # It has only been tested with gnomemeeting and may not work for other
@@ -12,10 +13,6 @@
 #
 # Also, it may very well match other things that use TPKT and
 # Q.931. 
-
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/H.323
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 # Note that to take full advantage of this pattern, you will need to
 # have connection tracking of H.323 support in your kernel.  This

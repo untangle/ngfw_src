@@ -1,6 +1,7 @@
 # IRC - Internet Relay Chat - RFC 1459
-# Pattern quality: good veryfast
+# Pattern attributes: good veryfast
 # Protocol groups: ietf_proposed_standard chat
+# Wiki: http://www.protocolinfo.org/wiki/IRC
 #
 # Usually runs on port 6666 or 6667
 # Note that chat traffic runs on these ports, but IRC-DCC traffic (which
@@ -9,10 +10,6 @@
 # this.
 #
 # This pattern has been tested and is believed to work well.
-#
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/IRC
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 irc
 # First thing that happens is that the client sends NICK and USER, in 

@@ -1,6 +1,7 @@
 # Ares - P2P filesharing - http://aresgalaxy.sf.net
-# Pattern quality: good veryfast undermatch
+# Pattern attributes: good veryfast undermatch
 # Protocol groups: p2p
+# Wiki: http://www.protocolinfo.org/wiki/Ares
 
 # This pattern catches only client-server connect messages.  This is
 # sufficient for blocking, but not for shaping, since it doesn't catch
@@ -9,10 +10,6 @@
 # Original pattern by Brandon Enright <bmenrigh at the server known as ucsd.edu>
 
 # This pattern has been tested with Ares 1.8.8.2998.
-
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/Ares
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 ares
 # regular expression madness: "[]Z]" means ']' or 'Z'.

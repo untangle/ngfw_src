@@ -1,10 +1,7 @@
 # World of Warcraft - popular network game - http://blizzard.com/
-# Pattern quality: ok veryfast
+# Pattern attributes: ok veryfast
 # Protocol groups: proprietary game
-#
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/World_of_Warcraft
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
+# Wiki: http://www.protocolinfo.org/wiki/World_of_Warcraft
 
 worldofwarcraft
 ^\x06\xec\x01

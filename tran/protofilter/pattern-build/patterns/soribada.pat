@@ -1,10 +1,7 @@
 # Soribada - A Korean P2P filesharing program/protocol - http://www.soribada.com
-# Pattern quality: good notsofast
+# Pattern attributes: good notsofast
 # Protocol groups: p2p
-
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/Soribada
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
+# Wiki: http://www.protocolinfo.org/wiki/Soribada
 
 # I am told that there are three versions of this protocol, the first no
 # longer being used.  That would probably explain why incoming searches

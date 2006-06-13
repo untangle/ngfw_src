@@ -1,6 +1,7 @@
 # NetBIOS - Network Basic Input Output System
-# Pattern quality: marginal fast
+# Pattern attributes: marginal fast
 # Protocol groups: ietf_internet_standard proprietary networking
+# Wiki: http://www.protocolinfo.org/wiki/NetBIOS
 #
 # As mentioned in smb.pat:
 #
@@ -18,10 +19,6 @@
 # than if you just waited for the easier-to-match SMB header.
 #
 # This pattern is untested.
-#
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/NetBIOS
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 
 netbios
 # session request byte, three bytes of flags and length.  Then 

@@ -1,16 +1,13 @@
 # FTP - File Transfer Protocol - RFC 959
-# Pattern quality: great fast
+# Pattern attributes: great fast
 # Protocol groups: ietf_internet_standard document_retrieval
+# Wiki: http://protocolinfo.org/wiki/FTP
 #
 # Usually runs on port 21.  Note that the data stream is on a dynamically
 # assigned port, which means that you will need the FTP connection 
 # tracking module in your kernel to usefully match FTP data transfers.
 # 
 # This pattern is well tested.
-#
-# To get or provide more information about this protocol and/or pattern:
-# http://www.protocolinfo.org/wiki/FTP
-# http://lists.sourceforge.net/lists/listinfo/l7-filter-developers
 #
 # Matches the first two things a server should say.  Most servers say 
 # something after 220, even though they don't have to, and it usually
