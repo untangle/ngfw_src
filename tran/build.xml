@@ -182,11 +182,11 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
     <!-- bases need casings -->
     <if> <equals arg1="${tran.type}" arg2="base"/> <then>
-    <var name="extra.classes" value="../tran/output/jar/http-casing-client.mar:../tran/output/jar/ftp-casing-client.mar:../tran/output/jar/mail-casing-client.mar"/>
+    <var name="extra.classes" value="../tran/output/jar/http-casing-client.jar:../tran/output/jar/ftp-casing-client.jar:../tran/output/jar/mail-casing-client.jar"/>
     </then> </if>
     <!-- transforms need casings and bases -->
     <if> <equals arg1="${tran.type}" arg2="transform"/> <then>
-    <var name="extra.classes" value="../tran/output/jar/spam-base-client.mar:../tran/output/jar/virus-base-client.mar:../tran/output/jar/http-casing-client.mar:../tran/output/jar/ftp-casing-client.mar:../tran/output/jar/mail-casing-client.mar"/>
+    <var name="extra.classes" value="../tran/output/jar/spam-base-client.jar:../tran/output/jar/virus-base-client.jar:../tran/output/jar/http-casing-client.jar:../tran/output/jar/ftp-casing-client.jar:../tran/output/jar/mail-casing-client.jar"/>
     </then> </if>
     <!-- Because of automatic proxies, a few things don't get referenced but are still nedeed -->
     <if> <equals arg1="${tran.name}" arg2="reporting"/> <then>
@@ -308,17 +308,17 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
     <!-- bases need casings -->
     <if> <equals arg1="${tran.type}" arg2="base"/> <then>
-    <var name="extra.classes" value="../tran/output/jar/http-casing.mar:../tran/output/jar/ftp-casing.mar:../tran/output/jar/mail-casing.mar"/>
+    <var name="extra.classes" value="../tran/output/jar/http-casing.jar:../tran/output/jar/ftp-casing.jar:../tran/output/jar/mail-casing.jar"/>
     </then> </if>
     <!-- transforms need casings and bases -->
     <if> <equals arg1="${tran.type}" arg2="transform"/> <then>
-    <var name="extra.classes" value="../tran/output/jar/spam-base.mar:../tran/output/jar/virus-base.mar:../tran/output/jar/http-casing.mar:../tran/output/jar/ftp-casing.mar:../tran/output/jar/mail-casing.mar"/>
+    <var name="extra.classes" value="../tran/output/jar/spam-base.jar:../tran/output/jar/virus-base.jar:../tran/output/jar/http-casing.jar:../tran/output/jar/ftp-casing.jar:../tran/output/jar/mail-casing.jar"/>
     </then> </if>
 
     <!-- FIXME clamphish special case -->
     <if><equals arg1="${tran.name}" arg2="clamphish"/>
     <then>
-      <var name="extra.classes" value="../tran/output/jar/clam-transform.mar:../tran/output/jar/spam-base.mar:../tran/output/jar/virus-base.mar:../tran/output/jar/mail-casing.mar"/>
+      <var name="extra.classes" value="../tran/output/jar/clam-transform.jar:../tran/output/jar/spam-base.jar:../tran/output/jar/virus-base.jar:../tran/output/jar/mail-casing.jar"/>
     </then>
     </if>
 
@@ -370,6 +370,10 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
       </fileset>
     </jar>
 
+    <!-- Workaround for 1.5.0_07 javac limitation -->
+    <exec executable="sh">
+      <arg line='-c "if ! [ -h ${build.jar}/${tran.name}-${tran.type}-client.mar ] ; then ln -fs ${tran.name}-${tran.type}-client.mar ${build.jar}/${tran.name}-${tran.type}-client.jar ; fi "'/>
+    </exec>
   </target>
 
   <target name="mar.tran" depends="xdoclet.tran, compile.tran, mar.tran-client">
@@ -388,6 +392,11 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
         <include name="**"/>
       </fileset>
     </jar>
+
+    <!-- Workaround for 1.5.0_07 javac limitation -->
+    <exec executable="sh">
+      <arg line='-c "if ! [ -h ${build.jar}/${tran.name}-${tran.type}.mar ] ; then ln -fs ${tran.name}-${tran.type}.mar ${build.jar}/${tran.name}-${tran.type}.jar ; fi "'/>
+    </exec>
 
     <antcall target="jar.${tran.name}" inheritAll="true"/>
   </target>
