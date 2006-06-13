@@ -1,5 +1,6 @@
 12.102.45.2 mask 255.255.255.254,Malware,Netropa
 12.105.21.160 mask 255.255.255.224,Malware,MarketScore
+12.107.180.0 mask 255.255.252.0,Malware,Adwatcher
 12.129.204.0 mask 255.255.255.0,Malware,eUniverse/KeenValue
 12.129.72.128 mask 255.255.255.128,Malware,RealNetworks
 12.129.72.201 mask 255.255.255.255,Malware,SystemSoap
@@ -20,6 +21,7 @@
 128.11.92.0 mask 255.255.255.0,Malware,DoubleClick
 128.121.212.181 mask 255.255.255.255,Malware,Navexcel
 128.121.26.0 mask 255.255.255.0,Malware,AWS
+128.241.21.0 mask 255.255.255.0,Malware,Omniture
 128.242.201.144 mask 255.255.255.248,Malware,Speedbit
 128.242.201.16 mask 255.255.255.248,Malware,CaveCreek
 128.242.201.184 mask 255.255.255.248,Malware,Speedbit
@@ -30,6 +32,7 @@
 128.242.247.184 mask 255.255.255.248,Malware,Speedbit
 129.253.170.220 mask 255.255.255.255,Malware,Backweb
 130.94.132.0 mask 255.255.192.0,Malware,SplitFinity
+130.94.201.128 mask 255.255.255.128,Malware,WhenU
 134.122.0.0 mask 255.255.0.0,Malware,Phoenixnet
 139.142.246.76 mask 255.255.255.255,Malware,BrowserToolBar
 146.82.109.0 mask 255.255.255.192,Malware,TrafficSyndicate
@@ -45,6 +48,7 @@
 165.254.12.0 mask 255.255.255.0,Malware,Hotbar
 166.88.8.48 mask 255.255.255.255,Malware,Address.com
 168.143.112.0 mask 255.255.248.0,Malware,SplitFinity
+168.75.65.72 mask 255.255.255.240,Malware,Contextweb
 170.224.10.0 mask 255.255.255.0,Malware,Viewpoint
 170.224.16.32 mask 255.255.255.240,Malware,Unicast
 192.146.101.0 mask 255.255.255.0,Malware,Lexmark
@@ -63,6 +67,8 @@
 198.31.62.0 mask 255.255.254.0,Malware,DoubleClick
 198.64.129.88 mask 255.255.255.255,Malware,SmartBrowser
 198.64.149.78 mask 255.255.255.255,Malware,SmartBrowser
+198.65.105.207 mask 255.255.255.255,Malware,2020search
+198.65.114.249 mask 255.255.255.255,Malware,2020search
 198.65.163.0 mask 255.255.255.0,Malware,SplitFinity
 198.65.220.0 mask 255.255.255.0,Malware,Comet
 198.77.37.32 mask 255.255.255.248,Malware,IEPlugin
@@ -140,6 +146,7 @@
 206.152.188.64 mask 255.255.255.192,Malware,Gratisware
 206.152.189.0 mask 255.255.255.128,Malware,Gratisware
 206.161.127.66 mask 255.255.255.255,Malware,CWS.Loadbat/CWS.MSConfd/IE-Search
+206.169.136.0 mask 255.255.255.0,Malware,Adbrite
 206.169.156.0 mask 255.255.255.0,Malware,180solutions
 206.230.232.32 mask 255.255.255.224,Malware,Utopiad/Mesia
 206.251.184.0 mask 255.255.255.0,Malware,C2
@@ -168,6 +175,7 @@
 207.44.180.96 mask 255.255.255.255,Malware,TwistedHumor.com
 207.44.196.98 mask 255.255.255.255,Malware,Searchsprint
 207.44.198.24 mask 255.255.255.248,Malware,TwistedHumor
+207.58.142.0 mask 255.255.255.0,Malware,Adwatcher
 207.69.235.0 mask 255.255.255.0,Malware,PeoplePC
 207.97.199.152 mask 255.255.255.255,Malware,BargainBuddy
 207.99.34.0 mask 255.255.255.0,Malware,CWS.MSoffice
@@ -179,6 +187,7 @@
 208.184.29.0 mask 255.255.255.0,Malware,DoubleClick
 208.184.39.128 mask 255.255.255.128,Malware,Speedera
 208.185.211.64 mask 255.255.255.224,Malware,Ezula
+208.185.211.64 mask 255.255.255.224,Malware,Kontera
 208.185.54.0 mask 255.255.255.192,Malware,TopMoxie/EBates
 208.185.86.64 mask 255.255.255.224,Malware,Viewpoint
 208.186.78.81 mask 255.255.255.255,Malware,1110100011o1window.info/Bulla
@@ -267,10 +276,12 @@
 209.47.15.72 mask 255.255.255.248,Malware,RapidBlaster
 209.47.169.0 mask 255.255.255.0,Malware,Colosseum
 209.50.151.0 mask 255.255.255.0,Malware,SearchTraffic
+209.50.238.0 mask 255.255.255.0,Malware,Adwatcher
 209.50.251.0 mask 255.255.255.0,Malware,PassThisOn
 209.50.251.0 mask 255.255.255.0,Malware,PassThisOn/SmartBotPro
 209.50.251.242 mask 255.255.255.255,Malware,Autosearch
 209.51.152.62 mask 255.255.255.255,Malware,VirtualBouncer
+209.59.145.0 mask 255.255.255.0,Malware,Site5
 209.61.228.23 mask 255.255.255.255,Malware,Huntbar
 209.61.228.36 mask 255.255.255.255,Malware,Huntbar
 209.62.176.0 mask 255.255.224.0,Malware,Doubleclick
@@ -285,6 +296,8 @@
 209.67.27.0 mask 255.255.255.224,Malware,Dynamic
 209.67.38.0 mask 255.255.255.0,Malware,DoubleClick
 209.71.218.64 mask 255.255.255.224,Malware,WebHancer
+209.73.202.0 mask 255.255.255.224,Malware,WhenU
+209.73.203.96 mask 255.255.255.224,Malware,WhenU
 209.73.225.0 mask 255.255.255.0,Malware,Cydoor
 209.75.20.0 mask 255.255.252.0,Malware,Hitbox
 209.8.25.0 mask 255.255.255.0,Malware,Search*
@@ -319,6 +332,7 @@
 216.110.36.129 mask 255.255.255.255,Malware,IPInsight
 216.12.215.30 mask 255.255.255.255,Malware,AdRoar
 216.127.33.0 mask 255.255.255.0,Malware,Gamma
+216.127.40.0 mask 255.255.252.0,Malware,MoneyTree/FCI
 216.127.44.0 mask 255.255.255.0,Malware,FlyingCroc
 216.127.62.0 mask 255.255.255.0,Malware,MoneyTree/FlyingCroc
 216.127.92.176 mask 255.255.255.252,Malware,Tinybar
@@ -353,6 +367,7 @@
 216.176.203.0 mask 255.255.255.224,Malware,FreeTree
 216.177.73.128 mask 255.255.255.192,Malware,IGetNet
 216.187.107.0 mask 255.255.255.192,Malware,DyFuCa
+216.193.228.0 mask 255.255.255.0,Malware,2020search
 216.194.125.0 mask 255.255.255.0,Malware,Omniture
 216.194.70.15 mask 255.255.255.255,Malware,SearchWWW
 216.194.89.112 mask 255.255.255.240,Malware,WRN
@@ -409,6 +424,7 @@
 216.37.13.0 mask 255.255.255.0,Malware,Radiate/Aureate
 216.37.32.32 mask 255.255.255.224,Malware,Akamai***
 216.39.104.0 mask 255.255.255.0,Malware,Overture
+216.39.104.0 mask 255.255.255.0,Malware,Overture
 216.39.68.32 mask 255.255.255.224,Malware,AvenueA
 216.39.69.64 mask 255.255.255.192,Malware,Atlas
 216.40.201.16 mask 255.255.255.255,Malware,AdRoar
@@ -445,6 +461,7 @@
 217.157.14.29 mask 255.255.255.255,Malware,Pugi
 24.200.251.0 mask 255.255.255.128,Malware,Akamai***
 38.113.198.132 mask 255.255.255.255,Malware,Best
+38.113.244.64 mask 255.255.255.240,Malware,Zeropopup/Jetseeker/Tinybar
 38.117.132.0 mask 255.255.255.0,Malware,Hotbar
 38.117.144.0 mask 255.255.252.0,Malware,Coolwebsearch
 38.117.144.27 mask 255.255.255.255,Malware,CWS.Tapicfg
@@ -515,10 +532,12 @@
 63.246.130.201 mask 255.255.255.255,Malware,SurferBar
 63.246.32.0 mask 255.255.240.0,Malware,Propamedia/Various
 63.251.211.0 mask 255.255.255.0,Malware,NewdotNet
+63.251.26.0 mask 255.255.255.0,Malware,Findwhat.com
 63.251.26.0 mask 255.255.255.0,Malware,Searchfeed
 63.251.83.40 mask 255.255.255.255,Malware,WhenU/SaveNow
 63.251.83.57 mask 255.255.255.255,Malware,Side-Search
 63.251.92.192 mask 255.255.255.192,Malware,CWS.MSSPI
+63.251.92.192 mask 255.255.255.252,Malware,Zeropopup/Jetseeker/Tinybar
 63.254.68.0 mask 255.255.252.0,Malware,NewtonKnows
 63.66.136.0 mask 255.255.255.0,Malware,SecondPower
 63.68.54.0 mask 255.255.254.0,Malware,BonziBuddy
@@ -546,6 +565,7 @@
 64.124.17.160 mask 255.255.255.224,Malware,Doubleclick
 64.124.186.233 mask 255.255.255.255,Malware,WildTangent
 64.124.186.247 mask 255.255.255.255,Malware,WildTangent
+64.124.204.224 mask 255.255.255.224,Malware,Kontera
 64.124.210.0 mask 255.255.255.0,Malware,UmaxSearch,
 64.124.210.131 mask 255.255.255.255,Malware,CWS.GrabItFast
 64.124.210.41 mask 255.255.255.255,Malware,Coolwebsearch
@@ -553,6 +573,7 @@
 64.128.107.128 mask 255.255.255.128,Malware,Net-Nucleus
 64.128.87.0 mask 255.255.255.0,Malware,Clickbank
 64.14.238.0 mask 255.255.255.240,Malware,NewtonKnows
+64.14.244.0 mask 255.255.255.0,Malware,Namegiant
 64.14.40.0 mask 255.255.255.0,Malware,Searchalot
 64.14.42.0 mask 255.255.255.0,Malware,AvenueA
 64.14.44.0 mask 255.255.255.0,Malware,Soboito
@@ -631,6 +652,7 @@
 64.49.245.112 mask 255.255.255.240,Malware,SmartBrowser/Tibsystems.com
 64.49.255.31 mask 255.255.255.255,Malware,Tibssystems.com
 64.5.48.121 mask 255.255.255.255,Malware,FavoriteMan
+64.56.205.0 mask 255.255.255.0,Malware,FrientGreeting/AdultFriendFinder
 64.58.80.0 mask 255.255.254.0,Malware,24/7
 64.60.8.160 mask 255.255.255.224,Malware,BrilliantDigital
 64.61.30.0 mask 255.255.255.0,Malware,Hotbar
@@ -640,7 +662,10 @@
 64.70.54.0 mask 255.255.255.0,Malware,Mediaplex
 64.74.131.0 mask 255.255.255.0,Malware,Accipiter/Engage
 64.74.193.0 mask 255.255.255.0,Malware,Accipiter
+64.74.223.0 mask 255.255.255.0,Malware,Various
+64.74.223.0 mask 255.255.255.0,Malware,Various/multiple/cybersquat
 64.74.96.192 mask 255.255.255.192,Malware,CWS.MSSPI
+64.74.96.242 mask 255.255.255.254,Malware,Zeropopup/Jetseeker/Tinybar
 64.79.161.0 mask 255.255.255.0,Malware,SpecificMedia
 64.90.160.152 mask 255.255.255.248,Malware,BroadcastPC
 64.90.160.154 mask 255.255.255.255,Malware,FlashTrack
@@ -687,6 +712,7 @@
 65.77.83.222 mask 255.255.255.255,Malware,CWS.Vrape
 65.89.40.0 mask 255.255.252.0,Malware,C2
 66.109.33.5 mask 255.255.255.255,Malware,Wurldmedia
+66.110.176.0 mask 255.255.240.0,Malware,Transponder/various
 66.111.55.108 mask 255.255.255.254,Malware,SearchSpace/Umaxsearch
 66.111.59.70 mask 255.255.255.255,Malware,Whazit
 66.111.63.148 mask 255.255.255.255,Malware,ToolbarCC
@@ -694,7 +720,7 @@
 66.115.160.0 mask 255.255.252.0,Malware,National-Net
 66.115.165.0 mask 255.255.255.0,Malware,National-Net
 66.115.177.32 mask 255.255.255.240,Malware,C2
-66.116.109.0 mask 255.255.255.128,Malware,C2
+66.116.109.0 mask 255.255.255.0,Malware,C2
 66.117.28.130 mask 255.255.255.255,Malware,FavoriteMan/SpyAssault
 66.119.41.0 mask 255.255.255.128,Malware,MarketScore
 66.120.65.224 mask 255.255.255.240,Malware,DoubleClick
@@ -710,10 +736,12 @@
 66.159.219.192 mask 255.255.255.192,Malware,Flashlightsearch
 66.159.219.192 mask 255.255.255.192,Malware,MemoryMeter
 66.161.28.166 mask 255.255.255.255,Malware,Clearsearch
+66.179.234.0 mask 255.255.255.224,Malware,ITToolbox
 66.186.13.128 mask 255.255.255.128,Malware,BrilliantDigital
 66.186.17.192 mask 255.255.255.192,Malware,Fordale
 66.197.138.235 mask 255.255.255.255,Malware,ShopNAV
 66.197.235.32 mask 255.255.255.224,Malware,Azebar
+66.201.203.128 mask 255.255.255.128,Malware,Targetnet
 66.207.130.0 mask 255.255.254.0,Malware,bFast
 66.216.104.0 mask 255.255.255.0,Malware,Pointroll
 66.216.127.40 mask 255.255.255.255,Malware,Tibssystems.com
@@ -725,6 +753,8 @@
 66.230.128.0 mask 255.255.224.0,Malware,ISPRIME
 66.230.151.96 mask 255.255.255.224,Malware,BroadcastPC
 66.230.192.0 mask 255.255.192.0,Malware,Neucom,
+66.230.192.0 mask 255.255.224.0,Malware,Neucom,
+66.230.224.0 mask 255.255.255.240,Malware,Neucom,
 66.235.128.0 mask 255.255.240.0,Malware,Archer
 66.240.1.128 mask 255.255.255.224,Malware,AWS
 66.250.107.0 mask 255.255.255.0,Malware,Pilosoft
@@ -772,20 +802,25 @@
 66.70.67.12 mask 255.255.255.252,Malware,Eprompter
 66.70.68.147 mask 255.255.255.255,Malware,Mojo
 66.77.127.90 mask 255.255.255.255,Malware,Divx
+66.77.183.128 mask 255.255.255.128,Malware,Targetnet
+66.96.205.235 mask 255.255.255.255,Malware,2020search
 66.98.144.141 mask 255.255.255.255,Malware,Start-space.com
 66.98.154.2 mask 255.255.255.255,Malware,Winupie
 66.98.178.19 mask 255.255.255.255,Malware,Rfwnad
 66.98.229.16 mask 255.255.255.255,Malware,Transponder/VX2
 67.123.49.24 mask 255.255.255.248,Malware,Netropa
 67.139.254.0 mask 255.255.255.0,Malware,Clickbank
+67.15.35.0 mask 255.255.255.0,Malware,Optical
 67.15.56.0 mask 255.255.255.0,Malware,Casalemedia
 67.18.129.135 mask 255.255.255.255,Malware,idgsearch.com
+67.19.0.192 mask 255.255.255.192,Malware,Casalemedia
 67.29.164.0 mask 255.255.255.0,Malware,Neucom,
 68.166.185.186 mask 255.255.255.255,Malware,Phoenix
 69.0.128.0 mask 255.255.128.0,Malware,DialtoneInternet
 69.20.20.161 mask 255.255.255.255,Malware,Look2Me
 69.20.69.168 mask 255.255.255.248,Malware,BargainBuddy
 69.25.142.0 mask 255.255.255.128,Malware,CWS.MSSPI
+69.25.142.0 mask 255.255.255.252,Malware,Zeropopup/Jetseeker/Tinybar
 69.28.146.0 mask 255.255.255.128,Malware,OfferOptimizer
 69.28.195.198 mask 255.255.255.255,Malware,TopSites
 69.28.208.64 mask 255.255.255.240,Malware,ISTBar
@@ -803,8 +838,9 @@
 69.31.92.0 mask 255.255.254.0,Malware,Coolwebsearch
 69.41.224.0 mask 255.255.254.0,Malware,ThePlanet
 69.42.128.0 mask 255.255.240.0,Malware,Primenetwork
-69.46.23.170 mask 255.255.255.254,Malware,X10ClearStream
+69.46.23.170 mask 255.255.255.254,Malware,X10/ClearStream
 69.50.131.86 mask 255.255.255.255,Malware,maximumsearch
+69.50.168.0 mask 255.255.255.0,Malware,Various/Intercage
 69.56.128.0 mask 255.255.128.0,Malware,ThePlanet
 69.56.130.21 mask 255.255.255.255,Malware,JetSeeker
 69.56.223.196 mask 255.255.255.255,Malware,IDGsearch
@@ -813,8 +849,14 @@
 69.90.184.0 mask 255.255.255.0,Malware,180solutions
 69.93.33.145 mask 255.255.255.255,Malware,Maximumsearch
 70.85.115.134 mask 255.255.255.255,Malware,GAMsys
+70.85.253.240 mask 255.255.255.240,Malware,2020search
+70.86.0.112 mask 255.255.255.240,Malware,Casalemedia
+70.86.0.32 mask 255.255.255.224,Malware,2020search
 70.86.209.0 mask 255.255.255.0,Malware,Casalemedia
+70.87.0.0 mask 255.255.255.128,Malware,Casalemedia
 70.97.62.0 mask 255.255.255.192,Malware,180solutions
+72.5.4.0 mask 255.255.254.0,Malware,2020search
+72.51.27.0 mask 255.255.255.0,Malware,Mediatech
 80.15.249.0 mask 255.255.255.128,Malware,RealNetworks
 80.77.84.0 mask 255.255.255.0,Malware,CWS.MSinfo
 80.77.84.178 mask 255.255.255.255,Malware,Global-Finder.com
