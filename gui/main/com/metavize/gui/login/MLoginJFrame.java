@@ -531,6 +531,8 @@ public class MLoginJFrame extends javax.swing.JFrame {
                         retryLogin = 0;
                     }
                     else{
+			if( loginAddress.equals("127.0.0.1") )
+			    loginAddress = "console";
                         resetLogin("Already logged in: " + loginName + " at " + loginAddress);
                         retryLogin = -1;
                         return;
