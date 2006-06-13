@@ -160,10 +160,17 @@ DirTree.prototype._populateCallback = function(obj, results)
       } else {
          var p = obj.parent;
          var pcn = p.getData(Browser.CIFS_NODE);
-         var isWorkGroup = pcn.isWorkGroup();
-         var n = isWorkGroup
-            ? new CifsNode(null, "//" + name, pcn.principal, CifsNode.WORKGROUP)
-            : new CifsNode(pcn.url, name, pcn.principal, CifsNode.DIR);
+         var n;
+         if (pcn.isWorkGroup()) {
+            DBG.println("WORKGROUP: " + name);
+            n = new CifsNode(null, "//" + name, pcn.principal, CifsNode.SERVER);
+         } else if (pcn.isServer()) {
+            DBG.println("SERVER: " + name);
+            n = new CifsNode(pcn.url, name, pcn.principal, CifsNode.DIR);
+         } else {
+            DBG.println("DIR: " + name);
+            n = new CifsNode(pcn.url, name, pcn.principal, CifsNode.DIR);
+         }
          var tn = new DwtTreeItem(obj.parent, null, n.label, n.getIconName());
          tn.setData(Browser.CIFS_NODE, n);
          if (this._dragSource) {

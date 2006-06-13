@@ -134,7 +134,7 @@ public class FileLister extends HttpServlet
         try {
             files = dir.listFiles();
         } catch (SmbAuthException exn) {
-            os.println("<auth-error type='listFiles' url='" + p + "'/>)");
+            os.println("<auth-error type='listFiles' url='" + p + "'/>");
             return;
         } catch (SmbException exn) {
             // XXX add error handling for client

@@ -2,7 +2,8 @@
 // All rights reserved.
 
 function CifsNode(parent, name, principal, type, size, lastModified,
-                  contentType) {
+                  contentType)
+{
    this.parent = parent;
    this.name = name;
    this.principal = principal;
@@ -44,12 +45,16 @@ CifsNode.prototype = {
       return this.name;
    },
 
-   isDirectory: function() {
-      return this.type == CifsNode.DIR;
+   isWorkGroup: function() {
+      return this.type == CifsNode.WORKGROUP;
    },
 
-   isWorkGroup: function() {
-      return this.type = CifsNode.WORKGROUP;
+   isServer: function() {
+      return this.type == CifsNode.SERVER;
+   },
+
+   isDirectory: function() {
+      return this.type == CifsNode.DIR;
    },
 
    getIconName: function() {
