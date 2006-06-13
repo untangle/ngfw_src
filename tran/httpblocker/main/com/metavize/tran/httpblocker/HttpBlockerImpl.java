@@ -345,6 +345,15 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
             bc = new BlacklistCategory("vacation", "Vacation", "Vacation");
             settings.addBlacklistCategory(bc);
         }
+        if (curCategories.size() < 11) {
+            /*
+             * First time or upgrade from 3.2 to 4.0
+             */
+            BlacklistCategory bc = new BlacklistCategory("ecommerce", "Shopping", "Online Shopping");
+            settings.addBlacklistCategory(bc);
+            bc = new BlacklistCategory("socialnetworking", "Social Networking", "Social Networking");
+            settings.addBlacklistCategory(bc);
+        }
     }
 
     protected void postInit(String[] args)
