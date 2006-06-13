@@ -133,6 +133,7 @@ DirTree.prototype._populate = function(item, cb, repopulate)
 
       var actionCb = new AjxCallback(this, this._populateCallback, obj);
       var authCallback = new AjxCallback(this, this._populateAuthCallback, obj);
+      DBG.println("LISTING: " + url);
       MvRpc.invoke(null, "ls?url=" + url + "&type=dir", null, true,
                    actionCb, MvRpc.reloadPageCallback, authCallback);
    } else {
@@ -144,7 +145,11 @@ DirTree.prototype._populate = function(item, cb, repopulate)
 
 DirTree.prototype._populateAuthCallback = function(obj, results)
 {
-   DBG.println("_populateErrorCallback");
+   var p = obj.parent;
+   var pcn = p.getData(Browser.CIFS_NODE);
+   DBG.println("Setting to unauthorized: " + pcn.label);
+   pcn.authorized = false;
+   p.setImage(pcn.getIconName());
 }
 
 DirTree.prototype._populateCallback = function(obj, results)

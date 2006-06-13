@@ -2,7 +2,7 @@
 // All rights reserved.
 
 function CifsNode(parent, name, principal, type, size, lastModified,
-                  contentType)
+                  contentType, authorized)
 {
    this.parent = parent;
    this.name = name;
@@ -10,6 +10,7 @@ function CifsNode(parent, name, principal, type, size, lastModified,
    this.type = type;
    this.size = size || 0;
    this.contentType = contentType;
+   this.authorized = authorized || true;
 
    if (0 < lastModified) {
       var date = new Date();
@@ -64,6 +65,7 @@ CifsNode.prototype = {
    },
 
    getIconName: function() {
-      return CifsNode.ICON_NAMES[this.type];
+      return CifsNode.ICON_NAMES[this.type]
+         + (this.authorized ? "" : "NoAuth");
    }
 }
