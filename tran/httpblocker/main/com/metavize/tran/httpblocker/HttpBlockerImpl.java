@@ -353,6 +353,8 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
             settings.addBlacklistCategory(bc);
             bc = new BlacklistCategory("socialnetworking", "Social Networking", "Social Networking");
             settings.addBlacklistCategory(bc);
+            bc = new BlacklistCategory("proxy", "Anonymous Surfing", "Anonymous Web Surfing");
+            settings.addBlacklistCategory(bc);
         }
     }
 
