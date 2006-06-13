@@ -31,12 +31,14 @@ function CifsNode(parent, name, principal, type, size, lastModified,
 
 CifsNode.WORKGROUP = "workgroup";
 CifsNode.SERVER = "server";
+CifsNode.SHARE = "share";
 CifsNode.FILE = "file";
 CifsNode.DIR = "dir";
 
 CifsNode.ICON_NAMES = { };
 CifsNode.ICON_NAMES[CifsNode.WORKGROUP] = "WorkGroup";
 CifsNode.ICON_NAMES[CifsNode.SERVER] = "Server";
+CifsNode.ICON_NAMES[CifsNode.SHARE] = "Share";
 CifsNode.ICON_NAMES[CifsNode.FILE] = "File";
 CifsNode.ICON_NAMES[CifsNode.DIR] = "Folder";
 
@@ -51,6 +53,10 @@ CifsNode.prototype = {
 
    isServer: function() {
       return this.type == CifsNode.SERVER;
+   },
+
+   isShare: function() {
+      return this.type == CifsNode.SHARE;
    },
 
    isDirectory: function() {

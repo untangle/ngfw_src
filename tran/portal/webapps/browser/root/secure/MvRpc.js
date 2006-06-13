@@ -23,6 +23,7 @@ MvRpc.invoke = function(requestStr, serverUrl, requestHeaders, useGet,
 
 MvRpc._reloadPage = function()
 {
+   DBG.println("RELOAD PAGE");
    window.location.reload();
 }
 

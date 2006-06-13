@@ -23,16 +23,16 @@ DirTree._POPULATED = "populated";
 
 // public methods -------------------------------------------------------------
 
-DirTree.prototype.addRoot = function(url, principal)
+DirTree.prototype.addRoot = function(url)
 {
    this.cwd = url;
 
-   var n = new CifsNode(null, url, principal, CifsNode.DIR); // XXX type
+   var n = new CifsNode(null, url, null, CifsNode.DIR); // XXX appropriate type
 
    var root = new DwtTreeItem(this);
    root.setText(n.label);
-   root.setImage(n.getIconName()); // XXX Make Server icon
-   root.setData(Browser.CIFS_NODE, n, principal);
+   root.setImage(n.getIconName());
+   root.setData(Browser.CIFS_NODE, n);
 
    this._populate(root);
 }
@@ -44,7 +44,7 @@ DirTree.prototype.addWorkGroup = function(name)
    var root = new DwtTreeItem(this);
    root.setText(n.label);
    root.setImage("WorkGroup");
-   root.setData(Browser.CIFS_NODE, n, null);
+   root.setData(Browser.CIFS_NODE, n);
 
    this._populate(root);
 }
@@ -130,8 +130,11 @@ DirTree.prototype._populate = function(item, cb, repopulate)
       var obj = { parent: item, cb: cb };
 
       var url = n.url;
-      AjxRpc.invoke(null, "ls?url=" + url + "&type=dir", null,
-                    new AjxCallback(this, this._populateCallback, obj), true);
+
+      var actionCb = new AjxCallback(this, this._populateCallback, obj);
+      var authCallback = new AjxCallback(this, this._populateAuthCallback, obj);
+      MvRpc.invoke(null, "ls?url=" + url + "&type=dir", null, true,
+                   actionCb, MvRpc.reloadPageCallback, authCallback);
    } else {
       if (cb) {
          cb.run(item);
@@ -139,14 +142,23 @@ DirTree.prototype._populate = function(item, cb, repopulate)
    }
 }
 
+DirTree.prototype._populateAuthCallback = function(obj, results)
+{
+   DBG.println("_populateErrorCallback");
+}
+
 DirTree.prototype._populateCallback = function(obj, results)
 {
+   var p = obj.parent;
+   var pcn = p.getData(Browser.CIFS_NODE);
+   DBG.println("ADDING TO: " + pcn.label);
+
    var dom = results.xml;
    var dirs = dom.getElementsByTagName("dir");
 
    var current = { };
 
-   var children = obj.parent.getItems();
+   var children = p.getItems();
    for (var i = 0; i < children.length; i++) {
       var n = children[i].getData(Browser.CIFS_NODE);
       current[n.name] = children[i];
@@ -158,14 +170,15 @@ DirTree.prototype._populateCallback = function(obj, results)
       if (current[name]) {
          delete current[name];
       } else {
-         var p = obj.parent;
-         var pcn = p.getData(Browser.CIFS_NODE);
          var n;
          if (pcn.isWorkGroup()) {
             DBG.println("WORKGROUP: " + name);
             n = new CifsNode(null, "//" + name, pcn.principal, CifsNode.SERVER);
          } else if (pcn.isServer()) {
             DBG.println("SERVER: " + name);
+            n = new CifsNode(pcn.url, name, pcn.principal, CifsNode.SHARE);
+         } else if (pcn.isShare()) {
+            DBG.println("SHARE: " + name);
             n = new CifsNode(pcn.url, name, pcn.principal, CifsNode.DIR);
          } else {
             DBG.println("DIR: " + name);

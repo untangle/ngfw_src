@@ -1,7 +1,7 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-function Browser(shell, url, principal) {
+function Browser(shell, url) {
    if (0 == arguments.length) {
       return;
    }
@@ -26,7 +26,7 @@ function Browser(shell, url, principal) {
    dropTarget.addDropListener(new AjxListener(this, this._treeDropListener));
    this._dirTree = new DirTree(this, null, DwtControl.ABSOLUTE_STYLE,
                                dragSource, dropTarget);
-   this._dirTree.addRoot(url, principal);
+   this._dirTree.addRoot(url);
    this._dirTree.setScrollStyle(DwtControl.SCROLL);
    this._dirTree.addSelectionListener(new AjxListener(this, this._dirSelectionListener));
    this._dirTree.zShow(true);
