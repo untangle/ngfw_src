@@ -280,11 +280,11 @@ Browser.prototype._authenticateDialogListener = function(obj, evt)
 {
    var d = obj.dialog;
    var domain = d.getDomain();
-   var username = d.getUsername();
+   var username = d.getUser();
    var password = d.getPassword();
 
-   var url = login("secure/login?domain=" + domain + "&username=" + username +
-                   + "&password=" + password);
+   var url = "secure/login?domain=" + domain + "&username=" + username
+                   + "&password=" + password;
 
    o = { dialog: d }
    var actionCb = new AjxCallback(this, this._loginCallback, o);

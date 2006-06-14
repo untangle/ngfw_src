@@ -138,4 +138,3 @@ LoginPanel.prototype._showError = function(msg)
    this._msgLabel.setText(msg);
    this._msgLabel.setVisible(true);
 }
-

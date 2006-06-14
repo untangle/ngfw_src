@@ -2,6 +2,9 @@
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
+<%-- If you remove the following line, I will hunt you down (love, amr): --%>
+<!-- MagicComment: MVTimeout -->
+
 <%
 String scheme = request.getScheme();
 String cp = (String)request.getContextPath();
@@ -47,19 +50,19 @@ String host=request.getHeader("host");
                         <td><i>&nbsp;<%=host %></i></td>
                       </tr>
 
-			<form method="POST" action="j_security_check">
-			<tr><td align="right">Login:</td><td><input type="text" name="j_username"></td></tr>
-			<tr><td align="right">Password:</td><td><input type="password" name="j_password"></td></tr>
-                    </table>	
-			<br/>
-			<input type="submit" value="login">
-			</form>
-			<br/>
-			<br/>
-			<br/>
-			<div style="font-style: italic; font-size: 80%;"> 	
-			<a href="http://<%=host%>/webstart">Administrator Login</a>
-			</div>
+            <form method="POST" action="j_security_check">
+            <tr><td align="right">Login:</td><td><input type="text" name="j_username"></td></tr>
+            <tr><td align="right">Password:</td><td><input type="password" name="j_password"></td></tr>
+                    </table>
+            <br/>
+            <input type="submit" value="login">
+            </form>
+            <br/>
+            <br/>
+            <br/>
+            <div style="font-style: italic; font-size: 80%;">
+            <a href="http://<%=host%>/webstart">Administrator Login</a>
+            </div>
                   </center>
               </div>
             </td>

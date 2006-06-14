@@ -31,6 +31,8 @@ MvRpc.reloadPageCallback = new AjxCallback(null, MvRpc._reloadPage, { });
 
 // private methods ------------------------------------------------------------
 
+MvRpc.MAGIC_RE = /<!-- MagicComment: MVTimeout -->/;
+
 MvRpc._callbackFn = function(obj, results)
 {
    if (results.xml) {
@@ -42,13 +44,14 @@ MvRpc._callbackFn = function(obj, results)
          DBG.println("RUNNING actionCallback");
          return obj.actionCallback.run(results);
       }
+   } else if (obj.timeoutCallback && results.text && 0 <= MvRpc.MAGIC_RE.search(results.text)) {
+      System.out.println("MATCHES RE: " + MvRpc.MAGIC_RE.search(results.text));
+      DBG.println("RUNNING timeoutCallback");
+      return obj.timeoutCallback.run(results);
+   } else if (obj.actionCallback) {
+      DBG.println("RUNNING actionCallback");
+         return obj.actionCallback.run(results);
    } else {
-      // XXX detect timeout page
-      if (obj.timeoutCallback) {
-         return obj.timeoutCallback.run(results);
-         DBG.println("RUNNING timeoutCallback");
-      } else {
-         DBG.println("DOING NOTHING");
-      }
+      DBG.println("DOING NOTHING");
    }
 }
