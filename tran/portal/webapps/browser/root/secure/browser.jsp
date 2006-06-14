@@ -32,12 +32,13 @@ String principal = pl.getNtlmAuth().toString();
 
 <script type="text/javascript" src="<%=sp%>/MvRpc.js"></script>
 
-<script type="text/javascript" src="<%=sp%>/CifsNode.js"></script>
 <script type="text/javascript" src="<%=sp%>/Browser.js"></script>
-<script type="text/javascript" src="<%=sp%>/DirTree.js"></script>
+<script type="text/javascript" src="<%=sp%>/CifsNode.js"></script>
 <script type="text/javascript" src="<%=sp%>/DetailPanel.js"></script>
-<script type="text/javascript" src="<%=sp%>/FileUploadPanel.js"></script>
+<script type="text/javascript" src="<%=sp%>/DirTree.js"></script>
 <script type="text/javascript" src="<%=sp%>/FileUploadDialog.js"></script>
+<script type="text/javascript" src="<%=sp%>/FileUploadPanel.js"></script>
+<script type="text/javascript" src="<%=sp%>/LoginDialog.js"></script>
 <script type="text/javascript" src="<%=sp%>/MkdirDialog.js"></script>
 <script type="text/javascript" src="<%=sp%>/RenameDialog.js"></script>
 

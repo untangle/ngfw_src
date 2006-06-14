@@ -48,7 +48,7 @@ DetailPanel.prototype.refresh = function()
    var actionCb = new AjxCallback(this, f, new Object());
 
    DBG.println("INVOKE ls");
-   MvRpc.invoke(null, "ls?url=" + this.cwd + "&type=full", null, true,
+   MvRpc.invoke(null, "secure/ls?url=" + this.cwd + "&type=full", null, true,
                 actionCb, MvRpc.reloadPageCallback, this._authCallback);
 }
 

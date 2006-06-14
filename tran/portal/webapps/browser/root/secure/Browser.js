@@ -207,7 +207,7 @@ Browser.prototype._broadcastRoots = function()
    var actionCb = new AjxCallback(this, this._broadcastRootsCb, new Object());
 
    DBG.println("INVOKE ls");
-   MvRpc.invoke(null, "ls?url=//", null, true,
+   MvRpc.invoke(null, "secure/ls?url=//", null, true,
                 actionCb, MvRpc.reloadPageCallback, this._authCallback);
 }
 
@@ -242,10 +242,10 @@ Browser.prototype._detailSelectionListener = function(ev) {
 
 // toolbar buttons ------------------------------------------------------------
 
-Browser.prototype._dirSelectionListener = function(ev) {
-   switch (ev.detail) {
+Browser.prototype._dirSelectionListener = function(evt) {
+   switch (evt.detail) {
       case DwtTree.ITEM_SELECTED:
-      var n = ev.item.getData(Browser.CIFS_NODE);
+      var n = evt.item.getData(Browser.CIFS_NODE);
       this.chdir(n.url);
       break;
 
@@ -259,13 +259,44 @@ Browser.prototype._dirSelectionListener = function(ev) {
       break;
 
       case DwtTree.ITEM_DBL_CLICKED:
+      var item = evt.item;
+      var n = item.getData(Browser.CIFS_NODE);
+      if (!n.authenticated) {
+         var d = new LoginDialog(this._shell, n.getDomain());
+         var o = { dialog: d };
+         var l = new AjxListener(this, this._authenticateDialogListener, o);
+         d.setButtonListener(DwtDialog.OK_BUTTON, l);
+         d.popup();
+      } else {
+         item.setExpanded(!evt.item.getExpanded());
+      }
       break;
 
       default:
    }
 }
 
-Browser.prototype._listActionListener = function (ev) {
+Browser.prototype._authenticateDialogListener = function(obj, evt)
+{
+   var d = obj.dialog;
+   var domain = d.getDomain();
+   var username = d.getUsername();
+   var password = d.getPassword();
+
+   var url = login("secure/login?domain=" + domain + "&username=" + username +
+                   + "&password=" + password);
+
+   o = { dialog: d }
+   var actionCb = new AjxCallback(this, this._loginCallback, o);
+   MvRpc.invoke(null, url, null, true, actionCb, MvRpc.reloadPageCallback, null);
+}
+
+Browser.prototype._loginCallback = function(obj, results)
+{
+   alert("SC: " + results.status);
+}
+
+Browser.prototype._listActionListener = function(ev) {
     this._actionMenu.popup(0, ev.docX, ev.docY);
 }
 
@@ -297,7 +328,7 @@ Browser.prototype._deleteButtonListener = function(ev)
       return;
    }
 
-   var url = "exec?command=rm";
+   var url = "secure/exec?command=rm";
 
    for (var i = 0; i < sel.length; i++) {
       url += "&file=" + sel[i].url;
@@ -321,7 +352,7 @@ Browser.prototype._renameButtonListener = function(ev)
       var dest = dialog.getDest();
 
       if (dest) {
-         var url = "exec?command=rename&src=" + sel[0].url + "&dest=" + dest;
+         var url = "secure/exec?command=rename&src=" + sel[0].url + "&dest=" + dest;
 
          var cb = function() {
             dialog.popdown();
@@ -368,7 +399,6 @@ Browser.prototype._mkdirButtonListener = function(ev)
 
 Browser.prototype._authResource = function(obj, response)
 {
-   alert("AUTHENTICATE MF");
 }
 
 
@@ -479,7 +509,7 @@ Browser.prototype._detailDropListener = function(evt)
 
 Browser._mkSrcDestCommand = function(command, src, dest)
 {
-   var url = "exec?command=" + command;
+   var url = "secure/exec?command=" + command;
 
    for (var i = 0; i < src.length; i++) {
       url += "&src=" + src[i].url; // XXX does this get escaped ?

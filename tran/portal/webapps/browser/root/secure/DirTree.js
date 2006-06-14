@@ -7,7 +7,6 @@ function DirTree(parent, className, posStyle, dragSource, dropTarget) {
    }
    DwtTree.call(this, parent, DwtTree.SINGLE_STYLE, className, posStyle);
 
-   this.addSelectionListener(new AjxListener(this, this._selectionListener));
    this.addTreeListener(new AjxListener(this, this._treeListener));
 
    this._dragSource = dragSource;
@@ -133,8 +132,7 @@ DirTree.prototype._populate = function(item, cb, repopulate)
 
       var actionCb = new AjxCallback(this, this._populateCallback, obj);
       var authCallback = new AjxCallback(this, this._populateAuthCallback, obj);
-      DBG.println("LISTING: " + url);
-      MvRpc.invoke(null, "ls?url=" + url + "&type=dir", null, true,
+      MvRpc.invoke(null, "secure/ls?url=" + url + "&type=dir", null, true,
                    actionCb, MvRpc.reloadPageCallback, authCallback);
    } else {
       if (cb) {
@@ -221,27 +219,6 @@ DirTree.prototype._treeListener = function(evt)
       break;
 
       case DwtTree.ITEM_COLLAPSED:
-      break;
-   }
-}
-
-DirTree.prototype._selectionListener = function(evt)
-{
-   switch (evt.detail) {
-      case DwtTree.ITEM_SELECTED:
-      break;
-
-      case DwtTree.ITEM_DESELECTED:
-      break;
-
-      case DwtTree.ITEM_CHECKED:
-      break;
-
-      case DwtTree.ITEM_ACTIONED:
-      break;
-
-      case DwtTree.ITEM_DBL_CLICKED:
-      evt.item.setExpanded(!evt.item.getExpanded());
       break;
    }
 }

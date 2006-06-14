@@ -67,5 +67,10 @@ CifsNode.prototype = {
    getIconName: function() {
       return CifsNode.ICON_NAMES[this.type]
          + (this.authorized ? "" : "NoAuth");
+   },
+
+   getDomain: function() {
+      var i = this.url.indexOf('/', 2);
+      return i < 2 ? this.url : this.url.substring(2, i);
    }
 }
