@@ -25,7 +25,10 @@ import com.metavize.jnetcap.JNetcapException;
 import com.metavize.jnetcap.PortRange;
 
 import com.metavize.mvvm.IntfConstants;
+
 import com.metavize.mvvm.argon.IntfConverter;
+import com.metavize.mvvm.argon.ArgonException;
+
 import com.metavize.mvvm.tran.IPaddr;
 
 import com.metavize.mvvm.networking.internal.InterfaceInternal;
@@ -43,6 +46,13 @@ public class RuleManager
     private static final String PUBLIC_ADDR_FLAG             = "HTTPS_PUBLIC_ADDR";
     private static final String PUBLIC_PORT_FLAG             = "HTTPS_PUBLIC_PORT";
     private static final String PUBLIC_REDIRECT_EN           = "HTTPS_PUBLIC_REDIRECT_EN";
+
+    /* Flags to use to steal an address and a few ports */
+    private static final String SETUP_MODE_FLAG              = "IS_IN_SETUP_MODE";
+    private static final String SETUP_ADDRESS_FLAG           = "STEAL_ADDRESS";
+    private static final String SETUP_INTERFACE_FLAG         = "STEAL_INTERFACE";
+    private static final String SETUP_TCP_PORTS_FLAG         = "STEAL_TCP_PORTS";
+    private static final String SETUP_UDP_PORTS_FLAG         = "STEAL_UDP_PORTS";
 
     /* Set to a list of interfaces that are in the services space that need to be able to
      * access the services */
@@ -82,6 +92,9 @@ public class RuleManager
 
     /* List of interfaces that are in the services spaces */
     private String servicesInterfaceList = "";
+
+    /* True if setup has been completed */
+    private boolean hasCompletedSetup = true;
 
     /* Call the script to generate all of the iptables rules */
     synchronized void generateIptablesRules() throws NetworkException
@@ -166,7 +179,7 @@ public class RuleManager
                 case IntfConstants.DMZ_INTF:
                     /* DMZ interface is not added if it is in the public space */
                     if ( 0 == serviceSpace.getIndex()) break;
-
+                    
                     /* fallthrough */
                 default:
                     try {
@@ -191,7 +204,11 @@ public class RuleManager
         this.pingInterfaceEnable = true;
         this.pingInterfaceList   = pingAntisubscribeList.trim();
         this.servicesInterfaceList = servicesInterfaceList.trim();
-        
+    }
+
+    void setHasCompletedSetup( boolean newValue )
+    {
+        this.hasCompletedSetup = newValue;
     }
 
     synchronized void isShutdown()
@@ -233,6 +250,29 @@ public class RuleManager
             if (( null != this.servicesInterfaceList ) && ( this.servicesInterfaceList.length() > 0 )) {
                 sb.append( SERVICES_INTERFACE_LIST + "=\"" + this.servicesInterfaceList + "\"\n" );
             }
+
+            IntfConverter ic = IntfConverter.getInstance();
+            
+            /* Setup a rule for stealing ARPs */
+            if ( !this.hasCompletedSetup ) {
+                String internal = "eth1";
+                
+                try {
+                    internal = ic.argonIntfToString( IntfConstants.INTERNAL_INTF );
+                } catch ( ArgonException e ) {
+                    logger.error( "Error retrieving internal interface, show must go on, using eth1", e );
+                    internal = "eth1";
+                }
+
+                sb.append( SETUP_MODE_FLAG + "=true\n" );
+                sb.append( SETUP_ADDRESS_FLAG + "=" + NetworkUtil.SETUP_ADDRESS + "\n" );
+                sb.append( SETUP_INTERFACE_FLAG + "=" + internal + "\n" );
+                /* Steal ports 80 and 443 for HTTP and HTTPs */
+                sb.append( SETUP_TCP_PORTS_FLAG + "=80,443\n" );
+
+                /* Steal port 53 for DHCP */
+                sb.append( SETUP_UDP_PORTS_FLAG + "=53\n" );
+            }
             
             writeFile( sb, MVVM_TMP_FILE );
         } catch ( JNetcapException e ) {
@@ -272,6 +312,4 @@ public class RuleManager
         
         return INSTANCE;
     }
-
-
 }

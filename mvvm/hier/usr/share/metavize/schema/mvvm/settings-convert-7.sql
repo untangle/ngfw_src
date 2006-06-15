@@ -122,6 +122,10 @@ ALTER TABLE settings.portal_user
 ALTER TABLE settings.mvvm_redirect_rule ADD COLUMN is_local_redirect BOOL;
 UPDATE settings.mvvm_redirect_rule SET is_local_redirect = false;
 
+-- Need to insert a column for has user completed wizard
+ALTER TABLE settings.mvvm_network_settings ADD COLUMN completed_setup BOOL;
+UPDATE settings.mvvm_network_settings SET completed_setup = true;
+
 -- add use_mx_records to MailSettings
 
 ALTER TABLE settings.mail_settings ADD COLUMN use_mx_records bool;

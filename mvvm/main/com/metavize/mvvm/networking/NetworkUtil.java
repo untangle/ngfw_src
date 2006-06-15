@@ -45,6 +45,9 @@ public class NetworkUtil
     public static final IPaddr DEFAULT_NAT_ADDRESS;
     public static final IPaddr DEFAULT_NAT_NETMASK;
 
+    /* This is the address to use during setup */
+    public static final IPaddr SETUP_ADDRESS;
+    
     /* ??? which one */
     public static final HostName DEFAULT_HOSTNAME;
     
@@ -54,7 +57,7 @@ public class NetworkUtil
     public static final String DEFAULT_SPACE_NAME_NAT     = "private";
 
     public static final int    DEF_HTTPS_PORT = 443;
-
+    
     private static final String PRIVATE_NETWORK_STRINGS[] = 
     {
         "192.168.0.0/16", "10.0.0.0/8", "172.16.0.0/12"
@@ -108,7 +111,7 @@ public class NetworkUtil
 
         return false;
     }
-                
+
     /* Validate that a network configuration is okay */
     public void validate( NetworkSpacesSettings settings ) throws ValidateException
     {
@@ -322,6 +325,8 @@ public class NetworkUtil
 
         IPaddr natAddress     = null;
         IPaddr natNetmask     = null;
+        
+        IPaddr setupAddress = null;
 
         HostName h, l;
 
@@ -337,6 +342,8 @@ public class NetworkUtil
 
             natAddress = IPaddr.parse( "192.168.1.1" );
             natNetmask = IPaddr.parse( "255.255.255.0" );
+
+            setupAddress = IPaddr.parse( "192.168.1.1" );
         } catch( Exception e ) {
             System.err.println( "this should never happen: " + e );
             emptyAddr = null;
@@ -367,6 +374,8 @@ public class NetworkUtil
 
         DEFAULT_NAT_ADDRESS = natAddress;
         DEFAULT_NAT_NETMASK = natNetmask;
+        
+        SETUP_ADDRESS = setupAddress;
 
         LOCAL_DOMAIN_DEFAULT = h;
         DEFAULT_HOSTNAME = l;

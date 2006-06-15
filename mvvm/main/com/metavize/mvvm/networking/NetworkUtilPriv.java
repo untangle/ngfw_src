@@ -83,17 +83,20 @@ class NetworkUtilPriv extends NetworkUtil
     private NetworkUtilPriv()
     {
     }
-
+        
     /* Convert a NetworkConfiguration and the previous internal network settings into
      * a new network spaces settings object.
      * @param networkingConfiguration:  New networking configuration for the primary space.
      * @param internalSettings: Current configuration for all of the other spaces.
      */
     public NetworkSpacesInternalSettings toInternal( BasicNetworkSettings basic,
-                                                     NetworkSpacesInternalSettings internalSettings )
+                                                     NetworkSpacesInternalSettings internalSettings,
+                                                     boolean hasCompletedSetup )
         throws NetworkException, ValidateException
     {
         NetworkSpacesSettings settings = toSettings( internalSettings );
+        
+        settings.setHasCompletedSetup( hasCompletedSetup );
 
         /* Now replace the parameters for the first space */
         NetworkSpace primary = settings.getNetworkSpaceList().get( 0 );
@@ -121,7 +124,7 @@ class NetworkUtilPriv extends NetworkUtil
         settings.setDefaultRoute( basic.gateway());
         settings.setDns1( basic.dns1());
         settings.setDns2( basic.dns2());
-
+        
         return toInternal( settings );
     }
 
@@ -138,6 +141,9 @@ class NetworkUtilPriv extends NetworkUtil
 
         /* First pass, get all of the primary addresses and interface lists */
         List<Interface> intfListCopy = new LinkedList<Interface>( networkSettings.getInterfaceList());
+
+        /* Boolean to indicate whether or not the user has completed setup */
+        boolean hasCompletedSetup = networkSettings.getHasCompletedSetup();
 
         IntfConverter ic = IntfConverter.getInstance();
 
@@ -225,7 +231,16 @@ class NetworkUtilPriv extends NetworkUtil
                 }
             }
 
-            NetworkSpaceInternal nwi = makeNetworkSpaceInternal( info );
+            NetworkSpaceInternal nwi;
+            if ( !hasCompletedSetup && info.getIndex() == 1 ) {
+                /* Make the setup space as a bridge */
+                nwi = NetworkSpaceInternal.
+                    makeInstance( info.getNetworkSpace(), info.getInterfaceList(), info.getPrimaryAddress(),
+                                  BRIDGE_PREFIX + 1, info.getIndex(), info.getNatAddress(),
+                                  info.getNatSpaceIndex(), true );
+            } else {
+                nwi = makeNetworkSpaceInternal( info );
+            }
 
             /* Iterate all of its interfaces and add them to the
              *  interface list, this allows the network space in the
@@ -281,7 +296,8 @@ class NetworkUtilPriv extends NetworkUtil
         }
         
         return NetworkSpacesInternalSettings.
-            makeInstance( setupState, isEnabled, realInterfaceList, interfaceList, networkSpaceList,
+            makeInstance( setupState, isEnabled, hasCompletedSetup,
+                          realInterfaceList, interfaceList, networkSpaceList,
                           routingTable, redirectList, dns1, dns2, defaultRoute );
 
     }
@@ -636,6 +652,7 @@ class NetworkUtilPriv extends NetworkUtil
         settings.setDefaultRoute( internalSettings.getDefaultRoute());
         settings.setDns1( internalSettings.getDns1());
         settings.setDns2( internalSettings.getDns2());
+        settings.setHasCompletedSetup( internalSettings.getHasCompletedSetup());
 
         settings.setRedirectList( internalSettings.getRedirectRuleList());
 

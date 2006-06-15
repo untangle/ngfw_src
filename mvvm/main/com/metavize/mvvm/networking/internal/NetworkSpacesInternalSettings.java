@@ -31,6 +31,9 @@ public class NetworkSpacesInternalSettings
     /* Indicator for whether the network space settings are enabled */
     private final boolean isEnabled;
 
+    /* Indicator for whether the user has completed the setup wizard */
+    private final boolean hasCompletedSetup;
+
     private final List<InterfaceInternal> interfaceList;
 
     /* List of interfaces and their mappings to use if network spaces was enabled */
@@ -50,6 +53,7 @@ public class NetworkSpacesInternalSettings
     private final NetworkSpaceInternal serviceSpace;
 
     private NetworkSpacesInternalSettings( SetupState setupState, boolean isEnabled,
+                                           boolean hasCompletedSetup,
                                            List<InterfaceInternal> interfaceList,
                                            List<InterfaceInternal> enabledList,
                                            List<NetworkSpaceInternal> networkSpaceList,
@@ -58,13 +62,14 @@ public class NetworkSpacesInternalSettings
                                            IPaddr dns1, IPaddr dns2, IPaddr defaultRoute,
                                            NetworkSpaceInternal serviceSpace )
     {
-        this.setupState       = setupState;
-        this.isEnabled        = isEnabled;
-        this.interfaceList    = Collections.unmodifiableList( new LinkedList( interfaceList ));
-        this.enabledList      = Collections.unmodifiableList( new LinkedList( enabledList ));
-        this.networkSpaceList = Collections.unmodifiableList( new LinkedList( networkSpaceList ));
-        this.routingTable     = Collections.unmodifiableList( new LinkedList( routingTable ));
-        this.redirectList     = Collections.unmodifiableList( new LinkedList( redirectList ));
+        this.setupState        = setupState;
+        this.isEnabled         = isEnabled;
+        this.hasCompletedSetup = hasCompletedSetup;
+        this.interfaceList     = Collections.unmodifiableList( new LinkedList( interfaceList ));
+        this.enabledList       = Collections.unmodifiableList( new LinkedList( enabledList ));
+        this.networkSpaceList  = Collections.unmodifiableList( new LinkedList( networkSpaceList ));
+        this.routingTable      = Collections.unmodifiableList( new LinkedList( routingTable ));
+        this.redirectList      = Collections.unmodifiableList( new LinkedList( redirectList ));
 
         this.dns1          = dns1;
         this.dns2          = dns2;
@@ -80,6 +85,11 @@ public class NetworkSpacesInternalSettings
     public boolean getIsEnabled()
     {
         return this.isEnabled;
+    }
+
+    public boolean getHasCompletedSetup()
+    {
+        return this.hasCompletedSetup;
     }
     
     public List<InterfaceInternal> getInterfaceList()
@@ -145,6 +155,7 @@ public class NetworkSpacesInternalSettings
 
         sb.append( "Network Settings\n" );
         sb.append( "setup-state: " + getSetupState() + " isEnabled: " + getIsEnabled());
+        sb.append( " completed-setup: " + getHasCompletedSetup());
         
         sb.append( "\nInterfaces:\n" );
         for ( InterfaceInternal intf : getInterfaceList()) sb.append( intf + "\n" );
@@ -164,7 +175,8 @@ public class NetworkSpacesInternalSettings
     }
 
     public static NetworkSpacesInternalSettings 
-        makeInstance( SetupState setupState, boolean isEnabled, List<InterfaceInternal> interfaceList,
+        makeInstance( SetupState setupState, boolean isEnabled, boolean hasCompletedSetup, 
+                      List<InterfaceInternal> interfaceList,
                       List<InterfaceInternal> enabledList,
                       List<NetworkSpaceInternal> networkSpaceList,
                       List<RouteInternal> routingTable,
@@ -184,7 +196,7 @@ public class NetworkSpacesInternalSettings
         }
 
         return new 
-            NetworkSpacesInternalSettings( setupState, isEnabled, 
+            NetworkSpacesInternalSettings( setupState, isEnabled, hasCompletedSetup,
                                            interfaceList, enabledList, networkSpaceList, routingTable, 
                                            redirectList, dns1, dns2, defaultRoute, serviceSpace );
     }

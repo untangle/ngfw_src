@@ -45,7 +45,7 @@ public class NetworkCompoundSettings implements CompoundSettings {
     }
 
     public void validate() throws Exception {
-
+        networkingConfiguration.validate();
     }
 
 }

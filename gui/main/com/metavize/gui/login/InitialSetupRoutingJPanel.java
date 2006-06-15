@@ -48,15 +48,16 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
 	    InitialSetupWizard.getInfiniteProgressJComponent().startLater("Auto-Detecting Usage...");
             try{
                 NetworkingConfiguration nc = Util.getNetworkingManager().get();
+
 		final boolean isPrivateNetwork = NetworkUtil.getInstance().isPrivateNetwork(nc.host(),nc.netmask());
 		SwingUtilities.invokeLater( new Runnable(){ public void run(){
 		    if(isPrivateNetwork){
-			natEnabledJRadioButton.setSelected(true);
-			natEnabledDependency(true);
+                        natDisabledJRadioButton.setSelected(true);
+			natEnabledDependency(false);
 		    }
 		    else{
-			natDisabledJRadioButton.setSelected(false);
-			natEnabledDependency(false);
+                        natEnabledJRadioButton.setSelected(true);
+			natEnabledDependency(true);
 		    }
 		}});
 		
@@ -64,7 +65,7 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
 	    }
 	    catch(Exception e){
 		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(-1l);
-		Util.handleExceptionNoRestart("Error gvetting data", e);
+		Util.handleExceptionNoRestart("Error getting data", e);
 	    }
 	}
     }

@@ -160,7 +160,16 @@ public class NetworkManagerImpl implements NetworkManager
         throws NetworkException, ValidateException
     {
         setNetworkSettings( NetworkUtilPriv.getPrivInstance().
-                            toInternal( configuration, this.networkSettings ));
+                            toInternal( configuration, this.networkSettings, true ));
+        setRemoteSettings( configuration );
+    }
+
+    /* Save the basic network settings during the wizard */
+    public synchronized void setSetupNetworkingConfiguration( NetworkingConfiguration configuration ) 
+        throws NetworkException, ValidateException
+    {
+        setNetworkSettings( NetworkUtilPriv.getPrivInstance().
+                            toInternal( configuration, this.networkSettings, false ));
         setRemoteSettings( configuration );
     }
 
@@ -187,8 +196,8 @@ public class NetworkManagerImpl implements NetworkManager
         logger.debug( "Loading the new network settings: " + settings );
 
         NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
-        NetworkSpacesInternalSettings internal = nup.toInternal( settings );
-
+        NetworkSpacesInternalSettings internal = nup.toInternal( settings );;
+        
         /* If the saving is disable, then don't actually reconfigured,
          * just save the settings to the database. */
         if ( configure ) {
@@ -359,6 +368,8 @@ public class NetworkManagerImpl implements NetworkManager
         try {
             NetworkSpacesSettings nss = getNetworkSettings();
             nss.setIsEnabled( false );
+            /* Disabling network spaces is a sign that the wizard has been completed */
+            nss.setHasCompletedSetup( true );
             setNetworkSettings( nss );
         } catch ( Exception e ) {
             logger.error( "Unable to disable network settings", e );
@@ -522,6 +533,9 @@ public class NetworkManagerImpl implements NetworkManager
                 MvvmContextFactory.context().adminManager().logout();
             }
 
+            /* Indicate that the user has completed setup */
+            newSettings.setHasCompletedSetup( true );
+
             setNetworkSettings( newSettings );
 
             /* Update the DHCP settings */
@@ -628,6 +642,9 @@ public class NetworkManagerImpl implements NetworkManager
 
         /* Set the public address */
         this.ruleManager.setPublicAddress( publicAddress, publicPort, isPublicRedirectEnabled );
+
+        /* Set whether or not setup has completed */
+        this.ruleManager.setHasCompletedSetup( this.networkSettings.getHasCompletedSetup());
 
         this.ruleManager.generateIptablesRules();
     }

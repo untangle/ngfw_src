@@ -55,10 +55,16 @@ DHCP_CLIENT_PORT="68"
 DHCP_PORT_RANGE="${DHCP_SERVER_PORT}:${DHCP_CLIENT_PORT}"
 
 function flush() {
+    local t_table
     ## Always flush intercepting first to avoid a few errant packets flying in unmarked.
     ${IPTABLES} -t mangle -F ${CHAIN_INTERCEPT}
-    for table in ${TABLE_LIST}; do 
-        ${IPTABLES} -t ${table} -F 
+    for t_table in ${TABLE_LIST}; do 
+        ${IPTABLES} -t ${t_table} -F 
+    done
+
+    ## Flush all of the ebtables just in case
+    for t_table in ${EBTABLE_LIST}; do
+        ${EBTABLES} -t ${t_table} -F
     done
 }
 
@@ -530,6 +536,67 @@ function uturnRules() {
     done
 }
 
+## This function is designed to ARP an address on a certain interface,
+## even if the address isn't configured for one of the interfaces.
+## t_intf is the physical interface that the ARP is coming in on.
+function stealArpAddress() {
+    local t_ip=$1
+    local t_intf=$2
+
+    ## This is the bridge interface
+    local t_bridge=`getBridge ${t_intf}`
+
+    ## This is the MAC address of the bridge
+    local t_macAddress
+
+    if [ -z "${t_bridge}" ]; then
+        echo "The interface ${t_intf} is not inside of a bridge, unable to steal ARP address";
+        return -1
+    fi
+    
+    t_macAddress=`getMACAddress ${t_bridge}`
+
+    if [ -z "${t_macAddress}" ]; then
+        echo "Unable to determine the MAC address for the bridge ${t_bridge}";
+        return -1
+    fi
+    
+    ${EBTABLES} -t nat -A PREROUTING -i ${t_intf} -p ARP --arp-ip-dst ${t_ip} \
+        -j arpreply --arpreply-mac ${t_macAddress}
+}
+
+function setupMode()
+{
+    local t_port
+    local t_qualifier
+    
+    if [ "${IS_IN_SETUP_MODE}x" = "truex" ]; then
+        ## Indicate to respond to ARP resquests on the interface where traffic is being stolen
+        stealArpAddress ${STEAL_ADDRESS} ${STEAL_INTERFACE} || return 0
+
+        ## Antisubscribe from  TCP traffic to the stolen IP here.
+        if [ -n "${STEAL_TCP_PORTS}" ]; then
+            t_qualifier="-p tcp --destination ${STEAL_ADDRESS} -m multiport --destination-ports ${STEAL_TCP_PORTS}"
+            
+            ## Redirect traffic to the stolen address to local.
+            ${IPTABLES} -t nat -A PREROUTING ${t_qualifier} -j REDIRECT
+
+            ## Antisubscribe to the stolen traffic
+            ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} ${t_qualifier} -j MARK --set-mark ${MARK_ANTISUB}
+        fi
+
+        if [ -n "${STEAL_UDP_PORTS}" ]; then
+            t_qualifier="-p udp  --destination ${STEAL_ADDRESS} -m multiport --destination-ports ${STEAL_UDP_PORTS}"
+
+            ## Redirect traffic to the stolen address to local.
+            ${IPTABLES} -t nat -A PREROUTING ${t_qualifier} -j REDIRECT
+
+            ## Antisubscribe to the stolen traffic
+            ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} ${t_qualifier} -j MARK --set-mark ${MARK_ANTISUB}
+        fi
+    fi
+}
+
 ###############################################################
 ######### Start of script #####################################
 ###############################################################
@@ -555,3 +622,6 @@ uturnRules
 
 interceptRules
 
+setupMode
+
+true

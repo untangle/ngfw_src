@@ -87,7 +87,6 @@ class InterfacesScriptWriter extends ScriptWriter
         addPostConfigurationScript();
     }
 
-    /* Index is used to name the bridge */
     private void addNetworkSpace( NetworkSpaceInternal space, boolean isFirst )
         throws NetworkException, ArgonException
     {

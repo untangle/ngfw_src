@@ -36,6 +36,10 @@ public interface NetworkManager
     public void setNetworkingConfiguration( NetworkingConfiguration configuration ) 
         throws NetworkException, ValidateException;
 
+    /* Save the basic network settings during the wizard */
+    public void setSetupNetworkingConfiguration( NetworkingConfiguration configuration ) 
+        throws NetworkException, ValidateException;
+
     /* Use this to retrieve just the remote settings */
     public RemoteSettings getRemoteSettings();
 

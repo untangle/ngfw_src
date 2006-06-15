@@ -4,6 +4,9 @@
 IPTABLES="/sbin/iptables"
 #IPTABLES=iptablesDbg
 
+EBTABLES="/sbin/ebtables"
+#EBTABLES=ebtablesDbg
+
 RT_TABLE_NAME_PREFIX="metavize-"
 
 ## Expecte bridge configuration.
@@ -26,6 +29,7 @@ fi
 LOG_DEBUG=logDebug
 
 TABLE_LIST="nat mangle filter raw"
+EBTABLE_LIST="nat filter broute"
 CHAIN_MARKINTF="markintf"
 CHAIN_GUARDS="guards"
 CHAIN_ANTISUB="antisub"
@@ -131,13 +135,21 @@ function bridgeInterfaceList() {
 }
 
 function getAddresses() {
-    if [ -n $1 ]; then
+    if [ -n "$1" ]; then
         eval echo \$${1}_addresses | sed 's/\/[^ ]*//g'
     fi
 }
 
+function getMACAddress()
+{
+    local t_intf=$1
+    if [ -n "${t_intf}" ]; then
+        cat "${SYSFS_INTERFACE_PATH}/${t_intf}/address"
+    fi
+}
+
 function getNetmasks() {
-    if [ -n $1 ]; then
+    if [ -n "$1" ]; then
         eval echo \$${1}_addresses | sed 's/[^ /]*\///g'
     fi
 }
@@ -330,6 +342,12 @@ function iptablesDbg() {
     echo /sbin/iptables $@
     /sbin/iptables $@
 }
+
+function ebtablesDbg() {
+    echo /sbin/ebtables $@
+    /sbin/ebtables $@
+}
+
 
 function addGateway() {
     local t_gateway=$1

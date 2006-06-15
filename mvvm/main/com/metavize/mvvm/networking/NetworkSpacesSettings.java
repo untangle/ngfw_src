@@ -23,6 +23,12 @@ public interface NetworkSpacesSettings
     /** Retrieve whether or not the settings are enabled */
     public boolean getIsEnabled();
 
+    /** Retrieve whether or not the EdgeGuard has completed the setup wizard */
+    public boolean getHasCompletedSetup();
+
+    /** Set whether this EdgeGuard has completed setup */
+    public void setHasCompletedSetup( boolean newValue );
+
     public void setIsEnabled( boolean newValue );
 
     /** Retrieve a list of interfaces */

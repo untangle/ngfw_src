@@ -41,6 +41,12 @@ class NatUtil
     static final IPaddr DEFAULT_DHCP_START = NetworkUtil.DEFAULT_DHCP_START;
     static final IPaddr DEFAULT_DHCP_END   = NetworkUtil.DEFAULT_DHCP_END;
 
+    /* These are values for setup */
+    static final IPaddr SETUP_INTERNAL_ADDRESS;
+    static final IPaddr SETUP_INTERNAL_SUBNET;
+    static final IPaddr SETUP_DHCP_START;
+    static final IPaddr SETUP_DHCP_END;
+    
     static final List<IPDBMatcher> LOCAL_MATCHER_LIST;
 
     /* Four hours, this parameter is actually unused */
@@ -142,16 +148,34 @@ class NatUtil
     static
     {
         IPaddr dmz;
+        IPaddr setupInternalAddress;
+        IPaddr setupInternalSubnet;
+        IPaddr setupDhcpStart;
+        IPaddr setupDhcpEnd;
 
         try {
             dmz        = IPaddr.parse( "192.168.1.2" );
+            
+            setupInternalAddress = IPaddr.parse( "192.168.1.81" );
+            setupInternalSubnet = IPaddr.parse( "255.255.255.240" );
+            setupDhcpStart = IPaddr.parse( "192.168.1.82" );
+            setupDhcpEnd = IPaddr.parse( "192.168.1.94" );
         } catch( Exception e ) {
             System.err.println( "Unable to initialize one of the ip addrs" );
             e.printStackTrace();
             dmz = null;
+            setupInternalAddress = null;
+            setupInternalSubnet = null;
+            setupDhcpStart = null;
+            setupDhcpEnd = null;
         }
         
         DEFAULT_DMZ_ADDRESS = dmz;
+
+        SETUP_INTERNAL_ADDRESS = setupInternalAddress;
+        SETUP_INTERNAL_SUBNET  = setupInternalSubnet;
+        SETUP_DHCP_START       = setupDhcpStart;
+        SETUP_DHCP_END         = setupDhcpEnd;
 
         /* Setup the default list of local matchers, perhaps this should be in the IPMatcherFactory? */
         List<IPDBMatcher> list = new LinkedList<IPDBMatcher>();

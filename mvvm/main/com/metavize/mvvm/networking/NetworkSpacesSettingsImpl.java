@@ -35,6 +35,7 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
 
     private SetupState setupState = SetupState.BASIC;
     private boolean isEnabled = false;
+    private boolean hasCompletedSetup = true;
 
     private List interfaceList = new LinkedList();
     private List networkSpaceList = new LinkedList();
@@ -275,12 +276,33 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
         return (( this.dns2 == null ) || this.dns2.isEmpty());
     }
 
+    /**
+     * Property indicating whether the user has completed the setup wizard.
+     * Only false if the wizard has never finished the wizard.  If the user
+     * ever hits save from inside of the standard gui, this is set to true,
+     * and should never return to false;
+     *
+     * @return true if the user never finished the wizard.
+     * @hibernate.property
+     * column="completed_setup"
+     */
+    public boolean getHasCompletedSetup()
+    {
+        return this.hasCompletedSetup;
+    }
+
+    public void setHasCompletedSetup( boolean newValue )
+    {
+        this.hasCompletedSetup = newValue;
+    }
+
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
         
         sb.append( "Network Settings\n" );
         sb.append( "setup-state: " + getSetupState() + " isEnabled: " + getIsEnabled());
+        sb.append( " completed-setup: " + getHasCompletedSetup());
         
         sb.append( "\nInterfaces:\n" );
         for ( Iterator iter = getInterfaceList().iterator() ; iter.hasNext() ; ) {

@@ -34,7 +34,8 @@ import com.metavize.mvvm.tran.ValidateException;
 
 import com.metavize.mvvm.networking.NetworkUtil;
 
-public class NetworkingConfigurationImpl implements Serializable, NetworkingConfiguration, Equivalence
+public class NetworkingConfigurationImpl 
+    implements Validatable, Serializable, NetworkingConfiguration, Equivalence
 {
     // private static final long serialVersionUID = 172494253701617361L;
 
@@ -67,6 +68,7 @@ public class NetworkingConfigurationImpl implements Serializable, NetworkingConf
     private HostName hostname = DEFAULT_HOSTNAME;
     
     private boolean isPublicAddressEnabled = false;
+    private boolean isPublicAddressSetup = false;
     private IPaddr publicIPaddr = null;
     private int publicPort = 0;
 
@@ -459,9 +461,7 @@ public class NetworkingConfigurationImpl implements Serializable, NetworkingConf
         if ( httpsPort == 0 || httpsPort > 0xFFFF || httpsPort == 80 ) httpsPort = DEF_HTTPS_PORT;
         
         this.httpsPort = httpsPort;
-    }
-
-    
+    }    
     
     public void validate() throws ValidateException
     {

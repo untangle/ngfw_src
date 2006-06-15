@@ -94,7 +94,7 @@ public class NetworkSpaceInternal
     /* List of interfaces in this network space */
     private NetworkSpaceInternal( NetworkSpace networkSpace, List<Interface> intfList, 
                                   IPNetwork primaryAddress, String deviceName, int index,
-                                  IPaddr natAddress, int natSpaceIndex )
+                                  IPaddr natAddress, int natSpaceIndex, boolean isBridge )
         throws ValidateException
     {
         /* Set whether or not the space is enabled */
@@ -162,7 +162,7 @@ public class NetworkSpaceInternal
         this.deviceName = deviceName;
 
         /* Set whether or not this is a bridge */
-        this.isBridge = ( this.interfaceList.size() > 1 );
+        this.isBridge = isBridge;
 
         /** stuff from a rule */
         this.name = networkSpace.getName();
@@ -328,7 +328,23 @@ public class NetworkSpaceInternal
                                                      int index, IPaddr natAddress, int natSpaceIndex )
         throws ValidateException
     {
-        return new NetworkSpaceInternal( networkSpace, intfList, primaryAddress, deviceName, index, 
-                                         natAddress, natSpaceIndex );
+        return makeInstance( networkSpace, intfList, primaryAddress, deviceName, index, natAddress,
+                             natSpaceIndex, ( intfList.size() > 1 ));
     }
+
+    /* A new function that allows setup of single interface bridges.
+     * This is required in order to work with ebtables */
+    public static NetworkSpaceInternal makeInstance( NetworkSpace networkSpace, 
+                                                     List<Interface> intfList,
+                                                     IPNetwork primaryAddress, String deviceName,
+                                                     int index, IPaddr natAddress, int natSpaceIndex, 
+                                                     boolean isBridge )
+        throws ValidateException
+    {
+        return new NetworkSpaceInternal( networkSpace, intfList, primaryAddress, deviceName, index, 
+                                         natAddress, natSpaceIndex, isBridge );
+    }
+
+
+    
 }

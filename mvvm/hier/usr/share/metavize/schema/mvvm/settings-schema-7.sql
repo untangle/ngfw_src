@@ -395,6 +395,7 @@ CREATE TABLE settings.mvvm_network_settings (
     default_route INET,
     dns_1 INET,
     dns_2 INET,
+    completed_setup BOOL,
     PRIMARY KEY (settings_id));
 
 -- Services settings

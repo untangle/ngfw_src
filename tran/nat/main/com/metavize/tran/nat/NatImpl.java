@@ -11,6 +11,7 @@
 package com.metavize.tran.nat;
 
 import java.net.InetAddress;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.metavize.mvvm.MvvmContextFactory;
@@ -23,11 +24,15 @@ import com.metavize.mvvm.logging.EventLoggerFactory;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SimpleEventFilter;
+import com.metavize.mvvm.networking.RemoteSettings;
 import com.metavize.mvvm.networking.IPNetwork;
+import com.metavize.mvvm.networking.IPNetworkRule;
 import com.metavize.mvvm.networking.NetworkException;
 import com.metavize.mvvm.networking.NetworkManagerImpl;
 import com.metavize.mvvm.networking.NetworkSettingsListener;
+import com.metavize.mvvm.networking.NetworkSpace;
 import com.metavize.mvvm.networking.NetworkSpacesSettings;
+import com.metavize.mvvm.networking.NetworkUtil;
 import com.metavize.mvvm.networking.SetupState;
 import com.metavize.mvvm.networking.internal.NetworkSpaceInternal;
 import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
@@ -176,6 +181,9 @@ public class NatImpl extends AbstractTransform implements Nat
         /* This isn't necessary, (the state should carry over), but
          * just in case. */
         newNetworkSettings.setIsEnabled( isEnabled );
+
+        /* Indicate that you are not in setup wizard mode anymore */
+        newNetworkSettings.setHasCompletedSetup( true );
 
         try {
             /* Have to reconfigure the network before configure the
@@ -407,7 +415,7 @@ public class NatImpl extends AbstractTransform implements Nat
             try {
                 networkManager.disableNetworkSpaces();
             } catch ( Exception e ) {
-                logger.error( "Unable to enable network spaces", e );
+                logger.error( "Unable to disable network spaces", e );
             }
         }
 
@@ -483,21 +491,35 @@ public class NatImpl extends AbstractTransform implements Nat
     private void postInitWizard()
     {
         logger.info( "Settings are not setup yet, using defaults for setup wizard" );
-
+        
         try {
+            NetworkManagerImpl networkManager = getNetworkManager();
+
+            /* Integrate the settings from the internal network and the ones from the user */
+            NetworkSpacesSettings networkSettings = networkManager.getNetworkSettings();
+
             /* Get the default settings, save them, and indicate
              * to turn on network spaces at startup. */
             NatBasicSettings defaultSettings =
                 this.settingsManager.getDefaultSettings( this.getTid());
+            
+            defaultSettings.setNatInternalAddress( NatUtil.SETUP_INTERNAL_ADDRESS );
+            defaultSettings.setNatInternalSubnet( NatUtil.SETUP_INTERNAL_SUBNET );
+            defaultSettings.setDhcpStartAndEndAddress( NatUtil.SETUP_DHCP_START, NatUtil.SETUP_DHCP_END );
 
-            if ( isRouterDetected()) {
-                /* Disble NAT, DHCP and DNS */
-                defaultSettings.setNatEnabled( false );
-                defaultSettings.setDhcpEnabled( false );
-                defaultSettings.setDnsEnabled( false );
-            }
+            NetworkSpacesSettings newNetworkSettings = this.settingsManager.
+                toNetworkSettings( networkSettings, (NatBasicSettings)defaultSettings );
 
-            setNatSettings( defaultSettings );
+            newNetworkSettings.setHasCompletedSetup( false );
+
+            /* Change the primary space to DHCP, this way it only happens once at startup. */
+            NetworkSpace primary = newNetworkSettings.getNetworkSpaceList().get( 0 );
+            primary.setIsDhcpEnabled( true );
+            /* Clear the list of aliases */
+            primary.setNetworkList( new LinkedList<IPNetworkRule>());
+            
+            networkManager.setNetworkSettings( newNetworkSettings, false );
+            networkManager.setServicesSettings( defaultSettings );
         } catch ( Exception e ) {
             logger.error( "Unable to set wizard nat settings", e );
         }

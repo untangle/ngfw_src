@@ -187,7 +187,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                 networkingConfiguration.setIsHostnamePublic(isPublic);
 
 		InitialSetupWizard.setSharedData(hostname.toString());
-                Util.getNetworkingManager().set(networkingConfiguration);
+                Util.getNetworkManager().setSetupNetworkingConfiguration(networkingConfiguration);
 		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);
             }
             catch(Exception e){

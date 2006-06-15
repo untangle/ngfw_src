@@ -199,6 +199,28 @@ public class NatAdvancedSettingsImpl implements NatAdvancedSettings, Serializabl
         return networkSpacesSettings.hasDns2();
     }
 
+    /**
+     * Property indicating whether the user has completed the setup wizard.
+     * Only false if the wizard has never finished the wizard.  If the user
+     * ever hits save from inside of the standard gui, this is set to true,
+     * and should never return to false;
+     *
+     */
+    public boolean getHasCompletedSetup()
+    {
+        /* XXX This should really do nothing, because this should never change from true.
+         * It doesn't make sense for the user to not have completed setup if they are in advanced mode. */
+        return networkSpacesSettings.getHasCompletedSetup();
+    }
+
+    public void setHasCompletedSetup( boolean newValue )
+    {
+        /* XXX This should really do nothing, because this should never change from true.
+         * It doesn't make sense for the user to not have completed setup if they are in advanced mode. */
+        networkSpacesSettings.setHasCompletedSetup( newValue );
+    }
+
+
     /* DHCP Settings */
     /**
      * Returns If DHCP is enabled.
