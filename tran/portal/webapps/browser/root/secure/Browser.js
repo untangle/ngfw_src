@@ -6,6 +6,8 @@ function Browser(shell, url) {
       return;
    }
 
+   var cifsNode = new CifsNode(null, url, null, CifsNode.SHARE);
+
    this._shell = shell;
 
    this._shell.addControlListener(new AjxListener(this, this._shellListener));
@@ -26,7 +28,7 @@ function Browser(shell, url) {
    dropTarget.addDropListener(new AjxListener(this, this._treeDropListener));
    this._dirTree = new DirTree(this, null, DwtControl.ABSOLUTE_STYLE,
                                dragSource, dropTarget);
-   this._dirTree.addRoot(url);
+   this._dirTree.addRoot(cifsNode);
    this._dirTree.setScrollStyle(DwtControl.SCROLL);
    this._dirTree.addSelectionListener(new AjxListener(this, this._dirSelectionListener));
    this._dirTree.zShow(true);
@@ -54,7 +56,7 @@ function Browser(shell, url) {
 
    this.layout();
 
-   this.chdir(url, false);
+   this.chdir(cifsNode, false);
 
    this.zShow(true);
 }
@@ -68,18 +70,18 @@ Browser.CIFS_NODE = "cifsNode";
 
 // public methods -------------------------------------------------------------
 
-Browser.prototype.chdir = function(url, expandTree, expandDetail)
+Browser.prototype.chdir = function(cifsNode, expandTree, expandDetail)
 {
-   this._cwd = url;
+   this._cwd = cifsNode;
 
-   this._addressField.setValue(url);
+   this._addressField.setValue(cifsNode.url);
 
    if (undefined == expandTree || expandTree) {
-      this._dirTree.chdir(url);
+      this._dirTree.chdir(cifsNode);
    }
 
    if (undefined == expandDetail || expandDetail) {
-      this._detailPanel.chdir(url);
+      this._detailPanel.chdir(cifsNode);
    }
 }
 
@@ -180,7 +182,8 @@ Browser.prototype._makeAddressBar = function() {
             if (val.charAt(val.length - 1) != '/') {
                val += '/';
             }
-            chdir(val);
+            var cifsNode = new CifsNode(null, val);
+            chdir(cifsNode);
          }
       };
    }
@@ -219,7 +222,9 @@ Browser.prototype._broadcastRootsCb = function(obj, results)
       var child = children[i];
       var tagName = child.tagName;
       if ("dir" == tagName || "file" == tagName) {
-         this._dirTree.addWorkGroup("//" + child.getAttribute("name"));
+         var name = "//" + child.getAttribute("name");
+         var n = new CifsNode(null, name, null, CifsNode.WORKGROUP);
+         this._dirTree.addWorkGroup(n);
       }
    }
 }
@@ -232,9 +237,9 @@ Browser.prototype._detailSelectionListener = function(ev) {
       var item = ev.item;
       if (item.isDirectory()) {
          DBG.println("IS DIR");
-         this.chdir(item.url);
+         this.chdir(item);
       } else {
-         AjxWindowOpener.open("get/" + item.url);
+         AjxWindowOpener.open("get/" + item.getReqUrl());
       }
       break;
    }
@@ -246,7 +251,7 @@ Browser.prototype._dirSelectionListener = function(evt) {
    switch (evt.detail) {
       case DwtTree.ITEM_SELECTED:
       var n = evt.item.getData(Browser.CIFS_NODE);
-      this.chdir(n.url);
+      this.chdir(n);
       break;
 
       case DwtTree.ITEM_DESELECTED:
@@ -261,7 +266,7 @@ Browser.prototype._dirSelectionListener = function(evt) {
       case DwtTree.ITEM_DBL_CLICKED:
       var item = evt.item;
       var n = item.getData(Browser.CIFS_NODE);
-      if (!n.authenticated) {
+      if (!n.authorized) {
          var d = new LoginDialog(this._shell, n.getDomain());
          var o = { dialog: d, item: item };
          var l = new AjxListener(this, this._authenticateDialogListener, o);
@@ -317,7 +322,7 @@ Browser.prototype._refreshButtonListener = function(ev)
 
 Browser.prototype._uploadButtonListener = function(ev)
 {
-   var dialog = new FileUploadDialog(this._shell, "put", this._cwd);
+   var dialog = new FileUploadDialog(this._shell, "put", this._cwd.getReqUrl());
 
    dialog.addUploadCompleteListener(new AjxListener(this, this._uploadCompleteListener));
 
@@ -340,7 +345,7 @@ Browser.prototype._deleteButtonListener = function(ev)
    var url = "secure/exec?command=rm";
 
    for (var i = 0; i < sel.length; i++) {
-      url += "&file=" + sel[i].url;
+      url += "&file=" + sel[i].getReqUrl();
    }
 
    AjxRpc.invoke(null, url, null, new AjxCallback(this, this.refresh, { }),
@@ -361,7 +366,7 @@ Browser.prototype._renameButtonListener = function(ev)
       var dest = dialog.getDest();
 
       if (dest) {
-         var url = "secure/exec?command=rename&src=" + sel[0].url + "&dest=" + dest;
+         var url = "secure/exec?command=rename&src=" + sel[0].getReqUrl() + "&dest=" + dest;
 
          var cb = function() {
             dialog.popdown();
@@ -381,7 +386,7 @@ Browser.prototype._renameButtonListener = function(ev)
 
 Browser.prototype._mkdirButtonListener = function(ev)
 {
-   var dialog = new MkdirDialog(this._shell, this._cwd);
+   var dialog = new MkdirDialog(this._shell, this._cwd.getReqUrl());
 
    var cb = function() {
       var dir = dialog.getDir();
@@ -521,10 +526,10 @@ Browser._mkSrcDestCommand = function(command, src, dest)
    var url = "secure/exec?command=" + command;
 
    for (var i = 0; i < src.length; i++) {
-      url += "&src=" + src[i].url; // XXX does this get escaped ?
+      url += "&src=" + src[i].getReqUrl(); // XXX does this get escaped ?
    }
 
-   url += "&dest=" + dest.url; // XXX does this get escaped ?
+   url += "&dest=" + dest.getReqUrl(); // XXX does this get escaped ?
 
    return url;
 }

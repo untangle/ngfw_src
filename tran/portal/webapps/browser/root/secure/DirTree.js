@@ -22,11 +22,9 @@ DirTree._POPULATED = "populated";
 
 // public methods -------------------------------------------------------------
 
-DirTree.prototype.addRoot = function(url)
+DirTree.prototype.addRoot = function(n)
 {
-   this.cwd = url;
-
-   var n = new CifsNode(null, url, null, CifsNode.DIR); // XXX appropriate type
+   this.cwd = n;
 
    var root = new DwtTreeItem(this);
    root.setText(n.label);
@@ -36,10 +34,8 @@ DirTree.prototype.addRoot = function(url)
    this._populate(root);
 }
 
-DirTree.prototype.addWorkGroup = function(name)
+DirTree.prototype.addWorkGroup = function(n)
 {
-   var n = new CifsNode(null, name, null, CifsNode.WORKGROUP);
-
    var root = new DwtTreeItem(this);
    root.setText(n.label);
    root.setImage("WorkGroup");
@@ -48,14 +44,14 @@ DirTree.prototype.addWorkGroup = function(name)
    this._populate(root);
 }
 
-DirTree.prototype.chdir = function(url)
+DirTree.prototype.chdir = function(cifsNode)
 {
-   if (this.cwd == url) {
+   if (this.cwd == cifsNode) {
       return;
    }
-   this.cwd = url;
+   this.cwd = cifsNode;
 
-   this._expandNode(url, this);
+   this._expandNode(cifsNode.url, this);
 }
 
 DirTree.prototype.refresh = function(url)
@@ -83,6 +79,8 @@ DirTree.prototype.repopulate = function(node, principal)
 {
    var cn = node.getData(Browser.CIFS_NODE);
    cn.principal = principal;
+   cn.authorized = true;
+   node.setImage(cn.getIconName());
    this._populate(node, null, true);
 }
 
@@ -135,7 +133,7 @@ DirTree.prototype._populate = function(item, cb, repopulate)
 
       var obj = { parent: item, cb: cb };
 
-      var url = n.url;
+      var url = n.getReqUrl();
 
       var actionCb = new AjxCallback(this, this._populateCallback, obj);
       var authCallback = new AjxCallback(this, this._populateAuthCallback, obj);
@@ -173,7 +171,6 @@ DirTree.prototype._populateCallback = function(obj, results)
       var n = children[i].getData(Browser.CIFS_NODE);
       current[n.name] = children[i];
    }
-
 
    for (var i = 0; i < dirs.length; i++) {
       var c = dirs[i];

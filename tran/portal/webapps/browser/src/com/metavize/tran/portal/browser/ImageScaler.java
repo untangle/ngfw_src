@@ -50,7 +50,7 @@ public class ImageScaler extends HttpServlet
     {
         PortalLogin pl = (PortalLogin)req.getUserPrincipal();
 
-        String url = "smb:" + req.getParameter("url");
+        String url = req.getParameter("url");
         try {
             BufferedImage bi = readImage(url, pl);
             bi = scaleImage(bi);

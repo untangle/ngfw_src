@@ -65,7 +65,7 @@ public class CommandRunner extends HttpServlet
 
         for (String f : files) {
             try {
-                Util.getSmbFile("smb:" + f, pl).delete();
+                Util.getSmbFile(f, pl).delete();
             } catch (SmbException exn) {
                 logger.warn("could not delete: " + f, exn);
             } catch (MalformedURLException exn) {
@@ -77,11 +77,11 @@ public class CommandRunner extends HttpServlet
     private void mv(HttpServletRequest req, PortalLogin pl)
     {
         String[] s = req.getParameterValues("src");
-        String d = "smb:" + req.getParameter("dest");
+        String d = req.getParameter("dest");
 
         for (String f : s) {
             try {
-                SmbFile src = Util.getSmbFile("smb:" + f, pl);
+                SmbFile src = Util.getSmbFile(f, pl);
                 SmbFile dest = Util.getSmbFile(d + src.getName(), pl);
                 src.renameTo(dest);
             } catch (SmbException exn) {
@@ -96,8 +96,8 @@ public class CommandRunner extends HttpServlet
 
     private void rename(HttpServletRequest req, PortalLogin pl)
     {
-        String src = "smb:" + req.getParameter("src");
-        String dest = "smb:" + req.getParameter("dest");
+        String src = req.getParameter("src");
+        String dest = req.getParameter("dest");
 
         try {
             SmbFile destFile = Util.getSmbFile(dest, pl);
@@ -112,11 +112,11 @@ public class CommandRunner extends HttpServlet
     private void cp(HttpServletRequest req, PortalLogin pl)
     {
         String[] s = req.getParameterValues("src");
-        String d = "smb:" + req.getParameter("dest");
+        String d = req.getParameter("dest");
 
         for (String f : s) {
             try {
-                SmbFile src = Util.getSmbFile("smb:" + f, pl);
+                SmbFile src = Util.getSmbFile(f, pl);
                 SmbFile dest = Util.getSmbFile(d + src.getName(), pl);
                 src.copyTo(dest);
             } catch (SmbException exn) {
@@ -131,7 +131,7 @@ public class CommandRunner extends HttpServlet
 
     private void mkdir(HttpServletRequest req, PortalLogin pl)
     {
-        String url = "smb:" + req.getParameter("url");
+        String url = req.getParameter("url");
 
         try {
             Util.getSmbFile(url, pl).mkdir();

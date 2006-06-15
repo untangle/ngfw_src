@@ -48,6 +48,10 @@ CifsNode.prototype = {
       return this.name;
    },
 
+   getReqUrl: function() {
+      return null == this.principal ? this.url : ("[" + this.principal + "]" + this.url);
+   },
+
    isWorkGroup: function() {
       return this.type == CifsNode.WORKGROUP;
    },

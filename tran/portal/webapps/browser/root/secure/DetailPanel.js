@@ -28,13 +28,13 @@ DetailPanel.prototype.constructor = DetailPanel;
 
 // public methods -------------------------------------------------------------
 
-DetailPanel.prototype.chdir = function(url)
+DetailPanel.prototype.chdir = function(cifsNode)
 {
-   if (this.cwd == url) {
+   if (this.cwd == cifsNode) {
       return;
    }
 
-   this.cwd = url;
+   this.cwd = cifsNode;
 
    this.refresh();
 }
@@ -48,7 +48,7 @@ DetailPanel.prototype.refresh = function()
    var actionCb = new AjxCallback(this, f, new Object());
 
    DBG.println("INVOKE ls");
-   MvRpc.invoke(null, "secure/ls?url=" + this.cwd + "&type=full", null, true,
+   MvRpc.invoke(null, "secure/ls?url=" + this.cwd.getReqUrl() + "&type=full", null, true,
                 actionCb, MvRpc.reloadPageCallback, this._authCallback);
 }
 
@@ -183,7 +183,7 @@ DetailPanel.prototype._mouseOverAction = function(ev, div)
       if (item.tooltip) {
          this.setToolTipContent(item.tooltip);
       } else if (this._hasPreview(item.contentType)) {
-         item.tooltip = "<div class='PreviewDiv'><img src='scale?url=" + item.url + "'/></div>"
+         item.tooltip = "<div class='PreviewDiv'><img src='scale?url=" + item.getReqUrl() + "'/></div>"
          this.setToolTipContent(item.tooltip);
       }
    }

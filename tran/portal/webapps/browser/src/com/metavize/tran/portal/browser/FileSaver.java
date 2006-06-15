@@ -63,7 +63,7 @@ public class FileSaver extends HttpServlet
 
             if (fi.isFormField()) {
                 if (fi.getFieldName().equals("dest")) {
-                    dest = "smb:" + fi.getString();
+                    dest = fi.getString();
                 }
 
                 i.remove();

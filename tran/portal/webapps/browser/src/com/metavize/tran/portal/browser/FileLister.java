@@ -65,7 +65,7 @@ public class FileLister extends HttpServlet
         resp.setContentType("text/xml");
         resp.addHeader("Cache-Control", "no-cache");
 
-        String url = "smb:" + req.getParameter("url");
+        String url = req.getParameter("url");
         String type = req.getParameter("type");
 
         SmbFileFilter filter = DIR_FILTER;
