@@ -239,7 +239,7 @@ Browser.prototype._detailSelectionListener = function(ev) {
          DBG.println("IS DIR");
          this.chdir(item);
       } else {
-         AjxWindowOpener.open("get/" + item.getReqUrl());
+         AjxWindowOpener.open("secure/get/" + item.getReqUrl());
       }
       break;
    }

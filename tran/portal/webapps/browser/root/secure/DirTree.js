@@ -82,6 +82,7 @@ DirTree.prototype.repopulate = function(node, principal)
    cn.authorized = true;
    node.setImage(cn.getIconName());
    this._populate(node, null, true);
+   node.setExpanded(true);
 }
 
 // internal methods -----------------------------------------------------------

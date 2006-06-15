@@ -38,8 +38,6 @@ public class SmbLogin extends HttpServlet
         String u = req.getParameter("username");
         String p = req.getParameter("password");
 
-        System.out.println("D: " + d + " U: " + u + " P: " + p);
-
         NtlmPasswordAuthentication auth = new NtlmPasswordAuthentication(d, u, p);
         try {
             PrintWriter writer = resp.getWriter();
@@ -53,11 +51,10 @@ public class SmbLogin extends HttpServlet
             } catch (UnknownHostException exn) {
                 writer.println("<?xml version=\"1.0\" ?>");
                 writer.println("<auth status='failure' principal='" + auth + "'/>");
-            } catch(SmbAuthException sae) {
-                sae.printStackTrace();
+            } catch(SmbAuthException exn) {
                 writer.println("<?xml version=\"1.0\" ?>");
                 writer.println("<auth status='failure' principal='" + auth + "'/>");
-            } catch(SmbException se) {
+            } catch(SmbException exn) {
                 writer.println("<?xml version=\"1.0\" ?>");
                 writer.println("<auth status='failure' principal='" + auth + "'/>");
             }
