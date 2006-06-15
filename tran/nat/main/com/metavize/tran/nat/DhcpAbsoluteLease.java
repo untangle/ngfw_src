@@ -11,8 +11,10 @@
 
 package com.metavize.tran.nat;
 
+import java.io.Serializable;
 import java.util.Date;
 
+import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.tran.firewall.MACAddress;
 import com.metavize.mvvm.tran.IPaddr;
@@ -28,8 +30,10 @@ import com.metavize.mvvm.tran.Rule;
  * table="DHCP_ABS_LEASE"
  * mutable="false"
  */
-public class DhcpAbsoluteLease 
+public class DhcpAbsoluteLease extends LogEvent
 {
+    private static final long serialVersionUID = -6582660598334287376L;
+
     static final int REGISTERED = 0;
     static final int EXPIRED    = 1;
 
@@ -62,12 +66,12 @@ public class DhcpAbsoluteLease
      * column="EVENT_ID"
      * generator-class="native"
      */
-    protected Long getId()
+    public Long getId()
     {
         return id;
     }
 
-    protected void setId(Long id)
+    public void setId(Long id)
     {
         this.id = id;
     }
@@ -165,9 +169,20 @@ public class DhcpAbsoluteLease
         this.eventType = eventType;
     }
 
-    // although DhcpAbsoluteLease isn't a LogEvent,
-    // DhcpAbsoluteEvent maintains a list of DhcpAbsoluteLease objects
-    // that it logs
+    public boolean isPersistent()
+    {
+        return false;
+    }
+
+    // although DhcpAbsoluteLease isn't an actual LogEvent,
+    // when it is created,
+    // we want to log each absolute lease to the sys log
+    // but not to the DB yet
+    // (see above)
+    // and later,
+    // log each absolute lease as a list member of DhcpAbsoluteEvent to the DB
+    // but not to the sys log again
+    // (see DhcpAbsoluteEvent -> absolute lease syslog code is commented out)
     public void appendSyslog(SyslogBuilder sb)
     {
         sb.startSection("lease");

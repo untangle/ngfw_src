@@ -84,12 +84,13 @@ public class DhcpAbsoluteEvent extends LogEvent implements Serializable
         sb.startSection("info");
         sb.addField("num-leases", absoluteLeaseList.size());
 
-        DhcpAbsoluteLease absoluteLease;
-        for (Iterator iter = absoluteLeaseList.iterator(); true == iter.hasNext(); )
-        {
-            absoluteLease = (DhcpAbsoluteLease) iter.next();
-            absoluteLease.appendSyslog(sb);
-        }
+        // each absolute lease has been sent to sys log
+        //DhcpAbsoluteLease absoluteLease;
+        //for (Iterator iter = absoluteLeaseList.iterator(); true == iter.hasNext(); )
+        //{
+            //absoluteLease = (DhcpAbsoluteLease) iter.next();
+            //absoluteLease.appendSyslog(sb);
+        //}
     }
 
     public String getSyslogId()
