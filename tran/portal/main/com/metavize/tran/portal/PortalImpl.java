@@ -16,6 +16,8 @@ import java.util.List;
 import com.metavize.mvvm.AppServerManager;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
+import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.logging.EventLoggerFactory;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.portal.Application;
@@ -25,6 +27,7 @@ import com.metavize.mvvm.portal.LocalPortalManager;
 import com.metavize.mvvm.portal.PortalSettings;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.PipeSpec;
+import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformStartException;
 import com.metavize.mvvm.tran.TransformStopException;
 import com.metavize.tran.portal.rdp.RdpBookmark;
@@ -66,6 +69,8 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[0];
 
+    private final EventLogger<LogEvent> eventLogger;
+
     private Application browserApp;
     private Application proxyApp;
     private Application rdpApp;
@@ -76,6 +81,8 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
     public PortalImpl()
     {
         logger.debug("<init>");
+        TransformContext tctx = getTransformContext();
+        eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
      }
 
     private void deployWebAppIfRequired(Logger logger) {
@@ -203,7 +210,7 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
 
     public EventManager<LogEvent> getEventManager()
     {
-        return null;
+        return eventLogger;
     }
 
     protected void initializeSettings() { }
