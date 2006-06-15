@@ -79,6 +79,13 @@ DirTree.prototype.refresh = function(url)
    }
 }
 
+DirTree.prototype.repopulate = function(node, principal)
+{
+   var cn = node.getData(Browser.CIFS_NODE);
+   cn.principal = principal;
+   this._populate(node, null, true);
+}
+
 // internal methods -----------------------------------------------------------
 
 DirTree.prototype._expandNode = function(url, node)
@@ -167,27 +174,30 @@ DirTree.prototype._populateCallback = function(obj, results)
       current[n.name] = children[i];
    }
 
+
    for (var i = 0; i < dirs.length; i++) {
       var c = dirs[i];
       var name = c.getAttribute("name");
+      var principal = c.getAttribute("principal");
       if (current[name]) {
          delete current[name];
       } else {
          var n;
          if (pcn.isWorkGroup()) {
             DBG.println("WORKGROUP: " + name);
-            n = new CifsNode(null, "//" + name, pcn.principal, CifsNode.SERVER);
+            n = new CifsNode(null, "//" + name, principal, CifsNode.SERVER);
          } else if (pcn.isServer()) {
             DBG.println("SERVER: " + name);
-            n = new CifsNode(pcn.url, name, pcn.principal, CifsNode.SHARE);
+            n = new CifsNode(pcn.url, name, principal, CifsNode.SHARE);
          } else if (pcn.isShare()) {
             DBG.println("SHARE: " + name);
-            n = new CifsNode(pcn.url, name, pcn.principal, CifsNode.DIR);
+            n = new CifsNode(pcn.url, name, principal, CifsNode.DIR);
          } else {
             DBG.println("DIR: " + name);
-            n = new CifsNode(pcn.url, name, pcn.principal, CifsNode.DIR);
+            n = new CifsNode(pcn.url, name, principal, CifsNode.DIR);
          }
          var tn = new DwtTreeItem(obj.parent, null, n.label, n.getIconName());
+         tn.setToolTipContent("PRINC: " + n.principal);
          tn.setData(Browser.CIFS_NODE, n);
          if (this._dragSource) {
             tn.setDragSource(this._dragSource);

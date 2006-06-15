@@ -44,7 +44,7 @@ MvRpc._callbackFn = function(obj, results)
          DBG.println("RUNNING actionCallback");
          return obj.actionCallback.run(results);
       }
-   } else if (obj.timeoutCallback && results.text && 0 <= MvRpc.MAGIC_RE.search(results.text)) {
+   } else if (obj.timeoutCallback && results.text && 0 <= results.text.search(MvRpc.MAGIC_RE)) {
       System.out.println("MATCHES RE: " + MvRpc.MAGIC_RE.search(results.text));
       DBG.println("RUNNING timeoutCallback");
       return obj.timeoutCallback.run(results);

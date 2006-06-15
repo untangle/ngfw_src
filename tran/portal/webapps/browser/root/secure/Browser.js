@@ -263,7 +263,7 @@ Browser.prototype._dirSelectionListener = function(evt) {
       var n = item.getData(Browser.CIFS_NODE);
       if (!n.authenticated) {
          var d = new LoginDialog(this._shell, n.getDomain());
-         var o = { dialog: d };
+         var o = { dialog: d, item: item };
          var l = new AjxListener(this, this._authenticateDialogListener, o);
          d.setButtonListener(DwtDialog.OK_BUTTON, l);
          d.popup();
@@ -286,14 +286,23 @@ Browser.prototype._authenticateDialogListener = function(obj, evt)
    var url = "secure/login?domain=" + domain + "&username=" + username
                    + "&password=" + password;
 
-   o = { dialog: d }
+   o = { dialog: d, item: obj.item }
    var actionCb = new AjxCallback(this, this._loginCallback, o);
    MvRpc.invoke(null, url, null, true, actionCb, MvRpc.reloadPageCallback, null);
 }
 
 Browser.prototype._loginCallback = function(obj, results)
 {
-   alert("SC: " + results.status);
+   var auth = results.xml.getElementsByTagName("auth")[0];
+   var status = auth.getAttribute("status");
+   var principal = auth.getAttribute("principal");
+
+   if ("success" == status) {
+      obj.dialog.popdown();
+      this._dirTree.repopulate(obj.item, principal);
+   } else {
+      alert("FAILURE");
+   }
 }
 
 Browser.prototype._listActionListener = function(ev) {

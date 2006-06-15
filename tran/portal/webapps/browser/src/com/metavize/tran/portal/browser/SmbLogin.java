@@ -12,6 +12,7 @@
 package com.metavize.tran.portal.browser;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.UnknownHostException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -41,25 +42,27 @@ public class SmbLogin extends HttpServlet
 
         NtlmPasswordAuthentication auth = new NtlmPasswordAuthentication(d, u, p);
         try {
+            PrintWriter writer = resp.getWriter();
+
             try {
                 UniAddress ua = UniAddress.getByName(d);
-                System.out.println("DC: " + ua);
                 SmbSession.logon(ua, auth);
-                System.out.println("AUTHENTICATED!!!");
+                pl.addNtlmAuth(auth);
+                writer.println("<?xml version=\"1.0\" ?>");
+                writer.println("<auth status='success' principal='" + auth + "'/>");
             } catch (UnknownHostException exn) {
-                System.out.println("UNKNOWN HOST!!!");
-                resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+                writer.println("<?xml version=\"1.0\" ?>");
+                writer.println("<auth status='failure' principal='" + auth + "'/>");
             } catch(SmbAuthException sae) {
-                System.out.println("AUTH EXN!!! " + sae);
                 sae.printStackTrace();
-                resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+                writer.println("<?xml version=\"1.0\" ?>");
+                writer.println("<auth status='failure' principal='" + auth + "'/>");
             } catch(SmbException se) {
-                System.out.println("WTF!!!");
-                resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                writer.println("<?xml version=\"1.0\" ?>");
+                writer.println("<auth status='failure' principal='" + auth + "'/>");
             }
         } catch (IOException exn) {
             throw new ServletException(exn);
         }
     }
 }
-

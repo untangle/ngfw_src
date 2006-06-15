@@ -15,6 +15,8 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.security.Principal;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.metavize.mvvm.tran.IPaddr;
 import jcifs.smb.NtlmPasswordAuthentication;
@@ -35,7 +37,7 @@ public class PortalLogin implements Principal, Serializable
     private final Date loginDate;
 
     // Not for UI use:
-    private transient NtlmPasswordAuthentication ntlmAuth;
+    private transient Map ntlmAuths = new HashMap();
 
     // constructors -----------------------------------------------------------
 
@@ -53,7 +55,8 @@ public class PortalLogin implements Principal, Serializable
         }
         this.clientAddr = new IPaddr(clientAddr);
         this.loginDate = new Date(System.currentTimeMillis());
-        this.ntlmAuth = ntlmAuth;
+        this.ntlmAuths.put(null, ntlmAuth);
+        this.ntlmAuths.put(ntlmAuth.toString(), ntlmAuth);
     }
 
     // Principal methods ------------------------------------------------------
@@ -115,11 +118,6 @@ public class PortalLogin implements Principal, Serializable
         return group;
     }
 
-    public NtlmPasswordAuthentication getNtlmAuth()
-    {
-        return ntlmAuth;
-    }
-
     /**
      * Client address.
      *
@@ -138,5 +136,20 @@ public class PortalLogin implements Principal, Serializable
     public Date getLoginDate()
     {
         return loginDate;
+    }
+
+    public void addNtlmAuth(NtlmPasswordAuthentication auth)
+    {
+        this.ntlmAuths.put(auth.toString(), auth);
+    }
+
+    public NtlmPasswordAuthentication getNtlmAuth(String name)
+    {
+        return (NtlmPasswordAuthentication)ntlmAuths.get(name);
+    }
+
+    public NtlmPasswordAuthentication getNtlmAuth()
+    {
+        return (NtlmPasswordAuthentication)ntlmAuths.get(null);
     }
 }
