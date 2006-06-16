@@ -61,7 +61,7 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
 		    }
 		}});
 		
-		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1000l);
+		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(4000l);
 	    }
 	    catch(Exception e){
 		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(-1l);

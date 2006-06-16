@@ -101,6 +101,7 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
 	ticker = buildTicker();
     }
 
+    // TEXT ///////////////////
     public void setText(String text){
         this.text = text;
         repaint();
@@ -110,11 +111,12 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
 	    setText(text);
 	}});
     }
-
     public String getText(){
         return text;
     }
+    /////////////////////////////
 
+    // PROGRESS BAR //////////////
     public JProgressBar getProgressBar(){
 	if(jProgressBar == null){
 	    jProgressBar = new JProgressBar();
@@ -127,76 +129,69 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
 	}
 	return jProgressBar;
     }
-
     public void setProgressBarVisible(boolean isVisible){
 	getProgressBar().setVisible(isVisible);
 	getProgressBar().setIndeterminate(false);
 	getProgressBar().setValue(0);
 	getProgressBar().setString("");	
     }
+    /////////////////////////////
 
-
+    // START ///////////////////
     public void start(String text){
 	setText(text);
 	start();
     }
     public void start(){
-	if( !actionTimer.isRunning() ){
-	    addMouseListener(this);
-	    paintContent = false;
-	    setVisible(true);
-	    rampUp = started = doInit = true;
-	    startTime = System.currentTimeMillis();
-	    actionTimer.start();
-	}
+	if( actionTimer.isRunning() )
+	    return;
+	addMouseListener(this);
+	paintContent = false;
+	setVisible(true);
+	rampUp = started = doInit = true;
+	startTime = System.currentTimeMillis();
+	actionTimer.start();
     }
+    public void startLater(){ startLater(""); }
     public void startLater(final String text){
 	SwingUtilities.invokeLater( new Runnable(){ public void run(){
 	    start(text);
 	}});
     }
-    public void startLater(){
-	SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    start();
-	}});
-    }
+    ///////////////////////////
 
-
-
+    // STOP //////////////////
+    private long sleepTime;
     public void stop(){
-	if( actionTimer.isRunning() ){
-	    rampUp = false;
-	}
+	if( !actionTimer.isRunning() )
+	    return;
+	actionTimer.stop();
+	removeMouseListener(this);
+	setVisible(false);
+	repaint();
+	for (int i = 0; i < ticker.length; i++)  // put back to corner for the next use
+	    ticker[i].transform(AffineTransform.getTranslateInstance(-newCenterX, -newCenterY));	
     }
     public void stopLater(){ stopLater(-1); }
     public void stopLater(final long minRunTime){
 	if( minRunTime > 0 ){
-	    long currentTime = System.currentTimeMillis();
-	    if( (currentTime - startTime) < minRunTime ){
-		try{ Thread.currentThread().sleep(minRunTime - (currentTime-startTime)); }
+	    try{
+		SwingUtilities.invokeAndWait(new Runnable(){ public void run(){
+		    sleepTime = minRunTime - (System.currentTimeMillis()-startTime);
+		}});
+	    }
+	    catch(Exception e){ Util.handleExceptionNoRestart("Error sleeping", e); }
+	    if( sleepTime > 0 ){
+		try{ Thread.currentThread().sleep(sleepTime); }
 		catch(Exception e){ Util.handleExceptionNoRestart("Error sleeping", e); }
-	    }	
+	    }
 	}
 	SwingUtilities.invokeLater(new Runnable(){ public void run(){
 	    stop();
 	}});
     }
+    //////////////////////////
 
-    public void interrupt(){
-	if( actionTimer.isRunning() ){
-	    actionTimer.stop();
-	}
-	started = doInit = false;
-	removeMouseListener(this);
-	setVisible(false);
-	repaint();
-	ticker = buildTicker();
-    }
-    public void interruptLater(){
-	SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    interrupt();
-	}});
-    }
 
     public boolean isRunning(){
 	return actionTimer.isRunning();
@@ -249,37 +244,6 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
         }
     }
     
-    private Area[] buildTicker(){
-        Area[] ticker = new Area[barsCount];
-        double fixedAngle = 2.0 * Math.PI / ((double) barsCount);
-	
-        for (double i = 0.0; i < (double) barsCount; i++){
-            Area primitive = buildPrimitive();
-
-            AffineTransform fullTransform = AffineTransform.getRotateInstance(-i * fixedAngle);
-	    fullTransform.concatenate( AffineTransform.getTranslateInstance(45.0, -6.0) );
-            primitive.transform(fullTransform);
-            
-            ticker[(int) i] = primitive;
-        }
-
-        return ticker;
-    }
-
-    private Area buildPrimitive(){
-        Rectangle2D.Double body = new Rectangle2D.Double(6, 0, 30, 12);
-        Ellipse2D.Double   head = new Ellipse2D.Double(0, 0, 12, 12);
-        Ellipse2D.Double   tail = new Ellipse2D.Double(30, 0, 12, 12);
-
-        Area tick = new Area(body);
-        tick.add(new Area(head));
-        tick.add(new Area(tail));
-
-	AffineTransform rotateTransform = AffineTransform.getRotateInstance(Math.toRadians(15));
-	tick.transform(rotateTransform);
-
-        return tick;
-    }
 
     private long start;
     private double fixedIncrement;
@@ -320,7 +284,6 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
 	lastCenterX = newCenterX;
 	lastCenterY = newCenterY;
  
-
 	if (rampDelay == 0)
 	    alphaLevel = rampUp ? 255 : 0;
 	
@@ -328,38 +291,43 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
 	    ticker[i].transform(fullTransform);	
 	paintContent = true;
 	repaint();
-	
-	
-	if(rampUp){
-	    if(rampDelay>0){
-		if (alphaLevel < 255){
-		    alphaLevel = (int) (255 * (System.currentTimeMillis() - start) / rampDelay);
-		    if (alphaLevel >= 255){
-			alphaLevel = 255;
-		    }
+		
+	if(rampDelay>0){
+	    if (alphaLevel < 255){
+		alphaLevel = (int) (255 * (System.currentTimeMillis() - start) / rampDelay);
+		if (alphaLevel >= 255){
+		    alphaLevel = 255;
 		}
 	    }
-	}
-	else{ // !rampUp
-	    if(rampDelay>0){
-		if (alphaLevel >= 0) {
-		    alphaLevel = (int) (255 - (255 * (System.currentTimeMillis() - start) / rampDelay));
-		}
-	    }
-	    if (alphaLevel <= 0){
-		alphaLevel = 0;
-		started = false;
-		setVisible(false);
-		repaint();		    
-		removeMouseListener(InfiniteProgressJComponent.this);
-		actionTimer.stop();
-		for (int i = 0; i < ticker.length; i++)
-		    ticker[i].transform(AffineTransform.getTranslateInstance(-newCenterX, -newCenterY));	
-		return;
-	    }
-	}
+	}		
+    }
+    
+
+    private Area[] buildTicker(){
+        Area[] ticker = new Area[barsCount];
+        double fixedAngle = 2.0 * Math.PI / ((double) barsCount);	
+        for (double i = 0.0; i < (double) barsCount; i++){
+            Area primitive = buildPrimitive();
+            AffineTransform fullTransform = AffineTransform.getRotateInstance(-i * fixedAngle);
+	    fullTransform.concatenate( AffineTransform.getTranslateInstance(45.0, -6.0) );
+            primitive.transform(fullTransform);            
+            ticker[(int) i] = primitive;
+        }
+        return ticker;
     }
 
+
+    private Area buildPrimitive(){
+        Rectangle2D.Double body = new Rectangle2D.Double(6, 0, 30, 12);
+        Ellipse2D.Double   head = new Ellipse2D.Double(0, 0, 12, 12);
+        Ellipse2D.Double   tail = new Ellipse2D.Double(30, 0, 12, 12);
+        Area tick = new Area(body);
+        tick.add(new Area(head));
+        tick.add(new Area(tail));
+	AffineTransform rotateTransform = AffineTransform.getRotateInstance(Math.toRadians(15));
+	tick.transform(rotateTransform);
+        return tick;
+    }
 
 
     public void mouseClicked(MouseEvent e) {}
