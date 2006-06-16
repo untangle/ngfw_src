@@ -101,11 +101,9 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	addRefreshable(NAME_STATUS, kickUserJPanel);
 
  	// EVENT LOG ///////
-	/*
 	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransform(), this);
         addTab(NAME_LOG, null, logJPanel);
         addShutdownable(NAME_LOG, logJPanel);
-	*/
     }
 
     List<PortalLogin> getLoginList(){
