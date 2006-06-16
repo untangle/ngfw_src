@@ -84,13 +84,9 @@ public class DhcpAbsoluteEvent extends LogEvent implements Serializable
         sb.startSection("info");
         sb.addField("num-leases", absoluteLeaseList.size());
 
-        // each absolute lease has been sent to sys log
-        //DhcpAbsoluteLease absoluteLease;
-        //for (Iterator iter = absoluteLeaseList.iterator(); true == iter.hasNext(); )
-        //{
-            //absoluteLease = (DhcpAbsoluteLease) iter.next();
-            //absoluteLease.appendSyslog(sb);
-        //}
+        // there is no reason to log each absolute lease to sys log
+        // - an absolute lease can be used for auditing and reporting later
+        //   but is not useful to add to sys log (see rbscott for more info)
     }
 
     public String getSyslogId()

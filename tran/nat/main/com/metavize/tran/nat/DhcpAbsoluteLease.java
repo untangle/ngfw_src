@@ -11,10 +11,8 @@
 
 package com.metavize.tran.nat;
 
-import java.io.Serializable;
 import java.util.Date;
 
-import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.tran.firewall.MACAddress;
 import com.metavize.mvvm.tran.IPaddr;
@@ -30,10 +28,8 @@ import com.metavize.mvvm.tran.Rule;
  * table="DHCP_ABS_LEASE"
  * mutable="false"
  */
-public class DhcpAbsoluteLease extends LogEvent
+public class DhcpAbsoluteLease 
 {
-    private static final long serialVersionUID = -6582660598334287376L;
-
     static final int REGISTERED = 0;
     static final int EXPIRED    = 1;
 
@@ -66,12 +62,12 @@ public class DhcpAbsoluteLease extends LogEvent
      * column="EVENT_ID"
      * generator-class="native"
      */
-    public Long getId()
+    protected Long getId()
     {
         return id;
     }
 
-    public void setId(Long id)
+    protected void setId(Long id)
     {
         this.id = id;
     }
@@ -167,39 +163,5 @@ public class DhcpAbsoluteLease extends LogEvent
     public void setEventType( int eventType )
     {
         this.eventType = eventType;
-    }
-
-    public boolean isPersistent()
-    {
-        return false;
-    }
-
-    // although DhcpAbsoluteLease isn't an actual LogEvent,
-    // when it is created,
-    // we want to log each absolute lease to the sys log
-    // but not to the DB yet
-    // (see above)
-    // and later,
-    // log each absolute lease as a list member of DhcpAbsoluteEvent to the DB
-    // but not to the sys log again
-    // (see DhcpAbsoluteEvent -> absolute lease syslog code is commented out)
-    public void appendSyslog(SyslogBuilder sb)
-    {
-        sb.startSection("lease");
-
-        sb.addField("mac", mac.toString());
-        sb.addField("hostname", hostname.toString());
-        sb.addField("ip", ip.toString());
-        sb.addField("lease-end", endOfLease);
-        String type;
-        if (REGISTERED == eventType) {
-            type = "registered";
-        } else if (EXPIRED == eventType) {
-            type = "expired";
-        } else {
-            type = "unknown";
-        }
-
-        sb.addField("type", type);
     }
 }
