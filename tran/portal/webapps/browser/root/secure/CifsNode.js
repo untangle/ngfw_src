@@ -30,18 +30,36 @@ function CifsNode(parent, name, principal, type, size, lastModified,
    }
 }
 
-CifsNode.WORKGROUP = "workgroup";
-CifsNode.SERVER = "server";
-CifsNode.SHARE = "share";
-CifsNode.FILE = "file";
-CifsNode.DIR = "dir";
+CifsNode.FILE = 1;
+CifsNode.DIRECTORY = 128;
+
+CifsNode.WORKGROUP = 2;
+CifsNode.SERVER = 4;
+CifsNode.SHARE = 8;
+CifsNode.NAMED_PIPE = 16;
+CifsNode.PRINTER = 32;
+CifsNode.COMM = 64;
+
+CifsNode.TYPES = { };
+CifsNode.TYPES["file"] = CifsNode.FILE;
+CifsNode.TYPES["directory"] = CifsNode.DIRECTORY;
+CifsNode.TYPES["workgroup"] = CifsNode.WORKGROUP;
+CifsNode.TYPES["server"] = CifsNode.SERVER;
+CifsNode.TYPES["share"] = CifsNode.SHARE;
+CifsNode.TYPES["named_pipe"] = CifsNode.NAMED_PIPE;
+CifsNode.TYPES["printer"] = CifsNode.PRINTER;
+CifsNode.TYPES["comm"] = CifsNode.COMM;
 
 CifsNode.ICON_NAMES = { };
 CifsNode.ICON_NAMES[CifsNode.WORKGROUP] = "WorkGroup";
 CifsNode.ICON_NAMES[CifsNode.SERVER] = "Server";
 CifsNode.ICON_NAMES[CifsNode.SHARE] = "Share";
+CifsNode.ICON_NAMES[CifsNode.PRINTER] = "Printer";
+CifsNode.ICON_NAMES[CifsNode.NAMED_PIPE] = "NamedPipe";
+CifsNode.ICON_NAMES[CifsNode.COMM] = "Comm";
+
 CifsNode.ICON_NAMES[CifsNode.FILE] = "File";
-CifsNode.ICON_NAMES[CifsNode.DIR] = "Folder";
+CifsNode.ICON_NAMES[CifsNode.DIRECTORY] = "Folder";
 
 CifsNode.prototype = {
    toString: function() {
@@ -65,7 +83,7 @@ CifsNode.prototype = {
    },
 
    isDirectory: function() {
-      return this.type == CifsNode.DIR;
+      return this.type == CifsNode.DIRECTORY;
    },
 
    getIconName: function() {

@@ -56,21 +56,21 @@ DirTree.prototype.chdir = function(cifsNode)
 
 DirTree.prototype.refresh = function(url)
 {
-   var unpopulateQueue = [ ];
+   var unpopulateStack = [ ];
 
    var children = this.getItems();
    for (var i = 0; i < children.length; i++) {
-      unpopulateQueue.push(children[i]);
+      unpopulateStack.push(children[i]);
    }
 
-   while (0 < unpopulateQueue.length) {
-      var item = unpopulateQueue.pop();
+   while (0 < unpopulateStack.length) {
+      var item = unpopulateStack.pop();
       if (item.getData(DirTree._POPULATED)) {
          this._populate(item, null, true);
       }
       var children = item.getItems();
       for (var i = 0; i < children.length; i++) {
-         unpopulateQueue.push(children[i]);
+         unpopulateStack.push(children[i]);
       }
    }
 }
@@ -147,20 +147,10 @@ DirTree.prototype._populate = function(item, cb, repopulate)
    }
 }
 
-DirTree.prototype._populateAuthCallback = function(obj, results)
-{
-   var p = obj.parent;
-   var pcn = p.getData(Browser.CIFS_NODE);
-   DBG.println("Setting to unauthorized: " + pcn.label);
-   pcn.authorized = false;
-   p.setImage(pcn.getIconName());
-}
-
 DirTree.prototype._populateCallback = function(obj, results)
 {
    var p = obj.parent;
    var pcn = p.getData(Browser.CIFS_NODE);
-   DBG.println("ADDING TO: " + pcn.label);
 
    var dom = results.xml;
    var dirs = dom.getElementsByTagName("dir");
@@ -175,25 +165,25 @@ DirTree.prototype._populateCallback = function(obj, results)
 
    for (var i = 0; i < dirs.length; i++) {
       var c = dirs[i];
-      var name = c.getAttribute("name");
+      var type = CifsNode.TYPES[c.getAttribute("type")];
+      var name;
+      if (CifsNode.WORKGROUP == type || CifsNode.SERVER == type) {
+         name = "//" + c.getAttribute("name");
+      } else {
+         name = c.getAttribute("name");
+      }
+
       var principal = c.getAttribute("principal");
       if (current[name]) {
          delete current[name];
       } else {
          var n;
-         if (pcn.isWorkGroup()) {
-            DBG.println("WORKGROUP: " + name);
-            n = new CifsNode(null, "//" + name, principal, CifsNode.SERVER);
-         } else if (pcn.isServer()) {
-            DBG.println("SERVER: " + name);
-            n = new CifsNode(pcn.url, name, principal, CifsNode.SHARE);
-         } else if (pcn.isShare()) {
-            DBG.println("SHARE: " + name);
-            n = new CifsNode(pcn.url, name, principal, CifsNode.DIR);
+         if (CifsNode.WORKGROUP == type || CifsNode.SERVER == type) {
+            n = new CifsNode(null, name, principal, type);
          } else {
-            DBG.println("DIR: " + name);
-            n = new CifsNode(pcn.url, name, principal, CifsNode.DIR);
+            n = new CifsNode(pcn.url, name, principal, type);
          }
+
          var tn = new DwtTreeItem(obj.parent, null, n.label, n.getIconName());
          tn.setToolTipContent("PRINC: " + n.principal);
          tn.setData(Browser.CIFS_NODE, n);
@@ -214,6 +204,14 @@ DirTree.prototype._populateCallback = function(obj, results)
    if (obj.cb) {
       obj.cb.run(obj.parent);
    }
+}
+
+DirTree.prototype._populateAuthCallback = function(obj, results)
+{
+   var p = obj.parent;
+   var pcn = p.getData(Browser.CIFS_NODE);
+   pcn.authorized = false;
+   p.setImage(pcn.getIconName());
 }
 
 DirTree.prototype._treeListener = function(evt)

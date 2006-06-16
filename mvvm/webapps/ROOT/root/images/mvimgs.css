@@ -7,6 +7,14 @@
 .ImgServerNoAuth{background-image:url("icons/ServerNoAuth.gif");background-position:0px 0px;background-repeat:no-repeat;width:16px;height:16px;overflow:hidden;}
 .ImgShare{background-image:url("icons/Share.gif");background-position:0px 0px;background-repeat:no-repeat;width:16px;height:16px;overflow:hidden;}
 .ImgShareNoAuth{background-image:url("icons/ShareNoAuth.gif");background-position:0px 0px;background-repeat:no-repeat;width:16px;height:16px;overflow:hidden;}
+.ImgPrinter{background-image:url("icons/Printer.gif");background-position:0px 0px;background-repeat:no-repeat;width:16px;height:16px;overflow:hidden;}
+.ImgPrinterNoAuth{background-image:url("icons/PrinterNoAuth.gif");background-position:0px 0px;background-repeat:no-repeat;width:16px;height:16px;overflow:hidden;}
+.ImgNamedPipe{background-image:url("icons/NamedPipe.gif");background-position:0px 0px;background-repeat:no-repeat;width:16px;height:16px;overflow:hidden;}
+.ImgNamedPipeNoAuth{background-image:url("icons/NamedPipeNoAuth.gif");background-position:0px 0px;background-repeat:no-repeat;width:16px;height:16px;overflow:hidden;}
+.ImgComm{background-image:url("icons/Comm.gif");background-position:0px 0px;background-repeat:no-repeat;width:16px;height:16px;overflow:hidden;}
+.ImgCommNoAuth{background-image:url("icons/CommNoAuth.gif");background-position:0px 0px;background-repeat:no-repeat;width:16px;height:16px;overflow:hidden;}
+
+
 .ImgFolder{background-image:url("icons/Folder.gif");background-position:0px 0px;background-repeat:no-repeat;width:16px;height:16px;overflow:hidden;}
 .ImgFolderNoAuth{background-image:url("icons/FolderNoAuth.gif");background-position:0px 0px;background-repeat:no-repeat;width:16px;height:16px;overflow:hidden;}
 .ImgLogout{background-image:url("icons/Logout.gif");background-position:0px 0px;background-repeat:no-repeat;width:16px;height:16px;overflow:hidden;}

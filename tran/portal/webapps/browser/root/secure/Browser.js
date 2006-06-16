@@ -6,7 +6,7 @@ function Browser(shell, url) {
       return;
    }
 
-   var cifsNode = new CifsNode(null, url, null, CifsNode.SHARE);
+   var cifsNode = new CifsNode(null, url, null, CifsNode.SHARE); // XXX TYPE?
 
    this._shell = shell;
 
@@ -103,8 +103,8 @@ Browser.prototype.cp = function(src, dest)
 
 Browser.prototype.refresh = function()
 {
-   this._dirTree.refresh();
    this._detailPanel.refresh();
+   this._dirTree.refresh();
 }
 
 Browser.prototype.layout = function(ignoreSash) {
@@ -223,7 +223,8 @@ Browser.prototype._broadcastRootsCb = function(obj, results)
       var tagName = child.tagName;
       if ("dir" == tagName || "file" == tagName) {
          var name = "//" + child.getAttribute("name");
-         var n = new CifsNode(null, name, null, CifsNode.WORKGROUP);
+         var type = CifsNode.TYPES[child.getAttribute("type")];
+         var n = new CifsNode(null, name, null, type);
          this._dirTree.addWorkGroup(n);
       }
    }

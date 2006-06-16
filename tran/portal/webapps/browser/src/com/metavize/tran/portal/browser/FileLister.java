@@ -158,6 +158,39 @@ public class FileLister extends HttpServlet
                     : mimeMap.getContentType(name);
                 String principal = f.getPrincipal().toString();
 
+                String type;
+                switch (f.getType()) {
+                case SmbFile.TYPE_FILESYSTEM:
+                    if (f.isDirectory()) {
+                        type = "directory";
+                    } else {
+                        type = "file";
+                    }
+                    break;
+                case SmbFile.TYPE_WORKGROUP:
+                    type = "workgroup";
+                    break;
+                case SmbFile.TYPE_SERVER:
+                    type = "server";
+                    break;
+                case SmbFile.TYPE_SHARE:
+                    type = "share";
+                    break;
+                case SmbFile.TYPE_PRINTER:
+                    type = "printer";
+                    break;
+                case SmbFile.TYPE_NAMED_PIPE:
+                    type = "named_pipe";
+                    break;
+                case SmbFile.TYPE_COMM:
+                    type = "comm";
+                    break;
+                default:
+                    logger.warn("unknown type: " + f.getType());
+                    type = "unknown";
+                    break;
+                }
+
                 os.println("  <" + tag + " "
                            + "name='" + name + "' "
                            + "principal='" + principal + "' "
@@ -166,6 +199,7 @@ public class FileLister extends HttpServlet
                            + "size='" + length + "' "
                            + "readable='" + readable + "' "
                            + "writable='" + writable + "' "
+                           + "type='" + type + "' "
                            + "hidden='" + hidden + "' "
                            + "content-type='" + contentType + "'/>");
              }
