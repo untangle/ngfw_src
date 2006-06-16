@@ -46,6 +46,9 @@ public class RuleManager
     private static final String PUBLIC_ADDR_FLAG             = "HTTPS_PUBLIC_ADDR";
     private static final String PUBLIC_PORT_FLAG             = "HTTPS_PUBLIC_PORT";
     private static final String PUBLIC_REDIRECT_EN           = "HTTPS_PUBLIC_REDIRECT_EN";
+    /* Flags to set the redirect for traffic to the internal admin port */
+    private static final String INTERNAL_OPEN_REDIRECT_FLAG  = "HTTPS_INTERNAL_REDIRECT_PORT";
+    
 
     /* Flags to use to steal an address and a few ports */
     private static final String SETUP_MODE_FLAG              = "IS_IN_SETUP_MODE";
@@ -73,8 +76,8 @@ public class RuleManager
 
     private final Logger logger = Logger.getLogger( RuleManager.class );
 
-    private boolean subscribeLocalInside  = false;
-    private boolean subscribeLocalOutside = false;
+    private boolean subscribeLocalInside  = true;
+    private boolean subscribeLocalOutside = true;
     private boolean dhcpEnableForwarding  = true;
 
     private boolean isPublicRedirectEnabled = false;
@@ -273,6 +276,9 @@ public class RuleManager
                 /* Steal port 53 for DHCP */
                 sb.append( SETUP_UDP_PORTS_FLAG + "=53\n" );
             }
+
+            /* Add the flag to redirect traffic from 443, to the special internal open port */
+            sb.append( INTERNAL_OPEN_REDIRECT_FLAG + "=" + NetworkUtil.INTERNAL_OPEN_HTTPS_PORT +"\n" );
             
             writeFile( sb, MVVM_TMP_FILE );
         } catch ( JNetcapException e ) {

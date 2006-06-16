@@ -23,6 +23,7 @@ echo "Reconstructing all of the tables"
 
 MARK_ANTISUB="0x01000000"
 MARK_NOTRACK="0x02000000"
+MARK_INTERNAL_REDIRECT="0x04000000"
 MARK_LOCAL="0x00001000"
 
 ## This is not the interface index (1,2,3, etc), this is the special bit that
@@ -327,6 +328,7 @@ function rawRules() {
 function antisubscribeRules() {
     local t_mark
     local pingList=${MVVM_PING_LIST}
+    local t_httpsPorts
 
     ## flush the antisubscribe chain
     ${IPTABLES} -t mangle -F ${CHAIN_ANTISUB}
@@ -352,22 +354,42 @@ function antisubscribeRules() {
     ## Determine whether or not to antisubscribe to local traffic
     antisubscribeLocalTraffic ${FLAG_OUTSIDE_INTF} ${ANTISUBSCRIBE_LOCAL_OUTSIDE}
     antisubscribeLocalTraffic ${FLAG_INSIDE_INTF}  ${ANTISUBSCRIBE_LOCAL_INSIDE}
-
-    ## Determine if the antisubscribe needs to be restricted
-    if [ "${MVVM_ALLOW_OUT_HTTPS}x" != "truex" ]; then
-        ## Otherwise, only antisubscribe to those packets with the inside mark.
-        t_mark="${MARK_INSIDE_INTF}/$(( ${MARK_ANTISUB} | ${MARK_INSIDE_INTF} ))"
-    else
-        t_mark=0/${MARK_ANTISUB}
+    
+    if [ -n "${HTTPS_INTERNAL_REDIRECT_PORT}" ]; then
+    ## Redirect HTTPS packets to the special port
+        t_httpsPorts=${HTTPS_PORT}
+        
+        if [ -n "${outsideHttpsPort}" ] && [ "${t_httpsPort}" != "${outsideHttpsPort}" ]; then
+            t_httpsPorts="${t_httpsPorts},${outsideHttpsPort}"
+        fi
+        
+        ## This is the mask for the next check
+        t_mark="$(( ${MARK_ANTISUB} | ${MARK_INSIDE_INTF} | ${MARK_LOCAL} ))"
+        ## This tells to antisubscribe, and mark as internal redirect any local packet
+        ## going to the local HTTPS ports.  These get redirected later
+        ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -p tcp \
+            -m mark --mark "$(( ${MARK_INSIDE_INTF} | ${MARK_LOCAL} ))/${t_mark}" \
+            -m multiport --destination-ports ${t_httpsPorts} \
+            -j MARK --set-mark $(( ${MARK_ANTISUB} | ${MARK_INTERNAL_REDIRECT} ))
     fi
     
     ## This rule will often be unecessary, but it is there just in case.
     ## if the public address is ever different than the box address, these are different.    
     if [ -n "${HTTPS_PUBLIC_ADDR}" ] && [ -n "${HTTPS_PUBLIC_PORT}" ]; then
-        ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -p tcp -m mark --mark ${t_mark} \
+        ## The first one is for traffic on the inside interface
+        ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -p tcp \
+            -m mark --mark "${MARK_INSIDE_INTF}/$(( ${MARK_ANTISUB} | ${MARK_INSIDE_INTF} ))" \
             --destination ${HTTPS_PUBLIC_ADDR} \
             --destination-port ${HTTPS_PUBLIC_PORT} \
-            -j MARK --set-mark ${MARK_ANTISUB}
+            -j MARK --set-mark $(( ${MARK_ANTISUB} | ${MARK_INTERNAL_REDIRECT} ))
+
+        ## If outside is enabled, catch everything else
+        if [ "${MVVM_ALLOW_OUT_HTTPS}x" != "truex" ]; then
+            ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -p tcp -m mark --mark "0/${MARK_ANTISUB}" \
+                --destination ${HTTPS_PUBLIC_ADDR} \
+                --destination-port ${HTTPS_PUBLIC_PORT} \
+                -j MARK --set-mark ${MARK_ANTISUB}
+        fi
     fi
 
     ## Antisubscribe to the locally requested traffic
@@ -488,6 +510,8 @@ function antisubscribeLocalPing() {
 
 ## intercept everything and then use antisubscribes to not intercept certain packets
 function interceptRules() {
+    local t_mark
+    
 ## Flush the intercept chain
     ${IPTABLES} -t mangle -F ${CHAIN_INTERCEPT}
 
@@ -519,6 +543,13 @@ function interceptRules() {
             -j REDIRECT --to-ports ${TCP_REDIRECT_PORTS/:/-}
     else
         echo "The TCP Redirect port is not set"
+    fi
+
+## Redirect all of the traffic on the internal HTTPs interface to the open port.
+    if [ -n "${HTTPS_INTERNAL_REDIRECT_PORT}" ]; then
+        t_mark="$(( ${MARK_ANTISUB} | ${MARK_INTERNAL_REDIRECT} ))"
+        ${IPTABLES} -t nat -A PREROUTING -p tcp -m mark --mark "${t_mark}/${t_mark}" \
+            -j REDIRECT --to-ports "${HTTPS_INTERNAL_REDIRECT_PORT}"
     fi
 }
 

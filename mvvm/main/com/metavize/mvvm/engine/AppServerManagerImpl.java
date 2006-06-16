@@ -16,6 +16,7 @@ import java.io.FileInputStream;
 import java.util.Properties;
 
 import com.metavize.mvvm.AppServerManager;
+import com.metavize.mvvm.networking.NetworkUtil;
 import com.metavize.mvvm.networking.RemoteSettingsListener;
 import com.metavize.mvvm.networking.internal.RemoteInternalSettings;
 import com.metavize.mvvm.security.CertInfo;
@@ -141,7 +142,8 @@ class AppServerManagerImpl implements AppServerManager
             if (null == disableTomcat || !Boolean.valueOf(disableTomcat)) {
                 tomcatManager.startTomcat(invokerBase, DEFAULT_HTTP_PORT,
                                           DEFAULT_HTTPS_PORT,
-                                          externalHttpsPort);
+                                          externalHttpsPort,
+                                          NetworkUtil.INTERNAL_OPEN_HTTPS_PORT);
             }
         } catch (Exception exn) {
             logger.warn("could not start Tomcat", exn);

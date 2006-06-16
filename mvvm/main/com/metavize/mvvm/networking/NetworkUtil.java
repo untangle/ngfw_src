@@ -63,6 +63,9 @@ public class NetworkUtil
         "192.168.0.0/16", "10.0.0.0/8", "172.16.0.0/12"
     };
 
+    /* ports 9500 -> 9650 are redirect ports, 10000 -> 60000 are reserved for NAT */
+    public static final int INTERNAL_OPEN_HTTPS_PORT = 64157;
+
     private static final String PUBLIC_ADDRESS_EXCEPTION = 
         "A public address is an ip address, optionally followed by a port.  (e.g. 1.2.3.4:445 or 1.2.3.4)";
 

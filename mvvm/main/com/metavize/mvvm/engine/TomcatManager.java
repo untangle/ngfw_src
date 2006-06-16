@@ -69,6 +69,7 @@ class TomcatManager
 
     private Connector defaultHTTPConnector;
     private Connector defaultHTTPSConnector;
+    private Connector internalOpenHTTPSConnector; /* Sessions on this port are unrestricted */
     private Connector externalHTTPSConnector;
 
     // constructors -----------------------------------------------------------
@@ -216,7 +217,8 @@ class TomcatManager
     synchronized void startTomcat(InvokerBase invokerBase,
                                   int internalHTTPPort,
                                   int internalHTTPSPort,
-                                  int externalHTTPSPort)
+                                  int externalHTTPSPort,
+                                  int internalOpenHTTPSPort)
         throws Exception
     {
         // Change for 4.0: Put the Tomcat class loader insdie the MVVM
@@ -301,6 +303,7 @@ class TomcatManager
             // create Connectors
             defaultHTTPConnector = createConnector(internalHTTPPort, false);
             defaultHTTPSConnector = createConnector(internalHTTPSPort, true);
+            internalOpenHTTPSConnector = createConnector(internalOpenHTTPSPort, true);
 
             /* Start the outside https server */
             if (externalHTTPSPort != internalHTTPSPort) {
@@ -498,6 +501,13 @@ class TomcatManager
 
         if (port == 80 || port == 0 || port > 0xFFFF) {
             throw new Exception("Cannot bind external to port 80");
+        }
+
+        /* This is kind of a questionable situation here, buecause it is not accessible here */
+        if (null != internalOpenHTTPSConnector
+            && internalOpenHTTPSConnector.getPort() == port) {
+            logger.info("External is already bound to port: " + port);
+            return;
         }
 
         /* If there was a failed attempt, retry, startExternal will
