@@ -134,7 +134,9 @@ class HttpInvoker extends InvokerBase
                 loginDesc = new NullLoginDesc(hi.url, hi.timeout);
             } else {
                 loginDesc = logins.get(loginSession);
-                loginSession = loginDesc.getLoginSession();
+                if (null != loginDesc) {
+                    loginSession = loginDesc.getLoginSession();
+                }
             }
             loginDescs.set(loginDesc);
 
