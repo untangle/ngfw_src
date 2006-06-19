@@ -41,15 +41,17 @@ DetailPanel.prototype.chdir = function(cifsNode)
 
 DetailPanel.prototype.refresh = function()
 {
-   var f = function(obj, results) {
-      this._setListingXml(results.xml);
-      this.setUI(1);
-   }
-   var actionCb = new AjxCallback(this, f, new Object());
+   var actionCb = new AjxCallback(this, this._refreshCbFn, { });
 
-   DBG.println("INVOKE ls");
-   MvRpc.invoke(null, "secure/ls?url=" + this.cwd.getReqUrl() + "&type=full", null, true,
+   var reqStr = "url=" + this.cwd.getReqUrl() + "&type=full";
+   MvRpc.invoke(reqStr, "secure/ls", null, true,
                 actionCb, MvRpc.reloadPageCallback, this._authCallback);
+}
+
+DetailPanel.prototype._refreshCbFn = function(obj, results)
+{
+   this._setListingXml(results.xml);
+   this.setUI(1);
 }
 
 // internal methods -----------------------------------------------------------
