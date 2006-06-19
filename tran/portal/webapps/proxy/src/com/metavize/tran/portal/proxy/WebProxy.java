@@ -20,6 +20,7 @@ import java.io.PipedOutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.net.InetAddress;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -31,6 +32,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.MvvmLocalContext;
+import com.metavize.mvvm.NetworkManager;
+import com.metavize.mvvm.tran.IPaddr;
 import org.apache.commons.fileupload.MultipartStream;
 import org.apache.commons.fileupload.ParameterParser;
 import org.apache.commons.httpclient.Header;
@@ -45,6 +49,7 @@ import org.htmlparser.lexer.Lexer;
 import org.htmlparser.lexer.Page;
 import org.htmlparser.util.ParserException;
 import org.xml.sax.XMLReader;
+import java.net.UnknownHostException;
 
 public class WebProxy extends HttpServlet
 {
@@ -57,11 +62,15 @@ public class WebProxy extends HttpServlet
         = Pattern.compile("^Content-Type:\\s*(.*)$",
                           Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
+    private MvvmLocalContext mvvmContext;
+    private NetworkManager netManager;
     private Logger logger;
 
     @Override
     public void init() throws ServletException
     {
+        mvvmContext = MvvmContextFactory.context();
+        netManager = mvvmContext.networkManager();
         logger = Logger.getLogger(getClass());
     }
 
@@ -71,8 +80,16 @@ public class WebProxy extends HttpServlet
     {
         try {
             UrlRewriter rewriter = UrlRewriter.getRewriter(req);
-            HttpMethod method = new GetMethod(rewriter.getRemoteUrl());
-            doIt(req, resp, method, rewriter);
+            String dest = rewriter.getHost();
+            IPaddr addr = new IPaddr(InetAddress.getByName(dest));
+            if (netManager.isAddressLocal(addr)) {
+                sendError(resp, HttpServletResponse.SC_FORBIDDEN);
+            } else {
+                HttpMethod method = new GetMethod(rewriter.getRemoteUrl());
+                doIt(req, resp, method, rewriter);
+            }
+        } catch (UnknownHostException exn) {
+            sendError(resp, HttpServletResponse.SC_BAD_REQUEST);
         } catch (URIException exn) {
             sendError(resp, HttpServletResponse.SC_BAD_REQUEST);
         }
@@ -287,7 +304,7 @@ public class WebProxy extends HttpServlet
         throws IOException
     {
         PipedInputStream pis = new PipedInputStream();
-        Thread t = MvvmContextFactory.context().newThread(new RewriteWorker(pis, w, rewriter));
+        Thread t = mvvmContext.newThread(new RewriteWorker(pis, w, rewriter));
         PipedOutputStream pos = new PipedOutputStream(pis);
         t.start();
         try {
