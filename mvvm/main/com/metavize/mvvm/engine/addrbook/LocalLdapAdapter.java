@@ -274,7 +274,7 @@ class LocalLdapAdapter extends LdapAdapter {
         attrs.put(new BasicAttribute("userPassword", password));//TODO MD5
 
         try {
-            createSubcontextAsSuperuser("uid=" + newEntry.getUID() + ",dc=mydomain", attrs);
+            createSubcontextAsSuperuser("uid=" + newEntry.getUID() + ",dc=nodomain", attrs);
         }
         catch(NameAlreadyBoundException ex) {
             throw ex;
@@ -307,7 +307,7 @@ class LocalLdapAdapter extends LdapAdapter {
         }
 
         try {
-            ctx.destroySubcontext("uid=" + uid + ",dc=mydomain");
+            ctx.destroySubcontext("uid=" + uid + ",dc=nodomain");
             returnSuperuserContext(ctx, false);
             return true;
         }
@@ -369,7 +369,7 @@ class LocalLdapAdapter extends LdapAdapter {
 
 
         try {
-            ctx.modifyAttributes("uid=" + uid + ",dc=mydomain",
+            ctx.modifyAttributes("uid=" + uid + ",dc=nodomain",
                                  DirContext.REPLACE_ATTRIBUTE,
                                  attrs);
             returnSuperuserContext(ctx, false);
