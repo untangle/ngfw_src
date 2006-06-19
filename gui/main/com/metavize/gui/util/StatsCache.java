@@ -22,18 +22,22 @@ public class StatsCache implements Shutdownable
     protected static long NORMAL_SLEEP_MILLIS = 1000l;
     protected static long PROBLEM_SLEEP_MILLIS = 10000l;
 
-    private final UpdateThread updateThread;
+    private final StatsCacheUpdateThread statsCacheUpdateThread;
 
     private final HashMap<Tid, FakeTransform> fakies;
 
     public StatsCache(){
         fakies = new HashMap<Tid, FakeTransform>();
-        updateThread = new UpdateThread();
-	Util.addShutdownable("StatsCache", this);
+        statsCacheUpdateThread = new StatsCacheUpdateThread();
+	Util.addShutdownable("StatsCacheUpdateThread", statsCacheUpdateThread);
     }
 
     public void start(){
-        updateThread.start();
+        statsCacheUpdateThread.start();
+    }
+
+    public void doShutdown(){
+	statsCacheUpdateThread.doShutdown();
     }
 
     public Transform getFakeTransform(Tid tid)
@@ -41,23 +45,19 @@ public class StatsCache implements Shutdownable
         return fakies.get(tid);
     }
 
-    public void doShutdown(){
-        updateThread.doShutdown();
-    }
-
-    private class UpdateThread extends Thread implements Shutdownable {
+    private class StatsCacheUpdateThread extends Thread implements Shutdownable {
 
 	private volatile boolean stop = false;
 
-	public UpdateThread(){
-	    setName("MVCLIENT-StatsCache");
+	public StatsCacheUpdateThread(){
+	    setName("MVCLIENT-StatsCacheUpdateThread");
 	    setDaemon(true);
 	}
 
         public void doShutdown(){
-	    if( !stop ){ // because upgrade can call doShutdown, and cause this call twice
+	    if(!stop){
 		stop = true;
-		this.interrupt();
+		interrupt();
 	    }
         }
        
@@ -75,7 +75,7 @@ public class StatsCache implements Shutdownable
                         fakies.clear();
                     }
 
-		    // PUT SPOTS IN RESPECTIVE SPOTS
+		    // PUT STATS IN RESPECTIVE SPOTS
 		    for(Tid tid : allStats.keySet()){
 			if( fakies.containsKey(tid) ) {
 			    fakies.get(tid).setStats(allStats.get(tid));
@@ -87,18 +87,19 @@ public class StatsCache implements Shutdownable
                     // PAUSE A REASONABLE AMOUNT OF TIME
                     sleep(NORMAL_SLEEP_MILLIS);
                 }
-		catch (InterruptedException exn) {
-                    continue; // reevaluate loop condition
-                }
-		catch (Exception exn) {
-                    try { Util.handleExceptionWithRestart("Error getting graph data", exn); }
-		    catch(Exception f){
-			Util.handleExceptionNoRestart("Error getting graph data", f);
-			try{ sleep(PROBLEM_SLEEP_MILLIS); }
-			catch(InterruptedException g){ continue; }
+		catch(InterruptedException e){ continue; }
+		catch(Exception e){
+		    if( !isInterrupted() ){
+			try { Util.handleExceptionWithRestart("Error getting graph data", e); }
+			catch(Exception f){
+			    Util.handleExceptionNoRestart("Error getting graph data", f);
+			    try{ sleep(PROBLEM_SLEEP_MILLIS); }
+			    catch(InterruptedException g){ continue; }
+			}
 		    }
 		}
             }
+	    Util.printMessage("StatsCacheUpdateThread Stopped");
         }
     }
     

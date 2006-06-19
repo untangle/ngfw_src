@@ -112,7 +112,8 @@ public class MLauncher {
 	    setDaemon(true);
         }
         public void run(){
-            MvvmRemoteContextFactory.factory().logout();
+	    try{ MvvmRemoteContextFactory.factory().logout(); }
+	    catch(Exception e){ Util.handleExceptionNoRestart("Error logging out", e); }
         }
     }
 }

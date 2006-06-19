@@ -479,6 +479,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 try{
 
                     // LOGIN ///////////
+		    Util.setShutdownInitiated(false);
                     URL url = Util.getServerCodeBase();
                     MvvmRemoteContext mvvmContext = MvvmRemoteContextFactory.factory().interactiveLogin( url.getHost(), url.getPort(),
                                                                                                          loginJTextField.getText(),

@@ -59,7 +59,6 @@ public class Util {
     public static void initialize(){
         shutdownableMap = new HashMap<String,Shutdownable>();
 	statsCache = new StatsCache();
-	addShutdownable("StatsCache", statsCache);
         logDateFormat = new SimpleDateFormat("EEE, MMM d HH:mm:ss");
         log = new Vector();
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -97,6 +96,10 @@ public class Util {
 	VALID_BACKGROUND_COLOR = new Color(224, 224, 224);
     }
 
+    // LOGOUT /////////////////////
+    private static volatile boolean shutdownInitiated = false;
+    public static boolean getShutdownInitiated(){ return shutdownInitiated; }
+    public static void setShutdownInitiated(boolean x){ shutdownInitiated = x; }
 
     // LOGIN //////////////////////
     public static final int LOGIN_RETRY_COUNT = 6;
@@ -358,7 +361,8 @@ public class Util {
     public static void addShutdownable(String name, Shutdownable shutdownable){
         shutdownableMap.put(name, shutdownable);
     }
-    public static void doShutdown(){
+    private static void doShutdown(){
+	Util.printMessage("Shutdown initiated by: " + Thread.currentThread().getName() );
         for( Map.Entry<String,Shutdownable> shutdownableEntry : shutdownableMap.entrySet() ){
 	    System.err.println("Shutting down: " + shutdownableEntry.getKey());
             shutdownableEntry.getValue().doShutdown();
@@ -458,18 +462,8 @@ public class Util {
             resetSize = true;
         }
         if(resetSize){
-            //Rectangle rectangle = resizableComponent.getBounds();
-            //resizableComponent.setBounds( rectangle.x, rectangle.y, currentSize.width, currentSize.height);
-            //final Dimension newSize = currentSize;
-            //SwingUtilities.invokeLater( new Runnable() { public void run(){
             resizableComponent.setSize( newWidth, newHeight );
-            //System.err.println(" SCREEN CHANGE ---> New size: " + newSize);
-            //}});
         }
-        //else{
-        //System.err.println(" NO SCREEN CHANGE");
-        //}
-
     }
     //////////////////////////////////////////////////////
 
@@ -487,34 +481,43 @@ public class Util {
     }
 
     public synchronized static void handleExceptionWithRestart(String output, Exception e) throws Exception {
-        Throwable throwableRef = e;
+        Throwable throwableRef = e;	
 
         while( throwableRef != null){
             if( throwableRef instanceof InvocationConnectionException ){
 		System.err.println(output);
 		e.printStackTrace();
-		doShutdown();
-                mLoginJFrame.resetLogin("Server communication failure.  Re-login.");
-                mLoginJFrame.reshowLogin();
-		MvvmRemoteContextFactory.factory().logout();
+		if( !Util.getShutdownInitiated() ){
+		    Util.setShutdownInitiated(true);
+		    doShutdown();
+		    mLoginJFrame.resetLogin("Server communication failure.  Re-login.");
+		    mLoginJFrame.reshowLogin();
+		    MvvmRemoteContextFactory.factory().logout();
+		}
                 return;
             }
             else if( throwableRef instanceof InvocationTargetExpiredException ){
 		System.err.println(output);
 		e.printStackTrace();
-		doShutdown();
-                mLoginJFrame.resetLogin("Server synchronization failure.  Re-login.");
-                mLoginJFrame.reshowLogin();
-		MvvmRemoteContextFactory.factory().logout();
+		if( !Util.getShutdownInitiated() ){
+		    Util.setShutdownInitiated(true);
+		    doShutdown();
+		    mLoginJFrame.resetLogin("Server synchronization failure.  Re-login.");
+		    mLoginJFrame.reshowLogin();
+		    MvvmRemoteContextFactory.factory().logout();
+		}
                 return;
             }
             else if( throwableRef instanceof com.metavize.mvvm.client.LoginExpiredException ){
 		System.err.println(output);
 		e.printStackTrace();
-		doShutdown();
-                mLoginJFrame.resetLogin("Login expired.  Re-login.");
-                mLoginJFrame.reshowLogin();
-		MvvmRemoteContextFactory.factory().logout();
+		if( !Util.getShutdownInitiated() ){
+		    Util.setShutdownInitiated(true);		
+		    doShutdown();
+		    mLoginJFrame.resetLogin("Login expired.  Re-login.");
+		    mLoginJFrame.reshowLogin();
+		    MvvmRemoteContextFactory.factory().logout();
+		}
                 return;
             }
             else if(    (throwableRef instanceof ConnectException)
@@ -522,20 +525,26 @@ public class Util {
                         || (throwableRef instanceof SocketTimeoutException) ){
 		System.err.println(output);
 		e.printStackTrace();
-                doShutdown();
-                mLoginJFrame.resetLogin("Server connection failure.  Re-login.");
-                mLoginJFrame.reshowLogin();
-		MvvmRemoteContextFactory.factory().logout();
+		if( !Util.getShutdownInitiated() ){
+		    Util.setShutdownInitiated(true);
+		    doShutdown();
+		    mLoginJFrame.resetLogin("Server connection failure.  Re-login.");
+		    mLoginJFrame.reshowLogin();
+		    MvvmRemoteContextFactory.factory().logout();
+		}
                 return;
             }
             else if( throwableRef instanceof LoginStolenException ){
                 String loginName = ((LoginStolenException)throwableRef).getThief().getMvvmPrincipal().getName();
                 String loginAddress = ((LoginStolenException)throwableRef).getThief().getClientAddr().getHostAddress();
                 new LoginStolenJDialog(loginName, loginAddress);
-		doShutdown();
-                mLoginJFrame.resetLogin("Login ended by: " + loginName + " at " + loginAddress);
-                mLoginJFrame.reshowLogin();
-		MvvmRemoteContextFactory.factory().logout();
+		if( !Util.getShutdownInitiated() ){
+		    Util.setShutdownInitiated(true);	       
+		    doShutdown();
+		    mLoginJFrame.resetLogin("Login ended by: " + loginName + " at " + loginAddress);
+		    mLoginJFrame.reshowLogin();
+		    MvvmRemoteContextFactory.factory().logout();
+		}
                 return;
             }
             throwableRef = throwableRef.getCause();

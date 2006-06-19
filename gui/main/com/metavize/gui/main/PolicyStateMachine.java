@@ -234,15 +234,12 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         }
 
         Util.setPolicyStateMachine(this);
-	Util.addShutdownable("PolicyStateMachine", this);
 	Util.addShutdownable("MessageClientThread", messageClientThread);
 	Util.addShutdownable("StoreModelThread", storeModelThread);
 	Util.addShutdownable("MoveFromStoreToToolboxThread", moveFromStoreToToolboxThread);
     }
 
     public void doShutdown(){	
-	storeModelThread.doShutdown();
-	moveFromStoreToToolboxThread.doShutdown();
 	for(MTransformJPanel mTransformJPanel : coreRackMap.values() )
 	    mTransformJPanel.doShutdown();
 	for(MTransformJPanel mTransformJPanel : utilRackMap.values() )
@@ -250,6 +247,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 	for(Policy policy : policyRackMap.keySet() )
 	    for(MTransformJPanel mTransformJPanel : policyRackMap.get(policy).values() )
 		mTransformJPanel.doShutdown();
+	Util.printMessage("PolicyStateMachine Stopped");
     }
 
     // HANDLERS ///////////////////////////////////////////
@@ -651,8 +649,10 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             start();
         }
 	public void doShutdown(){
-	    stop = true;
-	    this.interrupt();
+	    if(!stop){
+		stop = true;
+		interrupt();
+	    }
 	}
         public void run(){
             while(!stop){
@@ -661,12 +661,11 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                     purchasedMTransformJButton = purchaseBlockingQueue.take();
                     purchase(purchasedMTransformJButton);
                 }
-                catch(Exception e){
-                    Util.handleExceptionNoRestart("Interrupted while waiting to purchase", e);
-                }
+                catch(InterruptedException e){ continue; }
             }
+	    Util.printMessage("MoveFromStoreToToolboxThread Stopped");
         }
-        private void purchase(final MTransformJButton mTransformJButton){
+        private void purchase(final MTransformJButton mTransformJButton) throws InterruptedException {
             try{
                 // DO THE DOWNLOAD
                 MackageDesc[] originalUninstalledMackages = Util.getToolboxManager().uninstalled();
@@ -761,21 +760,24 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                     }
                 }
             }
+	    catch(InterruptedException e){ throw e; }
             catch(Exception e){
-                try{
-                    Util.handleExceptionWithRestart("error purchasing: " +  mTransformJButton.getName(),  e);
-                }
-                catch(Exception f){
-                    Util.handleExceptionNoRestart("Error purchasing:", f);
-                    mTransformJButton.setFailedProcureView();
-                    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-                        MOneButtonJDialog.factory(Util.getMMainJFrame(), "",						  
-						  "A problem occurred while purchasing:<br>"
-						  + mTransformJButton.getDisplayName()
-						  + "<br>Please try again or contact Metavize for assistance.",
-						  mTransformJButton.getDisplayName() + " Warning", "");
-                    }});
-                }
+		if( !isInterrupted() ){
+		    try{
+			Util.handleExceptionWithRestart("Error purchasing: " +  mTransformJButton.getName(),  e);
+		    }
+		    catch(Exception f){
+			Util.handleExceptionNoRestart("Error purchasing:", f);
+			mTransformJButton.setFailedProcureView();
+			SwingUtilities.invokeLater( new Runnable(){ public void run(){
+			    MOneButtonJDialog.factory(Util.getMMainJFrame(), "",						  
+						      "A problem occurred while purchasing:<br>"
+						      + mTransformJButton.getDisplayName()
+						      + "<br>Please try again or contact Metavize for assistance.",
+						      mTransformJButton.getDisplayName() + " Warning", "");
+			}});
+		    }
+		}
             }
         }
     }
@@ -821,7 +823,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 	private volatile boolean stop = false;
         public StoreModelThread(){
             setDaemon(true);
-	    setName("MVCLIENT-UpdateStoreModelThread");
+	    setName("MVCLIENT-StoreModelThread");
             storeProgressBar = new JProgressBar();
             storeProgressBar.setStringPainted(true);
             storeProgressBar.setForeground(new java.awt.Color(68, 91, 255));
@@ -836,12 +838,15 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             notify();
         }
 	public synchronized void doShutdown(){
-	    stop = true;
-	    notify();
+	    if(!stop){
+		stop = true;
+		notify();
+		interrupt();
+	    }
 	}
         public void run(){
             // MAIN STORE EVENT LOOP
-            while(true){
+            while(!stop){
                 try{
                     initStoreModel();
                     synchronized(this){
@@ -858,10 +863,9 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 			}
                     }
                 }
-                catch(Exception e){
-                    Util.handleExceptionNoRestart("Error sleeping store check thread", e);
-                }
+                catch(InterruptedException e){ continue; }
             }
+	    Util.printMessage("StoreModelThread Stopped");
         }
         private void initStoreModel(){
             // SHOW THE USER WHATS GOING ON

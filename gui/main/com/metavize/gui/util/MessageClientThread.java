@@ -25,15 +25,17 @@ public class MessageClientThread extends Thread implements Shutdownable {
 
     public MessageClientThread(MvvmRemoteContext mvvmContext, ToolboxMessageVisitor v){
 	setDaemon(true);
-	setName("MV-MessageClient");
+	setName("MV-MessageClientThread");
         this.mvvmContext = mvvmContext;
         this.toolboxMessageVisitor = v;
 	start();
     }
 
     public synchronized void doShutdown(){
-	stop = true;
-	interrupt();
+	if(!stop){
+	    stop = true;
+	    interrupt();
+	}
     }
 
     public void run(){
@@ -50,13 +52,17 @@ public class MessageClientThread extends Thread implements Shutdownable {
 		}
 		Thread.sleep(2000);
 	    }
+	    catch(InterruptedException e){ continue; }
 	    catch(Exception e){
-		try{ Util.handleExceptionWithRestart("Error handling messages", e); }
-		catch(Exception f){
-		    Util.handleExceptionNoRestart("Error handling messages", f);
-		    toolQ = null;
+		if( !isInterrupted() ){
+		    try{ Util.handleExceptionWithRestart("Error handling messages", e); }
+		    catch(Exception f){
+			Util.handleExceptionNoRestart("Error handling messages", f);
+			toolQ = null;
+		    }
 		}
 	    }
-	}	
+	}
+	Util.printMessage("MessageClientThread Stopped");
     }
 }

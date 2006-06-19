@@ -59,10 +59,12 @@ public class MMainJFrame extends javax.swing.JFrame {
         PolicyStateMachine policyStateMachine = new PolicyStateMachine(mTabbedPane,Util.getMRackJPanel(),toolboxJScrollPane,
                                        utilToolboxJPanel,policyToolboxJPanel,coreToolboxJPanel,
                                        storeScrollJPanel,Util.getMPipelineJPanel().getJScrollPane());
+	Util.addShutdownable("PolicyStateMachine", policyStateMachine);
         metavizeJButton.addActionListener(policyStateMachine);
 
         // UPDATE/UPGRADE
-        new UpdateCheckThread();
+        UpdateCheckThread updateCheckThread = new UpdateCheckThread();
+	Util.addShutdownable("UpdateCheckThread", updateCheckThread);
     }
 
 
@@ -760,16 +762,19 @@ public class MMainJFrame extends javax.swing.JFrame {
 
 
     private class UpdateCheckThread extends Thread implements Shutdownable {
+	private volatile boolean stop = false;
         public UpdateCheckThread(){
             super("MVCLIENT-UpdateCheckThread");
             this.setDaemon(true);
-            Util.addShutdownable("UpdateCheckThread", this);
             this.setContextClassLoader(Util.getClassLoader());
             this.start();
         }
-    public void doShutdown(){
-        interrupt();
-    }
+	public void doShutdown(){
+	    if(!stop){
+		stop = true;
+		interrupt();
+	    }
+	}
         public void run() {
             MackageDesc[] mackageDescs;
 
@@ -782,7 +787,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                 Util.handleExceptionNoRestart("Error updating upgrades on server", e);
             }
 
-            while(true){
+            while(!stop){
                 try{
                     // CHECK FOR UPGRADES
                     updateJButton(Util.UPGRADE_CHECKING);
@@ -797,15 +802,16 @@ public class MMainJFrame extends javax.swing.JFrame {
                     }
                     Thread.sleep(Util.UPGRADE_THREAD_SLEEP_MILLIS);
                 }
-                catch(InterruptedException ie){
-                    return;  // closed by interruption
-                }
+                catch(InterruptedException e){ continue; }
                 catch(Exception e){
-                    Util.handleExceptionNoRestart("Error checking for upgrades on server", e);
-                    updateJButton(Util.UPGRADE_UNAVAILABLE);
-                    try{ Thread.currentThread().sleep(10000); }  catch(Exception f){}
+		    if( !isInterrupted() ){
+			Util.handleExceptionNoRestart("Error checking for upgrades on server", e);
+			updateJButton(Util.UPGRADE_UNAVAILABLE);
+			try{ Thread.currentThread().sleep(10000); }  catch(Exception f){}
+		    }
                 }
             }
+	    Util.printMessage("UpdateCheckThread Stopped");
         }
     }
 
