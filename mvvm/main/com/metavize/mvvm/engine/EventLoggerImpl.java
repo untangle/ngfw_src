@@ -178,7 +178,7 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
 
     public void log(E e)
     {
-        if (inputQueue == null || !inputQueue.offer(new EventDesc(this, e))) {
+        if (null == inputQueue || !inputQueue.offer(new EventDesc(this, e))) {
             logger.warn("dropping logevent: " + e);
         }
     }
