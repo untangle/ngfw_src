@@ -185,7 +185,6 @@ DirTree.prototype._populateCallback = function(obj, results)
          }
 
          var tn = new DwtTreeItem(obj.parent, null, n.label, n.getIconName());
-         tn.setToolTipContent("PRINC: " + n.principal);
          tn.setData(Browser.CIFS_NODE, n);
          if (this._dragSource) {
             tn.setDragSource(this._dragSource);

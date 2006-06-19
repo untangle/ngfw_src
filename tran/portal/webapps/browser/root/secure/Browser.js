@@ -387,21 +387,22 @@ Browser.prototype._renameButtonListener = function(ev)
 
 Browser.prototype._mkdirButtonListener = function(ev)
 {
-   var dialog = new MkdirDialog(this._shell, this._cwd.getReqUrl());
+   var dialog = new MkdirDialog(this._shell, this._cwd);
 
    var cb = function() {
       var dir = dialog.getDir();
 
       if (dir) {
-         var url = "exec?command=mkdir&url=" + dir;
+         var url = "secure/exec";
+         var reqStr = "command=mkdir&url=" + dir;
+         var hs = {};
+         hs["Content-Type"] = "application/x-www-form-urlencoded";
 
-         var mkdirCb = function() {
-            dialog.popdown();
-            this.refresh();
-         }
+         var obj = { dialog: dialog }
+         var actionCb = new AjxCallback(this, this._mkdirCallbackFn, obj);
 
-         AjxRpc.invoke(null, url, null, new AjxCallback(this, mkdirCb, { }),
-                       false);
+         MvRpc.invoke(reqStr, url, hs, false, actionCb,
+                      MvRpc.reloadPageCallback, this._authCallback);
       }
    }
 
@@ -410,6 +411,12 @@ Browser.prototype._mkdirButtonListener = function(ev)
    dialog.addListener(DwtEvent.ENTER, l);
 
    dialog.popup();
+}
+
+Browser.prototype._mkdirCallbackFn = function(obj, evt)
+{
+   obj.dialog.popdown();
+   this.refresh();
 }
 
 Browser.prototype._authResource = function(obj, response)

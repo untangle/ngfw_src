@@ -1,7 +1,7 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-function MkdirDialog(parent, url)
+function MkdirDialog(parent, cifsNode)
 {
    if (arguments.length == 0) {
       return;
@@ -11,7 +11,7 @@ function MkdirDialog(parent, url)
 
    DwtDialog.call(this, parent, className, "Make Folder");
 
-   this._panel = new MkdirPanel(this, url);
+   this._panel = new MkdirPanel(this, cifsNode);
    this.addListener(DwtEvent.ONFOCUS, new AjxListener(this, this._focusListener));
 
    this.setView(this._panel);
@@ -37,18 +37,18 @@ MkdirDialog.prototype._focusListener = function(ev)
 
 // MkdirPanel -----------------------------------------------------------------
 
-function MkdirPanel(parent, url)
+function MkdirPanel(parent, cifsNode)
 {
    if (0 == arguments.length) {
       return;
    }
 
-   this._url = url;
+   this._cifsNode = cifsNode;
 
    DwtComposite.call(this, parent, "MkdirPanel");
 
    var label = new DwtLabel(this);
-   label.setText("Make new folder in " + url);
+   label.setText("Make new folder in " + this._cifsNode.url);
    this._field = new DwtInputField({ parent: this });
 }
 
@@ -60,7 +60,7 @@ MkdirPanel.prototype.constructor = FileUploadPanel;
 MkdirPanel.prototype.getDir = function()
 {
    // XXX resolve absolute vs relative paths
-   return this._url + this._field.getValue();
+   return this._cifsNode.getReqUrl() + this._field.getValue();
 }
 
 MkdirPanel.prototype.focus = function()

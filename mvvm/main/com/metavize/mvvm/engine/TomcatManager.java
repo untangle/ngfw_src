@@ -376,7 +376,6 @@ class TomcatManager
 
     synchronized void setRootWelcome(String welcomeFile)
     {
-        System.out.println("SETTING WELCOME FILE: " + welcomeFile);
         this.welcomeFile = welcomeFile;
     }
 
