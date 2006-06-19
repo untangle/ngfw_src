@@ -15,6 +15,7 @@ function Browser(shell, url) {
    DwtComposite.call(this, this._shell, "Browser", DwtComposite.ABSOLUTE_STYLE);
 
    this._authCallback = new AjxCallback(this, this._authResource, { });
+   this._refreshCallback = new AjxCallback(this, this.refresh, { });
 
    this._toolbar = this._makeToolbar();
    this._toolbar.zShow(true);
@@ -87,18 +88,22 @@ Browser.prototype.chdir = function(cifsNode, expandTree, expandDetail)
 
 Browser.prototype.mv = function(src, dest)
 {
-   var url = Browser._mkSrcDestCommand("mv", src, dest)
+   var reqStr = Browser._mkSrcDestCommand("mv", src, dest)
 
    // XXX handle error
-   AjxRpc.invoke(null, url, null, new AjxCallback(this, this.refresh, { }), false);
+   MvRpc.invoke(reqStr, "secure/exec", Browser._POST_HEADERS, false,
+                this._refreshCallback, MvRpc.reloadPageCallback,
+                this._authCallback);
 }
 
 Browser.prototype.cp = function(src, dest)
 {
-   var url = Browser._mkSrcDestCommand("cp", src, dest)
+   var reqStr = Browser._mkSrcDestCommand("cp", src, dest)
 
    // XXX handle error
-   AjxRpc.invoke(null, url, null, new AjxCallback(this, this.refresh, { }), false);
+   MvRpc.invoke(reqStr, "secure/exec", BROWSER._POST_HEADERS, false,
+                this._refreshCallback, MvRpc.reloadPageCallback,
+                this._authCallback);
 }
 
 Browser.prototype.refresh = function()
@@ -134,6 +139,11 @@ Browser.prototype.layout = function(ignoreSash) {
    this._detailPanel.setBounds(x, y, width - x, height);
    x += this._detailPanel.getSize().x;
 }
+
+// private fields -------------------------------------------------------------
+
+Browser._POST_HEADERS = {};
+Browser._POST_HEADERS["Content-Type"] = "application/x-www-form-urlencoded";
 
 // init -----------------------------------------------------------------------
 
@@ -208,13 +218,11 @@ Browser.prototype._makeActionMenu = function()
 Browser.prototype._broadcastRoots = function()
 {
    var actionCb = new AjxCallback(this, this._broadcastRootsCb, new Object());
-
-   DBG.println("INVOKE ls");
-   MvRpc.invoke(null, "secure/ls?url=//", null, true,
+   MvRpc.invoke("url=//", "secure/ls", null, true,
                 actionCb, MvRpc.reloadPageCallback, this._authCallback);
 }
 
-Browser.prototype._broadcastRootsCb = function(obj, results)
+Browser.prototype._broadcastRootsCbFn = function(obj, results)
 {
    var root = results.xml.getElementsByTagName("root")[0];
    var children = root.childNodes;
@@ -289,12 +297,13 @@ Browser.prototype._authenticateDialogListener = function(obj, evt)
    var username = d.getUser();
    var password = d.getPassword();
 
-   var url = "secure/login?domain=" + domain + "&username=" + username
-                   + "&password=" + password;
+   var reqStr = "domain=" + domain + "&username=" + username
+      + "&password=" + password;
 
-   o = { dialog: d, item: obj.item }
-   var actionCb = new AjxCallback(this, this._loginCallback, o);
-   MvRpc.invoke(null, url, null, true, actionCb, MvRpc.reloadPageCallback, null);
+   var obj = { dialog: d, item: obj.item }
+   var actionCb = new AjxCallback(this, this._loginCallback, obj);
+   MvRpc.invoke(reqStr, "secure/login", Browser._POST_HEADERS, false,
+                actionCb, MvRpc.reloadPageCallback, this._authCallback);
 }
 
 Browser.prototype._loginCallback = function(obj, results)
@@ -311,7 +320,8 @@ Browser.prototype._loginCallback = function(obj, results)
    }
 }
 
-Browser.prototype._listActionListener = function(ev) {
+Browser.prototype._listActionListener = function(ev)
+{
     this._actionMenu.popup(0, ev.docX, ev.docY);
 }
 
@@ -325,15 +335,11 @@ Browser.prototype._uploadButtonListener = function(ev)
 {
    var dialog = new FileUploadDialog(this._shell, "put", this._cwd.getReqUrl());
 
-   dialog.addUploadCompleteListener(new AjxListener(this, this._uploadCompleteListener));
+   var obj = { dialog: dialog };
+   var l = new AjxListener(this, this._popdownAndRefreshCbFn, obj);
+   dialog.addUploadCompleteListener(l);
 
    dialog.popup();
-}
-
-Browser.prototype._uploadCompleteListener = function(evt)
-{
-   evt.dialog.popdown();
-   this.refresh();
 }
 
 Browser.prototype._deleteButtonListener = function(ev)
@@ -343,14 +349,14 @@ Browser.prototype._deleteButtonListener = function(ev)
       return;
    }
 
-   var url = "secure/exec?command=rm";
-
+   var reqStr = "command=rm";
    for (var i = 0; i < sel.length; i++) {
-      url += "&file=" + sel[i].getReqUrl();
+      reqStr += "&file=" + sel[i].getReqUrl();
    }
 
-   AjxRpc.invoke(null, url, null, new AjxCallback(this, this.refresh, { }),
-                 false);
+   MvRpc.invoke(reqStr, "secure/exec", Browser._POST_HEADERS, false,
+                this._refreshCallback, MvRpc.reloadPageCallback,
+                this._authCallback);
 }
 
 Browser.prototype._renameButtonListener = function(ev)
@@ -362,58 +368,60 @@ Browser.prototype._renameButtonListener = function(ev)
 
    var dialog = new RenameDialog(this._shell, sel[0]);
 
-   // XXX first selection only
-   var cb = function() {
-      var dest = dialog.getDest();
+   var obj = { dialog: dialog };
+   var l = new AjxListener(this, this._renameDialogListenerFn, obj);
 
-      if (dest) {
-         var url = "secure/exec?command=rename&src=" + sel[0].getReqUrl() + "&dest=" + dest;
-
-         var cb = function() {
-            dialog.popdown();
-            this.refresh();
-         }
-
-         AjxRpc.invoke(null, url, null, new AjxCallback(this, cb, {}), false);
-      }
-   }
-
-   var l = new AjxListener(this, cb);
    dialog.setButtonListener(DwtDialog.OK_BUTTON, l);
    dialog.addListener(DwtEvent.ENTER, l);
 
    dialog.popup();
+}
+
+Browser.prototype._renameDialogListenerFn = function(obj, evt)
+{
+   // XXX first selection only
+   var dest = obj.dialog.getDest();
+
+   if (dest) {
+      var reqStr = "command=rename&src=" + sel[0].getReqUrl() + "&dest=" + dest;
+
+      var obj = { dialog: obj.dialog };
+      var actionCb = new AjxCallback(this, this._popdownAndRefreshCbFn, obj)
+
+      MvRpc.invoke(reqStr, "secure/exec", Browser._POST_HEADERS, false,
+                   actionCb, MvRpc.reloadPageCallback, this._authCallback);
+   }
 }
 
 Browser.prototype._mkdirButtonListener = function(ev)
 {
    var dialog = new MkdirDialog(this._shell, this._cwd);
 
-   var cb = function() {
-      var dir = dialog.getDir();
+   var obj = { dialog: dialog };
+   var l = new AjxListener(this, this._mkdirDialogListenerFn, obj);
 
-      if (dir) {
-         var url = "secure/exec";
-         var reqStr = "command=mkdir&url=" + dir;
-         var hs = {};
-         hs["Content-Type"] = "application/x-www-form-urlencoded";
-
-         var obj = { dialog: dialog }
-         var actionCb = new AjxCallback(this, this._mkdirCallbackFn, obj);
-
-         MvRpc.invoke(reqStr, url, hs, false, actionCb,
-                      MvRpc.reloadPageCallback, this._authCallback);
-      }
-   }
-
-   var l = new AjxListener(this, cb);
    dialog.setButtonListener(DwtDialog.OK_BUTTON, l);
    dialog.addListener(DwtEvent.ENTER, l);
 
    dialog.popup();
 }
 
-Browser.prototype._mkdirCallbackFn = function(obj, evt)
+Browser.prototype._mkdirDialogListenerFn = function(obj, evt) {
+   var dir = obj.dialog.getDir();
+
+   if (dir) {
+      var url = "secure/exec";
+      var reqStr = "command=mkdir&url=" + dir;
+
+      var obj = { dialog: obj.dialog }
+      var actionCb = new AjxCallback(this, this._popdownAndRefreshCbFn, obj);
+
+      MvRpc.invoke(reqStr, url, Browser._POST_HEADERS, false, actionCb,
+                   MvRpc.reloadPageCallback, this._authCallback);
+   }
+}
+
+Browser.prototype._popdownAndRefreshCbFn = function(obj, evt)
 {
    obj.dialog.popdown();
    this.refresh();
@@ -531,13 +539,13 @@ Browser.prototype._detailDropListener = function(evt)
 
 Browser._mkSrcDestCommand = function(command, src, dest)
 {
-   var url = "secure/exec?command=" + command;
+   var reqStr = "command=" + command;
 
    for (var i = 0; i < src.length; i++) {
-      url += "&src=" + src[i].getReqUrl(); // XXX does this get escaped ?
+      reqStr += "&src=" + src[i].getReqUrl(); // XXX does this get escaped ?
    }
 
-   url += "&dest=" + dest.getReqUrl(); // XXX does this get escaped ?
+   reqStr += "&dest=" + dest.getReqUrl(); // XXX does this get escaped ?
 
-   return url;
+   return reqStr;
 }

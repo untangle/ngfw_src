@@ -29,7 +29,7 @@ import jcifs.smb.SmbSession;
 public class SmbLogin extends HttpServlet
 {
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException
     {
         PortalLogin pl = (PortalLogin)req.getUserPrincipal();
