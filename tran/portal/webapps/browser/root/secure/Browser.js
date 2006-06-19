@@ -245,7 +245,6 @@ Browser.prototype._detailSelectionListener = function(ev) {
       case DwtListView.ITEM_DBL_CLICKED:
       var item = ev.item;
       if (item.isDirectory()) {
-         DBG.println("IS DIR");
          this.chdir(item);
       } else {
          AjxWindowOpener.open("secure/get/" + item.getReqUrl());
@@ -493,6 +492,7 @@ Browser.prototype._treeDropListener = function(evt)
          break;
 
          case Dwt.DND_DROP_MOVE:
+         DBG.println("MV SRC: " + src + " DEST: " + dest);
          this.mv(src, dest);
          break;
       }

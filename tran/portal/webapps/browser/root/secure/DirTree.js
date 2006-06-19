@@ -134,12 +134,11 @@ DirTree.prototype._populate = function(item, cb, repopulate)
 
       var obj = { parent: item, cb: cb };
 
-      var url = n.getReqUrl();
-      var reqStr = "url=" + url + "&type=dir";
+      var url = "secure/ls?url=" + n.getReqUrl() + "&type=dir";
 
       var actionCb = new AjxCallback(this, this._populateCallback, obj);
       var authCallback = new AjxCallback(this, this._populateAuthCallback, obj);
-      MvRpc.invoke(reqStr, "secure/ls", null, true,
+      MvRpc.invoke(null, url, null, true,
                    actionCb, MvRpc.reloadPageCallback, authCallback);
    } else {
       if (cb) {

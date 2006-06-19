@@ -43,8 +43,8 @@ DetailPanel.prototype.refresh = function()
 {
    var actionCb = new AjxCallback(this, this._refreshCbFn, { });
 
-   var reqStr = "url=" + this.cwd.getReqUrl() + "&type=full";
-   MvRpc.invoke(reqStr, "secure/ls", null, true,
+   var url = "secure/ls?url=" + this.cwd.getReqUrl() + "&type=full";
+   MvRpc.invoke(null, url, null, true,
                 actionCb, MvRpc.reloadPageCallback, this._authCallback);
 }
 
