@@ -68,7 +68,6 @@ class VirusHttpHandler extends HttpStateMachine
 
     private boolean scan;
     private long bufferingStart;
-    private boolean buffering;
     private int outstanding;
     private int totalSize;
     private String extension;
@@ -92,7 +91,6 @@ class VirusHttpHandler extends HttpStateMachine
     @Override
     protected RequestLineToken doRequestLine(RequestLineToken requestLine)
     {
-        this.scan = false;
         String path = requestLine.getRequestUri().getPath();
 
         int i = path.lastIndexOf('.');
@@ -139,6 +137,7 @@ class VirusHttpHandler extends HttpStateMachine
 
         if (null == rl || HttpMethod.HEAD == rl.getMethod()) {
             logger.debug("CONTINUE or HEAD");
+            this.scan = false;
         } else if (matchesExtension(extension)) {
             logger.debug("matches extension");
             reason = extension;
@@ -157,7 +156,6 @@ class VirusHttpHandler extends HttpStateMachine
         }
 
         if (scan) {
-            buffering = true;
             bufferingStart = System.currentTimeMillis();
             outstanding = 0;
             totalSize = 0;
@@ -187,13 +185,13 @@ class VirusHttpHandler extends HttpStateMachine
             }
             scanFile();
             if (getResponseMode() == Mode.QUEUEING) {
-                logger.error("still queueing after scanFile, buffering: "
-                            + buffering);
+                logger.warn("still queueing after scanFile, buffering: "
+                            + getResponseMode());
                 releaseResponse();
             }
         } else {
             if (getResponseMode() == Mode.QUEUEING) {
-                logger.error("still queueing, but not scanned");
+                logger.warn("still queueing, but not scanned");
                 releaseResponse();
             }
         }
@@ -234,7 +232,7 @@ class VirusHttpHandler extends HttpStateMachine
                 logger.info("Clean");
             }
 
-            if (buffering) {
+            if (Mode.QUEUEING == getResponseMode()) {
                 releaseResponse();
             } else {
                 preStream(new FileChunkStreamer(file, inFile, null, null, false));
@@ -245,7 +243,7 @@ class VirusHttpHandler extends HttpStateMachine
             // Todo: Quarantine (for now, don't delete the file) XXX
             transform.incrementCount(BLOCK_COUNTER, 1);
 
-            if (buffering) {
+            if (Mode.QUEUEING == getResponseMode()) {
                 blockResponse(blockMessage());
             } else {
                 TCPSession s = getSession();
@@ -381,10 +379,9 @@ class VirusHttpHandler extends HttpStateMachine
         outstanding += buf.remaining();
         totalSize += buf.remaining();
 
-        if (buffering) {
-            buffering = TIMEOUT > (System.currentTimeMillis() - bufferingStart)
-                && SIZE_LIMIT > totalSize;
-            if (buffering) {    /* remain in buffering mode */
+        if (Mode.QUEUEING == getResponseMode()) {
+            if (TIMEOUT > (System.currentTimeMillis() - bufferingStart)
+                && SIZE_LIMIT > totalSize) {
                 logger.debug("buffering");
                 return chunk;
             } else {            /* switch to trickle mode */
