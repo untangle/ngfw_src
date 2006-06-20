@@ -55,8 +55,10 @@ public class PortalLogin implements Principal, Serializable
         }
         this.clientAddr = new IPaddr(clientAddr);
         this.loginDate = new Date(System.currentTimeMillis());
-        this.ntlmAuths.put(null, ntlmAuth);
-        this.ntlmAuths.put(ntlmAuth.toString(), ntlmAuth);
+        if (ntlmAuth != null) {
+            this.ntlmAuths.put(null, ntlmAuth);
+            this.ntlmAuths.put(ntlmAuth.toString(), ntlmAuth);
+        }
     }
 
     // Principal methods ------------------------------------------------------
