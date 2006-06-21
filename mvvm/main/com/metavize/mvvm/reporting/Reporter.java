@@ -255,7 +255,7 @@ public class Reporter
     {
         Statement stmt = conn.createStatement();
         stmt.executeUpdate("set sort_mem=16384");
-        stmt.executeUpdate("set effective_cache_size=30000");
+        stmt.executeUpdate("set effective_cache_size=3000");
     }
 
     private static void addParam(BufferedWriter w, String name, java.util.Date value) throws IOException

@@ -62,9 +62,9 @@ for f in @THIRDPARTY_REPORTS_LIB@/*jar ; do
     CLASSPATH="$CLASSPATH:$f"
 done
 
-# Use 16Meg of memory for sorting, 32Meg for vacuuming, assume 300Meg of linux caching
+# Use 16Meg of memory for sorting, 32Meg for vacuuming, assume 30Meg of linux caching
 # (tilts optimizer towards use of indices)
-PGOPTIONS="-c sort_mem=16384 -c vacuum_mem=32768 -c effective_cache_size=30000"
+PGOPTIONS="-c sort_mem=16384 -c vacuum_mem=32768 -c effective_cache_size=3000"
 
 export JAVA_HOME CLASSPATH PGOPTIONS
 
