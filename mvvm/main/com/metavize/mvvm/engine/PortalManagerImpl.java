@@ -300,7 +300,7 @@ class PortalManagerImpl implements LocalPortalManager
             String uid = pu.getUid();
             PortalLoginDesc pld = activeLogins.get(uid);
             if (null != pld) {
-                PortalHomeSettings phs = pu.getPortalHomeSettings();
+                PortalHomeSettings phs = getPortalHomeSettings(pu);
                 long it;
                 if (null == phs) {
                     logger.warn("null PortalHomeSettings: " + pu);
@@ -374,7 +374,7 @@ class PortalManagerImpl implements LocalPortalManager
 
         }
         PortalLogin pl = new PortalLogin(user, addr, pwa);
-        PortalHomeSettings phs = user.getPortalHomeSettings();
+        PortalHomeSettings phs = getPortalHomeSettings(user);
         if (null == phs) {
             logger.warn("null PortalHomeSettings: " + user);
         }
