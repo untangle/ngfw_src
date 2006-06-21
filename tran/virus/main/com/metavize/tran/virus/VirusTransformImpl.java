@@ -399,27 +399,35 @@ public abstract class VirusTransformImpl extends AbstractTransform
             OUT_MOD_SUB_TEMPLATE,
             OUT_MOD_BODY_TEMPLATE));
 
+        initMimeTypes(vs);
+        initFileExtensions(vs);
 
+        setVirusSettings(vs);
+    }
+
+    private void initMimeTypes(VirusSettings vs)
+    {
         List s = new ArrayList();
-        s.add(new MimeTypeRule(new MimeType("application/x-javascript"), "JavaScript", "executable", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-shockwave-flash"), "Shockwave Flash", "executable", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-director"), "Macromedia Shockwave", "multimedia", false));
-        s.add(new MimeTypeRule(new MimeType("application/futuresplash"), "Macromedia FutureSplash", "multimedia", false));
-        s.add(new MimeTypeRule(new MimeType("application/x-java-applet"), "Java Applet", "executable", false));
-        s.add(new MimeTypeRule(new MimeType("application/rtf"), "Rich Text Format", "document", false));
-        s.add(new MimeTypeRule(new MimeType("application/pdf"), "Adobe Acrobat", "document", false));
-        s.add(new MimeTypeRule(new MimeType("application/postscript"), "Postscript", "document", false));
-        s.add(new MimeTypeRule(new MimeType("application/*"), "applications", "misc", false));
+        // Note that category is unused in the UI
+        // s.add(new MimeTypeRule(new MimeType("application/x-javascript"), "JavaScript", "executable", false));
+        // s.add(new MimeTypeRule(new MimeType("application/x-shockwave-flash"), "Shockwave Flash", "executable", false));
+        // s.add(new MimeTypeRule(new MimeType("application/x-director"), "Macromedia Shockwave", "multimedia", false));
+        // s.add(new MimeTypeRule(new MimeType("application/futuresplash"), "Macromedia FutureSplash", "multimedia", false));
+        // s.add(new MimeTypeRule(new MimeType("application/x-java-applet"), "Java Applet", "executable", false));
+        // s.add(new MimeTypeRule(new MimeType("application/rtf"), "Rich Text Format", "document", false));
+        // s.add(new MimeTypeRule(new MimeType("application/pdf"), "Adobe Acrobat", "document", false));
+        // s.add(new MimeTypeRule(new MimeType("application/postscript"), "Postscript", "document", false));
         s.add(new MimeTypeRule(new MimeType("message/*"), "messages", "misc", true));
-        s.add(new MimeTypeRule(new MimeType("image/*"), "images", "image", false));
-        s.add(new MimeTypeRule(new MimeType("video/*"), "video", "video", false));
-        s.add(new MimeTypeRule(new MimeType("text/*"), "text", "text", false));
-        s.add(new MimeTypeRule(new MimeType("audio/*"), "audio", "audio", false));
 
         vs.setHttpMimeTypes(s);
+    }
 
+    private void initFileExtensions(VirusSettings vs)
+    {
+        List s = new ArrayList();
         s = new ArrayList();
         /* XXX Need a description here */
+        // Note that category is unused in the UI
         s.add(new StringRule("exe", "executable", "download" , true));
         s.add(new StringRule("com", "executable", "download", true));
         s.add(new StringRule("ocx", "executable", "ActiveX", true));
@@ -430,6 +438,10 @@ public abstract class VirusTransformImpl extends AbstractTransform
         s.add(new StringRule("pif", "executable", "download" , true));
         s.add(new StringRule("scr", "executable", "download" , true));
         s.add(new StringRule("cpl", "executable", "download" , true));
+        s.add(new StringRule("hta", "executable", "download" , true));
+        s.add(new StringRule("vb",  "script", "download" , true));
+        s.add(new StringRule("vbe", "script", "download" , true));
+        s.add(new StringRule("vbs", "script", "download" , true));
         s.add(new StringRule("zip", "archive", "download" , true));
         s.add(new StringRule("eml", "archive", "download" , true));
         s.add(new StringRule("hqx", "archive", "download", true));
@@ -438,6 +450,10 @@ public abstract class VirusTransformImpl extends AbstractTransform
         s.add(new StringRule("ace", "archive", "download" , true));
         s.add(new StringRule("gz",  "archive", "download" , true));
         s.add(new StringRule("tar", "archive", "download" , true));
+        s.add(new StringRule("tgz", "archive", "download" , true));
+        s.add(new StringRule("doc", "document", "document", false));
+        s.add(new StringRule("ppt", "presentation", "document", false));
+        s.add(new StringRule("xls", "spreadsheet", "document", false));
         s.add(new StringRule("mp3", "audio", "download", false));
         s.add(new StringRule("wav", "audio", "download", false));
         s.add(new StringRule("wmf", "audio", "download", false));
@@ -448,12 +464,8 @@ public abstract class VirusTransformImpl extends AbstractTransform
         s.add(new StringRule("jar",   "java", "download", false));
         s.add(new StringRule("class", "java", "download", false));
         vs.setExtensions(s);
-
-        //TEMP hack - bscott
-        ensureTemplateSettings(vs);
-
-        setVirusSettings(vs);
     }
+
 
     protected void preInit(String args[])
     {
@@ -466,13 +478,26 @@ public abstract class VirusTransformImpl extends AbstractTransform
                     q.setParameter("tid", getTid());
                     settings = (VirusSettings)q.uniqueResult();
 
+                    boolean changed = false;
+                    if (settings.getHttpMimeTypes() == null || settings.getHttpMimeTypes().isEmpty()) {
+                        initMimeTypes(settings);
+                        changed = true;
+                    }
+                    if (settings.getExtensions() == null || settings.getExtensions().isEmpty()) {
+                        initFileExtensions(settings);
+                        changed = true;
+                    }
                     ensureTemplateSettings(settings);
+                    if (changed) {
+                        s.saveOrUpdate(settings);
+                    }
                     return true;
                 }
 
                 public Object getResult() { return null; }
             };
         getTransformContext().runTransaction(tw);
+
     }
 
     protected void preStart()
